@@ -120,92 +120,8 @@ boost::shared_ptr<Param> Element::CreateParam(const std::string &_key,
     const std::string &_type, const std::string &_defaultValue, bool _required,
     const std::string &_description)
 {
-  if (_type == "double")
-  {
-    boost::shared_ptr<ParamT<double> > param(
-        new ParamT<double>(_key, _defaultValue, _required, _type,
-                           _description));
-    return param;
-  }
-  else if (_type == "int")
-  {
-    boost::shared_ptr<ParamT<int> > param(
-        new ParamT<int>(_key, _defaultValue, _required, _type, _description));
-    return param;
-  }
-  else if (_type == "unsigned int")
-  {
-    boost::shared_ptr<ParamT<unsigned int> > param(
-        new ParamT<unsigned int>(_key, _defaultValue, _required, _type,
-                                 _description));
-    return param;
-  }
-  else if (_type == "float")
-  {
-    boost::shared_ptr<ParamT<float> > param(
-        new ParamT<float>(_key, _defaultValue, _required, _type, _description));
-    return param;
-  }
-  else if (_type == "bool")
-  {
-    boost::shared_ptr<ParamT<bool> > param(
-        new ParamT<bool>(_key, _defaultValue, _required, _type, _description));
-    return param;
-  }
-  else if (_type == "string")
-  {
-    boost::shared_ptr<ParamT<std::string> > param(
-        new ParamT<std::string>(_key, _defaultValue, _required, _type,
-                                _description));
-    return param;
-  }
-  else if (_type == "color")
-  {
-    boost::shared_ptr<ParamT<Color> > param(
-        new ParamT<Color>(_key, _defaultValue, _required,
-                                          _type, _description));
-    return param;
-  }
-  else if (_type == "vector3")
-  {
-    boost::shared_ptr<ParamT<Vector3> > param(
-        new ParamT<Vector3>(_key, _defaultValue, _required,
-                                          _type, _description));
-    return param;
-  }
-  else if (_type == "vector2i")
-  {
-    boost::shared_ptr<ParamT<Vector2i> > param(
-        new ParamT<Vector2i>(_key, _defaultValue, _required,
-                                           _type, _description));
-    return param;
-  }
-  else if (_type == "vector2d")
-  {
-    boost::shared_ptr<ParamT<Vector2d> > param(
-        new ParamT<Vector2d>(_key, _defaultValue, _required,
-                                           _type, _description));
-    return param;
-  }
-  else if (_type == "pose")
-  {
-    boost::shared_ptr<ParamT<Pose> > param(
-        new ParamT<Pose>(_key, _defaultValue, _required,
-                                       _type, _description));
-    return param;
-  }
-  else if (_type == "time")
-  {
-    boost::shared_ptr<ParamT<Time> > param(
-        new ParamT<Time>(_key, _defaultValue, _required,
-                                         _type, _description));
-    return param;
-  }
-  else
-  {
-    sdferr << "Unknown attribute _type[" << _type << "]\n";
-    return boost::shared_ptr<Param>();
-  }
+  return boost::shared_ptr<Param>(
+        new Param(_key, _type, _defaultValue, _required, _description));
 }
 
 /////////////////////////////////////////////////
@@ -269,7 +185,8 @@ void Element::Copy(const ElementPtr _elem)
     if (!this->HasAttribute((*iter)->GetKey()))
       this->attributes.push_back((*iter)->Clone());
     ParamPtr param = this->GetAttribute((*iter)->GetKey());
-    param->SetFromString((*iter)->GetAsString());
+    (*param) = (**iter);
+    //NATE: param->SetFromString((*iter)->GetAsString());
   }
 
   if (_elem->GetValue())
@@ -277,7 +194,8 @@ void Element::Copy(const ElementPtr _elem)
     if (!this->value)
       this->value = _elem->GetValue()->Clone();
     else
-      this->value->SetFromString(_elem->GetValue()->GetAsString());
+      *(this->value) = *(_elem->GetValue());
+      //NATE: this->value->SetFromString(_elem->GetValue()->GetAsString());
   }
 
   this->elementDescriptions.clear();
@@ -740,7 +658,7 @@ ElementPtr Element::AddElement(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
-bool Element::GetValueBool(const std::string &_key)
+/*bool Element::GetValueBool(const std::string &_key)
 {
   return this->Get<bool>(_key);
 }
@@ -810,6 +728,7 @@ Color Element::GetValueColor(const std::string &_key)
 {
   return this->Get<Color>(_key);
 }
+*/
 
 /////////////////////////////////////////////////
 void Element::ClearElements()

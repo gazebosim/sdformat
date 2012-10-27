@@ -111,32 +111,13 @@ namespace sdf
     /// \brief Get the param of the elements value
     public: ParamPtr GetValue();
 
-    public: bool GetValueBool(const std::string &_key = "") SDF_DEPRECATED;
-    public: int GetValueInt(const std::string &_key = "") SDF_DEPRECATED;
-    public: float GetValueFloat(const std::string &_key = "") SDF_DEPRECATED;
-    public: double GetValueDouble(const std::string &_key = "") SDF_DEPRECATED;
-    public: unsigned int GetValueUInt(const std::string &_key = "")
-            SDF_DEPRECATED;
-    public: char GetValueChar(const std::string &_key = "") SDF_DEPRECATED;
-    public: std::string GetValueString(const std::string &_key = "")
-            SDF_DEPRECATED;
-    public: Vector3 GetValueVector3(const std::string &_key = "")
-            SDF_DEPRECATED;
-    public: Vector2d GetValueVector2d(
-                const std::string &_key = "") SDF_DEPRECATED;
-    public: Quaternion GetValueQuaternion(
-                const std::string &_key = "") SDF_DEPRECATED;
-    public: Pose GetValuePose(const std::string &_key = "") SDF_DEPRECATED;
-    public: Color GetValueColor(const std::string &_key = "") SDF_DEPRECATED;
-    public: Time GetValueTime(const std::string &_key = "") SDF_DEPRECATED;
-
     public: template<typename T>
             T Get(const std::string &_key = "")
             {
-              T result;
+              T result = T();
 
               if (_key.empty())
-                this->value->Get(result);
+                this->value->Get<T>(result);
               else
               {
                 ParamPtr param = this->GetAttribute(_key);

@@ -178,6 +178,8 @@ else (buid_errors)
   if (BUILD_SDF)
     include_directories(include ${PROJECT_BINARY_DIR})
     add_subdirectory(src)
+    add_subdirectory(include/sdf)
+    add_subdirectory(sdf)
   endif(BUILD_SDF)
 
   ########################################

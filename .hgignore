@@ -1,0 +1,4 @@
+syntax: glob
+
+build
+build_*

@@ -32,7 +32,6 @@
   #include "sdf/parser_urdf.hh"
 #endif
 
-
 namespace sdf
 {
 

@@ -23,17 +23,58 @@
 
 using namespace sdf;
 
-std::vector<Param*> *Param::params = NULL;
+class string_set : public boost::static_visitor<>
+{
+  public: string_set(const std::string &_value)
+          {this->value = _value;}
+
+  public: template <typename T>
+          void operator()(T & _operand) const
+          {
+            _operand = boost::lexical_cast<T>(this->value);
+          }
+  public: std::string value;
+};
 
 //////////////////////////////////////////////////
-Param::Param(Param *_newParam)
-  : key(""), required(false), set(false), typeName("")
+Param::Param(const std::string &_key, const std::string &_typeName,
+             const std::string &_default, bool _required,
+             const std::string &_description)
 {
-  /*if (params == NULL)
-    gzthrow("Param vector is NULL\n");
-    */
-  if (params)
-    params->push_back(_newParam);
+  this->key = _key;
+  this->required = _required;
+  this->typeName = _typeName;
+  this->description = _description;
+  this->set = false;
+
+  if (this->typeName == "int")
+    this->Init<int>(_default);
+  else if (this->typeName == "unsigned int")
+    this->Init<unsigned int>(_default);
+  else if (this->typeName == "double")
+    this->Init<double>(_default);
+  else if (this->typeName == "float")
+    this->Init<float>(_default);
+  else if (this->typeName == "char")
+    this->Init<char>(_default);
+  else if (this->typeName == "std::string")
+    this->Init<std::string>(_default);
+  else if (this->typeName == "sdf::Vector2i")
+    this->Init<sdf::Vector2i>(_default);
+  else if (this->typeName == "sdf::Vector2d")
+    this->Init<sdf::Vector2d>(_default);
+  else if (this->typeName == "sdf::Vector3")
+    this->Init<sdf::Vector3>(_default);
+  else if (this->typeName == "sdf::Pose")
+    this->Init<sdf::Pose>(_default);
+  else if (this->typeName == "sdf::Quaternion")
+    this->Init<sdf::Quaternion>(_default);
+  else if (this->typeName == "sdf::Time")
+    this->Init<sdf::Time>(_default);
+  else if (this->typeName == "sdf::Color")
+    this->Init<sdf::Color>(_default);
+  else
+    sdferr << "Unknown parameter type[" << this->typeName << "]\n";
 }
 
 //////////////////////////////////////////////////
@@ -42,494 +83,106 @@ Param::~Param()
 }
 
 //////////////////////////////////////////////////
-std::string Param::GetTypeName() const
+void Param::Update()
+{
+  if (this->updateFunc)
+  {
+    // \TODO: Implemenet me
+    // this->value = this->updateFunc();
+    // const T v = boost::any_cast<T>(this->updateFunc());
+    // Param::Set(v);
+  }
+}
+
+//////////////////////////////////////////////////
+std::string Param::GetAsString() const
+{
+  return boost::lexical_cast<std::string>(this->value);
+}
+
+//////////////////////////////////////////////////
+std::string Param::GetDefaultAsString() const
+{
+  return boost::lexical_cast<std::string>(this->defaultValue);
+}
+
+//////////////////////////////////////////////////
+bool Param::SetFromString(const std::string &_value)
+{
+  std::string str = _value;
+  boost::trim(str);
+
+  if (str.empty() && this->required)
+  {
+    sdferr << "Empty string used when setting a required parameter. Key["
+      << this->GetKey() << "]\n";
+    return false;
+  }
+  else if (str.empty())
+  {
+    this->value = this->defaultValue;
+    return true;
+  }
+
+  std::string tmp(str);
+  std::string lowerTmp(str);
+  boost::to_lower(lowerTmp);
+
+  // "true" and "false" doesn't work properly
+  if (lowerTmp == "true")
+    tmp = "1";
+  else if (lowerTmp == "false")
+    tmp = "0";
+
+  try
+  {
+    boost::apply_visitor(string_set(tmp), this->value);
+  }
+  catch(boost::bad_lexical_cast &e)
+  {
+    if (str == "inf" || str == "-inf")
+    {
+      // in this case, the parser complains, but seems to assign the
+      // right values
+      sdfmsg << "INFO [sdf::Param]: boost throws when lexical casting "
+        << "inf's, but the values are usually passed through correctly\n";
+    }
+    else
+    {
+      sdferr << "Unable to set value [" <<  str
+        << "] for key[" << this->key << "]\n";
+      return false;
+    }
+  }
+
+  this->set = true;
+  return this->set;
+}
+
+//////////////////////////////////////////////////
+void Param::Reset()
+{
+  this->value = this->defaultValue;
+  this->set = false;
+}
+
+//////////////////////////////////////////////////
+boost::shared_ptr<Param> Param::Clone() const
+{
+  return boost::shared_ptr<Param>(new Param(this->key, this->typeName,
+        this->GetDefaultAsString(), this->required, this->description));
+}
+
+//////////////////////////////////////////////////
+const std::type_info &Param::GetType() const
+{
+  return this->value.type();
+}
+
+//////////////////////////////////////////////////
+const std::string &Param::GetTypeName() const
 {
   return this->typeName;
-}
-
-//////////////////////////////////////////////////
-bool Param::IsBool() const
-{
-  return this->GetTypeName() == "bool";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsInt() const
-{
-  return this->GetTypeName() == "int";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsUInt() const
-{
-  return this->GetTypeName() == "unsigned int";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsFloat() const
-{
-  return this->GetTypeName() == "float";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsDouble() const
-{
-  return this->GetTypeName() == "double";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsChar() const
-{
-  return this->GetTypeName() == "char";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsStr() const
-{
-  return this->GetTypeName() == "string";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsVector3() const
-{
-  return this->GetTypeName() == "vector3";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsVector2i() const
-{
-  return this->GetTypeName() == "vector2i";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsVector2d() const
-{
-  return this->GetTypeName() == "vector2d";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsQuaternion() const
-{
-  return this->GetTypeName() == "quaternion";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsPose() const
-{
-  return this->GetTypeName() == "pose";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsColor() const
-{
-  return this->GetTypeName() == "color";
-}
-
-//////////////////////////////////////////////////
-bool Param::IsTime() const
-{
-  return this->GetTypeName() == "time";
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const bool &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const int &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const unsigned int &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const float &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const double &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const char &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const std::string &_value)
-{
-  return this->SetFromString(_value);
-}
-
-/////////////////////////////////////////////////
-bool Param::Set(const char *_value)
-{
-  return this->SetFromString(std::string(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const Vector3 &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const Vector2i &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const Vector2d &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const Quaternion &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const Pose &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const Color &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Set(const Time &_value)
-{
-  return this->SetFromString(boost::lexical_cast<std::string>(_value));
-}
-
-//////////////////////////////////////////////////
-bool Param::Get(bool &_value)
-{
-  if (this->IsBool())
-  {
-    _value = ((ParamT<bool>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    sdferr << "Parameter [" << this->key << "] is not a bool\n";
-    return false;
-  }
-}
-
-//////////////////////////////////////////////////
-bool Param::Get(double &_value)
-{
-  if (this->IsDouble())
-  {
-    _value = ((ParamT<double>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    sdferr << "Parameter [" << this->key << "] is a ["
-          << this->typeName << "], attempting to get as a double.\n";
-    return false;
-  }
-}
-
-/////////////////////////////////////////////////
-bool Param::Get(float &_value)
-{
-  if (this->IsFloat())
-  {
-    _value = ((ParamT<float>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    sdferr << "Parameter [" << this->key << "] is not a float\n";
-    return false;
-  }
-}
-
-/////////////////////////////////////////////////
-bool Param::Get(Color &_value)
-{
-  if (this->IsColor())
-  {
-    _value = ((ParamT<Color>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    sdferr << "Parameter [" << this->key << "] is not a color\n";
-    return false;
-  }
-}
-
-/////////////////////////////////////////////////
-bool Param::Get(Time &_value)
-{
-  if (this->IsTime())
-  {
-    _value = ((ParamT<Time>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    sdferr << "Parameter [" << this->key << "] is not a time\n";
-    return false;
-  }
-}
-
-/////////////////////////////////////////////////
-bool Param::Get(Pose &_value)
-{
-  if (this->IsPose())
-  {
-    _value = ((ParamT<Pose>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    sdferr << "Parameter [" << this->key << "] is not a pose\n";
-    return false;
-  }
-}
-
-/////////////////////////////////////////////////
-bool Param::Get(Vector3 &_value)
-{
-  if (this->IsVector3())
-  {
-    _value = ((ParamT<Vector3>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    // sdfwarn << "Parameter [" << this->key
-    //        << "] is not a vector3, parse as string\n";
-    std::string val_str = this->GetAsString();
-    std::vector<double> elements;
-    std::vector<std::string> pieces;
-    boost::split(pieces, val_str, boost::is_any_of(" "));
-    if (pieces.size() != 3)
-    {
-      sdferr <<
-        "string does not have 3 pieces to parse into Vector3, using 0s\n";
-      return false;
-    }
-    else
-    {
-      for (unsigned int i = 0; i < pieces.size(); ++i)
-      {
-        if (pieces[i] != "")
-        {
-          try
-          {
-            elements.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
-          }
-          catch(boost::bad_lexical_cast &e)
-          {
-            sdferr << "value ["
-                  << pieces[i]
-                  << "] is not a valid double for Vector3[" << i << "]\n";
-            return false;
-          }
-        }
-      }
-      _value.x = elements[0];
-      _value.y = elements[1];
-      _value.z = elements[2];
-      return true;
-    }
-  }
-}
-
-/////////////////////////////////////////////////
-bool Param::Get(Vector2i &_value)
-{
-  if (this->IsVector2i())
-  {
-    _value = ((ParamT<Vector2i>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    // sdfwarn << "Parameter [" << this->key
-    //        << "] is not a vector2i,parse as string\n";
-    std::string val_str = this->GetAsString();
-    std::vector<int> elements;
-    std::vector<std::string> pieces;
-    boost::split(pieces, val_str, boost::is_any_of(" "));
-    if (pieces.size() != 2)
-    {
-      sdferr <<
-        "string does not have 2 parts to parse into Vector2i, using 0s\n";
-      return false;
-    }
-    else
-    {
-      for (unsigned int i = 0; i < pieces.size(); ++i)
-      {
-        if (pieces[i] != "")
-        {
-          try
-          {
-            elements.push_back(boost::lexical_cast<int>(pieces[i].c_str()));
-          }
-          catch(boost::bad_lexical_cast &e)
-          {
-            sdferr << "value ["
-                  << pieces[i]
-                  << "] is not a valid double for Vector2i[" << i << "]\n";
-            return false;
-          }
-        }
-      }
-      _value.x = elements[0];
-      _value.y = elements[1];
-      return true;
-    }
-  }
-}
-
-/////////////////////////////////////////////////
-bool Param::Get(Vector2d &_value)
-{
-  if (this->IsVector2d())
-  {
-    _value = ((ParamT<Vector2d>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    // sdfwarn << "Parameter [" << this->key
-    //        << "] is not vector2d, parse as string\n";
-    std::string val_str = this->GetAsString();
-    std::vector<double> elements;
-    std::vector<std::string> pieces;
-    boost::split(pieces, val_str, boost::is_any_of(" "));
-    if (pieces.size() != 2)
-    {
-      sdferr <<
-        "string does not have 2 pieces to parse into Vector2d, using 0s\n";
-      return false;
-    }
-    else
-    {
-      for (unsigned int i = 0; i < pieces.size(); ++i)
-      {
-        if (pieces[i] != "")
-        {
-          try
-          {
-            elements.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
-          }
-          catch(boost::bad_lexical_cast &e)
-          {
-            sdferr << "value ["
-                  << pieces[i]
-                  << "] is not a valid double for Vector2d[" << i << "]\n";
-            return false;
-          }
-        }
-      }
-      _value.x = elements[0];
-      _value.y = elements[1];
-      return true;
-    }
-  }
-}
-
-/////////////////////////////////////////////////
-bool Param::Get(int &_value)
-{
-  if (this->IsInt())
-  {
-    _value = ((ParamT<int>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    sdferr << "Parameter [" << this->key << "] is not an int\n";
-    return false;
-  }
-}
-
-/////////////////////////////////////////////////
-bool Param::Get(unsigned int &_value)
-{
-  if (this->IsUInt())
-  {
-    _value = ((ParamT<unsigned int>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    sdferr << "Parameter [" << this->key << "] is not an unsigned int\n";
-    return false;
-  }
-}
-
-/////////////////////////////////////////////////
-bool Param::Get(char &_value)
-{
-  if (this->IsChar())
-  {
-    _value = ((ParamT<char>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    sdferr << "Parameter [" << this->key << "] is not an unsigned int\n";
-    return false;
-  }
-}
-
-/////////////////////////////////////////////////
-bool Param::Get(std::string &_value)
-{
-  if (this->IsStr())
-  {
-    _value = ((ParamT<std::string>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    sdferr << "Parameter [" << this->key << "] is not a string\n";
-    return false;
-  }
-}
-
-/////////////////////////////////////////////////
-bool Param::Get(Quaternion &_value)
-{
-  if (this->IsQuaternion())
-  {
-    _value = ((ParamT<Quaternion>*)this)->GetValue();
-    return true;
-  }
-  else
-  {
-    sdferr << "Parameter [" << this->key << "] is not a quaternion\n";
-    return false;
-  }
 }
 
 /////////////////////////////////////////////////
