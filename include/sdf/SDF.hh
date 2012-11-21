@@ -31,58 +31,133 @@ namespace sdf
 {
   class SDF;
   class Element;
+
+  /// \def SDFPtr
+  /// \bried boost shared pointer to SDF
   typedef boost::shared_ptr<SDF> SDFPtr;
+
+  /// \def ElementPtr
+  /// \bried boost shared pointer to an SDF Element
   typedef boost::shared_ptr<Element> ElementPtr;
+
+  /// \def ElementPtr_V
+  /// \brief Vector of ElementPtr
   typedef std::vector< ElementPtr > ElementPtr_V;
 
   /// \addtogroup sdf_parser
   /// \{
 
+  /// \class Element Element.hh sdf/sdf.hh
   /// \brief SDF Element class
   class Element : public boost::enable_shared_from_this<Element>
   {
+    /// \brief Constructor.
     public: Element();
+
+    /// \brief Destructor.
     public: virtual ~Element();
 
+    /// \brief Create a copy of this Element.
+    /// \return A copy of this Element.
     public: boost::shared_ptr<Element> Clone() const;
 
-    /// \brief Copy values from an Element
+    /// \brief Copy values from an Element.
+    /// \param[in] _elem Element to copy value from.
     public: void Copy(const ElementPtr _elem);
 
+    /// \brief Get a pointer to this Element's parent.
+    /// \return Pointer to this Element's parent, NULL if there is no
+    /// parent.
     public: ElementPtr GetParent() const;
+
+    /// \brief Set the parent of this Element.
+    /// \param[in] _parent Paren for this element.
     public: void SetParent(const ElementPtr _parent);
 
+    /// \brief Set the name of the Element.
+    /// \param[in] _name The new name for this Element.
     public: void SetName(const std::string &_name);
+
+    /// \brief Get the Element's name.
+    /// \return The name of this Element.
     public: const std::string &GetName() const;
 
+    /// \brief Set the requirement type.
+    /// \param[in] _req Requirement type for this element:
+    /// 0: Not required
+    /// 1: Exactly one element is required
+    /// +: One or more elements are required
+    /// *: Zero or more elements are required.
     public: void SetRequired(const std::string &_req);
+
+    /// \brief Get the requirement string.
+    /// \return The requirement string.
+    /// \sa Element::SetRequired
     public: const std::string &GetRequired() const;
 
+    /// \brief Set whether this element should copy its child elements
+    /// during parsing.
+    /// \param[in] _value True to copy Element's children.
     public: void SetCopyChildren(bool _value);
+
+    /// \brief Return true if this Element's child elements should be copied
+    /// during parsing.
+    /// \return True to copy child elements during parsing.
     public: bool GetCopyChildren() const;
 
-    public: void PrintDescription(std::string _prefix);
-    public: void PrintValues(std::string _prefix);
-    public: void PrintWiki(std::string _prefix);
-    public: void PrintDoc(std::string &_divs, std::string &_html,
-                          int _spacing, int &_index);
+    /// \brief Output Element's description to stdout.
+    /// \param[in] _prefix String value to prefix to the output.
+    public: void PrintDescription(const std::string &_prefix);
 
-    private: void ToString(const std::string &_prefix,
-                           std::ostringstream &_out) const;
+    /// \brief Output Element's values to stdout.
+    /// \param[in] _prefix String value to prefix to the output.
+    public: void PrintValues(std::string _prefix);
+
+    /// \brief Helper function for SDF::PrintDoc
+    ///
+    /// This generates the SDF html documentation.
+    /// \param[out] _html Accumulated HTML for output.
+    /// \param[in] _spacing Amount of spacing for this element.
+    /// \param[in] _index Unique index for this element.
+    public: void PrintDocLeftPane(std::string &_html,
+                                  int _spacing, int &_index);
+
+    /// \brief Helper function for SDF::PrintDoc
+    ///
+    /// This generates the SDF html documentation.
+    /// \param[out] _html Accumulated HTML for output
+    /// \param[in] _spacing Amount of spacing for this element.
+    public: void PrintDocRightPane(std::string &_html, int _spacing);
+
+    /// \brief Convert the element values to a string representation.
+    /// \param[in] _prefix String value to prefix to the output.
+    /// \return The string representation.
     public: std::string ToString(const std::string &_prefix) const;
 
+    /// \brief Add an attribute value.
+    /// \param[in] _key Key value.
+    /// \param[in] _type Type of data the attribute will hold.
+    /// \param[in] _defaultValue Default value for the attribute.
+    /// \param[in] _required Requirement string. \as Element::SetRequired.
+    /// \param[in] _description A text description of the attribute.
     public: void AddAttribute(const std::string &_key,
                               const std::string &_type,
                               const std::string &_defaultvalue,
                               bool _required,
                               const std::string &_description="");
 
+    /// \brief Add a value to this Element.
+    /// \param[in] _type Type of data the attribute will hold.
+    /// \param[in] _defaultValue Default value for the attribute.
+    /// \param[in] _required Requirement string. \as Element::SetRequired.
+    /// \param[in] _description A text description of the attribute.
     public: void AddValue(const std::string &_type,
                           const std::string &_defaultValue, bool _required,
                           const std::string &_description="");
 
     /// \brief Get the param of an attribute.
-    /// \param _key the name of the attribute
+    /// \param[in] _key the name of the attribute
+    /// \return The parameter attribute value. NULL if the key is invalid.
     public: ParamPtr GetAttribute(const std::string &_key);
 
     /// \brief Get the number of attributes
@@ -172,6 +247,10 @@ namespace sdf
 
     /// \brief Add a new element description
     public: void AddElementDescription(ElementPtr _elem);
+
+    private: void ToString(const std::string &_prefix,
+                           std::ostringstream &_out) const;
+
 
     private: boost::shared_ptr<Param> CreateParam(const std::string &_key,
                  const std::string &_type, const std::string &_defaultValue,
