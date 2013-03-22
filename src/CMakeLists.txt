@@ -1,8 +1,10 @@
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 set (sources
+  Assert.cc
   Console.cc
   Converter.cc
+  Exception.cc
   parser.cc
   Param.cc
   SDF.cc
@@ -13,7 +15,7 @@ if (HAVE_URDFDOM AND HAVE_URDFDOM_HEADERS)
   include_directories(SYSTEM ${urdfdom_INCLUDE_DIRS}
                              ${urdfdom_headers_INCLUDE_DIRS}
                              ${console_bridge_INCLUDE_DIRS}
-                             ${CMAKE_SOURCE_DIR}/deps/opende/include)
+                             )
 
   link_directories(${urdfdom_LIBRARY_DIRS}
                    ${urdfdom_headers_LIBRARY_DIRS}

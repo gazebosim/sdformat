@@ -8,7 +8,7 @@ include(FindBoost)
 find_package(Boost ${MIN_BOOST_VERSION} REQUIRED system filesystem program_options regex iostreams)
 
 if (NOT Boost_FOUND)
-  set (BUILD_GAZEBO OFF CACHE INTERNAL "Build Gazebo" FORCE)
+  set (BUILD_SDF OFF CACHE INTERNAL "Build SDF" FORCE)
   BUILD_ERROR ("Boost not found. Please install thread signals system filesystem program_options regex boost version ${MIN_BOOST_VERSION} or higher.")
 endif() 
 

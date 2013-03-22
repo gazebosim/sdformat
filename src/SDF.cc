@@ -22,6 +22,23 @@ using namespace sdf;
 
 std::string SDF::version = SDF_VERSION;
 
+std::string find_file(const std::string &_filename,
+                      bool /*_searchLocalPath*/)
+{
+  std::string result = _filename;
+  /*
+     if (_filename[0] == '/')
+     result = gazebo::common::find_file(_filename, false);
+     else
+     {
+     std::string tmp = std::string("sdf/") + SDF::version + "/" + _filename;
+     result = gazebo::common::find_file(tmp, false);
+     }
+     */
+  return result;
+}
+
+
 /////////////////////////////////////////////////
 Element::Element()
 {
@@ -186,7 +203,7 @@ void Element::Copy(const ElementPtr _elem)
       this->attributes.push_back((*iter)->Clone());
     ParamPtr param = this->GetAttribute((*iter)->GetKey());
     (*param) = (**iter);
-    //TODO: param->SetFromString((*iter)->GetAsString());
+    // TODO: param->SetFromString((*iter)->GetAsString());
   }
 
   if (_elem->GetValue())
@@ -195,7 +212,7 @@ void Element::Copy(const ElementPtr _elem)
       this->value = _elem->GetValue()->Clone();
     else
       *(this->value) = *(_elem->GetValue());
-      //NATE: this->value->SetFromString(_elem->GetValue()->GetAsString());
+      // TODO: this->value->SetFromString(_elem->GetValue()->GetAsString());
   }
 
   this->elementDescriptions.clear();
@@ -217,7 +234,7 @@ void Element::Copy(const ElementPtr _elem)
 }
 
 /////////////////////////////////////////////////
-void Element::PrintDescription(std::string _prefix)
+void Element::PrintDescription(const std::string &_prefix)
 {
   std::cout << _prefix << "<element name ='" << this->name
             << "' required ='" << this->required << "'>\n";

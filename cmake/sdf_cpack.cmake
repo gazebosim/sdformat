@@ -22,4 +22,4 @@ set (DEBIAN_PACKAGE_DEPENDS "libboost-all-dev")
 
 set (RPM_PACKAGE_DEPENDS "libboost-all-dev")
 
-set (GAZEBO_CPACK_CFG_FILE "${PROJECT_BINARY_DIR}/cpack_options.cmake")
+set (SDF_CPACK_CFG_FILE "${PROJECT_BINARY_DIR}/cpack_options.cmake")

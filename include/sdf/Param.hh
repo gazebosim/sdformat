@@ -147,7 +147,7 @@ namespace sdf
               {
                 _value = boost::lexical_cast<T>(this->value);
               }
-              catch (...)
+              catch(...)
               {
                 sdferr << "Unable to convert parameter[" << this->key << "] "
                        << "whose type is[" << this->typeName << "], to "
@@ -168,7 +168,7 @@ namespace sdf
               {
                 _value = boost::lexical_cast<T>(this->defaultValue);
               }
-              catch (...)
+              catch(...)
               {
                 sdferr << "Unable to convert parameter[" << this->key << "] "
                        << "whose type is[" << this->typeName << "], to "

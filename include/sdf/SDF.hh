@@ -44,8 +44,11 @@ namespace sdf
   /// \brief Vector of ElementPtr
   typedef std::vector< ElementPtr > ElementPtr_V;
 
-  /// \addtogroup sdf_parser
+  /// \addtogroup sdf
   /// \{
+
+  std::string find_file(const std::string &_filename,
+                        bool _searchLocalPath = true);
 
   /// \class Element Element.hh sdf/sdf.hh
   /// \brief SDF Element class

@@ -22,6 +22,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 
+#include "sdf/SDF.hh"
+#include "sdf/Assert.hh"
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
 
@@ -66,7 +68,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   std::string origVersionStr = origVersion;
   boost::replace_all(origVersion, ".", "_");
 
-  std::string filename = gazebo::common::find_file(
+  std::string filename = sdf::find_file(
       std::string("sdf/") + _toVersion + "/" + origVersion + ".convert");
 
   // Use convert file in the current sdf version folder for conversion. If file
@@ -78,7 +80,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   if (!xmlDoc.LoadFile(filename))
   {
     // find all sdf version dirs in gazebo resource path
-    std::string sdfPath = gazebo::common::find_file(std::string("sdf/"), false);
+    std::string sdfPath = sdf::find_file(std::string("sdf/"), false);
     boost::filesystem::directory_iterator endIter;
     std::set<boost::filesystem::path> sdfDirs;
     if (boost::filesystem::exists(sdfPath)
@@ -108,7 +110,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
       {
         if (!xmlDoc.LoadFile(convertFile.string()))
         {
-            gzerr << "Unable to load file[" << convertFile << "]\n";
+            sdferr << "Unable to load file[" << convertFile << "]\n";
             return false;
         }
         ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
@@ -136,8 +138,8 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 /////////////////////////////////////////////////
 void Converter::Convert(TiXmlDocument *_doc, TiXmlDocument *_convertDoc)
 {
-  GZ_ASSERT(_doc != NULL, "SDF XML doc is NULL");
-  GZ_ASSERT(_convertDoc != NULL, "Convert XML doc is NULL");
+  SDF_ASSERT(_doc != NULL, "SDF XML doc is NULL");
+  SDF_ASSERT(_convertDoc != NULL, "Convert XML doc is NULL");
 
   ConvertImpl(_doc->FirstChildElement(), _convertDoc->FirstChildElement());
 }
@@ -145,8 +147,8 @@ void Converter::Convert(TiXmlDocument *_doc, TiXmlDocument *_convertDoc)
 /////////////////////////////////////////////////
 void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
 {
-  GZ_ASSERT(_elem != NULL, "SDF element is NULL");
-  GZ_ASSERT(_convert != NULL, "Convert element is NULL");
+  SDF_ASSERT(_elem != NULL, "SDF element is NULL");
+  SDF_ASSERT(_convert != NULL, "Convert element is NULL");
 
   CheckDeprecation(_elem, _convert);
 
@@ -178,8 +180,8 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
 /////////////////////////////////////////////////
 void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
 {
-  GZ_ASSERT(_elem != NULL, "SDF element is NULL");
-  GZ_ASSERT(_renameElem != NULL, "Rename element is NULL");
+  SDF_ASSERT(_elem != NULL, "SDF element is NULL");
+  SDF_ASSERT(_renameElem != NULL, "Rename element is NULL");
 
   TiXmlElement *fromConvertElem = _renameElem->FirstChildElement("from");
   TiXmlElement *toConvertElem = _renameElem->FirstChildElement("to");
@@ -196,7 +198,7 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
 
   if (!toElemName)
   {
-    gzerr << "No 'to' element name specified\n";
+    sdferr << "No 'to' element name specified\n";
     return;
   }
 
@@ -224,8 +226,8 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
 /////////////////////////////////////////////////
 void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem)
 {
-  GZ_ASSERT(_elem != NULL, "SDF element is NULL");
-  GZ_ASSERT(_moveElem != NULL, "Move element is NULL");
+  SDF_ASSERT(_elem != NULL, "SDF element is NULL");
+  SDF_ASSERT(_moveElem != NULL, "Move element is NULL");
 
   TiXmlElement *fromConvertElem = _moveElem->FirstChildElement("from");
   TiXmlElement *toConvertElem = _moveElem->FirstChildElement("to");
@@ -254,12 +256,12 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem)
 
   if (fromTokens.size() == 0)
   {
-    gzerr << "Incorrect 'from' string format\n";
+    sdferr << "Incorrect 'from' string format\n";
     return;
   }
   if (toTokens.size() == 0)
   {
-    gzerr << "Incorrect 'to' string format\n";
+    sdferr << "Incorrect 'to' string format\n";
     return;
   }
 

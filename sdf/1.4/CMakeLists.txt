@@ -29,4 +29,4 @@ set (sdfs
   world.sdf
 )
 
-install(FILES ${sdfs} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/gazebo-${GAZEBO_VERSION}/sdf/1.4)
+install(FILES ${sdfs} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdf-1.4)

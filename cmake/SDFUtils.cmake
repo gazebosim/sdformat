@@ -69,13 +69,13 @@ endmacro()
 
 #################################################
 macro (sdf_install_library _name)
-  set_target_properties(${_name} PROPERTIES SOVERSION ${GAZEBO_MAJOR_VERSION} VERSION ${GAZEBO_VERSION_FULL})
+  set_target_properties(${_name} PROPERTIES SOVERSION ${SDF_MAJOR_VERSION} VERSION ${SDF_VERSION_FULL})
   install (TARGETS ${_name} DESTINATION ${LIB_INSTALL_DIR} COMPONENT shlib)
 endmacro ()
 
 #################################################
 macro (sdf_install_executable _name)
-  set_target_properties(${_name} PROPERTIES VERSION ${GAZEBO_VERSION_FULL})
+  set_target_properties(${_name} PROPERTIES VERSION ${SDF_VERSION_FULL})
   install (TARGETS ${_name} DESTINATION ${BIN_INSTALL_DIR})
 endmacro ()
 

@@ -77,7 +77,8 @@ namespace sdf
 
   class Color
   {
-    public: Color(double _r=0.0, double _g=0.0, double _b=0.0, double _a=1.0)
+    public: Color(double _r = 0.0, double _g = 0.0,
+                double _b = 0.0, double _a = 1.0)
             : r(_r), g(_g), b(_b), a(_a) {}
 
     /// \brief Stream insertion operator
@@ -111,7 +112,7 @@ namespace sdf
 
   class Vector2i
   {
-    public: Vector2i(int _x=0, int _y=0)
+    public: Vector2i(int _x = 0, int _y = 0)
             : x(_x), y(_y) {}
 
     /// \brief Stream insertion operator
@@ -143,7 +144,7 @@ namespace sdf
 
   class Vector2d
   {
-    public: Vector2d(double _x=0.0, double _y=0.0)
+    public: Vector2d(double _x = 0.0, double _y = 0.0)
             : x(_x), y(_y) {}
 
     /// \brief Stream extraction operator
@@ -179,7 +180,7 @@ namespace sdf
     public: Vector3(const Vector3 &_v)
             : x(_v.x), y(_v.y), z(_v.z) {}
 
-    public: Vector3(double _x=0.0, double _y=0.0, double _z=0.0)
+    public: Vector3(double _x = 0.0, double _y = 0.0, double _z = 0.0)
             : x(_x), y(_y), z(_z) {}
 
     /// \brief Addition operator
@@ -189,6 +190,21 @@ namespace sdf
     {
       return Vector3(this->x + _v.x, this->y + _v.y, this->z + _v.z);
     }
+
+    public: Vector3 Cross(const Vector3 &_pt) const
+            {
+              Vector3 c(0, 0, 0);
+
+              c.x = this->y * _pt.z - this->z * _pt.y;
+              c.y = this->z * _pt.x - this->x * _pt.z;
+              c.z = this->x * _pt.y - this->y * _pt.x;
+
+              return c;
+            }
+    public: Vector3 operator*(double v) const
+            {
+              return Vector3(this->x * v, this->y * v, this->z * v);
+            }
 
     /// \brief Stream insertion operator
     /// \param _out output stream
@@ -200,6 +216,15 @@ namespace sdf
       _out << _pt.x << " " << _pt.y << " " << _pt.z;
       return _out;
     }
+
+    public: const Vector3 &operator*=(double v)
+            {
+              this->x *= v;
+              this->y *= v;
+              this->z *= v;
+
+              return *this;
+            }
 
     /// \brief Stream extraction operator
     /// \param _in input stream
@@ -221,7 +246,8 @@ namespace sdf
 
   class Vector4
   {
-    public: Vector4(double _x=0.0, double _y=0.0, double _z=0.0, double _w=0.0)
+    public: Vector4(double _x = 0.0, double _y = 0.0,
+                double _z = 0.0, double _w = 0.0)
             : x(_x), y(_y), z(_z), w(_w) {}
     public: double x;
     public: double y;
@@ -231,12 +257,37 @@ namespace sdf
 
   class Quaternion
   {
+    /// \brief Copy constructor
+    /// \param[in] _q Quaternion to copy
     public: Quaternion(const Quaternion &_q)
             : x(_q.x), y(_q.y), z(_q.z), w(_q.w) {}
 
-    public: Quaternion(double _x=0.0, double _y=0.0, double _z=0.0,
-                       double _w=1.0)
+    /// \brief Constructor
+    /// \param[in] _w W param
+    /// \param[in] _x X param
+    /// \param[in] _y Y param
+    /// \param[in] _z Z param
+    public: Quaternion(double _w = 1.0, double _x = 0.0, double _y = 0.0,
+                       double _z = 0.0)
             : x(_x), y(_y), z(_z), w(_w) {}
+
+    /// \brief Convert euler angles to quatern.
+    /// \param[in] _x rotation along x
+    /// \param[in] _y rotation along y
+    /// \param[in] _z rotation along z
+    public: static Quaternion EulerToQuaternion(double _x, double _y, double _z)
+            {
+              return EulerToQuaternion(Vector3(_x, _y, _z));
+            }
+
+    /// \brief Convert euler angles to quatern.
+    /// \param[in] _vec Vector of Euler angles
+    public: static Quaternion EulerToQuaternion(const Vector3 &_vec)
+            {
+              Quaternion result;
+              result.SetFromEuler(_vec);
+              return result;
+            }
 
     /// \brief Equal operator
     /// \param[in] _qt Quaternion to copy
@@ -382,6 +433,18 @@ namespace sdf
       return _out;
     }
 
+    public: Vector3 operator*(const Vector3 &v) const
+            {
+              Vector3 uv, uuv;
+              Vector3 qvec(this->x, this->y, this->z);
+              uv = qvec.Cross(v);
+              uuv = qvec.Cross(uv);
+              uv *= (2.0f * this->w);
+              uuv *= 2.0f;
+
+              return v + uv + uuv;
+            }
+
     /// \brief Stream extraction operator
     /// \param[in] _in input stream
     /// \param[in] _q Quaternion to read values into
@@ -439,6 +502,31 @@ namespace sdf
             return _in;
           }
 
+    public: Pose operator*(const Pose &pose)
+            {
+              return Pose(this->CoordPositionAdd(pose),  pose.rot * this->rot);
+            }
+
+    public: Vector3 CoordPositionAdd(const Pose &_pose) const
+            {
+              Quaternion tmp;
+              Vector3 result;
+
+              // result = _pose.rot + _pose.rot * this->pos * _pose.rot!
+              tmp.w = 0.0;
+              tmp.x = this->pos.x;
+              tmp.y = this->pos.y;
+              tmp.z = this->pos.z;
+
+              tmp = _pose.rot * (tmp * _pose.rot.GetInverse());
+
+              result.x = _pose.pos.x + tmp.x;
+              result.y = _pose.pos.y + tmp.y;
+              result.z = _pose.pos.z + tmp.z;
+
+              return result;
+            }
+
     public: Vector3 pos;
     public: Quaternion rot;
   };
@@ -473,6 +561,9 @@ namespace sdf
     public: int32_t nsec;
   };
 
-
+  class Mass
+  {
+    public: double mass;
+  };
 }
 #endif

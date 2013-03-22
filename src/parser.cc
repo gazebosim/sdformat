@@ -33,29 +33,13 @@
 
 namespace sdf
 {
-std::string find_file(const std::string &_filename)
-{
-  std::string result = _filename;
-
-  /*
-  if (_filename[0] == '/')
-    result = gazebo::common::find_file(_filename, false);
-  else
-  {
-    std::string tmp = std::string("sdf/") + SDF::version + "/" + _filename;
-    result = gazebo::common::find_file(tmp, false);
-  }
-*/
-  return result;
-}
-
 //////////////////////////////////////////////////
 bool init(SDFPtr _sdf)
 {
   bool result = false;
 
   std::string filename;
-  filename = find_file("root.sdf");
+  filename = sdf::find_file("root.sdf");
 
   FILE *ftest = fopen(filename.c_str(), "r");
   if (ftest && initFile(filename, _sdf))
@@ -72,7 +56,7 @@ bool init(SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, SDFPtr _sdf)
 {
-  std::string filename = find_file(_filename);
+  std::string filename = sdf::find_file(_filename);
 
   TiXmlDocument xmlDoc;
   if (xmlDoc.LoadFile(filename))
@@ -88,7 +72,7 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, ElementPtr _sdf)
 {
-  std::string filename = find_file(_filename);
+  std::string filename = sdf::find_file(_filename);
 
   TiXmlDocument xmlDoc;
   if (xmlDoc.LoadFile(filename))
@@ -266,7 +250,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
 bool readFile(const std::string &_filename, SDFPtr _sdf)
 {
   TiXmlDocument xmlDoc;
-  std::string filename = find_file(_filename);
+  std::string filename = sdf::find_file(_filename);
 
   if (filename.empty())
     return false;
@@ -278,7 +262,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
   {
 #ifdef HAVE_URDFDOM
     sdf::URDF2SDF u2g;
-    TiXmlDocument doc = u2g.initModelFile(filename);
+    TiXmlDocument doc = u2g.InitModelFile(filename);
     if (sdf::readDoc(&doc, _sdf, "urdf file"))
     {
       sdfwarn << "parse from urdf file [" << filename << "].\n";
@@ -306,7 +290,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
   {
 #ifdef HAVE_URDFDOM
     sdf::URDF2SDF u2g;
-    TiXmlDocument doc = u2g.initModelString(_xmlString);
+    TiXmlDocument doc = u2g.InitModelString(_xmlString);
     if (sdf::readDoc(&doc, _sdf, "urdf string"))
     {
       sdfwarn << "parse from urdf.\n";
@@ -357,7 +341,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
     if (strcmp(sdfNode->Attribute("version"), SDF::version.c_str()) != 0)
     {
       sdfwarn << "Converting a deprecatd SDF source[" << _source << "].\n";
-      Converter::Convert(sdfNode, SDF::version);
+      Converter::Convert(_xmlDoc, SDF::version);
     }
 
     /* parse new sdf xml */
@@ -565,6 +549,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
           boost::filesystem::path manifestPath = modelPath;
 
+          /// \TODO fix
+          /*
           // First try to get the GZ_MODEL_MANIFEST_FILENAME.
           // If that file doesn't exist, try to get the deprecated version.
           if (boost::filesystem::exists(
@@ -579,7 +565,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
                    << GZ_MODEL_MANIFEST_FILENAME << ".\n";
 
             manifestPath /= "manifest.xml";
-          }
+          }*/
 
           TiXmlDocument manifestDoc;
           if (manifestDoc.LoadFile(manifestPath.string()))
@@ -617,9 +603,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             sdferr << "<include filename='...'/> is deprecated. Should be "
                   << "<include><uri>...</uri></include\n";
 
-            // TODO NATE
-            // filename = gazebo::common::find_file(
-            //    elemXml->Attribute("filename"), false);
+            filename = sdf::find_file(elemXml->Attribute("filename"), false);
           }
           else
           {
