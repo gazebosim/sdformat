@@ -104,6 +104,7 @@ namespace sdf
     }
 
 
+
     public: double r;
     public: double g;
     public: double b;
@@ -138,6 +139,12 @@ namespace sdf
       _in >> _pt.x >> _pt.y;
       return _in;
     }
+
+    public: bool operator ==(const Vector2i &_pt) const
+            {
+              return this->x == _pt.x && this->y == _pt.y;
+            }
+
     public: int x;
     public: int y;
   };
@@ -170,6 +177,13 @@ namespace sdf
       _in >> _pt.x >> _pt.y;
       return _in;
     }
+
+    public: bool operator ==(const Vector2d &_pt) const
+            {
+              return equal(this->x, _pt.x, 0.001) &&
+                equal(this->y, _pt.y, 0.001);
+            }
+
 
     public: double x;
     public: double y;
@@ -225,6 +239,14 @@ namespace sdf
 
               return *this;
             }
+
+    public: bool operator ==(const sdf::Vector3 &_pt) const
+            {
+              return equal(this->x, _pt.x, 0.001) &&
+                equal(this->y, _pt.y, 0.001) &&
+                equal(this->z, _pt.z, 0.001);
+            }
+
 
     /// \brief Stream extraction operator
     /// \param _in input stream
@@ -463,6 +485,14 @@ namespace sdf
       return _in;
     }
 
+    public: bool operator ==(const Quaternion &_qt) const
+            {
+              return equal(this->x, _qt.x, 0.001) &&
+                equal(this->y, _qt.y, 0.001) &&
+                equal(this->z, _qt.z, 0.001) &&
+                equal(this->w, _qt.w, 0.001);
+            }
+
     public: double x;
     public: double y;
     public: double z;
@@ -477,6 +507,11 @@ namespace sdf
     public: Pose(Vector3 _pos, Quaternion _rot)
             : pos(_pos), rot(_rot) {}
 
+    public: Pose(double _x, double _y, double _z,
+                 double _roll, double _pitch, double _yaw)
+            : pos(_x, _y, _z), rot(_roll, _pitch, _yaw)
+            {
+            }
 
     /// \brief Stream insertion operator
     /// \param out output stream
@@ -527,12 +562,27 @@ namespace sdf
               return result;
             }
 
+    public: bool operator ==(const Pose &_pose) const
+            {
+              return this->pos == _pose.pos && this->rot == _pose.rot;
+            }
+
     public: Vector3 pos;
     public: Quaternion rot;
   };
 
   class Time
   {
+    public: Time()
+            : sec(0), nsec(0)
+    {
+    }
+
+    public: Time(int32_t _sec, int32_t _nsec)
+            : sec(_sec), nsec(_nsec)
+    {
+    }
+
       /// \brief Stream insertion operator
       /// \param[in] _out the output stream
       /// \param[in] _time time to write to the stream

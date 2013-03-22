@@ -1,5 +1,9 @@
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 
+link_directories(
+  ${PROJECT_BINARY_DIR}/test
+)
+
 set (sources
   Assert.cc
   Console.cc
@@ -10,6 +14,12 @@ set (sources
   SDF.cc
 )
 
+set (gtest_sources
+  SDF_TEST.cc
+  Converter_TEST.cc
+)
+
+sdf_build_tests(${gtest_sources})
 
 if (HAVE_URDFDOM AND HAVE_URDFDOM_HEADERS)
   include_directories(SYSTEM ${urdfdom_INCLUDE_DIRS}

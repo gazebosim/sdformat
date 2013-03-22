@@ -18,11 +18,11 @@
 #include "sdf/SDF.hh"
 #include "sdf/sdf_config.h"
 
-using namespace sdf;
 
+using namespace sdf;
 std::string SDF::version = SDF_VERSION;
 
-std::string find_file(const std::string &_filename,
+std::string sdf::find_file(const std::string &_filename,
                       bool /*_searchLocalPath*/)
 {
   std::string result = _filename;
