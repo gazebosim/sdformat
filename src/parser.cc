@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Nate Koenig & Andrew Howard
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  *
 */
-#define BOOST_FILESYSTEM_VERSION 2
 #include <stdlib.h>
 #include <stdio.h>
 #include <map>
@@ -34,18 +33,17 @@
 
 namespace sdf
 {
-
 std::string find_file(const std::string &_filename)
 {
   std::string result = _filename;
 
   /*
   if (_filename[0] == '/')
-    result = common::find_file(_filename, false);
+    result = gazebo::common::find_file(_filename, false);
   else
   {
     std::string tmp = std::string("sdf/") + SDF::version + "/" + _filename;
-    result = common::find_file(tmp, false);
+    result = gazebo::common::find_file(tmp, false);
   }
 */
   return result;
@@ -57,7 +55,7 @@ bool init(SDFPtr _sdf)
   bool result = false;
 
   std::string filename;
-  filename = find_file("sdf.sdf");
+  filename = find_file("root.sdf");
 
   FILE *ftest = fopen(filename.c_str(), "r");
   if (ftest && initFile(filename, _sdf))
@@ -65,6 +63,8 @@ bool init(SDFPtr _sdf)
     result = true;
     fclose(ftest);
   }
+  else
+    sdferr << "Unable to find or open SDF file[" << filename << "]\n";
 
   return result;
 }
@@ -349,6 +349,8 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
 
   /* check sdf version, use old parser if necessary */
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
+  if (!sdfNode)
+    sdfNode = _xmlDoc->FirstChildElement("gazebo");
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
@@ -359,7 +361,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
     }
 
     /* parse new sdf xml */
-    TiXmlElement* elemXml = _xmlDoc->FirstChildElement(_sdf->root->GetName());
+    TiXmlElement *elemXml = _xmlDoc->FirstChildElement(_sdf->root->GetName());
     if (!readXml(elemXml, _sdf->root))
     {
       sdferr << "Unable to read element <" << _sdf->root->GetName() << ">\n";
@@ -397,14 +399,17 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   }
 
   /* check sdf version, use old parser if necessary */
-  TiXmlElement* sdfNode = _xmlDoc->FirstChildElement("sdf");
+  TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
+  if (!sdfNode)
+    sdfNode = _xmlDoc->FirstChildElement("gazebo");
+
   if (sdfNode && sdfNode->Attribute("version"))
   {
     if (strcmp(sdfNode->Attribute("version"),
                SDF::version.c_str()) != 0)
     {
-      sdfwarn << "Converting a deprecatd SDF source[" << _source << "].\n";
-      Converter::Convert(sdfNode, SDF::version);
+      sdfwarn << "Converting a deprecated SDF source[" << _source << "].\n";
+      Converter::Convert(_xmlDoc, SDF::version);
     }
 
     TiXmlElement* elemXml = sdfNode;
@@ -426,9 +431,9 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   {
     // try to use the old deprecated parser
     if (!sdfNode)
-      sdfwarn << "SDF has no sdf element\n";
+      sdfwarn << "SDF has no <sdf> element\n";
     else if (!sdfNode->Attribute("version"))
-      sdfwarn << "SDF sdf element has no version\n";
+      sdfwarn << "<sdf> element has no version\n";
     else if (strcmp(sdfNode->Attribute("version"),
                     SDF::version.c_str()) != 0)
       sdfwarn << "SDF version ["
@@ -540,7 +545,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
               << elemXml->FirstChildElement("uri")->GetText() << "]\n";
 
             std::string uri = elemXml->FirstChildElement("uri")->GetText();
-            if (uri.find("model://") != 0)
+            if (uri.find("model://") != 0u)
             {
               sdferr << "Invalid uri[" << uri << "]. Should be model://"
                     << uri << "\n";
@@ -558,18 +563,50 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             }
           }
 
-          std::string manifest = modelPath + "/manifest.xml";
+          boost::filesystem::path manifestPath = modelPath;
+
+          // First try to get the GZ_MODEL_MANIFEST_FILENAME.
+          // If that file doesn't exist, try to get the deprecated version.
+          if (boost::filesystem::exists(
+                manifestPath / GZ_MODEL_MANIFEST_FILENAME))
+          {
+            manifestPath /= GZ_MODEL_MANIFEST_FILENAME;
+          }
+          else
+          {
+            sdfwarn << "The manifest.xml for a Gazebo model is deprecated. "
+                   << "Please rename manifest.xml to "
+                   << GZ_MODEL_MANIFEST_FILENAME << ".\n";
+
+            manifestPath /= "manifest.xml";
+          }
 
           TiXmlDocument manifestDoc;
-          if (manifestDoc.LoadFile(manifest))
+          if (manifestDoc.LoadFile(manifestPath.string()))
           {
             TiXmlElement *modelXML = manifestDoc.FirstChildElement("model");
             if (!modelXML)
-              sdferr << "No <model> element in manifest[" << manifest << "]\n";
+              sdferr << "No <model> element in manifest["
+                    << manifestPath << "]\n";
             else
             {
-              filename = modelPath + "/" +
-                         modelXML->FirstChildElement("sdf")->GetText();
+              TiXmlElement *sdfXML = modelXML->FirstChildElement("sdf");
+              TiXmlElement *sdfSearch = sdfXML;
+
+              // Find the SDF element that matches our current SDF version.
+              while (sdfSearch)
+              {
+                if (sdfSearch->Attribute("version") &&
+                    std::string(sdfSearch->Attribute("version")) == SDF_VERSION)
+                {
+                  sdfXML = sdfSearch;
+                  break;
+                }
+
+                sdfSearch = sdfSearch->NextSiblingElement("sdf");
+              }
+
+              filename = modelPath + "/" + sdfXML->GetText();
             }
           }
         }
@@ -612,6 +649,13 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           includeSDF->root->GetElement("model")->GetElement(
               "pose")->GetValue()->SetFromString(
                 elemXml->FirstChildElement("pose")->GetText());
+        }
+
+        if (elemXml->FirstChildElement("static"))
+        {
+          includeSDF->root->GetElement("model")->GetElement(
+              "static")->GetValue()->SetFromString(
+                elemXml->FirstChildElement("static")->GetText());
         }
 
         for (TiXmlElement *childElemXml = elemXml->FirstChildElement();

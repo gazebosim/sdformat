@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Nate Koenig
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,6 +113,8 @@ namespace sdf
     /// \param[in] _prefix String value to prefix to the output.
     public: void PrintValues(std::string _prefix);
 
+    public: void PrintWiki(std::string _prefix);
+
     /// \brief Helper function for SDF::PrintDoc
     ///
     /// This generates the SDF html documentation.
@@ -127,7 +129,8 @@ namespace sdf
     /// This generates the SDF html documentation.
     /// \param[out] _html Accumulated HTML for output
     /// \param[in] _spacing Amount of spacing for this element.
-    public: void PrintDocRightPane(std::string &_html, int _spacing);
+    public: void PrintDocRightPane(std::string &_html,
+                                  int _spacing, int &_index);
 
     /// \brief Convert the element values to a string representation.
     /// \param[in] _prefix String value to prefix to the output.
@@ -226,11 +229,18 @@ namespace sdf
 
     public: ElementPtr GetNextElement(const std::string &_name = "") const;
 
-    public: ElementPtr GetOrCreateElement(
-                const std::string &_name) SDF_DEPRECATED;
     public: ElementPtr GetElement(const std::string &_name);
     public: ElementPtr AddElement(const std::string &_name);
     public: void InsertElement(ElementPtr _elem);
+
+    /// \brief Remove this element from its parent.
+    public: void RemoveFromParent();
+
+    /// \brief Remove a child element.
+    /// \param[in] _child Pointer to the child to remove.
+    public: void RemoveChild(ElementPtr _child);
+
+    /// \brief Remove all child elements.
     public: void ClearElements();
 
     public: void Update();

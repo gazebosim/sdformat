@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Nate Koenig
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -186,7 +186,7 @@ void Element::Copy(const ElementPtr _elem)
       this->attributes.push_back((*iter)->Clone());
     ParamPtr param = this->GetAttribute((*iter)->GetKey());
     (*param) = (**iter);
-    //NATE: param->SetFromString((*iter)->GetAsString());
+    //TODO: param->SetFromString((*iter)->GetAsString());
   }
 
   if (_elem->GetValue())
@@ -248,46 +248,25 @@ void Element::PrintDescription(std::string _prefix)
   std::cout << _prefix << "</element>\n";
 }
 
-
 /////////////////////////////////////////////////
-void Element::PrintDoc(std::string &_divs, std::string &_html,
-                       int _spacing, int &_index)
+void Element::PrintDocRightPane(std::string &_html, int _spacing, int &_index)
 {
   std::ostringstream stream;
   ElementPtr_V::iterator eiter;
 
   int start = _index++;
-  _divs += "animatedcollapse.addDiv('" +
-    boost::lexical_cast<std::string>(start) + "', 'fade=1')\n";
-
 
   std::string childHTML;
   for (eiter = this->elementDescriptions.begin();
       eiter != this->elementDescriptions.end(); ++eiter)
   {
-    (*eiter)->PrintDoc(_divs, childHTML, _spacing + 10, _index);
+    (*eiter)->PrintDocRightPane(childHTML, _spacing + 4, _index);
   }
-  int end = _index;
 
-  stream << "<a id='" << this->name
-    << "' href=\"javascript:animatedcollapse.toggle('"
-            << start << "')\">+ &lt" << this->name << "&gt</a>";
-  stream << "<a style='padding-left: 5px' "
-         << "href=\"javascript:animatedcollapse.show([";
-  int i;
-  for (i = start; i < end - 1; ++i)
-    stream << "'" << i << "',";
-  stream << "'" << i << "'])\">all</a> | ";
+  stream << "<a name=\"" << this->name << start
+         << "\">&lt" << this->name << "&gt</a>";
 
-
-  stream << "<a style='padding-left: 5px' "
-         << "href=\"javascript:animatedcollapse.hide([";
-  for (i = start; i < end - 1; ++i)
-    stream << "'" << i << "',";
-  stream << "'" << i << "'])\">none</a><br>";
-
-  stream << "<div id='" << start << "' style='padding-left:" << _spacing
-         << "px; display:none; width: 404px;'>\n";
+  stream << "<div style='padding-left:" << _spacing << "px;'>\n";
 
   stream << "<div style='background-color: #ffffff'>\n";
 
@@ -302,7 +281,12 @@ void Element::PrintDoc(std::string &_divs, std::string &_html,
 
   stream << "<font style='font-weight:bold'>Type: </font>";
   if (this->value)
-    stream << this->value->GetTypeName() << "\n";
+  {
+    stream << this->value->GetTypeName()
+           << "&nbsp;&nbsp;&nbsp;\n"
+           << "<font style='font-weight:bold'>Default: </font>"
+           << this->value->GetDefaultAsString() << '\n';
+  }
   else
     stream << "n/a\n";
 
@@ -343,6 +327,32 @@ void Element::PrintDoc(std::string &_divs, std::string &_html,
     stream << "</div>\n";
     stream << "<br>\n";
   }
+
+  _html += stream.str();
+  _html += childHTML;
+  _html += "</div>\n";
+}
+
+/////////////////////////////////////////////////
+void Element::PrintDocLeftPane(std::string &_html, int _spacing, int &_index)
+{
+  std::ostringstream stream;
+  ElementPtr_V::iterator eiter;
+
+  int start = _index++;
+
+  std::string childHTML;
+  for (eiter = this->elementDescriptions.begin();
+      eiter != this->elementDescriptions.end(); ++eiter)
+  {
+    (*eiter)->PrintDocLeftPane(childHTML, _spacing + 4, _index);
+  }
+
+  stream << "<a id='" << start << "' onclick='highlight(" << start
+         << ");' href=\"#" << this->name << start
+         << "\">&lt" << this->name << "&gt</a>";
+
+  stream << "<div style='padding-left:" << _spacing << "px;'>\n";
 
   _html += stream.str();
   _html += childHTML;
@@ -592,12 +602,6 @@ ElementPtr Element::GetNextElement(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-ElementPtr Element::GetOrCreateElement(const std::string &_name)
-{
-  return this->GetElement(_name);
-}
-
-/////////////////////////////////////////////////
 ElementPtr Element::GetElement(const std::string &_name)
 {
   if (this->HasElement(_name))
@@ -647,7 +651,8 @@ ElementPtr Element::AddElement(const std::string &_name)
       for (iter2 = elem->elementDescriptions.begin();
            iter2 != elem->elementDescriptions.end(); ++iter2)
       {
-        elem->AddElement((*iter2)->name);
+        if ((*iter2)->GetRequired() == "1")
+          elem->AddElement((*iter2)->name);
       }
 
       return this->elements.back();
@@ -656,79 +661,6 @@ ElementPtr Element::AddElement(const std::string &_name)
   sdferr << "Missing element description for [" << _name << "]\n";
   return ElementPtr();
 }
-
-/////////////////////////////////////////////////
-/*bool Element::GetValueBool(const std::string &_key)
-{
-  return this->Get<bool>(_key);
-}
-
-/////////////////////////////////////////////////
-int Element::GetValueInt(const std::string &_key)
-{
-  return this->Get<int>(_key);
-}
-
-/////////////////////////////////////////////////
-float Element::GetValueFloat(const std::string &_key)
-{
-  return this->Get<float>(_key);
-}
-
-/////////////////////////////////////////////////
-double Element::GetValueDouble(const std::string &_key)
-{
-  return this->Get<double>(_key);
-}
-
-/////////////////////////////////////////////////
-unsigned int Element::GetValueUInt(const std::string &_key)
-{
-  return this->Get<unsigned int>(_key);
-}
-
-/////////////////////////////////////////////////
-char Element::GetValueChar(const std::string &_key)
-{
-  return this->Get<char>(_key);
-}
-
-/////////////////////////////////////////////////
-std::string Element::GetValueString(const std::string &_key)
-{
-  return this->Get<std::string>(_key);
-}
-
-/////////////////////////////////////////////////
-Vector3 Element::GetValueVector3(const std::string &_key)
-{
-  return this->Get<Vector3>(_key);
-}
-
-/////////////////////////////////////////////////
-Vector2d Element::GetValueVector2d(const std::string &_key)
-{
-  return this->Get<Vector2d>(_key);
-}
-
-/////////////////////////////////////////////////
-Quaternion Element::GetValueQuaternion(const std::string &_key)
-{
-  return this->Get<Quaternion>(_key);
-}
-
-/////////////////////////////////////////////////
-Pose Element::GetValuePose(const std::string &_key)
-{
-  return this->Get<Pose>(_key);
-}
-
-/////////////////////////////////////////////////
-Color Element::GetValueColor(const std::string &_key)
-{
-  return this->Get<Color>(_key);
-}
-*/
 
 /////////////////////////////////////////////////
 void Element::ClearElements()
@@ -750,6 +682,9 @@ void Element::Update()
   {
     (*iter)->Update();
   }
+
+  if (this->value)
+    this->value->Update();
 }
 
 /////////////////////////////////////////////////
@@ -830,43 +765,108 @@ void SDF::PrintValues()
 /////////////////////////////////////////////////
 void SDF::PrintDoc()
 {
-  std::string divs, html;
+  std::string html, html2;
   int index = 0;
-  this->root->PrintDoc(divs, html, 10, index);
+  this->root->PrintDocLeftPane(html, 10, index);
+
+  index = 0;
+  this->root->PrintDocRightPane(html2, 10, index);
 
   std::cout << "<!DOCTYPE HTML>\n"
   << "<html>\n"
   << "<head>\n"
   << "  <link href='style.css' rel='stylesheet' type='text/css'>\n"
-  << "  <script type='text/javascript'"
-  << "  src='http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js'>"
+  << "  <script type='text/javascript' src='jquery.js'></script>\n"
+  << "  <script type='text/javascript' src='splitter-152.js'></script>\n"
+  << "  <script type='text/javascript'>\n"
+  << "    var prevId = 0;\n"
+  << "  function highlight(id) {\n"
+  << "    var elem = document.getElementById(prevId);\n"
+  << "    elem.style.background = '#ffffff';\n"
+  << "    elem.style.color = '#da7800';\n"
+  << "    elem = document.getElementById(id);\n"
+  << "    elem.style.background = '#da7800';\n"
+  << "    elem.style.color = '#ffffff';\n"
+  << "    prevId = id;\n"
+  << "  }\n"
+  << "  $().ready(function() {\n"
+  << "    $('#my_splitter').splitter({\n"
+  << "      splitVertical: true,\n"
+  << "      outline: true,\n"
+  << "      sizeLeft: true,\n"
+  << "      resizeTo: window,\n"
+  << "      accessKey: 'I'\n"
+  << "    });\n"
+  << "  });\n"
   << "  </script>\n"
-  << "  <script type='text/javascript' src='animatedcollapse.js'>\n"
-  << "  /***********************************************\n"
-  << "   * Animated Collapsible DIV v2.4- (c) Dynamic Drive DHTML code\n"
-  << "   * library (www.dynamicdrive.com)\n"
-  << "   * This notice MUST stay intact for legal use\n"
-  << "   * Visit Dynamic Drive at http://www.dynamicdrive.com/ for this\n"
-  << "   * script and 100s more\n"
-  << "   ***********************************************/\n"
-  << "  </script>\n"
-  << "  <script type='text/javascript'>\n";
-
-  std::cout << divs << "\n";
-
-  std::cout << "animatedcollapse.ontoggle=function($, divobj, state)\n"
-      << "{ }\n animatedcollapse.init()\n </script>\n";
-  std::cout << "</head>\n<body>\n";
+  << "  <style type='text/css' media='all'>\n"
+  << "  #my_splitter {\n"
+  << "      height: 500px;\n"
+  << "      width: 100%;\n"
+  << "      border: 1px solid #aaa;\n"
+  << "  }\n"
+  << "  #left_pane {\n"
+  << "    min-width:320px;\n"
+  << "  }\n"
+  << "  #right_pane {\n"
+  << "    min-width:500px;\n"
+  << "  }\n"
+  << "  </style>\n"
+  << "</head>\n<body>\n";
 
   std::cout << "<div style='padding:4px'>\n"
             << "<h1>SDF " << SDF::version << "</h1>\n";
 
   std::cout << "<p>The Simulation Description Format (SDF) is an XML file "
-    << "format used to describe all the elements in a simulation "
-    << "environment.\n</p>";
+            << "format used to describe all the elements in a simulation "
+            << "environment.\n</p>";
+  std::cout << "<h3>Usage</h3>\n";
+  std::cout << "<blockquote>";
+  std::cout << "<ul><li><b>Left Panel:</b> List of all the SDF elements.</li>";
+  std::cout << "<li><b>Right Panel:</b> Descriptions of all the SDF "
+            << "elements.</li>";
+  std::cout << "<li><b>Selection:</b> Clicking an element in the Left Panel "
+            << "moves the corresponding description to the top of the Right "
+            << "Panel.</li>";
+  std::cout << "<li><b>Search:</b> Use your web-browser's built in 'Find' "
+            << "function to locate a specific element."
+            << "</li></ul>";
+  std::cout << "</blockquote>";
 
-  std::cout << "<div style='margin-left: 20px'>\n";
+  std::cout << "</br>\n";
+
+  std::cout << "<h3>Meta-Tags</h3>\n";
+  std::cout << "<blockquote>";
+  std::cout << "Meta-tags are processed by the parser before the final "
+            << "SDF file is generated.";
+  std::cout << "<ul>";
+
+  std::cout << "<li><b>&ltinclude&gt</b>: Include an SDF model file "
+            << "within the current SDF file."
+            << "<ul style='margin-left:12px'>"
+            << "<li><b>&lt;uri&gt;</b>: URI of SDF model file to include.</li>"
+            << "<li><b>&lt;name&gt;</b>: Name of the included SDF model.</li>"
+            << "<li><b>&lt;pose&gt;</b>: Pose of the included SDF model, "
+            << "specified as &lt;pose&gt;x y z roll pitch yaw&lt;/pose&gt;, "
+            << "with x, y, and z representing a position in meters, and roll, "
+            << "pitch, and yaw representing Euler angles in radians.</li>"
+            << "</ul>"
+            << "</li>";
+
+  std::cout << "</ul>";
+  std::cout << "</blockquote>";
+
+
+  std::cout << "</div>\n";
+
+  std::cout << "<div id='my_splitter'>\n";
+
+  std::cout << "<div id='left_pane'>\n";
   std::cout << html;
+  std::cout << "</div>\n";
+
+  std::cout << "<div id='right_pane'>\n";
+  std::cout << html2;
   std::cout << "</div>\n";
 
   std::cout << "</div>\n";
@@ -911,7 +911,7 @@ std::string SDF::ToString() const
 /////////////////////////////////////////////////
 void SDF::SetFromString(const std::string &_sdfData)
 {
-  sdf::initFile("sdf.sdf", this->root);
+  sdf::initFile("root.sdf", this->root);
   if (!sdf::readString(_sdfData, this->root))
   {
     sdferr << "Unable to parse sdf string[" << _sdfData << "]\n";
