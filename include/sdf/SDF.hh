@@ -197,9 +197,9 @@ namespace sdf
             {
               T result = T();
 
-              if (_key.empty())
+              if (_key.empty() && this->value)
                 this->value->Get<T>(result);
-              else
+              else if (!_key.empty())
               {
                 ParamPtr param = this->GetAttribute(_key);
                 if (param)

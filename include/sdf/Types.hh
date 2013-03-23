@@ -40,43 +40,19 @@ namespace sdf
   /// \param[in] _epsilon the tolerance
   template<typename T>
   inline bool equal(const T &_a, const T &_b,
-                    const T &_epsilon = 1e-6)
+                    const T &_epsilon = 1e-3)
   {
     return std::fabs(_a - _b) <= _epsilon;
   }
 
-  class Angle
-  {
-    /// \brief Stream insertion operator. Outputs in degrees
-    /// \param[in] _out output stream
-    /// \param[in] _a angle to output
-    /// \return The output stream
-    public: friend std::ostream &operator<<(std::ostream &_out,
-                                            const Angle &_a)
-    {
-      _out << _a.value;
-      return _out;
-    }
-
-    /// \brief Stream extraction operator. Assumes input is in degrees
-    /// \param in input stream
-    /// \param pt angle to read value into
-    /// \return The input stream
-    public: friend std::istream &operator>>(std::istream &_in,
-                                            Angle &_a)
-    {
-      // Skip white spaces
-      _in.setf(std::ios_base::skipws);
-      _in >> _a.value;
-      return _in;
-    }
-
-    /// The angle in radians
-    private: double value;
-  };
-
+  /// \brief Defines a color
   class Color
   {
+    /// \brief Constructor
+    /// \param[in] _r Red value (range 0 to 1)
+    /// \param[in] _g Green value (range 0 to 1
+    /// \param[in] _b Blue value (range 0 to 1
+    /// \param[in] _a Alpha value (0=transparent, 1=opaque)
     public: Color(double _r = 0.0, double _g = 0.0,
                 double _b = 0.0, double _a = 1.0)
             : r(_r), g(_g), b(_b), a(_a) {}
@@ -103,16 +79,37 @@ namespace sdf
       return _in;
     }
 
+    /// \brief Equality operator
+    /// \param[in] _clr The color to check for equality
+    /// \return True if the this color equals _clf
+    public: bool operator ==(const Color &_clr) const
+            {
+              return equal(this->r, _clr.r) &&
+                equal(this->g, _clr.g) &&
+                equal(this->b, _clr.b) &&
+                equal(this->a, _clr.a);
+            }
 
 
+    /// \brief Red value
     public: double r;
+
+    /// \brief Green value
     public: double g;
+
+    /// \brief Blue value
     public: double b;
+
+    /// \brief Alpha value
     public: double a;
   };
 
+  /// \brief Generic integer x, y vector
   class Vector2i
   {
+    /// \brief Constructor
+    /// \param[in] _x value along x
+    /// \param[in] _y value along y
     public: Vector2i(int _x = 0, int _y = 0)
             : x(_x), y(_y) {}
 
@@ -140,17 +137,27 @@ namespace sdf
       return _in;
     }
 
+    /// \brief Equality operator
+    /// \param _pt The vector to compare with
+    /// \return True if component have the same values, false otherwise
     public: bool operator ==(const Vector2i &_pt) const
             {
               return this->x == _pt.x && this->y == _pt.y;
             }
 
+    /// \brief x data
     public: int x;
+
+    /// \brief y data
     public: int y;
   };
 
+  /// \brief Generic double x, y vector
   class Vector2d
   {
+    /// \brief Constructor
+    /// \param[in] _x value along x
+    /// \param[in] _y value along y
     public: Vector2d(double _x = 0.0, double _y = 0.0)
             : x(_x), y(_y) {}
 
@@ -178,22 +185,37 @@ namespace sdf
       return _in;
     }
 
+    /// \brief Equal to operator
+    /// \param[in] _v the vector to compare to
+    /// \return true if the elements of the 2 vectors are equal within
+    /// a tolerence (1e-6)
     public: bool operator ==(const Vector2d &_pt) const
             {
-              return equal(this->x, _pt.x, 0.001) &&
-                equal(this->y, _pt.y, 0.001);
+              return equal(this->x, _pt.x) && equal(this->y, _pt.y);
             }
 
 
+    /// \brief x data
     public: double x;
+
+    /// \brief y data
     public: double y;
   };
 
+  /// \brief The Vector3 class represents the generic vector containing 3
+  ///        elements.  Since it's commonly used to keep coordinate system
+  ///        related information, its elements are labeled by x, y, z.
   class Vector3
   {
+    /// \brief Copy constructor
+    /// \param[in] _v a vector
     public: Vector3(const Vector3 &_v)
             : x(_v.x), y(_v.y), z(_v.z) {}
 
+    /// \brief Constructor
+    /// \param[in] _x value along x
+    /// \param[in] _y value along y
+    /// \param[in] _z value along z
     public: Vector3(double _x = 0.0, double _y = 0.0, double _z = 0.0)
             : x(_x), y(_y), z(_z) {}
 
@@ -205,6 +227,8 @@ namespace sdf
       return Vector3(this->x + _v.x, this->y + _v.y, this->z + _v.z);
     }
 
+    /// \brief Return the cross product of this vector and pt
+    /// \return the product
     public: Vector3 Cross(const Vector3 &_pt) const
             {
               Vector3 c(0, 0, 0);
@@ -215,9 +239,13 @@ namespace sdf
 
               return c;
             }
-    public: Vector3 operator*(double v) const
+
+    /// \brief Multiplication operator
+    /// \remarks this is an element wise multiplication, not a cross product
+    /// \param[in] _v
+    public: Vector3 operator*(double _v) const
             {
-              return Vector3(this->x * v, this->y * v, this->z * v);
+              return Vector3(this->x * _v, this->y * _v, this->z * _v);
             }
 
     /// \brief Stream insertion operator
@@ -231,22 +259,27 @@ namespace sdf
       return _out;
     }
 
-    public: const Vector3 &operator*=(double v)
+    /// \brief Multiplication by a double
+    /// \param[in] _v A double
+    /// \return this
+    public: const Vector3 &operator*=(double _v)
             {
-              this->x *= v;
-              this->y *= v;
-              this->z *= v;
+              this->x *= _v;
+              this->y *= _v;
+              this->z *= _v;
 
               return *this;
             }
 
-    public: bool operator ==(const sdf::Vector3 &_pt) const
+    /// \brief Equal to operator
+    /// \param[in] _pt The vector to compare against
+    /// \return true if each component is equal withing a
+    /// default tolerence (1e-6), false otherwise
+    public: bool operator==(const sdf::Vector3 &_pt) const
             {
-              return equal(this->x, _pt.x, 0.001) &&
-                equal(this->y, _pt.y, 0.001) &&
-                equal(this->z, _pt.z, 0.001);
+              return equal(this->x, _pt.x) && equal(this->y, _pt.y) &&
+                equal(this->z, _pt.z);
             }
-
 
     /// \brief Stream extraction operator
     /// \param _in input stream
@@ -261,36 +294,40 @@ namespace sdf
       return _in;
     }
 
+    /// \brief x Data
     public: double x;
+
+    /// \brief y Data
     public: double y;
+
+    /// \brief z Data
     public: double z;
   };
 
-  class Vector4
-  {
-    public: Vector4(double _x = 0.0, double _y = 0.0,
-                double _z = 0.0, double _w = 0.0)
-            : x(_x), y(_y), z(_z), w(_w) {}
-    public: double x;
-    public: double y;
-    public: double z;
-    public: double w;
-  };
-
+  /// \brief A quaternion class
   class Quaternion
   {
+    /// \brief Default Constructor
+    public: Quaternion() : x(0), y(0), z(0), w(1)
+            {}
+
     /// \brief Copy constructor
     /// \param[in] _q Quaternion to copy
     public: Quaternion(const Quaternion &_q)
             : x(_q.x), y(_q.y), z(_q.z), w(_q.w) {}
+
+    public: Quaternion(const double &_roll, const double &_pitch,
+                const double &_yaw)
+            {
+              this->SetFromEuler(Vector3(_roll, _pitch, _yaw));
+            }
 
     /// \brief Constructor
     /// \param[in] _w W param
     /// \param[in] _x X param
     /// \param[in] _y Y param
     /// \param[in] _z Z param
-    public: Quaternion(double _w = 1.0, double _x = 0.0, double _y = 0.0,
-                       double _z = 0.0)
+    public: Quaternion(double _w, double _x, double _y, double _z)
             : x(_x), y(_y), z(_z), w(_w) {}
 
     /// \brief Convert euler angles to quatern.
@@ -364,74 +401,87 @@ namespace sdf
               return q;
             }
 
+    /// \brief Return the rotation in Euler angles
+    /// \return This quaternion as an Euler vector
     public: Vector3 GetAsEuler() const
-    {
-      Vector3 vec;
+            {
+              Vector3 vec;
 
-      Quaternion copy = *this;
-      double squ;
-      double sqx;
-      double sqy;
-      double sqz;
+              Quaternion copy = *this;
+              double squ;
+              double sqx;
+              double sqy;
+              double sqz;
 
-      copy.Normalize();
+              copy.Normalize();
 
-      squ = copy.w * copy.w;
-      sqx = copy.x * copy.x;
-      sqy = copy.y * copy.y;
-      sqz = copy.z * copy.z;
+              squ = copy.w * copy.w;
+              sqx = copy.x * copy.x;
+              sqy = copy.y * copy.y;
+              sqz = copy.z * copy.z;
 
-      // Roll
-      vec.x = atan2(2 * (copy.y*copy.z + copy.w*copy.x), squ - sqx - sqy + sqz);
+              // Roll
+              vec.x = atan2(2 * (copy.y*copy.z + copy.w*copy.x),
+                  squ - sqx - sqy + sqz);
 
-      // Pitch
-      double sarg = -2 * (copy.x*copy.z - copy.w * copy.y);
-      vec.y = sarg <= -1.0 ? -0.5*M_PI : (sarg >= 1.0 ? 0.5*M_PI : asin(sarg));
+              // Pitch
+              double sarg = -2 * (copy.x*copy.z - copy.w * copy.y);
+              vec.y = sarg <= -1.0 ? -0.5*M_PI :
+                (sarg >= 1.0 ? 0.5*M_PI : asin(sarg));
 
-      // Yaw
-      vec.z = atan2(2 * (copy.x*copy.y + copy.w*copy.z), squ + sqx - sqy - sqz);
+              // Yaw
+              vec.z = atan2(2 * (copy.x*copy.y + copy.w*copy.z),
+                  squ + sqx - sqy - sqz);
 
-      return vec;
-    }
+              return vec;
+            }
 
+    /// \brief Set the quaternion from Euler angles
+    /// \param[in] _vec  Euler angle
     public: void SetFromEuler(const Vector3 &_vec)
-    {
-      double phi, the, psi;
+            {
+              double phi, the, psi;
 
-      phi = _vec.x / 2.0;
-      the = _vec.y / 2.0;
-      psi = _vec.z / 2.0;
+              phi = _vec.x / 2.0;
+              the = _vec.y / 2.0;
+              psi = _vec.z / 2.0;
 
-      this->w = cos(phi) * cos(the) * cos(psi) + sin(phi) * sin(the) * sin(psi);
-      this->x = sin(phi) * cos(the) * cos(psi) - cos(phi) * sin(the) * sin(psi);
-      this->y = cos(phi) * sin(the) * cos(psi) + sin(phi) * cos(the) * sin(psi);
-      this->z = cos(phi) * cos(the) * sin(psi) - sin(phi) * sin(the) * cos(psi);
+              this->w = cos(phi) * cos(the) * cos(psi) + sin(phi) *
+                sin(the) * sin(psi);
+              this->x = sin(phi) * cos(the) * cos(psi) - cos(phi) *
+                sin(the) * sin(psi);
+              this->y = cos(phi) * sin(the) * cos(psi) + sin(phi) *
+                cos(the) * sin(psi);
+              this->z = cos(phi) * cos(the) * sin(psi) - sin(phi) *
+                sin(the) * cos(psi);
 
-      this->Normalize();
-    }
+              this->Normalize();
+            }
 
+    /// \brief Normalize the quaternion
     public: void Normalize()
-    {
-      double s = 0;
+            {
+              double s = 0;
 
-      s = sqrt(this->w * this->w + this->x * this->x + this->y * this->y +
-               this->z * this->z);
+              s = sqrt(this->w * this->w + this->x * this->x +
+                  this->y * this->y +
+                  this->z * this->z);
 
-      if (equal(s, 0.0))
-      {
-        this->w = 1.0;
-        this->x = 0.0;
-        this->y = 0.0;
-        this->z = 0.0;
-      }
-      else
-      {
-        this->w /= s;
-        this->x /= s;
-        this->y /= s;
-        this->z /= s;
-      }
-    }
+              if (equal(s, 0.0))
+              {
+                this->w = 1.0;
+                this->x = 0.0;
+                this->y = 0.0;
+                this->z = 0.0;
+              }
+              else
+              {
+                this->w /= s;
+                this->x /= s;
+                this->y /= s;
+                this->z /= s;
+              }
+            }
 
     /// \brief Rotate a vector using the quaternion
     /// \param[in] _vec vector to rotate
@@ -455,16 +505,18 @@ namespace sdf
       return _out;
     }
 
-    public: Vector3 operator*(const Vector3 &v) const
+    /// \brief Vector3 multiplication operator
+    /// \param[in] _v vector to multiply
+    public: Vector3 operator*(const Vector3 &_v) const
             {
               Vector3 uv, uuv;
               Vector3 qvec(this->x, this->y, this->z);
-              uv = qvec.Cross(v);
+              uv = qvec.Cross(_v);
               uuv = qvec.Cross(uv);
               uv *= (2.0f * this->w);
               uuv *= 2.0f;
 
-              return v + uv + uuv;
+              return _v + uv + uuv;
             }
 
     /// \brief Stream extraction operator
@@ -485,32 +537,71 @@ namespace sdf
       return _in;
     }
 
+    /// \brief Equal to operator
+    /// \param[in] _qt Quaternion for comparison
+    /// \return True if equal
     public: bool operator ==(const Quaternion &_qt) const
             {
-              return equal(this->x, _qt.x, 0.001) &&
-                equal(this->y, _qt.y, 0.001) &&
-                equal(this->z, _qt.z, 0.001) &&
-                equal(this->w, _qt.w, 0.001);
+              return this->GetAsEuler() == _qt.GetAsEuler();
             }
 
+    public: inline void Correct()
+            {
+              if (!finite(this->x))
+                this->x = 0;
+              if (!finite(this->y))
+                this->y = 0;
+              if (!finite(this->z))
+                this->z = 0;
+              if (!finite(this->w))
+                this->w = 1;
+
+              if (equal(this->w, 0.0) && equal(this->x, 0.0) &&
+                  equal(this->y, 0.0) && equal(this->z, 0.0))
+              {
+                this->w = 1;
+              }
+            }
+
+    /// \brief x data
     public: double x;
+
+    /// \brief y data
     public: double y;
+
+    /// \brief z data
     public: double z;
+
+    /// \brief w data
     public: double w;
   };
 
+  /// \brief Encapsulates a position and rotation in three space
   class Pose
   {
+    /// \brief Constructor
     public: Pose()
+            :pos(0, 0, 0), rot(1, 0, 0, 0)
             {}
 
+    /// \brief Constructor
+    /// \param[in] _pos A position
+    /// \param[in] _rot A rotation
     public: Pose(Vector3 _pos, Quaternion _rot)
             : pos(_pos), rot(_rot) {}
 
+    /// \brief Constructor
+    /// \param[in] _x x position in meters.
+    /// \param[in] _y y position in meters.
+    /// \param[in] _z z position in meters.
+    /// \param[in] _roll Roll (rotation about X-axis) in radians.
+    /// \param[in] _pitch Pitch (rotation about y-axis) in radians.
+    /// \param[in] _yaw Yaw (rotation about z-axis) in radians.
     public: Pose(double _x, double _y, double _z,
                  double _roll, double _pitch, double _yaw)
             : pos(_x, _y, _z), rot(_roll, _pitch, _yaw)
             {
+              rot.Correct();
             }
 
     /// \brief Stream insertion operator
@@ -537,11 +628,17 @@ namespace sdf
             return _in;
           }
 
+    /// \brief Multiplication operator
+    /// \param[in] _pose the other pose
+    /// \return itself
     public: Pose operator*(const Pose &pose)
             {
               return Pose(this->CoordPositionAdd(pose),  pose.rot * this->rot);
             }
 
+    /// \brief Add one point to another: result = this + pose
+    /// \param[in] _pose The Pose to add
+    /// \return The resulting position
     public: Vector3 CoordPositionAdd(const Pose &_pose) const
             {
               Quaternion tmp;
@@ -562,56 +659,80 @@ namespace sdf
               return result;
             }
 
+    /// \brief Equality operator
+    /// \param[in] _pose Pose for comparison
+    /// \return True if equal
     public: bool operator ==(const Pose &_pose) const
             {
               return this->pos == _pose.pos && this->rot == _pose.rot;
             }
 
+    /// \brief Position data
     public: Vector3 pos;
+
+    /// \brief Orientation data
     public: Quaternion rot;
   };
 
+  /// \brief A Time class, can be used to hold wall- or sim-time.
+  /// stored as sec and nano-sec.
   class Time
   {
+    /// \brief Constructor
     public: Time()
             : sec(0), nsec(0)
     {
     }
 
+    /// \brief Constructor
+    /// \param[in] _sec Seconds
+    /// \param[in] _nsec Nanoseconds
     public: Time(int32_t _sec, int32_t _nsec)
             : sec(_sec), nsec(_nsec)
     {
     }
 
-      /// \brief Stream insertion operator
-      /// \param[in] _out the output stream
-      /// \param[in] _time time to write to the stream
-      /// \return the output stream
-      public: friend std::ostream &operator<<(std::ostream &_out,
-                                              const Time &_time)
-              {
-                _out << _time.sec << " " << _time.nsec;
-                return _out;
-              }
+    /// \brief Stream insertion operator
+    /// \param[in] _out the output stream
+    /// \param[in] _time time to write to the stream
+    /// \return the output stream
+    public: friend std::ostream &operator<<(std::ostream &_out,
+                const Time &_time)
+            {
+              _out << _time.sec << " " << _time.nsec;
+              return _out;
+            }
 
-      /// \brief Stream extraction operator
-      /// \param[in] _in the input stream
-      /// \param[in] _time time to read from to the stream
-      /// \return the input stream
-      public: friend std::istream &operator>>(std::istream &_in,
-                                              Time &_time)
-              {
-                // Skip white spaces
-                _in.setf(std::ios_base::skipws);
-                _in >> _time.sec >> _time.nsec;
-                return _in;
-              }
+    /// \brief Stream extraction operator
+    /// \param[in] _in the input stream
+    /// \param[in] _time time to read from to the stream
+    /// \return the input stream
+    public: friend std::istream &operator>>(std::istream &_in,
+                Time &_time)
+            {
+              // Skip white spaces
+              _in.setf(std::ios_base::skipws);
+              _in >> _time.sec >> _time.nsec;
+              return _in;
+            }
 
+    /// \brief Equal to operator.
+    /// \param[in] _time the time to compare to.
+    /// \return true if values are the same, false otherwise.
+    public: bool operator ==(const Time &_time) const
+            {
+              return this->sec == _time.sec && this->nsec == _time.nsec;
+            }
+
+    /// \brief Seconds.
     public: int32_t sec;
+
+    /// \brief Nanoseconds.
     public: int32_t nsec;
   };
 
-  class Mass
+  /// \brief A class for inertial information about a link.
+  class Inertia
   {
     public: double mass;
   };

@@ -219,8 +219,18 @@ namespace sdf
               }
               catch(...)
               {
-                sdferr << "Unable to init parameter value from string["
-                       << _value << "]\n";
+                if (this->typeName == "bool")
+                {
+                  std::string strValue = _value;
+                  boost::algorithm::to_lower(strValue);
+                  if (strValue == "true" || strValue == "1")
+                    this->value = true;
+                  else
+                    this->value = false;
+                }
+                else
+                  sdferr << "Unable to init parameter value from string["
+                    << _value << "]\n";
               }
 
               this->defaultValue = this->value;

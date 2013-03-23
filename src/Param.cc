@@ -37,6 +37,19 @@ class string_set : public boost::static_visitor<>
   public: std::string value;
 };
 
+class any_set : public boost::static_visitor<>
+{
+  public: any_set(const boost::any &_value)
+          {this->value = _value;}
+
+  public: template <typename T>
+          void operator()(T & _operand) const
+          {
+            _operand = boost::any_cast<T>(this->value);
+          }
+  public: boost::any value;
+};
+
 //////////////////////////////////////////////////
 Param::Param(const std::string &_key, const std::string &_typeName,
              const std::string &_default, bool _required,
@@ -48,7 +61,9 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->description = _description;
   this->set = false;
 
-  if (this->typeName == "int")
+  if (this->typeName == "bool")
+    this->Init<bool>(_default);
+  else if (this->typeName == "int")
     this->Init<int>(_default);
   else if (this->typeName == "unsigned int")
     this->Init<unsigned int>(_default);
@@ -58,21 +73,29 @@ Param::Param(const std::string &_key, const std::string &_typeName,
     this->Init<float>(_default);
   else if (this->typeName == "char")
     this->Init<char>(_default);
-  else if (this->typeName == "std::string")
+  else if (this->typeName == "std::string" ||
+      this->typeName == "string")
     this->Init<std::string>(_default);
-  else if (this->typeName == "sdf::Vector2i")
+  else if (this->typeName == "sdf::Vector2i" ||
+      this->typeName == "vector2i")
     this->Init<sdf::Vector2i>(_default);
-  else if (this->typeName == "sdf::Vector2d")
+  else if (this->typeName == "sdf::Vector2d" ||
+      this->typeName == "vector2d")
     this->Init<sdf::Vector2d>(_default);
-  else if (this->typeName == "sdf::Vector3")
+  else if (this->typeName == "sdf::Vector3" ||
+       this->typeName == "vector3")
     this->Init<sdf::Vector3>(_default);
-  else if (this->typeName == "sdf::Pose")
+  else if (this->typeName == "sdf::Pose" ||
+      this->typeName == "pose" || this->typeName == "Pose")
     this->Init<sdf::Pose>(_default);
-  else if (this->typeName == "sdf::Quaternion")
+  else if (this->typeName == "sdf::Quaternion" ||
+      this->typeName == "quaternion")
     this->Init<sdf::Quaternion>(_default);
-  else if (this->typeName == "sdf::Time")
+  else if (this->typeName == "sdf::Time" ||
+      this->typeName == "time")
     this->Init<sdf::Time>(_default);
-  else if (this->typeName == "sdf::Color")
+  else if (this->typeName == "sdf::Color" ||
+      this->typeName == "color")
     this->Init<sdf::Color>(_default);
   else
     sdferr << "Unknown parameter type[" << this->typeName << "]\n";
@@ -88,10 +111,15 @@ void Param::Update()
 {
   if (this->updateFunc)
   {
-    // \TODO: Implemenet me
-    // this->value = this->updateFunc();
-    // const T v = boost::any_cast<T>(this->updateFunc());
-    // Param::Set(v);
+    try
+    {
+      boost::apply_visitor(any_set(this->updateFunc()), this->value);
+    }
+    catch(boost::bad_lexical_cast &e)
+    {
+      sdferr << "Unable to set value using Update for key["
+        << this->key << "]\n";
+    }
   }
 }
 

@@ -15,9 +15,9 @@
  *
  */
 #include "sdf/parser.hh"
+#include "sdf/Assert.hh"
 #include "sdf/SDF.hh"
 #include "sdf/sdf_config.h"
-
 
 using namespace sdf;
 std::string SDF::version = SDF_VERSION;
@@ -25,7 +25,7 @@ std::string SDF::version = SDF_VERSION;
 std::string sdf::find_file(const std::string &_filename,
                       bool /*_searchLocalPath*/)
 {
-  std::string result = _filename;
+  std::string result = "/home/nkoenig/local/share/sdf-1.4/" + _filename;
   /*
      if (_filename[0] == '/')
      result = gazebo::common::find_file(_filename, false);
@@ -758,8 +758,38 @@ void Element::SetDescription(const std::string &_desc)
   this->description = _desc;
 }
 
+/////////////////////////////////////////////////
+void Element::RemoveFromParent()
+{
+  if (this->parent)
+  {
+    ElementPtr_V::iterator iter;
+    iter = std::find(this->parent->elements.begin(),
+        this->parent->elements.end(), shared_from_this());
 
+    if (iter != this->parent->elements.end())
+    {
+      this->parent->elements.erase(iter);
+      this->parent.reset();
+    }
+  }
+}
 
+/////////////////////////////////////////////////
+void Element::RemoveChild(ElementPtr _child)
+{
+  SDF_ASSERT(_child, "Cannot remove a NULL child pointer");
+
+  ElementPtr_V::iterator iter;
+  iter = std::find(this->elements.begin(),
+                   this->elements.end(), _child);
+
+  if (iter != this->elements.end())
+  {
+    _child->SetParent(ElementPtr());
+    this->elements.erase(iter);
+  }
+}
 
 /////////////////////////////////////////////////
 SDF::SDF()
@@ -934,3 +964,5 @@ void SDF::SetFromString(const std::string &_sdfData)
     sdferr << "Unable to parse sdf string[" << _sdfData << "]\n";
   }
 }
+
+
