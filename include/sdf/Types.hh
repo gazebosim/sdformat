@@ -90,18 +90,17 @@ namespace sdf
                 equal(this->a, _clr.a);
             }
 
-
     /// \brief Red value
-    public: double r;
+    public: float r;
 
     /// \brief Green value
-    public: double g;
+    public: float g;
 
     /// \brief Blue value
-    public: double b;
+    public: float b;
 
     /// \brief Alpha value
-    public: double a;
+    public: float a;
   };
 
   /// \brief Generic integer x, y vector

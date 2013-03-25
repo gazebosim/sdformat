@@ -7,4 +7,4 @@ Description: Simulation Description Format (SDF)
 Version: @SDF_VERSION_FULL@
 Requires:
 Libs: -L${libdir} -lsdf 
-CFlags: -I${includedir}/sdf-@SDF_VERSION@ -I${includedir}/sdf-@SDF_VERSION@/sdf
+CFlags: -I${includedir}/sdf-@SDF_VERSION@

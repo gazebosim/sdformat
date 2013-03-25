@@ -192,6 +192,28 @@ namespace sdf
     /// \brief Get the param of the elements value
     public: ParamPtr GetValue();
 
+    public: bool GetValueBool(const std::string &_key = "") SDF_DEPRECATED;
+    public: int GetValueInt(const std::string &_key = "") SDF_DEPRECATED;
+    public: float GetValueFloat(const std::string &_key = "") SDF_DEPRECATED;
+    public: double GetValueDouble(const std::string &_key = "") SDF_DEPRECATED;
+    public: unsigned int GetValueUInt(
+                const std::string &_key = "") SDF_DEPRECATED;
+    public: char GetValueChar(const std::string &_key = "") SDF_DEPRECATED;
+    public: std::string GetValueString(
+                const std::string &_key = "") SDF_DEPRECATED;
+    public: sdf::Vector3 GetValueVector3(
+                const std::string &_key = "") SDF_DEPRECATED;
+    public: sdf::Vector2d GetValueVector2d(
+                const std::string &_key = "") SDF_DEPRECATED;
+    public: sdf::Quaternion GetValueQuaternion(
+                const std::string &_key = "") SDF_DEPRECATED;
+    public: sdf::Pose GetValuePose(
+                const std::string &_key = "") SDF_DEPRECATED;
+    public: sdf::Color GetValueColor(
+                const std::string &_key = "") SDF_DEPRECATED;
+    public: sdf::Time GetValueTime(
+                const std::string &_key = "") SDF_DEPRECATED;
+
     public: template<typename T>
             T Get(const std::string &_key = "")
             {
