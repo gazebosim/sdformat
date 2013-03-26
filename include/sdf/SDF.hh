@@ -47,8 +47,18 @@ namespace sdf
   /// \addtogroup sdf
   /// \{
 
-  std::string find_file(const std::string &_filename,
-                        bool _searchLocalPath = true);
+  /// \brief Find the absolute path of a file.
+  /// \param[in] _filename Name of the file to find.
+  /// \param[in] _searchLocalPath True to search for the file in the current
+  /// working directory.
+  std::string findFile(const std::string &_filename,
+                       bool _searchLocalPath = true);
+
+  /// \brief Associate paths to a URI. 
+  /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
+  /// \param[in] _uri URI that will be mapped to _path
+  /// \param[in] _path Colon separated set of paths.
+  void addURIPath(const std::string &_uri, const std::string &_path);
 
   /// \class Element Element.hh sdf/sdf.hh
   /// \brief SDF Element class

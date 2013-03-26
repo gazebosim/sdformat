@@ -39,7 +39,7 @@ bool init(SDFPtr _sdf)
   bool result = false;
 
   std::string filename;
-  filename = sdf::find_file("root.sdf");
+  filename = sdf::findFile("root.sdf");
 
   FILE *ftest = fopen(filename.c_str(), "r");
   if (ftest && initFile(filename, _sdf))
@@ -56,7 +56,7 @@ bool init(SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, SDFPtr _sdf)
 {
-  std::string filename = sdf::find_file(_filename);
+  std::string filename = sdf::findFile(_filename);
 
   TiXmlDocument xmlDoc;
   if (xmlDoc.LoadFile(filename))
@@ -72,7 +72,7 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, ElementPtr _sdf)
 {
-  std::string filename = sdf::find_file(_filename);
+  std::string filename = sdf::findFile(_filename);
 
   TiXmlDocument xmlDoc;
   if (xmlDoc.LoadFile(filename))
@@ -250,7 +250,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
 bool readFile(const std::string &_filename, SDFPtr _sdf)
 {
   TiXmlDocument xmlDoc;
-  std::string filename = sdf::find_file(_filename);
+  std::string filename = sdf::findFile(_filename);
 
   if (filename.empty())
     return false;
@@ -518,9 +518,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
         if (elemXml->FirstChildElement("uri"))
         {
-          // TODO NATE
-          // modelPath = gazebo::common::ModelDatabase::GetModelPath(
-          //    elemXml->FirstChildElement("uri")->GetText());
+          modelPath = sdf::findFile(
+              elemXml->FirstChildElement("uri")->GetText());
 
           // Test the model path
           if (modelPath.empty())
@@ -603,7 +602,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             sdferr << "<include filename='...'/> is deprecated. Should be "
                   << "<include><uri>...</uri></include\n";
 
-            filename = sdf::find_file(elemXml->Attribute("filename"), false);
+            filename = sdf::findFile(elemXml->Attribute("filename"), false);
           }
           else
           {

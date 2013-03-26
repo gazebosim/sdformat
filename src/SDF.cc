@@ -16,6 +16,8 @@
  */
 
 #include <boost/filesystem.hpp>
+#include <map>
+#include <list>
 
 #include "sdf/parser.hh"
 #include "sdf/Assert.hh"
@@ -25,12 +27,39 @@
 using namespace sdf;
 std::string SDF::version = SDF_VERSION;
 
-std::string sdf::find_file(const std::string &_filename,
-                           bool _searchLocalPath)
+typedef std::list<boost::filesystem::path> PathList;
+typedef std::map<std::string, PathList> URIPathMap;
+
+URIPathMap g_uriPathMap;
+
+/////////////////////////////////////////////////
+std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath)
 {
   boost::filesystem::path path = _filename;
 
-  // First check to see if the given file exists.
+  // Check to see if _filename is URI. If so, resolve the URI path.
+  for (URIPathMap::iterator iter = g_uriPathMap.begin();
+       iter != g_uriPathMap.end(); ++iter)
+  {
+    // Check to see if the URI in the global map is the first part of the 
+    // given filename
+    if (_filename.find(iter->first) == 0)
+    {
+      std::string suffix = _filename;
+      boost::replace_first(suffix, iter->first, "");
+
+      // Check each path in the list.
+      for (PathList::iterator pathIter = iter->second.begin();
+           pathIter != iter->second.end(); ++pathIter)
+      {
+        // Return the path string if the path + suffix exists.
+        if (boost::filesystem::exists((*pathIter) / suffix))
+          return ((*pathIter) / suffix).string();
+      }
+    }
+  }
+
+  // Next check to see if the given file exists.
   if (boost::filesystem::exists(path))
     return path.string();
 
@@ -53,6 +82,27 @@ std::string sdf::find_file(const std::string &_filename,
   return std::string();
 }
 
+/////////////////////////////////////////////////
+void addURIPath(const std::string &_uri, const std::string &_path)
+{
+  // Split _path on colons.
+  std::list<std::string> parts;
+  boost::split(parts, _path, boost::is_any_of(":"));
+
+  // Add each part of the colon separated path to the global URI map.
+  for (std::list<std::string>::iterator iter = parts.begin();
+       iter != parts.end(); ++iter)
+  {
+    boost::filesystem::path path = *iter;
+
+    // Only add valid paths 
+    if (!(*iter).empty() && boost::filesystem::exists(path) &&
+        boost::filesystem::is_directory(path))
+    {
+      g_uriPathMap[_uri].push_back(path);
+    }
+  }
+}
 
 /////////////////////////////////////////////////
 Element::Element()
@@ -218,7 +268,6 @@ void Element::Copy(const ElementPtr _elem)
       this->attributes.push_back((*iter)->Clone());
     ParamPtr param = this->GetAttribute((*iter)->GetKey());
     (*param) = (**iter);
-    // TODO: param->SetFromString((*iter)->GetAsString());
   }
 
   if (_elem->GetValue())
@@ -227,7 +276,6 @@ void Element::Copy(const ElementPtr _elem)
       this->value = _elem->GetValue()->Clone();
     else
       *(this->value) = *(_elem->GetValue());
-      // TODO: this->value->SetFromString(_elem->GetValue()->GetAsString());
   }
 
   this->elementDescriptions.clear();
