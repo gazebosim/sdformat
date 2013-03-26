@@ -171,7 +171,7 @@ else (buid_errors)
   set(PKG_DEPENDS Boost)
   configure_file(${PROJECT_SOURCE_DIR}/cmake/sdf_config.cmake.in
                  ${PROJECT_BINARY_DIR}/cmake/sdf_config.cmake @ONLY)
-  install(FILES  DESTINATION 
+  install(FILES ${PROJECT_BINARY_DIR}/cmake/sdf_config.cmake DESTINATION  
     share/${PROJECT_NAME_LOWER}/cmake/ COMPONENT cmake)
 
   ########################################
