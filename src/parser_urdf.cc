@@ -271,7 +271,7 @@ std::string Vector32Str(const urdf::Vector3 _vector)
 
 /////////////////////////////////////////////////
 /// print mass for link for debugging
-void PrintMass(const std::string &/*_linkName*/, sdf::Mass /*_mass*/)
+void PrintMass(const std::string &/*_linkName*/, sdf::Inertia /*_inertia*/)
 {
   // \TODO
   /*  sdfdbg << "LINK NAME: [" << _linkName << "] from dMass\n";
