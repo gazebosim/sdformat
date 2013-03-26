@@ -125,7 +125,7 @@ namespace sdf
 
     /// \brief Stream extraction operator
     /// \param[in] _in input stream
-    /// \param[in] _pt Vector3 to read values into
+    /// \param[in] _pt Vector2i to read values into
     /// \return The stream
     public: friend std::istream &operator>>(std::istream &_in,
                 Vector2i &_pt)
@@ -173,7 +173,7 @@ namespace sdf
 
     /// \brief Stream extraction operator
     /// \param[in] _in input stream
-    /// \param[in] _pt Vector3 to read values into
+    /// \param[in] _pt Vector2d to read values into
     /// \return The stream
     public: friend std::istream &operator>>(std::istream &_in,
                 Vector2d &_pt)
