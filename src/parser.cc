@@ -64,7 +64,7 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
     return initDoc(&xmlDoc, _sdf);
   }
   else
-    sdferr << "Unable to load file[" << _filename << "]\n";
+    sdferr << "Unable to load file[" << filename << "]\n";
 
   return false;
 }

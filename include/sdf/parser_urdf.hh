@@ -18,25 +18,19 @@
 #define URDF2SDF_HH
 
 #include <tinyxml.h>
-// #include <cstdio>
-// #include <cstdlib>
-// #include <cmath>
 #include <vector>
 #include <string>
-// #include <sstream>
 #include <map>
 
 #include "sdf/Types.hh"
 #include "sdf/Console.hh"
 
-/// \ingroup sdf
-/// \brief namespace for URDF to SDF parser
 namespace sdf
 {
   /// \addtogroup sdf
   /// \{
 
-  /// \class A class for holding sdf extension elements in urdf
+  /// \brief A class for holding sdf extension elements in urdf
   class SDFExtension
   {
     private: SDFExtension()
@@ -152,6 +146,7 @@ namespace sdf
     friend class URDF2SDF;
   };
 
+  /// \brief URDF to SDF converter
   class URDF2SDF
   {
     /// \brief constructor

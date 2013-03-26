@@ -9,9 +9,11 @@
 #define SDF_VERSION_FULL "${SDF_VERSION_FULL}"
 #define SDF_VERSION_NAME ${SDF_VERSION_NAME}
 
-#define SDF_VERSION_HEADER "Simulation Description Format (SDF), version ${SDF_VERSION}\nCopyright (C) 2012 Nate Koenig.\nReleased under the Apache 2 License.\nhttp://gazebosim.org/sdf\n\n"
+#define SDF_VERSION_HEADER "Simulation Description Format (SDF), version ${SDF_VERSION}\nCopyright (C) 2013 Open Source Robotics Foundation.\nReleased under the Apache 2 License.\nhttp://gazebosim.org/sdf\n\n"
 
 #cmakedefine BUILD_TYPE_PROFILE 1
 #cmakedefine BUILD_TYPE_DEBUG 1
 #cmakedefine BUILD_TYPE_RELEASE 1
 #cmakedefine HAVE_URDFDOM 1
+
+#define SDF_PATH "${CMAKE_INSTALL_PREFIX}/share/sdf-${SDF_VERSION}"

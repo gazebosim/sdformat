@@ -22,13 +22,13 @@
 #include <cmath>
 
 #if defined(__GNUC__)
-#define SDF_DEPRECATED __attribute__((deprecated))
+#define SDF_DEPRECATED(version) __attribute__((deprecated))
 #define SDF_FORCEINLINE __attribute__((always_inline))
 #elif defined(MSVC)
-#define SDF_DEPRECATED
+#define SDF_DEPRECATED(version)
 #define SDF_FORCEINLINE __forceinline
 #else
-#define SDF_DEPRECATED
+#define SDF_DEPRECATED(version)
 #define SDF_FORCEINLINE
 #endif
 

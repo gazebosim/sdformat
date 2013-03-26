@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <boost/filesystem.hpp>
+
 #include "sdf/parser.hh"
 #include "sdf/Assert.hh"
 #include "sdf/SDF.hh"
@@ -23,19 +26,20 @@ using namespace sdf;
 std::string SDF::version = SDF_VERSION;
 
 std::string sdf::find_file(const std::string &_filename,
-                      bool /*_searchLocalPath*/)
+                           bool /*_searchLocalPath*/)
 {
-  std::string result = "/home/nkoenig/local/share/sdf-1.4/" + _filename;
-  /*
-     if (_filename[0] == '/')
-     result = gazebo::common::find_file(_filename, false);
-     else
-     {
-     std::string tmp = std::string("sdf/") + SDF::version + "/" + _filename;
-     result = gazebo::common::find_file(tmp, false);
-     }
-     */
-  return result;
+  boost::filesystem::path path = _filename;
+
+  // First check to see if the given file exists.
+  if (boost::filesystem::exists(path))
+    return path.string();
+
+  path = boost::filesystem::path(SDF_PATH) / _filename;
+
+  if (boost::filesystem::exists(path))
+    return path.string();
+
+  return std::string();
 }
 
 

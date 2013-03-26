@@ -192,27 +192,32 @@ namespace sdf
     /// \brief Get the param of the elements value
     public: ParamPtr GetValue();
 
-    public: bool GetValueBool(const std::string &_key = "") SDF_DEPRECATED;
-    public: int GetValueInt(const std::string &_key = "") SDF_DEPRECATED;
-    public: float GetValueFloat(const std::string &_key = "") SDF_DEPRECATED;
-    public: double GetValueDouble(const std::string &_key = "") SDF_DEPRECATED;
+    public: bool GetValueBool(
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
+    public: int GetValueInt(
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
+    public: float GetValueFloat(
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
+    public: double GetValueDouble(
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
     public: unsigned int GetValueUInt(
-                const std::string &_key = "") SDF_DEPRECATED;
-    public: char GetValueChar(const std::string &_key = "") SDF_DEPRECATED;
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
+    public: char GetValueChar(
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
     public: std::string GetValueString(
-                const std::string &_key = "") SDF_DEPRECATED;
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
     public: sdf::Vector3 GetValueVector3(
-                const std::string &_key = "") SDF_DEPRECATED;
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
     public: sdf::Vector2d GetValueVector2d(
-                const std::string &_key = "") SDF_DEPRECATED;
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
     public: sdf::Quaternion GetValueQuaternion(
-                const std::string &_key = "") SDF_DEPRECATED;
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
     public: sdf::Pose GetValuePose(
-                const std::string &_key = "") SDF_DEPRECATED;
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
     public: sdf::Color GetValueColor(
-                const std::string &_key = "") SDF_DEPRECATED;
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
     public: sdf::Time GetValueTime(
-                const std::string &_key = "") SDF_DEPRECATED;
+                const std::string &_key = "") SDF_DEPRECATED(1.4);
 
     public: template<typename T>
             T Get(const std::string &_key = "")
