@@ -26,7 +26,7 @@ using namespace sdf;
 std::string SDF::version = SDF_VERSION;
 
 std::string sdf::find_file(const std::string &_filename,
-                           bool /*_searchLocalPath*/)
+                           bool _searchLocalPath)
 {
   boost::filesystem::path path = _filename;
 
@@ -34,10 +34,21 @@ std::string sdf::find_file(const std::string &_filename,
   if (boost::filesystem::exists(path))
     return path.string();
 
+  // Next check the install path.
   path = boost::filesystem::path(SDF_PATH) / _filename;
-
   if (boost::filesystem::exists(path))
     return path.string();
+
+  // Finally check the local path, if the flag is set.
+  if (_searchLocalPath)
+  {
+    path = boost::filesystem::current_path() / _filename;
+
+    if (boost::filesystem::exists(path))
+      return path.string();
+  }
+
+  sdferr << "Unable to find file[" << _filename << "]\n";
 
   return std::string();
 }
