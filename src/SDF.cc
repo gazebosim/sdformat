@@ -83,7 +83,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath)
 }
 
 /////////////////////////////////////////////////
-void addURIPath(const std::string &_uri, const std::string &_path)
+void sdf::addURIPath(const std::string &_uri, const std::string &_path)
 {
   // Split _path on colons.
   std::list<std::string> parts;

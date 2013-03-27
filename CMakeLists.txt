@@ -169,9 +169,9 @@ else (buid_errors)
   # Make the cmake config files
   set(PKG_LIBRARIES sdf)
   set(PKG_DEPENDS Boost)
-  configure_file(${PROJECT_SOURCE_DIR}/cmake/sdf_config.cmake.in
-                 ${PROJECT_BINARY_DIR}/cmake/sdf_config.cmake @ONLY)
-  install(FILES  DESTINATION 
+  configure_file(${PROJECT_SOURCE_DIR}/cmake/SDFConfig.cmake.in
+    ${PROJECT_BINARY_DIR}/cmake/SDFConfig.cmake @ONLY)
+  install(FILES ${PROJECT_BINARY_DIR}/cmake/SDFConfig.cmake DESTINATION  
     share/${PROJECT_NAME_LOWER}/cmake/ COMPONENT cmake)
 
   ########################################

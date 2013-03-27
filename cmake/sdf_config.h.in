@@ -16,4 +16,4 @@
 #cmakedefine BUILD_TYPE_RELEASE 1
 #cmakedefine HAVE_URDFDOM 1
 
-#define SDF_PATH "${CMAKE_INSTALL_PREFIX}/share/sdf-${SDF_VERSION}"
+#define SDF_PATH "${CMAKE_INSTALL_PREFIX}/share/sdf/${SDF_VERSION}"
