@@ -35,7 +35,8 @@ URIPathMap g_uriPathMap;
 boost::function<std::string (const std::string &)> g_findFileCB;
 
 /////////////////////////////////////////////////
-void setFindCallback(boost::function<std::string (const std::string &)> _cb)
+void sdf::setFindCallback(
+    boost::function<std::string (const std::string &)> _cb)
 {
   g_findFileCB = _cb;
 }
@@ -97,7 +98,6 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   // flag has been set
   if (_useCallback)
   {
-    printf("Use callback\n");
     return g_findFileCB(_filename);
   }
 
