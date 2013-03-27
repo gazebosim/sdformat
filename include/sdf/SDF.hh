@@ -57,14 +57,14 @@ namespace sdf
                        bool _searchLocalPath = true,
                        bool _useCallback = false);
 
-  /// \brief Associate paths to a URI. 
+  /// \brief Associate paths to a URI.
   /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
   /// \param[in] _uri URI that will be mapped to _path
   /// \param[in] _path Colon separated set of paths.
   void addURIPath(const std::string &_uri, const std::string &_path);
 
   /// \brief Set the callback to use when SDF can't find a file.
-  /// The callback should return a complete path to the requested file, or 
+  /// The callback should return a complete path to the requested file, or
   /// and empty string if the file was not found in the callback.
   /// \param[in] _cb The callback function.
   void setFindCallback(boost::function<std::string (const std::string &)> _cb);

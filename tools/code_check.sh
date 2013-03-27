@@ -14,18 +14,18 @@ else
   builddir=./build
 fi
 
-echo "" > /tmp/sdf_cpp_check.suppress
+echo "*:src/urdf*" > /tmp/gazebo_cpp_check.suppress
 
 #cppcheck
 if [ $xmlout -eq 1 ]; then
-  (cppcheck --enable=all -q --suppressions-list=/tmp/sdf_cpp_check.suppress --xml `find ./src -name "*.cc"` -I include -I . -I $builddir -I $builddir/include  --check-config) 2> $xmldir/cppcheck.xml
+  (cppcheck --enable=all -q --suppressions-list=/tmp/sdf_cpp_check.suppress --xml `find ./src -name "*.cc"` -I include -I . -I src/urdf -I $builddir -I $builddir/include  --check-config) 2> $xmldir/cppcheck.xml
 else
-  cppcheck --enable=all -q --suppressions-list=/tmp/sdf_cpp_check.suppress `find ./src -name "*.cc"` -I include -I . -I $builddir -I $builddir/include --check-config
+  cppcheck --enable=all -q --suppressions-list=/tmp/sdf_cpp_check.suppress `find ./src -name "*.cc"` -I include -I . -I src/urdf -I $builddir -I $builddir/include --check-config
 fi
 
 # cpplint
 if [ $xmlout -eq 1 ]; then
-  (find ./src ./include -print0 -name "*.cc" -o -name "*.hh" -o -name "*.c" -o -name "*.h" | xargs -0 python tools/cpplint.py 2>&1) | python tools/cpplint_to_cppcheckxml.py 2> $xmldir/cpplint.xml
+  (find ./src ./include -name "*.cc" -o -name "*.hh"  -print0 | xargs -0 python tools/cpplint.py 2>&1) | python tools/cpplint_to_cppcheckxml.py 2> $xmldir/cpplint.xml
 else
-  find ./src ./include  -print0 -name "*.cc" -o -name "*.hh" -o -name "*.c" -o -name "*.h" | xargs -0 python tools/cpplint.py 2>&1
+  find ./src ./include -name "*.cc" -o -name "*.hh" -print0 | xargs -0 python tools/cpplint.py 2>&1
 fi
