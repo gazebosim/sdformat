@@ -93,6 +93,7 @@ macro (sdf_setup_apple)
 endmacro()
 
 #################################################
+include_directories(${PROJECT_SOURCE_DIR}/test/gtest/include)
 macro (sdf_build_tests)
   # Build all the tests
   foreach(GTEST_SOURCE_file ${ARGN})
