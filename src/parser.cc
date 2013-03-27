@@ -548,24 +548,21 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
           boost::filesystem::path manifestPath = modelPath;
 
-          /// \TODO fix
-          // First try to get the GZ_MODEL_MANIFEST_FILENAME.
-          // If that file doesn't exist, try to get the deprecated version.
-          if (boost::filesystem::exists(
-                manifestPath / "model.config"))
+          /// \todo This hardcoded bit is very Gazebo centric. It should
+          /// be abstracted away, possible through a plugin to SDF.
+          if (boost::filesystem::exists(manifestPath / "model.config"))
           {
             manifestPath /= "model.config";
           }
           else
           {
-            sdfwarn << "The manifest.xml for a Gazebo model is deprecated. "
+            sdfwarn << "The manifest.xml for a model is deprecated. "
                    << "Please rename manifest.xml to "
                    << "model.config" << ".\n";
 
             manifestPath /= "manifest.xml";
           }
 
-          std::cout << "ManifestPath[" << manifestPath << "]\n";
           TiXmlDocument manifestDoc;
           if (manifestDoc.LoadFile(manifestPath.string()))
           {
