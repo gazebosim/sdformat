@@ -185,7 +185,11 @@ else (buid_errors)
   message (STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
  
   if (BUILD_SDF)
-    include_directories(include ${PROJECT_BINARY_DIR} ${PROJECT_BINARY_DIR}/include)
+    include_directories(include
+      ${PROJECT_BINARY_DIR}
+      ${PROJECT_BINARY_DIR}/include
+      )
+
     add_subdirectory(test)
     add_subdirectory(src)
     add_subdirectory(include/sdf)

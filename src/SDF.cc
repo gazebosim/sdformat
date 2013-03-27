@@ -32,8 +32,17 @@ typedef std::map<std::string, PathList> URIPathMap;
 
 URIPathMap g_uriPathMap;
 
+boost::function<std::string (const std::string &)> g_findFileCB;
+
 /////////////////////////////////////////////////
-std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath)
+void setFindCallback(boost::function<std::string (const std::string &)> _cb)
+{
+  g_findFileCB = _cb;
+}
+
+/////////////////////////////////////////////////
+std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
+    bool _useCallback)
 {
   boost::filesystem::path path = _filename;
 
@@ -59,14 +68,21 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath)
     }
   }
 
-  // Next check to see if the given file exists.
+  // Next check the install path.
+  path = boost::filesystem::path(SDF_SHARE_PATH) / _filename;
   if (boost::filesystem::exists(path))
     return path.string();
 
-  // Next check the install path.
-  path = boost::filesystem::path(SDF_PATH) / _filename;
+  // Next check the versioned install path.
+  path = boost::filesystem::path(SDF_VERSION_PATH) / _filename;
   if (boost::filesystem::exists(path))
     return path.string();
+
+  // Next check to see if the given file exists.
+  path = boost::filesystem::path(_filename);
+  if (boost::filesystem::exists(path))
+    return path.string();
+
 
   // Finally check the local path, if the flag is set.
   if (_searchLocalPath)
@@ -77,7 +93,13 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath)
       return path.string();
   }
 
-  sdferr << "Unable to find file[" << _filename << "]\n";
+  // If we still haven't found the file, use the registered callback if the
+  // flag has been set
+  if (_useCallback)
+  {
+    printf("Use callback\n");
+    return g_findFileCB(_filename);
+  }
 
   return std::string();
 }

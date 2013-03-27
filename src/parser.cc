@@ -519,7 +519,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
         if (elemXml->FirstChildElement("uri"))
         {
           modelPath = sdf::findFile(
-              elemXml->FirstChildElement("uri")->GetText());
+              elemXml->FirstChildElement("uri")->GetText(), true, true);
 
           // Test the model path
           if (modelPath.empty())
@@ -549,23 +549,23 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           boost::filesystem::path manifestPath = modelPath;
 
           /// \TODO fix
-          /*
           // First try to get the GZ_MODEL_MANIFEST_FILENAME.
           // If that file doesn't exist, try to get the deprecated version.
           if (boost::filesystem::exists(
-                manifestPath / GZ_MODEL_MANIFEST_FILENAME))
+                manifestPath / "model.config"))
           {
-            manifestPath /= GZ_MODEL_MANIFEST_FILENAME;
+            manifestPath /= "model.config";
           }
           else
           {
             sdfwarn << "The manifest.xml for a Gazebo model is deprecated. "
                    << "Please rename manifest.xml to "
-                   << GZ_MODEL_MANIFEST_FILENAME << ".\n";
+                   << "model.config" << ".\n";
 
             manifestPath /= "manifest.xml";
-          }*/
+          }
 
+          std::cout << "ManifestPath[" << manifestPath << "]\n";
           TiXmlDocument manifestDoc;
           if (manifestDoc.LoadFile(manifestPath.string()))
           {

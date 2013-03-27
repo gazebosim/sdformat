@@ -51,14 +51,23 @@ namespace sdf
   /// \param[in] _filename Name of the file to find.
   /// \param[in] _searchLocalPath True to search for the file in the current
   /// working directory.
+  /// \param[in] _useCallback True to find a file based on a registered
+  /// callback if the file is not found via the normal mechanism.
   std::string findFile(const std::string &_filename,
-                       bool _searchLocalPath = true);
+                       bool _searchLocalPath = true,
+                       bool _useCallback = false);
 
   /// \brief Associate paths to a URI. 
   /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
   /// \param[in] _uri URI that will be mapped to _path
   /// \param[in] _path Colon separated set of paths.
   void addURIPath(const std::string &_uri, const std::string &_path);
+
+  /// \brief Set the callback to use when SDF can't find a file.
+  /// The callback should return a complete path to the requested file, or 
+  /// and empty string if the file was not found in the callback.
+  /// \param[in] _cb The callback function.
+  void setFindCallback(boost::function<std::string (const std::string &)> _cb);
 
   /// \class Element Element.hh sdf/sdf.hh
   /// \brief SDF Element class
