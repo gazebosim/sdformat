@@ -18,8 +18,8 @@ list (APPEND CPACK_SOURCE_IGNORE_FILES ";TODO;/.hg/;.swp$;/build/")
 include (InstallRequiredSystemLibraries)
 
 #execute_process(COMMAND dpkg --print-architecture _NPROCE)
-set (DEBIAN_PACKAGE_DEPENDS "libboost-all-dev")
+set (DEBIAN_PACKAGE_DEPENDS "libboost-all-dev, libtinyxml-dev")
 
-set (RPM_PACKAGE_DEPENDS "libboost-all-dev")
+set (RPM_PACKAGE_DEPENDS "libboost-all-dev, libtinyxml-dev")
 
 set (SDF_CPACK_CFG_FILE "${PROJECT_BINARY_DIR}/cpack_options.cmake")
