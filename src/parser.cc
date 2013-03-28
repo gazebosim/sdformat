@@ -27,9 +27,7 @@
 #include "sdf/parser.hh"
 #include "sdf/sdf_config.h"
 
-#ifdef HAVE_URDFDOM
-  #include "sdf/parser_urdf.hh"
-#endif
+#include "sdf/parser_urdf.hh"
 
 namespace sdf
 {
@@ -260,7 +258,6 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
     return true;
   else
   {
-#ifdef HAVE_URDFDOM
     sdf::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelFile(filename);
     if (sdf::readDoc(&doc, _sdf, "urdf file"))
@@ -273,7 +270,6 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
       sdferr << "parse as old deprecated model file failed.\n";
       return false;
     }
-#endif
   }
 
   return false;
@@ -288,7 +284,6 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
     return true;
   else
   {
-#ifdef HAVE_URDFDOM
     sdf::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelString(_xmlString);
     if (sdf::readDoc(&doc, _sdf, "urdf string"))
@@ -301,7 +296,6 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
       sdferr << "parse as old deprecated model file failed.\n";
       return false;
     }
-#endif
   }
 
   return false;
@@ -548,24 +542,21 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
           boost::filesystem::path manifestPath = modelPath;
 
-          /// \TODO fix
-          // First try to get the GZ_MODEL_MANIFEST_FILENAME.
-          // If that file doesn't exist, try to get the deprecated version.
-          if (boost::filesystem::exists(
-                manifestPath / "model.config"))
+          /// \todo This hardcoded bit is very Gazebo centric. It should
+          /// be abstracted away, possible through a plugin to SDF.
+          if (boost::filesystem::exists(manifestPath / "model.config"))
           {
             manifestPath /= "model.config";
           }
           else
           {
-            sdfwarn << "The manifest.xml for a Gazebo model is deprecated. "
+            sdfwarn << "The manifest.xml for a model is deprecated. "
                    << "Please rename manifest.xml to "
                    << "model.config" << ".\n";
 
             manifestPath /= "manifest.xml";
           }
 
-          std::cout << "ManifestPath[" << manifestPath << "]\n";
           TiXmlDocument manifestDoc;
           if (manifestDoc.LoadFile(manifestPath.string()))
           {

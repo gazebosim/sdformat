@@ -14,7 +14,7 @@ else
   builddir=./build
 fi
 
-echo "*:src/urdf*" > /tmp/gazebo_cpp_check.suppress
+echo "*:src/urdf*" > /tmp/sdf_cpp_check.suppress
 
 #cppcheck
 if [ $xmlout -eq 1 ]; then
