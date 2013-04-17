@@ -51,7 +51,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   for (URIPathMap::iterator iter = g_uriPathMap.begin();
        iter != g_uriPathMap.end(); ++iter)
   {
-    // Check to see if the URI in the global map is the first part of the 
+    // Check to see if the URI in the global map is the first part of the
     // given filename
     if (_filename.find(iter->first) == 0)
     {
@@ -117,7 +117,7 @@ void sdf::addURIPath(const std::string &_uri, const std::string &_path)
   {
     boost::filesystem::path path = *iter;
 
-    // Only add valid paths 
+    // Only add valid paths
     if (!(*iter).empty() && boost::filesystem::exists(path) &&
         boost::filesystem::is_directory(path))
     {
@@ -767,6 +767,12 @@ ElementPtr Element::AddElement(const std::string &_name)
 /////////////////////////////////////////////////
 void Element::ClearElements()
 {
+  for (sdf::ElementPtr_V::iterator iter = this->elements.begin();
+      iter != this->elements.end(); ++iter)
+  {
+    (*iter)->ClearElements();
+  }
+
   this->elements.clear();
 }
 
