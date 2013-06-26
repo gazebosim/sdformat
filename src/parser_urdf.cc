@@ -37,12 +37,16 @@ typedef boost::shared_ptr<const urdf::Link> ConstUrdfLinkPtr;
 std::map<std::string, std::vector<SDFExtension*> > g_extensions;
 bool g_reduceFixedJoints;
 bool g_enforceLimits;
+std::string g_collisionExt = "_geom";
+std::string g_visualExt = "_visual";
+urdf::Pose g_initialRobotPose;
 
 /// \brief parser xml string into urdf::Vector3
 /// \param[in] _key XML key where vector3 value might be
 /// \param[in] _scale scalar scale for the vector3
 /// \return a urdf::Vector3
 urdf::Vector3 ParseVector3(TiXmlNode* _key, double _scale = 1.0);
+urdf::Vector3 ParseVector3(const std::string &_str, double _scale = 1.0);
 
 /// insert extensions into collision geoms
 void InsertSDFExtensionCollision(TiXmlElement *_elem,
@@ -221,37 +225,51 @@ sdf::Pose CopyPose(urdf::Pose _pose);
 urdf::Pose CopyPose(sdf::Pose _pose);
 
 /////////////////////////////////////////////////
-urdf::Vector3 ParseVector3(TiXmlNode* _key, double _scale)
+urdf::Vector3 ParseVector3(const std::string &_str, double _scale)
+{
+  std::vector<std::string> pieces;
+  std::vector<double> vals;
+
+  boost::split(pieces, _str, boost::is_any_of(" "));
+  for (unsigned int i = 0; i < pieces.size(); ++i)
+  {
+    if (pieces[i] != "")
+    {
+      try
+      {
+        vals.push_back(_scale
+            * boost::lexical_cast<double>(pieces[i].c_str()));
+      }
+      catch(boost::bad_lexical_cast &e)
+      {
+        sdferr << "xml key [" << _str
+          << "][" << i << "] value [" << pieces[i]
+          << "] is not a valid double from a 3-tuple\n";
+        return urdf::Vector3(0, 0, 0);
+      }
+    }
+  }
+
+  if (vals.size() == 3)
+    return urdf::Vector3(vals[0], vals[1], vals[3]);
+  else
+    return urdf::Vector3(0, 0, 0);
+}
+
+/////////////////////////////////////////////////
+urdf::Vector3 ParseVector3(TiXmlNode *_key, double _scale)
 {
   if (_key != NULL)
   {
-    std::string str = _key->Value();
-    std::vector<std::string> pieces;
-    std::vector<double> vals;
-
-    boost::split(pieces, str, boost::is_any_of(" "));
-    for (unsigned int i = 0; i < pieces.size(); ++i)
+    TiXmlElement *key = _key->ToElement();
+    if (key != NULL)
     {
-      if (pieces[i] != "")
-      {
-        try
-        {
-          vals.push_back(_scale
-              * boost::lexical_cast<double>(pieces[i].c_str()));
-        }
-        catch(boost::bad_lexical_cast &e)
-        {
-          sdferr << "xml key [" << str
-            << "][" << i << "] value [" << pieces[i]
-            << "] is not a valid double from a 3-tuple\n";
-          return urdf::Vector3(0, 0, 0);
-        }
-      }
+      return ParseVector3(GetKeyValueAsString(key), _scale);
     }
-    return urdf::Vector3(vals[0], vals[1], vals[3]);
   }
-  else
-    return urdf::Vector3(0, 0, 0);
+  sdferr << "key[" << _key->Value() << "] does not contain a Vector3\n";
+
+  return urdf::Vector3(0, 0, 0);
 }
 
 /////////////////////////////////////////////////
@@ -397,43 +415,292 @@ void ReduceFixedJoints(TiXmlElement *_root, UrdfLinkPtr _link)
       ReduceFixedJoints(_root, _link->child_links[i]);
 }
 
+// ODE dMatrix
+typedef double dMatrix3[4*3];
+typedef double dVector3[4];
+#define _R(i,j) R[(i)*4+(j)]
+#define _I(i,j) I[(i)*4+(j)]
+#define dRecip(x) ((1.0f/(x)))
+
+struct dMass;
+void dMassSetZero (dMass *m);
+void dMassSetParameters (dMass *, double themass,
+    double cgx, double cgy, double cgz,
+    double I11, double I22, double I33,
+    double I12, double I13, double I23);
+
+struct dMass
+{
+  double mass;
+  dVector3 c;
+  dMatrix3 I;
+
+  dMass()
+  { dMassSetZero (this); }
+
+  void setZero()
+  { dMassSetZero (this); }
+
+  void setParameters (double themass, double cgx, double cgy, double cgz,
+      double I11, double I22, double I33,
+      double I12, double I13, double I23)
+  { dMassSetParameters (this,themass,cgx,cgy,cgz,I11,I22,I33,I12,I13,I23); }
+};
+
+void dSetZero (double *a, int n)
+{
+  // dAASSERT (a && n >= 0);
+  double *acurr = a;
+  int ncurr = n;
+  while (ncurr > 0)
+  {
+    *(acurr++) = 0;
+    --ncurr;
+  }
+}
+
+void dMassSetZero (dMass *m)
+{
+  // dAASSERT (m);
+  m->mass = 0.0;
+  dSetZero(m->c, sizeof(m->c) / sizeof(double));
+  dSetZero(m->I, sizeof(m->I) / sizeof(double));
+}
+
+
+void dMassSetParameters (dMass *m, double themass,
+    double cgx, double cgy, double cgz,
+    double I11, double I22, double I33,
+    double I12, double I13, double I23)
+{
+  // dAASSERT (m);
+  dMassSetZero (m);
+  m->mass = themass;
+  m->c[0] = cgx;
+  m->c[1] = cgy;
+  m->c[2] = cgz;
+  m->_I(0,0) = I11;
+  m->_I(1,1) = I22;
+  m->_I(2,2) = I33;
+  m->_I(0,1) = I12;
+  m->_I(0,2) = I13;
+  m->_I(1,2) = I23;
+  m->_I(1,0) = I12;
+  m->_I(2,0) = I13;
+  m->_I(2,1) = I23;
+  // dMassCheck (m);
+}
+
+void dRFromEulerAngles (dMatrix3 R, double phi, double theta, double psi)
+{
+  double sphi,cphi,stheta,ctheta,spsi,cpsi;
+  // dAASSERT (R);
+  sphi = sin(phi);
+  cphi = cos(phi);
+  stheta = sin(theta);
+  ctheta = cos(theta);
+  spsi = sin(psi);
+  cpsi = cos(psi);
+  _R(0,0) = cpsi*ctheta;
+  _R(0,1) = spsi*ctheta;
+  _R(0,2) =-stheta;
+  _R(0,3) = 0.0;
+  _R(1,0) = cpsi*stheta*sphi - spsi*cphi;
+  _R(1,1) = spsi*stheta*sphi + cpsi*cphi;
+  _R(1,2) = ctheta*sphi;
+  _R(1,3) = 0.0;
+  _R(2,0) = cpsi*stheta*cphi + spsi*sphi;
+  _R(2,1) = spsi*stheta*cphi - cpsi*sphi;
+  _R(2,2) = ctheta*cphi;
+  _R(2,3) = 0.0;
+}
+
+double _dCalcVectorDot3(const double *a, const double *b, unsigned step_a,
+unsigned step_b)
+{
+  return a[0] * b[0] + a[step_a] * b[step_b] + a[2 * step_a] * b[2 * step_b];
+}
+
+double dCalcVectorDot3 (const double *a, const double *b)
+{
+  return _dCalcVectorDot3(a,b,1,1);
+}
+
+double dCalcVectorDot3_41 (const double *a, const double *b)
+{
+  return _dCalcVectorDot3(a,b,4,1);
+}
+
+void dMultiply0_331(double *res, const double *a, const double *b)
+{
+  double res_0, res_1, res_2;
+  res_0 = dCalcVectorDot3(a, b);
+  res_1 = dCalcVectorDot3(a + 4, b);
+  res_2 = dCalcVectorDot3(a + 8, b);
+  res[0] = res_0; res[1] = res_1; res[2] = res_2;
+}
+
+void dMultiply1_331(double *res, const double *a, const double *b)
+{
+  double res_0, res_1, res_2;
+  res_0 = dCalcVectorDot3_41(a, b);
+  res_1 = dCalcVectorDot3_41(a + 1, b);
+  res_2 = dCalcVectorDot3_41(a + 2, b);
+  res[0] = res_0; res[1] = res_1; res[2] = res_2;
+}
+
+void dMultiply0_133(double *res, const double *a, const double *b)
+{
+  dMultiply1_331(res, b, a);
+}
+
+void dMultiply0_333(double *res, const double *a, const double *b)
+{
+  dMultiply0_133(res + 0, a + 0, b);
+  dMultiply0_133(res + 4, a + 4, b);
+  dMultiply0_133(res + 8, a + 8, b);
+}
+
+void dMultiply2_333(double *res, const double *a, const double *b)
+{
+  dMultiply0_331(res + 0, b, a + 0);
+  dMultiply0_331(res + 4, b, a + 4);
+  dMultiply0_331(res + 8, b, a + 8);
+}
+
+void dMassRotate (dMass *m, const dMatrix3 R)
+{
+  // if the body is rotated by `R' relative to its point of reference,
+  // the new inertia about the point of reference is:
+  //
+  //   R * I * R'
+  //
+  // where I is the old inertia.
+
+  dMatrix3 t1;
+  double t2[3];
+
+  // dAASSERT (m);
+
+  // rotate inertia matrix
+  dMultiply2_333 (t1,m->I,R);
+  dMultiply0_333 (m->I,R,t1);
+
+  // ensure perfect symmetry
+  m->_I(1,0) = m->_I(0,1);
+  m->_I(2,0) = m->_I(0,2);
+  m->_I(2,1) = m->_I(1,2);
+
+  // rotate center of mass
+  dMultiply0_331 (t2,R,m->c);
+  m->c[0] = t2[0];
+  m->c[1] = t2[1];
+  m->c[2] = t2[2];
+}
+
+void dSetCrossMatrixPlus(double *res, const double *a, unsigned skip)
+{
+  const double a_0 = a[0], a_1 = a[1], a_2 = a[2];
+  res[1] = -a_2;
+  res[2] = +a_1;
+  res[skip+0] = +a_2;
+  res[skip+2] = -a_0;
+  res[2*skip+0] = -a_1;
+  res[2*skip+1] = +a_0;
+}
+
+void dMassTranslate (dMass *m, double x, double y, double z)
+{
+  // if the body is translated by `a' relative to its point of reference,
+  // the new inertia about the point of reference is:
+  //
+  //   I + mass*(crossmat(c)^2 - crossmat(c+a)^2)
+  //
+  // where c is the existing center of mass and I is the old inertia.
+
+  int i,j;
+  dMatrix3 ahat,chat,t1,t2;
+  double a[3];
+
+  // dAASSERT (m);
+
+  // adjust inertia matrix
+  dSetZero (chat,12);
+  dSetCrossMatrixPlus (chat,m->c,4);
+  a[0] = x + m->c[0];
+  a[1] = y + m->c[1];
+  a[2] = z + m->c[2];
+  dSetZero (ahat,12);
+  dSetCrossMatrixPlus (ahat,a,4);
+  dMultiply0_333 (t1,ahat,ahat);
+  dMultiply0_333 (t2,chat,chat);
+  for (i=0; i<3; i++) for (j=0; j<3; j++)
+    m->_I(i,j) += m->mass * (t2[i*4+j]-t1[i*4+j]);
+
+  // ensure perfect symmetry
+  m->_I(1,0) = m->_I(0,1);
+  m->_I(2,0) = m->_I(0,2);
+  m->_I(2,1) = m->_I(1,2);
+
+  // adjust center of mass
+  m->c[0] += x;
+  m->c[1] += y;
+  m->c[2] += z;
+}
+
+void dMassAdd (dMass *a, const dMass *b)
+{
+  int i;
+  double denom = dRecip (a->mass + b->mass);
+  for (i=0; i<3; i++) a->c[i] = (a->c[i]*a->mass + b->c[i]*b->mass)*denom;
+  a->mass += b->mass;
+  for (i=0; i<12; i++) a->I[i] += b->I[i];
+}
+
+
 /////////////////////////////////////////////////
 /// reduce fixed joints:  lump inertial to parent link
-void ReduceInertialToParent(UrdfLinkPtr /*_link*/)
+void ReduceInertialToParent(UrdfLinkPtr _link)
 {
-  /// \TODO
-  /*
-  // sdfdbg << "TREE:   mass lumping from [" << link->name
-  //      << "] to [" << _link->getParent()->name << "]\n.";
   // now lump all contents of this _link to parent
   if (_link->inertial)
   {
-    // get parent mass (in parent link frame)
+    dMatrix3 R;
+    double phi, theta, psi;
+
+    // get parent mass (in parent link cg frame)
     dMass parentMass;
+
     if (!_link->getParent()->inertial)
       _link->getParent()->inertial.reset(new urdf::Inertial);
+
     dMassSetParameters(&parentMass, _link->getParent()->inertial->mass,
-        _link->getParent()->inertial->origin.position.x,
-        _link->getParent()->inertial->origin.position.y,
-        _link->getParent()->inertial->origin.position.z,
+        0, 0, 0,
         _link->getParent()->inertial->ixx, _link->getParent()->inertial->iyy,
         _link->getParent()->inertial->izz, _link->getParent()->inertial->ixy,
         _link->getParent()->inertial->ixz, _link->getParent()->inertial->iyz);
+
+    // transform parent inertia to parent link origin
+    _link->getParent()->inertial->origin.rotation.getRPY(phi, theta, psi);
+    dRFromEulerAngles(R, phi, theta, psi);
+    dMassRotate(&parentMass, R);
+    dMassTranslate(&parentMass,
+        _link->getParent()->inertial->origin.position.x,
+        _link->getParent()->inertial->origin.position.y,
+        _link->getParent()->inertial->origin.position.z);
+
     // PrintMass(_link->getParent()->name, parentMass);
     // PrintMass(_link->getParent());
-    // set _link mass (in _link frame)
+    // set _link mass (in _link's cg frame)
     dMass linkMass;
     dMassSetParameters(&linkMass, _link->inertial->mass,
-        _link->inertial->origin.position.x,
-        _link->inertial->origin.position.y,
-        _link->inertial->origin.position.z,
+        0, 0, 0,
         _link->inertial->ixx, _link->inertial->iyy, _link->inertial->izz,
         _link->inertial->ixy, _link->inertial->ixz, _link->inertial->iyz);
     // PrintMass(_link->name, linkMass);
     // PrintMass(_link);
+
     // un-rotate _link mass into parent link frame
-    dMatrix3 R;
-    double phi, theta, psi;
     _link->parent_joint->parent_to_joint_origin_transform.rotation.getRPY(
         phi, theta, psi);
     dRFromEulerAngles(R, phi, theta, psi);
@@ -441,27 +708,41 @@ void ReduceInertialToParent(UrdfLinkPtr /*_link*/)
     // PrintMass(_link->name, linkMass);
     // un-translate _link mass into parent link frame
     dMassTranslate(&linkMass,
+        _link->inertial->origin.position.x +
         _link->parent_joint->parent_to_joint_origin_transform.position.x,
+        _link->inertial->origin.position.y +
         _link->parent_joint->parent_to_joint_origin_transform.position.y,
+        _link->inertial->origin.position.z +
         _link->parent_joint->parent_to_joint_origin_transform.position.z);
+
     // PrintMass(_link->name, linkMass);
     // now linkMass is in the parent frame, add linkMass to parentMass
+    // dMassSetZero(&parentMass);
     dMassAdd(&parentMass, &linkMass);
-    // PrintMass(_link->getParent()->name, parentMass);
-    // update parent mass
+
+    // save new total mass
     _link->getParent()->inertial->mass = parentMass.mass;
+    // save CoG location
+    _link->getParent()->inertial->origin.position.x  = parentMass.c[0];
+    _link->getParent()->inertial->origin.position.y  = parentMass.c[1];
+    _link->getParent()->inertial->origin.position.z  = parentMass.c[2];
+
+    // transform MOI to the new CG
+    dMassTranslate(&parentMass,
+        -parentMass.c[0],
+        -parentMass.c[1],
+        -parentMass.c[2]);
+
+    // PrintMass(_link->getParent()->name, parentMass);
+    // update parent MOI
     _link->getParent()->inertial->ixx  = parentMass.I[0+4*0];
     _link->getParent()->inertial->iyy  = parentMass.I[1+4*1];
     _link->getParent()->inertial->izz  = parentMass.I[2+4*2];
     _link->getParent()->inertial->ixy  = parentMass.I[0+4*1];
     _link->getParent()->inertial->ixz  = parentMass.I[0+4*2];
     _link->getParent()->inertial->iyz  = parentMass.I[1+4*2];
-    _link->getParent()->inertial->origin.position.x  = parentMass.c[0];
-    _link->getParent()->inertial->origin.position.y  = parentMass.c[1];
-    _link->getParent()->inertial->origin.position.z  = parentMass.c[2];
     // PrintMass(_link->getParent());
   }
-  */
 }
 
 /////////////////////////////////////////////////
@@ -619,9 +900,9 @@ void ReduceJointsToParent(UrdfLinkPtr _link)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string lowerStr(std::string str)
+std::string lowerStr(const std::string &_str)
 {
-  std::string out = str;
+  std::string out = _str;
   std::transform(out.begin(), out.end(), out.begin(), ::tolower);
   return out;
 }
@@ -709,6 +990,32 @@ std::string GetKeyValueAsString(TiXmlElement* _elem)
   return valueStr;
 }
 
+/////////////////////////////////////////////////
+void ParseRobotOrigin(TiXmlDocument &_urdfXml)
+{
+  TiXmlElement *robotXml = _urdfXml.FirstChildElement("robot");
+  TiXmlElement *originXml = robotXml->FirstChildElement("origin");
+  if (originXml)
+  {
+    g_initialRobotPose.position = ParseVector3(
+        std::string(originXml->Attribute("xyz")));
+    urdf::Vector3 rpy = ParseVector3(std::string(originXml->Attribute("rpy")));
+    g_initialRobotPose.rotation.setFromRPY(rpy.x, rpy.y, rpy.z);
+  }
+}
+
+/////////////////////////////////////////////////
+void InsertRobotOrigin(TiXmlElement *_elem)
+{
+  /* set transform */
+  double pose[6];
+  pose[0] = g_initialRobotPose.position.x;
+  pose[1] = g_initialRobotPose.position.y;
+  pose[2] = g_initialRobotPose.position.z;
+  g_initialRobotPose.rotation.getRPY(pose[3], pose[4], pose[5]);
+  AddKeyValue(_elem, "pose", Values2str(6, pose));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
 {
@@ -771,16 +1078,16 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         else
           sdf->setStaticFlag = false;
       }
-      else if (childElem->ValueStr() == "gravity")
+      else if (childElem->ValueStr() == "turnGravityOff")
       {
         std::string valueStr = GetKeyValueAsString(childElem);
 
         // default of gravity is true
         if (lowerStr(valueStr) == "false" || lowerStr(valueStr) == "no" ||
             valueStr == "0")
-          sdf->gravity = false;
-        else
           sdf->gravity = true;
+        else
+          sdf->gravity = false;
       }
       else if (childElem->ValueStr() == "dampingFactor")
       {
@@ -839,6 +1146,12 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         else
           sdf->selfCollide = false;
       }
+      else if (childElem->ValueStr() == "maxContacts")
+      {
+        sdf->isMaxContacts = true;
+        sdf->maxContacts = boost::lexical_cast<int>(
+            GetKeyValueAsString(childElem).c_str());
+      }
       else if (childElem->ValueStr() == "laserRetro")
       {
         sdf->isLaserRetro = true;
@@ -857,6 +1170,18 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         sdf->stopErp = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
+      else if (childElem->ValueStr() == "stopKp")
+      {
+        sdf->isStopKp = true;
+        sdf->stopKp = boost::lexical_cast<double>(
+            GetKeyValueAsString(childElem).c_str());
+      }
+      else if (childElem->ValueStr() == "stopKd")
+      {
+        sdf->isStopKd = true;
+        sdf->stopKd = boost::lexical_cast<double>(
+            GetKeyValueAsString(childElem).c_str());
+      }
       else if (childElem->ValueStr() == "initialJointPosition")
       {
         sdf->isInitialJointPosition = true;
@@ -871,6 +1196,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       }
       else if (childElem->ValueStr() == "provideFeedback")
       {
+        sdf->isProvideFeedback = true;
         std::string valueStr = GetKeyValueAsString(childElem);
 
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
@@ -879,8 +1205,13 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         else
           sdf->provideFeedback = false;
       }
+      else if (childElem->ValueStr() == "canonicalBody")
+      {
+        sdflog << "do nothing with canonicalBody\n";
+      }
       else if (childElem->ValueStr() == "cfmDamping")
       {
+        sdf->isCFMDamping = true;
         std::string valueStr = GetKeyValueAsString(childElem);
 
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
@@ -891,10 +1222,17 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       }
       else
       {
+        // a place to store converted doc
+        TiXmlDocument xmlNewDoc;
+
         std::ostringstream stream;
         stream << *childElem;
+        sdferr << "extension [" << stream.str() <<
+          "] not converted from URDF, probably already in SDF format.\n";
+        xmlNewDoc.Parse(stream.str().c_str());
+
         // save all unknown stuff in a vector of blobs
-        TiXmlElement *blob = new TiXmlElement(*childElem);
+        TiXmlElement *blob = new TiXmlElement(*xmlNewDoc.FirstChildElement());
         sdf->blobs.push_back(blob);
       }
     }
@@ -947,6 +1285,9 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
         if ((*ge)->isLaserRetro)
           AddKeyValue(_elem, "laser_retro",
               Values2str(1, &(*ge)->laserRetro));
+        if ((*ge)->isMaxContacts)
+          AddKeyValue(_elem, "max_contacts",
+              boost::lexical_cast<std::string>((*ge)->maxContacts));
 
         contact->LinkEndChild(contactOde);
         surface->LinkEndChild(contact);
@@ -969,11 +1310,27 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
     for (std::vector<SDFExtension*>::iterator ge = sdfIt->second.begin();
         ge != sdfIt->second.end(); ++ge)
     {
-      if ((*ge)->oldLinkName == _linkName)
+      if (_linkName.find((*ge)->oldLinkName) != std::string::npos)
       {
         // insert material block
         if (!(*ge)->material.empty())
-          AddKeyValue(_elem, "material", (*ge)->material);
+        {
+          // new sdf needs <material><script>...</script></material>
+          TiXmlElement *materialElem = new TiXmlElement("material");
+          TiXmlElement *scriptElem = new TiXmlElement("script");
+          if (scriptElem && materialElem)
+          {
+            AddKeyValue(scriptElem, "name", (*ge)->material);
+            materialElem->LinkEndChild(scriptElem);
+            _elem->LinkEndChild(materialElem);
+            // AddKeyValue(_elem, "material", (*ge)->material);
+          }
+          else
+          {
+            // Memory allocation error
+            sdferr << "Memory allocation error while processing <material>.\n";
+          }
+        }
       }
     }
   }
@@ -1041,9 +1398,30 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
           ge = sdfIt->second.begin();
           ge != sdfIt->second.end(); ++ge)
       {
-        TiXmlElement *physics = new TiXmlElement("physics");
-        TiXmlElement *physicsOde = new TiXmlElement("ode");
-        TiXmlElement *limit = new TiXmlElement("limit");
+
+        TiXmlElement *physics = _elem->FirstChildElement("physics");
+        bool newPhysics = false;
+        if (physics == NULL)
+        {
+          physics = new TiXmlElement("physics");
+          newPhysics = true;
+        }
+
+        TiXmlElement *physicsOde = physics->FirstChildElement("ode");
+        bool newPhysicsOde = false;
+        if (physicsOde == NULL)
+        {
+          physicsOde = new TiXmlElement("ode");
+          newPhysicsOde = true;
+        }
+
+        TiXmlElement *limit = physicsOde->FirstChildElement("limit");
+        bool newLimit = false;
+        if (limit == NULL)
+        {
+          limit = new TiXmlElement("limit");
+          newLimit = true;
+        }
 
         // insert stopCfm, stopErp, fudgeFactor
         if ((*ge)->isStopCfm)
@@ -1061,25 +1439,34 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
            */
 
         // insert provideFeedback
-        if ((*ge)->provideFeedback)
-          AddKeyValue(physicsOde, "provide_feedback", "true");
-        else
-          AddKeyValue(physicsOde, "provide_feedback", "false");
+        if ((*ge)->isProvideFeedback)
+        {
+          if ((*ge)->provideFeedback)
+            AddKeyValue(physicsOde, "provide_feedback", "true");
+          else
+            AddKeyValue(physicsOde, "provide_feedback", "false");
+        }
 
         // insert cfmDamping
-        if ((*ge)->cfmDamping)
-          AddKeyValue(physicsOde, "cfm_damping", "true");
-        else
-          AddKeyValue(physicsOde, "cfm_damping", "false");
+        if ((*ge)->isCFMDamping)
+        {
+          if ((*ge)->cfmDamping)
+            AddKeyValue(physicsOde, "cfm_damping", "true");
+          else
+            AddKeyValue(physicsOde, "cfm_damping", "false");
+        }
 
         // insert fudgeFactor
         if ((*ge)->isFudgeFactor)
           AddKeyValue(physicsOde, "fudge_factor",
               Values2str(1, &(*ge)->fudgeFactor));
 
-        physics->LinkEndChild(physicsOde);
-        physicsOde->LinkEndChild(limit);
-        _elem->LinkEndChild(physics);
+        if (newLimit)
+          physicsOde->LinkEndChild(limit);
+        if (newPhysicsOde)
+          physics->LinkEndChild(physicsOde);
+        if (newPhysics)
+          _elem->LinkEndChild(physics);
       }
     }
   }
@@ -1219,9 +1606,6 @@ void CreateGeometry(TiXmlElement* _elem,
             //   << "http://sdfsim.org/wiki/Model_database#Model_Manifest_XML"
             //   << "] for more info.\n";
           }
-
-          // add mesh filename
-          AddKeyValue(geometryType, "uri", modelFilename);
         }
       }
       break;
@@ -1376,6 +1760,13 @@ sdf::Pose inverseTransformToParentFrame(
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionToParent(UrdfLinkPtr _link)
 {
+  /// \todo: move to header
+  /// Take the link's existing list of gazebo extensions, transfer them
+  /// into parent link.  Along the way, update local transforms by adding
+  /// the additional transform to parent.  Also, look through all
+  /// referenced link names with plugins and update references to current
+  /// link to the parent link. (reduceGazeboExtensionFrameReplace())
+
   /// @todo: this is a very complicated module that updates the plugins
   /// based on fixed joint reduction really wish this could be a lot cleaner
 
@@ -1562,24 +1953,24 @@ void CreateSDF(TiXmlElement *_root,
       ((!_link->inertial) || sdf::equal(_link->inertial->mass, 0.0)))
   {
     if (!_link->child_links.empty())
-      sdfwarn << "urdf2sdf: link[" << _link->name
+      sdflog << "urdf2sdf: link[" << _link->name
         << "] has no inertia, ["
         << static_cast<int>(_link->child_links.size())
         << "] children links ignored\n.";
 
     if (!_link->child_joints.empty())
-      sdfwarn << "urdf2sdf: link[" << _link->name
+      sdflog << "urdf2sdf: link[" << _link->name
         << "] has no inertia, ["
         << static_cast<int>(_link->child_links.size())
         << "] children joints ignored\n.";
 
     if (_link->parent_joint)
-      sdfwarn << "urdf2sdf: link[" << _link->name
+      sdflog << "urdf2sdf: link[" << _link->name
         << "] has no inertia, "
         << "parent joint [" << _link->parent_joint->name
         << "] ignored\n.";
 
-    sdfwarn << "urdf2sdf: link[" << _link->name
+    sdflog << "urdf2sdf: link[" << _link->name
       << "] has no inertia, not modeled in sdf\n";
     return;
   }
@@ -1646,7 +2037,7 @@ void CreateLink(TiXmlElement *_root,
     _currentTransform = localTransform * _currentTransform;
   }
   else
-    sdfdbg << "[" << _link->name << "] has no parent joint\n";
+    sdflog << "[" << _link->name << "] has no parent joint\n";
 
   // create origin tag for this element
   AddTransform(elem, _currentTransform);
@@ -2015,10 +2406,10 @@ void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
   /* set its name, if lumped, add original link name */
   if (_oldLinkName == _link->name)
     sdfCollision->SetAttribute("name",
-        _link->name + std::string("_collision"));
+        _link->name + g_collisionExt);
   else
     sdfCollision->SetAttribute("name",
-        _link->name + std::string("_collision_") + _oldLinkName);
+        _link->name + g_collisionExt + std::string("_") + _oldLinkName);
 
   /* set transform */
   double pose[6];
@@ -2041,7 +2432,7 @@ void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
   }
 
   /* set additional data from extensions */
-  InsertSDFExtensionCollision(sdfCollision, _oldLinkName);
+  InsertSDFExtensionCollision(sdfCollision, _link->name);
 
   /* add geometry to body */
   _elem->LinkEndChild(sdfCollision);
@@ -2058,9 +2449,9 @@ void CreateVisual(TiXmlElement *_elem, ConstUrdfLinkPtr _link,
   // sdfdbg << "original link name [" << _oldLinkName
   //       << "] new link name [" << _link->name << "]\n";
   if (_oldLinkName == _link->name)
-    sdfVisual->SetAttribute("name", _link->name + std::string("_vis"));
+    sdfVisual->SetAttribute("name", _link->name + g_visualExt);
   else
-    sdfVisual->SetAttribute("name", _link->name + std::string("_vis_")
+    sdfVisual->SetAttribute("name", _link->name + g_visualExt
         + _oldLinkName);
 
   /* add the visualisation transfrom */
@@ -2121,6 +2512,9 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   urdfXml.Parse(_urdfStr.c_str());
   this->ParseSDFExtension(urdfXml);
 
+  // Parse robot pose
+  ParseRobotOrigin(urdfXml);
+
   ConstUrdfLinkPtr rootLink = robotModel->getRoot();
 
   /* Fixed Joint Reduction */
@@ -2149,11 +2543,11 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   /* insert the extensions without reference into <robot> root level */
   InsertSDFExtensionRobot(robot);
 
+  InsertRobotOrigin(robot);
+
   // add robot to sdfXmlOut
   TiXmlElement *sdfSdf = new TiXmlElement("sdf");
-  // Until the URDF parser is updated to SDF 1.4, mark the SDF's as 1.3
-  // and rely on the sdf convert functions for compatibility.
-  sdfSdf->SetAttribute("version", "1.3");  // SDF_VERSION);
+  sdfSdf->SetAttribute("version", SDF_VERSION);
   sdfSdf->LinkEndChild(robot);
   sdfXmlOut.LinkEndChild(sdfSdf);
 
@@ -2310,12 +2704,13 @@ void ReduceSDFExtensionContactSensorFrameReplace(
       if (collision)
       {
         if (GetKeyValueAsString(collision->ToElement()) ==
-            linkName + std::string("_collision"))
+            linkName + g_collisionExt)
         {
           contact->RemoveChild(collision);
           TiXmlElement* collisionNameKey = new TiXmlElement("collision");
           std::ostringstream collisionNameStream;
-          collisionNameStream << newLinkName << "_collision_" << linkName;
+          collisionNameStream << newLinkName << g_collisionExt
+            << "_" << linkName;
           TiXmlText* collisionNameTxt = new TiXmlText(
               collisionNameStream.str());
           collisionNameKey->LinkEndChild(collisionNameTxt);
@@ -2431,23 +2826,28 @@ void ReduceSDFExtensionProjectorFrameReplace(
       // extract projector _link name and projector name
       size_t pos = projectorName.find("/");
       if (pos == std::string::npos)
+      {
         sdferr << "no slash in projector reference tag [" << projectorName
           << "], expecting linkName/projector_name.\n";
-      std::string projectorLinkName = projectorName.substr(0, pos);
-
-      if (projectorLinkName == linkName)
+      }
+      else
       {
-        // do the replacement
-        projectorName = newLinkName + "/" +
-          projectorName.substr(pos+1, projectorName.size());
+        std::string projectorLinkName = projectorName.substr(0, pos);
 
-        (*_blobIt)->RemoveChild(projectorElem);
-        TiXmlElement* bodyNameKey = new TiXmlElement("projector");
-        std::ostringstream bodyNameStream;
-        bodyNameStream << projectorName;
-        TiXmlText* bodyNameTxt = new TiXmlText(bodyNameStream.str());
-        bodyNameKey->LinkEndChild(bodyNameTxt);
-        (*_blobIt)->LinkEndChild(bodyNameKey);
+        if (projectorLinkName == linkName)
+        {
+          // do the replacement
+          projectorName = newLinkName + "/" +
+            projectorName.substr(pos+1, projectorName.size());
+
+          (*_blobIt)->RemoveChild(projectorElem);
+          TiXmlElement *bodyNameKey = new TiXmlElement("projector");
+          std::ostringstream bodyNameStream;
+          bodyNameStream << projectorName;
+          TiXmlText *bodyNameTxt = new TiXmlText(bodyNameStream.str());
+          bodyNameKey->LinkEndChild(bodyNameTxt);
+          (*_blobIt)->LinkEndChild(bodyNameKey);
+        }
       }
     }
   }

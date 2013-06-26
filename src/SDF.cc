@@ -753,8 +753,11 @@ ElementPtr Element::AddElement(const std::string &_name)
       for (iter2 = elem->elementDescriptions.begin();
            iter2 != elem->elementDescriptions.end(); ++iter2)
       {
+        // Add only required child element
         if ((*iter2)->GetRequired() == "1")
+        {
           elem->AddElement((*iter2)->name);
+        }
       }
 
       return this->elements.back();
@@ -798,25 +801,27 @@ void Element::Update()
 /////////////////////////////////////////////////
 void Element::Reset()
 {
-  this->parent.reset();
-
   for (ElementPtr_V::iterator iter = this->elements.begin();
       iter != this->elements.end(); ++iter)
   {
-    (*iter)->Reset();
+    if (*iter)
+      (*iter)->Reset();
     (*iter).reset();
   }
 
   for (ElementPtr_V::iterator iter = this->elementDescriptions.begin();
       iter != this->elementDescriptions.end(); ++iter)
   {
-    (*iter)->Reset();
+    if (*iter)
+      (*iter)->Reset();
     (*iter).reset();
   }
   this->elements.clear();
   this->elementDescriptions.clear();
 
   this->value.reset();
+
+  this->parent.reset();
 }
 
 /////////////////////////////////////////////////
