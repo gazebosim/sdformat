@@ -62,7 +62,7 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
     return initDoc(&xmlDoc, _sdf);
   }
   else
-    sdferr << "Unable to load file[" << filename << "]\n";
+    sdferr << "Unable to load file[" << _filename << "]\n";
 
   return false;
 }
@@ -76,7 +76,7 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
   if (xmlDoc.LoadFile(filename))
     return initDoc(&xmlDoc, _sdf);
   else
-    sdferr << "Unable to load file[" << filename << "]\n";
+    sdferr << "Unable to load file[" << _filename << "]\n";
 
   return false;
 }
@@ -262,7 +262,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
     TiXmlDocument doc = u2g.InitModelFile(filename);
     if (sdf::readDoc(&doc, _sdf, "urdf file"))
     {
-      sdfwarn << "parse from urdf file [" << filename << "].\n";
+      sdfwarn << "parse from urdf file [" << _filename << "].\n";
       return true;
     }
     else
@@ -325,20 +325,25 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
     return false;
   }
 
-  /* check sdf version, use old parser if necessary */
+  // check sdf version, use old parser if necessary
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
-  if (!sdfNode)
-    sdfNode = _xmlDoc->FirstChildElement("gazebo");
+
+  // Backward compatible with SDF
+  if (!sdfNode && _xmlDoc->FirstChildElement("sdf"))
+  {
+    Converter::Convert(_xmlDoc, SDF::version);
+    sdfNode = _xmlDoc->FirstChildElement("sdf");
+  }
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
     if (strcmp(sdfNode->Attribute("version"), SDF::version.c_str()) != 0)
     {
-      sdfwarn << "Converting a deprecatd SDF source[" << _source << "].\n";
+      sdfwarn << "Converting a deprecatd source[" << _source << "].\n";
       Converter::Convert(_xmlDoc, SDF::version);
     }
 
-    /* parse new sdf xml */
+    // parse new sdf xml
     TiXmlElement *elemXml = _xmlDoc->FirstChildElement(_sdf->root->GetName());
     if (!readXml(elemXml, _sdf->root))
     {
@@ -350,14 +355,13 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
   {
     // try to use the old deprecated parser
     if (!sdfNode)
-      sdfwarn << "Gazebo SDF has no <sdf> element in file["
-             << _source << "]\n";
+      sdfwarn << "No <sdf> element in file[" << _source << "]\n";
     else if (!sdfNode->Attribute("version"))
-      sdfwarn << "Gazebo SDF sdf element has no version in file["
+      sdfwarn << "SDF <sdf> element has no version in file["
              << _source << "]\n";
     else if (strcmp(sdfNode->Attribute("version"),
                     SDF::version.c_str()) != 0)
-      sdfwarn << "Gazebo SDF version ["
+      sdfwarn << "SDF version ["
             << sdfNode->Attribute("version")
             << "] is not " << SDF::version << "\n";
     return false;
@@ -376,10 +380,15 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
     return false;
   }
 
-  /* check sdf version, use old parser if necessary */
+  // check sdf version, use old parser if necessary
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
-  if (!sdfNode)
-    sdfNode = _xmlDoc->FirstChildElement("gazebo");
+
+  // Backward compatible with SDF
+  if (!sdfNode && _xmlDoc->FirstChildElement("sdf"))
+  {
+    Converter::Convert(_xmlDoc, SDF::version);
+    sdfNode = _xmlDoc->FirstChildElement("sdf");
+  }
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
@@ -436,7 +445,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
   {
     if (_sdf->GetRequired() == "1" || _sdf->GetRequired() =="+")
     {
-      sdferr << "SDF Element[" << _sdf->GetName() << "] is missing\n";
+      sdferr << "SDF Element<" << _sdf->GetName() << "> is missing\n";
       return false;
     }
     else
@@ -568,6 +577,13 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             else
             {
               TiXmlElement *sdfXML = modelXML->FirstChildElement("sdf");
+              bool sdf = false;
+              if (!sdfXML)
+              {
+                sdf = true;
+                sdfXML = modelXML->FirstChildElement("sdf");
+              }
+
               TiXmlElement *sdfSearch = sdfXML;
 
               // Find the SDF element that matches our current SDF version.
@@ -580,7 +596,10 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
                   break;
                 }
 
-                sdfSearch = sdfSearch->NextSiblingElement("sdf");
+                if (sdf)
+                  sdfSearch = sdfSearch->NextSiblingElement("sdf");
+                else
+                  sdfSearch = sdfSearch->NextSiblingElement("sdf");
               }
 
               filename = modelPath + "/" + sdfXML->GetText();

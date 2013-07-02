@@ -3,7 +3,7 @@ libdir=${prefix}/lib
 includedir=${prefix}/include
 
 Name: SDF
-Description: Simulation Description Format (SDF)
+Description: Robot Modeling Language (SDF)
 Version: @SDF_VERSION_FULL@
 Requires:
 Libs: -L${libdir} -lsdf 

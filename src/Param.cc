@@ -199,7 +199,7 @@ void Param::Reset()
 boost::shared_ptr<Param> Param::Clone() const
 {
   return boost::shared_ptr<Param>(new Param(this->key, this->typeName,
-        this->GetDefaultAsString(), this->required, this->description));
+        this->GetAsString(), this->required, this->description));
 }
 
 //////////////////////////////////////////////////

@@ -79,6 +79,21 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   if (boost::filesystem::exists(path))
     return path.string();
 
+  // Next check SDF_PATH environment variable
+  char *pathCStr = getenv("SDF_PATH");
+  if (pathCStr)
+  {
+    std::vector<std::string> paths;
+    boost::split(paths, pathCStr, boost::is_any_of(":"));
+    for (std::vector<std::string>::iterator iter = paths.begin();
+         iter != paths.end(); ++iter)
+    {
+      path = boost::filesystem::path(*iter) / _filename;
+      if (boost::filesystem::exists(path))
+        return path.string();
+    }
+  }
+
   // Next check to see if the given file exists.
   path = boost::filesystem::path(_filename);
   if (boost::filesystem::exists(path))
@@ -1039,7 +1054,7 @@ void SDF::PrintDoc()
   std::cout << "<div style='padding:4px'>\n"
             << "<h1>SDF " << SDF::version << "</h1>\n";
 
-  std::cout << "<p>The Simulation Description Format (SDF) is an XML file "
+  std::cout << "<p>The Robot Modeling Language (SDF) is an XML file "
             << "format used to describe all the elements in a simulation "
             << "environment.\n</p>";
   std::cout << "<h3>Usage</h3>\n";

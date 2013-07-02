@@ -33,7 +33,7 @@ using namespace sdf;
 bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
                         bool _quiet)
 {
-  TiXmlElement *elem = _doc->FirstChildElement("gazebo");
+  TiXmlElement *elem = _doc->FirstChildElement("sdf");
 
   // Replace <gazebo> with <sdf>
   if (elem && boost::lexical_cast<double>(_toVersion) >= 1.3)
@@ -78,7 +78,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   TiXmlDocument xmlDoc;
   if (!xmlDoc.LoadFile(filename))
   {
-    // find all sdf version dirs in gazebo resource path
+    // find all sdf version dirs in resource path
     std::string sdfPath = sdf::findFile(std::string("sdf/"), false);
     boost::filesystem::directory_iterator endIter;
     std::set<boost::filesystem::path> sdfDirs;

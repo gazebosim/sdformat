@@ -2546,10 +2546,10 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   InsertRobotOrigin(robot);
 
   // add robot to sdfXmlOut
-  TiXmlElement *sdfSdf = new TiXmlElement("sdf");
-  sdfSdf->SetAttribute("version", SDF_VERSION);
-  sdfSdf->LinkEndChild(robot);
-  sdfXmlOut.LinkEndChild(sdfSdf);
+  TiXmlElement *sdf = new TiXmlElement("sdf");
+  sdf->SetAttribute("version", SDF_VERSION);
+  sdf->LinkEndChild(robot);
+  sdfXmlOut.LinkEndChild(sdf);
 
   // debug
   // sdfXmlOut.Print();

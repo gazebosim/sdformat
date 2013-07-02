@@ -20,7 +20,7 @@ if(UNIX AND NOT WIN32)
  endif(CMAKE_UNAME)
 endif()
 
-project (SDFORMAT)
+project (SDF)
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 set (SDF_MAJOR_VERSION 1)
@@ -166,15 +166,6 @@ if (build_errors)
 else (buid_errors)
 
   ########################################
-  # Make the cmake config files
-  set(PKG_LIBRARIES sdf)
-  set(PKG_DEPENDS Boost)
-  configure_file(${PROJECT_SOURCE_DIR}/cmake/SDFConfig.cmake.in
-    ${PROJECT_BINARY_DIR}/cmake/SDFConfig.cmake @ONLY)
-  install(FILES ${PROJECT_BINARY_DIR}/cmake/SDFConfig.cmake DESTINATION  
-    share/${PROJECT_NAME_LOWER}/cmake/ COMPONENT cmake)
-
-  ########################################
   # Write the config.h file
   configure_file (${sdf_cmake_dir}/sdf_config.h.in
     ${PROJECT_BINARY_DIR}/sdf/sdf_config.h)
@@ -203,6 +194,15 @@ else (buid_errors)
     ${CMAKE_CURRENT_BINARY_DIR}/cmake/sdf.pc @ONLY)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/sdf.pc DESTINATION
     ${LIB_INSTALL_DIR}/pkgconfig COMPONENT pkgconfig)
+
+  ########################################
+  # Make the cmake config files
+  set(PKG_NAME ${PROJECT_NAME})
+  set(PKG_LIBRARIES sdf)
+  set(PKG_DEPENDS Boost)
+  set(cmake_conf_file "cmake/sdf_config.cmake")
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${cmake_conf_file}.in" "${CMAKE_CURRENT_BINARY_DIR}/SDFConfig.cmake" @ONLY)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SDFConfig.cmake DESTINATION share/${PROJECT_NAME_LOWER}/cmake/ COMPONENT cmake)
 
   ########################################
   # Package Creation: 

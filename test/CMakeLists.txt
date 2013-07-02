@@ -11,7 +11,7 @@ link_directories(
   ${Boost_LIBRARY_DIRS}
 )
 
-# configure_file (test_config.h.in ${PROJECT_BINARY_DIR}/test_config.h)
+configure_file (test_config.h.in ${PROJECT_BINARY_DIR}/test_config.h)
 
 # Build gtest
 add_library(gtest STATIC gtest/src/gtest-all.cc)
