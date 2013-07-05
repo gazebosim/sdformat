@@ -20,7 +20,7 @@ if(UNIX AND NOT WIN32)
  endif(CMAKE_UNAME)
 endif()
 
-project (SDF)
+project (SDFormat)
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 set (SDF_MAJOR_VERSION 1)
