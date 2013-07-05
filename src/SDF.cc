@@ -51,7 +51,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   for (URIPathMap::iterator iter = g_uriPathMap.begin();
        iter != g_uriPathMap.end(); ++iter)
   {
-    // Check to see if the URI in the global map is the first part of the 
+    // Check to see if the URI in the global map is the first part of the
     // given filename
     if (_filename.find(iter->first) == 0)
     {
@@ -78,6 +78,21 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   path = boost::filesystem::path(SDF_VERSION_PATH) / _filename;
   if (boost::filesystem::exists(path))
     return path.string();
+
+  // Next check SDF_PATH environment variable
+  char *pathCStr = getenv("SDF_PATH");
+  if (pathCStr)
+  {
+    std::vector<std::string> paths;
+    boost::split(paths, pathCStr, boost::is_any_of(":"));
+    for (std::vector<std::string>::iterator iter = paths.begin();
+         iter != paths.end(); ++iter)
+    {
+      path = boost::filesystem::path(*iter) / _filename;
+      if (boost::filesystem::exists(path))
+        return path.string();
+    }
+  }
 
   // Next check to see if the given file exists.
   path = boost::filesystem::path(_filename);
@@ -117,7 +132,7 @@ void sdf::addURIPath(const std::string &_uri, const std::string &_path)
   {
     boost::filesystem::path path = *iter;
 
-    // Only add valid paths 
+    // Only add valid paths
     if (!(*iter).empty() && boost::filesystem::exists(path) &&
         boost::filesystem::is_directory(path))
     {
@@ -753,8 +768,11 @@ ElementPtr Element::AddElement(const std::string &_name)
       for (iter2 = elem->elementDescriptions.begin();
            iter2 != elem->elementDescriptions.end(); ++iter2)
       {
+        // Add only required child element
         if ((*iter2)->GetRequired() == "1")
+        {
           elem->AddElement((*iter2)->name);
+        }
       }
 
       return this->elements.back();
@@ -767,6 +785,12 @@ ElementPtr Element::AddElement(const std::string &_name)
 /////////////////////////////////////////////////
 void Element::ClearElements()
 {
+  for (sdf::ElementPtr_V::iterator iter = this->elements.begin();
+      iter != this->elements.end(); ++iter)
+  {
+    (*iter)->ClearElements();
+  }
+
   this->elements.clear();
 }
 
@@ -792,25 +816,27 @@ void Element::Update()
 /////////////////////////////////////////////////
 void Element::Reset()
 {
-  this->parent.reset();
-
   for (ElementPtr_V::iterator iter = this->elements.begin();
       iter != this->elements.end(); ++iter)
   {
-    (*iter)->Reset();
+    if (*iter)
+      (*iter)->Reset();
     (*iter).reset();
   }
 
   for (ElementPtr_V::iterator iter = this->elementDescriptions.begin();
       iter != this->elementDescriptions.end(); ++iter)
   {
-    (*iter)->Reset();
+    if (*iter)
+      (*iter)->Reset();
     (*iter).reset();
   }
   this->elements.clear();
   this->elementDescriptions.clear();
 
   this->value.reset();
+
+  this->parent.reset();
 }
 
 /////////////////////////////////////////////////
@@ -1028,7 +1054,7 @@ void SDF::PrintDoc()
   std::cout << "<div style='padding:4px'>\n"
             << "<h1>SDF " << SDF::version << "</h1>\n";
 
-  std::cout << "<p>The Simulation Description Format (SDF) is an XML file "
+  std::cout << "<p>The Robot Modeling Language (SDF) is an XML file "
             << "format used to describe all the elements in a simulation "
             << "environment.\n</p>";
   std::cout << "<h3>Usage</h3>\n";

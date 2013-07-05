@@ -16,9 +16,36 @@
 */
 
 #include <gtest/gtest.h>
+#include <boost/filesystem.hpp>
+#include "test_config.h"
 #include "sdf/sdf.hh"
 
-class SdfUpdateFixture
+////////////////////////////////////////////////////
+// Testing fixture
+class RmlUpdate : public testing::Test
+{
+  protected: RmlUpdate()
+             {
+               boost::filesystem::path path =
+                 boost::filesystem::path(PROJECT_SOURCE_PATH)
+                 / "sdf" / SDF_VERSION;
+
+               // Store original env var.
+               this->origSDFPath = getenv("SDF_PATH");
+
+               setenv("SDF_PATH", path.string().c_str(), 1);
+             }
+
+  protected: virtual void TearDown()
+             {
+               // Restore original env var.
+               setenv("SDF_PATH", this->origSDFPath, 1);
+             }
+
+  private: char *origSDFPath;
+};
+
+class RmlUpdateFixture
 {
   public:  std::string GetName() const {return this->name;}
   public:  bool GetFlag() const {return this->flag;}
@@ -30,7 +57,7 @@ class SdfUpdateFixture
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Update is working for attributes
-TEST(SdfUpdate, UpdateAttribute)
+TEST_F(RmlUpdate, UpdateAttribute)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
@@ -54,9 +81,9 @@ TEST(SdfUpdate, UpdateAttribute)
 
   // Set test class variables based on sdf values
   // Set parameter update functions to test class accessors
-  SdfUpdateFixture fixture;
+  RmlUpdateFixture fixture;
   nameParam->Get(fixture.name);
-  nameParam->SetUpdateFunc(boost::bind(&SdfUpdateFixture::GetName, &fixture));
+  nameParam->SetUpdateFunc(boost::bind(&RmlUpdateFixture::GetName, &fixture));
 
   std::string nameCheck;
   int i;
@@ -76,7 +103,7 @@ TEST(SdfUpdate, UpdateAttribute)
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Update is working for elements
-TEST(SdfUpdate, UpdateElement)
+TEST_F(RmlUpdate, UpdateElement)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
@@ -105,11 +132,11 @@ TEST(SdfUpdate, UpdateElement)
 
   // Set test class variables based on sdf values
   // Set parameter update functions to test class accessors
-  SdfUpdateFixture fixture;
+  RmlUpdateFixture fixture;
   staticParam->Get(fixture.flag);
-  staticParam->SetUpdateFunc(boost::bind(&SdfUpdateFixture::GetFlag, &fixture));
+  staticParam->SetUpdateFunc(boost::bind(&RmlUpdateFixture::GetFlag, &fixture));
   poseParam->Get(fixture.pose);
-  poseParam->SetUpdateFunc(boost::bind(&SdfUpdateFixture::GetPose, &fixture));
+  poseParam->SetUpdateFunc(boost::bind(&RmlUpdateFixture::GetPose, &fixture));
 
   bool flagCheck;
   sdf::Pose poseCheck;
@@ -135,7 +162,7 @@ TEST(SdfUpdate, UpdateElement)
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Element::RemoveFromParent is working
-TEST(SdfUpdate, ElementRemoveFromParent)
+TEST_F(RmlUpdate, ElementRemoveFromParent)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
@@ -190,7 +217,7 @@ TEST(SdfUpdate, ElementRemoveFromParent)
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Element::RemoveChild is working
-TEST(SdfUpdate, ElementRemoveChild)
+TEST_F(RmlUpdate, ElementRemoveChild)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
@@ -257,7 +284,7 @@ TEST(SdfUpdate, ElementRemoveChild)
 
 ////////////////////////////////////////////////////
 /// Ensure that getting empty values with empty keys returns correct values.
-TEST(SdfUpdate, EmptyValues)
+TEST_F(RmlUpdate, EmptyValues)
 {
   std::string emptyString;
   sdf::ElementPtr elem;
@@ -331,6 +358,7 @@ TEST(SdfUpdate, EmptyValues)
   elem->AddValue("double", "12.34", "0", "description");
   EXPECT_NEAR(elem->Get<double>(emptyString), 12.34, 1e-6);
 }
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
