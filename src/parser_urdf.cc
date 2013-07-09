@@ -1024,8 +1024,8 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
   // Get all SDF extension elements, put everything in
   //   g_extensions map, containing a key string
   //   (link/joint name) and values
-  for (TiXmlElement* sdfXml = robotXml->FirstChildElement("sdf");
-      sdfXml; sdfXml = sdfXml->NextSiblingElement("sdf"))
+  for (TiXmlElement* sdfXml = robotXml->FirstChildElement("gazebo");
+      sdfXml; sdfXml = sdfXml->NextSiblingElement("gazebo"))
   {
     const char* ref = sdfXml->Attribute("reference");
     std::string refStr;
