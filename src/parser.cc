@@ -522,7 +522,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
         if (elemXml->FirstChildElement("uri"))
         {
           modelPath = sdf::findFile(
-              elemXml->FirstChildElement("uri")->GetText(), true, true);
+              elemXml->FirstChildElement("uri")->GetText());
 
           // Test the model path
           if (modelPath.empty())
