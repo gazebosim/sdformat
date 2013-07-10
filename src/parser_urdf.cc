@@ -37,7 +37,7 @@ typedef boost::shared_ptr<const urdf::Link> ConstUrdfLinkPtr;
 std::map<std::string, std::vector<SDFExtension*> > g_extensions;
 bool g_reduceFixedJoints;
 bool g_enforceLimits;
-std::string g_collisionExt = "_geom";
+std::string g_collisionExt = "_collision";
 std::string g_visualExt = "_visual";
 urdf::Pose g_initialRobotPose;
 bool g_initialRobotPoseValid = false;
