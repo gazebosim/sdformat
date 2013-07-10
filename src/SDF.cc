@@ -113,7 +113,14 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   // flag has been set
   if (_useCallback)
   {
-    return g_findFileCB(_filename);
+    if (!g_findFileCB)
+    {
+      sdferr << "Tried to use callback in sdf::findFile(), but the callback "
+        "is empty.  Did you call sdf::setFindCallback()?";
+      return std::string();
+    }
+    else
+      return g_findFileCB(_filename);
   }
 
   return std::string();
