@@ -1606,6 +1606,9 @@ void CreateGeometry(TiXmlElement* _elem,
             //   << "http://sdfsim.org/wiki/Model_database#Model_Manifest_XML"
             //   << "] for more info.\n";
           }
+
+          // add mesh filename
+          AddKeyValue(geometryType, "uri", modelFilename);
         }
       }
       break;
