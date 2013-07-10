@@ -40,6 +40,7 @@ bool g_enforceLimits;
 std::string g_collisionExt = "_geom";
 std::string g_visualExt = "_visual";
 urdf::Pose g_initialRobotPose;
+bool g_initialRobotPoseValid = false;
 
 /// \brief parser xml string into urdf::Vector3
 /// \param[in] _key XML key where vector3 value might be
@@ -1001,19 +1002,23 @@ void ParseRobotOrigin(TiXmlDocument &_urdfXml)
         std::string(originXml->Attribute("xyz")));
     urdf::Vector3 rpy = ParseVector3(std::string(originXml->Attribute("rpy")));
     g_initialRobotPose.rotation.setFromRPY(rpy.x, rpy.y, rpy.z);
+    g_initialRobotPoseValid = true;
   }
 }
 
 /////////////////////////////////////////////////
 void InsertRobotOrigin(TiXmlElement *_elem)
 {
-  /* set transform */
-  double pose[6];
-  pose[0] = g_initialRobotPose.position.x;
-  pose[1] = g_initialRobotPose.position.y;
-  pose[2] = g_initialRobotPose.position.z;
-  g_initialRobotPose.rotation.getRPY(pose[3], pose[4], pose[5]);
-  AddKeyValue(_elem, "pose", Values2str(6, pose));
+  if (g_initialRobotPoseValid)
+  {
+    /* set transform */
+    double pose[6];
+    pose[0] = g_initialRobotPose.position.x;
+    pose[1] = g_initialRobotPose.position.y;
+    pose[2] = g_initialRobotPose.position.z;
+    g_initialRobotPose.rotation.getRPY(pose[3], pose[4], pose[5]);
+    AddKeyValue(_elem, "pose", Values2str(6, pose));
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1024,8 +1029,8 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
   // Get all SDF extension elements, put everything in
   //   g_extensions map, containing a key string
   //   (link/joint name) and values
-  for (TiXmlElement* sdfXml = robotXml->FirstChildElement("sdf");
-      sdfXml; sdfXml = sdfXml->NextSiblingElement("sdf"))
+  for (TiXmlElement* sdfXml = robotXml->FirstChildElement("gazebo");
+      sdfXml; sdfXml = sdfXml->NextSiblingElement("gazebo"))
   {
     const char* ref = sdfXml->Attribute("reference");
     std::string refStr;
@@ -1606,6 +1611,9 @@ void CreateGeometry(TiXmlElement* _elem,
             //   << "http://sdfsim.org/wiki/Model_database#Model_Manifest_XML"
             //   << "] for more info.\n";
           }
+
+          // add mesh filename
+          AddKeyValue(geometryType, "uri", modelFilename);
         }
       }
       break;
