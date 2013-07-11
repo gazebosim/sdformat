@@ -596,10 +596,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
                   break;
                 }
 
-                if (sdf)
-                  sdfSearch = sdfSearch->NextSiblingElement("sdf");
-                else
-                  sdfSearch = sdfSearch->NextSiblingElement("sdf");
+                sdfSearch = sdfSearch->NextSiblingElement("sdf");
               }
 
               filename = modelPath + "/" + sdfXML->GetText();
