@@ -35,9 +35,9 @@ typedef boost::shared_ptr<const urdf::Link> ConstUrdfLinkPtr;
 
 /// create SDF geometry block based on URDF
 std::map<std::string, std::vector<SDFExtension*> > g_extensions;
-bool g_reduceFixedJoints;
-bool g_enforceLimits;
-std::string g_collisionExt = "_geom";
+bool g_reduceFixedJoints = true;
+bool g_enforceLimits = true;
+std::string g_collisionExt = "_collision";
 std::string g_visualExt = "_visual";
 urdf::Pose g_initialRobotPose;
 bool g_initialRobotPoseValid = false;
@@ -1961,24 +1961,24 @@ void CreateSDF(TiXmlElement *_root,
       ((!_link->inertial) || sdf::equal(_link->inertial->mass, 0.0)))
   {
     if (!_link->child_links.empty())
-      sdflog << "urdf2sdf: link[" << _link->name
+      sdfwarn << "urdf2sdf: link[" << _link->name
         << "] has no inertia, ["
         << static_cast<int>(_link->child_links.size())
         << "] children links ignored\n.";
 
     if (!_link->child_joints.empty())
-      sdflog << "urdf2sdf: link[" << _link->name
+      sdfwarn << "urdf2sdf: link[" << _link->name
         << "] has no inertia, ["
         << static_cast<int>(_link->child_links.size())
         << "] children joints ignored\n.";
 
     if (_link->parent_joint)
-      sdflog << "urdf2sdf: link[" << _link->name
+      sdfwarn << "urdf2sdf: link[" << _link->name
         << "] has no inertia, "
         << "parent joint [" << _link->parent_joint->name
         << "] ignored\n.";
 
-    sdflog << "urdf2sdf: link[" << _link->name
+    sdfwarn << "urdf2sdf: link[" << _link->name
       << "] has no inertia, not modeled in sdf\n";
     return;
   }
