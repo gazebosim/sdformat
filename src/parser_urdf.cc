@@ -1431,17 +1431,17 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
         // insert stopCfm, stopErp, fudgeFactor
         if ((*ge)->isStopCfm)
         {
-          AddKeyValue(limit, "erp", Values2str(1, &(*ge)->stopCfm));
+          AddKeyValue(limit, "cfm", Values2str(1, &(*ge)->stopCfm));
         }
         if ((*ge)->isStopErp)
         {
-          AddKeyValue(limit, "cfm", Values2str(1, &(*ge)->stopErp));
+          AddKeyValue(limit, "erp", Values2str(1, &(*ge)->stopErp));
         }
         /* gone
-           if ((*ge)->isInitialJointPosition)
+        if ((*ge)->isInitialJointPosition)
            AddKeyValue(_elem, "initialJointPosition",
-           Values2str(1, &(*ge)->initialJointPosition));
-           */
+             Values2str(1, &(*ge)->initialJointPosition));
+         */
 
         // insert provideFeedback
         if ((*ge)->isProvideFeedback)
@@ -1961,24 +1961,24 @@ void CreateSDF(TiXmlElement *_root,
       ((!_link->inertial) || sdf::equal(_link->inertial->mass, 0.0)))
   {
     if (!_link->child_links.empty())
-      sdflog << "urdf2sdf: link[" << _link->name
+      sdfwarn << "urdf2sdf: link[" << _link->name
         << "] has no inertia, ["
         << static_cast<int>(_link->child_links.size())
         << "] children links ignored\n.";
 
     if (!_link->child_joints.empty())
-      sdflog << "urdf2sdf: link[" << _link->name
+      sdfwarn << "urdf2sdf: link[" << _link->name
         << "] has no inertia, ["
         << static_cast<int>(_link->child_links.size())
         << "] children joints ignored\n.";
 
     if (_link->parent_joint)
-      sdflog << "urdf2sdf: link[" << _link->name
+      sdfwarn << "urdf2sdf: link[" << _link->name
         << "] has no inertia, "
         << "parent joint [" << _link->parent_joint->name
         << "] ignored\n.";
 
-    sdflog << "urdf2sdf: link[" << _link->name
+    sdfwarn << "urdf2sdf: link[" << _link->name
       << "] has no inertia, not modeled in sdf\n";
     return;
   }
@@ -2413,11 +2413,10 @@ void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
 
   /* set its name, if lumped, add original link name */
   if (_oldLinkName == _link->name)
-    sdfCollision->SetAttribute("name",
-        _link->name + g_collisionExt);
+    sdfCollision->SetAttribute("name", _link->name + g_collisionExt);
   else
-    sdfCollision->SetAttribute("name",
-        _link->name + g_collisionExt + std::string("_") + _oldLinkName);
+    sdfCollision->SetAttribute("name", _link->name + g_collisionExt
+        + std::string("_") + _oldLinkName);
 
   /* set transform */
   double pose[6];
@@ -2460,7 +2459,7 @@ void CreateVisual(TiXmlElement *_elem, ConstUrdfLinkPtr _link,
     sdfVisual->SetAttribute("name", _link->name + g_visualExt);
   else
     sdfVisual->SetAttribute("name", _link->name + g_visualExt
-        + _oldLinkName);
+        + std::string("_") + _oldLinkName);
 
   /* add the visualisation transfrom */
   double pose[6];
