@@ -40,7 +40,7 @@ namespace sdf
   /// \param[in] _epsilon the tolerance
   template<typename T>
   inline bool equal(const T &_a, const T &_b,
-                    const T &_epsilon = 1e-3)
+                    const T &_epsilon = 1e-6)
   {
     return std::fabs(_a - _b) <= _epsilon;
   }
