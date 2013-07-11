@@ -18,7 +18,9 @@
 #ifndef _SDF_PARAM_HH_
 #define _SDF_PARAM_HH_
 
-#include <boost/lexical_cast.hpp>
+#ifndef Q_MOC_RUN  // See: https://bugreports.qt-project.org/browse/QTBUG-22829
+# include <boost/lexical_cast.hpp>
+#endif
 #include <boost/bind.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/variant.hpp>
