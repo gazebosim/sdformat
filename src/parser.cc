@@ -577,12 +577,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             else
             {
               TiXmlElement *sdfXML = modelXML->FirstChildElement("sdf");
-              bool sdf = false;
               if (!sdfXML)
-              {
-                sdf = true;
                 sdfXML = modelXML->FirstChildElement("sdf");
-              }
 
               TiXmlElement *sdfSearch = sdfXML;
 
