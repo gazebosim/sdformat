@@ -7,7 +7,7 @@ set (headers
   Exception.hh
   Param.hh
   parser.hh
-  SDF.hh
+  SDFImpl.hh
   Types.hh
 )
 
