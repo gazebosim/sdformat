@@ -42,7 +42,7 @@ if(LD_LIBRARY_PATH)
   set (ENV{LD_LIBRARY_PATH} ${LD_LIBRARY_PATH}:$ENV{LD_LIBRARY_PATH})
 endif()
 
-set (INCLUDE_INSTALL_DIR "include/sdf-${SDF_VERSION}/sdf") 
+set (INCLUDE_INSTALL_DIR "include/sdformat-${SDF_VERSION}/sdf") 
 set (LIB_INSTALL_DIR "lib" CACHE STRING "Installation directory for libraries (relative to CMAKE_INSTALL_PREFIX)") 
 set (BIN_INSTALL_DIR "bin" CACHE STRING "Installation directory for binaries (relative to CMAKE_INSTALL_PREFIX)") 
 
@@ -190,19 +190,25 @@ else (buid_errors)
 
   ########################################
   # Make the package config file
-  configure_file(${CMAKE_SOURCE_DIR}/cmake/sdf_pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake/sdf.pc @ONLY)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/sdf.pc DESTINATION
+  configure_file(${CMAKE_SOURCE_DIR}/cmake/sdformat_pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/sdformat.pc @ONLY)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/sdformat.pc DESTINATION
     ${LIB_INSTALL_DIR}/pkgconfig COMPONENT pkgconfig)
+  # TODO: remove this extra copy after one release cycle
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/sdformat.pc DESTINATION
+    ${LIB_INSTALL_DIR}/pkgconfig COMPONENT pkgconfig RENAME sdf.pc)
 
   ########################################
   # Make the cmake config files
   set(PKG_NAME ${PROJECT_NAME})
-  set(PKG_LIBRARIES sdf)
+  set(PKG_LIBRARIES sdformat)
   set(PKG_DEPENDS Boost)
   set(cmake_conf_file "cmake/sdf_config.cmake")
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${cmake_conf_file}.in" "${CMAKE_CURRENT_BINARY_DIR}/SDFConfig.cmake" @ONLY)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SDFConfig.cmake DESTINATION share/${PROJECT_NAME_LOWER}/cmake/ COMPONENT cmake)
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${cmake_conf_file}.in" "${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake" @ONLY)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake DESTINATION share/${PROJECT_NAME_LOWER}/cmake/ COMPONENT cmake)
+  # TODO: remove this extra copy after one release cycle
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake DESTINATION share/${PROJECT_NAME_LOWER}/cmake/ COMPONENT cmake 
+          RENAME SDFConfig.cmake)
 
   ########################################
   # Package Creation: 
