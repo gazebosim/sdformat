@@ -36,6 +36,7 @@ namespace sdf
     private: SDFExtension()
     {
       material.clear();
+      visual_blobs.clear();
       setStaticFlag = false;
       gravity = true;
       isDampingFactor = false;
@@ -82,6 +83,7 @@ namespace sdf
     private: SDFExtension(const SDFExtension &ge)
     {
       material = ge.material;
+      visual_blobs = ge.visual_blobs;
       setStaticFlag = ge.setStaticFlag;
       gravity = ge.gravity;
       isDampingFactor = ge.isDampingFactor;
@@ -134,6 +136,7 @@ namespace sdf
 
     // visual
     public: std::string material;
+    public: std::vector<TiXmlElement*> visual_blobs;
 
     // body, default off
     public: bool setStaticFlag;
