@@ -28,12 +28,13 @@ set (sources
 set (gtest_sources
   SDF_TEST.cc
   Converter_TEST.cc
+  parser_urdf_TEST.cc
 )
 sdf_build_tests(${gtest_sources})
 
-sdf_add_library(sdf ${sources})
-target_link_libraries(sdf
+sdf_add_library(sdformat ${sources})
+target_link_libraries(sdformat
   ${tinyxml_libraries}
   ${Boost_LIBRARIES}
 )
-sdf_install_library(sdf)
+sdf_install_library(sdformat)

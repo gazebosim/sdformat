@@ -22,7 +22,7 @@
 
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
-#include "sdf/SDF.hh"
+#include "sdf/SDFImpl.hh"
 #include "sdf/Param.hh"
 #include "sdf/parser.hh"
 #include "sdf/sdf_config.h"

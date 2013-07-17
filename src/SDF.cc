@@ -21,7 +21,7 @@
 
 #include "sdf/parser.hh"
 #include "sdf/Assert.hh"
-#include "sdf/SDF.hh"
+#include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
 
 using namespace sdf;
