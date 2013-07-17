@@ -272,12 +272,13 @@ namespace sdf
 
     /// \brief Equal to operator
     /// \param[in] _pt The vector to compare against
-    /// \return true if each component is equal withing a
-    /// default tolerence (1e-6), false otherwise
+    /// \return true if each component is equal within a
+    /// tolerence (1e-3), false otherwise
     public: bool operator==(const sdf::Vector3 &_pt) const
             {
-              return equal(this->x, _pt.x) && equal(this->y, _pt.y) &&
-                equal(this->z, _pt.z);
+              return equal(this->x, _pt.x, 0.001) && 
+                     equal(this->y, _pt.y, 0.001) &&
+                     equal(this->z, _pt.z, 0.001);
             }
 
     /// \brief Stream extraction operator
