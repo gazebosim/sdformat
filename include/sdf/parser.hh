@@ -20,7 +20,7 @@
 #include <tinyxml.h>
 #include <string>
 
-#include "sdf/SDF.hh"
+#include "sdf/SDFImpl.hh"
 
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser

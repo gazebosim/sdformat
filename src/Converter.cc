@@ -22,7 +22,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 
-#include "sdf/SDF.hh"
+#include "sdf/SDFImpl.hh"
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"

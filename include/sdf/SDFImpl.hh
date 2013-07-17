@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef _SDF_HH_
-#define _SDF_HH_
+#ifndef _SDFIMPL_HH_
+#define _SDFIMPL_HH_
 
 #include <vector>
 #include <string>
