@@ -70,7 +70,7 @@ class URDFParser : public ::testing::Test
           return stream.str();
       }
 
-      TiXmlDocument convert_str_to_xml(const std::string urdf)
+      TiXmlDocument convert_str_to_xml(const std::string& urdf)
       {
           TiXmlDocument tmp;
           tmp.Parse(urdf.c_str());
