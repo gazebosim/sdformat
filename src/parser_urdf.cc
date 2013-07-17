@@ -1076,7 +1076,8 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       {
         // a place to store converted doc
         for (TiXmlElement* e = childElem->FirstChildElement(); e; 
-             e = e->NextSiblingElement()) {
+            e = e->NextSiblingElement()) 
+        {
           TiXmlDocument xmlNewDoc;
 
           std::ostringstream origStream;
@@ -1356,10 +1357,12 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
         }
 
         // insert any blobs (including visual plugins)
-        if (!(*ge)->visual_blobs.empty()) {
-          // There should only be 1 visual blob here, but for completeness
-          for (std::vector<TiXmlElement*>::iterator blob = (*ge)->visual_blobs.begin();
-               blob != (*ge)->visual_blobs.end(); ++blob) {
+        if (!(*ge)->visual_blobs.empty()) 
+        {
+          std::vector<TiXmlElement*>::iterator blob; 
+          for (blob = (*ge)->visual_blobs.begin();
+              blob != (*ge)->visual_blobs.end(); ++blob) 
+          {
             _elem->LinkEndChild(*blob);
           }
         }
