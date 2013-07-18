@@ -276,7 +276,7 @@ namespace sdf
     /// tolerence (1e-3), false otherwise
     public: bool operator==(const sdf::Vector3 &_pt) const
             {
-              return equal(this->x, _pt.x, 0.001) && 
+              return equal(this->x, _pt.x, 0.001) &&
                      equal(this->y, _pt.y, 0.001) &&
                      equal(this->z, _pt.z, 0.001);
             }
