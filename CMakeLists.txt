@@ -33,6 +33,9 @@ set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERS
 message (STATUS "${PROJECT_NAME} version ${SDF_VERSION_FULL}")
 set (CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 
+# Default test type for test all over source
+set(TEST_TYPE "UNIT")
+
 # developer's option to cache PKG_CONFIG_PATH and
 # LD_LIBRARY_PATH for local installs
 if(PKG_CONFIG_PATH)
