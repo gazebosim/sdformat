@@ -33,7 +33,7 @@ using namespace sdf;
 bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
                         bool _quiet)
 {
-  TiXmlElement *elem = _doc->FirstChildElement("sdf");
+  TiXmlElement *elem = _doc->FirstChildElement("gazebo");
 
   // Replace <gazebo> with <sdf>
   if (elem && boost::lexical_cast<double>(_toVersion) >= 1.3)
