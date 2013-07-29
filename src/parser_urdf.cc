@@ -1072,6 +1072,25 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       {
         sdf->material = GetKeyValueAsString(childElem);
       }
+      else if (childElem->ValueStr() == "visual") 
+      {
+        // a place to store converted doc
+        for (TiXmlElement* e = childElem->FirstChildElement(); e; 
+            e = e->NextSiblingElement()) 
+        {
+          TiXmlDocument xmlNewDoc;
+
+          std::ostringstream origStream;
+          origStream << *e;
+          sdflog << "visual extension [" << origStream.str() << "] not " << 
+                   "converted from URDF, probably already in SDF format.";
+          xmlNewDoc.Parse(origStream.str().c_str());
+
+          // save all unknown stuff in a vector of blobs
+          TiXmlElement *blob = new TiXmlElement(*xmlNewDoc.FirstChildElement());
+          sdf->visual_blobs.push_back(blob);
+        }
+      }
       else if (childElem->ValueStr() == "static")
       {
         std::string valueStr = GetKeyValueAsString(childElem);
@@ -1232,7 +1251,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
 
         std::ostringstream stream;
         stream << *childElem;
-        sdferr << "extension [" << stream.str() <<
+        sdflog << "extension [" << stream.str() <<
           "] not converted from URDF, probably already in SDF format.\n";
         xmlNewDoc.Parse(stream.str().c_str());
 
@@ -1336,6 +1355,18 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
             sdferr << "Memory allocation error while processing <material>.\n";
           }
         }
+
+        // insert any blobs (including visual plugins)
+        if (!(*ge)->visual_blobs.empty()) 
+        {
+          std::vector<TiXmlElement*>::iterator blob; 
+          for (blob = (*ge)->visual_blobs.begin();
+              blob != (*ge)->visual_blobs.end(); ++blob) 
+          {
+            _elem->LinkEndChild(*blob);
+          }
+        }
+
       }
     }
   }
@@ -1384,6 +1415,7 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
         {
           _elem->LinkEndChild((*blobIt)->Clone());
         }
+
       }
     }
   }
