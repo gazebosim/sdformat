@@ -39,7 +39,11 @@ class RmlUpdate : public testing::Test
   protected: virtual void TearDown()
              {
                // Restore original env var.
-               setenv("SDF_PATH", this->origSDFPath, 1);
+               // osx segfaults unless this check is in place
+               // some discussion of portability of setenv at:
+               // http://www.greenend.org.uk/rjk/tech/putenv.html
+               if (this->origSDFPath)
+                 setenv("SDF_PATH", this->origSDFPath, 1);
              }
 
   private: char *origSDFPath;
