@@ -88,6 +88,8 @@ set (CMAKE_LINK_FLAGS_DEBUG " " CACHE INTERNAL "Link flags for debug" FORCE)
 
 set (CMAKE_C_FLAGS_RELEASE "")
 if (NOT APPLE)
+  # -s doesn't work with default osx compiler clang, alternative:
+  # http://stackoverflow.com/questions/6085491/gcc-vs-clang-symbol-strippingu
   set (CMAKE_C_FLAGS_RELEASE " -s ")
 endif()
 set (CMAKE_C_FLAGS_RELEASE " ${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG ${CMAKE_C_FLAGS_ALL}"
