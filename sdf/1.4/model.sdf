@@ -18,6 +18,8 @@
     <description>A position and orientation in the global coordinate frame for the model. Position(x,y,z) and rotation (roll, pitch yaw) in the global coordinate frame.</description>
   </element>
 
+  <include filename="audio_sink.sdf" required="*"/>
+  <include filename="audio_source.sdf" required="*"/>
   <include filename="link.sdf" required="+"/>
   <include filename="joint.sdf" required="*"/>
   <include filename="plugin.sdf" required="*"/>
