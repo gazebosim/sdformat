@@ -88,9 +88,6 @@ namespace sdf
     /// \return Reference to output stream
     public: std::ofstream &Log();
 
-    /// \brief True if logging data
-    private: bool logData;
-
     /// \brief A stream that does not output anywhere
     private: class NullStream : public std::ostream
              {
