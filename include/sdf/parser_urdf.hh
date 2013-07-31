@@ -169,7 +169,7 @@ namespace sdf
     private: double stopKp, stopKd;
 
     // blobs into body or robot
-    public: std::vector<TiXmlElement*> blobs;
+    public: std::vector<boost::shared_ptr<TiXmlElement> > blobs;
 
     friend class URDF2SDF;
   };
