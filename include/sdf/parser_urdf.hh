@@ -136,7 +136,7 @@ namespace sdf
 
     // visual
     public: std::string material;
-    public: std::vector<TiXmlElement*> visual_blobs;
+    public: std::vector<boost::shared_ptr<TiXmlElement> > visual_blobs;
 
     // body, default off
     public: bool setStaticFlag;

@@ -1095,7 +1095,8 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
           xmlNewDoc.Parse(origStream.str().c_str());
 
           // save all unknown stuff in a vector of blobs
-          TiXmlElement *blob = new TiXmlElement(*xmlNewDoc.FirstChildElement());
+          TiXmlElementPtr blob(
+            new TiXmlElement(*xmlNewDoc.FirstChildElement()));
           sdf->visual_blobs.push_back(blob);
         }
       }
@@ -1367,11 +1368,11 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
         // insert any blobs (including visual plugins)
         if (!(*ge)->visual_blobs.empty()) 
         {
-          std::vector<TiXmlElement*>::iterator blob; 
+          std::vector<TiXmlElementPtr>::iterator blob; 
           for (blob = (*ge)->visual_blobs.begin();
               blob != (*ge)->visual_blobs.end(); ++blob) 
           {
-            _elem->LinkEndChild(*blob);
+            _elem->LinkEndChild((*blob)->Clone());
           }
         }
 
