@@ -27,7 +27,7 @@
     <description>Specifies the transmission power in dBm</description>
   </element> <!-- End Power -->
 
-  <element name="sensivity" type="double" default="-90" required="0">
+  <element name="sensitivity" type="double" default="-90" required="0">
     <description>Mininum received signal power</description>
   </element> <!-- End Power -->
 
