@@ -27,32 +27,58 @@ namespace sdf
   /// \addtogroup sdf SDF
   /// \{
 
-  /// \brief Output a message
-  #define sdfmsg (sdf::Console::Instance()->ColorMsg("Msg", 32))
-
   /// \brief Output a debug message
-  #define sdfdbg (sdf::Console::Instance()->ColorMsg("Dbg", 36))
+  #define sdfdbg (sdf::Console::Instance()->Log("Dbg", \
+    __FILE__, __LINE__))
+
+  /// \brief Output a message
+  #define sdfmsg (sdf::Console::Instance()->ColorMsg("Msg", \
+    __FILE__, __LINE__, 32))
 
   /// \brief Output a warning message
-  #define sdfwarn (sdf::Console::Instance()->ColorErr("Warning", \
+  #define sdfwarn (sdf::Console::Instance()->ColorMsg("Warning", \
         __FILE__, __LINE__, 33))
 
   /// \brief Output an error message
-  #define sdferr (sdf::Console::Instance()->ColorErr("Error", \
+  #define sdferr (sdf::Console::Instance()->ColorMsg("Error", \
         __FILE__, __LINE__, 31))
-
-  /// \brief Log a message
-  #define sdflog (sdf::Console::Instance()->Log() << "[" <<\
-      __FILE__ << ":" << __LINE__ << "] ")
 
   /// start marker
   #define sdfclr_start(clr) "\033[1;33m"
   /// end marker
   #define sdfclr_end "\033[0m"
 
+
   /// \brief Message, error, warning, and logging functionality
   class Console
   {
+    /// \brief An ostream-like class that we'll use for logging.
+    public: class ConsoleStream
+    {
+      private:
+        /// \brief The ostream to log to; can be NULL.
+        std::ostream* stream;
+
+      public:
+        /// \brief Constructor
+        ConsoleStream(std::ostream* _stream) :
+          stream(_stream) {}
+
+        /// \brief Redirect whatever is passed in to both our ostream 
+        ///        (if non-NULL) and the log file (if open).
+        /// \param[in] rhs Content to be logged
+        /// \return Reference to myself.
+        template <class T>
+        ConsoleStream &operator<<(const T& rhs)
+        {
+          if(stream)
+            *stream << rhs;
+          if(Console::Instance()->logFileStream.is_open())
+            Console::Instance()->logFileStream << rhs;
+          return *this;
+        }
+    };
+  
     /// \brief Default constructor
     private: Console();
 
@@ -62,52 +88,39 @@ namespace sdf
     /// \brief Return an instance to this class
     public: static Console *Instance();
 
-    /// \brief Load the message parameters
-    public: void Load();
-
     /// \brief Set quiet output
     /// \param[in] q True to prevent warning
     public: void SetQuiet(bool _q);
 
     /// \brief Use this to output a colored message to the terminal
     /// \param[in] _lbl Text label
-    /// \param[in] _color Color to make the label
-    /// \return Reference to an output stream
-    public: std::ostream &ColorMsg(const std::string &_lbl, int _color);
-
-    /// \brief Use this to output an error to the terminal
-    /// \param[in] _lbl Text label
     /// \param[in] _file File containing the error
     /// \param[in] _line Line containing the error
     /// \param[in] _color Color to make the label
     /// \return Reference to an output stream
-    public: std::ostream &ColorErr(const std::string &_lbl,
-                const std::string &_file, unsigned int _line, int _color);
+    public: ConsoleStream &ColorMsg(const std::string &lbl, 
+                                    const std::string &file,
+                                    unsigned int line, int color);
 
     /// \brief Use this to output a message to a log file
     /// \return Reference to output stream
-    public: std::ofstream &Log();
-
-    /// \brief A stream that does not output anywhere
-    private: class NullStream : public std::ostream
-             {
-               /// \brief constructor
-               public: NullStream() : std::ios(0), std::ostream(0) {}
-             };
-
-    /// \brief null stream
-    private: NullStream nullStream;
+    public: ConsoleStream &Log(const std::string &lbl,
+                               const std::string &file,
+                               unsigned int line);
 
     /// \brief message stream
-    private: std::ostream *msgStream;
+    private: ConsoleStream msgStream;
 
     /// \brief error stream
-    private: std::ostream *errStream;
+    private: ConsoleStream errStream;
 
     /// \brief log stream
-    private: std::ofstream logStream;
+    private: ConsoleStream logStream;
 
-    /// Pointer to myself
+    /// \brief logfile stream
+    private: std::ofstream logFileStream;
+
+    /// \brief Pointer to myself
     private: static Console *myself;
   };
   /// \}
