@@ -43,12 +43,6 @@ namespace sdf
   #define sdferr (sdf::Console::Instance()->ColorMsg("Error", \
         __FILE__, __LINE__, 31))
 
-  /// start marker
-  #define sdfclr_start(clr) "\033[1;33m"
-  /// end marker
-  #define sdfclr_end "\033[0m"
-
-
   /// \brief Message, error, warning, and logging functionality
   class Console
   {
