@@ -1993,13 +1993,13 @@ void CreateSDF(TiXmlElement *_root,
       ((!_link->inertial) || sdf::equal(_link->inertial->mass, 0.0)))
   {
     if (!_link->child_links.empty())
-      sdfwarn << "urdf2sdf: link[" << _link->name
+      sdfdbg << "urdf2sdf: link[" << _link->name
         << "] has no inertia, ["
         << static_cast<int>(_link->child_links.size())
         << "] children links ignored.\n";
 
     if (!_link->child_joints.empty())
-      sdfwarn << "urdf2sdf: link[" << _link->name
+      sdfdbg << "urdf2sdf: link[" << _link->name
         << "] has no inertia, ["
         << static_cast<int>(_link->child_links.size())
         << "] children joints ignored.\n";
