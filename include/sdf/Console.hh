@@ -60,21 +60,21 @@ namespace sdf
         ConsoleStream(std::ostream* _stream) :
           stream(_stream) {}
 
-        /// \brief Redirect whatever is passed in to both our ostream 
+        /// \brief Redirect whatever is passed in to both our ostream
         ///        (if non-NULL) and the log file (if open).
         /// \param[in] rhs Content to be logged
         /// \return Reference to myself.
         template <class T>
         ConsoleStream &operator<<(const T& rhs)
         {
-          if(stream)
+          if (stream)
             *stream << rhs;
-          if(Console::Instance()->logFileStream.is_open())
+          if (Console::Instance()->logFileStream.is_open())
             Console::Instance()->logFileStream << rhs;
           return *this;
         }
     };
-  
+
     /// \brief Default constructor
     private: Console();
 
@@ -94,7 +94,7 @@ namespace sdf
     /// \param[in] _line Line containing the error
     /// \param[in] _color Color to make the label
     /// \return Reference to an output stream
-    public: ConsoleStream &ColorMsg(const std::string &lbl, 
+    public: ConsoleStream &ColorMsg(const std::string &lbl,
                                     const std::string &file,
                                     unsigned int line, int color);
 
