@@ -88,9 +88,7 @@ Console::ConsoleStream &Console::ColorMsg(const std::string &lbl,
                                           const std::string &file,
                                           unsigned int line, int color)
 {
-  int index = file.find_last_of("/") + 1;
-  this->msgStream << "\033[1;" << color << "m" << lbl << " [" <<
-    file.substr(index , file.size() - index)<< ":" << line << "]\033[0m ";
+  this->msgStream.Prefix(lbl, file, line, color);
   return this->msgStream;
 }
 
@@ -99,8 +97,6 @@ Console::ConsoleStream &Console::Log(const std::string &lbl,
                                      const std::string &file,
                                      unsigned int line)
 {
-  int index = file.find_last_of("/") + 1;
-  this->logStream << lbl << " [" <<
-    file.substr(index , file.size() - index)<< ":" << line << "] ";
+  this->logStream.Prefix(lbl, file, line, 0);
   return this->logStream;
 }

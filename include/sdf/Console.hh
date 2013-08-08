@@ -60,7 +60,7 @@ namespace sdf
         ConsoleStream(std::ostream* _stream) :
           stream(_stream) {}
 
-        /// \brief Redirect whatever is passed in to both our ostream 
+        /// \brief Redirect whatever is passed in to both our ostream
         ///        (if non-NULL) and the log file (if open).
         /// \param[in] rhs Content to be logged
         /// \return Reference to myself.
@@ -73,8 +73,27 @@ namespace sdf
             Console::Instance()->logFileStream << rhs;
           return *this;
         }
+
+        /// \brief Print a prefix to both terminal and log file.
+        /// \param[in] _lbl Text label
+        /// \param[in] _file File containing the error
+        /// \param[in] _line Line containing the error
+        /// \param[in] _color Color to make the label.  Used only on terminal.
+        void Prefix(const std::string &lbl,
+                    const std::string &file,
+                    unsigned int line, int color)
+        {
+          int index = file.find_last_of("/") + 1;
+          if(stream)
+            *stream << "\033[1;" << color << "m" << lbl << " [" <<
+              file.substr(index , file.size() - index)<< ":" << line <<
+              "]\033[0m ";
+          if(Console::Instance()->logFileStream.is_open())
+            Console::Instance()->logFileStream << lbl << " [" <<
+              file.substr(index , file.size() - index)<< ":" << line << "] ";
+        }
     };
-  
+
     /// \brief Default constructor
     private: Console();
 
@@ -94,7 +113,7 @@ namespace sdf
     /// \param[in] _line Line containing the error
     /// \param[in] _color Color to make the label
     /// \return Reference to an output stream
-    public: ConsoleStream &ColorMsg(const std::string &lbl, 
+    public: ConsoleStream &ColorMsg(const std::string &lbl,
                                     const std::string &file,
                                     unsigned int line, int color);
 
