@@ -25,7 +25,7 @@
 
 using namespace sdf;
 
-Console *Console::myself = NULL;
+boost::shared_ptr<Console> Console::myself;
 static boost::mutex g_instance_mutex;
 
 //////////////////////////////////////////////////
@@ -69,11 +69,11 @@ Console::~Console()
 }
 
 //////////////////////////////////////////////////
-Console *Console::Instance()
+boost::shared_ptr<Console> Console::Instance()
 {
   boost::mutex::scoped_lock lock(g_instance_mutex);
-  if (myself == NULL)
-    myself = new Console();
+  if (!myself)
+    myself.reset(new Console());
 
   return myself;
 }

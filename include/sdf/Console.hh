@@ -22,6 +22,8 @@
 #include <fstream>
 #include <string>
 
+#include <boost/shared_ptr.hpp>
+
 namespace sdf
 {
   /// \addtogroup sdf SDF
@@ -77,10 +79,10 @@ namespace sdf
     private: Console();
 
     /// \brief Destructor
-    private: virtual ~Console();
+    public: virtual ~Console();
 
     /// \brief Return an instance to this class
-    public: static Console *Instance();
+    public: static boost::shared_ptr<Console> Instance();
 
     /// \brief Set quiet output
     /// \param[in] q True to prevent warning
@@ -115,7 +117,7 @@ namespace sdf
     private: std::ofstream logFileStream;
 
     /// \brief Pointer to myself
-    private: static Console *myself;
+    private: static boost::shared_ptr<Console> myself;
   };
   /// \}
 }
