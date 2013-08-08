@@ -9,12 +9,12 @@
     <description>Specifies the frequency of transmission in MHz</description>
   </element> <!-- End Frequency -->
 
-  <element name="frequency_from" type="double" default="2412" required="0">
+  <element name="min_frequency" type="double" default="2412" required="0">
     <description>Only a frequency range is filtered. Here we set the lower bound.
     </description>
   </element> <!-- End Power -->
 
-  <element name="frequency_to" type="double" default="2484" required="0">
+  <element name="max_frequency" type="double" default="2484" required="0">
     <description>Only a frequency range is filtered. Here we set the upper bound.
     </description>
   </element> <!-- End Power -->
