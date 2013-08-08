@@ -67,9 +67,9 @@ namespace sdf
         template <class T>
         ConsoleStream &operator<<(const T& rhs)
         {
-          if(stream)
+          if (stream)
             *stream << rhs;
-          if(Console::Instance()->logFileStream.is_open())
+          if (Console::Instance()->logFileStream.is_open())
             Console::Instance()->logFileStream << rhs;
           return *this;
         }
@@ -84,11 +84,11 @@ namespace sdf
                     unsigned int line, int color)
         {
           int index = file.find_last_of("/") + 1;
-          if(stream)
+          if (stream)
             *stream << "\033[1;" << color << "m" << lbl << " [" <<
               file.substr(index , file.size() - index)<< ":" << line <<
               "]\033[0m ";
-          if(Console::Instance()->logFileStream.is_open())
+          if (Console::Instance()->logFileStream.is_open())
             Console::Instance()->logFileStream << lbl << " [" <<
               file.substr(index , file.size() - index)<< ":" << line << "] ";
         }
