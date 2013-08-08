@@ -1,3 +1,5 @@
+set(TEST_TYPE "PERFORMANCE")
+
 set(tests
   parser_urdf.cc
 )
