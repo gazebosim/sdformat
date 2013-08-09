@@ -32,9 +32,13 @@ typedef boost::shared_ptr<urdf::Collision> UrdfCollisionPtr;
 typedef boost::shared_ptr<urdf::Visual> UrdfVisualPtr;
 typedef boost::shared_ptr<urdf::Link> UrdfLinkPtr;
 typedef boost::shared_ptr<const urdf::Link> ConstUrdfLinkPtr;
+typedef boost::shared_ptr<TiXmlElement> TiXmlElementPtr;
+typedef boost::shared_ptr<SDFExtension> SDFExtensionPtr;
+typedef std::map<std::string, std::vector<SDFExtensionPtr> > 
+  StringSDFExtensionPtrMap;
 
 /// create SDF geometry block based on URDF
-std::map<std::string, std::vector<SDFExtension*> > g_extensions;
+StringSDFExtensionPtrMap g_extensions;
 bool g_reduceFixedJoints;
 bool g_enforceLimits;
 std::string g_collisionExt = "_collision";
@@ -68,19 +72,19 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
 /// reduced fixed joints:  apply transform reduction for ray sensors
 ///   in extensions when doing fixed joint reduction
 void ReduceSDFExtensionSensorTransformReduction(
-      std::vector<TiXmlElement*>::iterator _blobIt,
+      std::vector<TiXmlElementPtr>::iterator _blobIt,
       sdf::Pose _reductionTransform);
 
 /// reduced fixed joints:  apply transform reduction for projectors in
 ///   extensions when doing fixed joint reduction
 void ReduceSDFExtensionProjectorTransformReduction(
-      std::vector<TiXmlElement*>::iterator _blobIt,
+      std::vector<TiXmlElementPtr>::iterator _blobIt,
       sdf::Pose _reductionTransform);
 
 
 /// reduced fixed joints:  apply transform reduction to extensions
 ///   when doing fixed joint reduction
-void ReduceSDFExtensionsTransform(SDFExtension* _ge);
+void ReduceSDFExtensionsTransform(SDFExtensionPtr _ge);
 
 /// reduce fixed joints:  lump joints to parent link
 void ReduceJointsToParent(UrdfLinkPtr _link);
@@ -137,29 +141,33 @@ void PrintCollisionGroups(UrdfLinkPtr _link);
 /// reduced fixed joints:  apply appropriate frame updates in joint
 ///   inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionJointFrameReplace(
-    std::vector<TiXmlElement*>::iterator _blobIt, UrdfLinkPtr _link);
+    std::vector<TiXmlElementPtr>::iterator _blobIt, 
+    UrdfLinkPtr _link);
 
 /// reduced fixed joints:  apply appropriate frame updates in gripper
 ///   inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionGripperFrameReplace(
-    std::vector<TiXmlElement*>::iterator _blobIt, UrdfLinkPtr _link);
+    std::vector<TiXmlElementPtr>::iterator _blobIt, 
+    UrdfLinkPtr _link);
 
 /// reduced fixed joints:  apply appropriate frame updates in projector
 /// inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionProjectorFrameReplace(
-    std::vector<TiXmlElement*>::iterator _blobIt, UrdfLinkPtr _link);
+    std::vector<TiXmlElementPtr>::iterator _blobIt, 
+    UrdfLinkPtr _link);
 
 /// reduced fixed joints:  apply appropriate frame updates in plugins
 ///   inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionPluginFrameReplace(
-      std::vector<TiXmlElement*>::iterator _blobIt,
+      std::vector<TiXmlElementPtr>::iterator _blobIt,
       UrdfLinkPtr _link, const std::string &_pluginName,
       const std::string &_elementName, sdf::Pose _reductionTransform);
 
 /// reduced fixed joints:  apply appropriate frame updates in urdf
 ///   extensions when doing fixed joint reduction
 void ReduceSDFExtensionContactSensorFrameReplace(
-    std::vector<TiXmlElement*>::iterator _blobIt, UrdfLinkPtr _link);
+    std::vector<TiXmlElementPtr>::iterator _blobIt, 
+    UrdfLinkPtr _link);
 
 /// \brief reduced fixed joints:  apply appropriate updates to urdf
 ///   extensions when doing fixed joint reduction
@@ -175,7 +183,7 @@ void ReduceSDFExtensionToParent(UrdfLinkPtr _link);
 
 /// reduced fixed joints:  apply appropriate frame updates
 ///   in urdf extensions when doing fixed joint reduction
-void ReduceSDFExtensionFrameReplace(SDFExtension* _ge, UrdfLinkPtr _link);
+void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge, UrdfLinkPtr _link);
 
 
 /// get value from <key value="..."/> pair and return it as string
@@ -1049,12 +1057,12 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         g_extensions.end())
     {
       // create extension map for reference
-      std::vector<SDFExtension*> ge;
+      std::vector<SDFExtensionPtr> ge;
       g_extensions.insert(std::make_pair(refStr, ge));
     }
 
     // create and insert a new SDFExtension into the map
-    SDFExtension* sdf = new SDFExtension();
+    SDFExtensionPtr sdf(new SDFExtension());
 
     // begin parsing xml node
     for (TiXmlElement *childElem = sdfXml->FirstChildElement();
@@ -1087,7 +1095,8 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
           xmlNewDoc.Parse(origStream.str().c_str());
 
           // save all unknown stuff in a vector of blobs
-          TiXmlElement *blob = new TiXmlElement(*xmlNewDoc.FirstChildElement());
+          TiXmlElementPtr blob(
+            new TiXmlElement(*xmlNewDoc.FirstChildElement()));
           sdf->visual_blobs.push_back(blob);
         }
       }
@@ -1256,7 +1265,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         xmlNewDoc.Parse(stream.str().c_str());
 
         // save all unknown stuff in a vector of blobs
-        TiXmlElement *blob = new TiXmlElement(*xmlNewDoc.FirstChildElement());
+        TiXmlElementPtr blob(new TiXmlElement(*xmlNewDoc.FirstChildElement()));              
         sdf->blobs.push_back(blob);
       }
     }
@@ -1270,11 +1279,11 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
 void InsertSDFExtensionCollision(TiXmlElement *_elem,
     const std::string &_linkName)
 {
-  for (std::map<std::string, std::vector<SDFExtension*> >::iterator
+  for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
       sdfIt != g_extensions.end(); ++sdfIt)
   {
-    for (std::vector<SDFExtension*>::iterator ge = sdfIt->second.begin();
+    for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
         ge != sdfIt->second.end(); ++ge)
     {
       if ((*ge)->oldLinkName == _linkName)
@@ -1327,11 +1336,11 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
 void InsertSDFExtensionVisual(TiXmlElement *_elem,
     const std::string &_linkName)
 {
-  for (std::map<std::string, std::vector<SDFExtension*> >::iterator
+  for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
       sdfIt != g_extensions.end(); ++sdfIt)
   {
-    for (std::vector<SDFExtension*>::iterator ge = sdfIt->second.begin();
+    for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
         ge != sdfIt->second.end(); ++ge)
     {
       if (_linkName.find((*ge)->oldLinkName) != std::string::npos)
@@ -1359,11 +1368,11 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
         // insert any blobs (including visual plugins)
         if (!(*ge)->visual_blobs.empty()) 
         {
-          std::vector<TiXmlElement*>::iterator blob; 
+          std::vector<TiXmlElementPtr>::iterator blob; 
           for (blob = (*ge)->visual_blobs.begin();
               blob != (*ge)->visual_blobs.end(); ++blob) 
           {
-            _elem->LinkEndChild(*blob);
+            _elem->LinkEndChild((*blob)->Clone());
           }
         }
 
@@ -1375,7 +1384,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
 ////////////////////////////////////////////////////////////////////////////////
 void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
 {
-  for (std::map<std::string, std::vector<SDFExtension*> >::iterator
+  for (StringSDFExtensionPtrMap::iterator
        sdfIt = g_extensions.begin();
        sdfIt != g_extensions.end(); ++sdfIt)
   {
@@ -1383,7 +1392,7 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
     {
       // sdfdbg << "inserting extension with reference ["
       //       << _linkName << "] into link.\n";
-      for (std::vector<SDFExtension*>::iterator ge =
+      for (std::vector<SDFExtensionPtr>::iterator ge =
           sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
       {
         // insert gravity
@@ -1409,7 +1418,7 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
         else
           AddKeyValue(_elem, "self_collide", "false");
         // insert blobs into body
-        for (std::vector<TiXmlElement*>::iterator
+        for (std::vector<TiXmlElementPtr>::iterator
             blobIt = (*ge)->blobs.begin();
             blobIt != (*ge)->blobs.end(); ++blobIt)
         {
@@ -1425,13 +1434,13 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
 void InsertSDFExtensionJoint(TiXmlElement *_elem,
     const std::string &_jointName)
 {
-  for (std::map<std::string, std::vector<SDFExtension*> >::iterator
+  for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
       sdfIt != g_extensions.end(); ++sdfIt)
   {
     if (sdfIt->first == _jointName)
     {
-      for (std::vector<SDFExtension*>::iterator
+      for (std::vector<SDFExtensionPtr>::iterator
           ge = sdfIt->second.begin();
           ge != sdfIt->second.end(); ++ge)
       {
@@ -1512,14 +1521,14 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
 ////////////////////////////////////////////////////////////////////////////////
 void InsertSDFExtensionRobot(TiXmlElement *_elem)
 {
-  for (std::map<std::string, std::vector<SDFExtension*> >::iterator
+  for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
       sdfIt != g_extensions.end(); ++sdfIt)
   {
     if (sdfIt->first.empty())
     {
       // no reference specified
-      for (std::vector<SDFExtension*>::iterator
+      for (std::vector<SDFExtensionPtr>::iterator
           ge = sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
       {
         // insert static flag
@@ -1529,7 +1538,7 @@ void InsertSDFExtensionRobot(TiXmlElement *_elem)
           AddKeyValue(_elem, "static", "false");
 
         // copy extension containing blobs and without reference
-        for (std::vector<TiXmlElement*>::iterator
+        for (std::vector<TiXmlElementPtr>::iterator
             blobIt = (*ge)->blobs.begin();
             blobIt != (*ge)->blobs.end(); ++blobIt)
         {
@@ -1814,8 +1823,7 @@ void ReduceSDFExtensionToParent(UrdfLinkPtr _link)
 
   // update extension map with references to linkName
   // this->ListSDFExtensions();
-  std::map<std::string, std::vector<SDFExtension*> >::iterator ext =
-    g_extensions.find(linkName);
+  StringSDFExtensionPtrMap::iterator ext = g_extensions.find(linkName);
   if (ext != g_extensions.end())
   {
     // sdfdbg << "  REDUCE EXTENSION: moving reference from ["
@@ -1823,7 +1831,7 @@ void ReduceSDFExtensionToParent(UrdfLinkPtr _link)
 
     // update reduction transform (for rays, cameras for now).
     //   FIXME: contact frames too?
-    for (std::vector<SDFExtension*>::iterator ge = ext->second.begin();
+    for (std::vector<SDFExtensionPtr>::iterator ge = ext->second.begin();
         ge != ext->second.end(); ++ge)
     {
       (*ge)->reductionTransform = TransformToParentFrame(
@@ -1835,20 +1843,19 @@ void ReduceSDFExtensionToParent(UrdfLinkPtr _link)
 
     // find pointer to the existing extension with the new _link reference
     std::string newLinkName = _link->getParent()->name;
-    std::map<std::string, std::vector<SDFExtension*> >::iterator
-      newExt = g_extensions.find(newLinkName);
+    StringSDFExtensionPtrMap::iterator newExt = g_extensions.find(newLinkName);
 
     // if none exist, create new extension with newLinkName
     if (newExt == g_extensions.end())
     {
-      std::vector<SDFExtension*> ge;
+      std::vector<SDFExtensionPtr> ge;
       g_extensions.insert(std::make_pair(
             newLinkName, ge));
       newExt = g_extensions.find(newLinkName);
     }
 
     // move sdf extensions from _link into the parent _link's extensions
-    for (std::vector<SDFExtension*>::iterator ge = ext->second.begin();
+    for (std::vector<SDFExtensionPtr>::iterator ge = ext->second.begin();
         ge != ext->second.end(); ++ge)
       newExt->second.push_back(*ge);
     ext->second.clear();
@@ -1857,12 +1864,12 @@ void ReduceSDFExtensionToParent(UrdfLinkPtr _link)
   // for extensions with empty reference, search and replace
   // _link name patterns within the plugin with new _link name
   // and assign the proper reduction transform for the _link name pattern
-  for (std::map<std::string, std::vector<SDFExtension*> >::iterator
+  for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
       sdfIt != g_extensions.end(); ++sdfIt)
   {
     // update reduction transform (for contacts, rays, cameras for now).
-    for (std::vector<SDFExtension*>::iterator
+    for (std::vector<SDFExtensionPtr>::iterator
         ge = sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
       ReduceSDFExtensionFrameReplace(*ge, _link);
   }
@@ -1871,7 +1878,7 @@ void ReduceSDFExtensionToParent(UrdfLinkPtr _link)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ReduceSDFExtensionFrameReplace(SDFExtension* _ge,
+void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
     UrdfLinkPtr _link)
 {
   // std::string linkName = _link->name;
@@ -1885,8 +1892,9 @@ void ReduceSDFExtensionFrameReplace(SDFExtension* _ge,
   //         <collision>base_footprint_collision</collision>
   // sdfdbg << "  STRING REPLACE: instances of _link name ["
   //       << linkName << "] with [" << newLinkName << "]\n";
-  for (std::vector<TiXmlElement*>::iterator blobIt = _ge->blobs.begin();
-      blobIt != _ge->blobs.end(); ++blobIt)
+  for (std::vector<TiXmlElementPtr>::iterator blobIt = 
+         _ge->blobs.begin();
+         blobIt != _ge->blobs.end(); ++blobIt)
   {
     std::ostringstream debugStreamIn;
     debugStreamIn << *(*blobIt);
@@ -1910,10 +1918,11 @@ void ReduceSDFExtensionFrameReplace(SDFExtension* _ge,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ReduceSDFExtensionsTransform(SDFExtension* _ge)
+void ReduceSDFExtensionsTransform(SDFExtensionPtr _ge)
 {
-  for (std::vector<TiXmlElement*>::iterator blobIt = _ge->blobs.begin();
-      blobIt != _ge->blobs.end(); ++blobIt)
+  for (std::vector<TiXmlElementPtr>::iterator blobIt = 
+         _ge->blobs.begin();
+         blobIt != _ge->blobs.end(); ++blobIt)
   {
     /// @todo make sure we are not missing any additional transform reductions
     ReduceSDFExtensionSensorTransformReduction(blobIt,
@@ -1926,20 +1935,20 @@ void ReduceSDFExtensionsTransform(SDFExtension* _ge)
 ////////////////////////////////////////////////////////////////////////////////
 void URDF2SDF::ListSDFExtensions()
 {
-  for (std::map<std::string, std::vector<SDFExtension*> >::iterator
+  for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
       sdfIt != g_extensions.end(); ++sdfIt)
   {
     int extCount = 0;
-    for (std::vector<SDFExtension*>::iterator ge = sdfIt->second.begin();
+    for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
         ge != sdfIt->second.end(); ++ge)
     {
-      if ((*ge)->blobs.size() > 0)
+      if (!(*ge)->blobs.empty())
       {
         sdfdbg <<  "  PRINTING [" << static_cast<int>((*ge)->blobs.size())
           << "] BLOBS for extension [" << ++extCount
           << "] referencing [" << sdfIt->first << "]\n";
-        for (std::vector<TiXmlElement*>::iterator
+        for (std::vector<TiXmlElementPtr>::iterator
             blobIt = (*ge)->blobs.begin();
             blobIt != (*ge)->blobs.end(); ++blobIt)
         {
@@ -1955,7 +1964,7 @@ void URDF2SDF::ListSDFExtensions()
 ////////////////////////////////////////////////////////////////////////////////
 void URDF2SDF::ListSDFExtensions(const std::string &_reference)
 {
-  for (std::map<std::string, std::vector<SDFExtension*> >::iterator
+  for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
       sdfIt != g_extensions.end(); ++sdfIt)
   {
@@ -1963,10 +1972,10 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
     {
       sdfdbg <<  "  PRINTING [" << static_cast<int>(sdfIt->second.size())
         << "] extensions referencing [" << _reference << "]\n";
-      for (std::vector<SDFExtension*>::iterator
+      for (std::vector<SDFExtensionPtr>::iterator
           ge = sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
       {
-        for (std::vector<TiXmlElement*>::iterator
+        for (std::vector<TiXmlElementPtr>::iterator
             blobIt = (*ge)->blobs.begin();
             blobIt != (*ge)->blobs.end(); ++blobIt)
         {
@@ -2622,7 +2631,7 @@ TiXmlDocument URDF2SDF::InitModelFile(const std::string &_filename)
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionSensorTransformReduction(
-    std::vector<TiXmlElement*>::iterator _blobIt,
+    std::vector<TiXmlElementPtr>::iterator _blobIt,
     sdf::Pose _reductionTransform)
 {
   // overwrite <xyz> and <rpy> if they exist
@@ -2676,7 +2685,7 @@ void ReduceSDFExtensionSensorTransformReduction(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionProjectorTransformReduction(
-    std::vector<TiXmlElement*>::iterator _blobIt,
+    std::vector<TiXmlElementPtr>::iterator _blobIt,
     sdf::Pose _reductionTransform)
 {
   // overwrite <pose> (xyz/rpy) if it exists
@@ -2729,7 +2738,8 @@ void ReduceSDFExtensionProjectorTransformReduction(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionContactSensorFrameReplace(
-    std::vector<TiXmlElement*>::iterator _blobIt, UrdfLinkPtr _link)
+    std::vector<TiXmlElementPtr>::iterator _blobIt, 
+    UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
   std::string newLinkName = _link->getParent()->name;
@@ -2766,7 +2776,8 @@ void ReduceSDFExtensionContactSensorFrameReplace(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionPluginFrameReplace(
-    std::vector<TiXmlElement*>::iterator _blobIt, UrdfLinkPtr _link,
+    std::vector<TiXmlElementPtr>::iterator _blobIt, 
+    UrdfLinkPtr _link,
     const std::string &_pluginName, const std::string &_elementName,
     sdf::Pose _reductionTransform)
 {
@@ -2848,7 +2859,8 @@ void ReduceSDFExtensionPluginFrameReplace(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionProjectorFrameReplace(
-    std::vector<TiXmlElement*>::iterator _blobIt, UrdfLinkPtr _link)
+    std::vector<TiXmlElementPtr>::iterator _blobIt, 
+    UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
   std::string newLinkName = _link->getParent()->name;
@@ -2895,7 +2907,8 @@ void ReduceSDFExtensionProjectorFrameReplace(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionGripperFrameReplace(
-    std::vector<TiXmlElement*>::iterator _blobIt, UrdfLinkPtr _link)
+    std::vector<TiXmlElementPtr>::iterator _blobIt, 
+    UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
   std::string newLinkName = _link->getParent()->name;
@@ -2935,7 +2948,8 @@ void ReduceSDFExtensionGripperFrameReplace(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionJointFrameReplace(
-    std::vector<TiXmlElement*>::iterator _blobIt, UrdfLinkPtr _link)
+    std::vector<TiXmlElementPtr>::iterator _blobIt, 
+    UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
   std::string newLinkName = _link->getParent()->name;
