@@ -14,8 +14,11 @@
     <description>Gain for the audio media</description>
   </element>
 
-  <element name="contact" type="bool" default="true" required="0">
-    <description>True to play the audio clip when on contact with another object.</description>
+  <element name="contact" required="0">
+    <description>List of collision objects that will trigger audio playback.</description>
+    <element name="collision" type="string" default="__default__" required="+">
+      <description>Name of child collision element that will trigger audio playback.</description>
+    </element>
   </element>
 
   <element name="loop" type="bool" default="false" required="0">
