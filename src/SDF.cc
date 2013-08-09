@@ -1100,6 +1100,26 @@ void SDF::PrintDoc()
   std::cout << "</ul>";
   std::cout << "</blockquote>";
 
+  std::cout << "<h3>Options for 'Required' attribute</h3>\n";
+  std::cout << "<blockquote>";
+  std::cout << "The value of the 'Required' attribute describes whether "
+            << "elements are required and how many may exist as siblings.";
+  std::cout << "<ul>";
+
+  std::cout << "<li><b>Required = 0</b>: "
+            << "The element is optional, and only "
+            << "1 may be present a the current tree level.</li>"
+            << "<li><b>Required = 1</b>: "
+            << "The element is mandatory, and only "
+            << "1 may be present a the current tree level.</li>"
+            << "<li><b>Required = +</b>: "
+            << "One or more are allowed.</li>"
+            << "<li><b>Required = *</b>: "
+            << "Zero or more are allowed.</li>"
+
+  std::cout << "</ul>";
+  std::cout << "</blockquote>";
+
 
   std::cout << "</div>\n";
 
