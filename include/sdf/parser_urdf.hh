@@ -136,7 +136,7 @@ namespace sdf
 
     // visual
     public: std::string material;
-    public: std::vector<TiXmlElement*> visual_blobs;
+    public: std::vector<boost::shared_ptr<TiXmlElement> > visual_blobs;
 
     // body, default off
     public: bool setStaticFlag;
@@ -169,7 +169,7 @@ namespace sdf
     private: double stopKp, stopKd;
 
     // blobs into body or robot
-    public: std::vector<TiXmlElement*> blobs;
+    public: std::vector<boost::shared_ptr<TiXmlElement> > blobs;
 
     friend class URDF2SDF;
   };
