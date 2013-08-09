@@ -51,47 +51,55 @@ namespace sdf
     /// \brief An ostream-like class that we'll use for logging.
     public: class ConsoleStream
     {
-      private:
-        /// \brief The ostream to log to; can be NULL.
-        std::ostream* stream;
+      /// \brief Constructor.
+      /// \param[in] _stream Pointer to an output stream operator. Can bee
+      /// NULL.
+      public: ConsoleStream(std::ostream *_stream) :
+              stream(_stream) {}
 
-      public:
-        /// \brief Constructor
-        ConsoleStream(std::ostream* _stream) :
-          stream(_stream) {}
-
-        /// \brief Redirect whatever is passed in to both our ostream
-        ///        (if non-NULL) and the log file (if open).
-        /// \param[in] rhs Content to be logged
-        /// \return Reference to myself.
-        template <class T>
-        ConsoleStream &operator<<(const T& rhs)
+      /// \brief Redirect whatever is passed in to both our ostream
+      ///        (if non-NULL) and the log file (if open).
+      /// \param[in] _rhs Content to be logged.
+      /// \return Reference to myself.
+      public: template <class T>
+        ConsoleStream &operator<<(const T &_rhs)
         {
-          if (stream)
-            *stream << rhs;
+          if (this->stream)
+            *this->stream << _rhs;
+
           if (Console::Instance()->logFileStream.is_open())
-            Console::Instance()->logFileStream << rhs;
+            Console::Instance()->logFileStream << _rhs;
+
           return *this;
         }
 
-        /// \brief Print a prefix to both terminal and log file.
-        /// \param[in] _lbl Text label
-        /// \param[in] _file File containing the error
-        /// \param[in] _line Line containing the error
-        /// \param[in] _color Color to make the label.  Used only on terminal.
-        void Prefix(const std::string &lbl,
-                    const std::string &file,
-                    unsigned int line, int color)
+      /// \brief Print a prefix to both terminal and log file.
+      /// \param[in] _lbl Text label
+      /// \param[in] _file File containing the error
+      /// \param[in] _line Line containing the error
+      /// \param[in] _color Color to make the label.  Used only on terminal.
+      public: void Prefix(const std::string &_lbl,
+                          const std::string &_file,
+                          unsigned int _line, int _color)
         {
-          int index = file.find_last_of("/") + 1;
-          if (stream)
-            *stream << "\033[1;" << color << "m" << lbl << " [" <<
-              file.substr(index , file.size() - index)<< ":" << line <<
+          int index = _file.find_last_of("/") + 1;
+
+          if (this->stream)
+          {
+            *this->stream << "\033[1;" << _color << "m" << _lbl << " [" <<
+              _file.substr(index , _file.size() - index)<< ":" << _line <<
               "]\033[0m ";
+          }
+
           if (Console::Instance()->logFileStream.is_open())
-            Console::Instance()->logFileStream << lbl << " [" <<
-              file.substr(index , file.size() - index)<< ":" << line << "] ";
+          {
+            Console::Instance()->logFileStream << _lbl << " [" <<
+              _file.substr(index , _file.size() - index)<< ":" << _line << "] ";
+          }
         }
+
+      /// \brief The ostream to log to; can be NULL.
+      private: std::ostream *stream;
     };
 
     /// \brief Default constructor
