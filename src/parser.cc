@@ -251,7 +251,10 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
   std::string filename = sdf::findFile(_filename);
 
   if (filename.empty())
+  {
+    sdferr << "Error with  file [" << _filename << "].\n";
     return false;
+  }
 
   xmlDoc.LoadFile(filename);
   if (readDoc(&xmlDoc, _sdf, filename))
