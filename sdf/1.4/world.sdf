@@ -9,7 +9,7 @@
     <description>Global audio properties.</description>
 
     <element name="device" type="string" default="default" required="1">
-      <description>Device to use for audio playback.</description>
+      <description>Device to use for audio playback. A value of "default" will use the system's default audio device. Otherwise, specify a an audio device file"</description>
     </element>
   </element>
 
