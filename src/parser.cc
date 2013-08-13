@@ -252,7 +252,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
 
   if (filename.empty())
   {
-    sdferr << "Error with  file [" << _filename << "].\n";
+    sdferr << "Error finding file [" << _filename << "].\n";
     return false;
   }
 
