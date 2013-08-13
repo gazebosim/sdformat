@@ -4,8 +4,11 @@
   <attribute name="name" type="string" default="__default__" required="1">
     <description>A unique name for the plugin, scoped to its parent.</description>
   </attribute>
-  <attribute name="filename" type="string" default="__default__" required="1">
+  <attribute name="filename" type="string" default="__default__" required="1" deprecated="1">
     <description>Name of the shared library to load. If the filename is not a full path name, the file will be searched for in the configuration paths.</description>
+  </attribute>
+  <attribute name="type" type="string" default="__default__" required="1">
+    <description>Base name of the shared library to load. The parser should use knowledge of the target OS to determine the library name.</description>
   </attribute>
   <element copy_data="true" required="*">
     <description>This is a special element that should not be specified in an SDF file. It automatically copies child elements into the SDF element so that a plugin can access the data.</description>
