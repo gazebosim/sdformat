@@ -7,11 +7,11 @@
   </element>
 
   <element name="pitch" type="double" default="1.0" required="0">
-    <description>Pitch for the audio media</description>
+    <description>Pitch for the audio media, in Hz</description>
   </element>
 
   <element name="gain" type="double" default="1.0" required="0">
-    <description>Gain for the audio media</description>
+    <description>Gain for the audio media, in dB.</description>
   </element>
 
   <element name="contact" required="0">
