@@ -29,8 +29,8 @@ boost::shared_ptr<Console> Console::myself;
 static boost::mutex g_instance_mutex;
 
 //////////////////////////////////////////////////
-Console::Console() :
-  msgStream(&std::cout), errStream(&std::cerr), logStream(NULL)
+Console::Console()
+  : msgStream(&std::cout), errStream(&std::cerr), logStream(NULL)
 {
   // Set up the file that we'll log to.
   try
@@ -56,7 +56,7 @@ Console::Console() :
     }
     this->logFileStream.open(logFile.string().c_str(), std::ios::out);
   }
-  catch (const boost::filesystem::filesystem_error& e)
+  catch(const boost::filesystem::filesystem_error& e)
   {
     sdfwarn << "Exception while setting up logging: " << e.what();
     return;
@@ -84,7 +84,7 @@ void Console::SetQuiet(bool)
 }
 
 //////////////////////////////////////////////////
-Console::ConsoleStream &Console::ColorMsg(const std::string &lbl, 
+Console::ConsoleStream &Console::ColorMsg(const std::string &lbl,
                                           const std::string &file,
                                           unsigned int line, int color)
 {
