@@ -1286,7 +1286,10 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
     for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
         ge != sdfIt->second.end(); ++ge)
     {
-      if ((*ge)->oldLinkName == _linkName)
+      if (((*ge)->oldLinkName == _linkName) || 
+          (_elem->Attribute("name") && 
+           (std::string(_elem->Attribute("name")) == 
+           _linkName + g_collisionExt + std::string("_") + (*ge)->oldLinkName)))
       {
         TiXmlElement *surface = new TiXmlElement("surface");
         TiXmlElement *friction = new TiXmlElement("friction");
