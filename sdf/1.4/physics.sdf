@@ -94,7 +94,7 @@
         <description>dynamic friction (mu_d) as described by this plot: http://gazebosim.org/wiki/File:Stribeck_friction.png</description>
       </element>
       <element name="viscous_friction" type="double" default="0.0" required="0">
-        <description>viscous friction (mu_v) as described by this plot: http://gazebosim.org/wiki/File:Stribeck_friction.png</description>
+        <description>viscous friction (mu_v) with units of (1/velocity) as described by this plot: http://gazebosim.org/wiki/File:Stribeck_friction.png</description>
       </element>
 
       <element name="override_impact_capture_velocity" type="double"
