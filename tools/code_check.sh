@@ -17,29 +17,39 @@ fi
 echo "*:src/urdf*" > /tmp/sdf_cpp_check.suppress
 
 #cppcheck
+CPPCHECK_BASE="cppcheck -q --suppressions-list=/tmp/sdf_cpp_check.suppress"
+CPPCHECK_FILES=`find ./src -name "*.cc"`
+CPPCHECK_INCLUDES="-I include -I . -I src/urdf -I $builddir -I $builddir/include"
+CPPCHECK_COMMAND1="-j 4 --enable=style,performance,portability,information $CPPCHECK_FILES"
+# Unused function checking must happen in one job
+CPPCHECK_COMMAND2="--enable=unusedFunction $CPPCHECK_FILES"
+CPPCHECK_COMMAND3="-j 4 --enable=missingInclude $CPPCHECK_FILES $CPPCHECK_INCLUDES --check-config"
 if [ $xmlout -eq 1 ]; then
-  (cppcheck --enable=style,performance,portability,information -j 4 -q --suppressions-list=/tmp/sdf_cpp_check.suppress --xml `find ./src -name "*.cc"`) 2> $xmldir/cppcheck.xml
+  # Performance, style, portability, and information
+  ($CPPCHECK_BASE --xml $CPPCHECK_COMMAND1) 2> $xmldir/cppcheck.xml
 
-  # Unused function checking must happen in one job
-  (cppcheck --xml --enable=unusedFunction -q --suppressions-list=/tmp/sdf_cpp_check.suppress `find ./src -name "*.cc"`) 2> $xmldir/cppcheck-unused-functions.xml
+  # Unused function checking
+  ($CPPCHECK_BASE --xml $CPPCHECK_COMMAND2) 2> $xmldir/cppcheck-unused-functions.xml
 
-  # Finally, check the configuration
-  (cppcheck --xml --enable=missingInclude -q -j 4 --suppressions-list=/tmp/sdf_cpp_check.suppress `find ./src -name "*.cc"` -I include -I . -I src/urdf -I $builddir -I $builddir/include  --check-config) 2> $xmldir/cppcheck-configuration.xml
-
+  # Check the configuration
+  ($CPPCHECK_BASE --xml $CPPCHECK_COMMAND3) 2> $xmldir/cppcheck-configuration.xml
 else
-  cppcheck --enable=style,performance,portability,information -j 4 -q --suppressions-list=/tmp/sdf_cpp_check.suppress `find ./src -name "*.cc"` 2>&1
+  # Performance, style, portability, and information
+  $CPPCHECK_BASE $CPPCHECK_COMMAND1 2>&1
 
-  # Unused function checking must happen in one job
-  cppcheck --enable=unusedFunction -q --suppressions-list=/tmp/sdf_cpp_check.suppress `find ./src -name "*.cc"` 2>&1 
+  # Unused function checking
+  $CPPCHECK_BASE $CPPCHECK_COMMAND2 2>&1
 
-  # Finally, check the configuration
-  cppcheck --enable=missingInclude -q -j 4 --suppressions-list=/tmp/sdf_cpp_check.suppress `find ./src -name "*.cc"` -I include -I . -I src/urdf -I $builddir -I $builddir/include  --check-config 2>&1
-
+  # Check the configuration
+  $CPPCHECK_BASE $CPPCHECK_COMMAND3 2>&1
 fi
 
 # cpplint
+# exclude urdf files for now, since they generate lots of errors
+CPPLINT_FILES=`find ./src ./include -name "*.cc" -o -name "*.hh" | grep -iv urdf`
 if [ $xmlout -eq 1 ]; then
-  (find ./src ./include -name "*.cc" -o -name "*.hh"  -print0 | xargs -0 python tools/cpplint.py 2>&1) | python tools/cpplint_to_cppcheckxml.py 2> $xmldir/cpplint.xml
+  (echo $CPPLINT_FILES | xargs python tools/cpplint.py 2>&1) \
+    | python tools/cpplint_to_cppcheckxml.py 2> $xmldir/cpplint.xml
 else
-  find ./src ./include -name "*.cc" -o -name "*.hh" -print0 | xargs -0 python tools/cpplint.py 2>&1
+  echo $CPPLINT_FILES | xargs python tools/cpplint.py 2>&1
 fi
