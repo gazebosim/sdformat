@@ -1,6 +1,8 @@
 set (sdfs
   1_3.convert
   actor.sdf
+  audio_source.sdf
+  audio_sink.sdf
   box_shape.sdf
   camera.sdf
   collision.sdf

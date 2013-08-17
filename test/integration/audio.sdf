@@ -10,6 +10,8 @@
       </geometry>
     </collision>
 
+    <audio_sink/>
+
     <audio_source>
       <uri>file://foo.mp3</uri>
       <pitch>2.0</pitch>
