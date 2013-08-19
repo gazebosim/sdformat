@@ -1,0 +1,25 @@
+<sdf version='1.4'>
+  <model name='full_audio_parameters'>
+    <link name="link">
+
+    <collision name="collision">
+      <geometry>
+        <box>
+          <size>1 1 1</size>
+        </box>
+      </geometry>
+    </collision>
+
+    <audio_sink/>
+
+    <audio_source>
+      <uri>file://foo.mp3</uri>
+      <pitch>2.0</pitch>
+      <gain>1.0</gain>
+      <loop>false</loop>
+      <pose>0 0 0 0 0 0</pose>
+      <contact><collision>collision</collision></contact>
+    </audio_source>
+  </link>
+ </model>
+</sdf>
