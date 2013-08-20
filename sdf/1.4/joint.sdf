@@ -121,7 +121,7 @@
     </element>
     <element name="simbody" required="0">
       <element name="limit" required="0">
-        <description>Simobody parameters for joint limits</description>
+        <description>Simbody parameters for joint limits</description>
         <element name="stiffness" type="double" default="1e6" required="1">
           <description>Joint stop stiffness.</description>
         </element>
