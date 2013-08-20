@@ -14,33 +14,33 @@
     <description></description>
     <element name="ode" required="0">
       <description>ODE friction parameters</description>
-      <element name="mu" type="double" default="-1" min="0.0" max="1.0" required="0">
+      <element name="mu" type="double" default="1" min="0.0" required="0">
         <description>Coefficient of friction in the range of [0..1].</description>
       </element>
-      <element name="mu2" type="double" default="-1" min="0.0" max="1.0" required="0">
+      <element name="mu2" type="double" default="1" min="0.0" required="0">
         <description>Second coefficient of friction in the range of [0..1]</description>
       </element>
       <element name="fdir1" type="vector3" default="0 0 0" required="0">
         <description>3-tuple specifying direction of mu1 in the collision local reference frame.</description>
       </element>
-      <element name="slip1" type="double" default="0.0" min="0.0" max="1.0" required="0">
+      <element name="slip1" type="double" default="0.0" required="0">
         <description>Force dependent slip direction 1 in collision local frame, between the range of [0..1].</description>
       </element>
-      <element name="slip2" type="double" default="0.0" min="0.0" max="1.0" required="0">
+      <element name="slip2" type="double" default="0.0" required="0">
         <description>Force dependent slip direction 2 in collision local frame, between the range of [0..1].</description>
       </element>
     </element> <!-- End ODE -->
     <element name="bullet" required="0">
-      <element name="friction" type="double" default="-1" min="0.0" max="1.0" required="0">
+      <element name="friction" type="double" default="1" min="0.0" required="0">
         <description>Coefficient of friction in the range of [0..1].</description>
       </element>
-      <element name="friction2" type="double" default="-1" min="0.0" max="1.0" required="0">
+      <element name="friction2" type="double" default="1" min="0.0" required="0">
         <description>Coefficient of friction in the range of [0..1].</description>
       </element>
       <element name="fdir1" type="vector3" default="0 0 0" required="0">
         <description>3-tuple specifying direction of mu1 in the collision local reference frame.</description>
       </element>
-      <element name="rolling_friction" type="double" default="-1" min="0.0" max="1.0" required="0">
+      <element name="rolling_friction" type="double" default="1" required="0">
         <description> coefficient of friction in the range of [0..1]</description>
       </element>
     </element> <!-- End Bullet -->
