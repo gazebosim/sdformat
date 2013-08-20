@@ -265,7 +265,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
     TiXmlDocument doc = u2g.InitModelFile(filename);
     if (sdf::readDoc(&doc, _sdf, "urdf file"))
     {
-      sdfwarn << "parse from urdf file [" << _filename << "].\n";
+      sdfdbg << "parse from urdf file [" << _filename << "].\n";
       return true;
     }
     else
@@ -291,7 +291,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
     TiXmlDocument doc = u2g.InitModelString(_xmlString);
     if (sdf::readDoc(&doc, _sdf, "urdf string"))
     {
-      sdfwarn << "parse from urdf.\n";
+      sdfdbg << "Parsing from urdf.\n";
       return true;
     }
     else
@@ -411,12 +411,12 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   {
     // try to use the old deprecated parser
     if (!sdfNode)
-      sdfwarn << "SDF has no <sdf> element\n";
+      sdfdbg << "SDF has no <sdf> element\n";
     else if (!sdfNode->Attribute("version"))
-      sdfwarn << "<sdf> element has no version\n";
+      sdfdbg << "<sdf> element has no version\n";
     else if (strcmp(sdfNode->Attribute("version"),
                     SDF::version.c_str()) != 0)
-      sdfwarn << "SDF version ["
+      sdfdbg << "SDF version ["
             << sdfNode->Attribute("version")
             << "] is not " << SDF::version << "\n";
     return false;

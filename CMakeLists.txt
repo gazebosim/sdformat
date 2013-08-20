@@ -203,9 +203,6 @@ else (buid_errors)
     ${CMAKE_CURRENT_BINARY_DIR}/cmake/sdformat.pc @ONLY)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/sdformat.pc DESTINATION
     ${LIB_INSTALL_DIR}/pkgconfig COMPONENT pkgconfig)
-  # TODO: remove this extra copy after one release cycle
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/sdformat.pc DESTINATION
-    ${LIB_INSTALL_DIR}/pkgconfig COMPONENT pkgconfig RENAME sdf.pc)
 
   ########################################
   # Make the cmake config files
@@ -215,9 +212,6 @@ else (buid_errors)
   set(cmake_conf_file "cmake/sdf_config.cmake")
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${cmake_conf_file}.in" "${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake" @ONLY)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake DESTINATION share/${PROJECT_NAME_LOWER}/cmake/ COMPONENT cmake)
-  # TODO: remove this extra copy after one release cycle
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake DESTINATION share/${PROJECT_NAME_LOWER}/cmake/ COMPONENT cmake 
-          RENAME SDFConfig.cmake)
 
   ########################################
   # Package Creation: 

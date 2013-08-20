@@ -47,7 +47,7 @@ Exception::~Exception()
 //////////////////////////////////////////////////
 void Exception::Print() const
 {
-  sdf::Console::Instance()->ColorErr("Exception",
+  sdf::Console::Instance()->ColorMsg("Exception",
       this->file, this->line, 31) << *this << "\n";
 }
 

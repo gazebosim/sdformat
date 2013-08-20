@@ -16,19 +16,51 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 #include <sstream>
+#include <boost/filesystem.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include "sdf/Console.hh"
 
 using namespace sdf;
 
-Console *Console::myself = NULL;
+boost::shared_ptr<Console> Console::myself;
+static boost::mutex g_instance_mutex;
 
 //////////////////////////////////////////////////
 Console::Console()
+  : msgStream(&std::cout), errStream(&std::cerr), logStream(NULL)
 {
-  this->msgStream = &std::cout;
-  this->errStream = &std::cerr;
+  // Set up the file that we'll log to.
+  try
+  {
+    char* home = getenv("HOME");
+    if (!home)
+    {
+      sdfwarn << "No HOME defined in the environment. Will not log.";
+      return;
+    }
+    boost::filesystem::path logFile(home);
+    logFile /= ".sdformat";
+    logFile /= "sdformat.log";
+    boost::filesystem::path logDir = logFile.parent_path();
+    if (!boost::filesystem::exists(logDir))
+    {
+      boost::filesystem::create_directory(logDir);
+    }
+    else if (!boost::filesystem::is_directory(logDir))
+    {
+      sdfwarn << logDir << " exists but is not a directory.  Will not log.";
+      return;
+    }
+    this->logFileStream.open(logFile.string().c_str(), std::ios::out);
+  }
+  catch(const boost::filesystem::filesystem_error& e)
+  {
+    sdfwarn << "Exception while setting up logging: " << e.what();
+    return;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -37,41 +69,13 @@ Console::~Console()
 }
 
 //////////////////////////////////////////////////
-Console *Console::Instance()
+boost::shared_ptr<Console> Console::Instance()
 {
-  if (myself == NULL)
-    myself = new Console();
+  boost::mutex::scoped_lock lock(g_instance_mutex);
+  if (!myself)
+    myself.reset(new Console());
 
   return myself;
-}
-
-//////////////////////////////////////////////////
-void Console::Load()
-{
-  char logFilename[50];
-
-  // TODO: Reimplement logging
-  /*if (**(this->logDataP))
-    {
-    time_t t;
-    struct tm *localTime;
-    char baseFilename[50];
-
-    time(&t);
-    localTime = localtime(&t);
-
-    strftime(baseFilename, sizeof(baseFilename),
-    "sdf-%Y_%m_%d_%H_%M", localTime);
-
-    snprintf(logFilename, sizeof(logFilename), "%s.log", baseFilename);
-    }
-    else
-    {
-    */
-  snprintf(logFilename, strlen("/dev/null"), "/dev/null");
-  // }
-
-  this->logStream.open(logFilename, std::ios::out);
 }
 
 //////////////////////////////////////////////////
@@ -80,32 +84,19 @@ void Console::SetQuiet(bool)
 }
 
 //////////////////////////////////////////////////
-std::ostream &Console::ColorMsg(const std::string &lbl, int color)
+Console::ConsoleStream &Console::ColorMsg(const std::string &lbl,
+                                          const std::string &file,
+                                          unsigned int line, int color)
 {
-  // if (**this->quietP)
-  // return this->nullStream;
-  // else
-  // {
-  *this->msgStream << "\033[1;" << color << "m" << lbl << "\033[0m ";
-  return *this->msgStream;
-  // }
+  this->msgStream.Prefix(lbl, file, line, color);
+  return this->msgStream;
 }
 
 //////////////////////////////////////////////////
-std::ostream &Console::ColorErr(const std::string &lbl,
-                                const std::string &file,
-                                unsigned int line, int color)
+Console::ConsoleStream &Console::Log(const std::string &lbl,
+                                     const std::string &file,
+                                     unsigned int line)
 {
-  int index = file.find_last_of("/") + 1;
-
-  *this->errStream << "\033[1;" << color << "m" << lbl << " [" <<
-    file.substr(index , file.size() - index)<< ":" << line << "]\033[0m ";
-
-  return *this->errStream;
-}
-
-//////////////////////////////////////////////////
-std::ofstream &Console::Log()
-{
+  this->logStream.Prefix(lbl, file, line, 0);
   return this->logStream;
 }

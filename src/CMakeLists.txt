@@ -27,6 +27,7 @@ set (sources
 
 set (gtest_sources
   SDF_TEST.cc
+  Console_TEST.cc
   Converter_TEST.cc
   parser_urdf_TEST.cc
 )
