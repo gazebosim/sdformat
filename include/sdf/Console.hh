@@ -134,9 +134,6 @@ namespace sdf
     /// \brief message stream
     private: ConsoleStream msgStream;
 
-    /// \brief error stream
-    private: ConsoleStream errStream;
-
     /// \brief log stream
     private: ConsoleStream logStream;
 
