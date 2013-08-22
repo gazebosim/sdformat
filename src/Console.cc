@@ -30,7 +30,7 @@ static boost::mutex g_instance_mutex;
 
 //////////////////////////////////////////////////
 Console::Console()
-  : msgStream(&std::cout), errStream(&std::cerr), logStream(NULL)
+  : msgStream(&std::cerr), logStream(NULL)
 {
   // Set up the file that we'll log to.
   try
