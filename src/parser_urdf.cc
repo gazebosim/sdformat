@@ -739,7 +739,7 @@ void ReduceInertialToParent(UrdfLinkPtr _link)
     // un-rotate _link mass into parent link frame
     _link->parent_joint->parent_to_joint_origin_transform.rotation.getRPY(
         phi, theta, psi);
-    dRFromEulerAngles(R, phi, theta, psi);
+    dRFromEulerAngles(R, -phi, -theta, -psi);  // FIXME: is the true reverse?
     dMassRotate(&linkMass, R);
 
     // un-translate _link mass into parent link frame
@@ -777,6 +777,11 @@ void ReduceInertialToParent(UrdfLinkPtr _link)
       -_link->getParent()->inertial->origin.position.x,
       -_link->getParent()->inertial->origin.position.y,
       -_link->getParent()->inertial->origin.position.z);
+
+    // rotate MOI at new CoG location
+    _link->getParent()->inertial->origin.rotation.getRPY(phi, theta, psi);
+    dRFromEulerAngles(R, phi, theta, psi);
+    dMassRotate(&parentMass, R);
 
     // save new combined MOI
     _link->getParent()->inertial->ixx  = parentMass.I[0+4*0];
