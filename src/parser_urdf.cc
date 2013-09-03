@@ -630,7 +630,7 @@ void dMassAdd (dMass *a, const dMass *b)
 
 /////////////////////////////////////////////////
 /// print mass for link for debugging
-void PrintMass(const std::string &_linkName, const dMass _mass)
+void PrintMass(const std::string &_linkName, const dMass &_mass)
 {
   sdfdbg << "LINK NAME: [" << _linkName << "] from dMass\n";
   sdfdbg << "     MASS: [" << _mass.mass << "]\n";
