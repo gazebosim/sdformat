@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <map>
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
@@ -23,11 +24,60 @@
 const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/fixed_joint_reduction.sdf";
 
+const double gc_tolerance = 1e-6;
+
 TEST(SDFParser, FixedJointReductionEquivalenceTest)
 {
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
   ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
+
+  std::map<std::string, double> linkMasses;
+  std::map<std::string, sdf::Pose> linkPoses;
+  std::map<std::string, sdf::Vector3> mapIxxIyyIzz;
+  std::map<std::string, sdf::Vector3> mapIxyIxzIyz;
+
+  {
+    std::string linkName = "link0";
+    linkMasses[linkName] = 1000;
+    linkPoses[linkName] = sdf::Pose(0, 0, -0.5, 0, -0, 0);
+    mapIxxIyyIzz[linkName] = sdf::Vector3(1, 1, 1);
+    mapIxyIxzIyz[linkName] = sdf::Vector3(0, 0, 0);
+  }
+
+  {
+    std::string linkName = "link1";
+    linkMasses[linkName] = 100;
+    linkPoses[linkName] = sdf::Pose(0, -1.5, 0, -2.14159, 0.141593, 0.858407);
+    mapIxxIyyIzz[linkName] = sdf::Vector3(2, 3, 4);
+    mapIxyIxzIyz[linkName] = sdf::Vector3(0, 0, 0);
+  }
+
+  {
+    std::string linkName = "link2";
+    linkMasses[linkName] = 200;
+    linkPoses[linkName] = sdf::Pose(0.2, 0.4, 1, -1.14159, -0.141593, 1.5708);
+    mapIxxIyyIzz[linkName] = sdf::Vector3(5, 6, 7);
+    mapIxyIxzIyz[linkName] = sdf::Vector3(0, 0, 0);
+  }
+
+  {
+    std::string linkName = "link3";
+    linkMasses[linkName] = 400;
+    linkPoses[linkName] =
+      sdf::Pose(0.1, 0.2, 0.3, -1.14159, 0.141593, 0.858407);
+    mapIxxIyyIzz[linkName] = sdf::Vector3(8, 9, 10);
+    mapIxyIxzIyz[linkName] = sdf::Vector3(0, 0, 0);
+  }
+
+  {
+    std::string linkName = "link1a";
+    linkMasses[linkName] = 700;
+    linkPoses[linkName] =
+      sdf::Pose(1.6, -2.72857, -0.342857, -2.14159, 0.141593, 0.858407);
+    mapIxxIyyIzz[linkName] = sdf::Vector3(576.477, 527.681, 420.127);
+    mapIxyIxzIyz[linkName] = sdf::Vector3(-65.6808, 134.562, 264.781);
+  }
 
   sdf::ElementPtr model = robot->root->GetElement("model");
   for (sdf::ElementPtr link = model->GetElement("link"); link;
@@ -56,65 +106,13 @@ TEST(SDFParser, FixedJointReductionEquivalenceTest)
               << "] iyz[" << iyz
               << "]\n";
 
-
-     if (linkName == "link0")
-     {
-       EXPECT_EQ(linkMass, 1000);
-       EXPECT_EQ(linkPose, sdf::Pose(0, 0, -0.5, 0, -0, 0));
-       EXPECT_EQ(ixx, 1);
-       EXPECT_EQ(iyy, 1);
-       EXPECT_EQ(izz, 1);
-       EXPECT_EQ(ixy, 0);
-       EXPECT_EQ(ixz, 0);
-       EXPECT_EQ(iyz, 0);
-     }
-     else if (linkName == "link1")
-     {
-       EXPECT_EQ(linkMass, 100);
-       EXPECT_EQ(linkPose,
-                 sdf::Pose(0, -1.5, 0, -2.14159, 0.141593, 0.858407));
-       EXPECT_EQ(ixx, 2);
-       EXPECT_EQ(iyy, 3);
-       EXPECT_EQ(izz, 4);
-       EXPECT_EQ(ixy, 0);
-       EXPECT_EQ(ixz, 0);
-       EXPECT_EQ(iyz, 0);
-     }
-     else if (linkName == "link2")
-     {
-       EXPECT_EQ(linkMass, 200);
-       EXPECT_EQ(linkPose,
-                 sdf::Pose(0.2, 0.4, 1, -1.14159, -0.141593, 1.5708));
-       EXPECT_EQ(ixx, 5);
-       EXPECT_EQ(iyy, 6);
-       EXPECT_EQ(izz, 7);
-       EXPECT_EQ(ixy, 0);
-       EXPECT_EQ(ixz, 0);
-       EXPECT_EQ(iyz, 0);
-     }
-     else if (linkName == "link3")
-     {
-       EXPECT_EQ(linkMass, 400);
-       EXPECT_EQ(linkPose,
-                 sdf::Pose(0.1, 0.2, 0.3, -1.14159, 0.141593, 0.858407));
-       EXPECT_EQ(ixx, 8);
-       EXPECT_EQ(iyy, 9);
-       EXPECT_EQ(izz, 10);
-       EXPECT_EQ(ixy, 0);
-       EXPECT_EQ(ixz, 0);
-       EXPECT_EQ(iyz, 0);
-     }
-     else if (linkName == "link1a")
-     {
-       EXPECT_EQ(linkMass, 700);
-       EXPECT_EQ(linkPose,
-           sdf::Pose(1.6, -2.72857, -0.342857, -2.14159, 0.141593, 0.858407));
-       EXPECT_EQ(ixx, 576.477);
-       EXPECT_EQ(iyy, 527.681);
-       EXPECT_EQ(izz, 420.127);
-       EXPECT_EQ(ixy, -65.6808);
-       EXPECT_EQ(ixz, 134.562);
-       EXPECT_EQ(iyz, 264.781);
-     }
+    EXPECT_NEAR(linkMass, linkMasses[linkName], gc_tolerance);
+    EXPECT_EQ(linkPose, linkPoses[linkName]);
+    EXPECT_NEAR(ixx, mapIxxIyyIzz[linkName].x, gc_tolerance);
+    EXPECT_NEAR(iyy, mapIxxIyyIzz[linkName].y, gc_tolerance);
+    EXPECT_NEAR(izz, mapIxxIyyIzz[linkName].z, gc_tolerance);
+    EXPECT_NEAR(ixy, mapIxyIxzIyz[linkName].x, gc_tolerance);
+    EXPECT_NEAR(ixz, mapIxyIxzIyz[linkName].y, gc_tolerance);
+    EXPECT_NEAR(iyz, mapIxyIxzIyz[linkName].z, gc_tolerance);
   }
 }
