@@ -29,7 +29,6 @@ TEST(SDFParser, FixedJointReductionEquivalenceTest)
     sdf::init(robot);
     ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
 
-    robot->PrintValues();
     sdf::ElementPtr model = robot->root->GetElement("model");
     for (sdf::ElementPtr link = model->GetElement("link"); link;
          link = link->GetNextElement("link"))
