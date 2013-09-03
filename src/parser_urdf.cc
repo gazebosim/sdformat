@@ -2345,10 +2345,6 @@ void CreateInertial(TiXmlElement *_elem,
   // check and print a warning message
   double roll, pitch, yaw;
   _link->inertial->origin.rotation.getRPY(roll, pitch, yaw);
-  if (!sdf::equal(roll, 0.0) ||
-      !sdf::equal(pitch, 0.0) || !sdf::equal(yaw, 0.0))
-    sdferr << "rotation of inertial frame in link ["
-      << _link->name << "] is not supported\n";
 
   /// add pose
   sdf::Pose pose = CopyPose(_link->inertial->origin);
