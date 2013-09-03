@@ -353,13 +353,13 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
   {
     // try to use the old deprecated parser
     if (!sdfNode)
-      sdflog << "No <sdf> element in file[" << _source << "]\n";
+      sdfdbg << "No <sdf> element in file[" << _source << "]\n";
     else if (!sdfNode->Attribute("version"))
-      sdflog << "SDF <sdf> element has no version in file["
+      sdfdbg << "SDF <sdf> element has no version in file["
              << _source << "]\n";
     else if (strcmp(sdfNode->Attribute("version"),
                     SDF::version.c_str()) != 0)
-      sdflog << "SDF version ["
+      sdfdbg << "SDF version ["
             << sdfNode->Attribute("version")
             << "] is not " << SDF::version << "\n";
     return false;
