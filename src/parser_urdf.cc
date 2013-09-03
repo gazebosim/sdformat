@@ -688,7 +688,11 @@ void ReduceInertialToParent(UrdfLinkPtr _link)
 
     // transform parent inertia to parent link origin
     _link->getParent()->inertial->origin.rotation.getRPY(phi, theta, psi);
-    dRFromEulerAngles(R, phi, theta, psi);
+    dRFromEulerAngles(R, -phi,      0,    0);
+    dMassRotate(&parentMass, R);
+    dRFromEulerAngles(R,    0, -theta,    0);
+    dMassRotate(&parentMass, R);
+    dRFromEulerAngles(R,    0,      0, -psi);
     dMassRotate(&parentMass, R);
 
     // un-translate link mass from cg(inertial frame) into link frame
@@ -721,7 +725,11 @@ void ReduceInertialToParent(UrdfLinkPtr _link)
 
     // Un-rotate _link mass from cg(inertial frame) into link frame
     _link->inertial->origin.rotation.getRPY(phi, theta, psi);
-    dRFromEulerAngles(R, phi, theta, psi);
+    dRFromEulerAngles(R, -phi,      0,    0);
+    dMassRotate(&linkMass, R);
+    dRFromEulerAngles(R,    0, -theta,    0);
+    dMassRotate(&linkMass, R);
+    dRFromEulerAngles(R,    0,      0, -psi);
     dMassRotate(&linkMass, R);
 
     // un-translate link mass from cg(inertial frame) into link frame
@@ -739,7 +747,11 @@ void ReduceInertialToParent(UrdfLinkPtr _link)
     // un-rotate _link mass into parent link frame
     _link->parent_joint->parent_to_joint_origin_transform.rotation.getRPY(
         phi, theta, psi);
-    dRFromEulerAngles(R, -phi, -theta, -psi);  // FIXME: is the true reverse?
+    dRFromEulerAngles(R, -phi,      0,    0);
+    dMassRotate(&linkMass, R);
+    dRFromEulerAngles(R,    0, -theta,    0);
+    dMassRotate(&linkMass, R);
+    dRFromEulerAngles(R,    0,      0, -psi);
     dMassRotate(&linkMass, R);
 
     // un-translate _link mass into parent link frame
