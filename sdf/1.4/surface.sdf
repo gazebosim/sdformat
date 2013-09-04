@@ -54,6 +54,11 @@
     <element name="collide_without_contact_bitmask" type="unsigned int" default="1" required="0">
       <description>Bitmask for collision filtering when collide_without_contact is on </description>
     </element>    
+
+    <element name="collide_bitmask" type="unsigned int" default="1" required="0">
+      <description>Bitmask for collision filtering. This will override collide_without_contact</description>
+    </element>
+
     <element name="ode" required="0">
       <description>ODE contact parameters</description>
       <element name="soft_cfm" type="double" default="0" required="0">
