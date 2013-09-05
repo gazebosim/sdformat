@@ -23,6 +23,9 @@
 
 const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/fixed_joint_reduction.sdf";
+const std::string SDF_TEST_FILE_SIMPLE =
+  std::string(PROJECT_SOURCE_PATH)
+  + "/test/integration/fixed_joint_reduction_simple.sdf";
 
 const double gc_tolerance = 1e-6;
 
@@ -95,16 +98,114 @@ TEST(SDFParser, FixedJointReductionEquivalenceTest)
     double ixz = inertia->Get<double>("ixz");
     double iyz = inertia->Get<double>("iyz");
 
-    std::cout << "name [" << linkName
-              << "] m[" << linkMass
-              << "] p[" << linkPose
-              << "] ixx[" << ixx
-              << "] iyy[" << iyy
-              << "] izz[" << izz
-              << "] ixy[" << ixy
-              << "] ixz[" << ixz
-              << "] iyz[" << iyz
-              << "]\n";
+    sdfmsg << "name [" << linkName
+           << "] m[" << linkMass
+           << "] p[" << linkPose
+           << "] ixx[" << ixx
+           << "] iyy[" << iyy
+           << "] izz[" << izz
+           << "] ixy[" << ixy
+           << "] ixz[" << ixz
+           << "] iyz[" << iyz
+           << "]\n";
+
+    EXPECT_NEAR(linkMass, linkMasses[linkName], gc_tolerance);
+    EXPECT_EQ(linkPose, linkPoses[linkName]);
+    EXPECT_NEAR(ixx, mapIxxIyyIzz[linkName].x, gc_tolerance);
+    EXPECT_NEAR(iyy, mapIxxIyyIzz[linkName].y, gc_tolerance);
+    EXPECT_NEAR(izz, mapIxxIyyIzz[linkName].z, gc_tolerance);
+    EXPECT_NEAR(ixy, mapIxyIxzIyz[linkName].x, gc_tolerance);
+    EXPECT_NEAR(ixz, mapIxyIxzIyz[linkName].y, gc_tolerance);
+    EXPECT_NEAR(iyz, mapIxyIxzIyz[linkName].z, gc_tolerance);
+  }
+}
+
+TEST(SDFParser, FixedJointReductionSimple)
+{
+  sdf::SDFPtr robot(new sdf::SDF());
+  sdf::init(robot);
+  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE_SIMPLE, robot));
+
+  std::map<std::string, double> linkMasses;
+  std::map<std::string, sdf::Pose> linkPoses;
+  std::map<std::string, sdf::Vector3> mapIxxIyyIzz;
+  std::map<std::string, sdf::Vector3> mapIxyIxzIyz;
+
+  const sdf::Vector3 defaultIxxIyyIzz(7, 9, 11);
+  {
+    std::string linkName = "link1";
+    linkMasses[linkName] = 300;
+    linkPoses[linkName] = sdf::Pose();
+    mapIxxIyyIzz[linkName] = defaultIxxIyyIzz;
+    mapIxyIxzIyz[linkName] = sdf::Vector3();
+  }
+
+  {
+    std::string linkName = "link1a";
+    linkMasses[linkName] = 300;
+    linkPoses[linkName] = sdf::Pose();
+    mapIxxIyyIzz[linkName] = defaultIxxIyyIzz;
+    mapIxyIxzIyz[linkName] = sdf::Vector3();
+  }
+
+  {
+    std::string linkName = "link1b";
+    linkMasses[linkName] = 300;
+    linkPoses[linkName] = sdf::Pose();
+    mapIxxIyyIzz[linkName] = defaultIxxIyyIzz;
+    mapIxyIxzIyz[linkName] = sdf::Vector3();
+  }
+
+  {
+    std::string linkName = "link1c";
+    linkMasses[linkName] = 300;
+    linkPoses[linkName] = sdf::Pose(0.2, 0, 0, 0, 0, 0);
+    mapIxxIyyIzz[linkName] = defaultIxxIyyIzz + sdf::Vector3(0, 6, 6);
+    mapIxyIxzIyz[linkName] = sdf::Vector3();
+  }
+
+  {
+    std::string linkName = "link1d";
+    linkMasses[linkName] = 300;
+    linkPoses[linkName] = sdf::Pose(0.2, 0, 0, 0, 0, 0);
+    mapIxxIyyIzz[linkName] = defaultIxxIyyIzz + sdf::Vector3(0, 6, 6);
+    mapIxyIxzIyz[linkName] = sdf::Vector3();
+  }
+
+  {
+    std::string linkName = "link1e";
+    linkMasses[linkName] = 300;
+    linkPoses[linkName] = sdf::Pose(0.2, 0, 0, 0, 0, 0);
+    mapIxxIyyIzz[linkName] = defaultIxxIyyIzz + sdf::Vector3(0, 6, 6);
+    mapIxyIxzIyz[linkName] = sdf::Vector3();
+  }
+
+  sdf::ElementPtr model = robot->root->GetElement("model");
+  for (sdf::ElementPtr link = model->GetElement("link"); link;
+       link = link->GetNextElement("link"))
+  {
+    std::string linkName = link->Get<std::string>("name");
+    sdf::ElementPtr inertial = link->GetElement("inertial");
+    double linkMass = inertial->Get<double>("mass");
+    sdf::Pose linkPose = inertial->Get<sdf::Pose>("pose");
+    sdf::ElementPtr inertia = inertial->GetElement("inertia");
+    double ixx = inertia->Get<double>("ixx");
+    double iyy = inertia->Get<double>("iyy");
+    double izz = inertia->Get<double>("izz");
+    double ixy = inertia->Get<double>("ixy");
+    double ixz = inertia->Get<double>("ixz");
+    double iyz = inertia->Get<double>("iyz");
+
+    sdfmsg << "name [" << linkName
+           << "] m[" << linkMass
+           << "] p[" << linkPose
+           << "] ixx[" << ixx
+           << "] iyy[" << iyy
+           << "] izz[" << izz
+           << "] ixy[" << ixy
+           << "] ixz[" << ixz
+           << "] iyz[" << iyz
+           << "]\n";
 
     EXPECT_NEAR(linkMass, linkMasses[linkName], gc_tolerance);
     EXPECT_EQ(linkPose, linkPoses[linkName]);
