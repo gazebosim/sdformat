@@ -1,0 +1,212 @@
+<?xml version="1.0" ?>
+<robot name="fixed_joint_reduction_test_model">
+
+  <link name="world"/>
+
+  <!-- trivial fixed joint reduction, coincident cg's
+       expect mass=300, origin = zeros
+       ixx = 7, iyy = 9, izz = 11                     -->
+  <joint name="joint01" type="continuous">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="1 0 0"/>  <!-- in child (link1) frame -->
+    <parent link="world"/>
+    <child link="link1"/>
+  </joint>
+
+  <link name="link1">
+    <inertial>
+      <mass value="100"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="2" ixy="0" ixz="0" iyy="3" iyz="0" izz="4"/>
+    </inertial>
+  </link>
+
+  <joint name="joint12" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
+    <limit lower="0" upper="0" velocity="1000" effort="10000"/>
+    <parent link="link1"/>
+    <child link="link2"/>
+  </joint>
+
+  <link name="link2">
+    <inertial>
+      <mass value="200"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="5" ixy="0" ixz="0" iyy="6" iyz="0" izz="7"/>
+    </inertial>
+  </link>
+
+  <!-- trivial fixed joint reduction, coincident cg's
+       cancelling offsets in joint12a and link2a
+       expect mass=300, origin = zeros
+       ixx = 7, iyy = 9, izz = 11                     -->
+  <joint name="joint01a" type="continuous">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="1 0 0"/>  <!-- in child (link1) frame -->
+    <parent link="world"/>
+    <child link="link1a"/>
+  </joint>
+
+  <link name="link1a">
+    <inertial>
+      <mass value="100"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="2" ixy="0" ixz="0" iyy="3" iyz="0" izz="4"/>
+    </inertial>
+  </link>
+
+  <joint name="joint12a" type="fixed">
+    <origin rpy="0 0 0" xyz="1 2 3"/>
+    <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
+    <limit lower="0" upper="0" velocity="1000" effort="10000"/>
+    <parent link="link1a"/>
+    <child link="link2a"/>
+  </joint>
+
+  <link name="link2a">
+    <inertial>
+      <mass value="200"/>
+      <origin rpy="0 0 0" xyz="-1 -2 -3"/>
+      <inertia ixx="5" ixy="0" ixz="0" iyy="6" iyz="0" izz="7"/>
+    </inertial>
+  </link>
+
+  <!-- trivial fixed joint reduction, coincident cg's
+       cancelling rotations in joint12a and link2a
+       expect mass=300, origin = zeros
+       ixx = 7, iyy = 9, izz = 11                     -->
+  <joint name="joint01b" type="continuous">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="1 0 0"/>  <!-- in child (link1) frame -->
+    <parent link="world"/>
+    <child link="link1b"/>
+  </joint>
+
+  <link name="link1b">
+    <inertial>
+      <mass value="100"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="2" ixy="0" ixz="0" iyy="3" iyz="0" izz="4"/>
+    </inertial>
+  </link>
+
+  <joint name="joint12b" type="fixed">
+    <origin rpy="0.1 0 0" xyz="0 0 0"/>
+    <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
+    <limit lower="0" upper="0" velocity="1000" effort="10000"/>
+    <parent link="link1b"/>
+    <child link="link2b"/>
+  </joint>
+
+  <link name="link2b">
+    <inertial>
+      <mass value="200"/>
+      <origin rpy="-0.1 0 0" xyz="0 0 0"/>
+      <inertia ixx="5" ixy="0" ixz="0" iyy="6" iyz="0" izz="7"/>
+    </inertial>
+  </link>
+
+  <!-- fixed joint reduction, 2nd c.g. translate 0.3 in x
+       expect mass=300, origin = 0.2, 0, 0
+       ixx = 7, iyy = 15, izz = 17                     -->
+  <joint name="joint01c" type="continuous">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="1 0 0"/>  <!-- in child (link1) frame -->
+    <parent link="world"/>
+    <child link="link1c"/>
+  </joint>
+
+  <link name="link1c">
+    <inertial>
+      <mass value="100"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="2" ixy="0" ixz="0" iyy="3" iyz="0" izz="4"/>
+    </inertial>
+  </link>
+
+  <joint name="joint12c" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
+    <limit lower="0" upper="0" velocity="1000" effort="10000"/>
+    <parent link="link1c"/>
+    <child link="link2c"/>
+  </joint>
+
+  <link name="link2c">
+    <inertial>
+      <mass value="200"/>
+      <origin rpy="0 0 0" xyz="0.3 0 0"/>
+      <inertia ixx="5" ixy="0" ixz="0" iyy="6" iyz="0" izz="7"/>
+    </inertial>
+  </link>
+
+  <!-- fixed joint reduction, 2nd c.g. translate 0.3 in x
+       expect mass=300, origin = 0.2, 0, 0
+       ixx = 7, iyy = 15, izz = 17                     -->
+  <joint name="joint01d" type="continuous">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="1 0 0"/>  <!-- in child (link1) frame -->
+    <parent link="world"/>
+    <child link="link1d"/>
+  </joint>
+
+  <link name="link1d">
+    <inertial>
+      <mass value="100"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="2" ixy="0" ixz="0" iyy="3" iyz="0" izz="4"/>
+    </inertial>
+  </link>
+
+  <joint name="joint12d" type="fixed">
+    <origin rpy="0 0 0" xyz="0.3 0 0"/>
+    <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
+    <limit lower="0" upper="0" velocity="1000" effort="10000"/>
+    <parent link="link1d"/>
+    <child link="link2d"/>
+  </joint>
+
+  <link name="link2d">
+    <inertial>
+      <mass value="200"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="5" ixy="0" ixz="0" iyy="6" iyz="0" izz="7"/>
+    </inertial>
+  </link>
+
+  <!-- fixed joint reduction, 2nd c.g. translate 0.3 in x
+       expect mass=300, origin = 0.2, 0, 0
+       ixx = 7, iyy = 15, izz = 17                     -->
+  <joint name="joint01e" type="continuous">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="1 0 0"/>  <!-- in child (link1) frame -->
+    <parent link="world"/>
+    <child link="link1e"/>
+  </joint>
+
+  <link name="link1e">
+    <inertial>
+      <mass value="100"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="2" ixy="0" ixz="0" iyy="3" iyz="0" izz="4"/>
+    </inertial>
+  </link>
+
+  <joint name="joint12e" type="fixed">
+    <origin rpy="0 0 1.57079632679" xyz="0 0 0"/>
+    <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
+    <limit lower="0" upper="0" velocity="1000" effort="10000"/>
+    <parent link="link1e"/>
+    <child link="link2e"/>
+  </joint>
+
+  <link name="link2e">
+    <inertial>
+      <mass value="200"/>
+      <origin rpy="0 0 -1.57079632679" xyz="0 -0.3 0"/>
+      <inertia ixx="5" ixy="0" ixz="0" iyy="6" iyz="0" izz="7"/>
+    </inertial>
+  </link>
+
+</robot>
