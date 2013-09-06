@@ -296,44 +296,6 @@ std::string Vector32Str(const urdf::Vector3 _vector)
   return ss.str();
 }
 
-/////////////////////////////////////////////////
-/// print mass for link for debugging
-void PrintMass(const std::string &/*_linkName*/, sdf::Inertia /*_inertia*/)
-{
-  // \TODO
-  /*  sdfdbg << "LINK NAME: [" << _linkName << "] from dMass\n";
-      sdfdbg << "     MASS: [" << _mass.mass << "]\n";
-      sdfdbg << "       CG: [" << _mass.c[0] << ", " << _mass.c[1] << ", "
-      << _mass.c[2] << "]\n";
-      sdfdbg << "        I: [" << _mass.I[0] << ", " << _mass.I[1] << ", "
-      << _mass.I[2] << "]\n";
-      sdfdbg << "           [" << _mass.I[4] << ", " << _mass.I[5] << ", "
-      << _mass.I[6] << "]\n";
-      sdfdbg << "           [" << _mass.I[8] << ", " << _mass.I[9] << ", "
-      << _mass.I[10] << "]\n";
-      */
-}
-
-/////////////////////////////////////////////////
-/// print mass for link for debugging
-void PrintMass(UrdfLinkPtr _link)
-{
-  sdfdbg << "LINK NAME: [" << _link->name << "] from dMass\n";
-  sdfdbg << "     MASS: [" << _link->inertial->mass << "]\n";
-  sdfdbg << "       CG: [" << _link->inertial->origin.position.x << ", "
-    << _link->inertial->origin.position.y << ", "
-    << _link->inertial->origin.position.z << "]\n";
-  sdfdbg << "        I: [" << _link->inertial->ixx << ", "
-    << _link->inertial->ixy << ", "
-    << _link->inertial->ixz << "]\n";
-  sdfdbg << "           [" << _link->inertial->ixy << ", "
-    << _link->inertial->iyy << ", "
-    << _link->inertial->iyz << "]\n";
-  sdfdbg << "           [" << _link->inertial->ixz << ", "
-    << _link->inertial->iyz << ", "
-    << _link->inertial->izz << "]\n";
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceCollisionToParent(UrdfLinkPtr _link,
     const std::string &_groupName, UrdfCollisionPtr _collision)
@@ -666,6 +628,41 @@ void dMassAdd (dMass *a, const dMass *b)
   for (i=0; i<12; i++) a->I[i] += b->I[i];
 }
 
+/////////////////////////////////////////////////
+/// print mass for link for debugging
+void PrintMass(const std::string &_linkName, const dMass &_mass)
+{
+  sdfdbg << "LINK NAME: [" << _linkName << "] from dMass\n";
+  sdfdbg << "     MASS: [" << _mass.mass << "]\n";
+  sdfdbg << "       CG: [" << _mass.c[0] << ", " << _mass.c[1] << ", "
+  << _mass.c[2] << "]\n";
+  sdfdbg << "        I: [" << _mass.I[0] << ", " << _mass.I[1] << ", "
+  << _mass.I[2] << "]\n";
+  sdfdbg << "           [" << _mass.I[4] << ", " << _mass.I[5] << ", "
+  << _mass.I[6] << "]\n";
+  sdfdbg << "           [" << _mass.I[8] << ", " << _mass.I[9] << ", "
+  << _mass.I[10] << "]\n";
+}
+
+/////////////////////////////////////////////////
+/// print mass for link for debugging
+void PrintMass(const UrdfLinkPtr _link)
+{
+  sdfdbg << "LINK NAME: [" << _link->name << "] from dMass\n";
+  sdfdbg << "     MASS: [" << _link->inertial->mass << "]\n";
+  sdfdbg << "       CG: [" << _link->inertial->origin.position.x << ", "
+    << _link->inertial->origin.position.y << ", "
+    << _link->inertial->origin.position.z << "]\n";
+  sdfdbg << "        I: [" << _link->inertial->ixx << ", "
+    << _link->inertial->ixy << ", "
+    << _link->inertial->ixz << "]\n";
+  sdfdbg << "           [" << _link->inertial->ixy << ", "
+    << _link->inertial->iyy << ", "
+    << _link->inertial->iyz << "]\n";
+  sdfdbg << "           [" << _link->inertial->ixz << ", "
+    << _link->inertial->iyz << ", "
+    << _link->inertial->izz << "]\n";
+}
 
 /////////////////////////////////////////////////
 /// reduce fixed joints:  lump inertial to parent link
@@ -691,66 +688,123 @@ void ReduceInertialToParent(UrdfLinkPtr _link)
 
     // transform parent inertia to parent link origin
     _link->getParent()->inertial->origin.rotation.getRPY(phi, theta, psi);
-    dRFromEulerAngles(R, phi, theta, psi);
+    dRFromEulerAngles(R, -phi,      0,    0);
     dMassRotate(&parentMass, R);
+    dRFromEulerAngles(R,    0, -theta,    0);
+    dMassRotate(&parentMass, R);
+    dRFromEulerAngles(R,    0,      0, -psi);
+    dMassRotate(&parentMass, R);
+
+    // un-translate link mass from cg(inertial frame) into link frame
     dMassTranslate(&parentMass,
         _link->getParent()->inertial->origin.position.x,
         _link->getParent()->inertial->origin.position.y,
         _link->getParent()->inertial->origin.position.z);
 
-    // PrintMass(_link->getParent()->name, parentMass);
+    PrintMass("parent: " + _link->getParent()->name, parentMass);
     // PrintMass(_link->getParent());
-    // set _link mass (in _link's cg frame)
+
+    //////////////////////////////////////////////
+    //                                          //
+    // create a_link mass (in _link's cg frame) //
+    //                                          //
+    //////////////////////////////////////////////
     dMass linkMass;
     dMassSetParameters(&linkMass, _link->inertial->mass,
         0, 0, 0,
         _link->inertial->ixx, _link->inertial->iyy, _link->inertial->izz,
         _link->inertial->ixy, _link->inertial->ixz, _link->inertial->iyz);
-    // PrintMass(_link->name, linkMass);
-    // PrintMass(_link);
+
+    PrintMass("link : " + _link->name, linkMass);
+
+    ////////////////////////////////////////////
+    //                                        //
+    // from cg (inertial frame) to link frame //
+    //                                        //
+    ////////////////////////////////////////////
+
+    // Un-rotate _link mass from cg(inertial frame) into link frame
+    _link->inertial->origin.rotation.getRPY(phi, theta, psi);
+    dRFromEulerAngles(R, -phi,      0,    0);
+    dMassRotate(&linkMass, R);
+    dRFromEulerAngles(R,    0, -theta,    0);
+    dMassRotate(&linkMass, R);
+    dRFromEulerAngles(R,    0,      0, -psi);
+    dMassRotate(&linkMass, R);
+
+    // un-translate link mass from cg(inertial frame) into link frame
+    dMassTranslate(&linkMass,
+        _link->inertial->origin.position.x,
+        _link->inertial->origin.position.y,
+        _link->inertial->origin.position.z);
+
+    ////////////////////////////////////////////
+    //                                        //
+    // from link frame to parent link frame   //
+    //                                        //
+    ////////////////////////////////////////////
 
     // un-rotate _link mass into parent link frame
     _link->parent_joint->parent_to_joint_origin_transform.rotation.getRPY(
         phi, theta, psi);
-    dRFromEulerAngles(R, phi, theta, psi);
+    dRFromEulerAngles(R, -phi,      0,    0);
     dMassRotate(&linkMass, R);
-    // PrintMass(_link->name, linkMass);
+    dRFromEulerAngles(R,    0, -theta,    0);
+    dMassRotate(&linkMass, R);
+    dRFromEulerAngles(R,    0,      0, -psi);
+    dMassRotate(&linkMass, R);
+
     // un-translate _link mass into parent link frame
     dMassTranslate(&linkMass,
-        _link->inertial->origin.position.x +
         _link->parent_joint->parent_to_joint_origin_transform.position.x,
-        _link->inertial->origin.position.y +
         _link->parent_joint->parent_to_joint_origin_transform.position.y,
-        _link->inertial->origin.position.z +
         _link->parent_joint->parent_to_joint_origin_transform.position.z);
 
-    // PrintMass(_link->name, linkMass);
+    PrintMass("link in parent link: " + _link->name, linkMass);
+
+    //
     // now linkMass is in the parent frame, add linkMass to parentMass
-    // dMassSetZero(&parentMass);
+    // new parentMass should be combined inertia,
+    // centered at parent link inertial frame.
+    //
+
     dMassAdd(&parentMass, &linkMass);
 
-    // save new total mass
+    PrintMass("combined: " + _link->getParent()->name, parentMass);
+
+    //
+    // Set new combined inertia in parent link frame into parent link urdf
+    //
+
+    // save combined mass
     _link->getParent()->inertial->mass = parentMass.mass;
+
     // save CoG location
     _link->getParent()->inertial->origin.position.x  = parentMass.c[0];
     _link->getParent()->inertial->origin.position.y  = parentMass.c[1];
     _link->getParent()->inertial->origin.position.z  = parentMass.c[2];
 
-    // transform MOI to the new CG
+    // get MOI at new CoG location
     dMassTranslate(&parentMass,
-        -parentMass.c[0],
-        -parentMass.c[1],
-        -parentMass.c[2]);
+      -_link->getParent()->inertial->origin.position.x,
+      -_link->getParent()->inertial->origin.position.y,
+      -_link->getParent()->inertial->origin.position.z);
 
-    // PrintMass(_link->getParent()->name, parentMass);
-    // update parent MOI
+    // rotate MOI at new CoG location
+    _link->getParent()->inertial->origin.rotation.getRPY(phi, theta, psi);
+    dRFromEulerAngles(R, phi, theta, psi);
+    dMassRotate(&parentMass, R);
+
+    // save new combined MOI
     _link->getParent()->inertial->ixx  = parentMass.I[0+4*0];
     _link->getParent()->inertial->iyy  = parentMass.I[1+4*1];
     _link->getParent()->inertial->izz  = parentMass.I[2+4*2];
     _link->getParent()->inertial->ixy  = parentMass.I[0+4*1];
     _link->getParent()->inertial->ixz  = parentMass.I[0+4*2];
     _link->getParent()->inertial->iyz  = parentMass.I[1+4*2];
-    // PrintMass(_link->getParent());
+
+    // final urdf inertia check
+    PrintMass(_link->getParent());
   }
 }
 
@@ -2291,10 +2345,6 @@ void CreateInertial(TiXmlElement *_elem,
   // check and print a warning message
   double roll, pitch, yaw;
   _link->inertial->origin.rotation.getRPY(roll, pitch, yaw);
-  if (!sdf::equal(roll, 0.0) ||
-      !sdf::equal(pitch, 0.0) || !sdf::equal(yaw, 0.0))
-    sdferr << "rotation of inertial frame in link ["
-      << _link->name << "] is not supported\n";
 
   /// add pose
   sdf::Pose pose = CopyPose(_link->inertial->origin);
