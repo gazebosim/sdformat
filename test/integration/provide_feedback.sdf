@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<robot name="provide_feedback_test">
+
+  <link name="world"/>
+  <link name="link0"/>
+  <link name="link1"/>
+  <link name="link2"/>
+
+  <joint name="jointw0" type="continuous">
+    <origin rpy="0 0 1.57079632679" xyz="0 0 1.0"/>
+    <axis xyz="1 0 0"/>  <!-- in child (link1) frame -->
+    <parent link="world"/>
+    <child link="link0"/>
+  </joint>
+
+  <joint name="joint01" type="continuous">
+    <origin rpy="0 0 1.57079632679" xyz="0 0 -1"/>
+    <axis xyz="1 0 0"/>  <!-- in child (link1) frame -->
+    <parent link="link0"/>
+    <child link="link1"/>
+  </joint>
+  <gazebo reference="joint01">
+    <provideFeedback>0</provideFeedback>
+  </gazebo>
+
+  <joint name="joint12" type="revolute">
+    <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 -3.0 0.0"/>
+    <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
+    <limit lower="0" upper="0" velocity="1000" effort="10000"/>
+    <parent link="link1"/>
+    <child link="link2"/>
+  </joint>
+  <gazebo reference="joint12">
+    <provideFeedback>1</provideFeedback>
+  </gazebo>
+
+</robot>
