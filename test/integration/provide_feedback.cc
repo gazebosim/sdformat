@@ -22,7 +22,7 @@
 #include "test_config.h"
 
 const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/provide_feedback.sdf";
+  + "/test/integration/provide_feedback.urdf";
 
 TEST(SDFParser, ProvideFeedbackTest)
 {
