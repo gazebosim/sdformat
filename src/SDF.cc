@@ -1141,6 +1141,7 @@ std::string SDF::ToString() const
 {
   std::ostringstream stream;
 
+  stream << "<?xml version='1.0'?>\n";
   if (this->root->GetName() != "sdf")
     stream << "<sdf version='" << SDF::version << "'>\n";
 
@@ -1161,5 +1162,3 @@ void SDF::SetFromString(const std::string &_sdfData)
     sdferr << "Unable to parse sdf string[" << _sdfData << "]\n";
   }
 }
-
-
