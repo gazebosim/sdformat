@@ -1297,21 +1297,21 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         sdfdbg << "do nothing with canonicalBody\n";
       }
       else if (childElem->ValueStr() == "cfmDamping" ||
-               childElem->ValueStr() == "implicitDamping")
+               childElem->ValueStr() == "implicitSpringDamper")
       {
         if (childElem->ValueStr() == "cfmDamping")
           sdfwarn << "Note that cfmDamping is being deprecated by "
-                  << "implicitDamping, please replace instances "
-                  << "of cfmDamping with implicitDamping in your model.\n";
+                  << "implicitSpringDamper, please replace instances "
+                  << "of cfmDamping with implicitSpringDamper in your model.\n";
 
-        sdf->isImplicitDamping = true;
+        sdf->isImplicitSpringDamper = true;
         std::string valueStr = GetKeyValueAsString(childElem);
 
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
             valueStr == "1")
-          sdf->implicitDamping = true;
+          sdf->implicitSpringDamper = true;
         else
-          sdf->implicitDamping = false;
+          sdf->implicitSpringDamper = false;
       }
       else
       {
@@ -1562,18 +1562,18 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
           }
         }
 
-        // insert implicitDamping
-        if ((*ge)->isImplicitDamping)
+        // insert implicitSpringDamper
+        if ((*ge)->isImplicitSpringDamper)
         {
-          if ((*ge)->implicitDamping)
+          if ((*ge)->implicitSpringDamper)
           {
-            AddKeyValue(physicsOde, "implicit_damping", "true");
+            AddKeyValue(physicsOde, "implicit_spring_damper", "true");
             /// \TODO: deprecating cfm_damping, transitional tag below
             AddKeyValue(physicsOde, "cfm_damping", "true");
           }
           else
           {
-            AddKeyValue(physicsOde, "implicit_damping", "false");
+            AddKeyValue(physicsOde, "implicit_spring_damper", "false");
             /// \TODO: deprecating cfm_damping, transitional tag below
             AddKeyValue(physicsOde, "cfm_damping", "false");
           }

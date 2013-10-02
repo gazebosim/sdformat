@@ -57,7 +57,7 @@ namespace sdf
       isInitialJointPosition = false;
       isFudgeFactor = false;
       isProvideFeedback = false;
-      isImplicitDamping = false;
+      isImplicitSpringDamper = false;
       blobs.clear();
 
       dampingFactor = 0;
@@ -77,7 +77,7 @@ namespace sdf
       fudgeFactor = 1;
 
       provideFeedback = false;
-      implicitDamping = false;
+      implicitSpringDamper = false;
     };
 
     private: SDFExtension(const SDFExtension &ge)
@@ -104,9 +104,9 @@ namespace sdf
       isInitialJointPosition = ge.isInitialJointPosition;
       isFudgeFactor = ge.isFudgeFactor;
       isProvideFeedback = ge.isProvideFeedback;
-      isImplicitDamping = ge.isImplicitDamping;
+      isImplicitSpringDamper = ge.isImplicitSpringDamper;
       provideFeedback = ge.provideFeedback;
-      implicitDamping = ge.implicitDamping;
+      implicitSpringDamper = ge.implicitSpringDamper;
       oldLinkName = ge.oldLinkName;
       reductionTransform = ge.reductionTransform;
       blobs = ge.blobs;
@@ -161,8 +161,8 @@ namespace sdf
     public: double stopCfm, stopErp, initialJointPosition, fudgeFactor;
     public: bool isProvideFeedback;
     public: bool provideFeedback;
-    public: bool isImplicitDamping;
-    public: bool implicitDamping;
+    public: bool isImplicitSpringDamper;
+    public: bool implicitSpringDamper;
     private: bool isStopKp, isStopKd;
     private: double stopKp, stopKd;
 

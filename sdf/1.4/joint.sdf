@@ -136,11 +136,11 @@
         <description>(DEPRECATION WARNING:  In SDF 1.5 this tag will be replaced by the same tag directly under the physics-block.  For now, this tag overrides the one outside of ode-block, but in SDF 1.5 this tag will be removed completely.)  If provide feedback is set to true, ODE will compute the constraint forces at this joint.</description>
       </element>
 
-      <element name="implicit_damping" type="bool" default="false" required="0">
-        <description>If implicit damping is set to true, ODE will use CFM to simulate damping, allows for infinite damping, and one additional constraint row (previously used for joint limit) is always active.</description>
+      <element name="implicit_spring_damper" type="bool" default="false" required="0">
+        <description>If implicit_spring_damper is set to true, ODE will use CFM, ERP to simulate stiffness and damping, allows for infinite damping, and one additional constraint row (previously used for joint limit) is always active.</description>
       </element>
       <element name="cfm_damping" type="bool" default="false" required="0">
-        <description>TO BE DEPRECATED BY implicit_damping.  If cfm damping is set to true, ODE will use CFM to simulate damping, allows for infinite damping, and one additional constraint row (previously used for joint limit) is always active.</description>
+        <description>TO BE DEPRECATED BY implicit_spring_damper.  If cfm damping is set to true, ODE will use CFM, ERP to simulate damping, allows for infinite damping, and one additional constraint row (previously used for joint limit) is always active.</description>
       </element>
 
       <element name="fudge_factor" type="double" default="0" required="0">
