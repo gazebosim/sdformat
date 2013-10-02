@@ -1566,9 +1566,17 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
         if ((*ge)->isImplicitDamping)
         {
           if ((*ge)->implicitDamping)
+          {
             AddKeyValue(physicsOde, "implicit_damping", "true");
+            /// \TODO: deprecating cfm_damping, transitional tag below
+            AddKeyValue(physicsOde, "cfm_damping", "true");
+          }
           else
+          {
             AddKeyValue(physicsOde, "implicit_damping", "false");
+            /// \TODO: deprecating cfm_damping, transitional tag below
+            AddKeyValue(physicsOde, "cfm_damping", "false");
+          }
         }
 
         // insert fudgeFactor
