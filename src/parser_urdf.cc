@@ -1296,16 +1296,22 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       {
         sdfdbg << "do nothing with canonicalBody\n";
       }
-      else if (childElem->ValueStr() == "cfmDamping")
+      else if (childElem->ValueStr() == "cfmDamping" ||
+               childElem->ValueStr() == "implicitDamping")
       {
-        sdf->isCFMDamping = true;
+        if (childElem->ValueStr() == "cfmDamping")
+          sdfwarn << "Note that cfmDamping is being deprecated by "
+                  << "implicitDamping, please replace instances "
+                  << "of cfmDamping with implicitDamping in your model.\n";
+
+        sdf->isImplicitDamping = true;
         std::string valueStr = GetKeyValueAsString(childElem);
 
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
             valueStr == "1")
-          sdf->cfmDamping = true;
+          sdf->implicitDamping = true;
         else
-          sdf->cfmDamping = false;
+          sdf->implicitDamping = false;
       }
       else
       {
@@ -1556,13 +1562,13 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
           }
         }
 
-        // insert cfmDamping
-        if ((*ge)->isCFMDamping)
+        // insert implicitDamping
+        if ((*ge)->isImplicitDamping)
         {
-          if ((*ge)->cfmDamping)
-            AddKeyValue(physicsOde, "cfm_damping", "true");
+          if ((*ge)->implicitDamping)
+            AddKeyValue(physicsOde, "implicit_damping", "true");
           else
-            AddKeyValue(physicsOde, "cfm_damping", "false");
+            AddKeyValue(physicsOde, "implicit_damping", "false");
         }
 
         // insert fudgeFactor
