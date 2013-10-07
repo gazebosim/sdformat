@@ -76,6 +76,15 @@
       <element name="velocity" type="double" default="-1" required="0">
         <description>(not implemented) An attribute for enforcing the maximum joint velocity.</description>
       </element>
+
+      <element name="stiffness" type="double" default="1e8" required="0">
+        <description>Joint stop stiffness.</description>
+      </element>
+
+      <element name="dissipation" type="double" default="1.0" required="0">
+        <description>Joint stop dissipation.</description>
+      </element>
+
     </element> <!-- End Limit -->
   </element> <!-- End Axis -->
 
@@ -108,6 +117,15 @@
       <element name="velocity" type="double" default="-1" required="0">
         <description>(not implemented) An attribute for enforcing the maximum joint velocity.</description>
       </element>
+
+      <element name="stiffness" type="double" default="1e8" required="0">
+        <description>Joint stop stiffness.</description>
+      </element>
+
+      <element name="dissipation" type="double" default="1.0" required="0">
+        <description>Joint stop dissipation.</description>
+      </element>
+
     </element> <!-- End Limit -->
   </element> <!-- End Axis2 -->
 
@@ -117,17 +135,6 @@
       <description>Simbody specific parameters</description>
       <element name="must_be_loop_joint" type="bool" default="0" required="0">
         <description>Force cut in the multibody graph at this joint.</description>
-      </element>
-    </element>
-    <element name="simbody" required="0">
-      <element name="limit" required="0">
-        <description>Simbody parameters for joint limits</description>
-        <element name="stiffness" type="double" default="1e6" required="1">
-          <description>Joint stop stiffness.</description>
-        </element>
-        <element name="dissipation" type="double" default="0.1" required="1">
-          <description>Joint stop dissipation.</description>
-        </element>
       </element>
     </element>
     <element name="ode" required="0">
