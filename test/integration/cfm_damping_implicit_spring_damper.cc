@@ -46,7 +46,7 @@ TEST(SDFParser, CFMDampingSDFTest)
     }
     else if (jointName == "joint12a")
     {
-      // cfm_damping = 1
+      // cfm_damping = 0
       ASSERT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
       ASSERT_TRUE(physics->HasElement("implicit_spring_damper"));
@@ -54,7 +54,7 @@ TEST(SDFParser, CFMDampingSDFTest)
     }
     else if (jointName == "joint12b")
     {
-      // cfm_damping = 0
+      // cfm_damping = true
       ASSERT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
       ASSERT_TRUE(physics->HasElement("implicit_spring_damper"));
@@ -62,7 +62,7 @@ TEST(SDFParser, CFMDampingSDFTest)
     }
     else if (jointName == "joint12c")
     {
-      // cfm_damping = 1
+      // implicit_spring_damper = 0
       ASSERT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
       ASSERT_TRUE(physics->HasElement("implicit_spring_damper"));
@@ -70,7 +70,7 @@ TEST(SDFParser, CFMDampingSDFTest)
     }
     else if (jointName == "joint12d")
     {
-      // cfm_damping = 0
+      // implicit_spring_damper = true
       ASSERT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
       ASSERT_TRUE(physics->HasElement("implicit_spring_damper"));
