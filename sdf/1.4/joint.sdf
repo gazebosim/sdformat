@@ -18,28 +18,6 @@
     <description>Name of the child link</description>
   </element> <!-- End Child -->
 
-  <!-- This is new stuff for SimBody support. We need to refactor SDF a bit more to remove link poses when this change is made-->
-  <!--<element name="parent" required="1">
-    <description>Parent link of the joint</description>
-    <element name="link_name" type="string" default="__default__" required="1">
-      <description>Name of the parent link</description>
-    </element>
-    <element name="pose" type="Pose" default="0 0 0 0 0 0" required="0">
-      <description>Experimental:  alternative joint pose specification.</description>
-    </element>
-  </element>
-
-  <element name="child" required="1">
-    <description>Child link of the joint</description>
-    <element name="link_name" type="string" default="__default__" required="1">
-      <description>Name of the child link</description>
-    </element>
-    <element name="pose" type="Pose" default="0 0 0 0 0 0" required="0">
-      <description>Experimental:  alternative joint pose specification.</description>
-    </element>
-  </element>
-  -->
-
   <element name="pose"  type="pose" default="0 0 0 0 0 0" required="0">
     <description>offset from child link origin in child link frame.</description>
   </element>

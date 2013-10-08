@@ -50,5 +50,45 @@
         </ode>
       </physics>
     </joint>
+
+    <joint name="joint12c" type="revolute">
+      <parent>link1</parent>
+      <chile>link2</chile>
+      <axis>
+        <xyz>1.0 0 0</xyz>
+      </axis>
+      <physics>
+        <limit>
+          <lower>0.000000</lower>
+          <upper>1.000000</upper>
+        </limit>
+        <dynamics>
+          <damping>1.000000</damping>
+        </dynamics>
+        <ode>
+          <implicit_spring_damper>0</implicit_spring_damper>
+        </ode>
+      </physics>
+    </joint>
+
+    <joint name="joint12d" type="revolute">
+      <parent>link1</parent>
+      <chile>link2</chile>
+      <axis>
+        <xyz>1.0 0 0</xyz>
+      </axis>
+      <physics>
+        <limit>
+          <lower>0.000000</lower>
+          <upper>1.000000</upper>
+        </limit>
+        <dynamics>
+          <damping>1.000000</damping>
+        </dynamics>
+        <ode>
+          <implicit_spring_damper>true</implicit_spring_damper>
+        </ode>
+      </physics>
+    </joint>
  </model>
 </sdf>
