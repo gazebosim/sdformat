@@ -7,7 +7,7 @@
   </attribute>
 
   <attribute name="type" type="string" default="__default__" required="1">
-    <description>The type of joint, which must be one of the following: (revolute) a hinge joint that rotates on a single axis with either a fixed or continuous range of motion, (revolute2) same as two revolute joints connected in series, (prismatic) a sliding joint that slides along an axis with a limited range specified by upper and lower limits, (ball) a ball and socket joint, (universal), like a ball joint, but constrains one degree of freedom, (piston) similar to a Slider joint except that rotation around the translation axis is possible.</description>
+    <description>The type of joint, which must be one of the following: (revolute) a hinge joint that rotates on a single axis with either a fixed or continuous range of motion, (gearbox) geared revolute joints, (revolute2) same as two revolute joints connected in series, (prismatic) a sliding joint that slides along an axis with a limited range specified by upper and lower limits, (ball) a ball and socket joint, (universal), like a ball joint, but constrains one degree of freedom, (piston) similar to a Slider joint except that rotation around the translation axis is possible.</description>
   </attribute>
 
   <element name="parent" type="string" default="__default__" required="1">
@@ -22,15 +22,13 @@
     <description>offset from child link origin in child link frame.</description>
   </element>
 
-  <!-- to be added
-  <element name="gear_ratio" type="double" default="1.0" required="0">
-    <description>Parameter for gearbox joints.</description>
+  <element name="gearbox_ratio" type="double" default="1.0" required="0">
+    <description>Parameter for gearbox joints.  Given theta_1 and theta_2 defined in description for gearbox_reference_body, theta_2 = -gearbox_ratio * theta_1.</description>
   </element>
 
-  <element name="reference_body" type="string" default="__default__" required="0">
-    <description>Parameter for gearbox joints.</description>
+  <element name="gearbox_reference_body" type="string" default="__default__" required="0">
+    <description>Parameter for gearbox joints.  Gearbox ratio is enforced over two joint angles.  First joint angle (theta_1) is the angle from the gearbox_reference_body to the parent link in the direction of the axis element and the second joint angle (theta_2) is the angle from the gearbox_reference_body to the child link in the direction of the axis2 element.</description>
   </element>
-  -->
 
   <element name="thread_pitch" type="double" default="1.0" required="0">
     <description>Parameter for screw joints.</description>
