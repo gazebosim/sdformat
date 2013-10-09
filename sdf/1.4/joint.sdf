@@ -86,7 +86,7 @@
       </element>
 
       <element name="stiffness" type="double" default="1e8" required="0">
-        <description>Joint stop stiffness.</description>
+        <description>Joint stop stiffness. Support physics engines: SimBody.</description>
       </element>
 
       <element name="dissipation" type="double" default="1.0" required="0">
@@ -127,11 +127,11 @@
       </element>
 
       <element name="stiffness" type="double" default="1e8" required="0">
-        <description>Joint stop stiffness.</description>
+        <description>Joint stop stiffness. Supported physics engines: SimBody.</description>
       </element>
 
       <element name="dissipation" type="double" default="1.0" required="0">
-        <description>Joint stop dissipation.</description>
+        <description>Joint stop dissipation. Supported physics engines: SimBody.</description>
       </element>
 
     </element> <!-- End Limit -->
