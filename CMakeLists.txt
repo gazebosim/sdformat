@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-include(GNUInstallDirs)
-
 if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0003 NEW)
   CMAKE_POLICY(SET CMP0004 NEW)
@@ -34,6 +32,9 @@ set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERS
 
 message (STATUS "${PROJECT_NAME} version ${SDF_VERSION_FULL}")
 set (CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
+
+# Include GNUInstallDirs to get canonical paths
+include(GNUInstallDirs)
 
 # Default test type for test all over source
 set(TEST_TYPE "UNIT")
