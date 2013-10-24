@@ -214,7 +214,7 @@ else (buid_errors)
   set(PKG_DEPENDS Boost)
   set(cmake_conf_file "cmake/sdf_config.cmake")
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${cmake_conf_file}.in" "${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake" @ONLY)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME_LOWER}/cmake/ COMPONENT cmake)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake DESTINATION ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/ COMPONENT cmake)
 
   ########################################
   # Package Creation: 
