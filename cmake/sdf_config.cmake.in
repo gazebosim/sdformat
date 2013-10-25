@@ -10,7 +10,7 @@ list(APPEND @PKG_NAME@_CFLAGS -I@CMAKE_INSTALL_PREFIX@/include/sdformat-@SDF_VER
 foreach(lib @PKG_LIBRARIES@)
   set(onelib "${lib}-NOTFOUND")
   find_library(onelib ${lib}
-    PATHS @CMAKE_INSTALL_PREFIX@/lib
+    PATHS @CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@
     NO_DEFAULT_PATH
     )
   if(NOT onelib)
@@ -27,4 +27,4 @@ foreach(dep @PKG_DEPENDS@)
   list(APPEND @PKG_NAME@_LIBRARIES ${${dep}_LIBRARIES})
 endforeach()
 
-list(APPEND @PKG_NAME@_LDFLAGS -L@CMAKE_INSTALL_PREFIX@/lib)
+list(APPEND @PKG_NAME@_LDFLAGS -L@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@)
