@@ -34,4 +34,7 @@
   <element name="use_terrain_paging" type="bool" default="false" required="0">
     <description>Set if the rendering engine will use terrain paging</description>
   </element>
+  <element name="use_true_size" type="bool" default="false" required="0">
+    <description>Set if a DEM file will use its original dimensions</description>
+  </element>
 </element>
