@@ -1,6 +1,6 @@
 <element name="heightmap" required="0">
   <description>A heightmap based on a 2d grayscale image.</description>
-  <element name="uri" type="string" default="__default__" required="*">
+  <element name="uri" type="string" default="__default__" required="1">
     <description>URI to a grayscale image file</description>
   </element>
   <element name="size" type="vector3" default="1 1 1" required="1">
