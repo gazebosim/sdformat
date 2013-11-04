@@ -1,0 +1,22 @@
+diff -r a5e72dd0ecf3 test/gtest/include/gtest/gtest-typed-test.h
+--- a/test/gtest/include/gtest/gtest-typed-test.h	Mon Nov 04 11:47:43 2013 -0800
++++ b/test/gtest/include/gtest/gtest-typed-test.h	Mon Nov 04 11:49:12 2013 -0800
+@@ -31,6 +31,7 @@
+ 
+ #ifndef GTEST_INCLUDE_GTEST_GTEST_TYPED_TEST_H_
+ #define GTEST_INCLUDE_GTEST_GTEST_TYPED_TEST_H_
++#pragma GCC system_header
+ 
+ // This header implements typed tests and type-parameterized tests.
+ 
+diff -r a5e72dd0ecf3 test/gtest/src/gtest.cc
+--- a/test/gtest/src/gtest.cc	Mon Nov 04 11:47:43 2013 -0800
++++ b/test/gtest/src/gtest.cc	Mon Nov 04 11:49:12 2013 -0800
+@@ -33,6 +33,7 @@
+ 
+ #include "gtest/gtest.h"
+ #include "gtest/gtest-spi.h"
++#pragma GCC system_header
+ 
+ #include <ctype.h>
+ #include <math.h>

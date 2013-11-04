@@ -33,6 +33,7 @@
 
 #include "gtest/gtest.h"
 #include "gtest/gtest-spi.h"
+#pragma GCC system_header
 
 #include <ctype.h>
 #include <math.h>
