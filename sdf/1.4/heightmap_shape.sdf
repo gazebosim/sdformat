@@ -3,7 +3,7 @@
   <element name="uri" type="string" default="__default__" required="1">
     <description>URI to a grayscale image file</description>
   </element>
-  <element name="size" type="vector3" default="1 1 1" required="1">
+  <element name="size" type="vector3" default="1 1 1" required="0">
     <description>The size of the heightmap in world units</description>
   </element>
   <element name="pos" type="vector3" default="0 0 0" required="0">
@@ -33,8 +33,5 @@
   </element>
   <element name="use_terrain_paging" type="bool" default="false" required="0">
     <description>Set if the rendering engine will use terrain paging</description>
-  </element>
-  <element name="use_true_size" type="bool" default="false" required="0">
-    <description>Set if a DEM file will use its original dimensions</description>
   </element>
 </element>
