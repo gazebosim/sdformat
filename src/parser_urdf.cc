@@ -1632,9 +1632,6 @@ void InsertSDFExtensionRobot(TiXmlElement *_elem)
 void CreateGeometry(TiXmlElement* _elem,
     boost::shared_ptr<urdf::Geometry> _geom)
 {
-  int sizeCount;
-  double sizeVals[3];
-
   TiXmlElement *sdfGeometry = new TiXmlElement("geometry");
 
   std::string type;
@@ -1644,10 +1641,11 @@ void CreateGeometry(TiXmlElement* _elem,
   {
     case urdf::Geometry::BOX:
       type = "box";
-      sizeCount = 3;
       {
         boost::shared_ptr<const urdf::Box> box;
         box = boost::dynamic_pointer_cast< const urdf::Box >(_geom);
+        int sizeCount = 3;
+        double sizeVals[3];
         sizeVals[0] = box->dim.x;
         sizeVals[1] = box->dim.y;
         sizeVals[2] = box->dim.z;
@@ -1658,7 +1656,6 @@ void CreateGeometry(TiXmlElement* _elem,
       break;
     case urdf::Geometry::CYLINDER:
       type = "cylinder";
-      sizeCount = 2;
       {
         boost::shared_ptr<const urdf::Cylinder> cylinder;
         cylinder = boost::dynamic_pointer_cast<const urdf::Cylinder >(_geom);
@@ -1671,7 +1668,6 @@ void CreateGeometry(TiXmlElement* _elem,
       break;
     case urdf::Geometry::SPHERE:
       type = "sphere";
-      sizeCount = 1;
       {
         boost::shared_ptr<const urdf::Sphere> sphere;
         sphere = boost::dynamic_pointer_cast<const urdf::Sphere >(_geom);
@@ -1682,13 +1678,9 @@ void CreateGeometry(TiXmlElement* _elem,
       break;
     case urdf::Geometry::MESH:
       type = "mesh";
-      sizeCount = 3;
       {
         boost::shared_ptr<const urdf::Mesh> mesh;
         mesh = boost::dynamic_pointer_cast<const urdf::Mesh >(_geom);
-        sizeVals[0] = mesh->scale.x;
-        sizeVals[1] = mesh->scale.y;
-        sizeVals[2] = mesh->scale.z;
         geometryType = new TiXmlElement(type);
         AddKeyValue(geometryType, "scale", Vector32Str(mesh->scale));
         // do something more to meshes
@@ -1736,7 +1728,6 @@ void CreateGeometry(TiXmlElement* _elem,
       }
       break;
     default:
-      sizeCount = 0;
       sdfwarn << "Unknown body type: [" << _geom->type
         << "] skipped in geometry\n";
       break;
