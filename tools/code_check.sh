@@ -24,13 +24,10 @@ CPPCHECK_INCLUDES="-I include -I . -I src/urdf -I $builddir -I $builddir/include
 CPPCHECK_COMMAND1="-j 4 --enable=style,performance,portability,information $CPPCHECK_FILES"
 # Unused function checking must happen in one job
 CPPCHECK_COMMAND2="--enable=unusedFunction $CPPCHECK_FILES"
-CPPCHECK_COMMAND3="-j 4 --enable=missingInclude $CPPCHECK_FILES $CPPCHECK_INCLUDES --check-config"
+CPPCHECK_COMMAND3="-j 4 --enable=missingInclude --suppress=missingIncludeSystem $CPPCHECK_FILES $CPPCHECK_INCLUDES --check-config"
 if [ $xmlout -eq 1 ]; then
   # Performance, style, portability, and information
   ($CPPCHECK_BASE --xml $CPPCHECK_COMMAND1) 2> $xmldir/cppcheck.xml
-
-  # Unused function checking
-  ($CPPCHECK_BASE --xml $CPPCHECK_COMMAND2) 2> $xmldir/cppcheck-unused-functions.xml
 
   # Check the configuration
   ($CPPCHECK_BASE --xml $CPPCHECK_COMMAND3) 2> $xmldir/cppcheck-configuration.xml
