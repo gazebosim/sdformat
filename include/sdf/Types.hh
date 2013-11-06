@@ -547,13 +547,13 @@ namespace sdf
 
     public: inline void Correct()
             {
-              if (!finite(this->x))
+              if (!isfinite(this->x))
                 this->x = 0;
-              if (!finite(this->y))
+              if (!isfinite(this->y))
                 this->y = 0;
-              if (!finite(this->z))
+              if (!isfinite(this->z))
                 this->z = 0;
-              if (!finite(this->w))
+              if (!isfinite(this->w))
                 this->w = 1;
 
               if (equal(this->w, 0.0) && equal(this->x, 0.0) &&
