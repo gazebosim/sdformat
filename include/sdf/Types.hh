@@ -547,13 +547,13 @@ namespace sdf
 
     public: inline void Correct()
             {
-              if (!isfinite(this->x))
+              if (!std::isfinite(this->x))
                 this->x = 0;
-              if (!isfinite(this->y))
+              if (!std::isfinite(this->y))
                 this->y = 0;
-              if (!isfinite(this->z))
+              if (!std::isfinite(this->z))
                 this->z = 0;
-              if (!isfinite(this->w))
+              if (!std::isfinite(this->w))
                 this->w = 1;
 
               if (equal(this->w, 0.0) && equal(this->x, 0.0) &&
