@@ -31,3 +31,14 @@ diff -r c33b44f8a9a1 test/gtest/include/gtest/internal/gtest-port.h
  
  // The user can define the following macros in the build script to
  // control Google Test's behavior.  If the user doesn't define a macro
+diff -r e980730656c1 test/gtest/include/gtest/gtest-printers.h
+--- a/test/gtest/include/gtest/gtest-printers.h	Wed Nov 06 17:13:57 2013 -0800
++++ b/test/gtest/include/gtest/gtest-printers.h	Thu Nov 07 09:29:28 2013 -0800
+@@ -94,6 +94,7 @@
+ 
+ #ifndef GTEST_INCLUDE_GTEST_GTEST_PRINTERS_H_
+ #define GTEST_INCLUDE_GTEST_GTEST_PRINTERS_H_
++#pragma GCC system_header
+ 
+ #include <ostream>  // NOLINT
+ #include <sstream>
