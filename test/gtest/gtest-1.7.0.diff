@@ -20,3 +20,14 @@ diff -r a5e72dd0ecf3 test/gtest/src/gtest.cc
  
  #include <ctype.h>
  #include <math.h>
+diff -r c33b44f8a9a1 test/gtest/include/gtest/internal/gtest-port.h
+--- a/test/gtest/include/gtest/internal/gtest-port.h	Wed Nov 06 11:23:38 2013 -0800
++++ b/test/gtest/include/gtest/internal/gtest-port.h	Wed Nov 06 17:12:57 2013 -0800
+@@ -39,6 +39,7 @@
+ 
+ #ifndef GTEST_INCLUDE_GTEST_INTERNAL_GTEST_PORT_H_
+ #define GTEST_INCLUDE_GTEST_INTERNAL_GTEST_PORT_H_
++#pragma GCC system_header
+ 
+ // The user can define the following macros in the build script to
+ // control Google Test's behavior.  If the user doesn't define a macro
