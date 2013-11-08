@@ -22,6 +22,8 @@ SUPPRESS2=/tmp/sdf_cpp_check2.suppress
 cp $SUPPRESS $SUPPRESS2
 echo "*:src/SDF.cc" >> $SUPPRESS2
 echo "*:src/Assert.cc" >> $SUPPRESS2
+echo "*:src/Console.cc" >> $SUPPRESS2
+echo "*:src/parser.cc" >> $SUPPRESS2
 echo "*:src/parser_urdf.cc" >> $SUPPRESS2
 
 CHECK_FILE_DIRS="./src ./include ./test/performance ./test/integration"
