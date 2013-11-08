@@ -1,6 +1,4 @@
 #!/bin/sh
-set -e
-set +x
 
 # Jenkins will pass -xml, in which case we want to generate XML output
 xmlout=0
