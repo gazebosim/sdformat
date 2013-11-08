@@ -25,7 +25,7 @@ echo "*:src/parser_urdf.cc" >> $SUPPRESS
 CHECK_FILE_DIRS="./src ./include ./test/performance ./test/integration"
 
 #cppcheck
-CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS"
+CPPCHECK_BASE="cppcheck -q"
 CPPCHECK_BASE2="cppcheck -q --suppressions-list=$SUPPRESS"
 CPPCHECK_FILES=`find $CHECK_FILE_DIRS -name "*.cc"`
 CPPCHECK_INCLUDES="-I include -I . -I src/urdf -I $builddir -I $builddir/include"
