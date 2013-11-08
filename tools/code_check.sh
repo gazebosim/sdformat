@@ -35,7 +35,7 @@ CPPCHECK_COMMAND2="--enable=unusedFunction $CPPCHECK_FILES"
 # -j 4 was used previously in CPPCHECK_COMMAND3 but it will generate a false
 # warning as described in bug: 
 # http://sourceforge.net/apps/trac/cppcheck/ticket/4946
-CPPCHECK_COMMAND3="-j 1 --enable=missingInclude $CPPCHECK_FILES $CPPCHECK_INCLUDES --check-config --suppress=missingIncludeSystem"
+CPPCHECK_COMMAND3="-j 1 --enable=missingInclude --suppress=missingIncludeSystem $CPPCHECK_FILES $CPPCHECK_INCLUDES --check-config"
 if [ $xmlout -eq 1 ]; then
   # Performance, style, portability, and information
   ($CPPCHECK_BASE --xml $CPPCHECK_COMMAND1) 2> $xmldir/cppcheck.xml
