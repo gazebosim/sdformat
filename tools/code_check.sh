@@ -16,14 +16,21 @@ fi
 
 SUPPRESS=/tmp/sdf_cpp_check.suppress
 echo "*:src/urdf*" > $SUPPRESS
-echo "*:src/SDF.cc" >> $SUPPRESS
-echo "*:src/Assert.cc" >> $SUPPRESS
-echo "*:src/parser_urdf.cc" >> $SUPPRESS
+
+# Use a separate suppression file for unused function checking
+SUPPRESS2=/tmp/sdf_cpp_check2.suppress
+cp $SUPPRESS $SUPPRESS2
+echo "*:src/SDF.cc" >> $SUPPRESS2
+echo "*:src/Assert.cc" >> $SUPPRESS2
+echo "*:src/Console.cc" >> $SUPPRESS2
+echo "*:src/parser.cc" >> $SUPPRESS2
+echo "*:src/parser_urdf.cc" >> $SUPPRESS2
 
 CHECK_FILE_DIRS="./src ./include ./test/performance ./test/integration"
 
 #cppcheck
 CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS"
+CPPCHECK_BASE2="cppcheck -q --suppressions-list=$SUPPRESS2"
 CPPCHECK_FILES=`find $CHECK_FILE_DIRS -name "*.cc"`
 CPPCHECK_INCLUDES="-I include -I . -I src/urdf -I $builddir -I $builddir/include"
 CPPCHECK_COMMAND1="-j 4 --enable=style,performance,portability,information $CPPCHECK_FILES"
@@ -35,19 +42,19 @@ if [ $xmlout -eq 1 ]; then
   ($CPPCHECK_BASE --xml $CPPCHECK_COMMAND1) 2> $xmldir/cppcheck.xml
 
   # Unused function checking
-  ($CPPCHECK_BASE --xml $CPPCHECK_COMMAND2) 2> $xmldir/cppcheck-unused-functions.xml
+  ($CPPCHECK_BASE2 --xml $CPPCHECK_COMMAND2) 2> $xmldir/cppcheck-unused-functions.xml
 
   # Check the configuration
   ($CPPCHECK_BASE --xml $CPPCHECK_COMMAND3) 2> $xmldir/cppcheck-configuration.xml
 else
   # Performance, style, portability, and information
-  #$CPPCHECK_BASE $CPPCHECK_COMMAND1 2>&1
+  $CPPCHECK_BASE $CPPCHECK_COMMAND1 2>&1
 
   # Unused function checking
-  $CPPCHECK_BASE $CPPCHECK_COMMAND2 2>&1
+  $CPPCHECK_BASE2 $CPPCHECK_COMMAND2 2>&1
 
   # Check the configuration
-  #$CPPCHECK_BASE $CPPCHECK_COMMAND3 2>&1
+  $CPPCHECK_BASE $CPPCHECK_COMMAND3 2>&1
 fi
 
 # cpplint
