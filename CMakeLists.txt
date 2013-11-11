@@ -93,18 +93,24 @@ set (CMAKE_LINK_FLAGS_RELEASE " " CACHE INTERNAL "Link flags fro release" FORCE)
 set (CMAKE_LINK_FLAGS_DEBUG " " CACHE INTERNAL "Link flags for debug" FORCE)
 
 set (CMAKE_C_FLAGS_RELEASE "")
-if (NOT APPLE)
-  # -s doesn't work with default osx compiler clang, alternative:
-  # http://stackoverflow.com/questions/6085491/gcc-vs-clang-symbol-strippingu
-  set (CMAKE_C_FLAGS_RELEASE " -s ")
-endif()
-set (CMAKE_C_FLAGS_RELEASE " ${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG ${CMAKE_C_FLAGS_ALL}"
-  CACHE INTERNAL "C Flags for release" FORCE)
-set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
 
-set (CMAKE_C_FLAGS_DEBUG " -ggdb3 ${CMAKE_C_FLAGS_ALL}"
-  CACHE INTERNAL "C Flags for debug" FORCE)
-set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+# USE_UPSTREAM_CFLAGS (default TRUE)
+# Use our own defined flags for building types
+if(NOT DEFINED USE_UPSTREAM_CFLAGS OR USE_UPSTREAM_CFLAGS)
+  message(STATUS "Enable host CFlags")
+  if (NOT APPLE)
+    # -s doesn't work with default osx compiler clang, alternative:
+    # http://stackoverflow.com/questions/6085491/gcc-vs-clang-symbol-strippingu
+    set (CMAKE_C_FLAGS_RELEASE " -s ")
+  endif()
+  set (CMAKE_C_FLAGS_RELEASE " ${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG"
+    CACHE INTERNAL "C Flags for release" FORCE)
+  set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
+  
+  set (CMAKE_C_FLAGS_DEBUG " -ggdb3"
+    CACHE INTERNAL "C Flags for debug" FORCE)
+  set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+endif()
 
 #####################################
 # Set the default build type
@@ -118,6 +124,7 @@ string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)
 # Set all the global build flags
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS_ALL}")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
 set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
 set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
