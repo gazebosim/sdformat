@@ -3,8 +3,11 @@
   <element name="uri" type="string" default="__default__" required="1">
     <description>URI to a grayscale image file</description>
   </element>
-  <element name="size" type="vector3" default="1 1 1" required="1">
-    <description>The size of the heightmap in world units</description>
+  <element name="size" type="vector3" default="1 1 1" required="0">
+    <description>The size of the heightmap in world units.
+      When loading an image: "size" is used if present, otherwise defaults to 1x1x1.
+      When loading a DEM: "size" is used if present, otherwise defaults to true size of DEM.
+  </description>
   </element>
   <element name="pos" type="vector3" default="0 0 0" required="0">
     <description>A position offset.</description>
