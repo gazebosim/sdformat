@@ -38,6 +38,7 @@
 #ifndef URDF_PARSER_URDF_PARSER_H
 #define URDF_PARSER_URDF_PARSER_H
 
+#include "visible.h"
 #include <string>
 #include <map>
 #include <tinyxml.h>
