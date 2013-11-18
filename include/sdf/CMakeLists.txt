@@ -9,6 +9,7 @@ set (headers
   parser.hh
   SDFImpl.hh
   Types.hh
+  system_util.hh
 )
 
 set (sdf_headers "" CACHE INTERNAL "SDF headers" FORCE)

@@ -24,6 +24,7 @@
 
 #include "sdf/Types.hh"
 #include "sdf/Console.hh"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
@@ -31,7 +32,7 @@ namespace sdf
   /// \{
 
   /// \brief A class for holding sdf extension elements in urdf
-  class SDFExtension
+  class SDFORMAT_VISIBLE SDFExtension
   {
     private: SDFExtension()
     {
@@ -169,11 +170,11 @@ namespace sdf
     // blobs into body or robot
     public: std::vector<boost::shared_ptr<TiXmlElement> > blobs;
 
-    friend class URDF2SDF;
+    friend class SDFORMAT_VISIBLE URDF2SDF;
   };
 
   /// \brief URDF to SDF converter
-  class URDF2SDF
+  class SDFORMAT_VISIBLE URDF2SDF
   {
     /// \brief constructor
     public: URDF2SDF();

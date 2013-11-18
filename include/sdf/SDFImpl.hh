@@ -24,13 +24,14 @@
 
 #include "sdf/Types.hh"
 #include "sdf/Param.hh"
+#include "sdf/system_util.hh"
 
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser
 namespace sdf
 {
-  class SDF;
-  class Element;
+  class SDFORMAT_VISIBLE SDF;
+  class SDFORMAT_VISIBLE Element;
 
   /// \def SDFPtr
   /// \bried boost shared pointer to SDF
@@ -53,6 +54,7 @@ namespace sdf
   /// working directory.
   /// \param[in] _useCallback True to find a file based on a registered
   /// callback if the file is not found via the normal mechanism.
+  SDFORMAT_VISIBLE
   std::string findFile(const std::string &_filename,
                        bool _searchLocalPath = true,
                        bool _useCallback = false);
@@ -61,17 +63,19 @@ namespace sdf
   /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
   /// \param[in] _uri URI that will be mapped to _path
   /// \param[in] _path Colon separated set of paths.
+  SDFORMAT_VISIBLE
   void addURIPath(const std::string &_uri, const std::string &_path);
 
   /// \brief Set the callback to use when SDF can't find a file.
   /// The callback should return a complete path to the requested file, or
   /// and empty string if the file was not found in the callback.
   /// \param[in] _cb The callback function.
+  SDFORMAT_VISIBLE
   void setFindCallback(boost::function<std::string (const std::string &)> _cb);
 
-  /// \class Element Element.hh sdf/sdf.hh
-  /// \brief SDF Element class
-  class Element : public boost::enable_shared_from_this<Element>
+  /// \class SDFORMAT_VISIBLE Element Element.hh sdf/sdf.hh
+  /// \brief SDF Element class SDFORMAT_VISIBLE
+  class SDFORMAT_VISIBLE Element : public boost::enable_shared_from_this<Element>
   {
     /// \brief Constructor.
     public: Element();
@@ -341,8 +345,8 @@ namespace sdf
   };
 
 
-  /// \brief Base SDF class
-  class SDF
+  /// \brief Base SDF class SDFORMAT_VISIBLE
+  class SDFORMAT_VISIBLE SDF
   {
     public: SDF();
     public: void PrintDescription();

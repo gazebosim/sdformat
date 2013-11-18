@@ -21,6 +21,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include "sdf/system_util.hh"
+
 #if defined(__GNUC__)
 #define SDF_DEPRECATED(version) __attribute__((deprecated))
 #define SDF_FORCEINLINE __attribute__((always_inline))
@@ -46,7 +48,7 @@ namespace sdf
   }
 
   /// \brief Defines a color
-  class Color
+  class SDFORMAT_VISIBLE Color
   {
     /// \brief Constructor
     /// \param[in] _r Red value (range 0 to 1)
@@ -104,7 +106,7 @@ namespace sdf
   };
 
   /// \brief Generic integer x, y vector
-  class Vector2i
+  class SDFORMAT_VISIBLE Vector2i
   {
     /// \brief Constructor
     /// \param[in] _x value along x
@@ -152,7 +154,7 @@ namespace sdf
   };
 
   /// \brief Generic double x, y vector
-  class Vector2d
+  class SDFORMAT_VISIBLE Vector2d
   {
     /// \brief Constructor
     /// \param[in] _x value along x
@@ -201,10 +203,10 @@ namespace sdf
     public: double y;
   };
 
-  /// \brief The Vector3 class represents the generic vector containing 3
+  /// \brief The Vector3 class SDFORMAT_VISIBLE represents the generic vector containing 3
   ///        elements.  Since it's commonly used to keep coordinate system
   ///        related information, its elements are labeled by x, y, z.
-  class Vector3
+  class SDFORMAT_VISIBLE Vector3
   {
     /// \brief Copy constructor
     /// \param[in] _v a vector
@@ -304,8 +306,8 @@ namespace sdf
     public: double z;
   };
 
-  /// \brief A quaternion class
-  class Quaternion
+  /// \brief A quaternion class SDFORMAT_VISIBLE
+  class SDFORMAT_VISIBLE Quaternion
   {
     /// \brief Default Constructor
     public: Quaternion() : x(0), y(0), z(0), w(1)
@@ -577,7 +579,7 @@ namespace sdf
   };
 
   /// \brief Encapsulates a position and rotation in three space
-  class Pose
+  class SDFORMAT_VISIBLE Pose
   {
     /// \brief Constructor
     public: Pose()
@@ -674,9 +676,9 @@ namespace sdf
     public: Quaternion rot;
   };
 
-  /// \brief A Time class, can be used to hold wall- or sim-time.
+  /// \brief A Time class SDFORMAT_VISIBLE, can be used to hold wall- or sim-time.
   /// stored as sec and nano-sec.
-  class Time
+  class SDFORMAT_VISIBLE Time
   {
     /// \brief Constructor
     public: Time()
@@ -731,8 +733,8 @@ namespace sdf
     public: int32_t nsec;
   };
 
-  /// \brief A class for inertial information about a link.
-  class Inertia
+  /// \brief A class SDFORMAT_VISIBLE for inertial information about a link.
+  class SDFORMAT_VISIBLE Inertia
   {
     public: double mass;
   };

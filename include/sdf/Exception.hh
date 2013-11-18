@@ -22,6 +22,8 @@
 #include <sstream>
 #include <string>
 
+#include "sdf/system_util.hh"
+
 namespace sdf
 {
   /// \addtogroup sdf
@@ -33,9 +35,9 @@ namespace sdf
     throwStream << msg << std::endl << std::flush;\
     throw sdf::Exception(__FILE__, __LINE__, throwStream.str()); }
 
-  /// \class Exception Exception.hh common/common.hh
+  /// \class SDFORMAT_VISIBLE Exception Exception.hh common/common.hh
   /// \brief Class for generating exceptions
-  class Exception
+  class SDFORMAT_VISIBLE Exception
   {
     /// \brief Constructor
     public: Exception();
@@ -81,11 +83,11 @@ namespace sdf
             }
   };
 
-  /// \class InternalError Exception.hh common/common.hh
+  /// \class SDFORMAT_VISIBLE InternalError Exception.hh common/common.hh
   /// \brief Class for generating Internal Gazebo Errors:
   ///        those errors which should never happend and
   ///        represent programming bugs.
-  class InternalError : public Exception
+  class SDFORMAT_VISIBLE InternalError : public Exception
   {
     /// \brief Constructor
     public: InternalError();
@@ -101,12 +103,12 @@ namespace sdf
     public: virtual ~InternalError();
   };
 
-  /// \class AssertionInternalError Exception.hh common/common.hh
+  /// \class SDFORMAT_VISIBLE AssertionInternalError Exception.hh common/common.hh
   /// \brief Class for generating Exceptions which come from
   ///        sdf assertions. They include information about the
   ///        assertion expression violated, function where problem
   ///        appeared and assertion debug message.
-  class AssertionInternalError : public InternalError
+  class SDFORMAT_VISIBLE AssertionInternalError : public InternalError
   {
     /// \brief Constructor for assertions
     /// \param[in] _file File name
