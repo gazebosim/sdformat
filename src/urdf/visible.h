@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef SDF_VISIBLE_HH_
-#define SDF_VISIBLE_HH_
+#ifndef _SDF_VISIBLE_HH_
+#define _SDF_VISIBLE_HH_
 
 /** \def SDFORMAT_VISIBLE
  * Use to represent "symbol visible" if supported
