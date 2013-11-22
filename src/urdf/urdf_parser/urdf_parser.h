@@ -58,6 +58,7 @@ SDFORMAT_HIDDEN
 std::string values2str(urdf::Color c);
 SDFORMAT_HIDDEN
 std::string values2str(double d);
+
 }
 
 namespace urdf{
