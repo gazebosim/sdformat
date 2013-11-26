@@ -36,6 +36,7 @@
 /* Author: Wim Meeussen */
 
 #ifndef URDF_INTERFACE_POSE_H
+#include "visible.h"
 #define URDF_INTERFACE_POSE_H
 
 #include <string>
@@ -48,7 +49,7 @@
 
 namespace urdf{
 
-class Vector3
+class SDFORMAT_HIDDEN Vector3
 {
 public:
   Vector3(double _x,double _y, double _z) {this->x=_x;this->y=_y;this->z=_z;};
@@ -89,7 +90,7 @@ public:
   };
 };
 
-class Rotation
+class SDFORMAT_HIDDEN Rotation
 {
 public:
   Rotation(double _x,double _y, double _z, double _w) {this->x=_x;this->y=_y;this->z=_z;this->w=_w;};
@@ -229,7 +230,7 @@ public:
 
 };
 
-class Pose
+class SDFORMAT_HIDDEN Pose
 {
 public:
   Pose() { this->clear(); };

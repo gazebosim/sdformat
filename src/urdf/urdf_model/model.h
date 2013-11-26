@@ -36,6 +36,7 @@
 
 #ifndef URDF_INTERFACE_MODEL_H
 #define URDF_INTERFACE_MODEL_H
+#include "visible.h"
 
 #include <string>
 #include <map>
@@ -45,7 +46,7 @@
 
 namespace urdf {
 
-class ModelInterface
+class SDFORMAT_HIDDEN ModelInterface
 {
 public:
   boost::shared_ptr<const Link> getRoot(void) const{return this->root_link_;};
