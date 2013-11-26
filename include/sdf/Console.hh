@@ -24,6 +24,8 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include "sdf/system_util.hh"
+
 namespace sdf
 {
   /// \addtogroup sdf SDF
@@ -46,10 +48,10 @@ namespace sdf
         __FILE__, __LINE__, 31))
 
   /// \brief Message, error, warning, and logging functionality
-  class Console
+  class SDFORMAT_VISIBLE Console
   {
     /// \brief An ostream-like class that we'll use for logging.
-    public: class ConsoleStream
+    public: class SDFORMAT_VISIBLE ConsoleStream
     {
       /// \brief Constructor.
       /// \param[in] _stream Pointer to an output stream operator. Can bee
@@ -108,7 +110,7 @@ namespace sdf
     /// \brief Destructor
     public: virtual ~Console();
 
-    /// \brief Return an instance to this class
+    /// \brief Return an instance to this class.
     public: static boost::shared_ptr<Console> Instance();
 
     /// \brief Set quiet output
