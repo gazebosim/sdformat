@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef SDF_VISIBLE_HH_
-#define SDF_VISIBLE_HH_
+#ifndef _SDF_VISIBLE_HH_
+#define _SDF_VISIBLE_HH_
 
 /** \def SDFORMAT_VISIBLE
  * Use to represent "symbol visible" if supported
@@ -30,13 +30,13 @@
     #ifdef __GNUC__
       #define SDFORMAT_VISIBLE __attribute__ ((dllexport))
     #else
-      #define SDFORMAT_VISIBLE __declspec(dllexport) 
+      #define SDFORMAT_VISIBLE __declspec(dllexport)
     #endif
   #else
     #ifdef __GNUC__
       #define SDFORMAT_VISIBLE __attribute__ ((dllimport))
     #else
-      #define SDFORMAT_VISIBLE __declspec(dllimport) 
+      #define SDFORMAT_VISIBLE __declspec(dllimport)
     #endif
   #endif
   #define SDFORMAT_HIDDEN

@@ -50,7 +50,7 @@ namespace sdf
   /// \brief Message, error, warning, and logging functionality
   class SDFORMAT_VISIBLE Console
   {
-    /// \brief An ostream-like class SDFORMAT_VISIBLE that we'll use for logging.
+    /// \brief An ostream-like class that we'll use for logging.
     public: class SDFORMAT_VISIBLE ConsoleStream
     {
       /// \brief Constructor.
@@ -110,7 +110,7 @@ namespace sdf
     /// \brief Destructor
     public: virtual ~Console();
 
-    /// \brief Return an instance to this class SDFORMAT_VISIBLE
+    /// \brief Return an instance to this class.
     public: static boost::shared_ptr<Console> Instance();
 
     /// \brief Set quiet output

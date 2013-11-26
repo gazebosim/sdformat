@@ -35,7 +35,7 @@ namespace sdf
     throwStream << msg << std::endl << std::flush;\
     throw sdf::Exception(__FILE__, __LINE__, throwStream.str()); }
 
-  /// \class SDFORMAT_VISIBLE Exception Exception.hh common/common.hh
+  /// \class Exception Exception.hh common/common.hh
   /// \brief Class for generating exceptions
   class SDFORMAT_VISIBLE Exception
   {
@@ -83,7 +83,7 @@ namespace sdf
             }
   };
 
-  /// \class SDFORMAT_VISIBLE InternalError Exception.hh common/common.hh
+  /// \class InternalError Exception.hh common/common.hh
   /// \brief Class for generating Internal Gazebo Errors:
   ///        those errors which should never happend and
   ///        represent programming bugs.
@@ -103,7 +103,7 @@ namespace sdf
     public: virtual ~InternalError();
   };
 
-  /// \class SDFORMAT_VISIBLE AssertionInternalError Exception.hh common/common.hh
+  /// \class AssertionInternalError Exception.hh common/common.hh
   /// \brief Class for generating Exceptions which come from
   ///        sdf assertions. They include information about the
   ///        assertion expression violated, function where problem

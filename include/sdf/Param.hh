@@ -48,8 +48,8 @@ namespace sdf
   /// \brief vector or boost shared_ptrs to a Param
   typedef std::vector<ParamPtr> Param_V;
 
-  /// \class SDFORMAT_VISIBLE Param Param.hh sdf/sdf.hh
-  /// \brief A parameter class SDFORMAT_VISIBLE
+  /// \class Param Param.hh sdf/sdf.hh
+  /// \brief A parameter class
   class SDFORMAT_VISIBLE Param
   {
     /// \brief Constructor.

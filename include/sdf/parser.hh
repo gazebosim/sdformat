@@ -84,6 +84,4 @@ namespace sdf
   SDFORMAT_VISIBLE
   void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF);
 }
-
 #endif
-

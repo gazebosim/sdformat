@@ -203,7 +203,7 @@ namespace sdf
     public: double y;
   };
 
-  /// \brief The Vector3 class SDFORMAT_VISIBLE represents the generic vector containing 3
+  /// \brief The Vector3 class represents the generic vector containing 3
   ///        elements.  Since it's commonly used to keep coordinate system
   ///        related information, its elements are labeled by x, y, z.
   class SDFORMAT_VISIBLE Vector3
@@ -306,7 +306,7 @@ namespace sdf
     public: double z;
   };
 
-  /// \brief A quaternion class SDFORMAT_VISIBLE
+  /// \brief A quaternion class
   class SDFORMAT_VISIBLE Quaternion
   {
     /// \brief Default Constructor
@@ -676,7 +676,7 @@ namespace sdf
     public: Quaternion rot;
   };
 
-  /// \brief A Time class SDFORMAT_VISIBLE, can be used to hold wall- or sim-time.
+  /// \brief A Time class, can be used to hold wall- or sim-time.
   /// stored as sec and nano-sec.
   class SDFORMAT_VISIBLE Time
   {
@@ -733,7 +733,7 @@ namespace sdf
     public: int32_t nsec;
   };
 
-  /// \brief A class SDFORMAT_VISIBLE for inertial information about a link.
+  /// \brief A class for inertial information about a link.
   class SDFORMAT_VISIBLE Inertia
   {
     public: double mass;

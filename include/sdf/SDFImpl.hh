@@ -73,9 +73,10 @@ namespace sdf
   SDFORMAT_VISIBLE
   void setFindCallback(boost::function<std::string (const std::string &)> _cb);
 
-  /// \class SDFORMAT_VISIBLE Element Element.hh sdf/sdf.hh
-  /// \brief SDF Element class SDFORMAT_VISIBLE
-  class SDFORMAT_VISIBLE Element : public boost::enable_shared_from_this<Element>
+  /// \class Element Element.hh sdf/sdf.hh
+  /// \brief SDF Element class
+  class SDFORMAT_VISIBLE Element :
+    public boost::enable_shared_from_this<Element>
   {
     /// \brief Constructor.
     public: Element();
@@ -345,7 +346,7 @@ namespace sdf
   };
 
 
-  /// \brief Base SDF class SDFORMAT_VISIBLE
+  /// \brief Base SDF class
   class SDFORMAT_VISIBLE SDF
   {
     public: SDF();
