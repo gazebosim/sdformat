@@ -300,8 +300,14 @@ std::string Vector32Str(const urdf::Vector3 _vector)
 void ReduceCollisionToParent(UrdfLinkPtr _link,
     const std::string &_groupName, UrdfCollisionPtr _collision)
 {
+#if USE_EXTERNAL_URDF
+  boost::shared_ptr<std::vector<UrdfCollisionPtr> > cols(
+      &_link->collision_array);
+#else
   boost::shared_ptr<std::vector<UrdfCollisionPtr> >
     cols = _link->getCollisions(_groupName);
+#endif
+
   if (!cols)
   {
     // group does not exist, create one and add to map
@@ -326,8 +332,13 @@ void ReduceCollisionToParent(UrdfLinkPtr _link,
 void ReduceVisualToParent(UrdfLinkPtr _link,
     const std::string &_groupName, UrdfVisualPtr _visual)
 {
+#if USE_EXTERNAL_URDF
+  boost::shared_ptr<std::vector<UrdfVisualPtr> > viss(&_link->visual_array);
+#else
   boost::shared_ptr<std::vector<UrdfVisualPtr> > viss
     = _link->getVisuals(_groupName);
+#endif
+
   if (!viss)
   {
     // group does not exist, create one and add to map
