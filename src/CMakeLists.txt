@@ -4,6 +4,10 @@ link_directories(
   ${PROJECT_BINARY_DIR}/test
 )
 
+if (USE_EXTERNAL_URDF)
+  link_directories(${URDF_LIBRARY_DIRS})
+endif()
+
 set (sources
   Assert.cc
   Console.cc
@@ -44,6 +48,9 @@ target_link_libraries(sdformat
   ${tinyxml_libraries}
   ${Boost_LIBRARIES}
 )
+
+message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
+message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
 
 if (USE_EXTERNAL_URDF)
   target_link_libraries(sdformat ${URDF_LIBRARIES})
