@@ -101,6 +101,9 @@ endif()
 
 #####################################
 # Build type link flags
+set (CMAKE_LINK_FLAGS_RELEASE " " CACHE INTERNAL "Link flags fro release" FORCE)
+set (CMAKE_LINK_FLAGS_DEBUG " " CACHE INTERNAL "Link flags for debug" FORCE)
+
 set (CMAKE_C_FLAGS_RELEASE "")
 if (NOT APPLE)
   # -s doesn't work with default osx compiler clang, alternative:
@@ -127,6 +130,9 @@ string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)
 # Set all the global build flags
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
+set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
+set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
+set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "RELEASE")
   set (BUILD_TYPE_RELEASE TRUE)
