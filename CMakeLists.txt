@@ -93,7 +93,7 @@ set (CMAKE_C_FLAGS_ALL " -Wall -Wextra -Wno-long-long -Wno-unused-value -Wno-unu
 # USE_UPSTREAM_CFLAGS (default TRUE)
 # Use our own defined flags for building types
 if(NOT DEFINED USE_UPSTREAM_CFLAGS OR USE_UPSTREAM_CFLAGS)
-  message(STATUS "Enable host CFlags")
+  message(STATUS "Using upstream CFlags")
   if (NOT APPLE)
     # -s doesn't work with default osx compiler clang, alternative:
     # http://stackoverflow.com/questions/6085491/gcc-vs-clang-symbol-strippingu
