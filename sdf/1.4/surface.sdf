@@ -98,8 +98,7 @@
     </element> <!-- End Bullet -->
   </element> <!-- End Contact -->
 
-
-  <!-- for simbody deformable body -->
+  <!-- for deformable bodies -->
   <element name="soft_contact" required="0">
     <element name="dart" required="0">
       <description>soft contact pamameters based on paper:
@@ -119,6 +118,5 @@
       </element>
     </element> <!-- dart -->
   </element> <!-- soft_contact -->
-
 
 </element> <!-- End Surface -->
