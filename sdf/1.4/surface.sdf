@@ -97,4 +97,28 @@
       </element>
     </element> <!-- End Bullet -->
   </element> <!-- End Contact -->
+
+
+  <!-- for simbody deformable body -->
+  <element name="soft_contact" required="0">
+    <element name="dart" required="0">
+      <description>soft contact pamameters based on paper:
+             http://www.cc.gatech.edu/graphics/projects/Sumit/homepage/papers/sigasia11/jain_softcontacts_siga11.pdf
+      </description>
+      <element name="bone_attachment" type="double" default="100.0" required="1">
+        <description>This is variable k_v in the soft contacts paper.  Its unit is N/m.</description>
+      </element>
+      <element name="stiffness" type="double" default="100.0" required="1">
+        <description>This is variable k_e in the soft contacts paper.  Its unit is N/m.</description>
+      </element>
+      <element name="damping" type="double" default="10.0" required="1">
+        <description>Viscous damping of point velocity in body frame.  Its unit is N/m/s.</description>
+      </element>
+      <element name="flesh_mass_fraction" type="double" default="0.05" required="1">
+        <description>Fraction of mass to be distributed among deformable nodes.</description>
+      </element>
+    </element> <!-- dart -->
+  </element> <!-- soft_contact -->
+
+
 </element> <!-- End Surface -->
