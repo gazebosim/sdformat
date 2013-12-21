@@ -49,7 +49,7 @@
       </element>
     </element>
 
-    <element name="lighting" type="bool" default="false" required="0">
+    <element name="lighting" type="bool" default="true" required="0">
       <description>If false lighting will be disabled</description>
     </element>
 
