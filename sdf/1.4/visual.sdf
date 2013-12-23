@@ -50,7 +50,7 @@
     </element>
 
     <element name="lighting" type="bool" default="true" required="0">
-      <description>If false lighting will be disabled</description>
+      <description>If false, dynamic lighting will be disabled</description>
     </element>
 
     <element name="ambient" type="color" default="0 0 0 1" required="0">
