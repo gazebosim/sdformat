@@ -20,7 +20,7 @@
     </element>
     <element name="ode" required="0">
       <description>ODE friction parameters</description>
-      <element name="mu_ratio" type="double" default="1.0" min="0.0" required="0">
+      <element name="mu1_ratio" type="double" default="1.0" min="0.0" required="0">
         <description>ODE friction multiplier in direction 1.</description>
       </element>
       <element name="mu2_ratio" type="double" default="1.0" min="0.0" required="0">
