@@ -67,22 +67,25 @@
       <description>For type "gaussian," the standard deviation of the Gaussian distribution from which noise values are drawn.</description>
     </element>
   </element> <!-- End Noise -->
-  
+
   <element name="distortion" required="0">
     <description>Lens distortion that should be applied to generated images.</description>
-    <element name="type" type="string" default="brown" required="0">
-      <description>The type of distortion model. Currently defaults to Brown's model.</description>
+    <element name="type" type="string" default="barrel" required="0">
+      <description>The type of distortion model. Currently defaults to barrel distortion.</description>
     </element>
     <element name="radial" type="vector3" default="0.0 0.0 0.0" required="0">
-      <description>For type "brown", the radial distortion coefficients k1, k2, k3.</description>
+      <description>For type "barrel", the radial distortion coefficients k1, k2, k3.</description>
     </element>
     <element name="tangential" type="vector2d" default="0.0 0.0" required="0">
-      <description>For type "brown", the tangential distortion coefficient p1, p2.</description>
-    </element>      
+      <description>For type "barrel", the tangential distortion coefficient p1, p2.</description>
+    </element>
     <element name="center" type="vector2d" default="0.0 0.0" required="0">
       <description>The distortion center or principal point</description>
-    </element>    
+    </element>
+    <element name="crop" type="bool" default="true" required="0">
+      <description>True to remove the black pixels outside the distorted image</description>
+    </element>
 
-  </element> <!-- End Distortion -->  
+  </element> <!-- End Distortion -->
 
 </element> <!-- End Camera -->
