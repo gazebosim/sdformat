@@ -353,6 +353,64 @@ TEST(Converter, MoveAttrElemMultipleLevels)
   EXPECT_EQ(convertedElem->ValueStr(), "elemD");
 }
 
+////////////////////////////////////////////////////
+/// Ensure that Converter::Add function is working
+/// Test adding element and attribute
+TEST(Converter, Add)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Test adding element
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <add element='elemBB' value='BB'/>"
+                << "    <convert name='elemC'>"
+                << "      <convert name='elemD'>"
+                << "        <add attribute='attrDD' value='DD'/>"
+                << "      </convert>"
+                << "    </convert>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_TRUE(convertedElem != NULL);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemC"));
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemBB"));
+  std::string elemValue = convertedElem->FirstChildElement("elemBB")->GetText();
+  EXPECT_EQ(elemValue, "BB");
+  convertedElem = convertedElem->FirstChildElement("elemC");
+  ASSERT_TRUE(convertedElem != NULL);
+  convertedElem = convertedElem->FirstChildElement("elemD");
+  ASSERT_TRUE(convertedElem != NULL);
+  std::string attrValue = convertedElem->Attribute("attrDD");
+  EXPECT_EQ(attrValue, "DD");
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
