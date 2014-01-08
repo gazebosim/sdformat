@@ -1,54 +1,29 @@
 <convert name="sdf">
-  <convert name="world">
-    <!--
-    <convert name="physics">
-      <move>
-        <from element="update_rate"/>
-        <to element="real_time_update_rate"/>
-      </move>
-      <move>
-        <from element="ode::solver::dt"/>
-        <to element="max_step_size"/>
-      </move>
-      <move>
-        <from element="bullet::dt"/>
-        <to element="max_step_size"/>
-      </move>
-    </convert>
-    -->
 
-    <!-- See comments joint.sdf about poses in joints -->
-    <!--
+  <convert name="world">
+    <!-- Add use_parent_model_frame=true for 1.4 joints -->
     <convert name="model">
       <convert name="joint">
-        <move>
-          <from element="parent"/>
-          <to element="parent::link_name"/>
-        </move>
-        <move>
-          <from element="child"/>
-          <to element="child::link_name"/>
-        </move>
+        <convert name="axis">
+          <add element="use_parent_model_frame" value="true"/>
+        </convert>
+        <convert name="axis2">
+          <add element="use_parent_model_frame" value="true"/>
+        </convert>
       </convert>
     </convert>
-    -->
   </convert>
 
   <!-- for model sdfs -->
-  <!-- See comments joint.sdf about poses in joints -->
-  <!--
   <convert name="model">
     <convert name="joint">
-      <move>
-        <from element="parent"/>
-        <to element="parent::link_name"/>
-      </move>
-      <move>
-        <from element="child"/>
-        <to element="child::link_name"/>
-      </move>
+      <convert name="axis">
+        <add element="use_parent_model_frame" value="true"/>
+      </convert>
+      <convert name="axis2">
+        <add element="use_parent_model_frame" value="true"/>
+      </convert>
     </convert>
   </convert>
-  -->
 
 </convert> <!-- End SDF -->

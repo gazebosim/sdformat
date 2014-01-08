@@ -52,7 +52,7 @@ namespace sdf
     /// \param[in] _renameElem A 'convert' element that describes the rename
     /// operation.
     private: static void Rename(TiXmlElement *_elem,
-                                     TiXmlElement *_renameElem);
+                                TiXmlElement *_renameElem);
 
     /// \brief Move an element or attribute within a common ancestor element.
     /// \param[in] _elem Ancestor element of the element or attribute to
@@ -60,7 +60,14 @@ namespace sdf
     /// \param[in] _moveElem A 'convert' element that describes the move
     /// operation.
     private: static void Move(TiXmlElement *_elem,
-                                     TiXmlElement *_moveElem);
+                              TiXmlElement *_moveElem);
+
+    /// \brief Add an element or attribute to an element.
+    /// \param[in] _elem The element to receive the value.
+    /// \param[in] _addElem A 'convert' element that describes the add
+    /// operation.
+    private: static void Add(TiXmlElement *_elem,
+                             TiXmlElement *_addElem);
 
     private: static const char *GetValue(const char *_valueElem,
                                          const char *_valueAttr,

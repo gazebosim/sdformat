@@ -35,9 +35,23 @@
   </element>
 
   <element name="axis" required="1">
-    <description>The joint axis specified in the parent model frame. This is the axis of rotation for revolute joints, the axis of translation for prismatic joints. The axis is currently specified in the parent model frame of reference, but this will be changed to the joint frame in future version of sdf (see gazebo issue #494).</description>
+    <description>
+      Parameters related to the axis of rotation for revolute joints,
+      the axis of translation for prismatic joints.
+    </description>
     <element name="xyz" type="vector3" default="0 0 1" required="1">
-      <description>Represents the x,y,z components of a vector. The vector should be normalized.</description>
+      <description>
+        Represents the x,y,z components of the axis unit vector. The axis is
+        expressed in the child link frame unless the use_parent_model_frame
+        flag is set to true. The vector should be normalized.
+      </description>
+    </element>
+    <element name="use_parent_model_frame" type="bool" default="false" required="0">
+      <description>
+        Flag to interpret the axis xyz element in the parent model frame instead
+        of child link frame. Provided for Gazebo compatibility
+        (see https://bitbucket.org/osrf/gazebo/issue/494 ).
+      </description>
     </element>
     <element name="dynamics" required="0">
       <description>An element specifying physical properties of the joint. These values are used to specify modeling properties of the joint, particularly useful for simulation.</description>
@@ -75,9 +89,22 @@
   </element> <!-- End Axis -->
 
   <element name="axis2" required="0">
-    <description>The second joint axis specified in the parent model frame. This is the second axis of rotation for revolute2 joints and universal joints. The axis is currently specified in the parent model frame of reference, but this will be changed to the joint frame in future version of sdf (see gazebo issue #494).</description>
+    <description>
+      Parameters related to the second axis of rotation for revolute2 joints and universal joints.
+    </description>
     <element name="xyz" type="vector3" default="0 0 1" required="1">
-      <description>Represents the x,y,z components of a vector. The vector should be normalized.</description>
+      <description>
+        Represents the x,y,z components of the axis unit vector. The axis is
+        expressed in the child link frame unless the use_parent_model_frame
+        flag is set to true. The vector should be normalized.
+      </description>
+    </element>
+    <element name="use_parent_model_frame" type="bool" default="false" required="0">
+      <description>
+        Flag to interpret the axis xyz element in the parent model frame instead
+        of child link frame. Provided for Gazebo compatibility
+        (see https://bitbucket.org/osrf/gazebo/issue/494 ).
+      </description>
     </element>
     <element name="dynamics" required="0">
       <description>An element specifying physical properties of the joint. These values are used to specify modeling properties of the joint, particularly useful for simulation.</description>
