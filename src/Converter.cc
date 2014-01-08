@@ -243,7 +243,7 @@ void Converter::Add(TiXmlElement *_elem, TiXmlElement *_addElem)
     sdferr << "No 'value' specified in <add>\n";
     return;
   }
-  if (!(attributeName == NULL ^ elementName == NULL))
+  if (!((attributeName == NULL) ^ (elementName == NULL)))
   {
     sdferr << "Exactly one 'element' or 'attribute'"
            << " must be specified in <add>\n";
