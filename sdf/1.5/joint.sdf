@@ -46,7 +46,7 @@
         flag is set to true. The vector should be normalized.
       </description>
     </element>
-    <element name="use_parent_model_frame" type="bool" default="false" required="0">
+    <element name="use_parent_model_frame" type="bool" default="false" required="1">
       <description>
         Flag to interpret the axis xyz element in the parent model frame instead
         of child link frame. Provided for Gazebo compatibility
@@ -99,7 +99,7 @@
         flag is set to true. The vector should be normalized.
       </description>
     </element>
-    <element name="use_parent_model_frame" type="bool" default="false" required="0">
+    <element name="use_parent_model_frame" type="bool" default="false" required="1">
       <description>
         Flag to interpret the axis xyz element in the parent model frame instead
         of child link frame. Provided for Gazebo compatibility
