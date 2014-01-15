@@ -19,7 +19,7 @@
   </element> <!-- End Child -->
 
   <element name="pose"  type="pose" default="0 0 0 0 0 0" required="0">
-    <description>offset from child link origin in child link frame.</description>
+    <description>Pose offset from child link frame to joint frame (expressed in child link frame).</description>
   </element>
 
   <element name="gearbox_ratio" type="double" default="1.0" required="0">
@@ -42,14 +42,14 @@
     <element name="xyz" type="vector3" default="0 0 1" required="1">
       <description>
         Represents the x,y,z components of the axis unit vector. The axis is
-        expressed in the child link frame unless the use_parent_model_frame
+        expressed in the joint frame unless the use_parent_model_frame
         flag is set to true. The vector should be normalized.
       </description>
     </element>
     <element name="use_parent_model_frame" type="bool" default="false" required="1">
       <description>
         Flag to interpret the axis xyz element in the parent model frame instead
-        of child link frame. Provided for Gazebo compatibility
+        of joint frame. Provided for Gazebo compatibility
         (see https://bitbucket.org/osrf/gazebo/issue/494 ).
       </description>
     </element>
@@ -95,14 +95,14 @@
     <element name="xyz" type="vector3" default="0 0 1" required="1">
       <description>
         Represents the x,y,z components of the axis unit vector. The axis is
-        expressed in the child link frame unless the use_parent_model_frame
+        expressed in the joint frame unless the use_parent_model_frame
         flag is set to true. The vector should be normalized.
       </description>
     </element>
     <element name="use_parent_model_frame" type="bool" default="false" required="1">
       <description>
         Flag to interpret the axis xyz element in the parent model frame instead
-        of child link frame. Provided for Gazebo compatibility
+        of joint frame. Provided for Gazebo compatibility
         (see https://bitbucket.org/osrf/gazebo/issue/494 ).
       </description>
     </element>
