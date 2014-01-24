@@ -6,7 +6,6 @@
       The type of noise. Currently supported types are:
       "none" (no noise).
       "gaussian" (draw noise values independently for each measurement from a Gaussian distribution).
-      "gaussian_quantized" ("gaussian" plus quantization of outputs (ie. rounding))
     </description>
   </attribute>
   <element name="mean" type="double" default="0.0" required="0">
