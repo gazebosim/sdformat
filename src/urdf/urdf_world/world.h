@@ -70,6 +70,7 @@
 #ifndef USDF_STATE_H
 #define USDF_STATE_H
 
+#include "visible.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -83,7 +84,7 @@
 
 namespace urdf{
 
-class Entity
+class SDFORMAT_HIDDEN Entity
 {
 public:
   boost::shared_ptr<ModelInterface> model;
@@ -91,7 +92,7 @@ public:
   Twist twist;
 };
 
-class World
+class SDFORMAT_HIDDEN World
 {
 public:
   World() { this->clear(); };

@@ -15,6 +15,7 @@
 #cmakedefine BUILD_TYPE_DEBUG 1
 #cmakedefine BUILD_TYPE_RELEASE 1
 #cmakedefine HAVE_URDFDOM 1
+#cmakedefine USE_EXTERNAL_URDF 1
 
 #define SDF_SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/"
 #define SDF_VERSION_PATH "${CMAKE_INSTALL_PREFIX}/share/sdformat/${SDF_VERSION}"

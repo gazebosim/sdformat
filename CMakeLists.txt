@@ -83,28 +83,42 @@ set (build_warnings "" CACHE INTERNAL "build warnings" FORCE)
 set (sdf_cmake_dir ${PROJECT_SOURCE_DIR}/cmake CACHE PATH
      "Location of CMake scripts")
 
+ message (STATUS "\n\n====== Finding 3rd Party Packages ======")
+include (${sdf_cmake_dir}/SearchForStuff.cmake)
+message (STATUS "----------------------------------------\n")
+
 #####################################
 # Build type cflags
 set (CMAKE_C_FLAGS_ALL " -Wall -Wextra -Wno-long-long -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wfloat-equal -Wshadow -Winit-self -Wswitch-default -Wmissing-include-dirs -pedantic" CACHE INTERNAL "General C Flags")
 
+# Check and add visibility hidden by default
+if (UNIX)
+  check_gcc_visibility()
+  if (GCC_SUPPORTS_VISIBILITY)
+         SET(CMAKE_C_FLAGS_ALL "${CMAKE_C_FLAGS_ALL} -fvisibility=hidden")
+  endif()
+endif()
+
 #####################################
 # Build type link flags
-set (CMAKE_LINK_FLAGS_RELEASE " " CACHE INTERNAL "Link flags fro release" FORCE)
-set (CMAKE_LINK_FLAGS_DEBUG " " CACHE INTERNAL "Link flags for debug" FORCE)
 
-set (CMAKE_C_FLAGS_RELEASE "")
-if (NOT APPLE)
-  # -s doesn't work with default osx compiler clang, alternative:
-  # http://stackoverflow.com/questions/6085491/gcc-vs-clang-symbol-strippingu
-  set (CMAKE_C_FLAGS_RELEASE " -s ")
+# USE_UPSTREAM_CFLAGS (default TRUE)
+# Use our own defined flags for building types
+if(NOT DEFINED USE_UPSTREAM_CFLAGS OR USE_UPSTREAM_CFLAGS)
+  message(STATUS "Using upstream CFlags")
+  if (NOT APPLE)
+    # -s doesn't work with default osx compiler clang, alternative:
+    # http://stackoverflow.com/questions/6085491/gcc-vs-clang-symbol-strippingu
+    set (CMAKE_C_FLAGS_RELEASE " -s ")
+  endif()
+  set (CMAKE_C_FLAGS_RELEASE " ${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG"
+    CACHE INTERNAL "C Flags for release" FORCE)
+  set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
+  
+  set (CMAKE_C_FLAGS_DEBUG " -ggdb3"
+    CACHE INTERNAL "C Flags for debug" FORCE)
+  set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
 endif()
-set (CMAKE_C_FLAGS_RELEASE " ${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG ${CMAKE_C_FLAGS_ALL}"
-  CACHE INTERNAL "C Flags for release" FORCE)
-set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
-
-set (CMAKE_C_FLAGS_DEBUG " -ggdb3 ${CMAKE_C_FLAGS_ALL}"
-  CACHE INTERNAL "C Flags for debug" FORCE)
-set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
 
 #####################################
 # Set the default build type
@@ -116,11 +130,8 @@ string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)
 
 #####################################
 # Set all the global build flags
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
-set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
-set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
-set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}} ${CMAKE_C_FLAGS_ALL}")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS_ALL}")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "RELEASE")
   set (BUILD_TYPE_RELEASE TRUE)
@@ -133,10 +144,6 @@ if ( "${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
 else()
   set (BUILD_TYPE_DEBUG FALSE)
 endif()
-
-message (STATUS "\n\n====== Finding 3rd Party Packages ======")
-include (${sdf_cmake_dir}/SearchForStuff.cmake)
-message (STATUS "----------------------------------------\n")
 
 
 #################################################
@@ -183,7 +190,7 @@ else (buid_errors)
     ${PROJECT_BINARY_DIR}/sdf/sdf_config.h)
   sdf_install_includes("" ${PROJECT_BINARY_DIR}/sdf/sdf_config.h)
 
-  message (STATUS "C Flags:${CMAKE_CXX_FLAGS}")
+  message (STATUS "C Flags:${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
   message (STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
   message (STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
  

@@ -36,6 +36,7 @@
 
 #ifndef URDF_MODEL_STATE_H
 #define URDF_MODEL_STATE_H
+#include "visible.h"
 
 #include <string>
 #include <vector>
@@ -49,7 +50,7 @@
 
 namespace urdf{
 
-class Time
+class SDFORMAT_HIDDEN Time
 {
 public:
   Time() { this->clear(); };
@@ -93,7 +94,7 @@ private:
 };
 
 
-class JointState
+class SDFORMAT_HIDDEN JointState
 {
 public:
   JointState() { this->clear(); };
@@ -114,7 +115,7 @@ public:
   }
 };
 
-class ModelState
+class SDFORMAT_HIDDEN ModelState
 {
 public:
   ModelState() { this->clear(); };

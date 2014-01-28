@@ -20,10 +20,12 @@
 #include <tinyxml.h>
 #include <string>
 
+#include "sdf/system_util.hh"
+
 namespace sdf
 {
   /// \brief Convert from one version of SDF to another
-  class Converter
+  class SDFORMAT_VISIBLE Converter
   {
     /// \brief Convert SDF to the specified version.
     /// \param[in] _doc SDF xml doc

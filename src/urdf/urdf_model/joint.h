@@ -36,6 +36,7 @@
 
 #ifndef URDF_INTERFACE_JOINT_H
 #define URDF_INTERFACE_JOINT_H
+#include "visible.h"
 
 #include <string>
 #include <vector>
@@ -46,9 +47,9 @@
 
 namespace urdf{
 
-class Link;
+class SDFORMAT_HIDDEN Link;
 
-class JointDynamics
+class SDFORMAT_HIDDEN JointDynamics
 {
 public:
   JointDynamics() { this->clear(); };
@@ -62,7 +63,7 @@ public:
   };
 };
 
-class JointLimits
+class SDFORMAT_HIDDEN JointLimits
 {
 public:
   JointLimits() { this->clear(); };
@@ -81,7 +82,7 @@ public:
 };
 
 /// \brief Parameters for Joint Safety Controllers
-class JointSafety
+class SDFORMAT_HIDDEN JointSafety
 {
 public:
   /// clear variables on construction
@@ -133,7 +134,7 @@ public:
 };
 
 
-class JointCalibration
+class SDFORMAT_HIDDEN JointCalibration
 {
 public:
   JointCalibration() { this->clear(); };
@@ -146,7 +147,7 @@ public:
   };
 };
 
-class JointMimic
+class SDFORMAT_HIDDEN JointMimic
 {
 public:
   JointMimic() { this->clear(); };
@@ -163,7 +164,7 @@ public:
 };
 
 
-class Joint
+class SDFORMAT_HIDDEN Joint
 {
 public:
 

@@ -61,6 +61,7 @@
 #ifndef URDF_SENSOR_H
 #define URDF_SENSOR_H
 
+#include "visible.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -72,7 +73,7 @@
 
 namespace urdf{
 
-class VisualSensor
+class SDFORMAT_HIDDEN VisualSensor
 {
 public:
   enum {CAMERA, RAY} type;
@@ -81,7 +82,7 @@ public:
   }
 };
 
-class Camera : public VisualSensor
+class SDFORMAT_HIDDEN Camera : public VisualSensor
 {
 public:
   Camera() { this->clear(); };
@@ -104,7 +105,7 @@ public:
   };
 };
 
-class Ray : public VisualSensor
+class SDFORMAT_HIDDEN Ray : public VisualSensor
 {
 public:
   Ray() { this->clear(); };
@@ -132,7 +133,7 @@ public:
 };
 
 
-class Sensor
+class SDFORMAT_HIDDEN Sensor
 {
 public:
   Sensor() { this->clear(); };

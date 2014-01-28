@@ -11,6 +11,10 @@ link_directories(
   ${Boost_LIBRARY_DIRS}
 )
 
+if (USE_EXTERNAL_URDF)
+  link_directories(${URDF_LIBRARY_DIRS})
+endif()
+
 configure_file (test_config.h.in ${PROJECT_BINARY_DIR}/test_config.h)
 
 # Build gtest

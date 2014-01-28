@@ -300,8 +300,22 @@ std::string Vector32Str(const urdf::Vector3 _vector)
 void ReduceCollisionToParent(UrdfLinkPtr _link,
     const std::string &_groupName, UrdfCollisionPtr _collision)
 {
-  boost::shared_ptr<std::vector<UrdfCollisionPtr> >
-    cols = _link->getCollisions(_groupName);
+  boost::shared_ptr<std::vector<UrdfCollisionPtr> > cols;
+#if USE_EXTERNAL_URDF
+  if (_link->collision)
+  {
+    cols.reset(new std::vector<UrdfCollisionPtr>);
+    cols->push_back(_link->collision);
+  }
+  else
+  {
+    cols = boost::shared_ptr<std::vector<UrdfCollisionPtr> >(
+            &_link->collision_array);
+  }
+#else
+  cols = _link->getCollisions(_groupName);
+#endif
+
   if (!cols)
   {
     // group does not exist, create one and add to map
@@ -326,8 +340,21 @@ void ReduceCollisionToParent(UrdfLinkPtr _link,
 void ReduceVisualToParent(UrdfLinkPtr _link,
     const std::string &_groupName, UrdfVisualPtr _visual)
 {
-  boost::shared_ptr<std::vector<UrdfVisualPtr> > viss
-    = _link->getVisuals(_groupName);
+  boost::shared_ptr<std::vector<UrdfVisualPtr> > viss;
+#if USE_EXTERNAL_URDF
+  if (_link->visual)
+  {
+    viss.reset(new std::vector<UrdfVisualPtr>);
+    viss->push_back(_link->visual);
+  }
+  else
+  {
+    viss = boost::shared_ptr<std::vector<UrdfVisualPtr> >(&_link->visual_array);
+  }
+#else
+  viss = _link->getVisuals(_groupName);
+#endif
+
   if (!viss)
   {
     // group does not exist, create one and add to map
@@ -1632,9 +1659,6 @@ void InsertSDFExtensionRobot(TiXmlElement *_elem)
 void CreateGeometry(TiXmlElement* _elem,
     boost::shared_ptr<urdf::Geometry> _geom)
 {
-  int sizeCount;
-  double sizeVals[3];
-
   TiXmlElement *sdfGeometry = new TiXmlElement("geometry");
 
   std::string type;
@@ -1644,10 +1668,11 @@ void CreateGeometry(TiXmlElement* _elem,
   {
     case urdf::Geometry::BOX:
       type = "box";
-      sizeCount = 3;
       {
         boost::shared_ptr<const urdf::Box> box;
         box = boost::dynamic_pointer_cast< const urdf::Box >(_geom);
+        int sizeCount = 3;
+        double sizeVals[3];
         sizeVals[0] = box->dim.x;
         sizeVals[1] = box->dim.y;
         sizeVals[2] = box->dim.z;
@@ -1658,7 +1683,6 @@ void CreateGeometry(TiXmlElement* _elem,
       break;
     case urdf::Geometry::CYLINDER:
       type = "cylinder";
-      sizeCount = 2;
       {
         boost::shared_ptr<const urdf::Cylinder> cylinder;
         cylinder = boost::dynamic_pointer_cast<const urdf::Cylinder >(_geom);
@@ -1671,7 +1695,6 @@ void CreateGeometry(TiXmlElement* _elem,
       break;
     case urdf::Geometry::SPHERE:
       type = "sphere";
-      sizeCount = 1;
       {
         boost::shared_ptr<const urdf::Sphere> sphere;
         sphere = boost::dynamic_pointer_cast<const urdf::Sphere >(_geom);
@@ -1682,13 +1705,9 @@ void CreateGeometry(TiXmlElement* _elem,
       break;
     case urdf::Geometry::MESH:
       type = "mesh";
-      sizeCount = 3;
       {
         boost::shared_ptr<const urdf::Mesh> mesh;
         mesh = boost::dynamic_pointer_cast<const urdf::Mesh >(_geom);
-        sizeVals[0] = mesh->scale.x;
-        sizeVals[1] = mesh->scale.y;
-        sizeVals[2] = mesh->scale.z;
         geometryType = new TiXmlElement(type);
         AddKeyValue(geometryType, "scale", Vector32Str(mesh->scale));
         // do something more to meshes
@@ -1736,7 +1755,6 @@ void CreateGeometry(TiXmlElement* _elem,
       }
       break;
     default:
-      sizeCount = 0;
       sdfwarn << "Unknown body type: [" << _geom->type
         << "] skipped in geometry\n";
       break;
