@@ -5,6 +5,21 @@ require "optparse"
 
 @@path = nil
 
+#################################################
+# \brief A not very elegant way to convert to schema types
+def xsdType(_type)
+  if _type == "unsigned int"
+    return "unsignedInt"
+  elsif _type == "unsigned long"
+    return "unsignedLog"
+  elsif _type == "bool"
+    return "boolean"
+  else
+    return _type
+  end
+end
+
+#################################################
 def isStdType(_type)
  return _type == "string" || _type == "int" || _type == "double" ||
    _type == "float" || _type == "bool" || _type == "char" ||
@@ -14,13 +29,18 @@ end
 #################################################
 def printElem(_file, _spaces, _elem)
 
+  # this currently short-circuits the plugin.sdf copy_data element.
+  if _elem.attributes["name"].nil?
+    return
+  end
+
   type = _elem.attributes["type"]
   if isStdType(type)
-    type = "xsd:" + type
+    type = "xsd:" + xsdType(type)
   end
 
   # Print the complex type with a name
-  if type.nil?
+  if type.nil? || type == ""
     _file.printf("%*s<xsd:element name='%s'>\n", _spaces, "",
                  _elem.attributes["name"])
 
@@ -60,7 +80,7 @@ def printDocumentation(_file, _spaces, _doc)
   _file.printf("%*s<xsd:documentation xml:lang='en'>\n", _spaces, "")
 
   _spaces += 2
-  _file.printf("%*s%s\n",_spaces, "", _doc);
+  _file.printf("%*s<![CDATA[%s]]>\n",_spaces, "", _doc);
   _spaces -= 2
 
   _file.printf("%*s</xsd:documentation>\n", _spaces, "")
@@ -105,7 +125,7 @@ def printAttribute(_file, _spaces, _attr)
   end
 
   if isStdType(type)
-    type = "xsd:" + type
+    type = "xsd:" + xsdType(type)
   end
 
   _file.printf("%*s<xsd:attribute name='%s' type='%s' %s %s>\n", _spaces,
@@ -169,8 +189,18 @@ def printXSD(_file, _spaces, _elem)
     _file.printf("%*s</xsd:complexType>\n", _spaces+2, "")
     _file.printf("%*s</xsd:element>\n", _spaces, "")
   else
-    _file.printf("%*s<xsd:element name='%s' type='%s'/>\n", _spaces, "",
-                 _elem.attributes["name"], _elem.attributes["type"])
+    type = _elem.attributes["type"]
+
+    if isStdType(type)
+      type = "xsd:" + type
+    end
+
+    if !type.nil?
+      type = "type='" + type + "'"
+    end
+
+    _file.printf("%*s<xsd:element name='%s' %s/>\n", _spaces, "",
+                 _elem.attributes["name"], type)
   end
 end
 
