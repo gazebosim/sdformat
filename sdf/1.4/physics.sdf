@@ -44,7 +44,7 @@
         friction is supposed to hold object in place.</description>
     </element>
     <element name="contact" required="0">
-      <description>
+      <description><![CDATA[
         Relationship among dissipation, coef. restitution, etc.
         d = dissipation coefficient (1/velocity)
         vc = capture velocity (velocity where e=e_max)
@@ -62,7 +62,7 @@
         cor = e                            [rigid]
   
         Combining rule e = 0,               e1==e2==0
-                         = 2*e1*e2/(e1+e2), otherwise
+                         = 2*e1*e2/(e1+e2), otherwise]]>
       </description>
 
       <element name="stiffness" type="double" default="1e8" required="0">
