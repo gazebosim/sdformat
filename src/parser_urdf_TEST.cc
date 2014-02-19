@@ -40,7 +40,7 @@ class URDFParser : public ::testing::Test
       std::string get_minimal_sdf_txt()
       {
           std::ostringstream stream;
-          stream << "<sdf version='1.4'>"
+          stream << "<sdf version='" << SDF_VERSION << "'>"
                  << "<model name='test_robot' />"
                  << "</sdf>";
           return stream.str();
