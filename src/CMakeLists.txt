@@ -45,7 +45,7 @@ sdf_build_tests(${gtest_sources})
 
 sdf_add_library(sdformat ${sources})
 target_link_libraries(sdformat
-  ${tinyxml_libraries}
+  ${tinyxml_LIBRARIES}
   ${Boost_LIBRARIES}
 )
 
