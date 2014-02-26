@@ -33,7 +33,7 @@ endif()
 if (tinyxml_FAIL)
   message (STATUS "Looking for tinyxml.h - not found")
   BUILD_ERROR("Missing: tinyxml")
-endif ()
+endif()
 
 ################################################
 # Find urdfdom parser
