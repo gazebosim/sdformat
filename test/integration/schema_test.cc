@@ -40,9 +40,10 @@ class SDFSchemaGenerator : public testing::Test
   public:
     void run_xmllint(const std::string model)
     {
-      std::string xmllint_cmd = "xmllint --noout --schema " + SDF_ROOT_SCHEMA + " " + model;
+      std::string xmllint_cmd = "xmllint --noout --schema " + \ 
+                                SDF_ROOT_SCHEMA + " " + model;
       if (system(xmllint_cmd.c_str()) != 0)
-          FAIL() << "Fail in parsing the PR2 model";
+          FAIL() << "Fail in parsing the model";
       else
           SUCCEED(); 
     }
