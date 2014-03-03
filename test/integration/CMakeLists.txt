@@ -5,6 +5,7 @@ set(tests
   fixed_joint_reduction.cc
   provide_feedback.cc
   cfm_damping_implicit_spring_damper.cc
+  schema_test.cc
 )
 
 link_directories(${PROJECT_BINARY_DIR}/test)
