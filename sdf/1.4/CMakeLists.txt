@@ -1,4 +1,5 @@
 set (sdfs
+  1_3.convert
   actor.sdf
   audio_source.sdf
   audio_sink.sdf
@@ -42,26 +43,4 @@ set (sdfs
   world.sdf
 )
 
-set (SDF_SCHEMA)
-
-foreach(FIL ${sdfs})
-  get_filename_component(ABS_FIL ${FIL} ABSOLUTE)
-  get_filename_component(FIL_WE ${FIL} NAME_WE)
-
-  list(APPEND SDF_SCHEMA "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.xsd")
-
-  add_custom_command(
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.xsd"
-    COMMAND ${CMAKE_SOURCE_DIR}/tools/xmlschema.rb
-    ARGS -s ${CMAKE_CURRENT_SOURCE_DIR} -i ${ABS_FIL} -o ${CMAKE_CURRENT_BINARY_DIR}
-    DEPENDS ${ABS_FIL}
-    COMMENT "Running xml schema compiler on ${FIL}"
-    VERBATIM)
-endforeach()
-
-add_custom_target(schema ALL DEPENDS ${SDF_SCHEMA})
-
-set_source_files_properties(${SDF_SCHEMA} PROPERTIES GENERATED TRUE)
-  
-install(FILES 1_3.convert ${sdfs} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.4)
-install(FILES ${SDF_SCHEMA} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.4)
+install(FILES ${sdfs} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.4)
