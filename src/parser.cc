@@ -37,7 +37,11 @@ bool init(SDFPtr _sdf)
   bool result = false;
 
   std::string filename;
-  filename = sdf::findFile("root.sdf");
+
+  if (sdf::SDF::version == "1.0" || sdf::SDF::version == "1.2")
+    filename = sdf::findFile("gazebo.sdf");
+  else
+    filename = sdf::findFile("root.sdf");
 
   FILE *ftest = fopen(filename.c_str(), "r");
   if (ftest && initFile(filename, _sdf))
