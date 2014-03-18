@@ -1,5 +1,4 @@
 set (sdfs
-  1_4.convert
   actor.sdf
   audio_source.sdf
   audio_sink.sdf
@@ -65,5 +64,5 @@ add_custom_target(schema ALL DEPENDS ${SDF_SCHEMA})
 
 set_source_files_properties(${SDF_SCHEMA} PROPERTIES GENERATED TRUE)
   
-install(FILES ${sdfs} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.5)
+install(FILES 1_4.convert ${sdfs} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.5)
 install(FILES ${SDF_SCHEMA} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.5)

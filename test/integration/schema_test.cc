@@ -23,7 +23,7 @@
 #include "test_config.h"
 
 const std::string SDF_ROOT_SCHEMA = std::string(PROJECT_BINARY_DIR)
-  + "/sdf/1.4/root.xsd";
+  + "/sdf/1.5/root.xsd";
 
 const std::string SDF_TEST_PR2 = std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/model/pr2.sdf";
@@ -40,7 +40,7 @@ class SDFSchemaGenerator : public testing::Test
   public:
     void run_xmllint(const std::string model)
     {
-      std::string xmllint_cmd = "xmllint --noout --schema " + \ 
+      std::string xmllint_cmd = "xmllint --noout --schema " + \
                                 SDF_ROOT_SCHEMA + " " + model;
       if (system(xmllint_cmd.c_str()) != 0)
           FAIL() << "Fail in parsing the model";
