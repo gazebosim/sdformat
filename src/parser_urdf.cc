@@ -1815,7 +1815,7 @@ std::string GetGeometryBoundingBox(
       break;
     default:
       _sizeVals[0] = _sizeVals[1] = _sizeVals[2] = 0;
-      sdfwarn << "Unknown body type: [" << _geom->type
+      sdfwarn << "Unknown body type: [" << static_cast<int>(_geom->type)
         << "] skipped in geometry\n";
       break;
   }
