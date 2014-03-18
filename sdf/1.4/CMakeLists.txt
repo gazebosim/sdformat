@@ -4,7 +4,8 @@ set (sdfs
   audio_source.sdf
   audio_sink.sdf
   box_shape.sdf
-  camera.sdf collision.sdf
+  camera.sdf
+  collision.sdf
   contact.sdf
   cylinder_shape.sdf
   forcetorque.sdf
