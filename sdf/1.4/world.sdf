@@ -15,7 +15,7 @@
 
   <element name="include" required="*">
     <description>Include resources from a URI</description>
-    <element name="uri" type="string" required="1">
+    <element name="uri" type="string" default="__default__" required="1">
       <description>URI to a resource, such as a model</description>
     </element>
   </element>
