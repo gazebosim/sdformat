@@ -2687,7 +2687,11 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
 
   // add robot to sdfXmlOut
   TiXmlElement *sdf = new TiXmlElement("sdf");
-  sdf->SetAttribute("version", SDF_VERSION);
+
+  // URDF is compatible with version 1.4. The automatic conversion script
+  // will up-convert URDF to SDF.
+  sdf->SetAttribute("version", "1.4");
+
   sdf->LinkEndChild(robot);
   sdfXmlOut.LinkEndChild(sdf);
 
