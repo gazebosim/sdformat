@@ -50,6 +50,16 @@ if (USE_EXTERNAL_URDF)
   endif()
 endif()
 
+################################################
+# Find ruby executable to produce xml schemas
+# Use quiet to avoid complains from ruby headers or libs not installed
+find_package(Ruby 1.9.1 QUIET)
+if (NOT RUBY_EXECUTABLE)
+    BUILD_ERROR ("Ruby version 1.9 is needed to build xml schemas")
+else()
+    message(STATUS "Found ruby executable: ${RUBY_EXECUTABLE}")
+endif()
+
 #################################################
 # Macro to check for visibility capability in compiler
 # Original idea from: https://gitorious.org/ferric-cmake-stuff/ 
