@@ -23,6 +23,10 @@ endif()
 project (SDFormat)
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
+# The protocol version has nothing to do with the package version set below.
+# It represents the current version of sdformat implement by the software
+set (SDF_PROTOCOL_VERSION 1.5)
+
 set (SDF_MAJOR_VERSION 2)
 set (SDF_MINOR_VERSION 0)
 set (SDF_PATCH_VERSION 0)
