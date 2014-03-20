@@ -1,0 +1,12 @@
+<element name="poly_line" required="0">
+  <description>Poly_line_shape</description>
+
+  <element name="points" type="vector2d" default="0 0" required="+">
+    <description>A series of points define the path of the poly_line.</description>
+  </element>
+
+  <element name="height" type="double" default="1.0" required="1">
+    <description>height of the poly_line</description>
+  </element>
+
+</element>
