@@ -1,7 +1,7 @@
-<element name="poly_line" required="0">
+<element name="polyline" required="0">
   <description>Poly_line_shape</description>
 
-  <element name="points" type="vector2d" default="0 0" required="+">
+  <element name="point" type="vector2d" default="0 0" required="+">
     <description>A series of points define the path of the poly_line.</description>
   </element>
 
