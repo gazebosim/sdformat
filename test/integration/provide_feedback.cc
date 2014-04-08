@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <boost/filesystem.hpp>
 #include <map>
 #include "sdf/sdf.hh"
 
@@ -27,9 +28,15 @@ const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
 /////////////////////////////////////////////////
 TEST(SDFParser, ProvideFeedbackTest)
 {
+  char *pathCStr = getenv("SDF_PATH");
+  boost::filesystem::path path = PROJECT_SOURCE_PATH;
+  path = path / "sdf" / SDF_VERSION;
+  setenv("SDF_PATH", path.string().c_str(), 1);
+
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
   ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
+  setenv("SDF_PATH", pathCStr, 1);
 
   sdf::ElementPtr model = robot->root->GetElement("model");
   for (sdf::ElementPtr joint = model->GetElement("joint"); joint;

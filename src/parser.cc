@@ -37,11 +37,12 @@ bool init(SDFPtr _sdf)
   bool result = false;
 
   std::string filename;
+  std::string fileToFind = "root.sdf";
 
   if (sdf::SDF::version == "1.0" || sdf::SDF::version == "1.2")
-    filename = sdf::findFile("gazebo.sdf");
-  else
-    filename = sdf::findFile("root.sdf");
+    fileToFind = "gazebo.sdf";
+
+  filename = sdf::findFile(fileToFind);
 
   FILE *ftest = fopen(filename.c_str(), "r");
   if (ftest && initFile(filename, _sdf))
@@ -50,7 +51,7 @@ bool init(SDFPtr _sdf)
     fclose(ftest);
   }
   else
-    sdferr << "Unable to find or open SDF file[" << filename << "]\n";
+    sdferr << "Unable to find or open SDF file[" << fileToFind << "]\n";
 
   return result;
 }
