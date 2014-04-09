@@ -41,7 +41,14 @@ TEST(SDFParser, FixedJointReductionEquivalenceTest)
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
   ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
-  setenv("SDF_PATH", pathCStr, 1);
+  if (pathCStr)
+  {
+    setenv("SDF_PATH", pathCStr, 1);
+  }
+  else
+  {
+    unsetenv("SDF_PATH");
+  }
 
   std::map<std::string, double> linkMasses;
   std::map<std::string, sdf::Pose> linkPoses;
@@ -139,7 +146,14 @@ TEST(SDFParser, FixedJointReductionSimple)
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
   ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE_SIMPLE, robot));
-  setenv("SDF_PATH", pathCStr, 1);
+  if (pathCStr)
+  {
+    setenv("SDF_PATH", pathCStr, 1);
+  }
+  else
+  {
+    unsetenv("SDF_PATH");
+  }
 
   std::map<std::string, double> linkMasses;
   std::map<std::string, sdf::Pose> linkPoses;

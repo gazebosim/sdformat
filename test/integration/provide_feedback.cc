@@ -36,7 +36,14 @@ TEST(SDFParser, ProvideFeedbackTest)
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
   ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
-  setenv("SDF_PATH", pathCStr, 1);
+  if (pathCStr)
+  {
+    setenv("SDF_PATH", pathCStr, 1);
+  }
+  else
+  {
+    unsetenv("SDF_PATH");
+  }
 
   sdf::ElementPtr model = robot->root->GetElement("model");
   for (sdf::ElementPtr joint = model->GetElement("joint"); joint;
