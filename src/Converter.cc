@@ -77,6 +77,8 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   TiXmlDocument xmlDoc;
   if (!xmlDoc.LoadFile(filename))
   {
+    // We are assuming that the filename's last 3 components are
+    // "sdf/<version>/<version>.convert", and we want the path below.
     boost::filesystem::path sdfPath = filename;
     sdfPath = sdfPath.parent_path();
     sdfPath = sdfPath.parent_path();
