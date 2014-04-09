@@ -54,7 +54,14 @@ TEST(JointAxisFrame, Version_1_4_missing)
   sdf::SDFPtr model(new sdf::SDF());
   sdf::init(model);
   ASSERT_TRUE(sdf::readString(get_sdf_string("1.4"), model));
-  setenv("SDF_PATH", pathCStr, 1);
+  if (pathCStr)
+  {
+    setenv("SDF_PATH", pathCStr, 1);
+  }
+  else
+  {
+    unsetenv("SDF_PATH");
+  }
 
   sdf::ElementPtr joint = model->root->GetElement("model")->GetElement("joint");
   sdf::ElementPtr axis = joint->GetElement("axis");
@@ -77,7 +84,14 @@ TEST(JointAxisFrame, Version_1_5_missing)
   sdf::SDFPtr model(new sdf::SDF());
   sdf::init(model);
   ASSERT_TRUE(sdf::readString(get_sdf_string("1.5"), model));
-  setenv("SDF_PATH", pathCStr, 1);
+  if (pathCStr)
+  {
+    setenv("SDF_PATH", pathCStr, 1);
+  }
+  else
+  {
+    unsetenv("SDF_PATH");
+  }
 
   sdf::ElementPtr joint = model->root->GetElement("model")->GetElement("joint");
   sdf::ElementPtr axis = joint->GetElement("axis");
