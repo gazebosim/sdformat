@@ -67,8 +67,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   std::string origVersionStr = origVersion;
   boost::replace_all(origVersion, ".", "_");
 
-  std::string filename = sdf::findFile(
-      std::string("sdformat/") + _toVersion + "/" + origVersion + ".convert");
+  std::string filename = sdf::findFile(origVersion + ".convert");
 
   // Use convert file in the current sdf version folder for conversion. If file
   // does not exist, then find intermediate convert files and iteratively
@@ -78,15 +77,18 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   TiXmlDocument xmlDoc;
   if (!xmlDoc.LoadFile(filename))
   {
+    boost::filesystem::path sdfPath = filename;
+    sdfPath = sdfPath.parent_path();
+    sdfPath = sdfPath.parent_path();
+
     // find all sdf version dirs in resource path
-    std::string sdfPath = sdf::findFile(std::string("sdformat/"), false);
     boost::filesystem::directory_iterator endIter;
     std::set<boost::filesystem::path> sdfDirs;
     if (boost::filesystem::exists(sdfPath)
         && boost::filesystem::is_directory(sdfPath))
     {
       for (boost::filesystem::directory_iterator dirIter(sdfPath);
-          dirIter != endIter ; ++dirIter)
+           dirIter != endIter ; ++dirIter)
       {
         if (boost::filesystem::is_directory(dirIter->status()))
         {

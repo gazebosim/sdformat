@@ -58,6 +58,8 @@ TEST(JointAxisFrame, Version_1_4_missing)
 
   sdf::ElementPtr joint = model->root->GetElement("model")->GetElement("joint");
   sdf::ElementPtr axis = joint->GetElement("axis");
+
+  axis->PrintValues("");
   EXPECT_TRUE(axis->HasElement("use_parent_model_frame"));
   EXPECT_TRUE(axis->Get<bool>("use_parent_model_frame"));
 }
