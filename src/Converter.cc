@@ -68,6 +68,9 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   boost::replace_all(origVersion, ".", "_");
 
   std::string filename = sdf::findFile(origVersion + ".convert");
+  if (filename.empty())
+    filename = sdf::findFile(_toVersion + "/" + origVersion + ".convert");
+
 
   // Use convert file in the current sdf version folder for conversion. If file
   // does not exist, then find intermediate convert files and iteratively
