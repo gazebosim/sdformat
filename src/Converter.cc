@@ -56,10 +56,10 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 
   if (!_quiet)
   {
-    sdfwarn << "  Version[" << origVersion << "] to Version[" << _toVersion
+    sdfdbg << "Version[" << origVersion << "] to Version[" << _toVersion
            << "]\n"
-           << "  Please use the gzsdf tool to update your SDF files.\n"
-           << "    $ gzsdf convert [sdf_file]\n";
+           << "  Please use the gz sdf tool to update your SDF files.\n"
+           << "    $ gz sdf -c [sdf_file]\n";
   }
 
   elem->SetAttribute("version", _toVersion);
@@ -68,9 +68,6 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   boost::replace_all(origVersion, ".", "_");
 
   std::string filename = sdf::findFile(origVersion + ".convert");
-  if (filename.empty())
-    filename = sdf::findFile(_toVersion + "/" + origVersion + ".convert");
-
 
   // Use convert file in the current sdf version folder for conversion. If file
   // does not exist, then find intermediate convert files and iteratively
@@ -80,11 +77,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   TiXmlDocument xmlDoc;
   if (!xmlDoc.LoadFile(filename))
   {
-    // We are assuming that the filename's last 3 components are
-    // "sdf/<version>/<version>.convert", and we want the path below.
-    boost::filesystem::path sdfPath = filename;
-    sdfPath = sdfPath.parent_path();
-    sdfPath = sdfPath.parent_path();
+    std::string sdfPath = sdf::findFile("sdformat/");
 
     // find all sdf version dirs in resource path
     boost::filesystem::directory_iterator endIter;

@@ -342,7 +342,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
   {
     if (strcmp(sdfNode->Attribute("version"), SDF::version.c_str()) != 0)
     {
-      sdfwarn << "Converting a deprecated source[" << _source << "].\n";
+      sdfdbg << "Converting a deprecated source[" << _source << "].\n";
       Converter::Convert(_xmlDoc, SDF::version);
     }
 
