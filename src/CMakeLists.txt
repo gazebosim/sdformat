@@ -2,6 +2,7 @@ include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 link_directories(
   ${PROJECT_BINARY_DIR}/test
+  ${tinyxml_LIBRARY_DIRS}
 )
 
 if (USE_EXTERNAL_URDF)
