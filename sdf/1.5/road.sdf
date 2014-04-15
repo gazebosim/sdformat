@@ -8,7 +8,7 @@
     <description>Width of the road</description>
   </element>
 
-  <element name="texture" type="string" default="HIGHWAY" required="1">
+  <element name="texture" type="string" default="primary" required="0">
     <description>Texture of the road</description>
   </element>
 
