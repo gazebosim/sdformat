@@ -6,7 +6,7 @@
         "parent" report the wrench expressed in the orientation of the parent link frame,
         "child" report the wrench expressed in the orientation of the child link frame,
         "joint" report the wrench expressed in the orientation of the joint frame,
-      Note that for both options the pole with respect to which the torque component of the wrench
+      Note that for both options the point with respect to which the torque component of the wrench
         is expressed is the joint origin.
     </description>
   </element>
