@@ -5,8 +5,8 @@
       Frame in which to report the wrench values. Currently supported frames are:
         "parent" report the wrench expressed in the orientation of the parent link frame,
         "child" report the wrench expressed in the orientation of the child link frame,
-        "joint" report the wrench expressed in the orientation of the joint frame.
-      Note that for both options the point with respect to which the torque component of the wrench
+        "sensor" report the wrench expressed in the orientation of the joint sensor frame.
+      Note that for each option the point with respect to which the torque component of the wrench
         is expressed is the joint origin.
     </description>
   </element>
