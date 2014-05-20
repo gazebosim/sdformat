@@ -12,8 +12,7 @@ if (NOT Boost_FOUND)
   BUILD_ERROR ("Boost not found. Please install thread signals system filesystem program_options regex boost version ${MIN_BOOST_VERSION} or higher.")
 endif() 
 
-if (UNIX)
-  set (USE_EXTERNAL_TINXYML:BOOL True)
+if (USE_EXTERNAL_TINXYML)
   #################################################
   # Find tinyxml. Only debian distributions package tinyxml with a pkg-config
   # Use pkg_check_modules and fallback to manual detection (needed, at least, for MacOS)
@@ -37,7 +36,7 @@ if (UNIX)
     BUILD_ERROR("Missing: tinyxml")
   endif()
 else()
-  set (USE_EXTERNAL_TINXYML:BOOL False)
+  # Needed in WIN32 since in UNIX the flag is added in the code installed
   add_definitions(-DTIXML_USE_STL)
   include_directories (${PROJECT_SOURCE_DIR}/src/win/tinyxml)
   set (tinyxml_LIBRARIES "tinyxml")

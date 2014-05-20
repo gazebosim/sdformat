@@ -21,7 +21,6 @@ set (sources
 
 if (USE_EXTERNAL_TINYXML)
   include_directories(${tinyxml_INCLUDE_DIRS})
-  link_directories(${tinyxml_LIBRARY_DIRS})
 else()
   set(sources ${sources}
     win/tinyxml/tinystr.cpp  
@@ -59,7 +58,8 @@ target_link_libraries(sdformat
   ${Boost_LIBRARIES}
 )
 
-if (NOT USE_EXTERNAL_TINYXML)
+if (USE_EXTERNAL_TINYXML)
+  link_directories(${tinyxml_LIBRARY_DIRS})
   target_link_libraries(sdformat ${tinyxml_LIBRARIES})
 endif()
 

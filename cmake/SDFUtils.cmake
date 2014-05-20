@@ -103,17 +103,17 @@ macro (sdf_build_tests)
 
     add_dependencies(${BINARY_NAME}
       gtest gtest_main sdformat
-      ${tinyxml_libraries}
+      ${tinyxml_LIBRARIES}
       )
-  
+     
     target_link_libraries(${BINARY_NAME}
       libgtest.a
       libgtest_main.a
       sdformat
       pthread
-      ${tinyxml_libraries}
+      ${tinyxml_LIBRARIES}
       )
-  
+
     add_test(${BINARY_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}
       --gtest_output=xml:${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
   
@@ -125,5 +125,3 @@ macro (sdf_build_tests)
              ${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
   endforeach()
 endmacro()
-
-
