@@ -12,7 +12,7 @@ if (NOT Boost_FOUND)
   BUILD_ERROR ("Boost not found. Please install thread signals system filesystem program_options regex boost version ${MIN_BOOST_VERSION} or higher.")
 endif() 
 
-if (NOT UNIX)
+if (UNIX)
   set (USE_EXTERNAL_TINXYML:BOOL True)
   #################################################
   # Find tinyxml. Only debian distributions package tinyxml with a pkg-config
