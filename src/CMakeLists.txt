@@ -2,7 +2,6 @@ include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 link_directories(
   ${PROJECT_BINARY_DIR}/test
-  ${tinyxml_LIBRARY_DIRS}
 )
 
 if (USE_EXTERNAL_URDF)
@@ -19,6 +18,17 @@ set (sources
   Param.cc
   SDF.cc
 )
+
+if (USE_EXTERNAL_TINYXML)
+  include_directories(${tinyxml_INCLUDE_DIRS})
+  link_directories(${tinyxml_LIBRARY_DIRS})
+else()
+  set(sources ${sources}
+    win/tinyxml/tinystr.cpp  
+    win/tinyxml/tinyxmlerror.cpp
+    win/tinyxml/tinyxml.cpp
+    win/tinyxml/tinyxmlparser.cpp)
+endif()
 
 if (USE_EXTERNAL_URDF)
   include_directories(${URDF_INCLUDE_DIRS})
@@ -46,9 +56,12 @@ sdf_build_tests(${gtest_sources})
 
 sdf_add_library(sdformat ${sources})
 target_link_libraries(sdformat
-  ${tinyxml_LIBRARIES}
   ${Boost_LIBRARIES}
 )
+
+if (NOT USE_EXTERNAL_TINYXML)
+  target_link_libraries(sdformat ${tinyxml_LIBRARIES})
+endif()
 
 message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
 message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
