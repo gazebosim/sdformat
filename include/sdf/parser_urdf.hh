@@ -17,8 +17,6 @@
 #ifndef URDF2SDF_HH
 #define URDF2SDF_HH
 
-#define _USE_MATH_DEFINES
-
 #include <tinyxml.h>
 #include <vector>
 #include <string>

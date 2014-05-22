@@ -42,7 +42,6 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>

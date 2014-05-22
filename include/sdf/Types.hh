@@ -18,7 +18,6 @@
 #ifndef _SDF_TYPES_HH_
 #define _SDF_TYPES_HH_
 
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <algorithm>
 

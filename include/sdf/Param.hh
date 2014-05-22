@@ -18,8 +18,6 @@
 #ifndef _SDF_PARAM_HH_
 #define _SDF_PARAM_HH_
 
-#define _USE_MATH_DEFINES
-
 #ifndef Q_MOC_RUN  // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 # include <boost/lexical_cast.hpp>
 #endif
