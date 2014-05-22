@@ -51,8 +51,16 @@ endmacro (BUILD_WARNING)
 
 #################################################
 macro (sdf_add_library _name)
+  set(LIBS_DESTINATION ${PROJECT_BINARY_DIR}/src)
+  set_source_files_properties(${ARGN} PROPERTIES COMPILE_DEFINITIONS "BUILDING_DLL")
   add_library(${_name} SHARED ${ARGN})
   target_link_libraries (${_name} ${general_libraries})
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIBS_DESTINATION})
+  if (MSVC)
+    set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${LIBS_DESTINATION})
+    set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${LIBS_DESTINATION})
+    set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${LIBS_DESTINATION})
+  endif ()
 endmacro ()
 
 #################################################
