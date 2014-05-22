@@ -19,6 +19,7 @@
 #define _SDF_TYPES_HH_
 
 #include <algorithm>
+#define _USE_MATH_DEFINES
 #include <cmath>
 
 #include "sdf/system_util.hh"
