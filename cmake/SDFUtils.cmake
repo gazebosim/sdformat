@@ -114,14 +114,24 @@ macro (sdf_build_tests)
       ${tinyxml_LIBRARIES}
       )
      
-    target_link_libraries(${BINARY_NAME}
-      libgtest.a
-      libgtest_main.a
-      sdformat
-      pthread
-      ${tinyxml_LIBRARIES}
+    if (UNIX)
+      target_link_libraries(${BINARY_NAME}
+        libgtest.a
+        libgtest_main.a
+        sdformat
+        pthread
+        ${tinyxml_LIBRARIES}
       )
-
+    elseif(WIN32)
+      target_link_libraries(${BINARY_NAME}
+        gtest.lib
+        gtest_main.lib
+        sdformat.dll
+      )
+    else()
+      message(FATAL_ERROR "Unsupported platform")
+    endif()
+ 
     add_test(${BINARY_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}
       --gtest_output=xml:${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
   
