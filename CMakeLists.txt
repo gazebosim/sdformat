@@ -114,6 +114,11 @@ else()
   set(WARN_LEVEL "-Wall")
 endif()
 
+# Need for M_PI constant
+if (WIN32)
+    add_definitions(-D_USE_MATH_DEFINES) 
+ENDIF(WIN32)
+
 filter_valid_compiler_warnings(${WARN_LEVEL} -Wextra -Wno-long-long
   -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wno-unused-value
   -Wfloat-equal -Wshadow -Winit-self -Wswitch-default
