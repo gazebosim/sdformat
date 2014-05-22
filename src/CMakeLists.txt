@@ -19,6 +19,8 @@ set (sources
   SDF.cc
 )
 
+include_directories(${Boost_INCLUDE_DIRS})
+
 if (USE_EXTERNAL_TINYXML)
   include_directories(${tinyxml_INCLUDE_DIRS})
 else()
