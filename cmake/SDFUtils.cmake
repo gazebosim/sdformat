@@ -125,3 +125,17 @@ macro (sdf_build_tests)
              ${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
   endforeach()
 endmacro()
+
+#################################################
+# Macro to setup supported compiler warnings
+# Based on work of Florent Lamiraux, Thomas Moulard, JRL, CNRS/AIST. 
+include(CheckCXXCompilerFlag)
+
+macro(filter_valid_compiler_warnings) 
+  foreach(flag ${ARGN})
+    CHECK_CXX_COMPILER_FLAG(${flag} R${flag})
+    if(${R${flag}})
+      set(WARNING_CXX_FLAGS "${WARNING_CXX_FLAGS} ${flag}")
+    endif()
+  endforeach()
+endmacro()

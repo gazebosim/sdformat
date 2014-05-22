@@ -87,6 +87,8 @@ set (build_warnings "" CACHE INTERNAL "build warnings" FORCE)
 set (sdf_cmake_dir ${PROJECT_SOURCE_DIR}/cmake CACHE PATH
      "Location of CMake scripts")
 
+include (${sdf_cmake_dir}/SDFUtils.cmake)
+
 message (STATUS "\n\n====== Finding 3rd Party Packages ======")
  # Use of tinyxml. System installation on UNIX. Internal copy on WIN
 if (UNIX)
@@ -103,14 +105,26 @@ include (${sdf_cmake_dir}/SearchForStuff.cmake)
 message (STATUS "----------------------------------------\n")
 
 #####################################
-# Build type cflags
-set (CMAKE_C_FLAGS_ALL " -Wall -Wextra -Wno-long-long -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wfloat-equal -Wshadow -Winit-self -Wswitch-default -Wmissing-include-dirs -pedantic" CACHE INTERNAL "General C Flags")
+# Check if warning options are avaliable for the compiler and return WARNING_CXX_FLAGS variable
+# MSVC generates tons of warnings on gtest code. 
+# Recommended to use /W4 instead of /Wall
+if (MSVC)
+  set(WARN_LEVEL "/W4")
+else()
+  set(WARN_LEVEL "-Wall")
+endif()
+
+filter_valid_compiler_warnings(${WARN_LEVEL} -Wextra -Wno-long-long
+  -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wno-unused-value
+  -Wfloat-equal -Wshadow -Winit-self -Wswitch-default
+  -Wmissing-include-dirs -pedantic)
+set (CMAKE_C_FLAGS_ALL "${WARNING_CXX_FLAGS}")
 
 # Check and add visibility hidden by default
 if (UNIX)
   check_gcc_visibility()
   if (GCC_SUPPORTS_VISIBILITY)
-         SET(CMAKE_C_FLAGS_ALL "${CMAKE_C_FLAGS_ALL} -fvisibility=hidden")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
   endif()
 endif()
 
