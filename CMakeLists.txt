@@ -118,7 +118,9 @@ if (WIN32)
     # Need for M_PI constant
     add_definitions(-D_USE_MATH_DEFINES) 
     # Use dynamic linking for boost
-    add_definitions(-DBOOST_ALL_DYN_LINK) 
+    add_definitions(-DBOOST_ALL_DYN_LINK)
+    # TODO: fix this hardcoded value
+    add_definitions(-DMACHINE=x64)
 ENDIF(WIN32)
 
 filter_valid_compiler_warnings(${WARN_LEVEL} -Wextra -Wno-long-long
