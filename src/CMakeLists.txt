@@ -2,8 +2,10 @@ include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 link_directories(
   ${PROJECT_BINARY_DIR}/test
-  {Boost_LIBRARY_DIR}
+  ${Boost_LIBRARY_DIR}
 )
+
+message (STATUS "Debug: ${Boost_LIBRARY_DIR}")
 
 if (USE_EXTERNAL_URDF)
   link_directories(${URDF_LIBRARY_DIRS})
