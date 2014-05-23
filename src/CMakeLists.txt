@@ -2,6 +2,7 @@ include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 link_directories(
   ${PROJECT_BINARY_DIR}/test
+  {Boost_LIBRARY_DIR}
 )
 
 if (USE_EXTERNAL_URDF)
@@ -56,7 +57,6 @@ set (gtest_sources
 sdf_build_tests(${gtest_sources})
 
 sdf_add_library(sdformat ${sources})
-link_directories(${Boost_LIBRARY_DIR})
 target_link_libraries(sdformat ${Boost_LIBRARIES})
 
 if (USE_EXTERNAL_TINYXML)
