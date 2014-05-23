@@ -119,6 +119,9 @@ if (WIN32)
     add_definitions(-D_USE_MATH_DEFINES) 
     # Use dynamic linking for boost
     add_definitions(-DBOOST_ALL_DYN_LINK) 
+    set(Boost_USE_STATIC_LIBS       OFF) 
+    set(Boost_USE_MULTITHREADED      ON)
+    set(Boost_USE_STATIC_RUNTIME    OFF)
 ENDIF(WIN32)
 
 filter_valid_compiler_warnings(${WARN_LEVEL} -Wextra -Wno-long-long
