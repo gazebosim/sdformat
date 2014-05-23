@@ -63,7 +63,7 @@ macro (sdf_add_library _name)
   endif ()
   # Workaround for bug: http://www.cmake.org/Bug/print_bug_page.php?bug_id=11240 
   # correct linking against boost x64 libraries
-  if (MSVC AND CMAKE_SIZEOF_VOID_P == 8)
+  if (MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
     set_target_properties( ${_name} PROPERTIES STATIC_LIBRARY_FLAGS "/machine:x64")
   endif()
 endmacro ()
