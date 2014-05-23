@@ -114,9 +114,11 @@ else()
   set(WARN_LEVEL "-Wall")
 endif()
 
-# Need for M_PI constant
 if (WIN32)
+    # Need for M_PI constant
     add_definitions(-D_USE_MATH_DEFINES) 
+    # Use dynamic linking for boost
+    add_definitions(-DBOOST_ALL_DYN_LINK) 
 ENDIF(WIN32)
 
 filter_valid_compiler_warnings(${WARN_LEVEL} -Wextra -Wno-long-long
