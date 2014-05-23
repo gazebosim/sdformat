@@ -243,6 +243,8 @@ else (buid_errors)
       ${PROJECT_BINARY_DIR}
       ${PROJECT_BINARY_DIR}/include
       )
+  
+    link_directories(${PROJECT_BINARY_DIR}/src)
 
     add_subdirectory(test)
     add_subdirectory(src)
