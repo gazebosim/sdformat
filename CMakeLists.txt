@@ -157,9 +157,11 @@ if(NOT DEFINED USE_UPSTREAM_CFLAGS OR USE_UPSTREAM_CFLAGS)
     CACHE INTERNAL "C Flags for release" FORCE)
   set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
   
-  set (CMAKE_C_FLAGS_DEBUG " -ggdb3"
-    CACHE INTERNAL "C Flags for debug" FORCE)
-  set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+  if (NOT MSVC)
+    set (CMAKE_C_FLAGS_DEBUG " -ggdb3"
+      CACHE INTERNAL "C Flags for debug" FORCE)
+    set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+  endif()
 endif()
 
 #####################################
