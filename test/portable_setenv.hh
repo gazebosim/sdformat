@@ -4,7 +4,7 @@
 int setenv(const char name, const char *value, int /*rewrite*/)
 {
   std::stringstream sstr;
-  sstr<<name<<'='<<value;
+  sstr << name << '=' << value;
   return _putenv(sstr.str().c_str());
 }
 
@@ -15,5 +15,4 @@ void unsetenv(const char name)
   _putenv(sstr.str().c_str());
   return;
 }
-
 #endif
