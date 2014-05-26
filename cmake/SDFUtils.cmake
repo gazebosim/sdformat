@@ -108,7 +108,20 @@ macro (sdf_build_tests)
     string(REGEX REPLACE ".cc" "" BINARY_NAME ${GTEST_SOURCE_file})
     set(BINARY_NAME ${TEST_TYPE}_${BINARY_NAME})
 
-    add_executable(${BINARY_NAME} ${GTEST_SOURCE_file})
+    if (UNIX)
+      add_executable(${BINARY_NAME} ${GTEST_SOURCE_file})
+    elseif(WIN32)
+      add_executable(${BINARY_NAME} 
+	${GTEST_SOURCE_file}
+	${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinystr.cpp  
+        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlerror.cpp
+        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxml.cpp
+        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlparser.cpp
+      )
+    else()
+      message(FATAL_ERROR "Unsupported platform")
+    endif()
+
     add_dependencies(${BINARY_NAME}
       gtest gtest_main sdformat
       ${tinyxml_LIBRARIES}
@@ -127,13 +140,7 @@ macro (sdf_build_tests)
         gtest.lib
         gtest_main.lib
         sdformat.dll
-	${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinystr.cpp  
-        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlerror.cpp
-        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxml.cpp
-        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlparser.cpp
       )
-    else()
-      message(FATAL_ERROR "Unsupported platform")
     endif()
  
     add_test(${BINARY_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}
