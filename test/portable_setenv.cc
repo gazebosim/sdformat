@@ -8,11 +8,12 @@ int setenv(const char name, const char *value, int /*rewrite*/)
   return _putenv(sstr.str().c_str());
 }
 
-void setenv(const char name)
+void unsetenv(const char name)
 {
   std::stringstream sstr;
   sstr << name << '=';
-  return _putenv(sstr.str().c_str());
+  _putenv(sstr.str().c_str());
+  return;
 }
 
 #endif
