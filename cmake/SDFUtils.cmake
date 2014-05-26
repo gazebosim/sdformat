@@ -127,7 +127,10 @@ macro (sdf_build_tests)
         gtest.lib
         gtest_main.lib
         sdformat.dll
-        ${tinyxml_LIBRARIES}
+        win/tinyxml/tinystr.cpp  
+        win/tinyxml/tinyxmlerror.cpp
+        win/tinyxml/tinyxml.cpp
+        win/tinyxml/tinyxmlparser.cpp
       )
     else()
       message(FATAL_ERROR "Unsupported platform")
