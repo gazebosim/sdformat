@@ -127,6 +127,7 @@ macro (sdf_build_tests)
         gtest.lib
         gtest_main.lib
         sdformat.dll
+        ${tinyxml_LIBRARIES}
       )
     else()
       message(FATAL_ERROR "Unsupported platform")
