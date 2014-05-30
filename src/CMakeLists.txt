@@ -2,6 +2,7 @@ include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 link_directories(
   ${PROJECT_BINARY_DIR}/test
+  ${Boost_LIBRARY_DIR}
 )
 
 if (USE_EXTERNAL_URDF)
@@ -18,6 +19,8 @@ set (sources
   Param.cc
   SDF.cc
 )
+
+include_directories(${Boost_INCLUDE_DIRS})
 
 if (USE_EXTERNAL_TINYXML)
   include_directories(${tinyxml_INCLUDE_DIRS})
@@ -54,9 +57,7 @@ set (gtest_sources
 sdf_build_tests(${gtest_sources})
 
 sdf_add_library(sdformat ${sources})
-target_link_libraries(sdformat
-  ${Boost_LIBRARIES}
-)
+target_link_libraries(sdformat ${Boost_LIBRARIES})
 
 if (USE_EXTERNAL_TINYXML)
   link_directories(${tinyxml_LIBRARY_DIRS})
