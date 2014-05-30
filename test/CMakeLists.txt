@@ -15,6 +15,10 @@ if (USE_EXTERNAL_URDF)
   link_directories(${URDF_LIBRARY_DIRS})
 endif()
 
+if (USE_EXTERNAL_TINYXML)
+  link_directories(${tinyxml_LIBRARY_DIRS})
+endif()
+
 configure_file (test_config.h.in ${PROJECT_BINARY_DIR}/test_config.h)
 
 # Build gtest
