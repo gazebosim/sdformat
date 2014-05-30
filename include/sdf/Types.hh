@@ -18,8 +18,8 @@
 #ifndef _SDF_TYPES_HH_
 #define _SDF_TYPES_HH_
 
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
 #include "sdf/system_util.hh"
 

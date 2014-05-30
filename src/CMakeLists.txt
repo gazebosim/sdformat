@@ -5,8 +5,6 @@ link_directories(
   ${Boost_LIBRARY_DIR}
 )
 
-message (STATUS "Debug: ${Boost_LIBRARY_DIR}")
-
 if (USE_EXTERNAL_URDF)
   link_directories(${URDF_LIBRARY_DIRS})
 endif()

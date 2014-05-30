@@ -112,8 +112,8 @@ macro (sdf_build_tests)
       add_executable(${BINARY_NAME} ${GTEST_SOURCE_file})
     elseif(WIN32)
       add_executable(${BINARY_NAME} 
-	${GTEST_SOURCE_file}
-	${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinystr.cpp  
+        ${GTEST_SOURCE_file}
+        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinystr.cpp  
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlerror.cpp
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxml.cpp
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlparser.cpp
