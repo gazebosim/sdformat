@@ -37,7 +37,12 @@ bool init(SDFPtr _sdf)
   bool result = false;
 
   std::string filename;
-  filename = sdf::findFile("root.sdf");
+  std::string fileToFind = "root.sdf";
+
+  if (sdf::SDF::version == "1.0" || sdf::SDF::version == "1.2")
+    fileToFind = "gazebo.sdf";
+
+  filename = sdf::findFile(fileToFind);
 
   FILE *ftest = fopen(filename.c_str(), "r");
   if (ftest && initFile(filename, _sdf))
@@ -46,7 +51,7 @@ bool init(SDFPtr _sdf)
     fclose(ftest);
   }
   else
-    sdferr << "Unable to find or open SDF file[" << filename << "]\n";
+    sdferr << "Unable to find or open SDF file[" << fileToFind << "]\n";
 
   return result;
 }
@@ -337,7 +342,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
   {
     if (strcmp(sdfNode->Attribute("version"), SDF::version.c_str()) != 0)
     {
-      sdfwarn << "Converting a deprecated source[" << _source << "].\n";
+      sdfdbg << "Converting a deprecated source[" << _source << "].\n";
       Converter::Convert(_xmlDoc, SDF::version);
     }
 

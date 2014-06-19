@@ -1755,7 +1755,7 @@ void CreateGeometry(TiXmlElement* _elem,
       }
       break;
     default:
-      sdfwarn << "Unknown body type: [" << _geom->type
+      sdfwarn << "Unknown body type: [" << static_cast<int>(_geom->type)
         << "] skipped in geometry\n";
       break;
   }
@@ -1815,7 +1815,7 @@ std::string GetGeometryBoundingBox(
       break;
     default:
       _sizeVals[0] = _sizeVals[1] = _sizeVals[2] = 0;
-      sdfwarn << "Unknown body type: [" << _geom->type
+      sdfwarn << "Unknown body type: [" << static_cast<int>(_geom->type)
         << "] skipped in geometry\n";
       break;
   }
@@ -2437,7 +2437,7 @@ void CreateJoint(TiXmlElement *_root,
         jtype = "fixed";
         break;
       default:
-        sdfwarn << "Unknown joint type: [" << _link->parent_joint->type
+        sdfwarn << "Unknown joint type: [" << static_cast<int>(_link->parent_joint->type)
           << "] in link [" << _link->name << "]\n";
         break;
     }
@@ -2687,7 +2687,11 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
 
   // add robot to sdfXmlOut
   TiXmlElement *sdf = new TiXmlElement("sdf");
-  sdf->SetAttribute("version", SDF_VERSION);
+
+  // URDF is compatible with version 1.4. The automatic conversion script
+  // will up-convert URDF to SDF.
+  sdf->SetAttribute("version", "1.4");
+
   sdf->LinkEndChild(robot);
   sdfXmlOut.LinkEndChild(sdf);
 
