@@ -56,10 +56,10 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 
   if (!_quiet)
   {
-    sdfwarn << "  Version[" << origVersion << "] to Version[" << _toVersion
+    sdfdbg << "Version[" << origVersion << "] to Version[" << _toVersion
            << "]\n"
-           << "  Please use the gzsdf tool to update your SDF files.\n"
-           << "    $ gzsdf convert [sdf_file]\n";
+           << "  Please use the gz sdf tool to update your SDF files.\n"
+           << "    $ gz sdf -c [sdf_file]\n";
   }
 
   elem->SetAttribute("version", _toVersion);
@@ -67,8 +67,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   std::string origVersionStr = origVersion;
   boost::replace_all(origVersion, ".", "_");
 
-  std::string filename = sdf::findFile(
-      std::string("sdformat/") + _toVersion + "/" + origVersion + ".convert");
+  std::string filename = sdf::findFile(origVersion + ".convert");
 
   // Use convert file in the current sdf version folder for conversion. If file
   // does not exist, then find intermediate convert files and iteratively
@@ -78,15 +77,16 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   TiXmlDocument xmlDoc;
   if (!xmlDoc.LoadFile(filename))
   {
+    std::string sdfPath = sdf::findFile("sdformat/");
+
     // find all sdf version dirs in resource path
-    std::string sdfPath = sdf::findFile(std::string("sdformat/"), false);
     boost::filesystem::directory_iterator endIter;
     std::set<boost::filesystem::path> sdfDirs;
     if (boost::filesystem::exists(sdfPath)
         && boost::filesystem::is_directory(sdfPath))
     {
       for (boost::filesystem::directory_iterator dirIter(sdfPath);
-          dirIter != endIter ; ++dirIter)
+           dirIter != endIter ; ++dirIter)
       {
         if (boost::filesystem::is_directory(dirIter->status()))
         {
@@ -174,6 +174,12 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
   {
     Move(_elem, moveElem);
   }
+
+  for (TiXmlElement *addElem = _convert->FirstChildElement("add");
+     addElem; addElem = addElem->NextSiblingElement("add"))
+  {
+    Add(_elem, addElem);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -219,6 +225,41 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
   {
     _elem->RemoveAttribute(fromAttrName);
     _elem->LinkEndChild(replaceTo);
+  }
+}
+
+/////////////////////////////////////////////////
+void Converter::Add(TiXmlElement *_elem, TiXmlElement *_addElem)
+{
+  SDF_ASSERT(_elem != NULL, "SDF element is NULL");
+  SDF_ASSERT(_addElem != NULL, "Add element is NULL");
+
+  const char *attributeName = _addElem->Attribute("attribute");
+  const char *elementName = _addElem->Attribute("element");
+  const char *value = _addElem->Attribute("value");
+
+  if (!value)
+  {
+    sdferr << "No 'value' specified in <add>\n";
+    return;
+  }
+  if (!((attributeName == NULL) ^ (elementName == NULL)))
+  {
+    sdferr << "Exactly one 'element' or 'attribute'"
+           << " must be specified in <add>\n";
+    return;
+  }
+
+  if (attributeName)
+  {
+    _elem->SetAttribute(attributeName, value);
+  }
+  else
+  {
+    TiXmlElement *addElem = new TiXmlElement(elementName);
+    TiXmlText *addText = new TiXmlText(value);
+    addElem->LinkEndChild(addText);
+    _elem->LinkEndChild(addElem);
   }
 }
 

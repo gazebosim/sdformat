@@ -23,9 +23,13 @@ endif()
 project (SDFormat)
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
-set (SDF_MAJOR_VERSION 1)
-set (SDF_MINOR_VERSION 4)
-set (SDF_PATCH_VERSION 11)
+# The protocol version has nothing to do with the package version set below.
+# It represents the current version of sdformat implement by the software
+set (SDF_PROTOCOL_VERSION 1.5)
+
+set (SDF_MAJOR_VERSION 2)
+set (SDF_MINOR_VERSION 0)
+set (SDF_PATCH_VERSION 1)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
 set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION})
@@ -83,9 +87,21 @@ set (build_warnings "" CACHE INTERNAL "build warnings" FORCE)
 set (sdf_cmake_dir ${PROJECT_SOURCE_DIR}/cmake CACHE PATH
      "Location of CMake scripts")
 
+ message (STATUS "\n\n====== Finding 3rd Party Packages ======")
+include (${sdf_cmake_dir}/SearchForStuff.cmake)
+message (STATUS "----------------------------------------\n")
+
 #####################################
 # Build type cflags
 set (CMAKE_C_FLAGS_ALL " -Wall -Wextra -Wno-long-long -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wfloat-equal -Wshadow -Winit-self -Wswitch-default -Wmissing-include-dirs -pedantic" CACHE INTERNAL "General C Flags")
+
+# Check and add visibility hidden by default
+if (UNIX)
+  check_gcc_visibility()
+  if (GCC_SUPPORTS_VISIBILITY)
+         SET(CMAKE_C_FLAGS_ALL "${CMAKE_C_FLAGS_ALL} -fvisibility=hidden")
+  endif()
+endif()
 
 #####################################
 # Build type link flags
@@ -132,10 +148,6 @@ if ( "${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
 else()
   set (BUILD_TYPE_DEBUG FALSE)
 endif()
-
-message (STATUS "\n\n====== Finding 3rd Party Packages ======")
-include (${sdf_cmake_dir}/SearchForStuff.cmake)
-message (STATUS "----------------------------------------\n")
 
 
 #################################################
