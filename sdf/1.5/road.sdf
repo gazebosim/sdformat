@@ -12,22 +12,5 @@
     <description>A series of points that define the path of the road.</description>
   </element>
 
-  <element name="material" required="0">
-    <description>The material of the visual element.</description>
-
-    <element name="script" required="0">
-      <description>Name of material from an installed script file. This will override the color element if the script exists.</description>
-
-        <element name="uri" type="string" default="__default__" required="+">
-          <description>URI of the material script file</description>
-        </element>
-
-        <element name="name" type="string" default="__default__" required="1">
-          <description>Name of the script within the script file</description>
-        </element>
-
-    </element>
-
-  </element>
-
+  <include filename="material.sdf" required="0"/>
 </element>
