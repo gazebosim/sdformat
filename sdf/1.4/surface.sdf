@@ -11,26 +11,14 @@
   </element> <!-- End Bounce -->
 
   <element name="friction" required="0">
-    <description>Collection of parameters related to surface friction.</description>
-    <element name="magnitude" type="double" default="1.0" min="0.0" required="1">
-      <description>
-        Surface friction magnitude. This parameter is used as a multiplier for
-        several parameters that are physics-engine specific with the suffix _ratio.
-      </description>
-    </element>
+    <description></description>
     <element name="ode" required="0">
       <description>ODE friction parameters</description>
-      <element name="mu1_ratio" type="double" default="1.0" min="0.0" required="0">
-        <description>ODE friction multiplier in direction 1.</description>
+      <element name="mu" type="double" default="1" min="0.0" required="0">
+        <description>Coefficient of friction in the range of [0..1].</description>
       </element>
-      <element name="mu2_ratio" type="double" default="1.0" min="0.0" required="0">
-        <description>ODE friction multiplier in direction 2.</description>
-      </element>
-      <element name="mu" type="double" default="1" min="0.0" required="-1">
-        <description>Deprecated: coefficient of friction in the range of [0..1].</description>
-      </element>
-      <element name="mu2" type="double" default="1" min="0.0" required="-1">
-        <description>Deprecated: second coefficient of friction in the range of [0..1]</description>
+      <element name="mu2" type="double" default="1" min="0.0" required="0">
+        <description>Second coefficient of friction in the range of [0..1]</description>
       </element>
       <element name="fdir1" type="vector3" default="0 0 0" required="0">
         <description>3-tuple specifying direction of mu1 in the collision local reference frame.</description>
@@ -43,48 +31,19 @@
       </element>
     </element> <!-- End ODE -->
     <element name="bullet" required="0">
-      <element name="friction_ratio" type="double" default="1" min="0.0" required="0">
-        <description>Multiplier for coefficient of friction in direction 1.</description>
+      <element name="friction" type="double" default="1" min="0.0" required="0">
+        <description>Coefficient of friction in the range of [0..1].</description>
       </element>
-      <element name="friction2_ratio" type="double" default="1" min="0.0" required="0">
-        <description>Multiplier for coefficient of friction in direction 2.</description>
-      </element>
-      <element name="rolling_friction_ratio" type="double" default="1.0" min="0.0" required="0">
-        <description>Multiplier for coefficient of rolling friction.</description>
-      </element>
-      <element name="friction" type="double" default="1" min="0.0" required="-1">
-        <description>Deprecated: coefficient of friction in the range of [0..1].</description>
-      </element>
-      <element name="friction2" type="double" default="1" min="0.0" required="-1">
-        <description>Deprecated: coefficient of friction in the range of [0..1].</description>
+      <element name="friction2" type="double" default="1" min="0.0" required="0">
+        <description>Coefficient of friction in the range of [0..1].</description>
       </element>
       <element name="fdir1" type="vector3" default="0 0 0" required="0">
         <description>3-tuple specifying direction of mu1 in the collision local reference frame.</description>
       </element>
-      <element name="rolling_friction" type="double" default="1" required="-1">
-        <description>Deprecated: coefficient of friction in the range of [0..1]</description>
+      <element name="rolling_friction" type="double" default="1" required="0">
+        <description> coefficient of friction in the range of [0..1]</description>
       </element>
     </element> <!-- End Bullet -->
-    <element name="simbody" required="0">
-      <element name="static_friction_ratio" type="double" default="1.0" required="0">
-        <description>
-          Simbody multiplier for static friction (mu_s) as described by this plot:
-          http://gazebosim.org/wiki/File:Stribeck_friction.png
-        </description>
-      </element>
-      <element name="dynamic_friction_ratio" type="double" default="1.0" required="0">
-        <description>
-          Simbody multiplier for dynamic friction (mu_d) as described by this plot:
-          http://gazebosim.org/wiki/File:Stribeck_friction.png
-        </description>
-      </element>
-      <element name="viscous_friction" type="double" default="0.0" required="0">
-        <description>
-          Viscous friction (mu_v) with units of (1/velocity) as described by this plot:
-          http://gazebosim.org/wiki/File:Stribeck_friction.png
-        </description>
-      </element>
-    </element> <!-- End Simbody -->
   </element> <!-- End Friction -->
 
   <element name="contact" required="0">
