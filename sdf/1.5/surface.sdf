@@ -79,6 +79,18 @@
         <description>Deprecated: coefficient of friction in the range of [0..1]</description>
       </element>
     </element> <!-- End Bullet -->
+    <element name="dart" required="0">
+      <description>ODE friction parameters</description>
+      <element name="friction1_ratio" type="double" default="1.0" min="0.0" required="0">
+        <description>Friction multiplier in direction 1.</description>
+      </element>
+      <element name="friction2_ratio" type="double" default="1.0" min="0.0" required="0">
+        <description>Friction multiplier in direction 2.</description>
+      </element>
+      <element name="fdir1" type="vector3" default="0 0 0" required="0">
+        <description>3-tuple specifying direction of mu1 in the collision local reference frame.</description>
+      </element>
+    </element> <!-- End ODE -->
   </element> <!-- End Friction -->
 
   <element name="contact" required="0">
