@@ -42,7 +42,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <urdf_exception/exception.h>
