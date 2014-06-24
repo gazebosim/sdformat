@@ -23,9 +23,13 @@ endif()
 project (SDFormat)
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
-set (SDF_MAJOR_VERSION 1)
-set (SDF_MINOR_VERSION 5)
-set (SDF_PATCH_VERSION 0)
+# The protocol version has nothing to do with the package version set below.
+# It represents the current version of sdformat implement by the software
+set (SDF_PROTOCOL_VERSION 1.5)
+
+set (SDF_MAJOR_VERSION 2)
+set (SDF_MINOR_VERSION 0)
+set (SDF_PATCH_VERSION 1)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
 set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION})
@@ -83,19 +87,57 @@ set (build_warnings "" CACHE INTERNAL "build warnings" FORCE)
 set (sdf_cmake_dir ${PROJECT_SOURCE_DIR}/cmake CACHE PATH
      "Location of CMake scripts")
 
- message (STATUS "\n\n====== Finding 3rd Party Packages ======")
+include (${sdf_cmake_dir}/SDFUtils.cmake)
+
+message (STATUS "\n\n====== Finding 3rd Party Packages ======")
+ # Use of tinyxml. System installation on UNIX. Internal copy on WIN
+if (UNIX)
+  message (STATUS "Using system tinyxml")
+  set (USE_EXTERNAL_TINYXML True)
+elseif(WIN32)
+  message (STATUS "Using internal tinyxml code")
+  set (USE_EXTERNAL_TINYXML False)
+else()
+  message (STATUS "Unknown platform")
+  BUILD_ERROR("Unknown platform")
+endif()
 include (${sdf_cmake_dir}/SearchForStuff.cmake)
 message (STATUS "----------------------------------------\n")
 
 #####################################
-# Build type cflags
-set (CMAKE_C_FLAGS_ALL " -Wall -Wextra -Wno-long-long -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wfloat-equal -Wshadow -Winit-self -Wswitch-default -Wmissing-include-dirs -pedantic" CACHE INTERNAL "General C Flags")
+# Check if warning options are avaliable for the compiler and return WARNING_CXX_FLAGS variable
+# MSVC generates tons of warnings on gtest code. 
+# Recommended to use /W4 instead of /Wall
+if (MSVC)
+  set(WARN_LEVEL "/W4")
+else()
+  set(WARN_LEVEL "-Wall")
+endif()
+
+if (WIN32)
+    # Need for M_PI constant
+    add_definitions(-D_USE_MATH_DEFINES) 
+    # Use dynamic linking for boost
+    add_definitions(-DBOOST_ALL_DYN_LINK)
+    if (MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+      # Not need if proper cmake gnerator (-G "...Win64") is passed to cmake
+      # Enable as a second measeure to workaround over bug
+      # http://www.cmake.org/Bug/print_bug_page.php?bug_id=11240 
+      set(CMAKE_SHARED_LINKER_FLAGS "/machine:x64")
+    endif()
+ENDIF(WIN32)
+
+filter_valid_compiler_warnings(${WARN_LEVEL} -Wextra -Wno-long-long
+  -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wno-unused-value
+  -Wfloat-equal -Wshadow -Winit-self -Wswitch-default
+  -Wmissing-include-dirs -pedantic)
+set (CMAKE_C_FLAGS_ALL "${WARNING_CXX_FLAGS}")
 
 # Check and add visibility hidden by default
 if (UNIX)
   check_gcc_visibility()
   if (GCC_SUPPORTS_VISIBILITY)
-         SET(CMAKE_C_FLAGS_ALL "${CMAKE_C_FLAGS_ALL} -fvisibility=hidden")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
   endif()
 endif()
 
@@ -115,9 +157,11 @@ if(NOT DEFINED USE_UPSTREAM_CFLAGS OR USE_UPSTREAM_CFLAGS)
     CACHE INTERNAL "C Flags for release" FORCE)
   set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
   
-  set (CMAKE_C_FLAGS_DEBUG " -ggdb3"
-    CACHE INTERNAL "C Flags for debug" FORCE)
-  set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+  if (NOT MSVC)
+    set (CMAKE_C_FLAGS_DEBUG " -ggdb3"
+      CACHE INTERNAL "C Flags for debug" FORCE)
+    set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+  endif()
 endif()
 
 #####################################
@@ -199,6 +243,8 @@ else (buid_errors)
       ${PROJECT_BINARY_DIR}
       ${PROJECT_BINARY_DIR}/include
       )
+  
+    link_directories(${PROJECT_BINARY_DIR}/src)
 
     add_subdirectory(test)
     add_subdirectory(src)

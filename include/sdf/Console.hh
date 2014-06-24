@@ -70,7 +70,10 @@ namespace sdf
             *this->stream << _rhs;
 
           if (Console::Instance()->logFileStream.is_open())
+          {
             Console::Instance()->logFileStream << _rhs;
+            Console::Instance()->logFileStream.flush();
+          }
 
           return *this;
         }
