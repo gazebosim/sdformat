@@ -1,0 +1,46 @@
+<!-- Population -->
+<element name="population" required="*">
+  <description>The population element defines how and where a set of models will
+    be automatically populated in Gazebo.</description>
+
+  <attribute name="name" type="string" default="__default__" required="1">
+    <description>A unique name for the population. This name must not match another population in the world.</description>
+  </attribute>
+
+  <element name="region" required="1">
+    <description>The region in which the model will be placed.</description>
+    <element name="min" type="vector3" default="1 1 1" required="1">
+      <description>
+        Minimum bounding box region specified in world coordinates.
+      </description>
+    </element><!-- End Min -->
+    <element name="max" type="vector3" default="1 1 1" required="1">
+      <description>
+        Maximum bounding box region specified in world coordinates.
+      </description>
+    </element><!-- End Min -->
+
+  </element><!-- End Region -->
+
+  <element name="density" type="double" default="1" required="1">
+    <description>Density is multiplied by the 'population_count' to determine the number of times to place this model.</description>
+  </element><!-- End Density -->
+
+  <element name="model_count" type="int" default="1" required="1">
+    <description>The number of models to place.</description>
+  </element><!-- End Model_count -->
+
+  <element name="prevent_collisions" type="bool" default="false" required="0">
+    <description>Set to true to make sure no models overlap.</description>
+  </element><!-- End Prevent_collisions -->
+
+  <element name="distribution" type="string" default="random" required="0">
+    <description>Define how the objects will be placed in the specified region.
+      - random: Models placed at random.
+      - grid: Models evenly placed in a 2D grid pattern.
+      - linear-x: Models evently placed in a row along the global x-axis.
+      - linear-y: Models evently placed in a row along the global y-axis.
+      - linear-z: Models evently placed in a row along the global z-axis.
+    </description>
+  </element><!-- End Distribution -->
+</element> <!-- End Population -->
