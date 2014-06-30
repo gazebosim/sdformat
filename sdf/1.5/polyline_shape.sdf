@@ -3,7 +3,7 @@
 
   <element name="point" type="vector2d" default="0 0" required="+">
     <description>
-      A series of points define the path of the polyline.
+      A series of points that define the path of the polyline.
     </description>
   </element>
 
