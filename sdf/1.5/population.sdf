@@ -43,4 +43,7 @@
       - linear-z: Models evently placed in a row along the global z-axis.
     </description>
   </element><!-- End Distribution -->
+
+  <include filename="model.sdf" required="1"/>
+
 </element> <!-- End Population -->
