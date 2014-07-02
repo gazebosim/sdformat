@@ -34,3 +34,26 @@ if (tinyxml_FAIL)
   message (STATUS "Looking for tinyxml.h - not found")
   BUILD_ERROR("Missing: tinyxml")
 endif()
+
+################################################
+# Find urdfdom parser
+if (USE_EXTERNAL_URDF)
+  if (NOT PKG_CONFIG_FOUND)
+      BUILD_ERROR ("pkgconfig not found. Please install to so USE_EXTERNAL_URDF can found the urdf library")
+  else()
+    message(STATUS ${URDF_INCLUDE_DIRS})
+    pkg_check_modules(URDF urdfdom>=0.3)
+    message(STATUS ${URDF_INCLUDE_DIRS})
+    if (NOT URDF_FOUND)
+      pkg_check_modules(URDF urdfdom)
+      # urdfdom library found < 0.3
+      set (URDF_GT_0P3 FALSE)
+      if (NOT URDF_FOUND)
+        BUILD_ERROR ("URDF library not found. Please install it to use with USE_EXTERNAL_URDF or set this flag to false to use internal URDF code")
+      endif()
+    else()
+      # urdfdom library found >= 0.3
+      set (URDF_GT_0P3 TRUE)
+    endif()
+  endif()
+endif()
