@@ -37,7 +37,6 @@ endif()
 
 ################################################
 # Find urdfdom parser
-set(USE_EXTERNAL_URDF TRUE)
 if (USE_EXTERNAL_URDF)
   if (NOT PKG_CONFIG_FOUND)
       BUILD_ERROR ("pkgconfig not found. Please install to so USE_EXTERNAL_URDF can found the urdf library")
