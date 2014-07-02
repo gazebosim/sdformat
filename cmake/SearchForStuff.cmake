@@ -37,23 +37,37 @@ endif()
 
 ################################################
 # Find urdfdom parser
+set(USE_EXTERNAL_URDF TRUE)
 if (USE_EXTERNAL_URDF)
   if (NOT PKG_CONFIG_FOUND)
       BUILD_ERROR ("pkgconfig not found. Please install to so USE_EXTERNAL_URDF can found the urdf library")
   else()
-    message(STATUS ${URDF_INCLUDE_DIRS})
+    # check for urdfdom with pkg-config
     pkg_check_modules(URDF urdfdom>=0.3)
-    message(STATUS ${URDF_INCLUDE_DIRS})
+
     if (NOT URDF_FOUND)
+      # version >= 0.3.x not found, check for urdfdom again with no version
+      # restriction.
       pkg_check_modules(URDF urdfdom)
-      # urdfdom library found < 0.3
-      set (URDF_GE_0P3 FALSE)
+
+
       if (NOT URDF_FOUND)
         BUILD_ERROR ("URDF library not found. Please install it to use with USE_EXTERNAL_URDF or set this flag to false to use internal URDF code")
+      else()
+        # urdfdom library found < 0.3, unset flag
+        set (URDF_GE_0P3 FALSE)
       endif()
+
     else()
-      # urdfdom library found >= 0.3
+      # urdfdom library found >= 0.3, set flag
       set (URDF_GE_0P3 TRUE)
     endif()
+
+    # debug
+    message(STATUS "\n\ncheck include dirs:\n${URDF_INCLUDEDIR}\n\n")
+    message(STATUS "\n\ncheck lib dirs:\n${URDF_LIBDIR}\n\n")
+    # what am I doing here? pkg-config and cmake
+    set(URDF_INCLUDE_DIRS ${URDF_INCLUDEDIR})
+    set(URDF_LIBRARY_DIRS ${URDF_LIBDIR})
   endif()
 endif()
