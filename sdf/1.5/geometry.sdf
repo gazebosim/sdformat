@@ -12,6 +12,7 @@
   <include filename="image_shape.sdf" required="0"/>
   <include filename="mesh_shape.sdf" required="0"/>
   <include filename="plane_shape.sdf" required="0"/>
+  <include filename="polyline_shape.sdf" required="0"/>
   <include filename="sphere_shape.sdf" required="0"/>
   <include filename="polyline_shape.sdf" required="0"/>
 
