@@ -18,11 +18,26 @@
           Minimum bounding box region specified in world coordinates.
         </description>
       </element><!-- End Min -->
-      <element name="max" type="vector3" default="1 1 1" required="1">
+      <element name="max" type="vector3" default="1 1 1" required="0">
         <description>
           Maximum bounding box region specified in world coordinates.
         </description>
       </element><!-- End Min -->
+      <element name="rows" type="int" default="1" required="0">
+        <description>
+          Number of rows in the grid.
+        </description>
+      </element><!-- End Rows -->
+      <element name="cols" type="int" default="1" required="0">
+        <description>
+          Number of columns in the grid.
+        </description>
+      </element><!-- End Columns -->
+      <element name="step" type="vector3" default="0.5 0.5 0" required="0">
+        <description>
+          Distance between elements of the grid.
+        </description>
+      </element><!-- End Step -->
     </element><!-- Cuboid -->
 
     <element name="cylinder" required="0">
@@ -43,13 +58,9 @@
           Height of the cylinder.
         </description>
       </element><!-- End Height -->
-    </element><!-- Cylinder -->
+    </element><!-- End Cylinder -->
 
   </element><!-- End Region -->
-
-  <element name="density" type="double" default="1" required="1">
-    <description>Density is multiplied by the 'population_count' to determine the number of times to place this model.</description>
-  </element><!-- End Density -->
 
   <element name="model_count" type="int" default="1" required="1">
     <description>The number of models to place.</description>
@@ -62,6 +73,7 @@
   <element name="distribution" type="string" default="random" required="0">
     <description>Define how the objects will be placed in the specified region.
       - random: Models placed at random.
+      - uniform: Models evenly placed in a 2D grid pattern.
       - grid: Models evenly placed in a 2D grid pattern.
       - linear-x: Models evently placed in a row along the global x-axis.
       - linear-y: Models evently placed in a row along the global y-axis.
