@@ -62,9 +62,6 @@ if (USE_EXTERNAL_URDF)
       set (URDF_GE_0P3 TRUE)
     endif()
 
-    # debug
-    message(STATUS "\n\ncheck include dirs:\n${URDF_INCLUDEDIR}\n\n")
-    message(STATUS "\n\ncheck lib dirs:\n${URDF_LIBDIR}\n\n")
     # what am I doing here? pkg-config and cmake
     set(URDF_INCLUDE_DIRS ${URDF_INCLUDEDIR})
     set(URDF_LIBRARY_DIRS ${URDF_LIBDIR})
