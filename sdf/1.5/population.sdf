@@ -7,18 +7,43 @@
     <description>A unique name for the population. This name must not match another population in the world.</description>
   </attribute>
 
-  <element name="region" required="1">
+  <element name="region" type="string" default="cuboid" required="1">
     <description>The region in which the model will be placed.</description>
-    <element name="min" type="vector3" default="1 1 1" required="1">
-      <description>
-        Minimum bounding box region specified in world coordinates.
-      </description>
-    </element><!-- End Min -->
-    <element name="max" type="vector3" default="1 1 1" required="1">
-      <description>
-        Maximum bounding box region specified in world coordinates.
-      </description>
-    </element><!-- End Min -->
+
+    <element name="cuboid" required="0">
+      <description>The objects will be distributed inside a cuboid.</description>
+
+      <element name="min" type="vector3" default="1 1 1" required="1">
+        <description>
+          Minimum bounding box region specified in world coordinates.
+        </description>
+      </element><!-- End Min -->
+      <element name="max" type="vector3" default="1 1 1" required="1">
+        <description>
+          Maximum bounding box region specified in world coordinates.
+        </description>
+      </element><!-- End Min -->
+    </element><!-- Cuboid -->
+
+    <element name="cylinder" required="0">
+      <description>The objects will be distributed inside a cylinder.</description>
+
+      <element name="center" type="vector3" default="0 0 0" required="1">
+        <description>
+          Center of the lower base.
+        </description>
+      </element><!-- End Center -->
+      <element name="radius" type="double" default="1" required="1">
+        <description>
+          Radius of the cylinder.
+        </description>
+      </element><!-- End Radius -->
+      <element name="height" type="double" default="1" required="1">
+        <description>
+          Height of the cylinder.
+        </description>
+      </element><!-- End Height -->
+    </element><!-- Cylinder -->
 
   </element><!-- End Region -->
 
