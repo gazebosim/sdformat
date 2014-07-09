@@ -49,9 +49,6 @@ target_link_libraries(sdformat
   ${Boost_LIBRARIES}
 )
 
-message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
-message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
-
 if (USE_EXTERNAL_URDF)
   target_link_libraries(sdformat ${URDF_LIBRARIES})
 endif()
