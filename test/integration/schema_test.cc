@@ -23,7 +23,7 @@
 #include "test_config.h"
 
 const std::string SDF_ROOT_SCHEMA = std::string(PROJECT_BINARY_DIR)
-  + "/sdf/" + SDF_VERSION + "/root.xsd";
+  + "/sdf/" + SDF_PROTOCOL_VERSION + "/root.xsd";
 
 const std::string SDF_TEST_PR2 = std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/model/pr2.sdf";
