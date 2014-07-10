@@ -347,7 +347,6 @@ void ReduceVisualToParent(UrdfLinkPtr _link,
     viss.reset(new std::vector<UrdfVisualPtr>);
     viss->push_back(_link->visual);
   }
-dd a comment to this line
   else
   {
     viss = boost::shared_ptr<std::vector<UrdfVisualPtr> >(&_link->visual_array);
