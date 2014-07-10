@@ -6,9 +6,9 @@
     <description></description>
   </attribute>
 
-  <attribute name="static" type="bool" default="false" required="0">
-    <description></description>
-  </attribute>
+  <element name="static" type="bool" default="true" required="0">
+    <description>Actors should be static, in terms of physics simulation.</description>
+  </element>
 
   <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
     <description>Origin of the actor</description>
