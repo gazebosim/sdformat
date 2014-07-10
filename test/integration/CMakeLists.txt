@@ -12,3 +12,6 @@ set(tests
 link_directories(${PROJECT_BINARY_DIR}/test)
 
 sdf_build_tests(${tests})
+
+# Need to run schema target (build .xsd files) before running schema_test
+add_dependencies(${TEST_TYPE}_schema_test schema)
