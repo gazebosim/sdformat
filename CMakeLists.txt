@@ -20,7 +20,7 @@ if(UNIX AND NOT WIN32)
  endif(CMAKE_UNAME)
 endif()
 
-project (SDFormat2)
+project (SDFormat)
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 # The protocol version has nothing to do with the package version set below.
