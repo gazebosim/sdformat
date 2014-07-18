@@ -12,6 +12,13 @@
         </convert>
       </convert>
     </convert>
+
+    <convert name="actor">
+      <rename>
+        <from attribute="static"/>
+        <to element="static"/>
+      </rename>
+    </convert>
   </convert>
 
   <!-- for model sdfs -->
@@ -23,6 +30,13 @@
       <convert name="axis2">
         <add element="use_parent_model_frame" value="true"/>
       </convert>
+    </convert>
+
+    <convert name="actor">
+      <rename>
+        <from attribute="static"/>
+        <to element="static"/>
+      </rename>
     </convert>
   </convert>
 
