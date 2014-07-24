@@ -776,7 +776,6 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
       for (TiXmlAttribute *attribute = elemXml->FirstAttribute();
            attribute; attribute = attribute->Next())
       {
-        std::cerr << attribute->ValueStr() << std::endl;
         element->AddAttribute(attribute->Name(), "string", "", 1, "");
         element->GetAttribute(attribute->Name())->SetFromString(
           attribute->ValueStr());
