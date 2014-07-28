@@ -22,7 +22,7 @@
         <description>
           Maximum bounding box region specified in world coordinates.
         </description>
-      </element><!-- End Min -->
+      </element><!-- End Max -->
       <element name="rows" type="int" default="1" required="0">
         <description>
           Number of rows in the grid.
@@ -66,11 +66,14 @@
     <description>The number of models to place.</description>
   </element><!-- End Model_count -->
 
-  <element name="distribution" type="string" default="random" required="0">
+  <element name="distribution" type="string" default="random" required="1">
     <description>Define how the objects will be placed in the specified region.
       - random: Models placed at random.
-      - uniform: Models evenly placed in a 2D grid pattern.
-      - grid: Models evenly placed in a 2D grid pattern.
+      - uniform: Models approximately placed in a 2D grid pattern with control
+                 over the number of objects.
+      - grid: Models evenly placed in a 2D grid pattern. The number of objects
+              is not explicitly specified, it is based on the number of rows and
+              columns of the grid.
       - linear-x: Models evently placed in a row along the global x-axis.
       - linear-y: Models evently placed in a row along the global y-axis.
       - linear-z: Models evently placed in a row along the global z-axis.
