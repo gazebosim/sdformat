@@ -76,4 +76,3 @@ TEST(PluginAttribute, ParseAttributes)
               std::string("value"));
   }
 }
-
