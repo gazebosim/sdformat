@@ -61,6 +61,12 @@
       <element name="friction" type="double" default="0" required="0">
         <description>The physical static friction value of the joint.</description>
       </element>
+      <element name="spring_reference" type="double" default="0" required="1">
+        <description>The spring reference position for this joint axis.</description>
+      </element>
+      <element name="spring_stiffness" type="double" default="0" required="1">
+        <description>The spring stiffness for this joint axis.</description>
+      </element>
     </element> <!-- End Dynamics -->
     <element name="limit" required="1">
       <description>specifies the limits of this joint</description>
@@ -113,6 +119,12 @@
       </element>
       <element name="friction" type="double" default="0" required="0">
         <description>The physical static friction value of the joint.</description>
+      </element>
+      <element name="spring_reference" type="double" default="0" required="1">
+        <description>The spring reference position for this joint axis.</description>
+      </element>
+      <element name="spring_stiffness" type="double" default="0" required="1">
+        <description>The spring stiffness for this joint axis.</description>
       </element>
     </element> <!-- End Dynamics -->
 

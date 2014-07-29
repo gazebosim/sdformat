@@ -27,7 +27,7 @@ set (sdfs
   physics.sdf
   plane_shape.sdf
   plugin.sdf
-  population.sdf
+  polyline_shape.sdf
   projector.sdf
   ray.sdf
   rfidtag.sdf

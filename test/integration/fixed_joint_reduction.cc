@@ -27,11 +27,31 @@ const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
 const std::string SDF_TEST_FILE_SIMPLE =
   std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/fixed_joint_reduction_simple.urdf";
+const std::string SDF_TEST_FILE_VISUAL =
+  std::string(PROJECT_SOURCE_PATH)
+  + "/test/integration/fixed_joint_reduction_visual.urdf";
 
 const double gc_tolerance = 1e-6;
 
+void FixedJointReductionEquivalence(const std::string &_file);
+
 /////////////////////////////////////////////////
 TEST(SDFParser, FixedJointReductionEquivalenceTest)
+{
+  FixedJointReductionEquivalence(SDF_TEST_FILE);
+}
+
+/////////////////////////////////////////////////
+// This test uses a urdf that has a fixed joint whose parent
+// has no visuals. This can cause a seg-fault with the wrong
+// version of urdfdom (see #63).
+TEST(SDFParser, FixedJointReductionVisualTest)
+{
+  FixedJointReductionEquivalence(SDF_TEST_FILE_VISUAL);
+}
+
+/////////////////////////////////////////////////
+void FixedJointReductionEquivalence(const std::string &_file)
 {
   char *pathCStr = getenv("SDF_PATH");
   boost::filesystem::path path = PROJECT_SOURCE_PATH;
@@ -40,7 +60,7 @@ TEST(SDFParser, FixedJointReductionEquivalenceTest)
 
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
+  ASSERT_TRUE(sdf::readFile(_file, robot));
   if (pathCStr)
   {
     setenv("SDF_PATH", pathCStr, 1);
