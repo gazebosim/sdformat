@@ -30,7 +30,7 @@
 1. Log messages to a file, reduce console output
     * [Pull request 33](https://bitbucket.org/osrf/sdformat/pull-request/33/log-messages-to-file-8)
 1. Generalize ode's <provide_feedback> element
-    * (Pull request 38](https://bitbucket.org/osrf/sdformat/pull-request/38/add-provide_feedback-for-bullet-joint)
+    * [Pull request 38](https://bitbucket.org/osrf/sdformat/pull-request/38/add-provide_feedback-for-bullet-joint)
 1. Various bug, style and test fixes
 
 ### SDFormat 1.4.5 (2013-07-23)
