@@ -773,6 +773,14 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
       if (elemXml->GetText() != NULL)
         element->AddValue("string", elemXml->GetText(), "1");
 
+      for (TiXmlAttribute *attribute = elemXml->FirstAttribute();
+           attribute; attribute = attribute->Next())
+      {
+        element->AddAttribute(attribute->Name(), "string", "", 1, "");
+        element->GetAttribute(attribute->Name())->SetFromString(
+          attribute->ValueStr());
+      }
+
       copyChildren(element, elemXml);
       _sdf->InsertElement(element);
     }
