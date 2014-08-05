@@ -5,6 +5,7 @@ set(tests
   cfm_damping_implicit_spring_damper.cc
   fixed_joint_reduction.cc
   joint_axis_frame.cc
+  plugin_attribute.cc
   provide_feedback.cc
 )
 
