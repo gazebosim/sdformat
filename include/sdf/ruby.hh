@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Open Source Robotics Foundation
+ * Copyright 2014 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 #ifndef _SDF_RUBY_HH_
 #define _SDF_RUBY_HH_
 
-// This file exists to prevernt compiler warning.
+// This file exists to prevent compiler warning.
 // This file is not installed. It s only used internally by the parser.
 
 // This disables warning messages for ruby
