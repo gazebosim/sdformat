@@ -20,6 +20,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "sdf/ruby.hh"
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
 #include "sdf/SDFImpl.hh"
@@ -861,5 +862,55 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
     }
     elem = nextElem;
   }
+}
+
+//////////////////////////////////////////////////
+std::string erbString(const std::string &_string)
+{
+  if (_string.empty())
+    return "";
+
+  std::string result;
+
+  // Initialize ruby
+  ruby_init();
+  ruby_init_loadpath();
+  rb_set_safe_level(0);
+  ruby_script("ruby");
+
+  // Create the ruby command
+  std::string cmd = "require 'erb'; ERB.new('" + _string + "').result";
+
+  // Run the ERB parser
+  VALUE ret = rb_eval_string_protect(cmd.c_str(), 0);
+
+  // Convert ruby string to std::string
+  if (RSTRING(ret)->as.heap.ptr != NULL)
+    result.assign(RSTRING(ret)->as.heap.ptr, RSTRING(ret)->as.heap.len);
+  else
+    sdferr << "Unable to parse string[" << _string << "] using ERB.\n";
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+std::string erbFile(const std::string &_filename)
+{
+  if (_filename.empty())
+    return "";
+
+  // Make sure the file exists
+  if (!boost::filesystem::exists(boost::filesystem::path(_filename)))
+  {
+    sdferr << "Error: File doesn't exist[" << _filename << "]\n";
+    return "";
+  }
+
+  // Read file data
+  std::ifstream in(_filename.c_str());
+  std::string data((std::istreambuf_iterator<char>(in)),
+                    std::istreambuf_iterator<char>());
+
+  return erbString(data);
 }
 }

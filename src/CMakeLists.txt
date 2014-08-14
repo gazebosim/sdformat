@@ -3,7 +3,9 @@ include (${sdf_cmake_dir}/SDFUtils.cmake)
 link_directories(
   ${PROJECT_BINARY_DIR}/test
   ${tinyxml_LIBRARY_DIRS}
+  ${ruby_LIBDIR}
 )
+include_directories(${ruby_INCLUDE_DIRS})
 
 if (USE_EXTERNAL_URDF)
   link_directories(${URDF_LIBRARY_DIRS})
@@ -48,6 +50,7 @@ sdf_add_library(sdformat ${sources})
 target_link_libraries(sdformat
   ${tinyxml_LIBRARIES}
   ${Boost_LIBRARIES}
+  ${ruby_LIBRARIES}
 )
 
 message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")

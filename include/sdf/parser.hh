@@ -83,5 +83,17 @@ namespace sdf
 
   SDFORMAT_VISIBLE
   void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF);
+
+  /// \brief Parse a string using ERB.
+  /// \param[in] _string String to parse.
+  /// \return ERB parsed string.
+  SDFORMAT_VISIBLE
+  std::string erbString(const std::string &_string);
+
+  /// \brief Parse an string using ERB.
+  /// \param[in] _filename File to parse.
+  /// \return ERB parsed file.
+  SDFORMAT_VISIBLE
+  std::string erbFile(const std::string &_filename);
 }
 #endif

@@ -75,3 +75,10 @@ macro (check_gcc_visibility)
   include (CheckCXXCompilerFlag)
   check_cxx_compiler_flag(-fvisibility=hidden GCC_SUPPORTS_VISIBILITY)
 endmacro()
+
+################################################
+# Require ruby-1.9 to parse ERB files
+pkg_check_modules(ruby ruby-1.9)
+if (NOT ruby_FOUND)
+  BUILD_ERROR("Ruby (ruby-dev) is required to parse ERB files.")
+endif()
