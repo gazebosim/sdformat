@@ -591,7 +591,23 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
                 sdfSearch = sdfSearch->NextSiblingElement("sdf");
               }
 
-              filename = modelPath + "/" + sdfXML->GetText();
+              if (sdfXML != NULL)
+              {
+                filename = modelPath + "/" + sdfXML->GetText();
+              }
+              else
+              {
+                // no valid <sdf> file, try <urdf>
+                TiXmlElement *urdfXML = modelXML->FirstChildElement("urdf");
+                if (urdfXML != NULL)
+                {
+                  filename = modelPath + "/" + urdfXML->GetText();
+                }
+                else
+                {
+                  sdferr << "No valid <sdf> or <urdf> file.\n";
+                }
+              }
             }
           }
         }
