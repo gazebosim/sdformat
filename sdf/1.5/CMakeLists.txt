@@ -28,6 +28,7 @@ set (sdfs
   plane_shape.sdf
   plugin.sdf
   polyline_shape.sdf
+  population.sdf
   projector.sdf
   ray.sdf
   rfidtag.sdf
