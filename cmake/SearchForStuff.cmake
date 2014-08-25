@@ -77,8 +77,54 @@ macro (check_gcc_visibility)
 endmacro()
 
 ################################################
-# Require ruby-1.9 to parse ERB files
-find_package(Ruby 1.9)
-if (NOT RUBY_FOUND)
+# Finding Ruby is complicated. We want to avoid finding the version of Ruby
+# that is installed via rbenv because the library is not usually in the 
+# LIBRARY_PATH. Unfortunately, the FindRuby.cmake will return the version
+# of Ruby installed locally using rbenv. So, we first try to use pkg-config.
+# If pkg-config fails, then we try find_library and find_path. If that fails,
+# then we try find_package.
+
+set (ruby_versions 1.9 1.8)
+
+foreach (ver ${ruby_versions})
+  # Check if pkg-config finds ruby
+  pkg_check_modules(ruby ruby-${ver})
+  if (NOT ruby_FOUND)
+    if (${ver} EQUAL 1.9)
+      set (ver_full 1.9.1)
+    elseif(${ver} EQUAL 1.8)
+      set (ver_full 1.8.0)
+    endif()
+
+    # pkg-config failed, so try using find_library and find_path
+    find_library(RUBY_LIBRARY NAMES ruby-${ver_full})
+    find_path(RUBY_INCLUDE_DIRS NAMES ruby.h
+      PATHS /usr/include/ruby-${ver_full})
+
+    # if find_library and find_path failed, try using find_package
+    if (NOT RUBY_LIBRARY)
+      find_package(Ruby ${ver})
+
+      # Make sure we don't count the static version.
+      if ("${RUBY_LIBRARY}" MATCHES ".*-static.a")
+        set (RUBY_LIBRARY RUBY_LIBRARY-NOTFOUND)
+        set (RUBY_INCLUDE_DIRS RUBY_INCLUDE_DIRS-NOTFOUND)
+      endif()
+    endif()
+
+  else ()
+    set (RUBY_LIBRARY ${ruby_LIBRARIES})
+    set (RUBY_INCLUDE_DIRS ${ruby_INCLUDE_DIRS})
+  endif()
+
+  # Break if ruby was found
+  if (RUBY_LIBRARY AND RUBY_INCLUDE_DIRS)
+    break()
+  endif()
+endforeach()
+
+# Generate error if ruby was not found
+if (NOT RUBY_LIBRARY)
+  message(STATUS "Looking for libruby - not found")
   BUILD_ERROR("Ruby (ruby-dev) is required to parse ERB files.")
 endif()

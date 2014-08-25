@@ -24,5 +24,6 @@
 #pragma GCC system_header
 
 #include <ruby/ruby.h>
+#include <ruby/version.h>
 
 #endif

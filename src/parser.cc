@@ -885,8 +885,13 @@ std::string erbString(const std::string &_string)
   VALUE ret = rb_eval_string_protect(cmd.c_str(), 0);
 
   // Convert ruby string to std::string
+#if RUBY_API_VERSION_CODE < 10900
+  if (RSTRING(ret)->ptr.ptr != NULL)
+    result.assign(RSTRING(ret)->ptr.ptr, RSTRING(ret)->ptr.len);
+#else
   if (RSTRING(ret)->as.heap.ptr != NULL)
     result.assign(RSTRING(ret)->as.heap.ptr, RSTRING(ret)->as.heap.len);
+#endif
   else
     sdferr << "Unable to parse string[" << _string << "] using ERB.\n";
 
