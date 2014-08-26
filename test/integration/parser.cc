@@ -61,7 +61,8 @@ std::string get_sha1(const T &_buffer)
 TEST(Parser, ParseERB)
 {
   // Parse the ERB file
-  std::string parsed = sdf::erbFile(RSDF_TEST_FILE);
+  std::string parsed;
+  EXPECT_TRUE(sdf::erbFile(RSDF_TEST_FILE, parsed));
 
   // Make sure the parsed string is correct.
   EXPECT_EQ(get_sha1(parsed), "6daaea47155b80ae9ff20e9b41948f455dd6f39b");

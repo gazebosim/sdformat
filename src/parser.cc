@@ -262,7 +262,15 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
     return false;
   }
 
-  xmlDoc.LoadFile(filename);
+  // Parse using ERB
+  std::string erbParsed;
+  if (!erbFile(filename, erbParsed))
+  {
+    sdferr << "Failed to ERB parse file[" << _filename << "]\n";
+    return false;
+  }
+
+  xmlDoc.Parse(erbParsed.c_str());
   if (readDoc(&xmlDoc, _sdf, filename))
     return true;
   else
@@ -287,8 +295,16 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, SDFPtr _sdf)
 {
+  // Parse using ERB
+  std::string erbParsed;
+  if (!erbString(_xmlString, erbParsed))
+  {
+    sdferr << "Unable to parse XML string using ERB\n";
+    return false;
+  }
+
   TiXmlDocument xmlDoc;
-  xmlDoc.Parse(_xmlString.c_str());
+  xmlDoc.Parse(erbParsed.c_str());
   if (readDoc(&xmlDoc, _sdf, "data-string"))
     return true;
   else
@@ -313,8 +329,16 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, ElementPtr _sdf)
 {
+  // Parse using ERB
+  std::string erbParsed;
+  if (!erbString(_xmlString, erbParsed))
+  {
+    sdferr << "Unable to parse XML string using ERB\n";
+    return false;
+  }
+
   TiXmlDocument xmlDoc;
-  xmlDoc.Parse(_xmlString.c_str());
+  xmlDoc.Parse(erbParsed.c_str());
   if (readDoc(&xmlDoc, _sdf, "data-string"))
     return true;
   else
@@ -865,21 +889,22 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
 }
 
 //////////////////////////////////////////////////
-std::string erbString(const std::string &_string)
+bool erbString(const std::string &_string, std::string &_result)
 {
-  if (_string.empty())
-    return "";
-
-  std::string result;
+  static bool rubyInitialized = false;
 
   // Initialize ruby
-  ruby_init();
-  ruby_init_loadpath();
-  rb_set_safe_level(0);
-  ruby_script("ruby");
+  if (!rubyInitialized)
+  {
+    ruby_init();
+    ruby_init_loadpath();
+    rb_set_safe_level(0);
+    ruby_script("ruby");
+    rubyInitialized = true;
+  }
 
   // Create the ruby command
-  std::string cmd = "require 'erb'; ERB.new('" + _string + "').result";
+  std::string cmd = "require 'erb'; ERB.new(%Q{" + _string + "}).result";
 
   // Run the ERB parser
   VALUE ret = rb_eval_string_protect(cmd.c_str(), 0);
@@ -887,28 +912,31 @@ std::string erbString(const std::string &_string)
   // Convert ruby string to std::string
 #if RUBY_API_VERSION_CODE < 10900
   if (RSTRING(ret)->ptr.ptr != NULL)
-    result.assign(RSTRING(ret)->ptr.ptr, RSTRING(ret)->ptr.len);
+    _result.assign(RSTRING(ret)->ptr.ptr, RSTRING(ret)->ptr.len);
 #else
   if (RSTRING(ret)->as.heap.ptr != NULL)
-    result.assign(RSTRING(ret)->as.heap.ptr, RSTRING(ret)->as.heap.len);
+    _result.assign(RSTRING(ret)->as.heap.ptr, RSTRING(ret)->as.heap.len);
 #endif
   else
+  {
     sdferr << "Unable to parse string[" << _string << "] using ERB.\n";
+    return false;
+  }
 
-  return result;
+  return true;
 }
 
 //////////////////////////////////////////////////
-std::string erbFile(const std::string &_filename)
+bool erbFile(const std::string &_filename, std::string &_result)
 {
   if (_filename.empty())
-    return "";
+    return false;
 
   // Make sure the file exists
   if (!boost::filesystem::exists(boost::filesystem::path(_filename)))
   {
     sdferr << "Error: File doesn't exist[" << _filename << "]\n";
-    return "";
+    return false;
   }
 
   // Read file data
@@ -916,6 +944,6 @@ std::string erbFile(const std::string &_filename)
   std::string data((std::istreambuf_iterator<char>(in)),
                     std::istreambuf_iterator<char>());
 
-  return erbString(data);
+  return erbString(data, _result);
 }
 }

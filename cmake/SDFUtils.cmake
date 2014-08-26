@@ -111,6 +111,7 @@ macro (sdf_build_tests)
       libgtest_main.a
       sdformat
       pthread
+      ${RUBY_LIBRARY}
       ${tinyxml_libraries}
       )
   

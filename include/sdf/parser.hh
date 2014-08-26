@@ -86,14 +86,16 @@ namespace sdf
 
   /// \brief Parse a string using ERB.
   /// \param[in] _string String to parse.
-  /// \return ERB parsed string.
+  /// \param[out] _result ERB parsed string.
+  /// \return True on success.
   SDFORMAT_VISIBLE
-  std::string erbString(const std::string &_string);
+  bool erbString(const std::string &_string, std::string &_result);
 
   /// \brief Parse an string using ERB.
   /// \param[in] _filename File to parse.
-  /// \return ERB parsed file.
+  /// \param[out] _result ERB parsed file.
+  /// \return True on success.
   SDFORMAT_VISIBLE
-  std::string erbFile(const std::string &_filename);
+  bool erbFile(const std::string &_filename, std::string &_result);
 }
 #endif
