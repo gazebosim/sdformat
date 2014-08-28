@@ -24,17 +24,28 @@
 namespace po = boost::program_options;
 
 /////////////////////////////////////////////////
+/// \brief Convert an SDF pose
+/// \param[in] _elem SDF element to convert
+/// \param[in] _prefix Prefix (spaces) used for formatting
+/// \param[out] _result Stream that contains the conversion result
+/// \return True on success
 bool ConvertPose(sdf::ElementPtr _elem, const std::string &_prefix,
     std::ostringstream &_result)
 {
   // Output pose
   sdf::Pose pose = _elem->Get<sdf::Pose>();
+
   _result << _prefix << "<origin xyz='" << pose.pos << "' rpy='"
     << pose.rot << "'/>\n";
   return true;
 }
 
 /////////////////////////////////////////////////
+/// \brief Convert an SDF geomentry
+/// \param[in] _elem SDF element to convert
+/// \param[in] _prefix Prefix (spaces) used for formatting
+/// \param[out] _result Stream that contains the conversion result
+/// \return True on success
 bool ConvertGeometry(sdf::ElementPtr _elem, const std::string &_prefix,
     std::ostringstream &_result)
 {
@@ -75,6 +86,11 @@ bool ConvertGeometry(sdf::ElementPtr _elem, const std::string &_prefix,
 }
 
 /////////////////////////////////////////////////
+/// \brief Convert an SDF collision
+/// \param[in] _elem SDF element to convert
+/// \param[in] _prefix Prefix (spaces) used for formatting
+/// \param[out] _result Stream that contains the conversion result
+/// \return True on success
 bool ConvertCollision(sdf::ElementPtr _elem, const std::string &_prefix,
     std::ostringstream &_result)
 {
@@ -132,7 +148,8 @@ bool ConvertInertia(sdf::ElementPtr _elem, const std::string &_prefix,
   sdf::ElementPtr inertia = _elem->GetElement("inertia");
   _result << _prefix << "  <inertia ixx='"
     << inertia->Get<double>("ixx") << "' ixy='"
-    << inertia->Get<double>("ixy") << "' iyy='"
+    << inertia->Get<double>("ixy") << "' ixz='"
+    << inertia->Get<double>("ixz") << "' iyy='"
     << inertia->Get<double>("iyy") << "' iyz='"
     << inertia->Get<double>("iyz") << "' izz='"
     << inertia->Get<double>("izz") << "'/>\n";
@@ -145,14 +162,15 @@ bool ConvertInertia(sdf::ElementPtr _elem, const std::string &_prefix,
 
 /////////////////////////////////////////////////
 bool ConvertLink(sdf::ElementPtr _elem, const std::string &_prefix,
+    std::map<std::string, sdf::Pose> &_linkPoses,
     std::ostringstream &_result)
 {
   // Output <link>
   _result << _prefix << "<link name='" << _elem->Get<std::string>("name")
           << "'>\n";
 
-  // Output pose information
-  ConvertPose(_elem->GetElement("pose"), _prefix + "  ", _result);
+  // Store the link pose
+  _linkPoses[_elem->Get<std::string>("name")] = _elem->Get<sdf::Pose>("pose");
 
   // Output inertia information
   ConvertInertia(_elem->GetElement("inertial"), _prefix + "  ", _result);
@@ -185,23 +203,120 @@ bool ConvertLink(sdf::ElementPtr _elem, const std::string &_prefix,
 }
 
 /////////////////////////////////////////////////
+bool ConvertCamera(sdf::ElementPtr _elem, const std::string &_prefix,
+    std::ostringstream &_result)
+{
+  if (!_elem->HasElement("image") || !_elem->HasElement("clip"))
+    return false;
+
+  // Output <camera>
+  _result << _prefix << "<camera>\n";
+
+  sdf::ElementPtr imgElem = _elem->GetElement("image");
+  sdf::ElementPtr clipElem = _elem->GetElement("clip");
+
+  _result << _prefix << "  <image "
+    << "width='" << imgElem->Get<int>("width") << "' "
+    << "height='" << imgElem->Get<int>("height") << "' "
+    << "format='" << imgElem->Get<std::string>("format") << "' "
+    << "hfov='" << _elem->Get<double>("horizontal_fov") << "' "
+    << "near='" << clipElem->Get<double>("near") << "' "
+    << "far='" << clipElem->Get<double>("far") << "' "
+    << "/>\n";
+
+  // Output </camera>
+  _result << _prefix << "</camera>\n";
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool ConvertRay(sdf::ElementPtr _elem, const std::string &_prefix,
+    std::ostringstream &_result)
+{
+  if (!_elem->HasElement("scan"))
+    return false;
+
+  sdf::ElementPtr scanElem = _elem->GetElement("scan");
+
+  // Output <ray>
+  _result << _prefix << "<ray>\n";
+
+  if (scanElem->HasElement("horizontal"))
+  {
+    sdf::ElementPtr horzElem = scanElem->GetElement("horizontal");
+    _result << _prefix << "  <horizontal "
+      << "samples='" << horzElem->Get<unsigned int>("samples") << "' "
+      << "resolution='" << horzElem->Get<double>("resolution") << "' "
+      << "min_angle='" << horzElem->Get<double>("min_angle") << "' "
+      << "max_angle='" << horzElem->Get<double>("max_angle") << "' "
+      << "/>\n";
+  }
+
+  if (scanElem->HasElement("vertical"))
+  {
+    sdf::ElementPtr vertElem = scanElem->GetElement("vertical");
+    _result << _prefix << "  <vertical "
+      << "samples='" << vertElem->Get<unsigned int>("samples") << "' "
+      << "resolution='" << vertElem->Get<double>("resolution") << "' "
+      << "min_angle='" << vertElem->Get<double>("min_angle") << "' "
+      << "max_angle='" << vertElem->Get<double>("max_angle") << "' "
+      << "/>\n";
+  }
+
+  _result << _prefix << "</ray>\n";
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool ConvertSensor(sdf::ElementPtr _elem, const std::string &_prefix,
+    const std::string &_parent, std::ostringstream &_result)
+{
+  // Output <sensor>
+  _result << _prefix << "<sensor name='" << _elem->Get<std::string>("name")
+    << "' update_rate='" << _elem->Get<double>("update_rate") << "'>\n";
+
+  _result << _prefix << "  <parent link='" << _parent << "'/>\n";
+  ConvertPose(_elem->GetElement("pose"), _prefix + "  ", _result);
+
+  if (_elem->HasElement("camera"))
+    ConvertCamera(_elem->GetElement("camera"), _prefix + "  ", _result);
+  else if (_elem->HasElement("ray"))
+    ConvertRay(_elem->GetElement("ray"), _prefix + "  ", _result);
+
+  // Output </sensor>
+  _result << _prefix << "</sensor>\n";
+
+  return true;
+}
+
+/////////////////////////////////////////////////
 bool ConvertJoint(sdf::ElementPtr _elem, const std::string &_prefix,
+    std::map<std::string, sdf::Pose> &_linkPoses,
     std::ostringstream &_result)
 {
   // Output <joint>
   _result << _prefix << "<joint name='" << _elem->Get<std::string>("name")
     << "' type='" << _elem->Get<std::string>("type") << "'>\n";
 
+  std::string childLink = _elem->Get<std::string>("child");
+  std::string parentLink = _elem->Get<std::string>("parent");
+
+  sdf::Pose childPose = _linkPoses[childLink];
+  sdf::Pose parentPose = _linkPoses[parentLink];
+  sdf::Pose jointPose = _elem->Get<sdf::Pose>("pose");
+
+  jointPose = (jointPose + childPose) - parentPose;
+
   // Output pose
-  ConvertPose(_elem->GetElement("pose"), _prefix + "  ", _result);
+  _result << _prefix << "  <origin xyz='" << jointPose.pos << "' rpy='"
+    << jointPose.rot << "'/>\n";
 
   // Output parent link
-  _result << _prefix << "  <parent link='"
-    << _elem->Get<std::string>("parent") << "'/>\n";
+  _result << _prefix << "  <parent link='" << parentLink << "'/>\n";
 
   // Output child link
   _result << _prefix << "  <child link='"
-    << _elem->Get<std::string>("child") << "'/>\n";
+    <<  childLink << "'/>\n";
 
   sdf::ElementPtr axisElem = _elem->GetElement("axis");
 
@@ -237,13 +352,28 @@ bool ConvertModel(sdf::ElementPtr _elem, std::ostringstream &_result)
   // Outut the <robot> tag
   _result << "<robot name='" << _elem->Get<std::string>("name") << "'>\n";
 
+  std::map<std::string, sdf::Pose> linkPoses;
+
   // Convert all links
   if (_elem->HasElement("link"))
   {
     sdf::ElementPtr linkElem = _elem->GetElement("link");
     while (linkElem)
     {
-      ConvertLink(linkElem, "  ", _result);
+      ConvertLink(linkElem, "  ", linkPoses, _result);
+
+      // Convert all sensors attached to the link
+      if (linkElem->HasElement("sensor"))
+      {
+        sdf::ElementPtr sensorElem = linkElem->GetElement("sensor");
+        while (sensorElem)
+        {
+          ConvertSensor(sensorElem, "  ", linkElem->Get<std::string>("name"),
+                        _result);
+          sensorElem = sensorElem->GetNextElement("sensor");
+        }
+      }
+
       linkElem = linkElem->GetNextElement("link");
     }
   }
@@ -254,10 +384,11 @@ bool ConvertModel(sdf::ElementPtr _elem, std::ostringstream &_result)
     sdf::ElementPtr jointElem = _elem->GetElement("joint");
     while (jointElem)
     {
-      ConvertJoint(jointElem, "  ", _result);
+      ConvertJoint(jointElem, "  ", linkPoses, _result);
       jointElem = jointElem->GetNextElement("joint");
     }
   }
+
 
   // Output the end <robot> tag
   _result << "</robot>\n";
@@ -294,7 +425,7 @@ bool Convert(const std::string &_file, std::ostringstream &_result)
   sdf::ElementPtr modelElem = sdf->root->GetElement("model");
 
   // Output xml encoding
-  _result << "<?xml verion='1.0' encoding='utf-8'?>\n";
+  _result << "<?xml version='1.0' encoding='utf-8'?>\n";
 
   // Output the model as URDF
   if (modelElem)
@@ -315,6 +446,7 @@ int main(int _argc, char **_argv)
     ("file,f", po::value<std::string>(), "SDF file to convert to URDF")
     ("out,o", po::value<std::string>(), "Output filename");
 
+  // Parse the command line arguments
   try
   {
     po::store(
