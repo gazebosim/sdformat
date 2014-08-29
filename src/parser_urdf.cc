@@ -300,8 +300,22 @@ std::string Vector32Str(const urdf::Vector3 _vector)
 void ReduceCollisionToParent(UrdfLinkPtr _link,
     const std::string &_groupName, UrdfCollisionPtr _collision)
 {
-  boost::shared_ptr<std::vector<UrdfCollisionPtr> >
-    cols = _link->getCollisions(_groupName);
+  boost::shared_ptr<std::vector<UrdfCollisionPtr> > cols;
+#if USE_EXTERNAL_URDF && defined(URDF_GE_0P3)
+  if (_link->collision)
+  {
+    cols.reset(new std::vector<UrdfCollisionPtr>);
+    cols->push_back(_link->collision);
+  }
+  else
+  {
+    cols = boost::shared_ptr<std::vector<UrdfCollisionPtr> >(
+            &_link->collision_array);
+  }
+#else
+  cols = _link->getCollisions(_groupName);
+#endif
+
   if (!cols)
   {
     // group does not exist, create one and add to map
@@ -326,8 +340,21 @@ void ReduceCollisionToParent(UrdfLinkPtr _link,
 void ReduceVisualToParent(UrdfLinkPtr _link,
     const std::string &_groupName, UrdfVisualPtr _visual)
 {
-  boost::shared_ptr<std::vector<UrdfVisualPtr> > viss
-    = _link->getVisuals(_groupName);
+  boost::shared_ptr<std::vector<UrdfVisualPtr> > viss;
+#if USE_EXTERNAL_URDF && defined(URDF_GE_0P3)
+  if (_link->visual)
+  {
+    viss.reset(new std::vector<UrdfVisualPtr>);
+    viss->push_back(_link->visual);
+  }
+  else
+  {
+    viss = boost::shared_ptr<std::vector<UrdfVisualPtr> >(&_link->visual_array);
+  }
+#else
+  viss = _link->getVisuals(_groupName);
+#endif
+
   if (!viss)
   {
     // group does not exist, create one and add to map
@@ -1728,7 +1755,7 @@ void CreateGeometry(TiXmlElement* _elem,
       }
       break;
     default:
-      sdfwarn << "Unknown body type: [" << _geom->type
+      sdfwarn << "Unknown body type: [" << static_cast<int>(_geom->type)
         << "] skipped in geometry\n";
       break;
   }
@@ -1788,7 +1815,7 @@ std::string GetGeometryBoundingBox(
       break;
     default:
       _sizeVals[0] = _sizeVals[1] = _sizeVals[2] = 0;
-      sdfwarn << "Unknown body type: [" << _geom->type
+      sdfwarn << "Unknown body type: [" << static_cast<int>(_geom->type)
         << "] skipped in geometry\n";
       break;
   }
@@ -2410,7 +2437,7 @@ void CreateJoint(TiXmlElement *_root,
         jtype = "fixed";
         break;
       default:
-        sdfwarn << "Unknown joint type: [" << _link->parent_joint->type
+        sdfwarn << "Unknown joint type: [" << static_cast<int>(_link->parent_joint->type)
           << "] in link [" << _link->name << "]\n";
         break;
     }
@@ -2660,7 +2687,11 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
 
   // add robot to sdfXmlOut
   TiXmlElement *sdf = new TiXmlElement("sdf");
-  sdf->SetAttribute("version", SDF_VERSION);
+
+  // URDF is compatible with version 1.4. The automatic conversion script
+  // will up-convert URDF to SDF.
+  sdf->SetAttribute("version", "1.4");
+
   sdf->LinkEndChild(robot);
   sdfXmlOut.LinkEndChild(sdf);
 

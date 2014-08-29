@@ -34,10 +34,11 @@
 
 #include "sdf/Console.hh"
 #include "sdf/Types.hh"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
-  class Param;
+  class SDFORMAT_VISIBLE Param;
 
   /// \def ParamPtr
   /// \brief boost shared_ptr to a Param
@@ -49,7 +50,7 @@ namespace sdf
 
   /// \class Param Param.hh sdf/sdf.hh
   /// \brief A parameter class
-  class Param
+  class SDFORMAT_VISIBLE Param
   {
     /// \brief Constructor.
     /// \param[in] _key Key for the parameter.

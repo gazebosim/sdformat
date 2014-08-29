@@ -40,7 +40,11 @@ class URDFParser : public ::testing::Test
       std::string get_minimal_sdf_txt()
       {
           std::ostringstream stream;
-          stream << "<sdf version='1.4'>"
+          // Use hard-coded "1.4" for version string
+          // until parser_urdf.cc exports version "1.5"
+          // see `sdf->SetAttribute("version", "1.4");`
+          // in URDF2SDF::InitModelString()
+          stream << "<sdf version='" << "1.4" << "'>"
                  << "<model name='test_robot' />"
                  << "</sdf>";
           return stream.str();

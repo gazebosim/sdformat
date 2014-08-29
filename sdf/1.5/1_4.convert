@@ -1,0 +1,43 @@
+<convert name="sdf">
+
+  <convert name="world">
+    <!-- Add use_parent_model_frame=true for 1.4 joints -->
+    <convert name="model">
+      <convert name="joint">
+        <convert name="axis">
+          <add element="use_parent_model_frame" value="true"/>
+        </convert>
+        <convert name="axis2">
+          <add element="use_parent_model_frame" value="true"/>
+        </convert>
+      </convert>
+    </convert>
+
+    <convert name="actor">
+      <rename>
+        <from attribute="static"/>
+        <to element="static"/>
+      </rename>
+    </convert>
+  </convert>
+
+  <!-- for model sdfs -->
+  <convert name="model">
+    <convert name="joint">
+      <convert name="axis">
+        <add element="use_parent_model_frame" value="true"/>
+      </convert>
+      <convert name="axis2">
+        <add element="use_parent_model_frame" value="true"/>
+      </convert>
+    </convert>
+
+    <convert name="actor">
+      <rename>
+        <from attribute="static"/>
+        <to element="static"/>
+      </rename>
+    </convert>
+  </convert>
+
+</convert> <!-- End SDF -->

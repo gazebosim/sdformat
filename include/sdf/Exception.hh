@@ -22,6 +22,8 @@
 #include <sstream>
 #include <string>
 
+#include "sdf/system_util.hh"
+
 namespace sdf
 {
   /// \addtogroup sdf
@@ -35,7 +37,7 @@ namespace sdf
 
   /// \class Exception Exception.hh common/common.hh
   /// \brief Class for generating exceptions
-  class Exception
+  class SDFORMAT_VISIBLE Exception
   {
     /// \brief Constructor
     public: Exception();
@@ -85,7 +87,7 @@ namespace sdf
   /// \brief Class for generating Internal Gazebo Errors:
   ///        those errors which should never happend and
   ///        represent programming bugs.
-  class InternalError : public Exception
+  class SDFORMAT_VISIBLE InternalError : public Exception
   {
     /// \brief Constructor
     public: InternalError();
@@ -106,7 +108,7 @@ namespace sdf
   ///        sdf assertions. They include information about the
   ///        assertion expression violated, function where problem
   ///        appeared and assertion debug message.
-  class AssertionInternalError : public InternalError
+  class SDFORMAT_VISIBLE AssertionInternalError : public InternalError
   {
     /// \brief Constructor for assertions
     /// \param[in] _file File name

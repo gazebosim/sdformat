@@ -1,0 +1,28 @@
+<!-- Visual -->
+<element name="visual" required="*">
+  <description>The visual properties of the link. This element specifies the shape of the object (box, cylinder, etc.) for visualization purposes.</description>
+
+  <attribute name="name" type="string" default="__default__" required="1">
+    <description>Unique name for the visual element within the scope of the parent link.</description>
+  </attribute>
+
+  <element name="cast_shadows" type="bool" default="true" required="0">
+    <description>If true the visual will cast shadows.</description>
+  </element>
+
+  <element name="laser_retro" type="double" default="0.0" required="0">
+    <description>will be implemented in the future release.</description>
+  </element>
+
+  <element name="transparency" type="double" default="0.0" required="0">
+    <description>The amount of transparency( 0=opaque, 1 = fully transparent)</description>
+  </element>
+
+  <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
+    <description>The reference frame of the visual element, relative to the reference frame of the link.</description>
+  </element>
+
+  <include filename="material.sdf" required="0"/>
+  <include filename="geometry.sdf" required="1"/>
+  <include filename="plugin.sdf" required="*"/>
+</element> <!-- End Visual -->
