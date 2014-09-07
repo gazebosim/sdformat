@@ -70,22 +70,24 @@
 
   <element name="distortion" required="0">
     <description>Lens distortion that should be applied to generated images.</description>
-    <element name="type" type="string" default="barrel" required="0">
-      <description>The type of distortion model. Currently defaults to barrel distortion.</description>
+    <element name="k1" type="double" default="0.0" required="0">
+      <description>The radial distortion coefficient k1</description>
     </element>
-    <element name="radial" type="vector3" default="0.0 0.0 0.0" required="0">
-      <description>For type "barrel", the radial distortion coefficients k1, k2, k3.</description>
+    <element name="k2" type="double" default="0.0" required="0">
+      <description>The radial distortion coefficient k2</description>
     </element>
-    <element name="tangential" type="vector2d" default="0.0 0.0" required="0">
-      <description>For type "barrel", the tangential distortion coefficient p1, p2.</description>
+    <element name="k3" type="double" default="0.0" required="0">
+      <description>The radial distortion coefficient k3</description>
+    </element>
+    <element name="p1" type="double" default="0.0" required="0">
+      <description>The radial distortion coefficient p1</description>
+    </element>
+    <element name="p2" type="double" default="0.0" required="0">
+      <description>The radial distortion coefficient p2</description>
     </element>
     <element name="center" type="vector2d" default="0.0 0.0" required="0">
       <description>The distortion center or principal point</description>
     </element>
-    <element name="crop" type="bool" default="true" required="0">
-      <description>True to remove the black pixels outside the distorted image</description>
-    </element>
-
   </element> <!-- End Distortion -->
 
 </element> <!-- End Camera -->
