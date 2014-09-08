@@ -911,8 +911,8 @@ bool erbString(const std::string &_string, std::string &_result)
 
   // Convert ruby string to std::string
 #if RUBY_API_VERSION_CODE < 10900
-  if (RSTRING(ret)->ptr.ptr != NULL)
-    _result.assign(RSTRING(ret)->ptr.ptr, RSTRING(ret)->ptr.len);
+  if (RSTRING(ret)->ptr != NULL)
+    _result.assign(RSTRING(ret)->ptr, RSTRING(ret)->len);
 #else
   if (RSTRING(ret)->as.heap.ptr != NULL)
     _result.assign(RSTRING(ret)->as.heap.ptr, RSTRING(ret)->as.heap.len);

@@ -88,6 +88,7 @@ set (ruby_versions 1.9 1.8)
 
 foreach (ver ${ruby_versions})
   # Check if pkg-config finds ruby
+  message(STATUS "ruby ${ver} pkg-config")
   pkg_check_modules(ruby ruby-${ver})
   if (NOT ruby_FOUND)
     if (${ver} EQUAL 1.9)
@@ -97,16 +98,18 @@ foreach (ver ${ruby_versions})
     endif()
 
     # pkg-config failed, so try using find_library and find_path
+    message(STATUS "ruby ${ver} find_library")
     find_library(RUBY_LIBRARY NAMES ruby-${ver_full})
     find_path(RUBY_INCLUDE_DIRS NAMES ruby.h
       PATHS /usr/include/ruby-${ver_full})
 
     # if find_library and find_path failed, try using find_package
     if (NOT RUBY_LIBRARY)
+      message(STATUS "ruby ${ver} find_package")
       find_package(Ruby ${ver})
 
       # Make sure we don't count the static version.
-      if ("${RUBY_LIBRARY}" MATCHES ".*-static.a")
+      if (NOT RUBY_FOUND OR "${RUBY_LIBRARY}" MATCHES ".*-static.a")
         set (RUBY_LIBRARY RUBY_LIBRARY-NOTFOUND)
         set (RUBY_INCLUDE_DIRS RUBY_INCLUDE_DIRS-NOTFOUND)
       endif()
