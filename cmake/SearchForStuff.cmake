@@ -89,6 +89,7 @@ set (ruby_versions 1.9 1.8)
 foreach (ver ${ruby_versions})
   # Check if pkg-config finds ruby
   pkg_check_modules(ruby ruby-${ver})
+  message (STATUS "ruby_FOUND=${ruby_FOUND}=")
   if (NOT ruby_FOUND)
     if (${ver} EQUAL 1.9)
       set (ver_full 1.9.1)
@@ -102,6 +103,7 @@ foreach (ver ${ruby_versions})
       PATHS /usr/include/ruby-${ver_full}/ruby
             /usr/include/ruby-${ver_full})
 
+    message (STATUS "||${RUBY_INCLUDE_DIRS}||")
     # if find_library and find_path failed, try using find_package
     if (NOT RUBY_LIBRARY)
       find_package(Ruby ${ver})
@@ -114,6 +116,7 @@ foreach (ver ${ruby_versions})
     endif()
 
   else ()
+    message (STATUS "PKG WORKED!")
     set (RUBY_LIBRARY ${ruby_LIBRARIES})
     set (RUBY_INCLUDE_DIRS ${ruby_INCLUDE_DIRS})
   endif()
@@ -125,7 +128,7 @@ foreach (ver ${ruby_versions})
 endforeach()
 
 # Generate error if ruby was not found
-if (NOT RUBY_LIBRARY)
+if (NOT RUBY_LIBRARY OR NOT RUBY_INCLUDE_DIRS)
   message(STATUS "Looking for libruby - not found")
   BUILD_ERROR("Ruby (ruby-dev) is required to parse ERB files.")
 endif()
