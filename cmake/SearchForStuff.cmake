@@ -99,7 +99,8 @@ foreach (ver ${ruby_versions})
     # pkg-config failed, so try using find_library and find_path
     find_library(RUBY_LIBRARY NAMES ruby-${ver_full})
     find_path(RUBY_INCLUDE_DIRS NAMES ruby.h
-      PATHS /usr/include/ruby-${ver_full})
+      PATHS /usr/include/ruby-${ver_full}/ruby
+            /usr/include/ruby-${ver_full})
 
     # if find_library and find_path failed, try using find_package
     if (NOT RUBY_LIBRARY)
