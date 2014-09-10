@@ -16,6 +16,7 @@
 */
 #include <gtest/gtest.h>
 #include <boost/uuid/sha1.hpp>
+#include <boost/filesystem.hpp>
 #include <string>
 
 #include "test_config.h"
@@ -60,6 +61,11 @@ std::string get_sha1(const T &_buffer)
 /////////////////////////////////////////////////
 TEST(Parser, ParseERB)
 {
+  char *pathCStr = getenv("SDF_PATH");
+  boost::filesystem::path path = PROJECT_SOURCE_PATH;
+  path = path / "sdf" / SDF_VERSION;
+  setenv("SDF_PATH", path.string().c_str(), 1);
+
   // Parse the ERB file
   std::string parsed;
   EXPECT_TRUE(sdf::erbFile(RSDF_TEST_FILE, parsed));
@@ -90,6 +96,15 @@ TEST(Parser, ParseERB)
   // The pose.pos.z should equal 0.005
   sdf::Pose pose = linkElem->Get<sdf::Pose>("pose");
   EXPECT_DOUBLE_EQ(pose.pos.z, 0.005);
+
+  if (pathCStr)
+  {
+    setenv("SDF_PATH", pathCStr, 1);
+  }
+  else
+  {
+    unsetenv("SDF_PATH");
+  }
 }
 
 /////////////////////////////////////////////////

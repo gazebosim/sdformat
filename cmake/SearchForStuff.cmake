@@ -99,8 +99,11 @@ foreach (ver ${ruby_versions})
     # pkg-config failed, so try using find_library and find_path
     find_library(RUBY_LIBRARY NAMES ruby-${ver_full})
     find_path(RUBY_INCLUDE_DIRS NAMES ruby.h
-      PATHS /usr/include/ruby-${ver_full}/ruby
-            /usr/include/ruby-${ver_full})
+      PATHS /usr/include/ruby-${ver_full})
+
+    # The ruby library includes a config.h in a very strange location. This
+    # is a "nice" hack to make sure config.h is found.
+    set(RUBY_INCLUDE_DIRS "${RUBY_INCLUDE_DIRS};${RUBY_INCLUDE_DIRS}/x86_64-linux")
 
     # if find_library and find_path failed, try using find_package
     if (NOT RUBY_LIBRARY)
@@ -125,7 +128,9 @@ foreach (ver ${ruby_versions})
 endforeach()
 
 # Generate error if ruby was not found
-if (NOT RUBY_LIBRARY)
+if (NOT RUBY_LIBRARY OR NOT RUBY_INCLUDE_DIRS)
   message(STATUS "Looking for libruby - not found")
   BUILD_ERROR("Ruby (ruby-dev) is required to parse ERB files.")
+else()
+  message(Status "Looking for ruby - found")
 endif()
