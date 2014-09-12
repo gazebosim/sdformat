@@ -110,7 +110,7 @@ foreach (ver ${ruby_versions})
       find_package(Ruby ${ver})
 
       # Make sure we don't count the static version.
-      if ("${RUBY_LIBRARY}" MATCHES ".*-static.a")
+      if (NOT RUBY_FOUND OR "${RUBY_LIBRARY}" MATCHES ".*-static.a")
         set (RUBY_LIBRARY RUBY_LIBRARY-NOTFOUND)
         set (RUBY_INCLUDE_DIRS RUBY_INCLUDE_DIRS-NOTFOUND)
       endif()
