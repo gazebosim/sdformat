@@ -15,7 +15,6 @@
                   gps,
                   gpu_ray,
                   imu,
-                  ir,
                   multicamera,
                   ray,
                   rfid,
