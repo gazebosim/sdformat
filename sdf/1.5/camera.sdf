@@ -80,10 +80,10 @@
       <description>The radial distortion coefficient k3</description>
     </element>
     <element name="p1" type="double" default="0.0" required="0">
-      <description>The radial distortion coefficient p1</description>
+      <description>The tangential distortion coefficient p1</description>
     </element>
     <element name="p2" type="double" default="0.0" required="0">
-      <description>The radial distortion coefficient p2</description>
+      <description>The tangential distortion coefficient p2</description>
     </element>
     <element name="center" type="vector2d" default="0.5 0.5" required="0">
       <description>The distortion center or principal point</description>
