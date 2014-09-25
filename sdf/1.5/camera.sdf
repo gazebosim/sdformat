@@ -69,7 +69,7 @@
   </element> <!-- End Noise -->
 
   <element name="distortion" required="0">
-    <description>Lens distortion that should be applied to generated images.</description>
+    <description>Lens distortion to be applied to camera images.</description>
     <element name="k1" type="double" default="0.0" required="0">
       <description>The radial distortion coefficient k1</description>
     </element>
