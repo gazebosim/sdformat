@@ -7,7 +7,21 @@
   </attribute>
 
   <attribute name="type" type="string" default="__default__" required="1">
-    <description>The type name of the sensor. By default, SDF supports types camera, contact, depth, force_torque, gps, gpu_ray, imu, ir, multicamera, ray, rfid, rfidtag, sonar, wireless_receiver, and wireless_transmitter.</description>
+    <description>The type name of the sensor. By default, SDF supports types
+                  camera,
+                  contact,
+                  depth,
+                  force_torque,
+                  gps,
+                  gpu_ray,
+                  imu,
+                  multicamera,
+                  ray,
+                  rfid,
+                  rfidtag,
+                  sonar,
+                  wireless_receiver, and
+                  wireless_transmitter.</description>
   </attribute>
 
   <element name="always_on" type="bool" default="false" required="0">
