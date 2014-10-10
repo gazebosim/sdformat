@@ -87,9 +87,13 @@ endmacro()
 set (ruby_versions 1.9 1.8)
 
 foreach (ver ${ruby_versions})
+
   # Check if pkg-config finds ruby
-  pkg_check_modules(ruby ruby-${ver})
-  if (NOT ruby_FOUND)
+  if (PKG_CONFIG_FOUND)
+    pkg_check_modules(ruby ruby-${ver})
+  endif()
+
+  if (NOT ruby_FOUND OR NOT PKG_CONFIG_FOUND)
     if (${ver} EQUAL 1.9)
       set (ver_full 1.9.1)
     elseif(${ver} EQUAL 1.8)
