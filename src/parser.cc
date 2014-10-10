@@ -19,7 +19,6 @@
 #include <map>
 
 #include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
 
 #include "sdf/ruby.hh"
 #include "sdf/Console.hh"
