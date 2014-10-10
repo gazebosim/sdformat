@@ -19,6 +19,7 @@
 #include <map>
 
 #include <boost/filesystem.hpp>
+#include <boost/thread.hpp>
 
 #include "sdf/ruby.hh"
 #include "sdf/Console.hh"
@@ -32,6 +33,66 @@
 
 namespace sdf
 {
+  /// \internal
+  // Class to handle Ruby initialization.
+  class RubyInitializer
+  {
+    /// \brief Constructor
+    public: RubyInitializer()
+    {
+      // Initialize ruby.
+      RUBY_INIT_STACK;
+      ruby_init();
+      ruby_init_loadpath();
+      rb_set_safe_level(0);
+      ruby_script("ruby");
+    }
+
+    /// \brief Destructor
+    public: virtual ~RubyInitializer()
+    {
+      ruby_finalize();
+    }
+
+    /// \brief Parse a string using ERB.
+    /// \param[in] _string String to parse.
+    /// \param[out] _result ERB parsed string.
+    /// \return True on success.
+    public: bool erbString(const std::string &_string, std::string &_result)
+    {
+      std::string cmd ="begin; require 'erb'; ERB.new(%Q{" +
+        _string + "}).result; rescue; end";
+
+      // Run the ERB parser
+      VALUE ret = rb_eval_string_protect(cmd.c_str(), 0);
+
+      // Convert ruby string to std::string
+#if RUBY_API_VERSION_CODE < 10900
+      if (RSTRING(ret)->ptr != NULL)
+      {
+        _result.assign(
+            RSTRING(ret)->ptr, RSTRING(ret)->len);
+      }
+#else
+      if (RSTRING(ret)->as.heap.ptr != NULL)
+      {
+        _result.assign(RSTRING(ret)->as.heap.ptr,
+            RSTRING(ret)->as.heap.len);
+      }
+#endif
+      else
+      {
+        sdferr << "Unable to parse string["
+          << _string << "] using ERB.\n";
+        return false;
+      }
+
+      return true;
+    }
+  };
+  static RubyInitializer g_rubyInit;
+
+
 //////////////////////////////////////////////////
 bool init(SDFPtr _sdf)
 {
@@ -891,39 +952,14 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
 //////////////////////////////////////////////////
 bool erbString(const std::string &_string, std::string &_result)
 {
-  static bool rubyInitialized = false;
-
-  // Initialize ruby
-  if (!rubyInitialized)
+  // Short circuit if there are no ERB tags
+  if (_string.find("<%") == std::string::npos)
   {
-    ruby_init();
-    ruby_init_loadpath();
-    rb_set_safe_level(0);
-    ruby_script("ruby");
-    rubyInitialized = true;
+    _result = _string;
+    return true;
   }
 
-  // Create the ruby command
-  std::string cmd = "require 'erb'; ERB.new(%Q{" + _string + "}).result";
-
-  // Run the ERB parser
-  VALUE ret = rb_eval_string_protect(cmd.c_str(), 0);
-
-  // Convert ruby string to std::string
-#if RUBY_API_VERSION_CODE < 10900
-  if (RSTRING(ret)->ptr != NULL)
-    _result.assign(RSTRING(ret)->ptr, RSTRING(ret)->len);
-#else
-  if (RSTRING(ret)->as.heap.ptr != NULL)
-    _result.assign(RSTRING(ret)->as.heap.ptr, RSTRING(ret)->as.heap.len);
-#endif
-  else
-  {
-    sdferr << "Unable to parse string[" << _string << "] using ERB.\n";
-    return false;
-  }
-
-  return true;
+  return g_rubyInit.erbString(_string, _result);
 }
 
 //////////////////////////////////////////////////
