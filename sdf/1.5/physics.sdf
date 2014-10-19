@@ -29,6 +29,10 @@
     <description>The gravity vector</description>
   </element> <!-- End Gravity -->
 
+  <element name="magnetic_field" type="vector3" default="0 50 0" required="1">
+    <description>The magnetic vector</description>
+  </element> <!-- End Magnetic -->
+
   <element name="simbody" required="0">
     <description>Simbody specific physics properties</description>
     <element name="min_step_size" type="double" default="0.0001" required="0">

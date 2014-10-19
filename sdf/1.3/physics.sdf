@@ -18,10 +18,6 @@
     <description>The gravity vector</description>
   </element> <!-- End Gravity -->
 
-  <element name="magnetic_field" type="vector3" default="0 50 0" required="1">
-    <description>The magnetic vector</description>
-  </element> <!-- End Magnetic -->
-
   <element name="bullet" required="0">
     <description>Bullet specific physics properties</description>
     <element name="dt" type="double" default="0.001" required="1">
