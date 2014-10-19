@@ -29,7 +29,7 @@
     <description>The gravity vector</description>
   </element> <!-- End Gravity -->
 
-  <element name="magnetic_field" type="vector3" default="22.8758 5.5645 42.3884" required="1">
+  <element name="magnetic_field" type="vector3" default="5.5645 22.8758 -42.3884" required="1">
     <description>The magnetic vector</description>
   </element> <!-- End Magnetic -->
 
