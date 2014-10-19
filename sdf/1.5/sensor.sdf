@@ -15,6 +15,7 @@
                   gps,
                   gpu_ray,
                   imu,
+                  magnetometer,
                   multicamera,
                   ray,
                   rfid,
@@ -49,6 +50,7 @@
   <include filename="contact.sdf" required="0"/>
   <include filename="gps.sdf" required="0"/>
   <include filename="imu.sdf" required="0"/>
+  <include filename="magnetometer.sdf" required="0"/>
   <include filename="ray.sdf" required="0"/>
   <include filename="rfid.sdf" required="0"/>
   <include filename="rfidtag.sdf" required="0"/>
