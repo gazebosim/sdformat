@@ -26,11 +26,11 @@
   </element>
 
   <element name="gravity" type="vector3" default="0 0 -9.8" required="1">
-    <description>The gravity vector</description>
+    <description>The gravity vector in m/s^2, expressed in the XYZ <-> ENU coordinate frame</description>
   </element> <!-- End Gravity -->
 
   <element name="magnetic_field" type="vector3" default="5.5645 22.8758 -42.3884" required="1">
-    <description>The magnetic vector</description>
+    <description>The magnetic vector in microtesla, expressed in the XYZ <-> ENU coordinate frame</description>
   </element> <!-- End Magnetic -->
 
   <element name="simbody" required="0">
