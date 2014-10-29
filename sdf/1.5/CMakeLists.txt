@@ -20,6 +20,7 @@ set (sdfs
   joint.sdf
   light.sdf
   link.sdf
+  magnetometer.sdf
   material.sdf
   mesh_shape.sdf
   model.sdf
