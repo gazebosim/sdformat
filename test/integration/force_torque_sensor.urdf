@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<robot name="force_torque_sensor_test">
+
+  <link name="base_link">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_1" type="revolute">
+    <parent link="base_link"/>
+    <child link="link_1"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1" lower="-1" upper="1" velocity="1"/>
+    <dynamics damping="1"/>
+  </joint>
+
+  <link name="link_1">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_2" type="revolute">
+    <parent link="base_link"/>
+    <child link="link_2"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1" lower="-1" upper="1" velocity="1"/>
+    <dynamics damping="1"/>
+  </joint>
+
+  <link name="link_2">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+  </link>
+
+  <gazebo reference="joint_1">
+    <provideFeedback>true</provideFeedback>
+    <sensor name="gzft_sensor" type="force_torque">
+      <always_on>1</always_on>
+      <update_rate>100.0</update_rate>
+      <visualize>1</visualize>
+      <force_torque>
+        <frame>child</frame>
+      </force_torque>
+    </sensor>
+  </gazebo>
+
+</robot>
+

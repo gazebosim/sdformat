@@ -1617,6 +1617,14 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
           physics->LinkEndChild(physicsOde);
         if (newPhysics)
           _elem->LinkEndChild(physics);
+
+        // insert all additional blobs into joint
+        for (std::vector<TiXmlElementPtr>::iterator
+            blobIt = (*ge)->blobs.begin();
+            blobIt != (*ge)->blobs.end(); ++blobIt)
+        {
+          _elem->LinkEndChild((*blobIt)->Clone());
+        }
       }
     }
   }
