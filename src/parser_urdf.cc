@@ -2476,6 +2476,7 @@ void CreateJoint(TiXmlElement *_root,
       AddKeyValue(jointAxisLimit, "lower", "0");
       AddKeyValue(jointAxisLimit, "upper", "0");
       AddKeyValue(jointAxisDynamics, "damping", "0");
+      AddKeyValue(jointAxisDynamics, "friction", "0");
     }
     else
     {
@@ -2489,8 +2490,12 @@ void CreateJoint(TiXmlElement *_root,
       AddKeyValue(jointAxis, "xyz",
           Values2str(3, rotatedJointAxisArray));
       if (_link->parent_joint->dynamics)
+      {
         AddKeyValue(jointAxisDynamics, "damping",
             Values2str(1, &_link->parent_joint->dynamics->damping));
+        AddKeyValue(jointAxisDynamics, "friction",
+            Values2str(1, &_link->parent_joint->dynamics->friction));
+      }
 
       if (g_enforceLimits && _link->parent_joint->limits)
       {

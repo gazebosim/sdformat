@@ -8,6 +8,7 @@ set(tests
   joint_axis_frame.cc
   plugin_attribute.cc
   provide_feedback.cc
+  urdf_joint_parameters.cc
 )
 
 link_directories(${PROJECT_BINARY_DIR}/test)
