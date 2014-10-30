@@ -25,8 +25,6 @@
 const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/urdf_joint_parameters.urdf";
 
-const double gc_tolerance = 1e-6;
-
 /////////////////////////////////////////////////
 TEST(SDFParser, JointAxisParameters)
 {
