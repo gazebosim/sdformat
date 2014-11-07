@@ -41,6 +41,7 @@ set (gtest_sources
   Console_TEST.cc
   Converter_TEST.cc
   parser_urdf_TEST.cc
+  Param_TEST.cc
 )
 sdf_build_tests(${gtest_sources})
 
