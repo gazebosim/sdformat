@@ -5,9 +5,11 @@ set(tests
   cfm_damping_implicit_spring_damper.cc
   convert_to_urdf.cc
   fixed_joint_reduction.cc
+  force_torque_sensor.cc
   joint_axis_frame.cc
   plugin_attribute.cc
   provide_feedback.cc
+  urdf_joint_parameters.cc
 )
 
 link_directories(${PROJECT_BINARY_DIR}/test)
