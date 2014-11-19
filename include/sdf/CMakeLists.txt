@@ -4,6 +4,7 @@ set (headers
   Assert.hh
   Console.hh
   Converter.hh
+  ConvertToURDF.hh
   Exception.hh
   Param.hh
   parser.hh

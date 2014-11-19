@@ -13,6 +13,7 @@ set (sources
   Assert.cc
   Console.cc
   Converter.cc
+  ConvertToURDF.cc
   Exception.cc
   parser.cc
   parser_urdf.cc
