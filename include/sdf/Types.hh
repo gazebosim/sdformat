@@ -228,6 +228,14 @@ namespace sdf
       return Vector3(this->x + _v.x, this->y + _v.y, this->z + _v.z);
     }
 
+    /// \brief Subtraction operator
+    /// \param[in] _v vector to subtract
+    /// \return the subracted vector
+    public: Vector3 operator-(const Vector3 &_v) const
+    {
+      return Vector3(this->x - _v.x, this->y - _v.y, this->z - _v.z);
+    }
+
     /// \brief Return the cross product of this vector and pt
     /// \return the product
     public: Vector3 Cross(const Vector3 &_pt) const
@@ -493,6 +501,28 @@ namespace sdf
               Quaternion tmp(0.0, _vec.x, _vec.y, _vec.z);
               tmp = (*this) * (tmp * this->GetInverse());
               return Vector3(tmp.x, tmp.y, tmp.z);
+            }
+
+    /// \brief Do the reverse rotation of a vector by this quaternion
+    /// \param[in] _vec the vector
+    /// \return the
+    public: Vector3 RotateVectorReverse(Vector3 _vec) const
+            {
+              Quaternion tmp;
+              Vector3 result;
+
+              tmp.w = 0.0;
+              tmp.x = _vec.x;
+              tmp.y = _vec.y;
+              tmp.z = _vec.z;
+
+              tmp =  this->GetInverse() * (tmp * (*this));
+
+              result.x = tmp.x;
+              result.y = tmp.y;
+              result.z = tmp.z;
+
+              return result;
             }
 
     /// \brief Stream insertion operator

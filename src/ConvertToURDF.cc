@@ -149,17 +149,21 @@ bool ConvertToURDF::ConvertInertia(sdf::ElementPtr _elem,
 /////////////////////////////////////////////////
 bool ConvertToURDF::ConvertLink(sdf::ElementPtr _elem,
     const std::string &_prefix,
-    std::map<std::string, sdf::Pose> &_linkPoses,
+    std::map<std::string, sdf::Pose> &_jointPoses,
     std::ostringstream &_result)
 {
+  std::string linkName = _elem->Get<std::string>("name");
   // Output <link>
-  _result << _prefix << "<link name='" << _elem->Get<std::string>("name")
-          << "'>\n";
+  _result << _prefix << "<link name='" << linkName << "'>\n";
 
   sdf::Pose linkPose = _elem->Get<sdf::Pose>("pose");
 
-  // Store the link pose
-  _linkPoses[_elem->Get<std::string>("name")] = linkPose;
+  sdf::Pose jointPose;
+  if (_jointPoses.find(linkName) != _jointPoses.end())
+  {
+    jointPose = _jointPoses[linkName];
+    linkPose = jointPose - linkPose;
+  }
 
   // Output inertia information
   ConvertInertia(_elem->GetElement("inertial"), _prefix + "  ", linkPose,
@@ -296,7 +300,15 @@ bool ConvertToURDF::ConvertJoint(sdf::ElementPtr _elem,
   sdf::Pose parentPose = _linkPoses[parentLink];
   sdf::Pose jointPose = _elem->Get<sdf::Pose>("pose");
 
-  jointPose = (jointPose + childPose) - parentPose;
+
+  std::cout << "------------------------------\n";
+  std::cout << "joint Pos[" << jointPose << "]\n";
+  std::cout << "child Pos[" << childPose << "]\n";
+  std::cout << "parent Pos[" << parentPose << "]\n";
+  jointPose = jointPose + childPose;
+
+  std::cout << "final Pos[" << jointPose << "]\n";
+  std::cout << "******************************\n";
 
   // Output pose
   _result << _prefix << "  <origin xyz='" << jointPose.pos << "' rpy='"
@@ -320,9 +332,11 @@ bool ConvertToURDF::ConvertJoint(sdf::ElementPtr _elem,
       << dynamicsElem->Get<double>("friction") << "' />\n";
   }
 
+  sdf::Vector3 xyz = axisElem->Get<sdf::Vector3>("xyz");
+  xyz = jointPose.rot.RotateVectorReverse(xyz);
+
   // Output axis
-  _result << _prefix << "  <axis xyz='"
-    << axisElem->Get<sdf::Vector3>("xyz") << "'/>\n";
+  _result << _prefix << "  <axis xyz='" << xyz << "'/>\n";
 
   // Output limits
   sdf::ElementPtr limitElem = axisElem->GetElement("limit");
@@ -345,6 +359,10 @@ bool ConvertToURDF::ConvertModel(sdf::ElementPtr _elem,
   _result << "<robot name='" << _elem->Get<std::string>("name") << "'>\n";
 
   std::map<std::string, sdf::Pose> linkPoses;
+  std::map<std::string, sdf::Pose> jointPoses;
+
+  GetLinkPoses(_elem, linkPoses);
+  GetJointPoses(_elem, linkPoses, jointPoses);
 
   // Convert all links
   if (_elem->HasElement("link"))
@@ -352,7 +370,7 @@ bool ConvertToURDF::ConvertModel(sdf::ElementPtr _elem,
     sdf::ElementPtr linkElem = _elem->GetElement("link");
     while (linkElem)
     {
-      ConvertLink(linkElem, "  ", linkPoses, _result);
+      ConvertLink(linkElem, "  ", jointPoses, _result);
 
       // Convert all sensors attached to the link
       if (linkElem->HasElement("sensor"))
@@ -468,4 +486,50 @@ bool ConvertToURDF::ConvertFile(const std::string &_file, std::string &_result)
   _result = stream.str();
 
   return true;
+}
+
+/////////////////////////////////////////////////
+void ConvertToURDF::GetLinkPoses(sdf::ElementPtr _elem,
+    std::map<std::string, sdf::Pose> &_linkPoses)
+{
+  if (_elem->HasElement("link"))
+  {
+    sdf::ElementPtr linkElem = _elem->GetElement("link");
+    while (linkElem)
+    {
+      sdf::Pose linkPose = linkElem->Get<sdf::Pose>("pose");
+
+      // Store the link pose
+      _linkPoses[linkElem->Get<std::string>("name")] = linkPose;
+
+      linkElem = linkElem->GetNextElement("link");
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+void ConvertToURDF::GetJointPoses(sdf::ElementPtr _elem,
+    std::map<std::string, sdf::Pose> &_linkPoses,
+    std::map<std::string, sdf::Pose> &_jointPoses)
+{
+  if (_elem->HasElement("joint"))
+  {
+    sdf::ElementPtr jointElem = _elem->GetElement("joint");
+    while (jointElem)
+    {
+      sdf::Pose jointPose = jointElem->Get<sdf::Pose>("pose");
+
+      std::string childLink = jointElem->Get<std::string>("child");
+      std::string parentLink = jointElem->Get<std::string>("parent");
+
+      sdf::Pose childPose = _linkPoses[childLink];
+      sdf::Pose parentPose = _linkPoses[parentLink];
+
+      jointPose = jointPose + childPose;
+      // Store the joint pose
+      _jointPoses[jointElem->Get<std::string>("child")] = jointPose;
+
+      jointElem = jointElem->GetNextElement("joint");
+    }
+  }
 }

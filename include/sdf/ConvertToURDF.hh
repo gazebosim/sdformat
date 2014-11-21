@@ -110,7 +110,7 @@ namespace sdf
     /// \return True on success
     private: static bool ConvertLink(sdf::ElementPtr _elem,
                 const std::string &_prefix,
-                std::map<std::string, sdf::Pose> &_linkPoses,
+                std::map<std::string, sdf::Pose> &_jointPoses,
                 std::ostringstream &_result);
 
     /// \brief Convert an SDF camera
@@ -150,6 +150,14 @@ namespace sdf
                 const std::string &_prefix,
                 std::map<std::string, sdf::Pose> &_linkPoses,
                 std::ostringstream &_result);
+
+    private: static void GetLinkPoses(sdf::ElementPtr _elem,
+                 std::map<std::string, sdf::Pose> &_linkPoses);
+
+    private: static void GetJointPoses(sdf::ElementPtr _elem,
+                 std::map<std::string, sdf::Pose> &_linkPoses,
+                 std::map<std::string, sdf::Pose> &_jointPoses);
+
   };
 }
 
