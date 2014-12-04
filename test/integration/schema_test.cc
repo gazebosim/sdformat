@@ -32,17 +32,18 @@ const std::string SDF_TEST_TURTLEBOT = std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/model/turtlebot.sdf";
 
 const std::string SDF_TEST_PENDULUM = std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/model/doble_pendulum.sdf";
+  + "/test/integration/model/double_pendulum.sdf";
 
 
 class SDFSchemaGenerator : public testing::Test
 {
   public:
-    void run_xmllint(const std::string & model)
+    void runXMLlint(const std::string & model)
     {
-      std::string xmllint_cmd = "xmllint --noout --schema " + \
+      std::string xmllintCmd = "xmllint --noout --schema " +
                                 SDF_ROOT_SCHEMA + " " + model;
-      if (system(xmllint_cmd.c_str()) != 0)
+      std::cout << "CMD[" << xmllintCmd << "]\n";
+      if (system(xmllintCmd.c_str()) != 0)
           FAIL() << "Fail in parsing the model";
       else
           SUCCEED();
@@ -52,17 +53,18 @@ class SDFSchemaGenerator : public testing::Test
 /////////////////////////////////////////////////
 TEST_F(SDFSchemaGenerator, TestDoblePendulum)
 {
-  run_xmllint(SDF_TEST_PENDULUM);
+  runXMLlint(SDF_TEST_PENDULUM);
 }
 
 /////////////////////////////////////////////////
 TEST_F(SDFSchemaGenerator, TestPR2Model)
 {
-  run_xmllint(SDF_TEST_PR2);
+  runXMLlint(SDF_TEST_PR2);
 }
+
 
 /////////////////////////////////////////////////
 TEST_F(SDFSchemaGenerator, TestTurtleBotModel)
 {
-  run_xmllint(SDF_TEST_TURTLEBOT);
+  runXMLlint(SDF_TEST_TURTLEBOT);
 }

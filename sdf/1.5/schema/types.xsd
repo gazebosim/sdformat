@@ -2,31 +2,31 @@
 <xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema'>
   <xsd:simpleType name="vector3">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="([0-9]+(\.[0-9]*)\s+){2}[0-9]+(\.[0-9]*)"/>
+      <xsd:pattern value="(\s*(-|\+)?[0-9]+(\.[0-9]*)?\s+){2}((-|\+)?[0-9]+(\.[0-9]*)?)"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="quaternion">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="([0-9]+(\.[0-9]*)\s+){3}[0-9]+(\.[0-9]*)"/>
+      <xsd:pattern value="(\s*(-|\+)?[0-9]+(\.[0-9]*)?\s+){3}((-|\+)?[0-9]+(\.[0-9]*)?)"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="vector2d">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="[0-9]+(\.[0-9]*)\s+[0-9]+(\.[0-9]*)"/>
+      <xsd:pattern value="(\s*(-|\+)?[0-9]+(\.[0-9]*)?\s+)((-|\+)?[0-9]+(\.[0-9]*)?)"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="vector2i">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="[0-9]+\s+[0-9]+"/>
+      <xsd:pattern value="\s*(-|\+)?[0-9]+\s+(-|\+)?[0-9]+"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="pose">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="([0-9]+(\.[0-9]*)\s+){5}[0-9]+(\.[0-9]*)"/>
+      <xsd:pattern value="(\s*(-|\+)?[0-9]+(\.[0-9]*)?\s+){5}((-|\+)?[0-9]+(\.[0-9]*)?)"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -37,7 +37,7 @@
 
   <xsd:simpleType name="color">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="([0-9]+(\.[0-9]*)\s+){3}[0-9]+(\.[0-9]*)"/>
+      <xsd:pattern value="(\s*\+?[0-9]+(\.[0-9]*)?\s+){3}\+?[0-9]+(\.[0-9]*)?"/>
     </xsd:restriction>
   </xsd:simpleType>
 

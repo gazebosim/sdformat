@@ -39,10 +39,30 @@ def printElem(_file, _spaces, _elem)
     type = "xsd:" + xsdType(type)
   end
 
+  minOccurs = '0'
+  maxOccurs = 'unbounded'
+  if _elem.attributes["required"] == '0'
+    minOccurs='0'
+    maxOccurs='1'
+  elsif _elem.attributes["required"] == '1'
+    minOccurs='1'
+    maxOccurs='1'
+  elsif _elem.attributes["required"] == '+'
+    minOccurs='1'
+    maxOccurs='unbounded'
+  elsif _elem.attributes["required"] == '*'
+    minOccurs='0'
+    maxOccurs='unbounded'
+  end
+
+  _file.printf("%*s<xsd:choice  minOccurs='%s' maxOccurs='%s'>\n",
+               _spaces, "", minOccurs, maxOccurs)
+
   # Print the complex type with a name
   if type.nil? || type == ""
-    _file.printf("%*s<xsd:element name='%s'>\n", _spaces, "",
-                 _elem.attributes["name"])
+
+    _file.printf("%*s<xsd:element name='%s'>\n",
+                 _spaces, "", _elem.attributes["name"])
 
     if !_elem.elements["description"].nil? &&
        !_elem.elements["description"].text.nil?
@@ -60,8 +80,7 @@ def printElem(_file, _spaces, _elem)
 
     _file.printf("%*s</xsd:complexType>\n", _spaces+2, "")
   else
-    _file.printf("%*s<xsd:element name='%s' type='%s'>\n", _spaces, "",
-                 _elem.attributes["name"], type)
+    _file.printf("%*s<xsd:element name='%s' type='%s'>\n", _spaces, "", _elem.attributes["name"], type)
 
     if !_elem.elements["description"].nil? &&
        !_elem.elements["description"].text.nil?
@@ -70,6 +89,7 @@ def printElem(_file, _spaces, _elem)
   end
 
   _file.printf("%*s</xsd:element>\n", _spaces, "")
+  _file.printf("%*s</xsd:choice>\n", _spaces, "")
 end
 
 #################################################
@@ -99,7 +119,8 @@ end
 
 #################################################
 def printInclude(_file, _spaces, _attr)
-  loc = "http://sdformat.org/schemas/"
+  #loc = "http://sdformat.org/schemas/"
+  loc = "/home/nkoenig/work/sdformat/build/sdf/1.5/"
   loc += _attr.attributes['filename'].sub("\.sdf","\.xsd")
   _file.printf("%*s<xsd:include schemaLocation='%s'/>\n", _spaces, "", loc)
 end
@@ -150,7 +171,8 @@ def printXSD(_file, _spaces, _elem)
     printDocumentation(_file, _spaces, _elem.elements["description"].text)
   end
 
-  _file.printf("%*s<xsd:include schemaLocation='http://sdformat.org/schemas/types.xsd'/>\n", _spaces, "")
+  # _file.printf("%*s<xsd:include schemaLocation='http://sdformat.org/schemas/types.xsd'/>\n", _spaces, "")
+  _file.printf("%*s<xsd:include schemaLocation='/home/nkoenig/work/sdformat/sdf/1.5/schema/types.xsd'/>\n", _spaces, "")
 
   # Print the inclues for the complex type
   # The includes must appear first
@@ -167,7 +189,12 @@ def printXSD(_file, _spaces, _elem)
                  _elem.attributes["name"])
     _file.printf("%*s<xsd:complexType>\n", _spaces+2, "")
 
-    _file.printf("%*s<xsd:choice maxOccurs='unbounded'>\n", _spaces+4, "")
+    if _elem.attributes['name'] != "plugin" &&
+      (_elem.get_elements("element").size > 0 ||
+       _elem.get_elements("include").size > 0)
+      _file.printf("%*s<xsd:choice maxOccurs='unbounded'>\n", _spaces+4, "")
+    end
+
     # Print all the child elements
     _elem.get_elements("element").each do |elem|
       printElem(_file, _spaces+6, elem);
@@ -177,7 +204,11 @@ def printXSD(_file, _spaces, _elem)
     _elem.get_elements("include").each do |inc|
       printIncludeRef(_file, _spaces+6, inc);
     end
-    _file.printf("%*s</xsd:choice>\n", _spaces+4, "")
+    if _elem.attributes['name'] != "plugin" &&
+      (_elem.get_elements("element").size > 0 ||
+       _elem.get_elements("include").size > 0)
+      _file.printf("%*s</xsd:choice>\n", _spaces+4, "")
+    end
 
     # Print the attributes for the complex type
     # Attributes must go at the end of the complex type.
