@@ -34,4 +34,5 @@
   <include filename="spherical_coordinates.sdf" required="0"/>
 
   <include filename="state.sdf" required="*"/>
+  <include filename="population.sdf" required="*"/>
 </element> <!-- End World -->

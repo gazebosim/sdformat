@@ -19,12 +19,16 @@ set (sdfs
   joint.sdf
   light.sdf
   link.sdf
+  magnetometer.sdf
+  material.sdf
   mesh_shape.sdf
   model.sdf
   noise.sdf
   physics.sdf
   plane_shape.sdf
   plugin.sdf
+  polyline_shape.sdf
+  population.sdf
   projector.sdf
   ray.sdf
   rfidtag.sdf

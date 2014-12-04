@@ -301,7 +301,7 @@ void ReduceCollisionToParent(UrdfLinkPtr _link,
     const std::string &_groupName, UrdfCollisionPtr _collision)
 {
   boost::shared_ptr<std::vector<UrdfCollisionPtr> > cols;
-#if USE_EXTERNAL_URDF
+#if USE_EXTERNAL_URDF && defined(URDF_GE_0P3)
   if (_link->collision)
   {
     cols.reset(new std::vector<UrdfCollisionPtr>);
@@ -341,7 +341,7 @@ void ReduceVisualToParent(UrdfLinkPtr _link,
     const std::string &_groupName, UrdfVisualPtr _visual)
 {
   boost::shared_ptr<std::vector<UrdfVisualPtr> > viss;
-#if USE_EXTERNAL_URDF
+#if USE_EXTERNAL_URDF && defined(URDF_GE_0P3)
   if (_link->visual)
   {
     viss.reset(new std::vector<UrdfVisualPtr>);
@@ -1617,6 +1617,14 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
           physics->LinkEndChild(physicsOde);
         if (newPhysics)
           _elem->LinkEndChild(physics);
+
+        // insert all additional blobs into joint
+        for (std::vector<TiXmlElementPtr>::iterator
+            blobIt = (*ge)->blobs.begin();
+            blobIt != (*ge)->blobs.end(); ++blobIt)
+        {
+          _elem->LinkEndChild((*blobIt)->Clone());
+        }
       }
     }
   }
@@ -2468,6 +2476,7 @@ void CreateJoint(TiXmlElement *_root,
       AddKeyValue(jointAxisLimit, "lower", "0");
       AddKeyValue(jointAxisLimit, "upper", "0");
       AddKeyValue(jointAxisDynamics, "damping", "0");
+      AddKeyValue(jointAxisDynamics, "friction", "0");
     }
     else
     {
@@ -2481,8 +2490,12 @@ void CreateJoint(TiXmlElement *_root,
       AddKeyValue(jointAxis, "xyz",
           Values2str(3, rotatedJointAxisArray));
       if (_link->parent_joint->dynamics)
+      {
         AddKeyValue(jointAxisDynamics, "damping",
             Values2str(1, &_link->parent_joint->dynamics->damping));
+        AddKeyValue(jointAxisDynamics, "friction",
+            Values2str(1, &_link->parent_joint->dynamics->friction));
+      }
 
       if (g_enforceLimits && _link->parent_joint->limits)
       {
