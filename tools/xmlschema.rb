@@ -119,8 +119,7 @@ end
 
 #################################################
 def printInclude(_file, _spaces, _attr)
-  #loc = "http://sdformat.org/schemas/"
-  loc = "/home/nkoenig/work/sdformat/build/sdf/1.5/"
+  loc = "http://sdformat.org/schemas/"
   loc += _attr.attributes['filename'].sub("\.sdf","\.xsd")
   _file.printf("%*s<xsd:include schemaLocation='%s'/>\n", _spaces, "", loc)
 end
@@ -171,8 +170,7 @@ def printXSD(_file, _spaces, _elem)
     printDocumentation(_file, _spaces, _elem.elements["description"].text)
   end
 
-  # _file.printf("%*s<xsd:include schemaLocation='http://sdformat.org/schemas/types.xsd'/>\n", _spaces, "")
-  _file.printf("%*s<xsd:include schemaLocation='/home/nkoenig/work/sdformat/sdf/1.5/schema/types.xsd'/>\n", _spaces, "")
+  _file.printf("%*s<xsd:include schemaLocation='http://sdformat.org/schemas/types.xsd'/>\n", _spaces, "")
 
   # Print the inclues for the complex type
   # The includes must appear first
