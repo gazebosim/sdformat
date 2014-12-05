@@ -3,7 +3,7 @@
 require "rexml/document"
 require "optparse"
 
-@@path = nil
+$path = nil
 
 #################################################
 # \brief A not very elegant way to convert to schema types
@@ -111,7 +111,7 @@ end
 
 #################################################
 def printIncludeRef(_file, _spaces, _inc)
-  path = File.join(@@path, _inc.attributes["filename"])
+  path = File.join($path, _inc.attributes["filename"])
   doc = REXML::Document.new File.new(path)
   incElemName = doc.root.attributes['name']
   _file.printf("%*s<xsd:element ref='%s'/>\n", _spaces, "", incElemName)
@@ -243,7 +243,7 @@ opt_parser = OptionParser.new do |o|
   o.on("-o", "--out [path]", String,
        "Output directory for source and header files") {|path| outdir = path}
   o.on("-s", "--sdf [path]", String,
-       "Directory containing all the SDF files") {|path| @@path = path}
+       "Directory containing all the SDF files") {|path| $path = path}
   o.on("-h", "--help", "Display this help message") do
     puts opt_parser
     exit
@@ -259,11 +259,11 @@ elsif !File.exists?(infile)
   exit
 end
 
-if @@path.nil?
+if $path.nil?
   puts "Missing option -s."
   exit
-elsif !Dir.exists?(@@path)
-  puts "SDF source dir[#{@@path}] does not exist\n"
+elsif !Dir.exists?($path)
+  puts "SDF source dir[#{$path}] does not exist\n"
   exit
 end
 
