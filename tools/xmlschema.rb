@@ -32,8 +32,7 @@ def printElem(_file, _spaces, _elem)
   # this currently short-circuits the plugin.sdf copy_data element.
   if _elem.attributes["name"].nil?
     _file.printf("%*s<xsd:sequence>\n", _spaces-2, "")
-    _file.printf("%*s<xsd:any maxOccurs='unbounded' processContents='lax'/>\n",
-                 _spaces, "")
+    _file.printf("%*s<xsd:any minOccurs='0' maxOccurs='unbounded' processContents='lax'/>\n", _spaces, "")
     _file.printf("%*s</xsd:sequence>\n", _spaces-2, "")
     return
   end
