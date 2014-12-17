@@ -31,6 +31,10 @@ def printElem(_file, _spaces, _elem)
 
   # this currently short-circuits the plugin.sdf copy_data element.
   if _elem.attributes["name"].nil?
+    _file.printf("%*s<xsd:sequence>\n", _spaces-2, "")
+    _file.printf("%*s<xsd:any maxOccurs='unbounded' processContents='lax'/>\n",
+                 _spaces, "")
+    _file.printf("%*s</xsd:sequence>\n", _spaces-2, "")
     return
   end
 
@@ -78,9 +82,16 @@ def printElem(_file, _spaces, _elem)
     end
     _file.printf("%*s</xsd:choice>\n", _spaces+4, "")
 
+    # Print the attributes for the complex type
+    # Attributes must go at the end of the complex type.
+    _elem.get_elements("attribute").each do |attr|
+      printAttribute(_file, _spaces+4, attr);
+    end
+
     _file.printf("%*s</xsd:complexType>\n", _spaces+2, "")
   else
-    _file.printf("%*s<xsd:element name='%s' type='%s'>\n", _spaces, "", _elem.attributes["name"], type)
+    _file.printf("%*s<xsd:element name='%s' type='%s'>\n",
+                 _spaces, "", _elem.attributes["name"], type)
 
     if !_elem.elements["description"].nil? &&
        !_elem.elements["description"].text.nil?
@@ -90,6 +101,7 @@ def printElem(_file, _spaces, _elem)
 
   _file.printf("%*s</xsd:element>\n", _spaces, "")
   _file.printf("%*s</xsd:choice>\n", _spaces, "")
+
 end
 
 #################################################
