@@ -8,9 +8,13 @@ set(tests
   joint_axis_frame.cc
   plugin_attribute.cc
   provide_feedback.cc
+  schema_test.cc
   urdf_joint_parameters.cc
 )
 
 link_directories(${PROJECT_BINARY_DIR}/test)
 
 sdf_build_tests(${tests})
+
+# Need to run schema target (build .xsd files) before running schema_test
+add_dependencies(${TEST_TYPE}_schema_test schema)

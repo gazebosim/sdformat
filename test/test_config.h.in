@@ -1,4 +1,6 @@
 #define PROJECT_SOURCE_PATH "${PROJECT_SOURCE_DIR}"
+#define PROJECT_BINARY_DIR  "${CMAKE_BINARY_DIR}"
+#define SDF_PROTOCOL_VERSION "${SDF_PROTOCOL_VERSION}"
 
 /* 
  * setenv/unstenv are not present in Windows. Define them to make the code
