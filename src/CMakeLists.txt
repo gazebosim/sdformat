@@ -1,7 +1,12 @@
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 
+include_directories(
+  ${Boost_INCLUDE_DIR}
+)
+
 link_directories(
   ${PROJECT_BINARY_DIR}/test
+  ${tinyxml_LIBRARY_DIRS}
 )
 
 if (USE_EXTERNAL_URDF)
