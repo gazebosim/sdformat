@@ -7,6 +7,7 @@ set(tests
   force_torque_sensor.cc
   joint_axis_frame.cc
   plugin_attribute.cc
+  plugin_bool.cc
   provide_feedback.cc
   schema_test.cc
   urdf_joint_parameters.cc

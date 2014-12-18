@@ -148,7 +148,19 @@ namespace sdf
             {
               try
               {
-                _value = boost::lexical_cast<T>(this->value);
+                if (typeid(T) == typeid(bool) && this->typeName == "string")
+                {
+                  std::string strValue =
+                    boost::lexical_cast<std::string>(this->value);
+                  if (strValue == "true" || strValue  == "1")
+                    _value = boost::lexical_cast<T>("1");
+                  else
+                    _value = boost::lexical_cast<T>("0");
+                }
+                else
+                {
+                  _value = boost::lexical_cast<T>(this->value);
+                }
               }
               catch(...)
               {
