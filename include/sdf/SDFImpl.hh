@@ -363,8 +363,9 @@ namespace sdf
     public: ElementPtr root;
 
     public: static std::string version;
-    // need to define the destructor so MSVC is not generating a symbol every time
-    public: ~SDF(); 
+    // need to define the destructor so MSVC is not generating a symbol
+    // every time
+    public: ~SDF();
   };
   /// \}
 }
