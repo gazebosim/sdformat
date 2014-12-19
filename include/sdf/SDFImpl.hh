@@ -350,7 +350,7 @@ namespace sdf
   class SDFORMAT_VISIBLE SDF
   {
     public: SDF();
-    // need to define the destructor so MSVC is not generating 
+    // need to define the destructor so MSVC is not generating
     // a symbol every time
     public: ~SDF();
     public: void PrintDescription();
