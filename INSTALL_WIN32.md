@@ -4,7 +4,7 @@ This documentation describes how to set up a workspace for trying to compile sdf
 
 ## Supported compilers
 
-At this moment, compilation has been testewd on Windows 7 and is supported 
+At this moment, compilation has been tested on Windows 7 and is supported 
 when using Visual Studio 2013. Patches for other versions are welcome.
 
 ## Installation
@@ -22,7 +22,7 @@ Windows `cmd` for configuring and building.
 
     - [boost 1.56.0](http://packages.osrfoundation.org/win32/deps/boost_1_56_0.zip)
 
-1. Unzip it n sdformat-ws.
+1. Unzip it in sdformat-ws.
 
 1. Clone sdformat
 
