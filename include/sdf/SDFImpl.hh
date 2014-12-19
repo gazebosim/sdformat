@@ -350,6 +350,9 @@ namespace sdf
   class SDFORMAT_VISIBLE SDF
   {
     public: SDF();
+    // need to define the destructor so MSVC is not generating 
+    // a symbol every time
+    public: ~SDF();
     public: void PrintDescription();
     public: void PrintValues();
     public: void PrintWiki();
@@ -363,9 +366,6 @@ namespace sdf
     public: ElementPtr root;
 
     public: static std::string version;
-    // need to define the destructor so MSVC is not generating a symbol
-    // every time
-    public: ~SDF();
   };
   /// \}
 }
