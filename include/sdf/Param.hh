@@ -25,8 +25,8 @@
 # include <boost/variant.hpp>
 # include <boost/any.hpp>
 # include <boost/function.hpp>
+# include <boost/shared_ptr.hpp>
 #endif
-#include <boost/shared_ptr.hpp>
 
 #include <typeinfo>
 #include <string>
