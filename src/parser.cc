@@ -611,8 +611,19 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           }
         }
 
+        // NOTE: sdf::init is an expensive call. For performance reason,
+        // a new sdf pointer is created here by cloning a fresh sdf template
+        // pointer instead of calling init every iteration.
+        // SDFPtr includeSDF(new SDF);
+        // init(includeSDF);
+        static SDFPtr includeSDFTemplate;
+        if (!includeSDFTemplate)
+        {
+          includeSDFTemplate.reset(new SDF);
+          init(includeSDFTemplate);
+        }
         SDFPtr includeSDF(new SDF);
-        init(includeSDF);
+        includeSDF->root = includeSDFTemplate->root->Clone();
 
         if (!readFile(filename, includeSDF))
         {
