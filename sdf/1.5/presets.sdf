@@ -1,0 +1,10 @@
+<element name="presets" required="1">
+  <description>Simulator performance presets.</description>
+
+  <element name="name" type="string" default="preset_profile" required="1">
+    <description>The name of the preset profile.</description>
+  </element>
+  
+  <include file="simulation_parameters.sdf" required="*"/>
+
+</element> <!-- End presets -->
