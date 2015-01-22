@@ -3,7 +3,12 @@
 
   <attribute name="name" type="string" default="preset_profile" required="1">
     <description>The name of the preset profile.</description>
-  </element>
+  </attribute>
+
+  <attribute name="selected" type="int" default="0" required="0">
+    <description>Whether or not to select this preset upon initialization.</description>
+  </attribute>
+
   
   <include file="simulation_parameters.sdf" required="*"/>
 
