@@ -17,7 +17,6 @@
     <description>Rate at which to update the physics engine (UpdatePhysics calls per real-time second). (was physics.sdf's update_rate).</description>
   </element>
 
-
   <element name="gravity" type="vector3" default="0 0 -9.8" required="1">
     <description>The gravity vector in m/s^2, expressed in a coordinate frame defined by the spherical_coordinates tag.</description>
   </element> <!-- End Gravity -->
