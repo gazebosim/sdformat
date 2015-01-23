@@ -25,7 +25,7 @@
     <description>The magnetic vector in Tesla, expressed in a coordinate frame defined by the spherical_coordinates tag.</description>
   </element> <!-- End Magnetic -->
 
-  <include file="simulation_parameters.sdf" required="*"/>
-  <include file="presets.sdf" required="0"/>
+  <include file="simulation_parameters.sdf" required="1"/>
+  <include file="presets.sdf" required="1"/>
 
 </element> <!-- Physics -->
