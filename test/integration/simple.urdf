@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name='boxes'>
+  <link name='link1'>
+    <inertial>
+      <origin xyz='0.1 0.2 0.3' rpy='0.4 0.5 0.6'/>
+      <mass value='123.456'/>
+      <inertia ixx='0.1' ixy='0.2' ixz='0.3' iyy='0.4' iyz='0.5' izz='0.6'/>
+    </inertial>
+    <collision name='collision'>
+      <origin xyz='0 0 0' rpy='0 -0 0'/>
+      <geometry>
+        <box size='1 1 1'/>
+      </geometry>
+    </collision>
+    <visual name='visual'>
+      <origin xyz='0 0 0' rpy='0 -0 0'/>
+      <geometry>
+        <box size='1 1 1'/>
+      </geometry>
+    </visual>
+  </link>
+  <link name='link2'>
+    <inertial>
+      <origin xyz='0.6 0.5 0.9' rpy='0.3 0.2 0.1'/>
+      <mass value='654.321'/>
+      <inertia ixx='1.1' ixy='2.2' ixz='3.3' iyy='4.4' iyz='5.5' izz='6.6'/>
+    </inertial>
+    <collision name='collision'>
+      <origin xyz='0 0 0.5' rpy='0 -0 0'/>
+      <geometry>
+        <box size='1 1 1'/>
+      </geometry>
+    </collision>
+    <visual name='visual'>
+      <origin xyz='0 0 0.5' rpy='0 -0 0'/>
+      <geometry>
+        <box size='1 1 1'/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name='joint1' type='revolute'>
+    <origin xyz='0 0 0.5' rpy='0 -0 0'/>
+    <parent link='link1'/>
+    <child link='link2'/>
+    <dynamics damping='0.1' friction='0.2' />
+    <axis xyz='0 0 1'/>
+    <limit lower='0.1' upper='1.2' effort='10' velocity='12'/>
+  </joint>
+</robot>
