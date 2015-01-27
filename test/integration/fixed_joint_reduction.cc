@@ -24,6 +24,9 @@
 
 const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/fixed_joint_reduction.urdf";
+const std::string SDF_TEST_FILE_COLLISION =
+  std::string(PROJECT_SOURCE_PATH)
+  + "/test/integration/fixed_joint_reduction_collision.urdf";
 const std::string SDF_TEST_FILE_SIMPLE =
   std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/fixed_joint_reduction_simple.urdf";
@@ -48,6 +51,15 @@ TEST(SDFParser, FixedJointReductionEquivalenceTest)
 TEST(SDFParser, FixedJointReductionVisualTest)
 {
   FixedJointReductionEquivalence(SDF_TEST_FILE_VISUAL);
+}
+
+/////////////////////////////////////////////////
+// This test uses a urdf that has a fixed joint whose parent
+// has no collisions. This is a parallel of the
+// FixedJointReductionVisualTest
+TEST(SDFParser, FixedJointReductionCollisionTest)
+{
+  FixedJointReductionEquivalence(SDF_TEST_FILE_COLLISION);
 }
 
 /////////////////////////////////////////////////
