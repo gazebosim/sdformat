@@ -301,20 +301,8 @@ void ReduceCollisionToParent(UrdfLinkPtr _link,
     const std::string &_groupName, UrdfCollisionPtr _collision)
 {
   boost::shared_ptr<std::vector<UrdfCollisionPtr> > cols;
-#if USE_EXTERNAL_URDF && defined(URDF_GE_0P3)
-  if (_link->collision)
-  {
-    cols.reset(new std::vector<UrdfCollisionPtr>);
-    cols->push_back(_link->collision);
-  }
-  else
-  {
-    cols = boost::shared_ptr<std::vector<UrdfCollisionPtr> >(
-            &_link->collision_array);
-  }
-#else
+#ifndef URDF_GE_0P3
   cols = _link->getCollisions(_groupName);
-#endif
 
   if (!cols)
   {
@@ -334,6 +322,7 @@ void ReduceCollisionToParent(UrdfLinkPtr _link,
       << _groupName << "]\n";
   else
     cols->push_back(_collision);
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -341,19 +330,8 @@ void ReduceVisualToParent(UrdfLinkPtr _link,
     const std::string &_groupName, UrdfVisualPtr _visual)
 {
   boost::shared_ptr<std::vector<UrdfVisualPtr> > viss;
-#if USE_EXTERNAL_URDF && defined(URDF_GE_0P3)
-  if (_link->visual)
-  {
-    viss.reset(new std::vector<UrdfVisualPtr>);
-    viss->push_back(_link->visual);
-  }
-  else
-  {
-    viss = boost::shared_ptr<std::vector<UrdfVisualPtr> >(&_link->visual_array);
-  }
-#else
+#ifndef URDF_GE_0P3
   viss = _link->getVisuals(_groupName);
-#endif
 
   if (!viss)
   {
@@ -376,6 +354,7 @@ void ReduceVisualToParent(UrdfLinkPtr _link,
       << _groupName << "]\n";
   else
     viss->push_back(_visual);
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
