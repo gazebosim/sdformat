@@ -30,7 +30,6 @@ set (sdfs
   plugin.sdf
   polyline_shape.sdf
   population.sdf
-  presets.sdf
   projector.sdf
   ray.sdf
   rfidtag.sdf
@@ -39,7 +38,6 @@ set (sdfs
   root.sdf
   scene.sdf
   sensor.sdf
-  simulation_parameters.sdf
   spherical_coordinates.sdf
   sphere_shape.sdf
   sonar.sdf

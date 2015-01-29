@@ -2,7 +2,7 @@
 <element name="physics" required="1">
   <description>The physics tag specifies the type and properties of the dynamics engine.</description>
 
-  <attribute name="name" type="string" default="default_physics" required="1">
+  <attribute name="name" type="string" default="default_physics" required="0">
     <description>The name of this set of physics parameters.</description>
   </attribute>
 
