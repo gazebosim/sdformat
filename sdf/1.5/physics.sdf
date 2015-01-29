@@ -2,6 +2,10 @@
 <element name="physics" required="1">
   <description>The physics tag specifies the type and properties of the dynamics engine.</description>
 
+  <attribute name="name" type="string" default="default_physics" required="1">
+    <description>The name of this set of physics parameters.</description>
+  </attribute>
+
   <attribute name="type" type="string" default="ode" required="1">
     <description>The type of the dynamics engine. Current options are ode, bullet, simbody and rtql8.  Defaults to ode if left unspecified.</description>
   </attribute>
@@ -24,8 +28,5 @@
   <element name="magnetic_field" type="vector3" default="5.5645e-6 22.8758e-6 -42.3884e-6" required="1">
     <description>The magnetic vector in Tesla, expressed in a coordinate frame defined by the spherical_coordinates tag.</description>
   </element> <!-- End Magnetic -->
-
-  <include file="simulation_parameters.sdf" required="1"/>
-  <include file="presets.sdf" required="1"/>
 
 </element> <!-- Physics -->
