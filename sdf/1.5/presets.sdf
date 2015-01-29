@@ -9,7 +9,6 @@
     <description>Whether or not to select this preset upon initialization.</description>
   </attribute>
 
-  
-  <include file="simulation_parameters.sdf" required="*"/>
+  <include file="simulation_parameters.sdf" required="1"/>
 
 </element> <!-- End presets -->
