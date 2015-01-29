@@ -174,7 +174,6 @@ void FixedJointReductionEquivalence(const std::string &_file)
       for (sdf::ElementPtr coll = link->GetElement("collision"); coll;
            coll = coll->GetNextElement("collision"))
       {
-        std::cout << "Found collision: " << coll->Get<std::string>("name") << std::endl;
         ++countCollisions;
       }
     }
@@ -183,7 +182,6 @@ void FixedJointReductionEquivalence(const std::string &_file)
       for (sdf::ElementPtr vis = link->GetElement("visual"); vis;
            vis = vis->GetNextElement("visual"))
       {
-        std::cout << "Found visual: " << vis->Get<std::string>("name") << std::endl;
         ++countVisuals;
       }
     }
