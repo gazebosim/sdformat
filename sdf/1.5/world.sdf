@@ -5,7 +5,7 @@
     <description>Unique name of the world</description>
   </attribute>
 
-  <attribute name="default_physics" type="string" default="default_physics" required="1">
+  <attribute name="default_physics" type="string" default="default_physics" required="0">
     <description>The default set of physics parameters to choose on initialization.</description>
   </attribute>
 
