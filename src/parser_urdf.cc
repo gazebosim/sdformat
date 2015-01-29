@@ -322,6 +322,8 @@ void ReduceCollisionToParent(UrdfLinkPtr _link,
       << _groupName << "]\n";
   else
     cols->push_back(_collision);
+#else
+  _link->collision_array.push_back(_collision);
 #endif
 }
 
@@ -354,6 +356,8 @@ void ReduceVisualToParent(UrdfLinkPtr _link,
       << _groupName << "]\n";
   else
     viss->push_back(_visual);
+#else
+  _link->visual_array.push_back(_visual);
 #endif
 }
 
