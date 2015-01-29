@@ -298,7 +298,12 @@ std::string Vector32Str(const urdf::Vector3 _vector)
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceCollisionToParent(UrdfLinkPtr _link,
-    const std::string &_groupName, UrdfCollisionPtr _collision)
+#ifndef URDF_GE_0P3
+    const std::string &_groupName,
+#else
+    const std::string &/*_groupName*/,
+#endif
+    UrdfCollisionPtr _collision)
 {
   boost::shared_ptr<std::vector<UrdfCollisionPtr> > cols;
 #ifndef URDF_GE_0P3
@@ -329,7 +334,12 @@ void ReduceCollisionToParent(UrdfLinkPtr _link,
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceVisualToParent(UrdfLinkPtr _link,
-    const std::string &_groupName, UrdfVisualPtr _visual)
+#ifndef URDF_GE_0P3
+    const std::string &_groupName,
+#else
+    const std::string &/*_groupName*/,
+#endif
+    UrdfVisualPtr _visual)
 {
   boost::shared_ptr<std::vector<UrdfVisualPtr> > viss;
 #ifndef URDF_GE_0P3
