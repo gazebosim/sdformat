@@ -34,6 +34,9 @@ else()
     win/tinyxml/tinyxmlerror.cpp
     win/tinyxml/tinyxml.cpp
     win/tinyxml/tinyxmlparser.cpp)
+    
+    install (FILES win/tinyxml/tinyxml.h 
+	    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sdformat-${SDF_VERSION})
 endif()
 
 if (USE_EXTERNAL_URDF)

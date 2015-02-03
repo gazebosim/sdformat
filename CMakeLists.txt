@@ -119,6 +119,9 @@ if (WIN32)
     add_definitions(-D_USE_MATH_DEFINES) 
     # Use dynamic linking for boost
     add_definitions(-DBOOST_ALL_DYN_LINK)
+    # And force linking to MSVC dynamic runtime
+    set(CMAKE_C_FLAGS_DEBUG "/MDd ${CMAKE_C_FLAGS_DEBUG}")
+    set(CMAKE_C_FLAGS_RELEASE "/MD ${CMAKE_C_FLAGS_RELEASE}")
     if (MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
       # Not need if proper cmake gnerator (-G "...Win64") is passed to cmake
       # Enable as a second measeure to workaround over bug
@@ -148,17 +151,17 @@ endif()
 # Use our own defined flags for building types
 if(NOT DEFINED USE_UPSTREAM_CFLAGS OR USE_UPSTREAM_CFLAGS)
   message(STATUS "Using upstream CFlags")
-  if (NOT APPLE)
+  if (NOT APPLE AND NOT MSVC)
     # -s doesn't work with default osx compiler clang, alternative:
     # http://stackoverflow.com/questions/6085491/gcc-vs-clang-symbol-strippingu
-    set (CMAKE_C_FLAGS_RELEASE " -s ")
+    set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s ")
   endif()
   set (CMAKE_C_FLAGS_RELEASE " ${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG"
     CACHE INTERNAL "C Flags for release" FORCE)
   set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
   
   if (NOT MSVC)
-    set (CMAKE_C_FLAGS_DEBUG " -ggdb3"
+    set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3"
       CACHE INTERNAL "C Flags for debug" FORCE)
     set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
   endif()
