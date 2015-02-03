@@ -18,6 +18,7 @@
 #include <sstream>
 #include <algorithm>
 #include <string>
+#include <set>
 
 #include "urdf_model/model.h"
 #include "urdf_model/link.h"
@@ -45,6 +46,7 @@ std::string g_collisionExt = "_collision";
 std::string g_visualExt = "_visual";
 urdf::Pose g_initialRobotPose;
 bool g_initialRobotPoseValid = false;
+std::set<std::string> g_fixedJointsNotReduced;
 
 /// \brief parser xml string into urdf::Vector3
 /// \param[in] _key XML key where vector3 value might be
@@ -68,6 +70,11 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
 /// insert extensions into joints
 void InsertSDFExtensionJoint(TiXmlElement *_elem,
     const std::string &_jointName);
+
+/// reduced fixed joints:  check if a fixed joint should be lumped
+///   checking both the joint type and if disabledFixedJointLumping
+///   option is set
+bool FixedJointShouldBeReduced(boost::shared_ptr<urdf::Joint> _jnt);
 
 /// reduced fixed joints:  apply transform reduction for ray sensors
 ///   in extensions when doing fixed joint reduction
@@ -386,13 +393,13 @@ void ReduceFixedJoints(TiXmlElement *_root, UrdfLinkPtr _link)
   // if child is attached to self by fixed _link first go up the tree,
   //   check it's children recursively
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
-    if (_link->child_links[i]->parent_joint->type == urdf::Joint::FIXED)
+    if (FixedJointShouldBeReduced(_link->child_links[i]->parent_joint))
       ReduceFixedJoints(_root, _link->child_links[i]);
 
   // reduce this _link's stuff up the tree to parent but skip first joint
   //   if it's the world
   if (_link->getParent() && _link->getParent()->name != "world" &&
-      _link->parent_joint && _link->parent_joint->type == urdf::Joint::FIXED)
+      _link->parent_joint && FixedJointShouldBeReduced(_link->parent_joint) )
   {
     sdfdbg << "Fixed Joint Reduction: extension lumping from ["
            << _link->name << "] to [" << _link->getParent()->name << "]\n";
@@ -409,7 +416,7 @@ void ReduceFixedJoints(TiXmlElement *_root, UrdfLinkPtr _link)
 
   // continue down the tree for non-fixed joints
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
-    if (_link->child_links[i]->parent_joint->type != urdf::Joint::FIXED)
+    if (!FixedJointShouldBeReduced(_link->child_links[i]->parent_joint))
       ReduceFixedJoints(_root, _link->child_links[i]);
 }
 
@@ -963,14 +970,14 @@ void ReduceJointsToParent(UrdfLinkPtr _link)
   {
     boost::shared_ptr<urdf::Joint> parentJoint =
       _link->child_links[i]->parent_joint;
-    if (parentJoint->type != urdf::Joint::FIXED)
+    if (!FixedJointShouldBeReduced(parentJoint))
     {
       // go down the tree until we hit a parent joint that is not fixed
       UrdfLinkPtr newParentLink = _link;
       sdf::Pose jointAnchorTransform;
       while (newParentLink->parent_joint &&
           newParentLink->getParent()->name != "world" &&
-          newParentLink->parent_joint->type == urdf::Joint::FIXED)
+          FixedJointShouldBeReduced(newParentLink->parent_joint) )
       {
         jointAnchorTransform = jointAnchorTransform * jointAnchorTransform;
         parentJoint->parent_to_joint_origin_transform =
@@ -1339,6 +1346,16 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
           sdf->implicitSpringDamper = true;
         else
           sdf->implicitSpringDamper = false;
+      }
+      else if (childElem->ValueStr() == "disableFixedJointLumping")
+      {
+        std::string valueStr = GetKeyValueAsString(childElem);
+
+        if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
+            valueStr == "1")
+        {
+          g_fixedJointsNotReduced.insert(refStr);
+        }
       }
       else
       {
@@ -2131,7 +2148,7 @@ void CreateSDF(TiXmlElement *_root,
   if ((_link->getParent() && _link->getParent()->name == "world") ||
       !g_reduceFixedJoints ||
       (!_link->parent_joint ||
-       _link->parent_joint->type != urdf::Joint::FIXED))
+       !FixedJointShouldBeReduced(_link->parent_joint)))
     CreateLink(_root, _link, _currentTransform);
 
   // recurse into children
@@ -2455,7 +2472,8 @@ void CreateJoint(TiXmlElement *_root,
   //   skip/return with the exception of root link being world,
   //   because there's no lumping there
   if (_link->getParent() && _link->getParent()->name != "world"
-      && jtype == "fixed" && g_reduceFixedJoints) return;
+      && FixedJointShouldBeReduced(_link->parent_joint)
+      && g_reduceFixedJoints) return;
 
   if (!jtype.empty())
   {
@@ -2675,6 +2693,8 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   /* set reduceFixedJoints to false will replace fixed joints with
      zero limit revolute joints, otherwise, we reduce it down to its
      parent link recursively */
+  /* using the disabledFixedJointLumping option is possible to disable
+     fixed joint lumping only for selected joints */
   if (g_reduceFixedJoints)
     ReduceFixedJoints(robot,
         (boost::const_pointer_cast< urdf::Link >(rootLink)));
@@ -2735,6 +2755,16 @@ TiXmlDocument URDF2SDF::InitModelFile(const std::string &_filename)
     sdferr << "Unable to load file[" << _filename << "].\n";
 
   return xmlDoc;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool FixedJointShouldBeReduced(boost::shared_ptr<urdf::Joint> _jnt)
+{
+    // A joint should be lumped only if its type is fixed and
+    // the disabledFixedJointLumping joint option is not set
+    return (_jnt->type == urdf::Joint::FIXED &&
+              (g_fixedJointsNotReduced.find(_jnt->name) ==
+                 g_fixedJointsNotReduced.end()) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
