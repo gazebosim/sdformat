@@ -79,6 +79,9 @@ if (USE_EXTERNAL_URDF)
     set(URDF_INCLUDE_DIRS ${URDF_INCLUDEDIR})
     set(URDF_LIBRARY_DIRS ${URDF_LIBDIR})
   endif()
+else()
+  # the internal copy is currently 0.3.0
+  set (URDF_GE_0P3 TRUE)
 endif()
 
 ################################################

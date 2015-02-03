@@ -192,12 +192,10 @@ public:
   /// \brief complete list of Materials
   std::map<std::string, boost::shared_ptr<Material> > materials_;
 
+  /// \brief The name of the robot model
   std::string name_;
 
-  /// ModelInterface is restricted to a tree for now, which means there exists one root link
-  ///  typically, root link is the world(inertial).  Where world is a special link
-  /// or is the root_link_ the link attached to the world by PLANAR/FLOATING joint?
-  ///  hmm...
+  /// \brief The root is always a link (the parent of the tree describing the robot)
   boost::shared_ptr<Link> root_link_;
 
 
