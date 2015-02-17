@@ -20,13 +20,13 @@
 
 #ifndef Q_MOC_RUN  // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 # include <boost/lexical_cast.hpp>
+# include <boost/bind.hpp>
+# include <boost/algorithm/string.hpp>
+# include <boost/variant.hpp>
+# include <boost/any.hpp>
+# include <boost/function.hpp>
+# include <boost/shared_ptr.hpp>
 #endif
-#include <boost/bind.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/variant.hpp>
-#include <boost/any.hpp>
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <typeinfo>
 #include <string>
@@ -148,7 +148,19 @@ namespace sdf
             {
               try
               {
-                _value = boost::lexical_cast<T>(this->value);
+                if (typeid(T) == typeid(bool) && this->typeName == "string")
+                {
+                  std::string strValue =
+                    boost::lexical_cast<std::string>(this->value);
+                  if (strValue == "true" || strValue  == "1")
+                    _value = boost::lexical_cast<T>("1");
+                  else
+                    _value = boost::lexical_cast<T>("0");
+                }
+                else
+                {
+                  _value = boost::lexical_cast<T>(this->value);
+                }
               }
               catch(...)
               {
