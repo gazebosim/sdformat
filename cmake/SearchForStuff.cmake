@@ -84,7 +84,10 @@ endmacro()
 # If pkg-config fails, then we try find_library and find_path. If that fails,
 # then we try find_package.
 
-set (ruby_versions 1.9 1.8)
+
+set (ruby_versions 1.9 2.0 2.1)
+unset(RUBY_INCLUDE_DIRS CACHE)
+unset(RUBY_LIBRARY CACHE)
 
 foreach (ver ${ruby_versions})
 
