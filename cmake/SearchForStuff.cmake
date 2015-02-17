@@ -84,13 +84,9 @@ endmacro()
 # If pkg-config fails, then we try find_library and find_path. If that fails,
 # then we try find_package.
 
-
 set (ruby_versions 1.9 2.0 2.1)
-unset(RUBY_INCLUDE_DIRS CACHE)
-unset(RUBY_LIBRARY CACHE)
 
 foreach (ver ${ruby_versions})
-
   # Check if pkg-config finds ruby
   if (PKG_CONFIG_FOUND)
     pkg_check_modules(ruby ruby-${ver})
@@ -99,8 +95,6 @@ foreach (ver ${ruby_versions})
   if (NOT ruby_FOUND OR NOT PKG_CONFIG_FOUND)
     if (${ver} EQUAL 1.9)
       set (ver_full 1.9.1)
-    elseif(${ver} EQUAL 1.8)
-      set (ver_full 1.8.0)
     endif()
 
     # pkg-config failed, so try using find_library and find_path
