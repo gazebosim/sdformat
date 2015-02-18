@@ -1,3 +1,5 @@
+include (FindPkgConfig)
+
 if (@PKG_NAME@_CONFIG_INCLUDED)
   return()
 endif()
