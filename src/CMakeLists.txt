@@ -1,5 +1,9 @@
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 
+include_directories(
+  ${Boost_INCLUDE_DIR}
+)
+
 link_directories(
   ${PROJECT_BINARY_DIR}/test
   ${tinyxml_LIBRARY_DIRS}
@@ -42,6 +46,7 @@ set (gtest_sources
   Console_TEST.cc
   Converter_TEST.cc
   parser_urdf_TEST.cc
+  Param_TEST.cc
 )
 sdf_build_tests(${gtest_sources})
 
