@@ -41,8 +41,11 @@ set (ruby_versions 1.9 2.0 2.1)
 
 foreach (ver ${ruby_versions})
   # Check if pkg-config finds ruby
-  pkg_check_modules(ruby ruby-${ver})
-  if (NOT ruby_FOUND)
+  if (PKG_CONFIG_FOUND)
+    pkg_check_modules(ruby ruby-${ver})
+  endif()
+
+  if (NOT ruby_FOUND OR NOT PKG_CONFIG_FOUND)
     if (${ver} EQUAL 1.9)
       set (ver_full 1.9.1)
     endif()
@@ -52,14 +55,20 @@ foreach (ver ${ruby_versions})
     find_path(RUBY_INCLUDE_DIRS NAMES ruby.h
       PATHS /usr/include/ruby-${ver_full})
 
+    # The ruby library includes a config.h in a very strange location. This
+    # is a "nice" hack to make sure config.h is found.
+    set(RUBY_INCLUDE_DIRS "${RUBY_INCLUDE_DIRS};${RUBY_INCLUDE_DIRS}/x86_64-linux")
+
     # if find_library and find_path failed, try using find_package
     if (NOT RUBY_LIBRARY)
       find_package(Ruby ${ver})
 
       # Make sure we don't count the static version.
-      if ("${RUBY_LIBRARY}" MATCHES ".*-static.a")
+      if (NOT RUBY_FOUND OR "${RUBY_LIBRARY}" MATCHES ".*-static.a")
         set (RUBY_LIBRARY RUBY_LIBRARY-NOTFOUND)
         set (RUBY_INCLUDE_DIRS RUBY_INCLUDE_DIRS-NOTFOUND)
+      else()
+        set( RUBY_INCLUDE_DIRS "${RUBY_INCLUDE_DIR};${RUBY_INCLUDE_DIR}/x86_64-linux")
       endif()
     endif()
 
