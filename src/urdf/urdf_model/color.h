@@ -36,6 +36,7 @@
 
 #ifndef URDF_INTERFACE_COLOR_H
 #define URDF_INTERFACE_COLOR_H
+#include "visible.h"
 
 #include <string>
 #include <vector>
@@ -46,7 +47,7 @@
 namespace urdf
 {
 
-class Color
+class SDFORMAT_HIDDEN Color
 {
 public:
   Color() {this->clear();};

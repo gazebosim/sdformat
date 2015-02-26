@@ -75,7 +75,8 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
     return path.string();
 
   // Next check the versioned install path.
-  path = boost::filesystem::path(SDF_VERSION_PATH) / _filename;
+  path = boost::filesystem::path(SDF_SHARE_PATH) / "sdformat" /
+    sdf::SDF::version / _filename;
   if (boost::filesystem::exists(path))
     return path.string();
 
@@ -1141,6 +1142,7 @@ std::string SDF::ToString() const
 {
   std::ostringstream stream;
 
+  stream << "<?xml version='1.0'?>\n";
   if (this->root->GetName() != "sdf")
     stream << "<sdf version='" << SDF::version << "'>\n";
 
@@ -1161,5 +1163,3 @@ void SDF::SetFromString(const std::string &_sdfData)
     sdferr << "Unable to parse sdf string[" << _sdfData << "]\n";
   }
 }
-
-

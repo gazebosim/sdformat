@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.6 FATAL_ERROR)
 
 if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0003 NEW)
@@ -23,15 +23,22 @@ endif()
 project (SDFormat)
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
-set (SDF_MAJOR_VERSION 1)
-set (SDF_MINOR_VERSION 4)
-set (SDF_PATCH_VERSION 7)
+# The protocol version has nothing to do with the package version set below.
+# It represents the current version of sdformat implement by the software
+set (SDF_PROTOCOL_VERSION 1.5)
+
+set (SDF_MAJOR_VERSION 2)
+set (SDF_MINOR_VERSION 2)
+set (SDF_PATCH_VERSION 1)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
 set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION})
 
 message (STATUS "${PROJECT_NAME} version ${SDF_VERSION_FULL}")
 set (CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
+
+# Include GNUInstallDirs to get canonical paths
+include(GNUInstallDirs)
 
 # Default test type for test all over source
 set(TEST_TYPE "UNIT")
@@ -45,9 +52,9 @@ if(LD_LIBRARY_PATH)
   set (ENV{LD_LIBRARY_PATH} ${LD_LIBRARY_PATH}:$ENV{LD_LIBRARY_PATH})
 endif()
 
-set (INCLUDE_INSTALL_DIR "include/sdformat-${SDF_VERSION}/sdf") 
-set (LIB_INSTALL_DIR "lib" CACHE STRING "Installation directory for libraries (relative to CMAKE_INSTALL_PREFIX)") 
-set (BIN_INSTALL_DIR "bin" CACHE STRING "Installation directory for binaries (relative to CMAKE_INSTALL_PREFIX)") 
+set (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}/sdformat-${SDF_VERSION}/sdf") 
+set (LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE STRING "Installation directory for libraries (relative to CMAKE_INSTALL_PREFIX)") 
+set (BIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR} CACHE STRING "Installation directory for binaries (relative to CMAKE_INSTALL_PREFIX)") 
 
 set (USE_FULL_RPATH OFF CACHE BOOL "Set to true to enable full rpath")
 
@@ -80,28 +87,42 @@ set (build_warnings "" CACHE INTERNAL "build warnings" FORCE)
 set (sdf_cmake_dir ${PROJECT_SOURCE_DIR}/cmake CACHE PATH
      "Location of CMake scripts")
 
+ message (STATUS "\n\n====== Finding 3rd Party Packages ======")
+include (${sdf_cmake_dir}/SearchForStuff.cmake)
+message (STATUS "----------------------------------------\n")
+
 #####################################
 # Build type cflags
 set (CMAKE_C_FLAGS_ALL " -Wall -Wextra -Wno-long-long -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wfloat-equal -Wshadow -Winit-self -Wswitch-default -Wmissing-include-dirs -pedantic" CACHE INTERNAL "General C Flags")
 
+# Check and add visibility hidden by default
+if (UNIX)
+  check_gcc_visibility()
+  if (GCC_SUPPORTS_VISIBILITY)
+         SET(CMAKE_C_FLAGS_ALL "${CMAKE_C_FLAGS_ALL} -fvisibility=hidden")
+  endif()
+endif()
+
 #####################################
 # Build type link flags
-set (CMAKE_LINK_FLAGS_RELEASE " " CACHE INTERNAL "Link flags fro release" FORCE)
-set (CMAKE_LINK_FLAGS_DEBUG " " CACHE INTERNAL "Link flags for debug" FORCE)
 
-set (CMAKE_C_FLAGS_RELEASE "")
-if (NOT APPLE)
-  # -s doesn't work with default osx compiler clang, alternative:
-  # http://stackoverflow.com/questions/6085491/gcc-vs-clang-symbol-strippingu
-  set (CMAKE_C_FLAGS_RELEASE " -s ")
+# USE_UPSTREAM_CFLAGS (default TRUE)
+# Use our own defined flags for building types
+if(NOT DEFINED USE_UPSTREAM_CFLAGS OR USE_UPSTREAM_CFLAGS)
+  message(STATUS "Using upstream CFlags")
+  if (NOT APPLE)
+    # -s doesn't work with default osx compiler clang, alternative:
+    # http://stackoverflow.com/questions/6085491/gcc-vs-clang-symbol-strippingu
+    set (CMAKE_C_FLAGS_RELEASE " -s ")
+  endif()
+  set (CMAKE_C_FLAGS_RELEASE " ${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG"
+    CACHE INTERNAL "C Flags for release" FORCE)
+  set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
+  
+  set (CMAKE_C_FLAGS_DEBUG " -ggdb3"
+    CACHE INTERNAL "C Flags for debug" FORCE)
+  set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
 endif()
-set (CMAKE_C_FLAGS_RELEASE " ${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG ${CMAKE_C_FLAGS_ALL}"
-  CACHE INTERNAL "C Flags for release" FORCE)
-set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
-
-set (CMAKE_C_FLAGS_DEBUG " -ggdb3 ${CMAKE_C_FLAGS_ALL}"
-  CACHE INTERNAL "C Flags for debug" FORCE)
-set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
 
 #####################################
 # Set the default build type
@@ -113,11 +134,8 @@ string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)
 
 #####################################
 # Set all the global build flags
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
-set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
-set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
-set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}} ${CMAKE_C_FLAGS_ALL}")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS_ALL}")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "RELEASE")
   set (BUILD_TYPE_RELEASE TRUE)
@@ -130,10 +148,6 @@ if ( "${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
 else()
   set (BUILD_TYPE_DEBUG FALSE)
 endif()
-
-message (STATUS "\n\n====== Finding 3rd Party Packages ======")
-include (${sdf_cmake_dir}/SearchForStuff.cmake)
-message (STATUS "----------------------------------------\n")
 
 
 #################################################
@@ -180,7 +194,7 @@ else (buid_errors)
     ${PROJECT_BINARY_DIR}/sdf/sdf_config.h)
   sdf_install_includes("" ${PROJECT_BINARY_DIR}/sdf/sdf_config.h)
 
-  message (STATUS "C Flags:${CMAKE_CXX_FLAGS}")
+  message (STATUS "C Flags:${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
   message (STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
   message (STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
  
@@ -210,8 +224,23 @@ else (buid_errors)
   set(PKG_LIBRARIES sdformat)
   set(PKG_DEPENDS Boost)
   set(cmake_conf_file "cmake/sdf_config.cmake")
+  set(cmake_conf_version_file "cmake/SDFormatConfigVersion.cmake")
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${cmake_conf_file}.in" "${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake" @ONLY)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake DESTINATION share/${PROJECT_NAME_LOWER}/cmake/ COMPONENT cmake)
+  # Use write_basic_package_version_file to generate a ConfigVersion file that
+  # allow users of gazebo to specify the API or version to depend on
+  # TODO: keep this instruction until deprecate Ubuntu/Precise and update with
+  # https://github.com/Kitware/CMake/blob/v2.8.8/Modules/CMakePackageConfigHelpers.cmake 
+  include(WriteBasicConfigVersionFile)
+  write_basic_config_version_file(
+      ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_version_file}
+      VERSION "${SDF_VERSION_FULL}"
+      COMPATIBILITY SameMajorVersion)
+  install(FILES 
+            ${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_version_file}
+          DESTINATION 
+	    ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/ 
+	  COMPONENT cmake)
 
   ########################################
   # Package Creation: 

@@ -24,6 +24,7 @@
 
 #include "sdf/Types.hh"
 #include "sdf/Console.hh"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
@@ -31,7 +32,7 @@ namespace sdf
   /// \{
 
   /// \brief A class for holding sdf extension elements in urdf
-  class SDFExtension
+  class SDFORMAT_VISIBLE SDFExtension
   {
     private: SDFExtension()
     {
@@ -57,7 +58,7 @@ namespace sdf
       isInitialJointPosition = false;
       isFudgeFactor = false;
       isProvideFeedback = false;
-      isCFMDamping = false;
+      isImplicitSpringDamper = false;
       blobs.clear();
 
       dampingFactor = 0;
@@ -77,7 +78,7 @@ namespace sdf
       fudgeFactor = 1;
 
       provideFeedback = false;
-      cfmDamping = false;
+      implicitSpringDamper = false;
     };
 
     private: SDFExtension(const SDFExtension &ge)
@@ -104,9 +105,9 @@ namespace sdf
       isInitialJointPosition = ge.isInitialJointPosition;
       isFudgeFactor = ge.isFudgeFactor;
       isProvideFeedback = ge.isProvideFeedback;
-      isCFMDamping = ge.isCFMDamping;
+      isImplicitSpringDamper = ge.isImplicitSpringDamper;
       provideFeedback = ge.provideFeedback;
-      cfmDamping = ge.cfmDamping;
+      implicitSpringDamper = ge.implicitSpringDamper;
       oldLinkName = ge.oldLinkName;
       reductionTransform = ge.reductionTransform;
       blobs = ge.blobs;
@@ -126,8 +127,6 @@ namespace sdf
       stopErp = ge.stopErp;
       initialJointPosition = ge.initialJointPosition;
       fudgeFactor = ge.fudgeFactor;
-      provideFeedback = ge.provideFeedback;
-      cfmDamping = ge.cfmDamping;
     };
 
     // for reducing fixed joints and removing links
@@ -163,19 +162,19 @@ namespace sdf
     public: double stopCfm, stopErp, initialJointPosition, fudgeFactor;
     public: bool isProvideFeedback;
     public: bool provideFeedback;
-    public: bool isCFMDamping;
-    public: bool cfmDamping;
+    public: bool isImplicitSpringDamper;
+    public: bool implicitSpringDamper;
     private: bool isStopKp, isStopKd;
     private: double stopKp, stopKd;
 
     // blobs into body or robot
     public: std::vector<boost::shared_ptr<TiXmlElement> > blobs;
 
-    friend class URDF2SDF;
+    friend class SDFORMAT_VISIBLE URDF2SDF;
   };
 
   /// \brief URDF to SDF converter
-  class URDF2SDF
+  class SDFORMAT_VISIBLE URDF2SDF
   {
     /// \brief constructor
     public: URDF2SDF();

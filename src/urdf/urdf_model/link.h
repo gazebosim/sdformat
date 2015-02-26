@@ -36,6 +36,7 @@
 
 #ifndef URDF_INTERFACE_LINK_H
 #define URDF_INTERFACE_LINK_H
+#include "visible.h"
 
 #include <string>
 #include <vector>
@@ -48,7 +49,7 @@
 
 namespace urdf{
 
-class Geometry
+class SDFORMAT_HIDDEN Geometry
 {
 public:
   enum {SPHERE, BOX, CYLINDER, MESH} type;
@@ -58,7 +59,7 @@ public:
   }  
 };
 
-class Sphere : public Geometry
+class SDFORMAT_HIDDEN Sphere : public Geometry
 {
 public:
   Sphere() { this->clear(); };
@@ -70,7 +71,7 @@ public:
   };
 };
 
-class Box : public Geometry
+class SDFORMAT_HIDDEN Box : public Geometry
 {
 public:
   Box() { this->clear(); };
@@ -82,7 +83,7 @@ public:
   };
 };
 
-class Cylinder : public Geometry
+class SDFORMAT_HIDDEN Cylinder : public Geometry
 {
 public:
   Cylinder() { this->clear(); };
@@ -96,7 +97,7 @@ public:
   };
 };
 
-class Mesh : public Geometry
+class SDFORMAT_HIDDEN Mesh : public Geometry
 {
 public:
   Mesh() { this->clear(); };
@@ -113,7 +114,7 @@ public:
   };
 };
 
-class Material
+class SDFORMAT_HIDDEN Material
 {
 public:
   Material() { this->clear(); };
@@ -129,7 +130,7 @@ public:
   };
 };
 
-class Inertial
+class SDFORMAT_HIDDEN Inertial
 {
 public:
   Inertial() { this->clear(); };
@@ -145,7 +146,7 @@ public:
   };
 };
 
-class Visual
+class SDFORMAT_HIDDEN Visual
 {
 public:
   Visual() { this->clear(); };
@@ -166,7 +167,7 @@ public:
   std::string group_name;
 };
 
-class Collision
+class SDFORMAT_HIDDEN Collision
 {
 public:
   Collision() { this->clear(); };
@@ -183,7 +184,7 @@ public:
 };
 
 
-class Link
+class SDFORMAT_HIDDEN Link
 {
 public:
   Link() { this->clear(); };

@@ -20,13 +20,13 @@
 
 #ifndef Q_MOC_RUN  // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 # include <boost/lexical_cast.hpp>
+# include <boost/bind.hpp>
+# include <boost/algorithm/string.hpp>
+# include <boost/variant.hpp>
+# include <boost/any.hpp>
+# include <boost/function.hpp>
+# include <boost/shared_ptr.hpp>
 #endif
-#include <boost/bind.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/variant.hpp>
-#include <boost/any.hpp>
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <typeinfo>
 #include <string>
@@ -34,10 +34,11 @@
 
 #include "sdf/Console.hh"
 #include "sdf/Types.hh"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
-  class Param;
+  class SDFORMAT_VISIBLE Param;
 
   /// \def ParamPtr
   /// \brief boost shared_ptr to a Param
@@ -49,7 +50,7 @@ namespace sdf
 
   /// \class Param Param.hh sdf/sdf.hh
   /// \brief A parameter class
-  class Param
+  class SDFORMAT_VISIBLE Param
   {
     /// \brief Constructor.
     /// \param[in] _key Key for the parameter.
@@ -147,7 +148,19 @@ namespace sdf
             {
               try
               {
-                _value = boost::lexical_cast<T>(this->value);
+                if (typeid(T) == typeid(bool) && this->typeName == "string")
+                {
+                  std::string strValue =
+                    boost::lexical_cast<std::string>(this->value);
+                  if (strValue == "true" || strValue  == "1")
+                    _value = boost::lexical_cast<T>("1");
+                  else
+                    _value = boost::lexical_cast<T>("0");
+                }
+                else
+                {
+                  _value = boost::lexical_cast<T>(this->value);
+                }
               }
               catch(...)
               {
