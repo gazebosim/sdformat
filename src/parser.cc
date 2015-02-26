@@ -43,8 +43,6 @@ class RubyInitializer
     RUBY_INIT_STACK;
     ruby_init();
     ruby_init_loadpath();
-    rb_set_safe_level(0);
-    ruby_script("ruby");
   }
 
   /// \brief Destructor
@@ -63,27 +61,26 @@ class RubyInitializer
       _string + "}).result; rescue; end";
 
     // Run the ERB parser
-    VALUE ret = rb_eval_string_protect(cmd.c_str(), 0);
+    int rbState = 0;
+    VALUE ret = rb_eval_string_protect(cmd.c_str(), &rbState);
 
-    // Convert ruby string to std::string
-#if RUBY_API_VERSION_CODE < 10900
-    if (RSTRING(ret)->ptr != NULL)
+    if (rbState)
     {
-      _result.assign(
-          RSTRING(ret)->ptr, RSTRING(ret)->len);
+      sdferr << "Unable to parse string[" << _string << "] using ERB.\n";
+      return false;
     }
-#else
-    if (RSTRING(ret)->as.heap.ptr != NULL)
-    {
-      _result.assign(RSTRING(ret)->as.heap.ptr,
-          RSTRING(ret)->as.heap.len);
-    }
-#endif
     else
     {
-      sdferr << "Unable to parse string["
-        << _string << "] using ERB.\n";
-      return false;
+      // Convert ruby string to std::string
+      if (RSTRING(ret)->as.heap.ptr != NULL)
+      {
+        _result.assign(RSTRING(ret)->as.heap.ptr, RSTRING(ret)->as.heap.len);
+      }
+      else
+      {
+        sdferr << "Unable to parse string[" << _string << "] using ERB.\n";
+        return false;
+      }
     }
 
     return true;
