@@ -6,6 +6,10 @@
     <description>The name of this set of physics parameters.</description>
   </attribute>
 
+  <attribute name="default" type="bool" default="false" required="0">
+    <description>If true, this physics element is set as the default physics profile for the world.</description>
+  </attribute>
+
   <attribute name="type" type="string" default="ode" required="1">
     <description>The type of the dynamics engine. Current options are ode, bullet, simbody and rtql8.  Defaults to ode if left unspecified.</description>
   </attribute>
