@@ -28,8 +28,8 @@ string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 set (SDF_PROTOCOL_VERSION 1.5)
 
 set (SDF_MAJOR_VERSION 2)
-set (SDF_MINOR_VERSION 2)
-set (SDF_PATCH_VERSION 1)
+set (SDF_MINOR_VERSION 3)
+set (SDF_PATCH_VERSION 0)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
 set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION})
@@ -90,7 +90,20 @@ set (build_warnings "" CACHE INTERNAL "build warnings" FORCE)
 set (sdf_cmake_dir ${PROJECT_SOURCE_DIR}/cmake CACHE PATH
      "Location of CMake scripts")
 
- message (STATUS "\n\n====== Finding 3rd Party Packages ======")
+include (${sdf_cmake_dir}/SDFUtils.cmake)
+
+message (STATUS "\n\n====== Finding 3rd Party Packages ======")
+ # Use of tinyxml. System installation on UNIX. Internal copy on WIN
+if (UNIX)
+  message (STATUS "Using system tinyxml")
+  set (USE_EXTERNAL_TINYXML True)
+elseif(WIN32)
+  message (STATUS "Using internal tinyxml code")
+  set (USE_EXTERNAL_TINYXML False)
+else()
+  message (STATUS "Unknown platform")
+  BUILD_ERROR("Unknown platform")
+endif()
 include (${sdf_cmake_dir}/SearchForStuff.cmake)
 message (STATUS "----------------------------------------\n")
 
@@ -222,6 +235,8 @@ else (buid_errors)
       ${PROJECT_BINARY_DIR}
       ${PROJECT_BINARY_DIR}/include
       )
+  
+    link_directories(${PROJECT_BINARY_DIR}/src)
 
     add_subdirectory(test)
     add_subdirectory(src)
