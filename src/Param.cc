@@ -163,10 +163,55 @@ bool Param::SetFromString(const std::string &_value)
   else if (lowerTmp == "false")
     tmp = "0";
 
+  bool isHex = tmp.compare(0, 2, "0x") == 0;
+
   try
   {
-    boost::apply_visitor(string_set(tmp), this->value);
+    // If the string is hex, try to use stoi nad stoul, and then
+    // lexical cast as a last resort.
+    if (isHex)
+    {
+      if (this->typeName == "int")
+        this->value = std::stoi(tmp, NULL, 16);
+      else if (this->typeName == "unsigned int")
+        this->value = static_cast<unsigned int>(std::stoul(tmp, NULL, 16));
+      else
+      {
+        boost::apply_visitor(string_set(tmp), this->value);
+      }
+    }
+    // Otherwise use stod, stof, and lexical cast
+    else
+    {
+      if (this->typeName == "int")
+        this->value = std::stoi(tmp, NULL, 10);
+      else if (this->typeName == "unsigned int")
+        this->value = static_cast<unsigned int>(std::stoul(tmp, NULL, 10));
+      else if (this->typeName == "double")
+        this->value = std::stod(tmp);
+      else if (this->typeName == "float")
+        this->value = std::stof(tmp);
+      else
+        boost::apply_visitor(string_set(tmp), this->value);
+    }
   }
+  // Catch invalid argument exception from std::stoi/stoul/stod/stof
+  catch(std::invalid_argument &e)
+  {
+    sdferr << "Invalid argument. Unable to set value ["
+      << str << " ] for key["
+      << this->key << "].\n";
+    return false;
+  }
+  // Catch out of range exception from std::stoi/stoul/stod/stof
+  catch(std::out_of_range &e)
+  {
+    sdferr << "Out of range. Unable to set value ["
+      << str << " ] for key["
+      << this->key << "].\n";
+    return false;
+  }
+  // Catch boost lexical cast exceptions
   catch(boost::bad_lexical_cast &e)
   {
     if (str == "inf" || str == "-inf")
