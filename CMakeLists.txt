@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.6 FATAL_ERROR)
 
 if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0003 NEW)
@@ -28,8 +28,8 @@ string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 set (SDF_PROTOCOL_VERSION 1.5)
 
 set (SDF_MAJOR_VERSION 2)
-set (SDF_MINOR_VERSION 0)
-set (SDF_PATCH_VERSION 1)
+set (SDF_MINOR_VERSION 3)
+set (SDF_PATCH_VERSION 0)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
 set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION})
@@ -87,19 +87,60 @@ set (build_warnings "" CACHE INTERNAL "build warnings" FORCE)
 set (sdf_cmake_dir ${PROJECT_SOURCE_DIR}/cmake CACHE PATH
      "Location of CMake scripts")
 
- message (STATUS "\n\n====== Finding 3rd Party Packages ======")
+include (${sdf_cmake_dir}/SDFUtils.cmake)
+
+message (STATUS "\n\n====== Finding 3rd Party Packages ======")
+ # Use of tinyxml. System installation on UNIX. Internal copy on WIN
+if (UNIX)
+  message (STATUS "Using system tinyxml")
+  set (USE_EXTERNAL_TINYXML True)
+elseif(WIN32)
+  message (STATUS "Using internal tinyxml code")
+  set (USE_EXTERNAL_TINYXML False)
+else()
+  message (STATUS "Unknown platform")
+  BUILD_ERROR("Unknown platform")
+endif()
 include (${sdf_cmake_dir}/SearchForStuff.cmake)
 message (STATUS "----------------------------------------\n")
 
 #####################################
-# Build type cflags
-set (CMAKE_C_FLAGS_ALL " -Wall -Wextra -Wno-long-long -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wfloat-equal -Wshadow -Winit-self -Wswitch-default -Wmissing-include-dirs -pedantic" CACHE INTERNAL "General C Flags")
+# Check if warning options are avaliable for the compiler and return WARNING_CXX_FLAGS variable
+# MSVC generates tons of warnings on gtest code. 
+# Recommended to use /W4 instead of /Wall
+if (MSVC)
+  set(WARN_LEVEL "/W4")
+else()
+  set(WARN_LEVEL "-Wall")
+endif()
+
+if (WIN32)
+    # Need for M_PI constant
+    add_definitions(-D_USE_MATH_DEFINES) 
+    # Use dynamic linking for boost
+    add_definitions(-DBOOST_ALL_DYN_LINK)
+    # And force linking to MSVC dynamic runtime
+    set(CMAKE_C_FLAGS_DEBUG "/MDd ${CMAKE_C_FLAGS_DEBUG}")
+    set(CMAKE_C_FLAGS_RELEASE "/MD ${CMAKE_C_FLAGS_RELEASE}")
+    if (MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+      # Not need if proper cmake gnerator (-G "...Win64") is passed to cmake
+      # Enable as a second measeure to workaround over bug
+      # http://www.cmake.org/Bug/print_bug_page.php?bug_id=11240 
+      set(CMAKE_SHARED_LINKER_FLAGS "/machine:x64")
+    endif()
+ENDIF(WIN32)
+
+filter_valid_compiler_warnings(${WARN_LEVEL} -Wextra -Wno-long-long
+  -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wno-unused-value
+  -Wfloat-equal -Wshadow -Winit-self -Wswitch-default
+  -Wmissing-include-dirs -pedantic)
+set (CMAKE_C_FLAGS_ALL "${WARNING_CXX_FLAGS}")
 
 # Check and add visibility hidden by default
 if (UNIX)
   check_gcc_visibility()
   if (GCC_SUPPORTS_VISIBILITY)
-         SET(CMAKE_C_FLAGS_ALL "${CMAKE_C_FLAGS_ALL} -fvisibility=hidden")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
   endif()
 endif()
 
@@ -110,18 +151,20 @@ endif()
 # Use our own defined flags for building types
 if(NOT DEFINED USE_UPSTREAM_CFLAGS OR USE_UPSTREAM_CFLAGS)
   message(STATUS "Using upstream CFlags")
-  if (NOT APPLE)
+  if (NOT APPLE AND NOT MSVC)
     # -s doesn't work with default osx compiler clang, alternative:
     # http://stackoverflow.com/questions/6085491/gcc-vs-clang-symbol-strippingu
-    set (CMAKE_C_FLAGS_RELEASE " -s ")
+    set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s ")
   endif()
   set (CMAKE_C_FLAGS_RELEASE " ${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG"
     CACHE INTERNAL "C Flags for release" FORCE)
   set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
   
-  set (CMAKE_C_FLAGS_DEBUG " -ggdb3"
-    CACHE INTERNAL "C Flags for debug" FORCE)
-  set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+  if (NOT MSVC)
+    set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3"
+      CACHE INTERNAL "C Flags for debug" FORCE)
+    set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+  endif()
 endif()
 
 #####################################
@@ -203,6 +246,8 @@ else (buid_errors)
       ${PROJECT_BINARY_DIR}
       ${PROJECT_BINARY_DIR}/include
       )
+  
+    link_directories(${PROJECT_BINARY_DIR}/src)
 
     add_subdirectory(test)
     add_subdirectory(src)
@@ -224,8 +269,23 @@ else (buid_errors)
   set(PKG_LIBRARIES sdformat)
   set(PKG_DEPENDS Boost)
   set(cmake_conf_file "cmake/sdf_config.cmake")
+  set(cmake_conf_version_file "cmake/SDFormatConfigVersion.cmake")
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${cmake_conf_file}.in" "${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake" @ONLY)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake DESTINATION ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/ COMPONENT cmake)
+  # Use write_basic_package_version_file to generate a ConfigVersion file that
+  # allow users of gazebo to specify the API or version to depend on
+  # TODO: keep this instruction until deprecate Ubuntu/Precise and update with
+  # https://github.com/Kitware/CMake/blob/v2.8.8/Modules/CMakePackageConfigHelpers.cmake 
+  include(WriteBasicConfigVersionFile)
+  write_basic_config_version_file(
+      ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_version_file}
+      VERSION "${SDF_VERSION_FULL}"
+      COMPATIBILITY SameMajorVersion)
+  install(FILES 
+            ${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_version_file}
+          DESTINATION 
+	    ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/ 
+	  COMPONENT cmake)
 
   ########################################
   # Package Creation: 

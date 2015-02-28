@@ -18,6 +18,7 @@
 #include <sstream>
 #include <algorithm>
 #include <string>
+#include <set>
 
 #include "urdf_model/model.h"
 #include "urdf_model/link.h"
@@ -45,6 +46,7 @@ std::string g_collisionExt = "_collision";
 std::string g_visualExt = "_visual";
 urdf::Pose g_initialRobotPose;
 bool g_initialRobotPoseValid = false;
+std::set<std::string> g_fixedJointsNotReduced;
 
 /// \brief parser xml string into urdf::Vector3
 /// \param[in] _key XML key where vector3 value might be
@@ -68,6 +70,11 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
 /// insert extensions into joints
 void InsertSDFExtensionJoint(TiXmlElement *_elem,
     const std::string &_jointName);
+
+/// reduced fixed joints:  check if a fixed joint should be lumped
+///   checking both the joint type and if disabledFixedJointLumping
+///   option is set
+bool FixedJointShouldBeReduced(boost::shared_ptr<urdf::Joint> _jnt);
 
 /// reduced fixed joints:  apply transform reduction for ray sensors
 ///   in extensions when doing fixed joint reduction
@@ -298,23 +305,16 @@ std::string Vector32Str(const urdf::Vector3 _vector)
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceCollisionToParent(UrdfLinkPtr _link,
-    const std::string &_groupName, UrdfCollisionPtr _collision)
+#ifndef URDF_GE_0P3
+    const std::string &_groupName,
+#else
+    const std::string &/*_groupName*/,
+#endif
+    UrdfCollisionPtr _collision)
 {
   boost::shared_ptr<std::vector<UrdfCollisionPtr> > cols;
-#if USE_EXTERNAL_URDF
-  if (_link->collision)
-  {
-    cols.reset(new std::vector<UrdfCollisionPtr>);
-    cols->push_back(_link->collision);
-  }
-  else
-  {
-    cols = boost::shared_ptr<std::vector<UrdfCollisionPtr> >(
-            &_link->collision_array);
-  }
-#else
+#ifndef URDF_GE_0P3
   cols = _link->getCollisions(_groupName);
-#endif
 
   if (!cols)
   {
@@ -334,26 +334,23 @@ void ReduceCollisionToParent(UrdfLinkPtr _link,
       << _groupName << "]\n";
   else
     cols->push_back(_collision);
+#else
+  _link->collision_array.push_back(_collision);
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceVisualToParent(UrdfLinkPtr _link,
-    const std::string &_groupName, UrdfVisualPtr _visual)
+#ifndef URDF_GE_0P3
+    const std::string &_groupName,
+#else
+    const std::string &/*_groupName*/,
+#endif
+    UrdfVisualPtr _visual)
 {
   boost::shared_ptr<std::vector<UrdfVisualPtr> > viss;
-#if USE_EXTERNAL_URDF
-  if (_link->visual)
-  {
-    viss.reset(new std::vector<UrdfVisualPtr>);
-    viss->push_back(_link->visual);
-  }
-  else
-  {
-    viss = boost::shared_ptr<std::vector<UrdfVisualPtr> >(&_link->visual_array);
-  }
-#else
+#ifndef URDF_GE_0P3
   viss = _link->getVisuals(_groupName);
-#endif
 
   if (!viss)
   {
@@ -376,6 +373,9 @@ void ReduceVisualToParent(UrdfLinkPtr _link,
       << _groupName << "]\n";
   else
     viss->push_back(_visual);
+#else
+  _link->visual_array.push_back(_visual);
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -386,13 +386,13 @@ void ReduceFixedJoints(TiXmlElement *_root, UrdfLinkPtr _link)
   // if child is attached to self by fixed _link first go up the tree,
   //   check it's children recursively
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
-    if (_link->child_links[i]->parent_joint->type == urdf::Joint::FIXED)
+    if (FixedJointShouldBeReduced(_link->child_links[i]->parent_joint))
       ReduceFixedJoints(_root, _link->child_links[i]);
 
   // reduce this _link's stuff up the tree to parent but skip first joint
   //   if it's the world
   if (_link->getParent() && _link->getParent()->name != "world" &&
-      _link->parent_joint && _link->parent_joint->type == urdf::Joint::FIXED)
+      _link->parent_joint && FixedJointShouldBeReduced(_link->parent_joint) )
   {
     sdfdbg << "Fixed Joint Reduction: extension lumping from ["
            << _link->name << "] to [" << _link->getParent()->name << "]\n";
@@ -409,7 +409,7 @@ void ReduceFixedJoints(TiXmlElement *_root, UrdfLinkPtr _link)
 
   // continue down the tree for non-fixed joints
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
-    if (_link->child_links[i]->parent_joint->type != urdf::Joint::FIXED)
+    if (!FixedJointShouldBeReduced(_link->child_links[i]->parent_joint))
       ReduceFixedJoints(_root, _link->child_links[i]);
 }
 
@@ -844,6 +844,7 @@ void ReduceVisualsToParent(UrdfLinkPtr _link)
   // "lump::"+group name+"::'+_link name
   // lump but keep the _link name in(/as) the group name,
   // so we can correlate visuals to visuals somehow.
+#ifndef URDF_GE_0P3
   for (std::map<std::string,
       boost::shared_ptr<std::vector<UrdfVisualPtr> > >::iterator
       visualsIt = _link->visual_groups.begin();
@@ -888,6 +889,21 @@ void ReduceVisualsToParent(UrdfLinkPtr _link)
       }
     }
   }
+#else
+  std::string lumpGroupName = std::string("lump::")+_link->name;
+  for (std::vector<UrdfVisualPtr>::iterator
+      visualIt = _link->visual_array.begin();
+      visualIt != _link->visual_array.end(); ++visualIt)
+  {
+    // transform visual origin from _link frame to
+    // parent link frame before adding to parent
+    (*visualIt)->origin = TransformToParentFrame((*visualIt)->origin,
+        _link->parent_joint->parent_to_joint_origin_transform);
+    // add the modified visual to parent
+    ReduceVisualToParent(_link->getParent(), lumpGroupName,
+        *visualIt);
+  }
+#endif
 }
 
 /////////////////////////////////////////////////
@@ -899,6 +915,7 @@ void ReduceCollisionsToParent(UrdfLinkPtr _link)
   // "lump::"+group name+"::'+_link name
   // lump but keep the _link name in(/as) the group name,
   // so we can correlate visuals to collisions somehow.
+#ifndef URDF_GE_0P3
   for (std::map<std::string,
       boost::shared_ptr<std::vector<UrdfCollisionPtr> > >::iterator
       collisionsIt = _link->collision_groups.begin();
@@ -951,6 +968,23 @@ void ReduceCollisionsToParent(UrdfLinkPtr _link)
     }
   }
   // this->PrintCollisionGroups(_link->getParent());
+#else
+  std::string lumpGroupName = std::string("lump::")+_link->name;
+  for (std::vector<UrdfCollisionPtr>::iterator
+      collisionIt = _link->collision_array.begin();
+      collisionIt != _link->collision_array.end(); ++collisionIt)
+  {
+    // transform collision origin from _link frame to
+    // parent link frame before adding to parent
+    (*collisionIt)->origin = TransformToParentFrame(
+        (*collisionIt)->origin,
+        _link->parent_joint->parent_to_joint_origin_transform);
+
+    // add the modified collision to parent
+    ReduceCollisionToParent(_link->getParent(), lumpGroupName,
+        *collisionIt);
+  }
+#endif
 }
 
 /////////////////////////////////////////////////
@@ -963,14 +997,14 @@ void ReduceJointsToParent(UrdfLinkPtr _link)
   {
     boost::shared_ptr<urdf::Joint> parentJoint =
       _link->child_links[i]->parent_joint;
-    if (parentJoint->type != urdf::Joint::FIXED)
+    if (!FixedJointShouldBeReduced(parentJoint))
     {
       // go down the tree until we hit a parent joint that is not fixed
       UrdfLinkPtr newParentLink = _link;
       sdf::Pose jointAnchorTransform;
       while (newParentLink->parent_joint &&
           newParentLink->getParent()->name != "world" &&
-          newParentLink->parent_joint->type == urdf::Joint::FIXED)
+          FixedJointShouldBeReduced(newParentLink->parent_joint) )
       {
         jointAnchorTransform = jointAnchorTransform * jointAnchorTransform;
         parentJoint->parent_to_joint_origin_transform =
@@ -1163,6 +1197,19 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       }
       else if (childElem->ValueStr() == "visual")
       {
+        // anything inside of visual tags:
+        // <gazebo reference="link_name">
+        //   <visual>
+        //     <extention_stuff_here/>
+        //   </visual>
+        // </gazebl>
+        // are treated as blobs that gets inserted
+        // into visuals for the link
+        // <visual name="link_name[anything here]">
+        //   <stuff_from_urdf_link_visuals/>
+        //   <extention_stuff_here/>
+        // </visual>
+
         // a place to store converted doc
         for (TiXmlElement* e = childElem->FirstChildElement(); e;
             e = e->NextSiblingElement())
@@ -1339,6 +1386,16 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
           sdf->implicitSpringDamper = true;
         else
           sdf->implicitSpringDamper = false;
+      }
+      else if (childElem->ValueStr() == "disableFixedJointLumping")
+      {
+        std::string valueStr = GetKeyValueAsString(childElem);
+
+        if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
+            valueStr == "1")
+        {
+          g_fixedJointsNotReduced.insert(refStr);
+        }
       }
       else
       {
@@ -1617,6 +1674,14 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
           physics->LinkEndChild(physicsOde);
         if (newPhysics)
           _elem->LinkEndChild(physics);
+
+        // insert all additional blobs into joint
+        for (std::vector<TiXmlElementPtr>::iterator
+            blobIt = (*ge)->blobs.begin();
+            blobIt != (*ge)->blobs.end(); ++blobIt)
+        {
+          _elem->LinkEndChild((*blobIt)->Clone());
+        }
       }
     }
   }
@@ -1826,6 +1891,7 @@ std::string GetGeometryBoundingBox(
 ////////////////////////////////////////////////////////////////////////////////
 void PrintCollisionGroups(UrdfLinkPtr _link)
 {
+#ifndef URDF_GE_0P3
   sdfdbg << "COLLISION LUMPING: link: [" << _link->name << "] contains ["
     << static_cast<int>(_link->collision_groups.size())
     << "] collisions.\n";
@@ -1838,6 +1904,11 @@ void PrintCollisionGroups(UrdfLinkPtr _link)
       << static_cast<int>(colsIt->second->size())
       << "] Collision objects\n";
   }
+#else
+  sdfdbg << "COLLISION LUMPING: link: [" << _link->name << "] contains ["
+    << static_cast<int>(_link->collision_array.size())
+    << "] collisions.\n";
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2123,7 +2194,7 @@ void CreateSDF(TiXmlElement *_root,
   if ((_link->getParent() && _link->getParent()->name == "world") ||
       !g_reduceFixedJoints ||
       (!_link->parent_joint ||
-       _link->parent_joint->type != urdf::Joint::FIXED))
+       !FixedJointShouldBeReduced(_link->parent_joint)))
     CreateLink(_root, _link, _currentTransform);
 
   // recurse into children
@@ -2211,6 +2282,7 @@ void CreateCollisions(TiXmlElement* _elem,
 {
   // loop through all collision groups. as well as additional collision from
   //   lumped meshes (fixed joint reduction)
+#ifndef URDF_GE_0P3
   for (std::map<std::string,
       boost::shared_ptr<std::vector<UrdfCollisionPtr> > >::const_iterator
       collisionsIt = _link->collision_groups.begin();
@@ -2287,6 +2359,33 @@ void CreateCollisions(TiXmlElement* _elem,
       }
     }
   }
+#else
+  unsigned int defaultMeshCount = 0;
+  for (std::vector<UrdfCollisionPtr>::const_iterator
+      collision = _link->collision_array.begin();
+      collision != _link->collision_array.end();
+      ++collision)
+  {
+    sdfdbg << "creating default collision for link [" << _link->name
+           << "]";
+
+    std::string collisionPrefix = _link->name;
+
+    if (defaultMeshCount > 0)
+    {
+      // append _[meshCount] to link name for additional collisions
+      std::ostringstream collisionNameStream;
+      collisionNameStream << collisionPrefix << "_" << defaultMeshCount;
+      collisionPrefix = collisionNameStream.str();
+    }
+
+    /* make a <collision> block */
+    CreateCollision(_elem, _link, *collision, collisionPrefix);
+
+    // only 1 default mesh
+    ++defaultMeshCount;
+  }
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2295,6 +2394,7 @@ void CreateVisuals(TiXmlElement* _elem,
 {
   // loop through all visual groups. as well as additional visuals from
   //   lumped meshes (fixed joint reduction)
+#ifndef URDF_GE_0P3
   for (std::map<std::string,
       boost::shared_ptr<std::vector<UrdfVisualPtr> > >::const_iterator
       visualsIt = _link->visual_groups.begin();
@@ -2371,6 +2471,33 @@ void CreateVisuals(TiXmlElement* _elem,
       }
     }
   }
+#else
+  unsigned int defaultMeshCount = 0;
+  for (std::vector<UrdfVisualPtr>::const_iterator
+      visual = _link->visual_array.begin();
+      visual != _link->visual_array.end();
+      ++visual)
+  {
+    sdfdbg << "creating default visual for link [" << _link->name
+           << "]";
+
+    std::string visualPrefix = _link->name;
+
+    if (defaultMeshCount > 0)
+    {
+      // append _[meshCount] to _link name for additional visuals
+      std::ostringstream visualNameStream;
+      visualNameStream << visualPrefix << "_" << defaultMeshCount;
+      visualPrefix = visualNameStream.str();
+    }
+
+    // create a <visual> block
+    CreateVisual(_elem, _link, *visual, visualPrefix);
+
+    // only 1 default mesh
+    ++defaultMeshCount;
+  }
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2447,7 +2574,8 @@ void CreateJoint(TiXmlElement *_root,
   //   skip/return with the exception of root link being world,
   //   because there's no lumping there
   if (_link->getParent() && _link->getParent()->name != "world"
-      && jtype == "fixed" && g_reduceFixedJoints) return;
+      && FixedJointShouldBeReduced(_link->parent_joint)
+      && g_reduceFixedJoints) return;
 
   if (!jtype.empty())
   {
@@ -2468,6 +2596,7 @@ void CreateJoint(TiXmlElement *_root,
       AddKeyValue(jointAxisLimit, "lower", "0");
       AddKeyValue(jointAxisLimit, "upper", "0");
       AddKeyValue(jointAxisDynamics, "damping", "0");
+      AddKeyValue(jointAxisDynamics, "friction", "0");
     }
     else
     {
@@ -2481,8 +2610,12 @@ void CreateJoint(TiXmlElement *_root,
       AddKeyValue(jointAxis, "xyz",
           Values2str(3, rotatedJointAxisArray));
       if (_link->parent_joint->dynamics)
+      {
         AddKeyValue(jointAxisDynamics, "damping",
             Values2str(1, &_link->parent_joint->dynamics->damping));
+        AddKeyValue(jointAxisDynamics, "friction",
+            Values2str(1, &_link->parent_joint->dynamics->friction));
+      }
 
       if (g_enforceLimits && _link->parent_joint->limits)
       {
@@ -2662,6 +2795,8 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   /* set reduceFixedJoints to false will replace fixed joints with
      zero limit revolute joints, otherwise, we reduce it down to its
      parent link recursively */
+  /* using the disabledFixedJointLumping option is possible to disable
+     fixed joint lumping only for selected joints */
   if (g_reduceFixedJoints)
     ReduceFixedJoints(robot,
         (boost::const_pointer_cast< urdf::Link >(rootLink)));
@@ -2722,6 +2857,16 @@ TiXmlDocument URDF2SDF::InitModelFile(const std::string &_filename)
     sdferr << "Unable to load file[" << _filename << "].\n";
 
   return xmlDoc;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool FixedJointShouldBeReduced(boost::shared_ptr<urdf::Joint> _jnt)
+{
+    // A joint should be lumped only if its type is fixed and
+    // the disabledFixedJointLumping joint option is not set
+    return (_jnt->type == urdf::Joint::FIXED &&
+              (g_fixedJointsNotReduced.find(_jnt->name) ==
+                 g_fixedJointsNotReduced.end()) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////

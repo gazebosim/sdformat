@@ -7,7 +7,15 @@
   </attribute>
 
   <attribute name="type" type="string" default="__default__" required="1">
-    <description>The type of joint, which must be one of the following: (revolute) a hinge joint that rotates on a single axis with either a fixed or continuous range of motion, (gearbox) geared revolute joints, (revolute2) same as two revolute joints connected in series, (prismatic) a sliding joint that slides along an axis with a limited range specified by upper and lower limits, (ball) a ball and socket joint, (universal), like a ball joint, but constrains one degree of freedom, (piston) similar to a Slider joint except that rotation around the translation axis is possible.</description>
+    <description>The type of joint, which must be one of the following:
+      (revolute) a hinge joint that rotates on a single axis with either a fixed or continuous range of motion,
+      (gearbox) geared revolute joints,
+      (revolute2) same as two revolute joints connected in series,
+      (prismatic) a sliding joint that slides along an axis with a limited range specified by upper and lower limits,
+      (ball) a ball and socket joint,
+      (screw) a single degree of freedom joint with coupled sliding and rotational motion,
+      (universal) like a ball joint, but constrains one degree of freedom.
+    </description>
   </attribute>
 
   <element name="parent" type="string" default="__default__" required="1">
@@ -61,6 +69,12 @@
       <element name="friction" type="double" default="0" required="0">
         <description>The physical static friction value of the joint.</description>
       </element>
+      <element name="spring_reference" type="double" default="0" required="1">
+        <description>The spring reference position for this joint axis.</description>
+      </element>
+      <element name="spring_stiffness" type="double" default="0" required="1">
+        <description>The spring stiffness for this joint axis.</description>
+      </element>
     </element> <!-- End Dynamics -->
     <element name="limit" required="1">
       <description>specifies the limits of this joint</description>
@@ -113,6 +127,12 @@
       </element>
       <element name="friction" type="double" default="0" required="0">
         <description>The physical static friction value of the joint.</description>
+      </element>
+      <element name="spring_reference" type="double" default="0" required="1">
+        <description>The spring reference position for this joint axis.</description>
+      </element>
+      <element name="spring_stiffness" type="double" default="0" required="1">
+        <description>The spring stiffness for this joint axis.</description>
       </element>
     </element> <!-- End Dynamics -->
 

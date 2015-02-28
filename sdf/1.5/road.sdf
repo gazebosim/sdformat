@@ -9,7 +9,8 @@
   </element>
 
   <element name="point" type="vector3" default="0 0 0" required="+">
-    <description>A series of points define the path of the road.</description>
+    <description>A series of points that define the path of the road.</description>
   </element>
 
+  <include filename="material.sdf" required="0"/>
 </element>

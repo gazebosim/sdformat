@@ -350,6 +350,8 @@ namespace sdf
   class SDFORMAT_VISIBLE SDF
   {
     public: SDF();
+    /// \brief Destructor
+    public: ~SDF();
     public: void PrintDescription();
     public: void PrintValues();
     public: void PrintWiki();

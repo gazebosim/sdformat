@@ -26,12 +26,12 @@
     <description>If true, the link will have 6DOF and be a direct child of world.</description>
   </element>
 
-  <element name="velocity_decay" required="1">
+  <element name="velocity_decay" required="0">
     <description>Exponential damping of the link's velocity.</description>
-    <element name="linear" type="double" default="0.0" required="1">
+    <element name="linear" type="double" default="0.0" required="0">
       <description>Linear damping</description>
     </element>
-    <element name="angular" type="double" default="0.0" required="1">
+    <element name="angular" type="double" default="0.0" required="0">
       <description>Angular damping</description>
     </element>
   </element> <!-- End velocity decay -->

@@ -4,13 +4,14 @@
     <description></description>
   </attribute>
 
+  <include filename="plugin.sdf" required="*"/>
+
   <element name="camera" required="0">
     <description> </description>
 
     <attribute name="name" type="string" default="user_camera" required="1">
       <description></description>
     </attribute>
-
 
     <element name="view_controller" type="string" default="orbit" required="0">
       <description></description>

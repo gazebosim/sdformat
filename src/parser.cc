@@ -611,8 +611,19 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           }
         }
 
+        // NOTE: sdf::init is an expensive call. For performance reason,
+        // a new sdf pointer is created here by cloning a fresh sdf template
+        // pointer instead of calling init every iteration.
+        // SDFPtr includeSDF(new SDF);
+        // init(includeSDF);
+        static SDFPtr includeSDFTemplate;
+        if (!includeSDFTemplate)
+        {
+          includeSDFTemplate.reset(new SDF);
+          init(includeSDFTemplate);
+        }
         SDFPtr includeSDF(new SDF);
-        init(includeSDF);
+        includeSDF->root = includeSDFTemplate->root->Clone();
 
         if (!readFile(filename, includeSDF))
         {
@@ -772,6 +783,14 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
       element->SetName(elem_name);
       if (elemXml->GetText() != NULL)
         element->AddValue("string", elemXml->GetText(), "1");
+
+      for (TiXmlAttribute *attribute = elemXml->FirstAttribute();
+           attribute; attribute = attribute->Next())
+      {
+        element->AddAttribute(attribute->Name(), "string", "", 1, "");
+        element->GetAttribute(attribute->Name())->SetFromString(
+          attribute->ValueStr());
+      }
 
       copyChildren(element, elemXml);
       _sdf->InsertElement(element);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Open Source Robotics Foundation
+ * Copyright 2014 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  *
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <gtest/gtest.h>
 #include "sdf/Param.hh"
 
@@ -31,7 +28,53 @@ int check_double(std::string num)
     return param.SetFromString(num);
 }
 
+////////////////////////////////////////////////////
+/// Test getting a bool using true/false and 1/0.
+TEST(Param, Bool)
+{
+  sdf::Param boolParam("key", "bool", "true", false, "description");
+  bool value;
+  boolParam.Get<bool>(value);
+  EXPECT_TRUE(value);
+
+  boolParam.Set(false);
+  boolParam.Get<bool>(value);
+  EXPECT_FALSE(value);
+
+  // String parameter that represents a boolean.
+  sdf::Param strParam("key", "string", "true", false, "description");
+
+  strParam.Get<bool>(value);
+  EXPECT_TRUE(value);
+
+  strParam.Set("false");
+  strParam.Get<bool>(value);
+  EXPECT_FALSE(value);
+
+  strParam.Set("1");
+  strParam.Get<bool>(value);
+  EXPECT_TRUE(value);
+
+  strParam.Set("0");
+  strParam.Get<bool>(value);
+  EXPECT_FALSE(value);
+
+  // Anything other than 1 or true is treated as a false value
+  strParam.Set("%");
+  strParam.Get<bool>(value);
+  EXPECT_FALSE(value);
+}
+////////////////////////////////////////////////////
+/// Test decimal number
 TEST(SetFromString, Decimals)
 {
   ASSERT_TRUE(check_double("0.2345"));
+}
+
+/////////////////////////////////////////////////
+/// Main
+int main(int argc, char **argv)
+{
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

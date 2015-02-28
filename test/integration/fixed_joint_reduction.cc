@@ -24,14 +24,46 @@
 
 const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/fixed_joint_reduction.urdf";
+const std::string SDF_TEST_FILE_COLLISION =
+  std::string(PROJECT_SOURCE_PATH)
+  + "/test/integration/fixed_joint_reduction_collision.urdf";
 const std::string SDF_TEST_FILE_SIMPLE =
   std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/fixed_joint_reduction_simple.urdf";
+const std::string SDF_TEST_FILE_VISUAL =
+  std::string(PROJECT_SOURCE_PATH)
+  + "/test/integration/fixed_joint_reduction_visual.urdf";
 
 const double gc_tolerance = 1e-6;
 
+void FixedJointReductionEquivalence(const std::string &_file);
+
 /////////////////////////////////////////////////
 TEST(SDFParser, FixedJointReductionEquivalenceTest)
+{
+  FixedJointReductionEquivalence(SDF_TEST_FILE);
+}
+
+/////////////////////////////////////////////////
+// This test uses a urdf that has a fixed joint whose parent
+// has no visuals. This can cause a seg-fault with the wrong
+// version of urdfdom (see #63).
+TEST(SDFParser, FixedJointReductionVisualTest)
+{
+  FixedJointReductionEquivalence(SDF_TEST_FILE_VISUAL);
+}
+
+/////////////////////////////////////////////////
+// This test uses a urdf that has a fixed joint whose parent
+// has no collisions. This is a parallel of the
+// FixedJointReductionVisualTest
+TEST(SDFParser, FixedJointReductionCollisionTest)
+{
+  FixedJointReductionEquivalence(SDF_TEST_FILE_COLLISION);
+}
+
+/////////////////////////////////////////////////
+void FixedJointReductionEquivalence(const std::string &_file)
 {
   char *pathCStr = getenv("SDF_PATH");
   boost::filesystem::path path = PROJECT_SOURCE_PATH;
@@ -40,7 +72,7 @@ TEST(SDFParser, FixedJointReductionEquivalenceTest)
 
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
+  ASSERT_TRUE(sdf::readFile(_file, robot));
   if (pathCStr)
   {
     setenv("SDF_PATH", pathCStr, 1);
@@ -97,6 +129,10 @@ TEST(SDFParser, FixedJointReductionEquivalenceTest)
     mapIxyIxzIyz[linkName] = sdf::Vector3(-65.6808, 134.562, 264.781);
   }
 
+  // Count collisions and visuals
+  unsigned int countVisuals = 0;
+  unsigned int countCollisions = 0;
+
   sdf::ElementPtr model = robot->root->GetElement("model");
   for (sdf::ElementPtr link = model->GetElement("link"); link;
        link = link->GetNextElement("link"))
@@ -132,6 +168,39 @@ TEST(SDFParser, FixedJointReductionEquivalenceTest)
     EXPECT_NEAR(ixy, mapIxyIxzIyz[linkName].x, gc_tolerance);
     EXPECT_NEAR(ixz, mapIxyIxzIyz[linkName].y, gc_tolerance);
     EXPECT_NEAR(iyz, mapIxyIxzIyz[linkName].z, gc_tolerance);
+
+    if (link->HasElement("collision"))
+    {
+      for (sdf::ElementPtr coll = link->GetElement("collision"); coll;
+           coll = coll->GetNextElement("collision"))
+      {
+        ++countCollisions;
+      }
+    }
+    if (link->HasElement("visual"))
+    {
+      for (sdf::ElementPtr vis = link->GetElement("visual"); vis;
+           vis = vis->GetNextElement("visual"))
+      {
+        ++countVisuals;
+      }
+    }
+  }
+
+  if (_file.compare(SDF_TEST_FILE) == 0)
+  {
+    EXPECT_EQ(countCollisions, 7u);
+    EXPECT_EQ(countVisuals, 7u);
+  }
+  else if (_file.compare(SDF_TEST_FILE_COLLISION) == 0)
+  {
+    EXPECT_EQ(countCollisions, 6u);
+    EXPECT_EQ(countVisuals, 0u);
+  }
+  else if (_file.compare(SDF_TEST_FILE_VISUAL) == 0)
+  {
+    EXPECT_EQ(countCollisions, 0u);
+    EXPECT_EQ(countVisuals, 6u);
   }
 }
 
