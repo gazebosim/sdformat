@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Open Source Robotics Foundation
+ * Copyright 2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,23 @@
  *
 */
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <gtest/gtest.h>
-#include "sdf/sdf.hh"
+#include "sdf/Param.hh"
 
-#include "test_config.h"
-
-const std::string SDF_TEST_FILE =
-  std::string(PROJECT_SOURCE_PATH) + "/test/integration/audio.sdf";
-
-TEST(SDFParser, AudioSDF_FullParameters_noThrow)
+int check_double(std::string num)
 {
-  std::setlocale(LC_ALL, "POSIX");
-  sdf::SDFPtr p(new sdf::SDF());
-  sdf::init(p);
-  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, p));
+    const std::string name = "number";
+    const std::string type = "double";
+    const std::string def = "0.0";
+    
+    sdf::Param param(name, type, def, true);
+    return param.SetFromString(num);
+}
+
+TEST(SetFromString, Decimals)
+{
+  ASSERT_TRUE(check_double("0.2345"));
 }

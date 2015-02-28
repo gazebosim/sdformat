@@ -17,15 +17,37 @@
 
 #include <gtest/gtest.h>
 #include "sdf/sdf.hh"
+#include "sdf/parser_urdf.hh"
 
 #include "test_config.h"
 
 const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/numeric.sdf";
 
-TEST(CheckFixForLocal, OverwriteAndCorrectOutput)
+// Windows supports the setlocale call but we can not extract the
+// available locales using the Linux call
+#ifndef _MSC_VER 
+TEST(CheckFixForLocal, MakeTestToFail)
 {
-  std::setlocale(LC_NUMERIC, "de_DE.utf8");
+  // Check if any of the latin locales is avilable 
+  FILE *fp = popen("locale -a | grep '^es\\|^pt_' | head -n 1", "r");
+
+  if (!fp)
+    FAIL() << "locale -a call failed";
+
+  char buffer[1024];
+  char *line = fgets(buffer, sizeof(buffer), fp);
+  pclose(fp);
+
+  // Do not run test if not available
+  if (!line)
+  {
+    std::cout << "No latin locale available. Skip test" << std::endl;
+    SUCCEED();
+  }
+
+  std::setlocale(LC_NUMERIC, line);
+
   sdf::SDFPtr p(new sdf::SDF());
   sdf::init(p);
   ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, p));
@@ -37,4 +59,11 @@ TEST(CheckFixForLocal, OverwriteAndCorrectOutput)
                                      ->GetElement("sor");
   double angle = elem->Get<double>();
   ASSERT_DOUBLE_EQ(angle, 0.823);
+
+  elem->Set<double>(0.423);
+
+  // TODO: automatic checking. Error is thrown to the log file and std::err
+  // We should check for "Error [Param.cc:186] Unable to set value"
+  // Problem is How to get the log file path without duplicating code
 }
+#endif
