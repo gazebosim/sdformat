@@ -138,7 +138,7 @@ std::string Param::GetDefaultAsString() const
 //////////////////////////////////////////////////
 bool Param::SetFromString(const std::string &_value)
 {
-  // Under some circunstances, latin locales (es_ES or pt_BR) will return a
+  // Under some circumstances, latin locales (es_ES or pt_BR) will return a
   // comma for decimal position instead of a dot, making the conversion
   // to fail. See bug #60 for more information. Force to use always C
   std::setlocale(LC_NUMERIC, "C");
