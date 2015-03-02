@@ -7,7 +7,7 @@
   </attribute>
 
   <attribute name="default" type="bool" default="false" required="0">
-    <description>If true, this physics element is set as the default physics profile for the world.</description>
+    <description>If true, this physics element is set as the default physics profile for the world. If multiple default physics elements exist, the first element marked as default is chosen.</description>
   </attribute>
 
   <attribute name="type" type="string" default="ode" required="1">
