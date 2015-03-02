@@ -44,6 +44,7 @@ TEST(CheckFixForLocal, MakeTestToFail)
   {
     std::cout << "No latin locale available. Skip test" << std::endl;
     SUCCEED();
+    return();
   }
 
   std::setlocale(LC_NUMERIC, line);
