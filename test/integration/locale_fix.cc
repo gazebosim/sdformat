@@ -30,7 +30,7 @@ const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
 TEST(CheckFixForLocal, MakeTestToFail)
 {
   // Check if any of the latin locales is avilable 
-  FILE *fp = popen("locale -a | grep '^es\\|^pt_' | head -n 1", "r");
+  FILE *fp = popen("locale -a | grep '^es\\|^pt_\\|^it_' | head -n 1", "r");
 
   if (!fp)
     FAIL() << "locale -a call failed";
