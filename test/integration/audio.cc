@@ -25,7 +25,6 @@ const std::string SDF_TEST_FILE =
 
 TEST(SDFParser, AudioSDF_FullParameters_noThrow)
 {
-  std::setlocale(LC_ALL, "POSIX");
   sdf::SDFPtr p(new sdf::SDF());
   sdf::init(p);
   ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, p));
