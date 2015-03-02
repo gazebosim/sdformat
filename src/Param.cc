@@ -20,7 +20,7 @@
  */
 
 #include <math.h>
-#include "locale.h"
+#include <locale.h>
 #include "sdf/Param.hh"
 
 using namespace sdf;
@@ -143,7 +143,7 @@ bool Param::SetFromString(const std::string &_value)
   // comma for decimal position instead of a dot, making the conversion
   // to fail. See bug #60 for more information. Force to use always C
   setlocale(LC_NUMERIC, "C");
- 
+
   std::string str = _value;
   boost::trim(str);
 

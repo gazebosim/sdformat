@@ -23,7 +23,7 @@ int check_double(std::string num)
     const std::string name = "number";
     const std::string type = "double";
     const std::string def = "0.0";
-    
+
     sdf::Param param(name, type, def, true);
     return param.SetFromString(num);
 }
@@ -33,7 +33,7 @@ int check_double(std::string num)
 TEST(Param, Bool)
 {
   sdf::Param boolParam("key", "bool", "true", false, "description");
-  bool value;
+  bool value = true;
   boolParam.Get<bool>(value);
   EXPECT_TRUE(value);
 

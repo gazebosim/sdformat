@@ -26,10 +26,10 @@ const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
 
 // Windows supports the setlocale call but we can not extract the
 // available locales using the Linux call
-#ifndef _MSC_VER 
+#ifndef _MSC_VER
 TEST(CheckFixForLocal, MakeTestToFail)
 {
-  // Check if any of the latin locales is avilable 
+  // Check if any of the latin locales is avilable
   FILE *fp = popen("locale -a | grep '^es\\|^pt_\\|^it_' | head -n 1", "r");
 
   if (!fp)
