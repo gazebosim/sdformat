@@ -710,10 +710,12 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
       if (descCounter == _sdf->GetElementDescriptionCount())
       {
-        sdferr << "XML Element[" << elemXml->Value()
+        sdfwarn << "XML Element[" << elemXml->Value()
           << "], child of element[" << _xml->Value()
-          << "] not defined in SDF. Ignoring.[" << _sdf->GetName() << "]\n";
-        return false;
+          << "] not defined in SDF. Ignoring[" << elemXml->Value() << "]. "
+          << "You may have an incorrect SDF file, or an sdformat version "
+          << "that doesn't support this element.\n";
+        continue;
       }
     }
 
