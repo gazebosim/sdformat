@@ -167,7 +167,7 @@ bool Param::SetFromString(const std::string &_value)
 
   try
   {
-    // If the string is hex, try to use stoi nad stoul, and then
+    // If the string is hex, try to use stoi and stoul, and then
     // lexical cast as a last resort.
     if (isHex)
     {
