@@ -7,6 +7,7 @@ set(tests
   fixed_joint_reduction.cc
   force_torque_sensor.cc
   joint_axis_frame.cc
+  locale_fix.cc
   plugin_attribute.cc
   plugin_bool.cc
   provide_feedback.cc
