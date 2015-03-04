@@ -36,7 +36,7 @@ class RmlUpdate : public testing::Test
                setenv("SDF_PATH", path.string().c_str(), 1);
              }
 
-  protected: virtual void TearDown()
+  protected: virtual ~RmlUpdate()
              {
                // Restore original env var.
                // osx segfaults unless this check is in place
@@ -195,7 +195,7 @@ TEST_F(RmlUpdate, ElementRemoveFromParent)
 
   // Select the second model named 'model2'
   elem = elem->GetNextElement("model");
-  EXPECT_TRUE(elem);
+  EXPECT_TRUE(elem != NULL);
   EXPECT_TRUE(elem->HasAttribute("name"));
   EXPECT_EQ(elem->Get<std::string>("name"), "model2");
 
@@ -250,7 +250,7 @@ TEST_F(RmlUpdate, ElementRemoveChild)
 
   // Select the static element in model1
   elem2 = elem->GetElement("static");
-  EXPECT_TRUE(elem2);
+  EXPECT_TRUE(elem2 != NULL);
   EXPECT_FALSE(elem2->Get<bool>());
   elem->RemoveChild(elem2);
 
