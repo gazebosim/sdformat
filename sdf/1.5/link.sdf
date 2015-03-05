@@ -11,7 +11,7 @@
   </element>
 
   <element name="self_collide" type="bool" default="false" required="0">
-    <description>If true, the link can collide with other links in the model.</description>
+    <description>If true, the link can collide with other links in the model. Two links within a model will collide if link1.self_collide OR link2.self_collide.</description>
   </element>
 
   <element name="kinematic" type="bool" default="false" required="0">
