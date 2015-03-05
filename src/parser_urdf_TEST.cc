@@ -20,12 +20,12 @@
 #include "sdf/sdf.hh"
 #include "sdf/parser_urdf.hh"
 
-class URDFParser : public ::testing::Test 
+class URDFParser : public ::testing::Test
 {
   public:
       TiXmlDocument get_empty()
       {
-          return TiXmlDocument(); 
+          return TiXmlDocument();
       }
 
       std::string get_minimal_urdf_txt()
@@ -50,37 +50,13 @@ class URDFParser : public ::testing::Test
           return stream.str();
       }
 
-      std::string get_full_model_urdf_txt()
-      {
-          std::ostringstream stream;
-          stream << "<robot name='test_robot'>"
-                 << "<link name='link1' />"
-                 << "  <link name='link2' />"
-                 << "  <link name='link3' />"
-                 << "  <link name='link4' />"
-                 << "  <joint name='joint1' type='continuous'>"
-                 << "    <parent link='link1'/>"
-                 << "    <child link='link2'/>"
-                 << "  </joint>"
-                 << "  <joint name='joint2' type='continuous'>"
-                 << "    <parent link='link1'/>"
-                 << "    <child link='link3'/>"
-                 << "  </joint>"
-                 << "  <joint name='joint3' type='continuous'>"
-                 << "    <parent link='link3'/>"
-                 << "    <child link='link4'/>"
-                 << "  </joint>"
-                 << "</robot>";
-          return stream.str();
-      }
-
       TiXmlDocument convert_str_to_xml(const std::string& urdf)
       {
           TiXmlDocument tmp;
           tmp.Parse(urdf.c_str());
           return tmp;
       }
-       
+
     protected:
         sdf::URDF2SDF parser_;
 };
