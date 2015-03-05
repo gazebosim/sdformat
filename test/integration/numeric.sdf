@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default">
+    <gui>
+      <camera name="user_camera">
+        <pose>10 0 3 0 0 3.141592</pose>
+      </camera>
+    </gui>
+    <physics type="ode">
+      <gravity>0.0 0.0 -10.00</gravity>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>100</iters>
+          <sor>0.823</sor>
+        </solver>
+        <constraints>
+          <cfm>0.0</cfm>
+          <erp>0.2</erp>
+          <contact_max_correcting_vel>0.1</contact_max_correcting_vel>
+          <contact_surface_layer>0.0</contact_surface_layer>
+        </constraints>
+      </ode>
+      <real_time_update_rate>0</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+    </physics>
+   </world>
+</sdf>

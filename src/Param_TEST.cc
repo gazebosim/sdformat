@@ -18,12 +18,22 @@
 #include <gtest/gtest.h>
 #include "sdf/Param.hh"
 
+int check_double(std::string num)
+{
+    const std::string name = "number";
+    const std::string type = "double";
+    const std::string def = "0.0";
+
+    sdf::Param param(name, type, def, true);
+    return param.SetFromString(num);
+}
+
 ////////////////////////////////////////////////////
 /// Test getting a bool using true/false and 1/0.
 TEST(Param, Bool)
 {
   sdf::Param boolParam("key", "bool", "true", false, "description");
-  bool value;
+  bool value = true;
   boolParam.Get<bool>(value);
   EXPECT_TRUE(value);
 
@@ -53,6 +63,12 @@ TEST(Param, Bool)
   strParam.Set("%");
   strParam.Get<bool>(value);
   EXPECT_FALSE(value);
+}
+////////////////////////////////////////////////////
+/// Test decimal number
+TEST(SetFromString, Decimals)
+{
+  ASSERT_TRUE(check_double("0.2345"));
 }
 
 /////////////////////////////////////////////////
