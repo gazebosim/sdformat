@@ -11,7 +11,7 @@
   </element>
 
   <element name="self_collide" type="bool" default="false" required="0">
-    <description>If set to true, all links in the model will collide with each other (except those connected by a joint). Can be overridden by the link or collision element self_collide property. Two links within a model will collide if link1.self_collide OR link2.self_collide.</description>
+    <description>If set to true, all links in the model will collide with each other (except those connected by a joint). Can be overridden by the link or collision element self_collide property. Two links within a model will collide if link1.self_collide OR link2.self_collide. Links connected by a joint will never collide.</description>
   </element>
 
   <element name="allow_auto_disable" type="bool" default="true" required="0">
