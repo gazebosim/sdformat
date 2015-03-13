@@ -17,8 +17,6 @@ set(tests
 find_program(XMLLINT_EXE xmllint)
 if (EXISTS ${XMLLINT_EXE})
   set (tests ${tests} schema_test.cc)
-  # Need to run schema target (build .xsd files) before running schema_test
-  add_dependencies(${TEST_TYPE}_schema_test schema)
 else()
   BUILD_WARNING("xmllint not found. schema_test won't be run")
 endif()
@@ -26,3 +24,9 @@ endif()
 link_directories(${PROJECT_BINARY_DIR}/test)
 
 sdf_build_tests(${tests})
+
+if (EXISTS ${XMLLINT_EXE})
+  # Need to run schema target (build .xsd files) before running schema_test
+  add_dependencies(${TEST_TYPE}_schema_test schema)
+endif()
+
