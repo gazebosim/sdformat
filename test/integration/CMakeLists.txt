@@ -11,13 +11,22 @@ set(tests
   plugin_attribute.cc
   plugin_bool.cc
   provide_feedback.cc
-  schema_test.cc
   urdf_joint_parameters.cc
 )
+
+find_program(XMLLINT_EXE xmllint)
+if (EXISTS ${XMLLINT_EXE})
+  set (tests ${tests} schema_test.cc)
+else()
+  BUILD_WARNING("xmllint not found. schema_test won't be run")
+endif()
 
 link_directories(${PROJECT_BINARY_DIR}/test)
 
 sdf_build_tests(${tests})
 
-# Need to run schema target (build .xsd files) before running schema_test
-add_dependencies(${TEST_TYPE}_schema_test schema)
+if (EXISTS ${XMLLINT_EXE})
+  # Need to run schema target (build .xsd files) before running schema_test
+  add_dependencies(${TEST_TYPE}_schema_test schema)
+endif()
+
