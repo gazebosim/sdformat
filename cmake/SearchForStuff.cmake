@@ -86,7 +86,6 @@ endif()
 
 ################################################
 # Find ruby executable to produce xml schemas
-# Use quiet to avoid complains from ruby headers or libs not installed
 find_program(RUBY ruby)
 if (NOT RUBY)
     BUILD_ERROR ("Ruby version 1.9 is needed to build xml schemas")
