@@ -1,4 +1,6 @@
-<!-- URDF Robot Model -->
+<!-- URDF Robot Model
+     see http://wiki.ros.org/urdf/XML/model
+-->
 <element name="robot" required="*">
   <description>The model element defines a complete robot or any other physical object.</description>
 
