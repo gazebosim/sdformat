@@ -1,0 +1,20 @@
+<!-- Material -->
+<element name="material" required="0">
+  <description>The material of the visual element.</description>
+
+  <attribute name="name" type="string" default="material" required="0">
+    <description>Unique name for the material element within the scope of the parent link.</description>
+  </attribute>
+
+  <element name="color" required="0">
+    <description>The rgba color of the material.</description>
+    <attribute name="rgba" type="vector4" default="0 0 0 0" required="0">
+      <description>each element red/green/blue/alpha is between 0 and 1.</description>
+    </attribute>
+  </element>
+
+  <element name="texture" required="0">
+    <description>The texture fo the material.</description>
+  </element>
+
+</element> <!-- End Material -->

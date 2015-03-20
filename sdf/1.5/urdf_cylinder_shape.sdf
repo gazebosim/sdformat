@@ -1,0 +1,9 @@
+<element name="cylinder" required="0">
+  <description>Cylinder shape</description>
+  <attribute name="radius" type="double" default="1" required="1">
+    <description>Radius of the cylinder</description>
+  </attribute>
+  <attribute name="length" type="double" default="1" required="1">
+    <description>Length of the cylinder</description>
+  </attribute>
+</element>

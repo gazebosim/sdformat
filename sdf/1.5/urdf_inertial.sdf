@@ -1,0 +1,40 @@
+<!-- Inertial -->
+<element name="inertial" required="0">
+  <description>The inertial properties of the link.</description>
+
+  <element name="origin" required="0">
+    <description>The origin of the inertial frame.</description>
+    <attribute name="value" type="vector3" default="0 0 0" required="0">
+      <description>origin of the inertial frame specified in the link frame, identity transform if unspecified.</description>
+    </attribute>
+  </element>
+
+  <element name="mass" required="0">
+    <description>The mass of the link.</description>
+    <attribute name="value" type="double" default="1.0" required="0">
+      <description>mass of the link, defaults to 1.0 (kg if SI metric).</description>
+    </attribute>
+  </element>
+
+  <element name="inertia" required="0">
+    <description>The moments of inertia of the link.</description>
+    <attribute name="ixx" type="double" default="1.0" required="0">
+      <description>Ixx of the link, defaults to 1.0 (kg m^2 if SI metric).</description>
+    </attribute>
+    <attribute name="ixy" type="double" default="0.0" required="0">
+      <description>Ixy of the link, defaults to 0.0 (kg m^2 if SI metric).</description>
+    </attribute>
+    <attribute name="ixz" type="double" default="0.0" required="0">
+      <description>Ixz of the link, defaults to 0.0 (kg m^2 if SI metric).</description>
+    </attribute>
+    <attribute name="iyy" type="double" default="1.0" required="0">
+      <description>Iyy of the link, defaults to 1.0 (kg m^2 if SI metric).</description>
+    </attribute>
+    <attribute name="iyz" type="double" default="0.0" required="0">
+      <description>Iyz of the link, defaults to 0.0 (kg m^2 if SI metric).</description>
+    </attribute>
+    <attribute name="izz" type="double" default="1.0" required="0">
+      <description>Izz of the link, defaults to 1.0 (kg m^2 if SI metric).</description>
+    </attribute>
+  </element> <!-- End Inertia -->
+</element> <!-- End Inertial -->

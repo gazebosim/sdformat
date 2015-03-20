@@ -1,0 +1,18 @@
+<!-- Collision -->
+<element name="collision" required="*">
+  <description>The collision properties of a link. Note that this can be different from the visual properties of a link, for example, simpler collision models are often used to reduce computation time.</description>
+
+  <attribute name="name" type="string" default="collision" required="0">
+    <description>Unique name for the collision element within the scope of the parent link.</description>
+  </attribute>
+
+  <element name="origin" required="0">
+    <description>The origin of the collision frame.</description>
+    <attribute name="value" type="vector3" default="0 0 0" required="0">
+      <description>origin of the collision frame specified in the link frame, identity transform if unspecified.</description>
+    </attribute>
+  </element>
+
+  <include filename="urdf_geometry.sdf" required="1"/>
+
+</element> <!-- End Collision -->
