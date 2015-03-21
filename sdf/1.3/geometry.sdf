@@ -89,7 +89,7 @@
     </element>
 
     <element name="texture" required="*">
-      <description>The heightmap can contain multiple textures. The order of the texture matters. The first texture will appear at the lowest height, and the last texture at the highest hieght. Use blend to control the hieight thresholds and fade between textures.</description>
+      <description>The heightmap can contain multiple textures. The order of the texture matters. The first texture will appear at the lowest height, and the last texture at the highest height. Use blend to control the height thresholds and fade between textures.</description>
       <element name="size" type="double" default="10" required="1">
         <description>Size of the applied texture in meters.</description>
       </element>
