@@ -24,6 +24,7 @@ set (sdfs
   mesh_shape.sdf
   model.sdf
   noise.sdf
+  param.sdf
   physics.sdf
   plane_shape.sdf
   plugin.sdf

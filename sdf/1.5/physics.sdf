@@ -41,11 +41,11 @@
     <description>The magnetic vector in Tesla, expressed in a coordinate frame defined by the spherical_coordinates tag.</description>
   </element> <!-- End Magnetic -->
 
-  <include filename="param.sdf" required="*">
+  <include filename="param.sdf" required="*"/>
 
   <element name="simbody" required="0">
     <description>Simbody specific physics properties</description>
-    <include filename="param.sdf" required="*">
+    <include filename="param.sdf" required="*"/>
     <element name="min_step_size" type="double" default="0.0001" required="0">
       <description>(Currently not used in simbody) The time duration which advances with each iteration of the dynamics engine, this has to be no bigger than max_step_size under physics block.  If left unspecified, min_step_size defaults to max_step_size.</description>
     </element>
@@ -80,7 +80,7 @@
                          = 2*e1*e2/(e1+e2), otherwise]]>
       </description>
 
-      <include filename="param.sdf" required="*">
+      <include filename="param.sdf" required="*"/>
       <element name="stiffness" type="double" default="1e8" required="0">
         <description>Default contact material stiffness
                      (force/dist or torque/radian).</description>
@@ -134,9 +134,9 @@
 
   <element name="bullet" required="0">
     <description>Bullet specific physics properties</description>
-    <include filename="param.sdf" required="*">
+    <include filename="param.sdf" required="*"/>
     <element name="solver" required="1">
-      <include filename="param.sdf" required="*">
+      <include filename="param.sdf" required="*"/>
       <description></description>
       <element name="type" type="string" default="sequential_impulse" required="1">
         <description>One of the following types: sequential_impulse only.</description>
@@ -154,7 +154,7 @@
 
     <element name="constraints" required="1">
       <description>Bullet constraint parameters.</description>
-      <include filename="param.sdf" required="*">
+      <include filename="param.sdf" required="*"/>
       <element name="cfm" type="double" default="0" required="1">
         <description>Constraint force mixing parameter. See the ODE page for more information.</description>
       </element>
@@ -175,10 +175,10 @@
 
   <element name="ode" required="0">
     <description>ODE specific physics properties</description>
-    <include filename="param.sdf" required="*">
+    <include filename="param.sdf" required="*"/>
     <element name="solver" required="1">
       <description></description>
-      <include filename="param.sdf" required="*">
+      <include filename="param.sdf" required="*"/>
       <element name="type" type="string" default="quick" required="1">
         <description>One of the following types: world, quick</description>
       </element>
@@ -205,7 +205,7 @@
 
     <element name="constraints" required="1">
       <description>ODE constraint parameters.</description>
-      <include filename="param.sdf" required="*">
+      <include filename="param.sdf" required="*"/>
       <element name="cfm" type="double" default="0" required="1">
         <description>Constraint force mixing parameter. See the ODE page for more information.</description>
       </element>
