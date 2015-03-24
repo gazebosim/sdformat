@@ -1,16 +1,16 @@
 <!-- Param -->
-<element name="param" required="*">
+<element name="param" required="*" type="string" default="">
   <description>A general key/value param interface.</description>
 
   <attribute name="name" type="string" default="default_key_name" required="1">
     <description>The name of this parameter.</description>
   </attribute>
 
-  <attribute name="type" type="string" default="empty" required="0">
+  <attribute name="type" type="string" default="" required="0">
     <description>The type of this parameter.</description>
   </attribute>
 
-  <attribute name="value" type="string" default="empty" required="0">
+  <!--<attribute name="value" type="string" default="empty" required="0">
     <description>The value of this parameter. Stored as a string.</description>
-  </attribute>
+  </attribute>-->
 </element>
