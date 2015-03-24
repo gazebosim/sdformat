@@ -137,7 +137,6 @@ macro (sdf_build_tests)
 
     add_dependencies(${BINARY_NAME}
       gtest gtest_main sdformat
-      ${tinyxml_LIBRARIES}
       )
      
     if (UNIX)
