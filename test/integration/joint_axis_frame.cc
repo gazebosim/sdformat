@@ -63,7 +63,7 @@ TEST(JointAxisFrame, Version_1_4_missing)
     unsetenv("SDF_PATH");
   }
 
-  sdf::ElementPtr joint = model->GetRoot()->GetElement(
+  sdf::ElementPtr joint = model->Root()->GetElement(
     "model")->GetElement("joint");
   sdf::ElementPtr axis = joint->GetElement("axis");
 
@@ -94,7 +94,7 @@ TEST(JointAxisFrame, Version_1_5_missing)
     unsetenv("SDF_PATH");
   }
 
-  sdf::ElementPtr joint = model->GetRoot()->GetElement(
+  sdf::ElementPtr joint = model->Root()->GetElement(
     "model")->GetElement("joint");
   sdf::ElementPtr axis = joint->GetElement("axis");
   EXPECT_TRUE(axis->HasElement("use_parent_model_frame"));

@@ -133,7 +133,7 @@ void FixedJointReductionEquivalence(const std::string &_file)
   unsigned int countVisuals = 0;
   unsigned int countCollisions = 0;
 
-  sdf::ElementPtr model = robot->GetRoot()->GetElement("model");
+  sdf::ElementPtr model = robot->Root()->GetElement("model");
   for (sdf::ElementPtr link = model->GetElement("link"); link;
        link = link->GetNextElement("link"))
   {
@@ -278,7 +278,7 @@ TEST(SDFParser, FixedJointReductionSimple)
     mapIxyIxzIyz[linkName] = sdf::Vector3();
   }
 
-  sdf::ElementPtr model = robot->GetRoot()->GetElement("model");
+  sdf::ElementPtr model = robot->Root()->GetElement("model");
   for (sdf::ElementPtr link = model->GetElement("link"); link;
        link = link->GetNextElement("link"))
   {

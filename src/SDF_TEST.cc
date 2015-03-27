@@ -75,8 +75,8 @@ TEST_F(RmlUpdate, UpdateAttribute)
   sdfParsed.SetFromString(stream.str());
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.root->HasElement("model"));
-  sdf::ElementPtr modelElem = sdfParsed.root->GetElement("model");
+  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
+  sdf::ElementPtr modelElem = sdfParsed.Root()->GetElement("model");
 
   // Read name attribute value
   EXPECT_TRUE(modelElem->HasAttribute("name"));
@@ -97,7 +97,7 @@ TEST_F(RmlUpdate, UpdateAttribute)
     fixture.name[0] = 'd' + i;
 
     // Update root sdf element
-    sdfParsed.root->Update();
+    sdfParsed.Root()->Update();
 
     // Expect sdf values to match test class variables
     nameParam->Get(nameCheck);
@@ -121,8 +121,8 @@ TEST_F(RmlUpdate, UpdateElement)
   sdfParsed.SetFromString(stream.str());
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.root->HasElement("model"));
-  sdf::ElementPtr modelElem = sdfParsed.root->GetElement("model");
+  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
+  sdf::ElementPtr modelElem = sdfParsed.Root()->GetElement("model");
 
   // Read static element value
   EXPECT_TRUE(modelElem->HasElement("static"));
@@ -154,7 +154,7 @@ TEST_F(RmlUpdate, UpdateElement)
     fixture.pose.pos.z = -i*i*i;
 
     // Update root sdf element
-    sdfParsed.root->Update();
+    sdfParsed.Root()->Update();
 
     // Expect sdf values to match test class variables
     staticParam->Get(flagCheck);
@@ -190,8 +190,8 @@ TEST_F(RmlUpdate, ElementRemoveFromParent)
   sdf::ElementPtr elem;
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.root->HasElement("model"));
-  elem = sdfParsed.root->GetElement("model");
+  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
+  elem = sdfParsed.Root()->GetElement("model");
 
   // Select the second model named 'model2'
   elem = elem->GetNextElement("model");
@@ -203,7 +203,7 @@ TEST_F(RmlUpdate, ElementRemoveFromParent)
   elem->RemoveFromParent();
 
   // Get first model element again
-  elem = sdfParsed.root->GetElement("model");
+  elem = sdfParsed.Root()->GetElement("model");
   // Check name == model1
   EXPECT_TRUE(elem->HasAttribute("name"));
   EXPECT_EQ(elem->Get<std::string>("name"), "model1");
@@ -245,8 +245,8 @@ TEST_F(RmlUpdate, ElementRemoveChild)
   sdf::ElementPtr elem, elem2;
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.root->HasElement("model"));
-  elem = sdfParsed.root->GetElement("model");
+  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
+  elem = sdfParsed.Root()->GetElement("model");
 
   // Select the static element in model1
   elem2 = elem->GetElement("static");
@@ -255,7 +255,7 @@ TEST_F(RmlUpdate, ElementRemoveChild)
   elem->RemoveChild(elem2);
 
   // Get first model element again
-  elem = sdfParsed.root->GetElement("model");
+  elem = sdfParsed.Root()->GetElement("model");
   // Check name == model1
   EXPECT_TRUE(elem->HasAttribute("name"));
   EXPECT_EQ(elem->Get<std::string>("name"), "model1");
@@ -267,10 +267,10 @@ TEST_F(RmlUpdate, ElementRemoveChild)
   elem2 = elem->GetNextElement("model");
 
   // Remove model2
-  sdfParsed.root->RemoveChild(elem2);
+  sdfParsed.Root()->RemoveChild(elem2);
 
   // Get first model element again
-  elem = sdfParsed.root->GetElement("model");
+  elem = sdfParsed.Root()->GetElement("model");
   // Check name == model1
   EXPECT_TRUE(elem->HasAttribute("name"));
   EXPECT_EQ(elem->Get<std::string>("name"), "model1");

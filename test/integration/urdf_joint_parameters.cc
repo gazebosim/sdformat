@@ -45,7 +45,7 @@ TEST(SDFParser, JointAxisParameters)
     unsetenv("SDF_PATH");
   }
 
-  sdf::ElementPtr model = robot->GetRoot()->GetElement("model");
+  sdf::ElementPtr model = robot->Root()->GetElement("model");
 
   ASSERT_TRUE(model->HasElement("joint"));
   unsigned int bitmask = 0;

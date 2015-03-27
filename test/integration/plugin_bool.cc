@@ -60,7 +60,7 @@ TEST(PluginBool, ParseBoolValue)
   }
 
   sdf::ElementPtr plugin =
-    model->GetRoot()->GetElement("model")->GetElement("plugin");
+    model->Root()->GetElement("model")->GetElement("plugin");
 
   ASSERT_TRUE(plugin->HasElement("value1"));
   EXPECT_TRUE(plugin->Get<bool>("value1"));
