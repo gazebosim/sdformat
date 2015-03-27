@@ -22,7 +22,7 @@
 #include "sdf/Types.hh"
 
 /////////////////////////////////////////////////
-const char *sdf::winGetEnv(cosnt char *_name)
+const char *sdf::winGetEnv(const char *_name)
 {
 #ifdef _WIN32
   const DWORD buffSize = 65535;
