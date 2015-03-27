@@ -63,8 +63,6 @@ namespace sdf
   SDFORMAT_VISIBLE
   void setFindCallback(boost::function<std::string (const std::string &)> _cb);
 
-  class SDFPrivate;
-
   /// \brief Base SDF class
   class SDFORMAT_VISIBLE SDF
   {
