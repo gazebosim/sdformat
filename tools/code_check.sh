@@ -21,6 +21,9 @@ echo "*:src/Assert.cc" >> $SUPPRESS
 echo "*:src/Console.cc" >> $SUPPRESS
 echo "*:src/parser.cc" >> $SUPPRESS
 echo "*:src/parser_urdf.cc" >> $SUPPRESS
+echo "*:src/Element.cc:464" >> $SUPPRESS
+echo "*:src/Element.cc:64" >> $SUPPRESS
+echo "*:src/Element.cc:736" >> $SUPPRESS
 
 CHECK_FILE_DIRS="./src ./include ./test/performance ./test/integration"
 
