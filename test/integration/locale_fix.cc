@@ -70,11 +70,9 @@ TEST(CheckFixForLocal, MakeTestToFail)
     unsetenv("SDF_PATH");
   }
 
-  sdf::ElementPtr elem = p->root->GetElement("world")\
-                                  ->GetElement("physics")\
-                                   ->GetElement("ode")\
-                                    ->GetElement("solver")\
-                                     ->GetElement("sor");
+  sdf::ElementPtr elem = p->GetRoot()->GetElement("world")
+    ->GetElement("physics")->GetElement("ode")->GetElement("solver")
+    ->GetElement("sor");
   double angle = elem->Get<double>();
   ASSERT_DOUBLE_EQ(angle, 0.823);
 
