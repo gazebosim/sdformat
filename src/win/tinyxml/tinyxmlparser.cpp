@@ -105,7 +105,9 @@ void TiXmlBase::ConvertUTF32ToUTF8( unsigned long input, char* output, int* leng
 	output += *length;
 
 	// Scary scary fall throughs.
-        #pragma GCC diagnostic ignored "-Wswitch-default"
+        #ifndef _WIN32 
+	#pragma GCC diagnostic ignored "-Wswitch-default"
+	#endif
 	switch (*length) 
 	{
 		case 4:
@@ -124,7 +126,9 @@ void TiXmlBase::ConvertUTF32ToUTF8( unsigned long input, char* output, int* leng
 			--output; 
 			*output = (char)(input | FIRST_BYTE_MARK[*length]);
 	}
+	#ifndef _WIN32
         #pragma GCC diagnostic pop
+	#endif
 }
 
 
