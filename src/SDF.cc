@@ -974,7 +974,7 @@ sdf::Time Element::GetValueTime(const std::string &_key)
 }
 
 /////////////////////////////////////////////////
-boost::any Element::GetAny(const std::string &_key = "")
+boost::any Element::GetAny(const std::string &_key)
 {
   boost::any result;
   if (_key.empty())
