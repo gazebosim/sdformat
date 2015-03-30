@@ -244,7 +244,7 @@ namespace sdf
                 const std::string &_key = "") SDF_DEPRECATED(1.4);
 
     /// \brief Get the element value/attribute as a boost::any.
-    /// \param[in] _key The key of the attribute. If empty, get the value of.
+    /// \param[in] _key The key of the attribute. If empty, get the value of
     /// the element. Defaults to empty.
     /// \return The element as a boost::any.
     public: boost::any GetAny(const std::string &_key = "");
