@@ -500,13 +500,14 @@ TEST_F(RmlUpdate, GetAny)
     EXPECT_TRUE(modelElem->GetElement("link")->HasElement("visual"));
     EXPECT_TRUE(modelElem->GetElement("link")->GetElement("visual")->
         HasElement("material"));
-    sdf::ElementPtr materialElem = modelElem->GetElement("link")->GetElement("visual")->
-        GetElement("material");
+    sdf::ElementPtr materialElem = modelElem->GetElement("link")->
+        GetElement("visual")->GetElement("material");
     EXPECT_TRUE(materialElem->HasElement("ambient"));
     boost::any anyValue = materialElem->GetElement("ambient")->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<sdf::Color>(anyValue), sdf::Color(0.1, 0.1, 0.1, 1));
+      EXPECT_EQ(boost::any_cast<sdf::Color>(anyValue),
+          sdf::Color(0.1, 0.1, 0.1, 1));
     }
     catch(boost::bad_any_cast &_e)
     {
