@@ -382,7 +382,7 @@ TEST_F(RmlUpdate, GetAny)
          << "       </inertial>"
          << "       <collision>"
          << "         <max_contacts>8</max_contacts>"
-         << "       </collision>
+         << "       </collision>"
          << "       <visual>"
          << "         <material>"
          << "           <ambient>0.1 0.1 0.1</ambient>"
