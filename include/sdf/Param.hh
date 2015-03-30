@@ -311,12 +311,14 @@ namespace sdf
           this->dataPtr->value = false;
       }
       else
+      {
         sdferr << "Unable to init parameter value from string["
-          << _value << "]\n";
+               << _value << "]\n";
+      }
     }
 
     this->dataPtr->defaultValue = this->dataPtr->value;
     this->dataPtr->set = false;
-            }
+  }
 }
 #endif
