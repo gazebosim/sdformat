@@ -985,7 +985,7 @@ boost::any Element::GetAny(const std::string &_key = "")
              << "] as boost::any\n";
     }
   }
-  else if (!this->GetAttribute(_key)->GetAny(result));
+  else if (!this->GetAttribute(_key)->GetAny(result))
   {
     sdferr << "Couldn't get attribute [" << _key << "] as boost::any\n";
   }
