@@ -29,6 +29,7 @@ Exception::Exception()
 
 //////////////////////////////////////////////////
 Exception::Exception(const char *_file, int64_t _line, std::string _msg)
+  : dataPtr(new ExceptionPrivate)
 {
   this->dataPtr->file = _file;
   this->dataPtr->line = _line;
@@ -48,7 +49,7 @@ void Exception::Print() const
 {
   sdf::Console::Instance()->ColorMsg("Exception",
       this->dataPtr->file,
-      static_cast<unsigned int>(this->dataPtr->line), 31) << *this << "\n";
+      static_cast<unsigned int>(this->dataPtr->line), 31) << *this;
 }
 
 //////////////////////////////////////////////////
