@@ -53,6 +53,18 @@ TEST(Param, Bool)
   strParam.Set("%");
   strParam.Get<bool>(value);
   EXPECT_FALSE(value);
+
+  boolParam.Set(true);
+  boost::any anyValue = boolParam.GetAny();
+  try
+  {
+    value = boost::any_cast<bool>(anyValue);
+  }
+  catch(boost::bad_any_cast &_e)
+  {
+    FAIL();
+  }
+  EXPECT_TRUE(value);
 }
 
 /////////////////////////////////////////////////

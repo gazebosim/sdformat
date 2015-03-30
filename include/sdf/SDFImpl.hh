@@ -243,6 +243,8 @@ namespace sdf
     public: sdf::Time GetValueTime(
                 const std::string &_key = "") SDF_DEPRECATED(1.4);
 
+    public: boost::any GetAny(const std::string &_key);
+
     public: template<typename T>
             T Get(const std::string &_key = "")
             {

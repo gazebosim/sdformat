@@ -139,6 +139,8 @@ namespace sdf
               return true;
             }
 
+    public: boost::any GetAny();
+
     /// \brief Get the value of the parameter.
     /// \param[out] _value The value of the parameter.
     /// \return True if parameter was successfully cast to the value type

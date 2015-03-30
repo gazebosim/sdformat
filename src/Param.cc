@@ -107,6 +107,91 @@ Param::~Param()
 }
 
 //////////////////////////////////////////////////
+boost::any Param::GetAny()
+{
+  if (typeid(int) == this->GetType())
+  {
+    int tmp;
+    this->Get<int>(tmp);
+    return tmp;
+  }
+  else if (typeid(double) == this->GetType())
+  {
+    double tmp;
+    this->Get<double>(tmp);
+    return tmp;
+  }
+  else if (typeid(float) == this->GetType())
+  {
+    float tmp;
+    this->Get<float>(tmp);
+    return tmp;
+  }
+  else if (typeid(bool) == this->GetType())
+  {
+    bool tmp;
+    this->Get<bool>(tmp);
+    return tmp;
+  }
+  else if (typeid(std::string) == this->GetType())
+  {
+    std::string tmp;
+    this->Get<std::string>(tmp);
+    return tmp;
+  }
+  else if (typeid(sdf::Vector3) == this->GetType())
+  {
+    sdf::Vector3 tmp;
+    this->Get<sdf::Vector3>(tmp);
+    return tmp;
+  }
+  else if (typeid(unsigned int) == this->GetType())
+  {
+    unsigned int tmp;
+    this->Get<unsigned int>(tmp);
+    return tmp;
+  }
+  else if (typeid(char) == this->GetType())
+  {
+    char tmp;
+    this->Get<char>(tmp);
+    return tmp;
+  }
+  else if (typeid(sdf::Vector2i) == this->GetType())
+  {
+    sdf::Vector2i tmp;
+    this->Get<sdf::Vector2i>(tmp);
+    return tmp;
+  }
+  else if (typeid(sdf::Pose) == this->GetType())
+  {
+    sdf::Pose tmp;
+    this->Get<sdf::Pose>(tmp);
+    return tmp;
+  }
+  else if (typeid(sdf::Quaternion) == this->GetType())
+  {
+    sdf::Quaternion tmp;
+    this->Get<sdf::Quaternion>(tmp);
+    return tmp;
+  }
+  else if (typeid(sdf::Time) == this->GetType())
+  {
+    sdf::Time tmp;
+    this->Get<sdf::Time>(tmp);
+    return tmp;
+  }
+  else if (typeid(sdf::Color) == this->GetType())
+  {
+    sdf::Color tmp;
+    this->Get<sdf::Color>(tmp);
+    return tmp;
+  }
+  sdferr << "Type of parameter not known: [" << this->GetTypeName() << "]\n";
+  return 0;
+}
+
+//////////////////////////////////////////////////
 void Param::Update()
 {
   if (this->updateFunc)

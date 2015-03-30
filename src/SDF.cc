@@ -974,6 +974,17 @@ sdf::Time Element::GetValueTime(const std::string &_key)
 }
 
 /////////////////////////////////////////////////
+boost::any Element::GetAny(const std::string &_key = "")
+{
+  boost::any result;
+  if (_key.empty())
+  {
+    return this->value->GetAny();
+  }
+  return this->GetAttribute(_key)->GetAny();
+}
+
+/////////////////////////////////////////////////
 void Element::RemoveChild(ElementPtr _child)
 {
   SDF_ASSERT(_child, "Cannot remove a NULL child pointer");
