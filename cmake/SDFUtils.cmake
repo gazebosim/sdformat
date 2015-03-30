@@ -51,8 +51,16 @@ endmacro (BUILD_WARNING)
 
 #################################################
 macro (sdf_add_library _name)
+  set(LIBS_DESTINATION ${PROJECT_BINARY_DIR}/src)
+  set_source_files_properties(${ARGN} PROPERTIES COMPILE_DEFINITIONS "BUILDING_DLL")
   add_library(${_name} SHARED ${ARGN})
   target_link_libraries (${_name} ${general_libraries})
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIBS_DESTINATION})
+  if (MSVC)
+    set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${LIBS_DESTINATION})
+    set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${LIBS_DESTINATION})
+    set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${LIBS_DESTINATION})
+  endif ()
 endmacro ()
 
 #################################################
@@ -85,6 +93,19 @@ endmacro()
 
 #################################################
 macro (sdf_setup_windows)
+  # Need for M_PI constant
+  add_definitions(-D_USE_MATH_DEFINES) 
+  # Use dynamic linking for boost
+  add_definitions(-DBOOST_ALL_DYN_LINK)
+  # And force linking to MSVC dynamic runtime
+  set(CMAKE_C_FLAGS_DEBUG "/MDd ${CMAKE_C_FLAGS_DEBUG}")
+  set(CMAKE_C_FLAGS_RELEASE "/MD ${CMAKE_C_FLAGS_RELEASE}")
+  if (MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+    # Not need if proper cmake gnerator (-G "...Win64") is passed to cmake
+    # Enable as a second measeure to workaround over bug
+    # http://www.cmake.org/Bug/print_bug_page.php?bug_id=11240 
+    set(CMAKE_SHARED_LINKER_FLAGS "/machine:x64")
+  endif()
 endmacro()
 
 #################################################
@@ -99,21 +120,41 @@ macro (sdf_build_tests)
   foreach(GTEST_SOURCE_file ${ARGN})
     string(REGEX REPLACE ".cc" "" BINARY_NAME ${GTEST_SOURCE_file})
     set(BINARY_NAME ${TEST_TYPE}_${BINARY_NAME})
-    add_executable(${BINARY_NAME} ${GTEST_SOURCE_file})
+
+    if (UNIX)
+      add_executable(${BINARY_NAME} ${GTEST_SOURCE_file})
+    elseif(WIN32)
+      add_executable(${BINARY_NAME} 
+        ${GTEST_SOURCE_file}
+        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinystr.cpp  
+        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlerror.cpp
+        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxml.cpp
+        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlparser.cpp
+      )
+    else()
+      message(FATAL_ERROR "Unsupported platform")
+    endif()
 
     add_dependencies(${BINARY_NAME}
       gtest gtest_main sdformat
-      ${tinyxml_libraries}
       )
-  
-    target_link_libraries(${BINARY_NAME}
-      libgtest.a
-      libgtest_main.a
-      sdformat
-      pthread
-      ${tinyxml_libraries}
+     
+    if (UNIX)
+      target_link_libraries(${BINARY_NAME}
+        libgtest.a
+        libgtest_main.a
+        sdformat
+        pthread
+        ${tinyxml_LIBRARIES}
       )
-  
+    elseif(WIN32)
+      target_link_libraries(${BINARY_NAME}
+        gtest.lib
+        gtest_main.lib
+        sdformat.dll
+      )
+    endif()
+ 
     add_test(${BINARY_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}
       --gtest_output=xml:${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
   
@@ -121,9 +162,21 @@ macro (sdf_build_tests)
   
     # Check that the test produced a result and create a failure if it didn't.
     # Guards against crashed and timed out tests.
-    add_test(check_${BINARY_NAME} ${PROJECT_SOURCE_DIR}/tools/check_test_ran.py
+    add_test(check_${BINARY_NAME} python ${PROJECT_SOURCE_DIR}/tools/check_test_ran.py
              ${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
   endforeach()
 endmacro()
 
+#################################################
+# Macro to setup supported compiler warnings
+# Based on work of Florent Lamiraux, Thomas Moulard, JRL, CNRS/AIST. 
+include(CheckCXXCompilerFlag)
 
+macro(filter_valid_compiler_warnings) 
+  foreach(flag ${ARGN})
+    CHECK_CXX_COMPILER_FLAG(${flag} R${flag})
+    if(${R${flag}})
+      set(WARNING_CXX_FLAGS "${WARNING_CXX_FLAGS} ${flag}")
+    endif()
+  endforeach()
+endmacro()
