@@ -172,6 +172,13 @@ bool Param::GetAny(boost::any &_anyVal)
       return false;
     _anyVal = ret;
   }
+  else if (typeid(sdf::Vector2d) == this->GetType())
+  {
+    sdf::Vector2d ret;
+    if (!this->Get<sdf::Vector2d>(ret))
+      return false;
+    _anyVal = ret;
+  }
   else if (typeid(sdf::Pose) == this->GetType())
   {
     sdf::Pose ret;
