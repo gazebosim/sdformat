@@ -364,6 +364,45 @@ TEST_F(RmlUpdate, EmptyValues)
 }
 
 /////////////////////////////////////////////////
+TEST_F(RmlUpdate, GetAny)
+{
+  std::ostringstream stream;
+  // Test types double, bool, string, int, vector3, color, pose
+  stream << "<sdf version='1.3'>"
+         << "<world name='test'>"
+         << "   <physics>"
+         << "     <gravity> 0 0 -7.1"
+         << "   </physics>"
+         << "   <model name='test_model'>"
+         << "     <pose>0 1 2 0 0 0</pose>"
+         << "     <static>false</static>"
+         << "     <link name='link1'>"
+         << "       <inertial>"
+         << "         <mass>4.0</mass>"
+         << "       </inertial>"
+         << "       <collision>"
+         << "         <max_contacts>8</max_contacts>"
+         << "       </collision>
+         << "       <visual>"
+         << "         <material>"
+         << "           <ambient>0.1 0.1 0.1</ambient>"
+         << "         </material>"
+         << "       </visual>"
+         << "     </link>"
+         << "   </model>"
+         << "</world>"
+         << "</sdf>";
+  sdf::SDF sdfParsed;
+  sdfParsed.SetFromString(stream.str());
+
+  // Verify correct parsing
+  EXPECT_TRUE(sdfParsed.root->HasElement("model"));
+  sdf::ElementPtr modelElem = sdfParsed.root->GetElement("model");
+
+  //
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {
