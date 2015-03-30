@@ -55,7 +55,8 @@ TEST(Param, Bool)
   EXPECT_FALSE(value);
 
   boolParam.Set(true);
-  boost::any anyValue = boolParam.GetAny();
+  boost::any anyValue;
+  EXPECT_TRUE(boolParam.GetAny(anyValue));
   try
   {
     value = boost::any_cast<bool>(anyValue);

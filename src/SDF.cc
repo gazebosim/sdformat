@@ -979,9 +979,17 @@ boost::any Element::GetAny(const std::string &_key = "")
   boost::any result;
   if (_key.empty())
   {
-    return this->value->GetAny();
+    if (!this->value->GetAny(result))
+    {
+      sdferr << "Couldn't get element [" << this->GetName()
+             << "] as boost::any\n";
+    }
   }
-  return this->GetAttribute(_key)->GetAny();
+  else if (!this->GetAttribute(_key)->GetAny(result));
+  {
+    sdferr << "Couldn't get attribute [" << _key << "] as boost::any\n";
+  }
+  return result;
 }
 
 /////////////////////////////////////////////////
