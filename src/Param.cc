@@ -108,6 +108,115 @@ Param::~Param()
 }
 
 //////////////////////////////////////////////////
+bool Param::GetAny(boost::any &_anyVal)
+{
+  if (typeid(int) == this->GetType())
+  {
+    int ret = 0;
+    if (!this->Get<int>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(double) == this->GetType())
+  {
+    double ret = 0;
+    if (!this->Get<double>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(float) == this->GetType())
+  {
+    float ret = 0;
+    if (!this->Get<float>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(bool) == this->GetType())
+  {
+    bool ret = false;
+    if (!this->Get<bool>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(std::string) == this->GetType())
+  {
+    std::string ret;
+    if (!this->Get<std::string>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(sdf::Vector3) == this->GetType())
+  {
+    sdf::Vector3 ret;
+    if (!this->Get<sdf::Vector3>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(unsigned int) == this->GetType())
+  {
+    unsigned int ret = 0;
+    if (!this->Get<unsigned int>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(char) == this->GetType())
+  {
+    char ret = 0;
+    if (!this->Get<char>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(sdf::Vector2i) == this->GetType())
+  {
+    sdf::Vector2i ret;
+    if (!this->Get<sdf::Vector2i>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(sdf::Vector2d) == this->GetType())
+  {
+    sdf::Vector2d ret;
+    if (!this->Get<sdf::Vector2d>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(sdf::Pose) == this->GetType())
+  {
+    sdf::Pose ret;
+    if (!this->Get<sdf::Pose>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(sdf::Quaternion) == this->GetType())
+  {
+    sdf::Quaternion ret;
+    if (!this->Get<sdf::Quaternion>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(sdf::Time) == this->GetType())
+  {
+    sdf::Time ret;
+    if (!this->Get<sdf::Time>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(sdf::Color) == this->GetType())
+  {
+    sdf::Color ret;
+    if (!this->Get<sdf::Color>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else
+  {
+    sdferr << "Type of parameter not known: [" << this->GetTypeName() << "]\n";
+    return false;
+  }
+  return true;
+}
+
+//////////////////////////////////////////////////
 void Param::Update()
 {
   if (this->updateFunc)
