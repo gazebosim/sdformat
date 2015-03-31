@@ -71,7 +71,7 @@ TEST(Param, Bool)
   {
     value = boost::any_cast<bool>(anyValue);
   }
-  catch(boost::bad_any_cast &_e)
+  catch(boost::bad_any_cast &/*_e*/)
   {
     FAIL();
   }

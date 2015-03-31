@@ -407,7 +407,7 @@ TEST_F(RmlUpdate, GetAny)
     {
       EXPECT_EQ(boost::any_cast<std::string>(anyValue), "test_model");
     }
-    catch(boost::bad_any_cast &_e)
+    catch(boost::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -422,7 +422,7 @@ TEST_F(RmlUpdate, GetAny)
       EXPECT_EQ(boost::any_cast<sdf::Pose>(anyValue),
           sdf::Pose(0, 1, 2, 0, 0, 0));
     }
-    catch(boost::bad_any_cast &_e)
+    catch(boost::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -436,7 +436,7 @@ TEST_F(RmlUpdate, GetAny)
       EXPECT_EQ(boost::any_cast<sdf::Vector3>(anyValue),
           sdf::Vector3(0, 0, -7.1));
     }
-    catch(boost::bad_any_cast &_e)
+    catch(boost::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -449,7 +449,7 @@ TEST_F(RmlUpdate, GetAny)
     {
       EXPECT_NEAR(boost::any_cast<double>(anyValue), 0.002, 1e-6);
     }
-    catch(boost::bad_any_cast &_e)
+    catch(boost::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -462,7 +462,7 @@ TEST_F(RmlUpdate, GetAny)
     {
       EXPECT_EQ(boost::any_cast<int>(anyValue), 8);
     }
-    catch(boost::bad_any_cast &_e)
+    catch(boost::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -476,7 +476,7 @@ TEST_F(RmlUpdate, GetAny)
       EXPECT_EQ(boost::any_cast<sdf::Vector3>(anyValue),
           sdf::Vector3(0, 0, -7.1));
     }
-    catch(boost::bad_any_cast &_e)
+    catch(boost::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -489,7 +489,7 @@ TEST_F(RmlUpdate, GetAny)
     {
       EXPECT_EQ(boost::any_cast<bool>(anyValue), true);
     }
-    catch(boost::bad_any_cast &_e)
+    catch(boost::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -509,7 +509,7 @@ TEST_F(RmlUpdate, GetAny)
       EXPECT_EQ(boost::any_cast<sdf::Color>(anyValue),
           sdf::Color(0.1, 0.1, 0.1, 1));
     }
-    catch(boost::bad_any_cast &_e)
+    catch(boost::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
