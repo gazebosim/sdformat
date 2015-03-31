@@ -977,7 +977,7 @@ sdf::Time Element::GetValueTime(const std::string &_key)
 boost::any Element::GetAny(const std::string &_key)
 {
   boost::any result;
-  if (_key.empty())
+  if (_key.empty() && this->value)
   {
     if (!this->value->GetAny(result))
     {
@@ -985,9 +985,20 @@ boost::any Element::GetAny(const std::string &_key)
              << "] as boost::any\n";
     }
   }
-  else if (!this->GetAttribute(_key)->GetAny(result))
+  else if (!_key.empty())
   {
-    sdferr << "Couldn't get attribute [" << _key << "] as boost::any\n";
+    ParamPtr param = this->GetAttribute(_key);
+    if (param)
+    {
+      if (!this->GetAttribute(_key)->GetAny(result))
+        sdferr << "Couldn't get attribute [" << _key << "] as boost::any\n";
+    }
+    else if (this->HasElement(_key))
+      result = this->GetElementImpl(_key)->GetAny();
+    else if (this->HasElementDescription(_key))
+      result = this->GetElementDescription(_key)->GetAny();
+    else
+      sdferr << "Unable to find value for key [" << _key << "]\n";
   }
   return result;
 }

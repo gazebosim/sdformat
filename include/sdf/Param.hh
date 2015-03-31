@@ -141,7 +141,7 @@ namespace sdf
 
     /// \brief Get the value of the parameter as a boost::any.
     /// \param[out] _anyVal The boost::any object to set.
-    /// \return True if successfully set anyVal, false otherwise.
+    /// \return True if successfully set _anyVal, false otherwise.
     public: bool GetAny(boost::any &_anyVal);
 
     /// \brief Get the value of the parameter.
