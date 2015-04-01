@@ -507,7 +507,7 @@ TEST_F(RmlUpdate, GetAny)
     try
     {
       EXPECT_EQ(boost::any_cast<sdf::Color>(anyValue),
-          sdf::Color(0.1f, 0.1f, 0.1f, 1f));
+          sdf::Color(0.1f, 0.1f, 0.1f, 1.0f));
     }
     catch(boost::bad_any_cast &/*_e*/)
     {
