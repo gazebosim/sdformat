@@ -393,8 +393,8 @@ TEST_F(RmlUpdate, GetAny)
   sdfParsed.SetFromString(stream.str());
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.root->HasElement("world"));
-  sdf::ElementPtr worldElem = sdfParsed.root->GetElement("world");
+  EXPECT_TRUE(sdfParsed.Root()->HasElement("world"));
+  sdf::ElementPtr worldElem = sdfParsed.Root()->GetElement("world");
 
   EXPECT_TRUE(worldElem->HasElement("model"));
   sdf::ElementPtr modelElem = worldElem->GetElement("model");
