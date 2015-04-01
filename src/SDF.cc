@@ -93,7 +93,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
 #ifndef _WIN32
   char *pathCStr = getenv("SDF_PATH");
 #else
-  const char *pathCStr = sdf::winGetEnv("HOMEPATH");
+  const char *pathCStr = sdf::winGetEnv("SDF_PATH");
 #endif
 
   if (pathCStr)
