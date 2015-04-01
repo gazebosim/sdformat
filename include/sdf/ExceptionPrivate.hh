@@ -30,10 +30,10 @@ namespace sdf
     /// \brief The error function
     public: std::string file;
 
-            /// \brief Line the error occured on
+    /// \brief Line the error occured on
     public: int64_t line;
 
-            /// \brief The error string
+    /// \brief The error string
     public: std::string str;
   };
 }
