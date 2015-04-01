@@ -94,7 +94,9 @@ endmacro()
 #################################################
 macro (sdf_setup_windows)
   # Need for M_PI constant
-  add_definitions(-D_USE_MATH_DEFINES) 
+  add_definitions(-D_USE_MATH_DEFINES -DWINDOWS_LEAN_AND_MEAN) 
+  # Suppress warnings caused by boost
+  add_definitions(/wd4512 /wd4996)
   # Use dynamic linking for boost
   add_definitions(-DBOOST_ALL_DYN_LINK)
   # And force linking to MSVC dynamic runtime

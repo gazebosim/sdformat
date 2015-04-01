@@ -23,6 +23,7 @@ set (sources
   parser_urdf.cc
   Param.cc
   SDF.cc
+  Types.cc
 )
 
 include_directories(${Boost_INCLUDE_DIRS})

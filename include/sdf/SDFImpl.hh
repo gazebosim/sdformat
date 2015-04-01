@@ -34,7 +34,6 @@ namespace sdf
   /// \bried boost shared pointer to SDF
   typedef boost::shared_ptr<SDF> SDFPtr;
 
-
   /// \addtogroup sdf
   /// \{
 
@@ -79,9 +78,25 @@ namespace sdf
     /// \brief Set SDF values from a string
     public: void SetFromString(const std::string &_sdfData);
 
-    public: ElementPtr root;
+    /// \brief Get a pointer to the root element
+    /// \return Pointer to the root element
+    public: ElementPtr Root() const;
 
-    public: static std::string version;
+    /// \brief Set the root pointer
+    /// \param[in] _root Root element
+    public: void Root(const ElementPtr _root);
+
+    /// \brief Get the version
+    /// \return The version as a string
+    public: static std::string Version();
+
+    /// \brief Deprecated. See Root()
+    /// \sa Root()
+    public: ElementPtr root SDF_DEPRECATED(4.0);
+
+    /// \brief Deprecated. See Version()
+    /// \sa Version()
+    public: static std::string version SDF_DEPRECATED(4.0);
   };
   /// \}
 }

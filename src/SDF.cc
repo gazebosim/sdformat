@@ -25,7 +25,16 @@
 #include "sdf/sdf_config.h"
 
 using namespace sdf;
+
+/// \todo Remove this pragma when SDF::version is removed
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 std::string SDF::version = SDF_VERSION;
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 typedef std::list<boost::filesystem::path> PathList;
 typedef std::map<std::string, PathList> URIPathMap;
@@ -76,7 +85,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
 
   // Next check the versioned install path.
   path = boost::filesystem::path(SDF_SHARE_PATH) / "sdformat" /
-    sdf::SDF::version / _filename;
+    sdf::SDF::Version() / _filename;
   if (boost::filesystem::exists(path))
     return path.string();
 
@@ -155,8 +164,14 @@ void sdf::addURIPath(const std::string &_uri, const std::string &_path)
 }
 
 /////////////////////////////////////////////////
+/// \todo Remove this pragma once this->root is removed
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+/////////////////////////////////////////////////
 SDF::SDF()
-: root(new Element)
+  : root(new Element)
 {
 }
 
@@ -164,17 +179,21 @@ SDF::SDF()
 SDF::~SDF()
 {
 }
+/// \todo Remove this pragma once this->root is removed
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 /////////////////////////////////////////////////
 void SDF::PrintDescription()
 {
-  this->root->PrintDescription("");
+  this->Root()->PrintDescription("");
 }
 
 /////////////////////////////////////////////////
 void SDF::PrintValues()
 {
-  this->root->PrintValues("");
+  this->Root()->PrintValues("");
 }
 
 /////////////////////////////////////////////////
@@ -182,10 +201,10 @@ void SDF::PrintDoc()
 {
   std::string html, html2;
   int index = 0;
-  this->root->PrintDocLeftPane(html, 10, index);
+  this->Root()->PrintDocLeftPane(html, 10, index);
 
   index = 0;
-  this->root->PrintDocRightPane(html2, 10, index);
+  this->Root()->PrintDocRightPane(html2, 10, index);
 
   std::cout << "<!DOCTYPE HTML>\n"
   << "<html>\n"
@@ -230,7 +249,7 @@ void SDF::PrintDoc()
   << "</head>\n<body>\n";
 
   std::cout << "<div style='padding:4px'>\n"
-            << "<h1>SDF " << SDF::version << "</h1>\n";
+            << "<h1>SDF " << SDF::Version() << "</h1>\n";
 
   std::cout << "<p>The Robot Modeling Language (SDF) is an XML file "
             << "format used to describe all the elements in a simulation "
@@ -294,7 +313,7 @@ void SDF::PrintDoc()
 /////////////////////////////////////////////////
 void SDF::Write(const std::string &_filename)
 {
-  std::string string = this->root->ToString("");
+  std::string string = this->Root()->ToString("");
 
   std::ofstream out(_filename.c_str(), std::ios::out);
 
@@ -313,12 +332,12 @@ std::string SDF::ToString() const
   std::ostringstream stream;
 
   stream << "<?xml version='1.0'?>\n";
-  if (this->root->GetName() != "sdf")
-    stream << "<sdf version='" << SDF::version << "'>\n";
+  if (this->Root()->GetName() != "sdf")
+    stream << "<sdf version='" << SDF::Version() << "'>\n";
 
-  stream << this->root->ToString("");
+  stream << this->Root()->ToString("");
 
-  if (this->root->GetName() != "sdf")
+  if (this->Root()->GetName() != "sdf")
     stream << "</sdf>";
 
   return stream.str();
@@ -327,9 +346,43 @@ std::string SDF::ToString() const
 /////////////////////////////////////////////////
 void SDF::SetFromString(const std::string &_sdfData)
 {
-  sdf::initFile("root.sdf", this->root);
-  if (!sdf::readString(_sdfData, this->root))
+  sdf::initFile("root.sdf", this->Root());
+  if (!sdf::readString(_sdfData, this->Root()))
   {
     sdferr << "Unable to parse sdf string[" << _sdfData << "]\n";
   }
+}
+
+/////////////////////////////////////////////////
+ElementPtr SDF::Root() const
+{
+/// \todo Remove this pragma once this->root is removed
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+  return this->root;
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
+}
+
+/////////////////////////////////////////////////
+void SDF::Root(const ElementPtr _root)
+{
+/// \todo Remove this pragma once this->root is removed
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+  this->root = _root;
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
+}
+
+/////////////////////////////////////////////////
+std::string SDF::Version()
+{
+  return SDF_VERSION;
 }

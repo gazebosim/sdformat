@@ -59,7 +59,7 @@ TEST(PluginAttribute, ParseAttributes)
   }
 
   sdf::ElementPtr plugin =
-    model->root->GetElement("model")->GetElement("plugin");
+    model->Root()->GetElement("model")->GetElement("plugin");
   ASSERT_TRUE(plugin->HasElement("user"));
   {
     sdf::ElementPtr user = plugin->GetElement("user");

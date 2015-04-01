@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -56,7 +56,7 @@ boost::shared_ptr<ModelInterface>  parseURDFFile(const std::string &path)
     }
 
     std::string xml_str((std::istreambuf_iterator<char>(stream)),
-	                     std::istreambuf_iterator<char>());
+                       std::istreambuf_iterator<char>());
     return urdf::parseURDF( xml_str );
 }
 
@@ -114,7 +114,8 @@ boost::shared_ptr<ModelInterface>  parseURDF(const std::string &xml_string)
         //logDebug("urdfdom: successfully added a new material '%s'", material->name.c_str());
       }
     }
-    catch (ParseError &e) {
+    catch (ParseError &)
+    {
       //logDebug("material xml is not initialized correctly");
       material.reset();
       model.reset();
@@ -170,7 +171,8 @@ boost::shared_ptr<ModelInterface>  parseURDF(const std::string &xml_string)
         //logDebug("urdfdom: successfully added a new link '%s'", link->name.c_str());
       }
     }
-    catch (ParseError &e) {
+    catch (ParseError &)
+    {
       //logDebug("link xml is not initialized correctly");
       model.reset();
       return model;
@@ -217,11 +219,11 @@ boost::shared_ptr<ModelInterface>  parseURDF(const std::string &xml_string)
   parent_link_tree.clear();
 
   // building tree: name mapping
-  try 
+  try
   {
     model->initTree(parent_link_tree);
   }
-  catch(ParseError &e)
+  catch(ParseError &)
   {
     //logDebug("Failed to build tree: %s", e.what());
     model.reset();
@@ -233,13 +235,13 @@ boost::shared_ptr<ModelInterface>  parseURDF(const std::string &xml_string)
   {
     model->initRoot(parent_link_tree);
   }
-  catch(ParseError &e)
+  catch(ParseError &)
   {
     //logDebug("Failed to find root link: %s", e.what());
     model.reset();
     return model;
   }
-  
+
   return model;
 }
 
@@ -261,13 +263,13 @@ TiXmlDocument*  exportURDF(const ModelInterface &model)
     exportMaterial(*(m->second), robot);
   }
 
-  for (std::map<std::string, boost::shared_ptr<Link> >::const_iterator l=model.links_.begin(); l!=model.links_.end(); l++)  
+  for (std::map<std::string, boost::shared_ptr<Link> >::const_iterator l=model.links_.begin(); l!=model.links_.end(); l++)
   {
     //logDebug("urdfdom: exporting link [%s]\n",l->second->name.c_str());
     exportLink(*(l->second), robot);
   }
-  	
-  for (std::map<std::string, boost::shared_ptr<Joint> >::const_iterator j=model.joints_.begin(); j!=model.joints_.end(); j++)  
+
+  for (std::map<std::string, boost::shared_ptr<Joint> >::const_iterator j=model.joints_.begin(); j!=model.joints_.end(); j++)
   {
     //logDebug("urdfdom: exporting joint [%s]\n",j->second->name.c_str());
     exportJoint(*(j->second), robot);
@@ -275,7 +277,7 @@ TiXmlDocument*  exportURDF(const ModelInterface &model)
 
   return doc;
 }
-    
+
 TiXmlDocument*  exportURDF(boost::shared_ptr<ModelInterface> &model)
 {
   return exportURDF(*model);

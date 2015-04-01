@@ -32,7 +32,7 @@ const std::string SDF_FIXED_JNT_NO_LUMPING = std::string(PROJECT_SOURCE_PATH)
 bool findJointInModel(std::string desired_joint_name, sdf::SDFPtr robot)
 {
   bool found = false;
-  sdf::ElementPtr model = robot->root->GetElement("model");
+  sdf::ElementPtr model = robot->Root()->GetElement("model");
   for (sdf::ElementPtr joint = model->GetElement("joint"); joint;
        joint = joint->GetNextElement("joint"))
   {

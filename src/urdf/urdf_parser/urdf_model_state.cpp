@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -64,7 +64,7 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
       double sec = boost::lexical_cast<double>(time_stamp_char);
       ms.time_stamp.set(sec);
     }
-    catch (boost::bad_lexical_cast &e) {
+    catch (boost::bad_lexical_cast &/*e*/) {
       //logError("Parsing time stamp [%s] failed: %s", time_stamp_char, e.what());
       return false;
     }
@@ -84,7 +84,7 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
       //logError("No joint name given for the model_state.");
       return false;
     }
-    
+
     // parse position
     const char *position_char = joint_state_elem->Attribute("position");
     if (position_char)
@@ -97,7 +97,7 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
           try {
             joint_state->position.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
           }
-          catch (boost::bad_lexical_cast &e) {
+          catch (boost::bad_lexical_cast &/*e*/) {
             throw ParseError("position element ("+ pieces[i] +") is not a valid float");
           }
         }
@@ -116,7 +116,7 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
           try {
             joint_state->velocity.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
           }
-          catch (boost::bad_lexical_cast &e) {
+          catch (boost::bad_lexical_cast &/*e*/) {
             throw ParseError("velocity element ("+ pieces[i] +") is not a valid float");
           }
         }
@@ -135,7 +135,7 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
           try {
             joint_state->effort.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
           }
-          catch (boost::bad_lexical_cast &e) {
+          catch (boost::bad_lexical_cast &/*e*/) {
             throw ParseError("effort element ("+ pieces[i] +") is not a valid float");
           }
         }
