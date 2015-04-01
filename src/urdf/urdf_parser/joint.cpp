@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software Ligcense Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -61,7 +61,7 @@ bool parseJointDynamics(JointDynamics &jd, TiXmlElement* config)
     {
       jd.damping = boost::lexical_cast<double>(damping_str);
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("damping value (%s) is not a float: %s",damping_str, e.what());
       return false;
@@ -80,7 +80,7 @@ bool parseJointDynamics(JointDynamics &jd, TiXmlElement* config)
     {
       jd.friction = boost::lexical_cast<double>(friction_str);
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("friction value (%s) is not a float: %s",friction_str, e.what());
       return false;
@@ -114,7 +114,7 @@ bool parseJointLimits(JointLimits &jl, TiXmlElement* config)
     {
       jl.lower = boost::lexical_cast<double>(lower_str);
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("lower value (%s) is not a float: %s", lower_str, e.what());
       return false;
@@ -133,7 +133,7 @@ bool parseJointLimits(JointLimits &jl, TiXmlElement* config)
     {
       jl.upper = boost::lexical_cast<double>(upper_str);
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("upper value (%s) is not a float: %s",upper_str, e.what());
       return false;
@@ -152,7 +152,7 @@ bool parseJointLimits(JointLimits &jl, TiXmlElement* config)
     {
       jl.effort = boost::lexical_cast<double>(effort_str);
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("effort value (%s) is not a float: %s",effort_str, e.what());
       return false;
@@ -171,7 +171,7 @@ bool parseJointLimits(JointLimits &jl, TiXmlElement* config)
     {
       jl.velocity = boost::lexical_cast<double>(velocity_str);
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("velocity value (%s) is not a float: %s",velocity_str, e.what());
       return false;
@@ -198,7 +198,7 @@ bool parseJointSafety(JointSafety &js, TiXmlElement* config)
     {
       js.soft_lower_limit = boost::lexical_cast<double>(soft_lower_limit_str);
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("soft_lower_limit value (%s) is not a float: %s",soft_lower_limit_str, e.what());
       return false;
@@ -218,7 +218,7 @@ bool parseJointSafety(JointSafety &js, TiXmlElement* config)
     {
       js.soft_upper_limit = boost::lexical_cast<double>(soft_upper_limit_str);
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("soft_upper_limit value (%s) is not a float: %s",soft_upper_limit_str, e.what());
       return false;
@@ -238,7 +238,7 @@ bool parseJointSafety(JointSafety &js, TiXmlElement* config)
     {
       js.k_position = boost::lexical_cast<double>(k_position_str);
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("k_position value (%s) is not a float: %s",k_position_str, e.what());
       return false;
@@ -257,7 +257,7 @@ bool parseJointSafety(JointSafety &js, TiXmlElement* config)
     {
       js.k_velocity = boost::lexical_cast<double>(k_velocity_str);
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("k_velocity value (%s) is not a float: %s",k_velocity_str, e.what());
       return false;
@@ -284,7 +284,7 @@ bool parseJointCalibration(JointCalibration &jc, TiXmlElement* config)
     {
       jc.rising.reset(new double(boost::lexical_cast<double>(rising_position_str)));
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("risingvalue (%s) is not a float: %s",rising_position_str, e.what());
       return false;
@@ -304,7 +304,7 @@ bool parseJointCalibration(JointCalibration &jc, TiXmlElement* config)
     {
       jc.falling.reset(new double(boost::lexical_cast<double>(falling_position_str)));
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("fallingvalue (%s) is not a float: %s",falling_position_str, e.what());
       return false;
@@ -328,14 +328,14 @@ bool parseJointMimic(JointMimic &jm, TiXmlElement* config)
   }
   else
     jm.joint_name = joint_name_str;
-  
+
   // Get mimic multiplier
   const char* multiplier_str = config->Attribute("multiplier");
 
   if (multiplier_str == NULL)
   {
     //logDebug("joint mimic: no multiplier, using default value of 1");
-    jm.multiplier = 1;    
+    jm.multiplier = 1;
   }
   else
   {
@@ -343,14 +343,14 @@ bool parseJointMimic(JointMimic &jm, TiXmlElement* config)
     {
       jm.multiplier = boost::lexical_cast<double>(multiplier_str);
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("multiplier value (%s) is not a float: %s",multiplier_str, e.what());
       return false;
     }
   }
 
-  
+
   // Get mimic offset
   const char* offset_str = config->Attribute("offset");
   if (offset_str == NULL)
@@ -364,7 +364,7 @@ bool parseJointMimic(JointMimic &jm, TiXmlElement* config)
     {
       jm.offset = boost::lexical_cast<double>(offset_str);
     }
-    catch (boost::bad_lexical_cast &e)
+    catch (boost::bad_lexical_cast &/*e*/)
     {
       //logError("offset value (%s) is not a float: %s",offset_str, e.what());
       return false;
@@ -441,7 +441,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
     //logError("joint [%s] has no type, check to see if it's a reference.", joint.name.c_str());
     return false;
   }
-  
+
   std::string type_str = type_char;
   if (type_str == "planar")
     joint.type = Joint::PLANAR;
@@ -475,7 +475,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
         try {
           joint.axis.init(axis_xml->Attribute("xyz"));
         }
-        catch (ParseError &e) {
+        catch (ParseError &/*e*/) {
           joint.axis.clear();
           //logError("Malformed axis element for joint [%s]: %s", joint.name.c_str(), e.what());
           return false;
@@ -503,7 +503,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   }
   else if (joint.type == Joint::PRISMATIC)
   {
-    //logError("Joint [%s] is of type PRISMATIC without limits", joint.name.c_str()); 
+    //logError("Joint [%s] is of type PRISMATIC without limits", joint.name.c_str());
     return false;
   }
 
@@ -652,7 +652,7 @@ bool exportJoint(Joint &joint, TiXmlElement* xml)
   axis_xml->SetAttribute("xyz", urdf_export_helpers::values2str(joint.axis));
   joint_xml->LinkEndChild(axis_xml);
 
-  // parent 
+  // parent
   TiXmlElement * parent_xml = new TiXmlElement("parent");
   parent_xml->SetAttribute("link", joint.parent_link_name);
   joint_xml->LinkEndChild(parent_xml);
