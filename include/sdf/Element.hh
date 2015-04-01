@@ -188,6 +188,12 @@ namespace sdf
     /// \brief Get the param of the elements value
     public: ParamPtr GetValue();
 
+    /// \brief Get the element value/attribute as a boost::any.
+    /// \param[in] _key The key of the attribute. If empty, get the value of
+    /// the element. Defaults to empty.
+    /// \return The element as a boost::any.
+    public: boost::any GetAny(const std::string &_key = "");
+
     public: template<typename T>
             T Get(const std::string &_key = "");
 

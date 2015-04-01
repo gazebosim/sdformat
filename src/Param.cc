@@ -14,10 +14,6 @@
  * limitations under the License.
  *
 */
-/* Desc: Parameter class
- * Author: Nate Koenig
- * Date: 14 Aug 2008
- */
 
 #include <math.h>
 #include <locale.h>
