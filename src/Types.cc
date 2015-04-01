@@ -22,16 +22,18 @@
 #include "sdf/Types.hh"
 
 /////////////////////////////////////////////////
+#ifdef _WIN32
 const char *sdf::winGetEnv(const char *_name)
 {
-#ifdef _WIN32
   const DWORD buffSize = 65535;
   static char buffer[buffSize];
   if (GetEnvironmentVariable(_name, buffer, buffSize))
     return buffer;
-  else
-    return NULL;
-#else
   return NULL;
-#endif
 }
+#else
+const char *sdf::winGetEnv(const char * /*_name*/)
+{
+  return NULL;
+}
+#endif

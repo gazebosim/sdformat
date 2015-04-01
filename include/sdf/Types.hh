@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <sstream>
 #include <vector>
 #include <boost/shared_ptr.hpp>
 
