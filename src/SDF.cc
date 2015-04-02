@@ -366,7 +366,10 @@ void Element::PrintDescription(const std::string &_prefix)
     std::cout << _prefix << "  <attribute name ='"
               << (*aiter)->GetKey() << "' type ='" << (*aiter)->GetTypeName()
               << "' default ='" << (*aiter)->GetDefaultAsString()
-              << "' required ='" << (*aiter)->GetRequired() << "'/>\n";
+              << "' required ='" << (*aiter)->GetRequired() << "'>\n";
+    std::cout << _prefix << "    <description>" << (*aiter)->GetDescription()
+              << "    </description>\n";
+    std::cout << _prefix << "  </attribute>\n";
   }
 
   if (this->GetCopyChildren())
