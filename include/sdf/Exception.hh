@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <stdint.h>
 #include <string>
 
 #include "sdf/system_util.hh"
