@@ -45,7 +45,7 @@ TEST(SDFParser, ProvideFeedbackTest)
     unsetenv("SDF_PATH");
   }
 
-  sdf::ElementPtr model = robot->root->GetElement("model");
+  sdf::ElementPtr model = robot->Root()->GetElement("model");
   for (sdf::ElementPtr joint = model->GetElement("joint"); joint;
        joint = joint->GetNextElement("joint"))
   {

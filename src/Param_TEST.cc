@@ -63,6 +63,19 @@ TEST(Param, Bool)
   strParam.Set("%");
   strParam.Get<bool>(value);
   EXPECT_FALSE(value);
+
+  boolParam.Set(true);
+  boost::any anyValue;
+  EXPECT_TRUE(boolParam.GetAny(anyValue));
+  try
+  {
+    value = boost::any_cast<bool>(anyValue);
+  }
+  catch(boost::bad_any_cast &/*_e*/)
+  {
+    FAIL();
+  }
+  EXPECT_TRUE(value);
 }
 ////////////////////////////////////////////////////
 /// Test decimal number

@@ -243,6 +243,12 @@ namespace sdf
     public: sdf::Time GetValueTime(
                 const std::string &_key = "") SDF_DEPRECATED(1.4);
 
+    /// \brief Get the element value/attribute as a boost::any.
+    /// \param[in] _key The key of the attribute. If empty, get the value of
+    /// the element. Defaults to empty.
+    /// \return The element as a boost::any.
+    public: boost::any GetAny(const std::string &_key = "");
+
     public: template<typename T>
             T Get(const std::string &_key = "")
             {
@@ -362,9 +368,31 @@ namespace sdf
     /// \brief Set SDF values from a string
     public: void SetFromString(const std::string &_sdfData);
 
-    public: ElementPtr root;
+    /// \brief Get a pointer to the root element
+    /// \return Pointer to the root element
+    public: ElementPtr Root() const;
 
-    public: static std::string version;
+    /// \brief Set the root pointer
+    /// \param[in] _root Root element
+    public: void Root(const ElementPtr _root);
+
+    /// \brief Get the version
+    /// \return The version as a string
+    public: static std::string Version();
+
+    /// \brief Set the version string
+    /// \param[in] _version SDF version string.
+    public: static void Version(const std::string &_version);
+
+    /// \brief Deprecated.
+    /// \sa ElementPtr Root()
+    /// \sa void Root(const ElementPtr _root)
+    public: ElementPtr root SDF_DEPRECATED(4.0);
+
+    /// \brief Deprecated.
+    /// \sa std::string Version()
+    /// \sa Version(const std::string &_version)
+    public: static std::string version SDF_DEPRECATED(4.0);
   };
   /// \}
 }
