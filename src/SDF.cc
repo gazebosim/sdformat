@@ -353,36 +353,36 @@ void SDF::SetFromString(const std::string &_sdfData)
   }
 }
 
-/////////////////////////////////////////////////
-ElementPtr SDF::Root() const
-{
-/// \todo Remove this pragma once this->root is removed
+/// \todo Remove this pragma once this->root this->version is removed
 #ifndef _WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
+
+/////////////////////////////////////////////////
+ElementPtr SDF::Root() const
+{
   return this->root;
-#ifndef _WIN32
-#pragma GCC diagnostic pop
-#endif
 }
 
 /////////////////////////////////////////////////
 void SDF::Root(const ElementPtr _root)
 {
-/// \todo Remove this pragma once this->root is removed
-#ifndef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
   this->root = _root;
-#ifndef _WIN32
-#pragma GCC diagnostic pop
-#endif
 }
 
 /////////////////////////////////////////////////
 std::string SDF::Version()
 {
-  return SDF_VERSION;
+  return version;
 }
+
+/////////////////////////////////////////////////
+void SDF::Version(const std::string &_version)
+{
+  version = _version;
+}
+
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif

@@ -90,12 +90,18 @@ namespace sdf
     /// \return The version as a string
     public: static std::string Version();
 
-    /// \brief Deprecated. See Root()
-    /// \sa Root()
+    /// \brief Set the version string
+    /// \param[in] _version SDF version string.
+    public: static void Version(const std::string &_version);
+
+    /// \brief Deprecated.
+    /// \sa ElementPtr Root()
+    /// \sa void Root(const ElementPtr _root)
     public: ElementPtr root SDF_DEPRECATED(4.0);
 
-    /// \brief Deprecated. See Version()
-    /// \sa Version()
+    /// \brief Deprecated.
+    /// \sa std::string Version()
+    /// \sa Version(const std::string &_version)
     public: static std::string version SDF_DEPRECATED(4.0);
   };
   /// \}
