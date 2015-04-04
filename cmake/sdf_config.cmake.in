@@ -6,7 +6,9 @@ set(@PKG_NAME@_CONFIG_INCLUDED TRUE)
 list(APPEND @PKG_NAME@_INCLUDE_DIRS @CMAKE_INSTALL_PREFIX@/include/sdformat-@SDF_VERSION@)
 
 list(APPEND @PKG_NAME@_CFLAGS -I@CMAKE_INSTALL_PREFIX@/include/sdformat-@SDF_VERSION@)
-list(APPEND @PKG_NAME@_CXX_FLAGS "${@PKG_NAME@_CFLAGS} -std=c++11")
+if (NOT WIN32)
+  list(APPEND @PKG_NAME@_CXX_FLAGS "${@PKG_NAME@_CFLAGS} -std=c++11")
+endif()
 
 foreach(lib @PKG_LIBRARIES@)
   set(onelib "${lib}-NOTFOUND")
