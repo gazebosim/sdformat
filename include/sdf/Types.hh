@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include <cmath>
-// #include <cstdint>  /// needs c++11
 #include <sstream>
 #include <vector>
 #include <boost/shared_ptr.hpp>
