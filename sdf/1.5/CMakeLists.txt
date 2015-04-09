@@ -43,6 +43,18 @@ set (sdfs
   state.sdf
   surface.sdf
   transceiver.sdf
+  urdf_box_shape.sdf
+  urdf_collision.sdf
+  urdf_cylinder_shape.sdf
+  urdf_geometry.sdf
+  urdf_inertial.sdf
+  urdf_joint.sdf
+  urdf_link.sdf
+  urdf_material.sdf
+  urdf_mesh_shape.sdf
+  urdf_robot.sdf
+  urdf_sphere_shape.sdf
+  urdf_visual.sdf
   visual.sdf
   world.sdf
 )
