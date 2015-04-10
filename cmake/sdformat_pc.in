@@ -7,4 +7,4 @@ Description: Robot Modeling Language (SDF)
 Version: @SDF_VERSION_FULL@
 Requires:
 Libs: -L${libdir} -lsdformat
-CFlags: -I${includedir}/sdformat-@SDF_VERSION@
+CFlags: -I${includedir}/sdformat-@SDF_VERSION@ -std=c++11
