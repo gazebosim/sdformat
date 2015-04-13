@@ -112,7 +112,8 @@ namespace sdf
     /// \brief Set the update function. The updateFunc will be used to
     /// set the parameter's value when Param::Update is called.
     /// \param[in] _updateFunc Function pointer to an update function.
-    public: template<typename T> void SetUpdateFunc(T _updateFunc);
+    public: template<typename T> 
+            void SetUpdateFunc(T _updateFunc);
 
     /// \brief Set the parameter's value using the updateFunc.
     /// \sa Param::SetUpdateFunc
