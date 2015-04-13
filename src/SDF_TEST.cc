@@ -55,10 +55,10 @@ class SDFUpdateFixture
 {
   public:  std::string GetName() const {return this->name;}
   public:  bool GetFlag() const {return this->flag;}
-  public:  sdf::Pose GetPose() const {return this->pose;}
+  public:  ignition::math::Pose3d GetPose() const {return this->pose;}
   public:  std::string name;
   public:  bool flag;
-  public:  sdf::Pose pose;
+  public:  ignition::math::Pose3d pose;
 };
 
 ////////////////////////////////////////////////////
@@ -145,15 +145,15 @@ TEST_F(SDFUpdate, UpdateElement)
   poseParam->SetUpdateFunc(boost::bind(&SDFUpdateFixture::GetPose, &fixture));
 
   bool flagCheck;
-  sdf::Pose poseCheck;
+  ignition::math::Pose3d poseCheck;
   int i;
   for (i = 0; i < 4; i++)
   {
     // Update test class variables
     fixture.flag = !fixture.flag;
-    fixture.pose.pos.x = i;
-    fixture.pose.pos.y = i+10;
-    fixture.pose.pos.z = -i*i*i;
+    fixture.pose.Pos().X() = i;
+    fixture.pose.Pos().Y() = i+10;
+    fixture.pose.Pos().Z() = -i*i*i;
 
     // Update root sdf element
     sdfParsed.Root()->Update();
@@ -323,14 +323,18 @@ TEST_F(SDFUpdate, EmptyValues)
   EXPECT_EQ(elem->Get<std::string>(emptyString), "hello");
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Vector2d>(emptyString), sdf::Vector2d());
+  EXPECT_EQ(elem->Get<ignition::math::Vector2d>(emptyString),
+      ignition::math::Vector2d());
   elem->AddValue("vector2d", "1 2", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Vector2d>(emptyString), sdf::Vector2d(1, 2));
+  EXPECT_EQ(elem->Get<ignition::math::Vector2d>(emptyString),
+      ignition::math::Vector2d(1, 2));
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Vector3>(emptyString), sdf::Vector3());
+  EXPECT_EQ(elem->Get<ignition::math::Vector3d>(emptyString),
+      ignition::math::Vector3d());
   elem->AddValue("vector3", "1 2 3", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Vector3>(emptyString), sdf::Vector3(1, 2, 3));
+  EXPECT_EQ(elem->Get<ignition::math::Vector3d>(emptyString),
+      ignition::math::Vector3d(1, 2, 3));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<sdf::Quaternion>(emptyString), sdf::Quaternion());
@@ -339,9 +343,13 @@ TEST_F(SDFUpdate, EmptyValues)
             sdf::Quaternion(-2.14159, 1.14159, -0.141593));
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Pose>(emptyString), sdf::Pose());
-  elem->AddValue("pose", "1 2 3 4 5 6", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Pose>(emptyString), sdf::Pose(1, 2, 3, 4, 5, 6));
+  EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString),
+      ignition::math::Pose3d());
+  elem->AddValue("pose", "1.0 2.0 3.0 4.0 5.0 6.0", "0", "description");
+  EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString).Pos(),
+      ignition::math::Pose3d(1, 2, 3, 4, 5, 6).Pos());
+  EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString).Rot().Euler(),
+      ignition::math::Pose3d(1, 2, 3, 4, 5, 6).Rot().Euler());
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<sdf::Color>(emptyString), sdf::Color());
@@ -420,8 +428,8 @@ TEST_F(SDFUpdate, GetAny)
     boost::any anyValue = poseElem->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<sdf::Pose>(anyValue),
-          sdf::Pose(0, 1, 2, 0, 0, 0));
+      EXPECT_EQ(boost::any_cast<ignition::math::Pose3d>(anyValue),
+          ignition::math::Pose3d(0, 1, 2, 0, 0, 0));
     }
     catch(boost::bad_any_cast &/*_e*/)
     {
@@ -434,8 +442,8 @@ TEST_F(SDFUpdate, GetAny)
     boost::any anyValue = physicsElem->GetElement("gravity")->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<sdf::Vector3>(anyValue),
-          sdf::Vector3(0, 0, -7.1));
+      EXPECT_EQ(boost::any_cast<ignition::math::Vector3d>(anyValue),
+          ignition::math::Vector3d(0, 0, -7.1));
     }
     catch(boost::bad_any_cast &/*_e*/)
     {
@@ -474,8 +482,8 @@ TEST_F(SDFUpdate, GetAny)
     boost::any anyValue = physicsElem->GetElement("gravity")->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<sdf::Vector3>(anyValue),
-          sdf::Vector3(0, 0, -7.1));
+      EXPECT_EQ(boost::any_cast<ignition::math::Vector3d>(anyValue),
+          ignition::math::Vector3d(0, 0, -7.1));
     }
     catch(boost::bad_any_cast &/*_e*/)
     {
