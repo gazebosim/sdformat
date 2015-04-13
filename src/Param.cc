@@ -14,10 +14,6 @@
  * limitations under the License.
  *
 */
-/* Desc: Parameter class
- * Author: Nate Koenig
- * Date: 14 Aug 2008
- */
 
 #include <math.h>
 #include <locale.h>
@@ -111,19 +107,35 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   /// \deprecated The following sdf::<types are deprecated
   else if (this->typeName == "sdf::Vector2i" ||
       this->typeName == "vector2i")
+  {
+    sdferr << "sdf::Vector2i is deprecated. Use ignition::math::Vector2i\n";
     this->Init<sdf::Vector2i>(_default);
+  }
   else if (this->typeName == "sdf::Vector2d" ||
       this->typeName == "vector2d")
+  {
+    sdferr << "sdf::Vector2d is deprecated. Use ignition::math::Vector2d\n";
     this->Init<sdf::Vector2d>(_default);
+  }
   else if (this->typeName == "sdf::Vector3" ||
        this->typeName == "vector3")
+  {
+    sdferr << "sdf::Vector3 is deprecated. Use ignition::math::Vector3d\n";
     this->Init<sdf::Vector3>(_default);
+  }
   else if (this->typeName == "sdf::Pose" ||
       this->typeName == "pose" || this->typeName == "Pose")
+  {
+    sdferr << "sdf::Pose is deprecated. Use ignition::math::Pose3d\n";
     this->Init<sdf::Pose>(_default);
+  }
   else if (this->typeName == "sdf::Quaternion" ||
       this->typeName == "quaternion")
+  {
+    sdferr << "sdf::Quaternion is deprecated. "
+           << "Use ignition::math::Quaterniond\n";
     this->Init<sdf::Quaternion>(_default);
+  }
   else
     sdferr << "Unknown parameter type[" << this->typeName << "]\n";
 }
@@ -238,6 +250,7 @@ bool Param::GetAny(boost::any &_anyVal)
   /// \deprecated The follow sdf Types are deprecated
   else if (typeid(sdf::Vector3) == this->GetType())
   {
+    sdferr << "sdf::Vector3 is deprecated. Use ignition::math::Vector3d\n";
     sdf::Vector3 ret;
     if (!this->Get<sdf::Vector3>(ret))
       return false;
@@ -245,6 +258,7 @@ bool Param::GetAny(boost::any &_anyVal)
   }
   else if (typeid(sdf::Vector2i) == this->GetType())
   {
+    sdferr << "sdf::Vector2i is deprecated. Use ignition::math::Vector2i\n";
     sdf::Vector2i ret;
     if (!this->Get<sdf::Vector2i>(ret))
       return false;
@@ -252,6 +266,7 @@ bool Param::GetAny(boost::any &_anyVal)
   }
   else if (typeid(sdf::Vector2d) == this->GetType())
   {
+    sdferr << "sdf::Vector2d is deprecated. Use ignition::math::Vector2d\n";
     sdf::Vector2d ret;
     if (!this->Get<sdf::Vector2d>(ret))
       return false;
@@ -259,6 +274,7 @@ bool Param::GetAny(boost::any &_anyVal)
   }
   else if (typeid(sdf::Pose) == this->GetType())
   {
+    sdferr << "sdf::Pose is deprecated. Use ignition::math::Pose3d\n";
     sdf::Pose ret;
     if (!this->Get<sdf::Pose>(ret))
       return false;
@@ -266,6 +282,8 @@ bool Param::GetAny(boost::any &_anyVal)
   }
   else if (typeid(sdf::Quaternion) == this->GetType())
   {
+    sdferr << "sdf::Quaternion is deprecated. "
+           << "Use ignition::math::Quaterniond\n";
     sdf::Quaternion ret;
     if (!this->Get<sdf::Quaternion>(ret))
       return false;
