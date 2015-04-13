@@ -22,9 +22,18 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
-#include "sdf/Types.hh"
 #include "sdf/Param.hh"
 #include "sdf/system_util.hh"
+
+/// \todo Remove this diagnositic push/pop in version 5
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#include "sdf/Types.hh"
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser
@@ -215,33 +224,6 @@ namespace sdf
 
     /// \brief Get the param of the elements value
     public: ParamPtr GetValue();
-
-    public: bool GetValueBool(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
-    public: int GetValueInt(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
-    public: float GetValueFloat(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
-    public: double GetValueDouble(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
-    public: unsigned int GetValueUInt(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
-    public: char GetValueChar(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
-    public: std::string GetValueString(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
-    public: sdf::Vector3 GetValueVector3(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
-    public: sdf::Vector2d GetValueVector2d(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
-    public: sdf::Quaternion GetValueQuaternion(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
-    public: sdf::Pose GetValuePose(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
-    public: sdf::Color GetValueColor(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
-    public: sdf::Time GetValueTime(
-                const std::string &_key = "") SDF_DEPRECATED(1.4);
 
     /// \brief Get the element value/attribute as a boost::any.
     /// \param[in] _key The key of the attribute. If empty, get the value of

@@ -100,3 +100,13 @@ macro (check_gcc_visibility)
   include (CheckCXXCompilerFlag)
   check_cxx_compiler_flag(-fvisibility=hidden GCC_SUPPORTS_VISIBILITY)
 endmacro()
+
+########################################
+# Find ignition math
+find_package(ignition-math QUIET)
+if (NOT ignition-math_FOUND)
+  message(STATUS "Looking for ignition-math-config.cmake - not found")
+  BUILD_ERROR ("Missing: Ignition math library.")
+else()
+  message(STATUS "Looking for ignition-math-config.cmake - found")
+endif()

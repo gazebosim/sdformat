@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include <boost/filesystem.hpp>
 #include <boost/any.hpp>
+#include <ignition/math.hh>
 #include "test_config.h"
 #include "sdf/sdf.hh"
 
@@ -133,7 +134,7 @@ TEST_F(RmlUpdate, UpdateElement)
   // Read pose element value
   EXPECT_TRUE(modelElem->HasElement("pose"));
   sdf::ParamPtr poseParam = modelElem->GetElement("pose")->GetValue();
-  EXPECT_TRUE(poseParam->GetType() == typeid(sdf::Pose));
+  EXPECT_TRUE(poseParam->GetType() == typeid(ignition::math::Pose3d));
 
   // Set test class variables based on sdf values
   // Set parameter update functions to test class accessors

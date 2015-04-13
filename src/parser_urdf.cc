@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <string>
 #include <set>
+#include <ignition/math.hh>
 
 #include "urdf_model/model.h"
 #include "urdf_model/link.h"
@@ -80,13 +81,13 @@ bool FixedJointShouldBeReduced(boost::shared_ptr<urdf::Joint> _jnt);
 ///   in extensions when doing fixed joint reduction
 void ReduceSDFExtensionSensorTransformReduction(
       std::vector<TiXmlElementPtr>::iterator _blobIt,
-      sdf::Pose _reductionTransform);
+      ignition::math::Pose3d _reductionTransform);
 
 /// reduced fixed joints:  apply transform reduction for projectors in
 ///   extensions when doing fixed joint reduction
 void ReduceSDFExtensionProjectorTransformReduction(
       std::vector<TiXmlElementPtr>::iterator _blobIt,
-      sdf::Pose _reductionTransform);
+      ignition::math::Pose3d _reductionTransform);
 
 
 /// reduced fixed joints:  apply transform reduction to extensions
@@ -116,7 +117,7 @@ void CreateVisual(TiXmlElement *_elem, ConstUrdfLinkPtr _link,
 
 /// create SDF Joint block based on URDF
 void CreateJoint(TiXmlElement *_root, ConstUrdfLinkPtr _link,
-      sdf::Pose &_currentTransform);
+      ignition::math::Pose3d &_currentTransform);
 
 /// insert extensions into links
 void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName);
@@ -131,15 +132,15 @@ void CreateCollisions(TiXmlElement* _elem, ConstUrdfLinkPtr _link);
 void CreateInertial(TiXmlElement *_elem, ConstUrdfLinkPtr _link);
 
 /// append transform (pose) to the end of the xml element
-void AddTransform(TiXmlElement *_elem, const sdf::Pose &_transform);
+void AddTransform(TiXmlElement *_elem, const ignition::math::Pose3d &_transform);
 
 /// create SDF from URDF link
 void CreateSDF(TiXmlElement *_root, ConstUrdfLinkPtr _link,
-      const sdf::Pose &_transform);
+      const ignition::math::Pose3d &_transform);
 
 /// create SDF Link block based on URDF
 void CreateLink(TiXmlElement *_root, ConstUrdfLinkPtr _link,
-      sdf::Pose &_currentTransform);
+      ignition::math::Pose3d &_currentTransform);
 
 
 /// print collision groups for debugging purposes
@@ -168,7 +169,8 @@ void ReduceSDFExtensionProjectorFrameReplace(
 void ReduceSDFExtensionPluginFrameReplace(
       std::vector<TiXmlElementPtr>::iterator _blobIt,
       UrdfLinkPtr _link, const std::string &_pluginName,
-      const std::string &_elementName, sdf::Pose _reductionTransform);
+      const std::string &_elementName,
+      ignition::math::Pose3d _reductionTransform);
 
 /// reduced fixed joints:  apply appropriate frame updates in urdf
 ///   extensions when doing fixed joint reduction
@@ -217,7 +219,8 @@ void CreateGeometry(TiXmlElement* _elem,
 std::string GetGeometryBoundingBox(boost::shared_ptr<urdf::Geometry> _geometry,
     double *_sizeVals);
 
-sdf::Pose inverseTransformToParentFrame(sdf::Pose _transformInLinkFrame,
+ignition::math::Pose3d inverseTransformToParentFrame(
+    ignition::math::Pose3d _transformInLinkFrame,
     urdf::Pose _parentToLinkTransform);
 
 /// reduced fixed joints: transform to parent frame
@@ -225,20 +228,22 @@ urdf::Pose TransformToParentFrame(urdf::Pose _transformInLinkFrame,
     urdf::Pose _parentToLinkTransform);
 
 /// reduced fixed joints: transform to parent frame
-sdf::Pose TransformToParentFrame(sdf::Pose _transformInLinkFrame,
+ignition::math::Pose3d TransformToParentFrame(
+    ignition::math::Pose3d _transformInLinkFrame,
     urdf::Pose _parentToLinkTransform);
 
 /// reduced fixed joints: transform to parent frame
-sdf::Pose TransformToParentFrame(sdf::Pose _transformInLinkFrame,
-    sdf::Pose _parentToLinkTransform);
+ignition::math::Pose3d TransformToParentFrame(
+    ignition::math::Pose3d _transformInLinkFrame,
+    ignition::math::Pose3d _parentToLinkTransform);
 
 /// reduced fixed joints: utility to copy between urdf::Pose and
 ///   math::Pose
-sdf::Pose CopyPose(urdf::Pose _pose);
+ignition::math::Pose3d CopyPose(urdf::Pose _pose);
 
 /// reduced fixed joints: utility to copy between urdf::Pose and
 ///   math::Pose
-urdf::Pose CopyPose(sdf::Pose _pose);
+urdf::Pose CopyPose(ignition::math::Pose3d _pose);
 
 /////////////////////////////////////////////////
 urdf::Vector3 ParseVector3(const std::string &_str, double _scale)
@@ -1001,7 +1006,7 @@ void ReduceJointsToParent(UrdfLinkPtr _link)
     {
       // go down the tree until we hit a parent joint that is not fixed
       UrdfLinkPtr newParentLink = _link;
-      sdf::Pose jointAnchorTransform;
+      ignition::math::Pose3d jointAnchorTransform;
       while (newParentLink->parent_joint &&
           newParentLink->getParent()->name != "world" &&
           FixedJointShouldBeReduced(newParentLink->parent_joint) )
@@ -1086,13 +1091,13 @@ void AddKeyValue(TiXmlElement *_elem, const std::string &_key,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void AddTransform(TiXmlElement *_elem, const sdf::Pose &_transform)
+void AddTransform(TiXmlElement *_elem, const ignition::math::Pose3d &_transform)
 {
-  sdf::Vector3 e = _transform.rot.GetAsEuler();
-  double cpose[6] = { _transform.pos.x, _transform.pos.y,
-    _transform.pos.z, e.x, e.y, e.z };
+  ignition::math::Vector3d e = _transform.Rot().Euler();
+  double cpose[6] = { _transform.Pos().X(), _transform.Pos().Y(),
+    _transform.Pos().Z(), e.X(), e.Y(), e.Z() };
 
-  /* set geometry transform */
+  // set geometry transform
   AddKeyValue(_elem, "pose", Values2str(6, cpose));
 }
 
@@ -1915,58 +1920,59 @@ void PrintCollisionGroups(UrdfLinkPtr _link)
 urdf::Pose TransformToParentFrame(
     urdf::Pose _transformInLinkFrame, urdf::Pose _parentToLinkTransform)
 {
-  // transform to sdf::Pose then call TransformToParentFrame
-  sdf::Pose p1 = CopyPose(_transformInLinkFrame);
-  sdf::Pose p2 = CopyPose(_parentToLinkTransform);
+  // transform to ignition::math::Pose3d then call TransformToParentFrame
+  ignition::math::Pose3d p1 = CopyPose(_transformInLinkFrame);
+  ignition::math::Pose3d p2 = CopyPose(_parentToLinkTransform);
   return CopyPose(TransformToParentFrame(p1, p2));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-sdf::Pose TransformToParentFrame(sdf::Pose _transformInLinkFrame,
+ignition::math::Pose3d TransformToParentFrame(ignition::math::Pose3d _transformInLinkFrame,
     urdf::Pose _parentToLinkTransform)
 {
-  // transform to sdf::Pose then call TransformToParentFrame
-  sdf::Pose p2 = CopyPose(_parentToLinkTransform);
+  // transform to ignition::math::Pose3d then call TransformToParentFrame
+  ignition::math::Pose3d p2 = CopyPose(_parentToLinkTransform);
   return TransformToParentFrame(_transformInLinkFrame, p2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-sdf::Pose TransformToParentFrame(sdf::Pose _transformInLinkFrame,
-    sdf::Pose _parentToLinkTransform)
+ignition::math::Pose3d TransformToParentFrame(
+    ignition::math::Pose3d _transformInLinkFrame,
+    ignition::math::Pose3d _parentToLinkTransform)
 {
-  sdf::Pose transformInParentLinkFrame;
+  ignition::math::Pose3d transformInParentLinkFrame;
   // rotate link pose to parentLink frame
-  transformInParentLinkFrame.pos =
-    _parentToLinkTransform.rot * _transformInLinkFrame.pos;
-  transformInParentLinkFrame.rot =
-    _parentToLinkTransform.rot * _transformInLinkFrame.rot;
+  transformInParentLinkFrame.Pos() =
+    _parentToLinkTransform.Rot() * _transformInLinkFrame.Pos();
+  transformInParentLinkFrame.Rot() =
+    _parentToLinkTransform.Rot() * _transformInLinkFrame.Rot();
   // translate link to parentLink frame
-  transformInParentLinkFrame.pos =
-    _parentToLinkTransform.pos + transformInParentLinkFrame.pos;
+  transformInParentLinkFrame.Pos() =
+    _parentToLinkTransform.Pos() + transformInParentLinkFrame.Pos();
 
   return transformInParentLinkFrame;
 }
 
 /////////////////////////////////////////////////
 /// reduced fixed joints: transform to parent frame
-sdf::Pose inverseTransformToParentFrame(
-    sdf::Pose _transformInLinkFrame,
+ignition::math::Pose3d inverseTransformToParentFrame(
+    ignition::math::Pose3d _transformInLinkFrame,
     urdf::Pose _parentToLinkTransform)
 {
-  sdf::Pose transformInParentLinkFrame;
+  ignition::math::Pose3d transformInParentLinkFrame;
   //   rotate link pose to parentLink frame
   urdf::Rotation ri = _parentToLinkTransform.rotation.GetInverse();
-  sdf::Quaternion q1(ri.w, ri.x, ri.y, ri.z);
-  transformInParentLinkFrame.pos = q1 * _transformInLinkFrame.pos;
+  ignition::math::Quaterniond q1(ri.w, ri.x, ri.y, ri.z);
+  transformInParentLinkFrame.Pos() = q1 * _transformInLinkFrame.Pos();
   urdf::Rotation r2 = _parentToLinkTransform.rotation.GetInverse();
-  sdf::Quaternion q3(r2.w, r2.x, r2.y, r2.z);
-  transformInParentLinkFrame.rot = q3 * _transformInLinkFrame.rot;
+  ignition::math::Quaterniond q3(r2.w, r2.x, r2.y, r2.z);
+  transformInParentLinkFrame.Rot() = q3 * _transformInLinkFrame.Rot();
   //   translate link to parentLink frame
-  transformInParentLinkFrame.pos.x = transformInParentLinkFrame.pos.x
+  transformInParentLinkFrame.Pos().X() = transformInParentLinkFrame.Pos().X()
     - _parentToLinkTransform.position.x;
-  transformInParentLinkFrame.pos.y = transformInParentLinkFrame.pos.y
+  transformInParentLinkFrame.Pos().Y() = transformInParentLinkFrame.Pos().Y()
     - _parentToLinkTransform.position.y;
-  transformInParentLinkFrame.pos.z = transformInParentLinkFrame.pos.z
+  transformInParentLinkFrame.Pos().Z() = transformInParentLinkFrame.Pos().Z()
     - _parentToLinkTransform.position.z;
 
   return transformInParentLinkFrame;
@@ -2157,15 +2163,15 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
 ////////////////////////////////////////////////////////////////////////////////
 void CreateSDF(TiXmlElement *_root,
     ConstUrdfLinkPtr _link,
-    const sdf::Pose &_transform)
+    const ignition::math::Pose3d &_transform)
 {
-  sdf::Pose _currentTransform = _transform;
+  ignition::math::Pose3d _currentTransform = _transform;
 
   // must have an <inertial> block and cannot have zero mass.
   //  allow det(I) == zero, in the case of point mass geoms.
   // @todo:  keyword "world" should be a constant defined somewhere else
   if (_link->name != "world" &&
-      ((!_link->inertial) || sdf::equal(_link->inertial->mass, 0.0)))
+      ((!_link->inertial) || ignition::math::equal(_link->inertial->mass, 0.0)))
   {
     if (!_link->child_links.empty())
       sdfdbg << "urdf2sdf: link[" << _link->name
@@ -2203,37 +2209,37 @@ void CreateSDF(TiXmlElement *_root,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-sdf::Pose CopyPose(urdf::Pose _pose)
+ignition::math::Pose3d CopyPose(urdf::Pose _pose)
 {
-  sdf::Pose p;
-  p.pos.x = _pose.position.x;
-  p.pos.y = _pose.position.y;
-  p.pos.z = _pose.position.z;
-  p.rot.x = _pose.rotation.x;
-  p.rot.y = _pose.rotation.y;
-  p.rot.z = _pose.rotation.z;
-  p.rot.w = _pose.rotation.w;
+  ignition::math::Pose3d p;
+  p.Pos().X() = _pose.position.x;
+  p.Pos().Y() = _pose.position.y;
+  p.Pos().Z() = _pose.position.z;
+  p.Rot().X() = _pose.rotation.x;
+  p.Rot().Y() = _pose.rotation.y;
+  p.Rot().Z() = _pose.rotation.z;
+  p.Rot().W() = _pose.rotation.w;
   return p;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-urdf::Pose CopyPose(sdf::Pose _pose)
+urdf::Pose CopyPose(ignition::math::Pose3d _pose)
 {
   urdf::Pose p;
-  p.position.x = _pose.pos.x;
-  p.position.y = _pose.pos.y;
-  p.position.z = _pose.pos.z;
-  p.rotation.x = _pose.rot.x;
-  p.rotation.y = _pose.rot.y;
-  p.rotation.z = _pose.rot.z;
-  p.rotation.w = _pose.rot.w;
+  p.position.x = _pose.Pos().X();
+  p.position.y = _pose.Pos().Y();
+  p.position.z = _pose.Pos().Z();
+  p.rotation.x = _pose.Rot().X();
+  p.rotation.y = _pose.Rot().Y();
+  p.rotation.z = _pose.Rot().Z();
+  p.rotation.w = _pose.Rot().W();
   return p;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void CreateLink(TiXmlElement *_root,
     ConstUrdfLinkPtr _link,
-    sdf::Pose &_currentTransform)
+    ignition::math::Pose3d &_currentTransform)
 {
   /* create new body */
   TiXmlElement *elem     = new TiXmlElement("link");
@@ -2242,7 +2248,7 @@ void CreateLink(TiXmlElement *_root,
   elem->SetAttribute("name", _link->name);
 
   /* compute global transform */
-  sdf::Pose localTransform;
+  ignition::math::Pose3d localTransform;
   // this is the transform from parent link to current _link
   // this transform does not exist for the root link
   if (_link->parent_joint)
@@ -2512,7 +2518,7 @@ void CreateInertial(TiXmlElement *_elem,
   _link->inertial->origin.rotation.getRPY(roll, pitch, yaw);
 
   /// add pose
-  sdf::Pose pose = CopyPose(_link->inertial->origin);
+  ignition::math::Pose3d pose = CopyPose(_link->inertial->origin);
   AddTransform(inertial, pose);
 
   // add mass
@@ -2541,7 +2547,7 @@ void CreateInertial(TiXmlElement *_elem,
 ////////////////////////////////////////////////////////////////////////////////
 void CreateJoint(TiXmlElement *_root,
     ConstUrdfLinkPtr _link,
-    sdf::Pose &_currentTransform)
+    ignition::math::Pose3d &_currentTransform)
 {
   /* compute the joint tag */
   std::string jtype;
@@ -2600,13 +2606,13 @@ void CreateJoint(TiXmlElement *_root,
     }
     else
     {
-      sdf::Vector3 rotatedJointAxis =
-        _currentTransform.rot.RotateVector(
-            sdf::Vector3(_link->parent_joint->axis.x,
+      ignition::math::Vector3d rotatedJointAxis =
+        _currentTransform.Rot().RotateVector(
+            ignition::math::Vector3d(_link->parent_joint->axis.x,
               _link->parent_joint->axis.y,
               _link->parent_joint->axis.z));
       double rotatedJointAxisArray[3] =
-      { rotatedJointAxis.x, rotatedJointAxis.y, rotatedJointAxis.z };
+      { rotatedJointAxis.X(), rotatedJointAxis.Y(), rotatedJointAxis.Z() };
       AddKeyValue(jointAxis, "xyz",
           Values2str(3, rotatedJointAxisArray));
       if (_link->parent_joint->dynamics)
@@ -2777,7 +2783,7 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
 
   /* initialize transform for the model, urdf is recursive,
      while sdf defines all links relative to model frame */
-  sdf::Pose transform;
+  ignition::math::Pose3d transform;
 
   /* parse sdf extension */
   TiXmlDocument urdfXml;
@@ -2872,7 +2878,7 @@ bool FixedJointShouldBeReduced(boost::shared_ptr<urdf::Joint> _jnt)
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionSensorTransformReduction(
     std::vector<TiXmlElementPtr>::iterator _blobIt,
-    sdf::Pose _reductionTransform)
+    ignition::math::Pose3d _reductionTransform)
 {
   // overwrite <xyz> and <rpy> if they exist
   if ((*_blobIt)->ValueStr() == "sensor")
@@ -2898,13 +2904,13 @@ void ReduceSDFExtensionSensorTransformReduction(
     }
 
     // convert reductionTransform to values
-    urdf::Vector3 reductionXyz(_reductionTransform.pos.x,
-        _reductionTransform.pos.y,
-        _reductionTransform.pos.z);
-    urdf::Rotation reductionQ(_reductionTransform.rot.x,
-        _reductionTransform.rot.y,
-        _reductionTransform.rot.z,
-        _reductionTransform.rot.w);
+    urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
+        _reductionTransform.Pos().Y(),
+        _reductionTransform.Pos().Z());
+    urdf::Rotation reductionQ(_reductionTransform.Rot().X(),
+        _reductionTransform.Rot().Y(),
+        _reductionTransform.Rot().Z(),
+        _reductionTransform.Rot().W());
 
     urdf::Vector3 reductionRpy;
     reductionQ.getRPY(reductionRpy.x, reductionRpy.y, reductionRpy.z);
@@ -2926,7 +2932,7 @@ void ReduceSDFExtensionSensorTransformReduction(
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionProjectorTransformReduction(
     std::vector<TiXmlElementPtr>::iterator _blobIt,
-    sdf::Pose _reductionTransform)
+    ignition::math::Pose3d _reductionTransform)
 {
   // overwrite <pose> (xyz/rpy) if it exists
   if ((*_blobIt)->ValueStr() == "projector")
@@ -2951,13 +2957,13 @@ void ReduceSDFExtensionProjectorTransformReduction(
     if (poseKey) (*_blobIt)->RemoveChild(poseKey);
 
     // convert reductionTransform to values
-    urdf::Vector3 reductionXyz(_reductionTransform.pos.x,
-        _reductionTransform.pos.y,
-        _reductionTransform.pos.z);
-    urdf::Rotation reductionQ(_reductionTransform.rot.x,
-        _reductionTransform.rot.y,
-        _reductionTransform.rot.z,
-        _reductionTransform.rot.w);
+    urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
+        _reductionTransform.Pos().Y(),
+        _reductionTransform.Pos().Z());
+    urdf::Rotation reductionQ(_reductionTransform.Rot().X(),
+        _reductionTransform.Rot().Y(),
+        _reductionTransform.Rot().Z(),
+        _reductionTransform.Rot().W());
 
     urdf::Vector3 reductionRpy;
     reductionQ.getRPY(reductionRpy.x, reductionRpy.y, reductionRpy.z);
@@ -3019,7 +3025,7 @@ void ReduceSDFExtensionPluginFrameReplace(
     std::vector<TiXmlElementPtr>::iterator _blobIt,
     UrdfLinkPtr _link,
     const std::string &_pluginName, const std::string &_elementName,
-    sdf::Pose _reductionTransform)
+    ignition::math::Pose3d _reductionTransform)
 {
   std::string linkName = _link->name;
   std::string newLinkName = _link->getParent()->name;
@@ -3046,7 +3052,8 @@ void ReduceSDFExtensionPluginFrameReplace(
         if (xyzKey)
         {
           urdf::Vector3 v1 = ParseVector3(xyzKey);
-          _reductionTransform.pos = sdf::Vector3(v1.x, v1.y, v1.z);
+          _reductionTransform.Pos() =
+            ignition::math::Vector3d(v1.x, v1.y, v1.z);
           // remove xyzOffset and rpyOffset
           (*_blobIt)->RemoveChild(xyzKey);
         }
@@ -3054,8 +3061,8 @@ void ReduceSDFExtensionPluginFrameReplace(
         if (rpyKey)
         {
           urdf::Vector3 rpy = ParseVector3(rpyKey, M_PI/180.0);
-          _reductionTransform.rot =
-            sdf::Quaternion::EulerToQuaternion(rpy.x, rpy.y, rpy.z);
+          _reductionTransform.Rot() =
+            ignition::math::Quaterniond::EulerToQuaternion(rpy.x, rpy.y, rpy.z);
           // remove xyzOffset and rpyOffset
           (*_blobIt)->RemoveChild(rpyKey);
         }
@@ -3069,12 +3076,12 @@ void ReduceSDFExtensionPluginFrameReplace(
         rpyKey = new TiXmlElement("rpyOffset");
 
         // create new offset xml blocks
-        urdf::Vector3 reductionXyz(_reductionTransform.pos.x,
-            _reductionTransform.pos.y,
-            _reductionTransform.pos.z);
-        urdf::Rotation reductionQ(_reductionTransform.rot.x,
-            _reductionTransform.rot.y, _reductionTransform.rot.z,
-            _reductionTransform.rot.w);
+        urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
+            _reductionTransform.Pos().Y(),
+            _reductionTransform.Pos().Z());
+        urdf::Rotation reductionQ(_reductionTransform.Rot().X(),
+            _reductionTransform.Rot().Y(), _reductionTransform.Rot().Z(),
+            _reductionTransform.Rot().W());
 
         std::ostringstream xyzStream, rpyStream;
         xyzStream << reductionXyz.x << " " << reductionXyz.y << " "

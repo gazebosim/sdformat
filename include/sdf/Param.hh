@@ -31,10 +31,20 @@
 #include <typeinfo>
 #include <string>
 #include <vector>
+#include <ignition/math.hh>
 
 #include "sdf/Console.hh"
-#include "sdf/Types.hh"
 #include "sdf/system_util.hh"
+
+/// \todo Remove this diagnositic push/pop in version 5
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#include "sdf/Types.hh"
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 namespace sdf
 {
@@ -275,12 +285,23 @@ namespace sdf
     /// \brief Update function pointer.
     private: boost::function<boost::any ()> updateFunc;
 
+/// \todo Remove this diagnositic push/pop in version 5
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
     /// \def ParamVariant
     /// \briead Variant type def.
     private: typedef boost::variant<bool, char, std::string, int,
-               unsigned int, double, float, sdf::Vector3, sdf::Vector2i,
-               sdf::Vector2d, sdf::Quaternion, sdf::Pose, sdf::Color,
-               sdf::Time> ParamVariant;
+               unsigned int, double, float, sdf::Time, sdf::Color,
+               sdf::Vector3, sdf::Vector2i, sdf::Vector2d,
+               sdf::Quaternion, sdf::Pose,
+               ignition::math::Vector3d, ignition::math::Vector2i,
+               ignition::math::Vector2d, ignition::math::Quaterniond,
+               ignition::math::Pose3d> ParamVariant;
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#endif
 
     /// \brief This parameter's value
     protected: ParamVariant value;

@@ -77,6 +77,38 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   else if (this->typeName == "std::string" ||
       this->typeName == "string")
     this->Init<std::string>(_default);
+  else if (this->typeName == "sdf::Time" ||
+      this->typeName == "time")
+    this->Init<sdf::Time>(_default);
+  else if (this->typeName == "sdf::Color" ||
+      this->typeName == "color")
+    this->Init<sdf::Color>(_default);
+  else if (this->typeName == "ignition::math::Vector2i" ||
+           this->typeName == "vector2i")
+  {
+    this->Init<ignition::math::Vector2i>(_default);
+  }
+  else if (this->typeName == "ignition::math::Vector2d" ||
+           this->typeName == "vector2d")
+  {
+    this->Init<ignition::math::Vector2d>(_default);
+  }
+  else if (this->typeName == "ignition::math::Vector3d" ||
+           this->typeName == "vector3")
+  {
+    this->Init<ignition::math::Vector3d>(_default);
+  }
+  else if (this->typeName == "ignition::math::Pose3d" ||
+           this->typeName == "pose" || this->typeName == "Pose")
+  {
+    this->Init<ignition::math::Pose3d>(_default);
+  }
+  else if (this->typeName == "ignition::math::Quaterniond" ||
+           this->typeName == "quaternion")
+  {
+    this->Init<ignition::math::Quaterniond>(_default);
+  }
+  /// \deprecated The following sdf::<types are deprecated
   else if (this->typeName == "sdf::Vector2i" ||
       this->typeName == "vector2i")
     this->Init<sdf::Vector2i>(_default);
@@ -92,12 +124,6 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   else if (this->typeName == "sdf::Quaternion" ||
       this->typeName == "quaternion")
     this->Init<sdf::Quaternion>(_default);
-  else if (this->typeName == "sdf::Time" ||
-      this->typeName == "time")
-    this->Init<sdf::Time>(_default);
-  else if (this->typeName == "sdf::Color" ||
-      this->typeName == "color")
-    this->Init<sdf::Color>(_default);
   else
     sdferr << "Unknown parameter type[" << this->typeName << "]\n";
 }
@@ -145,13 +171,6 @@ bool Param::GetAny(boost::any &_anyVal)
       return false;
     _anyVal = ret;
   }
-  else if (typeid(sdf::Vector3) == this->GetType())
-  {
-    sdf::Vector3 ret;
-    if (!this->Get<sdf::Vector3>(ret))
-      return false;
-    _anyVal = ret;
-  }
   else if (typeid(unsigned int) == this->GetType())
   {
     unsigned int ret = 0;
@@ -163,6 +182,64 @@ bool Param::GetAny(boost::any &_anyVal)
   {
     char ret = 0;
     if (!this->Get<char>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(sdf::Time) == this->GetType())
+  {
+    sdf::Time ret;
+    if (!this->Get<sdf::Time>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(sdf::Color) == this->GetType())
+  {
+    sdf::Color ret;
+    if (!this->Get<sdf::Color>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(ignition::math::Vector3d) == this->GetType())
+  {
+    ignition::math::Vector3d ret;
+    if (!this->Get<ignition::math::Vector3d>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(ignition::math::Vector2i) == this->GetType())
+  {
+    ignition::math::Vector2i ret;
+    if (!this->Get<ignition::math::Vector2i>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(ignition::math::Vector2d) == this->GetType())
+  {
+    ignition::math::Vector2d ret;
+    if (!this->Get<ignition::math::Vector2d>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(ignition::math::Pose3d) == this->GetType())
+  {
+    ignition::math::Pose3d ret;
+    if (!this->Get<ignition::math::Pose3d>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(ignition::math::Quaterniond) == this->GetType())
+  {
+    ignition::math::Quaterniond ret;
+    if (!this->Get<ignition::math::Quaterniond>(ret))
+      return false;
+    _anyVal = ret;
+  }
+
+  /// \deprecated The follow sdf Types are deprecated
+  else if (typeid(sdf::Vector3) == this->GetType())
+  {
+    sdf::Vector3 ret;
+    if (!this->Get<sdf::Vector3>(ret))
       return false;
     _anyVal = ret;
   }
@@ -191,20 +268,6 @@ bool Param::GetAny(boost::any &_anyVal)
   {
     sdf::Quaternion ret;
     if (!this->Get<sdf::Quaternion>(ret))
-      return false;
-    _anyVal = ret;
-  }
-  else if (typeid(sdf::Time) == this->GetType())
-  {
-    sdf::Time ret;
-    if (!this->Get<sdf::Time>(ret))
-      return false;
-    _anyVal = ret;
-  }
-  else if (typeid(sdf::Color) == this->GetType())
-  {
-    sdf::Color ret;
-    if (!this->Get<sdf::Color>(ret))
       return false;
     _anyVal = ret;
   }
