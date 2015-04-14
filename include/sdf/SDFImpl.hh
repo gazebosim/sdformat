@@ -132,6 +132,14 @@ namespace sdf
     /// \return True to copy child elements during parsing.
     public: bool GetCopyChildren() const;
 
+    /// \brief Set whether this is a nested SDF element.
+    /// \param[in] _value True to set this as a nested SDF element.
+    public: void SetNestedSDF(bool _value);
+
+    /// \brief Return true if this is a nested SDF element.
+    /// \return True if this is a nested SDF element.
+    public: bool GetNestedSDF() const;
+
     /// \brief Output Element's description to stdout.
     /// \param[in] _prefix String value to prefix to the output.
     public: void PrintDescription(const std::string &_prefix);
@@ -332,6 +340,7 @@ namespace sdf
     private: std::string required;
     private: std::string description;
     private: bool copyChildren;
+    private: bool nestedSDF;
 
     private: ElementPtr parent;
 

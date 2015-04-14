@@ -162,6 +162,7 @@ void sdf::addURIPath(const std::string &_uri, const std::string &_path)
 Element::Element()
 {
   this->copyChildren = false;
+  this->nestedSDF = false;
 }
 
 /////////////////////////////////////////////////
@@ -243,6 +244,18 @@ bool Element::GetCopyChildren() const
 }
 
 /////////////////////////////////////////////////
+void Element::SetNestedSDF(bool _value)
+{
+  this->nestedSDF = _value;
+}
+
+/////////////////////////////////////////////////
+bool Element::GetNestedSDF() const
+{
+  return this->nestedSDF;
+}
+
+/////////////////////////////////////////////////
 void Element::AddValue(const std::string &_type,
     const std::string &_defaultValue, bool _required,
     const std::string &_description)
@@ -278,6 +291,7 @@ ElementPtr Element::Clone() const
   clone->required = this->required;
   // clone->parent = this->parent;
   clone->copyChildren = this->copyChildren;
+  clone->copyChildren = this->nestedSDF;
   clone->includeFilename = this->includeFilename;
 
   Param_V::const_iterator aiter;
@@ -313,6 +327,7 @@ void Element::Copy(const ElementPtr _elem)
   this->description = _elem->GetDescription();
   this->required = _elem->GetRequired();
   this->copyChildren = _elem->GetCopyChildren();
+  this->nestedSDF = _elem->GetNestedSDF();
   this->includeFilename = _elem->includeFilename;
 
   for (Param_V::iterator iter = _elem->attributes.begin();
@@ -374,6 +389,9 @@ void Element::PrintDescription(const std::string &_prefix)
 
   if (this->GetCopyChildren())
     std::cout << _prefix << "  <element copy_data ='true' required ='*'/>\n";
+
+  if (this->GetNestedSDF())
+    std::cout << _prefix << "  <element nested_sdf ='true' required ='*'/>\n";
 
   ElementPtr_V::iterator eiter;
   for (eiter = this->elementDescriptions.begin();
