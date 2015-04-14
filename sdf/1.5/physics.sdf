@@ -176,6 +176,9 @@
       <element name="min_step_size" type="double" default="0.0001" required="0">
         <description>The time duration which advances with each iteration of the dynamics engine, this has to be no bigger than max_step_size under physics block.  If left unspecified, min_step_size defaults to max_step_size.</description>
       </element>
+      <element name="island_threads" type="int" default="-1" required="0">
+        <description>Number of threads to use for "islands" of disconnected models.</description>
+      </element>
       <element name="iters" type="int" default="50" required="1">
         <description>Number of iterations for each step. A higher number produces greater accuracy at a performance cost.</description>
       </element>
