@@ -462,7 +462,6 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     _sdf->GetValue()->SetFromString(_xml->GetText());
   }
 
-
   // check for nested model
   if (_sdf->GetNestedSDF())
   {
