@@ -462,6 +462,21 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     _sdf->GetValue()->SetFromString(_xml->GetText());
   }
 
+
+  // check for nested model
+  if (_sdf->GetNestedSDF())
+  {
+    ElementPtr modelSDF;
+    modelSDF.reset(new Element);
+    // assume nested model for now.
+    initFile("model.sdf", modelSDF);
+
+    _sdf->GetParent()->InsertElement(modelSDF);
+    _sdf = modelSDF;
+    // probably not needed
+    _sdf->SetNestedSDF(true);
+  }
+
   TiXmlAttribute *attribute = _xml->FirstAttribute();
 
   unsigned int i = 0;
@@ -513,21 +528,6 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
   }
   else
   {
-
-    if (_sdf->GetNestedSDF())
-    {
-      ElementPtr modelSDF;
-      modelSDF.reset(new Element);
-      // assume nested model for now.
-      initFile("model.sdf", modelSDF);
-
-      _sdf->GetParent()->InsertElement(modelSDF);
-      _sdf = modelSDF;
-      // probably not needed
-      _sdf->SetNestedSDF(true);
-    }
-
-
     std::string filename;
 
     // Iterate over all the child elements
