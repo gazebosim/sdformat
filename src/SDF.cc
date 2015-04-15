@@ -291,7 +291,7 @@ ElementPtr Element::Clone() const
   clone->required = this->required;
   // clone->parent = this->parent;
   clone->copyChildren = this->copyChildren;
-  clone->copyChildren = this->nestedSDF;
+  clone->nestedSDF = this->nestedSDF;
   clone->includeFilename = this->includeFilename;
 
   Param_V::const_iterator aiter;

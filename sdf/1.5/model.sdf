@@ -46,15 +46,15 @@
     </element>
   </element>
 
-<!--  <element name="model" required="*">
+  <element name="model" required="*">
     <attribute name="name" type="string" default="__default__" required="1">
       <description>A unique name for the model. This name must not match another model in the world.</description>
     </attribute>
 
-    <element copy_data="true" required="*">
+    <element nested_sdf="true" required="*">
       <description>This is a special element that should not be specified in an SDF file. It automatically copies child elements into the SDF element.</description>
     </element>
 
-  </element>-->
+  </element>
 
 </element> <!-- End Model -->

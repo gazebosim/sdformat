@@ -219,19 +219,19 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
       child; child = child->NextSiblingElement("element"))
   {
     const char *copyDataString = child->Attribute("copy_data");
-//    const char *nestedSDFString = child->Attribute("nested_sdf");
+    const char *nestedSDFString = child->Attribute("nested_sdf");
     if (copyDataString &&
         (std::string(copyDataString) == "true" ||
          std::string(copyDataString) == "1"))
     {
       _sdf->SetCopyChildren(true);
     }
-/*    else if (nestedSDFString &&
+    else if (nestedSDFString &&
         (std::string(nestedSDFString) == "true" ||
          std::string(nestedSDFString) == "1"))
     {
       _sdf->SetNestedSDF(true);
-    }*/
+    }
     else
     {
       ElementPtr element(new Element);
@@ -509,29 +509,25 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
   if (_sdf->GetCopyChildren())
   {
-    std::cerr << "copy children!!! " << _sdf->GetName() <<
-        " " << _xml->Value() << std::endl;
     copyChildren(_sdf, _xml);
   }
-/*  else if (_sdf->GetNestedSDF())
-  {
-
-//   copyChildren(_sdf, _xml);
-
-    std::cerr << "nested SDF!!! " << _sdf->GetName() <<
-        " " << _xml->Value() << std::endl;
-
-    ElementPtr modelSDF;
-    modelSDF.reset(new Element);
-    // assume nested model for now.
-    initFile("model.sdf", modelSDF);
-
-
-
-//    copyChildren(_sdf, _xml);
-  }*/
   else
   {
+
+    if (_sdf->GetNestedSDF())
+    {
+      ElementPtr modelSDF;
+      modelSDF.reset(new Element);
+      // assume nested model for now.
+      initFile("model.sdf", modelSDF);
+
+      _sdf->GetParent()->InsertElement(modelSDF);
+      _sdf = modelSDF;
+      // probably not needed
+      _sdf->SetNestedSDF(true);
+    }
+
+
     std::string filename;
 
     // Iterate over all the child elements
