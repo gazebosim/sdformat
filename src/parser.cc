@@ -469,11 +469,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     modelSDF.reset(new Element);
     // assume nested model for now.
     initFile("model.sdf", modelSDF);
-
-    _sdf->GetParent()->InsertElement(modelSDF);
-    _sdf = modelSDF;
-    // probably not needed
-    _sdf->SetNestedSDF(true);
+    _sdf->RemoveFromParent();
+    _sdf->Copy(modelSDF);
   }
 
   TiXmlAttribute *attribute = _xml->FirstAttribute();
@@ -740,7 +737,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
       }
     }
 
-    // Chek that all required elements have been set
+    // Check that all required elements have been set
     unsigned int descCounter = 0;
     for (descCounter = 0;
          descCounter != _sdf->GetElementDescriptionCount(); ++descCounter)
