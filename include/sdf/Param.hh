@@ -101,7 +101,15 @@ namespace sdf
 
     /// \brief Get the type of the value stored.
     /// \return The std::type_info.
-    public: const std::type_info &GetType() const;
+    /// \deprecated GetType is unstable. Use IsType().
+    /// \sa IsType
+    public: const std::type_info &GetType() const SDF_DEPRECATED(4.0);
+
+    /// \brief Return true if the param is a particular type
+    /// \return True if the type held by this Param matches the Type
+    /// template parameter.
+    public: template<typename Type>
+            bool IsType() const;
 
     /// \brief Get the type name value.
     /// \return The type name.
@@ -346,6 +354,13 @@ namespace sdf
 
     this->dataPtr->defaultValue = this->dataPtr->value;
     this->dataPtr->set = false;
+  }
+
+  ///////////////////////////////////////////////
+  template<typename Type>
+  bool Param::IsType() const
+  {
+    return this->dataPtr->value.type() == typeid(Type);
   }
 }
 #endif

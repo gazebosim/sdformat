@@ -83,7 +83,7 @@ TEST_F(SDFUpdate, UpdateAttribute)
   // Read name attribute value
   EXPECT_TRUE(modelElem->HasAttribute("name"));
   sdf::ParamPtr nameParam = modelElem->GetAttribute("name");
-  EXPECT_EQ(nameParam->GetType(), typeid(std::string));
+  EXPECT_TRUE(nameParam->IsType<std::string>());
 
   // Set test class variables based on sdf values
   // Set parameter update functions to test class accessors
@@ -129,12 +129,12 @@ TEST_F(SDFUpdate, UpdateElement)
   // Read static element value
   EXPECT_TRUE(modelElem->HasElement("static"));
   sdf::ParamPtr staticParam = modelElem->GetElement("static")->GetValue();
-  EXPECT_EQ(staticParam->GetType(), typeid(bool));
+  EXPECT_TRUE(staticParam->IsType<bool>());
 
   // Read pose element value
   EXPECT_TRUE(modelElem->HasElement("pose"));
   sdf::ParamPtr poseParam = modelElem->GetElement("pose")->GetValue();
-  EXPECT_EQ(poseParam->GetType(), typeid(ignition::math::Pose3d));
+  EXPECT_TRUE(poseParam->IsType<ignition::math::Pose3d>());
 
   // Set test class variables based on sdf values
   // Set parameter update functions to test class accessors
