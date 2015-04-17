@@ -5,6 +5,7 @@ include_directories (
   ${PROJECT_SOURCE_DIR}/test/gtest/include
   ${PROJECT_SOURCE_DIR}/test/gtest
   ${PROJECT_SOURCE_DIR}/test
+  ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
 link_directories(

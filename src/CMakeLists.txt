@@ -2,6 +2,7 @@ include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 include_directories(
   ${Boost_INCLUDE_DIR}
+  ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
 link_directories(
