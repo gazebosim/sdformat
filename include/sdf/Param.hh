@@ -138,14 +138,14 @@ namespace sdf
     /// \return True if parameter was successfully cast to the value type
     /// passed in.
     public: template<typename T>
-            bool Get(T &_value);
+            bool Get(T &_value) const;
 
     /// \brief Get the default value of the parameter.
     /// \param[out] _value The default value of the parameter.
     /// \return True if parameter was successfully cast to the value type
     /// passed in.
     public: template<typename T>
-            bool GetDefault(T &_value);
+            bool GetDefault(T &_value) const;
 
     /// \brief Equal operator. Set's the value and default value from the
     /// provided Param.
@@ -246,7 +246,7 @@ namespace sdf
 
   ///////////////////////////////////////////////
   template<typename T>
-  bool Param::Get(T &_value)
+  bool Param::Get(T &_value) const
   {
     try
     {
@@ -279,7 +279,7 @@ namespace sdf
 
   ///////////////////////////////////////////////
   template<typename T>
-  bool Param::GetDefault(T &_value)
+  bool Param::GetDefault(T &_value) const
   {
     try
     {
