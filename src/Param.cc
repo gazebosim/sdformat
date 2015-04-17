@@ -107,7 +107,7 @@ Param::~Param()
 }
 
 //////////////////////////////////////////////////
-bool Param::GetAny(boost::any &_anyVal)
+bool Param::GetAny(boost::any &_anyVal) const
 {
   if (typeid(int) == this->GetType())
   {
