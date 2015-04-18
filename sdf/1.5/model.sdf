@@ -22,7 +22,7 @@
     <description>A position and orientation in the global coordinate frame for the model. Position(x,y,z) and rotation (roll, pitch yaw) in the global coordinate frame.</description>
   </element>
 
-  <include filename="link.sdf" required="+"/>
+  <include filename="link.sdf" required="*"/>
   <include filename="joint.sdf" required="*"/>
   <include filename="plugin.sdf" required="*"/>
   <include filename="gripper.sdf" required="*"/>
