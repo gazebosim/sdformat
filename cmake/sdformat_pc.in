@@ -6,5 +6,5 @@ Name: SDF
 Description: Robot Modeling Language (SDF)
 Version: @SDF_VERSION_FULL@
 Requires:
-Libs: -L${libdir} -lsdformat
-CFlags: -I${includedir}/sdformat-@SDF_VERSION@ -std=c++11
+Libs: -L${libdir} -lsdformat -l@IGNTION-MATH_LIBRARIES@
+CFlags: -I${includedir}/sdformat-@SDF_VERSION@ -I@IGNITION-MATH_INCLUDE_DIRS@ -std=c++11
