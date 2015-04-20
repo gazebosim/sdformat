@@ -22,7 +22,7 @@ foreach(lib @PKG_LIBRARIES@)
   list(APPEND @PKG_NAME@_LIBRARIES ${onelib})
 endforeach()
 
-find_package(ignition-math2)
+find_package(ignition-math@IGNITION-MATH_REQUIRED_MAJOR_VERSION@)
 list(APPEND @PKG_NAME@_INCLUDE_DIRS ${IGNITION-MATH_INCLUDE_DIRS})
 list(APPEND @PKG_NAME@_LIBRARIES ${IGNITION-MATH_LIBRARIES})
 
