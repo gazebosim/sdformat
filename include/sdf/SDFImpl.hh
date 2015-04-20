@@ -18,6 +18,7 @@
 #define _SDFIMPL_HH_
 
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 #include "sdf/Types.hh"
 #include "sdf/Param.hh"
@@ -31,7 +32,7 @@ namespace sdf
   class SDFORMAT_VISIBLE SDF;
 
   /// \def SDFPtr
-  /// \bried boost shared pointer to SDF
+  /// \brief boost shared pointer to SDF
   typedef boost::shared_ptr<SDF> SDFPtr;
 
   /// \addtogroup sdf

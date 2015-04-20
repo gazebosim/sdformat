@@ -24,6 +24,7 @@
 
 #include "sdf/Types.hh"
 #include "sdf/Param.hh"
+#include "sdf/system_util.hh"
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -38,12 +39,15 @@ namespace sdf
   class SDFORMAT_VISIBLE Element;
 
   /// \def ElementPtr
-  /// \bried boost shared pointer to an SDF Element
+  /// \brief boost shared pointer to an SDF Element
   typedef boost::shared_ptr<Element> ElementPtr;
 
   /// \def ElementPtr_V
   /// \brief Vector of ElementPtr
   typedef std::vector< ElementPtr > ElementPtr_V;
+
+  /// \addtogroup sdf
+  /// \{
 
   /// \class Element Element.hh sdf/sdf.hh
   /// \brief SDF Element class
@@ -320,6 +324,7 @@ namespace sdf
     }
     return false;
   }
+  /// \}
 }
 
 #ifdef _WIN32
