@@ -8,6 +8,7 @@ include_directories(
 link_directories(
   ${PROJECT_BINARY_DIR}/test
   ${Boost_LIBRARY_DIR}
+  ${IGNITION-MATH_LIBRARY_DIRS}
 )
 
 if (USE_EXTERNAL_URDF)
