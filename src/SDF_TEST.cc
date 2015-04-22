@@ -32,7 +32,12 @@ class SDFUpdate : public testing::Test
                  / "sdf" / SDF_VERSION;
 
                // Store original env var.
+#ifndef _WIN32
                this->origSDFPath = getenv("SDF_PATH");
+#else
+               this->origSDFPath = const_cast<char*>(
+                   sdf::winGetEnv("SDF_PATH"));
+#endif
 
                setenv("SDF_PATH", path.string().c_str(), 1);
              }
@@ -95,7 +100,7 @@ TEST_F(SDFUpdate, UpdateAttribute)
   for (i = 0; i < 4; i++)
   {
     // Update test class variables
-    fixture.name[0] = 'd' + i;
+    fixture.name[0] = 'd' + static_cast<char>(i);
 
     // Update root sdf element
     sdfParsed.Root()->Update();
@@ -346,7 +351,7 @@ TEST_F(SDFUpdate, EmptyValues)
   EXPECT_EQ(elem->Get<sdf::Color>(emptyString), sdf::Color());
   elem->AddValue("color", ".1 .2 .3 1.0", "0", "description");
   EXPECT_EQ(elem->Get<sdf::Color>(emptyString),
-            sdf::Color(.1, .2, .3, 1.0));
+            sdf::Color(.1f, .2f, .3f, 1.0f));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<sdf::Time>(emptyString), sdf::Time());
