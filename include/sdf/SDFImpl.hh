@@ -95,6 +95,12 @@ namespace sdf
     /// \param[in] _version SDF version string.
     public: static void Version(const std::string &_version);
 
+// \todo Remove this warning push/pop after sdformat 4.0
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
     /// \brief Deprecated.
     /// \sa ElementPtr Root()
     /// \sa void Root(const ElementPtr _root)
@@ -104,6 +110,10 @@ namespace sdf
     /// \sa std::string Version()
     /// \sa Version(const std::string &_version)
     public: static std::string version SDF_DEPRECATED(4.0);
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
   };
   /// \}
 }
