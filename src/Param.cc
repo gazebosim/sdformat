@@ -318,7 +318,7 @@ void Param::Update()
       boost::apply_visitor(any_set(this->dataPtr->updateFunc()),
       this->dataPtr->value);
     }
-    catch(boost::bad_lexical_cast &e)
+    catch(boost::bad_lexical_cast &/*e*/)
     {
       sdferr << "Unable to set value using Update for key["
         << this->dataPtr->key << "]\n";

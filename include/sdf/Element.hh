@@ -17,8 +17,8 @@
 #ifndef _SDF_ELEMENT_HH_
 #define _SDF_ELEMENT_HH_
 
-#include <vector>
 #include <string>
+#include <vector>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
@@ -35,10 +35,18 @@
 #pragma GCC diagnostic pop
 #endif
 
+#ifdef _WIN32
+// Disable warning C4251 which is triggered by
+// boost::enable_shared_from_this
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser
 namespace sdf
 {
+  class ElementPrivate;
   class SDFORMAT_VISIBLE Element;
 
   /// \def ElementPtr
@@ -170,13 +178,13 @@ namespace sdf
     public: ParamPtr GetAttribute(const std::string &_key);
 
     /// \brief Get the number of attributes
-    public: unsigned int GetAttributeCount() const;
+    public: size_t GetAttributeCount() const;
 
     /// \brief Get an attribute using an index
     public: ParamPtr GetAttribute(unsigned int _index) const;
 
     /// \brief Get the number of element descriptions
-    public: unsigned int GetElementDescriptionCount() const;
+    public: size_t GetElementDescriptionCount() const;
 
     /// \brief Get an element description using an index
     public: ElementPtr GetElementDescription(unsigned int _index) const;
@@ -202,37 +210,10 @@ namespace sdf
     public: boost::any GetAny(const std::string &_key = "");
 
     public: template<typename T>
-            T Get(const std::string &_key = "")
-            {
-              T result = T();
-
-              if (_key.empty() && this->value)
-                this->value->Get<T>(result);
-              else if (!_key.empty())
-              {
-                ParamPtr param = this->GetAttribute(_key);
-                if (param)
-                  param->Get(result);
-                else if (this->HasElement(_key))
-                  result = this->GetElementImpl(_key)->Get<T>();
-                else if (this->HasElementDescription(_key))
-                  result = this->GetElementDescription(_key)->Get<T>();
-                else
-                  sdferr << "Unable to find value for key[" << _key << "]\n";
-              }
-              return result;
-            }
+            T Get(const std::string &_key = "");
 
     public: template<typename T>
-            bool Set(const T &_value)
-            {
-              if (this->value)
-              {
-                this->value->Set(_value);
-                return true;
-              }
-              return false;
-            }
+            bool Set(const T &_value);
 
     public: bool HasElement(const std::string &_name) const;
 
@@ -270,6 +251,8 @@ namespace sdf
     /// \brief Add a new element description
     public: void AddElementDescription(ElementPtr _elem);
 
+    public: ElementPtr GetElementImpl(const std::string &_name) const;
+
     private: void ToString(const std::string &_prefix,
                            std::ostringstream &_out) const;
 
@@ -278,30 +261,85 @@ namespace sdf
                  const std::string &_type, const std::string &_defaultValue,
                  bool _required, const std::string &_description="");
 
-    public: ElementPtr GetElementImpl(const std::string &_name) const;
 
-    private: std::string name;
-    private: std::string required;
-    private: std::string description;
-    private: bool copyChildren;
+    /// \brief Private data pointer
+    private: ElementPrivate *dataPtr;
+  };
 
-    private: ElementPtr parent;
+  /// \internal
+  /// \brief Private data for Element
+  class ElementPrivate
+  {
+    /// \brief Element name
+    public: std::string name;
+
+    /// \brief True if element is required
+    public: std::string required;
+
+    /// \brief Element description
+    public: std::string description;
+
+    /// \brief True if element's children should be copied.
+    public: bool copyChildren;
+
+    /// \brief Element's parent
+    public: ElementPtr parent;
 
     // Attributes of this element
-    private: Param_V attributes;
+    public: Param_V attributes;
 
     // Value of this element
-    private: ParamPtr value;
+    public: ParamPtr value;
 
     // The existing child elements
-    private: ElementPtr_V elements;
+    public: ElementPtr_V elements;
 
     // The possible child elements
-    private: ElementPtr_V elementDescriptions;
+    public: ElementPtr_V elementDescriptions;
 
     /// name of the include file that was used to create this element
-    private: std::string includeFilename;
+    public: std::string includeFilename;
   };
+
+  ///////////////////////////////////////////////
+  template<typename T>
+  T Element::Get(const std::string &_key)
+  {
+    T result = T();
+
+    if (_key.empty() && this->dataPtr->value)
+      this->dataPtr->value->Get<T>(result);
+    else if (!_key.empty())
+    {
+      ParamPtr param = this->GetAttribute(_key);
+      if (param)
+        param->Get(result);
+      else if (this->HasElement(_key))
+        result = this->GetElementImpl(_key)->Get<T>();
+      else if (this->HasElementDescription(_key))
+        result = this->GetElementDescription(_key)->Get<T>();
+      else
+        sdferr << "Unable to find value for key[" << _key << "]\n";
+    }
+    return result;
+  }
+
+  ///////////////////////////////////////////////
+  template<typename T>
+  bool Element::Set(const T &_value)
+  {
+    if (this->dataPtr->value)
+    {
+      this->dataPtr->value->Set(_value);
+      return true;
+    }
+    return false;
+  }
   /// \}
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
+
 #endif

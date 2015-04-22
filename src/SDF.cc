@@ -90,7 +90,12 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
     return path.string();
 
   // Next check SDF_PATH environment variable
+#ifndef _WIN32
   char *pathCStr = getenv("SDF_PATH");
+#else
+  const char *pathCStr = sdf::winGetEnv("SDF_PATH");
+#endif
+
   if (pathCStr)
   {
     std::vector<std::string> paths;
@@ -158,6 +163,7 @@ void sdf::addURIPath(const std::string &_uri, const std::string &_path)
   }
 }
 
+/////////////////////////////////////////////////
 /// \todo Remove this pragma once this->root is removed
 #ifndef _WIN32
 #pragma GCC diagnostic push
@@ -167,7 +173,6 @@ void sdf::addURIPath(const std::string &_uri, const std::string &_path)
 SDF::SDF()
   : root(new Element)
 {
-  this->root.reset(new Element);
 }
 
 /////////////////////////////////////////////////
