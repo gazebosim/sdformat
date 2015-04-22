@@ -1288,7 +1288,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       else if (childElem->ValueStr() == "kp")
       {
         sdf->isKp = true;
-        sdf->kd = boost::lexical_cast<double>(
+        sdf->kp = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "kd")
@@ -1356,7 +1356,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         sdf->fudgeFactor = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
-      else if (childElem->ValueStr() == "->provideFeedback")
+      else if (childElem->ValueStr() == "provideFeedback")
       {
         sdf->isProvideFeedback = true;
         std::string valueStr = GetKeyValueAsString(childElem);
@@ -1452,7 +1452,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
         if (!(*ge)->fdir1.empty())
           AddKeyValue(frictionOde, "fdir1", (*ge)->fdir1);
         if ((*ge)->isKp)
-          AddKeyValue(contactOde, "kp", Values2str(1, &(*ge)->kd));
+          AddKeyValue(contactOde, "kp", Values2str(1, &(*ge)->kp));
         if ((*ge)->isKd)
           AddKeyValue(contactOde, "kd", Values2str(1, &(*ge)->kd));
         // max contact interpenetration correction velocity
@@ -1632,7 +1632,7 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
              Values2str(1, &(*ge)->initialJointPosition));
          */
 
-        // insert ->provideFeedback
+        // insert provideFeedback
         if ((*ge)->isProvideFeedback)
         {
           if ((*ge)->provideFeedback)
