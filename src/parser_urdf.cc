@@ -256,7 +256,7 @@ urdf::Vector3 ParseVector3(const std::string &_str, double _scale)
         vals.push_back(_scale
             * boost::lexical_cast<double>(pieces[i].c_str()));
       }
-      catch(boost::bad_lexical_cast &e)
+      catch(boost::bad_lexical_cast &)
       {
         sdferr << "xml key [" << _str
           << "][" << i << "] value [" << pieces[i]
@@ -1183,7 +1183,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
     for (TiXmlElement *childElem = sdfXml->FirstChildElement();
         childElem; childElem = childElem->NextSiblingElement())
     {
-      sdf->oldLinkName = refStr;
+      sdf->dataPtr->oldLinkName = refStr;
 
       // go through all elements of the extension,
       //   extract what we know, and save the rest in blobs
@@ -1193,7 +1193,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       // material
       if (childElem->ValueStr() == "material")
       {
-        sdf->material = GetKeyValueAsString(childElem);
+        sdf->dataPtr->material = GetKeyValueAsString(childElem);
       }
       else if (childElem->ValueStr() == "visual")
       {
@@ -1225,7 +1225,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
           // save all unknown stuff in a vector of blobs
           TiXmlElementPtr blob(
             new TiXmlElement(*xmlNewDoc.FirstChildElement()));
-          sdf->visual_blobs.push_back(blob);
+          sdf->dataPtr->visual_blobs.push_back(blob);
         }
       }
       else if (childElem->ValueStr() == "static")
@@ -1235,9 +1235,9 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         // default of setting static flag is false
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
             valueStr == "1")
-          sdf->setStaticFlag = true;
+          sdf->dataPtr->setStaticFlag = true;
         else
-          sdf->setStaticFlag = false;
+          sdf->dataPtr->setStaticFlag = false;
       }
       else if (childElem->ValueStr() == "turnGravityOff")
       {
@@ -1246,54 +1246,54 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         // default of gravity is true
         if (lowerStr(valueStr) == "false" || lowerStr(valueStr) == "no" ||
             valueStr == "0")
-          sdf->gravity = true;
+          sdf->dataPtr->gravity = true;
         else
-          sdf->gravity = false;
+          sdf->dataPtr->gravity = false;
       }
       else if (childElem->ValueStr() == "dampingFactor")
       {
-        sdf->isDampingFactor = true;
-        sdf->dampingFactor = boost::lexical_cast<double>(
+        sdf->dataPtr->isDampingFactor = true;
+        sdf->dataPtr->dampingFactor = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "maxVel")
       {
-        sdf->isMaxVel = true;
-        sdf->maxVel = boost::lexical_cast<double>(
+        sdf->dataPtr->isMaxVel = true;
+        sdf->dataPtr->maxVel = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "minDepth")
       {
-        sdf->isMinDepth = true;
-        sdf->minDepth = boost::lexical_cast<double>(
+        sdf->dataPtr->isMinDepth = true;
+        sdf->dataPtr->minDepth = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "mu1")
       {
-        sdf->isMu1 = true;
-        sdf->mu1 = boost::lexical_cast<double>(
+        sdf->dataPtr->isMu1 = true;
+        sdf->dataPtr->mu1 = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "mu2")
       {
-        sdf->isMu2 = true;
-        sdf->mu2 = boost::lexical_cast<double>(
+        sdf->dataPtr->isMu2 = true;
+        sdf->dataPtr->mu2 = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "fdir1")
       {
-        sdf->fdir1 = GetKeyValueAsString(childElem);
+        sdf->dataPtr->fdir1 = GetKeyValueAsString(childElem);
       }
       else if (childElem->ValueStr() == "kp")
       {
-        sdf->isKp = true;
-        sdf->kp = boost::lexical_cast<double>(
+        sdf->dataPtr->isKp = true;
+        sdf->dataPtr->kd = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "kd")
       {
-        sdf->isKd = true;
-        sdf->kd = boost::lexical_cast<double>(
+        sdf->dataPtr->isKd = true;
+        sdf->dataPtr->kd = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "selfCollide")
@@ -1303,68 +1303,68 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         // default of selfCollide is false
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
             valueStr == "1")
-          sdf->selfCollide = true;
+          sdf->dataPtr->selfCollide = true;
         else
-          sdf->selfCollide = false;
+          sdf->dataPtr->selfCollide = false;
       }
       else if (childElem->ValueStr() == "maxContacts")
       {
-        sdf->isMaxContacts = true;
-        sdf->maxContacts = boost::lexical_cast<int>(
+        sdf->dataPtr->isMaxContacts = true;
+        sdf->dataPtr->maxContacts = boost::lexical_cast<int>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "laserRetro")
       {
-        sdf->isLaserRetro = true;
-        sdf->laserRetro = boost::lexical_cast<double>(
+        sdf->dataPtr->isLaserRetro = true;
+        sdf->dataPtr->laserRetro = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "stopCfm")
       {
-        sdf->isStopCfm = true;
-        sdf->stopCfm = boost::lexical_cast<double>(
+        sdf->dataPtr->isStopCfm = true;
+        sdf->dataPtr->stopCfm = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "stopErp")
       {
-        sdf->isStopErp = true;
-        sdf->stopErp = boost::lexical_cast<double>(
+        sdf->dataPtr->isStopErp = true;
+        sdf->dataPtr->stopErp = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "stopKp")
       {
-        sdf->isStopKp = true;
-        sdf->stopKp = boost::lexical_cast<double>(
+        sdf->dataPtr->isStopKp = true;
+        sdf->dataPtr->stopKp = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "stopKd")
       {
-        sdf->isStopKd = true;
-        sdf->stopKd = boost::lexical_cast<double>(
+        sdf->dataPtr->isStopKd = true;
+        sdf->dataPtr->stopKd = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "initialJointPosition")
       {
-        sdf->isInitialJointPosition = true;
-        sdf->initialJointPosition = boost::lexical_cast<double>(
+        sdf->dataPtr->isInitialJointPosition = true;
+        sdf->dataPtr->initialJointPosition = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
       else if (childElem->ValueStr() == "fudgeFactor")
       {
-        sdf->isFudgeFactor = true;
-        sdf->fudgeFactor = boost::lexical_cast<double>(
+        sdf->dataPtr->isFudgeFactor = true;
+        sdf->dataPtr->fudgeFactor = boost::lexical_cast<double>(
             GetKeyValueAsString(childElem).c_str());
       }
-      else if (childElem->ValueStr() == "provideFeedback")
+      else if (childElem->ValueStr() == "->dataPtr->provideFeedback")
       {
-        sdf->isProvideFeedback = true;
+        sdf->dataPtr->isProvideFeedback = true;
         std::string valueStr = GetKeyValueAsString(childElem);
 
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
             valueStr == "1")
-          sdf->provideFeedback = true;
+          sdf->dataPtr->provideFeedback = true;
         else
-          sdf->provideFeedback = false;
+          sdf->dataPtr->provideFeedback = false;
       }
       else if (childElem->ValueStr() == "canonicalBody")
       {
@@ -1378,14 +1378,14 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
                   << "implicitSpringDamper, please replace instances "
                   << "of cfmDamping with implicitSpringDamper in your model.\n";
 
-        sdf->isImplicitSpringDamper = true;
+        sdf->dataPtr->isImplicitSpringDamper = true;
         std::string valueStr = GetKeyValueAsString(childElem);
 
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
             valueStr == "1")
-          sdf->implicitSpringDamper = true;
+          sdf->dataPtr->implicitSpringDamper = true;
         else
-          sdf->implicitSpringDamper = false;
+          sdf->dataPtr->implicitSpringDamper = false;
       }
       else if (childElem->ValueStr() == "disableFixedJointLumping")
       {
@@ -1410,7 +1410,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
 
         // save all unknown stuff in a vector of blobs
         TiXmlElementPtr blob(new TiXmlElement(*xmlNewDoc.FirstChildElement()));
-        sdf->blobs.push_back(blob);
+        sdf->dataPtr->blobs.push_back(blob);
       }
     }
 
@@ -1430,10 +1430,10 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
     for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
         ge != sdfIt->second.end(); ++ge)
     {
-      if (((*ge)->oldLinkName == _linkName) ||
+      if (((*ge)->dataPtr->oldLinkName == _linkName) ||
           (_elem->Attribute("name") &&
            (std::string(_elem->Attribute("name")) ==
-           _linkName + g_collisionExt + std::string("_") + (*ge)->oldLinkName)))
+           _linkName + g_collisionExt + std::string("_") + (*ge)->dataPtr->oldLinkName)))
       {
         TiXmlElement *surface = new TiXmlElement("surface");
         TiXmlElement *friction = new TiXmlElement("friction");
@@ -1442,32 +1442,32 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
         TiXmlElement *contactOde = new TiXmlElement("ode");
 
         // insert mu1, mu2, kp, kd for collision
-        if ((*ge)->isMu1)
+        if ((*ge)->dataPtr->isMu1)
           AddKeyValue(frictionOde, "mu",
-              Values2str(1, &(*ge)->mu1));
-        if ((*ge)->isMu2)
+              Values2str(1, &(*ge)->dataPtr->mu1));
+        if ((*ge)->dataPtr->isMu2)
           AddKeyValue(frictionOde, "mu2",
-              Values2str(1, &(*ge)->mu2));
-        if (!(*ge)->fdir1.empty())
-          AddKeyValue(frictionOde, "fdir1", (*ge)->fdir1);
-        if ((*ge)->isKp)
-          AddKeyValue(contactOde, "kp", Values2str(1, &(*ge)->kp));
-        if ((*ge)->isKd)
-          AddKeyValue(contactOde, "kd", Values2str(1, &(*ge)->kd));
+              Values2str(1, &(*ge)->dataPtr->mu2));
+        if (!(*ge)->dataPtr->fdir1.empty())
+          AddKeyValue(frictionOde, "fdir1", (*ge)->dataPtr->fdir1);
+        if ((*ge)->dataPtr->isKp)
+          AddKeyValue(contactOde, "kp", Values2str(1, &(*ge)->dataPtr->kd));
+        if ((*ge)->dataPtr->isKd)
+          AddKeyValue(contactOde, "kd", Values2str(1, &(*ge)->dataPtr->kd));
         // max contact interpenetration correction velocity
-        if ((*ge)->isMaxVel)
+        if ((*ge)->dataPtr->isMaxVel)
           AddKeyValue(contactOde, "max_vel",
-              Values2str(1, &(*ge)->maxVel));
+              Values2str(1, &(*ge)->dataPtr->maxVel));
         // contact interpenetration margin tolerance
-        if ((*ge)->isMinDepth)
+        if ((*ge)->dataPtr->isMinDepth)
           AddKeyValue(contactOde, "min_depth",
-              Values2str(1, &(*ge)->minDepth));
-        if ((*ge)->isLaserRetro)
+              Values2str(1, &(*ge)->dataPtr->minDepth));
+        if ((*ge)->dataPtr->isLaserRetro)
           AddKeyValue(_elem, "laser_retro",
-              Values2str(1, &(*ge)->laserRetro));
-        if ((*ge)->isMaxContacts)
+              Values2str(1, &(*ge)->dataPtr->laserRetro));
+        if ((*ge)->dataPtr->isMaxContacts)
           AddKeyValue(_elem, "max_contacts",
-              boost::lexical_cast<std::string>((*ge)->maxContacts));
+              boost::lexical_cast<std::string>((*ge)->dataPtr->maxContacts));
 
         contact->LinkEndChild(contactOde);
         surface->LinkEndChild(contact);
@@ -1490,20 +1490,20 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
     for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
         ge != sdfIt->second.end(); ++ge)
     {
-      if (_linkName.find((*ge)->oldLinkName) != std::string::npos)
+      if (_linkName.find((*ge)->dataPtr->oldLinkName) != std::string::npos)
       {
         // insert material block
-        if (!(*ge)->material.empty())
+        if (!(*ge)->dataPtr->material.empty())
         {
           // new sdf needs <material><script>...</script></material>
           TiXmlElement *materialElem = new TiXmlElement("material");
           TiXmlElement *scriptElem = new TiXmlElement("script");
           if (scriptElem && materialElem)
           {
-            AddKeyValue(scriptElem, "name", (*ge)->material);
+            AddKeyValue(scriptElem, "name", (*ge)->dataPtr->material);
             materialElem->LinkEndChild(scriptElem);
             _elem->LinkEndChild(materialElem);
-            // AddKeyValue(_elem, "material", (*ge)->material);
+            // AddKeyValue(_elem, "material", (*ge)->dataPtr->material);
           }
           else
           {
@@ -1513,11 +1513,11 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
         }
 
         // insert any blobs (including visual plugins)
-        if (!(*ge)->visual_blobs.empty())
+        if (!(*ge)->dataPtr->visual_blobs.empty())
         {
           std::vector<TiXmlElementPtr>::iterator blob;
-          for (blob = (*ge)->visual_blobs.begin();
-              blob != (*ge)->visual_blobs.end(); ++blob)
+          for (blob = (*ge)->dataPtr->visual_blobs.begin();
+              blob != (*ge)->dataPtr->visual_blobs.end(); ++blob)
           {
             _elem->LinkEndChild((*blob)->Clone());
           }
@@ -1543,31 +1543,31 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
           sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
       {
         // insert gravity
-        if ((*ge)->gravity)
+        if ((*ge)->dataPtr->gravity)
           AddKeyValue(_elem, "gravity", "true");
         else
           AddKeyValue(_elem, "gravity", "false");
 
         // damping factor
         TiXmlElement *velocityDecay = new TiXmlElement("velocity_decay");
-        if ((*ge)->isDampingFactor)
+        if ((*ge)->dataPtr->isDampingFactor)
         {
           /// @todo separate linear and angular velocity decay
           AddKeyValue(velocityDecay, "linear",
-              Values2str(1, &(*ge)->dampingFactor));
+              Values2str(1, &(*ge)->dataPtr->dampingFactor));
           AddKeyValue(velocityDecay, "angular",
-              Values2str(1, &(*ge)->dampingFactor));
+              Values2str(1, &(*ge)->dataPtr->dampingFactor));
         }
         _elem->LinkEndChild(velocityDecay);
         // selfCollide tag
-        if ((*ge)->selfCollide)
+        if ((*ge)->dataPtr->selfCollide)
           AddKeyValue(_elem, "self_collide", "true");
         else
           AddKeyValue(_elem, "self_collide", "false");
         // insert blobs into body
         for (std::vector<TiXmlElementPtr>::iterator
-            blobIt = (*ge)->blobs.begin();
-            blobIt != (*ge)->blobs.end(); ++blobIt)
+            blobIt = (*ge)->dataPtr->blobs.begin();
+            blobIt != (*ge)->dataPtr->blobs.end(); ++blobIt)
         {
           _elem->LinkEndChild((*blobIt)->Clone());
         }
@@ -1617,24 +1617,24 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
         }
 
         // insert stopCfm, stopErp, fudgeFactor
-        if ((*ge)->isStopCfm)
+        if ((*ge)->dataPtr->isStopCfm)
         {
-          AddKeyValue(limit, "cfm", Values2str(1, &(*ge)->stopCfm));
+          AddKeyValue(limit, "cfm", Values2str(1, &(*ge)->dataPtr->stopCfm));
         }
-        if ((*ge)->isStopErp)
+        if ((*ge)->dataPtr->isStopErp)
         {
-          AddKeyValue(limit, "erp", Values2str(1, &(*ge)->stopErp));
+          AddKeyValue(limit, "erp", Values2str(1, &(*ge)->dataPtr->stopErp));
         }
         /* gone
-        if ((*ge)->isInitialJointPosition)
+        if ((*ge)->dataPtr->isInitialJointPosition)
            AddKeyValue(_elem, "initialJointPosition",
-             Values2str(1, &(*ge)->initialJointPosition));
+             Values2str(1, &(*ge)->dataPtr->initialJointPosition));
          */
 
-        // insert provideFeedback
-        if ((*ge)->isProvideFeedback)
+        // insert ->dataPtr->provideFeedback
+        if ((*ge)->dataPtr->isProvideFeedback)
         {
-          if ((*ge)->provideFeedback)
+          if ((*ge)->dataPtr->provideFeedback)
           {
             AddKeyValue(physics, "provide_feedback", "true");
             AddKeyValue(physicsOde, "provide_feedback", "true");
@@ -1647,9 +1647,9 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
         }
 
         // insert implicitSpringDamper
-        if ((*ge)->isImplicitSpringDamper)
+        if ((*ge)->dataPtr->isImplicitSpringDamper)
         {
-          if ((*ge)->implicitSpringDamper)
+          if ((*ge)->dataPtr->implicitSpringDamper)
           {
             AddKeyValue(physicsOde, "implicit_spring_damper", "true");
             /// \TODO: deprecating cfm_damping, transitional tag below
@@ -1664,9 +1664,9 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
         }
 
         // insert fudgeFactor
-        if ((*ge)->isFudgeFactor)
+        if ((*ge)->dataPtr->isFudgeFactor)
           AddKeyValue(physicsOde, "fudge_factor",
-              Values2str(1, &(*ge)->fudgeFactor));
+              Values2str(1, &(*ge)->dataPtr->fudgeFactor));
 
         if (newLimit)
           physicsOde->LinkEndChild(limit);
@@ -1677,8 +1677,8 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
 
         // insert all additional blobs into joint
         for (std::vector<TiXmlElementPtr>::iterator
-            blobIt = (*ge)->blobs.begin();
-            blobIt != (*ge)->blobs.end(); ++blobIt)
+            blobIt = (*ge)->dataPtr->blobs.begin();
+            blobIt != (*ge)->dataPtr->blobs.end(); ++blobIt)
         {
           _elem->LinkEndChild((*blobIt)->Clone());
         }
@@ -1701,15 +1701,15 @@ void InsertSDFExtensionRobot(TiXmlElement *_elem)
           ge = sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
       {
         // insert static flag
-        if ((*ge)->setStaticFlag)
+        if ((*ge)->dataPtr->setStaticFlag)
           AddKeyValue(_elem, "static", "true");
         else
           AddKeyValue(_elem, "static", "false");
 
         // copy extension containing blobs and without reference
         for (std::vector<TiXmlElementPtr>::iterator
-            blobIt = (*ge)->blobs.begin();
-            blobIt != (*ge)->blobs.end(); ++blobIt)
+            blobIt = (*ge)->dataPtr->blobs.begin();
+            blobIt != (*ge)->dataPtr->blobs.end(); ++blobIt)
         {
           std::ostringstream streamIn;
           streamIn << *(*blobIt);
@@ -2000,8 +2000,8 @@ void ReduceSDFExtensionToParent(UrdfLinkPtr _link)
     for (std::vector<SDFExtensionPtr>::iterator ge = ext->second.begin();
         ge != ext->second.end(); ++ge)
     {
-      (*ge)->reductionTransform = TransformToParentFrame(
-          (*ge)->reductionTransform,
+      (*ge)->dataPtr->reductionTransform = TransformToParentFrame(
+          (*ge)->dataPtr->reductionTransform,
           _link->parent_joint->parent_to_joint_origin_transform);
       // for sensor and projector blocks only
       ReduceSDFExtensionsTransform((*ge));
@@ -2059,8 +2059,8 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
   sdfdbg << "  STRING REPLACE: instances of _link name ["
         << linkName << "] with [" << newLinkName << "]\n";
   for (std::vector<TiXmlElementPtr>::iterator blobIt =
-         _ge->blobs.begin();
-         blobIt != _ge->blobs.end(); ++blobIt)
+         _ge->dataPtr->blobs.begin();
+         blobIt != _ge->dataPtr->blobs.end(); ++blobIt)
   {
     std::ostringstream debugStreamIn;
     debugStreamIn << *(*blobIt);
@@ -2071,9 +2071,9 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
 
     ReduceSDFExtensionContactSensorFrameReplace(blobIt, _link);
     ReduceSDFExtensionPluginFrameReplace(blobIt, _link,
-        "plugin", "bodyName", _ge->reductionTransform);
+        "plugin", "bodyName", _ge->dataPtr->reductionTransform);
     ReduceSDFExtensionPluginFrameReplace(blobIt, _link,
-        "plugin", "frameName", _ge->reductionTransform);
+        "plugin", "frameName", _ge->dataPtr->reductionTransform);
     ReduceSDFExtensionProjectorFrameReplace(blobIt, _link);
     ReduceSDFExtensionGripperFrameReplace(blobIt, _link);
     ReduceSDFExtensionJointFrameReplace(blobIt, _link);
@@ -2087,14 +2087,14 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
 void ReduceSDFExtensionsTransform(SDFExtensionPtr _ge)
 {
   for (std::vector<TiXmlElementPtr>::iterator blobIt =
-         _ge->blobs.begin();
-         blobIt != _ge->blobs.end(); ++blobIt)
+         _ge->dataPtr->blobs.begin();
+         blobIt != _ge->dataPtr->blobs.end(); ++blobIt)
   {
     /// @todo make sure we are not missing any additional transform reductions
     ReduceSDFExtensionSensorTransformReduction(blobIt,
-        _ge->reductionTransform);
+        _ge->dataPtr->reductionTransform);
     ReduceSDFExtensionProjectorTransformReduction(blobIt,
-        _ge->reductionTransform);
+        _ge->dataPtr->reductionTransform);
   }
 }
 
@@ -2109,14 +2109,14 @@ void URDF2SDF::ListSDFExtensions()
     for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
         ge != sdfIt->second.end(); ++ge)
     {
-      if (!(*ge)->blobs.empty())
+      if (!(*ge)->dataPtr->blobs.empty())
       {
-        sdfdbg <<  "  PRINTING [" << static_cast<int>((*ge)->blobs.size())
+        sdfdbg <<  "  PRINTING [" << static_cast<int>((*ge)->dataPtr->blobs.size())
           << "] BLOBS for extension [" << ++extCount
           << "] referencing [" << sdfIt->first << "]\n";
         for (std::vector<TiXmlElementPtr>::iterator
-            blobIt = (*ge)->blobs.begin();
-            blobIt != (*ge)->blobs.end(); ++blobIt)
+            blobIt = (*ge)->dataPtr->blobs.begin();
+            blobIt != (*ge)->dataPtr->blobs.end(); ++blobIt)
         {
           std::ostringstream streamIn;
           streamIn << *(*blobIt);
@@ -2142,8 +2142,8 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
           ge = sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
       {
         for (std::vector<TiXmlElementPtr>::iterator
-            blobIt = (*ge)->blobs.begin();
-            blobIt != (*ge)->blobs.end(); ++blobIt)
+            blobIt = (*ge)->dataPtr->blobs.begin();
+            blobIt != (*ge)->dataPtr->blobs.end(); ++blobIt)
         {
           std::ostringstream streamIn;
           streamIn << *(*blobIt);
