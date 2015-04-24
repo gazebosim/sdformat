@@ -9,6 +9,10 @@
     <description>A position and orientation in the parent coordinate frame for the camera.</description>
   </element>
 
+  <element name="projection_type" type="string" default="perspective" required="0">
+    <description>Set the type of projection for the camera. Valid values are "perspective" and "orthographic".</description>
+  </element>
+
   <element name="horizontal_fov" type="double" default="1.047" min="0.1" max="1.5708" required="1">
     <description>Horizontal field of view</description>
   </element> <!-- End Horizontal_FOV -->
