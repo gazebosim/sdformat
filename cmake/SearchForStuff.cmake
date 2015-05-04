@@ -17,7 +17,7 @@ if (NOT Boost_FOUND)
   BUILD_ERROR ("Boost not found. Please install thread signals system filesystem program_options regex boost version ${MIN_BOOST_VERSION} or higher.")
 endif() 
 
-if (USE_EXTERNAL_TINXYML)
+if (USE_EXTERNAL_TINYXML)
   #################################################
   # Find tinyxml. Only debian distributions package tinyxml with a pkg-config
   # Use pkg_check_modules and fallback to manual detection (needed, at least, for MacOS)
@@ -86,12 +86,11 @@ endif()
 
 ################################################
 # Find ruby executable to produce xml schemas
-# Use quiet to avoid complains from ruby headers or libs not installed
-find_package(Ruby 1.9.1 QUIET)
-if (NOT RUBY_EXECUTABLE)
+find_program(RUBY ruby)
+if (NOT RUBY)
     BUILD_ERROR ("Ruby version 1.9 is needed to build xml schemas")
 else()
-    message(STATUS "Found ruby executable: ${RUBY_EXECUTABLE}")
+    message(STATUS "Found ruby executable: ${RUBY}")
 endif()
 
 #################################################

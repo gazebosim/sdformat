@@ -94,7 +94,9 @@ endmacro()
 #################################################
 macro (sdf_setup_windows)
   # Need for M_PI constant
-  add_definitions(-D_USE_MATH_DEFINES) 
+  add_definitions(-D_USE_MATH_DEFINES -DWINDOWS_LEAN_AND_MEAN) 
+  # Suppress warnings caused by boost
+  add_definitions(/wd4512 /wd4996)
   # Use dynamic linking for boost
   add_definitions(-DBOOST_ALL_DYN_LINK)
   # And force linking to MSVC dynamic runtime
@@ -137,7 +139,6 @@ macro (sdf_build_tests)
 
     add_dependencies(${BINARY_NAME}
       gtest gtest_main sdformat
-      ${tinyxml_LIBRARIES}
       )
      
     if (UNIX)
@@ -163,7 +164,7 @@ macro (sdf_build_tests)
   
     # Check that the test produced a result and create a failure if it didn't.
     # Guards against crashed and timed out tests.
-    add_test(check_${BINARY_NAME} ${PROJECT_SOURCE_DIR}/tools/check_test_ran.py
+    add_test(check_${BINARY_NAME} python ${PROJECT_SOURCE_DIR}/tools/check_test_ran.py
              ${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
   endforeach()
 endmacro()

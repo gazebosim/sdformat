@@ -31,8 +31,9 @@
 *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
-
+#ifndef _WIN32
 #pragma GCC system_header
+#endif
 /* Author: Wim Meeussen */
 
 #ifndef URDF_PARSER_URDF_PARSER_H

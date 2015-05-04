@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <stdint.h>
 #include <string>
 
 #include "sdf/system_util.hh"
@@ -35,6 +36,8 @@ namespace sdf
     throwStream << msg << std::endl << std::flush;\
     throw sdf::Exception(__FILE__, __LINE__, throwStream.str()); }
 
+  class ExceptionPrivate;
+
   /// \class Exception Exception.hh common/common.hh
   /// \brief Class for generating exceptions
   class SDFORMAT_VISIBLE Exception
@@ -47,8 +50,8 @@ namespace sdf
     /// \param[in] _line Line number where the error occurred
     /// \param[in] _msg Error message
     public: Exception(const char *_file,
-                        int _line,
-                        std::string _msg);
+                      int64_t _line,
+                      std::string _msg);
 
     /// \brief Destructor
     public: virtual ~Exception();
@@ -64,14 +67,6 @@ namespace sdf
     /// \brief Print the exception to std out.
     public: void Print() const;
 
-    /// \brief The error function
-    private: std::string file;
-
-    /// \brief Line the error occured on
-    private: int line;
-
-    /// \brief The error string
-    private: std::string str;
 
     /// \brief stream insertion operator for Gazebo Error
     /// \param[in] _out the output stream
@@ -81,6 +76,9 @@ namespace sdf
             {
               return _out << _err.GetErrorStr();
             }
+
+    /// \brief Private data pointer.
+    private: ExceptionPrivate *dataPtr;
   };
 
   /// \class InternalError Exception.hh common/common.hh
@@ -96,7 +94,7 @@ namespace sdf
     /// \param[in] _file File name
     /// \param[in] _line Line number where the error occurred
     /// \param[in] _msg Error message
-    public: InternalError(const char *_file, int _line,
+    public: InternalError(const char *_file, int64_t _line,
                           const std::string _msg);
 
     /// \brief Destructor
@@ -118,7 +116,7 @@ namespace sdf
     /// \param[in] _function Function where assertion failed
     /// \param[in] _msg Function where assertion failed
     public: AssertionInternalError(const char *_file,
-                                   int _line,
+                                   int64_t _line,
                                    const std::string _expr,
                                    const std::string _function,
                                    const std::string _msg = "");

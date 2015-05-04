@@ -20,6 +20,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
+#include <sstream>
+#include <vector>
+#include <boost/shared_ptr.hpp>
 
 #include "sdf/system_util.hh"
 
@@ -36,6 +40,13 @@
 
 namespace sdf
 {
+  /// \brief Windows equivalent of getEnv.
+  /// Should only be called when using windows.
+  /// \param[in] _name Name of the environment variable to get.
+  /// \return Environment variable contents, or NULL on error.
+  SDFORMAT_VISIBLE
+  const char *winGetEnv(const char *_name);
+
   /// \brief check if two values are equal, within a tolerance
   /// \param[in] _a the first value
   /// \param[in] _b the second value
@@ -55,8 +66,8 @@ namespace sdf
     /// \param[in] _g Green value (range 0 to 1
     /// \param[in] _b Blue value (range 0 to 1
     /// \param[in] _a Alpha value (0=transparent, 1=opaque)
-    public: Color(double _r = 0.0, double _g = 0.0,
-                double _b = 0.0, double _a = 1.0)
+    public: Color(float _r = 0.0f, float _g = 0.0f,
+                  float _b = 0.0f, float _a = 1.0f)
             : r(_r), g(_g), b(_b), a(_a) {}
 
     /// \brief Stream insertion operator

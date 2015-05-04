@@ -14,12 +14,8 @@
  * limitations under the License.
  *
  */
-/*
- * Desc: Gazebo Error
- * Author: Nathan Koenig
- * Date: 07 May 2007
- */
 
+#include "sdf/ExceptionPrivate.hh"
 #include "sdf/Console.hh"
 #include "sdf/Exception.hh"
 
@@ -27,40 +23,45 @@ using namespace sdf;
 
 //////////////////////////////////////////////////
 Exception::Exception()
+  : dataPtr(new ExceptionPrivate)
 {
 }
 
 //////////////////////////////////////////////////
-Exception::Exception(const char *_file, int _line, std::string _msg)
+Exception::Exception(const char *_file, int64_t _line, std::string _msg)
+  : dataPtr(new ExceptionPrivate)
 {
-  this->file = _file;
-  this->line = _line;
-  this->str = _msg;
+  this->dataPtr->file = _file;
+  this->dataPtr->line = _line;
+  this->dataPtr->str = _msg;
   this->Print();
 }
 
 //////////////////////////////////////////////////
 Exception::~Exception()
 {
+  delete this->dataPtr;
+  this->dataPtr = NULL;
 }
 
 //////////////////////////////////////////////////
 void Exception::Print() const
 {
   sdf::Console::Instance()->ColorMsg("Exception",
-      this->file, this->line, 31) << *this << "\n";
+      this->dataPtr->file,
+      static_cast<unsigned int>(this->dataPtr->line), 31) << *this;
 }
 
 //////////////////////////////////////////////////
 std::string Exception::GetErrorFile() const
 {
-  return this->file;
+  return this->dataPtr->file;
 }
 
 //////////////////////////////////////////////////
 std::string Exception::GetErrorStr() const
 {
-  return this->str;
+  return this->dataPtr->str;
 }
 
 //////////////////////////////////////////////////
@@ -69,7 +70,7 @@ InternalError::InternalError()
 }
 
 //////////////////////////////////////////////////
-InternalError::InternalError(const char *_file, int _line,
+InternalError::InternalError(const char *_file, int64_t _line,
                              const std::string _msg) :
   Exception(_file, _line, _msg)
 {
@@ -82,7 +83,7 @@ InternalError::~InternalError()
 
 //////////////////////////////////////////////////
 AssertionInternalError::AssertionInternalError(
-    const char * _file, int _line,
+    const char * _file, int64_t _line,
     const std::string _expr,
     const std::string _function,
     const std::string _msg) :

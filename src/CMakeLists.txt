@@ -17,11 +17,13 @@ set (sources
   Assert.cc
   Console.cc
   Converter.cc
+  Element.cc
   Exception.cc
   parser.cc
   parser_urdf.cc
   Param.cc
   SDF.cc
+  Types.cc
 )
 
 include_directories(${Boost_INCLUDE_DIRS})
@@ -59,6 +61,7 @@ set (gtest_sources
   SDF_TEST.cc
   Console_TEST.cc
   Converter_TEST.cc
+  Exception_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc
 )

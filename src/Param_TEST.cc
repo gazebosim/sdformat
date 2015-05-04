@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 #include "sdf/Param.hh"
 
-int check_double(std::string num)
+bool check_double(std::string num)
 {
     const std::string name = "number";
     const std::string type = "double";
@@ -63,6 +63,19 @@ TEST(Param, Bool)
   strParam.Set("%");
   strParam.Get<bool>(value);
   EXPECT_FALSE(value);
+
+  boolParam.Set(true);
+  boost::any anyValue;
+  EXPECT_TRUE(boolParam.GetAny(anyValue));
+  try
+  {
+    value = boost::any_cast<bool>(anyValue);
+  }
+  catch(boost::bad_any_cast &/*_e*/)
+  {
+    FAIL();
+  }
+  EXPECT_TRUE(value);
 }
 ////////////////////////////////////////////////////
 /// Test decimal number
@@ -152,19 +165,19 @@ TEST(Param, HexDouble)
   sdf::Param doubleParam("key", "double", "0", false, "description");
   double value;
   EXPECT_TRUE(doubleParam.Get<double>(value));
-  EXPECT_FLOAT_EQ(value, 0.0);
+  EXPECT_DOUBLE_EQ(value, 0.0);
 
   EXPECT_FALSE(doubleParam.SetFromString("0x01"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
-  EXPECT_FLOAT_EQ(value, 0.0);
+  EXPECT_DOUBLE_EQ(value, 0.0);
 
   EXPECT_TRUE(doubleParam.SetFromString("0.123"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
-  EXPECT_FLOAT_EQ(value, 0.123);
+  EXPECT_DOUBLE_EQ(value, 0.123);
 
   EXPECT_FALSE(doubleParam.SetFromString("1.0e1000"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
-  EXPECT_FLOAT_EQ(value, 0.123);
+  EXPECT_DOUBLE_EQ(value, 0.123);
 }
 
 /////////////////////////////////////////////////
