@@ -1,7 +1,9 @@
 <element name="surface" required="0">
   <description>The surface parameters</description>
+  <include filename="param.sdf" required="*"/>
   <element name="bounce" required="0">
     <description></description>
+    <include filename="param.sdf" required="*"/>
     <element name="restitution_coefficient" type="double" default="0" min="0.0" max="1.0" required="0">
       <description>Bounciness coefficient of restitution, from [0...1], where 0=no bounciness.</description>
     </element>
@@ -12,8 +14,10 @@
 
   <element name="friction" required="0">
     <description></description>
+    <include filename="param.sdf" required="*"/>
     <element name="ode" required="0">
       <description>ODE friction parameters</description>
+      <include filename="param.sdf" required="*"/>
       <element name="mu" type="double" default="1" min="0.0" required="0">
         <description>Coefficient of friction in the range of [0..1].</description>
       </element>
@@ -31,6 +35,7 @@
       </element>
     </element> <!-- End ODE -->
     <element name="bullet" required="0">
+      <include filename="param.sdf" required="*"/>
       <element name="friction" type="double" default="1" min="0.0" required="0">
         <description>Coefficient of friction in the range of [0..1].</description>
       </element>
@@ -48,6 +53,7 @@
 
   <element name="contact" required="0">
     <description></description>
+    <include filename="param.sdf" required="*"/>
     <element name="collide_without_contact" type="bool" default="0" required="0">
       <description>Flag to disable contact force generation, while still allowing collision checks and contact visualization to occur.</description>
     </element>
@@ -61,6 +67,7 @@
 
     <element name="ode" required="0">
       <description>ODE contact parameters</description>
+      <include filename="param.sdf" required="*"/>
       <element name="soft_cfm" type="double" default="0" required="0">
         <description>Soft constraint force mixing.</description>
       </element>
@@ -82,6 +89,7 @@
     </element> <!-- End ODE -->
     <element name="bullet" required="0">
       <description>Bullet contact parameters</description>
+      <include filename="param.sdf" required="*"/>
       <element name="soft_cfm" type="double" default="0" required="0">
         <description>Soft constraint force mixing.</description>
       </element>
@@ -105,10 +113,12 @@
 
   <!-- for deformable bodies -->
   <element name="soft_contact" required="0">
+    <include filename="param.sdf" required="*"/>
     <element name="dart" required="0">
       <description>soft contact pamameters based on paper:
              http://www.cc.gatech.edu/graphics/projects/Sumit/homepage/papers/sigasia11/jain_softcontacts_siga11.pdf
       </description>
+      <include filename="param.sdf" required="*"/>
       <element name="bone_attachment" type="double" default="100.0" required="1">
         <description>This is variable k_v in the soft contacts paper.  Its unit is N/m.</description>
       </element>

@@ -1,6 +1,7 @@
 <!-- Link -->
 <element name="link" required="+">
   <description>A physical link with inertia, collision, and visual properties. A link must be a child of a model, and any number of links may exist in a model.</description>
+  <include filename="param.sdf" required="*"/>
 
   <attribute name="name" type="string" default="__default__" required="1">
     <description>A unique name for the link within the scope of the model.</description>
@@ -28,6 +29,7 @@
 
   <element name="velocity_decay" required="0">
     <description>Exponential damping of the link's velocity.</description>
+    <include filename="param.sdf" required="*"/>
     <element name="linear" type="double" default="0.0" required="0">
       <description>Linear damping</description>
     </element>

@@ -18,6 +18,7 @@
     </description>
   </attribute>
 
+  <include filename="param.sdf" required="*"/>
   <element name="parent" type="string" default="__default__" required="1">
     <description>Name of the parent link</description>
   </element> <!-- End Parent -->
@@ -47,6 +48,7 @@
       Parameters related to the axis of rotation for revolute joints,
       the axis of translation for prismatic joints.
     </description>
+    <include filename="param.sdf" required="*"/>
     <element name="xyz" type="vector3" default="0 0 1" required="1">
       <description>
         Represents the x,y,z components of the axis unit vector. The axis is
@@ -63,6 +65,7 @@
     </element>
     <element name="dynamics" required="0">
       <description>An element specifying physical properties of the joint. These values are used to specify modeling properties of the joint, particularly useful for simulation.</description>
+      <include filename="param.sdf" required="*"/>
       <element name="damping" type="double" default="0" required="0">
         <description>The physical velocity dependent viscous damping coefficient of the joint.</description>
       </element>
@@ -106,6 +109,7 @@
     <description>
       Parameters related to the second axis of rotation for revolute2 joints and universal joints.
     </description>
+    <include filename="param.sdf" required="*"/>
     <element name="xyz" type="vector3" default="0 0 1" required="1">
       <description>
         Represents the x,y,z components of the axis unit vector. The axis is
@@ -122,6 +126,7 @@
     </element>
     <element name="dynamics" required="0">
       <description>An element specifying physical properties of the joint. These values are used to specify modeling properties of the joint, particularly useful for simulation.</description>
+      <include filename="param.sdf" required="*"/>
       <element name="damping" type="double" default="0" required="0">
         <description>The physical velocity dependent viscous damping coefficient of the joint.  EXPERIMENTAL: if damping coefficient is negative and implicit_spring_damper is true, adaptive damping is used.</description>
       </element>
@@ -138,6 +143,7 @@
 
     <element name="limit" required="0">
       <description></description>
+      <include filename="param.sdf" required="*"/>
       <element name="lower" type="double" default="-1e16" required="0">
         <description>An attribute specifying the lower joint limit (radians for revolute joints, meters for prismatic joints). Omit if joint is continuous.</description>
       </element>
@@ -164,14 +170,17 @@
 
   <element name="physics" required="0">
     <description>Parameters that are specific to a certain physics engine.</description>
+    <include filename="param.sdf" required="*"/>
     <element name="simbody" required="0">
       <description>Simbody specific parameters</description>
+      <include filename="param.sdf" required="*"/>
       <element name="must_be_loop_joint" type="bool" default="0" required="0">
         <description>Force cut in the multibody graph at this joint.</description>
       </element>
     </element>
     <element name="ode" required="0">
       <description>ODE specific parameters</description>
+      <include filename="param.sdf" required="*"/>
       <element name="provide_feedback" type="bool" default="false" required="0">
         <description>(DEPRECATION WARNING:  In SDF 1.5 this tag will be replaced by the same tag directly under the physics-block.  For now, this tag overrides the one outside of ode-block, but in SDF 1.5 this tag will be removed completely.)  If provide feedback is set to true, ODE will compute the constraint forces at this joint.</description>
       </element>
@@ -205,6 +214,7 @@
 
       <element name="limit" required="0">
         <description></description>
+        <include filename="param.sdf" required="*"/>
         <element name="cfm" type="double" default="0.0" required="1">
           <description>Constraint force mixing parameter used by the joint stop</description>
         </element>
@@ -215,6 +225,7 @@
 
       <element name="suspension" required="0">
         <description></description>
+        <include filename="param.sdf" required="*"/>
         <element name="cfm" type="double" default="0.0" required="1">
           <description>Suspension constraint force mixing parameter</description>
         </element>

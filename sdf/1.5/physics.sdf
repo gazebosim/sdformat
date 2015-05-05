@@ -89,7 +89,7 @@
         <description>dissipation coefficient to be used in compliant contact;
     if not given it is (1-min_cor)/plastic_impact_velocity</description>
       </element>
-    
+
       <element name="plastic_coef_restitution" type="double"
                default="0.5" required="0">
         <description>this is the COR to be used at high velocities for rigid
