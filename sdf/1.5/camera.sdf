@@ -29,7 +29,7 @@
   <element name="clip" required="1">
     <description>The near and far clip planes. Objects closer or farther than these planes are not rendered.</description>
 
-    <element name="near" type="double" default=".1" min="0.0" required="1">
+    <element name="near" type="double" default=".05" min="0.0" required="1">
       <description>Near clipping plane</description>
     </element>
 
