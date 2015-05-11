@@ -182,18 +182,19 @@ TEST(Param, HexDouble)
 
   // Boost 1.58 and higher parses hex integers into floating point variables
   // successfully, while older versions don't
-  if (BOOST_VERSION >= 105800)
+#if (BOOST_VERSION >= 105800)
   {
     EXPECT_TRUE(doubleParam.SetFromString("0x01"));
     EXPECT_TRUE(doubleParam.Get<double>(value));
     EXPECT_DOUBLE_EQ(value, 1.0);
   }
-  else
+#else
   {
     EXPECT_FALSE(doubleParam.SetFromString("0x01"));
     EXPECT_TRUE(doubleParam.Get<double>(value));
     EXPECT_DOUBLE_EQ(value, 0.0);
   }
+#endif
 
   EXPECT_TRUE(doubleParam.SetFromString("0.123"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
