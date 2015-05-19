@@ -75,7 +75,7 @@
     <description>Enable/disable the grid</description>
   </element>
 
-  <element name="origin" type="bool" default="true" required="0">
+  <element name="show_origin" type="bool" default="true" required="0">
     <description>Show/hide world origin indicator</description>
   </element>
 
