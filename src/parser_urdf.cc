@@ -25,6 +25,7 @@
 #include "urdf_model/link.h"
 #include "urdf_parser/urdf_parser.h"
 
+#include "sdf/SDFExtension.hh"
 #include "sdf/parser_urdf.hh"
 #include "sdf/sdf.hh"
 
@@ -261,7 +262,7 @@ urdf::Vector3 ParseVector3(const std::string &_str, double _scale)
         vals.push_back(_scale
             * boost::lexical_cast<double>(pieces[i].c_str()));
       }
-      catch(boost::bad_lexical_cast &e)
+      catch(boost::bad_lexical_cast &)
       {
         sdferr << "xml key [" << _str
           << "][" << i << "] value [" << pieces[i]

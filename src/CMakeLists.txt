@@ -25,6 +25,7 @@ set (sources
   parser_urdf.cc
   Param.cc
   SDF.cc
+  SDFExtension.cc
   Types.cc
 )
 

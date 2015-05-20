@@ -45,16 +45,16 @@ TEST(Converter, MoveElemElem)
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
   TiXmlElement *childElem =  xmlDoc.FirstChildElement();
-  EXPECT_TRUE(childElem);
+  EXPECT_TRUE(childElem != NULL);
   EXPECT_EQ(childElem->ValueStr(), "elemA");
   childElem =  childElem->FirstChildElement();
-  EXPECT_TRUE(childElem);
+  EXPECT_TRUE(childElem != NULL);
   EXPECT_EQ(childElem->ValueStr(), "elemB");
   childElem =  childElem->FirstChildElement();
-  EXPECT_TRUE(childElem);
+  EXPECT_TRUE(childElem != NULL);
   EXPECT_EQ(childElem->ValueStr(), "elemC");
   childElem =  childElem->FirstChildElement();
-  EXPECT_TRUE(childElem);
+  EXPECT_TRUE(childElem != NULL);
   EXPECT_EQ(childElem->ValueStr(), "elemD");
 
   // Test moving from elem to elem
@@ -77,8 +77,8 @@ TEST(Converter, MoveElemElem)
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != NULL);
   EXPECT_EQ(convertedElem->ValueStr(), "elemB");
-  EXPECT_TRUE(convertedElem->FirstChildElement("elemC"));
-  EXPECT_TRUE(convertedElem->FirstChildElement("elemE"));
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemC") != NULL);
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemE") != NULL);
   std::string elemValue = convertedElem->FirstChildElement("elemE")->GetText();
   EXPECT_EQ(elemValue, "D");
   convertedElem =  convertedElem->FirstChildElement("elemC");
@@ -115,7 +115,7 @@ TEST(Converter, MoveElemAttr)
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != NULL);
   EXPECT_EQ(convertedElem->ValueStr(), "elemB");
-  EXPECT_TRUE(convertedElem->Attribute("attrE"));
+  EXPECT_TRUE(convertedElem->Attribute("attrE") != NULL);
   std::string attrValue = convertedElem->Attribute("attrE");
   EXPECT_EQ(attrValue, "D");
   convertedElem =  convertedElem->FirstChildElement();
@@ -153,7 +153,7 @@ TEST(Converter, MoveAttrAttr)
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != NULL);
   EXPECT_EQ(convertedElem->ValueStr(), "elemB");
-  EXPECT_TRUE(convertedElem->Attribute("attrE"));
+  EXPECT_TRUE(convertedElem->Attribute("attrE") != NULL);
   std::string attrValue = convertedElem->Attribute("attrE");
   EXPECT_EQ(attrValue, "C");
   convertedElem =  convertedElem->FirstChildElement();
@@ -194,10 +194,10 @@ TEST(Converter, MoveAttrElem)
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != NULL);
   EXPECT_EQ(convertedElem->ValueStr(), "elemB");
-  EXPECT_TRUE(convertedElem->FirstChildElement("elemE"));
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemE") != NULL);
   std::string elemValue = convertedElem->FirstChildElement("elemE")->GetText();
   EXPECT_EQ(elemValue, "C");
-  EXPECT_TRUE(convertedElem->FirstChildElement("elemC"));
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemC") != NULL);
   convertedElem =  convertedElem->FirstChildElement("elemC");
   ASSERT_TRUE(convertedElem != NULL);
   EXPECT_FALSE(convertedElem->Attribute("attrC"));
@@ -230,7 +230,7 @@ TEST(Converter, MoveElemElemMultipleLevels)
 
   TiXmlElement *convertedElem =  xmlDoc5.FirstChildElement();
   EXPECT_EQ(convertedElem->ValueStr(), "elemA");
-  EXPECT_TRUE(convertedElem->FirstChildElement("elemE"));
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemE") != NULL);
   std::string elemValue = convertedElem->FirstChildElement("elemE")->GetText();
   EXPECT_EQ(elemValue, "D");
   convertedElem =  convertedElem->FirstChildElement("elemB");
@@ -339,7 +339,7 @@ TEST(Converter, MoveAttrElemMultipleLevels)
   TiXmlElement *convertedElem =  xmlDoc8.FirstChildElement();
   ASSERT_TRUE(convertedElem != NULL);
   EXPECT_EQ(convertedElem->ValueStr(), "elemA");
-  EXPECT_TRUE(convertedElem->FirstChildElement("elemE"));
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemE") != NULL);
   std::string elemValue = convertedElem->FirstChildElement("elemE")->GetText();
   EXPECT_EQ(elemValue, "C");
   convertedElem =  convertedElem->FirstChildElement("elemB");
@@ -365,16 +365,16 @@ TEST(Converter, Add)
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
   TiXmlElement *childElem =  xmlDoc.FirstChildElement();
-  EXPECT_TRUE(childElem);
+  EXPECT_TRUE(childElem != NULL);
   EXPECT_EQ(childElem->ValueStr(), "elemA");
   childElem = childElem->FirstChildElement();
-  EXPECT_TRUE(childElem);
+  EXPECT_TRUE(childElem != NULL);
   EXPECT_EQ(childElem->ValueStr(), "elemB");
   childElem = childElem->FirstChildElement();
-  EXPECT_TRUE(childElem);
+  EXPECT_TRUE(childElem != NULL);
   EXPECT_EQ(childElem->ValueStr(), "elemC");
   childElem = childElem->FirstChildElement();
-  EXPECT_TRUE(childElem);
+  EXPECT_TRUE(childElem != NULL);
   EXPECT_EQ(childElem->ValueStr(), "elemD");
 
   // Test adding element
@@ -399,8 +399,8 @@ TEST(Converter, Add)
   convertedElem = convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != NULL);
   EXPECT_EQ(convertedElem->ValueStr(), "elemB");
-  EXPECT_TRUE(convertedElem->FirstChildElement("elemC"));
-  EXPECT_TRUE(convertedElem->FirstChildElement("elemBB"));
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemC") != NULL);
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemBB") != NULL);
   std::string elemValue = convertedElem->FirstChildElement("elemBB")->GetText();
   EXPECT_EQ(elemValue, "BB");
   convertedElem = convertedElem->FirstChildElement("elemC");
