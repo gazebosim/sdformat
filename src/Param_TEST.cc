@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <boost/version.hpp>
 #include "sdf/Param.hh"
 
 bool check_double(std::string num)
@@ -145,9 +146,21 @@ TEST(Param, HexFloat)
   EXPECT_TRUE(floatParam.Get<float>(value));
   EXPECT_FLOAT_EQ(value, 0.0f);
 
-  EXPECT_FALSE(floatParam.SetFromString("0x01"));
-  EXPECT_TRUE(floatParam.Get<float>(value));
-  EXPECT_FLOAT_EQ(value, 0.0f);
+  // Boost 1.58 and higher parses hex integers into floating point variables
+  // successfully, while older versions don't
+#if (BOOST_VERSION >= 105800)
+  {
+    EXPECT_TRUE(floatParam.SetFromString("0x01"));
+    EXPECT_TRUE(floatParam.Get<float>(value));
+    EXPECT_FLOAT_EQ(value, 1.0f);
+  }
+#else
+  {
+    EXPECT_FALSE(floatParam.SetFromString("0x01"));
+    EXPECT_TRUE(floatParam.Get<float>(value));
+    EXPECT_FLOAT_EQ(value, 0.0f);
+  }
+#endif
 
   EXPECT_TRUE(floatParam.SetFromString("0.123"));
   EXPECT_TRUE(floatParam.Get<float>(value));
@@ -167,9 +180,21 @@ TEST(Param, HexDouble)
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 0.0);
 
-  EXPECT_FALSE(doubleParam.SetFromString("0x01"));
-  EXPECT_TRUE(doubleParam.Get<double>(value));
-  EXPECT_DOUBLE_EQ(value, 0.0);
+  // Boost 1.58 and higher parses hex integers into floating point variables
+  // successfully, while older versions don't
+#if (BOOST_VERSION >= 105800)
+  {
+    EXPECT_TRUE(doubleParam.SetFromString("0x01"));
+    EXPECT_TRUE(doubleParam.Get<double>(value));
+    EXPECT_DOUBLE_EQ(value, 1.0);
+  }
+#else
+  {
+    EXPECT_FALSE(doubleParam.SetFromString("0x01"));
+    EXPECT_TRUE(doubleParam.Get<double>(value));
+    EXPECT_DOUBLE_EQ(value, 0.0);
+  }
+#endif
 
   EXPECT_TRUE(doubleParam.SetFromString("0.123"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
