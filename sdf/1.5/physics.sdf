@@ -192,6 +192,18 @@
           https://bitbucket.org/osrf/gazebo/pull-request/1114
         </description>
       </element>
+      <element name="use_thread_position_correction" type="bool" default="0" required="0">
+        <description>
+          Flag to enable threading of position correction terms.
+          See gazebo pull request 1561 for the implementation of this feature.
+          https://bitbucket.org/osrf/gazebo/pull-request/1561
+        </description>
+      </element>
+      <element name="num_island_threads" type="int" default="0" required="0">
+        <description>
+          Number of threads to use for island threading.
+        </description>
+      </element>
     </element> <!-- End Solver -->
 
     <element name="constraints" required="1">
