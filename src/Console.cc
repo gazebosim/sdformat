@@ -21,7 +21,16 @@
 #include <boost/filesystem.hpp>
 #include <boost/thread/mutex.hpp>
 
+/// \todo Remove this diagnositic push/pop in version 5
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 #include "sdf/Types.hh"
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
+
 #include "sdf/Console.hh"
 
 using namespace sdf;

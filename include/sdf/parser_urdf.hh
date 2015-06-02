@@ -20,7 +20,6 @@
 #include <tinyxml.h>
 #include <string>
 
-#include "sdf/Types.hh"
 #include "sdf/Console.hh"
 #include "sdf/system_util.hh"
 
