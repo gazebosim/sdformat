@@ -4,7 +4,7 @@ This documentation describes how to set up a workspace for trying to compile sdf
 
 ## Supported compilers
 
-At this moment, compilation has been tested on Windows 7 and is supported 
+At this moment, compilation has been tested on Windows 7 and 8.1 and is supported 
 when using Visual Studio 2013. Patches for other versions are welcome.
 
 ## Installation
@@ -43,4 +43,4 @@ Windows `cmd` for configuring and building.
 
     You should now have an installation of sdformat in sdformat-ws/sdformat/build/install/Release.
 
-    Once this all works (which it currently does not, by a long shot): you should now have an installation of sdformat in sdformat-ws/sdformat/build/install/Release.
+    Once this all works (which it does with tender love and care): you should now have an installation of sdformat in sdformat-ws/sdformat/build/install/Release.
