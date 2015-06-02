@@ -112,7 +112,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   {
     this->Init<ignition::math::Quaterniond>(_default);
   }
-  /// \deprecated The following sdf::<types are deprecated
+  /// \deprecated The following sdf::<types> are deprecated
   else if (this->dataPtr->typeName == "sdf::Vector2i" ||
            this->dataPtr->typeName == "vector2i")
   {
