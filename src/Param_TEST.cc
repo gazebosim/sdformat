@@ -190,9 +190,10 @@ TEST(Param, uint64t)
   EXPECT_TRUE(uint64tParam.Get<uint64_t>(value));
   EXPECT_EQ(value, 1u);
 
-  EXPECT_TRUE(uint64tParam.SetFromString("2"));
+  // Max uint64_t
+  EXPECT_TRUE(uint64tParam.SetFromString("18446744073709551615"));
   EXPECT_TRUE(uint64tParam.Get<uint64_t>(value));
-  EXPECT_EQ(value, 2u);
+  EXPECT_EQ(value, UINT64_MAX);
 }
 
 /////////////////////////////////////////////////
