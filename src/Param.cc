@@ -65,6 +65,8 @@ Param::Param(const std::string &_key, const std::string &_typeName,
     this->Init<int>(_default);
   else if (this->dataPtr->typeName == "unsigned int")
     this->Init<unsigned int>(_default);
+  else if (this->dataPtr->typeName == "uint64_t")
+    this->Init<uint64_t>(_default);
   else if (this->dataPtr->typeName == "double")
     this->Init<double>(_default);
   else if (this->dataPtr->typeName == "float")
@@ -113,6 +115,13 @@ bool Param::GetAny(boost::any &_anyVal) const
   {
     int ret = 0;
     if (!this->Get<int>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (typeid(uint64_t) == this->GetType())
+  {
+    uint64_t ret = 0;
+    if (!this->Get<uint64_t>(ret))
       return false;
     _anyVal = ret;
   }
