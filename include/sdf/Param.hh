@@ -228,7 +228,7 @@ namespace sdf
 #endif
     /// \def ParamVariant
     /// \briead Variant type def.
-    public: typedef boost::variant<bool, char, std::string, int,
+    public: typedef boost::variant<bool, char, std::string, int, uint64_t,
                unsigned int, double, float, sdf::Time, sdf::Color,
                sdf::Vector3, sdf::Vector2i, sdf::Vector2d,
                sdf::Quaternion, sdf::Pose,
