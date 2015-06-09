@@ -22,6 +22,14 @@
     <description>The reference frame of the visual element, relative to the reference frame of the link.</description>
   </element>
 
+  <element name="meta" required="0">
+    <description>Optional meta information for the visual. The information contained within this element should be used to provide additional feedback to an end user.</description>
+
+    <element name="layer" type="int" default="0" required="0">
+      <description>The layer in which this visual is displayed. The layer number is useful for programs, such as Gazebo, that put visuals in different layers for enhanced visualization.</description>
+    </element>
+  </element>
+
   <include filename="material.sdf" required="0"/>
   <include filename="geometry.sdf" required="1"/>
   <include filename="plugin.sdf" required="*"/>

@@ -29,7 +29,7 @@ set (SDF_PROTOCOL_VERSION 1.5)
 
 set (SDF_MAJOR_VERSION 3)
 set (SDF_MINOR_VERSION 0)
-set (SDF_PATCH_VERSION 3)
+set (SDF_PATCH_VERSION 5)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
 set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION})
@@ -256,7 +256,6 @@ else (buid_errors)
   # Make the cmake config files
   set(PKG_NAME ${PROJECT_NAME})
   set(PKG_LIBRARIES sdformat)
-  set(PKG_DEPENDS Boost)
   set(cmake_conf_file "cmake/sdf_config.cmake")
   set(cmake_conf_version_file "cmake/SDFormatConfigVersion.cmake")
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${cmake_conf_file}.in" "${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake" @ONLY)

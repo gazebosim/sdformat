@@ -22,9 +22,18 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
-#include "sdf/Types.hh"
 #include "sdf/Param.hh"
 #include "sdf/system_util.hh"
+
+/// \todo Remove this diagnositic push/pop in version 5
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#include "sdf/Types.hh"
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -33,6 +42,8 @@
 #pragma warning(disable: 4251)
 #endif
 
+/// \ingroup sdf_parser
+/// \brief namespace for Simulation Description Format parser
 namespace sdf
 {
   class ElementPrivate;
