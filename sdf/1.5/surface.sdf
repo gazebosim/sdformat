@@ -20,6 +20,9 @@
       <element name="mu2" type="double" default="1" min="0.0" required="0">
         <description>Second coefficient of friction in the range of [0..1]</description>
       </element>
+      <element name="mu3" type="double" default="1" min="0.0" required="0">
+        <description>Torsional coefficient of friction in the range of [0..1]</description>
+      </element>
       <element name="fdir1" type="vector3" default="0 0 0" required="0">
         <description>3-tuple specifying direction of mu1 in the collision local reference frame.</description>
       </element>
@@ -27,6 +30,9 @@
         <description>Force dependent slip direction 1 in collision local frame, between the range of [0..1].</description>
       </element>
       <element name="slip2" type="double" default="0.0" required="0">
+        <description>Force dependent slip direction 2 in collision local frame, between the range of [0..1].</description>
+      </element>
+      <element name="slip3" type="double" default="0.0" required="0">
         <description>Force dependent slip direction 2 in collision local frame, between the range of [0..1].</description>
       </element>
     </element> <!-- End ODE -->
@@ -53,7 +59,7 @@
     </element>
     <element name="collide_without_contact_bitmask" type="unsigned int" default="1" required="0">
       <description>Bitmask for collision filtering when collide_without_contact is on </description>
-    </element>    
+    </element>
 
     <element name="collide_bitmask" type="unsigned int" default="65535" required="0">
       <description>Bitmask for collision filtering. This will override collide_without_contact</description>
