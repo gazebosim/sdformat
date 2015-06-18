@@ -32,10 +32,20 @@
 #include <typeinfo>
 #include <string>
 #include <vector>
+#include <ignition/math.hh>
 
 #include "sdf/Console.hh"
-#include "sdf/Types.hh"
 #include "sdf/system_util.hh"
+
+/// \todo Remove this diagnositic push/pop in version 5
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#include "sdf/Types.hh"
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 namespace sdf
 {
@@ -91,7 +101,15 @@ namespace sdf
 
     /// \brief Get the type of the value stored.
     /// \return The std::type_info.
-    public: const std::type_info &GetType() const;
+    /// \deprecated GetType is unstable. Use IsType().
+    /// \sa IsType
+    public: const std::type_info &GetType() const SDF_DEPRECATED(4.0);
+
+    /// \brief Return true if the param is a particular type
+    /// \return True if the type held by this Param matches the Type
+    /// template parameter.
+    public: template<typename Type>
+            bool IsType() const;
 
     /// \brief Get the type name value.
     /// \return The type name.
@@ -203,12 +221,23 @@ namespace sdf
     /// \brief Update function pointer.
     public: boost::function<boost::any ()> updateFunc;
 
+/// \todo Remove this diagnositic push/pop in version 5
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
     /// \def ParamVariant
     /// \briead Variant type def.
-    public: typedef boost::variant<bool, char, std::string, int,
-               unsigned int, double, float, sdf::Vector3, sdf::Vector2i,
-               sdf::Vector2d, sdf::Quaternion, sdf::Pose, sdf::Color,
-               sdf::Time> ParamVariant;
+    public: typedef boost::variant<bool, char, std::string, int, uint64_t,
+               unsigned int, double, float, sdf::Time, sdf::Color,
+               sdf::Vector3, sdf::Vector2i, sdf::Vector2d,
+               sdf::Quaternion, sdf::Pose,
+               ignition::math::Vector3d, ignition::math::Vector2i,
+               ignition::math::Vector2d, ignition::math::Quaterniond,
+               ignition::math::Pose3d> ParamVariant;
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#endif
 
     /// \brief This parameter's value
     public: ParamVariant value;
@@ -325,6 +354,13 @@ namespace sdf
 
     this->dataPtr->defaultValue = this->dataPtr->value;
     this->dataPtr->set = false;
+  }
+
+  ///////////////////////////////////////////////
+  template<typename Type>
+  bool Param::IsType() const
+  {
+    return this->dataPtr->value.type() == typeid(Type);
   }
 }
 #endif

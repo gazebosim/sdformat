@@ -65,6 +65,8 @@ Param::Param(const std::string &_key, const std::string &_typeName,
     this->Init<int>(_default);
   else if (this->dataPtr->typeName == "unsigned int")
     this->Init<unsigned int>(_default);
+  else if (this->dataPtr->typeName == "uint64_t")
+    this->Init<uint64_t>(_default);
   else if (this->dataPtr->typeName == "double")
     this->Init<double>(_default);
   else if (this->dataPtr->typeName == "float")
@@ -72,29 +74,79 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   else if (this->dataPtr->typeName == "char")
     this->Init<char>(_default);
   else if (this->dataPtr->typeName == "std::string" ||
-      this->dataPtr->typeName == "string")
+           this->dataPtr->typeName == "string")
+  {
     this->Init<std::string>(_default);
-  else if (this->dataPtr->typeName == "sdf::Vector2i" ||
-      this->dataPtr->typeName == "vector2i")
-    this->Init<sdf::Vector2i>(_default);
-  else if (this->dataPtr->typeName == "sdf::Vector2d" ||
-      this->dataPtr->typeName == "vector2d")
-    this->Init<sdf::Vector2d>(_default);
-  else if (this->dataPtr->typeName == "sdf::Vector3" ||
-       this->dataPtr->typeName == "vector3")
-    this->Init<sdf::Vector3>(_default);
-  else if (this->dataPtr->typeName == "sdf::Pose" ||
-      this->dataPtr->typeName == "pose" || this->dataPtr->typeName == "Pose")
-    this->Init<sdf::Pose>(_default);
-  else if (this->dataPtr->typeName == "sdf::Quaternion" ||
-      this->dataPtr->typeName == "quaternion")
-    this->Init<sdf::Quaternion>(_default);
+  }
   else if (this->dataPtr->typeName == "sdf::Time" ||
-      this->dataPtr->typeName == "time")
+           this->dataPtr->typeName == "time")
+  {
     this->Init<sdf::Time>(_default);
+  }
   else if (this->dataPtr->typeName == "sdf::Color" ||
-      this->dataPtr->typeName == "color")
+           this->dataPtr->typeName == "color")
+  {
     this->Init<sdf::Color>(_default);
+  }
+  else if (this->dataPtr->typeName == "ignition::math::Vector2i" ||
+           this->dataPtr->typeName == "vector2i")
+  {
+    this->Init<ignition::math::Vector2i>(_default);
+  }
+  else if (this->dataPtr->typeName == "ignition::math::Vector2d" ||
+           this->dataPtr->typeName == "vector2d")
+  {
+    this->Init<ignition::math::Vector2d>(_default);
+  }
+  else if (this->dataPtr->typeName == "ignition::math::Vector3d" ||
+           this->dataPtr->typeName == "vector3")
+  {
+    this->Init<ignition::math::Vector3d>(_default);
+  }
+  else if (this->dataPtr->typeName == "ignition::math::Pose3d" ||
+           this->dataPtr->typeName == "pose" ||
+           this->dataPtr->typeName == "Pose")
+  {
+    this->Init<ignition::math::Pose3d>(_default);
+  }
+  else if (this->dataPtr->typeName == "ignition::math::Quaterniond" ||
+           this->dataPtr->typeName == "quaternion")
+  {
+    this->Init<ignition::math::Quaterniond>(_default);
+  }
+  /// \deprecated The following sdf::<types> are deprecated
+  else if (this->dataPtr->typeName == "sdf::Vector2i" ||
+           this->dataPtr->typeName == "vector2i")
+  {
+    sdferr << "sdf::Vector2i is deprecated. Use ignition::math::Vector2i\n";
+    this->Init<sdf::Vector2i>(_default);
+  }
+  else if (this->dataPtr->typeName == "sdf::Vector2d" ||
+           this->dataPtr->typeName == "vector2d")
+  {
+    sdferr << "sdf::Vector2d is deprecated. Use ignition::math::Vector2d\n";
+    this->Init<sdf::Vector2d>(_default);
+  }
+  else if (this->dataPtr->typeName == "sdf::Vector3" ||
+           this->dataPtr->typeName == "vector3")
+  {
+    sdferr << "sdf::Vector3 is deprecated. Use ignition::math::Vector3d\n";
+    this->Init<sdf::Vector3>(_default);
+  }
+  else if (this->dataPtr->typeName == "sdf::Pose" ||
+           this->dataPtr->typeName == "pose" ||
+           this->dataPtr->typeName == "Pose")
+  {
+    sdferr << "sdf::Pose is deprecated. Use ignition::math::Pose3d\n";
+    this->Init<sdf::Pose>(_default);
+  }
+  else if (this->dataPtr->typeName == "sdf::Quaternion" ||
+           this->dataPtr->typeName == "quaternion")
+  {
+    sdferr << "sdf::Quaternion is deprecated. "
+           << "Use ignition::math::Quaterniond\n";
+    this->Init<sdf::Quaternion>(_default);
+  }
   else
     sdferr << "Unknown parameter type[" << this->dataPtr->typeName << "]\n";
 }
@@ -109,101 +161,151 @@ Param::~Param()
 //////////////////////////////////////////////////
 bool Param::GetAny(boost::any &_anyVal) const
 {
-  if (typeid(int) == this->GetType())
+  if (this->IsType<int>())
   {
     int ret = 0;
     if (!this->Get<int>(ret))
       return false;
     _anyVal = ret;
   }
-  else if (typeid(double) == this->GetType())
+  else if (this->IsType<uint64_t>())
+  {
+    uint64_t ret = 0;
+    if (!this->Get<uint64_t>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (this->IsType<double>())
   {
     double ret = 0;
     if (!this->Get<double>(ret))
       return false;
     _anyVal = ret;
   }
-  else if (typeid(float) == this->GetType())
+  else if (this->IsType<float>())
   {
     float ret = 0;
     if (!this->Get<float>(ret))
       return false;
     _anyVal = ret;
   }
-  else if (typeid(bool) == this->GetType())
+  else if (this->IsType<bool>())
   {
     bool ret = false;
     if (!this->Get<bool>(ret))
       return false;
     _anyVal = ret;
   }
-  else if (typeid(std::string) == this->GetType())
+  else if (this->IsType<std::string>())
   {
     std::string ret;
     if (!this->Get<std::string>(ret))
       return false;
     _anyVal = ret;
   }
-  else if (typeid(sdf::Vector3) == this->GetType())
-  {
-    sdf::Vector3 ret;
-    if (!this->Get<sdf::Vector3>(ret))
-      return false;
-    _anyVal = ret;
-  }
-  else if (typeid(unsigned int) == this->GetType())
+  else if (this->IsType<unsigned int>())
   {
     unsigned int ret = 0;
     if (!this->Get<unsigned int>(ret))
       return false;
     _anyVal = ret;
   }
-  else if (typeid(char) == this->GetType())
+  else if (this->IsType<char>())
   {
     char ret = 0;
     if (!this->Get<char>(ret))
       return false;
     _anyVal = ret;
   }
-  else if (typeid(sdf::Vector2i) == this->GetType())
-  {
-    sdf::Vector2i ret;
-    if (!this->Get<sdf::Vector2i>(ret))
-      return false;
-    _anyVal = ret;
-  }
-  else if (typeid(sdf::Vector2d) == this->GetType())
-  {
-    sdf::Vector2d ret;
-    if (!this->Get<sdf::Vector2d>(ret))
-      return false;
-    _anyVal = ret;
-  }
-  else if (typeid(sdf::Pose) == this->GetType())
-  {
-    sdf::Pose ret;
-    if (!this->Get<sdf::Pose>(ret))
-      return false;
-    _anyVal = ret;
-  }
-  else if (typeid(sdf::Quaternion) == this->GetType())
-  {
-    sdf::Quaternion ret;
-    if (!this->Get<sdf::Quaternion>(ret))
-      return false;
-    _anyVal = ret;
-  }
-  else if (typeid(sdf::Time) == this->GetType())
+  else if (this->IsType<sdf::Time>())
   {
     sdf::Time ret;
     if (!this->Get<sdf::Time>(ret))
       return false;
     _anyVal = ret;
   }
-  else if (typeid(sdf::Color) == this->GetType())
+  else if (this->IsType<sdf::Color>())
   {
     sdf::Color ret;
     if (!this->Get<sdf::Color>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (this->IsType<ignition::math::Vector3d>())
+  {
+    ignition::math::Vector3d ret;
+    if (!this->Get<ignition::math::Vector3d>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (this->IsType<ignition::math::Vector2i>())
+  {
+    ignition::math::Vector2i ret;
+    if (!this->Get<ignition::math::Vector2i>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (this->IsType<ignition::math::Vector2d>())
+  {
+    ignition::math::Vector2d ret;
+    if (!this->Get<ignition::math::Vector2d>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (this->IsType<ignition::math::Pose3d>())
+  {
+    ignition::math::Pose3d ret;
+    if (!this->Get<ignition::math::Pose3d>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (this->IsType<ignition::math::Quaterniond>())
+  {
+    ignition::math::Quaterniond ret;
+    if (!this->Get<ignition::math::Quaterniond>(ret))
+      return false;
+    _anyVal = ret;
+  }
+
+  /// \deprecated The follow sdf Types are deprecated
+  else if (this->IsType<sdf::Vector3>())
+  {
+    sdferr << "sdf::Vector3 is deprecated. Use ignition::math::Vector3d\n";
+    sdf::Vector3 ret;
+    if (!this->Get<sdf::Vector3>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (this->IsType<sdf::Vector2i>())
+  {
+    sdferr << "sdf::Vector2i is deprecated. Use ignition::math::Vector2i\n";
+    sdf::Vector2i ret;
+    if (!this->Get<sdf::Vector2i>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (this->IsType<sdf::Vector2d>())
+  {
+    sdferr << "sdf::Vector2d is deprecated. Use ignition::math::Vector2d\n";
+    sdf::Vector2d ret;
+    if (!this->Get<sdf::Vector2d>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (this->IsType<sdf::Pose>())
+  {
+    sdferr << "sdf::Pose is deprecated. Use ignition::math::Pose3d\n";
+    sdf::Pose ret;
+    if (!this->Get<sdf::Pose>(ret))
+      return false;
+    _anyVal = ret;
+  }
+  else if (this->IsType<sdf::Quaternion>())
+  {
+    sdferr << "sdf::Quaternion is deprecated. "
+           << "Use ignition::math::Quaterniond\n";
+    sdf::Quaternion ret;
+    if (!this->Get<sdf::Quaternion>(ret))
       return false;
     _anyVal = ret;
   }
