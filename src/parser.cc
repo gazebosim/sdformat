@@ -57,15 +57,14 @@ bool init(SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-bool initFile(const std::string &_filename, SDFPtr _sdf)
+template <typename TPtr>
+inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
   std::string filename = sdf::findFile(_filename);
 
   TiXmlDocument xmlDoc;
   if (xmlDoc.LoadFile(filename))
-  {
     return initDoc(&xmlDoc, _sdf);
-  }
   else
     sdferr << "Unable to load file[" << _filename << "]\n";
 
@@ -73,17 +72,15 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
+bool initFile(const std::string &_filename, SDFPtr _sdf)
+{
+  return _initFile(_filename, _sdf);
+}
+
+//////////////////////////////////////////////////
 bool initFile(const std::string &_filename, ElementPtr _sdf)
 {
-  std::string filename = sdf::findFile(_filename);
-
-  TiXmlDocument xmlDoc;
-  if (xmlDoc.LoadFile(filename))
-    return initDoc(&xmlDoc, _sdf);
-  else
-    sdferr << "Unable to load file[" << _filename << "]\n";
-
-  return false;
+  return _initFile(_filename, _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -96,41 +93,40 @@ bool initString(const std::string &_xmlString, SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf)
+inline TiXmlElement * _initDocGetElement(TiXmlDocument *_xmlDoc)
 {
   if (!_xmlDoc)
   {
     sdferr << "Could not parse the xml\n";
-    return false;
+    return nullptr;
   }
 
-  TiXmlElement *xml = _xmlDoc->FirstChildElement("element");
-  if (!xml)
+  TiXmlElement * element = _xmlDoc->FirstChildElement("element");
+  if (!element)
   {
     sdferr << "Could not find the 'element' element in the xml file\n";
-    return false;
+    return nullptr;
   }
 
-  return initXml(xml, _sdf->Root());
+  return element;
+}
+
+//////////////////////////////////////////////////
+bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf)
+{
+  auto element = _initDocGetElement(_xmlDoc);
+  if (!element) return false;
+
+  return initXml(element, _sdf->Root());
 }
 
 //////////////////////////////////////////////////
 bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf)
 {
-  if (!_xmlDoc)
-  {
-    sdferr << "Could not parse the xml\n";
-    return false;
-  }
+  auto element = _initDocGetElement(_xmlDoc);
+  if (!element) return false;
 
-  TiXmlElement *xml = _xmlDoc->FirstChildElement("element");
-  if (!xml)
-  {
-    sdferr << "Could not find the 'element' element in the xml file\n";
-    return false;
-  }
-
-  return initXml(xml, _sdf);
+  return initXml(element, _sdf);
 }
 
 //////////////////////////////////////////////////
