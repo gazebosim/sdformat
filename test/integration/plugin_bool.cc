@@ -34,7 +34,8 @@ std::string get_sdf_string()
     << "    <value3>false</value3>"
     << "    <value4>0</value4>"
     << "  </plugin>"
-    << "</model>";
+    << "</model>"
+    << "</sdf>";
   return stream.str();
 }
 
