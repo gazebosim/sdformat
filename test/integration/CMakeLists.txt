@@ -8,6 +8,7 @@ set(tests
   force_torque_sensor.cc
   joint_axis_frame.cc
   locale_fix.cc
+  parser_error_detection.cc
   plugin_attribute.cc
   plugin_bool.cc
   provide_feedback.cc
