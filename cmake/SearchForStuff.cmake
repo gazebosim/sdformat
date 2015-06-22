@@ -1,6 +1,11 @@
 include (${sdf_cmake_dir}/FindOS.cmake)
 include (FindPkgConfig)
 
+# Detect the architecture
+include (${project_cmake_dir}/TargetArch.cmake)
+target_architecture(ARCH)
+message(STATUS "Building for arch: ${ARCH}")
+
 ########################################
 # Find Boost, if not specified manually
 if (WIN32)

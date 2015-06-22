@@ -78,6 +78,7 @@ TEST(Param, Bool)
   }
   EXPECT_TRUE(value);
 }
+
 ////////////////////////////////////////////////////
 /// Test decimal number
 TEST(SetFromString, Decimals)
@@ -203,6 +204,21 @@ TEST(Param, HexDouble)
   EXPECT_FALSE(doubleParam.SetFromString("1.0e1000"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 0.123);
+}
+
+////////////////////////////////////////////////////
+/// Test setting and reading uint64_t values.
+TEST(Param, uint64t)
+{
+  sdf::Param uint64tParam("key", "uint64_t", "1", false, "description");
+  uint64_t value;
+  EXPECT_TRUE(uint64tParam.Get<uint64_t>(value));
+  EXPECT_EQ(value, 1u);
+
+  // Max uint64_t
+  EXPECT_TRUE(uint64tParam.SetFromString("18446744073709551615"));
+  EXPECT_TRUE(uint64tParam.Get<uint64_t>(value));
+  EXPECT_EQ(value, UINT64_MAX);
 }
 
 /////////////////////////////////////////////////

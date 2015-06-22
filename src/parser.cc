@@ -481,8 +481,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     if (i == _sdf->GetAttributeCount())
     {
       sdfwarn << "XML Attribute[" << attribute->Name()
-             << "] in element[" << _xml->Value()
-             << "] not defined in SDF, ignoring.\n";
+              << "] in element[" << _xml->Value()
+              << "] not defined in SDF, ignoring.\n";
     }
 
     attribute = attribute->Next();
