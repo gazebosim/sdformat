@@ -807,8 +807,8 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
   ElementPtr elem = modelPtr->GetFirstElement();
   std::map<std::string, std::string> replace;
 
-  Pose modelPose =
-    modelPtr->Get<Pose>("pose");
+  ignition::math::Pose3d modelPose =
+    modelPtr->Get<ignition::math::Pose3d>("pose");
 
   std::string modelName = modelPtr->Get<std::string>("name");
   while (elem)
@@ -820,10 +820,12 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
       replace[elemName] = newName;
       if (elem->HasElementDescription("pose"))
       {
-        Pose newPose = Pose(
-          modelPose.pos +
-            modelPose.rot.RotateVector(elem->Get<Pose>("pose").pos),
-            modelPose.rot * elem->Get<Pose>("pose").rot);
+        ignition::math::Pose3d offsetPose =
+          elem->Get<ignition::math::Pose3d>("pose");
+        ignition::math::Pose3d newPose = ignition::math::Pose3d(
+          modelPose.Pos() +
+            modelPose.Rot().RotateVector(offsetPose.Pos()),
+            modelPose.Rot() * offsetPose.Rot());
         elem->GetElement("pose")->Set(newPose);
       }
     }
@@ -838,8 +840,8 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
       if (elem->HasElement("axis"))
       {
         ElementPtr axisElem = elem->GetElement("axis");
-        Vector3 newAxis =  modelPose.rot.RotateVector(
-          axisElem->Get<Vector3>("xyz"));
+        ignition::math::Vector3d newAxis =  modelPose.Rot().RotateVector(
+          axisElem->Get<ignition::math::Vector3d>("xyz"));
         axisElem->GetElement("xyz")->Set(newAxis);
       }
     }

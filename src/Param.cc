@@ -114,6 +114,10 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   {
     this->Init<ignition::math::Quaterniond>(_default);
   }
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
   /// \deprecated The following sdf::<types> are deprecated
   else if (this->dataPtr->typeName == "sdf::Vector2i" ||
            this->dataPtr->typeName == "vector2i")
@@ -147,6 +151,9 @@ Param::Param(const std::string &_key, const std::string &_typeName,
            << "Use ignition::math::Quaterniond\n";
     this->Init<sdf::Quaternion>(_default);
   }
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
   else
     sdferr << "Unknown parameter type[" << this->dataPtr->typeName << "]\n";
 }
@@ -267,6 +274,10 @@ bool Param::GetAny(boost::any &_anyVal) const
     _anyVal = ret;
   }
 
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
   /// \deprecated The follow sdf Types are deprecated
   else if (this->IsType<sdf::Vector3>())
   {
@@ -309,6 +320,9 @@ bool Param::GetAny(boost::any &_anyVal) const
       return false;
     _anyVal = ret;
   }
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
   else
   {
     sdferr << "Type of parameter not known: [" << this->GetTypeName() << "]\n";
