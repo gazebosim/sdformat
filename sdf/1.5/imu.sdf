@@ -9,15 +9,15 @@
     <description>These elements are specific to body-frame angular velocity,
     which is expressed in radians per second</description>
     <element name="x" required="0">
-      <description>Angular velocity about the X axis of the sensor</description>
+      <description>Angular velocity about the X axis</description>
       <include filename="noise.sdf" required="0"/>
     </element>
     <element name="y" required="0">
-      <description>Angular velocity about the Y axis of the sensor</description>
+      <description>Angular velocity about the Y axis</description>
       <include filename="noise.sdf" required="0"/>
     </element>
     <element name="z" required="0">
-      <description>Angular velocity about the Z axis of the sensor</description>
+      <description>Angular velocity about the Z axis</description>
       <include filename="noise.sdf" required="0"/>
     </element>
   </element>
@@ -39,7 +39,7 @@
     </element>
   </element>
 
-  <!-- THE ELEMENTS BELOW ARE DEPRECATED AND WILL BE REMOVED -->
+  <!-- THE ELEMENTS BELOW ARE DEPRECATED AND SHOULD BE REMOVED in SDF 1.6 -->
 
   <element name="noise" required="0">
     <description>The properties of the noise model that should be applied to generated data</description>
