@@ -115,7 +115,10 @@ inline TiXmlElement *_initDocGetElement(TiXmlDocument *_xmlDoc)
 bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf)
 {
   auto element = _initDocGetElement(_xmlDoc);
-  if (!element) return false;
+  if (!element)
+  {
+    return false;
+  }
 
   return initXml(element, _sdf->Root());
 }
@@ -124,7 +127,10 @@ bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf)
 bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf)
 {
   auto element = _initDocGetElement(_xmlDoc);
-  if (!element) return false;
+  if (!element)
+  {
+    return false;
+  }
 
   return initXml(element, _sdf);
 }
