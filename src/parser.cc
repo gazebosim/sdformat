@@ -93,7 +93,7 @@ bool initString(const std::string &_xmlString, SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-inline TiXmlElement * _initDocGetElement(TiXmlDocument *_xmlDoc)
+inline TiXmlElement *_initDocGetElement(TiXmlDocument *_xmlDoc)
 {
   if (!_xmlDoc)
   {
@@ -101,7 +101,7 @@ inline TiXmlElement * _initDocGetElement(TiXmlDocument *_xmlDoc)
     return nullptr;
   }
 
-  TiXmlElement * element = _xmlDoc->FirstChildElement("element");
+  TiXmlElement *element = _xmlDoc->FirstChildElement("element");
   if (!element)
   {
     sdferr << "Could not find the 'element' element in the xml file\n";
@@ -393,7 +393,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
       Converter::Convert(_xmlDoc, SDF::Version());
     }
 
-    TiXmlElement* elemXml = sdfNode;
+    TiXmlElement *elemXml = sdfNode;
     if (sdfNode->Value() != _sdf->GetName() &&
         sdfNode->FirstChildElement(_sdf->GetName()))
     {
@@ -505,7 +505,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     std::string filename;
 
     // Iterate over all the child elements
-    TiXmlElement* elemXml = NULL;
+    TiXmlElement *elemXml = NULL;
     for (elemXml = _xml->FirstChildElement(); elemXml;
          elemXml = elemXml->NextSiblingElement())
     {
@@ -750,7 +750,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
 {
   // Iterate over all the child elements
-  TiXmlElement* elemXml = NULL;
+  TiXmlElement *elemXml = NULL;
   for (elemXml = _xml->FirstChildElement(); elemXml;
        elemXml = elemXml->NextSiblingElement())
   {
