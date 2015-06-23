@@ -1,4 +1,12 @@
 <element name="magnetometer" required="0">
   <description>These elements are specific to a Magnetometer sensor.</description>
-  <include filename="noise.sdf" required="0"/>
+  <x>
+    <include filename="noise.sdf" required="0"/>
+  </x>
+  <y>
+    <include filename="noise.sdf" required="0"/>
+  </y>
+  <z>
+    <include filename="noise.sdf" required="0"/>
+  </z>
 </element>
