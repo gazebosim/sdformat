@@ -45,13 +45,22 @@ bool init(SDFPtr _sdf)
   filename = sdf::findFile(fileToFind);
 
   FILE *ftest = fopen(filename.c_str(), "r");
-  if (ftest && initFile(filename, _sdf))
+  if (ftest)
   {
-    result = true;
     fclose(ftest);
+    if (initFile(filename, _sdf))
+    {
+      result = true;
+    }
+    else
+    {
+      sdferr << "Unable to init SDF file[" << filename << "]\n";
+    }
   }
   else
+  {
     sdferr << "Unable to find or open SDF file[" << fileToFind << "]\n";
+  }
 
   return result;
 }
