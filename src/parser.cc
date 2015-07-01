@@ -630,7 +630,6 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             sdferr << "Error parsing XML in file ["
                    << manifestPath.string() << "]: "
                    << manifestDoc.ErrorDesc() << '\n';
-            // TODO(wjwwood): Should this be a failure? return false?
           }
         }
         else
