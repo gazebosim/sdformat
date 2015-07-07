@@ -97,6 +97,11 @@ bool initString(const std::string &_xmlString, SDFPtr _sdf)
 {
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
+  if (xmlDoc.Error())
+  {
+    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
 
   return initDoc(&xmlDoc, _sdf);
 }
@@ -272,7 +277,12 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
     return false;
   }
 
-  xmlDoc.LoadFile(filename);
+  if (!xmlDoc.LoadFile(filename))
+  {
+    sdferr << "Error parsing XML in file [" << filename << "]: "
+           << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
   if (readDoc(&xmlDoc, _sdf, filename))
     return true;
   else
@@ -299,6 +309,11 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 {
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
+  if (xmlDoc.Error())
+  {
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
   if (readDoc(&xmlDoc, _sdf, "data-string"))
     return true;
   else
@@ -325,6 +340,11 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 {
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
+  if (xmlDoc.Error())
+  {
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
   if (readDoc(&xmlDoc, _sdf, "data-string"))
     return true;
   else
@@ -604,6 +624,12 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
               filename = modelPath + "/" + sdfXML->GetText();
             }
+          }
+          else
+          {
+            sdferr << "Error parsing XML in file ["
+                   << manifestPath.string() << "]: "
+                   << manifestDoc.ErrorDesc() << '\n';
           }
         }
         else
