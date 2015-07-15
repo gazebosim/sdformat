@@ -17,6 +17,10 @@
     <description>Real time stamp of the state [seconds nanoseconds]</description>
   </element>
 
+  <element name="iterations" type="uint64_t" default="0" required="1">
+    <description>Number of simulation iterations.</description>
+  </element>
+
   <element name="insertions" required="0">
     <description>A list of new model names</description>
     <include filename="model.sdf" required="+"/>

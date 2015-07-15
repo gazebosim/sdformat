@@ -55,7 +55,7 @@
       <description>Bitmask for collision filtering when collide_without_contact is on </description>
     </element>    
 
-    <element name="collide_bitmask" type="unsigned int" default="1" required="0">
+    <element name="collide_bitmask" type="unsigned int" default="65535" required="0">
       <description>Bitmask for collision filtering. This will override collide_without_contact</description>
     </element>
 
