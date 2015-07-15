@@ -33,7 +33,8 @@ std::string get_sdf_string()
     << "    <user attribute='attribute' />"
     << "    <value attribute='attribute'>value</value>"
     << "  </plugin>"
-    << "</model>";
+    << "</model>"
+    << "</sdf>";
   return stream.str();
 }
 

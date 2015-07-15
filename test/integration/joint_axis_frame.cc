@@ -37,7 +37,8 @@ std::string get_sdf_string(std::string _version)
     << "      <xyz>1 0 0</xyz>"
     << "    </axis>"
     << "  </joint>"
-    << "</model>";
+    << "</model>"
+    << "</sdf>";
   return stream.str();
 }
 

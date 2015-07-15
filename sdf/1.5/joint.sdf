@@ -14,7 +14,8 @@
       (prismatic) a sliding joint that slides along an axis with a limited range specified by upper and lower limits,
       (ball) a ball and socket joint,
       (screw) a single degree of freedom joint with coupled sliding and rotational motion,
-      (universal) like a ball joint, but constrains one degree of freedom.
+      (universal) like a ball joint, but constrains one degree of freedom,
+      (fixed) a joint with zero degrees of freedom that rigidly connects two links.
     </description>
   </attribute>
 
@@ -42,7 +43,7 @@
     <description>Parameter for screw joints.</description>
   </element>
 
-  <element name="axis" required="1">
+  <element name="axis" required="0">
     <description>
       Parameters related to the axis of rotation for revolute joints,
       the axis of translation for prismatic joints.

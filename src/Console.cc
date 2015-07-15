@@ -15,11 +15,11 @@
  *
  */
 
+#include <mutex>
 #include <string.h>
 #include <stdlib.h>
 #include <sstream>
 #include <boost/filesystem.hpp>
-#include <boost/thread/mutex.hpp>
 
 /// \todo Remove this diagnositic push/pop in version 5
 #ifndef _WIN32
@@ -37,7 +37,7 @@ using namespace sdf;
 
 /// Static pointer to the console.
 static boost::shared_ptr<Console> myself;
-static boost::mutex g_instance_mutex;
+static std::mutex g_instance_mutex;
 
 //////////////////////////////////////////////////
 Console::Console()
@@ -86,7 +86,7 @@ Console::~Console()
 //////////////////////////////////////////////////
 boost::shared_ptr<Console> Console::Instance()
 {
-  boost::mutex::scoped_lock lock(g_instance_mutex);
+  std::lock_guard<std::mutex> lock(g_instance_mutex);
   if (!myself)
     myself.reset(new Console());
 
