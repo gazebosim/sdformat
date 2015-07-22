@@ -1,0 +1,25 @@
+<!-- Encoder Sensor -->
+<element name="encoder" required="0">
+  <description>These elements are specific to the joint encoder sensor.</description>
+
+  <element name="topic" type="string" default="__default_topic__" required="0">
+    <description>Topic on which data is published.</description>
+  </element>
+
+  <attribute name="type" type="string" default="__default__" required="1">
+    <description>The type of encoder, which must be one of the following:
+      (limit) limit sensor
+      (position) joint position sensor
+      (velocity) joint velocity sensor
+    </description>
+  </attribute>
+
+  <element name="joint" type="string" default="__default__" required="1">
+    <description>Name of the joint</description>
+  </element> <!-- End Joint -->
+
+  <element name="transmission" type="string" default="__default__" required="1">
+    <description>Name of the transmission</description>
+  </element> <!-- End Joint -->
+
+</element> <!-- End Encoder -->

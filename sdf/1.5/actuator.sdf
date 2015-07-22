@@ -1,0 +1,24 @@
+<!-- Actuator -->
+<element name="actuator" required="*">
+  <description>
+    An actuator is a non-simple system component that applies actuation to components (joints or links) of a model.
+    An actuator model has mass(es)? (e.g. free spinning motor core inertia matters if the output mechanical reduction ratio is high).
+    We could split actuator motor into parent (shell or casing) inertia (attached to parent link) and child (e.g. motor core) inertia
+    (attached to child link or gearbox output).
+    An actuator defines offsets for its components.
+  </description>
+
+  <attribute name="name" type="string" default="__default__" required="1">
+    <description>A unique name for the actuator within the scope of the model.</description>
+  </attribute>
+
+  <attribute name="type" type="string" default="__default__" required="1">
+    <description>The type of actuator, which must be one of the following:
+      (direct_drive_dc_motor) a hinge joint that rotates on a single axis with either a fixed or continuous range of motion,
+    </description>
+  </attribute>
+
+  <element name="parent" type="string" default="__default__" required="1">
+    <description>Name of the parent link</description>
+  </element> <!-- End Parent -->
+</element> <!-- End Actuator -->
