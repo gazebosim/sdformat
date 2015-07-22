@@ -36,6 +36,7 @@
      * [Pull request 145](https://bitbucket.org/osrf/sdformat/pull-request/145)
 1. Fix problems with latin locales and decimal numbers (issue #60)
      * [Pull request 147](https://bitbucket.org/osrf/sdformat/pull-request/147)
+     * [Issue 60](https://bitbucket.org/osrf/sdformat/issues/60)
 
 ## SDFormat 2.x
 
@@ -47,18 +48,21 @@
      * [Pull request 61](https://bitbucket.org/osrf/sdformat/pull-request/61)
 1. Support for GNUInstallDirs
      * [Pull request 64](https://bitbucket.org/osrf/sdformat/pull-request/64)
-1. <use_true_size> element used by DEM heightmaps
+1. `<use_true_size>` element used by DEM heightmaps
      * [Pull request 67](https://bitbucket.org/osrf/sdformat/pull-request/67)
 1. Do not export urdf symbols in sdformat 1.4
      * [Pull request 75](https://bitbucket.org/osrf/sdformat/pull-request/75)
 1. adding deformable properties per issue #32
      * [Pull request 78](https://bitbucket.org/osrf/sdformat/pull-request/78)
+     * [Issue 32](https://bitbucket.org/osrf/sdformat/issues/32)
 1. Support to use external URDF
      * [Pull request 77](https://bitbucket.org/osrf/sdformat/pull-request/77)
 1. Add lighting element to visual
      * [Pull request 79](https://bitbucket.org/osrf/sdformat/pull-request/79)
 1. SDF 1.5: add flag to fix joint axis frame #43 (gazebo issue 494)
      * [Pull request 83](https://bitbucket.org/osrf/sdformat/pull-request/83)
+     * [Issue 43](https://bitbucket.org/osrf/sdformat/issues/43)
+     * [Gazebo issue 494](https://bitbucket.org/osrf/gazebo/issues/494)
 1. Implement SDF_PROTOCOL_VERSION (issue #51)
      * [Pull request 90](https://bitbucket.org/osrf/sdformat/pull-request/90)
 1. Port sdformat to compile on Windows (MSVC)
