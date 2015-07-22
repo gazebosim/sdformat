@@ -37,6 +37,81 @@
 1. Fix problems with latin locales and decimal numbers (issue #60)
      * [Pull request 147](https://bitbucket.org/osrf/sdformat/pull-request/147)
 
+## SDFormat 2.x
+
+1. rename cfm_damping --> implicit_spring_damper
+     * [Pull request 59](https://bitbucket.org/osrf/sdformat/pull-request/59)
+1. add gear_ratio and reference_body for gearbox joint.
+     * [Pull request 62](https://bitbucket.org/osrf/sdformat/pull-request/62)
+1. Update joint stop stiffness and dissipation
+     * [Pull request 61](https://bitbucket.org/osrf/sdformat/pull-request/61)
+1. Support for GNUInstallDirs
+     * [Pull request 64](https://bitbucket.org/osrf/sdformat/pull-request/64)
+1. <use_true_size> element used by DEM heightmaps
+     * [Pull request 67](https://bitbucket.org/osrf/sdformat/pull-request/67)
+1. Do not export urdf symbols in sdformat 1.4
+     * [Pull request 75](https://bitbucket.org/osrf/sdformat/pull-request/75)
+1. adding deformable properties per issue #32
+     * [Pull request 78](https://bitbucket.org/osrf/sdformat/pull-request/78)
+1. Support to use external URDF
+     * [Pull request 77](https://bitbucket.org/osrf/sdformat/pull-request/77)
+1. Add lighting element to visual
+     * [Pull request 79](https://bitbucket.org/osrf/sdformat/pull-request/79)
+1. SDF 1.5: add flag to fix joint axis frame #43 (gazebo issue 494)
+     * [Pull request 83](https://bitbucket.org/osrf/sdformat/pull-request/83)
+1. Implement SDF_PROTOCOL_VERSION (issue #51)
+     * [Pull request 90](https://bitbucket.org/osrf/sdformat/pull-request/90)
+1. Port sdformat to compile on Windows (MSVC)
+     * [Pull request 101](https://bitbucket.org/osrf/sdformat/pull-request/101)
+1. Separate material properties in material.sdf
+     * [Pull request 104](https://bitbucket.org/osrf/sdformat/pull-request/104)
+1. Add road textures (repeat pull request #104 for sdf_2.0)
+     * [Pull request 105](https://bitbucket.org/osrf/sdformat/pull-request/105)
+1. Add Extruded Polylines as a model
+     * [Pull request 93](https://bitbucket.org/osrf/sdformat/pull-request/93)
+1. Added polyline for sdf_2.0
+     * [Pull request 106](https://bitbucket.org/osrf/sdformat/pull-request/106)
+1. Add spring_reference and spring_stiffness tags to joint axis dynamics
+     * [Pull request 102](https://bitbucket.org/osrf/sdformat/pull-request/102)
+1. Fix actor static
+     * [Pull request 110](https://bitbucket.org/osrf/sdformat/pull-request/110)
+1. New <Population> element
+     * [Pull request 112](https://bitbucket.org/osrf/sdformat/pull-request/112)
+1. Add camera distortion element
+     * [Pull request 120](https://bitbucket.org/osrf/sdformat/pull-request/120)
+1. Inclusion of magnetic field strength sensor
+     * [Pull request 123](https://bitbucket.org/osrf/sdformat/pull-request/123)
+1. Properly add URDF gazebo extensions blobs to SDF joint elements
+     * [Pull request 125](https://bitbucket.org/osrf/sdformat/pull-request/125)
+1. Allow gui plugins to be specified in SDF
+     * [Pull request 127](https://bitbucket.org/osrf/sdformat/pull-request/127)
+1. Backport magnetometer
+     * [Pull request 128](https://bitbucket.org/osrf/sdformat/pull-request/128)
+1. Add flag for MOI rescaling to sdf 1.4
+     * [Pull request 121](https://bitbucket.org/osrf/sdformat/pull-request/121)
+1. Parse urdf joint friction parameters, add corresponding test
+     * [Pull request 129](https://bitbucket.org/osrf/sdformat/pull-request/129)
+1. Allow reading of boolean values from plugin elements.
+     * [Pull request 132](https://bitbucket.org/osrf/sdformat/pull-request/132)
+1. Implement generation of XML Schema files (issue #2)
+     * [Pull request 91](https://bitbucket.org/osrf/sdformat/pull-request/91)
+1. Fix build for OS X 10.10
+     * [Pull request 135](https://bitbucket.org/osrf/sdformat/pull-request/135)
+1. Improve performance in loading <include> SDF elements
+     * [Pull request 138](https://bitbucket.org/osrf/sdformat/pull-request/138)
+1. Added urdf gazebo extension option to disable fixed joint lumping
+     * [Pull request 133](https://bitbucket.org/osrf/sdformat/pull-request/133)
+1. Support urdfdom 0.3 (alternative to pull request #122)
+     * [Pull request 141](https://bitbucket.org/osrf/sdformat/pull-request/141)
+1. Update list of supported joint types
+     * [Pull request 142](https://bitbucket.org/osrf/sdformat/pull-request/142)
+1. Ignore unknown elements
+     * [Pull request 148](https://bitbucket.org/osrf/sdformat/pull-request/148)
+1. Physics preset attributes
+     * [Pull request 146](https://bitbucket.org/osrf/sdformat/pull-request/146)
+1. Backport fix for latin locales (pull request #147)
+     * [Pull request 150](https://bitbucket.org/osrf/sdformat/pull-request/150)
+
 ## SDFormat 1.4
 
 ### SDFormat 1.4.8 (2013-09-06)
