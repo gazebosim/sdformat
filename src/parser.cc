@@ -97,6 +97,11 @@ bool initString(const std::string &_xmlString, SDFPtr _sdf)
 {
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
+  if (xmlDoc.Error())
+  {
+    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
 
   return initDoc(&xmlDoc, _sdf);
 }
@@ -272,7 +277,12 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
     return false;
   }
 
-  xmlDoc.LoadFile(filename);
+  if (!xmlDoc.LoadFile(filename))
+  {
+    sdferr << "Error parsing XML in file [" << filename << "]: "
+           << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
   if (readDoc(&xmlDoc, _sdf, filename))
     return true;
   else
@@ -299,6 +309,11 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 {
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
+  if (xmlDoc.Error())
+  {
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
   if (readDoc(&xmlDoc, _sdf, "data-string"))
     return true;
   else
@@ -325,6 +340,11 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 {
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
+  if (xmlDoc.Error())
+  {
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
   if (readDoc(&xmlDoc, _sdf, "data-string"))
     return true;
   else
@@ -605,6 +625,12 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
               filename = modelPath + "/" + sdfXML->GetText();
             }
           }
+          else
+          {
+            sdferr << "Error parsing XML in file ["
+                   << manifestPath.string() << "]: "
+                   << manifestDoc.ErrorDesc() << '\n';
+          }
         }
         else
         {
@@ -818,8 +844,8 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
   ElementPtr elem = modelPtr->GetFirstElement();
   std::map<std::string, std::string> replace;
 
-  Pose modelPose =
-    modelPtr->Get<Pose>("pose");
+  ignition::math::Pose3d modelPose =
+    modelPtr->Get<ignition::math::Pose3d>("pose");
 
   std::string modelName = modelPtr->Get<std::string>("name");
   while (elem)
@@ -831,10 +857,12 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
       replace[elemName] = newName;
       if (elem->HasElementDescription("pose"))
       {
-        Pose newPose = Pose(
-          modelPose.pos +
-            modelPose.rot.RotateVector(elem->Get<Pose>("pose").pos),
-            modelPose.rot * elem->Get<Pose>("pose").rot);
+        ignition::math::Pose3d offsetPose =
+          elem->Get<ignition::math::Pose3d>("pose");
+        ignition::math::Pose3d newPose = ignition::math::Pose3d(
+          modelPose.Pos() +
+            modelPose.Rot().RotateVector(offsetPose.Pos()),
+            modelPose.Rot() * offsetPose.Rot());
         elem->GetElement("pose")->Set(newPose);
       }
     }
@@ -849,8 +877,8 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
       if (elem->HasElement("axis"))
       {
         ElementPtr axisElem = elem->GetElement("axis");
-        Vector3 newAxis =  modelPose.rot.RotateVector(
-          axisElem->Get<Vector3>("xyz"));
+        ignition::math::Vector3d newAxis =  modelPose.Rot().RotateVector(
+          axisElem->Get<ignition::math::Vector3d>("xyz"));
         axisElem->GetElement("xyz")->Set(newAxis);
       }
     }

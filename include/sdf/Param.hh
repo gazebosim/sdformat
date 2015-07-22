@@ -236,7 +236,7 @@ namespace sdf
                ignition::math::Vector2d, ignition::math::Quaterniond,
                ignition::math::Pose3d> ParamVariant;
 #ifndef _WIN32
-#pragma GCC diagnostic push
+#pragma GCC diagnostic pop
 #endif
 
     /// \brief This parameter's value
