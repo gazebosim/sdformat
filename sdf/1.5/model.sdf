@@ -27,6 +27,11 @@
   <include filename="plugin.sdf" required="*"/>
   <include filename="gripper.sdf" required="*"/>
 
+  <!-- for robotic joint actuation -->
+  <include filename="actuator.sdf" required="*"/>
+  <include filename="transmission.sdf" required="*"/>
+  <include filename="encoder.sdf" required="*"/>
+
   <element name="include" required="*">
     <description>Include resources from a URI. This can be used to nest models.</description>
     <element name="uri" type="string" default="__default__" required="1">

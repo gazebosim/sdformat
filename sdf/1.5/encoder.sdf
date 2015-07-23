@@ -2,9 +2,9 @@
 <element name="encoder" required="0">
   <description>These elements are specific to the joint encoder sensor.</description>
 
-  <element name="topic" type="string" default="__default_topic__" required="0">
-    <description>Topic on which data is published.</description>
-  </element>
+  <attribute name="name" type="string" default="__default__" required="1">
+    <description>A unique name for the encoder. This name must not match another encoder in the model.</description>
+  </attribute>
 
   <attribute name="type" type="string" default="__default__" required="1">
     <description>The type of encoder, which must be one of the following:
@@ -14,9 +14,17 @@
     </description>
   </attribute>
 
+  <element name="topic" type="string" default="__default_topic__" required="0">
+    <description>Topic on which data is published.</description>
+  </element>
+
   <element name="joint" type="string" default="__default__" required="1">
     <description>Name of the joint</description>
   </element> <!-- End Joint -->
+
+  <element name="transmission" type="string" default="__default__" required="1">
+    <description>Name of the transmission</description>
+  </element> <!-- End Transmission -->
 
   <element name="transmission" type="string" default="__default__" required="1">
     <description>Name of the transmission</description>

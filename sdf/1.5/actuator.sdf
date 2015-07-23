@@ -5,7 +5,6 @@
     An actuator model has mass(es)? (e.g. free spinning motor core inertia matters if the output mechanical reduction ratio is high).
     We could split actuator motor into parent (shell or casing) inertia (attached to parent link) and child (e.g. motor core) inertia
     (attached to child link or gearbox output).
-    An actuator defines offsets for its components.
   </description>
 
   <attribute name="name" type="string" default="__default__" required="1">
