@@ -17,7 +17,7 @@
     <description>Real time stamp of the state [seconds nanoseconds]</description>
   </element>
 
-  <element name="iterations" type="int" default="0" required="1">
+  <element name="iterations" type="unsigned int" default="0" required="1">
     <description>Number of simulation iterations.</description>
   </element>
 
