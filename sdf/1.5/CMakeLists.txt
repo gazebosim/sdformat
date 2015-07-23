@@ -3,6 +3,7 @@ set (sdfs
   altimeter.sdf
   audio_source.sdf
   audio_sink.sdf
+  battery.sdf
   box_shape.sdf
   camera.sdf
   collision.sdf
