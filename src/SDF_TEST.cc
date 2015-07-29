@@ -342,10 +342,11 @@ TEST_F(SDFUpdate, EmptyValues)
       ignition::math::Vector3d(1, 2, 3));
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Quaternion>(emptyString), sdf::Quaternion());
+  EXPECT_EQ(elem->Get<ignition::math::Quaterniond>(emptyString),
+            ignition::math::Quaterniond());
   elem->AddValue("quaternion", "1 2 3", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Quaternion>(emptyString),
-            sdf::Quaternion(-2.14159, 1.14159, -0.141593));
+  EXPECT_EQ(elem->Get<ignition::math::Quaterniond>(emptyString),
+            ignition::math::Quaterniond(-2.14159, 1.14159, -0.141593));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString),

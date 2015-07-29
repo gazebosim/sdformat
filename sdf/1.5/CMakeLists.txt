@@ -1,5 +1,6 @@
 set (sdfs
   actor.sdf
+  altimeter.sdf
   audio_source.sdf
   audio_sink.sdf
   box_shape.sdf

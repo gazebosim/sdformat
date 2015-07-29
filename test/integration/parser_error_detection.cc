@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Open Source Robotics Foundation
+ * Copyright 2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,21 +27,27 @@ std::string get_sdf_string()
   std::ostringstream stream;
   stream
     << "<sdf version='" << SDF_VERSION << "'>"
-    << "<model name='model'>"
-    << "  <plugin name='example' filename='libexample.so'>"
-    << "    <value1>true</value1>"
-    << "    <value2>1</value2>"
-    << "    <value3>false</value3>"
-    << "    <value4>0</value4>"
-    << "  </plugin>"
+    << "<model name=\"test\">"
+    << "  <link name=\"test1\">"
+    << "    <visual name=\"bad\">"
+    << "      <geometry>"
+    << "        <box><size>1 1 1</size></box>"
+    << "      </geometry_typo_bad>"
+    << "    </visual>"
+    << "    <visual name=\"good\">"
+    << "      <geometry>"
+    << "        <box><size>1 1 1</size></box>"
+    << "      </geometry>"
+    << "    </visual>"
+    << "  </link>"
     << "</model>"
     << "</sdf>";
   return stream.str();
 }
 
 ////////////////////////////////////////
-// make sure that we can read boolean values from inside a plugin
-TEST(PluginBool, ParseBoolValue)
+// make sure that XML errors get caught
+TEST(ParserErrorDetection, BadXML)
 {
   char *pathCStr = getenv("SDF_PATH");
   boost::filesystem::path path = PROJECT_SOURCE_PATH;
@@ -50,7 +56,7 @@ TEST(PluginBool, ParseBoolValue)
 
   sdf::SDFPtr model(new sdf::SDF());
   sdf::init(model);
-  ASSERT_TRUE(sdf::readString(get_sdf_string(), model));
+  ASSERT_FALSE(sdf::readString(get_sdf_string(), model));
   if (pathCStr)
   {
     setenv("SDF_PATH", pathCStr, 1);
@@ -59,19 +65,4 @@ TEST(PluginBool, ParseBoolValue)
   {
     unsetenv("SDF_PATH");
   }
-
-  sdf::ElementPtr plugin =
-    model->Root()->GetElement("model")->GetElement("plugin");
-
-  ASSERT_TRUE(plugin->HasElement("value1"));
-  EXPECT_TRUE(plugin->Get<bool>("value1"));
-
-  ASSERT_TRUE(plugin->HasElement("value2"));
-  EXPECT_TRUE(plugin->Get<bool>("value2"));
-
-  ASSERT_TRUE(plugin->HasElement("value3"));
-  EXPECT_FALSE(plugin->Get<bool>("value3"));
-
-  ASSERT_TRUE(plugin->HasElement("value4"));
-  EXPECT_FALSE(plugin->Get<bool>("value4"));
 }
