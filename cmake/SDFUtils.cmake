@@ -141,7 +141,7 @@ macro (sdf_build_tests)
       gtest gtest_main sdformat
       )
      
-    link_directories(${IGNITION-MATH_LIBRARY_DIRS})
+    link_directories(${IGNITION-MATH_LIBRARY_DIRS}         )
 
     if (UNIX)
       target_link_libraries(${BINARY_NAME}
@@ -151,13 +151,14 @@ macro (sdf_build_tests)
         pthread
         ${tinyxml_LIBRARIES}
         ${IGNITION-MATH_LIBRARIES}
-      )
+	)
     elseif(WIN32)
       target_link_libraries(${BINARY_NAME}
         gtest.lib
         gtest_main.lib
         sdformat.dll
         ${IGNITION-MATH_LIBRARIES}
+	${Boost_LIBRARIES}
       )
     endif()
  
