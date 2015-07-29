@@ -158,7 +158,7 @@ macro (sdf_build_tests)
         gtest_main.lib
         sdformat.dll
         ${IGNITION-MATH_LIBRARIES}
-	      ${Boost_LIBRARIES}
+        ${Boost_LIBRARIES}
       )
     endif()
 
