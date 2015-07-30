@@ -1,5 +1,6 @@
 set (sdfs
   actor.sdf
+  actuator.sdf
   altimeter.sdf
   audio_source.sdf
   audio_sink.sdf
@@ -8,6 +9,7 @@ set (sdfs
   collision.sdf
   contact.sdf
   cylinder_shape.sdf
+  encoder.sdf
   forcetorque.sdf
   geometry.sdf
   gps.sdf
@@ -44,6 +46,7 @@ set (sdfs
   state.sdf
   surface.sdf
   transceiver.sdf
+  transmission.sdf
   visual.sdf
   world.sdf
 )
