@@ -22,7 +22,7 @@
     <description>A position and orientation in the global coordinate frame for the model. Position(x,y,z) and rotation (roll, pitch yaw) in the global coordinate frame.</description>
   </element>
 
-  <include filename="link.sdf" required="+"/>
+  <include filename="link.sdf" required="*"/>
   <include filename="joint.sdf" required="*"/>
   <include filename="plugin.sdf" required="*"/>
   <include filename="gripper.sdf" required="*"/>
@@ -44,6 +44,13 @@
     <element name="static" type="bool" default="false" required="0">
       <description>Override the static value of the included model.</description>
     </element>
+  </element>
+
+  <element ref="model" required="*">
+    <description>A nested model element</description>
+    <attribute name="name" type="string" default="__default__" required="1">
+      <description>A unique name for the model. This name must not match another model in the world.</description>
+    </attribute>
   </element>
 
 </element> <!-- End Model -->
