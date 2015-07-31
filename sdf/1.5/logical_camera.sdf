@@ -1,5 +1,5 @@
 <element name="logical_camera" required="0">
-  <description>These elements are specific to logical camera sensors. A logical camera reports objects that fall within a frustum. Computation should be performed on a the CPU.</description>
+  <description>These elements are specific to logical camera sensors. A logical camera reports objects that fall within a frustum. Computation should be performed on the CPU.</description>
 
   <element name="near" type="double" default="0" required="1">
     <description>Near clipping distance of the view frustum</description>
