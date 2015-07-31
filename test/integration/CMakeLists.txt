@@ -11,7 +11,6 @@ set(tests
   parser_error_detection.cc
   plugin_attribute.cc
   plugin_bool.cc
-  precision.cc
   provide_feedback.cc
   urdf_joint_parameters.cc
 )
