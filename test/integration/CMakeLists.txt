@@ -11,6 +11,7 @@ set(tests
   parser_error_detection.cc
   plugin_attribute.cc
   plugin_bool.cc
+  precision.cc
   provide_feedback.cc
   urdf_joint_parameters.cc
 )
@@ -30,4 +31,3 @@ if (EXISTS ${XMLLINT_EXE})
   # Need to run schema target (build .xsd files) before running schema_test
   add_dependencies(${TEST_TYPE}_schema_test schema)
 endif()
-
