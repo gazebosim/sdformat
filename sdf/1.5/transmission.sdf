@@ -1,14 +1,20 @@
 <!-- Transmission -->
 <element name="transmission" required="*">
   <description>
-    A transmission is a non-simple system component that applies some mapping between an actuator and the
-    physical system (links, joints, etc.).
-    The mapping could be enforced by: physical components (four bar linkages, gearboxes, etc.) or actuator-joint mapping.
-    A transmission model has mass(es)? (e.g. inertia of free spinning gears matter if the output mechanical reduction
-    ratio is high or adjoining gears joint friction is high).
-    We could split transmission motor into parent inertia (attached to parent link) and child inertia
-    (attached to child link or gearbox output), as well as maybe intermediate gear inertia? or allow for chaining
-    of transmissions.
+    A transmission is a system component that applies mapping between joints and actuators.
+    While in reality, the mapping could be enforced by physical components
+    such as a four bar linkages or gearboxes; this description is targeted
+    at various simplifications.
+
+    Open Questions:
+      - Does a transmission model have mass(es)?
+        (e.g. inertia of free spinning gears matter if the output mechanical reduction
+        ratio is high or adjoining gears joint friction is high).
+        We could split transmission motor into parent inertia (attached to parent link)
+        and child inertia (attached to child link or gearbox output), as well as
+        intermediate gear inertia?
+      - Allow for chaining of transmissions?
+      - How to incorporate with encoders?  Input are joints, output are encoder angles?
   </description>
 
   <attribute name="name" type="string" default="__default__" required="1">
