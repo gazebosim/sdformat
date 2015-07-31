@@ -12,6 +12,29 @@
 
   <element name="friction" required="0">
     <description></description>
+
+    <element name="torsional" required="0">
+      <description>Parameters for torsional friction</description>
+      <element name="coefficient" type="double" default="1.0" min="0.0" required="0">
+        <description>Torsional friction coefficient in the range of [0..1].</description>
+      </element>
+      <element name="use_patch_radius" type="bool" default="1" required="0">
+        <description>By default, torsional friction is calculated using the "patch_radius", which is sqrt(R*d), where "R" is the radius of the collision surface at the contact point (surface_radius) and "d" is the contact depth. If this flag is set to false, surface_radius and contact depth will be used instead of patch radius.</description>
+      </element>
+      <element name="patch_radius" type="double" default="0" min="0.0" required="0">
+        <description>Radius of contact patch surface, used for torsional friction.</description>
+      </element>
+      <element name="surface_radius" type="double" default="Inf" min="0.0" required="0">
+        <description>Surface radius on the point of contact, used for torsional friction.</description>
+      </element>
+      <element name="ode" required="0">
+        <description>Torsional friction parameters for ODE</description>
+        <element name="slip" type="double" default="0.0" required="0">
+          <description>Force dependent slip for torsional friction, between the range of [0..1].</description>
+        </element>
+      </element> <!-- End ODE -->
+    </element> <!-- End torsional -->
+
     <element name="ode" required="0">
       <description>ODE friction parameters</description>
       <element name="mu" type="double" default="1" min="0.0" required="0">
@@ -19,18 +42,6 @@
       </element>
       <element name="mu2" type="double" default="1" min="0.0" required="0">
         <description>Second coefficient of friction in the range of [0..1]</description>
-      </element>
-      <element name="mu3" type="double" default="1" min="0.0" required="0">
-        <description>Torsional coefficient of friction in the range of [0..1].</description>
-      </element>
-      <element name="use_patch_radius" type="bool" default="1" required="0">
-        <description>By default, torsional friction is calculated using the "patch_radius", which is sqrt(R*d), where "R" is the radius of the collision at the contact point (surface_radius) and "d" is the contact depth. If this flag is set to true, surface_radius and contact depth will be used instead of patch radius.</description>
-      </element>
-      <element name="patch_radius" type="double" default="0" min="0.0" required="0">
-        <description>Radius of contact patch surface, used for torsional friction.</description>
-      </element>
-      <element name="surface_radius" type="double" default="Inf" min="0.0" required="0">
-        <description>Surface radius on the point of contact, used for torsional friction.</description>
       </element>
       <element name="fdir1" type="vector3" default="0 0 0" required="0">
         <description>3-tuple specifying direction of mu1 in the collision local reference frame.</description>
@@ -40,9 +51,6 @@
       </element>
       <element name="slip2" type="double" default="0.0" required="0">
         <description>Force dependent slip direction 2 in collision local frame, between the range of [0..1].</description>
-      </element>
-      <element name="slip3" type="double" default="0.0" required="0">
-        <description>Force dependent slip for torsional friction, between the range of [0..1].</description>
       </element>
     </element> <!-- End ODE -->
     <element name="bullet" required="0">
