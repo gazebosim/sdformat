@@ -1,9 +1,14 @@
 ## SDFormat 3.0
 
-### SDFormat 3.0.0 (xxxx-xx-xx)
+### SDFormat 3.x.x (xxxx-xx-xx)
+
+### SDFormat 3.1.0 (2015-08-02)
 
 1. Added logical camera sensor to SDF
      * [Pull request 207](https://bitbucket.org/osrf/sdformat/pull-request/207)
+
+### SDFormat 3.0.0 (2015-07-24)
+
 1. Added altimeter sensor to SDF
      * [Pull request 197](https://bitbucket.org/osrf/sdformat/pull-request/197)
 1. Added magnetometer sensor to SDF
