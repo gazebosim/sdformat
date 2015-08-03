@@ -2,9 +2,11 @@
 
 ### SDFormat 3.0.0 (xxxx-xx-xx)
 
-1. Added altimeter sensor to SDF
+1. Added altimeter sensor to SDF.
+   A contribution from Andrew Symington.
      * [Pull request 197](https://bitbucket.org/osrf/sdformat/pull-request/197)
-1. Added magnetometer sensor to SDF
+1. Added magnetometer sensor to SDF.
+   A contribution from Andrew Symington.
      * [Pull request 198](https://bitbucket.org/osrf/sdformat/pull-request/198)
 1. Fix detection of XML parsing errors
      * [Pull request 190](https://bitbucket.org/osrf/sdformat/pull-request/190)
@@ -103,7 +105,8 @@
      * [Pull request 135](https://bitbucket.org/osrf/sdformat/pull-request/135)
 1. Improve performance in loading <include> SDF elements
      * [Pull request 138](https://bitbucket.org/osrf/sdformat/pull-request/138)
-1. Added urdf gazebo extension option to disable fixed joint lumping
+1. Added urdf gazebo extension option to disable fixed joint lumping.
+   A contribution from Silvio Traversaro.
      * [Pull request 133](https://bitbucket.org/osrf/sdformat/pull-request/133)
 1. Support urdfdom 0.3 (alternative to pull request #122)
      * [Pull request 141](https://bitbucket.org/osrf/sdformat/pull-request/141)
