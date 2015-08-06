@@ -3,7 +3,7 @@
 ### SDFormat 3.x.x (xxxx-xx-xx)
 
 1. Added torsional friction to SDF
-     * [Pull request 205](https://bitbucket.org/osrf/sdformat/pull-request/205)
+     * [Pull request 211](https://bitbucket.org/osrf/sdformat/pull-request/211)
 
 ### SDFormat 3.1.1 (2015-08-03)
 
