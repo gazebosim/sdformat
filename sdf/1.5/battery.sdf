@@ -9,8 +9,4 @@
   <element name="voltage" type="double" default="0.0" required="1">
     <description>Initial voltage in volts.</description>
   </element>
-
-  <element name="initial_power_load" type="double" default="0.0" required="1">
-    <description>Initial power load in watts.</description>
-  </element>
 </element>
