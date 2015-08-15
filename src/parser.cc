@@ -154,10 +154,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
 {
   const char *refString = _xml->Attribute("ref");
   if (refString)
-  {
     _sdf->SetReferenceSDF(std::string(refString));
-    return true;
-  }
 
   const char *nameString = _xml->Attribute("name");
   if (!nameString)

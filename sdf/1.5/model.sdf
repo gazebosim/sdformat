@@ -46,7 +46,7 @@
     </element>
   </element>
 
-  <element ref="model" required="*">
+  <element name="model" ref="model" required="*">
     <description>A nested model element</description>
     <attribute name="name" type="string" default="__default__" required="1">
       <description>A unique name for the model. This name must not match another model in the world.</description>
