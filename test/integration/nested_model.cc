@@ -23,8 +23,7 @@
 #include "test_config.h"
 
 ////////////////////////////////////////
-// sdf model, version 1.4, use_parent_model_frame tag missing
-// expect tag to be inserted with value true
+// Test parsing nested model with joint
 TEST(NestedModel, NestedModel)
 {
   std::ostringstream stream;
