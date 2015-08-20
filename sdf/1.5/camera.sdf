@@ -9,7 +9,7 @@
     <description>A position and orientation in the parent coordinate frame for the camera.</description>
   </element>
 
-  <element name="horizontal_fov" type="double" default="1.047" min="0.1" max="1.5708" required="1">
+  <element name="horizontal_fov" type="double" default="1.047" min="0.1" max="6.283186" required="1">
     <description>Horizontal field of view</description>
   </element> <!-- End Horizontal_FOV -->
 
@@ -90,4 +90,45 @@
     </element>
   </element> <!-- End Distortion -->
 
+  <element name="lens" required="0">
+    <description>Lens projection description</description>
+
+    <element name="type" type="string" default="stereographic" required="1">
+      <description>Type of the lens mapping, acceptable values are gnomonical,stereographic,equidistant,equisolid_angle,orthographic,custom</description>
+    </element>
+    <element name="scale_to_hfov" type="bool" default="true" required="1">
+      <description>If true the image will be scaled to fit horisontal FOV, otherwise it will be shown according to projection type parameters</description>
+    </element>
+
+    <element name="custom_function" required="0">
+      <description>Definition of custom mapping function in a form of r=c1*f*fun(theta/c2 + c3). See https://en.wikipedia.org/wiki/Fisheye_lens#Mapping_function</description>
+      <element name="c1" type="double" default="1" required="0">
+        <description>Linear scaling constant</description>
+      </element>
+      <element name="c2" type="double" default="1" required="0">
+        <description>Angle scaling constant</description>
+      </element>
+      <element name="c3" type="double" default="0" required="0">
+        <description>Angle offset constant</description>
+      </element>
+      <element name="f" type="double" default="1" required="0">
+        <description>Focal length of the optical system. Note: It's not a focal length of the lens in a common sense! This value is ignored if 'scale_to_fov' is set to true</description>
+      </element>
+      <element name="fun" type="string" default="tan" required="1">
+        <description>Possible values are 'sin', 'tan' and 'id'</description>
+      </element>
+    </element> <!-- End Custom Function -->
+
+    <element name="cutoff_angle" type="double" default="1.5707" max="3.141592653" required="0">
+      <description>Everything outside of the specified angle will be hidden, 90° by default</description>
+    </element>
+
+    <element name="env_texture_size" type="int" default="256" min="4" max="2048" required="0">
+      <description>Resolution of the environment cube map used to draw the world</description>
+    </element>
+
+    <element name="advertise" type="bool" default="false" required="0">
+      <description>Provide info topic for this lens</description>
+    </element>
+  </element> <!-- End Lens -->
 </element> <!-- End Camera -->

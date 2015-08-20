@@ -2,6 +2,9 @@
 
 ### SDFormat 3.x.x (xxxx-xx-xx)
 
+1. Added lens element to camera SDF
+     * [Pull request 213](https://bitbucket.org/osrf/sdformat/pull-request/213)
+
 ### SDFormat 3.1.0 (2015-08-02)
 
 1. Added logical camera sensor to SDF
