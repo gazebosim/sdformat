@@ -4,6 +4,13 @@
 
 1. Added lens element to camera SDF
      * [Pull request 213](https://bitbucket.org/osrf/sdformat/pull-request/213)
+1. Added torsional friction to SDF
+     * [Pull request 211](https://bitbucket.org/osrf/sdformat/pull-request/211)
+
+### SDFormat 3.1.1 (2015-08-03)
+
+1. Fix tinyxml linking error
+     * [Pull request #209](https://bitbucket.org/osrf/sdformat/pull-request/209)
 
 ### SDFormat 3.1.0 (2015-08-02)
 
