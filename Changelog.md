@@ -17,6 +17,8 @@
 
 ### SDFormat 3.0.0 (2015-07-24)
 
+1. Added battery to SDF
+     * [Pull request 204](https://bitbucket.org/osrf/sdformat/pull-request/204)
 1. Added altimeter sensor to SDF
      * [Pull request 197](https://bitbucket.org/osrf/sdformat/pull-request/197)
 1. Added magnetometer sensor to SDF
