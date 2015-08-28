@@ -3,7 +3,7 @@
 ### SDFormat 3.x.x (xxxx-xx-xx)
 
 1. Added lens element to camera SDF
-     * [Pull request 213](https://bitbucket.org/osrf/sdformat/pull-request/213)
+     * [Pull request 215](https://bitbucket.org/osrf/sdformat/pull-request/215)
 1. Added torsional friction to SDF
      * [Pull request 211](https://bitbucket.org/osrf/sdformat/pull-request/211)
 
