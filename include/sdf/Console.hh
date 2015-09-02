@@ -52,7 +52,7 @@ namespace sdf
 
   /// \def ConsolePtr
   /// \brief Shared pointer to a Console Element
-  typedef boost::shared_ptr<Console> ConsolePtr;
+  typedef std::shared_ptr<Console> ConsolePtr;
 
   /// \brief Message, error, warning, and logging functionality
   class SDFORMAT_VISIBLE Console
