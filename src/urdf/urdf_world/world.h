@@ -75,7 +75,7 @@
 #include <vector>
 #include <map>
 #include <tinyxml.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/weak_ptr.hpp>
 
 #include "urdf_model/model.h"
@@ -87,7 +87,7 @@ namespace urdf{
 class SDFORMAT_HIDDEN Entity
 {
 public:
-  boost::shared_ptr<ModelInterface> model;
+  std::shared_ptr<ModelInterface> model;
   Pose origin;
   Twist twist;
 };

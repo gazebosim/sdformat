@@ -41,11 +41,19 @@ typedef std::map<std::string, PathList> URIPathMap;
 
 URIPathMap g_uriPathMap;
 
-boost::function<std::string (const std::string &)> g_findFileCB;
+std::function<std::string (const std::string &)> g_findFileCB;
+boost::function<std::string (const std::string &)> g_findFileCB_Boost;
 
 /////////////////////////////////////////////////
 void sdf::setFindCallback(
     boost::function<std::string (const std::string &)> _cb)
+{
+  g_findFileCB_Boost = _cb;
+}
+
+/////////////////////////////////////////////////
+void sdf::setFindCallback(
+    std::function<std::string (const std::string &)> _cb)
 {
   g_findFileCB = _cb;
 }
@@ -128,11 +136,18 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   // flag has been set
   if (_useCallback)
   {
+    // First try the std::function
     if (!g_findFileCB)
     {
-      sdferr << "Tried to use callback in sdf::findFile(), but the callback "
-        "is empty.  Did you call sdf::setFindCallback()?";
-      return std::string();
+      // Otherwise try the boost::function
+      if (!g_findFileCB_Boost)
+      {
+        sdferr << "Tried to use callback in sdf::findFile(), but the callback "
+          "is empty.  Did you call sdf::setFindCallback()?";
+        return std::string();
+      }
+      else
+        return g_findFileCB_Boost(_filename);
     }
     else
       return g_findFileCB(_filename);

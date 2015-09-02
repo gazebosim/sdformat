@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -41,8 +41,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 
 #include "joint.h"
 #include "color.h"
@@ -56,7 +55,7 @@ public:
 
   virtual ~Geometry(void)
   {
-  }  
+  }
 };
 
 class SDFORMAT_HIDDEN Sphere : public Geometry
@@ -151,10 +150,10 @@ class SDFORMAT_HIDDEN Visual
 public:
   Visual() { this->clear(); };
   Pose origin;
-  boost::shared_ptr<Geometry> geometry;
+  std::shared_ptr<Geometry> geometry;
 
   std::string material_name;
-  boost::shared_ptr<Material> material;
+  std::shared_ptr<Material> material;
 
   void clear()
   {
@@ -173,7 +172,7 @@ class SDFORMAT_HIDDEN Collision
 public:
   Collision() { this->clear(); };
   Pose origin;
-  boost::shared_ptr<Geometry> geometry;
+  std::shared_ptr<Geometry> geometry;
 
   void clear()
   {
@@ -195,34 +194,34 @@ public:
   std::string name;
 
   /// inertial element
-  boost::shared_ptr<Inertial> inertial;
+  std::shared_ptr<Inertial> inertial;
 
   /// visual element
-  boost::shared_ptr<Visual> visual;
+  std::shared_ptr<Visual> visual;
 
   /// collision element
-  boost::shared_ptr<Collision> collision;
+  std::shared_ptr<Collision> collision;
 
   /// if more than one collision element is specified, all collision elements are placed in this array (the collision member points to the first element of the array)
-  std::vector<boost::shared_ptr<Collision> > collision_array;
+  std::vector<std::shared_ptr<Collision> > collision_array;
 
   /// if more than one visual element is specified, all visual elements are placed in this array (the visual member points to the first element of the array)
-  std::vector<boost::shared_ptr<Visual> > visual_array;
+  std::vector<std::shared_ptr<Visual> > visual_array;
 
   /// Parent Joint element
   ///   explicitly stating "parent" because we want directional-ness for tree structure
   ///   every link can have one parent
-  boost::shared_ptr<Joint> parent_joint;
+  std::shared_ptr<Joint> parent_joint;
 
-  std::vector<boost::shared_ptr<Joint> > child_joints;
-  std::vector<boost::shared_ptr<Link> > child_links;
+  std::vector<std::shared_ptr<Joint> > child_joints;
+  std::vector<std::shared_ptr<Link> > child_links;
 
-  boost::shared_ptr<Link> getParent() const
+  std::shared_ptr<Link> getParent() const
   {return parent_link_.lock();};
 
-  void setParent(const boost::shared_ptr<Link> &parent)
+  void setParent(const std::shared_ptr<Link> &parent)
   { parent_link_ = parent; }
-  
+
   void clear()
   {
     this->name.clear();
@@ -237,7 +236,7 @@ public:
   };
 
 private:
-  boost::weak_ptr<Link> parent_link_;
+  std::weak_ptr<Link> parent_link_;
 
 };
 

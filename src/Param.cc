@@ -385,7 +385,7 @@ bool Param::SetFromString(const std::string &_value)
 
   std::string tmp(str);
   std::string lowerTmp(str);
-  boost::to_lower(lowerTmp);
+  std::transform(lowerTmp.begin(), lowerTmp.end(), lowerTmp.begin(), ::tolower);
 
   // "true" and "false" doesn't work properly
   if (lowerTmp == "true")
@@ -477,9 +477,9 @@ void Param::Reset()
 }
 
 //////////////////////////////////////////////////
-boost::shared_ptr<Param> Param::Clone() const
+std::shared_ptr<Param> Param::Clone() const
 {
-  return boost::shared_ptr<Param>(
+  return std::shared_ptr<Param>(
   new Param(this->dataPtr->key, this->dataPtr->typeName,
       this->GetAsString(), this->dataPtr->required,
       this->dataPtr->description));

@@ -118,11 +118,11 @@ void Element::AddValue(const std::string &_type,
 }
 
 /////////////////////////////////////////////////
-boost::shared_ptr<Param> Element::CreateParam(const std::string &_key,
+std::shared_ptr<Param> Element::CreateParam(const std::string &_key,
     const std::string &_type, const std::string &_defaultValue, bool _required,
     const std::string &_description)
 {
-  return boost::shared_ptr<Param>(
+  return std::shared_ptr<Param>(
         new Param(_key, _type, _defaultValue, _required, _description));
 }
 

@@ -22,7 +22,7 @@
 #include <fstream>
 #include <string>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "sdf/system_util.hh"
 
@@ -88,7 +88,7 @@ namespace sdf
     public: virtual ~Console();
 
     /// \brief Return an instance to this class.
-    public: static boost::shared_ptr<Console> Instance();
+    public: static std::shared_ptr<Console> Instance();
 
     /// \brief Set quiet output
     /// \param[in] q True to prevent warning
