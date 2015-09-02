@@ -477,10 +477,9 @@ void Param::Reset()
 }
 
 //////////////////////////////////////////////////
-std::shared_ptr<Param> Param::Clone() const
+ParamPtr Param::Clone() const
 {
-  return std::shared_ptr<Param>(
-  new Param(this->dataPtr->key, this->dataPtr->typeName,
+  return ParamPtr(new Param(this->dataPtr->key, this->dataPtr->typeName,
       this->GetAsString(), this->dataPtr->required,
       this->dataPtr->description));
 }

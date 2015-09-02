@@ -128,7 +128,7 @@ namespace sdf
 
     /// \brief Clone the parameter.
     /// \return A new parameter that is the clone of this.
-    public: std::shared_ptr<Param> Clone() const;
+    public: ParamPtr Clone() const;
 
     /// \brief Set the update function. The updateFunc will be used to
     /// set the parameter's value when Param::Update is called.

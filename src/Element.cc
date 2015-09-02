@@ -122,8 +122,8 @@ ParamPtr Element::CreateParam(const std::string &_key,
     const std::string &_type, const std::string &_defaultValue, bool _required,
     const std::string &_description)
 {
-  return std::shared_ptr<Param>(
-        new Param(_key, _type, _defaultValue, _required, _description));
+  return ParamPtr(
+      new Param(_key, _type, _defaultValue, _required, _description));
 }
 
 /////////////////////////////////////////////////

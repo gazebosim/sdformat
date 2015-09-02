@@ -84,7 +84,7 @@ Console::~Console()
 }
 
 //////////////////////////////////////////////////
-std::shared_ptr<Console> Console::Instance()
+ConsolePtr Console::Instance()
 {
   std::lock_guard<std::mutex> lock(g_instance_mutex);
   if (!myself)
