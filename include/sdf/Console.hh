@@ -49,6 +49,10 @@ namespace sdf
 
   class ConsolePrivate;
 
+  /// \def ConsolePtr
+  /// \brief Shared pointer to a Console Element
+  typedef boost::shared_ptr<Console> ConsolePtr;
+
   /// \brief Message, error, warning, and logging functionality
   class SDFORMAT_VISIBLE Console
   {
@@ -88,7 +92,7 @@ namespace sdf
     public: virtual ~Console();
 
     /// \brief Return an instance to this class.
-    public: static boost::shared_ptr<Console> Instance();
+    public: static ConsolePtr Instance();
 
     /// \brief Set quiet output
     /// \param[in] q True to prevent warning
