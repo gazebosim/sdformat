@@ -48,6 +48,7 @@ namespace sdf
         __FILE__, __LINE__, 31))
 
   class ConsolePrivate;
+  class Console;
 
   /// \def ConsolePtr
   /// \brief Shared pointer to a Console Element
