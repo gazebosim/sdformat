@@ -125,7 +125,7 @@ namespace sdf
 
     /// \brief Get the name of the reference SDF element.
     /// \return Name of the reference SDF element.
-    public: std::string GetReferenceSDF() const;
+    public: std::string ReferenceSDF() const;
 
     /// \brief Output Element's description to stdout.
     /// \param[in] _prefix String value to prefix to the output.

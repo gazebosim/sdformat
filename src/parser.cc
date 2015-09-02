@@ -491,7 +491,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
   }
 
   // check for nested sdf
-  std::string refSDFStr = _sdf->GetReferenceSDF();
+  std::string refSDFStr = _sdf->ReferenceSDF();
   if (!refSDFStr.empty())
   {
     ElementPtr refSDF;

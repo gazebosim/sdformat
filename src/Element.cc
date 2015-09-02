@@ -116,7 +116,7 @@ void Element::SetReferenceSDF(const std::string &_value)
 }
 
 /////////////////////////////////////////////////
-std::string Element::GetReferenceSDF() const
+std::string Element::ReferenceSDF() const
 {
   return this->dataPtr->referenceSDF;
 }
@@ -195,7 +195,7 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->required = _elem->GetRequired();
   this->dataPtr->copyChildren = _elem->GetCopyChildren();
   this->dataPtr->includeFilename = _elem->dataPtr->includeFilename;
-  this->dataPtr->referenceSDF = _elem->GetReferenceSDF();
+  this->dataPtr->referenceSDF = _elem->ReferenceSDF();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
        iter != _elem->dataPtr->attributes.end(); ++iter)
@@ -259,7 +259,7 @@ void Element::PrintDescription(const std::string &_prefix)
     std::cout << _prefix << "  <element copy_data ='true' required ='*'/>\n";
 
 
-  std::string refSDF = this->GetReferenceSDF();
+  std::string refSDF = this->ReferenceSDF();
   if (!refSDF.empty())
   {
     std::cout << _prefix << "  <element ref ='" << refSDF <<
