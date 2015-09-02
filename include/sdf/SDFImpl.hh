@@ -71,7 +71,8 @@ namespace sdf
   /// The callback should return a complete path to the requested file, or
   /// and empty string if the file was not found in the callback.
   /// \param[in] _cb The callback function.
-  /// \sa setFindCallback(std::function<std::string (const std::string &)>);
+  /// \deprecated setFindCallback(
+  /// std::function<std::string (const std::string &)>);
   SDFORMAT_VISIBLE
   void setFindCallback(boost::function<std::string (const std::string &)> _cb);
   SDF_DEPRECATED(4.0)
