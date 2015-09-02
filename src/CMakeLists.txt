@@ -15,6 +15,10 @@ if (USE_EXTERNAL_URDF)
   link_directories(${URDF_LIBRARY_DIRS})
 endif()
 
+if (USE_EXTERNAL_TINYXML)
+  link_directories(${tinyxml_LIBRARY_DIRS})
+endif()
+
 set (sources
   Assert.cc
   Console.cc
@@ -74,7 +78,6 @@ sdf_add_library(sdformat ${sources})
 target_link_libraries(sdformat ${Boost_LIBRARIES} ${IGNITION-MATH_LIBRARIES})
 
 if (USE_EXTERNAL_TINYXML)
-  link_directories(${tinyxml_LIBRARY_DIRS})
   target_link_libraries(sdformat ${tinyxml_LIBRARIES})
 endif()
 
