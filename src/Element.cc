@@ -25,7 +25,7 @@ Element::Element()
   : dataPtr(new ElementPrivate)
 {
   this->dataPtr->copyChildren = false;
-  this->dataPtr->nestedSDF = false;
+  this->dataPtr->referenceSDF = "";
 }
 
 /////////////////////////////////////////////////
@@ -110,15 +110,15 @@ bool Element::GetCopyChildren() const
 }
 
 /////////////////////////////////////////////////
-void Element::SetNestedSDF(bool _value)
+void Element::SetReferenceSDF(const std::string &_value)
 {
-  this->dataPtr->nestedSDF = _value;
+  this->dataPtr->referenceSDF = _value;
 }
 
 /////////////////////////////////////////////////
-bool Element::GetNestedSDF() const
+std::string Element::ReferenceSDF() const
 {
-  return this->dataPtr->nestedSDF;
+  return this->dataPtr->referenceSDF;
 }
 
 /////////////////////////////////////////////////
@@ -157,8 +157,8 @@ ElementPtr Element::Clone() const
   clone->dataPtr->required = this->dataPtr->required;
   // clone->parent = this->dataPtr->parent;
   clone->dataPtr->copyChildren = this->dataPtr->copyChildren;
-  clone->dataPtr->nestedSDF = this->dataPtr->nestedSDF;
   clone->dataPtr->includeFilename = this->dataPtr->includeFilename;
+  clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
@@ -194,8 +194,8 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->description = _elem->GetDescription();
   this->dataPtr->required = _elem->GetRequired();
   this->dataPtr->copyChildren = _elem->GetCopyChildren();
-  this->dataPtr->nestedSDF = _elem->GetNestedSDF();
   this->dataPtr->includeFilename = _elem->dataPtr->includeFilename;
+  this->dataPtr->referenceSDF = _elem->ReferenceSDF();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
        iter != _elem->dataPtr->attributes.end(); ++iter)
@@ -258,8 +258,13 @@ void Element::PrintDescription(const std::string &_prefix)
   if (this->GetCopyChildren())
     std::cout << _prefix << "  <element copy_data ='true' required ='*'/>\n";
 
-  if (this->GetNestedSDF())
-    std::cout << _prefix << "  <element nested_sdf ='true' required ='*'/>\n";
+
+  std::string refSDF = this->ReferenceSDF();
+  if (!refSDF.empty())
+  {
+    std::cout << _prefix << "  <element ref ='" << refSDF <<
+        "' required ='*'/>\n";
+  }
 
   ElementPtr_V::iterator eiter;
   for (eiter = this->dataPtr->elementDescriptions.begin();

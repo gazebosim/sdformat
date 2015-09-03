@@ -43,5 +43,6 @@
   <include filename="projector.sdf" required="*"/>
   <include filename="audio_sink.sdf" required="*"/>
   <include filename="audio_source.sdf" required="*"/>
+  <include filename="battery.sdf" required="*"/>
 
 </element> <!-- End Link -->

@@ -119,13 +119,13 @@ namespace sdf
     /// \return True to copy child elements during parsing.
     public: bool GetCopyChildren() const;
 
-    /// \brief Set whether this is a nested SDF element.
-    /// \param[in] _value True to set this as a nested SDF element.
-    public: void SetNestedSDF(bool _value);
+    /// \brief Set reference SDF element.
+    /// \param[in] _value Name of the reference sdf element.
+    public: void SetReferenceSDF(const std::string &_value);
 
-    /// \brief Return true if this is a nested SDF element.
-    /// \return True if this is a nested SDF element.
-    public: bool GetNestedSDF() const;
+    /// \brief Get the name of the reference SDF element.
+    /// \return Name of the reference SDF element.
+    public: std::string ReferenceSDF() const;
 
     /// \brief Output Element's description to stdout.
     /// \param[in] _prefix String value to prefix to the output.
@@ -308,8 +308,8 @@ namespace sdf
     /// name of the include file that was used to create this element
     public: std::string includeFilename;
 
-    /// \brief True if this is a nested element.
-    public: bool nestedSDF;
+    /// \brief Name of reference sdf.
+    public: std::string referenceSDF;
   };
 
   ///////////////////////////////////////////////
