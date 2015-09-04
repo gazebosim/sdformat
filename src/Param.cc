@@ -477,10 +477,9 @@ void Param::Reset()
 }
 
 //////////////////////////////////////////////////
-boost::shared_ptr<Param> Param::Clone() const
+ParamPtr Param::Clone() const
 {
-  return boost::shared_ptr<Param>(
-  new Param(this->dataPtr->key, this->dataPtr->typeName,
+  return ParamPtr(new Param(this->dataPtr->key, this->dataPtr->typeName,
       this->GetAsString(), this->dataPtr->required,
       this->dataPtr->description));
 }
