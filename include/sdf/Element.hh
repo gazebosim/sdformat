@@ -118,6 +118,14 @@ namespace sdf
     /// \return True to copy child elements during parsing.
     public: bool GetCopyChildren() const;
 
+    /// \brief Set reference SDF element.
+    /// \param[in] _value Name of the reference sdf element.
+    public: void SetReferenceSDF(const std::string &_value);
+
+    /// \brief Get the name of the reference SDF element.
+    /// \return Name of the reference SDF element.
+    public: std::string ReferenceSDF() const;
+
     /// \brief Output Element's description to stdout.
     /// \param[in] _prefix String value to prefix to the output.
     public: void PrintDescription(const std::string &_prefix);
@@ -298,6 +306,9 @@ namespace sdf
 
     /// name of the include file that was used to create this element
     public: std::string includeFilename;
+
+    /// \brief Name of reference sdf.
+    public: std::string referenceSDF;
   };
 
   ///////////////////////////////////////////////
