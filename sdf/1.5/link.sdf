@@ -1,5 +1,5 @@
 <!-- Link -->
-<element name="link" required="+">
+<element name="link" required="*">
   <description>A physical link with inertia, collision, and visual properties. A link must be a child of a model, and any number of links may exist in a model.</description>
 
   <attribute name="name" type="string" default="__default__" required="1">

@@ -152,6 +152,10 @@ bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
 {
+  const char *refString = _xml->Attribute("ref");
+  if (refString)
+    _sdf->SetReferenceSDF(std::string(refString));
+
   const char *nameString = _xml->Attribute("name");
   if (!nameString)
   {
@@ -486,6 +490,18 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     _sdf->GetValue()->SetFromString(_xml->GetText());
   }
 
+  // check for nested sdf
+  std::string refSDFStr = _sdf->ReferenceSDF();
+  if (!refSDFStr.empty())
+  {
+    ElementPtr refSDF;
+    refSDF.reset(new Element);
+    std::string refFilename = refSDFStr + ".sdf";
+    initFile(refFilename, refSDF);
+    _sdf->RemoveFromParent();
+    _sdf->Copy(refSDF);
+  }
+
   TiXmlAttribute *attribute = _xml->FirstAttribute();
 
   unsigned int i = 0;
@@ -756,7 +772,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
       }
     }
 
-    // Chek that all required elements have been set
+    // Check that all required elements have been set
     unsigned int descCounter = 0;
     for (descCounter = 0;
          descCounter != _sdf->GetElementDescriptionCount(); ++descCounter)
