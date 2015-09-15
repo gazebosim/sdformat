@@ -1494,9 +1494,6 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           for (blob = (*ge)->collision_blobs.begin();
               blob != (*ge)->collision_blobs.end(); ++blob)
           {
-            TiXmlNode* b1 = (*blob)->Clone();
-            printf("b1 %s\n", b1->Value());
-
             // find elements and assign pointers if they exist
             // for mu1, mu2, minDepth, maxVel, fdir1, kp, kd
             // otherwise, they are allocated by 'new' below.
@@ -1504,7 +1501,6 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
             {
               if (surface == NULL)
               {
-                printf("surface is NULL in blobs process\n");
                 surface = dynamic_cast<TiXmlElement*>((*blob)->Clone());
               }
               else
@@ -1529,7 +1525,6 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
                     *(*blob)->FirstChild("friction"));
                 }
               }
-              printf("surface in blobs process\n");
 
               // get contact, friction nodes, etc
               contact  = surface->FirstChild("contact");
@@ -1547,7 +1542,6 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
             {
               // add to master element if not surface
               // otherwise added below
-              printf("max_contact?!! %s\n", surface->Value());
               _elem->LinkEndChild((*blob)->Clone());
             }
           }
@@ -1638,7 +1632,6 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
 
         if (surface == NULL)
         {
-          printf("surface is NULL at the end\n");
           surface  = new TiXmlElement("surface");
           _elem->LinkEndChild(surface);
         }
