@@ -55,6 +55,7 @@ namespace sdf
 
     // visual
     public: std::string material;
+    public: std::vector<boost::shared_ptr<TiXmlElement> > collision_blobs;
     public: std::vector<boost::shared_ptr<TiXmlElement> > visual_blobs;
 
     // body, default off

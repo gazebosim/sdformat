@@ -1201,6 +1201,39 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       {
         sdf->material = GetKeyValueAsString(childElem);
       }
+      else if (childElem->ValueStr() == "collision")
+      {
+        // anything inside of collision tags:
+        // <gazebo reference="link_name">
+        //   <collision>
+        //     <extention_stuff_here/>
+        //   </collision>
+        // </gazebl>
+        // are treated as blobs that gets inserted
+        // into all collisions for the link
+        // <collision name="link_name[anything here]">
+        //   <stuff_from_urdf_link_collisions/>
+        //   <extention_stuff_here/>
+        // </collision>
+
+        // a place to store converted doc
+        for (TiXmlElement* e = childElem->FirstChildElement(); e;
+            e = e->NextSiblingElement())
+        {
+          TiXmlDocument xmlNewDoc;
+
+          std::ostringstream origStream;
+          origStream << *e;
+          sdfdbg << "collision extension [" << origStream.str() << "] not " <<
+                   "converted from URDF, probably already in SDF format.";
+          xmlNewDoc.Parse(origStream.str().c_str());
+
+          // save all unknown stuff in a vector of blobs
+          TiXmlElementPtr blob(
+            new TiXmlElement(*xmlNewDoc.FirstChildElement()));
+          sdf->collision_blobs.push_back(blob);
+        }
+      }
       else if (childElem->ValueStr() == "visual")
       {
         // anything inside of visual tags:
@@ -1210,7 +1243,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         //   </visual>
         // </gazebl>
         // are treated as blobs that gets inserted
-        // into visuals for the link
+        // into all visuals for the link
         // <visual name="link_name[anything here]">
         //   <stuff_from_urdf_link_visuals/>
         //   <extention_stuff_here/>
@@ -1433,53 +1466,189 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
       sdfIt = g_extensions.begin();
       sdfIt != g_extensions.end(); ++sdfIt)
   {
+    // if _elem already has a surface element, use it
+    TiXmlNode *surface = _elem->FirstChild("surface");
+    TiXmlNode *friction = NULL;
+    TiXmlNode *frictionOde = NULL;
+    TiXmlNode *contact = NULL;
+    TiXmlNode *contactOde = NULL;
+
     for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
         ge != sdfIt->second.end(); ++ge)
     {
-      if (((*ge)->oldLinkName == _linkName) ||
-          (_elem->Attribute("name") &&
-           (std::string(_elem->Attribute("name")) ==
-           _linkName + g_collisionExt + std::string("_") + (*ge)->oldLinkName)))
+      // if (((*ge)->oldLinkName == _linkName) ||
+      //   (_elem->Attribute("name") &&
+      //   (std::string(_elem->Attribute("name")) ==
+      //   _linkName + g_collisionExt + std::string("_") + (*ge)->oldLinkName)))
+      if (_linkName.find((*ge)->oldLinkName) != std::string::npos)
       {
-        TiXmlElement *surface = new TiXmlElement("surface");
-        TiXmlElement *friction = new TiXmlElement("friction");
-        TiXmlElement *frictionOde = new TiXmlElement("ode");
-        TiXmlElement *contact = new TiXmlElement("contact");
-        TiXmlElement *contactOde = new TiXmlElement("ode");
+
+        // insert any blobs (including visual plugins)
+        // warning, if you insert a <surface> sdf here, it might
+        // duplicate what was constructed above.
+        // in the future, we should use blobs (below) in place of
+        // explicitly specified fields (above).
+        if (!(*ge)->collision_blobs.empty())
+        {
+          std::vector<TiXmlElementPtr>::iterator blob;
+          for (blob = (*ge)->collision_blobs.begin();
+              blob != (*ge)->collision_blobs.end(); ++blob)
+          {
+            TiXmlNode* b1 = (*blob)->Clone();
+            printf("b1 %s\n", b1->Value());
+
+            // find elements and assign pointers if they exist
+            // for mu1, mu2, minDepth, maxVel, fdir1, kp, kd
+            // otherwise, they are allocated by 'new' below.
+            if (strcmp((*blob)->Value(), "surface") == 0)
+            {
+              if (surface == NULL)
+              {
+                printf("surface is NULL in blobs process\n");
+                surface = dynamic_cast<TiXmlElement*>((*blob)->Clone());
+              }
+              else
+              {
+                // overwrite previous surface with this one
+                if (surface->FirstChild("contact") == NULL)
+                {
+                  surface->InsertEndChild(*(*blob)->FirstChild("contact"));
+                }
+                else
+                {
+                  surface->ReplaceChild(surface->FirstChild("contact"),
+                    *(*blob)->FirstChild("contact"));
+                }
+                if (surface->FirstChild("friction") == NULL)
+                {
+                  surface->InsertEndChild(*(*blob)->FirstChild("friction"));
+                }
+                else
+                {
+                  surface->ReplaceChild(surface->FirstChild("friction"),
+                    *(*blob)->FirstChild("friction"));
+                }
+              }
+              printf("surface in blobs process\n");
+
+              // get contact, friction nodes, etc
+              contact  = surface->FirstChild("contact");
+              if (contact != NULL)
+              {
+                contactOde  = contact->FirstChild("ode");
+              }
+              friction = surface->FirstChild("friction");
+              if (friction != NULL)
+              {
+                frictionOde  = friction->FirstChild("ode");
+              }
+            }
+            else
+            {
+              // add to master element if not surface
+              // otherwise added below
+              printf("max_contact?!! %s\n", surface->Value());
+              _elem->LinkEndChild((*blob)->Clone());
+            }
+          }
+        }
+
+        // construct new elements if not in blobs
+        if (surface == NULL)
+        {
+          surface  = new TiXmlElement("surface");
+          _elem->LinkEndChild(surface);
+        }
+
+        // construct new elements if not in blobs
+        if (contact == NULL)
+        {
+          if (surface->FirstChild("contact") == NULL)
+          {
+            contact  = new TiXmlElement("contact");
+            surface->LinkEndChild(contact);
+          }
+          else
+          {
+            contact  = surface->FirstChild("contact");
+          }
+        }
+
+        if (contactOde == NULL)
+        {
+
+          if (contact->FirstChild("ode") == NULL)
+          {
+            contactOde  = new TiXmlElement("ode");
+            contact->LinkEndChild(contactOde);
+          }
+          else
+          {
+            contactOde  = contact->FirstChild("ode");
+          }
+        }
+
+        if (friction == NULL)
+        {
+          if (surface->FirstChild("friction") == NULL)
+          {
+            friction  = new TiXmlElement("friction");
+            surface->LinkEndChild(friction);
+          }
+          else
+          {
+            friction  = surface->FirstChild("friction");
+          }
+        }
+
+        if (frictionOde == NULL)
+        {
+          if (friction->FirstChild("ode") == NULL)
+          {
+            frictionOde  = new TiXmlElement("ode");
+            friction->LinkEndChild(frictionOde);
+          }
+          else
+          {
+            frictionOde  = friction->FirstChild("ode");
+          }
+        }
 
         // insert mu1, mu2, kp, kd for collision
         if ((*ge)->isMu1)
-          AddKeyValue(frictionOde, "mu",
+          AddKeyValue(frictionOde->ToElement(), "mu",
               Values2str(1, &(*ge)->mu1));
         if ((*ge)->isMu2)
-          AddKeyValue(frictionOde, "mu2",
+          AddKeyValue(frictionOde->ToElement(), "mu2",
               Values2str(1, &(*ge)->mu2));
         if (!(*ge)->fdir1.empty())
-          AddKeyValue(frictionOde, "fdir1", (*ge)->fdir1);
+          AddKeyValue(frictionOde->ToElement(), "fdir1", (*ge)->fdir1);
         if ((*ge)->isKp)
-          AddKeyValue(contactOde, "kp", Values2str(1, &(*ge)->kp));
+          AddKeyValue(contactOde->ToElement(), "kp", Values2str(1, &(*ge)->kp));
         if ((*ge)->isKd)
-          AddKeyValue(contactOde, "kd", Values2str(1, &(*ge)->kd));
+          AddKeyValue(contactOde->ToElement(), "kd", Values2str(1, &(*ge)->kd));
         // max contact interpenetration correction velocity
         if ((*ge)->isMaxVel)
-          AddKeyValue(contactOde, "max_vel",
+          AddKeyValue(contactOde->ToElement(), "max_vel",
               Values2str(1, &(*ge)->maxVel));
         // contact interpenetration margin tolerance
         if ((*ge)->isMinDepth)
-          AddKeyValue(contactOde, "min_depth",
+          AddKeyValue(contactOde->ToElement(), "min_depth",
               Values2str(1, &(*ge)->minDepth));
+
+        if (surface == NULL)
+        {
+          printf("surface is NULL at the end\n");
+          surface  = new TiXmlElement("surface");
+          _elem->LinkEndChild(surface);
+        }
+
         if ((*ge)->isLaserRetro)
           AddKeyValue(_elem, "laser_retro",
               Values2str(1, &(*ge)->laserRetro));
         if ((*ge)->isMaxContacts)
           AddKeyValue(_elem, "max_contacts",
               boost::lexical_cast<std::string>((*ge)->maxContacts));
-
-        contact->LinkEndChild(contactOde);
-        surface->LinkEndChild(contact);
-        friction->LinkEndChild(frictionOde);
-        surface->LinkEndChild(friction);
-        _elem->LinkEndChild(surface);
       }
     }
   }
