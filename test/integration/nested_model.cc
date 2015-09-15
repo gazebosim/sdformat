@@ -45,14 +45,29 @@ TEST(NestedModel, NestedModel)
     << "  </joint>"
     << "</model>"
     << "</sdf>";
-  sdf::SDF sdfParsed;
-  sdfParsed.SetFromString(stream.str());
+
+  char *pathCStr = getenv("SDF_PATH");
+  boost::filesystem::path path = PROJECT_SOURCE_PATH;
+  path = path / "sdf" / SDF_VERSION;
+  setenv("SDF_PATH", path.string().c_str(), 1);
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
+  if (pathCStr)
+  {
+    setenv("SDF_PATH", pathCStr, 1);
+  }
+  else
+  {
+    unsetenv("SDF_PATH");
+  }
 
   // Verify correct parsing
 
   // top level model
-  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
-  sdf::ElementPtr modelElem = sdfParsed.Root()->GetElement("model");
+  EXPECT_TRUE(sdfParsed->Root()->HasElement("model"));
+  sdf::ElementPtr modelElem = sdfParsed->Root()->GetElement("model");
   EXPECT_TRUE(modelElem->HasAttribute("name"));
   EXPECT_EQ(modelElem->Get<std::string>("name"), "top_level_model");
 
