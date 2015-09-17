@@ -314,12 +314,12 @@ void ReduceCollisionToParent(UrdfLinkPtr _link,
 #ifndef URDF_GE_0P3
     const std::string &_groupName,
 #else
-    const std::string &/*_groupName*/,
+    const std::string &_groupName,
 #endif
     UrdfCollisionPtr _collision)
 {
-  boost::shared_ptr<std::vector<UrdfCollisionPtr> > cols;
 #ifndef URDF_GE_0P3
+  boost::shared_ptr<std::vector<UrdfCollisionPtr> > cols;
   cols = _link->getCollisions(_groupName);
 
   if (!cols)
@@ -341,6 +341,7 @@ void ReduceCollisionToParent(UrdfLinkPtr _link,
   else
     cols->push_back(_collision);
 #else
+  _collision->name = _groupName;
   _link->collision_array.push_back(_collision);
 #endif
 }
@@ -1462,186 +1463,226 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
 void InsertSDFExtensionCollision(TiXmlElement *_elem,
     const std::string &_linkName)
 {
+  // loop through extensions for the whole model
   for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
       sdfIt != g_extensions.end(); ++sdfIt)
   {
-    // if _elem already has a surface element, use it
-    TiXmlNode *surface = _elem->FirstChild("surface");
-    TiXmlNode *friction = NULL;
-    TiXmlNode *frictionOde = NULL;
-    TiXmlNode *contact = NULL;
-    TiXmlNode *contactOde = NULL;
-
-    for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
-        ge != sdfIt->second.end(); ++ge)
+    if (sdfIt->first == _linkName)
     {
-      // if (((*ge)->oldLinkName == _linkName) ||
-      //   (_elem->Attribute("name") &&
-      //   (std::string(_elem->Attribute("name")) ==
-      //   _linkName + g_collisionExt + std::string("_") + (*ge)->oldLinkName)))
-      if (_linkName.find((*ge)->oldLinkName) != std::string::npos)
-      {
+      std::cout << "============================\n";
+      std::cout << "working on g_extensions for link ["
+                << sdfIt->first << "]\n";
+      // if _elem already has a surface element, use it
+      TiXmlNode *surface = _elem->FirstChild("surface");
+      TiXmlNode *friction = NULL;
+      TiXmlNode *frictionOde = NULL;
+      TiXmlNode *contact = NULL;
+      TiXmlNode *contactOde = NULL;
 
-        // insert any blobs (including visual plugins)
-        // warning, if you insert a <surface> sdf here, it might
-        // duplicate what was constructed above.
-        // in the future, we should use blobs (below) in place of
-        // explicitly specified fields (above).
-        if (!(*ge)->collision_blobs.empty())
+      for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
+          ge != sdfIt->second.end(); ++ge)
+      {
+        std::cout << "----------------------------\n";
+        std::string sdfCollisionName(_elem->Attribute("name"));
+        std::string newCollisionName = _linkName + g_collisionExt +
+          std::string("_lump::") + (*ge)->oldLinkName +
+          std::string("_1");  // _1 is iffy, default mesh only?
+        std::string newCollisionName1 = _linkName + g_collisionExt +
+          std::string("_");
+        std::string newCollisionName2 = _linkName + g_collisionExt +
+          std::string("__");
+
+        std::cout << "linkName [" << _linkName
+                  << "] old parent LinkName [" << (*ge)->oldLinkName
+                  << "] sdf collision name [" << sdfCollisionName
+                  << "] new collision name [" << newCollisionName
+                  << "] new collision name no lump [" << newCollisionName1
+                  << "]\n";
+        // if (_linkName.find(sdfIt->first) != std::string::npos &&
+        //   _elem->Attribute("name").find((*ge)->oldLinkName) != std::string::npos)
+        if ((((*ge)->oldLinkName == _linkName) &&
+            (sdfCollisionName.find(newCollisionName2) != std::string::npos ||
+             sdfCollisionName == newCollisionName1))
+            ||
+            (((*ge)->oldLinkName != _linkName) &&
+            (_linkName.find(sdfIt->first) != std::string::npos &&
+            (_elem->Attribute("name") && (sdfCollisionName == newCollisionName)))))
         {
-          std::vector<TiXmlElementPtr>::iterator blob;
-          for (blob = (*ge)->collision_blobs.begin();
-              blob != (*ge)->collision_blobs.end(); ++blob)
+
+          // insert any blobs (including visual plugins)
+          // warning, if you insert a <surface> sdf here, it might
+          // duplicate what was constructed above.
+          // in the future, we should use blobs (below) in place of
+          // explicitly specified fields (above).
+          if (!(*ge)->collision_blobs.empty())
           {
-            // find elements and assign pointers if they exist
-            // for mu1, mu2, minDepth, maxVel, fdir1, kp, kd
-            // otherwise, they are allocated by 'new' below.
-            if (strcmp((*blob)->Value(), "surface") == 0)
+            std::vector<TiXmlElementPtr>::iterator blob;
+            for (blob = (*ge)->collision_blobs.begin();
+                blob != (*ge)->collision_blobs.end(); ++blob)
             {
-              if (surface == NULL)
+              // find elements and assign pointers if they exist
+              // for mu1, mu2, minDepth, maxVel, fdir1, kp, kd
+              // otherwise, they are allocated by 'new' below.
+              printf(">>>>> working on extension blob: [%s]\n", (*blob)->Value());
+              // print for debug
+              std::ostringstream origStream;
+              origStream << *(*blob)->Clone();
+              std::cout << "collision extension [" << origStream.str() << "]\n";
+
+              if (strcmp((*blob)->Value(), "surface") == 0)
               {
-                surface = dynamic_cast<TiXmlElement*>((*blob)->Clone());
+                if (surface == NULL)
+                {
+                  _elem->LinkEndChild((*blob)->Clone());
+                  surface = _elem->LastChild("surface");
+                  printf("surface created %p\n", (void*)surface);
+
+                  // print for debug
+                  std::ostringstream oStream;
+                  oStream << *(*blob)->Clone();
+                  std::cout << "collision extension [" << oStream.str() << "]\n";
+
+                }
+                else
+                {
+                  printf("surface exists\n");
+                  _elem->RemoveChild(surface);
+                  _elem->LinkEndChild((*blob)->Clone());
+                  surface = _elem->FirstChild("surface");
+
+                  // overwrite previous surface with this one
+                  if (surface->FirstChild("contact") == NULL)
+                  {
+                    surface->InsertEndChild(*(*blob)->FirstChild("contact"));
+                  }
+                  else
+                  {
+                    surface->ReplaceChild(surface->FirstChild("contact"),
+                      *(*blob)->FirstChild("contact"));
+                  }
+                  if (surface->FirstChild("friction") == NULL)
+                  {
+                    surface->InsertEndChild(*(*blob)->FirstChild("friction"));
+                  }
+                  else
+                  {
+                    surface->ReplaceChild(surface->FirstChild("friction"),
+                      *(*blob)->FirstChild("friction"));
+                  }
+                }
+
+                // get contact, friction nodes, etc
+                contact  = surface->FirstChild("contact");
+                if (contact != NULL)
+                {
+                  contactOde  = contact->FirstChild("ode");
+                }
+                friction = surface->FirstChild("friction");
+                if (friction != NULL)
+                {
+                  frictionOde  = friction->FirstChild("ode");
+                }
               }
               else
               {
-                // overwrite previous surface with this one
-                if (surface->FirstChild("contact") == NULL)
-                {
-                  surface->InsertEndChild(*(*blob)->FirstChild("contact"));
-                }
-                else
-                {
-                  surface->ReplaceChild(surface->FirstChild("contact"),
-                    *(*blob)->FirstChild("contact"));
-                }
-                if (surface->FirstChild("friction") == NULL)
-                {
-                  surface->InsertEndChild(*(*blob)->FirstChild("friction"));
-                }
-                else
-                {
-                  surface->ReplaceChild(surface->FirstChild("friction"),
-                    *(*blob)->FirstChild("friction"));
-                }
+                // add to master element if not surface
+                // otherwise added below
+                _elem->LinkEndChild((*blob)->Clone());
               }
+            }
+          }
 
-              // get contact, friction nodes, etc
-              contact  = surface->FirstChild("contact");
-              if (contact != NULL)
-              {
-                contactOde  = contact->FirstChild("ode");
-              }
-              friction = surface->FirstChild("friction");
-              if (friction != NULL)
-              {
-                frictionOde  = friction->FirstChild("ode");
-              }
+          // construct new elements if not in blobs
+          if (surface == NULL)
+          {
+            surface  = new TiXmlElement("surface");
+            _elem->LinkEndChild(surface);
+          }
+
+          // construct new elements if not in blobs
+          if (contact == NULL)
+          {
+            if (surface->FirstChild("contact") == NULL)
+            {
+              contact  = new TiXmlElement("contact");
+              surface->LinkEndChild(contact);
             }
             else
             {
-              // add to master element if not surface
-              // otherwise added below
-              _elem->LinkEndChild((*blob)->Clone());
+              contact  = surface->FirstChild("contact");
             }
           }
+
+          if (contactOde == NULL)
+          {
+
+            if (contact->FirstChild("ode") == NULL)
+            {
+              contactOde  = new TiXmlElement("ode");
+              contact->LinkEndChild(contactOde);
+            }
+            else
+            {
+              contactOde  = contact->FirstChild("ode");
+            }
+          }
+
+          if (friction == NULL)
+          {
+            if (surface->FirstChild("friction") == NULL)
+            {
+              friction  = new TiXmlElement("friction");
+              surface->LinkEndChild(friction);
+            }
+            else
+            {
+              friction  = surface->FirstChild("friction");
+            }
+          }
+
+          if (frictionOde == NULL)
+          {
+            if (friction->FirstChild("ode") == NULL)
+            {
+              frictionOde  = new TiXmlElement("ode");
+              friction->LinkEndChild(frictionOde);
+            }
+            else
+            {
+              frictionOde  = friction->FirstChild("ode");
+            }
+          }
+
+          // insert mu1, mu2, kp, kd for collision
+          if ((*ge)->isMu1)
+            AddKeyValue(frictionOde->ToElement(), "mu",
+                Values2str(1, &(*ge)->mu1));
+          if ((*ge)->isMu2)
+            AddKeyValue(frictionOde->ToElement(), "mu2",
+                Values2str(1, &(*ge)->mu2));
+          if (!(*ge)->fdir1.empty())
+            AddKeyValue(frictionOde->ToElement(), "fdir1", (*ge)->fdir1);
+          if ((*ge)->isKp)
+            AddKeyValue(contactOde->ToElement(), "kp", Values2str(1, &(*ge)->kp));
+          if ((*ge)->isKd)
+            AddKeyValue(contactOde->ToElement(), "kd", Values2str(1, &(*ge)->kd));
+          // max contact interpenetration correction velocity
+          if ((*ge)->isMaxVel)
+            AddKeyValue(contactOde->ToElement(), "max_vel",
+                Values2str(1, &(*ge)->maxVel));
+          // contact interpenetration margin tolerance
+          if ((*ge)->isMinDepth)
+            AddKeyValue(contactOde->ToElement(), "min_depth",
+                Values2str(1, &(*ge)->minDepth));
+
+          if ((*ge)->isLaserRetro)
+            AddKeyValue(_elem, "laser_retro",
+                Values2str(1, &(*ge)->laserRetro));
+          if ((*ge)->isMaxContacts)
+            AddKeyValue(_elem, "max_contacts",
+                boost::lexical_cast<std::string>((*ge)->maxContacts));
         }
-
-        // construct new elements if not in blobs
-        if (surface == NULL)
-        {
-          surface  = new TiXmlElement("surface");
-          _elem->LinkEndChild(surface);
-        }
-
-        // construct new elements if not in blobs
-        if (contact == NULL)
-        {
-          if (surface->FirstChild("contact") == NULL)
-          {
-            contact  = new TiXmlElement("contact");
-            surface->LinkEndChild(contact);
-          }
-          else
-          {
-            contact  = surface->FirstChild("contact");
-          }
-        }
-
-        if (contactOde == NULL)
-        {
-
-          if (contact->FirstChild("ode") == NULL)
-          {
-            contactOde  = new TiXmlElement("ode");
-            contact->LinkEndChild(contactOde);
-          }
-          else
-          {
-            contactOde  = contact->FirstChild("ode");
-          }
-        }
-
-        if (friction == NULL)
-        {
-          if (surface->FirstChild("friction") == NULL)
-          {
-            friction  = new TiXmlElement("friction");
-            surface->LinkEndChild(friction);
-          }
-          else
-          {
-            friction  = surface->FirstChild("friction");
-          }
-        }
-
-        if (frictionOde == NULL)
-        {
-          if (friction->FirstChild("ode") == NULL)
-          {
-            frictionOde  = new TiXmlElement("ode");
-            friction->LinkEndChild(frictionOde);
-          }
-          else
-          {
-            frictionOde  = friction->FirstChild("ode");
-          }
-        }
-
-        // insert mu1, mu2, kp, kd for collision
-        if ((*ge)->isMu1)
-          AddKeyValue(frictionOde->ToElement(), "mu",
-              Values2str(1, &(*ge)->mu1));
-        if ((*ge)->isMu2)
-          AddKeyValue(frictionOde->ToElement(), "mu2",
-              Values2str(1, &(*ge)->mu2));
-        if (!(*ge)->fdir1.empty())
-          AddKeyValue(frictionOde->ToElement(), "fdir1", (*ge)->fdir1);
-        if ((*ge)->isKp)
-          AddKeyValue(contactOde->ToElement(), "kp", Values2str(1, &(*ge)->kp));
-        if ((*ge)->isKd)
-          AddKeyValue(contactOde->ToElement(), "kd", Values2str(1, &(*ge)->kd));
-        // max contact interpenetration correction velocity
-        if ((*ge)->isMaxVel)
-          AddKeyValue(contactOde->ToElement(), "max_vel",
-              Values2str(1, &(*ge)->maxVel));
-        // contact interpenetration margin tolerance
-        if ((*ge)->isMinDepth)
-          AddKeyValue(contactOde->ToElement(), "min_depth",
-              Values2str(1, &(*ge)->minDepth));
-
-        if (surface == NULL)
-        {
-          surface  = new TiXmlElement("surface");
-          _elem->LinkEndChild(surface);
-        }
-
-        if ((*ge)->isLaserRetro)
-          AddKeyValue(_elem, "laser_retro",
-              Values2str(1, &(*ge)->laserRetro));
-        if ((*ge)->isMaxContacts)
-          AddKeyValue(_elem, "max_contacts",
-              boost::lexical_cast<std::string>((*ge)->maxContacts));
       }
     }
   }
@@ -2177,22 +2218,22 @@ void ReduceSDFExtensionToParent(UrdfLinkPtr _link)
     }
 
     // find pointer to the existing extension with the new _link reference
-    std::string newLinkName = _link->getParent()->name;
-    StringSDFExtensionPtrMap::iterator newExt = g_extensions.find(newLinkName);
+    std::string parentLinkName = _link->getParent()->name;
+    StringSDFExtensionPtrMap::iterator parentExt = g_extensions.find(parentLinkName);
 
-    // if none exist, create new extension with newLinkName
-    if (newExt == g_extensions.end())
+    // if none exist, create new extension with parentLinkName
+    if (parentExt == g_extensions.end())
     {
       std::vector<SDFExtensionPtr> ge;
       g_extensions.insert(std::make_pair(
-            newLinkName, ge));
-      newExt = g_extensions.find(newLinkName);
+            parentLinkName, ge));
+      parentExt = g_extensions.find(parentLinkName);
     }
 
     // move sdf extensions from _link into the parent _link's extensions
     for (std::vector<SDFExtensionPtr>::iterator ge = ext->second.begin();
         ge != ext->second.end(); ++ge)
-      newExt->second.push_back(*ge);
+      parentExt->second.push_back(*ge);
     ext->second.clear();
   }
 
@@ -2217,7 +2258,7 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
     UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
-  std::string newLinkName = _link->getParent()->name;
+  std::string parentLinkName = _link->getParent()->name;
 
   // HACK: need to do this more generally, but we also need to replace
   //       all instances of _link name with new link name
@@ -2226,7 +2267,7 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
   //         and it needs to be reparented to
   //         <collision>base_footprint_collision</collision>
   sdfdbg << "  STRING REPLACE: instances of _link name ["
-        << linkName << "] with [" << newLinkName << "]\n";
+        << linkName << "] with [" << parentLinkName << "]\n";
   for (std::vector<TiXmlElementPtr>::iterator blobIt =
          _ge->blobs.begin();
          blobIt != _ge->blobs.end(); ++blobIt)
@@ -2235,7 +2276,7 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
     debugStreamIn << *(*blobIt);
     std::string debugBlob = debugStreamIn.str();
     sdfdbg << "        INITIAL STRING link ["
-           << linkName << "]-->[" << newLinkName << "]: ["
+           << linkName << "]-->[" << parentLinkName << "]: ["
            << debugBlob << "]\n";
 
     ReduceSDFExtensionContactSensorFrameReplace(blobIt, _link);
@@ -2538,7 +2579,7 @@ void CreateCollisions(TiXmlElement* _elem,
     sdfdbg << "creating default collision for link [" << _link->name
            << "]";
 
-    std::string collisionPrefix = _link->name;
+    std::string collisionPrefix = (*collision)->name;
 
     if (defaultMeshCount > 0)
     {
@@ -2549,6 +2590,7 @@ void CreateCollisions(TiXmlElement* _elem,
     }
 
     /* make a <collision> block */
+    std::cout << "collisionPrefix [" << collisionPrefix << "]\n";
     CreateCollision(_elem, _link, *collision, collisionPrefix);
 
     // only 1 default mesh
@@ -3151,7 +3193,7 @@ void ReduceSDFExtensionContactSensorFrameReplace(
     UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
-  std::string newLinkName = _link->getParent()->name;
+  std::string parentLinkName = _link->getParent()->name;
   if ((*_blobIt)->ValueStr() == "sensor")
   {
     // parse it and add/replace the reduction transform
@@ -3168,7 +3210,7 @@ void ReduceSDFExtensionContactSensorFrameReplace(
           contact->RemoveChild(collision);
           TiXmlElement* collisionNameKey = new TiXmlElement("collision");
           std::ostringstream collisionNameStream;
-          collisionNameStream << newLinkName << g_collisionExt
+          collisionNameStream << parentLinkName << g_collisionExt
             << "_" << linkName;
           TiXmlText* collisionNameTxt = new TiXmlText(
               collisionNameStream.str());
@@ -3191,7 +3233,7 @@ void ReduceSDFExtensionPluginFrameReplace(
     ignition::math::Pose3d _reductionTransform)
 {
   std::string linkName = _link->name;
-  std::string newLinkName = _link->getParent()->name;
+  std::string parentLinkName = _link->getParent()->name;
   if ((*_blobIt)->ValueStr() == _pluginName)
   {
     // replace element containing _link names to parent link names
@@ -3204,7 +3246,7 @@ void ReduceSDFExtensionPluginFrameReplace(
         (*_blobIt)->RemoveChild(elementNode);
         TiXmlElement* bodyNameKey = new TiXmlElement(_elementName);
         std::ostringstream bodyNameStream;
-        bodyNameStream << newLinkName;
+        bodyNameStream << parentLinkName;
         TiXmlText* bodyNameTxt = new TiXmlText(bodyNameStream.str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
         (*_blobIt)->LinkEndChild(bodyNameKey);
@@ -3273,7 +3315,7 @@ void ReduceSDFExtensionProjectorFrameReplace(
     UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
-  std::string newLinkName = _link->getParent()->name;
+  std::string parentLinkName = _link->getParent()->name;
 
   // updates _link reference for <projector> inside of
   // projector plugins
@@ -3299,7 +3341,7 @@ void ReduceSDFExtensionProjectorFrameReplace(
         if (projectorLinkName == linkName)
         {
           // do the replacement
-          projectorName = newLinkName + "/" +
+          projectorName = parentLinkName + "/" +
             projectorName.substr(pos+1, projectorName.size());
 
           (*_blobIt)->RemoveChild(projectorElem);
@@ -3321,7 +3363,7 @@ void ReduceSDFExtensionGripperFrameReplace(
     UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
-  std::string newLinkName = _link->getParent()->name;
+  std::string parentLinkName = _link->getParent()->name;
 
   if ((*_blobIt)->ValueStr() == "gripper")
   {
@@ -3333,7 +3375,7 @@ void ReduceSDFExtensionGripperFrameReplace(
         (*_blobIt)->RemoveChild(gripperLink);
         TiXmlElement* bodyNameKey = new TiXmlElement("gripper_link");
         std::ostringstream bodyNameStream;
-        bodyNameStream << newLinkName;
+        bodyNameStream << parentLinkName;
         TiXmlText* bodyNameTxt = new TiXmlText(bodyNameStream.str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
         (*_blobIt)->LinkEndChild(bodyNameKey);
@@ -3347,7 +3389,7 @@ void ReduceSDFExtensionGripperFrameReplace(
         (*_blobIt)->RemoveChild(palmLink);
         TiXmlElement* bodyNameKey = new TiXmlElement("palm_link");
         std::ostringstream bodyNameStream;
-        bodyNameStream << newLinkName;
+        bodyNameStream << parentLinkName;
         TiXmlText* bodyNameTxt = new TiXmlText(bodyNameStream.str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
         (*_blobIt)->LinkEndChild(bodyNameKey);
@@ -3362,7 +3404,7 @@ void ReduceSDFExtensionJointFrameReplace(
     UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
-  std::string newLinkName = _link->getParent()->name;
+  std::string parentLinkName = _link->getParent()->name;
 
   if ((*_blobIt)->ValueStr() == "joint")
   {
@@ -3376,7 +3418,7 @@ void ReduceSDFExtensionJointFrameReplace(
         (*_blobIt)->RemoveChild(parent);
         TiXmlElement* parentNameKey = new TiXmlElement("parent");
         std::ostringstream parentNameStream;
-        parentNameStream << newLinkName;
+        parentNameStream << parentLinkName;
         TiXmlText* parentNameTxt = new TiXmlText(parentNameStream.str());
         parentNameKey->LinkEndChild(parentNameTxt);
         (*_blobIt)->LinkEndChild(parentNameKey);
@@ -3390,7 +3432,7 @@ void ReduceSDFExtensionJointFrameReplace(
         (*_blobIt)->RemoveChild(child);
         TiXmlElement* childNameKey = new TiXmlElement("child");
         std::ostringstream childNameStream;
-        childNameStream << newLinkName;
+        childNameStream << parentLinkName;
         TiXmlText* childNameTxt = new TiXmlText(childNameStream.str());
         childNameKey->LinkEndChild(childNameTxt);
         (*_blobIt)->LinkEndChild(childNameKey);
