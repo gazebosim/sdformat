@@ -24,7 +24,6 @@
   #include <boost/bind.hpp>
   #include <boost/algorithm/string.hpp>
   #include <boost/any.hpp>
-  #include <boost/shared_ptr.hpp>
   #include <boost/variant.hpp>
   #include <boost/function.hpp>
 #endif

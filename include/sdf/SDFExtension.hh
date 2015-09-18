@@ -21,6 +21,7 @@
 #include <tinyxml.h>
 #include <string>
 #include <vector>
+#include <memory>
 #include <ignition/math/Pose3.hh>
 
 /// \todo Remove this diagnositic push/pop in version 5
