@@ -17,6 +17,7 @@
 
 #include <math.h>
 #include <locale.h>
+#include <boost/algorithm/string.hpp>
 #include "sdf/Param.hh"
 
 using namespace sdf;

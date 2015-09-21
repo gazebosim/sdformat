@@ -21,7 +21,6 @@
 // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
   #include <boost/lexical_cast.hpp>
-  #include <boost/algorithm/string.hpp>
   #include <boost/any.hpp>
   #include <boost/variant.hpp>
 #endif
