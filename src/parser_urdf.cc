@@ -1686,16 +1686,24 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
               // otherwise, they are allocated by 'new' below.
               // std::cout << ">>>>> working on extension blob: ["
               //           << (*blob)->Value() << "]\n";
+
               // print for debug
-              std::ostringstream origStream;
-              origStream << *(*blob)->Clone();
+              // std::ostringstream origStream;
+              // origStream << *(*blob)->Clone();
               // std::cout << "collision extension ["
               //           << origStream.str() << "]\n";
 
               if (strcmp((*blob)->Value(), "surface") == 0)
               {
+                // blob is a <surface>, tread carefully otherwise
+                // we end up with multiple copies of <surface>.
+                // Also, get pointers (contact[Ode], friction[Ode])
+                // below for backwards (non-blob) compatibility.
                 if (surface == NULL)
                 {
+                  // <surface> do not exist, it simple,
+                  // just add it to the current collision
+                  // and it's done.
                   _elem->LinkEndChild((*blob)->Clone());
                   surface = _elem->LastChild("surface");
                   // std::cout << " --- surface created "
@@ -1703,33 +1711,28 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
                 }
                 else
                 {
-                  // std::cout << " --- surface exists\n";
+                  // <surface> exist already, remove it and
+                  // overwrite with the blob.
                   _elem->RemoveChild(surface);
                   _elem->LinkEndChild((*blob)->Clone());
                   surface = _elem->FirstChild("surface");
-
-                  // overwrite previous surface with this one
-                  if (surface->FirstChild("contact") == NULL)
-                  {
-                    surface->InsertEndChild(*(*blob)->FirstChild("contact"));
-                  }
-                  else
-                  {
-                    surface->ReplaceChild(surface->FirstChild("contact"),
-                      *(*blob)->FirstChild("contact"));
-                  }
-                  if (surface->FirstChild("friction") == NULL)
-                  {
-                    surface->InsertEndChild(*(*blob)->FirstChild("friction"));
-                  }
-                  else
-                  {
-                    surface->ReplaceChild(surface->FirstChild("friction"),
-                      *(*blob)->FirstChild("friction"));
-                  }
+                  // std::cout << " --- surface exists, replace with blob.\n";
                 }
 
-                // get contact, friction nodes, etc
+                // Extra code for backwards compatibility, to
+                // deal with old way of specifying collision attributes
+                // using individual elements listed below:
+                //   "mu"
+                //   "mu2"
+                //   "fdir1"
+                //   "kp"
+                //   "kd"
+                //   "max_vel"
+                //   "min_depth"
+                //   "laser_retro"
+                //   "max_contacts"
+                // Get contact[Ode] and friction[Ode] node pointers
+                // if they exist.
                 contact  = surface->FirstChild("contact");
                 if (contact != NULL)
                 {
@@ -1743,17 +1746,40 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
               }
               else
               {
-                // add to master element if not surface
-                // otherwise added below
+                // If the blob is not a <surface>, we don't have
+                // to worry about backwards compatibility.
+                // Simply add to master element.
                 _elem->LinkEndChild((*blob)->Clone());
               }
             }
           }
 
+          // Extra code for backwards compatibility, to
+          // deal with old way of specifying collision attributes
+          // using individual elements listed below:
+          //   "mu"
+          //   "mu2"
+          //   "fdir1"
+          //   "kp"
+          //   "kd"
+          //   "max_vel"
+          //   "min_depth"
+          //   "laser_retro"
+          //   "max_contacts"
+          // The new way to do this is to specify everything
+          // in collision blobs by using the <collision> tag.
+          // So there's no need for custom code for each property.
+
           // construct new elements if not in blobs
           if (surface == NULL)
           {
             surface  = new TiXmlElement("surface");
+            if (!surface)
+            {
+              // Memory allocation error
+              sdferr << "Memory allocation error while"
+                     << " processing <surface>.\n";
+            }
             _elem->LinkEndChild(surface);
           }
 
@@ -1763,6 +1789,12 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
             if (surface->FirstChild("contact") == NULL)
             {
               contact  = new TiXmlElement("contact");
+              if (!contact)
+              {
+                // Memory allocation error
+                sdferr << "Memory allocation error while"
+                       << " processing <contact>.\n";
+              }
               surface->LinkEndChild(contact);
             }
             else
@@ -1777,6 +1809,12 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
             if (contact->FirstChild("ode") == NULL)
             {
               contactOde  = new TiXmlElement("ode");
+              if (!contactOde)
+              {
+                // Memory allocation error
+                sdferr << "Memory allocation error while"
+                       << " processing <contactOde>.\n";
+              }
               contact->LinkEndChild(contactOde);
             }
             else
@@ -1790,6 +1828,12 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
             if (surface->FirstChild("friction") == NULL)
             {
               friction  = new TiXmlElement("friction");
+              if (!friction)
+              {
+                // Memory allocation error
+                sdferr << "Memory allocation error while"
+                       << " processing <friction>.\n";
+              }
               surface->LinkEndChild(friction);
             }
             else
@@ -1803,6 +1847,12 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
             if (friction->FirstChild("ode") == NULL)
             {
               frictionOde  = new TiXmlElement("ode");
+              if (!frictionOde)
+              {
+                // Memory allocation error
+                sdferr << "Memory allocation error while"
+                       << " processing <frictionOde>.\n";
+              }
               friction->LinkEndChild(frictionOde);
             }
             else
@@ -1821,9 +1871,11 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           if (!(*ge)->fdir1.empty())
             AddKeyValue(frictionOde->ToElement(), "fdir1", (*ge)->fdir1);
           if ((*ge)->isKp)
-            AddKeyValue(contactOde->ToElement(), "kp", Values2str(1, &(*ge)->kp));
+            AddKeyValue(contactOde->ToElement(), "kp",
+                        Values2str(1, &(*ge)->kp));
           if ((*ge)->isKd)
-            AddKeyValue(contactOde->ToElement(), "kd", Values2str(1, &(*ge)->kd));
+            AddKeyValue(contactOde->ToElement(), "kd",
+                        Values2str(1, &(*ge)->kd));
           // max contact interpenetration correction velocity
           if ((*ge)->isMaxVel)
             AddKeyValue(contactOde->ToElement(), "max_vel",
@@ -1849,46 +1901,184 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
 void InsertSDFExtensionVisual(TiXmlElement *_elem,
     const std::string &_linkName)
 {
+  // loop through extensions for the whole model
+  // and see which ones belong to _linkName
+  // This might be complicated since there's:
+  //   - urdf visual name -> sdf visual name conversion
+  //   - fixed joint reduction / lumping
   for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
       sdfIt != g_extensions.end(); ++sdfIt)
   {
-    for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
-        ge != sdfIt->second.end(); ++ge)
+    if (sdfIt->first == _linkName)
     {
-      if (_linkName.find((*ge)->oldLinkName) != std::string::npos)
+      // std::cout << "============================\n";
+      // std::cout << "working on g_extensions for link ["
+      //           << sdfIt->first << "]\n";
+      // if _elem already has a material element, use it
+      TiXmlNode *material = _elem->FirstChild("material");
+      TiXmlElement *script = NULL;
+
+      // loop through all the gazebo extensions stored in sdfIt->second
+      for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
+          ge != sdfIt->second.end(); ++ge)
       {
-        // insert material block
-        if (!(*ge)->material.empty())
+        // Check if this blob belongs to _elem based on
+        //   - blob's reference link name (_linkName or sdfIt->first)
+        //   - _elem (destination for blob, which is a visual sdf).
+
+        if (!_elem->Attribute("name"))
+          sdferr << "ERROR: visual _elem has no name,"
+                 << " something is wrong" << "\n";
+
+        std::string sdfVisualName(_elem->Attribute("name"));
+
+        // std::cout << "----------------------------\n";
+        // std::cout << "blob belongs to [" << _linkName
+        //           << "] with old parent LinkName [" << (*ge)->oldLinkName
+        //           << "]\n";
+        // std::cout << "_elem sdf visual name [" << sdfVisualName
+        //           << "]\n";
+        // std::cout << "----------------------------\n";
+
+        std::string lumpVisualName = std::string("_lump::") +
+          (*ge)->oldLinkName;
+
+        bool wasReduced = (_linkName == (*ge)->oldLinkName);
+        bool visualNameContainsLinkname =
+          sdfVisualName.find(_linkName) != std::string::npos;
+        bool visualNameContainsLumpedLinkname =
+          sdfVisualName.find(lumpVisualName) != std::string::npos;
+        bool visualNameContainsLumpedRef =
+          sdfVisualName.find("lump::") != std::string::npos;
+
+        if (!visualNameContainsLinkname)
+          sdferr << "visual name does not contain link name,"
+                 << " file an issue.\n";
+
+        // if the visual _elem was not reduced,
+        // its name should not have "lump::" in it.
+        // otherwise, its name should have
+        // "lump::[original link name before reduction]".
+        if ((wasReduced && !visualNameContainsLumpedRef) ||
+            (!wasReduced && visualNameContainsLumpedLinkname))
         {
-          // new sdf needs <material><script>...</script></material>
-          TiXmlElement *materialElem = new TiXmlElement("material");
-          TiXmlElement *scriptElem = new TiXmlElement("script");
-          if (scriptElem && materialElem)
+          // insert any blobs (including visual plugins)
+          // warning, if you insert a <material> sdf here, it might
+          // duplicate what was constructed above.
+          // in the future, we should use blobs (below) in place of
+          // explicitly specified fields (above).
+          if (!(*ge)->visual_blobs.empty())
           {
-            AddKeyValue(scriptElem, "name", (*ge)->material);
-            materialElem->LinkEndChild(scriptElem);
-            _elem->LinkEndChild(materialElem);
-            // AddKeyValue(_elem, "material", (*ge)->material);
+            std::vector<TiXmlElementPtr>::iterator blob;
+            for (blob = (*ge)->visual_blobs.begin();
+                blob != (*ge)->visual_blobs.end(); ++blob)
+            {
+              // find elements and assign pointers if they exist
+              // for mu1, mu2, minDepth, maxVel, fdir1, kp, kd
+              // otherwise, they are allocated by 'new' below.
+              // std::cout << ">>>>> working on extension blob: ["
+              //           << (*blob)->Value() << "]\n";
+
+              // print for debug
+              // std::ostringstream origStream;
+              // origStream << *(*blob)->Clone();
+              // std::cout << "visual extension ["
+              //           << origStream.str() << "]\n";
+
+              if (strcmp((*blob)->Value(), "material") == 0)
+              {
+                // blob is a <material>, tread carefully otherwise
+                // we end up with multiple copies of <material>.
+                // Also, get pointers (script)
+                // below for backwards (non-blob) compatibility.
+                if (material == NULL)
+                {
+                  // <material> do not exist, it simple,
+                  // just add it to the current visual
+                  // and it's done.
+                  _elem->LinkEndChild((*blob)->Clone());
+                  material = _elem->LastChild("material");
+                  // std::cout << " --- material created "
+                  //           <<  (void*)material << "\n";
+                }
+                else
+                {
+                  // <material> exist already, remove it and
+                  // overwrite with the blob.
+                  _elem->RemoveChild(material);
+                  _elem->LinkEndChild((*blob)->Clone());
+                  material = _elem->FirstChild("material");
+                  // std::cout << " --- material exists, replace with blob.\n";
+                }
+
+                // Extra code for backwards compatibility, to
+                // deal with old way of specifying visual attributes
+                // using individual element:
+                //   "script"
+                // Get script node pointers
+                // if they exist.
+                script = material->FirstChildElement("script");
+              }
+              else
+              {
+                // std::cout << "***** working on extension blob: ["
+                //           << (*blob)->Value() << "]\n";
+                // If the blob is not a <material>, we don't have
+                // to worry about backwards compatibility.
+                // Simply add to master element.
+                _elem->LinkEndChild((*blob)->Clone());
+              }
+            }
           }
-          else
+
+          // Extra code for backwards compatibility, to
+          // deal with old way of specifying visual attributes
+          // using individual element:
+          //   "script"
+          // The new way to do this is to specify everything
+          // in visual blobs by using the <visual> tag.
+          // So there's no need for custom code for each property.
+
+          // construct new elements if not in blobs
+          if (material == NULL)
           {
-            // Memory allocation error
-            sdferr << "Memory allocation error while processing <material>.\n";
+            material  = new TiXmlElement("material");
+            if (!material)
+            {
+              // Memory allocation error
+              sdferr << "Memory allocation error while"
+                     << " processing <material>.\n";
+            }
+            _elem->LinkEndChild(material);
+          }
+
+          if (script == NULL)
+          {
+            if (material->FirstChildElement("script") == NULL)
+            {
+              script  = new TiXmlElement("script");
+              if (!script)
+              {
+                // Memory allocation error
+                sdferr << "Memory allocation error while"
+                       << " processing <script>.\n";
+              }
+              material->LinkEndChild(script);
+            }
+            else
+            {
+              script  = material->FirstChildElement("script");
+            }
+          }
+
+          // insert material/script block for visual
+          // (*ge)->material block goes under sdf <material><script>.
+          if (!(*ge)->material.empty())
+          {
+            AddKeyValue(script, "name", (*ge)->material);
           }
         }
-
-        // insert any blobs (including visual plugins)
-        if (!(*ge)->visual_blobs.empty())
-        {
-          std::vector<TiXmlElementPtr>::iterator blob;
-          for (blob = (*ge)->visual_blobs.begin();
-              blob != (*ge)->visual_blobs.end(); ++blob)
-          {
-            _elem->LinkEndChild((*blob)->Clone());
-          }
-        }
-
       }
     }
   }
@@ -3031,7 +3221,7 @@ void CreateVisual(TiXmlElement *_elem, ConstUrdfLinkPtr _link,
   TiXmlElement *sdfVisual = new TiXmlElement("visual");
 
   /* set its name */
-  if (_oldLinkName == _link->name || _oldLinkName.empty())
+  if (_oldLinkName.find(_link->name) == 0 || _oldLinkName.empty())
     sdfVisual->SetAttribute("name", _link->name);
   else
     sdfVisual->SetAttribute("name", _link->name
