@@ -40,7 +40,7 @@
 
 #include <string>
 #include <vector>
-#include <memory>
+#include <boost/shared_ptr.hpp>
 
 #include "urdf_model/pose.h"
 
@@ -139,7 +139,7 @@ class SDFORMAT_HIDDEN JointCalibration
 public:
   JointCalibration() { this->clear(); };
   double reference_position;
-  std::shared_ptr<double> rising, falling;
+  boost::shared_ptr<double> rising, falling;
 
   void clear()
   {
@@ -197,19 +197,19 @@ public:
   Pose  parent_to_joint_origin_transform;
 
   /// Joint Dynamics
-  std::shared_ptr<JointDynamics> dynamics;
+  boost::shared_ptr<JointDynamics> dynamics;
 
   /// Joint Limits
-  std::shared_ptr<JointLimits> limits;
+  boost::shared_ptr<JointLimits> limits;
 
   /// Unsupported Hidden Feature
-  std::shared_ptr<JointSafety> safety;
+  boost::shared_ptr<JointSafety> safety;
 
   /// Unsupported Hidden Feature
-  std::shared_ptr<JointCalibration> calibration;
+  boost::shared_ptr<JointCalibration> calibration;
 
   /// Option to Mimic another Joint
-  std::shared_ptr<JointMimic> mimic;
+  boost::shared_ptr<JointMimic> mimic;
 
   void clear()
   {

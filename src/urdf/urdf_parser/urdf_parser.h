@@ -65,8 +65,8 @@ std::string values2str(double d);
 namespace urdf{
 
   SDFORMAT_HIDDEN
-  std::shared_ptr<ModelInterface> parseURDF(const std::string &xml_string);
-  TiXmlDocument*  exportURDF(std::shared_ptr<ModelInterface> &model);
+  boost::shared_ptr<ModelInterface> parseURDF(const std::string &xml_string);
+  TiXmlDocument*  exportURDF(boost::shared_ptr<ModelInterface> &model);
 
 }
 

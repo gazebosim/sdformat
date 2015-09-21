@@ -41,7 +41,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
 #include "urdf_model/pose.h"
@@ -132,7 +132,7 @@ public:
     this->joint_states.clear();
   };
 
-  std::vector<std::shared_ptr<JointState> > joint_states;
+  std::vector<boost::shared_ptr<JointState> > joint_states;
 
 };
 
