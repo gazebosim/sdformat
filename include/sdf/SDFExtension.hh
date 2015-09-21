@@ -53,11 +53,13 @@ namespace sdf
     public: std::string oldLinkName;
     public: ignition::math::Pose3d reductionTransform;
 
-    // visual
+    // visual material
     public: std::string material;
-    public: std::vector<boost::shared_ptr<TiXmlElement> > collision_blobs;
 
-    /// \brief blobs of xml to be copied into the collision element
+    /// \brief blobs of xml to be copied into the visual sdf element
+    public: std::vector<boost::shared_ptr<TiXmlElement> > visual_blobs;
+    
+    /// \brief blobs of xml to be copied into the collision sdf element
     /// An example might be:
     /// <gazebo reference="link-1">
     ///   <collision>
@@ -82,8 +84,8 @@ namespace sdf
     /// </gazebo>
     /// where all the contents of `<collision>` element is copied into the
     /// resulting collision sdf.
-    public: std::vector<boost::shared_ptr<TiXmlElement> > visual_blobs;
-
+    public: std::vector<boost::shared_ptr<TiXmlElement> > collision_blobs;
+    
     // body, default off
     public: bool setStaticFlag;
     public: bool gravity;
