@@ -20,7 +20,6 @@
 #include <string>
 #include <memory>
 #include <functional>
-#include <boost/function.hpp>
 
 #include "sdf/Param.hh"
 #include "sdf/Element.hh"
