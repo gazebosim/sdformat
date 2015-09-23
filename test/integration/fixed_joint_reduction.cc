@@ -33,6 +33,12 @@ const std::string SDF_TEST_FILE_SIMPLE =
 const std::string SDF_TEST_FILE_VISUAL =
   std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/fixed_joint_reduction_visual.urdf";
+const std::string SDF_TEST_FILE_COLLISION_EXTENSION =
+  std::string(PROJECT_SOURCE_PATH)
+  + "/test/integration/fixed_joint_reduction_collision_extension.urdf";
+const std::string SDF_TEST_FILE_COLLISION_EXTENSION_EMPTY_PARENT =
+  std::string(PROJECT_SOURCE_PATH)
+  + "/test/integration/fixed_joint_reduction_collision_extension_empty_parent.urdf";
 
 const double gc_tolerance = 1e-6;
 

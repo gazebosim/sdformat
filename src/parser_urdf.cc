@@ -385,10 +385,10 @@ void ReduceCollisionToParent(UrdfLinkPtr _parent_link,
          _collision);
   if (collisionIt != _parent_link->collision_array.end())
     sdfwarn << "attempted to add collision [" << _collision->name
-      << "] to link ["
-      << _parent_link->name
-      << "], but it already exists in collision_array under name ["
-      << (*collisionIt)->name << "]\n";
+            << "] to link ["
+            << _parent_link->name
+            << "], but it already exists in collision_array under name ["
+            << (*collisionIt)->name << "]\n";
   else
     _parent_link->collision_array.push_back(_collision);
 #endif
@@ -1017,7 +1017,14 @@ void ReduceCollisionsToParent(UrdfLinkPtr _link)
     }
     else
     {
-      newCollisionName = _link->name;
+      if ((*collisionIt)->name.empty())
+      {
+        newCollisionName = _link->name;
+      }
+      else
+      {
+        newCollisionName = (*collisionIt)->name;
+      }
       sdfdbg << "lumping collision [" << (*collisionIt)->name
              << "] for link [" << _link->name
              << "] to parent [" << _link->getParent()->name
@@ -1117,7 +1124,14 @@ void ReduceVisualsToParent(UrdfLinkPtr _link)
     }
     else
     {
-      newVisualName = _link->name;
+      if ((*visualIt)->name.empty())
+      {
+        newVisualName = _link->name;
+      }
+      else
+      {
+        newVisualName = (*visualIt)->name;
+      }
       sdfdbg << "lumping visual [" << (*visualIt)->name
              << "] for link [" << _link->name
              << "] to parent [" << _link->getParent()->name
@@ -1649,7 +1663,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
         // std::cout << "----------------------------\n";
 
         std::string lumpCollisionName = std::string("_lump::") +
-          (*ge)->oldLinkName;
+          (*ge)->oldLinkName + g_collisionExt;
 
         bool wasReduced = (_linkName == (*ge)->oldLinkName);
         bool collisionNameContainsLinkname =
@@ -1688,8 +1702,8 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
               //           << (*blob)->Value() << "]\n";
 
               // print for debug
-              // std::ostringstream origStream;
-              // origStream << *(*blob)->Clone();
+              std::ostringstream origStream;
+              origStream << *(*blob)->Clone();
               // std::cout << "collision extension ["
               //           << origStream.str() << "]\n";
 
@@ -1942,7 +1956,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
         // std::cout << "----------------------------\n";
 
         std::string lumpVisualName = std::string("_lump::") +
-          (*ge)->oldLinkName;
+          (*ge)->oldLinkName + g_visualExt;
 
         bool wasReduced = (_linkName == (*ge)->oldLinkName);
         bool visualNameContainsLinkname =
@@ -2072,11 +2086,15 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
             }
           }
 
+          // backward compatibility for old code
           // insert material/script block for visual
-          // (*ge)->material block goes under sdf <material><script>.
+          // (*ge)->material block goes under sdf <material><script><name>.
           if (!(*ge)->material.empty())
           {
             AddKeyValue(script, "name", (*ge)->material);
+            // hard code original default gazebo materials files
+            AddKeyValue(script, "uri",
+              "file://media/materials/scripts/gazebo.material");
           }
         }
       }
