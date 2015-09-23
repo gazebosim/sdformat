@@ -127,8 +127,5 @@
       <description>Resolution of the environment cube map used to draw the world</description>
     </element>
 
-    <element name="advertise" type="bool" default="false" required="0">
-      <description>Provide info topic for this lens</description>
-    </element>
   </element> <!-- End Lens -->
 </element> <!-- End Camera -->
