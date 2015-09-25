@@ -16,7 +16,6 @@
 */
 
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
 #include <boost/any.hpp>
 #include <ignition/math.hh>
 #include "test_config.h"

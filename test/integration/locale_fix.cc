@@ -16,7 +16,6 @@
 */
 
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
 #include "sdf/sdf.hh"
 #include "sdf/parser_urdf.hh"
 

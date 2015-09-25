@@ -17,7 +17,6 @@
 
 #include <gtest/gtest.h>
 #include <map>
-#include <boost/filesystem.hpp>
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
