@@ -36,7 +36,7 @@ CPPCHECK_COMMAND1="-j 4 --enable=style,performance,portability,information $CPPC
 # Unused function checking must happen in one job
 CPPCHECK_COMMAND2="--enable=unusedFunction $CPPCHECK_FILES"
 # -j 4 was used previously in CPPCHECK_COMMAND3 but it will generate a false
-# warning as described in bug: 
+# warning as described in bug:
 # http://sourceforge.net/apps/trac/cppcheck/ticket/4946
 CPPCHECK_COMMAND3="-j 1 --enable=missingInclude --suppress=missingIncludeSystem $CPPCHECK_FILES $CPPCHECK_INCLUDES --check-config"
 if [ $xmlout -eq 1 ]; then
