@@ -49,20 +49,7 @@ std::string get_sdf_string()
 // make sure that XML errors get caught
 TEST(ParserErrorDetection, BadXML)
 {
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr model(new sdf::SDF());
   sdf::init(model);
   ASSERT_FALSE(sdf::readString(get_sdf_string(), model));
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 }

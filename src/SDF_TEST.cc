@@ -28,32 +28,11 @@ class SDFUpdate : public testing::Test
 {
   protected: SDFUpdate()
              {
-               boost::filesystem::path path =
-                 boost::filesystem::path(PROJECT_SOURCE_PATH)
-                 / "sdf" / SDF_VERSION;
-
-               // Store original env var.
-#ifndef _WIN32
-               this->origSDFPath = getenv("SDF_PATH");
-#else
-               this->origSDFPath = const_cast<char*>(
-                   sdf::winGetEnv("SDF_PATH"));
-#endif
-
-               setenv("SDF_PATH", path.string().c_str(), 1);
              }
 
   protected: virtual ~SDFUpdate()
              {
-               // Restore original env var.
-               // osx segfaults unless this check is in place
-               // some discussion of portability of setenv at:
-               // http://www.greenend.org.uk/rjk/tech/putenv.html
-               if (this->origSDFPath)
-                 setenv("SDF_PATH", this->origSDFPath, 1);
              }
-
-  private: char *origSDFPath;
 };
 
 class SDFUpdateFixture

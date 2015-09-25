@@ -46,22 +46,9 @@ TEST(NestedModel, NestedModel)
     << "</model>"
     << "</sdf>";
 
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr sdfParsed(new sdf::SDF());
   sdf::init(sdfParsed);
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 
   // Verify correct parsing
 

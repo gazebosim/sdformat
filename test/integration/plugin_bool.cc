@@ -43,22 +43,9 @@ std::string get_sdf_string()
 // make sure that we can read boolean values from inside a plugin
 TEST(PluginBool, ParseBoolValue)
 {
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr model(new sdf::SDF());
   sdf::init(model);
   ASSERT_TRUE(sdf::readString(get_sdf_string(), model));
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 
   sdf::ElementPtr plugin =
     model->Root()->GetElement("model")->GetElement("plugin");

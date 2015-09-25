@@ -51,24 +51,9 @@ TEST(CheckFixForLocal, MakeTestToFail)
   setlocale(LC_NUMERIC, line);
 
   // fix to allow make test without make install
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr p(new sdf::SDF());
   sdf::init(p);
   ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, p));
-
-  // clean up environment variables that we modified
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 
   sdf::ElementPtr elem = p->Root()->GetElement("world")
     ->GetElement("physics")->GetElement("ode")->GetElement("solver")
