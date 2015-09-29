@@ -102,4 +102,7 @@
 
     </element> <!-- End Link -->
   </element> <!-- End Model -->
+
+  <include filename="light_state.sdf" required="*"/>
+
 </element> <!-- End State -->

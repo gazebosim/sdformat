@@ -1,0 +1,12 @@
+<!-- State information for a light -->
+<element name="light" required="*">
+  <description>Light state</description>
+
+  <attribute name="name" type="string" default="__default__" required="1">
+    <description>Name of the light</description>
+  </attribute>
+
+  <element name="pose" type="pose" default="0 0 0 0 0 0" required="1">
+    <description>Pose of the light</description>
+  </element>
+</element> <!-- End Light -->
