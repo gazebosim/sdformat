@@ -11,16 +11,24 @@
   </element>
 
   <element name="velocity" type="pose" default="0 0 0 0 0 0" required="0">
-    <description>Velocity of the link</description>
+    <description>Velocity of the link. The x, y, z components of the pose
+      correspond to the linear velocity of the link, and the roll, pitch, yaw
+      components correspond to the angular velocity of the link
+    </description>
   </element>
 
-  <element name="acceleration" type="pose"
-          default="0 0 0 0 0 0" required="0">
-    <description>Acceleration of the link</description>
+  <element name="acceleration" type="pose" default="0 0 0 0 0 0" required="0">
+    <description>Acceleration of the link. The x, y, z components of the pose
+      correspond to the linear acceleration of the link, and the roll,
+      pitch, yaw components correspond to the angular acceleration of the link
+    </description>
   </element>
 
   <element name="wrench" type="pose" default="0 0 0 0 0 0" required="0">
-    <description>Force applied to the link</description>
+    <description>Force and torque applied to the link. The x, y, z components
+      of the pose correspond to the force applied to the link, and the roll,
+      pitch, yaw components correspond to the torque applied to the link
+    </description>
   </element>
 
   <element name="collision" required="*">
