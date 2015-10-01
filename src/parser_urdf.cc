@@ -35,7 +35,7 @@ typedef boost::shared_ptr<urdf::Collision> UrdfCollisionPtr;
 typedef boost::shared_ptr<urdf::Visual> UrdfVisualPtr;
 typedef boost::shared_ptr<urdf::Link> UrdfLinkPtr;
 typedef boost::shared_ptr<const urdf::Link> ConstUrdfLinkPtr;
-typedef boost::shared_ptr<TiXmlElement> TiXmlElementPtr;
+typedef std::shared_ptr<TiXmlElement> TiXmlElementPtr;
 typedef boost::shared_ptr<SDFExtension> SDFExtensionPtr;
 typedef std::map<std::string, std::vector<SDFExtensionPtr> >
   StringSDFExtensionPtrMap;

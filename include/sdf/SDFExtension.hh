@@ -21,7 +21,6 @@
 #include <tinyxml.h>
 #include <string>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 #include <ignition/math/Pose3.hh>
 
 /// \todo Remove this diagnositic push/pop in version 5
@@ -56,7 +55,7 @@ namespace sdf
 
     // visual
     public: std::string material;
-    public: std::vector<boost::shared_ptr<TiXmlElement> > visual_blobs;
+    public: std::vector<std::shared_ptr<TiXmlElement> > visual_blobs;
 
     // body, default off
     public: bool setStaticFlag;
@@ -89,7 +88,7 @@ namespace sdf
     public: double stopKp, stopKd;
 
     // blobs into body or robot
-    public: std::vector<boost::shared_ptr<TiXmlElement> > blobs;
+    public: std::vector<std::shared_ptr<TiXmlElement> > blobs;
 
     friend class SDFORMAT_VISIBLE URDF2SDF;
   };
