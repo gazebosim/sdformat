@@ -22,11 +22,13 @@ set (sdfs
   light.sdf
   light_state.sdf
   link.sdf
+  link_state.sdf
   logical_camera.sdf
   magnetometer.sdf
   material.sdf
   mesh_shape.sdf
   model.sdf
+  model_state.sdf
   noise.sdf
   physics.sdf
   plane_shape.sdf
