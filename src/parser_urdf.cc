@@ -15,6 +15,7 @@
  *
  */
 #include <fstream>
+#include <memory>
 #include <sstream>
 #include <algorithm>
 #include <string>
