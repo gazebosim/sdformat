@@ -171,12 +171,10 @@ macro (sdf_build_tests)
       TIMEOUT 240
       ENVIRONMENT "${_env_vars}")
 
-    if(PYTHONINTERP_FOUND)
-      # Check that the test produced a result and create a failure if it didn't.
-      # Guards against crashed and timed out tests.
-      add_test(check_${BINARY_NAME} ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_test_ran.py
-               ${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
-    endif()
+    # Check that the test produced a result and create a failure if it didn't.
+    # Guards against crashed and timed out tests.
+    add_test(check_${BINARY_NAME} python ${PROJECT_SOURCE_DIR}/tools/check_test_ran.py
+             ${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
   endforeach()
 endmacro()
 
