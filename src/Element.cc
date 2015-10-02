@@ -667,6 +667,20 @@ bool Element::HasElementDescription(const std::string &_name)
 /////////////////////////////////////////////////
 ElementPtr Element::AddElement(const std::string &_name)
 {
+  // if this element is a reference sdf and does not have any element
+  // descriptions then get them from its parent
+  if (!this->dataPtr->referenceSDF.empty() &&
+      this->dataPtr->elementDescriptions.empty() && this->dataPtr->parent &&
+      this->dataPtr->parent->GetName() == this->dataPtr->name)
+  {
+    for (unsigned int i = 0;
+        i < this->dataPtr->parent->GetElementDescriptionCount(); ++i)
+    {
+      this->dataPtr->elementDescriptions.push_back(
+          this->dataPtr->parent->GetElementDescription(i)->Clone());
+    }
+  }
+
   ElementPtr_V::const_iterator iter, iter2;
   for (iter = this->dataPtr->elementDescriptions.begin();
       iter != this->dataPtr->elementDescriptions.end(); ++iter)
@@ -691,6 +705,7 @@ ElementPtr Element::AddElement(const std::string &_name)
       return this->dataPtr->elements.back();
     }
   }
+
   sdferr << "Missing element description for [" << _name << "]\n";
   return ElementPtr();
 }

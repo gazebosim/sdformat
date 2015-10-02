@@ -9,6 +9,10 @@
      * [Pull request 211](https://bitbucket.org/osrf/sdformat/pull-request/211)
      * [Pull request 217](https://bitbucket.org/osrf/sdformat/pull-request/217)
 
+1. Added support for nested models
+     * [Pull request 221](https://bitbucket.org/osrf/sdformat/pull-request/221)
+     * [Pull request 223](https://bitbucket.org/osrf/sdformat/pull-request/223)
+
 ### SDFormat 3.1.1 (2015-08-03)
 
 1. Fix tinyxml linking error
