@@ -90,6 +90,11 @@ else()
 endif()
 
 ################################################
+# Find the Python interpreter for running the
+# check_test_ran.py script
+find_package(PythonInterp QUIET)
+
+################################################
 # Find ruby executable to produce xml schemas
 find_program(RUBY ruby)
 if (NOT RUBY)
