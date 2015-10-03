@@ -31,40 +31,14 @@ Element::Element()
 /////////////////////////////////////////////////
 Element::~Element()
 {
-  this->dataPtr->parent.reset();
-  for (Param_V::iterator iter = this->dataPtr->attributes.begin();
-      iter != this->dataPtr->attributes.end(); ++iter)
-  {
-    (*iter).reset();
-  }
-  this->dataPtr->attributes.clear();
-
-  for (ElementPtr_V::iterator iter = this->dataPtr->elements.begin();
-      iter != this->dataPtr->elements.end(); ++iter)
-  {
-    (*iter).reset();
-  }
-
-  for (ElementPtr_V::iterator iter = this->dataPtr->elementDescriptions.begin();
-      iter != this->dataPtr->elementDescriptions.end(); ++iter)
-  {
-    (*iter).reset();
-  }
-  this->dataPtr->elements.clear();
-  this->dataPtr->elementDescriptions.clear();
-
-  this->dataPtr->value.reset();
-
   delete this->dataPtr;
   this->dataPtr = NULL;
-
-  // this->Reset();
 }
 
 /////////////////////////////////////////////////
 ElementPtr Element::GetParent() const
 {
-  return this->dataPtr->parent;
+  return this->dataPtr->parent.lock();
 }
 
 /////////////////////////////////////////////////
@@ -601,25 +575,26 @@ ElementPtr Element::GetFirstElement() const
 /////////////////////////////////////////////////
 ElementPtr Element::GetNextElement(const std::string &_name) const
 {
-  if (this->dataPtr->parent)
+  auto parent = this->dataPtr->parent.lock();
+  if (parent)
   {
     ElementPtr_V::const_iterator iter;
-    iter = std::find(this->dataPtr->parent->dataPtr->elements.begin(),
-        this->dataPtr->parent->dataPtr->elements.end(), shared_from_this());
+    iter = std::find(parent->dataPtr->elements.begin(),
+        parent->dataPtr->elements.end(), shared_from_this());
 
-    if (iter == this->dataPtr->parent->dataPtr->elements.end())
+    if (iter == parent->dataPtr->elements.end())
     {
       return ElementPtr();
     }
 
     ++iter;
-    if (iter == this->dataPtr->parent->dataPtr->elements.end())
+    if (iter == parent->dataPtr->elements.end())
       return ElementPtr();
     else if (_name.empty())
       return *(iter);
     else
     {
-      for (; iter != this->dataPtr->parent->dataPtr->elements.end(); ++iter)
+      for (; iter != parent->dataPtr->elements.end(); ++iter)
       {
         if ((*iter)->GetName() == _name)
           return (*iter);
@@ -668,15 +643,15 @@ ElementPtr Element::AddElement(const std::string &_name)
 {
   // if this element is a reference sdf and does not have any element
   // descriptions then get them from its parent
+  auto parent = this->dataPtr->parent.lock();
   if (!this->dataPtr->referenceSDF.empty() &&
-      this->dataPtr->elementDescriptions.empty() && this->dataPtr->parent &&
-      this->dataPtr->parent->GetName() == this->dataPtr->name)
+      this->dataPtr->elementDescriptions.empty() && parent &&
+      parent->GetName() == this->dataPtr->name)
   {
-    for (unsigned int i = 0;
-        i < this->dataPtr->parent->GetElementDescriptionCount(); ++i)
+    for (unsigned int i = 0; i < parent->GetElementDescriptionCount(); ++i)
     {
       this->dataPtr->elementDescriptions.push_back(
-          this->dataPtr->parent->GetElementDescription(i)->Clone());
+          parent->GetElementDescription(i)->Clone());
     }
   }
 
@@ -799,16 +774,17 @@ void Element::SetDescription(const std::string &_desc)
 /////////////////////////////////////////////////
 void Element::RemoveFromParent()
 {
-  if (this->dataPtr->parent)
+  auto parent = this->dataPtr->parent.lock();
+  if (parent)
   {
     ElementPtr_V::iterator iter;
-    iter = std::find(this->dataPtr->parent->dataPtr->elements.begin(),
-        this->dataPtr->parent->dataPtr->elements.end(), shared_from_this());
+    iter = std::find(parent->dataPtr->elements.begin(),
+        parent->dataPtr->elements.end(), shared_from_this());
 
-    if (iter != this->dataPtr->parent->dataPtr->elements.end())
+    if (iter != parent->dataPtr->elements.end())
     {
-      this->dataPtr->parent->dataPtr->elements.erase(iter);
-      this->dataPtr->parent.reset();
+      parent->dataPtr->elements.erase(iter);
+      parent.reset();
     }
   }
 }

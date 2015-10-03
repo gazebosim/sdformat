@@ -53,6 +53,10 @@ namespace sdf
   /// \brief boost shared pointer to an SDF Element
   typedef boost::shared_ptr<Element> ElementPtr;
 
+  /// \def ElementWeakPtr
+  /// \brief Weak pointer to an SDF Element
+  typedef boost::weak_ptr<Element> ElementWeakPtr;
+
   /// \def ElementPtr_V
   /// \brief Vector of ElementPtr
   typedef std::vector< ElementPtr > ElementPtr_V;
@@ -291,7 +295,7 @@ namespace sdf
     public: bool copyChildren;
 
     /// \brief Element's parent
-    public: ElementPtr parent;
+    public: ElementWeakPtr parent;
 
     // Attributes of this element
     public: Param_V attributes;
