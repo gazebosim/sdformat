@@ -64,14 +64,8 @@ const std::string sdfString(
   "    </model>\n"
   "</sdf>");
 
-const std::string pythonMeminfo("python -c '"
-  "import os;"
-  "import psutil;"
-  "pid = os.getppid();"
-  "p = psutil.Process(pid);"
-  "parent = p.parent();"
-  "print parent.memory_info()[0]"
-  "'");
+const std::string pythonMeminfo("python "
+  PROJECT_SOURCE_PATH "/tools/get_mem_info.py");
 
 int getMemoryUsage()
 {
