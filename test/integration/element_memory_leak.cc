@@ -85,8 +85,8 @@ TEST(ElementMemoryLeak, SDFCreateDestroy)
   int memoryLimit = getMemoryUsage();
   std::cout << "initial memory: " << memoryLimit << std::endl;
 
-  // Allow 10% increase
-  memoryLimit += memoryLimit / 10;
+  // Allow 15x increase
+  memoryLimit *= 15;
 
 
   for (unsigned int i = 0; i < 50; ++i)
