@@ -95,11 +95,6 @@ endif()
 find_package(PythonInterp QUIET)
 
 ################################################
-# Find the Python interpreter for running the
-# check_test_ran.py script
-find_package(PythonInterp QUIET)
-
-################################################
 # Find psutil python package for memory tests
 find_python_module(psutil)
 if(NOT PY_PSUTIL)
