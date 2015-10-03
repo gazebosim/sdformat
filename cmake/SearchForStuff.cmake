@@ -95,6 +95,18 @@ endif()
 find_package(PythonInterp QUIET)
 
 ################################################
+# Find the Python interpreter for running the
+# check_test_ran.py script
+find_package(PythonInterp QUIET)
+
+################################################
+# Find psutil python package for memory tests
+find_python_module(psutil)
+if(NOT PY_PSUTIL)
+  BUILD_WARNING("Python psutil package not found. Memory leak tests will be skipped")
+endif()
+
+################################################
 # Find ruby executable to produce xml schemas
 find_program(RUBY ruby)
 if (NOT RUBY)
