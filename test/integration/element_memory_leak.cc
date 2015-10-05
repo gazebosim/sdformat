@@ -25,8 +25,6 @@
 /////////////////////////////////////////////////
 std::string custom_exec(std::string _cmd)
 {
-  _cmd += " 2>/dev/null";
-
 #ifdef _WIN32
   FILE *pipe = _popen(_cmd.c_str(), "r");
 #else
@@ -79,9 +77,8 @@ TEST(ElementMemoryLeak, SDFCreateDestroy)
   int memoryLimit = getMemoryUsage();
   std::cout << "initial memory: " << memoryLimit << std::endl;
 
-  // Allow 15x increase
+  // Allow 15x increase (based on testing with Ubuntu and OSX)
   memoryLimit *= 15;
-
 
   for (unsigned int i = 0; i < 50; ++i)
   {
