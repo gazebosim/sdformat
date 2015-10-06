@@ -54,7 +54,7 @@ namespace sdf
 
   /// \def ElementWeakPtr
   /// \brief Weak pointer to an SDF Element
-  typedef boost::weak_ptr<Element> ElementWeakPtr;
+  typedef std::weak_ptr<Element> ElementWeakPtr;
 
   /// \def ElementPtr_V
   /// \brief Vector of ElementPtr
