@@ -5,6 +5,8 @@
 1. Fix tinyxml linking error
      * [Pull request #209](https://bitbucket.org/osrf/sdformat/pull-request/209)
 
+1. Added lens element to camera SDF
+     * [Pull request 215](https://bitbucket.org/osrf/sdformat/pull-request/215)
 1. Added torsional friction to SDF
      * [Pull request 211](https://bitbucket.org/osrf/sdformat/pull-request/211)
      * [Pull request 217](https://bitbucket.org/osrf/sdformat/pull-request/217)
