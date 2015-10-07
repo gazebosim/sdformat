@@ -94,7 +94,7 @@
     <description>Lens projection description</description>
 
     <element name="type" type="string" default="stereographic" required="1">
-      <description>Type of the lens mapping. Supported values are gnomonical, stereographic, equidistant, equisolid_angle, orthographic, custom. For gnomonical (perspective) projection, it is recommended to specify a horizontal_fov of <= 90°</description>
+      <description>Type of the lens mapping. Supported values are gnomonical, stereographic, equidistant, equisolid_angle, orthographic, custom. For gnomonical (perspective) projection, it is recommended to specify a horizontal_fov of less than or equal to 90°</description>
     </element>
     <element name="scale_to_hfov" type="bool" default="true" required="1">
       <description>If true the image will be scaled to fit horizontal FOV, otherwise it will be shown according to projection type parameters</description>
