@@ -106,7 +106,7 @@
       <description>
         Young's Modulus in SI derived unit Pascal.
         Defaults to -1.  If value is less or equal to zero,
-        contact using elastic modulus is disabled.
+        contact using elastic modulus (with Poisson's Ratio) is disabled.
 
         For reference, approximate values for Material:(Young's Modulus, Poisson's Ratio)
         for some of the typical materials are:
