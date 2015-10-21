@@ -3240,7 +3240,7 @@ void CreateVisual(TiXmlElement *_elem, ConstUrdfLinkPtr _link,
 
   /* set its name */
   if (_oldLinkName.find(_link->name) == 0 || _oldLinkName.empty())
-    sdfVisual->SetAttribute("name", _link->name);
+    sdfVisual->SetAttribute("name", _oldLinkName);
   else
     sdfVisual->SetAttribute("name", _link->name
         + std::string("_lump::") + _oldLinkName);
