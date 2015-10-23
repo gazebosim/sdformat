@@ -16,6 +16,10 @@ set(tests
   urdf_joint_parameters.cc
 )
 
+if (PYTHONINTERP_FOUND AND PY_PSUTIL)
+  set(tests ${tests} element_memory_leak.cc)
+endif()
+
 find_program(XMLLINT_EXE xmllint)
 if (EXISTS ${XMLLINT_EXE})
   set (tests ${tests} schema_test.cc)

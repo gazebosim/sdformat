@@ -28,4 +28,4 @@ set (sdfs
   world.sdf
 )
 
-install(FILES ${sdfs} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.2)
+install(FILES ${sdfs} DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/sdformat/1.2)

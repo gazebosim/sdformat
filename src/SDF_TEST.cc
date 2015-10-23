@@ -16,7 +16,6 @@
 */
 
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
 #include <boost/any.hpp>
 #include <ignition/math.hh>
 #include "test_config.h"
@@ -28,32 +27,11 @@ class SDFUpdate : public testing::Test
 {
   protected: SDFUpdate()
              {
-               boost::filesystem::path path =
-                 boost::filesystem::path(PROJECT_SOURCE_PATH)
-                 / "sdf" / SDF_VERSION;
-
-               // Store original env var.
-#ifndef _WIN32
-               this->origSDFPath = getenv("SDF_PATH");
-#else
-               this->origSDFPath = const_cast<char*>(
-                   sdf::winGetEnv("SDF_PATH"));
-#endif
-
-               setenv("SDF_PATH", path.string().c_str(), 1);
              }
 
   protected: virtual ~SDFUpdate()
              {
-               // Restore original env var.
-               // osx segfaults unless this check is in place
-               // some discussion of portability of setenv at:
-               // http://www.greenend.org.uk/rjk/tech/putenv.html
-               if (this->origSDFPath)
-                 setenv("SDF_PATH", this->origSDFPath, 1);
              }
-
-  private: char *origSDFPath;
 };
 
 class SDFUpdateFixture
@@ -94,7 +72,7 @@ TEST_F(SDFUpdate, UpdateAttribute)
   // Set parameter update functions to test class accessors
   SDFUpdateFixture fixture;
   nameParam->Get(fixture.name);
-  nameParam->SetUpdateFunc(boost::bind(&SDFUpdateFixture::GetName, &fixture));
+  nameParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetName, &fixture));
 
   std::string nameCheck;
   int i;
@@ -145,9 +123,9 @@ TEST_F(SDFUpdate, UpdateElement)
   // Set parameter update functions to test class accessors
   SDFUpdateFixture fixture;
   staticParam->Get(fixture.flag);
-  staticParam->SetUpdateFunc(boost::bind(&SDFUpdateFixture::GetFlag, &fixture));
+  staticParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetFlag, &fixture));
   poseParam->Get(fixture.pose);
-  poseParam->SetUpdateFunc(boost::bind(&SDFUpdateFixture::GetPose, &fixture));
+  poseParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetPose, &fixture));
 
   bool flagCheck;
   ignition::math::Pose3d poseCheck;

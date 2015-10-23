@@ -21,14 +21,13 @@
 // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
   #include <boost/lexical_cast.hpp>
-  #include <boost/bind.hpp>
-  #include <boost/algorithm/string.hpp>
   #include <boost/any.hpp>
-  #include <boost/shared_ptr.hpp>
   #include <boost/variant.hpp>
-  #include <boost/function.hpp>
 #endif
 
+#include <memory>
+#include <functional>
+#include <algorithm>
 #include <typeinfo>
 #include <string>
 #include <vector>
@@ -52,11 +51,11 @@ namespace sdf
   class SDFORMAT_VISIBLE Param;
 
   /// \def ParamPtr
-  /// \brief boost shared_ptr to a Param
-  typedef boost::shared_ptr<Param> ParamPtr;
+  /// \brief Shared pointer to a Param
+  typedef std::shared_ptr<Param> ParamPtr;
 
   /// \def Param_V
-  /// \brief vector or boost shared_ptrs to a Param
+  /// \brief vector of shared pointers to a Param
   typedef std::vector<ParamPtr> Param_V;
 
   /// \internal
@@ -125,7 +124,7 @@ namespace sdf
 
     /// \brief Clone the parameter.
     /// \return A new parameter that is the clone of this.
-    public: boost::shared_ptr<Param> Clone() const;
+    public: ParamPtr Clone() const;
 
     /// \brief Set the update function. The updateFunc will be used to
     /// set the parameter's value when Param::Update is called.
@@ -219,7 +218,7 @@ namespace sdf
     public: std::string description;
 
     /// \brief Update function pointer.
-    public: boost::function<boost::any ()> updateFunc;
+    public: std::function<boost::any ()> updateFunc;
 
 /// \todo Remove this diagnositic push/pop in version 5
 #ifndef _WIN32
@@ -339,7 +338,8 @@ namespace sdf
       if (this->dataPtr->typeName == "bool")
       {
         std::string strValue = _value;
-        boost::algorithm::to_lower(strValue);
+        std::transform(strValue.begin(), strValue.end(),
+                       strValue.begin(), ::tolower);
         if (strValue == "true" || strValue == "1")
           this->dataPtr->value = true;
         else
