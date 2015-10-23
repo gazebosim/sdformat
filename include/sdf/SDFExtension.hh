@@ -19,6 +19,7 @@
 #define _SDFORMAT_SDFEXTENSION_HH_
 
 #include <tinyxml.h>
+#include <memory>
 #include <string>
 #include <vector>
 #include <ignition/math/Pose3.hh>
@@ -57,7 +58,7 @@ namespace sdf
     public: std::string material;
 
     /// \brief blobs of xml to be copied into the visual sdf element
-    public: std::vector<boost::shared_ptr<TiXmlElement> > visual_blobs;
+    public: std::vector<std::shared_ptr<TiXmlElement> > visual_blobs;
 
     /// \brief blobs of xml to be copied into the collision sdf element
     /// An example might be:
@@ -84,7 +85,7 @@ namespace sdf
     /// </gazebo>
     /// where all the contents of `<collision>` element is copied into the
     /// resulting collision sdf.
-    public: std::vector<boost::shared_ptr<TiXmlElement> > collision_blobs;
+    public: std::vector<std::shared_ptr<TiXmlElement> > collision_blobs;
 
     // body, default off
     public: bool setStaticFlag;
@@ -117,7 +118,7 @@ namespace sdf
     public: double stopKp, stopKd;
 
     // blobs into body or robot
-    public: std::vector<boost::shared_ptr<TiXmlElement> > blobs;
+    public: std::vector<std::shared_ptr<TiXmlElement> > blobs;
 
     friend class SDFORMAT_VISIBLE URDF2SDF;
   };

@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <map>
-
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
 #include "sdf/Console.hh"
