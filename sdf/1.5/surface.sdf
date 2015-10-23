@@ -30,7 +30,7 @@
       <element name="patch_radius" type="double" default="0" min="0.0" required="0">
         <description>Radius of contact patch surface.</description>
       </element>
-      <element name="surface_radius" type="double" default="Inf" min="0.0" required="0">
+      <element name="surface_radius" type="double" default="0.0" min="0.0" required="0">
         <description>Surface radius on the point of contact.</description>
       </element>
       <element name="ode" required="0">
@@ -86,6 +86,35 @@
 
     <element name="collide_bitmask" type="unsigned int" default="65535" required="0">
       <description>Bitmask for collision filtering. This will override collide_without_contact</description>
+    </element>
+
+    <element name="poissons_ratio" type="double" default="0.3" required="0">
+      <description>
+        Poisson's ratio is the ratio between transverse and axial strain.
+        This value must lie between (-1, 0.5).  Defaults to 0.3 for typical steel.
+        Note typical silicone elastomers have Poisson's ratio near 0.49 ~ 0.50.
+
+        For reference, approximate values for Material:(Young's Modulus, Poisson's Ratio)
+        for some of the typical materials are:
+          Plastic:  (1e8 ~ 3e9 Pa,  0.35 ~ 0.41), 
+          Wood:     (4e9 ~ 1e10 Pa, 0.22 ~ 0.50),
+          Aluminum: (7e10 Pa,       0.32 ~ 0.35),
+          Steel:    (2e11 Pa,       0.26 ~ 0.31).
+      </description>
+    </element>
+    <element name="elastic_modulus" type="double" default="-1" required="0">
+      <description>
+        Young's Modulus in SI derived unit Pascal.
+        Defaults to -1.  If value is less or equal to zero,
+        contact using elastic modulus (with Poisson's Ratio) is disabled.
+
+        For reference, approximate values for Material:(Young's Modulus, Poisson's Ratio)
+        for some of the typical materials are:
+          Plastic:  (1e8 ~ 3e9 Pa,  0.35 ~ 0.41), 
+          Wood:     (4e9 ~ 1e10 Pa, 0.22 ~ 0.50),
+          Aluminum: (7e10 Pa,       0.32 ~ 0.35),
+          Steel:    (2e11 Pa,       0.26 ~ 0.31).
+      </description>
     </element>
 
     <element name="ode" required="0">
