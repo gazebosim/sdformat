@@ -17,7 +17,6 @@
 
 #include <gtest/gtest.h>
 #include <map>
-#include <boost/filesystem.hpp>
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
@@ -71,22 +70,9 @@ TEST(SDFParser, FixedJointReductionCollisionTest)
 /////////////////////////////////////////////////
 void FixedJointReductionEquivalence(const std::string &_file)
 {
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
   ASSERT_TRUE(sdf::readFile(_file, robot));
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 
   std::map<std::string, double> linkMasses;
   std::map<std::string, ignition::math::Pose3d> linkPoses;
@@ -218,22 +204,9 @@ void FixedJointReductionEquivalence(const std::string &_file)
 /////////////////////////////////////////////////
 TEST(SDFParser, FixedJointReductionSimple)
 {
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
   ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE_SIMPLE, robot));
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 
   std::map<std::string, double> linkMasses;
   std::map<std::string, ignition::math::Pose3d> linkPoses;

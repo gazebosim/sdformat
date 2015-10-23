@@ -17,7 +17,6 @@
 
 #include <gtest/gtest.h>
 #include <map>
-#include <boost/filesystem.hpp>
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
@@ -28,22 +27,9 @@ const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
 /////////////////////////////////////////////////
 TEST(SDFParser, JointAxisParameters)
 {
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
   ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 
   sdf::ElementPtr model = robot->Root()->GetElement("model");
 

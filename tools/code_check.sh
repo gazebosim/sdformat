@@ -21,9 +21,9 @@ echo "*:src/Assert.cc" >> $SUPPRESS
 echo "*:src/Console.cc" >> $SUPPRESS
 echo "*:src/parser.cc" >> $SUPPRESS
 echo "*:src/parser_urdf.cc" >> $SUPPRESS
-echo "*:src/Element.cc:467" >> $SUPPRESS
-echo "*:src/Element.cc:64" >> $SUPPRESS
-echo "*:src/Element.cc:739" >> $SUPPRESS
+echo "*:src/Element.cc:463" >> $SUPPRESS
+echo "*:src/Element.cc:39" >> $SUPPRESS
+echo "*:src/Element.cc:751" >> $SUPPRESS
 
 CHECK_FILE_DIRS="./src ./include ./test/performance ./test/integration"
 
@@ -36,7 +36,7 @@ CPPCHECK_COMMAND1="-j 4 --enable=style,performance,portability,information $CPPC
 # Unused function checking must happen in one job
 CPPCHECK_COMMAND2="--enable=unusedFunction $CPPCHECK_FILES"
 # -j 4 was used previously in CPPCHECK_COMMAND3 but it will generate a false
-# warning as described in bug: 
+# warning as described in bug:
 # http://sourceforge.net/apps/trac/cppcheck/ticket/4946
 CPPCHECK_COMMAND3="-j 1 --enable=missingInclude --suppress=missingIncludeSystem $CPPCHECK_FILES $CPPCHECK_INCLUDES --check-config"
 if [ $xmlout -eq 1 ]; then

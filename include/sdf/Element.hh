@@ -53,6 +53,10 @@ namespace sdf
   /// \brief boost shared pointer to an SDF Element
   typedef boost::shared_ptr<Element> ElementPtr;
 
+  /// \def ElementWeakPtr
+  /// \brief Weak pointer to an SDF Element
+  typedef boost::weak_ptr<Element> ElementWeakPtr;
+
   /// \def ElementPtr_V
   /// \brief Vector of ElementPtr
   typedef std::vector< ElementPtr > ElementPtr_V;
@@ -73,7 +77,7 @@ namespace sdf
 
     /// \brief Create a copy of this Element.
     /// \return A copy of this Element.
-    public: boost::shared_ptr<Element> Clone() const;
+    public: ElementPtr Clone() const;
 
     /// \brief Copy values from an Element.
     /// \param[in] _elem Element to copy value from.
@@ -118,6 +122,14 @@ namespace sdf
     /// during parsing.
     /// \return True to copy child elements during parsing.
     public: bool GetCopyChildren() const;
+
+    /// \brief Set reference SDF element.
+    /// \param[in] _value Name of the reference sdf element.
+    public: void SetReferenceSDF(const std::string &_value);
+
+    /// \brief Get the name of the reference SDF element.
+    /// \return Name of the reference SDF element.
+    public: std::string ReferenceSDF() const;
 
     /// \brief Output Element's description to stdout.
     /// \param[in] _prefix String value to prefix to the output.
@@ -257,7 +269,7 @@ namespace sdf
                            std::ostringstream &_out) const;
 
 
-    private: boost::shared_ptr<Param> CreateParam(const std::string &_key,
+    private: ParamPtr CreateParam(const std::string &_key,
                  const std::string &_type, const std::string &_defaultValue,
                  bool _required, const std::string &_description="");
 
@@ -283,7 +295,7 @@ namespace sdf
     public: bool copyChildren;
 
     /// \brief Element's parent
-    public: ElementPtr parent;
+    public: ElementWeakPtr parent;
 
     // Attributes of this element
     public: Param_V attributes;
@@ -299,6 +311,9 @@ namespace sdf
 
     /// name of the include file that was used to create this element
     public: std::string includeFilename;
+
+    /// \brief Name of reference sdf.
+    public: std::string referenceSDF;
   };
 
   ///////////////////////////////////////////////

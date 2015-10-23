@@ -8,12 +8,17 @@ set(tests
   force_torque_sensor.cc
   joint_axis_frame.cc
   locale_fix.cc
+  nested_model.cc
   parser_error_detection.cc
   plugin_attribute.cc
   plugin_bool.cc
   provide_feedback.cc
   urdf_joint_parameters.cc
 )
+
+if (PYTHONINTERP_FOUND AND PY_PSUTIL)
+  set(tests ${tests} element_memory_leak.cc)
+endif()
 
 find_program(XMLLINT_EXE xmllint)
 if (EXISTS ${XMLLINT_EXE})
@@ -30,4 +35,3 @@ if (EXISTS ${XMLLINT_EXE})
   # Need to run schema target (build .xsd files) before running schema_test
   add_dependencies(${TEST_TYPE}_schema_test schema)
 endif()
-
