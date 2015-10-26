@@ -106,6 +106,7 @@
     <minDepth>0.007</minDepth>
     <mu1>0.7</mu1>
     <collision>
+      <max_contacts>177</max_contacts>
       <surface>
         <contact>
           <ode/>
@@ -128,6 +129,7 @@
   </gazebo>
   <gazebo reference="child_link_1a">
     <mu1>0.6</mu1>
+    <maxContacts>166</maxContacts>
     <collision>
       <surface>
         <contact>
