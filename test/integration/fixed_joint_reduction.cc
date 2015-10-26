@@ -226,8 +226,28 @@ void FixedJointReductionCollisionVisualExtension(
   EXPECT_FLOAT_EQ(urdf_mu2, 0.71);
   EXPECT_FLOAT_EQ(urdf_mu2, sdf_mu2);
 
+  EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("name"),
+            "script_uri_71_name");
+  EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("name"),
+             sdf_child_link_1_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("name"));
+
+  EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("uri"),
+            "file://media/materials/scripts/gazebo.material");
+
+  EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
+            Get<sdf::Color>("ambient"), sdf::Color(0, 1, 0, 1));
+  EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
+            Get<sdf::Color>("ambient"),
+             sdf_child_link_1_vis->GetElement("material")->
+            Get<sdf::Color>("ambient"));
+
   // child_link_1a
   //   <collision name='base_link_lump::child_link_1a_collision_3'>
+  //     <maxContacts>166</maxContacts>
   //     <mu1>0.6</mu1>
   //     <mu2>0.61</mu2>
   //  <visual name='base_link_lump::child_link_1a_visual_3'>
@@ -237,6 +257,43 @@ void FixedJointReductionCollisionVisualExtension(
   //        <name>__default__</name>
   //      </script>
   //    </material>
+  EXPECT_EQ(urdf_child_link_1a_col->Get<int>("max_contacts"), 166);
+  EXPECT_EQ(urdf_child_link_1a_col->Get<int>("max_contacts"),
+             sdf_child_link_1a_col->Get<int>("max_contacts"));
+
+  EXPECT_FLOAT_EQ(urdf_child_link_1a_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu"), 0.6);
+  EXPECT_FLOAT_EQ(urdf_child_link_1a_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu"),
+    sdf_child_link_1a_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu"));
+
+  EXPECT_FLOAT_EQ(urdf_child_link_1a_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu2"), 0.61);
+  EXPECT_FLOAT_EQ(urdf_child_link_1a_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu2"),
+    sdf_child_link_1a_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu2"));
+
+  EXPECT_EQ(urdf_child_link_1a_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("name"),
+            "__default__");
+  EXPECT_EQ(urdf_child_link_1a_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("name"),
+             sdf_child_link_1a_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("name"));
+
+  EXPECT_EQ(urdf_child_link_1a_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("uri"),
+            "__default__");
+
+  // ambient unassigned should be 0, 0, 0, 1
+  EXPECT_EQ(urdf_child_link_1a_vis->GetElement("material")->
+            Get<sdf::Color>("ambient"), sdf::Color(0, 0, 0, 1));
+  EXPECT_EQ(urdf_child_link_1a_vis->GetElement("material")->
+            Get<sdf::Color>("ambient"),
+             sdf_child_link_1a_vis->GetElement("material")->
+            Get<sdf::Color>("ambient"));
 
   // child_link_2
   //   <collision name='base_link_lump::child_link_2_collision_2'>
@@ -245,6 +302,44 @@ void FixedJointReductionCollisionVisualExtension(
   //   <visual name='base_link_lump::child_link_2_visual_2'>
   //     <uri>script_uri_51</uri>
   //     <name>script_name_51</name>
+  // unassigne max_contacts defaut is 10
+  EXPECT_EQ(urdf_child_link_2_col->Get<int>("max_contacts"), 10);
+  EXPECT_EQ(urdf_child_link_2_col->Get<int>("max_contacts"),
+             sdf_child_link_2_col->Get<int>("max_contacts"));
+
+  EXPECT_FLOAT_EQ(urdf_child_link_2_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu"), 0.5);
+  EXPECT_FLOAT_EQ(urdf_child_link_2_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu"),
+    sdf_child_link_2_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu"));
+
+  EXPECT_FLOAT_EQ(urdf_child_link_2_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu2"), 0.51);
+  EXPECT_FLOAT_EQ(urdf_child_link_2_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu2"),
+    sdf_child_link_2_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu2"));
+
+  EXPECT_EQ(urdf_child_link_2_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("name"),
+            "script_name_51");
+  EXPECT_EQ(urdf_child_link_2_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("name"),
+             sdf_child_link_2_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("name"));
+
+  EXPECT_EQ(urdf_child_link_2_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("uri"),
+            "script_uri_51");
+
+  // ambient unassigned should be 0, 0, 0, 1
+  EXPECT_EQ(urdf_child_link_2_vis->GetElement("material")->
+            Get<sdf::Color>("ambient"), sdf::Color(0, 0, 0, 1));
+  EXPECT_EQ(urdf_child_link_2_vis->GetElement("material")->
+            Get<sdf::Color>("ambient"),
+             sdf_child_link_2_vis->GetElement("material")->
+            Get<sdf::Color>("ambient"));
 }
 
 /////////////////////////////////////////////////
