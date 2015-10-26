@@ -56,7 +56,7 @@ namespace sdf
   typedef boost::shared_ptr<Param> ParamPtr;
 
   /// \def Param_V
-  /// \brief vector or boost shared_ptrs to a Param
+  /// \brief vector of boost shared_ptrs to a Param
   typedef std::vector<ParamPtr> Param_V;
 
   /// \internal
