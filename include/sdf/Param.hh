@@ -52,7 +52,7 @@ namespace sdf
   class SDFORMAT_VISIBLE Param;
 
   /// \def ParamPtr
-  /// \brief Shared pointer to a Param
+  /// \brief boost pointer to a Param
   typedef boost::shared_ptr<Param> ParamPtr;
 
   /// \def Param_V
