@@ -110,7 +110,7 @@ boost::shared_ptr<Param> Element::CreateParam(const std::string &_key,
     const std::string &_description)
 {
   return boost::shared_ptr<Param>(
-    new Param(_key, _type, _defaultValue, _required, _description));
+        new Param(_key, _type, _defaultValue, _required, _description));
 }
 
 /////////////////////////////////////////////////
