@@ -29,6 +29,7 @@
             <radius>0.03</radius>
           </sphere>
         </geometry>
+        <max_contacts>177</max_contacts>
         <surface>
           <contact>
             <ode>
@@ -80,6 +81,7 @@
             </ode>
           </friction>
         </surface>
+        <max_contacts>166</max_contacts>
       </collision>
       <visual name='base_link_visual'>
         <pose>0 0 0 0 -0 0</pose>
