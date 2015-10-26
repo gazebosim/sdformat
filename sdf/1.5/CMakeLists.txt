@@ -20,6 +20,7 @@ set (sdfs
   inertial.sdf
   joint.sdf
   light.sdf
+  light_state.sdf
   link.sdf
   link_state.sdf
   logical_camera.sdf
