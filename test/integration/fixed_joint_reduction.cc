@@ -206,20 +206,25 @@ void FixedJointReductionCollisionVisualExtension(
   //   <visual name='base_link_lump::child_link_1_visual_1'>
   //     <ambient>0 1 0 1</ambient>
   //     <script><name>script_uri_71_name</name></script>
+  EXPECT_EQ(urdf_child_link_1_col->Get<int>("max_contacts"), 177);
+  EXPECT_EQ(urdf_child_link_1_col->Get<int>("max_contacts"),
+             sdf_child_link_1_col->Get<int>("max_contacts"));
+
   double urdf_mu1 = urdf_child_link_1_col->GetElement("surface")
     ->GetElement("friction")->GetElement("ode")->Get<double>("mu");
-  double urdf_mu2 = urdf_child_link_1_col->GetElement("surface")
-    ->GetElement("friction")->GetElement("ode")->Get<double>("mu2");
-
   double sdf_mu1 = sdf_child_link_1_col->GetElement("surface")
     ->GetElement("friction")->GetElement("ode")->Get<double>("mu");
+  sdfmsg << "urdf mu1: " << urdf_mu1 << "\n";
+  EXPECT_FLOAT_EQ(urdf_mu1, 0.7);
+  EXPECT_FLOAT_EQ(urdf_mu1, sdf_mu1);
+
+  double urdf_mu2 = urdf_child_link_1_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu2");
   double sdf_mu2 = sdf_child_link_1_col->GetElement("surface")
     ->GetElement("friction")->GetElement("ode")->Get<double>("mu2");
-
-  sdfmsg << "urdf mu1: " << urdf_mu1 << "\n";
   sdfmsg << "urdf mu2: " << urdf_mu2 << "\n";
-  EXPECT_EQ(urdf_mu1, sdf_mu1);
-  EXPECT_EQ(urdf_mu2, sdf_mu2);
+  EXPECT_FLOAT_EQ(urdf_mu2, 0.71);
+  EXPECT_FLOAT_EQ(urdf_mu2, sdf_mu2);
 
   // child_link_1a
   //   <collision name='base_link_lump::child_link_1a_collision_3'>
