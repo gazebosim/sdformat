@@ -28,5 +28,5 @@
 #cmakedefine USE_EXTERNAL_URDF 1
 #cmakedefine URDF_GE_0P3 1
 
-#define SDF_SHARE_PATH "${CMAKE_INSTALL_PREFIX}/"
+#define SDF_SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/"
 #define SDF_VERSION_PATH "${CMAKE_INSTALL_PREFIX}/share/sdformat/${SDF_PKG_VERSION}"

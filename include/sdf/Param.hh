@@ -52,11 +52,11 @@ namespace sdf
   class SDFORMAT_VISIBLE Param;
 
   /// \def ParamPtr
-  /// \brief boost pointer to a Param
+  /// \brief boost shared_ptr to a Param
   typedef boost::shared_ptr<Param> ParamPtr;
 
   /// \def Param_V
-  /// \brief vector of boost shared pointers to a Param
+  /// \brief vector of boost shared_ptrs to a Param
   typedef std::vector<ParamPtr> Param_V;
 
   /// \internal

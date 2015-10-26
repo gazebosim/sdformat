@@ -41,7 +41,7 @@ namespace sdf
   class SDFORMAT_VISIBLE SDF;
 
   /// \def SDFPtr
-  /// \brief Shared pointer to SDF
+  /// \brief boost shared pointer to SDF
   typedef boost::shared_ptr<SDF> SDFPtr;
 
   /// \addtogroup sdf

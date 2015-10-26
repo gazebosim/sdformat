@@ -50,7 +50,7 @@ namespace sdf
   class SDFORMAT_VISIBLE Element;
 
   /// \def ElementPtr
-  /// \brief boost pointer to an SDF Element
+  /// \brief boost shared pointer to an SDF Element
   typedef boost::shared_ptr<Element> ElementPtr;
 
   /// \def ElementWeakPtr
