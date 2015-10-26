@@ -22,7 +22,7 @@
 #include <fstream>
 #include <string>
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 
 #include "sdf/system_util.hh"
 
@@ -52,7 +52,7 @@ namespace sdf
 
   /// \def ConsolePtr
   /// \brief Shared pointer to a Console Element
-  typedef std::shared_ptr<Console> ConsolePtr;
+  typedef boost::shared_ptr<Console> ConsolePtr;
 
   /// \brief Message, error, warning, and logging functionality
   class SDFORMAT_VISIBLE Console

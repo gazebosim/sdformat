@@ -21,13 +21,14 @@
 // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
   #include <boost/lexical_cast.hpp>
+  #include <boost/bind.hpp>
+  #include <boost/algorithm/string.hpp>
   #include <boost/any.hpp>
+  #include <boost/shared_ptr.hpp>
   #include <boost/variant.hpp>
+  #include <boost/function.hpp>
 #endif
 
-#include <memory>
-#include <functional>
-#include <algorithm>
 #include <typeinfo>
 #include <string>
 #include <vector>
@@ -52,10 +53,10 @@ namespace sdf
 
   /// \def ParamPtr
   /// \brief Shared pointer to a Param
-  typedef std::shared_ptr<Param> ParamPtr;
+  typedef boost::shared_ptr<Param> ParamPtr;
 
   /// \def Param_V
-  /// \brief vector of shared pointers to a Param
+  /// \brief vector of boost shared pointers to a Param
   typedef std::vector<ParamPtr> Param_V;
 
   /// \internal
@@ -218,7 +219,7 @@ namespace sdf
     public: std::string description;
 
     /// \brief Update function pointer.
-    public: std::function<boost::any ()> updateFunc;
+    public: boost::function<boost::any ()> updateFunc;
 
 /// \todo Remove this diagnositic push/pop in version 5
 #ifndef _WIN32
@@ -338,8 +339,7 @@ namespace sdf
       if (this->dataPtr->typeName == "bool")
       {
         std::string strValue = _value;
-        std::transform(strValue.begin(), strValue.end(),
-                       strValue.begin(), ::tolower);
+        boost::algorithm::to_lower(strValue);
         if (strValue == "true" || strValue == "1")
           this->dataPtr->value = true;
         else

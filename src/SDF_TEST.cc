@@ -72,7 +72,7 @@ TEST_F(SDFUpdate, UpdateAttribute)
   // Set parameter update functions to test class accessors
   SDFUpdateFixture fixture;
   nameParam->Get(fixture.name);
-  nameParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetName, &fixture));
+  nameParam->SetUpdateFunc(boost::bind(&SDFUpdateFixture::GetName, &fixture));
 
   std::string nameCheck;
   int i;
@@ -123,9 +123,9 @@ TEST_F(SDFUpdate, UpdateElement)
   // Set parameter update functions to test class accessors
   SDFUpdateFixture fixture;
   staticParam->Get(fixture.flag);
-  staticParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetFlag, &fixture));
+  staticParam->SetUpdateFunc(boost::bind(&SDFUpdateFixture::GetFlag, &fixture));
   poseParam->Get(fixture.pose);
-  poseParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetPose, &fixture));
+  poseParam->SetUpdateFunc(boost::bind(&SDFUpdateFixture::GetPose, &fixture));
 
   bool flagCheck;
   ignition::math::Pose3d poseCheck;

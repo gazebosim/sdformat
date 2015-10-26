@@ -19,7 +19,8 @@
 
 #include <string>
 #include <vector>
-#include <memory>
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 #include "sdf/Param.hh"
 #include "sdf/system_util.hh"
@@ -36,7 +37,7 @@
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
-// std::enable_shared_from_this
+// boost::enable_shared_from_this
 #pragma warning(push)
 #pragma warning(disable: 4251)
 #endif
@@ -50,11 +51,11 @@ namespace sdf
 
   /// \def ElementPtr
   /// \brief Shared pointer to an SDF Element
-  typedef std::shared_ptr<Element> ElementPtr;
+  typedef boost::shared_ptr<Element> ElementPtr;
 
   /// \def ElementWeakPtr
   /// \brief Weak pointer to an SDF Element
-  typedef std::weak_ptr<Element> ElementWeakPtr;
+  typedef boost::weak_ptr<Element> ElementWeakPtr;
 
   /// \def ElementPtr_V
   /// \brief Vector of ElementPtr
@@ -66,7 +67,7 @@ namespace sdf
   /// \class Element Element.hh sdf/sdf.hh
   /// \brief SDF Element class
   class SDFORMAT_VISIBLE Element :
-    public std::enable_shared_from_this<Element>
+    public boost::enable_shared_from_this<Element>
   {
     /// \brief Constructor.
     public: Element();

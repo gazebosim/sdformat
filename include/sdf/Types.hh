@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <sstream>
 #include <vector>
+#include <boost/shared_ptr.hpp>
 
 #include "sdf/system_util.hh"
 
