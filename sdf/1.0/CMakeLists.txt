@@ -27,4 +27,4 @@ set (sdfs
   world.sdf
 )
 
-install(FILES ${sdfs} DESTINATION ${CMAKE_INSTALL_PREFIX}/sdformat/1.0/)
+install(FILES ${sdfs} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.0/)
