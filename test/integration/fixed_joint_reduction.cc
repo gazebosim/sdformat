@@ -38,17 +38,21 @@ const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION =
 const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_SDF =
   std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/fixed_joint_reduction_collision_visual_extension.sdf";
-/* not used
-const std::string SDF_TEST_FILE_COLLISION_EXTENSION_EMPTY_PARENT =
+const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT =
   std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/"
-  + "fixed_joint_reduction_collision_extension_empty_parent.urdf";
-*/
+  + "fixed_joint_reduction_collision_visual_empty_root.urdf";
+const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF =
+  std::string(PROJECT_SOURCE_PATH)
+  + "/test/integration/"
+  + "fixed_joint_reduction_collision_visual_empty_root.sdf";
 
 const double gc_tolerance = 1e-6;
 
 void FixedJointReductionEquivalence(const std::string &_file);
 void FixedJointReductionCollisionVisualExtension(
+  const std::string &_urdfFile, const std::string &_sdfFile);
+void FixedJointReductionCollisionVisualExtensionEmptyRoot(
   const std::string &_urdfFile, const std::string &_sdfFile);
 
 /////////////////////////////////////////////////
@@ -76,14 +80,27 @@ TEST(SDFParser, FixedJointReductionCollisionTest)
 }
 
 /////////////////////////////////////////////////
-// This test uses a urdf that has a fixed joint whose parent
-// has no collisions. This is a parallel of the
-// FixedJointReductionVisualTest
+// This test uses a urdf that has two levels
+// of fixed joint reduction.
+// Compare parsing results with a pre-built verified sdf
+// as well as with hardcoded expected values.
 TEST(SDFParser, FixedJointReductionCollisionVisualExtensionTest)
 {
   FixedJointReductionCollisionVisualExtension(
     SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION,
     SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_SDF);
+}
+
+/////////////////////////////////////////////////
+// This test uses a urdf that has a fixed joint whose parent link
+// (base_link) has no collisions.
+// Compare parsing results with a pre-built verified sdf
+// as well as with hardcoded expected values.
+TEST(SDFParser, FixedJointReductionCollisionVisualExtensionEmptyRootTest)
+{
+  FixedJointReductionCollisionVisualExtensionEmptyRoot(
+    SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT,
+    SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF);
 }
 
 /////////////////////////////////////////////////
@@ -339,6 +356,134 @@ void FixedJointReductionCollisionVisualExtension(
   EXPECT_EQ(urdf_child_link_2_vis->GetElement("material")->
             Get<sdf::Color>("ambient"),
              sdf_child_link_2_vis->GetElement("material")->
+            Get<sdf::Color>("ambient"));
+}
+
+/////////////////////////////////////////////////
+void FixedJointReductionCollisionVisualExtensionEmptyRoot(
+  const std::string &_urdfFile, const std::string &_sdfFile)
+{
+  // load urdf file, load sdf file.
+  // check to see that urdf load results are consistent with sdf load.
+
+  // load urdf
+  sdf::SDFPtr urdfRobot(new sdf::SDF());
+  sdf::init(urdfRobot);
+  ASSERT_TRUE(sdf::readFile(_urdfFile, urdfRobot));
+
+  // load sdf
+  sdf::SDFPtr sdfRobot(new sdf::SDF());
+  sdf::init(sdfRobot);
+  ASSERT_TRUE(sdf::readFile(_sdfFile, sdfRobot));
+
+  // check two loaded files, make sure they are the same
+  sdf::ElementPtr urdfModel = urdfRobot->Root()->GetElement("model");
+  sdf::ElementPtr urdf_child_link_1_col;
+  sdf::ElementPtr urdf_child_link_1_vis;
+  for (sdf::ElementPtr link = urdfModel->GetElement("link"); link;
+       link = link->GetNextElement("link"))
+  {
+    for (sdf::ElementPtr col = link->GetElement("collision"); col;
+         col = col->GetNextElement("collision"))
+    {
+      std::string colName = col->Get<std::string>("name");
+      // note that if there is only one child visual, no _1 is appended
+      // compare this with FixedJointReductionCollisionVisualExtension test
+      if (colName == "base_link_lump::child_link_1_collision")
+      {
+        urdf_child_link_1_col = col;
+      }
+      sdfmsg << "col: " << colName << "\n";
+    }
+    for (sdf::ElementPtr vis = link->GetElement("visual"); vis;
+         vis = vis->GetNextElement("visual"))
+    {
+      std::string visName = vis->Get<std::string>("name");
+      // note that if there is only one child visual, no _1 is appended
+      // compare this with FixedJointReductionCollisionVisualExtension test
+      if (visName == "base_link_lump::child_link_1_visual")
+      {
+        urdf_child_link_1_vis = vis;
+      }
+      sdfmsg << "vis: " << visName << "\n";
+    }
+  }
+  sdf::ElementPtr sdfModel = sdfRobot->Root()->GetElement("model");
+  sdf::ElementPtr sdf_child_link_1_col;
+  sdf::ElementPtr sdf_child_link_1_vis;
+  for (sdf::ElementPtr link = sdfModel->GetElement("link"); link;
+       link = link->GetNextElement("link"))
+  {
+    for (sdf::ElementPtr col = link->GetElement("collision"); col;
+         col = col->GetNextElement("collision"))
+    {
+      std::string colName = col->Get<std::string>("name");
+      // note that if there is only one child visual, no _1 is appended
+      // compare this with FixedJointReductionCollisionVisualExtension test
+      if (colName == "base_link_lump::child_link_1_collision")
+      {
+        sdf_child_link_1_col = col;
+      }
+      sdfmsg << "col: " << colName << "\n";
+    }
+    for (sdf::ElementPtr vis = link->GetElement("visual"); vis;
+         vis = vis->GetNextElement("visual"))
+    {
+      std::string visName = vis->Get<std::string>("name");
+      // note that if there is only one child visual, no _1 is appended
+      // compare this with FixedJointReductionCollisionVisualExtension test
+      if (visName == "base_link_lump::child_link_1_visual")
+      {
+        sdf_child_link_1_vis = vis;
+      }
+      sdfmsg << "vis: " << visName << "\n";
+    }
+  }
+  // child_link_1
+  //   <collision name='base_link_lump::child_link_1_collision_1'>
+  //     <minDepth>0.007</minDepth>
+  //     <mu1>0.7</mu1>
+  //     <mu2>0.71</mu2>
+  //   <visual name='base_link_lump::child_link_1_visual_1'>
+  //     <ambient>0 1 0 1</ambient>
+  //     <script><name>script_uri_71_name</name></script>
+  EXPECT_EQ(urdf_child_link_1_col->Get<int>("max_contacts"), 177);
+  EXPECT_EQ(urdf_child_link_1_col->Get<int>("max_contacts"),
+             sdf_child_link_1_col->Get<int>("max_contacts"));
+
+  double urdf_mu1 = urdf_child_link_1_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu");
+  double sdf_mu1 = sdf_child_link_1_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu");
+  sdfmsg << "urdf mu1: " << urdf_mu1 << "\n";
+  EXPECT_FLOAT_EQ(urdf_mu1, 0.7);
+  EXPECT_FLOAT_EQ(urdf_mu1, sdf_mu1);
+
+  double urdf_mu2 = urdf_child_link_1_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu2");
+  double sdf_mu2 = sdf_child_link_1_col->GetElement("surface")
+    ->GetElement("friction")->GetElement("ode")->Get<double>("mu2");
+  sdfmsg << "urdf mu2: " << urdf_mu2 << "\n";
+  EXPECT_FLOAT_EQ(urdf_mu2, 0.71);
+  EXPECT_FLOAT_EQ(urdf_mu2, sdf_mu2);
+
+  EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("name"),
+            "script_uri_71_name");
+  EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("name"),
+             sdf_child_link_1_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("name"));
+
+  EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
+            GetElement("script")->Get<std::string>("uri"),
+            "file://media/materials/scripts/gazebo.material");
+
+  EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
+            Get<sdf::Color>("ambient"), sdf::Color(0, 1, 0, 1));
+  EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
+            Get<sdf::Color>("ambient"),
+             sdf_child_link_1_vis->GetElement("material")->
             Get<sdf::Color>("ambient"));
 }
 
