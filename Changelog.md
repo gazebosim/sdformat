@@ -1,5 +1,10 @@
 ## SDFormat 3.0
 
+### SDFormat 3.x.x (201x-xx-xx)
+
+1. Support frame specification in SDF
+     * [Pull request 237](https://bitbucket.org/osrf/sdformat/pull-request/237)
+
 ### SDFormat 3.6.0 (2015-10-27)
 
 1. Add light state
