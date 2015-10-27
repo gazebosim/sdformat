@@ -6,10 +6,6 @@
     <description>Name of the link</description>
   </attribute>
 
-  <element name="pose" type="pose" default="0 0 0 0 0 0" required="1">
-    <description>Pose of the link relative to the model</description>
-  </element>
-
   <element name="velocity" type="pose" default="0 0 0 0 0 0" required="0">
     <description>Velocity of the link. The x, y, z components of the pose
       correspond to the linear velocity of the link, and the roll, pitch, yaw
@@ -37,10 +33,9 @@
     <attribute name="name" type="string" default="__default__" required="1">
       <description>Name of the collision</description>
     </attribute>
-
-    <element name="pose" type="pose" default="0 0 0 0 0 0" required="1">
-      <description>Pose of the link relative to the model</description>
-    </element>
   </element>
+
+  <include filename="frame.sdf" required="*"/>
+  <include filename="pose.sdf" required="0"/>
 
 </element> <!-- End Link -->

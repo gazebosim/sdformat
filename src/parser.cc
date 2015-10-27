@@ -691,11 +691,17 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
                 elemXml->FirstChildElement("name")->GetText());
         }
 
-        if (elemXml->FirstChildElement("pose"))
+        TiXmlElement *poseElemXml = elemXml->FirstChildElement("pose");
+        if (poseElemXml)
         {
-          includeSDF->Root()->GetElement("model")->GetElement(
-              "pose")->GetValue()->SetFromString(
-                elemXml->FirstChildElement("pose")->GetText());
+          sdf::ElementPtr poseElem =
+              includeSDF->Root()->GetElement("model")->GetElement("pose");
+
+          poseElem->GetValue()->SetFromString(poseElemXml->GetText());
+
+          const char *frame = poseElemXml->Attribute("frame");
+          if (frame)
+            poseElem->GetAttribute("frame")->SetFromString(frame);
         }
 
         if (elemXml->FirstChildElement("static"))

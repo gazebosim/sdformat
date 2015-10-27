@@ -6,6 +6,7 @@ set(tests
   disable_fixed_joint_reduction.cc
   fixed_joint_reduction.cc
   force_torque_sensor.cc
+  frame.cc
   joint_axis_frame.cc
   locale_fix.cc
   nested_model.cc
