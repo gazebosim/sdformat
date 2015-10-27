@@ -26,7 +26,7 @@
 TEST(Frame, ModelFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
@@ -84,7 +84,7 @@ TEST(Frame, ModelFrame)
 TEST(Frame, FrameDefaultPose)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
@@ -131,7 +131,7 @@ TEST(Frame, FrameDefaultPose)
 TEST(Frame, NoFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
@@ -195,7 +195,7 @@ TEST(Frame, NoFrame)
 TEST(Frame, LinkFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
@@ -254,7 +254,7 @@ TEST(Frame, LinkFrame)
 TEST(Frame, JointFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
@@ -346,7 +346,7 @@ TEST(Frame, JointFrame)
 TEST(Frame, CollisionFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
@@ -413,7 +413,7 @@ TEST(Frame, CollisionFrame)
 TEST(Frame, VisualFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
@@ -480,7 +480,7 @@ TEST(Frame, VisualFrame)
 TEST(Frame, InertialFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
@@ -545,7 +545,7 @@ TEST(Frame, InertialFrame)
 TEST(Frame, LightFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<light type= 'directional' name='my_light'>"
@@ -610,7 +610,7 @@ TEST(Frame, LightFrame)
 TEST(Frame, ActorFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<actor name='my_actor'>"
@@ -818,7 +818,7 @@ TEST(NestedModel, StateFrame)
 TEST(Frame, ProjectorFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
@@ -885,7 +885,7 @@ TEST(Frame, ProjectorFrame)
 TEST(Frame, SensorFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
@@ -954,7 +954,7 @@ TEST(Frame, SensorFrame)
 TEST(Frame, CameraFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
@@ -1029,7 +1029,7 @@ TEST(Frame, CameraFrame)
 TEST(Frame, AudioSourceFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
@@ -1094,7 +1094,7 @@ TEST(Frame, AudioSourceFrame)
 TEST(Frame, PopulationFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<world name='default'>"
@@ -1149,7 +1149,7 @@ TEST(Frame, PopulationFrame)
 TEST(Frame, GuiCameraFrame)
 {
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<world name='default'>"
@@ -1213,7 +1213,7 @@ TEST(Frame, IncludeFrame)
       + "/test/integration/model/box";
 
   std::ostringstream stream;
-  std::string version = "1.5";
+  std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
     << "<world name='default'>"
