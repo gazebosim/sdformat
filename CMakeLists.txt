@@ -27,8 +27,8 @@ string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 # It represents the current version of sdformat implement by the software
 set (SDF_PROTOCOL_VERSION 1.5)
 
-set (SDF_MAJOR_VERSION 3)
-set (SDF_MINOR_VERSION 5)
+set (SDF_MAJOR_VERSION 4)
+set (SDF_MINOR_VERSION 0)
 set (SDF_PATCH_VERSION 0)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
