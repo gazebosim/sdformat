@@ -25,6 +25,26 @@
       <description></description>
     </element>
 
+    <element name="follow_model" required="0">
+      <description>The follow model parameters</description>
+
+      <element name="static" type="bool" default="false" required="0">
+        <description>If set to true, the position of the camera is fixed.</description>
+      </element>
+
+      <element name="relative" type="bool" default="true" required="0">
+        <description>If set to true, the position of the camera is relative to the model reference frame.</description>
+      </element>
+
+      <element name="distance" type="double" default="8.0" required="0">
+        <description>If static is set to false, the distance between camera and model in meters.</description>
+      </element>
+
+      <element name="xyz" type="vector3" default="-5.0 0.0 3.0" required="0">
+        <description>If static is set to true, the position of the camera reference frame. If relative is set to true, the position is relative to the model reference frame, otherwise it represents world coordinates.</description>
+      </element>
+    </element>
+
     <element name="track_visual" required="0">
       <description></description>
 
