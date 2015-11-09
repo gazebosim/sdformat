@@ -10,6 +10,10 @@
     <description>If true, the link is affected by gravity.</description>
   </element>
 
+  <element name="wind" type="bool" default="false" required="0">
+    <description>If true, the link is affected by the wind.</description>
+  </element>
+
   <element name="self_collide" type="bool" default="false" required="0">
     <description>If true, the link can collide with other links in the model. Two links within a model will collide if link1.self_collide OR link2.self_collide. Links connected by a joint will never collide.</description>
   </element>
