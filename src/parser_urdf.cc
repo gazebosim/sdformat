@@ -937,113 +937,6 @@ void ReduceInertialToParent(UrdfLinkPtr _link)
 }
 
 /////////////////////////////////////////////////
-/// \brief reduce fixed joints:  lump collisions to parent link
-/// \param[in] _link take all collisions from _link and lump/move them
-///            to the parent link (_link->getParentLink()).
-void ReduceCollisionsToParent(UrdfLinkPtr _link)
-{
-  // lump all collisions of _link to _link->getParent().
-  // modify collision name (urdf 0.3.x) or
-  //        collision group name (urdf 0.2.x)
-  // to indicate that it was lumped (fixed joint reduced)
-  // from another descendant link connected by a fixed joint.
-  //
-  // Algorithm for generating new name (or group name) is:
-  //   original name + "_lump::"+original link name (urdf 0.3.x)
-  //   original group name + "_lump::"+original link name (urdf 0.2.x)
-  // The purpose is to track where this collision came from
-  // (original parent link name before lumping/reducing).
-#ifndef URDF_GE_0P3
-  for (std::map<std::string,
-      boost::shared_ptr<std::vector<UrdfCollisionPtr> > >::iterator
-      collisionsIt = _link->collision_groups.begin();
-      collisionsIt != _link->collision_groups.end(); ++collisionsIt)
-  {
-    // if it's a previously lumped mesh, relump under same _groupName
-    // otherwise, modify lumped group name to specify it's lumped
-    // into current parent link "lump::[new parent link name]"
-    std::string newCollisionGroupName;
-    std::size_t lumpIndex = collisionsIt->first.find(std::string("lump::"));
-    if (lumpIndex != std::string::npos)
-    {
-      newCollisionGroupName = collisionsIt->first;
-      sdfdbg << "re-lumping collision [" << collisionsIt->first
-             << "] for link [" << _link->name
-             << "] to parent [" << _link->getParent()->name
-             << "] with group name [" << newCollisionGroupName << "]\n";
-    }
-    else
-    {
-      // collision was originally under this link, but now we are
-      // lumping it to parent link so apply name change algorithm.
-      newCollisionGroupName =
-        collisionsIt->first + std::string("_lump::")+_link->name;
-      sdfdbg << "lumping collision [" << collisionsIt->first
-             << "] for link [" << _link->name
-             << "] to parent [" << _link->getParent()->name
-             << "] with group name [" << newCollisionGroupName << "]\n";
-    }
-
-    for (std::vector<UrdfCollisionPtr>::iterator
-        collisionIt = collisionsIt->second->begin();
-        collisionIt != collisionsIt->second->end(); ++collisionIt)
-    {
-      // transform collision origin from _link frame to
-      // parent link frame before adding to parent
-      (*collisionIt)->origin = TransformToParentFrame(
-          (*collisionIt)->origin,
-          _link->parent_joint->parent_to_joint_origin_transform);
-
-      // add the modified collision to parent
-      ReduceCollisionToParent(_link->getParent(), newCollisionGroupName,
-          *collisionIt);
-    }
-  }
-  // this->PrintCollisionGroups(_link->getParent());
-#else
-  for (std::vector<UrdfCollisionPtr>::iterator
-      collisionIt = _link->collision_array.begin();
-      collisionIt != _link->collision_array.end(); ++collisionIt)
-  {
-    std::string newCollisionName;
-    std::size_t lumpIndex = (*collisionIt)->name.find(std::string("lump::"));
-    if (lumpIndex != std::string::npos)
-    {
-      newCollisionName = (*collisionIt)->name;
-      sdfdbg << "re-lumping collision [" << (*collisionIt)->name
-             << "] for link [" << _link->name
-             << "] to parent [" << _link->getParent()->name
-             << "] with name [" << newCollisionName << "]\n";
-    }
-    else
-    {
-      if ((*collisionIt)->name.empty())
-      {
-        newCollisionName = _link->name;
-      }
-      else
-      {
-        newCollisionName = (*collisionIt)->name;
-      }
-      sdfdbg << "lumping collision [" << (*collisionIt)->name
-             << "] for link [" << _link->name
-             << "] to parent [" << _link->getParent()->name
-             << "] with name [" << newCollisionName << "]\n";
-    }
-    // transform collision origin from _link frame to
-    // parent link frame before adding to parent
-    (*collisionIt)->origin = TransformToParentFrame(
-        (*collisionIt)->origin,
-        _link->parent_joint->parent_to_joint_origin_transform);
-
-    // add the modified collision to parent
-    ReduceCollisionToParent(_link->getParent(), newCollisionName,
-        *collisionIt);
-  }
-#endif
-}
-
-/////////////////////////////////////////////////
 /// \brief reduce fixed joints:  lump visuals to parent link
 /// \param[in] _link take all visuals from _link and lump/move them
 ///            to the parent link (_link->getParentLink()).
@@ -1146,6 +1039,113 @@ void ReduceVisualsToParent(UrdfLinkPtr _link)
     // add the modified visual to parent
     ReduceVisualToParent(_link->getParent(), newVisualName,
         *visualIt);
+  }
+#endif
+}
+
+/////////////////////////////////////////////////
+/// \brief reduce fixed joints:  lump collisions to parent link
+/// \param[in] _link take all collisions from _link and lump/move them
+///            to the parent link (_link->getParentLink()).
+void ReduceCollisionsToParent(UrdfLinkPtr _link)
+{
+  // lump all collisions of _link to _link->getParent().
+  // modify collision name (urdf 0.3.x) or
+  //        collision group name (urdf 0.2.x)
+  // to indicate that it was lumped (fixed joint reduced)
+  // from another descendant link connected by a fixed joint.
+  //
+  // Algorithm for generating new name (or group name) is:
+  //   original name + "_lump::"+original link name (urdf 0.3.x)
+  //   original group name + "_lump::"+original link name (urdf 0.2.x)
+  // The purpose is to track where this collision came from
+  // (original parent link name before lumping/reducing).
+#ifndef URDF_GE_0P3
+  for (std::map<std::string,
+      boost::shared_ptr<std::vector<UrdfCollisionPtr> > >::iterator
+      collisionsIt = _link->collision_groups.begin();
+      collisionsIt != _link->collision_groups.end(); ++collisionsIt)
+  {
+    // if it's a previously lumped mesh, relump under same _groupName
+    // otherwise, modify lumped group name to specify it's lumped
+    // into current parent link "lump::[new parent link name]"
+    std::string newCollisionGroupName;
+    std::size_t lumpIndex = collisionsIt->first.find(std::string("lump::"));
+    if (lumpIndex != std::string::npos)
+    {
+      newCollisionGroupName = collisionsIt->first;
+      sdfdbg << "re-lumping collision [" << collisionsIt->first
+             << "] for link [" << _link->name
+             << "] to parent [" << _link->getParent()->name
+             << "] with group name [" << newCollisionGroupName << "]\n";
+    }
+    else
+    {
+      // collision was originally under this link, but now we are
+      // lumping it to parent link so apply name change algorithm.
+      newCollisionGroupName =
+        collisionsIt->first + std::string("_lump::")+_link->name;
+      sdfdbg << "lumping collision [" << collisionsIt->first
+             << "] for link [" << _link->name
+             << "] to parent [" << _link->getParent()->name
+             << "] with group name [" << newCollisionGroupName << "]\n";
+    }
+
+    for (std::vector<UrdfCollisionPtr>::iterator
+        collisionIt = collisionsIt->second->begin();
+        collisionIt != collisionsIt->second->end(); ++collisionIt)
+    {
+      // transform collision origin from _link frame to
+      // parent link frame before adding to parent
+      (*collisionIt)->origin = TransformToParentFrame(
+          (*collisionIt)->origin,
+          _link->parent_joint->parent_to_joint_origin_transform);
+
+      // add the modified collision to parent
+      ReduceCollisionToParent(_link->getParent(), newCollisionGroupName,
+          *collisionIt);
+    }
+  }
+  // this->PrintCollisionGroups(_link->getParent());
+#else
+  for (std::vector<UrdfCollisionPtr>::iterator
+      collisionIt = _link->collision_array.begin();
+      collisionIt != _link->collision_array.end(); ++collisionIt)
+  {
+    std::string newCollisionName;
+    std::size_t lumpIndex = (*collisionIt)->name.find(std::string("lump::"));
+    if (lumpIndex != std::string::npos)
+    {
+      newCollisionName = (*collisionIt)->name;
+      sdfdbg << "re-lumping collision [" << (*collisionIt)->name
+             << "] for link [" << _link->name
+             << "] to parent [" << _link->getParent()->name
+             << "] with name [" << newCollisionName << "]\n";
+    }
+    else
+    {
+      if ((*collisionIt)->name.empty())
+      {
+        newCollisionName = _link->name;
+      }
+      else
+      {
+        newCollisionName = (*collisionIt)->name;
+      }
+      sdfdbg << "lumping collision [" << (*collisionIt)->name
+             << "] for link [" << _link->name
+             << "] to parent [" << _link->getParent()->name
+             << "] with name [" << newCollisionName << "]\n";
+    }
+    // transform collision origin from _link frame to
+    // parent link frame before adding to parent
+    (*collisionIt)->origin = TransformToParentFrame(
+        (*collisionIt)->origin,
+        _link->parent_joint->parent_to_joint_origin_transform);
+
+    // add the modified collision to parent
+    ReduceCollisionToParent(_link->getParent(), newCollisionName,
+        *collisionIt);
   }
 #endif
 }
