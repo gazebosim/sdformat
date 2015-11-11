@@ -59,7 +59,7 @@ namespace sdf
 
   /// \def ElementPtr_V
   /// \brief Vector of ElementPtr
-  typedef std::vector< ElementPtr > ElementPtr_V;
+  typedef std::vector<ElementPtr> ElementPtr_V;
 
   /// \addtogroup sdf
   /// \{

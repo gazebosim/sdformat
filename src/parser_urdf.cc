@@ -17,6 +17,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <set>
 #include <ignition/math.hh>
@@ -35,8 +36,8 @@ typedef boost::shared_ptr<urdf::Collision> UrdfCollisionPtr;
 typedef boost::shared_ptr<urdf::Visual> UrdfVisualPtr;
 typedef boost::shared_ptr<urdf::Link> UrdfLinkPtr;
 typedef boost::shared_ptr<const urdf::Link> ConstUrdfLinkPtr;
-typedef boost::shared_ptr<TiXmlElement> TiXmlElementPtr;
-typedef boost::shared_ptr<SDFExtension> SDFExtensionPtr;
+typedef std::shared_ptr<TiXmlElement> TiXmlElementPtr;
+typedef std::shared_ptr<SDFExtension> SDFExtensionPtr;
 typedef std::map<std::string, std::vector<SDFExtensionPtr> >
   StringSDFExtensionPtrMap;
 
@@ -2015,16 +2016,16 @@ void ReduceSDFExtensionToParent(UrdfLinkPtr _link)
     }
 
     // find pointer to the existing extension with the new _link reference
-    std::string newLinkName = _link->getParent()->name;
-    StringSDFExtensionPtrMap::iterator newExt = g_extensions.find(newLinkName);
+    std::string parentLinkName = _link->getParent()->name;
+    StringSDFExtensionPtrMap::iterator newExt = g_extensions.find(parentLinkName);
 
-    // if none exist, create new extension with newLinkName
+    // if none exist, create new extension with parentLinkName
     if (newExt == g_extensions.end())
     {
       std::vector<SDFExtensionPtr> ge;
       g_extensions.insert(std::make_pair(
-            newLinkName, ge));
-      newExt = g_extensions.find(newLinkName);
+            parentLinkName, ge));
+      newExt = g_extensions.find(parentLinkName);
     }
 
     // move sdf extensions from _link into the parent _link's extensions
@@ -2055,7 +2056,7 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
     UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
-  std::string newLinkName = _link->getParent()->name;
+  std::string parentLinkName = _link->getParent()->name;
 
   // HACK: need to do this more generally, but we also need to replace
   //       all instances of _link name with new link name
@@ -2064,7 +2065,7 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
   //         and it needs to be reparented to
   //         <collision>base_footprint_collision</collision>
   sdfdbg << "  STRING REPLACE: instances of _link name ["
-        << linkName << "] with [" << newLinkName << "]\n";
+        << linkName << "] with [" << parentLinkName << "]\n";
   for (std::vector<TiXmlElementPtr>::iterator blobIt =
          _ge->blobs.begin();
          blobIt != _ge->blobs.end(); ++blobIt)
@@ -2073,7 +2074,7 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
     debugStreamIn << *(*blobIt);
     std::string debugBlob = debugStreamIn.str();
     sdfdbg << "        INITIAL STRING link ["
-           << linkName << "]-->[" << newLinkName << "]: ["
+           << linkName << "]-->[" << parentLinkName << "]: ["
            << debugBlob << "]\n";
 
     ReduceSDFExtensionContactSensorFrameReplace(blobIt, _link);
@@ -2989,7 +2990,7 @@ void ReduceSDFExtensionContactSensorFrameReplace(
     UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
-  std::string newLinkName = _link->getParent()->name;
+  std::string parentLinkName = _link->getParent()->name;
   if ((*_blobIt)->ValueStr() == "sensor")
   {
     // parse it and add/replace the reduction transform
@@ -3006,7 +3007,7 @@ void ReduceSDFExtensionContactSensorFrameReplace(
           contact->RemoveChild(collision);
           TiXmlElement* collisionNameKey = new TiXmlElement("collision");
           std::ostringstream collisionNameStream;
-          collisionNameStream << newLinkName << g_collisionExt
+          collisionNameStream << parentLinkName << g_collisionExt
             << "_" << linkName;
           TiXmlText* collisionNameTxt = new TiXmlText(
               collisionNameStream.str());
@@ -3029,7 +3030,7 @@ void ReduceSDFExtensionPluginFrameReplace(
     ignition::math::Pose3d _reductionTransform)
 {
   std::string linkName = _link->name;
-  std::string newLinkName = _link->getParent()->name;
+  std::string parentLinkName = _link->getParent()->name;
   if ((*_blobIt)->ValueStr() == _pluginName)
   {
     // replace element containing _link names to parent link names
@@ -3042,7 +3043,7 @@ void ReduceSDFExtensionPluginFrameReplace(
         (*_blobIt)->RemoveChild(elementNode);
         TiXmlElement* bodyNameKey = new TiXmlElement(_elementName);
         std::ostringstream bodyNameStream;
-        bodyNameStream << newLinkName;
+        bodyNameStream << parentLinkName;
         TiXmlText* bodyNameTxt = new TiXmlText(bodyNameStream.str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
         (*_blobIt)->LinkEndChild(bodyNameKey);
@@ -3111,7 +3112,7 @@ void ReduceSDFExtensionProjectorFrameReplace(
     UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
-  std::string newLinkName = _link->getParent()->name;
+  std::string parentLinkName = _link->getParent()->name;
 
   // updates _link reference for <projector> inside of
   // projector plugins
@@ -3137,7 +3138,7 @@ void ReduceSDFExtensionProjectorFrameReplace(
         if (projectorLinkName == linkName)
         {
           // do the replacement
-          projectorName = newLinkName + "/" +
+          projectorName = parentLinkName + "/" +
             projectorName.substr(pos+1, projectorName.size());
 
           (*_blobIt)->RemoveChild(projectorElem);
@@ -3159,7 +3160,7 @@ void ReduceSDFExtensionGripperFrameReplace(
     UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
-  std::string newLinkName = _link->getParent()->name;
+  std::string parentLinkName = _link->getParent()->name;
 
   if ((*_blobIt)->ValueStr() == "gripper")
   {
@@ -3171,7 +3172,7 @@ void ReduceSDFExtensionGripperFrameReplace(
         (*_blobIt)->RemoveChild(gripperLink);
         TiXmlElement* bodyNameKey = new TiXmlElement("gripper_link");
         std::ostringstream bodyNameStream;
-        bodyNameStream << newLinkName;
+        bodyNameStream << parentLinkName;
         TiXmlText* bodyNameTxt = new TiXmlText(bodyNameStream.str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
         (*_blobIt)->LinkEndChild(bodyNameKey);
@@ -3185,7 +3186,7 @@ void ReduceSDFExtensionGripperFrameReplace(
         (*_blobIt)->RemoveChild(palmLink);
         TiXmlElement* bodyNameKey = new TiXmlElement("palm_link");
         std::ostringstream bodyNameStream;
-        bodyNameStream << newLinkName;
+        bodyNameStream << parentLinkName;
         TiXmlText* bodyNameTxt = new TiXmlText(bodyNameStream.str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
         (*_blobIt)->LinkEndChild(bodyNameKey);
@@ -3200,7 +3201,7 @@ void ReduceSDFExtensionJointFrameReplace(
     UrdfLinkPtr _link)
 {
   std::string linkName = _link->name;
-  std::string newLinkName = _link->getParent()->name;
+  std::string parentLinkName = _link->getParent()->name;
 
   if ((*_blobIt)->ValueStr() == "joint")
   {
@@ -3214,7 +3215,7 @@ void ReduceSDFExtensionJointFrameReplace(
         (*_blobIt)->RemoveChild(parent);
         TiXmlElement* parentNameKey = new TiXmlElement("parent");
         std::ostringstream parentNameStream;
-        parentNameStream << newLinkName;
+        parentNameStream << parentLinkName;
         TiXmlText* parentNameTxt = new TiXmlText(parentNameStream.str());
         parentNameKey->LinkEndChild(parentNameTxt);
         (*_blobIt)->LinkEndChild(parentNameKey);
@@ -3228,7 +3229,7 @@ void ReduceSDFExtensionJointFrameReplace(
         (*_blobIt)->RemoveChild(child);
         TiXmlElement* childNameKey = new TiXmlElement("child");
         std::ostringstream childNameStream;
-        childNameStream << newLinkName;
+        childNameStream << parentLinkName;
         TiXmlText* childNameTxt = new TiXmlText(childNameStream.str());
         childNameKey->LinkEndChild(childNameTxt);
         (*_blobIt)->LinkEndChild(childNameKey);
