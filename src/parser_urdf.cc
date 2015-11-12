@@ -1298,7 +1298,7 @@ void InsertRobotOrigin(TiXmlElement *_elem)
 {
   if (g_initialRobotPoseValid)
   {
-    /* set transform */
+    // set transform
     double pose[6];
     pose[0] = g_initialRobotPose.position.x;
     pose[1] = g_initialRobotPose.position.y;
@@ -2200,11 +2200,9 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
         {
           AddKeyValue(limit, "erp", Values2str(1, &(*ge)->stopErp));
         }
-        /* gone
-        if ((*ge)->isInitialJointPosition)
-           AddKeyValue(_elem, "initialJointPosition",
-             Values2str(1, &(*ge)->initialJointPosition));
-         */
+        // if ((*ge)->isInitialJointPosition)
+        //    AddKeyValue(_elem, "initialJointPosition",
+        //      Values2str(1, &(*ge)->initialJointPosition));
 
         // insert provideFeedback
         if ((*ge)->isProvideFeedback)
@@ -2352,7 +2350,7 @@ void CreateGeometry(TiXmlElement* _elem,
         AddKeyValue(geometryType, "scale", Vector32Str(mesh->scale));
         // do something more to meshes
         {
-          /* set mesh file */
+          // set mesh file
           if (mesh->filename.empty())
           {
             sdferr << "urdf2sdf: mesh geometry with no filename given.\n";
@@ -2766,7 +2764,7 @@ void CreateSDF(TiXmlElement *_root,
     return;
   }
 
-  /* create <body:...> block for non fixed joint attached bodies */
+  // create <body:...> block for non fixed joint attached bodies
   if ((_link->getParent() && _link->getParent()->name == "world") ||
       !g_reduceFixedJoints ||
       (!_link->parent_joint ||
@@ -2811,13 +2809,13 @@ void CreateLink(TiXmlElement *_root,
     ConstUrdfLinkPtr _link,
     ignition::math::Pose3d &_currentTransform)
 {
-  /* create new body */
+  // create new body
   TiXmlElement *elem     = new TiXmlElement("link");
 
-  /* set body name */
+  // set body name
   elem->SetAttribute("name", _link->name);
 
-  /* compute global transform */
+  // compute global transform
   ignition::math::Pose3d localTransform;
   // this is the transform from parent link to current _link
   // this transform does not exist for the root link
@@ -2833,22 +2831,22 @@ void CreateLink(TiXmlElement *_root,
   // create origin tag for this element
   AddTransform(elem, _currentTransform);
 
-  /* create new inerial block */
+  // create new inerial block
   CreateInertial(elem, _link);
 
-  /* create new collision block */
+  // create new collision block
   CreateCollisions(elem, _link);
 
-  /* create new visual block */
+  // create new visual block
   CreateVisuals(elem, _link);
 
-  /* copy sdf extensions data */
+  // copy sdf extensions data
   InsertSDFExtensionLink(elem, _link->name);
 
-  /* add body to document */
+  // add body to document
   _root->LinkEndChild(elem);
 
-  /* make a <joint:...> block */
+  // make a <joint:...> block
   CreateJoint(_root, _link, _currentTransform);
 }
 
@@ -2892,7 +2890,7 @@ void CreateCollisions(TiXmlElement* _elem,
         collisionName = collisionNameStream.str();
       }
 
-      /* make a <collision> block */
+      // make a <collision> block
       CreateCollision(_elem, _link, *collision, collisionName);
 
       // only 1 default mesh
@@ -2926,7 +2924,7 @@ void CreateCollisions(TiXmlElement* _elem,
       collisionName = collisionNameStream.str();
     }
 
-    /* make a <collision> block */
+    // make a <collision> block
     CreateCollision(_elem, _link, *collision, collisionName);
 
     ++collisionCount;
@@ -2974,7 +2972,7 @@ void CreateVisuals(TiXmlElement* _elem,
         visualName = visualNameStream.str();
       }
 
-      /* make a <visual> block */
+      // make a <visual> block
       CreateVisual(_elem, _link, *visual, visualName);
 
       // only 1 default mesh
@@ -3008,7 +3006,7 @@ void CreateVisuals(TiXmlElement* _elem,
       visualName = visualNameStream.str();
     }
 
-    /* make a <visual> block */
+    // make a <visual> block
     CreateVisual(_elem, _link, *visual, visualName);
 
     ++visualCount;
@@ -3022,7 +3020,7 @@ void CreateInertial(TiXmlElement *_elem,
 {
   TiXmlElement *inertial = new TiXmlElement("inertial");
 
-  /* set mass properties */
+  // set mass properties
   // check and print a warning message
   double roll, pitch, yaw;
   _link->inertial->origin.rotation.getRPY(roll, pitch, yaw);
@@ -3059,7 +3057,7 @@ void CreateJoint(TiXmlElement *_root,
     ConstUrdfLinkPtr _link,
     ignition::math::Pose3d &_currentTransform)
 {
-  /* compute the joint tag */
+  // compute the joint tag
   std::string jtype;
   jtype.clear();
   if (_link->parent_joint != NULL)
@@ -3177,10 +3175,10 @@ void CreateJoint(TiXmlElement *_root,
     jointAxis->LinkEndChild(jointAxisDynamics);
     joint->LinkEndChild(jointAxis);
 
-    /* copy sdf extensions data */
+    // copy sdf extensions data
     InsertSDFExtensionJoint(joint, _link->parent_joint->name);
 
-    /* add joint to document */
+    // add joint to document
     _root->LinkEndChild(joint);
   }
 }
@@ -3189,13 +3187,13 @@ void CreateJoint(TiXmlElement *_root,
 void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
     UrdfCollisionPtr _collision, const std::string &_oldLinkName)
 {
-  /* begin create geometry node, skip if no collision specified */
+  // begin create geometry node, skip if no collision specified
   TiXmlElement *sdfCollision = new TiXmlElement("collision");
 
   // std::cout << "CreateCollision link [" << _link->name
   //           << "] old [" << _oldLinkName
   //           << "]\n";
-  /* set its name, if lumped, add original link name */
+  // set its name, if lumped, add original link name
   // for meshes in an original mesh, it's likely
   // _link->name + mesh count
   if (_oldLinkName.find(_link->name) == 0 || _oldLinkName.empty())
@@ -3206,7 +3204,7 @@ void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
 
   // std::cout << "collision [" << sdfCollision->Attribute("name") << "]\n";
 
-  /* set transform */
+  // set transform
   double pose[6];
   pose[0] = _collision->origin.position.x;
   pose[1] = _collision->origin.position.y;
@@ -3214,7 +3212,7 @@ void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
   _collision->origin.rotation.getRPY(pose[3], pose[4], pose[5]);
   AddKeyValue(sdfCollision, "pose", Values2str(6, pose));
 
-  /* add geometry block */
+  // add geometry block
   if (!_collision || !_collision->geometry)
   {
     sdfdbg << "urdf2sdf: collision of link [" << _link->name
@@ -3225,10 +3223,10 @@ void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
     CreateGeometry(sdfCollision, _collision->geometry);
   }
 
-  /* set additional data from extensions */
+  // set additional data from extensions
   InsertSDFExtensionCollision(sdfCollision, _link->name);
 
-  /* add geometry to body */
+  // add geometry to body
   _elem->LinkEndChild(sdfCollision);
 }
 
@@ -3236,17 +3234,17 @@ void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
 void CreateVisual(TiXmlElement *_elem, ConstUrdfLinkPtr _link,
     UrdfVisualPtr _visual, const std::string &_oldLinkName)
 {
-  /* begin create sdf visual node */
+  // begin create sdf visual node
   TiXmlElement *sdfVisual = new TiXmlElement("visual");
 
-  /* set its name */
+  // set its name
   if (_oldLinkName.find(_link->name) == 0 || _oldLinkName.empty())
     sdfVisual->SetAttribute("name", _oldLinkName);
   else
     sdfVisual->SetAttribute("name", _link->name
         + std::string("_lump::") + _oldLinkName);
 
-  /* add the visualisation transfrom */
+  // add the visualisation transfrom
   double pose[6];
   pose[0] = _visual->origin.position.x;
   pose[1] = _visual->origin.position.y;
@@ -3254,7 +3252,7 @@ void CreateVisual(TiXmlElement *_elem, ConstUrdfLinkPtr _link,
   _visual->origin.rotation.getRPY(pose[3], pose[4], pose[5]);
   AddKeyValue(sdfVisual, "pose", Values2str(6, pose));
 
-  /* insert geometry */
+  // insert geometry
   if (!_visual || !_visual->geometry)
   {
     sdfdbg << "urdf2sdf: visual of link [" << _link->name
@@ -3265,10 +3263,10 @@ void CreateVisual(TiXmlElement *_elem, ConstUrdfLinkPtr _link,
     CreateGeometry(sdfVisual, _visual->geometry);
   }
 
-  /* set additional data from extensions */
+  // set additional data from extensions
   InsertSDFExtensionVisual(sdfVisual, _link->name);
 
-  /* end create _visual node */
+  // end create _visual node
   _elem->LinkEndChild(sdfVisual);
 }
 
@@ -3278,7 +3276,7 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
 {
   g_enforceLimits = _enforceLimits;
 
-  /* Create a RobotModel from string */
+  // Create a RobotModel from string
   boost::shared_ptr<urdf::ModelInterface> robotModel =
     urdf::parseURDF(_urdfStr.c_str());
 
@@ -3291,17 +3289,17 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
     return sdfXmlOut;
   }
 
-  /* create root element and define needed namespaces */
+  // create root element and define needed namespaces
   TiXmlElement *robot = new TiXmlElement("model");
 
   // set model name to urdf robot name if not specified
   robot->SetAttribute("name", robotModel->getName());
 
-  /* initialize transform for the model, urdf is recursive,
-     while sdf defines all links relative to model frame */
+  // initialize transform for the model, urdf is recursive,
+  // while sdf defines all links relative to model frame
   ignition::math::Pose3d transform;
 
-  /* parse sdf extension */
+  // parse sdf extension
   TiXmlDocument urdfXml;
   urdfXml.Parse(_urdfStr.c_str());
   g_extensions.clear();
@@ -3312,20 +3310,20 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
 
   ConstUrdfLinkPtr rootLink = robotModel->getRoot();
 
-  /* Fixed Joint Reduction */
-  /* if link connects to parent via fixed joint, lump down and remove link */
-  /* set reduceFixedJoints to false will replace fixed joints with
-     zero limit revolute joints, otherwise, we reduce it down to its
-     parent link recursively */
-  /* using the disabledFixedJointLumping option is possible to disable
-     fixed joint lumping only for selected joints */
+  // Fixed Joint Reduction
+  // if link connects to parent via fixed joint, lump down and remove link
+  // set reduceFixedJoints to false will replace fixed joints with
+  // zero limit revolute joints, otherwise, we reduce it down to its
+  // parent link recursively
+  // using the disabledFixedJointLumping option is possible to disable
+  // fixed joint lumping only for selected joints
   if (g_reduceFixedJoints)
     ReduceFixedJoints(robot,
         (boost::const_pointer_cast< urdf::Link >(rootLink)));
 
   if (rootLink->name == "world")
   {
-    /* convert all children link */
+    // convert all children link
     for (std::vector<UrdfLinkPtr>::const_iterator
         child = rootLink->child_links.begin();
         child != rootLink->child_links.end(); ++child)
@@ -3333,11 +3331,11 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   }
   else
   {
-    /* convert, starting from root link */
+    // convert, starting from root link
     CreateSDF(robot, rootLink, transform);
   }
 
-  /* insert the extensions without reference into <robot> root level */
+  // insert the extensions without reference into <robot> root level
   InsertSDFExtensionRobot(robot);
 
   InsertRobotOrigin(robot);
@@ -3453,19 +3451,18 @@ void ReduceSDFExtensionProjectorTransformReduction(
   // overwrite <pose> (xyz/rpy) if it exists
   if ((*_blobIt)->ValueStr() == "projector")
   {
-    /*
     // parse it and add/replace the reduction transform
     // find first instance of xyz and rpy, replace with reduction transform
-    for (TiXmlNode* elIt = (*_blobIt)->FirstChild();
-    elIt; elIt = elIt->NextSibling())
-    {
-    std::ostringstream streamIn;
-    streamIn << *elIt;
-    sdfdbg << "    " << streamIn << "\n";
-    }
-    */
+    //
+    // for (TiXmlNode* elIt = (*_blobIt)->FirstChild();
+    // elIt; elIt = elIt->NextSibling())
+    // {
+    //   std::ostringstream streamIn;
+    //   streamIn << *elIt;
+    //   sdfdbg << "    " << streamIn << "\n";
+    // }
 
-    /* should read <pose>...</pose> and agregate reductionTransform */
+    // should read <pose>...</pose> and agregate reductionTransform
     TiXmlNode* poseKey = (*_blobIt)->FirstChild("pose");
     // read pose and save it
 
