@@ -110,6 +110,8 @@ namespace sdf
     // joint, joint limit dynamics
     public: bool isStopCfm, isStopErp, isInitialJointPosition, isFudgeFactor;
     public: double stopCfm, stopErp, initialJointPosition, fudgeFactor;
+    public: bool isSpringReference, isSpringStiffness;
+    public: double springReference, springStiffness;
     public: bool isProvideFeedback;
     public: bool provideFeedback;
     public: bool isImplicitSpringDamper;
