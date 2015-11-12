@@ -385,13 +385,17 @@ void ReduceCollisionToParent(UrdfLinkPtr _parent_link,
          _parent_link->collision_array.end(),
          _collision);
   if (collisionIt != _parent_link->collision_array.end())
+  {
     sdfwarn << "attempted to add collision [" << _collision->name
             << "] to link ["
             << _parent_link->name
             << "], but it already exists in collision_array under name ["
             << (*collisionIt)->name << "]\n";
+  }
   else
+  {
     _parent_link->collision_array.push_back(_collision);
+  }
 #endif
 }
 
@@ -470,13 +474,17 @@ void ReduceVisualToParent(UrdfLinkPtr _parent_link,
          _parent_link->visual_array.end(),
          _visual);
   if (visualIt != _parent_link->visual_array.end())
+  {
     sdfwarn << "attempted to add visual [" << _visual->name
       << "] to link ["
       << _parent_link->name
       << "], but it already exists in visual_array under name ["
       << (*visualIt)->name << "]\n";
+  }
   else
+  {
     _parent_link->visual_array.push_back(_visual);
+  }
 #endif
 }
 
@@ -1650,8 +1658,10 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
         //   - _elem (destination for blob, which is a collision sdf).
 
         if (!_elem->Attribute("name"))
+        {
           sdferr << "ERROR: collision _elem has no name,"
                  << " something is wrong" << "\n";
+        }
 
         std::string sdfCollisionName(_elem->Attribute("name"));
 
@@ -1675,8 +1685,10 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           sdfCollisionName.find("lump::") != std::string::npos;
 
         if (!collisionNameContainsLinkname)
+        {
           sdferr << "collision name does not contain link name,"
                  << " file an issue.\n";
+        }
 
         // if the collision _elem was not reduced,
         // its name should not have "lump::" in it.
@@ -1828,7 +1840,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
               {
                 // Memory allocation error
                 sdferr << "Memory allocation error while"
-                       << " processing <contactOde>.\n";
+                       << " processing <contact><ode>.\n";
               }
               contact->LinkEndChild(contactOde);
             }
@@ -1878,34 +1890,51 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
 
           // insert mu1, mu2, kp, kd for collision
           if ((*ge)->isMu1)
+          {
             AddKeyValue(frictionOde->ToElement(), "mu",
                 Values2str(1, &(*ge)->mu1));
+          }
           if ((*ge)->isMu2)
+          {
             AddKeyValue(frictionOde->ToElement(), "mu2",
                 Values2str(1, &(*ge)->mu2));
+          }
           if (!(*ge)->fdir1.empty())
+          {
             AddKeyValue(frictionOde->ToElement(), "fdir1", (*ge)->fdir1);
+          }
           if ((*ge)->isKp)
+          {
             AddKeyValue(contactOde->ToElement(), "kp",
                         Values2str(1, &(*ge)->kp));
+          }
           if ((*ge)->isKd)
+          {
             AddKeyValue(contactOde->ToElement(), "kd",
                         Values2str(1, &(*ge)->kd));
+          }
           // max contact interpenetration correction velocity
           if ((*ge)->isMaxVel)
+          {
             AddKeyValue(contactOde->ToElement(), "max_vel",
                 Values2str(1, &(*ge)->maxVel));
+          }
           // contact interpenetration margin tolerance
           if ((*ge)->isMinDepth)
+          {
             AddKeyValue(contactOde->ToElement(), "min_depth",
                 Values2str(1, &(*ge)->minDepth));
-
+          }
           if ((*ge)->isLaserRetro)
+          {
             AddKeyValue(_elem, "laser_retro",
                 Values2str(1, &(*ge)->laserRetro));
+          }
           if ((*ge)->isMaxContacts)
+          {
             AddKeyValue(_elem, "max_contacts",
                 boost::lexical_cast<std::string>((*ge)->maxContacts));
+          }
         }
       }
     }
