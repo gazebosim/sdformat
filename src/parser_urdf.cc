@@ -1359,52 +1359,27 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       {
         sdf->material = GetKeyValueAsString(childElem);
       }
-      else if (childElem->ValueStr() == "collision")
+      else if (childElem->ValueStr() == "collision"
+            || childElem->ValueStr() == "visual")
       {
-        // anything inside of collision tags:
+        // anything inside of collision or visual tags:
         // <gazebo reference="link_name">
         //   <collision>
-        //     <extention_stuff_here/>
+        //     <collision_extention_stuff_here/>
         //   </collision>
-        // </gazebl>
-        // are treated as blobs that gets inserted
-        // into all collisions for the link
-        // <collision name="link_name[anything here]">
-        //   <stuff_from_urdf_link_collisions/>
-        //   <extention_stuff_here/>
-        // </collision>
-
-        // a place to store converted doc
-        for (TiXmlElement* e = childElem->FirstChildElement(); e;
-            e = e->NextSiblingElement())
-        {
-          TiXmlDocument xmlNewDoc;
-
-          std::ostringstream origStream;
-          origStream << *e;
-          sdfdbg << "collision extension [" << origStream.str() << "] not " <<
-                   "converted from URDF, probably already in SDF format.";
-          xmlNewDoc.Parse(origStream.str().c_str());
-
-          // save all unknown stuff in a vector of blobs
-          TiXmlElementPtr blob(
-            new TiXmlElement(*xmlNewDoc.FirstChildElement()));
-          sdf->collision_blobs.push_back(blob);
-        }
-      }
-      else if (childElem->ValueStr() == "visual")
-      {
-        // anything inside of visual tags:
-        // <gazebo reference="link_name">
         //   <visual>
-        //     <extention_stuff_here/>
+        //     <visual_extention_stuff_here/>
         //   </visual>
         // </gazebl>
         // are treated as blobs that gets inserted
-        // into all visuals for the link
+        // into all collisions and visuals for the link
+        // <collision name="link_name[anything here]">
+        //   <stuff_from_urdf_link_collisions/>
+        //   <collision_extention_stuff_here/>
+        // </collision>
         // <visual name="link_name[anything here]">
         //   <stuff_from_urdf_link_visuals/>
-        //   <extention_stuff_here/>
+        //   <visual_extention_stuff_here/>
         // </visual>
 
         // a place to store converted doc
@@ -1415,14 +1390,19 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
 
           std::ostringstream origStream;
           origStream << *e;
-          sdfdbg << "visual extension [" << origStream.str() << "] not " <<
-                   "converted from URDF, probably already in SDF format.";
           xmlNewDoc.Parse(origStream.str().c_str());
 
           // save all unknown stuff in a vector of blobs
           TiXmlElementPtr blob(
             new TiXmlElement(*xmlNewDoc.FirstChildElement()));
-          sdf->visual_blobs.push_back(blob);
+          if (childElem->ValueStr() == "collision")
+          {
+            sdf->collision_blobs.push_back(blob);
+          }
+          else
+          {
+            sdf->visual_blobs.push_back(blob);
+          }
         }
       }
       else if (childElem->ValueStr() == "static")
