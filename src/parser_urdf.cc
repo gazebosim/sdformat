@@ -1866,7 +1866,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
               {
                 // Memory allocation error
                 sdferr << "Memory allocation error while"
-                       << " processing <frictionOde>.\n";
+                       << " processing <friction><ode>.\n";
               }
               friction->LinkEndChild(frictionOde);
             }
