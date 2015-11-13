@@ -39,14 +39,6 @@
     <description>Parameter for gearbox joints.  Gearbox ratio is enforced over two joint angles.  First joint angle (theta_1) is the angle from the gearbox_reference_body to the parent link in the direction of the axis element and the second joint angle (theta_2) is the angle from the gearbox_reference_body to the child link in the direction of the axis2 element.</description>
   </element>
 
-  <element name="gearbox_reference_body_parent" type="string" default="__default__" required="0">
-    <description>Parameter for gearbox joints.  Gearbox ratio is enforced over two joint angles.  First joint angle (theta_1) is the angle from the gearbox_reference_body to the parent link in the direction of the axis element and the second joint angle (theta_2) is the angle from the gearbox_reference_body to the child link in the direction of the axis2 element.</description>
-  </element>
-
-  <element name="gearbox_reference_body_child" type="string" default="__default__" required="0">
-    <description>Parameter for gearbox joints.  Gearbox ratio is enforced over two joint angles.  First joint angle (theta_1) is the angle from the gearbox_reference_body to the parent link in the direction of the axis element and the second joint angle (theta_2) is the angle from the gearbox_reference_body to the child link in the direction of the axis2 element.</description>
-  </element>
-
   <element name="thread_pitch" type="double" default="1.0" required="0">
     <description>Parameter for screw joints.</description>
   </element>
