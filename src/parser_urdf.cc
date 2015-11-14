@@ -372,18 +372,18 @@ void ReduceCollisionToParent(UrdfLinkPtr _parent_link,
 #else
   // check if _collision already exist in _parent_link::collision_array
   // if not, add it.
-  _collision->name = _name;
+  _collision->group_name = _name;
   std::vector<UrdfCollisionPtr>::iterator collisionIt =
     find(_parent_link->collision_array.begin(),
          _parent_link->collision_array.end(),
          _collision);
   if (collisionIt != _parent_link->collision_array.end())
   {
-    sdfwarn << "attempted to add collision [" << _collision->name
+    sdfwarn << "attempted to add collision [" << _collision->group_name
             << "] to link ["
             << _parent_link->name
             << "], but it already exists in collision_array under name ["
-            << (*collisionIt)->name << "]\n";
+            << (*collisionIt)->group_name << "]\n";
   }
   else
   {
@@ -454,18 +454,18 @@ void ReduceVisualToParent(UrdfLinkPtr _parent_link,
 #else
   // check if _visual already exist in _parent_link::visual_array
   // if not, add it.
-  _visual->name = _name;
+  _visual->group_name = _name;
   std::vector<UrdfVisualPtr>::iterator visualIt =
     find(_parent_link->visual_array.begin(),
          _parent_link->visual_array.end(),
          _visual);
   if (visualIt != _parent_link->visual_array.end())
   {
-    sdfwarn << "attempted to add visual [" << _visual->name
+    sdfwarn << "attempted to add visual [" << _visual->group_name
       << "] to link ["
       << _parent_link->name
       << "], but it already exists in visual_array under name ["
-      << (*visualIt)->name << "]\n";
+      << (*visualIt)->group_name << "]\n";
   }
   else
   {
@@ -1001,26 +1001,26 @@ void ReduceVisualsToParent(UrdfLinkPtr _link)
       visualIt != _link->visual_array.end(); ++visualIt)
   {
     std::string newVisualName;
-    std::size_t lumpIndex = (*visualIt)->name.find(std::string("lump::"));
+    std::size_t lumpIndex = (*visualIt)->group_name.find(std::string("lump::"));
     if (lumpIndex != std::string::npos)
     {
-      newVisualName = (*visualIt)->name;
-      sdfdbg << "re-lumping visual [" << (*visualIt)->name
+      newVisualName = (*visualIt)->group_name;
+      sdfdbg << "re-lumping visual [" << (*visualIt)->group_name
              << "] for link [" << _link->name
              << "] to parent [" << _link->getParent()->name
              << "] with name [" << newVisualName << "]\n";
     }
     else
     {
-      if ((*visualIt)->name.empty())
+      if ((*visualIt)->group_name.empty())
       {
         newVisualName = _link->name;
       }
       else
       {
-        newVisualName = (*visualIt)->name;
+        newVisualName = (*visualIt)->group_name;
       }
-      sdfdbg << "lumping visual [" << (*visualIt)->name
+      sdfdbg << "lumping visual [" << (*visualIt)->group_name
              << "] for link [" << _link->name
              << "] to parent [" << _link->getParent()->name
              << "] with name [" << newVisualName << "]\n";
@@ -1108,26 +1108,27 @@ void ReduceCollisionsToParent(UrdfLinkPtr _link)
       collisionIt != _link->collision_array.end(); ++collisionIt)
   {
     std::string newCollisionName;
-    std::size_t lumpIndex = (*collisionIt)->name.find(std::string("lump::"));
+    std::size_t lumpIndex =
+      (*collisionIt)->group_name.find(std::string("lump::"));
     if (lumpIndex != std::string::npos)
     {
-      newCollisionName = (*collisionIt)->name;
-      sdfdbg << "re-lumping collision [" << (*collisionIt)->name
+      newCollisionName = (*collisionIt)->group_name;
+      sdfdbg << "re-lumping collision [" << (*collisionIt)->group_name
              << "] for link [" << _link->name
              << "] to parent [" << _link->getParent()->name
              << "] with name [" << newCollisionName << "]\n";
     }
     else
     {
-      if ((*collisionIt)->name.empty())
+      if ((*collisionIt)->group_name.empty())
       {
         newCollisionName = _link->name;
       }
       else
       {
-        newCollisionName = (*collisionIt)->name;
+        newCollisionName = (*collisionIt)->group_name;
       }
-      sdfdbg << "lumping collision [" << (*collisionIt)->name
+      sdfdbg << "lumping collision [" << (*collisionIt)->group_name
              << "] for link [" << _link->name
              << "] to parent [" << _link->getParent()->name
              << "] with name [" << newCollisionName << "]\n";
@@ -2900,11 +2901,11 @@ void CreateCollisions(TiXmlElement* _elem,
       ++collision)
   {
     sdfdbg << "creating collision for link [" << _link->name
-           << "] collision [" << (*collision)->name << "]\n";
+           << "] collision [" << (*collision)->group_name << "]\n";
 
     // collision sdf has a name if it was lumped/reduced
     // otherwise, use the link name
-    std::string collisionName = (*collision)->name;
+    std::string collisionName = (*collision)->group_name;
     if (collisionName.empty())
       collisionName = _link->name;
 
@@ -2982,11 +2983,11 @@ void CreateVisuals(TiXmlElement* _elem,
       ++visual)
   {
     sdfdbg << "creating visual for link [" << _link->name
-           << "] visual [" << (*visual)->name << "]\n";
+           << "] visual [" << (*visual)->group_name << "]\n";
 
     // visual sdf has a name if it was lumped/reduced
     // otherwise, use the link name
-    std::string visualName = (*visual)->name;
+    std::string visualName = (*visual)->group_name;
     if (visualName.empty())
       visualName = _link->name;
 
