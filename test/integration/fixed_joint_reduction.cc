@@ -79,6 +79,9 @@ TEST(SDFParser, FixedJointReductionCollisionTest)
   FixedJointReductionEquivalence(SDF_TEST_FILE_COLLISION);
 }
 
+#if URDF_GE_0P3
+// this updated test will not work for old parser
+
 /////////////////////////////////////////////////
 // This test uses a urdf that has two levels
 // of fixed joint reduction.
@@ -102,6 +105,7 @@ TEST(SDFParser, FixedJointReductionCollisionVisualExtensionEmptyRootTest)
     SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT,
     SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF);
 }
+#endif
 
 /////////////////////////////////////////////////
 void FixedJointReductionCollisionVisualExtension(
