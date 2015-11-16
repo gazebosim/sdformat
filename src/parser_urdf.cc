@@ -370,8 +370,9 @@ void ReduceCollisionToParent(UrdfLinkPtr _parent_link,
   else
     collisions->push_back(_collision);
 #else
-  // check if _collision already exist in _parent_link::collision_array
-  // if not, add it.
+  // 20151116: changelog for pull request #235
+  // added a check to see if _collision already exist in
+  // _parent_link::collision_array if not, add it.
   _collision->name = _name;
   std::vector<UrdfCollisionPtr>::iterator collisionIt =
     find(_parent_link->collision_array.begin(),
@@ -452,8 +453,9 @@ void ReduceVisualToParent(UrdfLinkPtr _parent_link,
   else
     visuals->push_back(_visual);
 #else
-  // check if _visual already exist in _parent_link::visual_array
-  // if not, add it.
+  // 20151116: changelog for pull request #235
+  // added a check to see if _visual already exist in
+  // _parent_link::visual_array if not, add it.
   _visual->name = _name;
   std::vector<UrdfVisualPtr>::iterator visualIt =
     find(_parent_link->visual_array.begin(),
@@ -1000,6 +1002,7 @@ void ReduceVisualsToParent(UrdfLinkPtr _link)
       visualIt = _link->visual_array.begin();
       visualIt != _link->visual_array.end(); ++visualIt)
   {
+    // 20151116: changelog for pull request #235
     std::string newVisualName;
     std::size_t lumpIndex = (*visualIt)->name.find(std::string("lump::"));
     if (lumpIndex != std::string::npos)
@@ -1025,6 +1028,7 @@ void ReduceVisualsToParent(UrdfLinkPtr _link)
              << "] to parent [" << _link->getParent()->name
              << "] with name [" << newVisualName << "]\n";
     }
+
     // transform visual origin from _link frame to
     // parent link frame before adding to parent
     (*visualIt)->origin = TransformToParentFrame(
