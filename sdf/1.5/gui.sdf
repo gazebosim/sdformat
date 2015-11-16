@@ -29,19 +29,19 @@
       <description>The follow model parameters</description>
 
       <element name="static" type="bool" default="false" required="0">
-        <description>If set to true, the position of the camera is fixed.</description>
+        <description>If set to true, the position of the camera is fixed relatively to the model or to the world, depending on the value of the relative element. Otherwise, the position of the camera may vary but the distance between the camera and the model will depend on the value of the distance element. In any case, the camera will always follow the model by changing its orientation.</description>
       </element>
 
       <element name="relative" type="bool" default="true" required="0">
-        <description>If set to true, the position of the camera is relative to the model reference frame.</description>
+        <description>If set to true, the position of the camera is relative to the model reference frame, which means that its position relatively to the model will not changed. Otherwise, the position of the camera is relative to the world reference frame, which means that its position relatively to the world will not changed. This parameter is only used if static is set to true.</description>
       </element>
 
       <element name="distance" type="double" default="8.0" required="0">
-        <description>If static is set to false, the distance between camera and model in meters.</description>
+        <description>The distance between camera and model in meters. This parameter is only used if static is set to false.</description>
       </element>
 
       <element name="xyz" type="vector3" default="-5.0 0.0 3.0" required="0">
-        <description>If static is set to true, the position of the camera reference frame. If relative is set to true, the position is relative to the model reference frame, otherwise it represents world coordinates.</description>
+        <description>The position of the camera reference frame. This parameter is only used if static is set to true. If relative is set to true, the position is relative to the model reference frame, otherwise it represents world coordinates.</description>
       </element>
     </element>
 
