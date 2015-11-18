@@ -262,6 +262,12 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
     ElementPtr element(new Element);
 
     initFile(filename, element);
+
+    // override description for include elements
+    TiXmlElement *description = child->FirstChildElement("description");
+    if (description)
+      element->SetDescription(description->GetText());
+
     _sdf->AddElementDescription(element);
   }
 
