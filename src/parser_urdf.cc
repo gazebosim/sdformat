@@ -1617,8 +1617,8 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
   {
     if (sdfIt->first == _linkName)
     {
-      // std::cout << "============================\n";
-      // std::cout << "working on g_extensions for link ["
+      // std::cerr << "============================\n";
+      // std::cerr << "working on g_extensions for link ["
       //           << sdfIt->first << "]\n";
       // if _elem already has a surface element, use it
       TiXmlNode *surface = _elem->FirstChild("surface");
@@ -1643,13 +1643,13 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
 
         std::string sdfCollisionName(_elem->Attribute("name"));
 
-        // std::cout << "----------------------------\n";
-        // std::cout << "blob belongs to [" << _linkName
+        // std::cerr << "----------------------------\n";
+        // std::cerr << "blob belongs to [" << _linkName
         //           << "] with old parent LinkName [" << (*ge)->oldLinkName
         //           << "]\n";
-        // std::cout << "_elem sdf collision name [" << sdfCollisionName
+        // std::cerr << "_elem sdf collision name [" << sdfCollisionName
         //           << "]\n";
-        // std::cout << "----------------------------\n";
+        // std::cerr << "----------------------------\n";
 
         std::string lumpCollisionName = std::string("_lump::") +
           (*ge)->oldLinkName + g_collisionExt;
@@ -1689,13 +1689,13 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
               // find elements and assign pointers if they exist
               // for mu1, mu2, minDepth, maxVel, fdir1, kp, kd
               // otherwise, they are allocated by 'new' below.
-              // std::cout << ">>>>> working on extension blob: ["
+              // std::cerr << ">>>>> working on extension blob: ["
               //           << (*blob)->Value() << "]\n";
 
               // print for debug
               std::ostringstream origStream;
               origStream << *(*blob)->Clone();
-              // std::cout << "collision extension ["
+              // std::cerr << "collision extension ["
               //           << origStream.str() << "]\n";
 
               if (strcmp((*blob)->Value(), "surface") == 0)
@@ -1711,7 +1711,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
                   // and it's done.
                   _elem->LinkEndChild((*blob)->Clone());
                   surface = _elem->LastChild("surface");
-                  // std::cout << " --- surface created "
+                  // std::cerr << " --- surface created "
                   //           <<  (void*)surface << "\n";
                 }
                 else
@@ -1721,7 +1721,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
                   _elem->RemoveChild(surface);
                   _elem->LinkEndChild((*blob)->Clone());
                   surface = _elem->FirstChild("surface");
-                  // std::cout << " --- surface exists, replace with blob.\n";
+                  // std::cerr << " --- surface exists, replace with blob.\n";
                 }
 
                 // Extra code for backwards compatibility, to
@@ -1934,8 +1934,8 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
   {
     if (sdfIt->first == _linkName)
     {
-      // std::cout << "============================\n";
-      // std::cout << "working on g_extensions for link ["
+      // std::cerr << "============================\n";
+      // std::cerr << "working on g_extensions for link ["
       //           << sdfIt->first << "]\n";
       // if _elem already has a material element, use it
       TiXmlNode *material = _elem->FirstChild("material");
@@ -1955,13 +1955,13 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
 
         std::string sdfVisualName(_elem->Attribute("name"));
 
-        // std::cout << "----------------------------\n";
-        // std::cout << "blob belongs to [" << _linkName
+        // std::cerr << "----------------------------\n";
+        // std::cerr << "blob belongs to [" << _linkName
         //           << "] with old parent LinkName [" << (*ge)->oldLinkName
         //           << "]\n";
-        // std::cout << "_elem sdf visual name [" << sdfVisualName
+        // std::cerr << "_elem sdf visual name [" << sdfVisualName
         //           << "]\n";
-        // std::cout << "----------------------------\n";
+        // std::cerr << "----------------------------\n";
 
         std::string lumpVisualName = std::string("_lump::") +
           (*ge)->oldLinkName + g_visualExt;
@@ -1999,13 +1999,13 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
               // find elements and assign pointers if they exist
               // for mu1, mu2, minDepth, maxVel, fdir1, kp, kd
               // otherwise, they are allocated by 'new' below.
-              // std::cout << ">>>>> working on extension blob: ["
+              // std::cerr << ">>>>> working on extension blob: ["
               //           << (*blob)->Value() << "]\n";
 
               // print for debug
               // std::ostringstream origStream;
               // origStream << *(*blob)->Clone();
-              // std::cout << "visual extension ["
+              // std::cerr << "visual extension ["
               //           << origStream.str() << "]\n";
 
               if (strcmp((*blob)->Value(), "material") == 0)
@@ -2021,7 +2021,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
                   // and it's done.
                   _elem->LinkEndChild((*blob)->Clone());
                   material = _elem->LastChild("material");
-                  // std::cout << " --- material created "
+                  // std::cerr << " --- material created "
                   //           <<  (void*)material << "\n";
                 }
                 else
@@ -2031,7 +2031,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
                   _elem->RemoveChild(material);
                   _elem->LinkEndChild((*blob)->Clone());
                   material = _elem->FirstChild("material");
-                  // std::cout << " --- material exists, replace with blob.\n";
+                  // std::cerr << " --- material exists, replace with blob.\n";
                 }
 
                 // Extra code for backwards compatibility, to
@@ -2044,7 +2044,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
               }
               else
               {
-                // std::cout << "***** working on extension blob: ["
+                // std::cerr << "***** working on extension blob: ["
                 //           << (*blob)->Value() << "]\n";
                 // If the blob is not a <material>, we don't have
                 // to worry about backwards compatibility.
@@ -3308,7 +3308,7 @@ void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
   // begin create geometry node, skip if no collision specified
   TiXmlElement *sdfCollision = new TiXmlElement("collision");
 
-  // std::cout << "CreateCollision link [" << _link->name
+  // std::cerr << "CreateCollision link [" << _link->name
   //           << "] old [" << _oldLinkName
   //           << "]\n";
   // set its name, if lumped, add original link name
@@ -3320,7 +3320,7 @@ void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
     sdfCollision->SetAttribute("name", _link->name
         + std::string("_lump::") + _oldLinkName);
 
-  // std::cout << "collision [" << sdfCollision->Attribute("name") << "]\n";
+  // std::cerr << "collision [" << sdfCollision->Attribute("name") << "]\n";
 
   // set transform
   double pose[6];
