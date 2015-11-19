@@ -47,7 +47,7 @@ bool g_reduceFixedJoints;
 bool g_enforceLimits;
 std::string g_collisionExt = "_collision";
 std::string g_visualExt = "_visual";
-std::string g_lumpPrefix = "fixed_joint_lump__";
+std::string g_lumpPrefix = "_fixed_joint_lump__";
 urdf::Pose g_initialRobotPose;
 bool g_initialRobotPoseValid = false;
 std::set<std::string> g_fixedJointsNotReduced;
