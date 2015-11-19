@@ -91,10 +91,10 @@ SDFExtension::SDFExtension(const SDFExtension &_ge)
   this->isKd = _ge.isKd;
   this->selfCollide = _ge.selfCollide;
   this->isLaserRetro = _ge.isLaserRetro;
-  this->isStopKp = _ge.isStopKp;
-  this->isStopKd = _ge.isStopKd;
   this->isSpringReference = _ge.isSpringReference;
   this->isSpringStiffness = _ge.isSpringStiffness;
+  this->isStopKp = _ge.isStopKp;
+  this->isStopKd = _ge.isStopKd;
   this->isStopCfm = _ge.isStopCfm;
   this->isStopErp = _ge.isStopErp;
   this->isInitialJointPosition = _ge.isInitialJointPosition;
@@ -116,10 +116,10 @@ SDFExtension::SDFExtension(const SDFExtension &_ge)
   this->kp = _ge.kp;
   this->kd = _ge.kd;
   this->laserRetro = _ge.laserRetro;
-  this->stopKp = _ge.stopKp;
-  this->stopKd = _ge.stopKd;
   this->springReference = _ge.springReference;
   this->springStiffness = _ge.springStiffness;
+  this->stopKp = _ge.stopKp;
+  this->stopKd = _ge.stopKd;
   this->stopCfm = _ge.stopCfm;
   this->stopErp = _ge.stopErp;
   this->initialJointPosition = _ge.initialJointPosition;
