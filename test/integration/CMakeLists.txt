@@ -14,6 +14,7 @@ set(tests
   plugin_bool.cc
   provide_feedback.cc
   urdf_joint_parameters.cc
+  urdf_gazebo_extensions.cc
 )
 
 if (PYTHONINTERP_FOUND AND PY_PSUTIL)
