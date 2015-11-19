@@ -1,0 +1,57 @@
+<robot name="lumping_test">
+  <!-- test if base_link is empty, lumping still works well -->
+  <link name="base_link"/>
+  <link name="child_link_1">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1.0" />
+      <inertia ixx="0.001" ixy="0.000" ixz="0.000" iyy="0.001" iyz="0.000" izz="0.001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.03" />
+      </geometry>
+      <material name="">
+        <color rgba="0.1 0.1 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.03" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="fixed_joint_1" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="child_link_1" />
+  </joint>
+  <gazebo reference="child_link_1">
+    <minDepth>0.007</minDepth>
+    <mu1>0.7</mu1>
+    <collision>
+      <max_contacts>177</max_contacts>
+      <surface>
+        <contact>
+          <ode/>
+        </contact>
+        <friction>
+          <ode>
+            <mu2>0.71</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    <visual>
+      <material>
+        <ambient>0 1 0 1</ambient>
+      </material>
+    </visual>
+    <material>
+      script_uri_71_name
+    </material>
+  </gazebo>
+</robot>
+
