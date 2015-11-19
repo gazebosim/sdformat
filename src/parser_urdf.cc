@@ -47,6 +47,7 @@ bool g_reduceFixedJoints;
 bool g_enforceLimits;
 std::string g_collisionExt = "_collision";
 std::string g_visualExt = "_visual";
+std::string g_lumpPrefix = "fixed_joint_lump__";
 urdf::Pose g_initialRobotPose;
 bool g_initialRobotPoseValid = false;
 std::set<std::string> g_fixedJointsNotReduced;
@@ -937,8 +938,8 @@ void ReduceVisualsToParent(UrdfLinkPtr _link)
   // from another descendant link connected by a fixed joint.
   //
   // Algorithm for generating new name (or group name) is:
-  //   original name + "_lump::"+original link name (urdf 0.3.x)
-  //   original group name + "_lump::"+original link name (urdf 0.2.x)
+  //   original name + g_lumpPrefix+original link name (urdf 0.3.x)
+  //   original group name + g_lumpPrefix+original link name (urdf 0.2.x)
   // The purpose is to track where this visual came from
   // (original parent link name before lumping/reducing).
 #ifndef URDF_GE_0P3
@@ -947,7 +948,7 @@ void ReduceVisualsToParent(UrdfLinkPtr _link)
       visualsIt = _link->visual_groups.begin();
       visualsIt != _link->visual_groups.end(); ++visualsIt)
   {
-    if (visualsIt->first.find(std::string("lump::")) == 0)
+    if (visualsIt->first.find(g_lumpPrefix) == 0)
     {
       // it's a previously lumped mesh, re-lump under same _groupName
       std::string lumpGroupName = visualsIt->first;
@@ -969,7 +970,7 @@ void ReduceVisualsToParent(UrdfLinkPtr _link)
     else
     {
       // default and any other groups meshes
-      std::string lumpGroupName = std::string("lump::")+_link->name;
+      std::string lumpGroupName = g_lumpPrefix+_link->name;
       sdfdbg << "adding modified lump group name [" << lumpGroupName
              << "] to link [" << _link->getParent()->name << "].\n";
       for (std::vector<UrdfVisualPtr>::iterator
@@ -993,7 +994,7 @@ void ReduceVisualsToParent(UrdfLinkPtr _link)
   {
     // 20151116: changelog for pull request #235
     std::string newVisualName;
-    std::size_t lumpIndex = (*visualIt)->name.find(std::string("lump::"));
+    std::size_t lumpIndex = (*visualIt)->name.find(g_lumpPrefix);
     if (lumpIndex != std::string::npos)
     {
       newVisualName = (*visualIt)->name;
@@ -1044,8 +1045,8 @@ void ReduceCollisionsToParent(UrdfLinkPtr _link)
   // from another descendant link connected by a fixed joint.
   //
   // Algorithm for generating new name (or group name) is:
-  //   original name + "_lump::"+original link name (urdf 0.3.x)
-  //   original group name + "_lump::"+original link name (urdf 0.2.x)
+  //   original name + g_lumpPrefix+original link name (urdf 0.3.x)
+  //   original group name + g_lumpPrefix+original link name (urdf 0.2.x)
   // The purpose is to track where this collision came from
   // (original parent link name before lumping/reducing).
 #ifndef URDF_GE_0P3
@@ -1054,7 +1055,7 @@ void ReduceCollisionsToParent(UrdfLinkPtr _link)
       collisionsIt = _link->collision_groups.begin();
       collisionsIt != _link->collision_groups.end(); ++collisionsIt)
   {
-    if (collisionsIt->first.find(std::string("lump::")) == 0)
+    if (collisionsIt->first.find(g_lumpPrefix) == 0)
     {
       // if it's a previously lumped mesh, relump under same _groupName
       std::string lumpGroupName = collisionsIt->first;
@@ -1079,7 +1080,7 @@ void ReduceCollisionsToParent(UrdfLinkPtr _link)
     else
     {
       // default and any other group meshes
-      std::string lumpGroupName = std::string("lump::")+_link->name;
+      std::string lumpGroupName = g_lumpPrefix+_link->name;
       sdfdbg << "lumping collision [" << collisionsIt->first
              << "] for link [" << _link->name
              << "] to parent [" << _link->getParent()->name
@@ -1108,7 +1109,7 @@ void ReduceCollisionsToParent(UrdfLinkPtr _link)
   {
     std::string newCollisionName;
     std::size_t lumpIndex =
-      (*collisionIt)->name.find(std::string("lump::"));
+      (*collisionIt)->name.find(g_lumpPrefix);
     if (lumpIndex != std::string::npos)
     {
       newCollisionName = (*collisionIt)->name;
@@ -1651,7 +1652,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
         //           << "]\n";
         // std::cerr << "----------------------------\n";
 
-        std::string lumpCollisionName = std::string("_lump::") +
+        std::string lumpCollisionName = g_lumpPrefix +
           (*ge)->oldLinkName + g_collisionExt;
 
         bool wasReduced = (_linkName == (*ge)->oldLinkName);
@@ -1660,7 +1661,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
         bool collisionNameContainsLumpedLinkname =
           sdfCollisionName.find(lumpCollisionName) != std::string::npos;
         bool collisionNameContainsLumpedRef =
-          sdfCollisionName.find("lump::") != std::string::npos;
+          sdfCollisionName.find(g_lumpPrefix) != std::string::npos;
 
         if (!collisionNameContainsLinkname)
         {
@@ -1669,9 +1670,9 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
         }
 
         // if the collision _elem was not reduced,
-        // its name should not have "lump::" in it.
+        // its name should not have g_lumpPrefix in it.
         // otherwise, its name should have
-        // "lump::[original link name before reduction]".
+        // "g_lumpPrefix+[original link name before reduction]".
         if ((wasReduced && !collisionNameContainsLumpedRef) ||
             (!wasReduced && collisionNameContainsLumpedLinkname))
         {
@@ -1963,7 +1964,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
         //           << "]\n";
         // std::cerr << "----------------------------\n";
 
-        std::string lumpVisualName = std::string("_lump::") +
+        std::string lumpVisualName = g_lumpPrefix +
           (*ge)->oldLinkName + g_visualExt;
 
         bool wasReduced = (_linkName == (*ge)->oldLinkName);
@@ -1972,16 +1973,16 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
         bool visualNameContainsLumpedLinkname =
           sdfVisualName.find(lumpVisualName) != std::string::npos;
         bool visualNameContainsLumpedRef =
-          sdfVisualName.find("lump::") != std::string::npos;
+          sdfVisualName.find(g_lumpPrefix) != std::string::npos;
 
         if (!visualNameContainsLinkname)
           sdferr << "visual name does not contain link name,"
                  << " file an issue.\n";
 
         // if the visual _elem was not reduced,
-        // its name should not have "lump::" in it.
+        // its name should not have g_lumpPrefix in it.
         // otherwise, its name should have
-        // "lump::[original link name before reduction]".
+        // "g_lumpPrefix+[original link name before reduction]".
         if ((wasReduced && !visualNameContainsLumpedRef) ||
             (!wasReduced && visualNameContainsLumpedLinkname))
         {
@@ -2934,9 +2935,9 @@ void CreateCollisions(TiXmlElement* _elem,
         // only 1 default mesh
         ++defaultMeshCount;
       }
-      else if (collisionsIt->first.find(std::string("lump::")) == 0)
+      else if (collisionsIt->first.find(g_lumpPrefix) == 0)
       {
-        // if collision name starts with "lump::", pass through
+        // if collision name starts with g_lumpPrefix, pass through
         //   original parent link name
         sdfdbg << "creating lump collision [" << collisionsIt->first
                << "] for link [" << _link->name << "].\n";
@@ -3056,9 +3057,9 @@ void CreateVisuals(TiXmlElement* _elem,
         // only 1 default mesh
         ++defaultMeshCount;
       }
-      else if (visualsIt->first.find(std::string("lump::")) == 0)
+      else if (visualsIt->first.find(g_lumpPrefix) == 0)
       {
-        // if visual name starts with "lump::", pass through
+        // if visual name starts with g_lumpPrefix, pass through
         //   original parent link name
         sdfdbg << "creating lump visual [" << visualsIt->first
                << "] for link [" << _link->name << "].\n";
@@ -3318,7 +3319,7 @@ void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
     sdfCollision->SetAttribute("name", _oldLinkName);
   else
     sdfCollision->SetAttribute("name", _link->name
-        + std::string("_lump::") + _oldLinkName);
+        + g_lumpPrefix + _oldLinkName);
 
   // std::cerr << "collision [" << sdfCollision->Attribute("name") << "]\n";
 
@@ -3360,7 +3361,7 @@ void CreateVisual(TiXmlElement *_elem, ConstUrdfLinkPtr _link,
     sdfVisual->SetAttribute("name", _oldLinkName);
   else
     sdfVisual->SetAttribute("name", _link->name
-        + std::string("_lump::") + _oldLinkName);
+        + g_lumpPrefix + _oldLinkName);
 
   // add the visualisation transfrom
   double pose[6];

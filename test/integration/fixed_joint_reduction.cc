@@ -139,15 +139,15 @@ void FixedJointReductionCollisionVisualExtension(
          col = col->GetNextElement("collision"))
     {
       std::string colName = col->Get<std::string>("name");
-      if (colName == "base_link_lump::child_link_1_collision_1")
+      if (colName == "base_link_fixed_joint_lump__child_link_1_collision_1")
       {
         urdf_child_link_1_col = col;
       }
-      else if (colName == "base_link_lump::child_link_1a_collision_3")
+      else if (colName == "base_link_fixed_joint_lump__child_link_1a_collision_3")
       {
         urdf_child_link_1a_col = col;
       }
-      else if (colName == "base_link_lump::child_link_2_collision_2")
+      else if (colName == "base_link_fixed_joint_lump__child_link_2_collision_2")
       {
         urdf_child_link_2_col = col;
       }
@@ -157,15 +157,15 @@ void FixedJointReductionCollisionVisualExtension(
          vis = vis->GetNextElement("visual"))
     {
       std::string visName = vis->Get<std::string>("name");
-      if (visName == "base_link_lump::child_link_1_visual_1")
+      if (visName == "base_link_fixed_joint_lump__child_link_1_visual_1")
       {
         urdf_child_link_1_vis = vis;
       }
-      else if (visName == "base_link_lump::child_link_1a_visual_3")
+      else if (visName == "base_link_fixed_joint_lump__child_link_1a_visual_3")
       {
         urdf_child_link_1a_vis = vis;
       }
-      else if (visName == "base_link_lump::child_link_2_visual_2")
+      else if (visName == "base_link_fixed_joint_lump__child_link_2_visual_2")
       {
         urdf_child_link_2_vis = vis;
       }
@@ -186,15 +186,15 @@ void FixedJointReductionCollisionVisualExtension(
          col = col->GetNextElement("collision"))
     {
       std::string colName = col->Get<std::string>("name");
-      if (colName == "base_link_lump::child_link_1_collision_1")
+      if (colName == "base_link_fixed_joint_lump__child_link_1_collision_1")
       {
         sdf_child_link_1_col = col;
       }
-      else if (colName == "base_link_lump::child_link_1a_collision_3")
+      else if (colName == "base_link_fixed_joint_lump__child_link_1a_collision_3")
       {
         sdf_child_link_1a_col = col;
       }
-      else if (colName == "base_link_lump::child_link_2_collision_2")
+      else if (colName == "base_link_fixed_joint_lump__child_link_2_collision_2")
       {
         sdf_child_link_2_col = col;
       }
@@ -204,15 +204,15 @@ void FixedJointReductionCollisionVisualExtension(
          vis = vis->GetNextElement("visual"))
     {
       std::string visName = vis->Get<std::string>("name");
-      if (visName == "base_link_lump::child_link_1_visual_1")
+      if (visName == "base_link_fixed_joint_lump__child_link_1_visual_1")
       {
         sdf_child_link_1_vis = vis;
       }
-      else if (visName == "base_link_lump::child_link_1a_visual_3")
+      else if (visName == "base_link_fixed_joint_lump__child_link_1a_visual_3")
       {
         sdf_child_link_1a_vis = vis;
       }
-      else if (visName == "base_link_lump::child_link_2_visual_2")
+      else if (visName == "base_link_fixed_joint_lump__child_link_2_visual_2")
       {
         sdf_child_link_2_vis = vis;
       }
@@ -220,11 +220,11 @@ void FixedJointReductionCollisionVisualExtension(
     }
   }
   // child_link_1
-  //   <collision name='base_link_lump::child_link_1_collision_1'>
+  //   <collision name='base_link_fixed_joint_lump__child_link_1_collision_1'>
   //     <minDepth>0.007</minDepth>
   //     <mu1>0.7</mu1>
   //     <mu2>0.71</mu2>
-  //   <visual name='base_link_lump::child_link_1_visual_1'>
+  //   <visual name='base_link_fixed_joint_lump__child_link_1_visual_1'>
   //     <ambient>0 1 0 1</ambient>
   //     <script><name>script_uri_71_name</name></script>
   EXPECT_EQ(urdf_child_link_1_col->Get<int>("max_contacts"), 177);
@@ -267,11 +267,11 @@ void FixedJointReductionCollisionVisualExtension(
             Get<sdf::Color>("ambient"));
 
   // child_link_1a
-  //   <collision name='base_link_lump::child_link_1a_collision_3'>
+  //   <collision name='base_link_fixed_joint_lump__child_link_1a_collision_3'>
   //     <maxContacts>166</maxContacts>
   //     <mu1>0.6</mu1>
   //     <mu2>0.61</mu2>
-  //  <visual name='base_link_lump::child_link_1a_visual_3'>
+  //  <visual name='base_link_fixed_joint_lump__child_link_1a_visual_3'>
   //    <material>
   //      <script>
   //        <uri>__default__</uri>
@@ -317,10 +317,10 @@ void FixedJointReductionCollisionVisualExtension(
             Get<sdf::Color>("ambient"));
 
   // child_link_2
-  //   <collision name='base_link_lump::child_link_2_collision_2'>
+  //   <collision name='base_link_fixed_joint_lump__child_link_2_collision_2'>
   //     <mu1>0.5</mu1>
   //     <mu2>0.51</mu2>
-  //   <visual name='base_link_lump::child_link_2_visual_2'>
+  //   <visual name='base_link_fixed_joint_lump__child_link_2_visual_2'>
   //     <uri>script_uri_51</uri>
   //     <name>script_name_51</name>
   // unassigne max_contacts defaut is 10
@@ -393,7 +393,7 @@ void FixedJointReductionCollisionVisualExtensionEmptyRoot(
       std::string colName = col->Get<std::string>("name");
       // note that if there is only one child visual, no _1 is appended
       // compare this with FixedJointReductionCollisionVisualExtension test
-      if (colName == "base_link_lump::child_link_1_collision")
+      if (colName == "base_link_fixed_joint_lump__child_link_1_collision")
       {
         urdf_child_link_1_col = col;
       }
@@ -405,7 +405,7 @@ void FixedJointReductionCollisionVisualExtensionEmptyRoot(
       std::string visName = vis->Get<std::string>("name");
       // note that if there is only one child visual, no _1 is appended
       // compare this with FixedJointReductionCollisionVisualExtension test
-      if (visName == "base_link_lump::child_link_1_visual")
+      if (visName == "base_link_fixed_joint_lump__child_link_1_visual")
       {
         urdf_child_link_1_vis = vis;
       }
@@ -424,7 +424,7 @@ void FixedJointReductionCollisionVisualExtensionEmptyRoot(
       std::string colName = col->Get<std::string>("name");
       // note that if there is only one child visual, no _1 is appended
       // compare this with FixedJointReductionCollisionVisualExtension test
-      if (colName == "base_link_lump::child_link_1_collision")
+      if (colName == "base_link_fixed_joint_lump__child_link_1_collision")
       {
         sdf_child_link_1_col = col;
       }
@@ -436,7 +436,7 @@ void FixedJointReductionCollisionVisualExtensionEmptyRoot(
       std::string visName = vis->Get<std::string>("name");
       // note that if there is only one child visual, no _1 is appended
       // compare this with FixedJointReductionCollisionVisualExtension test
-      if (visName == "base_link_lump::child_link_1_visual")
+      if (visName == "base_link_fixed_joint_lump__child_link_1_visual")
       {
         sdf_child_link_1_vis = vis;
       }
@@ -444,11 +444,11 @@ void FixedJointReductionCollisionVisualExtensionEmptyRoot(
     }
   }
   // child_link_1
-  //   <collision name='base_link_lump::child_link_1_collision_1'>
+  //   <collision name='base_link_fixed_joint_lump__child_link_1_collision_1'>
   //     <minDepth>0.007</minDepth>
   //     <mu1>0.7</mu1>
   //     <mu2>0.71</mu2>
-  //   <visual name='base_link_lump::child_link_1_visual_1'>
+  //   <visual name='base_link_fixed_joint_lump__child_link_1_visual_1'>
   //     <ambient>0 1 0 1</ambient>
   //     <script><name>script_uri_71_name</name></script>
   EXPECT_EQ(urdf_child_link_1_col->Get<int>("max_contacts"), 177);

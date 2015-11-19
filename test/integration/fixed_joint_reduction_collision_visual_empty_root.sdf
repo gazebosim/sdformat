@@ -14,7 +14,7 @@
           <izz>0.001</izz>
         </inertia>
       </inertial>
-      <collision name='base_link_lump::child_link_1_collision'>
+      <collision name='base_link_fixed_joint_lump__child_link_1_collision'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -36,7 +36,7 @@
           </friction>
         </surface>
       </collision>
-      <visual name='base_link_lump::child_link_1_visual'>
+      <visual name='base_link_fixed_joint_lump__child_link_1_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
