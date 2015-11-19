@@ -27,10 +27,6 @@
     <description>Name of the child link</description>
   </element> <!-- End Child -->
 
-  <element name="pose"  type="pose" default="0 0 0 0 0 0" required="0">
-    <description>Pose offset from child link frame to joint frame (expressed in child link frame).</description>
-  </element>
-
   <element name="gearbox_ratio" type="double" default="1.0" required="0">
     <description>Parameter for gearbox joints.  Given theta_1 and theta_2 defined in description for gearbox_reference_body, theta_2 = -gearbox_ratio * theta_1.</description>
   </element>
@@ -230,5 +226,7 @@
     </element>
   </element> <!-- End Physics -->
 
+  <include filename="frame.sdf" required="*"/>
+  <include filename="pose.sdf" required="0"/>
   <include filename="sensor.sdf" required="*"/>
 </element> <!-- End Joint -->

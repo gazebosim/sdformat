@@ -9,6 +9,7 @@ set (sdfs
   collision.sdf
   contact.sdf
   cylinder_shape.sdf
+  frame.sdf
   forcetorque.sdf
   geometry.sdf
   gps.sdf
@@ -35,6 +36,7 @@ set (sdfs
   plugin.sdf
   polyline_shape.sdf
   population.sdf
+  pose.sdf
   projector.sdf
   ray.sdf
   rfidtag.sdf

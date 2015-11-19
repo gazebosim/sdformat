@@ -25,8 +25,7 @@
     <description>True to make the audio source loop playback.</description>
   </element>
 
-  <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
-    <description>A position and orientation in the parent coordinate frame for the audio source. Position(x,y,z) and rotation (roll, pitch yaw) in the parent coordinate frame.</description>
-  </element>
+  <include filename="frame.sdf" required="*"/>
+  <include filename="pose.sdf" required="0"/>
 
 </element>

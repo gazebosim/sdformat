@@ -8,11 +8,6 @@
     <description>Texture name</description>
   </element>
 
-  <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
-    <description>Pose of the projector</description>
-  </element>
-
-
   <element name="fov" type="double" default="0.785" required="0">
     <description>Field of view</description>
   </element>
@@ -27,6 +22,8 @@
     <description>far clip distance</description>
   </element>
 
+  <include filename="frame.sdf" required="*"/>
+  <include filename="pose.sdf" required="0"/>
 
   <include filename="plugin.sdf" required="*"/>
 </element>

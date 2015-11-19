@@ -6,7 +6,6 @@
     <description>Name of the light</description>
   </attribute>
 
-  <element name="pose" type="pose" default="0 0 0 0 0 0" required="1">
-    <description>Pose of the light</description>
-  </element>
+  <include filename="frame.sdf" required="*"/>
+  <include filename="pose.sdf" required="0"/>
 </element> <!-- End Light -->

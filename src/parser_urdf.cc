@@ -312,12 +312,12 @@ std::string Vector32Str(const urdf::Vector3 _vector)
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Check and add collision to parent link
-/// \param[in] _parent_link destination for _collision
+/// \param[in] _parentLink destination for _collision
 /// \param[in] _name urdfdom 0.3+: urdf collision group name with lumped
 ///            collision info (see ReduceCollisionsToParent).
 ///            urdfdom 0.2: collision name with lumped
 ///            collision info (see ReduceCollisionsToParent).
-/// \param[in] _collision move this collision to _parent_link
+/// \param[in] _collision move this collision to _parentLink
 ////////////////////////////////////////////////////////////////
 // IMPORTANT NOTE: URDF_GE_OP3
 // IMPORTANT NOTE: on change from urdfdom_headers 0.2.x to 0.3.x
@@ -339,19 +339,20 @@ std::string Vector32Str(const urdf::Vector3 _vector)
 //   - Visual::group_name renamed to Visual::name
 //   - Collision::group_name renamed to Collision::name
 ////////////////////////////////////////////////////////////////
-void ReduceCollisionToParent(UrdfLinkPtr _parent_link,
+void ReduceCollisionToParent(UrdfLinkPtr _parentLink,
     const std::string &_name,
     UrdfCollisionPtr _collision)
 {
 #ifndef URDF_GE_0P3
-  cols = _link->getCollisions(_groupName);
+  boost::shared_ptr<std::vector<UrdfCollisionPtr> > cols;
+  cols = _parentLink->getCollisions(_name);
 
   if (!cols)
   {
     // group does not exist, create one and add to map
     cols.reset(new std::vector<UrdfCollisionPtr>);
     // new group name, create add vector to map and add Collision to the vector
-    _link->collision_groups.insert(make_pair(_groupName, cols));
+    _parentLink->collision_groups.insert(make_pair(_name, cols));
   }
 
   // group exists, add Collision to the vector in the map
@@ -359,42 +360,42 @@ void ReduceCollisionToParent(UrdfLinkPtr _parent_link,
     find(cols->begin(), cols->end(), _collision);
   if (colIt != cols->end())
     sdfwarn << "attempted to add collision to link ["
-      << _link->name
+      << _parentLink->name
       << "], but it already exists under group ["
-      << _groupName << "]\n";
+      << _name << "]\n";
   else
     cols->push_back(_collision);
 #else
   // added a check to see if _collision already exist in
-  // _parent_link::collision_array if not, add it.
+  // _parentLink::collision_array if not, add it.
   _collision->name = _name;
   std::vector<UrdfCollisionPtr>::iterator collisionIt =
-    find(_parent_link->collision_array.begin(),
-         _parent_link->collision_array.end(),
+    find(_parentLink->collision_array.begin(),
+         _parentLink->collision_array.end(),
          _collision);
-  if (collisionIt != _parent_link->collision_array.end())
+  if (collisionIt != _parentLink->collision_array.end())
   {
     sdfwarn << "attempted to add collision [" << _collision->name
             << "] to link ["
-            << _parent_link->name
+            << _parentLink->name
             << "], but it already exists in collision_array under name ["
             << (*collisionIt)->name << "]\n";
   }
   else
   {
-    _parent_link->collision_array.push_back(_collision);
+    _parentLink->collision_array.push_back(_collision);
   }
 #endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Check and add visual to parent link
-/// \param[in] _parent_link destination for _visual
+/// \param[in] _parentLink destination for _visual
 /// \param[in] _name urdfdom 0.3+: urdf visual group name with lumped
 ///            visual info (see ReduceVisualsToParent).
 ///            urdfdom 0.2: visual name with lumped
 ///            visual info (see ReduceVisualsToParent).
-/// \param[in] _visual move this visual to _parent_link
+/// \param[in] _visual move this visual to _parentLink
 ////////////////////////////////////////////////////////////////
 // IMPORTANT NOTE: URDF_GE_OP3
 // IMPORTANT NOTE: on change from urdfdom_headers 0.2.x to 0.3.x
@@ -416,12 +417,13 @@ void ReduceCollisionToParent(UrdfLinkPtr _parent_link,
 //   - Visual::group_name renamed to Visual::name
 //   - Collision::group_name renamed to Collision::name
 ////////////////////////////////////////////////////////////////
-void ReduceVisualToParent(UrdfLinkPtr _parent_link,
+void ReduceVisualToParent(UrdfLinkPtr _parentLink,
     const std::string &_name,
     UrdfVisualPtr _visual)
 {
 #ifndef URDF_GE_0P3
-  viss = _link->getVisuals(_groupName);
+  boost::shared_ptr<std::vector<UrdfVisualPtr> > viss;
+  viss = _parentLink->getVisuals(_name);
 
   if (!viss)
   {
@@ -429,9 +431,9 @@ void ReduceVisualToParent(UrdfLinkPtr _parent_link,
     viss.reset(new std::vector<UrdfVisualPtr>);
     // new group name, create vector, add vector to map and
     //   add Visual to the vector
-    _link->visual_groups.insert(make_pair(_groupName, viss));
+    _parentLink->visual_groups.insert(make_pair(_name, viss));
     sdfdbg << "successfully added a new visual group name ["
-          << _groupName << "]\n";
+          << _name << "]\n";
   }
 
   // group exists, add Visual to the vector in the map if it's not there
@@ -439,30 +441,30 @@ void ReduceVisualToParent(UrdfLinkPtr _parent_link,
     = find(viss->begin(), viss->end(), _visual);
   if (visIt != viss->end())
     sdfwarn << "attempted to add visual to link ["
-      << _link->name
+      << _parentLink->name
       << "], but it already exists under group ["
-      << _groupName << "]\n";
+      << _name << "]\n";
   else
     viss->push_back(_visual);
 #else
   // added a check to see if _visual already exist in
-  // _parent_link::visual_array if not, add it.
+  // _parentLink::visual_array if not, add it.
   _visual->name = _name;
   std::vector<UrdfVisualPtr>::iterator visualIt =
-    find(_parent_link->visual_array.begin(),
-         _parent_link->visual_array.end(),
+    find(_parentLink->visual_array.begin(),
+         _parentLink->visual_array.end(),
          _visual);
-  if (visualIt != _parent_link->visual_array.end())
+  if (visualIt != _parentLink->visual_array.end())
   {
     sdfwarn << "attempted to add visual [" << _visual->name
       << "] to link ["
-      << _parent_link->name
+      << _parentLink->name
       << "], but it already exists in visual_array under name ["
       << (*visualIt)->name << "]\n";
   }
   else
   {
-    _parent_link->visual_array.push_back(_visual);
+    _parentLink->visual_array.push_back(_visual);
   }
 #endif
 }
