@@ -39,14 +39,12 @@
     <description>If true, the sensor is visualized in the GUI</description>
   </element>
 
-  <element name="pose"  type="pose" default="0 0 0 0 0 0" required="0">
-    <description>This is the pose of the sensor, relative to the parent (link or joint) reference frame.</description>
-  </element>
-
   <element name="topic" type="string" default="__default__" required="0">
     <description>Name of the topic on which data is published. This is necessary for visualization</description>
   </element>
 
+  <include filename="frame.sdf" required="*"/>
+  <include filename="pose.sdf" required="0"/>
   <include filename="plugin.sdf" required="*"/>
   <include filename="altimeter.sdf" required="0"/>
   <include filename="camera.sdf" required="0"/>
