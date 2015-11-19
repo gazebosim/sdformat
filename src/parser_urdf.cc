@@ -325,11 +325,11 @@ std::string Vector32Str(const urdf::Vector3 _vector)
 // In urdfdom_headers 0.2.x, there are group names for
 // visuals and collisions in Link class:
 //   std::map<std::string,
-//     boost::shared_ptr<std::vector<boost::shared_ptr<Visual> > > 
+//     boost::shared_ptr<std::vector<boost::shared_ptr<Visual> > >
 //     > visual_groups;
 //   std::map<std::string,
-//     boost::shared_ptr<std::vector<boost::shared_ptr<Collision> > > 
-//     > collision_groups; 
+//     boost::shared_ptr<std::vector<boost::shared_ptr<Collision> > >
+//     > collision_groups;
 // and we have Visual::group_name and
 //             Collision::group_name
 // In urdfdom_headers 0.3.x,
@@ -403,11 +403,11 @@ void ReduceCollisionToParent(UrdfLinkPtr _parentLink,
 // In urdfdom_headers 0.2.x, there are group names for
 // visuals and collisions in Link class:
 //   std::map<std::string,
-//     boost::shared_ptr<std::vector<boost::shared_ptr<Visual> > > 
+//     boost::shared_ptr<std::vector<boost::shared_ptr<Visual> > >
 //     > visual_groups;
 //   std::map<std::string,
-//     boost::shared_ptr<std::vector<boost::shared_ptr<Collision> > > 
-//     > collision_groups; 
+//     boost::shared_ptr<std::vector<boost::shared_ptr<Collision> > >
+//     > collision_groups;
 // and we have Visual::group_name and
 //             Collision::group_name
 // In urdfdom_headers 0.3.x,
@@ -1495,14 +1495,12 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       else if (childElem->ValueStr() == "springReference")
       {
         sdf->isSpringReference = true;
-        sdf->springReference = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->springReference = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "springStiffness")
       {
         sdf->isSpringStiffness = true;
-        sdf->springStiffness = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->springStiffness = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "stopCfm")
       {
