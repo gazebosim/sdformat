@@ -61,8 +61,10 @@ namespace sdf
     /// be moved.
     /// \param[in] _moveElem A 'convert' element that describes the move
     /// operation.
+    /// \param[in] _copy True to copy the element
     private: static void Move(TiXmlElement *_elem,
-                              TiXmlElement *_moveElem);
+                              TiXmlElement *_moveElem,
+                              const bool _copy);
 
     /// \brief Add an element or attribute to an element.
     /// \param[in] _elem The element to receive the value.
@@ -70,6 +72,8 @@ namespace sdf
     /// operation.
     private: static void Add(TiXmlElement *_elem,
                              TiXmlElement *_addElem);
+
+    private: static void Remove(TiXmlElement *_elem, TiXmlElement *_moveElem);
 
     private: static const char *GetValue(const char *_valueElem,
                                          const char *_valueAttr,
