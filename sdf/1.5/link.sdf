@@ -18,10 +18,6 @@
     <description>If true, the link is kinematic only</description>
   </element>
 
-  <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
-    <description>This is the pose of the link reference frame, relative to the model reference frame.</description>
-  </element>
-
   <element name="must_be_base_link" type="bool" default="false" required="0">
     <description>If true, the link will have 6DOF and be a direct child of world.</description>
   </element>
@@ -36,6 +32,8 @@
     </element>
   </element> <!-- End velocity decay -->
 
+  <include filename="frame.sdf" required="*"/>
+  <include filename="pose.sdf" required="0"/>
   <include filename="inertial.sdf" required="0"/>
   <include filename="collision.sdf" required="*"/>
   <include filename="visual.sdf" required="*"/>

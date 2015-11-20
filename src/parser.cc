@@ -262,6 +262,12 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
     ElementPtr element(new Element);
 
     initFile(filename, element);
+
+    // override description for include elements
+    TiXmlElement *description = child->FirstChildElement("description");
+    if (description)
+      element->SetDescription(description->GetText());
+
     _sdf->AddElementDescription(element);
   }
 
@@ -691,11 +697,17 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
                 elemXml->FirstChildElement("name")->GetText());
         }
 
-        if (elemXml->FirstChildElement("pose"))
+        TiXmlElement *poseElemXml = elemXml->FirstChildElement("pose");
+        if (poseElemXml)
         {
-          includeSDF->Root()->GetElement("model")->GetElement(
-              "pose")->GetValue()->SetFromString(
-                elemXml->FirstChildElement("pose")->GetText());
+          sdf::ElementPtr poseElem =
+              includeSDF->Root()->GetElement("model")->GetElement("pose");
+
+          poseElem->GetValue()->SetFromString(poseElemXml->GetText());
+
+          const char *frame = poseElemXml->Attribute("frame");
+          if (frame)
+            poseElem->GetAttribute("frame")->SetFromString(frame);
         }
 
         if (elemXml->FirstChildElement("static"))

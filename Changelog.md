@@ -1,19 +1,52 @@
 ## SDFormat 3.0
-     
-### SDFormat 3.1.1 (2015-08-03)
 
-1. Fix tinyxml linking error
-     * [Pull request #209](https://bitbucket.org/osrf/sdformat/pull-request/209)
+### SDFormat 3.x.x (201x-xx-xx)
 
-1. Added lens element to camera SDF
-     * [Pull request 215](https://bitbucket.org/osrf/sdformat/pull-request/215)
-1. Added torsional friction to SDF
-     * [Pull request 211](https://bitbucket.org/osrf/sdformat/pull-request/211)
-     * [Pull request 217](https://bitbucket.org/osrf/sdformat/pull-request/217)
+1. Support frame specification in SDF
+     * [Pull request 237](https://bitbucket.org/osrf/sdformat/pull-request/237)
 
-1. Added support for nested models
-     * [Pull request 221](https://bitbucket.org/osrf/sdformat/pull-request/221)
-     * [Pull request 223](https://bitbucket.org/osrf/sdformat/pull-request/223)
+### SDFormat 3.6.0 (2015-10-27)
+
+1. Add light state
+    * [Pull request 227](https://bitbucket.org/osrf/sdformat/pull-request/227)
+1. redo pull request #222 for sdf3 branch
+    * [Pull request 232](https://bitbucket.org/osrf/sdformat/pull-request/232)
+1. Fix links in API documentation
+    * [Pull request 231](https://bitbucket.org/osrf/sdformat/pull-request/231)
+
+### SDFormat 3.5.0 (2015-10-07)
+
+1. Camera lens description (Replaces #213)
+    * [Pull request 215](https://bitbucket.org/osrf/sdformat/pull-request/215)
+1. Fix shared pointer reference loop in Element and memory leak (#104)
+    * [Pull request 230](https://bitbucket.org/osrf/sdformat/pull-request/230)
+
+### SDFormat 3.4.0 (2015-10-05)
+
+1. Support nested model states
+    * [Pull request 223](https://bitbucket.org/osrf/sdformat/pull-request/223)
+1. Cleaner way to set SDF_PATH for tests
+    * [Pull request 226](https://bitbucket.org/osrf/sdformat/pull-request/226)
+
+### SDFormat 3.3.0 (2015-09-15)
+
+1. Windows Boost linking errors
+    * [Pull request 206](https://bitbucket.org/osrf/sdformat/pull-request/206)
+1. Nested SDF -> sdf3
+    * [Pull request 221](https://bitbucket.org/osrf/sdformat/pull-request/221)
+1. Pointer types
+    * [Pull request 218](https://bitbucket.org/osrf/sdformat/pull-request/218)
+1. Torsional friction default surface radius not infinity
+    * [Pull request 217](https://bitbucket.org/osrf/sdformat/pull-request/217)
+
+### SDFormat 3.2.2 (2015-08-24)
+
+1. Added battery element (contribution from Olivier Crave)
+     * [Pull request #204](https://bitbucket.org/osrf/sdformat/pull-request/204)
+1. Torsional friction backport
+     * [Pull request #211](https://bitbucket.org/osrf/sdformat/pull-request/211)
+1. Allow Visual Studio 2015
+     * [Pull request #208](https://bitbucket.org/osrf/sdformat/pull-request/208)
 
 ### SDFormat 3.1.1 (2015-08-03)
 
