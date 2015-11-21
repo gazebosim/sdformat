@@ -326,11 +326,6 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   const char *toElemStr = toConvertElem->Attribute("element");
   const char *toAttrStr = toConvertElem->Attribute("attribute");
 
-  std::cout << "\n";
-  std::cout << "Move/copy [" << _copy << "]\n";
-  std::cout << "From[" << fromElemStr << "]\n";
-  std::cout << "To[" << toElemStr << "]\n";
-
   // tokenize 'from' and 'to' strs
   std::string fromStr = "";
   if (fromElemStr)
@@ -346,7 +341,6 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   std::vector<std::string> toTokens;
   boost::algorithm::split_regex(fromTokens, fromStr, boost::regex("::"));
   boost::algorithm::split_regex(toTokens, toStr, boost::regex("::"));
-
 
   if (fromTokens.empty())
   {
@@ -371,11 +365,9 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     }
   }
 
-
   const char *fromName = fromTokens[fromTokens.size()-1].c_str();
   const char *value = NULL;
 
-  std::cout << "FromName[" << fromName << "]\n";
 
   unsigned int newDirIndex = 0;
   // get the new element/attribute name
@@ -397,12 +389,9 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   // elements
   if (!childElem)
   {
-    std::cout << "NewDirIndex[" << newDirIndex  << "]\n";
-    std::cout << "ToTokens.size[" << toTokens.size()  << "]\n";
-
-    while (newDirIndex < toTokens.size())
+    int offset = toElemStr != NULL && toAttrStr != NULL ? 0 : 1;
+    while (newDirIndex < (toTokens.size()-offset))
     {
-      std::cout << "ToToken I[" << newDirIndex << "][" << toTokens[newDirIndex] << "]\n";
       TiXmlElement *newElem = new TiXmlElement(toTokens[newDirIndex]);
       toElem->LinkEndChild(newElem);
       toElem = newElem;
@@ -414,16 +403,8 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   // be specified in the sdf.
   if (fromElemStr)
   {
-    std::cout << "HERE\n";
-    std::cout << "FromElem[" << fromElem->ValueStr() << "]\n";
-
     TiXmlElement *moveFrom =
         fromElem->FirstChildElement(fromName);
-
-    /*TiXmlElement *moveTo = new TiXmlElement(toName);
-    TiXmlText *text = new TiXmlText(valueStr);
-    moveTo->LinkEndChild(text);
-    */
 
     if (toElemStr && !toAttrStr)
     {
@@ -435,10 +416,7 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     {
       value = GetValue(fromName, NULL, fromElem);
       if (!value)
-      {
-        std::cerr << "Invalid value\n";
         return;
-      }
       std::string valueStr = value;
 
       toElem->SetAttribute(toAttrStr, valueStr);
@@ -449,17 +427,24 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   }
   else if (fromAttrStr)
   {
-    std::cout << "No HERE\n";
     value = GetValue(NULL, fromName, fromElem);
 
     if (!value)
-    {
-      std::cerr << "Invalid value\n";
       return;
-    }
 
     std::string valueStr = value;
-    toElem->SetAttribute(toName, valueStr);
+
+    if (toElemStr)
+    {
+      TiXmlElement *moveTo = new TiXmlElement(toName);
+      TiXmlText *text = new TiXmlText(valueStr);
+      moveTo->LinkEndChild(text);
+      toElem->LinkEndChild(moveTo);
+    }
+    else if (toAttrStr)
+    {
+      toElem->SetAttribute(toName, valueStr);
+    }
 
     if (!_copy && fromAttrStr)
       fromElem->RemoveAttribute(fromName);
