@@ -90,14 +90,14 @@ TEST(ConverterIntegration, IMU_15_to_16)
   TiXmlElement *linAccElem = angVelElem->NextSiblingElement();
   EXPECT_EQ(linAccElem->ValueStr(), "linear_acceleration");
 
-  std::array<char, 3> axis{'x', 'y', 'z'};
+  std::array<char, 3> axis = {'x', 'y', 'z'};
 
   TiXmlElement *angVelAxisElem = angVelElem->FirstChildElement();
   TiXmlElement *linAccAxisElem = linAccElem->FirstChildElement();
 
   // Iterate over <x>, <y>, and <z> elements under <angular_velocity> and
   // <linear_acceleration>
-  for (auto const &a : axis )
+  for (auto const &a : axis)
   {
     EXPECT_EQ(angVelAxisElem->Value()[0], a);
     EXPECT_EQ(linAccAxisElem->Value()[0], a);

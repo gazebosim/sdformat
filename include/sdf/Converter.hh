@@ -73,7 +73,10 @@ namespace sdf
     private: static void Add(TiXmlElement *_elem,
                              TiXmlElement *_addElem);
 
-    private: static void Remove(TiXmlElement *_elem, TiXmlElement *_moveElem);
+    /// \brief Remove an element.
+    /// \param[in] _elem The element that will has the _removeElem child.
+    /// \param[in] _removeElem The element to remove.
+    private: static void Remove(TiXmlElement *_elem, TiXmlElement *_removeElem);
 
     private: static const char *GetValue(const char *_valueElem,
                                          const char *_valueAttr,

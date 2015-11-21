@@ -270,12 +270,12 @@ void Converter::Add(TiXmlElement *_elem, TiXmlElement *_addElem)
 }
 
 /////////////////////////////////////////////////
-void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_moveElem)
+void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
-  SDF_ASSERT(_moveElem != NULL, "Move element is NULL");
+  SDF_ASSERT(_removeElem != NULL, "Move element is NULL");
 
-  const char *fromElemStr = _moveElem->Attribute("element");
+  const char *fromElemStr = _removeElem->Attribute("element");
 
   // tokenize 'from' and 'to' strs
   std::string fromStr = "";
