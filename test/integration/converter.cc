@@ -23,8 +23,11 @@
 const std::string CONVERT_DOC =
   std::string(PROJECT_SOURCE_PATH) + "/sdf/1.6/1_5.convert";
 
+/////////////////////////////////////////////////
+/// Test conversion of imu in 1.5 to 1.6
 TEST(ConverterIntegration, IMU_15_to_16)
 {
+  // The imu noise in 1.5 format
   std::string xmlString = R"(
 <?xml version="1.0" ?>
 <sdf version="1.5">
@@ -58,10 +61,12 @@ TEST(ConverterIntegration, IMU_15_to_16)
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
+  // Convert
   TiXmlDocument convertXmlDoc;
   convertXmlDoc.LoadFile(CONVERT_DOC);
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
+  // Check some basic elements
   TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
   EXPECT_EQ(convertedElem->ValueStr(), "sdf");
   convertedElem = convertedElem->FirstChildElement();
@@ -73,12 +78,15 @@ TEST(ConverterIntegration, IMU_15_to_16)
   convertedElem = convertedElem->FirstChildElement();
   EXPECT_EQ(convertedElem->ValueStr(), "sensor");
 
+  // Get the imu
   TiXmlElement *imuElem = convertedElem->FirstChildElement();
   EXPECT_EQ(imuElem->ValueStr(), "imu");
 
+  // Get the angular_velocity
   TiXmlElement *angVelElem = imuElem->FirstChildElement();
   EXPECT_EQ(angVelElem->ValueStr(), "angular_velocity");
 
+  // Get the linear_acceleration
   TiXmlElement *linAccElem = angVelElem->NextSiblingElement();
   EXPECT_EQ(linAccElem->ValueStr(), "linear_acceleration");
 
@@ -86,6 +94,9 @@ TEST(ConverterIntegration, IMU_15_to_16)
 
   TiXmlElement *angVelAxisElem = angVelElem->FirstChildElement();
   TiXmlElement *linAccAxisElem = linAccElem->FirstChildElement();
+
+  // Iterate over <x>, <y>, and <z> elements under <angular_velocity> and
+  // <linear_acceleration>
   for (auto const &a : axis )
   {
     EXPECT_EQ(angVelAxisElem->Value()[0], a);
