@@ -21,8 +21,20 @@
       <description>Set the type of projection for the camera. Valid values are "perspective" and "orthographic".</description>
     </element>
 
-    <element name="follow_model" required="0">
-      <description>Use this tag to have the user camera follow a model.</description>
+    <element name="track_visual" required="0">
+      <description></description>
+
+      <element name="name" type="string" default="__default__" required="1">
+        <description></description>
+      </element>
+
+      <element name="min_dist" type="double" default="0" required="0">
+        <description></description>
+      </element>
+
+      <element name="max_dist" type="double" default="0" required="0">
+        <description></description>
+      </element>
 
       <element name="static" type="bool" default="false" required="0">
         <description>If set to true, the position of the camera is fixed relatively to the model or to the world, depending on the value of the relative element. Otherwise, the position of the camera may vary but the distance between the camera and the model will depend on the value of the distance element. In any case, the camera will always follow the model by changing its orientation.</description>
@@ -39,21 +51,9 @@
       <element name="xyz" type="vector3" default="-5.0 0.0 3.0" required="0">
         <description>The position of the camera's reference frame. This parameter is only used if static is set to true. If relative is set to true, the position is relative to the model reference frame, otherwise it represents world coordinates.</description>
       </element>
-    </element>
 
-    <element name="track_visual" required="0">
-      <description></description>
-
-      <element name="name" type="string" default="__default__" required="1">
-        <description></description>
-      </element>
-
-      <element name="min_dist" type="double" default="0" required="0">
-        <description></description>
-      </element>
-
-      <element name="max_dist" type="double" default="0" required="0">
-        <description></description>
+      <element name="inherit_yaw" type="bool" default="true" required="0">
+        <description>If set to true, the camera will inherit the yaw rotation of the tracked model. This parameter is only used if static and relative are set to true.</description>
       </element>
 
     </element>
