@@ -74,7 +74,7 @@ namespace sdf
                              TiXmlElement *_addElem);
 
     /// \brief Remove an element.
-    /// \param[in] _elem The element that will has the _removeElem child.
+    /// \param[in] _elem The element that has the _removeElem child.
     /// \param[in] _removeElem The element to remove.
     private: static void Remove(TiXmlElement *_elem, TiXmlElement *_removeElem);
 
