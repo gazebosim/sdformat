@@ -109,7 +109,7 @@
               <to element="linear_acceleration::z::noise::mean"/>
             </move>
   
-            <!-- Copy <accel><stddev> into <angular_velocity> -->
+            <!-- Copy <accel><stddev> into <linear_velocity> -->
             <copy>
               <from element="noise::accel::stddev"/>
               <to element="linear_acceleration::x::noise::stddev"/>
@@ -268,7 +268,7 @@
             <to element="linear_acceleration::z::noise::mean"/>
           </move>
 
-          <!-- Copy <accel><stddev> into <angular_velocity> -->
+          <!-- Copy <accel><stddev> into <linear_acceleration> -->
           <copy>
             <from element="noise::accel::stddev"/>
             <to element="linear_acceleration::x::noise::stddev"/>
