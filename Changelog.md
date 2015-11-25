@@ -1,9 +1,16 @@
 ## SDFormat 3.0
 
-### SDFormat 3.x.x (201x-xx-xx)
+### SDFormat 3.7.0 (2015-11-20)
+
+1. Add spring pass through for sdf3
+     * [Design document](https://bitbucket.org/osrf/gazebo_design/pull-requests/23)
+     * [Pull request 242](https://bitbucket.org/osrf/sdformat/pull-request/242)
 
 1. Support frame specification in SDF
      * [Pull request 237](https://bitbucket.org/osrf/sdformat/pull-request/237)
+
+1. Remove boost from SDFExtension
+     * [Pull request 229](https://bitbucket.org/osrf/sdformat/pull-request/229)
 
 ### SDFormat 3.6.0 (2015-10-27)
 

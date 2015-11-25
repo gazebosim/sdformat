@@ -15,6 +15,7 @@ set(tests
   plugin_attribute.cc
   plugin_bool.cc
   provide_feedback.cc
+  urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
 )
 

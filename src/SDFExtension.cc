@@ -38,6 +38,8 @@ SDFExtension::SDFExtension()
   this->isKd = false;
   this->selfCollide = false;
   this->isLaserRetro = false;
+  this->isSpringReference = false;
+  this->isSpringStiffness = false;
   this->isStopCfm = false;
   this->isStopErp = false;
   this->isStopKp = false;
@@ -57,6 +59,8 @@ SDFExtension::SDFExtension()
   this->kp = 100000000;
   this->kd = 1;
   this->laserRetro = 101;
+  this->springReference = 0;
+  this->springStiffness = 0;
   this->stopCfm = 0;
   this->stopErp = 0.1;
   this->stopKp = 100000000;
@@ -87,6 +91,8 @@ SDFExtension::SDFExtension(const SDFExtension &_ge)
   this->isKd = _ge.isKd;
   this->selfCollide = _ge.selfCollide;
   this->isLaserRetro = _ge.isLaserRetro;
+  this->isSpringReference = _ge.isSpringReference;
+  this->isSpringStiffness = _ge.isSpringStiffness;
   this->isStopKp = _ge.isStopKp;
   this->isStopKd = _ge.isStopKd;
   this->isStopCfm = _ge.isStopCfm;
@@ -110,6 +116,8 @@ SDFExtension::SDFExtension(const SDFExtension &_ge)
   this->kp = _ge.kp;
   this->kd = _ge.kd;
   this->laserRetro = _ge.laserRetro;
+  this->springReference = _ge.springReference;
+  this->springStiffness = _ge.springStiffness;
   this->stopKp = _ge.stopKp;
   this->stopKd = _ge.stopKd;
   this->stopCfm = _ge.stopCfm;
