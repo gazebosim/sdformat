@@ -105,12 +105,12 @@ void Element::AddValue(const std::string &_type,
 }
 
 /////////////////////////////////////////////////
-boost::shared_ptr<Param> Element::CreateParam(const std::string &_key,
+ParamPtr Element::CreateParam(const std::string &_key,
     const std::string &_type, const std::string &_defaultValue, bool _required,
     const std::string &_description)
 {
-  return boost::shared_ptr<Param>(
-        new Param(_key, _type, _defaultValue, _required, _description));
+  return ParamPtr(
+      new Param(_key, _type, _defaultValue, _required, _description));
 }
 
 /////////////////////////////////////////////////
@@ -231,6 +231,7 @@ void Element::PrintDescription(const std::string &_prefix)
 
   if (this->GetCopyChildren())
     std::cout << _prefix << "  <element copy_data ='true' required ='*'/>\n";
+
 
   std::string refSDF = this->ReferenceSDF();
   if (!refSDF.empty())

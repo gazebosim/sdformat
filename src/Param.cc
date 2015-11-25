@@ -17,6 +17,7 @@
 
 #include <math.h>
 #include <locale.h>
+#include <boost/algorithm/string.hpp>
 #include "sdf/Param.hh"
 
 using namespace sdf;
@@ -385,7 +386,7 @@ bool Param::SetFromString(const std::string &_value)
 
   std::string tmp(str);
   std::string lowerTmp(str);
-  boost::to_lower(lowerTmp);
+  std::transform(lowerTmp.begin(), lowerTmp.end(), lowerTmp.begin(), ::tolower);
 
   // "true" and "false" doesn't work properly
   if (lowerTmp == "true")

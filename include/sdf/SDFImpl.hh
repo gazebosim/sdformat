@@ -18,7 +18,8 @@
 #define _SDFIMPL_HH_
 
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
+#include <functional>
 
 #include "sdf/Param.hh"
 #include "sdf/Element.hh"
@@ -41,8 +42,8 @@ namespace sdf
   class SDFORMAT_VISIBLE SDF;
 
   /// \def SDFPtr
-  /// \brief boost shared pointer to SDF
-  typedef boost::shared_ptr<SDF> SDFPtr;
+  /// \brief Shared pointer to SDF
+  typedef std::shared_ptr<SDF> SDFPtr;
 
   /// \addtogroup sdf
   /// \{
@@ -70,7 +71,7 @@ namespace sdf
   /// and empty string if the file was not found in the callback.
   /// \param[in] _cb The callback function.
   SDFORMAT_VISIBLE
-  void setFindCallback(boost::function<std::string (const std::string &)> _cb);
+  void setFindCallback(std::function<std::string (const std::string &)> _cb);
 
   /// \brief Base SDF class
   class SDFORMAT_VISIBLE SDF
