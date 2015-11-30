@@ -1,0 +1,45 @@
+<!-- gui -->
+<element name="gui" required="0">
+  <attribute name="fullscreen" type="bool" default="false" required="0">
+    <description></description>
+  </attribute>
+
+  <include filename="plugin.sdf" required="*"/>
+
+  <element name="camera" required="0">
+    <description> </description>
+
+    <attribute name="name" type="string" default="user_camera" required="1">
+      <description></description>
+    </attribute>
+
+    <element name="view_controller" type="string" default="orbit" required="0">
+      <description></description>
+    </element>
+
+    <element name="projection_type" type="string" default="perspective" required="0">
+      <description>Set the type of projection for the camera. Valid values are "perspective" and "orthographic".</description>
+    </element>
+
+    <element name="track_visual" required="0">
+      <description></description>
+
+      <element name="name" type="string" default="__default__" required="1">
+        <description></description>
+      </element>
+
+      <element name="min_dist" type="double" default="0" required="0">
+        <description></description>
+      </element>
+
+      <element name="max_dist" type="double" default="0" required="0">
+        <description></description>
+      </element>
+
+    </element>
+
+    <include filename="frame.sdf" required="*"/>
+    <include filename="pose.sdf" required="0"/>
+
+  </element>
+</element>

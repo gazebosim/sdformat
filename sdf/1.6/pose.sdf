@@ -1,0 +1,9 @@
+<!-- Pose -->
+<element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
+  <description>A position(x,y,z) and orientation(roll, pitch yaw) with respect to the specified frame.</description>
+
+  <attribute name="frame" type="string" default="" required="*">
+    <description>Name of frame which the pose is defined relative to.</description>
+  </attribute>
+
+</element> <!-- End Pose -->
