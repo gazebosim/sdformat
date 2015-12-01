@@ -108,6 +108,9 @@ TEST(ConverterIntegration, IMU_15_to_16)
     EXPECT_EQ(angVelAxisNoiseElem->ValueStr(), "noise");
     EXPECT_EQ(linAccAxisNoiseElem->ValueStr(), "noise");
 
+    EXPECT_STREQ(angVelAxisNoiseElem->Attribute("type"), "gaussian");
+    EXPECT_STREQ(linAccAxisNoiseElem->Attribute("type"), "gaussian");
+
     EXPECT_STREQ(angVelAxisNoiseElem->FirstChildElement("mean")->GetText(),
         "0");
     EXPECT_STREQ(linAccAxisNoiseElem->FirstChildElement("mean")->GetText(),
