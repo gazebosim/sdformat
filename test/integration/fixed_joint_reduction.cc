@@ -143,11 +143,13 @@ void FixedJointReductionCollisionVisualExtension(
       {
         urdf_child_link_1_col = col;
       }
-      else if (colName == "base_link_fixed_joint_lump__child_link_1a_collision_3")
+      else if (colName ==
+              "base_link_fixed_joint_lump__child_link_1a_collision_3")
       {
         urdf_child_link_1a_col = col;
       }
-      else if (colName == "base_link_fixed_joint_lump__child_link_2_collision_2")
+      else if (colName ==
+              "base_link_fixed_joint_lump__child_link_2_collision_2")
       {
         urdf_child_link_2_col = col;
       }
@@ -190,11 +192,13 @@ void FixedJointReductionCollisionVisualExtension(
       {
         sdf_child_link_1_col = col;
       }
-      else if (colName == "base_link_fixed_joint_lump__child_link_1a_collision_3")
+      else if (colName ==
+              "base_link_fixed_joint_lump__child_link_1a_collision_3")
       {
         sdf_child_link_1a_col = col;
       }
-      else if (colName == "base_link_fixed_joint_lump__child_link_2_collision_2")
+      else if (colName ==
+              "base_link_fixed_joint_lump__child_link_2_collision_2")
       {
         sdf_child_link_2_col = col;
       }
