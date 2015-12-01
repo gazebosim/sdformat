@@ -41,7 +41,7 @@
       </element>
 
       <element name="relative" type="bool" default="true" required="0">
-        <description>If set to true, the position of the camera is relative to the model reference frame, which means that its position relative to the model will not changed. Otherwise, the position of the camera is relative to the world reference frame, which means that its position relative to the world will not changed. This parameter is only used if static is set to true.</description>
+        <description>If set to true, the position of the camera is relative to the model reference frame, which means that its position relative to the model will not change. Otherwise, the position of the camera is relative to the world reference frame, which means that its position relative to the world will not change. This parameter is only used if static is set to true.</description>
       </element>
 
       <element name="distance" type="double" default="8.0" required="0">
