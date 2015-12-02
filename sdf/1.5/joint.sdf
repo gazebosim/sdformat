@@ -19,20 +19,91 @@
     </description>
   </attribute>
 
+  <!--
+  <element name="gear1" type="string" default="__default__" required="0">
+    <description>Name of the first gear</description>
+    <element name="joint" type="string" default="__default__" required="0">
+      <description>Name of the joint attaching this gear link to another body</description>
+    </element>
+    <element name="link" type="string" default="__default__" required="0">
+      <description>Name of the gear link, this has to be either parent or child link of the joint</description>
+    </element>
+    <element name="teeth_count" type="double" default="1" required="0">
+      <description>Number of teeth (per revolution) for this gear</description>
+    </element>
+  </element>
+
+  <element name="gear2" type="string" default="__default__" required="0">
+    <description>Name of the second gear</description>
+    <element name="joint" type="string" default="__default__" required="0">
+      <description>Name of the joint attaching this gear link to another body</description>
+    </element>
+    <element name="link" type="string" default="__default__" required="0">
+      <description>Name of the gear link, this has to be either parent or child link of the joint</description>
+    </element>
+    <element name="teeth_count" type="double" default="1" required="0">
+      <description>Number of teeth (per revolution) for this gear</description>
+    </element>
+  </element>
+  -->
+
   <element name="parent" type="string" default="__default__" required="1">
     <description>Name of the parent link</description>
-  </element> <!-- End Parent -->
+  </element>
 
   <element name="child" type="string" default="__default__" required="1">
     <description>Name of the child link</description>
-  </element> <!-- End Child -->
+  </element>
 
   <element name="gearbox_ratio" type="double" default="1.0" required="0">
-    <description>Parameter for gearbox joints.  Given theta_1 and theta_2 defined in description for gearbox_reference_body, theta_2 = -gearbox_ratio * theta_1.</description>
+    <description>Parameter for gearbox joints.
+                 Gearbox ratio is enforced over two joint angles.
+
+                 The assumption here is that both parent and child link are attached to the same
+                   gearbox_reference_body (link).
+
+                 First joint angle (theta_1) is the angle from the gearbox_reference_body to the parent link
+                   in the direction of the joint adjoining them. Or user can explicity use axis element to
+                   specify the joint vector.
+
+                 The second joint angle (theta_2) is the angle from the gearbox_reference_body to the child link
+                   in the direction of the joint adjoining them. Or user can explicitly use axis2 element to
+                   specify the joint vector.
+
+                 If gearbox_reference_body is not specfied, the code should look for parents to each
+                   of the child and parent links connected throught revolute joints.
+
+                 Given theta_1 and theta_2 defined in description for gearbox_reference_body,
+
+                   theta_2 = -gearbox_ratio * theta_1
+
+    </description>
   </element>
 
   <element name="gearbox_reference_body" type="string" default="__default__" required="0">
-    <description>Parameter for gearbox joints.  Gearbox ratio is enforced over two joint angles.  First joint angle (theta_1) is the angle from the gearbox_reference_body to the parent link in the direction of the axis element and the second joint angle (theta_2) is the angle from the gearbox_reference_body to the child link in the direction of the axis2 element.</description>
+    <description>
+                 Parameter for gearbox joints.
+                 Gearbox ratio is enforced over two joint angles.
+
+                 The assumption here is that both parent and child link are attached to the same
+                   gearbox_reference_body (link).
+
+                 First joint angle (theta_1) is the angle from the gearbox_reference_body to the parent link
+                   in the direction of the joint adjoining them. Or user can explicity use axis element to
+                   specify the joint vector.
+
+                 The second joint angle (theta_2) is the angle from the gearbox_reference_body to the child link
+                   in the direction of the joint adjoining them. Or user can explicitly use axis2 element to
+                   specify the joint vector.
+
+                 If gearbox_reference_body is not specfied, the code should look for parents to each
+                   of the links referenced by child and parent elements, connected through revolute joints.
+
+                 Given theta_1 and theta_2 defined in description for gearbox_reference_body,
+
+                   theta_2 = -gearbox_ratio * theta_1
+
+    </description>
   </element>
 
   <element name="thread_pitch" type="double" default="1.0" required="0">
