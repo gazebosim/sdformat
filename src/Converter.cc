@@ -298,7 +298,8 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
     fromElem = fromElem->FirstChildElement(fromTokens[i]);
     if (!fromElem)
     {
-      std::cerr << "No From element\n";
+      // Return when the tokens don't match. Don't output an error message
+      // because it spams the console.
       return;
     }
   }
@@ -360,14 +361,14 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     fromElem = fromElem->FirstChildElement(fromTokens[i]);
     if (!fromElem)
     {
-      std::cerr << "No From element\n";
+      // Return when the tokens don't match. Don't output an error message
+      // because it spams the console.
       return;
     }
   }
 
   const char *fromName = fromTokens[fromTokens.size()-1].c_str();
   const char *value = NULL;
-
 
   unsigned int newDirIndex = 0;
   // get the new element/attribute name
@@ -405,6 +406,10 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   {
     TiXmlElement *moveFrom =
         fromElem->FirstChildElement(fromName);
+
+    // No matching element, so return.
+    if (!moveFrom)
+      return;
 
     if (toElemStr && !toAttrStr)
     {

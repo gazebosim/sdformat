@@ -25,7 +25,7 @@
               <to element="angular_velocity::z::noise" attribute="type"/>
             </copy>
   
-            <!-- Copy <noise><type> to <linear_acceleration>
+            <!-- Copy <noise><type> to <linear_acceleration> -->
             <copy>
               <from element="noise::type"/>
               <to element="linear_acceleration::x::noise" attribute="type"/>
@@ -184,7 +184,7 @@
             <to element="angular_velocity::z::noise" attribute="type"/>
           </copy>
 
-          <!-- Copy <noise><type> to <linear_acceleration>
+          <!-- Copy <noise><type> to <linear_acceleration> -->
           <copy>
             <from element="noise::type"/>
             <to element="linear_acceleration::x::noise" attribute="type"/>
@@ -251,7 +251,7 @@
           </copy>
           <move>
             <from element="noise::rate::bias_stddev"/>
-             <to element="angular_velocity::z::noise::bias_stddev"/>
+            <to element="angular_velocity::z::noise::bias_stddev"/>
           </move>
 
           <!-- Copy <accel><mean> into <linear_acceleration> -->
