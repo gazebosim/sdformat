@@ -32,6 +32,10 @@
   <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
 
+  <element name="scale" type="vector3" default="1 1 1" required="0">
+    <description>Scale for the 3 dimensions of the model.</description>
+  </element>
+
   <include filename="link_state.sdf" required="*"/>
 
 </element> <!-- End Model -->
