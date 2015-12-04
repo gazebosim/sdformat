@@ -24,6 +24,7 @@ SDFExtension::SDFExtension()
 {
   this->material.clear();
   this->visual_blobs.clear();
+  this->collision_blobs.clear();
   this->setStaticFlag = false;
   this->gravity = true;
   this->isDampingFactor = false;
@@ -37,6 +38,8 @@ SDFExtension::SDFExtension()
   this->isKd = false;
   this->selfCollide = false;
   this->isLaserRetro = false;
+  this->isSpringReference = false;
+  this->isSpringStiffness = false;
   this->isStopCfm = false;
   this->isStopErp = false;
   this->isStopKp = false;
@@ -56,6 +59,8 @@ SDFExtension::SDFExtension()
   this->kp = 100000000;
   this->kd = 1;
   this->laserRetro = 101;
+  this->springReference = 0;
+  this->springStiffness = 0;
   this->stopCfm = 0;
   this->stopErp = 0.1;
   this->stopKp = 100000000;
@@ -72,6 +77,7 @@ SDFExtension::SDFExtension(const SDFExtension &_ge)
 {
   this->material = _ge.material;
   this->visual_blobs = _ge.visual_blobs;
+  this->collision_blobs = _ge.collision_blobs;
   this->setStaticFlag = _ge.setStaticFlag;
   this->gravity = _ge.gravity;
   this->isDampingFactor = _ge.isDampingFactor;
@@ -85,6 +91,8 @@ SDFExtension::SDFExtension(const SDFExtension &_ge)
   this->isKd = _ge.isKd;
   this->selfCollide = _ge.selfCollide;
   this->isLaserRetro = _ge.isLaserRetro;
+  this->isSpringReference = _ge.isSpringReference;
+  this->isSpringStiffness = _ge.isSpringStiffness;
   this->isStopKp = _ge.isStopKp;
   this->isStopKd = _ge.isStopKd;
   this->isStopCfm = _ge.isStopCfm;
@@ -108,6 +116,8 @@ SDFExtension::SDFExtension(const SDFExtension &_ge)
   this->kp = _ge.kp;
   this->kd = _ge.kd;
   this->laserRetro = _ge.laserRetro;
+  this->springReference = _ge.springReference;
+  this->springStiffness = _ge.springStiffness;
   this->stopKp = _ge.stopKp;
   this->stopKd = _ge.stopKd;
   this->stopCfm = _ge.stopCfm;

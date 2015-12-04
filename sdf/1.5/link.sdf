@@ -10,20 +10,12 @@
     <description>If true, the link is affected by gravity.</description>
   </element>
 
-  <element name="wind" type="bool" default="false" required="0">
-    <description>If true, the link is affected by the wind.</description>
-  </element>
-
   <element name="self_collide" type="bool" default="false" required="0">
     <description>If true, the link can collide with other links in the model. Two links within a model will collide if link1.self_collide OR link2.self_collide. Links connected by a joint will never collide.</description>
   </element>
 
   <element name="kinematic" type="bool" default="false" required="0">
     <description>If true, the link is kinematic only</description>
-  </element>
-
-  <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
-    <description>This is the pose of the link reference frame, relative to the model reference frame.</description>
   </element>
 
   <element name="must_be_base_link" type="bool" default="false" required="0">
@@ -40,6 +32,8 @@
     </element>
   </element> <!-- End velocity decay -->
 
+  <include filename="frame.sdf" required="*"/>
+  <include filename="pose.sdf" required="0"/>
   <include filename="inertial.sdf" required="0"/>
   <include filename="collision.sdf" required="*"/>
   <include filename="visual.sdf" required="*"/>

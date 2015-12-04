@@ -9,6 +9,7 @@ set (sdfs
   collision.sdf
   contact.sdf
   cylinder_shape.sdf
+  frame.sdf
   forcetorque.sdf
   geometry.sdf
   gps.sdf
@@ -35,6 +36,7 @@ set (sdfs
   plugin.sdf
   polyline_shape.sdf
   population.sdf
+  pose.sdf
   projector.sdf
   ray.sdf
   rfidtag.sdf
@@ -50,7 +52,6 @@ set (sdfs
   surface.sdf
   transceiver.sdf
   visual.sdf
-  wind.sdf
   world.sdf
 )
 
@@ -71,7 +72,7 @@ foreach(FIL ${sdfs})
     VERBATIM)
 endforeach()
 
-add_custom_target(schema ALL DEPENDS ${SDF_SCHEMA})
+add_custom_target(schema1_5 ALL DEPENDS ${SDF_SCHEMA})
 
 set_source_files_properties(${SDF_SCHEMA} PROPERTIES GENERATED TRUE)
 
