@@ -3,9 +3,12 @@ set(TEST_TYPE "INTEGRATION")
 set(tests
   audio.cc
   cfm_damping_implicit_spring_damper.cc
+  converter.cc
   disable_fixed_joint_reduction.cc
   fixed_joint_reduction.cc
   force_torque_sensor.cc
+  frame.cc
+  include.cc
   joint_axis_frame.cc
   locale_fix.cc
   nested_model.cc
@@ -13,6 +16,7 @@ set(tests
   plugin_attribute.cc
   plugin_bool.cc
   provide_feedback.cc
+  urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
 )
 

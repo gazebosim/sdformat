@@ -165,8 +165,24 @@ macro (sdf_build_tests)
     add_test(${BINARY_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}
       --gtest_output=xml:${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
 
-    set(_env_vars)
-    list(APPEND _env_vars "SDF_PATH=${PROJECT_SOURCE_DIR}/sdf/${SDF_PROTOCOL_VERSION}")
+    set (_env_vars)
+    set (sdf_paths)
+
+    # Get all the sdf protocol directory names
+    file(GLOB dirs RELATIVE "${PROJECT_SOURCE_DIR}/sdf"
+         "${PROJECT_SOURCE_DIR}/sdf/*")
+    list(SORT dirs)
+
+    # Add each sdf protocol to the sdf_path variable
+    foreach(dir ${dirs})
+      if (IS_DIRECTORY ${PROJECT_SOURCE_DIR}/sdf/${dir}) 
+        set(sdf_paths "${PROJECT_SOURCE_DIR}/sdf/${dir}:${sdf_paths}")
+      endif()
+    endforeach()
+
+    # Set the SDF_PATH environment variable
+    list(APPEND _env_vars "SDF_PATH=${sdf_paths}")
+
     set_tests_properties(${BINARY_NAME} PROPERTIES
       TIMEOUT 240
       ENVIRONMENT "${_env_vars}")
