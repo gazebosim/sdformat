@@ -24,7 +24,7 @@
     <element name="track_visual" required="0">
       <description></description>
 
-      <element name="name" type="string" default="__default__" required="1">
+      <element name="name" type="string" default="__default__" required="0">
         <description>Name of the tracked visual.</description>
       </element>
 
