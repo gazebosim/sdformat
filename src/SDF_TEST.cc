@@ -362,10 +362,10 @@ TEST_F(SDFUpdate, GetAny)
 {
   std::ostringstream stream;
   // Test types double, bool, string, int, vector3, color, pose
-  stream << "<sdf version='1.5'>"
+  stream << "<sdf version='1.6'>"
          << "<world name='test'>"
+         << "   <gravity> 0 0 -7.1 </gravity>"
          << "   <physics type='ode'>"
-         << "     <gravity> 0 0 -7.1 </gravity>"
          << "     <max_contacts>8</max_contacts>"
          << "     <max_step_size>0.002</max_step_size>"
          << "   </physics>"
@@ -422,8 +422,8 @@ TEST_F(SDFUpdate, GetAny)
   }
 
   {
-    EXPECT_TRUE(physicsElem->HasElement("gravity"));
-    boost::any anyValue = physicsElem->GetElement("gravity")->GetAny();
+    EXPECT_TRUE(worldElem->HasElement("gravity"));
+    boost::any anyValue = worldElem->GetElement("gravity")->GetAny();
     try
     {
       EXPECT_EQ(boost::any_cast<ignition::math::Vector3d>(anyValue),
@@ -462,8 +462,8 @@ TEST_F(SDFUpdate, GetAny)
   }
 
   {
-    EXPECT_TRUE(physicsElem->HasElement("gravity"));
-    boost::any anyValue = physicsElem->GetElement("gravity")->GetAny();
+    EXPECT_TRUE(worldElem->HasElement("gravity"));
+    boost::any anyValue = worldElem->GetElement("gravity")->GetAny();
     try
     {
       EXPECT_EQ(boost::any_cast<ignition::math::Vector3d>(anyValue),
