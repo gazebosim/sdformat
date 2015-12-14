@@ -2,12 +2,8 @@
 <element name="wind" required="1">
   <description>The wind tag specifies the type and properties of the wind.</description>
 
-  <element name="direction" type="double" default="0.0" required="0">
-    <description>Wind heading in unit of degrees. The direction is defined as north=0 and increases counterclockwise.</description>
-  </element>
-
-  <element name="magnitude" type="double" default="0.0" required="0">
-    <description>Wind magnitude in world units.</description>
+  <element name="linear_velocity" type="vector3" default="0 0 0" required="0">
+    <description>Linear velocity of the wind.</description>
   </element>
 
 </element> <!-- Wind -->
