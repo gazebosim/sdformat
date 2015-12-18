@@ -34,6 +34,25 @@
     </element>
   </element> <!-- End Clip -->
 
+  <element name="intrinsics" required="0">
+    <description>Camera intrinsic parameters</description>
+    <element name="fx" type="double" default="1400" required="1">
+      <description>X focal length (in pixels)</description>
+    </element>
+    <element name="fy" type="double" default="1400" required="1">
+      <description>Y focal length (in pixels)</description>
+    </element>
+    <element name="cx" type="double" default="640" required="1">
+      <description>X principal point (in pixels)</description>
+    </element>
+    <element name="cy" type="double" default="400" required="1">
+      <description>Y principal point (in pixels)</description>
+    </element>
+    <element name="s" type="double" default="1.0" required="1">
+      <description>XY axis skew</description>
+    </element>
+  </element> <!-- End Intrinsics -->
+
   <element name="save" required="0">
     <description>Enable or disable saving of camera frames.</description>
     <attribute name="enabled" type="bool" default="false" required="1">
