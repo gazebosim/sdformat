@@ -175,7 +175,7 @@ macro (sdf_build_tests)
 
     # Add each sdf protocol to the sdf_path variable
     foreach(dir ${dirs})
-      if (IS_DIRECTORY ${PROJECT_SOURCE_DIR}/sdf/${dir}) 
+      if (IS_DIRECTORY ${PROJECT_SOURCE_DIR}/sdf/${dir})
         set(sdf_paths "${PROJECT_SOURCE_DIR}/sdf/${dir}:${sdf_paths}")
       endif()
     endforeach()
@@ -192,6 +192,11 @@ macro (sdf_build_tests)
       # Guards against crashed and timed out tests.
       add_test(check_${BINARY_NAME} ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_test_ran.py
                ${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
+    endif()
+
+    if(SDFORMAT_RUN_VALGRIND_TESTS)
+      add_test(memcheck_${BINARY_NAME} ${VALGRIND_PROGRAM} --leak-check=full
+               --error-exitcode=1 --show-leak-kinds=all ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME})
     endif()
   endforeach()
 endmacro()
