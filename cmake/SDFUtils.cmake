@@ -194,7 +194,7 @@ macro (sdf_build_tests)
                ${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
     endif()
 
-    if(SDFORMAT_RUN_VALGRIND_TESTS)
+    if(SDFORMAT_RUN_VALGRIND_TESTS AND VALGRIND_PROGRAM)
       add_test(memcheck_${BINARY_NAME} ${VALGRIND_PROGRAM} --leak-check=full
                --error-exitcode=1 --show-leak-kinds=all ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME})
     endif()
