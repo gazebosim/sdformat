@@ -115,7 +115,7 @@ namespace sdf
                                const std::string &file,
                                unsigned int line);
 
-    private: ConsolePrivate *dataPtr;
+    private: std::unique_ptr<ConsolePrivate> dataPtr;
   };
 
   /// \internal

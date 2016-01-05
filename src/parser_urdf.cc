@@ -1694,7 +1694,8 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
 
               // print for debug
               std::ostringstream origStream;
-              origStream << *(*blob)->Clone();
+              std::unique_ptr<TiXmlNode> blobClone((*blob)->Clone());
+              origStream << *blobClone;
               // std::cerr << "collision extension ["
               //           << origStream.str() << "]\n";
 
