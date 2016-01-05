@@ -150,7 +150,7 @@ TEST(Param, HexFloat)
   EXPECT_TRUE(floatParam.SetFromString("0x01"));
   EXPECT_TRUE(floatParam.Get<float>(value));
   EXPECT_FLOAT_EQ(value, 1.0f);
- 
+
   EXPECT_TRUE(floatParam.SetFromString("0X2A"));
   EXPECT_TRUE(floatParam.Get<float>(value));
   EXPECT_FLOAT_EQ(value, 42.0f);
@@ -176,7 +176,7 @@ TEST(Param, HexDouble)
   EXPECT_TRUE(doubleParam.SetFromString("0x01"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 1.0);
- 
+
   EXPECT_TRUE(doubleParam.SetFromString("0X2A"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 42.0);

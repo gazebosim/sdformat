@@ -419,7 +419,7 @@ bool Param::SetFromString(const std::string &_value)
     else
       boost::apply_visitor(string_set(tmp), this->dataPtr->value);
   }
- 
+
   // Catch invalid argument exception from std::stoi/stoul/stod/stof
   catch(std::invalid_argument &)
   {
