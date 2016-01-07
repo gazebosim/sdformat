@@ -22,7 +22,7 @@
           </sphere>
         </geometry>
       </collision>
-      <collision name='base_link_lump::child_link_1_collision_1'>
+      <collision name='base_link_fixed_joint_lump__child_link_1_collision_1'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -44,7 +44,7 @@
           </friction>
         </surface>
       </collision>
-      <collision name='base_link_lump::child_link_2_collision_2'>
+      <collision name='base_link_fixed_joint_lump__child_link_2_collision_2'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -63,7 +63,7 @@
           </friction>
         </surface>
       </collision>
-      <collision name='base_link_lump::child_link_1a_collision_3'>
+      <collision name='base_link_fixed_joint_lump__child_link_1a_collision_3'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -91,7 +91,7 @@
           </sphere>
         </geometry>
       </visual>
-      <visual name='base_link_lump::child_link_1_visual_1'>
+      <visual name='base_link_fixed_joint_lump__child_link_1_visual_1'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -106,7 +106,7 @@
           </script>
         </material>
       </visual>
-      <visual name='base_link_lump::child_link_2_visual_2'>
+      <visual name='base_link_fixed_joint_lump__child_link_2_visual_2'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -120,7 +120,7 @@
           </script>
         </material>
       </visual>
-      <visual name='base_link_lump::child_link_1a_visual_3'>
+      <visual name='base_link_fixed_joint_lump__child_link_1a_visual_3'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
