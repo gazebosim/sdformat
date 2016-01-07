@@ -1,9 +1,0 @@
-<!-- Wind -->
-<element name="wind" required="1">
-  <description>The wind tag specifies the type and properties of the wind.</description>
-
-  <element name="linear_velocity" type="vector3" default="0 0 0" required="0">
-    <description>Linear velocity of the wind.</description>
-  </element>
-
-</element> <!-- Wind -->

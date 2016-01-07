@@ -52,7 +52,6 @@ set (sdfs
   surface.sdf
   transceiver.sdf
   visual.sdf
-  wind.sdf
   world.sdf
 )
 
