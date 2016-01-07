@@ -10,7 +10,7 @@
     <description>If true, the link is affected by gravity.</description>
   </element>
 
-  <element name="wind" type="bool" default="false" required="0">
+  <element name="enable_wind" type="bool" default="false" required="0">
     <description>If true, the link is affected by the wind.</description>
   </element>
 

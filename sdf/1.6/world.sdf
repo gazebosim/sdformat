@@ -13,6 +13,14 @@
     </element>
   </element>
 
+  <element name="wind" required="0">
+    <description>The wind tag specifies the type and properties of the wind.</description>
+
+    <element name="linear_velocity" type="vector3" default="0 0 0" required="0">
+      <description>Linear velocity of the wind.</description>
+    </element>
+  </element>
+
   <element name="include" required="*">
     <description>Include resources from a URI</description>
     <element name="uri" type="string" default="__default__" required="1">
@@ -30,11 +38,9 @@
     <include filename="pose.sdf" required="0"/>
   </element>
 
-
   <include filename="gui.sdf" required="0"/>
   <include filename="physics.sdf" required="1"/>
   <include filename="scene.sdf" required="1"/>
-  <include filename="wind.sdf" required="1"/>
   <include filename="light.sdf" required="*"/>
 
   <include filename="model.sdf" required="*"/>
