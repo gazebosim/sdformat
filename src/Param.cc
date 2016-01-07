@@ -397,40 +397,28 @@ bool Param::SetFromString(const std::string &_value)
 
   try
   {
-    // If the string is hex, try to use stoi and stoul, and then
-    // lexical cast as a last resort.
+    // Try to use stoi and stoul for integers, and
+    // stof and stod for floating point values.
+    // Use boost lexical cast as a last resort.
+    int numericBase = 10;
     if (isHex)
+        numericBase = 16;
+
+    if (this->dataPtr->typeName == "int")
+      this->dataPtr->value = std::stoi(tmp, NULL, numericBase);
+    else if (this->dataPtr->typeName == "unsigned int")
     {
-      if (this->dataPtr->typeName == "int")
-        this->dataPtr->value = std::stoi(tmp, NULL, 16);
-      else if (this->dataPtr->typeName == "unsigned int")
-      {
-        this->dataPtr->value = static_cast<unsigned int>(
-            std::stoul(tmp, NULL, 16));
-      }
-      else
-      {
-        boost::apply_visitor(string_set(tmp), this->dataPtr->value);
-      }
+      this->dataPtr->value = static_cast<unsigned int>(
+          std::stoul(tmp, NULL, numericBase));
     }
-    // Otherwise use stod, stof, and lexical cast
+    else if (this->dataPtr->typeName == "double")
+      this->dataPtr->value = std::stod(tmp);
+    else if (this->dataPtr->typeName == "float")
+      this->dataPtr->value = std::stof(tmp);
     else
-    {
-      if (this->dataPtr->typeName == "int")
-        this->dataPtr->value = std::stoi(tmp, NULL, 10);
-      else if (this->dataPtr->typeName == "unsigned int")
-      {
-        this->dataPtr->value = static_cast<unsigned int>(
-            std::stoul(tmp, NULL, 10));
-      }
-      else if (this->dataPtr->typeName == "double")
-        this->dataPtr->value = std::stod(tmp);
-      else if (this->dataPtr->typeName == "float")
-        this->dataPtr->value = std::stof(tmp);
-      else
-        boost::apply_visitor(string_set(tmp), this->dataPtr->value);
-    }
+      boost::apply_visitor(string_set(tmp), this->dataPtr->value);
   }
+
   // Catch invalid argument exception from std::stoi/stoul/stod/stof
   catch(std::invalid_argument &)
   {
