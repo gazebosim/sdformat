@@ -19,7 +19,7 @@
   </element>
 
   <element name="temperature_gradient" type="double" default="-0.0065" required="0">
-    <description>Temperature gradient at sea level in K/m.</description>
+    <description>Temperature gradient with respect to increasing altitude at sea level in units of K/m.</description>
   </element>
 
 </element> <!-- Atmosphere -->
