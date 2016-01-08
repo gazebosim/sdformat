@@ -48,7 +48,7 @@
         <description>The position of the camera's reference frame. This parameter is only used if static is set to true. If relative is set to true, the position is relative to the model reference frame, otherwise it represents world coordinates.</description>
       </element>
 
-      <element name="inherit_yaw" type="bool" default="true" required="0">
+      <element name="inherit_yaw" type="bool" default="false" required="0">
         <description>If set to true, the camera will inherit the yaw rotation of the tracked model. This parameter is only used if static and relative are set to true.</description>
       </element>
 
