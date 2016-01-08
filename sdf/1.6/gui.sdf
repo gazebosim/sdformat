@@ -25,7 +25,7 @@
       <description></description>
 
       <element name="name" type="string" default="__default__" required="0">
-        <description>Name of the tracked visual.</description>
+        <description>Name of the tracked visual. If no name is provided, the remaining settings will be applied whenever tracking is triggered in the GUI.</description>
       </element>
 
       <element name="min_dist" type="double" default="0" required="0">
