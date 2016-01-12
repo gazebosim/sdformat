@@ -25,7 +25,7 @@ release will remove the deprecated code.
 
 1. **Boost pointers and boost::function**
    + All boost pointers, boost::function in the public API have been replaced
-     by their std:: equivalents in the C++11 standard.
+     by their std:: equivalents (C++11 standard)
 
 1. **SDF IMU: noise**
    + TODO

@@ -2,6 +2,8 @@
 
 ### SDFormat 4.0.0 (2015-01-12)
 
+1. Boost pointers and boost::function in the public API have been replaced
+   by their std::equivalents (C++11 standard) 
 1. Move gravity and magnetic_field tags from physics to world
     * [Pull request 247](https://bitbucket.org/osrf/sdformat/pull-request/247)
 1. Switch lump link prefix from lump:: to lump_
