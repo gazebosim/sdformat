@@ -1,3 +1,26 @@
+## SDFormat 4.0
+
+### SDFormat 4.0.0 (2015-01-12)
+
+1. Move gravity and magnetic_field tags from physics to world
+    * [Pull request 247](https://bitbucket.org/osrf/sdformat/pull-request/247)
+1. Switch lump link prefix from lump:: to lump_
+   A contribution from Silvio Traversaro
+    * [Pull request 245](https://bitbucket.org/osrf/sdformat/pull-request/245)
+1. New <wind> element
+   A contribution from Olivier Crave
+    * [Pull request 240](https://bitbucket.org/osrf/sdformat/pull-request/240)
+1. Add scale to model state
+    * [Pull request 246](https://bitbucket.org/osrf/sdformat/pull-request/246)
+1. Use stof functions to parse hex strings as floating point params
+   A contribution from Rich Mattes
+    * [Pull request 250](https://bitbucket.org/osrf/sdformat/pull-request/250)
+1. Fix memory leaks.
+   A contribution from Silvio Traversaro
+    * [Pull request 249](https://bitbucket.org/osrf/sdformat/pull-request/249)
+1. Update SDF to version 1.6
+    * [Pull request 243](https://bitbucket.org/osrf/sdformat/pull-request/243)
+
 ## SDFormat 3.0
 
 ### SDFormat 3.7.0 (2015-11-20)
