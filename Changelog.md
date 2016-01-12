@@ -7,7 +7,6 @@
 1. Move gravity and magnetic_field tags from physics to world
     * [Pull request 247](https://bitbucket.org/osrf/sdformat/pull-request/247)
 1. Switch lump link prefix from lump:: to lump_
-   A contribution from Silvio Traversaro
     * [Pull request 245](https://bitbucket.org/osrf/sdformat/pull-request/245)
 1. New <wind> element
    A contribution from Olivier Crave
