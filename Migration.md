@@ -17,8 +17,8 @@ but with improved human-readability..
 ### Additions
 
 1. **New SDF protocol version 1.6**
-   + Details about the 1.5 to 1.6 transition are explained below in this same
-     document
+    + Details about the 1.5 to 1.6 transition are explained below in this same
+      document
 
 ### Modifications
 
