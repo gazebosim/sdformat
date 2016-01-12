@@ -63,8 +63,7 @@ but with improved human-readability.
    for sdf 1.5 and the old style was declared as deprecated.
    The old style has been removed from sdf 1.6 with the conversion script
    updating to the new style.
-
-   + [pull request 199](https://bitbucket.org/osrf/sdformat/pull-requests/199)
-   + [pull request 243](https://bitbucket.org/osrf/sdformat/pull-requests/243)
-   + [pull request 244](https://bitbucket.org/osrf/sdformat/pull-requests/244)
+    + [pull request 199](https://bitbucket.org/osrf/sdformat/pull-requests/199)
+    + [pull request 243](https://bitbucket.org/osrf/sdformat/pull-requests/243)
+    + [pull request 244](https://bitbucket.org/osrf/sdformat/pull-requests/244)
 
