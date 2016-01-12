@@ -23,27 +23,27 @@ but with improved human-readability..
 ### Modifications
 
 1. **Boost pointers and boost::function**
-   All boost pointers, boost::function in the public API have been replaced
-   by their std:: equivalents (C++11 standard)
+    + All boost pointers, boost::function in the public API have been replaced
+      by their std:: equivalents (C++11 standard)
 
 1. **`gravity` and `magnetic_field` elements are moved  from `physics` to `world`**
-   In physics element: gravity and magnetic_field tags have been moved
-   from Physics to World element.
+    + In physics element: gravity and magnetic_field tags have been moved
+      from Physics to World element.
     + [pull request 247](https://bitbucket.org/osrf/sdformat/pull-requests/247)
     + [gazebo pull request 2090](https://bitbucket.org/osrf/gazebo/pull-requests/2090)
 
 1. **New noise for IMU**
-   A new style for representing the noise properties of an `imu` was implemented
-   in [pull request 199](https://bitbucket.org/osrf/sdformat/pull-requests/199)
-   for sdf 1.5 and the old style was declared as deprecated.
-   The old style has been removed from sdf 1.6 with the conversion script
-   updating to the new style.
+    + A new style for representing the noise properties of an `imu` was implemented
+      in [pull request 199](https://bitbucket.org/osrf/sdformat/pull-requests/199)
+      for sdf 1.5 and the old style was declared as deprecated.
+      The old style has been removed from sdf 1.6 with the conversion script
+      updating to the new style.
     + [pull request 199](https://bitbucket.org/osrf/sdformat/pull-requests/199)
     + [pull request 243](https://bitbucket.org/osrf/sdformat/pull-requests/243)
     + [pull request 244](https://bitbucket.org/osrf/sdformat/pull-requests/244)
 
 1. **Lump:: prefix in link names**
-   Changed to \_fixed_joint_lump__ to avoid confusion with scoped names
+    + Changed to \_fixed_joint_lump__ to avoid confusion with scoped names
     + [Pull request 245](https://bitbucket.org/osrf/sdformat/pull-request/245)
 
 ## SDF protocol 1.5 to 1.6
