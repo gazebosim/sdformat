@@ -19,8 +19,10 @@
 1. Fix memory leaks.
    A contribution from Silvio Traversaro
     * [Pull request 249](https://bitbucket.org/osrf/sdformat/pull-request/249)
-1. Update SDF to version 1.6
+1. Update SDF to version 1.6: new style for representing the noise properties 
+   of an `imu`
     * [Pull request 243](https://bitbucket.org/osrf/sdformat/pull-request/243)
+    * [Pull request 199](https://bitbucket.org/osrf/sdformat/pull-requests/199)
 
 ## SDFormat 3.0
 
