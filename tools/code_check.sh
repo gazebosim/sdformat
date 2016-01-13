@@ -24,6 +24,7 @@ echo "*:src/parser_urdf.cc" >> $SUPPRESS
 echo "*:src/Element.cc:464" >> $SUPPRESS
 echo "*:src/Element.cc:39" >> $SUPPRESS
 echo "*:src/Element.cc:752" >> $SUPPRESS
+echo "*:test/integration/locale_fix.cc:35" >> $SUPPRESS
 
 CHECK_FILE_DIRS="./src ./include ./test/performance ./test/integration"
 
