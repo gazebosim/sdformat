@@ -29,8 +29,8 @@ echo "*:test/integration/locale_fix.cc:35" >> $SUPPRESS
 CHECK_FILE_DIRS="./src ./include ./test/performance ./test/integration"
 
 #cppcheck
-CPPCHECK_BASE="cppcheck -q"
-CPPCHECK_BASE2="cppcheck -q --suppressions-list=$SUPPRESS"
+CPPCHECK_BASE="cppcheck -q --xml-version=2"
+CPPCHECK_BASE2="cppcheck -q --xml-version=2 --suppressions-list=$SUPPRESS"
 CPPCHECK_FILES=`find $CHECK_FILE_DIRS -name "*.cc"`
 CPPCHECK_INCLUDES="-I include -I . -I src/urdf -I $builddir -I $builddir/include"
 CPPCHECK_COMMAND1="-j 4 --enable=style,performance,portability,information $CPPCHECK_FILES"
