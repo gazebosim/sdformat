@@ -9,6 +9,7 @@ set (sdfs
   collision.sdf
   contact.sdf
   cylinder_shape.sdf
+  frame.sdf
   forcetorque.sdf
   geometry.sdf
   gps.sdf
@@ -35,6 +36,7 @@ set (sdfs
   plugin.sdf
   polyline_shape.sdf
   population.sdf
+  pose.sdf
   projector.sdf
   ray.sdf
   rfidtag.sdf
@@ -70,9 +72,9 @@ foreach(FIL ${sdfs})
     VERBATIM)
 endforeach()
 
-add_custom_target(schema ALL DEPENDS ${SDF_SCHEMA})
+add_custom_target(schema1_5 ALL DEPENDS ${SDF_SCHEMA})
 
 set_source_files_properties(${SDF_SCHEMA} PROPERTIES GENERATED TRUE)
 
-install(FILES 1_4.convert ${sdfs} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.5)
-install(FILES ${SDF_SCHEMA} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.5)
+install(FILES 1_4.convert ${sdfs} DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/sdformat/1.5)
+install(FILES ${SDF_SCHEMA} DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/sdformat/1.5)

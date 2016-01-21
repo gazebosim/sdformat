@@ -15,6 +15,7 @@
  *
  */
 
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <map>
 #include <list>
@@ -41,11 +42,11 @@ typedef std::map<std::string, PathList> URIPathMap;
 
 URIPathMap g_uriPathMap;
 
-boost::function<std::string (const std::string &)> g_findFileCB;
+std::function<std::string (const std::string &)> g_findFileCB;
 
 /////////////////////////////////////////////////
 void sdf::setFindCallback(
-    boost::function<std::string (const std::string &)> _cb)
+    std::function<std::string (const std::string &)> _cb)
 {
   g_findFileCB = _cb;
 }

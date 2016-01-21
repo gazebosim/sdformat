@@ -25,9 +25,9 @@ string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 # The protocol version has nothing to do with the package version set below.
 # It represents the current version of sdformat implement by the software
-set (SDF_PROTOCOL_VERSION 1.5)
+set (SDF_PROTOCOL_VERSION 1.6)
 
-set (SDF_MAJOR_VERSION 3)
+set (SDF_MAJOR_VERSION 4)
 set (SDF_MINOR_VERSION 99)
 set (SDF_PATCH_VERSION 99+mentor2v1.0)
 

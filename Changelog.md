@@ -1,19 +1,88 @@
+## SDFormat 4.0
+
+### SDFormat 4.0.0 (2015-01-12)
+
+1. Boost pointers and boost::function in the public API have been replaced
+   by their std::equivalents (C++11 standard) 
+1. Move gravity and magnetic_field tags from physics to world
+    * [Pull request 247](https://bitbucket.org/osrf/sdformat/pull-request/247)
+1. Switch lump link prefix from lump:: to lump_
+    * [Pull request 245](https://bitbucket.org/osrf/sdformat/pull-request/245)
+1. New <wind> element.
+   A contribution from Olivier Crave
+    * [Pull request 240](https://bitbucket.org/osrf/sdformat/pull-request/240)
+1. Add scale to model state
+    * [Pull request 246](https://bitbucket.org/osrf/sdformat/pull-request/246)
+1. Use stof functions to parse hex strings as floating point params.
+   A contribution from Rich Mattes
+    * [Pull request 250](https://bitbucket.org/osrf/sdformat/pull-request/250)
+1. Fix memory leaks.
+   A contribution from Silvio Traversaro
+    * [Pull request 249](https://bitbucket.org/osrf/sdformat/pull-request/249)
+1. Update SDF to version 1.6: new style for representing the noise properties 
+   of an `imu`
+    * [Pull request 243](https://bitbucket.org/osrf/sdformat/pull-request/243)
+    * [Pull request 199](https://bitbucket.org/osrf/sdformat/pull-requests/199)
+
 ## SDFormat 3.0
      
-### SDFormat 3.1.1 (2015-08-03)
+### SDFormat 3.7.0 (2015-11-20)
 
 1. Fix tinyxml linking error
      * [Pull request #209](https://bitbucket.org/osrf/sdformat/pull-request/209)
 
-1. Added lens element to camera SDF
-     * [Pull request 215](https://bitbucket.org/osrf/sdformat/pull-request/215)
-1. Added torsional friction to SDF
-     * [Pull request 211](https://bitbucket.org/osrf/sdformat/pull-request/211)
-     * [Pull request 217](https://bitbucket.org/osrf/sdformat/pull-request/217)
+1. Add spring pass through for sdf3
+     * [Design document](https://bitbucket.org/osrf/gazebo_design/pull-requests/23)
+     * [Pull request 242](https://bitbucket.org/osrf/sdformat/pull-request/242)
 
-1. Added support for nested models
-     * [Pull request 221](https://bitbucket.org/osrf/sdformat/pull-request/221)
-     * [Pull request 223](https://bitbucket.org/osrf/sdformat/pull-request/223)
+1. Support frame specification in SDF
+     * [Pull request 237](https://bitbucket.org/osrf/sdformat/pull-request/237)
+
+1. Remove boost from SDFExtension
+     * [Pull request 229](https://bitbucket.org/osrf/sdformat/pull-request/229)
+
+### SDFormat 3.6.0 (2015-10-27)
+
+1. Add light state
+    * [Pull request 227](https://bitbucket.org/osrf/sdformat/pull-request/227)
+1. redo pull request #222 for sdf3 branch
+    * [Pull request 232](https://bitbucket.org/osrf/sdformat/pull-request/232)
+1. Fix links in API documentation
+    * [Pull request 231](https://bitbucket.org/osrf/sdformat/pull-request/231)
+
+### SDFormat 3.5.0 (2015-10-07)
+
+1. Camera lens description (Replaces #213)
+    * [Pull request 215](https://bitbucket.org/osrf/sdformat/pull-request/215)
+1. Fix shared pointer reference loop in Element and memory leak (#104)
+    * [Pull request 230](https://bitbucket.org/osrf/sdformat/pull-request/230)
+
+### SDFormat 3.4.0 (2015-10-05)
+
+1. Support nested model states
+    * [Pull request 223](https://bitbucket.org/osrf/sdformat/pull-request/223)
+1. Cleaner way to set SDF_PATH for tests
+    * [Pull request 226](https://bitbucket.org/osrf/sdformat/pull-request/226)
+
+### SDFormat 3.3.0 (2015-09-15)
+
+1. Windows Boost linking errors
+    * [Pull request 206](https://bitbucket.org/osrf/sdformat/pull-request/206)
+1. Nested SDF -> sdf3
+    * [Pull request 221](https://bitbucket.org/osrf/sdformat/pull-request/221)
+1. Pointer types
+    * [Pull request 218](https://bitbucket.org/osrf/sdformat/pull-request/218)
+1. Torsional friction default surface radius not infinity
+    * [Pull request 217](https://bitbucket.org/osrf/sdformat/pull-request/217)
+
+### SDFormat 3.2.2 (2015-08-24)
+
+1. Added battery element (contribution from Olivier Crave)
+     * [Pull request #204](https://bitbucket.org/osrf/sdformat/pull-request/204)
+1. Torsional friction backport
+     * [Pull request #211](https://bitbucket.org/osrf/sdformat/pull-request/211)
+1. Allow Visual Studio 2015
+     * [Pull request #208](https://bitbucket.org/osrf/sdformat/pull-request/208)
 
 ### SDFormat 3.1.1 (2015-08-03)
 

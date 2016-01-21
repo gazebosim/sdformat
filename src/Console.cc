@@ -36,7 +36,7 @@
 using namespace sdf;
 
 /// Static pointer to the console.
-static boost::shared_ptr<Console> myself;
+static std::shared_ptr<Console> myself;
 static std::mutex g_instance_mutex;
 
 //////////////////////////////////////////////////

@@ -6,10 +6,6 @@
     <description>Name of the model</description>
   </attribute>
 
-  <element name="pose" type="pose" default="0 0 0 0 0 0" required="1">
-    <description>Pose of the model</description>
-  </element>
-
   <element name="joint" required="*">
     <description>Joint angle</description>
 
@@ -32,6 +28,9 @@
       <description>Name of the model. </description>
     </attribute>
   </element>
+
+  <include filename="frame.sdf" required="*"/>
+  <include filename="pose.sdf" required="0"/>
 
   <include filename="link_state.sdf" required="*"/>
 
