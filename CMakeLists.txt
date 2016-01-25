@@ -253,6 +253,11 @@ else (buid_errors)
     ${LIB_INSTALL_DIR}/pkgconfig COMPONENT pkgconfig)
 
   ########################################
+  # Configure documentation uploader
+  configure_file("${CMAKE_SOURCE_DIR}/cmake/upload_doc.sh.in"
+    ${CMAKE_BINARY_DIR}/upload_doc.sh @ONLY)
+
+  ########################################
   # Make the cmake config files
   set(PKG_NAME ${PROJECT_NAME})
   set(PKG_LIBRARIES sdformat)
