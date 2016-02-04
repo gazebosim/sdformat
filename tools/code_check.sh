@@ -24,6 +24,7 @@ echo "*:src/parser_urdf.cc" >> $SUPPRESS
 echo "*:src/Element.cc:464" >> $SUPPRESS
 echo "*:src/Element.cc:39" >> $SUPPRESS
 echo "*:src/Element.cc:752" >> $SUPPRESS
+echo "*:test/integration/locale_fix.cc:35" >> $SUPPRESS
 
 CHECK_FILE_DIRS="./src ./include ./test/performance ./test/integration"
 
@@ -41,13 +42,13 @@ CPPCHECK_COMMAND2="--enable=unusedFunction $CPPCHECK_FILES"
 CPPCHECK_COMMAND3="-j 1 --enable=missingInclude --suppress=missingIncludeSystem $CPPCHECK_FILES $CPPCHECK_INCLUDES --check-config"
 if [ $xmlout -eq 1 ]; then
   # Performance, style, portability, and information
-  ($CPPCHECK_BASE --xml $CPPCHECK_COMMAND1) 2> $xmldir/cppcheck.xml
+  ($CPPCHECK_BASE --xml --xml-version=2 $CPPCHECK_COMMAND1) 2> $xmldir/cppcheck.xml
 
   # Unused function checking
-  ($CPPCHECK_BASE2 --xml $CPPCHECK_COMMAND2) 2> $xmldir/cppcheck-unused-functions.xml
+  ($CPPCHECK_BASE2 --xml --xml-version=2 $CPPCHECK_COMMAND2) 2> $xmldir/cppcheck-unused-functions.xml
 
   # Check the configuration
-  ($CPPCHECK_BASE --xml $CPPCHECK_COMMAND3) 2> $xmldir/cppcheck-configuration.xml
+  ($CPPCHECK_BASE --xml --xml-version=2 $CPPCHECK_COMMAND3) 2> $xmldir/cppcheck-configuration.xml
 else
   # Performance, style, portability, and information
   $CPPCHECK_BASE $CPPCHECK_COMMAND1 2>&1
