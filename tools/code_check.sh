@@ -14,23 +14,26 @@ else
   builddir=./build
 fi
 
-# Use a suppression file for unused function checking
+# Use a suppression file for spurious errors
 SUPPRESS=/tmp/sdf_cpp_check.suppress
-echo "*:src/SDF.cc" > $SUPPRESS
-echo "*:src/Assert.cc" >> $SUPPRESS
-echo "*:src/Console.cc" >> $SUPPRESS
-echo "*:src/parser.cc" >> $SUPPRESS
-echo "*:src/parser_urdf.cc" >> $SUPPRESS
-echo "*:src/Element.cc:464" >> $SUPPRESS
-echo "*:src/Element.cc:39" >> $SUPPRESS
-echo "*:src/Element.cc:752" >> $SUPPRESS
-echo "*:test/integration/locale_fix.cc:35" >> $SUPPRESS
+echo "*:test/integration/locale_fix.cc:35" > $SUPPRESS
+
+# Use another suppression file for unused function checking
+SUPPRESS2=/tmp/sdf_cpp_check2.suppress
+echo "*:src/SDF.cc" > $SUPPRESS2
+echo "*:src/Assert.cc" >> $SUPPRESS2
+echo "*:src/Console.cc" >> $SUPPRESS2
+echo "*:src/parser.cc" >> $SUPPRESS2
+echo "*:src/parser_urdf.cc" >> $SUPPRESS2
+echo "*:src/Element.cc:464" >> $SUPPRESS2
+echo "*:src/Element.cc:39" >> $SUPPRESS2
+echo "*:src/Element.cc:752" >> $SUPPRESS2
 
 CHECK_FILE_DIRS="./src ./include ./test/performance ./test/integration"
 
 #cppcheck
-CPPCHECK_BASE="cppcheck -q"
-CPPCHECK_BASE2="cppcheck -q --suppressions-list=$SUPPRESS"
+CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS"
+CPPCHECK_BASE2="cppcheck -q --suppressions-list=$SUPPRESS2"
 CPPCHECK_FILES=`find $CHECK_FILE_DIRS -name "*.cc"`
 CPPCHECK_INCLUDES="-I include -I . -I src/urdf -I $builddir -I $builddir/include"
 CPPCHECK_COMMAND1="-j 4 --enable=style,performance,portability,information $CPPCHECK_FILES"
