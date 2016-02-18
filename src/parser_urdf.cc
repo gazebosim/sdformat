@@ -289,8 +289,8 @@ urdf::Vector3 ParseVector3(TiXmlNode *_key, double _scale)
     {
       return ParseVector3(GetKeyValueAsString(key), _scale);
     }
+    sdferr << "key[" << _key->Value() << "] does not contain a Vector3\n";
   }
-  sdferr << "key[" << _key->Value() << "] does not contain a Vector3\n";
 
   return urdf::Vector3(0, 0, 0);
 }
