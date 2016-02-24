@@ -1,11 +1,23 @@
 <convert name="sdf">
 
+  <!-- Move <gravity> and <magnetic_field> -->
+  <convert name="world">
+    <move>
+      <from element="physics::gravity"/>
+      <to element="gravity"/>
+    </move>
+    <move>
+      <from element="physics::magnetic_field"/>
+      <to element="magnetic_field"/>
+    </move>
+  </convert>
+
   <convert name="world">
     <convert name="model">
       <convert name="link">
         <convert name="sensor">
           <convert name="imu">
-            <!-- Add <angular_velocity> and <linear_acceleration -->
+            <!-- Add <angular_velocity> and <linear_acceleration> -->
             <add element="angular_velocity"/>
             <add element="linear_acceleration"/>
   

@@ -135,3 +135,47 @@ TEST(ConverterIntegration, IMU_15_to_16)
     linAccAxisElem = linAccAxisElem->NextSiblingElement();
   }
 }
+
+/////////////////////////////////////////////////
+/// Test conversion of gravity, magnetic_field in 1.5 to 1.6
+TEST(ConverterIntegration, World_15_to_16)
+{
+  // The gravity and magnetic_field in 1.5 format
+  std::string xmlString = R"(
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default">
+    <physics type="ode">
+      <gravity>0 0 -9.8</gravity>
+      <magnetic_field>1 2 3</magnetic_field>
+    </physics>
+  </world>
+</sdf>)";
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  // Convert
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.LoadFile(CONVERT_DOC);
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // Check some basic elements
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "sdf");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "world");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "physics");
+
+  // Get the gravity
+  TiXmlElement *gravityElem = convertedElem->NextSiblingElement("gravity");
+  ASSERT_TRUE(gravityElem != NULL);
+  EXPECT_STREQ(gravityElem->GetText(), "0 0 -9.8");
+
+  // Get the magnetic_field
+  TiXmlElement *magneticFieldElem =
+    convertedElem->NextSiblingElement("magnetic_field");
+  ASSERT_TRUE(magneticFieldElem != NULL);
+  EXPECT_STREQ(magneticFieldElem->GetText(), "1 2 3");
+}

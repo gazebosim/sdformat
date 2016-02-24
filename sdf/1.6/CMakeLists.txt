@@ -1,6 +1,7 @@
 set (sdfs
   actor.sdf
   altimeter.sdf
+  atmosphere.sdf
   audio_source.sdf
   audio_sink.sdf
   battery.sdf
