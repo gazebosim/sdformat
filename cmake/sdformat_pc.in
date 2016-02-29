@@ -1,10 +1,10 @@
-prefix=@CMAKE_INSTALL_PREFIX@
+prefix="@CMAKE_INSTALL_PREFIX@"
 libdir=${prefix}/@LIB_INSTALL_DIR@
 includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 
 Name: SDF
 Description: Robot Modeling Language (SDF)
 Version: @SDF_VERSION_FULL@
-Requires:
+Requires: ignition-math@IGNITION-MATH_REQUIRED_MAJOR_VERSION@
 Libs: -L${libdir} -lsdformat
-CFlags: -I${includedir}/sdformat-@SDF_VERSION@
+CFlags: -I${includedir}/sdformat-@SDF_VERSION@ -std=c++11

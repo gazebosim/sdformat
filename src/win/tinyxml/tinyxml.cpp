@@ -643,7 +643,9 @@ int TiXmlElement::QueryIntAttribute( const char* name, int* ival ) const
 	return attrib->QueryIntValue( ival );
 }
 
+#ifndef _WIN32
 #pragma GCC diagnostic ignored "-Wshadow"
+#endif
 int TiXmlElement::QueryUnsignedAttribute( const char* name, unsigned* value ) const
 {
 	const TiXmlAttribute* node = attributeSet.Find( name );
@@ -655,7 +657,9 @@ int TiXmlElement::QueryUnsignedAttribute( const char* name, unsigned* value ) co
 	*value = (unsigned)ival;
 	return result;
 }
+#ifndef _WIN32
 #pragma GCC diagnostic pop
+#endif
 
 int TiXmlElement::QueryBoolAttribute( const char* name, bool* bval ) const
 {

@@ -5,6 +5,7 @@ set (headers
   Console.hh
   Converter.hh
   ConvertToURDF.hh
+  Element.hh
   Exception.hh
   Param.hh
   parser.hh

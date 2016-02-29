@@ -7,7 +7,7 @@ MACRO (APPEND_TO_CACHED_STRING _string _cacheDesc)
   ENDFOREACH (newItem ${ARGN})
   #STRING(STRIP ${${_string}} ${_string})
 ENDMACRO (APPEND_TO_CACHED_STRING)
-                 
+
 ################################################################################
 # APPEND_TO_CACHED_LIST (_list _cacheDesc [items...]
 # Appends items to a cached list.
@@ -93,6 +93,21 @@ endmacro()
 
 #################################################
 macro (sdf_setup_windows)
+  # Need for M_PI constant
+  add_definitions(-D_USE_MATH_DEFINES -DWINDOWS_LEAN_AND_MEAN)
+  # Suppress warnings caused by boost
+  add_definitions(/wd4512 /wd4996)
+  # Use dynamic linking for boost
+  add_definitions(-DBOOST_ALL_DYN_LINK)
+  # And force linking to MSVC dynamic runtime
+  set(CMAKE_C_FLAGS_DEBUG "/MDd ${CMAKE_C_FLAGS_DEBUG}")
+  set(CMAKE_C_FLAGS_RELEASE "/MD ${CMAKE_C_FLAGS_RELEASE}")
+  if (MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+    # Not need if proper cmake gnerator (-G "...Win64") is passed to cmake
+    # Enable as a second measeure to workaround over bug
+    # http://www.cmake.org/Bug/print_bug_page.php?bug_id=11240
+    set(CMAKE_SHARED_LINKER_FLAGS "/machine:x64")
+  endif()
 endmacro()
 
 #################################################
@@ -111,9 +126,9 @@ macro (sdf_build_tests)
     if (UNIX)
       add_executable(${BINARY_NAME} ${GTEST_SOURCE_file})
     elseif(WIN32)
-      add_executable(${BINARY_NAME} 
+      add_executable(${BINARY_NAME}
         ${GTEST_SOURCE_file}
-        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinystr.cpp  
+        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinystr.cpp
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlerror.cpp
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxml.cpp
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlparser.cpp
@@ -124,9 +139,10 @@ macro (sdf_build_tests)
 
     add_dependencies(${BINARY_NAME}
       gtest gtest_main sdformat
-      ${tinyxml_LIBRARIES}
       )
-     
+
+    link_directories(${IGNITION-MATH_LIBRARY_DIRS})
+
     if (UNIX)
       target_link_libraries(${BINARY_NAME}
         libgtest.a
@@ -134,33 +150,63 @@ macro (sdf_build_tests)
         sdformat
         pthread
         ${tinyxml_LIBRARIES}
+        ${IGNITION-MATH_LIBRARIES}
       )
     elseif(WIN32)
       target_link_libraries(${BINARY_NAME}
         gtest.lib
         gtest_main.lib
         sdformat.dll
+        ${IGNITION-MATH_LIBRARIES}
+        ${Boost_LIBRARIES}
       )
     endif()
- 
+
     add_test(${BINARY_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}
       --gtest_output=xml:${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
-  
-    set_tests_properties(${BINARY_NAME} PROPERTIES TIMEOUT 240)
-  
-    # Check that the test produced a result and create a failure if it didn't.
-    # Guards against crashed and timed out tests.
-    add_test(check_${BINARY_NAME} ${PROJECT_SOURCE_DIR}/tools/check_test_ran.py
-             ${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
+
+    set (_env_vars)
+    set (sdf_paths)
+
+    # Get all the sdf protocol directory names
+    file(GLOB dirs RELATIVE "${PROJECT_SOURCE_DIR}/sdf"
+         "${PROJECT_SOURCE_DIR}/sdf/*")
+    list(SORT dirs)
+
+    # Add each sdf protocol to the sdf_path variable
+    foreach(dir ${dirs})
+      if (IS_DIRECTORY ${PROJECT_SOURCE_DIR}/sdf/${dir})
+        set(sdf_paths "${PROJECT_SOURCE_DIR}/sdf/${dir}:${sdf_paths}")
+      endif()
+    endforeach()
+
+    # Set the SDF_PATH environment variable
+    list(APPEND _env_vars "SDF_PATH=${sdf_paths}")
+
+    set_tests_properties(${BINARY_NAME} PROPERTIES
+      TIMEOUT 240
+      ENVIRONMENT "${_env_vars}")
+
+    if(PYTHONINTERP_FOUND)
+      # Check that the test produced a result and create a failure if it didn't.
+      # Guards against crashed and timed out tests.
+      add_test(check_${BINARY_NAME} ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_test_ran.py
+               ${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
+    endif()
+
+    if(SDFORMAT_RUN_VALGRIND_TESTS AND VALGRIND_PROGRAM)
+      add_test(memcheck_${BINARY_NAME} ${VALGRIND_PROGRAM} --leak-check=full
+               --error-exitcode=1 --show-leak-kinds=all ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME})
+    endif()
   endforeach()
 endmacro()
 
 #################################################
 # Macro to setup supported compiler warnings
-# Based on work of Florent Lamiraux, Thomas Moulard, JRL, CNRS/AIST. 
+# Based on work of Florent Lamiraux, Thomas Moulard, JRL, CNRS/AIST.
 include(CheckCXXCompilerFlag)
 
-macro(filter_valid_compiler_warnings) 
+macro(filter_valid_compiler_warnings)
   foreach(flag ${ARGN})
     CHECK_CXX_COMPILER_FLAG(${flag} R${flag})
     if(${R${flag}})
@@ -168,3 +214,27 @@ macro(filter_valid_compiler_warnings)
     endif()
   endforeach()
 endmacro()
+
+#################################################
+# Copied from catkin/cmake/empy.cmake
+function(find_python_module module)
+  # cribbed from http://www.cmake.org/pipermail/cmake/2011-January/041666.html
+  string(TOUPPER ${module} module_upper)
+  if(NOT PY_${module_upper})
+    if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED")
+      set(${module}_FIND_REQUIRED TRUE)
+    endif()
+    # A module's location is usually a directory, but for
+    # binary modules
+    # it's a .so file.
+    execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c" "import re, ${module}; print(re.compile('/__init__.py.*').sub('',${module}.__file__))"
+      RESULT_VARIABLE _${module}_status
+      OUTPUT_VARIABLE _${module}_location
+      ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(NOT _${module}_status)
+      set(PY_${module_upper} ${_${module}_location} CACHE STRING "Location of Python module ${module}")
+    endif(NOT _${module}_status)
+  endif(NOT PY_${module_upper})
+  include(FindPackageHandleStandardArgs)
+  find_package_handle_standard_args(PY_${module} DEFAULT_MSG PY_${module_upper})
+endfunction(find_python_module)

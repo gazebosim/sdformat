@@ -3,28 +3,31 @@ if (@PKG_NAME@_CONFIG_INCLUDED)
 endif()
 set(@PKG_NAME@_CONFIG_INCLUDED TRUE)
 
-list(APPEND @PKG_NAME@_INCLUDE_DIRS @CMAKE_INSTALL_PREFIX@/include/sdformat-@SDF_VERSION@)
+list(APPEND @PKG_NAME@_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include/sdformat-@SDF_VERSION@")
 
-list(APPEND @PKG_NAME@_CFLAGS -I@CMAKE_INSTALL_PREFIX@/include/sdformat-@SDF_VERSION@)
+list(APPEND @PKG_NAME@_CFLAGS "-I@CMAKE_INSTALL_PREFIX@/include/sdformat-@SDF_VERSION@")
+if (NOT WIN32)
+  list(APPEND @PKG_NAME@_CXX_FLAGS "${@PKG_NAME@_CFLAGS} -std=c++11")
+endif()
 
 foreach(lib @PKG_LIBRARIES@)
   set(onelib "${lib}-NOTFOUND")
   find_library(onelib ${lib}
-    PATHS @CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@
+    PATHS "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@"
     NO_DEFAULT_PATH
     )
   if(NOT onelib)
     message(FATAL_ERROR "Library '${lib}' in package @PKG_NAME@ is not installed properly")
   endif()
-  list(APPEND @PKG_NAME@_LIBRARIES ${onelib})
+  list(APPEND @PKG_NAME@_LIBRARIES "${onelib}")
 endforeach()
 
-foreach(dep @PKG_DEPENDS@)
-  if(NOT ${dep}_FOUND)
-    find_package(${dep})
-  endif()
-  list(APPEND @PKG_NAME@_INCLUDE_DIRS ${${dep}_INCLUDE_DIRS})
-  list(APPEND @PKG_NAME@_LIBRARIES ${${dep}_LIBRARIES})
-endforeach()
+find_package(ignition-math@IGNITION-MATH_REQUIRED_MAJOR_VERSION@)
+list(APPEND @PKG_NAME@_INCLUDE_DIRS ${IGNITION-MATH_INCLUDE_DIRS})
+list(APPEND @PKG_NAME@_LIBRARIES ${IGNITION-MATH_LIBRARIES})
 
-list(APPEND @PKG_NAME@_LDFLAGS -L@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@)
+find_package(Boost)
+list(APPEND @PKG_NAME@_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
+list(APPEND @PKG_NAME@_LIBRARIES ${Boost_LIBRARIES})
+
+list(APPEND @PKG_NAME@_LDFLAGS "-L@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@")

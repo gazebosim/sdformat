@@ -25,14 +25,17 @@ string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 # The protocol version has nothing to do with the package version set below.
 # It represents the current version of sdformat implement by the software
-set (SDF_PROTOCOL_VERSION 1.5)
+set (SDF_PROTOCOL_VERSION 1.6)
 
-set (SDF_MAJOR_VERSION 2)
-set (SDF_MINOR_VERSION 1)
+set (SDF_MAJOR_VERSION 4)
+set (SDF_MINOR_VERSION 0)
 set (SDF_PATCH_VERSION 0)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
 set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION})
+
+set (project_cmake_dir ${PROJECT_SOURCE_DIR}/cmake
+  CACHE PATH "Location of CMake scripts")
 
 message (STATUS "${PROJECT_NAME} version ${SDF_VERSION_FULL}")
 set (CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
@@ -105,90 +108,79 @@ include (${sdf_cmake_dir}/SearchForStuff.cmake)
 message (STATUS "----------------------------------------\n")
 
 #####################################
-# Check if warning options are avaliable for the compiler and return WARNING_CXX_FLAGS variable
-# MSVC generates tons of warnings on gtest code. 
-# Recommended to use /W4 instead of /Wall
-if (MSVC)
-  set(WARN_LEVEL "/W4")
+# Set the default build type
+if (NOT CMAKE_BUILD_TYPE)
+  set (CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING 
+    "Choose the type of build, options are: Debug Release RelWithDebInfo Profile Check" FORCE)
+endif (NOT CMAKE_BUILD_TYPE)
+string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPERCASE)
+
+set (BUILD_TYPE_PROFILE FALSE)
+set (BUILD_TYPE_RELEASE FALSE)
+set (BUILD_TYPE_RELWITHDEBINFO FALSE)
+set (BUILD_TYPE_DEBUG FALSE)
+
+if ("${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "PROFILE")
+  set (BUILD_TYPE_PROFILE TRUE)
+elseif ("${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "RELEASE")
+  set (BUILD_TYPE_RELEASE TRUE)
+elseif ("${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "RELWITHDEBINFO")
+  set (BUILD_TYPE_RELWITHDEBINFO TRUE)
+elseif ("${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "DEBUG")
+  set (BUILD_TYPE_DEBUG TRUE)
+elseif ("${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "COVERAGE")
+  include (${project_cmake_dir}/CodeCoverage.cmake)
+  set (BUILD_TYPE_DEBUG TRUE)
+  SETUP_TARGET_FOR_COVERAGE(coverage ctest coverage)
 else()
-  set(WARN_LEVEL "-Wall")
+  build_error("CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} unknown. Valid options are: Debug Release RelWithDebInfo Profile Check")
 endif()
 
-if (WIN32)
-    # Need for M_PI constant
-    add_definitions(-D_USE_MATH_DEFINES) 
-    # Use dynamic linking for boost
-    add_definitions(-DBOOST_ALL_DYN_LINK)
-    if (MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-      # Not need if proper cmake gnerator (-G "...Win64") is passed to cmake
-      # Enable as a second measeure to workaround over bug
-      # http://www.cmake.org/Bug/print_bug_page.php?bug_id=11240 
-      set(CMAKE_SHARED_LINKER_FLAGS "/machine:x64")
-    endif()
-ENDIF(WIN32)
+#####################################
+# Handle CFlags
+unset (CMAKE_C_FLAGS_ALL CACHE)
+unset (CMAKE_CXX_FLAGS CACHE)
+
+# USE_HOST_CFLAGS (default TRUE)
+# Will check building host machine for proper cflags
+if(NOT DEFINED USE_HOST_CFLAGS OR USE_HOST_CFLAGS)
+  message(STATUS "Enable host CFlags")
+  include (${project_cmake_dir}/HostCFlags.cmake)
+endif()
+
+# USE_UPSTREAM_CFLAGS (default TRUE)
+# Will use predefined ignition developers cflags
+if(NOT DEFINED USE_UPSTREAM_CFLAGS OR USE_UPSTREAM_CFLAGS)
+  message(STATUS "Enable upstream CFlags")
+  include(${project_cmake_dir}/DefaultCFlags.cmake)
+endif()
+
+# Check if warning options are avaliable for the compiler and return WARNING_CXX_FLAGS variable
+if (MSVC)
+  set(WARN_LEVEL "/W4")
+
+  # Unable to be filtered flags (failing due to limitations in filter_valid_compiler_warnings)
+  # Handling exceptions rightly
+  set(UNFILTERED_FLAGS "/EHsc")
+else()
+  # Equivalent to Wall (according to man gcc) but removed the unknown pragams since we use
+  # MSVC only pragmas all over the code
+  list(APPEND WARN_LEVEL -Waddress -Warray-bounds -Wcomment -Wformat -Wnonnull)
+  list(APPEND WARN_LEVEL -Wparentheses -Wreorder -Wreturn-type)
+  list(APPEND WARN_LEVEL -Wsequence-point -Wsign-compare -Wstrict-aliasing)
+  list(APPEND WARN_LEVEL -Wstrict-overflow=1 -Wswitch -Wtrigraphs -Wuninitialized)
+  list(APPEND WARN_LEVEL -Wunused-function -Wunused-label -Wunused-value)
+  list(APPEND WARN_LEVEL -Wunused-variable -Wvolatile-register-var)
+
+  # Unable to be filtered flags (failing due to limitations in filter_valid_compiler_warnings)
+  set(UNFILTERED_FLAGS "-Wc++11-compat")
+endif()
 
 filter_valid_compiler_warnings(${WARN_LEVEL} -Wextra -Wno-long-long
   -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wno-unused-value
   -Wfloat-equal -Wshadow -Winit-self -Wswitch-default
-  -Wmissing-include-dirs -pedantic)
-set (CMAKE_C_FLAGS_ALL "${WARNING_CXX_FLAGS}")
-
-# Check and add visibility hidden by default
-if (UNIX)
-  check_gcc_visibility()
-  if (GCC_SUPPORTS_VISIBILITY)
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
-  endif()
-endif()
-
-#####################################
-# Build type link flags
-
-# USE_UPSTREAM_CFLAGS (default TRUE)
-# Use our own defined flags for building types
-if(NOT DEFINED USE_UPSTREAM_CFLAGS OR USE_UPSTREAM_CFLAGS)
-  message(STATUS "Using upstream CFlags")
-  if (NOT APPLE)
-    # -s doesn't work with default osx compiler clang, alternative:
-    # http://stackoverflow.com/questions/6085491/gcc-vs-clang-symbol-strippingu
-    set (CMAKE_C_FLAGS_RELEASE " -s ")
-  endif()
-  set (CMAKE_C_FLAGS_RELEASE " ${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG"
-    CACHE INTERNAL "C Flags for release" FORCE)
-  set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
-  
-  if (NOT MSVC)
-    set (CMAKE_C_FLAGS_DEBUG " -ggdb3"
-      CACHE INTERNAL "C Flags for debug" FORCE)
-    set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
-  endif()
-endif()
-
-#####################################
-# Set the default build type
-if (NOT CMAKE_BUILD_TYPE)
-  set (CMAKE_BUILD_TYPE "RELEASE" CACHE STRING 
-    "Choose the type of build, options are: debug release profile check" FORCE)
-endif (NOT CMAKE_BUILD_TYPE)
-string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)
-
-#####################################
-# Set all the global build flags
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}} ${CMAKE_C_FLAGS_ALL}")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS_ALL}")
-
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "RELEASE")
-  set (BUILD_TYPE_RELEASE TRUE)
-else()
-  set (BUILD_TYPE_RELEASE FALSE)
-endif()
-
-if ( "${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
-  set (BUILD_TYPE_DEBUG TRUE)
-else()
-  set (BUILD_TYPE_DEBUG FALSE)
-endif()
-
+  -Wmissing-include-dirs -pedantic -Wno-pragmas)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}${WARNING_CXX_FLAGS} ${UNFILTERED_FLAGS}")
 
 #################################################
 # OS Specific initialization
@@ -265,7 +257,6 @@ else (buid_errors)
   # Make the cmake config files
   set(PKG_NAME ${PROJECT_NAME})
   set(PKG_LIBRARIES sdformat)
-  set(PKG_DEPENDS Boost)
   set(cmake_conf_file "cmake/sdf_config.cmake")
   set(cmake_conf_version_file "cmake/SDFormatConfigVersion.cmake")
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${cmake_conf_file}.in" "${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake" @ONLY)

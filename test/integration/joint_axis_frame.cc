@@ -16,7 +16,6 @@
 */
 
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
 #include <string>
 #include "sdf/sdf.hh"
 
@@ -37,7 +36,8 @@ std::string get_sdf_string(std::string _version)
     << "      <xyz>1 0 0</xyz>"
     << "    </axis>"
     << "  </joint>"
-    << "</model>";
+    << "</model>"
+    << "</sdf>";
   return stream.str();
 }
 
@@ -46,24 +46,12 @@ std::string get_sdf_string(std::string _version)
 // expect tag to be inserted with value true
 TEST(JointAxisFrame, Version_1_4_missing)
 {
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr model(new sdf::SDF());
   sdf::init(model);
   ASSERT_TRUE(sdf::readString(get_sdf_string("1.4"), model));
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 
-  sdf::ElementPtr joint = model->root->GetElement("model")->GetElement("joint");
+  sdf::ElementPtr joint = model->Root()->GetElement(
+    "model")->GetElement("joint");
   sdf::ElementPtr axis = joint->GetElement("axis");
 
   axis->PrintValues("");
@@ -76,24 +64,12 @@ TEST(JointAxisFrame, Version_1_4_missing)
 // expect tag to be inserted with value false
 TEST(JointAxisFrame, Version_1_5_missing)
 {
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr model(new sdf::SDF());
   sdf::init(model);
   ASSERT_TRUE(sdf::readString(get_sdf_string("1.5"), model));
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 
-  sdf::ElementPtr joint = model->root->GetElement("model")->GetElement("joint");
+  sdf::ElementPtr joint = model->Root()->GetElement(
+    "model")->GetElement("joint");
   sdf::ElementPtr axis = joint->GetElement("axis");
   EXPECT_TRUE(axis->HasElement("use_parent_model_frame"));
   EXPECT_FALSE(axis->Get<bool>("use_parent_model_frame"));
