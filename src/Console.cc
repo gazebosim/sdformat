@@ -33,26 +33,6 @@
 
 #include "sdf/Console.hh"
 
-namespace sdf
-{
-  /// \internal
-  /// \brief Private data for Console
-  class ConsolePrivate
-  {
-    /// \brief Constructor.
-    public: ConsolePrivate() : msgStream(&std::cerr), logStream(NULL) {}
-
-    /// \brief Destructor.
-    public: virtual ~ConsolePrivate() {}
-
-    /// \brief message stream
-    public: Console::ConsoleStream msgStream;
-
-    /// \brief log stream
-    public: Console::ConsoleStream logStream;
-  };
-}
-
 using namespace sdf;
 
 /// Static pointer to the console.
@@ -89,7 +69,7 @@ Console::Console()
       sdfwarn << logDir << " exists but is not a directory.  Will not log.";
       return;
     }
-    this->logFileStream.open(logFile.string().c_str(), std::ios::out);
+    this->dataPtr->logFileStream.open(logFile.string().c_str(), std::ios::out);
   }
   catch(const boost::filesystem::filesystem_error& e)
   {
@@ -150,9 +130,9 @@ void Console::ConsoleStream::Prefix(const std::string &_lbl,
       "]\033[0m ";
   }
 
-  if (Console::Instance()->logFileStream.is_open())
+  if (Console::Instance()->dataPtr->logFileStream.is_open())
   {
-    Console::Instance()->logFileStream << _lbl << " [" <<
+    Console::Instance()->dataPtr->logFileStream << _lbl << " [" <<
       _file.substr(index , _file.size() - index)<< ":" << _line << "] ";
   }
 }
