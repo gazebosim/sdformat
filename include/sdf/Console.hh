@@ -54,6 +54,11 @@ namespace sdf
   /// \brief Shared pointer to a Console Element
   typedef std::shared_ptr<Console> ConsolePtr;
 
+#ifdef DECLSPECIFIER
+  EXPIMP_TEMPLATE template class DECLSPECIFIER
+      std::unique_ptr<sdf::ConsolePrivate>;
+#endif
+
   /// \brief Message, error, warning, and logging functionality
   class SDFORMAT_VISIBLE Console
   {
@@ -156,8 +161,4 @@ namespace sdf
   /// \}
 
 }
-#ifdef DECLSPECIFIER
-  EXPIMP_TEMPLATE template class DECLSPECIFIER
-      std::unique_ptr<sdf::ConsolePrivate>;
-#endif
 #endif
