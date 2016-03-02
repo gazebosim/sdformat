@@ -117,9 +117,6 @@ namespace sdf
 
     /// \internal
     /// \brief Pointer to private data.
-#ifdef DECLSPECIFIER
-  EXPIMP_TEMPLATE template class DECLSPECIFIER std::unique_ptr<ConsolePrivate>;
-#endif
     private: std::unique_ptr<ConsolePrivate> dataPtr;
   };
 
@@ -159,4 +156,8 @@ namespace sdf
   /// \}
 
 }
+#ifdef DECLSPECIFIER
+  EXPIMP_TEMPLATE template class DECLSPECIFIER
+      std::unique_ptr<sdf::ConsolePrivate>;
+#endif
 #endif
