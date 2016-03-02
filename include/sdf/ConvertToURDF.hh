@@ -21,6 +21,7 @@
 #include <string>
 #include <map>
 #include <sdf/sdf.hh>
+#include <ignition/math/Pose3.hh>
 #include "sdf/system_util.hh"
 
 namespace sdf
@@ -61,7 +62,8 @@ namespace sdf
     private: static bool ConvertPose(sdf::ElementPtr _elem,
                 const std::string &_prefix,
                 std::ostringstream &_result,
-                const sdf::Pose &_offset = sdf::Pose(0, 0, 0, 0, 0, 0));
+                const ignition::math::Pose3d &_offset =
+                  ignition::math::Pose3d::Zero);
 
     /// \brief Convert an SDF geomentry
     /// \param[in] _elem SDF element to convert
@@ -78,7 +80,8 @@ namespace sdf
     /// \param[out] _result Stream that contains the conversion result
     /// \return True on success
     private: static bool ConvertCollision(sdf::ElementPtr _elem,
-                const std::string &_prefix, const sdf::Pose &_offset,
+                const std::string &_prefix,
+                const ignition::math::Pose3d &_offset,
                 std::ostringstream &_result);
 
     /// \brief Convert an SDF visual
@@ -88,8 +91,9 @@ namespace sdf
     /// \param[out] _result Stream that contains the conversion result
     /// \return True on success
     private: static bool ConvertVisual(sdf::ElementPtr _elem,
-                const std::string &_prefix, const sdf::Pose &_offset,
-                std::ostringstream &_result);
+                 const std::string &_prefix,
+                 const ignition::math::Pose3d &_offset,
+                 std::ostringstream &_result);
 
     /// \brief Convert an SDF inertia
     /// \param[in] _elem SDF element to convert
@@ -98,8 +102,9 @@ namespace sdf
     /// \param[out] _result Stream that contains the conversion result
     /// \return True on success
     private: static bool ConvertInertia(sdf::ElementPtr _elem,
-                const std::string &_prefix, const sdf::Pose &_offset,
-                std::ostringstream &_result);
+                 const std::string &_prefix,
+                 const ignition::math::Pose3d &_offset,
+                 std::ostringstream &_result);
 
     /// \brief Convert an SDF link
     /// \param[in] _elem SDF element to convert
@@ -110,7 +115,7 @@ namespace sdf
     /// \return True on success
     private: static bool ConvertLink(sdf::ElementPtr _elem,
                 const std::string &_prefix,
-                std::map<std::string, sdf::Pose> &_jointPoses,
+                std::map<std::string, ignition::math::Pose3d> &_jointPoses,
                 std::ostringstream &_result);
 
     /// \brief Convert an SDF camera
@@ -148,15 +153,15 @@ namespace sdf
     /// \return True on success
     private: static bool ConvertJoint(sdf::ElementPtr _elem,
                 const std::string &_prefix,
-                std::map<std::string, sdf::Pose> &_linkPoses,
+                std::map<std::string, ignition::math::Pose3d> &_linkPoses,
                 std::ostringstream &_result);
 
     private: static void GetLinkPoses(sdf::ElementPtr _elem,
-                 std::map<std::string, sdf::Pose> &_linkPoses);
+                 std::map<std::string, ignition::math::Pose3d> &_linkPoses);
 
     private: static void GetJointPoses(sdf::ElementPtr _elem,
-                 std::map<std::string, sdf::Pose> &_linkPoses,
-                 std::map<std::string, sdf::Pose> &_jointPoses);
+                 std::map<std::string, ignition::math::Pose3d> &_linkPoses,
+                 std::map<std::string, ignition::math::Pose3d> &_jointPoses);
 
   };
 }

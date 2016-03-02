@@ -24,14 +24,14 @@ using namespace sdf;
 /////////////////////////////////////////////////
 bool ConvertToURDF::ConvertPose(sdf::ElementPtr _elem,
     const std::string &_prefix, std::ostringstream &_result,
-    const sdf::Pose &_offset)
+    const ignition::math::Pose3d &_offset)
 {
   // Output pose
-  sdf::Pose pose = _elem->Get<sdf::Pose>();
+  ignition::math::Pose3d pose = _elem->Get<ignition::math::Pose3d>();
   pose += _offset;
 
-  _result << _prefix << "<origin xyz='" << pose.pos << "' rpy='"
-    << pose.rot << "'/>\n";
+  _result << _prefix << "<origin xyz='" << pose.Pos() << "' rpy='"
+    << pose.Rot() << "'/>\n";
   return true;
 }
 
@@ -46,7 +46,8 @@ bool ConvertToURDF::ConvertGeometry(sdf::ElementPtr _elem,
   if (_elem->HasElement("box"))
   {
     _result << _prefix << "  <box size='"
-      << _elem->GetElement("box")->Get<sdf::Vector3>("size") << "'/>\n";
+      << _elem->GetElement("box")->Get<ignition::math::Vector3d>("size")
+      << "'/>\n";
   }
   // Output sphere
   else if (_elem->HasElement("sphere"))
@@ -66,7 +67,8 @@ bool ConvertToURDF::ConvertGeometry(sdf::ElementPtr _elem,
   {
     _result << _prefix << "  <mesh filename='"
       << _elem->GetElement("mesh")->Get<std::string>("uri") << "' scale='"
-      << _elem->GetElement("mesh")->Get<sdf::Vector3>("scale") << "'/>\n";
+      << _elem->GetElement("mesh")->Get<ignition::math::Vector3d>("scale")
+      << "'/>\n";
   }
 
   // Output end <geometry> tag
@@ -77,7 +79,7 @@ bool ConvertToURDF::ConvertGeometry(sdf::ElementPtr _elem,
 
 /////////////////////////////////////////////////
 bool ConvertToURDF::ConvertCollision(sdf::ElementPtr _elem,
-    const std::string &_prefix, const sdf::Pose &_offset,
+    const std::string &_prefix, const ignition::math::Pose3d &_offset,
     std::ostringstream &_result)
 {
   // Output <collision>
@@ -98,7 +100,7 @@ bool ConvertToURDF::ConvertCollision(sdf::ElementPtr _elem,
 
 /////////////////////////////////////////////////
 bool ConvertToURDF::ConvertVisual(sdf::ElementPtr _elem,
-    const std::string &_prefix, const sdf::Pose &_offset,
+    const std::string &_prefix, const ignition::math::Pose3d &_offset,
     std::ostringstream &_result)
 {
   // Output <visual>
@@ -117,7 +119,7 @@ bool ConvertToURDF::ConvertVisual(sdf::ElementPtr _elem,
 
 /////////////////////////////////////////////////
 bool ConvertToURDF::ConvertInertia(sdf::ElementPtr _elem,
-    const std::string &_prefix, const sdf::Pose &_offset,
+    const std::string &_prefix, const ignition::math::Pose3d &_offset,
     std::ostringstream &_result)
 {
   // Output <inertial>
@@ -149,16 +151,16 @@ bool ConvertToURDF::ConvertInertia(sdf::ElementPtr _elem,
 /////////////////////////////////////////////////
 bool ConvertToURDF::ConvertLink(sdf::ElementPtr _elem,
     const std::string &_prefix,
-    std::map<std::string, sdf::Pose> &_jointPoses,
+    std::map<std::string, ignition::math::Pose3d> &_jointPoses,
     std::ostringstream &_result)
 {
   std::string linkName = _elem->Get<std::string>("name");
   // Output <link>
   _result << _prefix << "<link name='" << linkName << "'>\n";
 
-  sdf::Pose linkPose = _elem->Get<sdf::Pose>("pose");
+  ignition::math::Pose3d linkPose = _elem->Get<ignition::math::Pose3d>("pose");
 
-  sdf::Pose jointPose;
+  ignition::math::Pose3d jointPose;
   if (_jointPoses.find(linkName) != _jointPoses.end())
   {
     jointPose = _jointPoses[linkName];
@@ -286,7 +288,7 @@ bool ConvertToURDF::ConvertSensor(sdf::ElementPtr _elem,
 
 /////////////////////////////////////////////////
 bool ConvertToURDF::ConvertJoint(sdf::ElementPtr _elem,
-    const std::string &_prefix, std::map<std::string, sdf::Pose> &_linkPoses,
+    const std::string &_prefix, std::map<std::string, ignition::math::Pose3d> &_linkPoses,
     std::ostringstream &_result)
 {
   // Output <joint>
@@ -296,9 +298,9 @@ bool ConvertToURDF::ConvertJoint(sdf::ElementPtr _elem,
   std::string childLink = _elem->Get<std::string>("child");
   std::string parentLink = _elem->Get<std::string>("parent");
 
-  sdf::Pose childPose = _linkPoses[childLink];
-  sdf::Pose parentPose = _linkPoses[parentLink];
-  sdf::Pose jointPose = _elem->Get<sdf::Pose>("pose");
+  ignition::math::Pose3d childPose = _linkPoses[childLink];
+  ignition::math::Pose3d parentPose = _linkPoses[parentLink];
+  ignition::math::Pose3d jointPose = _elem->Get<ignition::math::Pose3d>("pose");
 
 
   std::cout << "------------------------------\n";
@@ -311,8 +313,8 @@ bool ConvertToURDF::ConvertJoint(sdf::ElementPtr _elem,
   std::cout << "******************************\n";
 
   // Output pose
-  _result << _prefix << "  <origin xyz='" << jointPose.pos << "' rpy='"
-    << jointPose.rot << "'/>\n";
+  _result << _prefix << "  <origin xyz='" << jointPose.Pos() << "' rpy='"
+    << jointPose.Rot() << "'/>\n";
 
   // Output parent link
   _result << _prefix << "  <parent link='" << parentLink << "'/>\n";
@@ -332,8 +334,8 @@ bool ConvertToURDF::ConvertJoint(sdf::ElementPtr _elem,
       << dynamicsElem->Get<double>("friction") << "' />\n";
   }
 
-  sdf::Vector3 xyz = axisElem->Get<sdf::Vector3>("xyz");
-  xyz = jointPose.rot.RotateVectorReverse(xyz);
+  ignition::math::Vector3d xyz = axisElem->Get<ignition::math::Vector3d>("xyz");
+  xyz = jointPose.Rot().RotateVectorReverse(xyz);
 
   // Output axis
   _result << _prefix << "  <axis xyz='" << xyz << "'/>\n";
@@ -358,8 +360,8 @@ bool ConvertToURDF::ConvertModel(sdf::ElementPtr _elem,
   // Outut the <robot> tag
   _result << "<robot name='" << _elem->Get<std::string>("name") << "'>\n";
 
-  std::map<std::string, sdf::Pose> linkPoses;
-  std::map<std::string, sdf::Pose> jointPoses;
+  std::map<std::string, ignition::math::Pose3d> linkPoses;
+  std::map<std::string, ignition::math::Pose3d> jointPoses;
 
   GetLinkPoses(_elem, linkPoses);
   GetJointPoses(_elem, linkPoses, jointPoses);
@@ -410,7 +412,7 @@ bool ConvertToURDF::ConvertString(const std::string &_sdfString,
     std::string &_result)
 {
   // Create and initialize SDF
-  boost::shared_ptr<sdf::SDF> sdf(new sdf::SDF());
+  sdf::SDFPtr sdf(new sdf::SDF());
   if (!sdf::init(sdf))
   {
     std::cerr << "ERROR: SDF parsing the xml failed" << std::endl;
@@ -425,7 +427,7 @@ bool ConvertToURDF::ConvertString(const std::string &_sdfString,
   }
 
   // Read the model
-  sdf::ElementPtr modelElem = sdf->root->GetElement("model");
+  sdf::ElementPtr modelElem = sdf->Root()->GetElement("model");
 
   std::ostringstream stream;
 
@@ -455,7 +457,7 @@ bool ConvertToURDF::ConvertFile(const std::string &_file, std::string &_result)
   }
 
   // Create and initialize SDF
-  boost::shared_ptr<sdf::SDF> sdf(new sdf::SDF());
+  sdf::SDFPtr sdf(new sdf::SDF());
   if (!sdf::init(sdf))
   {
     std::cerr << "ERROR: SDF parsing the xml failed" << std::endl;
@@ -470,7 +472,7 @@ bool ConvertToURDF::ConvertFile(const std::string &_file, std::string &_result)
   }
 
   // Read the model
-  sdf::ElementPtr modelElem = sdf->root->GetElement("model");
+  sdf::ElementPtr modelElem = sdf->Root()->GetElement("model");
 
   std::ostringstream stream;
 
@@ -490,14 +492,14 @@ bool ConvertToURDF::ConvertFile(const std::string &_file, std::string &_result)
 
 /////////////////////////////////////////////////
 void ConvertToURDF::GetLinkPoses(sdf::ElementPtr _elem,
-    std::map<std::string, sdf::Pose> &_linkPoses)
+    std::map<std::string, ignition::math::Pose3d> &_linkPoses)
 {
   if (_elem->HasElement("link"))
   {
     sdf::ElementPtr linkElem = _elem->GetElement("link");
     while (linkElem)
     {
-      sdf::Pose linkPose = linkElem->Get<sdf::Pose>("pose");
+      ignition::math::Pose3d linkPose = linkElem->Get<ignition::math::Pose3d>("pose");
 
       // Store the link pose
       _linkPoses[linkElem->Get<std::string>("name")] = linkPose;
@@ -509,21 +511,21 @@ void ConvertToURDF::GetLinkPoses(sdf::ElementPtr _elem,
 
 /////////////////////////////////////////////////
 void ConvertToURDF::GetJointPoses(sdf::ElementPtr _elem,
-    std::map<std::string, sdf::Pose> &_linkPoses,
-    std::map<std::string, sdf::Pose> &_jointPoses)
+    std::map<std::string, ignition::math::Pose3d> &_linkPoses,
+    std::map<std::string, ignition::math::Pose3d> &_jointPoses)
 {
   if (_elem->HasElement("joint"))
   {
     sdf::ElementPtr jointElem = _elem->GetElement("joint");
     while (jointElem)
     {
-      sdf::Pose jointPose = jointElem->Get<sdf::Pose>("pose");
+      ignition::math::Pose3d jointPose = jointElem->Get<ignition::math::Pose3d>("pose");
 
       std::string childLink = jointElem->Get<std::string>("child");
       std::string parentLink = jointElem->Get<std::string>("parent");
 
-      sdf::Pose childPose = _linkPoses[childLink];
-      sdf::Pose parentPose = _linkPoses[parentLink];
+      ignition::math::Pose3d childPose = _linkPoses[childLink];
+      ignition::math::Pose3d parentPose = _linkPoses[parentLink];
 
       jointPose = jointPose + childPose;
       // Store the joint pose
