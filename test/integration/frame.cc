@@ -597,12 +597,12 @@ TEST(Frame, LightFrame)
   // diffuse
   EXPECT_TRUE(lightElem->HasElement("diffuse"));
   sdf::ElementPtr diffuseElem = lightElem->GetElement("diffuse");
-  EXPECT_EQ(diffuseElem->Get<sdf::Color>(), sdf::Color(0.2, 0.3, 0.4, 1));
+  EXPECT_TRUE(diffuseElem->Get<sdf::Color>() == sdf::Color(0.2, 0.3, 0.4, 1));
 
   // specular
   EXPECT_TRUE(lightElem->HasElement("specular"));
   sdf::ElementPtr specularElem = lightElem->GetElement("specular");
-  EXPECT_EQ(specularElem->Get<sdf::Color>(), sdf::Color(0.3, 0.4, 0.5, 1));
+  EXPECT_TRUE(specularElem->Get<sdf::Color>() == sdf::Color(0.3, 0.4, 0.5, 1));
 }
 
 ////////////////////////////////////////

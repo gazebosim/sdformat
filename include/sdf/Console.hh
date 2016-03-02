@@ -87,7 +87,7 @@ namespace sdf
     };
 
     /// \brief Default constructor
-    private: Console();
+    public: Console();
 
     /// \brief Destructor
     public: virtual ~Console();
@@ -114,7 +114,8 @@ namespace sdf
     public: ConsoleStream &Log(const std::string &lbl,
                                const std::string &file,
                                unsigned int line);
-
+    /// \internal
+    /// \brief Pointer to private data.
     private: std::unique_ptr<ConsolePrivate> dataPtr;
   };
 
