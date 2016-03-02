@@ -114,29 +114,13 @@ namespace sdf
     public: ConsoleStream &Log(const std::string &lbl,
                                const std::string &file,
                                unsigned int line);
+
+    /// \brief Logfile stream
+    private: std::ofstream logFileStream;
+
     /// \internal
     /// \brief Pointer to private data.
     private: std::unique_ptr<ConsolePrivate> dataPtr;
-  };
-
-  /// \internal
-  /// \brief Private data for Console
-  class ConsolePrivate
-  {
-    /// \brief Constructor.
-    public: ConsolePrivate() : msgStream(&std::cerr), logStream(NULL) {}
-
-    /// \brief Destructor.
-    public: virtual ~ConsolePrivate() {}
-
-    /// \brief message stream
-    public: Console::ConsoleStream msgStream;
-
-    /// \brief log stream
-    public: Console::ConsoleStream logStream;
-
-    /// \brief logfile stream
-    public: std::ofstream logFileStream;
   };
 
   ///////////////////////////////////////////////
@@ -146,10 +130,10 @@ namespace sdf
     if (this->stream)
       *this->stream << _rhs;
 
-    if (Console::Instance()->dataPtr->logFileStream.is_open())
+    if (Console::Instance()->logFileStream.is_open())
     {
-      Console::Instance()->dataPtr->logFileStream << _rhs;
-      Console::Instance()->dataPtr->logFileStream.flush();
+      Console::Instance()->logFileStream << _rhs;
+      Console::Instance()->logFileStream.flush();
     }
 
     return *this;
