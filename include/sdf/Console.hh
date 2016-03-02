@@ -54,6 +54,10 @@ namespace sdf
   /// \brief Shared pointer to a Console Element
   typedef std::shared_ptr<Console> ConsolePtr;
 
+  /// \def ConsolePrivateUniquePtr
+  /// \brief Unique pointer to ConsolePrivate.
+  typedef std::unique_ptr<ConsolePrivate> ConsolePrivateUniquePtr;
+
   /// \brief Message, error, warning, and logging functionality
   class SDFORMAT_VISIBLE Console
   {
@@ -87,7 +91,7 @@ namespace sdf
     };
 
     /// \brief Default constructor
-    public: Console();
+    private: Console();
 
     /// \brief Destructor
     public: virtual ~Console();
@@ -116,7 +120,7 @@ namespace sdf
                                unsigned int line);
     /// \internal
     /// \brief Pointer to private data.
-    private: std::unique_ptr<ConsolePrivate> dataPtr;
+    private: ConsolePrivateUniquePtr dataPtr;
   };
 
   /// \internal
