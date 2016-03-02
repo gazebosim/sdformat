@@ -122,7 +122,7 @@ namespace sdf
 
   /// \internal
   /// \brief Private data for Console
-  class SDFORMAT_VISIBLE ConsolePrivate
+  class ConsolePrivate
   {
     /// \brief Constructor
     public: ConsolePrivate() : msgStream(&std::cerr), logStream(NULL) {}
