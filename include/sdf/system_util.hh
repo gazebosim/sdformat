@@ -31,12 +31,16 @@
       #define SDFORMAT_VISIBLE __attribute__ ((dllexport))
     #else
       #define SDFORMAT_VISIBLE __declspec(dllexport)
+      #define DECLSPECIFIER __declspec(dllexport)
+      #define EXPIMP_TEMPLATE
     #endif
   #else
     #ifdef __GNUC__
       #define SDFORMAT_VISIBLE __attribute__ ((dllimport))
     #else
       #define SDFORMAT_VISIBLE __declspec(dllimport)
+      #define DECLSPECIFIER __declspec(dllimport)
+      #define EXPIMP_TEMPLATE extern
     #endif
   #endif
   #define SDFORMAT_HIDDEN

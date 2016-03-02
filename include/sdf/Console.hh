@@ -154,5 +154,9 @@ namespace sdf
   }
 
   /// \}
+
+#ifdef DECLSPECIFIER
+ EXPIMP_TEMPLATE template class DECLSPECIFIER std::unique_ptr<ConsolePrivate>;
+#endif
 }
 #endif
