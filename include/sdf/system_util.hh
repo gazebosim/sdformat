@@ -50,4 +50,9 @@
   #endif
 #endif
 
+// Ignore warnings on windows
+#ifdef _MSC_VER
+#pragma warning(disable : 4251)
+#endif
+
 #endif /* SDFORMAT_VISIBLE_HH */
