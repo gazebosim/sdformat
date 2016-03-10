@@ -59,27 +59,27 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       ASSERT_TRUE(ode->HasElement("cfm_damping"));
       EXPECT_TRUE(!ode->Get<bool>("cfm_damping"));
       ASSERT_TRUE(ode->HasElement("fudge_factor"));
-      EXPECT_FLOAT_EQ(ode->Get<double>("fudge_factor"), 0.56789);
+      EXPECT_DOUBLE_EQ(ode->Get<double>("fudge_factor"), 0.56789);
 
       ASSERT_TRUE(ode->HasElement("limit"));
       sdf::ElementPtr limit = ode->GetElement("limit");
       ASSERT_TRUE(limit->HasElement("cfm"));
-      EXPECT_FLOAT_EQ(limit->Get<double>("cfm"), 123);
+      EXPECT_DOUBLE_EQ(limit->Get<double>("cfm"), 123);
       ASSERT_TRUE(limit->HasElement("erp"));
-      EXPECT_FLOAT_EQ(limit->Get<double>("erp"), 0.987);
+      EXPECT_DOUBLE_EQ(limit->Get<double>("erp"), 0.987);
 
       ASSERT_TRUE(joint->HasElement("axis"));
       sdf::ElementPtr axis = joint->GetElement("axis");
       ASSERT_TRUE(axis->HasElement("dynamics"));
       sdf::ElementPtr dynamics = axis->GetElement("dynamics");
       ASSERT_TRUE(dynamics->HasElement("damping"));
-      EXPECT_FLOAT_EQ(dynamics->Get<double>("damping"), 1.1111);
+      EXPECT_DOUBLE_EQ(dynamics->Get<double>("damping"), 1.1111);
       ASSERT_TRUE(dynamics->HasElement("friction"));
-      EXPECT_FLOAT_EQ(dynamics->Get<double>("friction"), 2.2222);
+      EXPECT_DOUBLE_EQ(dynamics->Get<double>("friction"), 2.2222);
       ASSERT_TRUE(dynamics->HasElement("spring_reference"));
-      EXPECT_FLOAT_EQ(dynamics->Get<double>("spring_reference"), 0.234);
+      EXPECT_DOUBLE_EQ(dynamics->Get<double>("spring_reference"), 0.234);
       ASSERT_TRUE(dynamics->HasElement("spring_stiffness"));
-      EXPECT_FLOAT_EQ(dynamics->Get<double>("spring_stiffness"), 0.567);
+      EXPECT_DOUBLE_EQ(dynamics->Get<double>("spring_stiffness"), 0.567);
     }
     else if (jointName == "joint12")
     {

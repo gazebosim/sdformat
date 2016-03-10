@@ -26,6 +26,13 @@
 
 #include "sdf/system_util.hh"
 
+#ifdef _WIN32
+// Disable warning C4251 which is triggered by
+// std::unique_ptr
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
 namespace sdf
 {
   /// \addtogroup sdf SDF
@@ -115,6 +122,8 @@ namespace sdf
                                const std::string &file,
                                unsigned int line);
 
+    /// \internal
+    /// \brief Pointer to private data.
     private: std::unique_ptr<ConsolePrivate> dataPtr;
   };
 
@@ -151,7 +160,11 @@ namespace sdf
     return *this;
   }
 
-
   /// \}
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
+
 #endif
