@@ -161,7 +161,7 @@ macro (sdf_build_tests)
         ${Boost_LIBRARIES}
       )
 
-      # Copy in ignition-math library
+      # Copy in sdformat library
       add_custom_command(TARGET ${BINARY_NAME}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_BINARY_DIR}/src/sdformat.dll"
