@@ -14,7 +14,7 @@
  * limitations under the License.
  *
 */
-#include <clocale>
+
 #include <gtest/gtest.h>
 #include <boost/version.hpp>
 #include "sdf/Param.hh"
