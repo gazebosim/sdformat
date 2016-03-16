@@ -97,6 +97,7 @@ macro (sdf_setup_windows)
   add_definitions(-D_USE_MATH_DEFINES -DWINDOWS_LEAN_AND_MEAN)
   # Suppress warnings caused by boost
   add_definitions(/wd4512 /wd4996)
+  add_definitions("/EHsc")
   # Use dynamic linking for boost
   add_definitions(-DBOOST_ALL_DYN_LINK)
   # And force linking to MSVC dynamic runtime
@@ -156,11 +157,39 @@ macro (sdf_build_tests)
       target_link_libraries(${BINARY_NAME}
         gtest.lib
         gtest_main.lib
-        sdformat.dll
+        sdformat.lib
         ${IGNITION-MATH_LIBRARIES}
         ${Boost_LIBRARIES}
       )
+
+      # Copy in ignition-math library
+      add_custom_command(TARGET ${BINARY_NAME}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_BINARY_DIR}/src/sdformat.dll"
+        $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
+
+      # Copy in ignition-math library
+      add_custom_command(TARGET ${BINARY_NAME}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${IGNITION-MATH_LIBRARY_DIRS}/${IGNITION-MATH_LIBRARIES}.dll"
+        $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
+  
+      # Copy in boost libraries
+      foreach(lib ${Boost_LIBRARIES})
+        if (EXISTS ${lib})
+          add_custom_command(TARGET ${BINARY_NAME}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${lib}"
+            $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
+  
+          string(REPLACE ".lib" ".dll" dll ${lib})
+          add_custom_command(TARGET ${BINARY_NAME}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dll}"
+            $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
+  
+        endif()
+      endforeach()
     endif()
+
 
     add_test(${BINARY_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}
       --gtest_output=xml:${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
