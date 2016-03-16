@@ -97,7 +97,6 @@ macro (sdf_setup_windows)
   add_definitions(-D_USE_MATH_DEFINES -DWINDOWS_LEAN_AND_MEAN)
   # Suppress warnings caused by boost
   add_definitions(/wd4512 /wd4996)
-  add_definitions("/EHsc")
   # Use dynamic linking for boost
   add_definitions(-DBOOST_ALL_DYN_LINK)
   # And force linking to MSVC dynamic runtime
@@ -157,7 +156,7 @@ macro (sdf_build_tests)
       target_link_libraries(${BINARY_NAME}
         gtest.lib
         gtest_main.lib
-        sdformat.lib
+        sdformat.dll
         ${IGNITION-MATH_LIBRARIES}
         ${Boost_LIBRARIES}
       )

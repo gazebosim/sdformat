@@ -149,7 +149,7 @@ TEST(Param, HexFloat)
   EXPECT_TRUE(floatParam.Get<float>(value));
   EXPECT_FLOAT_EQ(value, 0.0f);
 
-  EXPECT_TRUE(floatParam.SetFromString("0x3f800000"));
+  EXPECT_TRUE(floatParam.SetFromString("0x01"));
   EXPECT_TRUE(floatParam.Get<float>(value));
   EXPECT_FLOAT_EQ(value, 1.0f);
 
