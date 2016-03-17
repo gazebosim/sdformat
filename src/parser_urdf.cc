@@ -292,6 +292,10 @@ urdf::Vector3 ParseVector3(TiXmlNode *_key, double _scale)
     }
     sdferr << "key[" << _key->Value() << "] does not contain a Vector3\n";
   }
+  else
+  {
+    sdferr << "Pointer to XML node _key is NULL\n";
+  }
 
   return urdf::Vector3(0, 0, 0);
 }
