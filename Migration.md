@@ -16,7 +16,7 @@ but with improved human-readability..
 
 ### Deletions
 
-1. **Removed the following functions from `parser.hh`:
+1. **Removed the following functions from `parser.hh`**
     + bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf);
     + bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf);
     + bool initXml(TiXmlElement *_xml, ElementPtr _sdf);
