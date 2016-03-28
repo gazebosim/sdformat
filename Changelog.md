@@ -1,3 +1,11 @@
+## SDFormat 5.0
+
+### SDFormat 5.0.0 (xxxx-xx-xx)
+
+1. Move functions that use TinyXML classes in private headers by creating 
+   `parser_private.hh` from `parser.hh` and by not installing `Converter.hh`.
+    * [Pull request 262](https://bitbucket.org/osrf/sdformat/pull-requests/262)
+
 ## SDFormat 4.0
 
 ### SDFormat 4.0.0 (2015-01-12)
