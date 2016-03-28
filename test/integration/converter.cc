@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/sdf.hh"
+#include "sdf/Converter.hh"
 
 #include "test_config.h"
 
