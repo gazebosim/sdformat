@@ -12,6 +12,19 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDFormat 4.x to 5.x
+
+### Deletions
+
+1. **Removed the following functions from `parser.hh`:
+    + bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf);
+    + bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf);
+    + bool initXml(TiXmlElement *_xml, ElementPtr _sdf);
+    + bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source);
+    + bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf, const std::string &_source);
+    + bool readXml(TiXmlElement *_xml, ElementPtr _sdf);
+    + void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);
+
 ## SDFormat 3.x to 4.x
 
 ### Additions

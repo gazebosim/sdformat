@@ -16,7 +16,9 @@
 */
 
 #include <gtest/gtest.h>
+#include <tinyxml.h>
 #include "sdf/sdf.hh"
+#include "sdf/Converter.hh"
 
 #include "test_config.h"
 
