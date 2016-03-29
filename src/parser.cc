@@ -943,4 +943,60 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
     elem = nextElem;
   }
 }
+
+/////////////////////////////////////////////////
+bool convertFile(const std::string &_filename, const std::string &_version,
+    SDFPtr _sdf)
+{
+  std::string filename = sdf::findFile(_filename);
+
+  if (filename.empty())
+  {
+    sdferr << "Error finding file [" << _filename << "].\n";
+    return false;
+  }
+
+  TiXmlDocument xmlDoc;
+  if (xmlDoc.LoadFile(filename))
+  {
+    if (sdf::Converter::Convert(&xmlDoc, _version, true))
+    {
+      return sdf::readDoc(&xmlDoc, _sdf, filename);
+    }
+  }
+  else
+  {
+    sdferr << "Error parsing file[" << filename << "]\n";
+  }
+
+  return false;
+}
+
+/////////////////////////////////////////////////
+bool convertString(const std::string &_sdfString, const std::string &_version,
+    SDFPtr _sdf)
+{
+  if (_sdfString.empty())
+  {
+    sdferr << "SDF string is empty.\n";
+    return false;
+  }
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(_sdfString.c_str());
+
+  if (!xmlDoc.Error())
+  {
+    if (sdf::Converter::Convert(&xmlDoc, _version, true))
+    {
+      return sdf::readDoc(&xmlDoc, _sdf, "data-string");
+    }
+  }
+  else
+  {
+    sdferr << "Error parsing XML from string[" << _sdfString << "]\n";
+  }
+
+  return false;
+}
 }
