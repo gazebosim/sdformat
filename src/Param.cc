@@ -24,7 +24,7 @@ using namespace sdf;
 
 class string_set : public boost::static_visitor<>
 {
-  public: string_set(const std::string &_value)
+  public: explicit string_set(const std::string &_value)
           {this->value = _value;}
 
   public: template <typename T>
@@ -37,7 +37,7 @@ class string_set : public boost::static_visitor<>
 
 class any_set : public boost::static_visitor<>
 {
-  public: any_set(const boost::any &_value)
+  public: explicit any_set(const boost::any &_value)
           {this->value = _value;}
 
   public: template <typename T>
