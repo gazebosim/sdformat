@@ -1,5 +1,10 @@
 ## SDFormat 4.0
 
+### SDFormat 4.1.0 (2016-xx-xx)
+
+1. Added SDF conversion functions to parser including sdf::convertFile and sdf::convertString.
+    * [Pull request 266](https://bitbucket.org/osrf/sdformat/pull-request/266)
+
 ### SDFormat 4.0.0 (2015-01-12)
 
 1. Boost pointers and boost::function in the public API have been replaced
