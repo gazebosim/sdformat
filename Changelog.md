@@ -1,5 +1,10 @@
 ## SDFormat 4.0
 
+### SDFormat 4.x.x (20xx-xx-xx)
+
+1. Added an upload script
+    * [Pull request 256](https://bitbucket.org/osrf/sdformat/pull-request/256)
+ 
 ### SDFormat 4.0.0 (2015-01-12)
 
 1. Boost pointers and boost::function in the public API have been replaced
