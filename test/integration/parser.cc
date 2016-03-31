@@ -79,19 +79,19 @@ TEST(Parser, ParseERB)
   EXPECT_TRUE(sdf::readString(parsed, p));
 
   // There should be a model
-  EXPECT_TRUE(p->root->HasElement("model"));
-  sdf::ElementPtr modelElem = p->root->GetElement("model");
-  ASSERT_TRUE(modelElem);
+  EXPECT_TRUE(p->Root()->HasElement("model"));
+  sdf::ElementPtr modelElem = p->Root()->GetElement("model");
+  ASSERT_TRUE(modelElem != NULL);
 
   // The model should have a link
   EXPECT_TRUE(modelElem->HasElement("link"));
   sdf::ElementPtr linkElem = modelElem->GetElement("link");
-  ASSERT_TRUE(linkElem);
+  ASSERT_TRUE(linkElem != NULL);
 
   // The link should have a pose
   EXPECT_TRUE(linkElem->HasElement("pose"));
   sdf::ElementPtr poseElem = linkElem->GetElement("pose");
-  ASSERT_TRUE(poseElem);
+  ASSERT_TRUE(poseElem != NULL);
 
   // The pose.pos.z should equal 0.005
   sdf::Pose pose = linkElem->Get<sdf::Pose>("pose");
