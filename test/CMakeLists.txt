@@ -5,14 +5,20 @@ include_directories (
   ${PROJECT_SOURCE_DIR}/test/gtest/include
   ${PROJECT_SOURCE_DIR}/test/gtest
   ${PROJECT_SOURCE_DIR}/test
+  ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
 link_directories(
   ${Boost_LIBRARY_DIRS}
+  ${IGNITION-MATH_LIBRARY_DIRS}
 )
 
 if (USE_EXTERNAL_URDF)
   link_directories(${URDF_LIBRARY_DIRS})
+endif()
+
+if (USE_EXTERNAL_TINYXML)
+  link_directories(${tinyxml_LIBRARY_DIRS})
 endif()
 
 configure_file (test_config.h.in ${PROJECT_BINARY_DIR}/test_config.h)

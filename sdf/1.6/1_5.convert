@@ -1,0 +1,331 @@
+<convert name="sdf">
+
+  <!-- Move <gravity> and <magnetic_field> -->
+  <convert name="world">
+    <move>
+      <from element="physics::gravity"/>
+      <to element="gravity"/>
+    </move>
+    <move>
+      <from element="physics::magnetic_field"/>
+      <to element="magnetic_field"/>
+    </move>
+  </convert>
+
+  <convert name="world">
+    <convert name="model">
+      <convert name="link">
+        <convert name="sensor">
+          <convert name="imu">
+            <!-- Add <angular_velocity> and <linear_acceleration> -->
+            <add element="angular_velocity"/>
+            <add element="linear_acceleration"/>
+  
+  
+            <!-- Move the noise type into <angular_velocity> and
+                 <linear_acceleration> -->
+            <copy>
+              <from element="noise::type"/>
+              <to element="angular_velocity::x::noise" attribute="type"/>
+            </copy>
+            <copy>
+              <from element="noise::type"/>
+              <to element="angular_velocity::y::noise" attribute="type"/>
+            </copy>
+            <copy>
+              <from element="noise::type"/>
+              <to element="angular_velocity::z::noise" attribute="type"/>
+            </copy>
+  
+            <!-- Copy <noise><type> to <linear_acceleration> -->
+            <copy>
+              <from element="noise::type"/>
+              <to element="linear_acceleration::x::noise" attribute="type"/>
+            </copy>
+            <copy>
+              <from element="noise::type"/>
+              <to element="linear_acceleration::y::noise" attribute="type"/>
+            </copy>
+            <move>
+              <from element="noise::type"/>
+              <to element="linear_acceleration::z::noise" attribute="type"/>
+            </move>
+  
+            <!-- Copy <rate><mean> into <angular_velocity> -->
+            <copy>
+              <from element="noise::rate::mean"/>
+              <to element="angular_velocity::x::noise::mean"/>
+            </copy>
+            <copy>
+              <from element="noise::rate::mean"/>
+              <to element="angular_velocity::y::noise::mean"/>
+            </copy>
+            <move>
+              <from element="noise::rate::mean"/>
+              <to element="angular_velocity::z::noise::mean"/>
+            </move>
+  
+            <!-- Copy <rate><stddev> into <angular_velocity> -->
+            <copy>
+              <from element="noise::rate::stddev"/>
+              <to element="angular_velocity::x::noise::stddev"/>
+            </copy>
+            <copy>
+              <from element="noise::rate::stddev"/>
+              <to element="angular_velocity::y::noise::stddev"/>
+            </copy>
+            <move>
+              <from element="noise::rate::stddev"/>
+              <to element="angular_velocity::z::noise::stddev"/>
+            </move>
+  
+            <!-- Copy <rate><bias_mean> into <angular_velocity> -->
+            <copy>
+              <from element="noise::rate::bias_mean"/>
+              <to element="angular_velocity::x::noise::bias_mean"/>
+            </copy>
+            <copy>
+              <from element="noise::rate::bias_mean"/>
+              <to element="angular_velocity::y::noise::bias_mean"/>
+            </copy>
+            <move>
+              <from element="noise::rate::bias_mean"/>
+              <to element="angular_velocity::z::noise::bias_mean"/>
+            </move>
+  
+            <!-- Copy <rate><bias_stddev> into <angular_velocity> -->
+            <copy>
+              <from element="noise::rate::bias_stddev"/>
+              <to element="angular_velocity::x::noise::bias_stddev"/>
+            </copy>
+            <copy>
+              <from element="noise::rate::bias_stddev"/>
+              <to element="angular_velocity::y::noise::bias_stddev"/>
+            </copy>
+            <move>
+              <from element="noise::rate::bias_stddev"/>
+               <to element="angular_velocity::z::noise::bias_stddev"/>
+            </move>
+  
+            <!-- Copy <accel><mean> into <linear_acceleration> -->
+            <copy>
+              <from element="noise::accel::mean"/>
+              <to element="linear_acceleration::x::noise::mean"/>
+            </copy>
+            <copy>
+              <from element="noise::accel::mean"/>
+              <to element="linear_acceleration::y::noise::mean"/>
+            </copy>
+            <move>
+              <from element="noise::accel::mean"/>
+              <to element="linear_acceleration::z::noise::mean"/>
+            </move>
+  
+            <!-- Copy <accel><stddev> into <linear_acceleration> -->
+            <copy>
+              <from element="noise::accel::stddev"/>
+              <to element="linear_acceleration::x::noise::stddev"/>
+            </copy>
+            <copy>
+              <from element="noise::accel::stddev"/>
+              <to element="linear_acceleration::y::noise::stddev"/>
+            </copy>
+            <move>
+              <from element="noise::accel::stddev"/>
+              <to element="linear_acceleration::z::noise::stddev"/>
+            </move>
+  
+            <!-- Copy <accel><bias_mean> into <linear_acceleration> -->
+            <copy>
+              <from element="noise::accel::bias_mean"/>
+              <to element="linear_acceleration::x::noise::bias_mean"/>
+            </copy>
+            <copy>
+              <from element="noise::accel::bias_mean"/>
+              <to element="linear_acceleration::y::noise::bias_mean"/>
+            </copy>
+            <move>
+              <from element="noise::accel::bias_mean"/>
+              <to element="linear_acceleration::z::noise::bias_mean"/>
+            </move>
+  
+            <!-- Copy <accel><bias_stddev> into <linear_acceleration> -->
+            <copy>
+              <from element="noise::accel::bias_stddev"/>
+              <to element="linear_acceleration::x::noise::bias_stddev"/>
+            </copy>
+            <copy>
+              <from element="noise::accel::bias_stddev"/>
+              <to element="linear_acceleration::y::noise::bias_stddev"/>
+            </copy>
+            <move>
+              <from element="noise::accel::bias_stddev"/>
+              <to element="linear_acceleration::z::noise::bias_stddev"/>
+            </move>
+  
+            <!--  Remove <accel> and <rate> -->
+            <remove element="noise"/>
+          </convert>
+        </convert>
+      </convert>
+    </convert>
+  </convert>
+
+  <!-- for model sdfs -->
+  <convert name="model">
+    <convert name="link">
+      <convert name="sensor">
+        <convert name="imu">
+          <!-- Add <angular_velocity> and <linear_acceleration -->
+          <add element="angular_velocity"/>
+          <add element="linear_acceleration"/>
+
+
+          <!-- Move the noise type into <angular_velocity> and
+               <linear_acceleration> -->
+          <copy>
+            <from element="noise::type"/>
+            <to element="angular_velocity::x::noise" attribute="type"/>
+          </copy>
+          <copy>
+            <from element="noise::type"/>
+            <to element="angular_velocity::y::noise" attribute="type"/>
+          </copy>
+          <copy>
+            <from element="noise::type"/>
+            <to element="angular_velocity::z::noise" attribute="type"/>
+          </copy>
+
+          <!-- Copy <noise><type> to <linear_acceleration> -->
+          <copy>
+            <from element="noise::type"/>
+            <to element="linear_acceleration::x::noise" attribute="type"/>
+          </copy>
+          <copy>
+            <from element="noise::type"/>
+            <to element="linear_acceleration::y::noise" attribute="type"/>
+          </copy>
+          <move>
+            <from element="noise::type"/>
+            <to element="linear_acceleration::z::noise" attribute="type"/>
+          </move>
+
+          <!-- Copy <rate><mean> into <angular_velocity> -->
+          <copy>
+            <from element="noise::rate::mean"/>
+            <to element="angular_velocity::x::noise::mean"/>
+          </copy>
+          <copy>
+            <from element="noise::rate::mean"/>
+            <to element="angular_velocity::y::noise::mean"/>
+          </copy>
+          <move>
+            <from element="noise::rate::mean"/>
+            <to element="angular_velocity::z::noise::mean"/>
+          </move>
+
+          <!-- Copy <rate><stddev> into <angular_velocity> -->
+          <copy>
+            <from element="noise::rate::stddev"/>
+            <to element="angular_velocity::x::noise::stddev"/>
+          </copy>
+          <copy>
+            <from element="noise::rate::stddev"/>
+            <to element="angular_velocity::y::noise::stddev"/>
+          </copy>
+          <move>
+            <from element="noise::rate::stddev"/>
+            <to element="angular_velocity::z::noise::stddev"/>
+          </move>
+
+          <!-- Copy <rate><bias_mean> into <angular_velocity> -->
+          <copy>
+            <from element="noise::rate::bias_mean"/>
+            <to element="angular_velocity::x::noise::bias_mean"/>
+          </copy>
+          <copy>
+            <from element="noise::rate::bias_mean"/>
+            <to element="angular_velocity::y::noise::bias_mean"/>
+          </copy>
+          <move>
+            <from element="noise::rate::bias_mean"/>
+            <to element="angular_velocity::z::noise::bias_mean"/>
+          </move>
+
+          <!-- Copy <rate><bias_stddev> into <angular_velocity> -->
+          <copy>
+            <from element="noise::rate::bias_stddev"/>
+            <to element="angular_velocity::x::noise::bias_stddev"/>
+          </copy>
+          <copy>
+            <from element="noise::rate::bias_stddev"/>
+            <to element="angular_velocity::y::noise::bias_stddev"/>
+          </copy>
+          <move>
+            <from element="noise::rate::bias_stddev"/>
+            <to element="angular_velocity::z::noise::bias_stddev"/>
+          </move>
+
+          <!-- Copy <accel><mean> into <linear_acceleration> -->
+          <copy>
+            <from element="noise::accel::mean"/>
+            <to element="linear_acceleration::x::noise::mean"/>
+          </copy>
+          <copy>
+            <from element="noise::accel::mean"/>
+            <to element="linear_acceleration::y::noise::mean"/>
+          </copy>
+          <move>
+            <from element="noise::accel::mean"/>
+            <to element="linear_acceleration::z::noise::mean"/>
+          </move>
+
+          <!-- Copy <accel><stddev> into <linear_acceleration> -->
+          <copy>
+            <from element="noise::accel::stddev"/>
+            <to element="linear_acceleration::x::noise::stddev"/>
+          </copy>
+          <copy>
+            <from element="noise::accel::stddev"/>
+            <to element="linear_acceleration::y::noise::stddev"/>
+          </copy>
+          <move>
+            <from element="noise::accel::stddev"/>
+            <to element="linear_acceleration::z::noise::stddev"/>
+          </move>
+
+          <!-- Copy <accel><bias_mean> into <linear_acceleration> -->
+          <copy>
+            <from element="noise::accel::bias_mean"/>
+            <to element="linear_acceleration::x::noise::bias_mean"/>
+          </copy>
+          <copy>
+            <from element="noise::accel::bias_mean"/>
+            <to element="linear_acceleration::y::noise::bias_mean"/>
+          </copy>
+          <move>
+            <from element="noise::accel::bias_mean"/>
+            <to element="linear_acceleration::z::noise::bias_mean"/>
+          </move>
+
+          <!-- Copy <accel><bias_stddev> into <linear_acceleration> -->
+          <copy>
+            <from element="noise::accel::bias_stddev"/>
+            <to element="linear_acceleration::x::noise::bias_stddev"/>
+          </copy>
+          <copy>
+            <from element="noise::accel::bias_stddev"/>
+            <to element="linear_acceleration::y::noise::bias_stddev"/>
+          </copy>
+          <move>
+            <from element="noise::accel::bias_stddev"/>
+            <to element="linear_acceleration::z::noise::bias_stddev"/>
+          </move>
+
+          <!--  Remove <accel> and <rate> -->
+          <remove element="noise"/>
+        </convert>
+      </convert>
+    </convert>
+  </convert>
+</convert> <!-- End SDF -->

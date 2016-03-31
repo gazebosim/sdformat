@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Open Source Robotics Foundation
+ * Copyright 2012-2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,52 +16,37 @@
 */
 
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
+#include <boost/any.hpp>
+#include <ignition/math.hh>
 #include "test_config.h"
 #include "sdf/sdf.hh"
 
 ////////////////////////////////////////////////////
 // Testing fixture
-class RmlUpdate : public testing::Test
+class SDFUpdate : public testing::Test
 {
-  protected: RmlUpdate()
+  protected: SDFUpdate()
              {
-               boost::filesystem::path path =
-                 boost::filesystem::path(PROJECT_SOURCE_PATH)
-                 / "sdf" / SDF_VERSION;
-
-               // Store original env var.
-               this->origSDFPath = getenv("SDF_PATH");
-
-               setenv("SDF_PATH", path.string().c_str(), 1);
              }
 
-  protected: virtual void TearDown()
+  protected: virtual ~SDFUpdate()
              {
-               // Restore original env var.
-               // osx segfaults unless this check is in place
-               // some discussion of portability of setenv at:
-               // http://www.greenend.org.uk/rjk/tech/putenv.html
-               if (this->origSDFPath)
-                 setenv("SDF_PATH", this->origSDFPath, 1);
              }
-
-  private: char *origSDFPath;
 };
 
-class RmlUpdateFixture
+class SDFUpdateFixture
 {
   public:  std::string GetName() const {return this->name;}
   public:  bool GetFlag() const {return this->flag;}
-  public:  sdf::Pose GetPose() const {return this->pose;}
+  public:  ignition::math::Pose3d GetPose() const {return this->pose;}
   public:  std::string name;
   public:  bool flag;
-  public:  sdf::Pose pose;
+  public:  ignition::math::Pose3d pose;
 };
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Update is working for attributes
-TEST_F(RmlUpdate, UpdateAttribute)
+TEST_F(SDFUpdate, UpdateAttribute)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
@@ -75,29 +60,29 @@ TEST_F(RmlUpdate, UpdateAttribute)
   sdfParsed.SetFromString(stream.str());
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.root->HasElement("model"));
-  sdf::ElementPtr modelElem = sdfParsed.root->GetElement("model");
+  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
+  sdf::ElementPtr modelElem = sdfParsed.Root()->GetElement("model");
 
   // Read name attribute value
   EXPECT_TRUE(modelElem->HasAttribute("name"));
   sdf::ParamPtr nameParam = modelElem->GetAttribute("name");
-  EXPECT_EQ(nameParam->GetType(), typeid(std::string));
+  EXPECT_TRUE(nameParam->IsType<std::string>());
 
   // Set test class variables based on sdf values
   // Set parameter update functions to test class accessors
-  RmlUpdateFixture fixture;
+  SDFUpdateFixture fixture;
   nameParam->Get(fixture.name);
-  nameParam->SetUpdateFunc(boost::bind(&RmlUpdateFixture::GetName, &fixture));
+  nameParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetName, &fixture));
 
   std::string nameCheck;
   int i;
   for (i = 0; i < 4; i++)
   {
     // Update test class variables
-    fixture.name[0] = 'd' + i;
+    fixture.name[0] = 'd' + static_cast<char>(i);
 
     // Update root sdf element
-    sdfParsed.root->Update();
+    sdfParsed.Root()->Update();
 
     // Expect sdf values to match test class variables
     nameParam->Get(nameCheck);
@@ -107,7 +92,7 @@ TEST_F(RmlUpdate, UpdateAttribute)
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Update is working for elements
-TEST_F(RmlUpdate, UpdateElement)
+TEST_F(SDFUpdate, UpdateElement)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
@@ -121,40 +106,40 @@ TEST_F(RmlUpdate, UpdateElement)
   sdfParsed.SetFromString(stream.str());
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.root->HasElement("model"));
-  sdf::ElementPtr modelElem = sdfParsed.root->GetElement("model");
+  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
+  sdf::ElementPtr modelElem = sdfParsed.Root()->GetElement("model");
 
   // Read static element value
   EXPECT_TRUE(modelElem->HasElement("static"));
   sdf::ParamPtr staticParam = modelElem->GetElement("static")->GetValue();
-  EXPECT_TRUE(staticParam->GetType() == typeid(bool));
+  EXPECT_TRUE(staticParam->IsType<bool>());
 
   // Read pose element value
   EXPECT_TRUE(modelElem->HasElement("pose"));
   sdf::ParamPtr poseParam = modelElem->GetElement("pose")->GetValue();
-  EXPECT_TRUE(poseParam->GetType() == typeid(sdf::Pose));
+  EXPECT_TRUE(poseParam->IsType<ignition::math::Pose3d>());
 
   // Set test class variables based on sdf values
   // Set parameter update functions to test class accessors
-  RmlUpdateFixture fixture;
+  SDFUpdateFixture fixture;
   staticParam->Get(fixture.flag);
-  staticParam->SetUpdateFunc(boost::bind(&RmlUpdateFixture::GetFlag, &fixture));
+  staticParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetFlag, &fixture));
   poseParam->Get(fixture.pose);
-  poseParam->SetUpdateFunc(boost::bind(&RmlUpdateFixture::GetPose, &fixture));
+  poseParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetPose, &fixture));
 
   bool flagCheck;
-  sdf::Pose poseCheck;
+  ignition::math::Pose3d poseCheck;
   int i;
   for (i = 0; i < 4; i++)
   {
     // Update test class variables
     fixture.flag = !fixture.flag;
-    fixture.pose.pos.x = i;
-    fixture.pose.pos.y = i+10;
-    fixture.pose.pos.z = -i*i*i;
+    fixture.pose.Pos().X() = i;
+    fixture.pose.Pos().Y() = i+10;
+    fixture.pose.Pos().Z() = -i*i*i;
 
     // Update root sdf element
-    sdfParsed.root->Update();
+    sdfParsed.Root()->Update();
 
     // Expect sdf values to match test class variables
     staticParam->Get(flagCheck);
@@ -166,7 +151,7 @@ TEST_F(RmlUpdate, UpdateElement)
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Element::RemoveFromParent is working
-TEST_F(RmlUpdate, ElementRemoveFromParent)
+TEST_F(SDFUpdate, ElementRemoveFromParent)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
@@ -190,12 +175,12 @@ TEST_F(RmlUpdate, ElementRemoveFromParent)
   sdf::ElementPtr elem;
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.root->HasElement("model"));
-  elem = sdfParsed.root->GetElement("model");
+  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
+  elem = sdfParsed.Root()->GetElement("model");
 
   // Select the second model named 'model2'
   elem = elem->GetNextElement("model");
-  EXPECT_TRUE(elem);
+  EXPECT_TRUE(elem != NULL);
   EXPECT_TRUE(elem->HasAttribute("name"));
   EXPECT_EQ(elem->Get<std::string>("name"), "model2");
 
@@ -203,7 +188,7 @@ TEST_F(RmlUpdate, ElementRemoveFromParent)
   elem->RemoveFromParent();
 
   // Get first model element again
-  elem = sdfParsed.root->GetElement("model");
+  elem = sdfParsed.Root()->GetElement("model");
   // Check name == model1
   EXPECT_TRUE(elem->HasAttribute("name"));
   EXPECT_EQ(elem->Get<std::string>("name"), "model1");
@@ -221,7 +206,7 @@ TEST_F(RmlUpdate, ElementRemoveFromParent)
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Element::RemoveChild is working
-TEST_F(RmlUpdate, ElementRemoveChild)
+TEST_F(SDFUpdate, ElementRemoveChild)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
@@ -245,17 +230,17 @@ TEST_F(RmlUpdate, ElementRemoveChild)
   sdf::ElementPtr elem, elem2;
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.root->HasElement("model"));
-  elem = sdfParsed.root->GetElement("model");
+  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
+  elem = sdfParsed.Root()->GetElement("model");
 
   // Select the static element in model1
   elem2 = elem->GetElement("static");
-  EXPECT_TRUE(elem2);
+  EXPECT_TRUE(elem2 != NULL);
   EXPECT_FALSE(elem2->Get<bool>());
   elem->RemoveChild(elem2);
 
   // Get first model element again
-  elem = sdfParsed.root->GetElement("model");
+  elem = sdfParsed.Root()->GetElement("model");
   // Check name == model1
   EXPECT_TRUE(elem->HasAttribute("name"));
   EXPECT_EQ(elem->Get<std::string>("name"), "model1");
@@ -267,10 +252,10 @@ TEST_F(RmlUpdate, ElementRemoveChild)
   elem2 = elem->GetNextElement("model");
 
   // Remove model2
-  sdfParsed.root->RemoveChild(elem2);
+  sdfParsed.Root()->RemoveChild(elem2);
 
   // Get first model element again
-  elem = sdfParsed.root->GetElement("model");
+  elem = sdfParsed.Root()->GetElement("model");
   // Check name == model1
   EXPECT_TRUE(elem->HasAttribute("name"));
   EXPECT_EQ(elem->Get<std::string>("name"), "model1");
@@ -288,7 +273,7 @@ TEST_F(RmlUpdate, ElementRemoveChild)
 
 ////////////////////////////////////////////////////
 /// Ensure that getting empty values with empty keys returns correct values.
-TEST_F(RmlUpdate, EmptyValues)
+TEST_F(SDFUpdate, EmptyValues)
 {
   std::string emptyString;
   sdf::ElementPtr elem;
@@ -321,31 +306,40 @@ TEST_F(RmlUpdate, EmptyValues)
   EXPECT_EQ(elem->Get<std::string>(emptyString), "hello");
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Vector2d>(emptyString), sdf::Vector2d());
+  EXPECT_EQ(elem->Get<ignition::math::Vector2d>(emptyString),
+      ignition::math::Vector2d());
   elem->AddValue("vector2d", "1 2", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Vector2d>(emptyString), sdf::Vector2d(1, 2));
+  EXPECT_EQ(elem->Get<ignition::math::Vector2d>(emptyString),
+      ignition::math::Vector2d(1, 2));
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Vector3>(emptyString), sdf::Vector3());
+  EXPECT_EQ(elem->Get<ignition::math::Vector3d>(emptyString),
+      ignition::math::Vector3d());
   elem->AddValue("vector3", "1 2 3", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Vector3>(emptyString), sdf::Vector3(1, 2, 3));
+  EXPECT_EQ(elem->Get<ignition::math::Vector3d>(emptyString),
+      ignition::math::Vector3d(1, 2, 3));
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Quaternion>(emptyString), sdf::Quaternion());
+  EXPECT_EQ(elem->Get<ignition::math::Quaterniond>(emptyString),
+            ignition::math::Quaterniond());
   elem->AddValue("quaternion", "1 2 3", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Quaternion>(emptyString),
-            sdf::Quaternion(-2.14159, 1.14159, -0.141593));
+  EXPECT_EQ(elem->Get<ignition::math::Quaterniond>(emptyString),
+            ignition::math::Quaterniond(-2.14159, 1.14159, -0.141593));
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Pose>(emptyString), sdf::Pose());
-  elem->AddValue("pose", "1 2 3 4 5 6", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Pose>(emptyString), sdf::Pose(1, 2, 3, 4, 5, 6));
+  EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString),
+      ignition::math::Pose3d());
+  elem->AddValue("pose", "1.0 2.0 3.0 4.0 5.0 6.0", "0", "description");
+  EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString).Pos(),
+      ignition::math::Pose3d(1, 2, 3, 4, 5, 6).Pos());
+  EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString).Rot().Euler(),
+      ignition::math::Pose3d(1, 2, 3, 4, 5, 6).Rot().Euler());
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<sdf::Color>(emptyString), sdf::Color());
   elem->AddValue("color", ".1 .2 .3 1.0", "0", "description");
   EXPECT_EQ(elem->Get<sdf::Color>(emptyString),
-            sdf::Color(.1, .2, .3, 1.0));
+            sdf::Color(.1f, .2f, .3f, 1.0f));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<sdf::Time>(emptyString), sdf::Time());
@@ -361,6 +355,167 @@ TEST_F(RmlUpdate, EmptyValues)
   EXPECT_NEAR(elem->Get<double>(emptyString), 0.0, 1e-6);
   elem->AddValue("double", "12.34", "0", "description");
   EXPECT_NEAR(elem->Get<double>(emptyString), 12.34, 1e-6);
+}
+
+/////////////////////////////////////////////////
+TEST_F(SDFUpdate, GetAny)
+{
+  std::ostringstream stream;
+  // Test types double, bool, string, int, vector3, color, pose
+  stream << "<sdf version='1.6'>"
+         << "<world name='test'>"
+         << "   <gravity> 0 0 -7.1 </gravity>"
+         << "   <physics type='ode'>"
+         << "     <max_contacts>8</max_contacts>"
+         << "     <max_step_size>0.002</max_step_size>"
+         << "   </physics>"
+         << "   <model name='test_model'>"
+         << "     <pose>0 1 2 0 0 0</pose>"
+         << "     <static>true</static>"
+         << "     <link name='link1'>"
+         << "       <visual name='visual'>"
+         << "         <material>"
+         << "           <ambient>0.1 0.1 0.1 1</ambient>"
+         << "         </material>"
+         << "       </visual>"
+         << "     </link>"
+         << "   </model>"
+         << "</world>"
+         << "</sdf>";
+  sdf::SDF sdfParsed;
+  sdfParsed.SetFromString(stream.str());
+
+  // Verify correct parsing
+  EXPECT_TRUE(sdfParsed.Root()->HasElement("world"));
+  sdf::ElementPtr worldElem = sdfParsed.Root()->GetElement("world");
+
+  EXPECT_TRUE(worldElem->HasElement("model"));
+  sdf::ElementPtr modelElem = worldElem->GetElement("model");
+  EXPECT_TRUE(worldElem->HasElement("physics"));
+  sdf::ElementPtr physicsElem = worldElem->GetElement("physics");
+
+  {
+    boost::any anyValue = modelElem->GetAny("name");
+    try
+    {
+      EXPECT_EQ(boost::any_cast<std::string>(anyValue), "test_model");
+    }
+    catch(boost::bad_any_cast &/*_e*/)
+    {
+      FAIL();
+    }
+  }
+
+  {
+    EXPECT_TRUE(modelElem->HasElement("pose"));
+    sdf::ElementPtr poseElem = modelElem->GetElement("pose");
+    boost::any anyValue = poseElem->GetAny();
+    try
+    {
+      EXPECT_EQ(boost::any_cast<ignition::math::Pose3d>(anyValue),
+          ignition::math::Pose3d(0, 1, 2, 0, 0, 0));
+    }
+    catch(boost::bad_any_cast &/*_e*/)
+    {
+      FAIL();
+    }
+  }
+
+  {
+    EXPECT_TRUE(worldElem->HasElement("gravity"));
+    boost::any anyValue = worldElem->GetElement("gravity")->GetAny();
+    try
+    {
+      EXPECT_EQ(boost::any_cast<ignition::math::Vector3d>(anyValue),
+          ignition::math::Vector3d(0, 0, -7.1));
+    }
+    catch(boost::bad_any_cast &/*_e*/)
+    {
+      FAIL();
+    }
+  }
+
+  {
+    EXPECT_TRUE(physicsElem->HasElement("max_step_size"));
+    boost::any anyValue = physicsElem->GetElement("max_step_size")->GetAny();
+    try
+    {
+      EXPECT_NEAR(boost::any_cast<double>(anyValue), 0.002, 1e-6);
+    }
+    catch(boost::bad_any_cast &/*_e*/)
+    {
+      FAIL();
+    }
+  }
+
+  {
+    EXPECT_TRUE(physicsElem->HasElement("max_contacts"));
+    boost::any anyValue = physicsElem->GetElement("max_contacts")->GetAny();
+    try
+    {
+      EXPECT_EQ(boost::any_cast<int>(anyValue), 8);
+    }
+    catch(boost::bad_any_cast &/*_e*/)
+    {
+      FAIL();
+    }
+  }
+
+  {
+    EXPECT_TRUE(worldElem->HasElement("gravity"));
+    boost::any anyValue = worldElem->GetElement("gravity")->GetAny();
+    try
+    {
+      EXPECT_EQ(boost::any_cast<ignition::math::Vector3d>(anyValue),
+          ignition::math::Vector3d(0, 0, -7.1));
+    }
+    catch(boost::bad_any_cast &/*_e*/)
+    {
+      FAIL();
+    }
+  }
+
+  {
+    EXPECT_TRUE(modelElem->HasElement("static"));
+    boost::any anyValue = modelElem->GetElement("static")->GetAny();
+    try
+    {
+      EXPECT_EQ(boost::any_cast<bool>(anyValue), true);
+    }
+    catch(boost::bad_any_cast &/*_e*/)
+    {
+      FAIL();
+    }
+  }
+
+  {
+    EXPECT_TRUE(modelElem->HasElement("link"));
+    EXPECT_TRUE(modelElem->GetElement("link")->HasElement("visual"));
+    EXPECT_TRUE(modelElem->GetElement("link")->GetElement("visual")->
+        HasElement("material"));
+    sdf::ElementPtr materialElem = modelElem->GetElement("link")->
+        GetElement("visual")->GetElement("material");
+    EXPECT_TRUE(materialElem->HasElement("ambient"));
+    boost::any anyValue = materialElem->GetElement("ambient")->GetAny();
+    try
+    {
+      EXPECT_EQ(boost::any_cast<sdf::Color>(anyValue),
+          sdf::Color(0.1f, 0.1f, 0.1f, 1.0f));
+    }
+    catch(boost::bad_any_cast &/*_e*/)
+    {
+      FAIL();
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+TEST_F(SDFUpdate, Version)
+{
+  EXPECT_STREQ(SDF_VERSION, sdf::SDF::Version().c_str());
+
+  sdf::SDF::Version("0.2.3");
+  EXPECT_STREQ("0.2.3", sdf::SDF::Version().c_str());
 }
 
 /////////////////////////////////////////////////

@@ -15,27 +15,42 @@
  *
  */
 
+#include <mutex>
 #include <string.h>
 #include <stdlib.h>
 #include <sstream>
 #include <boost/filesystem.hpp>
-#include <boost/thread/mutex.hpp>
+
+/// \todo Remove this diagnositic push/pop in version 5
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#include "sdf/Types.hh"
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 #include "sdf/Console.hh"
 
 using namespace sdf;
 
-boost::shared_ptr<Console> Console::myself;
-static boost::mutex g_instance_mutex;
+/// Static pointer to the console.
+static std::shared_ptr<Console> myself;
+static std::mutex g_instance_mutex;
 
 //////////////////////////////////////////////////
 Console::Console()
-  : msgStream(&std::cerr), logStream(NULL)
+  : dataPtr(new ConsolePrivate)
 {
   // Set up the file that we'll log to.
   try
   {
-    char* home = getenv("HOME");
+#ifndef _WIN32
+    char *home = getenv("HOME");
+#else
+    const char *home = sdf::winGetEnv("HOMEPATH");
+#endif
     if (!home)
     {
       sdfwarn << "No HOME defined in the environment. Will not log.";
@@ -54,7 +69,7 @@ Console::Console()
       sdfwarn << logDir << " exists but is not a directory.  Will not log.";
       return;
     }
-    this->logFileStream.open(logFile.string().c_str(), std::ios::out);
+    this->dataPtr->logFileStream.open(logFile.string().c_str(), std::ios::out);
   }
   catch(const boost::filesystem::filesystem_error& e)
   {
@@ -69,9 +84,9 @@ Console::~Console()
 }
 
 //////////////////////////////////////////////////
-boost::shared_ptr<Console> Console::Instance()
+ConsolePtr Console::Instance()
 {
-  boost::mutex::scoped_lock lock(g_instance_mutex);
+  std::lock_guard<std::mutex> lock(g_instance_mutex);
   if (!myself)
     myself.reset(new Console());
 
@@ -88,8 +103,8 @@ Console::ConsoleStream &Console::ColorMsg(const std::string &lbl,
                                           const std::string &file,
                                           unsigned int line, int color)
 {
-  this->msgStream.Prefix(lbl, file, line, color);
-  return this->msgStream;
+  this->dataPtr->msgStream.Prefix(lbl, file, line, color);
+  return this->dataPtr->msgStream;
 }
 
 //////////////////////////////////////////////////
@@ -97,6 +112,28 @@ Console::ConsoleStream &Console::Log(const std::string &lbl,
                                      const std::string &file,
                                      unsigned int line)
 {
-  this->logStream.Prefix(lbl, file, line, 0);
-  return this->logStream;
+  this->dataPtr->logStream.Prefix(lbl, file, line, 0);
+  return this->dataPtr->logStream;
 }
+
+//////////////////////////////////////////////////
+void Console::ConsoleStream::Prefix(const std::string &_lbl,
+                          const std::string &_file,
+                          unsigned int _line, int _color)
+{
+  size_t index = _file.find_last_of("/") + 1;
+
+  if (this->stream)
+  {
+    *this->stream << "\033[1;" << _color << "m" << _lbl << " [" <<
+      _file.substr(index , _file.size() - index)<< ":" << _line <<
+      "]\033[0m ";
+  }
+
+  if (Console::Instance()->dataPtr->logFileStream.is_open())
+  {
+    Console::Instance()->dataPtr->logFileStream << _lbl << " [" <<
+      _file.substr(index , _file.size() - index)<< ":" << _line << "] ";
+  }
+}
+

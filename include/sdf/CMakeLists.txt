@@ -3,7 +3,7 @@ include (${sdf_cmake_dir}/SDFUtils.cmake)
 set (headers
   Assert.hh
   Console.hh
-  Converter.hh
+  Element.hh
   Exception.hh
   Param.hh
   parser.hh

@@ -1,0 +1,144 @@
+<sdf version='1.5'>
+  <model name='lumping_test'>
+    <link name='base_link'>
+      <pose>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>4</mass>
+        <inertia>
+          <ixx>0.004</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.004</iyy>
+          <iyz>0</iyz>
+          <izz>0.004</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_link_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__child_link_1_collision_1'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.03</radius>
+          </sphere>
+        </geometry>
+        <max_contacts>177</max_contacts>
+        <surface>
+          <contact>
+            <ode>
+              <min_depth>0.007</min_depth>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu2>0.71</mu2>
+              <mu>0.7</mu>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__child_link_2_collision_2'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.05</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu2>0.51</mu2>
+              <mu>0.5</mu>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__child_link_1a_collision_3'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.03</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu2>0.61</mu2>
+              <mu>0.6</mu>
+            </ode>
+          </friction>
+        </surface>
+        <max_contacts>166</max_contacts>
+      </collision>
+      <visual name='base_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__child_link_1_visual_1'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.03</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <ambient>0 1 0 1</ambient>
+          <script>
+            <name>script_uri_71_name</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__child_link_2_visual_2'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.05</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <script>
+            <uri>script_uri_51</uri>
+            <name>script_name_51</name>
+          </script>
+        </material>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__child_link_1a_visual_3'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.03</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <script>
+            <uri>__default__</uri>
+            <name>__default__</name>
+          </script>
+        </material>
+      </visual>
+      <velocity_decay/>
+      <velocity_decay/>
+      <gravity>1</gravity>
+      <velocity_decay/>
+      <self_collide>0</self_collide>
+    </link>
+  </model>
+</sdf>

@@ -22,9 +22,16 @@
 #include <fstream>
 #include <string>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "sdf/system_util.hh"
+
+#ifdef _WIN32
+// Disable warning C4251 which is triggered by
+// std::unique_ptr
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 namespace sdf
 {
@@ -47,6 +54,13 @@ namespace sdf
   #define sdferr (sdf::Console::Instance()->ColorMsg("Error", \
         __FILE__, __LINE__, 31))
 
+  class ConsolePrivate;
+  class Console;
+
+  /// \def ConsolePtr
+  /// \brief Shared pointer to a Console Element
+  typedef std::shared_ptr<Console> ConsolePtr;
+
   /// \brief Message, error, warning, and logging functionality
   class SDFORMAT_VISIBLE Console
   {
@@ -64,19 +78,7 @@ namespace sdf
       /// \param[in] _rhs Content to be logged.
       /// \return Reference to myself.
       public: template <class T>
-        ConsoleStream &operator<<(const T &_rhs)
-        {
-          if (this->stream)
-            *this->stream << _rhs;
-
-          if (Console::Instance()->logFileStream.is_open())
-          {
-            Console::Instance()->logFileStream << _rhs;
-            Console::Instance()->logFileStream.flush();
-          }
-
-          return *this;
-        }
+        ConsoleStream &operator<<(const T &_rhs);
 
       /// \brief Print a prefix to both terminal and log file.
       /// \param[in] _lbl Text label
@@ -85,23 +87,7 @@ namespace sdf
       /// \param[in] _color Color to make the label.  Used only on terminal.
       public: void Prefix(const std::string &_lbl,
                           const std::string &_file,
-                          unsigned int _line, int _color)
-        {
-          int index = _file.find_last_of("/") + 1;
-
-          if (this->stream)
-          {
-            *this->stream << "\033[1;" << _color << "m" << _lbl << " [" <<
-              _file.substr(index , _file.size() - index)<< ":" << _line <<
-              "]\033[0m ";
-          }
-
-          if (Console::Instance()->logFileStream.is_open())
-          {
-            Console::Instance()->logFileStream << _lbl << " [" <<
-              _file.substr(index , _file.size() - index)<< ":" << _line << "] ";
-          }
-        }
+                          unsigned int _line, int _color);
 
       /// \brief The ostream to log to; can be NULL.
       private: std::ostream *stream;
@@ -114,7 +100,7 @@ namespace sdf
     public: virtual ~Console();
 
     /// \brief Return an instance to this class.
-    public: static boost::shared_ptr<Console> Instance();
+    public: static ConsolePtr Instance();
 
     /// \brief Set quiet output
     /// \param[in] q True to prevent warning
@@ -136,18 +122,49 @@ namespace sdf
                                const std::string &file,
                                unsigned int line);
 
+    /// \internal
+    /// \brief Pointer to private data.
+    private: std::unique_ptr<ConsolePrivate> dataPtr;
+  };
+
+  /// \internal
+  /// \brief Private data for Console
+  class ConsolePrivate
+  {
+    /// \brief Constructor
+    public: ConsolePrivate() : msgStream(&std::cerr), logStream(NULL) {}
+
     /// \brief message stream
-    private: ConsoleStream msgStream;
+    public: Console::ConsoleStream msgStream;
 
     /// \brief log stream
-    private: ConsoleStream logStream;
+    public: Console::ConsoleStream logStream;
 
     /// \brief logfile stream
-    private: std::ofstream logFileStream;
-
-    /// \brief Pointer to myself
-    private: static boost::shared_ptr<Console> myself;
+    public: std::ofstream logFileStream;
   };
+
+  ///////////////////////////////////////////////
+  template <class T>
+  Console::ConsoleStream &Console::ConsoleStream::operator<<(const T &_rhs)
+  {
+    if (this->stream)
+      *this->stream << _rhs;
+
+    if (Console::Instance()->dataPtr->logFileStream.is_open())
+    {
+      Console::Instance()->dataPtr->logFileStream << _rhs;
+      Console::Instance()->dataPtr->logFileStream.flush();
+    }
+
+    return *this;
+  }
+
   /// \}
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
+
 #endif

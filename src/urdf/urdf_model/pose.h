@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -32,7 +32,9 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
+#ifndef _WIN32
 #pragma GCC system_header
+#endif
 /* Author: Wim Meeussen */
 
 #ifndef URDF_INTERFACE_POSE_H
@@ -42,7 +44,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <urdf_exception/exception.h>
@@ -60,7 +62,7 @@ public:
 
   void clear() {this->x=this->y=this->z=0.0;};
   void init(const std::string &vector_str)
-  { 
+  {
     this->clear();
     std::vector<std::string> pieces;
     std::vector<double> xyz;
@@ -70,20 +72,21 @@ public:
         try {
           xyz.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
         }
-        catch (boost::bad_lexical_cast &e) {
-          throw ParseError("Unable to parse component [" + pieces[i] + "] to a double (while parsing a vector value)");
+        catch (boost::bad_lexical_cast &) {
+          throw ParseError("Unable to parse component [" + pieces[i]
+              + "] to a double (while parsing a vector value)");
         }
       }
     }
-    
+
     if (xyz.size() != 3)
       throw ParseError("Parser found " + boost::lexical_cast<std::string>(xyz.size())  + " elements but 3 expected while parsing vector [" + vector_str + "]");
-    
+
     this->x = xyz[0];
     this->y = xyz[1];
     this->z = xyz[2];
   }
-  
+
   Vector3 operator+(Vector3 vec)
   {
     return Vector3(this->x+vec.x,this->y+vec.y,this->z+vec.z);
@@ -147,13 +150,13 @@ public:
   double x,y,z,w;
 
   void init(const std::string &rotation_str)
-  { 
+  {
     this->clear();
     Vector3 rpy;
     rpy.init(rotation_str);
     setFromRPY(rpy.x, rpy.y, rpy.z);
   }
-  
+
   void clear() { this->x=this->y=this->z=0.0;this->w=1.0; }
 
   void normalize()
@@ -210,7 +213,7 @@ public:
     return result;
   };
   // Get the inverse of this quaternion
-  Rotation GetInverse() const 
+  Rotation GetInverse() const
   {
     Rotation q;
 

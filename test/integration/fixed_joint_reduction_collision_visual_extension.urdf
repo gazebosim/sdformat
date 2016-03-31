@@ -1,0 +1,170 @@
+<robot name="lumping_test">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1.0" />
+      <inertia ixx="0.001" ixy="0.000" ixz="0.000" iyy="0.001" iyz="0.000" izz="0.001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.02" />
+      </geometry>
+      <material name="">
+        <color rgba="0.1 0.1 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.02" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="child_link_1">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1.0" />
+      <inertia ixx="0.001" ixy="0.000" ixz="0.000" iyy="0.001" iyz="0.000" izz="0.001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.03" />
+      </geometry>
+      <material name="">
+        <color rgba="0.1 0.1 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.03" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="fixed_joint_1" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="child_link_1" />
+  </joint>
+  <link name="child_link_1a">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1.0" />
+      <inertia ixx="0.001" ixy="0.000" ixz="0.000" iyy="0.001" iyz="0.000" izz="0.001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.03" />
+      </geometry>
+      <material name="">
+        <color rgba="0.1 0.1 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.03" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="fixed_joint_1a" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="child_link_1a" />
+  </joint>
+  <link name="child_link_2">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1.0" />
+      <inertia ixx="0.001" ixy="0.000" ixz="0.000" iyy="0.001" iyz="0.000" izz="0.001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.05" />
+      </geometry>
+      <material name="">
+        <color rgba="0.1 0.1 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.05" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="fixed_joint_2" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="child_link_1" />
+    <child link="child_link_2" />
+  </joint>
+  <gazebo reference="child_link_1">
+    <minDepth>0.007</minDepth>
+    <mu1>0.7</mu1>
+    <collision>
+      <max_contacts>177</max_contacts>
+      <surface>
+        <contact>
+          <ode/>
+        </contact>
+        <friction>
+          <ode>
+            <mu2>0.71</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    <visual>
+      <material>
+        <ambient>0 1 0 1</ambient>
+      </material>
+    </visual>
+    <material>
+      script_uri_71_name
+    </material>
+  </gazebo>
+  <gazebo reference="child_link_1a">
+    <mu1>0.6</mu1>
+    <maxContacts>166</maxContacts>
+    <collision>
+      <surface>
+        <contact>
+          <ode/>
+        </contact>
+        <friction>
+          <ode>
+            <mu2>0.61</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </gazebo>
+  <gazebo reference="child_link_2">
+    <mu1>0.5</mu1>
+    <collision>
+      <surface>
+        <contact>
+          <ode/>
+        </contact>
+        <friction>
+          <ode>
+            <mu2>0.51</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    <visual>
+      <material>
+        <script>
+          <uri>script_uri_51</uri>
+          <name>script_name_51</name>
+        </script>
+      </material>
+    </visual>
+  </gazebo>
+</robot>
+
