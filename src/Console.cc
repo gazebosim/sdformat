@@ -118,16 +118,28 @@ Console::ConsoleStream &Console::Log(const std::string &lbl,
 
 //////////////////////////////////////////////////
 void Console::ConsoleStream::Prefix(const std::string &_lbl,
-                          const std::string &_file,
-                          unsigned int _line, int _color)
+  const std::string &_file,
+  unsigned int _line,
+// This is here to prevent a compilation warning about an unused variable.
+#ifndef _WIN32
+  int _color
+#else
+  int /*color*/
+#endif
+)
 {
   size_t index = _file.find_last_of("/") + 1;
 
   if (this->stream)
   {
+#ifndef _WIN32
     *this->stream << "\033[1;" << _color << "m" << _lbl << " [" <<
       _file.substr(index , _file.size() - index)<< ":" << _line <<
       "]\033[0m ";
+#else
+    *this->stream << _lbl << " [" <<
+      _file.substr(index , _file.size() - index)<< ":" << _line << "] ";
+#endif
   }
 
   if (Console::Instance()->dataPtr->logFileStream.is_open())
