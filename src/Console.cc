@@ -118,13 +118,13 @@ Console::ConsoleStream &Console::Log(const std::string &lbl,
 
 //////////////////////////////////////////////////
 void Console::ConsoleStream::Prefix(const std::string &_lbl,
-  const std::string &_file,
-  unsigned int _line,
-// This is here to prevent a compilation warning about an unused variable.
+    const std::string &_file,
+    unsigned int _line,
+    // This is here to prevent a compilation warning about an unused variable.
 #ifndef _WIN32
-  int _color
+    int _color
 #else
-  int /*color*/
+    int /*_color*/
 #endif
 )
 {
@@ -134,11 +134,11 @@ void Console::ConsoleStream::Prefix(const std::string &_lbl,
   {
 #ifndef _WIN32
     *this->stream << "\033[1;" << _color << "m" << _lbl << " [" <<
-      _file.substr(index , _file.size() - index)<< ":" << _line <<
+      _file.substr(index , _file.size() - index) << ":" << _line <<
       "]\033[0m ";
 #else
     *this->stream << _lbl << " [" <<
-      _file.substr(index , _file.size() - index)<< ":" << _line << "] ";
+      _file.substr(index , _file.size() - index) << ":" << _line << "] ";
 #endif
   }
 
@@ -148,4 +148,3 @@ void Console::ConsoleStream::Prefix(const std::string &_lbl,
       _file.substr(index , _file.size() - index)<< ":" << _line << "] ";
   }
 }
-
