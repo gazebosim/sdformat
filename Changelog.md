@@ -2,6 +2,9 @@
 
 ### SDFormat 4.x.x (20xx-xx-xx)
 
+1. Added SDF conversion functions to parser including sdf::convertFile and sdf::convertString.
+    * [Pull request 266](https://bitbucket.org/osrf/sdformat/pull-request/266)
+
 1. Added an upload script
     * [Pull request 256](https://bitbucket.org/osrf/sdformat/pull-request/256)
  
