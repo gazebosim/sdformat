@@ -168,7 +168,6 @@ TEST(Param, HexFloat)
 #endif
 }
 
-
 ////////////////////////////////////////////////////
 /// Test setting and reading hex and non-hex double values.
 TEST(Param, HexDouble)
