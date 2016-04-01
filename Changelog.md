@@ -1,6 +1,6 @@
 ## SDFormat 4.0
 
-### SDFormat 4.x.x (20xx-xx-xx)
+### SDFormat 4.1.0 (2016-04-01)
 
 1. Added SDF conversion functions to parser including sdf::convertFile and sdf::convertString.
     * [Pull request 266](https://bitbucket.org/osrf/sdformat/pull-request/266)
