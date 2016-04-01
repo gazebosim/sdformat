@@ -94,8 +94,8 @@ TEST(Parser, ParseERB)
   ASSERT_TRUE(poseElem != NULL);
 
   // The pose.pos.z should equal 0.005
-  sdf::Pose pose = linkElem->Get<sdf::Pose>("pose");
-  EXPECT_DOUBLE_EQ(pose.pos.z, 0.005);
+  auto pose = linkElem->Get<ignition::math::Pose3d>("pose");
+  EXPECT_DOUBLE_EQ(pose.Pos().Z(), 0.005);
 
   if (pathCStr)
   {
