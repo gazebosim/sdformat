@@ -55,5 +55,23 @@ namespace sdf
 
   SDFORMAT_VISIBLE
   void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF);
+
+  /// \brief Convert an SDF file to a specific SDF version.
+  /// \param[in] _filename Name of the SDF file to convert.
+  /// \param[in] _version Version to convert _filename to.
+  /// \param[out] _sdf Pointer to the converted SDF document.
+  /// \return True on success.
+  SDFORMAT_VISIBLE
+  bool convertFile(const std::string &_filename, const std::string &_version,
+                   SDFPtr _sdf);
+
+  /// \brief Convert an SDF string to a specific SDF version.
+  /// \param[in] _sdfString The SDF string to convert.
+  /// \param[in] _version Version to convert _filename to.
+  /// \param[out] _sdf Pointer to the converted SDF document.
+  /// \return True on success.
+  SDFORMAT_VISIBLE
+  bool convertString(const std::string &_sdfString,
+                     const std::string &_version, SDFPtr _sdf);
 }
 #endif

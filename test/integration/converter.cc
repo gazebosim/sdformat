@@ -138,6 +138,84 @@ TEST(ConverterIntegration, IMU_15_to_16)
 }
 
 /////////////////////////////////////////////////
+/// Test conversion using the parser sdf file converter interface.
+TEST(ConverterIntegration, ParserFileConverter)
+{
+  std::string filename = std::string(PROJECT_SOURCE_PATH) +
+    "/test/integration/audio.sdf";
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+  sdf::init(sdf);
+
+  EXPECT_TRUE(sdf::convertFile(filename, "1.6", sdf));
+
+  sdf::ElementPtr rootElem = sdf->Root();
+  ASSERT_TRUE(rootElem != NULL);
+  EXPECT_EQ(rootElem->Get<std::string>("version"), "1.6");
+
+  sdf::ElementPtr modelElem = rootElem->GetElement("model");
+  ASSERT_TRUE(modelElem != NULL);
+  EXPECT_EQ(modelElem->Get<std::string>("name"), "full_audio_parameters");
+
+  sdf::ElementPtr linkElem = modelElem->GetElement("link");
+  ASSERT_TRUE(linkElem != NULL);
+  EXPECT_EQ(linkElem->Get<std::string>("name"), "link");
+
+  sdf::ElementPtr collElem = linkElem->GetElement("collision");
+  ASSERT_TRUE(collElem != NULL);
+  EXPECT_EQ(collElem->Get<std::string>("name"), "collision");
+
+  sdf::ElementPtr sinkElem = linkElem->GetElement("audio_sink");
+  ASSERT_TRUE(sinkElem != NULL);
+
+  sdf::ElementPtr sourceElem = linkElem->GetElement("audio_source");
+  ASSERT_TRUE(sourceElem != NULL);
+}
+
+/////////////////////////////////////////////////
+/// Test conversion using the parser sdf string converter interface.
+TEST(ConverterIntegration, ParserStringConverter)
+{
+  // The gravity and magnetic_field in 1.5 format
+  std::string xmlString = R"(
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default">
+    <physics type="ode">
+      <gravity>0 0 -9.8</gravity>
+      <magnetic_field>1 2 3</magnetic_field>
+    </physics>
+  </world>
+</sdf>)";
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+  sdf::init(sdf);
+
+  EXPECT_TRUE(sdf::convertString(xmlString, "1.6", sdf));
+  ASSERT_TRUE(sdf->Root() != NULL);
+  EXPECT_EQ(sdf->Root()->GetName(), "sdf");
+
+  sdf::ElementPtr worldElem = sdf->Root()->GetElement("world");
+  ASSERT_TRUE(worldElem != NULL);
+  EXPECT_EQ(worldElem->Get<std::string>("name"), "default");
+
+  sdf::ElementPtr physicsElem = worldElem->GetElement("physics");
+  ASSERT_TRUE(physicsElem != NULL);
+  EXPECT_EQ(physicsElem->Get<std::string>("name"), "default_physics");
+  EXPECT_EQ(physicsElem->Get<std::string>("type"), "ode");
+
+  sdf::ElementPtr gravityElem = worldElem->GetElement("gravity");
+  ASSERT_TRUE(gravityElem != NULL);
+  EXPECT_EQ(gravityElem->Get<ignition::math::Vector3d>(),
+      ignition::math::Vector3d(0, 0, -9.8));
+
+  sdf::ElementPtr magElem = worldElem->GetElement("magnetic_field");
+  ASSERT_TRUE(magElem != NULL);
+  EXPECT_EQ(magElem->Get<ignition::math::Vector3d>(),
+      ignition::math::Vector3d(1, 2, 3));
+}
+
+/////////////////////////////////////////////////
 /// Test conversion of gravity, magnetic_field in 1.5 to 1.6
 TEST(ConverterIntegration, World_15_to_16)
 {
