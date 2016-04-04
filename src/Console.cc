@@ -39,6 +39,16 @@ using namespace sdf;
 static std::shared_ptr<Console> myself;
 static std::mutex g_instance_mutex;
 
+/// \todo Output disabled for windows, to allow tests to pass. We should
+/// disable output just for tests on windows.
+#ifndef _WIN32
+static bool g_quiet = false;
+#else
+static bool g_quiet = true;
+#endif
+
+static Console::ConsoleStream g_NullStream(NULL);
+
 //////////////////////////////////////////////////
 Console::Console()
   : dataPtr(new ConsolePrivate)
@@ -94,8 +104,9 @@ ConsolePtr Console::Instance()
 }
 
 //////////////////////////////////////////////////
-void Console::SetQuiet(bool)
+void Console::SetQuiet(bool _quiet)
 {
+  g_quiet = _quiet;
 }
 
 //////////////////////////////////////////////////
@@ -103,8 +114,15 @@ Console::ConsoleStream &Console::ColorMsg(const std::string &lbl,
                                           const std::string &file,
                                           unsigned int line, int color)
 {
-  this->dataPtr->msgStream.Prefix(lbl, file, line, color);
-  return this->dataPtr->msgStream;
+  if (!g_quiet)
+  {
+    this->dataPtr->msgStream.Prefix(lbl, file, line, color);
+    return this->dataPtr->msgStream;
+  }
+  else
+  {
+    return g_NullStream;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -118,16 +136,28 @@ Console::ConsoleStream &Console::Log(const std::string &lbl,
 
 //////////////////////////////////////////////////
 void Console::ConsoleStream::Prefix(const std::string &_lbl,
-                          const std::string &_file,
-                          unsigned int _line, int _color)
+    const std::string &_file,
+    unsigned int _line,
+    // This is here to prevent a compilation warning about an unused variable.
+#ifndef _WIN32
+    int _color
+#else
+    int /*_color*/
+#endif
+)
 {
   size_t index = _file.find_last_of("/") + 1;
 
   if (this->stream)
   {
+#ifndef _WIN32
     *this->stream << "\033[1;" << _color << "m" << _lbl << " [" <<
-      _file.substr(index , _file.size() - index)<< ":" << _line <<
+      _file.substr(index , _file.size() - index) << ":" << _line <<
       "]\033[0m ";
+#else
+    *this->stream << _lbl << " [" <<
+      _file.substr(index , _file.size() - index) << ":" << _line << "] ";
+#endif
   }
 
   if (Console::Instance()->dataPtr->logFileStream.is_open())
@@ -136,4 +166,3 @@ void Console::ConsoleStream::Prefix(const std::string &_lbl,
       _file.substr(index , _file.size() - index)<< ":" << _line << "] ";
   }
 }
-
