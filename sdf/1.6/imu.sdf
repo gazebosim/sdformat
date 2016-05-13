@@ -1,6 +1,18 @@
 <element name="imu" required="0">
   <description>These elements are specific to the IMU sensor.</description>
 
+  <attribute name="reference_frame" type="string" default="local" required="0">
+    <description>
+      The reference frame of the IMU.
+      Current options are:
+        - local: use IMU local frame on boot as the reference frame.
+        - world: use gazebo world frame as the reference frame.
+        - NED: use North-East-Down (maps to world X-Y-Z) frame as the reference frame.
+        - NWU: use North-West-Up (maps to world X-Y-Z) frame as the reference frame.
+        - optical: use optical frame as described in http://www.ros.org/reps/rep-0103.html#suffix-frames.
+    </description>
+  </attribute>
+
   <element name="topic" type="string" default="__default_topic__" required="0">
     <description>Topic on which data is published.</description>
   </element>
