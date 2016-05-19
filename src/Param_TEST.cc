@@ -188,13 +188,13 @@ TEST(Param, HexDouble)
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 42.0);
 #endif
-  EXPECT_TRUE(doubleParam.SetFromString("0.123"));
+  EXPECT_TRUE(doubleParam.SetFromString("0.123456789"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
-  EXPECT_DOUBLE_EQ(value, 0.123);
+  EXPECT_DOUBLE_EQ(value, 0.123456789);
 
   EXPECT_FALSE(doubleParam.SetFromString("1.0e1000"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
-  EXPECT_DOUBLE_EQ(value, 0.123);
+  EXPECT_DOUBLE_EQ(value, 0.123456789);
 }
 
 ////////////////////////////////////////////////////
