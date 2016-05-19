@@ -288,6 +288,10 @@ namespace sdf
         else
           _value = boost::lexical_cast<T>("0");
       }
+      else if (typeid(T) == this->dataPtr->value.type())
+      {
+         _value = boost::get<T>(this->dataPtr->value);
+      }
       else
       {
         _value = boost::lexical_cast<T>(this->dataPtr->value);
