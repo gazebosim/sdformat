@@ -20,14 +20,13 @@
 int main(int argc, char **argv)
 {
   // Check for a second argument, which should be the sdf file to parse
-  if (argc < 2)
+  if (argc != 2)
   {
     std::cerr << "Usage: simple <sdf_file>\n";
     return -1;
   }
 
-  // Create and initialize the data structure that will hold the parsed SDF
-  // data
+  // Create and initialize the data structure that will hold the parsed SDF data
   sdf::SDFPtr sdfParsed(new sdf::SDF());
   sdf::init(sdfParsed);
 
