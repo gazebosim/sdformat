@@ -27,6 +27,7 @@
   #include <boost/shared_ptr.hpp>
   #include <boost/variant.hpp>
   #include <boost/function.hpp>
+  #include <boost/version.hpp>
 #endif
 
 #include <typeinfo>
@@ -291,7 +292,11 @@ namespace sdf
       }
       else if (typeid(T) == this->dataPtr->value.type())
       {
+#if BOOST_VERSION < 105800
          _value = boost::get<T>(this->dataPtr->value);
+#else
+         _value = boost::relaxed_get<T>(this->dataPtr->value);
+#endif
       }
       else
       {
