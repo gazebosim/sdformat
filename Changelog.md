@@ -42,6 +42,12 @@
 
 ## SDFormat 3.0
 
+### SDFormat 3.X.X (201X-XX-XX)
+
+1. Improve precision of floating point parameters
+     * [Pull request 273](https://bitbucket.org/osrf/sdformat/pull-requests/273)
+     * [Pull request 276](https://bitbucket.org/osrf/sdformat/pull-requests/276)
+
 ### SDFormat 3.7.0 (2015-11-20)
 
 1. Add spring pass through for sdf3
