@@ -35,7 +35,20 @@ link_directories(${PROJECT_BINARY_DIR}/test)
 
 sdf_build_tests(${tests})
 
-if (EXISTS ${XMLLINT_EXE})
-  # Need to run schema target (build .xsd files) before running schema_test
-  add_dependencies(${TEST_TYPE}_schema_test schema)
+if (BUILD_BUNDLE)
+  set (APPS "${BUNDLE_INSTALL_BINARY_DIR}/INTEGRATION_locale_fix")
+  install (TARGETS INTEGRATION_locale_fix BUNDLE DESTINATION .)
+
+  INSTALL(CODE "
+    # Needed for getting the right permissions when using brew
+    set (BU_CHMOD_BUNDLE_ITEMS ON)
+
+    include(BundleUtilities)
+    fixup_bundle(\"${APPS}\"   \"\"   \"\")
+   " COMPONENT Runtime)
 endif()
+
+#if (EXISTS ${XMLLINT_EXE})
+  # Need to run schema target (build .xsd files) before running schema_test
+  #add_dependencies(${TEST_TYPE}_schema_test schema)
+  #endif()

@@ -33,6 +33,11 @@ set (sources
   Types.cc
 )
 
+#if (BUILD_OSX_BUNDLE)
+  # include the icns file in the target
+  #SET(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/doc/qtest.icns)
+  #endif()
+
 include_directories(${Boost_INCLUDE_DIRS})
 
 if (USE_EXTERNAL_TINYXML)

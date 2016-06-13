@@ -6,6 +6,8 @@ if(COMMAND CMAKE_POLICY)
 endif(COMMAND CMAKE_POLICY)
 enable_testing()
 
+option(BUILD_OSX_BUNDLE "Build MacOSX bundle" ON)
+
 # with -fPIC
 if(UNIX AND NOT WIN32)
   set (CMAKE_INSTALL_PREFIX "/usr" CACHE STRING "Install Prefix")
@@ -89,6 +91,18 @@ set (build_warnings "" CACHE INTERNAL "build warnings" FORCE)
 
 set (sdf_cmake_dir ${PROJECT_SOURCE_DIR}/cmake CACHE PATH
      "Location of CMake scripts")
+
+# MACOSX Bundle
+if (BUILD_OSX_BUNDLE)
+  SET(BUNDLE_INSTALL_BINARY_DIR ${PROJECT_BINARY_DIR}/INTEGRATION_locale_fix.app/Contents/MacOS/)
+  SET(BUNDLE_DATA_DEST_DIR ${BUNDLE_INSTALL_BINARY_DIR}/../Resources)
+
+  SET(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
+  #SET(MACOSX_BUNDLE_ICON_FILE QtTest.icns) 
+  # set where in the bundle to put the icns file
+  #SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/doc/qtest.icns 
+  #                            PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+endif()
 
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 

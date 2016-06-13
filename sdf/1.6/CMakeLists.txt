@@ -76,6 +76,7 @@ endforeach()
 add_custom_target(schema1_6 ALL DEPENDS ${SDF_SCHEMA})
 
 set_source_files_properties(${SDF_SCHEMA} PROPERTIES GENERATED TRUE)
+list(APPEND sdfs "1_5.convert")
 
-install(FILES 1_5.convert ${sdfs} DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/sdformat/1.6)
-install(FILES ${SDF_SCHEMA} DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/sdformat/1.6)
+sdf_install_sdf_files(${SDF_SCHEMA} "1.6")
+sdf_install_sdf_files(${sdfs} "1.6")

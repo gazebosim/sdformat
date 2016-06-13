@@ -78,7 +78,11 @@ endmacro()
 #################################################
 macro (sdf_install_library _name)
   set_target_properties(${_name} PROPERTIES SOVERSION ${SDF_MAJOR_VERSION} VERSION ${SDF_VERSION_FULL})
-  install (TARGETS ${_name} DESTINATION ${LIB_INSTALL_DIR} COMPONENT shlib)
+  if (BUILD_OSX_BUNDLE)
+    install (TARGETS ${_name} DESTINATION ${BUNDLE_INSTALL_BINARY_DIR} COMPONENT shlib)
+  else()
+    install (TARGETS ${_name} DESTINATION ${LIB_INSTALL_DIR} COMPONENT shlib)
+  endif()
 endmacro ()
 
 #################################################
@@ -86,6 +90,17 @@ macro (sdf_install_executable _name)
   set_target_properties(${_name} PROPERTIES VERSION ${SDF_VERSION_FULL})
   install (TARGETS ${_name} DESTINATION ${BIN_INSTALL_DIR})
 endmacro ()
+
+#################################################
+macro (sdf_install_sdf_files _list _version)
+  if (BUILD_BUNDLE)
+    set(DATA_DESTINATION ${BUNDLE_DATA_DEST_DIR})
+  elseif()
+    set(DATA_DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR})
+  endif()
+
+  install(FILES ${_list} DESTINATION ${DATA_DESTINATION}/sdformat/${_version})
+endmacro()
 
 #################################################
 macro (sdf_setup_unix)
@@ -118,13 +133,18 @@ endmacro()
 #################################################
 include_directories(${PROJECT_SOURCE_DIR}/test/gtest/include)
 macro (sdf_build_tests)
+  # Modifiers for bundles
+  if (BUILD_OSX_BUNDLE)
+    set (EXEC_MODIFIER "MACOSX_BUNDLE")
+  endif()
+
   # Build all the tests
   foreach(GTEST_SOURCE_file ${ARGN})
     string(REGEX REPLACE ".cc" "" BINARY_NAME ${GTEST_SOURCE_file})
     set(BINARY_NAME ${TEST_TYPE}_${BINARY_NAME})
 
     if (UNIX)
-      add_executable(${BINARY_NAME} ${GTEST_SOURCE_file})
+        add_executable(${BINARY_NAME} ${EXEC_MODIFIER} ${GTEST_SOURCE_file})
     elseif(WIN32)
       add_executable(${BINARY_NAME}
         ${GTEST_SOURCE_file}
