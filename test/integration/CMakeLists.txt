@@ -35,7 +35,7 @@ link_directories(${PROJECT_BINARY_DIR}/test)
 
 sdf_build_tests(${tests})
 
-if (BUILD_BUNDLE)
+if (BUILD_OSX_BUNDLE)
   set (APPS "${BUNDLE_INSTALL_BINARY_DIR}/INTEGRATION_locale_fix")
   install (TARGETS INTEGRATION_locale_fix BUNDLE DESTINATION .)
 

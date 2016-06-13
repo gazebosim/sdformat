@@ -72,7 +72,9 @@ endmacro ()
 
 #################################################
 macro (sdf_install_includes _subdir)
-  install(FILES ${ARGN} DESTINATION ${INCLUDE_INSTALL_DIR}/${_subdir} COMPONENT headers)
+  if (NOT BUILD_OSX_BUNDLE)
+    install(FILES ${ARGN} DESTINATION ${INCLUDE_INSTALL_DIR}/${_subdir} COMPONENT headers)
+  endif()
 endmacro()
 
 #################################################
@@ -93,12 +95,13 @@ endmacro ()
 
 #################################################
 macro (sdf_install_sdf_files _list _version)
-  if (BUILD_BUNDLE)
+  if (BUILD_OSX_BUNDLE)
     set(DATA_DESTINATION ${BUNDLE_DATA_DEST_DIR})
   elseif()
     set(DATA_DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR})
   endif()
 
+  message(STATUS "Will install list: ${_list}")
   install(FILES ${_list} DESTINATION ${DATA_DESTINATION}/sdformat/${_version})
 endmacro()
 
