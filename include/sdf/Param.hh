@@ -23,6 +23,7 @@
   #include <boost/lexical_cast.hpp>
   #include <boost/any.hpp>
   #include <boost/variant.hpp>
+  #include <boost/version.hpp>
 #endif
 
 #include <memory>
@@ -287,6 +288,14 @@ namespace sdf
           _value = boost::lexical_cast<T>("1");
         else
           _value = boost::lexical_cast<T>("0");
+      }
+      else if (typeid(T) == this->dataPtr->value.type())
+      {
+#if BOOST_VERSION < 105800
+         _value = boost::get<T>(this->dataPtr->value);
+#else
+         _value = boost::relaxed_get<T>(this->dataPtr->value);
+#endif
       }
       else
       {
