@@ -36,15 +36,15 @@ link_directories(${PROJECT_BINARY_DIR}/test)
 sdf_build_tests(${tests})
 
 if (BUILD_OSX_BUNDLE)
-  set (APPS "${BUNDLE_INSTALL_BINARY_DIR}/INTEGRATION_locale_fix")
   install (TARGETS INTEGRATION_locale_fix BUNDLE DESTINATION .)
 
+  set (APPS "${BUNDLE_INSTALL_BINARY_DIR}/INTEGRATION_locale_fix")
   INSTALL(CODE "
     # Needed for getting the right permissions when using brew
     set (BU_CHMOD_BUNDLE_ITEMS ON)
 
-    include(BundleUtilities)
-    fixup_bundle(\"${APPS}\"   \"\"   \"\")
+      include(BundleUtilities)
+      fixup_bundle(\"${APPS}\" \"\"  \"${CMAKE_BINARY_DIR}/src\")
    " COMPONENT Runtime)
 endif()
 

@@ -82,6 +82,7 @@ macro (sdf_install_library _name)
   set_target_properties(${_name} PROPERTIES SOVERSION ${SDF_MAJOR_VERSION} VERSION ${SDF_VERSION_FULL})
   if (BUILD_OSX_BUNDLE)
     install (TARGETS ${_name} DESTINATION ${BUNDLE_INSTALL_BINARY_DIR} COMPONENT shlib)
+    message(" ******* libs installed in ${BUNDLE_INSTALL_BINARY_DIR}")
   else()
     install (TARGETS ${_name} DESTINATION ${LIB_INSTALL_DIR} COMPONENT shlib)
   endif()
@@ -95,14 +96,7 @@ endmacro ()
 
 #################################################
 macro (sdf_install_sdf_files _list _version)
-  if (BUILD_OSX_BUNDLE)
-    set(DATA_DESTINATION ${BUNDLE_DATA_DEST_DIR})
-  elseif()
-    set(DATA_DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR})
-  endif()
-
-  message(STATUS "Will install list: ${_list}")
-  install(FILES ${_list} DESTINATION ${DATA_DESTINATION}/sdformat/${_version})
+    install(FILES ${_list} DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/sdformat/${_version})
 endmacro()
 
 #################################################
