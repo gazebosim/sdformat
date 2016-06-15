@@ -13,7 +13,7 @@
   <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
 
-  <element name="skin" required="1">
+  <element name="skin" required="0">
     <description></description>
 
     <element name="filename" type="string" default="__default__" required="1">
