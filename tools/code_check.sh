@@ -29,7 +29,7 @@ echo "*:src/Element.cc:464" >> $SUPPRESS2
 echo "*:src/Element.cc:39" >> $SUPPRESS2
 echo "*:src/Element.cc:752" >> $SUPPRESS2
 
-CHECK_FILE_DIRS="./src ./include ./test/performance ./test/integration"
+CHECK_FILE_DIRS="./src ./include ./examples ./test/performance ./test/integration"
 
 #cppcheck
 CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS"
