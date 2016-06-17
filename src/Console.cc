@@ -63,7 +63,8 @@ Console::Console()
 #endif
     if (!home)
     {
-      sdfwarn << "No HOME defined in the environment. Will not log.";
+      std::cerr << "No HOME defined in the environment. Will not log."
+                << std::endl;
       return;
     }
     boost::filesystem::path logFile(home);
@@ -76,14 +77,16 @@ Console::Console()
     }
     else if (!boost::filesystem::is_directory(logDir))
     {
-      sdfwarn << logDir << " exists but is not a directory.  Will not log.";
+      std::cerr << logDir << " exists but is not a directory.  Will not log."
+                << std::endl;
       return;
     }
     this->dataPtr->logFileStream.open(logFile.string().c_str(), std::ios::out);
   }
   catch(const boost::filesystem::filesystem_error& e)
   {
-    sdfwarn << "Exception while setting up logging: " << e.what();
+    std::cerr << "Exception while setting up logging: " << e.what()
+              << std::endl;
     return;
   }
 }
