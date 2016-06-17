@@ -3320,11 +3320,16 @@ void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
   // set its name, if lumped, add original link name
   // for meshes in an original mesh, it's likely
   // _link->name + mesh count
-  if (_oldLinkName.find(_link->name) == 0 || _oldLinkName.empty())
+  if (_oldLinkName.compare(0, _link->name.size(), _link->name) == 0 ||
+      _oldLinkName.empty())
+  {
     sdfCollision->SetAttribute("name", _oldLinkName);
+  }
   else
+  {
     sdfCollision->SetAttribute("name", _link->name
         + g_lumpPrefix + _oldLinkName);
+  }
 
   // std::cerr << "collision [" << sdfCollision->Attribute("name") << "]\n";
 
@@ -3362,11 +3367,16 @@ void CreateVisual(TiXmlElement *_elem, ConstUrdfLinkPtr _link,
   TiXmlElement *sdfVisual = new TiXmlElement("visual");
 
   // set its name
-  if (_oldLinkName.find(_link->name) == 0 || _oldLinkName.empty())
+  if (_oldLinkName.compare(0, _link->name.size(), _link->name) == 0 ||
+      _oldLinkName.empty())
+  {
     sdfVisual->SetAttribute("name", _oldLinkName);
+  }
   else
+  {
     sdfVisual->SetAttribute("name", _link->name
         + g_lumpPrefix + _oldLinkName);
+  }
 
   // add the visualisation transfrom
   double pose[6];
