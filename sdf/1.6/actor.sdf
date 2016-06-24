@@ -43,7 +43,7 @@
     </element>
   </element> <!-- End Animation -->
 
-  <element name="script" required="0">
+  <element name="script" required="1">
     <description>Adds scripted trajectories to the actor.</description>
 
     <element name="loop" type="bool" default="true" required="0">
