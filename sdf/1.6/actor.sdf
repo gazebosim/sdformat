@@ -25,7 +25,7 @@
     </element>
   </element> <!-- End Skin -->
 
-  <element name="animation" required="+">
+  <element name="animation" required="*">
     <description>Animation file defines an animation for the skeleton in the skin. The skeleton must be compatible with the skin skeleton.</description>
 
     <attribute name="name" type="string" default="__default__" required="1">
