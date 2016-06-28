@@ -1,6 +1,6 @@
 <!-- Actor -->
 <element name="actor" required="*">
-  <description>A special kind of model which can have a scripted motion ignoring the physics engine. This includes both global waypoint type animations and skeleton animations described in COLLADA and BVH formats.</description>
+  <description>A special kind of model which can have a scripted motion. This includes both global waypoint type animations and skeleton animations.</description>
 
   <attribute name="name" type="string" default="__default__" required="1">
     <description>A unique name for the actor.</description>
