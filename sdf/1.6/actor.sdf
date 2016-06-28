@@ -7,7 +7,7 @@
   </attribute>
 
   <element name="static" type="bool" default="true" required="0">
-    <description>Actors should be static, in terms of physics simulation. That means no forces will be applied to them. This is ignored if set to true.</description>
+    <description>(DEPRECATION WARNING: This is deprecated in 1.6 and removed in 1.7. Actors should be static, so this is always true.</description>
   </element>
 
   <include filename="frame.sdf" required="*"/>
