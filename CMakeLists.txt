@@ -10,7 +10,6 @@ option(BUILD_OSX_BUNDLE "Build MacOSX bundle" ON)
 
 # with -fPIC
 if(UNIX AND NOT WIN32)
-  set (CMAKE_INSTALL_PREFIX "/usr" CACHE STRING "Install Prefix")
  find_program(CMAKE_UNAME uname /bin /usr/bin /usr/local/bin )
  if(CMAKE_UNAME)
    exec_program(uname ARGS -m OUTPUT_VARIABLE CMAKE_SYSTEM_PROCESSOR)
@@ -58,8 +57,8 @@ if(LD_LIBRARY_PATH)
 endif()
 
 set (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}/sdformat-${SDF_VERSION}/sdf") 
-set (LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE STRING "Installation directory for libraries (relative to CMAKE_INSTALL_PREFIX)") 
-set (BIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR} CACHE STRING "Installation directory for binaries (relative to CMAKE_INSTALL_PREFIX)") 
+set (LIB_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Installation directory for libraries (relative to CMAKE_INSTALL_PREFIX)") 
+set (BIN_INSTALL_DIR "${CMAKE_INSTALL_BINDIR}" CACHE STRING "Installation directory for binaries (relative to CMAKE_INSTALL_PREFIX)") 
 
 set (USE_FULL_RPATH OFF CACHE BOOL "Set to true to enable full rpath")
 
@@ -98,7 +97,9 @@ if (BUILD_OSX_BUNDLE)
   SET(BUNDLE_DATA_DEST_DIR ${BUNDLE_INSTALL_BINARY_DIR}/../Resources)
   SET(CMAKE_INSTALL_FULL_DATAROOTDIR ${BUNDLE_DATA_DEST_DIR})
 
-  SET(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
+  SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}")
+  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
   #SET(MACOSX_BUNDLE_ICON_FILE QtTest.icns) 
   # set where in the bundle to put the icns file
   #SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/doc/qtest.icns 
@@ -297,6 +298,7 @@ else (buid_errors)
 
   ########################################
   # Package Creation: 
+    set(CPACK_COMPONENTS_ALL_IN_ONE_PACKAGE 1)
   include (${sdf_cmake_dir}/sdf_cpack.cmake)
   set (CPACK_PACKAGE_VERSION "${SDF_VERSION_FULL}")
   set (CPACK_PACKAGE_VERSION_MAJOR "${SDF_MAJOR_VERSION}")
