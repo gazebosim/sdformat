@@ -35,7 +35,7 @@ link_directories(${PROJECT_BINARY_DIR}/test)
 
 sdf_build_tests(${tests})
 
-if (EXISTS ${XMLLINT_EXE})
+if (EXISTS ${XMLLINT_EXE} AND TARGET schema)
   # Need to run schema target (build .xsd files) before running schema_test
   add_dependencies(${TEST_TYPE}_schema_test schema)
 endif()
