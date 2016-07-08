@@ -1,5 +1,13 @@
 ## SDFormat 4.0
 
+### SDFormat 4.2.0 (2016-08-19)
+
+1. Added documentation and animation to `<actor>` element.
+    * [Pull request 280](https://bitbucket.org/osrf/sdformat/pull-request/280)
+
+1. Added tag to specify initial joint position
+    * [Pull request 279](https://bitbucket.org/osrf/sdformat/pull-request/279)
+
 ### SDFormat 4.1.0 (2016-04-01)
 
 1. Added SDF conversion functions to parser including sdf::convertFile and sdf::convertString.
