@@ -25,7 +25,8 @@ using namespace sdf;
 class string_set : public boost::static_visitor<>
 {
   public: explicit string_set(const std::string &_value)
-          {this->value = _value;}
+    : value(_value)
+          {}
 
   public: template <typename T>
           void operator()(T & _operand) const
