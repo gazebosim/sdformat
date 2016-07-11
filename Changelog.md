@@ -1,6 +1,6 @@
 ## SDFormat 4.0
 
-### SDFormat 4.2.0 (2016-08-19)
+### SDFormat 4.1.1 (2016-07-08)
 
 1. Added documentation and animation to `<actor>` element.
     * [Pull request 280](https://bitbucket.org/osrf/sdformat/pull-request/280)
