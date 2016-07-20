@@ -1,16 +1,26 @@
 <element name="imu" required="0">
   <description>These elements are specific to the IMU sensor.</description>
 
-  <element name="reference_frame" type="string" default="local" required="0">
+  <element name="reference_frame" type="pose" default="0 0 0 0 0 0" required="0">
     <description>
-      The reference frame of the IMU.
-      Current options are:
-        - local: use IMU local frame on boot as the reference frame.
-        - world: use world frame as the reference frame.
-        - NED: use North-East-Down (maps to world X-Y-Z) frame as the reference frame.
-        - NWU: use North-West-Up (maps to world X-Y-Z) frame as the reference frame.
-        - optical: use optical frame as described in http://www.ros.org/reps/rep-0103.html#suffix-frames.
+      Position(x,y,z) and orientation(roll, pitch yaw) transform from world frame to IMU reference frame.
+      Some options are:
+        - use IMU local frame on boot as the reference frame.
+           example: frame="", transform="0 0 0 0 0 0"
+        - use world frame as the reference frame.
+           example: frame="world", transform="0 0 0 0 0 0"
+        - NED (North-East-Down maps to world X-Y-Z) frame as the IMU reference frame.
+           example: frame="world", transform="0 0 0 0 0 0"
+        - NWU (North-West-Up maps to world X-Y-Z) frame as the IMU reference frame.
+           example: frame="world", transform="0 0 0 0 0 0"
+        - use optical frame as described in http://www.ros.org/reps/rep-0103.html#suffix-frames, which is
+           (z-forward, x-left to right when facing +z, y-top to bottom when facing +z).
+           (default gazebo camera is x-forward, y-right to left when facing +x, z-bottom to top when facing +x).
+           example: frame="local", transform="0 0 0 0 0 0"
     </description>
+    <attribute name="frame" type="string" default="" required="*">
+      <description>Name of frame which the pose is defined relative to. If left empty, use the parent frame.</description>
+    </attribute>
   </element>
 
   <element name="topic" type="string" default="__default_topic__" required="0">
