@@ -865,7 +865,8 @@ void ReduceInertialToParent(UrdfLinkPtr _link)
     //                                        //
     ////////////////////////////////////////////
 
-    childInertial.SetPose(childInertial.Pose() + parentInertial.Pose());
+    childInertial.SetPose(childInertial.Pose() +
+        CopyPose(_link->parent_joint->parent_to_joint_origin_transform));
 
     PrintMass("link in parent link: " + _link->name, childInertial);
 
