@@ -19,6 +19,7 @@
 #include <map>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <ignition/math/SemanticVersion.hh>
 
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
@@ -631,16 +632,34 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
               TiXmlElement *sdfSearch = sdfXML;
 
-              // Find the SDF element that matches our current SDF version.
+              // If a match is not found, use the latest version of the element
+              // that is not older than the SDF parser.
               while (sdfSearch)
               {
-                if (sdfSearch->Attribute("version") &&
-                    std::string(sdfSearch->Attribute("version")) == SDF_VERSION)
+                if (sdfSearch->Attribute("version"))
                 {
-                  sdfXML = sdfSearch;
-                  break;
+                  auto version = std::string(sdfSearch->Attribute("version"));
+                  ignition::math::SemanticVersion modelVersion(version);
+                  ignition::math::SemanticVersion bestVersion(bestVersionStr);
+                  if (modelVersion > bestVersion)
+                  {
+                    // this model is better than the previous one
+                    if (modelVersion <= sdfParserVersion)
+                    {
+                      // the parser can read it
+                      sdfXML = sdfSearch;
+                      bestVersionStr = version;
+                    }
+                    else
+                    {
+                      sdfwarn << "Ignoring version " << version
+                              << " for model " << _uri
+                              << " because is newer than this sdf parser"
+                              << " (version " << SDF_VERSION << ")"
+                              << std::endl;
+                    }
+                  }
                 }
-
                 sdfSearch = sdfSearch->NextSiblingElement("sdf");
               }
 
