@@ -4,7 +4,7 @@
   <element name="reference_frame_orientation" required="0">
     <element name="rpy" type="vector3" default="0 0 0" required="0">
       <description>
-        This field and parent_frame attribute are used when imu_localization is set to CUSTOM.
+        This field and parent_frame are used when imu_localization is set to CUSTOM.
         Orientation (roll, pitch yaw) transform from parent_frame to this IMU's reference frame.
         Some common examples are:
           - IMU reports in its local frame on boot. IMU sensor frame is the reference frame.
@@ -33,7 +33,7 @@
     <attribute name="imu_localization" type="string" default="CUSTOM" required="1">
       <description>
         This string represents special hardcoded use cases that are commonly seen with typical robot IMU's:
-          - CUSTOM: use combinary of parent_frame attribute and Euler angle orientation specification.
+          - CUSTOM: use combinary of parent_frame and Euler angle rpy orientation specification.
           - SPH: use spherical coordinates as defined in gazebo. IMU will report data in Gazebo World frame.
           - NED: where North-East-Down maps to Gazebo World X-Y-Z.
           - ENU: where East-North-Up maps to Gazebo World X-Y-Z.
