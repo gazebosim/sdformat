@@ -2,6 +2,20 @@
   <description>These elements are specific to the IMU sensor.</description>
 
   <element name="reference_frame_orientation" required="0">
+    <attribute name="imu_localization" type="string" default="CUSTOM" required="1">
+      <description>
+        This string represents special hardcoded use cases that are commonly seen with typical robot IMU's:
+          - CUSTOM: use combinary of parent_frame and Euler angle rpy orientation specification.
+          - SPH: use spherical coordinates as defined in gazebo. IMU will report data in Gazebo World frame.
+          - NED: where North-East-Down maps to Gazebo World X-Y-Z.
+          - ENU: where East-North-Up maps to Gazebo World X-Y-Z.
+          - NWU: where North-West-Up maps to Gazebo World X-Y-Z.
+          - GRAV: where direction of gravity maps to Gazebo World Z-axis. IMU reference frame X-axis direction
+                  is defined by imu_dir_x. Note if imu_dir_x is parallel to gravity direction, this configuration fails.
+                  Otherwise, IMU reference frame Y-axis is defined as the vector orthogonal to both
+                  X and Z axis.
+      </description>
+    </attribute>
     <element name="rpy" type="vector3" default="0 0 0" required="0">
       <description>
         This field and parent_frame are used when imu_localization is set to CUSTOM.
@@ -29,34 +43,20 @@
           If left empty, use the sensor's own local frame.
         </description>
       </attribute>
-    </element>
-    <attribute name="imu_localization" type="string" default="CUSTOM" required="1">
-      <description>
-        This string represents special hardcoded use cases that are commonly seen with typical robot IMU's:
-          - CUSTOM: use combinary of parent_frame and Euler angle rpy orientation specification.
-          - SPH: use spherical coordinates as defined in gazebo. IMU will report data in Gazebo World frame.
-          - NED: where North-East-Down maps to Gazebo World X-Y-Z.
-          - ENU: where East-North-Up maps to Gazebo World X-Y-Z.
-          - NWU: where North-West-Up maps to Gazebo World X-Y-Z.
-          - GRAV: where direction of gravity maps to Gazebo World Z-axis. IMU reference frame X-axis direction
-                  is defined by imu_dir_x. Note if imu_dir_x is parallel to gravity direction, this configuration fails.
-                  Otherwise, IMU reference frame Y-axis is defined as the vector orthogonal to both
-                  X and Z axis.
-      </description>
-    </attribute>
-    <element name="imu_dir_x" type="vector3" default="1 0 0" required="0">
-      <description>
-        Used when imu_localization is set to GRAV, a projection of this vector 
-        into a plane that is orthogonal to the gravity vector
-        defines the direction of the IMU reference frame's X-axis.
-      </description>
-      <attribute name="parent_frame" type="string" default="" required="0">
+      <element name="imu_dir_x" type="vector3" default="1 0 0" required="0">
         <description>
-          Name of parent frame in which the imu_dir_x vector is defined.
-          It can be any valid fully scoped Gazebo Link name or the special reserved "world" frame.
-          If left empty, use the sensor's own local frame.
+          Used when imu_localization is set to GRAV, a projection of this vector 
+          into a plane that is orthogonal to the gravity vector
+          defines the direction of the IMU reference frame's X-axis.
         </description>
-      </attribute>
+        <attribute name="parent_frame" type="string" default="" required="0">
+          <description>
+            Name of parent frame in which the imu_dir_x vector is defined.
+            It can be any valid fully scoped Gazebo Link name or the special reserved "world" frame.
+            If left empty, use the sensor's own local frame.
+          </description>
+        </attribute>
+      </element>
     </element>
   </element>
 
