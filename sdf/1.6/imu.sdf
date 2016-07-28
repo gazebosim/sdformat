@@ -22,13 +22,13 @@
              (default gazebo camera is +x:view direction, +y:left, +z:up).
              example sdf: parent_frame="local", rpy="-0.5*M_PI 0 -0.5*M_PI"
       </description>
-      <element name="parent_frame" type="string" default="" required="0">
+      <attribute name="parent_frame" type="string" default="" required="0">
         <description>
           Name of parent frame which the pose is defined relative to.
           It can be any valid fully scoped Gazebo Link name or the special reserved "world" frame.
           If left empty, use the sensor's own local frame.
         </description>
-      </element>
+      </attribute>
     </element>
     <attribute name="imu_localization" type="string" default="CUSTOM" required="1">
       <description>
