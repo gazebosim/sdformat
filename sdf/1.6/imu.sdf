@@ -51,9 +51,11 @@
         defines the direction of the IMU reference frame's X-axis.
       </description>
       <attribute name="parent_frame" type="string" default="" required="0">
-        <description>Name of parent frame in which the vector is defined.
-                     It can be any valid fully scoped Gazebo Link name or the special reserved "world" frame.
-                     If left empty, use the sensor's own local frame.</description>
+        <description>
+          Name of parent frame in which the imu_dir_x vector is defined.
+          It can be any valid fully scoped Gazebo Link name or the special reserved "world" frame.
+          If left empty, use the sensor's own local frame.
+        </description>
       </attribute>
     </element>
   </element>
