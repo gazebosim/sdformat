@@ -1,31 +1,34 @@
 <element name="imu" required="0">
   <description>These elements are specific to the IMU sensor.</description>
 
-  <element name="reference_frame_orientation" type="vector3" default="0 0 0" required="0">
-    <description>
-      Orientation (roll, pitch yaw) transform from parent_frame to this IMU's reference frame.
-      Some options are:
-        - IMU reports in its local frame on boot. IMU sensor frame is the reference frame.
-           example: parent_frame="", transform="0 0 0"
-        - IMU reports in Gazebo world frame.
-           example sdf: parent_frame="world", transform="0 0 0"
-        - IMU reports in NED frame, where North-East-Down maps to world X-Y-Z.
-           example sdf: parent_frame="world", transform="M_PI 0 0"
-        - IMU reports in ENU frame, where East-North-Up maps to world X-Y-Z.
-           example sdf: parent_frame="world", transform="0 0 -0.5*M_PI"
-        - IMU reports in NWU frame, where North-West-Up maps to world X-Y-Z.
-           example sdf: parent_frame="world", transform="0 0 0"
-        - IMU reports in ROS optical frame as described in http://www.ros.org/reps/rep-0103.html#suffix-frames, which is
-           (z-forward, x-left to right when facing +z, y-top to bottom when facing +z).
-           (default gazebo camera is +x:view direction, +y:left, +z:up).
-           example sdf: parent_frame="local", transform="-0.5*M_PI 0 -0.5*M_PI"
-    </description>
-    <attribute name="parent_frame" type="string" default="" required="0">
-      <description>Name of parent frame which the pose is defined relative to.
-                   It can be any valid fully scoped Gazebo Link name or the special reserved "world" frame.
-                   If left empty, use the sensor's own local frame.</description>
-    </attribute>
-    <attribute name="IMU_LOCALIZATION" type="string" default="CUSTOM" required="1">
+  <element name="reference_frame_orientation" required="0">
+    <element name="rpy" type="vector3" default="0 0 0" required="0">
+      <description>
+        This field and parent_frame attribute are used when imu_localization is set to CUSTOM.
+        Orientation (roll, pitch yaw) transform from parent_frame to this IMU's reference frame.
+        Some options are:
+          - IMU reports in its local frame on boot. IMU sensor frame is the reference frame.
+             example: parent_frame="", rpy="0 0 0"
+          - IMU reports in Gazebo world frame.
+             example sdf: parent_frame="world", rpy="0 0 0"
+          - IMU reports in NED frame, where North-East-Down maps to world X-Y-Z.
+             example sdf: parent_frame="world", rpy="M_PI 0 0"
+          - IMU reports in ENU frame, where East-North-Up maps to world X-Y-Z.
+             example sdf: parent_frame="world", rpy="0 0 -0.5*M_PI"
+          - IMU reports in NWU frame, where North-West-Up maps to world X-Y-Z.
+             example sdf: parent_frame="world", rpy="0 0 0"
+          - IMU reports in ROS optical frame as described in http://www.ros.org/reps/rep-0103.html#suffix-frames, which is
+             (z-forward, x-left to right when facing +z, y-top to bottom when facing +z).
+             (default gazebo camera is +x:view direction, +y:left, +z:up).
+             example sdf: parent_frame="local", rpy="-0.5*M_PI 0 -0.5*M_PI"
+      </description>
+      <attribute name="parent_frame" type="string" default="" required="0">
+        <description>Name of parent frame which the pose is defined relative to.
+                     It can be any valid fully scoped Gazebo Link name or the special reserved "world" frame.
+                     If left empty, use the sensor's own local frame.</description>
+      </attribute>
+    </element>
+    <attribute name="imu_localization" type="string" default="CUSTOM" required="1">
       <description>
         This string represents special hardcoded use cases that are commonly seen with typical robot IMU's:
           - CUSTOM: use combinary of parent_frame attribute and Euler angle orientation specification.
@@ -33,9 +36,24 @@
           - NED: where North-East-Down maps to Gazebo World X-Y-Z.
           - ENU: where East-North-Up maps to Gazebo World X-Y-Z.
           - NWU: where North-West-Up maps to Gazebo World X-Y-Z.
-          - NEG: where North-East-Gravity (where gravity is marked by direction of free-fall acceleration) maps to Gazebo World X-Y-Z.
+          - GRAV: where direction of gravity maps to Gazebo World Z-axis. IMU reference frame X-axis direction
+                  is defined by x_dir. Note if x_dir is parallel to gravity direction, this configuration fails.
+                  Otherwise, IMU reference frame Y-axis is defined as the vector orthogonal to both
+                  X and Z axis.
       </description>
     </attribute>
+    <element name="x_dir" type="vector3" default="1 0 0" required="0">
+      <description>
+        Used when imu_localization is set to GRAV, a projection of this vector 
+        into a plane that is orthogonal to the gravity vector
+        defines the direction of the IMU reference frame's X-axis.
+      </description>
+      <attribute name="parent_frame" type="string" default="" required="0">
+        <description>Name of parent frame in which the vector is defined.
+                     It can be any valid fully scoped Gazebo Link name or the special reserved "world" frame.
+                     If left empty, use the sensor's own local frame.</description>
+      </attribute>
+    </element>
   </element>
 
   <element name="topic" type="string" default="__default_topic__" required="0">
