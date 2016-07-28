@@ -39,12 +39,12 @@
           - ENU: where East-North-Up maps to Gazebo World X-Y-Z.
           - NWU: where North-West-Up maps to Gazebo World X-Y-Z.
           - GRAV: where direction of gravity maps to Gazebo World Z-axis. IMU reference frame X-axis direction
-                  is defined by x_dir. Note if x_dir is parallel to gravity direction, this configuration fails.
+                  is defined by imu_dir_x. Note if imu_dir_x is parallel to gravity direction, this configuration fails.
                   Otherwise, IMU reference frame Y-axis is defined as the vector orthogonal to both
                   X and Z axis.
       </description>
     </attribute>
-    <element name="x_dir" type="vector3" default="1 0 0" required="0">
+    <element name="imu_dir_x" type="vector3" default="1 0 0" required="0">
       <description>
         Used when imu_localization is set to GRAV, a projection of this vector 
         into a plane that is orthogonal to the gravity vector
