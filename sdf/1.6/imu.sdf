@@ -6,17 +6,17 @@
       <description>
         This field and parent_frame attribute are used when imu_localization is set to CUSTOM.
         Orientation (roll, pitch yaw) transform from parent_frame to this IMU's reference frame.
-        Some options are:
+        Some common examples are:
           - IMU reports in its local frame on boot. IMU sensor frame is the reference frame.
              example: parent_frame="", rpy="0 0 0"
           - IMU reports in Gazebo world frame.
              example sdf: parent_frame="world", rpy="0 0 0"
-          - IMU reports in NED frame, where North-East-Down maps to world X-Y-Z.
-             example sdf: parent_frame="world", rpy="M_PI 0 0"
-          - IMU reports in ENU frame, where East-North-Up maps to world X-Y-Z.
-             example sdf: parent_frame="world", rpy="0 0 -0.5*M_PI"
-          - IMU reports in NWU frame, where North-West-Up maps to world X-Y-Z.
+          - IMU reports in NWU frame, where North-West-Up maps to world (+X,+Y,+Z).
              example sdf: parent_frame="world", rpy="0 0 0"
+          - IMU reports in NED frame, where North-East-Down maps to world (+X,-Y,-Z).
+             example sdf: parent_frame="world", rpy="M_PI 0 0"
+          - IMU reports in ENU frame, where East-North-Up maps to world (+Y,+X,+Z).
+             example sdf: parent_frame="world", rpy="0 0 -0.5*M_PI"
           - IMU reports in ROS optical frame as described in http://www.ros.org/reps/rep-0103.html#suffix-frames, which is
              (z-forward, x-left to right when facing +z, y-top to bottom when facing +z).
              (default gazebo camera is +x:view direction, +y:left, +z:up).
