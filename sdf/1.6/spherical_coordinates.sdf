@@ -8,6 +8,15 @@
     </description>
   </element>
 
+  <element name="world_orientation" type="string" default="ENU" required="0">
+    <description>
+      This field identifies how Gazebo world frame is aligned in Geographical sense.
+      Options are:
+        - ENU (East-North-Up)
+        - NED (North-East-Down)
+        - NWU (North-West-Up)
+    </description>
+  </element>
   <element name="latitude_deg" type="double" default="0.0" required="1">
     <description>
       Geodetic latitude at origin of gazebo reference frame, specified
@@ -31,8 +40,10 @@
   <element name="heading_deg" type="double" default="0.0" required="1">
     <description>
       Heading offset of gazebo reference frame, measured as angle between
-      East and gazebo x axis, or equivalently, the angle between North and
+      East and gazebo x axis, or equivalently, the angle from North to
       gazebo y axis. The angle is specified in degrees.
+      Rotation about the upward-vector is positive, which rotation in the direction
+      of the downward-vector is negative.
     </description>
   </element>
 
