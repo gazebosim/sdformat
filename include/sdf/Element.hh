@@ -220,8 +220,24 @@ namespace sdf
     /// \return The element as a boost::any.
     public: boost::any GetAny(const std::string &_key = "");
 
+    /// \brief Get the value of a key. This function assumes the _key
+    /// exists.
+    /// \param[in] _key The name of a child attribute or element.
+    /// \return The value of the _key.
+    /// \sa std::pair<T, bool> Get(const std::string &_key,
+    /// const T &_defaultValue)
     public: template<typename T>
             T Get(const std::string &_key = "");
+
+    /// \brief Get the value of a key.
+    /// \param[in] _key The name of a child attribute or element.
+    /// \param[in] _defaultValue A default value to use if _key is not
+    /// found.
+    /// \return A pair where the first element is the value of _key, and the
+    /// second element is true when the _key was found and false otherwise.
+    public: template<typename T>
+            std::pair<T, bool> Get(const std::string &_key,
+                                   const T &_defaultValue);
 
     public: template<typename T>
             bool Set(const T &_value);
@@ -335,6 +351,35 @@ namespace sdf
       else
         sdferr << "Unable to find value for key[" << _key << "]\n";
     }
+    return result;
+  }
+
+  ///////////////////////////////////////////////
+  template<typename T>
+  std::pair<T, bool> Element::Get(const std::string &_key,
+                                  const T &_defaultValue)
+  {
+    std::pair<T, bool> result(_defaultValue, true);
+
+    if (_key.empty() && this->dataPtr->value)
+      this->dataPtr->value->Get<T>(result.first);
+    else if (!_key.empty())
+    {
+      ParamPtr param = this->GetAttribute(_key);
+      if (param)
+        param->Get(result.first);
+      else if (this->HasElement(_key))
+        result.first = this->GetElementImpl(_key)->Get<T>();
+      else if (this->HasElementDescription(_key))
+        result.first = this->GetElementDescription(_key)->Get<T>();
+      else
+        result.second = false;
+    }
+    else
+    {
+      result.second = false;
+    }
+
     return result;
   }
 
