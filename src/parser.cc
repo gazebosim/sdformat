@@ -25,6 +25,7 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/Param.hh"
 #include "sdf/parser.hh"
+#include "sdf/parser_private.hh"
 #include "sdf/sdf_config.h"
 
 #include "sdf/parser_urdf.hh"
