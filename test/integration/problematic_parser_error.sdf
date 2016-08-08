@@ -1,0 +1,15 @@
+<sdf version='1.4'>
+  <model name="model1">
+    <pose>0 0 0 0 0 1.5707</pose>
+    <link name="link1">
+    </link>
+    <stuff_ok>
+      some_content
+      <stuff_not_ok>
+        this block will lead to error:
+        Error [Element.cc:684] Missing element description for [stuff_not_ok]
+      </stuff_not_ok>
+    </stuff_ok>
+  </model>
+</sdf>
+
