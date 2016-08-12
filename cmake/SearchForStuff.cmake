@@ -149,7 +149,7 @@ endif()
 # If pkg-config fails, then we try find_library and find_path. If that fails,
 # then we try find_package.
 
-set (ruby_versions 1.9 2.0 2.1)
+set (ruby_versions 2.3 2.1 2.0 1.9)
 
 foreach (ver ${ruby_versions})
   # Check if pkg-config finds ruby
