@@ -2,13 +2,24 @@
 
 ### SDFormat 5.0.0 (xxxx-xx-xx)
 
+1. Added an example
+    * [Pull request 275](https://bitbucket.org/osrf/sdformat/pull-requests/275)
+
 1. Move functions that use TinyXML classes in private headers by creating 
    `parser_private.hh` from `parser.hh` and by not installing `Converter.hh`.
     * [Pull request 262](https://bitbucket.org/osrf/sdformat/pull-requests/262)
 
 ## SDFormat 4.0
 
-### SDFormat 4.x.x (20xx-xx-xx)
+### SDFormat 4.1.1 (2016-07-08)
+
+1. Added documentation and animation to `<actor>` element.
+    * [Pull request 280](https://bitbucket.org/osrf/sdformat/pull-request/280)
+
+1. Added tag to specify initial joint position
+    * [Pull request 279](https://bitbucket.org/osrf/sdformat/pull-request/279)
+
+### SDFormat 4.1.0 (2016-04-01)
 
 1. Added SDF conversion functions to parser including sdf::convertFile and sdf::convertString.
     * [Pull request 266](https://bitbucket.org/osrf/sdformat/pull-request/266)
@@ -41,6 +52,12 @@
     * [Pull request 199](https://bitbucket.org/osrf/sdformat/pull-requests/199)
 
 ## SDFormat 3.0
+
+### SDFormat 3.X.X (201X-XX-XX)
+
+1. Improve precision of floating point parameters
+     * [Pull request 273](https://bitbucket.org/osrf/sdformat/pull-requests/273)
+     * [Pull request 276](https://bitbucket.org/osrf/sdformat/pull-requests/276)
 
 ### SDFormat 3.7.0 (2015-11-20)
 

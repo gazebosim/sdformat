@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <boost/version.hpp>
+#include <ignition/math/Angle.hh>
 #include "sdf/Param.hh"
 
 bool check_double(std::string num)
@@ -142,6 +143,9 @@ TEST(Param, HexUInt)
 /// Test setting and reading hex and non-hex float values.
 TEST(Param, HexFloat)
 {
+// Microsoft does not parse hex values properly.
+// https://bitbucket.org/osrf/sdformat/issues/114
+#ifndef _MSC_VER
   sdf::Param floatParam("key", "float", "0", false, "description");
   float value;
   EXPECT_TRUE(floatParam.Get<float>(value));
@@ -162,6 +166,7 @@ TEST(Param, HexFloat)
   EXPECT_FALSE(floatParam.SetFromString("1.0e100"));
   EXPECT_TRUE(floatParam.Get<float>(value));
   EXPECT_FLOAT_EQ(value, 0.123f);
+#endif
 }
 
 ////////////////////////////////////////////////////
@@ -173,6 +178,9 @@ TEST(Param, HexDouble)
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 0.0);
 
+// Microsoft does not parse hex values properly.
+// https://bitbucket.org/osrf/sdformat/issues/114
+#ifndef _MSC_VER
   EXPECT_TRUE(doubleParam.SetFromString("0x01"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 1.0);
@@ -180,14 +188,14 @@ TEST(Param, HexDouble)
   EXPECT_TRUE(doubleParam.SetFromString("0X2A"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 42.0);
-
-  EXPECT_TRUE(doubleParam.SetFromString("0.123"));
+#endif
+  EXPECT_TRUE(doubleParam.SetFromString("0.123456789"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
-  EXPECT_DOUBLE_EQ(value, 0.123);
+  EXPECT_DOUBLE_EQ(value, 0.123456789);
 
   EXPECT_FALSE(doubleParam.SetFromString("1.0e1000"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
-  EXPECT_DOUBLE_EQ(value, 0.123);
+  EXPECT_DOUBLE_EQ(value, 0.123456789);
 }
 
 ////////////////////////////////////////////////////
@@ -203,6 +211,16 @@ TEST(Param, uint64t)
   EXPECT_TRUE(uint64tParam.SetFromString("18446744073709551615"));
   EXPECT_TRUE(uint64tParam.Get<uint64_t>(value));
   EXPECT_EQ(value, UINT64_MAX);
+}
+
+////////////////////////////////////////////////////
+/// Unknown type, should fall back to lexical_cast
+TEST(Param, UnknownType)
+{
+  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  ignition::math::Angle value;
+  EXPECT_TRUE(doubleParam.Get<ignition::math::Angle>(value));
+  EXPECT_DOUBLE_EQ(value.Radian(), 1.0);
 }
 
 /////////////////////////////////////////////////

@@ -52,7 +52,7 @@ namespace sdf
   /// \param[in] _epsilon the tolerance
   template<typename T>
   inline bool equal(const T &_a, const T &_b,
-                    const T &_epsilon = 1e-6)
+                    const T &_epsilon = 1e-6f)
   {
     return std::fabs(_a - _b) <= _epsilon;
   }
@@ -232,6 +232,21 @@ namespace sdf
     /// \param[in] _z value along z
     public: Vector3(double _x = 0.0, double _y = 0.0, double _z = 0.0)
             : x(_x), y(_y), z(_z) {}
+
+    /// \brief Assignment operator
+    /// \param[in] _v a new value
+    /// \return this
+    public: Vector3 &operator=(const Vector3 &_v)
+    {
+      if (this == &_v)
+        return *this;
+
+      this->x = _v.x;
+      this->y = _v.y;
+      this->z = _v.z;
+
+      return *this;
+    }
 
     /// \brief Addition operator
     /// \param[in] _v vector to add
