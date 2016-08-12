@@ -76,7 +76,11 @@ set (gtest_sources
 sdf_build_tests(${gtest_sources})
 
 sdf_add_library(sdformat ${sources})
-target_link_libraries(sdformat ${Boost_LIBRARIES} ${IGNITION-MATH_LIBRARIES} ${RUBY_LIBRARY})
+target_link_libraries(sdformat
+  ${Boost_LIBRARIES}
+  ${IGNITION-MATH_LIBRARIES}
+  ${RUBY_LIBRARY}
+)
 
 if (USE_EXTERNAL_TINYXML)
   target_link_libraries(sdformat ${tinyxml_LIBRARIES})

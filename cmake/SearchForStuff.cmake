@@ -160,6 +160,8 @@ foreach (ver ${ruby_versions})
   if (NOT ruby_FOUND OR NOT PKG_CONFIG_FOUND)
     if (${ver} EQUAL 1.9)
       set (ver_full 1.9.1)
+    else()
+      set (ver_full ${ver})
     endif()
 
     # pkg-config failed, so try using find_library and find_path

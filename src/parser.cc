@@ -33,7 +33,7 @@
 
 namespace sdf
 {
-/// \internal
+/// \cond
 // Class to handle Ruby initialization.
 class RubyInitializer
 {
@@ -90,6 +90,7 @@ class RubyInitializer
 
 // Instance of RubyInitializer that is constructed at startup.
 static RubyInitializer g_rubyInit;
+/// \endcond
 
 
 //////////////////////////////////////////////////
@@ -357,6 +358,12 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
   }
 
   xmlDoc.Parse(erbParsed.c_str());
+  if (xmlDoc.Error())
+  {
+    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
+
   if (readDoc(&xmlDoc, _sdf, filename))
     return true;
   else
@@ -391,6 +398,12 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(erbParsed.c_str());
+  if (xmlDoc.Error())
+  {
+    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
+
   if (xmlDoc.Error())
   {
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
@@ -1098,15 +1111,16 @@ bool erbFile(const std::string &_filename, std::string &_result)
   if (_filename.empty())
     return false;
 
+  // Open the file
+  std::ifstream in(_filename.c_str());
+
   // Make sure the file exists
-  if (!boost::filesystem::exists(boost::filesystem::path(_filename)))
+  if (!in.good())
   {
     sdferr << "Error: File doesn't exist[" << _filename << "]\n";
     return false;
   }
 
-  // Read file data
-  std::ifstream in(_filename.c_str());
   std::string data((std::istreambuf_iterator<char>(in)),
                     std::istreambuf_iterator<char>());
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Open Source Robotics Foundation
+ * Copyright 2016 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef _SDF_RUBY_HH_
-#define _SDF_RUBY_HH_
+#ifndef SDF_RUBY_HH_
+#define SDF_RUBY_HH_
 
 // This file exists to prevent compiler warning.
 // This file is not installed. It s only used internally by the parser.

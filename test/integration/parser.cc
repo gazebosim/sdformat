@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Open Source Robotics Foundation
+ * Copyright 2016 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
 #include "sdf/parser.hh"
 
 const std::string RSDF_TEST_FILE =
-  std::string(PROJECT_SOURCE_PATH) + "/test/integration/erb_test.rsdf";
+  std::string(PROJECT_SOURCE_PATH) + "/test/integration/erb_test.sdf.erb";
 
 /////////////////////////////////////////////////
 // Move this function to a more public place if more tests need it.
