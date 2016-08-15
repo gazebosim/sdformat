@@ -8,7 +8,7 @@
     </description>
   </element>
 
-  <element name="world_orientation" type="string" default="ENU" required="0">
+  <element name="world_frame_orientation" type="string" default="ENU" required="0">
     <description>
       This field identifies how Gazebo world frame is aligned in Geographical
       sense.  The final Gazebo world frame orientation is obtained by rotating
@@ -46,9 +46,8 @@
   <element name="heading_deg" type="double" default="0.0" required="1">
     <description>
       Heading offset of gazebo reference frame, measured as angle between
-      East and gazebo x axis, or equivalently, the angle from North to
-      gazebo y axis. Counterclockwise rotation (e.g. from North-East to North)
-      about the Down-vector is positive. The angle is specified in degrees.
+      Gazebo world frame and the world_frame_orientation type (ENU/NED/NWU).
+      Rotations about the Z-vector is positive. The angle is specified in degrees.
     </description>
   </element>
 
