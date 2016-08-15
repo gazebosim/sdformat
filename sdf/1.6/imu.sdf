@@ -14,11 +14,18 @@
                  is defined by the SphericalCoordinate class.
           - NWU: The IMU XYZ aligns with NWU, where NWU orientation relative to Gazebo world
                  is defined by the SphericalCoordinate class.
-          - GRAV: where direction of gravity maps to IMU reference frame Z-axis. IMU reference frame X-axis direction
-                  is defined by imu_dir_x. Note if imu_dir_x is parallel to gravity direction, this configuration fails.
-                  Otherwise, IMU reference frame X-axis is defined by projection of imu_dir_x onto a plane
-                  normal to the gravity vector. IMU reference frame Y-axis is a vector orthogonal to both
-                  X and Z axis following the right hand rule.
+          - GRAV_UP: where direction of gravity maps to IMU reference frame Z-axis with Z-axis pointing in
+                     the opposite direction of gravity. IMU reference frame X-axis direction is defined by imu_dir_x.
+                     Note if imu_dir_x is parallel to gravity direction, this configuration fails.
+                     Otherwise, IMU reference frame X-axis is defined by projection of imu_dir_x onto a plane
+                     normal to the gravity vector. IMU reference frame Y-axis is a vector orthogonal to both
+                     X and Z axis following the right hand rule.
+          - GRAV_DOWN: where direction of gravity maps to IMU reference frame Z-axis with Z-axis pointing in
+                       the direction of gravity. IMU reference frame X-axis direction is defined by imu_dir_x.
+                       Note if imu_dir_x is parallel to gravity direction, this configuration fails.
+                       Otherwise, IMU reference frame X-axis is defined by projection of imu_dir_x onto a plane
+                       normal to the gravity vector. IMU reference frame Y-axis is a vector orthogonal to both
+                       X and Z axis following the right hand rule.
       </description>
     </attribute>
     <element name="rpy" type="vector3" default="0 0 0" required="0">
@@ -57,7 +64,7 @@
     </element>
     <element name="imu_dir_x" type="vector3" default="1 0 0" required="0">
       <description>
-        Used when imu_localization is set to GRAV, a projection of this vector 
+        Used when imu_localization is set to GRAV_UP or GRAV_DOWN, a projection of this vector 
         into a plane that is orthogonal to the gravity vector
         defines the direction of the IMU reference frame's X-axis.
       </description>
