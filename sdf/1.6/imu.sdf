@@ -9,11 +9,11 @@
                  The orientation of the IMU's reference frame is defined by adding the rpy rotation
                  to the parent_frame.
           - NED: The IMU XYZ aligns with NED, where NED orientation relative to Gazebo world
-                 is defined by the SphericalCoordinate class.
+                 is defined by the SphericalCoordinates class.
           - ENU: The IMU XYZ aligns with ENU, where ENU orientation relative to Gazebo world
-                 is defined by the SphericalCoordinate class.
+                 is defined by the SphericalCoordinates class.
           - NWU: The IMU XYZ aligns with NWU, where NWU orientation relative to Gazebo world
-                 is defined by the SphericalCoordinate class.
+                 is defined by the SphericalCoordinates class.
           - GRAV_UP: where direction of gravity maps to IMU reference frame Z-axis with Z-axis pointing in
                      the opposite direction of gravity. IMU reference frame X-axis direction is defined by imu_dir_x.
                      Note if imu_dir_x is parallel to gravity direction, this configuration fails.
@@ -38,16 +38,16 @@
           - IMU reports in Gazebo world frame.
              Example sdf: parent_frame="world", rpy="0 0 0"
           - IMU reports in NWU frame.
-             Uses SphericalCoordinate class to determine world frame in relation to magnetic north and gravity;
-             i.e. rotation between North-West-Up and world (+X,+Y,+Z) frame is defined by SphericalCoordinate class.
+             Uses SphericalCoordinates class to determine world frame in relation to magnetic north and gravity;
+             i.e. rotation between North-West-Up and world (+X,+Y,+Z) frame is defined by SphericalCoordinates class.
              Example sdf given world is NWU: parent_frame="world", rpy="0 0 0"
           - IMU reports in NED frame.
-             Uses SphericalCoordinate class to determine world frame in relation to magnetic north and gravity;
-             i.e. rotation between North-East-Down and world (+X,+Y,+Z) frame is defined by SphericalCoordinate class.
+             Uses SphericalCoordinates class to determine world frame in relation to magnetic north and gravity;
+             i.e. rotation between North-East-Down and world (+X,+Y,+Z) frame is defined by SphericalCoordinates class.
              Example sdf given world is NWU: parent_frame="world", rpy="M_PI 0 0"
           - IMU reports in ENU frame.
-             Uses SphericalCoordinate class to determine world frame in relation to magnetic north and gravity;
-             i.e. rotation between East-North-Up and world (+X,+Y,+Z) frame is defined by SphericalCoordinate class.
+             Uses SphericalCoordinates class to determine world frame in relation to magnetic north and gravity;
+             i.e. rotation between East-North-Up and world (+X,+Y,+Z) frame is defined by SphericalCoordinates class.
              Example sdf given world is NWU: parent_frame="world", rpy="0 0 -0.5*M_PI"
           - IMU reports in ROS optical frame as described in http://www.ros.org/reps/rep-0103.html#suffix-frames, which is
              (z-forward, x-left to right when facing +z, y-top to bottom when facing +z).
