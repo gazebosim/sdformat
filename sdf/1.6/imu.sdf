@@ -5,7 +5,9 @@
     <attribute name="imu_localization" type="string" default="CUSTOM" required="1">
       <description>
         This string represents special hardcoded use cases that are commonly seen with typical robot IMU's:
-          - CUSTOM: use combinary of parent_frame and Euler angle rpy orientation specification.
+          - CUSTOM: use parent_frame attribute and Euler angle rpy orientation specification.
+                 The orientation of the IMU's reference frame is defined by adding the rpy rotation
+                 to the parent_frame.
           - NED: The IMU XYZ aligns with NED, where NED orientation relative to Gazebo world
                  is defined by the SphericalCoordinate class.
           - ENU: The IMU XYZ aligns with ENU, where ENU orientation relative to Gazebo world
