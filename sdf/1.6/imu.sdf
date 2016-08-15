@@ -1,7 +1,7 @@
 <element name="imu" required="0">
   <description>These elements are specific to the IMU sensor.</description>
 
-  <element name="reference_frame_orientation" required="0">
+  <element name="orientation_reference_frame" required="0">
     <attribute name="imu_localization" type="string" default="CUSTOM" required="1">
       <description>
         This string represents special hardcoded use cases that are commonly seen with typical robot IMU's:
