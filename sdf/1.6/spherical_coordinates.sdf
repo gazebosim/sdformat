@@ -47,7 +47,8 @@
     <description>
       Heading offset of gazebo reference frame, measured as angle between
       Gazebo world frame and the world_frame_orientation type (ENU/NED/NWU).
-      Rotations about the Z-vector is positive. The angle is specified in degrees.
+      Rotations about the downward-vector (e.g. N to E) is positive.
+      The angle is specified in degrees.
     </description>
   </element>
 
