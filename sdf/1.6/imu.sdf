@@ -67,7 +67,7 @@
         Used when imu_localization is set to GRAV_UP or GRAV_DOWN, a projection of this vector 
         into a plane that is orthogonal to the gravity vector
         defines the direction of the IMU reference frame's X-axis.
-        grav_dir_x is  defined in the parent_frame attribute.
+        grav_dir_x is  defined in the coordinate frame as defined by the parent_frame attribute.
       </description>
       <attribute name="parent_frame" type="string" default="" required="0">
         <description>
