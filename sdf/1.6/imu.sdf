@@ -60,7 +60,7 @@
           Name of parent frame which the pose is defined relative to.
           It can be any valid fully scoped Gazebo Link name or the special reserved "world" frame.
           If left empty, use the sensor's own local frame.
-        </element>
+        </description>
       </element>
     </element>
     <element name="grav_dir_x" type="vector3" default="1 0 0" required="0">
