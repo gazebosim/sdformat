@@ -57,7 +57,7 @@
       </description>
       <element name="parent_frame" type="string" default="" required="0">
         <description>
-          Name of parent frame which the pose is defined relative to.
+          Name of parent frame which the custom_rpy transform is defined relative to.
           It can be any valid fully scoped Gazebo Link name or the special reserved "world" frame.
           If left empty, use the sensor's own local frame.
         </description>
