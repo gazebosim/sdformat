@@ -197,6 +197,12 @@ TEST_F(SDFUpdate, ElementRemoveFromParent)
   EXPECT_EQ(elem->Get<std::string>("bad_name", "default").first, "default");
   EXPECT_FALSE(elem->Get<std::string>("bad_name", "default").second);
 
+  std::string value;
+  bool success;
+  std::tie(value, success) = elem->Get<std::string>("bad_name", "default");
+  EXPECT_FALSE(success);
+  EXPECT_EQ(value, "default");
+
   // Get next model element
   elem = elem->GetNextElement("model");
   // Check name == model3
