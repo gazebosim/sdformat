@@ -1476,6 +1476,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       }
       else if (childElem->ValueStr() == "selfCollide")
       {
+        sdf->isSelfCollide = true;
         std::string valueStr = GetKeyValueAsString(childElem);
 
         // default of selfCollide is false
@@ -2148,10 +2149,13 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
         }
         _elem->LinkEndChild(velocityDecay);
         // selfCollide tag
-        if ((*ge)->selfCollide)
-          AddKeyValue(_elem, "self_collide", "true");
-        else
-          AddKeyValue(_elem, "self_collide", "false");
+        if ((*ge)->isSelfCollide)
+        {
+          if ((*ge)->selfCollide)
+            AddKeyValue(_elem, "self_collide", "true");
+          else
+            AddKeyValue(_elem, "self_collide", "false");
+        }
         // insert blobs into body
         for (std::vector<TiXmlElementPtr>::iterator
             blobIt = (*ge)->blobs.begin();
