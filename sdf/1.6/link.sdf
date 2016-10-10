@@ -18,6 +18,10 @@
     <description>If true, the link can collide with other links in the model. Two links within a model will collide if link1.self_collide OR link2.self_collide. Links connected by a joint will never collide.</description>
   </element>
 
+  <element name="collide_mode" type="string" default="" required="0">
+    <description>See Link::SetCollideMode for details. It can be [all|none|sensors|fixed|ghoxe|...]. Default string is empty, which will not set custom collide mode for the link.</description>
+  </element>
+
   <element name="kinematic" type="bool" default="false" required="0">
     <description>If true, the link is kinematic only</description>
   </element>
