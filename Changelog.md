@@ -1,6 +1,6 @@
 ## SDFormat 4.0
 
-### SDFormat 4.2.0 (2016-07-08)
+### SDFormat 4.2.0 (2016-10-10)
 
 1. Fix URDF to SDF `self_collide` bug.
     * [Pull request 287](https://bitbucket.org/osrf/sdformat/pull-request/287)
