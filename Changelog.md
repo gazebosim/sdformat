@@ -1,5 +1,13 @@
 ## SDFormat 4.0
 
+### SDFormat 4.2.0 (2016-07-08)
+
+1. Fix URDF to SDF `self_collide` bug.
+    * [Pull request 287](https://bitbucket.org/osrf/sdformat/pull-request/287)
+
+1. Added IMU orientation specification to SDF.
+    * [Pull request 284](https://bitbucket.org/osrf/sdformat/pull-request/284)
+
 ### SDFormat 4.1.1 (2016-07-08)
 
 1. Added documentation and animation to `<actor>` element.
