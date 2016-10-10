@@ -2151,10 +2151,7 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
         // selfCollide tag
         if ((*ge)->isSelfCollide)
         {
-          if ((*ge)->selfCollide)
-            AddKeyValue(_elem, "self_collide", "true");
-          else
-            AddKeyValue(_elem, "self_collide", "false");
+          AddKeyValue(_elem, "self_collide", (*ge)->selfCollide ? "1" : "0");
         }
         // insert blobs into body
         for (std::vector<TiXmlElementPtr>::iterator
