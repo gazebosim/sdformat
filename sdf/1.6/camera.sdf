@@ -44,6 +44,10 @@
     </element>
   </element> <!-- End Save -->
 
+  <element name="strict_rate" type="bool" default="true" required="0">
+    <description>Enable or disable the strict respect of the provided fps. When enabled, the real time factor may be affected.</description>
+  </element> <!-- End strict_rate -->
+
   <element name="depth_camera" required="0">
     <description>Depth camera parameters</description>
     <element name="output" type="string" default="depths" required="1">
