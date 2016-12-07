@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <boost/version.hpp>
+#include <ignition/math/Angle.hh>
 #include "sdf/Param.hh"
 
 bool check_double(std::string num)
@@ -188,13 +189,13 @@ TEST(Param, HexDouble)
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 42.0);
 #endif
-  EXPECT_TRUE(doubleParam.SetFromString("0.123"));
+  EXPECT_TRUE(doubleParam.SetFromString("0.123456789"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
-  EXPECT_DOUBLE_EQ(value, 0.123);
+  EXPECT_DOUBLE_EQ(value, 0.123456789);
 
   EXPECT_FALSE(doubleParam.SetFromString("1.0e1000"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
-  EXPECT_DOUBLE_EQ(value, 0.123);
+  EXPECT_DOUBLE_EQ(value, 0.123456789);
 }
 
 ////////////////////////////////////////////////////
@@ -210,6 +211,16 @@ TEST(Param, uint64t)
   EXPECT_TRUE(uint64tParam.SetFromString("18446744073709551615"));
   EXPECT_TRUE(uint64tParam.Get<uint64_t>(value));
   EXPECT_EQ(value, UINT64_MAX);
+}
+
+////////////////////////////////////////////////////
+/// Unknown type, should fall back to lexical_cast
+TEST(Param, UnknownType)
+{
+  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  ignition::math::Angle value;
+  EXPECT_TRUE(doubleParam.Get<ignition::math::Angle>(value));
+  EXPECT_DOUBLE_EQ(value.Radian(), 1.0);
 }
 
 /////////////////////////////////////////////////

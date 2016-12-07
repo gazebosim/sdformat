@@ -1,5 +1,21 @@
 ## SDFormat 4.0
 
+### SDFormat 4.2.0 (2016-10-10)
+
+1. Fix URDF to SDF `self_collide` bug.
+    * [Pull request 287](https://bitbucket.org/osrf/sdformat/pull-request/287)
+
+1. Added IMU orientation specification to SDF.
+    * [Pull request 284](https://bitbucket.org/osrf/sdformat/pull-request/284)
+
+### SDFormat 4.1.1 (2016-07-08)
+
+1. Added documentation and animation to `<actor>` element.
+    * [Pull request 280](https://bitbucket.org/osrf/sdformat/pull-request/280)
+
+1. Added tag to specify initial joint position
+    * [Pull request 279](https://bitbucket.org/osrf/sdformat/pull-request/279)
+
 ### SDFormat 4.1.0 (2016-04-01)
 
 1. Added SDF conversion functions to parser including sdf::convertFile and sdf::convertString.
@@ -33,6 +49,12 @@
     * [Pull request 199](https://bitbucket.org/osrf/sdformat/pull-requests/199)
 
 ## SDFormat 3.0
+
+### SDFormat 3.X.X (201X-XX-XX)
+
+1. Improve precision of floating point parameters
+     * [Pull request 273](https://bitbucket.org/osrf/sdformat/pull-requests/273)
+     * [Pull request 276](https://bitbucket.org/osrf/sdformat/pull-requests/276)
 
 ### SDFormat 3.7.0 (2015-11-20)
 

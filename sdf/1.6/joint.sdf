@@ -44,6 +44,11 @@
       Parameters related to the axis of rotation for revolute joints,
       the axis of translation for prismatic joints.
     </description>
+    <element name="initial_position" type="double" default="0" required="0">
+      <description>
+        Default joint position for this joint axis.
+      </description>
+    </element>
     <element name="xyz" type="vector3" default="0 0 1" required="1">
       <description>
         Represents the x,y,z components of the axis unit vector. The axis is
@@ -103,6 +108,11 @@
     <description>
       Parameters related to the second axis of rotation for revolute2 joints and universal joints.
     </description>
+    <element name="initial_position" type="double" default="0" required="0">
+      <description>
+        Default joint position for this joint axis.
+      </description>
+    </element>
     <element name="xyz" type="vector3" default="0 0 1" required="1">
       <description>
         Represents the x,y,z components of the axis unit vector. The axis is

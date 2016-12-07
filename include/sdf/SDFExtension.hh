@@ -98,6 +98,7 @@ namespace sdf
     public: double maxVel;
     public: bool isMinDepth;
     public: double minDepth;
+    public: bool isSelfCollide;
     public: bool selfCollide;
 
     // geom, contact dynamics

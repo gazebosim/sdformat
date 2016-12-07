@@ -290,8 +290,12 @@ urdf::Vector3 ParseVector3(TiXmlNode *_key, double _scale)
     {
       return ParseVector3(GetKeyValueAsString(key), _scale);
     }
+    sdferr << "key[" << _key->Value() << "] does not contain a Vector3\n";
   }
-  sdferr << "key[" << _key->Value() << "] does not contain a Vector3\n";
+  else
+  {
+    sdferr << "Pointer to XML node _key is NULL\n";
+  }
 
   return urdf::Vector3(0, 0, 0);
 }
@@ -1472,6 +1476,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       }
       else if (childElem->ValueStr() == "selfCollide")
       {
+        sdf->isSelfCollide = true;
         std::string valueStr = GetKeyValueAsString(childElem);
 
         // default of selfCollide is false
@@ -2144,10 +2149,10 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
         }
         _elem->LinkEndChild(velocityDecay);
         // selfCollide tag
-        if ((*ge)->selfCollide)
-          AddKeyValue(_elem, "self_collide", "true");
-        else
-          AddKeyValue(_elem, "self_collide", "false");
+        if ((*ge)->isSelfCollide)
+        {
+          AddKeyValue(_elem, "self_collide", (*ge)->selfCollide ? "1" : "0");
+        }
         // insert blobs into body
         for (std::vector<TiXmlElementPtr>::iterator
             blobIt = (*ge)->blobs.begin();
@@ -3316,11 +3321,16 @@ void CreateCollision(TiXmlElement* _elem, ConstUrdfLinkPtr _link,
   // set its name, if lumped, add original link name
   // for meshes in an original mesh, it's likely
   // _link->name + mesh count
-  if (_oldLinkName.find(_link->name) == 0 || _oldLinkName.empty())
+  if (_oldLinkName.compare(0, _link->name.size(), _link->name) == 0 ||
+      _oldLinkName.empty())
+  {
     sdfCollision->SetAttribute("name", _oldLinkName);
+  }
   else
+  {
     sdfCollision->SetAttribute("name", _link->name
         + g_lumpPrefix + _oldLinkName);
+  }
 
   // std::cerr << "collision [" << sdfCollision->Attribute("name") << "]\n";
 
@@ -3358,11 +3368,16 @@ void CreateVisual(TiXmlElement *_elem, ConstUrdfLinkPtr _link,
   TiXmlElement *sdfVisual = new TiXmlElement("visual");
 
   // set its name
-  if (_oldLinkName.find(_link->name) == 0 || _oldLinkName.empty())
+  if (_oldLinkName.compare(0, _link->name.size(), _link->name) == 0 ||
+      _oldLinkName.empty())
+  {
     sdfVisual->SetAttribute("name", _oldLinkName);
+  }
   else
+  {
     sdfVisual->SetAttribute("name", _link->name
         + g_lumpPrefix + _oldLinkName);
+  }
 
   // add the visualisation transfrom
   double pose[6];
