@@ -184,6 +184,20 @@
           https://bitbucket.org/osrf/gazebo/pull-request/1114
         </description>
       </element>
+      <element name="friction_model" type="string" default="pyramid_model">
+        <description>
+          Name of ODE friction model to use. Valid values include:
+
+          pyramid_model: (default) friction forces limited in two directions
+          in proportion to normal force.
+          box_model: friction forces limited to constant in two directions.
+          cone_model: friction force magnitude limited in proportion to normal force.
+
+          See gazebo pull request 1522 for the implementation of this feature.
+          https://bitbucket.org/osrf/gazebo/pull-request/1522
+          https://bitbucket.org/osrf/gazebo/commits/8c05ad64967c
+        </description>
+      </element>
     </element> <!-- End Solver -->
 
     <element name="constraints" required="1">
