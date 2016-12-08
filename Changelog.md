@@ -2,6 +2,9 @@
 
 ### SDFormat 4.2.0 (2016-10-10)
 
+1. Added tag to specify ODE friction model.
+    * [Pull request 294](https://bitbucket.org/osrf/sdformat/pull-request/294)
+
 1. Fix URDF to SDF `self_collide` bug.
     * [Pull request 287](https://bitbucket.org/osrf/sdformat/pull-request/287)
 
