@@ -51,7 +51,7 @@ but with improved human-readability.
     + type: string
     + default: "pyramid_model"
     + required: 0
-    + [pull request 246](https://bitbucket.org/osrf/sdformat/pull-requests/246)
+    + [pull request 294](https://bitbucket.org/osrf/sdformat/pull-requests/294)
 
 1. **world.sdf** `wind` element
     + description: The wind tag specifies the type and properties of the wind.
