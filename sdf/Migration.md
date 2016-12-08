@@ -45,9 +45,9 @@ but with improved human-readability.
           in proportion to normal force.
         + box_model: friction forces limited to constant in two directions.
         + cone_model: friction force magnitude limited in proportion to normal force.
-          See gazebo pull request 1522 for the implementation of this feature.
-          https://bitbucket.org/osrf/gazebo/pull-request/1522
-          https://bitbucket.org/osrf/gazebo/commits/8c05ad64967c
+          See [gazebo pull request 1522](https://bitbucket.org/osrf/gazebo/pull-request/1522)
+          (merged in [gazebo 8c05ad64967c](https://bitbucket.org/osrf/gazebo/commits/8c05ad64967c))
+          for the implementation of this feature.
     + type: string
     + default: "pyramid_model"
     + required: 0
