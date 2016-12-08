@@ -1,5 +1,10 @@
 ## SDFormat 4.0
 
+### SDFormat 4.x.x (2016-xx-xx)
+
+1. Added `sampling` parameter to `<heightmap>` SDF element.
+    * [Pull request 293](https://bitbucket.org/osrf/sdformat/pull-request/293)
+
 ### SDFormat 4.2.0 (2016-10-10)
 
 1. Fix URDF to SDF `self_collide` bug.
