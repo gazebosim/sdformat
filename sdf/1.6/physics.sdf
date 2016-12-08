@@ -184,7 +184,7 @@
           https://bitbucket.org/osrf/gazebo/pull-request/1114
         </description>
       </element>
-      <element name="friction_model" type="string" default="pyramid_model">
+      <element name="friction_model" type="string" default="pyramid_model" required="0">
         <description>
           Name of ODE friction model to use. Valid values include:
 
