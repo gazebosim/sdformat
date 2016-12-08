@@ -16,6 +16,16 @@ but with improved human-readability.
 
 ### Additions
 
+1. **heightmap_shape.sdf** `sampling` element
+    + description: Samples per heightmap datum.
+      For rasterized heightmaps, this indicates the number of samples to take per pixel.
+      Using a lower value, e.g. 1, will generally improve the performance
+      of the heightmap but lower the heightmap quality.
+    + type: unsigned int
+    + default: 2
+    + required: 0
+    + [pull request 293](https://bitbucket.org/osrf/sdformat/pull-requests/293)
+
 1. **link.sdf** `enable_wind` element
     + description: If true, the link is affected by the wind
     + type: bool
