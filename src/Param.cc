@@ -115,46 +115,6 @@ Param::Param(const std::string &_key, const std::string &_typeName,
            this->dataPtr->typeName == "quaternion")
   {
     this->Init<ignition::math::Quaterniond>(_default);
-#ifndef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-  }
-  /// \deprecated The following sdf::<types> are deprecated
-  else if (this->dataPtr->typeName == "sdf::Vector2i" ||
-           this->dataPtr->typeName == "vector2i")
-  {
-    sdferr << "sdf::Vector2i is deprecated. Use ignition::math::Vector2i\n";
-    this->Init<sdf::Vector2i>(_default);
-  }
-  else if (this->dataPtr->typeName == "sdf::Vector2d" ||
-           this->dataPtr->typeName == "vector2d")
-  {
-    sdferr << "sdf::Vector2d is deprecated. Use ignition::math::Vector2d\n";
-    this->Init<sdf::Vector2d>(_default);
-  }
-  else if (this->dataPtr->typeName == "sdf::Vector3" ||
-           this->dataPtr->typeName == "vector3")
-  {
-    sdferr << "sdf::Vector3 is deprecated. Use ignition::math::Vector3d\n";
-    this->Init<sdf::Vector3>(_default);
-  }
-  else if (this->dataPtr->typeName == "sdf::Pose" ||
-           this->dataPtr->typeName == "pose" ||
-           this->dataPtr->typeName == "Pose")
-  {
-    sdferr << "sdf::Pose is deprecated. Use ignition::math::Pose3d\n";
-    this->Init<sdf::Pose>(_default);
-  }
-  else if (this->dataPtr->typeName == "sdf::Quaternion" ||
-           this->dataPtr->typeName == "quaternion")
-  {
-    sdferr << "sdf::Quaternion is deprecated. "
-           << "Use ignition::math::Quaterniond\n";
-    this->Init<sdf::Quaternion>(_default);
-#ifndef _WIN32
-#pragma GCC diagnostic pop
-#endif
   }
   else
     sdferr << "Unknown parameter type[" << this->dataPtr->typeName << "]\n";
@@ -274,55 +234,6 @@ bool Param::GetAny(boost::any &_anyVal) const
     if (!this->Get<ignition::math::Quaterniond>(ret))
       return false;
     _anyVal = ret;
-#ifndef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-  }
-  /// \deprecated The follow sdf Types are deprecated
-  else if (this->IsType<sdf::Vector3>())
-  {
-    sdferr << "sdf::Vector3 is deprecated. Use ignition::math::Vector3d\n";
-    sdf::Vector3 ret;
-    if (!this->Get<sdf::Vector3>(ret))
-      return false;
-    _anyVal = ret;
-  }
-  else if (this->IsType<sdf::Vector2i>())
-  {
-    sdferr << "sdf::Vector2i is deprecated. Use ignition::math::Vector2i\n";
-    sdf::Vector2i ret;
-    if (!this->Get<sdf::Vector2i>(ret))
-      return false;
-    _anyVal = ret;
-  }
-  else if (this->IsType<sdf::Vector2d>())
-  {
-    sdferr << "sdf::Vector2d is deprecated. Use ignition::math::Vector2d\n";
-    sdf::Vector2d ret;
-    if (!this->Get<sdf::Vector2d>(ret))
-      return false;
-    _anyVal = ret;
-  }
-  else if (this->IsType<sdf::Pose>())
-  {
-    sdferr << "sdf::Pose is deprecated. Use ignition::math::Pose3d\n";
-    sdf::Pose ret;
-    if (!this->Get<sdf::Pose>(ret))
-      return false;
-    _anyVal = ret;
-  }
-  else if (this->IsType<sdf::Quaternion>())
-  {
-    sdferr << "sdf::Quaternion is deprecated. "
-           << "Use ignition::math::Quaterniond\n";
-    sdf::Quaternion ret;
-    if (!this->Get<sdf::Quaternion>(ret))
-      return false;
-    _anyVal = ret;
-#ifndef _WIN32
-#pragma GCC diagnostic pop
-#endif
   }
   else
   {
@@ -472,12 +383,6 @@ ParamPtr Param::Clone() const
   return ParamPtr(new Param(this->dataPtr->key, this->dataPtr->typeName,
       this->GetAsString(), this->dataPtr->required,
       this->dataPtr->description));
-}
-
-//////////////////////////////////////////////////
-const std::type_info &Param::GetType() const
-{
-  return this->dataPtr->value.type();
 }
 
 //////////////////////////////////////////////////

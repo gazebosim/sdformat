@@ -24,16 +24,7 @@
 #include "sdf/Param.hh"
 #include "sdf/Element.hh"
 #include "sdf/system_util.hh"
-
-/// \todo Remove this diagnositic push/pop in version 5
-#ifndef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 #include "sdf/Types.hh"
-#ifndef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser
@@ -103,27 +94,14 @@ namespace sdf
 
     /// \brief Set the version string
     /// \param[in] _version SDF version string.
-    public: static void Version(const std::string &_version);
+    /// \deprecated It isn't possible to set the version anymore.
+    public: static void Version(const std::string &_version)
+        SDF_DEPRECATED(5.0);
 
-// \todo Remove this warning push/pop after sdformat 4.0
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
-
-    /// \brief Deprecated.
+    /// \brief Store the root element.
     /// \sa ElementPtr Root()
     /// \sa void Root(const ElementPtr _root)
-    public: ElementPtr root SDF_DEPRECATED(4.0);
-
-    /// \brief Deprecated.
-    /// \sa std::string Version()
-    /// \sa Version(const std::string &_version)
-    public: static std::string version SDF_DEPRECATED(4.0);
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
+    private: ElementPtr root;
   };
   /// \}
 }

@@ -19,15 +19,7 @@
 #include <Windows.h>
 #endif
 
-/// \todo Remove this diagnositic push/pop in version 5
-#ifndef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 #include "sdf/Types.hh"
-#ifndef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 /////////////////////////////////////////////////
 #ifdef _WIN32
