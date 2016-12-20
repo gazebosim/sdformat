@@ -49,6 +49,20 @@ but with improved human-readability.
     + required: 0
     + [pull request 246](https://bitbucket.org/osrf/sdformat/pull-requests/246)
 
+1. **physics.sdf** `friction_model` element
+    + description: Name of ODE friction model to use. Valid values include:
+        + pyramid_model: (default) friction forces limited in two directions
+          in proportion to normal force.
+        + box_model: friction forces limited to constant in two directions.
+        + cone_model: friction force magnitude limited in proportion to normal force.
+          See [gazebo pull request 1522](https://bitbucket.org/osrf/gazebo/pull-request/1522)
+          (merged in [gazebo 8c05ad64967c](https://bitbucket.org/osrf/gazebo/commits/8c05ad64967c))
+          for the implementation of this feature.
+    + type: string
+    + default: "pyramid_model"
+    + required: 0
+    + [pull request 294](https://bitbucket.org/osrf/sdformat/pull-requests/294)
+
 1. **world.sdf** `wind` element
     + description: The wind tag specifies the type and properties of the wind.
     + required: 0
