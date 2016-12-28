@@ -187,7 +187,7 @@ macro (sdf_build_tests)
               $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
           endif()
           
-          # Check if there is a .dll the /bin/ sibling directory of /lib/ 
+          # Check if there is a .dll in the /bin/ directory, sibling of /lib/ 
           # This is the structure used by vcpkg boost port
           string(REPLACE "/lib/" "/bin/" alt_dll ${dll})
           if (EXISTS ${alt_dll})
