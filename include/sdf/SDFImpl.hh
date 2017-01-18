@@ -27,6 +27,13 @@
 #include "sdf/system_util.hh"
 #include "sdf/Types.hh"
 
+#ifdef _WIN32
+// Disable warning C4251 which is triggered by
+// std::unique_ptr
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser
 namespace sdf
