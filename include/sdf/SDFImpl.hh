@@ -23,6 +23,7 @@
 
 #include "sdf/Param.hh"
 #include "sdf/Element.hh"
+#include "sdf/SDFImplPrivate.hh"
 #include "sdf/system_util.hh"
 #include "sdf/Types.hh"
 
@@ -98,10 +99,9 @@ namespace sdf
     public: static void Version(const std::string &_version)
         SDF_DEPRECATED(5.0);
 
-    /// \brief Store the root element.
-    /// \sa ElementPtr Root()
-    /// \sa void Root(const ElementPtr _root)
-    private: ElementPtr root;
+    /// \internal
+    /// \brief Pointer to private data.
+    private: std::unique_ptr<SDFPrivate> dataPtr;
   };
   /// \}
 }

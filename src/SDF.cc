@@ -157,7 +157,7 @@ void sdf::addURIPath(const std::string &_uri, const std::string &_path)
 
 /////////////////////////////////////////////////
 SDF::SDF()
-  : root(new Element)
+  : dataPtr(new SDFPrivate)
 {
 }
 
@@ -338,13 +338,13 @@ void SDF::SetFromString(const std::string &_sdfData)
 /////////////////////////////////////////////////
 ElementPtr SDF::Root() const
 {
-  return this->root;
+  return this->dataPtr->root;
 }
 
 /////////////////////////////////////////////////
 void SDF::Root(const ElementPtr _root)
 {
-  this->root = _root;
+  this->dataPtr->root = _root;
 }
 
 /////////////////////////////////////////////////
@@ -354,7 +354,7 @@ std::string SDF::Version()
 }
 
 /////////////////////////////////////////////////
-void SDF::Version(const std::string &_version)
+void SDF::Version(const std::string &/*_version*/)
 {
   sdferr << "SDF::Version(std::string) is deprecated. " <<
       "The version can't be changed at runtime anymore.\n";
