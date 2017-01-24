@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Open Source Robotics Foundation
+ * Copyright 2017 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */
-
-#ifdef _WIN32
-#include <Windows.h>
-#endif
+*/
+#ifndef _SDFIMPLPRIVATE_HH_
+#define _SDFIMPLPRIVATE_HH_
 
 #include "sdf/Types.hh"
 
-/////////////////////////////////////////////////
-#ifdef _WIN32
-const char *sdf::winGetEnv(const char *_name)
+/// \ingroup sdf_parser
+/// \brief namespace for Simulation Description Format parser
+namespace sdf
 {
-  const DWORD buffSize = 65535;
-  static char buffer[buffSize];
-  if (GetEnvironmentVariable(_name, buffer, buffSize))
-    return buffer;
-  return NULL;
-}
-#else
-const char *sdf::winGetEnv(const char * /*_name*/)
-{
-  return NULL;
+  /// \brief Private data for base SDF class
+  class SDFPrivate
+  {
+    public: SDFPrivate() : root(new Element)
+    {
+    };
+
+    /// \brief Store the root element.
+    /// \sa ElementPtr Root()
+    /// \sa void Root(const ElementPtr _root)
+    public: ElementPtr root;
+  };
+  /// \}
 }
 #endif
