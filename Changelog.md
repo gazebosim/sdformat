@@ -12,6 +12,9 @@
    `parser_private.hh` from `parser.hh` and by not installing `Converter.hh`.
     * [Pull request 262](https://bitbucket.org/osrf/sdformat/pull-requests/262)
 
+1. Require ignition-math3 as dependency
+    * [Pull request 299](https://bitbucket.org/osrf/sdformat/pull-requests/299)
+
 ## SDFormat 4.0
 
 ### SDFormat 4.1.1 (2016-07-08)
