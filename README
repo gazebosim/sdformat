@@ -1,5 +1,5 @@
-sdformat - Simulation Description Format (SDF) parser
------------------------------------------------------
+# sdformat # - Simulation Description Format (SDF) and parser
+
 
 SDF is an XML file format that describes environments, objects, and robots
 in a manner suitable for robotic applications. SDF is capable of representing
@@ -11,8 +11,8 @@ this package that reads SDF files and returns a C++ interface.
   
   http://sdformat.org
 
-Installation
-------------
+## Installation ##
+
 Standard installation can be performed in UNIX systems using the following 
 steps:
 
@@ -29,8 +29,8 @@ sdformat supported cmake parameters at configuring time:
    Use the sdformat team compilation flags instead of the common set defined
    by cmake.
                
-Uninstallation 
---------------
+## Uninstallation ## 
+
 To uninstall the software installed with the previous steps:
  - cd build/
  - sudo make uninstall
