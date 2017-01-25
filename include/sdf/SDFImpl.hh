@@ -23,7 +23,6 @@
 
 #include "sdf/Param.hh"
 #include "sdf/Element.hh"
-#include "sdf/SDFImplPrivate.hh"
 #include "sdf/system_util.hh"
 #include "sdf/Types.hh"
 
@@ -71,6 +70,8 @@ namespace sdf
   /// \param[in] _cb The callback function.
   SDFORMAT_VISIBLE
   void setFindCallback(std::function<std::string (const std::string &)> _cb);
+
+  class SDFPrivate;
 
   /// \brief Base SDF class
   class SDFORMAT_VISIBLE SDF
