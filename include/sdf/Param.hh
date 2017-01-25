@@ -36,16 +36,7 @@
 
 #include "sdf/Console.hh"
 #include "sdf/system_util.hh"
-
-/// \todo Remove this diagnositic push/pop in version 5
-#ifndef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 #include "sdf/Types.hh"
-#ifndef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 namespace sdf
 {
@@ -98,12 +89,6 @@ namespace sdf
     /// \brief Get the key value.
     /// \return The key.
     public: const std::string &GetKey() const;
-
-    /// \brief Get the type of the value stored.
-    /// \return The std::type_info.
-    /// \deprecated GetType is unstable. Use IsType().
-    /// \sa IsType
-    public: const std::type_info &GetType() const SDF_DEPRECATED(4.0);
 
     /// \brief Return true if the param is a particular type
     /// \return True if the type held by this Param matches the Type
@@ -221,23 +206,13 @@ namespace sdf
     /// \brief Update function pointer.
     public: std::function<boost::any ()> updateFunc;
 
-/// \todo Remove this diagnositic push/pop in version 5
-#ifndef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
     /// \def ParamVariant
     /// \briead Variant type def.
     public: typedef boost::variant<bool, char, std::string, int, uint64_t,
                unsigned int, double, float, sdf::Time, sdf::Color,
-               sdf::Vector3, sdf::Vector2i, sdf::Vector2d,
-               sdf::Quaternion, sdf::Pose,
                ignition::math::Vector3d, ignition::math::Vector2i,
                ignition::math::Vector2d, ignition::math::Quaterniond,
                ignition::math::Pose3d> ParamVariant;
-#ifndef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
     /// \brief This parameter's value
     public: ParamVariant value;

@@ -12,6 +12,14 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDFormat 5.x to 6.x
+
+### Deprecations
+
+1. **sdf/SDFImpl.hh**
+    + ***Deprecation:*** static void Version(const std::string &_version)
+    + ***Replacement:*** It isn't possible to set the version anymore.
+
 ## SDFormat 4.x to 5.x
 
 ### Deletions
@@ -24,6 +32,30 @@ but with improved human-readability..
     + bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf, const std::string &_source);
     + bool readXml(TiXmlElement *_xml, ElementPtr _sdf);
     + void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);
+
+### Deprecations
+
+1. **sdf/Param.hh**
+    + ***Deprecation:*** const std::type_info &GetType() const
+    + ***Replacement:*** template<typename Type> bool IsType() const
+
+1. **sdf/SDFImpl.hh**
+    + ***Deprecation:*** ElementPtr root
+    + ***Replacement:*** ElementPtr Root() const / void Root(const ElementPtr _root)
+    + ***Deprecation:*** static std::string version
+    + ***Replacement:*** static std::string Version()
+
+1. **sdf/Types.hh**
+    + ***Deprecation:*** sdf::Vector2i
+    + ***Replacement:*** ignition::math::Vector2i
+    + ***Deprecation:*** sdf::Vector2d
+    + ***Replacement:*** ignition::math::Vector2d
+    + ***Deprecation:*** sdf::Vector3
+    + ***Replacement:*** ignition::math::Vector3d
+    + ***Deprecation:*** sdf::Quaternion
+    + ***Replacement:*** ignition::math::Quaterniond
+    + ***Deprecation:*** sdf::Pose
+    + ***Replacement:*** ignition::math::Pose3d
 
 ## SDFormat 3.x to 4.x
 
