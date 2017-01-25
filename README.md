@@ -1,6 +1,7 @@
-# sdformat # - Simulation Description Format (SDF) and parser
+# sdformat #
 
-[Issue Tracker](https://gazebo.atlassian.net/projects/SDFOR/issues)
+* [Issue Tracker](https://gazebo.atlassian.net/projects/SDFOR/issues)
+
 
 SDF is an XML file format that describes environments, objects, and robots
 in a manner suitable for robotic applications. SDF is capable of representing
