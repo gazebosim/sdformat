@@ -24,6 +24,7 @@
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
 #include "sdf/SDFImpl.hh"
+#include "sdf/SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
 
 using namespace sdf;
