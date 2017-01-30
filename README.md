@@ -1,5 +1,3 @@
-[**Issue Tracker**](https://gazebo.atlassian.net/projects/SDFOR/issues)
-
 # sdformat #
 
 SDF is an XML file format that describes environments, objects, and robots
