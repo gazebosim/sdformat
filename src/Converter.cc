@@ -285,11 +285,10 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
   std::vector<std::string> fromTokens;
   boost::algorithm::split_regex(fromTokens, fromStr, boost::regex("::"));
 
-  if (fromTokens.empty())
-  {
-    sdferr << "Incorrect 'from' string format\n";
-    return;
-  }
+  // split_regex always returns at least one element in the fromTokens,
+  // even with an empty string (in that case, it is the empty string
+  // itself).  Thus, we never check whether it is empty, since that
+  // will always be false.
 
   // get value of the 'from' element/attribute
   TiXmlElement *fromElem = _elem;
