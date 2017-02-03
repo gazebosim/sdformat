@@ -297,7 +297,7 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
 
 /////////////////////////////////////////////////
 void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
-    const bool _copy)
+                     const bool _copy)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_moveElem != NULL, "Move element is NULL");
@@ -327,16 +327,9 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   boost::algorithm::split_regex(fromTokens, fromStr, boost::regex("::"));
   boost::algorithm::split_regex(toTokens, toStr, boost::regex("::"));
 
-  if (fromTokens.empty())
-  {
-    sdferr << "Incorrect 'from' string format\n";
-    return;
-  }
-  if (toTokens.empty())
-  {
-    sdferr << "Incorrect 'to' string format\n";
-    return;
-  }
+  // split_regex always returns at least one element, even with the
+  // empty string.  Thus we don't check if the fromTokens or toTokens
+  // are empty.
 
   // get value of the 'from' element/attribute
   TiXmlElement *fromElem = _elem;
