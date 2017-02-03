@@ -17,7 +17,6 @@
 
 #include <vector>
 #include <set>
-#include <regex>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
@@ -318,23 +317,14 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
 static std::vector<std::string> split_double_colon(const std::string& str)
 {
   std::vector<std::string> ret;
-  std::string dbl("::");
-  std::regex rgx(dbl);
+  size_t next = -2;
 
-  ret = {std::sregex_token_iterator(str.begin(), str.end(), rgx, -1),
-         std::sregex_token_iterator()};
-
-  // boost::algorithm::split_regex always puts an extra blank element on the
-  // back of the vector if the original string ended with "::".  The C++
-  // std::regex does not.  Since the Converter::Move code depends on the
-  // boost behavior, emulate that behavior here.
-  if (str.length() >= dbl.length())
+  do
   {
-    if (str.compare(str.length() - dbl.length(), dbl.length(), dbl) == 0)
-    {
-      ret.push_back("");
-    }
-  }
+    size_t current = next + 2;
+    next = str.find("::", current);
+    ret.push_back(str.substr(current, next - current));
+  } while (next != std::string::npos);
 
   return ret;
 }
