@@ -275,39 +275,24 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_removeElem != NULL, "Move element is NULL");
 
-  const char *fromElemStr = _removeElem->Attribute("element");
+  const char *attributeName = _removeElem->Attribute("attribute");
+  const char *elementName = _removeElem->Attribute("element");
 
-  // tokenize 'from' and 'to' strs
-  std::string fromStr = "";
-  if (fromElemStr)
-    fromStr = fromElemStr;
-
-  std::vector<std::string> fromTokens;
-  boost::algorithm::split_regex(fromTokens, fromStr, boost::regex("::"));
-
-  // split_regex always returns at least one element in the fromTokens,
-  // even with an empty string (in that case, it is the empty string
-  // itself).  Thus, we never check whether it is empty, since that
-  // will always be false.
-
-  // get value of the 'from' element/attribute
-  TiXmlElement *fromElem = _elem;
-  for (unsigned int i = 0; i < fromTokens.size()-1; ++i)
+  if (!((attributeName == NULL) ^ (elementName == NULL)))
   {
-    fromElem = fromElem->FirstChildElement(fromTokens[i]);
-    if (!fromElem)
-    {
-      // Return when the tokens don't match. Don't output an error message
-      // because it spams the console.
-      return;
-    }
+    sdferr << "Exactly one 'element' or 'attribute'"
+           << " must be specified in <remove>\n";
+    return;
   }
 
-  const char *fromName = fromTokens[fromTokens.size()-1].c_str();
-
-  TiXmlElement *moveFrom = fromElem->FirstChildElement(fromName);
-
-  fromElem->RemoveChild(moveFrom);
+  if (attributeName)
+  {
+    _elem->RemoveAttribute(attributeName);
+  }
+  else
+  {
+    _elem->RemoveChild(_elem->FirstChildElement(elementName));
+  }
 }
 
 /////////////////////////////////////////////////
