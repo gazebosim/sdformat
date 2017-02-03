@@ -612,6 +612,62 @@ TEST(Converter, MoveInvalid)
   EXPECT_EQ(convertElem->ValueStr(), "elemD");
 }
 
+////////////////////////////////////////////////////
+/// Ensure that Converter::Move function is working
+/// Test an invalid move
+TEST(Converter, MoveInvalidPrefix)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <move>"
+                << "     <from element='::elemC'/>"
+                << "     <to element='elemE'/>"
+                << "   </move>"
+                << " </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // In this case, we had an invalid elemC:: in the conversion, which
+  // means that the conversion quietly failed.  Make sure the new
+  // document is the same as the original.
+  // Verify the xml
+  TiXmlElement *convertElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(convertElem != NULL);
+  EXPECT_EQ(convertElem->ValueStr(), "elemA");
+  convertElem =  convertElem->FirstChildElement();
+  EXPECT_TRUE(convertElem != NULL);
+  EXPECT_EQ(convertElem->ValueStr(), "elemB");
+  convertElem =  convertElem->FirstChildElement();
+  EXPECT_TRUE(convertElem != NULL);
+  EXPECT_EQ(convertElem->ValueStr(), "elemC");
+  convertElem =  convertElem->FirstChildElement();
+  EXPECT_TRUE(convertElem != NULL);
+  EXPECT_EQ(convertElem->ValueStr(), "elemD");
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
