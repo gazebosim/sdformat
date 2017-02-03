@@ -257,7 +257,7 @@ void Converter::Add(TiXmlElement *_elem, TiXmlElement *_addElem)
   const char *elementName = _addElem->Attribute("element");
   const char *value = _addElem->Attribute("value");
 
-  if (!((attributeName == NULL) ^ (elementName == NULL)))
+  if (!((attributeName == nullptr) ^ (elementName == nullptr)))
   {
     sdferr << "Exactly one 'element' or 'attribute'"
            << " must be specified in <add>\n";
@@ -297,7 +297,7 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
   const char *attributeName = _removeElem->Attribute("attribute");
   const char *elementName = _removeElem->Attribute("element");
 
-  if (!((attributeName == NULL) ^ (elementName == NULL)))
+  if (!((attributeName == nullptr) ^ (elementName == nullptr)))
   {
     sdferr << "Exactly one 'element' or 'attribute'"
            << " must be specified in <remove>\n";
