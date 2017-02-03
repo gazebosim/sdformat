@@ -314,6 +314,7 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
   }
 }
 
+/////////////////////////////////////////////////
 static std::vector<std::string> split_double_colon(const std::string& str)
 {
   std::vector<std::string> ret;
