@@ -668,6 +668,62 @@ TEST(Converter, MoveInvalidPrefix)
   EXPECT_EQ(convertElem->ValueStr(), "elemD");
 }
 
+////////////////////////////////////////////////////
+/// Ensure that Converter::Move function is working
+/// Test moving from elem to elem
+TEST(Converter, CopyElemElem)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Test moving from elem to elem
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <copy>"
+                << "     <from element='elemC::elemD'/>"
+                << "     <to element='elemE'/>"
+                << "   </copy>"
+                << " </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  TiXmlElement *elemB = convertedElem->FirstChildElement();
+  ASSERT_TRUE(elemB != NULL);
+  EXPECT_EQ(elemB->ValueStr(), "elemB");
+  TiXmlElement *elemC = elemB->FirstChild("elemC")->ToElement();
+  EXPECT_TRUE(elemC != NULL);
+  TiXmlElement *elemD = elemC->FirstChildElement();
+  EXPECT_TRUE(elemD != NULL);
+  std::string elemValue = elemD->GetText();
+  EXPECT_EQ(elemValue, "D");
+  TiXmlElement *elemE = elemB->FirstChild("elemE")->ToElement();
+  EXPECT_TRUE(elemE != NULL);
+  elemValue = elemE->GetText();
+  EXPECT_EQ(elemValue, "D");
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
