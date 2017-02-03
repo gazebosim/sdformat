@@ -411,6 +411,100 @@ TEST(Converter, Add)
   EXPECT_EQ(attrValue, "DD");
 }
 
+////////////////////////////////////////////////////
+/// Ensure that Converter::Remove function is working
+/// Test removing element
+TEST(Converter, RemoveElement)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Test adding element
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <convert name='elemC'>"
+                << "      <remove element='elemD'/>"
+                << "    </convert>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_TRUE(convertedElem != NULL);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemC") != NULL);
+  convertedElem = convertedElem->FirstChildElement("elemC");
+  ASSERT_TRUE(convertedElem != NULL);
+  convertedElem = convertedElem->FirstChildElement("elemD");
+  ASSERT_TRUE(convertedElem == NULL);
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Remove function is working
+/// Test removing element and sub-elements
+TEST(Converter, RemoveElementSubElement)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Test adding element
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <remove element='elemC'/>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_TRUE(convertedElem != NULL);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  ASSERT_TRUE(convertedElem->FirstChildElement("elemC") == NULL);
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
