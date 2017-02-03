@@ -17,8 +17,8 @@
 
 #include <vector>
 #include <set>
+#include <regex>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/regex.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 
@@ -315,6 +315,27 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
   }
 }
 
+static std::vector<std::string> split_double_colon(const std::string& str)
+{
+  std::vector<std::string> ret;
+  std::string dbl("::");
+  std::regex rgx(dbl);
+
+  ret = {std::sregex_token_iterator(str.begin(), str.end(), rgx, -1), std::sregex_token_iterator()};
+
+  // boost::algorithm::split_regex always puts an extra blank element on the
+  // back of the vector if the original string ended with "::".  The C++
+  // std::regex does not.  Since the Converter::Move code depends on the
+  // boost behavior, emulate that behavior here.
+  if (str.length() >= dbl.length()) {
+    if (str.compare(str.length() - dbl.length(), dbl.length(), dbl) == 0) {
+      ret.push_back("");
+    }
+  }
+
+  return ret;
+}
+
 /////////////////////////////////////////////////
 void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
                      const bool _copy)
@@ -350,14 +371,12 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   {
     toStr = toAttrStr;
   }
-  std::vector<std::string> fromTokens;
-  std::vector<std::string> toTokens;
-  boost::algorithm::split_regex(fromTokens, fromStr, boost::regex("::"));
-  boost::algorithm::split_regex(toTokens, toStr, boost::regex("::"));
 
-  // split_regex always returns at least one element, even with the
-  // empty string.  Thus we don't check if the fromTokens or toTokens
-  // are empty.
+  std::vector<std::string> fromTokens = split_double_colon(fromStr);
+  std::vector<std::string> toTokens = split_double_colon(toStr);
+
+  // split_double_colon always returns at least one element, even with the
+  // empty string.  Thus we don't check if the fromTokens or toTokens are empty.
 
   // get value of the 'from' element/attribute
   TiXmlElement *fromElem = _elem;
