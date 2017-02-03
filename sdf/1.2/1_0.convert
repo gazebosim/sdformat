@@ -118,7 +118,7 @@
           <to element="density"/>
         </rename>
       </convert>
-   
+
       <deprecated>background/sky/rgba</deprecated>
       <deprecated>background/sky/material</deprecated>
     </convert>

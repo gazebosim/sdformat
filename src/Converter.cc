@@ -320,14 +320,17 @@ static std::vector<std::string> split_double_colon(const std::string& str)
   std::string dbl("::");
   std::regex rgx(dbl);
 
-  ret = {std::sregex_token_iterator(str.begin(), str.end(), rgx, -1), std::sregex_token_iterator()};
+  ret = {std::sregex_token_iterator(str.begin(), str.end(), rgx, -1),
+         std::sregex_token_iterator()};
 
   // boost::algorithm::split_regex always puts an extra blank element on the
   // back of the vector if the original string ended with "::".  The C++
   // std::regex does not.  Since the Converter::Move code depends on the
   // boost behavior, emulate that behavior here.
-  if (str.length() >= dbl.length()) {
-    if (str.compare(str.length() - dbl.length(), dbl.length(), dbl) == 0) {
+  if (str.length() >= dbl.length())
+  {
+    if (str.compare(str.length() - dbl.length(), dbl.length(), dbl) == 0)
+    {
       ret.push_back("");
     }
   }
