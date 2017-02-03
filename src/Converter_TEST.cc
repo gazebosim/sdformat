@@ -724,6 +724,21 @@ TEST(Converter, CopyElemElem)
   EXPECT_EQ(elemValue, "D");
 }
 
+TEST(Converter, GazeboToSDF)
+{
+  std::stringstream stream;
+  stream << "<gazebo version='1.2'>"
+         << "</gazebo>";
+  std::string xmlString = stream.str();
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  sdf::Converter::Convert(&xmlDoc, "1.3");
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChild("sdf")->ToElement();
+  EXPECT_TRUE(convertedElem != NULL);
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
