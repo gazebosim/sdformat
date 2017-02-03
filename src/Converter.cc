@@ -41,7 +41,9 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
     elem->SetValue("sdf");
   }
   else if (!elem)
+  {
     elem = _doc->FirstChildElement("sdf");
+  }
 
   if (!elem || !elem->Attribute("version"))
   {
@@ -52,7 +54,9 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   std::string origVersion = elem->Attribute("version");
 
   if (origVersion == _toVersion)
+  {
     return true;
+  }
 
   if (!_quiet)
   {
@@ -167,15 +171,25 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
        childElem; childElem = childElem->NextSiblingElement())
   {
     if (childElem->ValueStr() == "rename")
+    {
       Rename(_elem, childElem);
+    }
     else if (childElem->ValueStr() == "copy")
+    {
       Move(_elem, childElem, true);
+    }
     else if (childElem->ValueStr() == "move")
+    {
       Move(_elem, childElem, false);
+    }
     else if (childElem->ValueStr() == "add")
+    {
       Add(_elem, childElem);
+    }
     else if (childElem->ValueStr() == "remove")
+    {
       Remove(_elem, childElem);
+    }
     else if (childElem->ValueStr() != "convert")
     {
       std::cerr <<  "Unknown convert element[" << childElem->ValueStr()
@@ -201,7 +215,9 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
 
   const char *value = GetValue(fromElemName, fromAttrName, _elem);
   if (!value)
+  {
     return;
+  }
 
   if (!toElemName)
   {
@@ -211,7 +227,9 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
 
   TiXmlElement *replaceTo = new TiXmlElement(toElemName);
   if (toAttrName)
+  {
     replaceTo->SetAttribute(toAttrName, value);
+  }
   else
   {
     TiXmlText *text = new TiXmlText(value);
@@ -250,7 +268,9 @@ void Converter::Add(TiXmlElement *_elem, TiXmlElement *_addElem)
   if (attributeName)
   {
     if (value)
+    {
       _elem->SetAttribute(attributeName, value);
+    }
     else
     {
       sdferr << "No 'value' specified in <add>\n";
@@ -314,14 +334,22 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   // tokenize 'from' and 'to' strs
   std::string fromStr = "";
   if (fromElemStr)
+  {
     fromStr = fromElemStr;
+  }
   else if (fromAttrStr)
+  {
     fromStr = fromAttrStr;
+  }
   std::string toStr = "";
   if (toElemStr)
+  {
     toStr = toElemStr;
+  }
   else if (toAttrStr)
+  {
     toStr = toAttrStr;
+  }
   std::vector<std::string> fromTokens;
   std::vector<std::string> toTokens;
   boost::algorithm::split_regex(fromTokens, fromStr, boost::regex("::"));
@@ -386,7 +414,9 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
 
     // No matching element, so return.
     if (!moveFrom)
+    {
       return;
+    }
 
     if (toElemStr && !toAttrStr)
     {
@@ -398,21 +428,27 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     {
       value = GetValue(fromName, NULL, fromElem);
       if (!value)
+      {
         return;
+      }
       std::string valueStr = value;
 
       toElem->SetAttribute(toAttrStr, valueStr);
     }
 
     if (!_copy)
+    {
       fromElem->RemoveChild(moveFrom);
+    }
   }
   else if (fromAttrStr)
   {
     value = GetValue(NULL, fromName, fromElem);
 
     if (!value)
+    {
       return;
+    }
 
     std::string valueStr = value;
 
@@ -429,7 +465,9 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     }
 
     if (!_copy && fromAttrStr)
+    {
       fromElem->RemoveAttribute(fromName);
+    }
   }
 }
 
@@ -441,12 +479,18 @@ const char *Converter::GetValue(const char *_valueElem, const char *_valueAttr,
   {
     // Check to see if the element that is being converted has the value
     if (!_elem->FirstChildElement(_valueElem))
+    {
       return NULL;
+    }
 
     if (_valueAttr)
+    {
       return _elem->FirstChildElement(_valueElem)->Attribute(_valueAttr);
+    }
     else
+    {
       return _elem->FirstChildElement(_valueElem)->GetText();
+    }
   }
   else if (_valueAttr)
   {
