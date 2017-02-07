@@ -314,17 +314,19 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
 }
 
 /////////////////////////////////////////////////
-static std::vector<std::string> split_double_colon(const std::string& str)
+static std::vector<std::string> split(const std::string& str,
+                                      const std::string& splitter)
 {
   std::vector<std::string> ret;
-  size_t next = -2;
+  size_t next = 0;
+  size_t current = next;
 
-  do
+  while (next != std::string::npos)
   {
-    size_t current = next + 2;
-    next = str.find("::", current);
+    next = str.find(splitter, current);
     ret.push_back(str.substr(current, next - current));
-  } while (next != std::string::npos);
+    current = next + splitter.length();
+  }
 
   return ret;
 }
@@ -365,8 +367,8 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     toStr = toAttrStr;
   }
 
-  std::vector<std::string> fromTokens = split_double_colon(fromStr);
-  std::vector<std::string> toTokens = split_double_colon(toStr);
+  std::vector<std::string> fromTokens = split(fromStr, "::");
+  std::vector<std::string> toTokens = split(toStr, "::");
 
   // split_double_colon always returns at least one element, even with the
   // empty string.  Thus we don't check if the fromTokens or toTokens are empty.
