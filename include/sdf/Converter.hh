@@ -42,7 +42,7 @@ namespace sdf
     /// \param[in] _doc SDF xml doc
     /// \param[in] _convertDoc Convert xml doc
     public: static void Convert(TiXmlDocument *_doc,
-        TiXmlDocument *_convertDoc);
+                                TiXmlDocument *_convertDoc);
     /// \endcond
 
     private: static void ConvertImpl(TiXmlElement *_elem,

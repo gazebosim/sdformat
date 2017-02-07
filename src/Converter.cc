@@ -18,8 +18,6 @@
 #include <vector>
 #include <set>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/regex.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 
 #include "sdf/SDFImpl.hh"
@@ -36,12 +34,14 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   TiXmlElement *elem = _doc->FirstChildElement("gazebo");
 
   // Replace <gazebo> with <sdf>
-  if (elem && boost::lexical_cast<double>(_toVersion) >= 1.3)
+  if (elem && std::stod(_toVersion) >= 1.3)
   {
     elem->SetValue("sdf");
   }
   else if (!elem)
+  {
     elem = _doc->FirstChildElement("sdf");
+  }
 
   if (!elem || !elem->Attribute("version"))
   {
@@ -52,7 +52,9 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   std::string origVersion = elem->Attribute("version");
 
   if (origVersion == _toVersion)
+  {
     return true;
+  }
 
   if (!_quiet)
   {
@@ -167,15 +169,25 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
        childElem; childElem = childElem->NextSiblingElement())
   {
     if (childElem->ValueStr() == "rename")
+    {
       Rename(_elem, childElem);
+    }
     else if (childElem->ValueStr() == "copy")
+    {
       Move(_elem, childElem, true);
+    }
     else if (childElem->ValueStr() == "move")
+    {
       Move(_elem, childElem, false);
+    }
     else if (childElem->ValueStr() == "add")
+    {
       Add(_elem, childElem);
+    }
     else if (childElem->ValueStr() == "remove")
+    {
       Remove(_elem, childElem);
+    }
     else if (childElem->ValueStr() != "convert")
     {
       std::cerr <<  "Unknown convert element[" << childElem->ValueStr()
@@ -201,7 +213,9 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
 
   const char *value = GetValue(fromElemName, fromAttrName, _elem);
   if (!value)
+  {
     return;
+  }
 
   if (!toElemName)
   {
@@ -211,7 +225,9 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
 
   TiXmlElement *replaceTo = new TiXmlElement(toElemName);
   if (toAttrName)
+  {
     replaceTo->SetAttribute(toAttrName, value);
+  }
   else
   {
     TiXmlText *text = new TiXmlText(value);
@@ -240,7 +256,7 @@ void Converter::Add(TiXmlElement *_elem, TiXmlElement *_addElem)
   const char *elementName = _addElem->Attribute("element");
   const char *value = _addElem->Attribute("value");
 
-  if (!((attributeName == NULL) ^ (elementName == NULL)))
+  if (!((attributeName == nullptr) ^ (elementName == nullptr)))
   {
     sdferr << "Exactly one 'element' or 'attribute'"
            << " must be specified in <add>\n";
@@ -250,7 +266,9 @@ void Converter::Add(TiXmlElement *_elem, TiXmlElement *_addElem)
   if (attributeName)
   {
     if (value)
+    {
       _elem->SetAttribute(attributeName, value);
+    }
     else
     {
       sdferr << "No 'value' specified in <add>\n";
@@ -275,45 +293,47 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_removeElem != NULL, "Move element is NULL");
 
-  const char *fromElemStr = _removeElem->Attribute("element");
+  const char *attributeName = _removeElem->Attribute("attribute");
+  const char *elementName = _removeElem->Attribute("element");
 
-  // tokenize 'from' and 'to' strs
-  std::string fromStr = "";
-  if (fromElemStr)
-    fromStr = fromElemStr;
-
-  std::vector<std::string> fromTokens;
-  boost::algorithm::split_regex(fromTokens, fromStr, boost::regex("::"));
-
-  if (fromTokens.empty())
+  if (!((attributeName == nullptr) ^ (elementName == nullptr)))
   {
-    sdferr << "Incorrect 'from' string format\n";
+    sdferr << "Exactly one 'element' or 'attribute'"
+           << " must be specified in <remove>\n";
     return;
   }
 
-  // get value of the 'from' element/attribute
-  TiXmlElement *fromElem = _elem;
-  for (unsigned int i = 0; i < fromTokens.size()-1; ++i)
+  if (attributeName)
   {
-    fromElem = fromElem->FirstChildElement(fromTokens[i]);
-    if (!fromElem)
-    {
-      // Return when the tokens don't match. Don't output an error message
-      // because it spams the console.
-      return;
-    }
+    _elem->RemoveAttribute(attributeName);
+  }
+  else
+  {
+    _elem->RemoveChild(_elem->FirstChildElement(elementName));
+  }
+}
+
+/////////////////////////////////////////////////
+static std::vector<std::string> split(const std::string& str,
+                                      const std::string& splitter)
+{
+  std::vector<std::string> ret;
+  size_t next = 0;
+  size_t current = next;
+
+  while (next != std::string::npos)
+  {
+    next = str.find(splitter, current);
+    ret.push_back(str.substr(current, next - current));
+    current = next + splitter.length();
   }
 
-  const char *fromName = fromTokens[fromTokens.size()-1].c_str();
-
-  TiXmlElement *moveFrom = fromElem->FirstChildElement(fromName);
-
-  fromElem->RemoveChild(moveFrom);
+  return ret;
 }
 
 /////////////////////////////////////////////////
 void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
-    const bool _copy)
+                     const bool _copy)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_moveElem != NULL, "Move element is NULL");
@@ -330,29 +350,28 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   // tokenize 'from' and 'to' strs
   std::string fromStr = "";
   if (fromElemStr)
+  {
     fromStr = fromElemStr;
+  }
   else if (fromAttrStr)
+  {
     fromStr = fromAttrStr;
+  }
   std::string toStr = "";
   if (toElemStr)
+  {
     toStr = toElemStr;
+  }
   else if (toAttrStr)
+  {
     toStr = toAttrStr;
-  std::vector<std::string> fromTokens;
-  std::vector<std::string> toTokens;
-  boost::algorithm::split_regex(fromTokens, fromStr, boost::regex("::"));
-  boost::algorithm::split_regex(toTokens, toStr, boost::regex("::"));
+  }
 
-  if (fromTokens.empty())
-  {
-    sdferr << "Incorrect 'from' string format\n";
-    return;
-  }
-  if (toTokens.empty())
-  {
-    sdferr << "Incorrect 'to' string format\n";
-    return;
-  }
+  std::vector<std::string> fromTokens = split(fromStr, "::");
+  std::vector<std::string> toTokens = split(toStr, "::");
+
+  // split_double_colon always returns at least one element, even with the
+  // empty string.  Thus we don't check if the fromTokens or toTokens are empty.
 
   // get value of the 'from' element/attribute
   TiXmlElement *fromElem = _elem;
@@ -409,7 +428,9 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
 
     // No matching element, so return.
     if (!moveFrom)
+    {
       return;
+    }
 
     if (toElemStr && !toAttrStr)
     {
@@ -421,21 +442,27 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     {
       value = GetValue(fromName, NULL, fromElem);
       if (!value)
+      {
         return;
+      }
       std::string valueStr = value;
 
       toElem->SetAttribute(toAttrStr, valueStr);
     }
 
     if (!_copy)
+    {
       fromElem->RemoveChild(moveFrom);
+    }
   }
   else if (fromAttrStr)
   {
     value = GetValue(NULL, fromName, fromElem);
 
     if (!value)
+    {
       return;
+    }
 
     std::string valueStr = value;
 
@@ -452,7 +479,9 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     }
 
     if (!_copy && fromAttrStr)
+    {
       fromElem->RemoveAttribute(fromName);
+    }
   }
 }
 
@@ -464,12 +493,18 @@ const char *Converter::GetValue(const char *_valueElem, const char *_valueAttr,
   {
     // Check to see if the element that is being converted has the value
     if (!_elem->FirstChildElement(_valueElem))
+    {
       return NULL;
+    }
 
     if (_valueAttr)
+    {
       return _elem->FirstChildElement(_valueElem)->Attribute(_valueAttr);
+    }
     else
+    {
       return _elem->FirstChildElement(_valueElem)->GetText();
+    }
   }
   else if (_valueAttr)
   {

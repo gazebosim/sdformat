@@ -411,6 +411,334 @@ TEST(Converter, Add)
   EXPECT_EQ(attrValue, "DD");
 }
 
+////////////////////////////////////////////////////
+/// Ensure that Converter::Remove function is working
+/// Test removing element
+TEST(Converter, RemoveElement)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Test adding element
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <convert name='elemC'>"
+                << "      <remove element='elemD'/>"
+                << "    </convert>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_TRUE(convertedElem != NULL);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemC") != NULL);
+  convertedElem = convertedElem->FirstChildElement("elemC");
+  ASSERT_TRUE(convertedElem != NULL);
+  convertedElem = convertedElem->FirstChildElement("elemD");
+  ASSERT_TRUE(convertedElem == NULL);
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Remove function is working
+/// Test removing element and sub-elements
+TEST(Converter, RemoveElementSubElement)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Test adding element
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <remove element='elemC'/>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_TRUE(convertedElem != NULL);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  ASSERT_TRUE(convertedElem->FirstChildElement("elemC") == NULL);
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Remove function is working
+/// Test removing attribute
+TEST(Converter, RemoveAttr)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem = childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Test adding element
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <convert name='elemC'>"
+                << "      <remove attribute='attrC'/>"
+                << "    </convert>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_TRUE(convertedElem != NULL);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemC") != NULL);
+  convertedElem = convertedElem->FirstChildElement("elemC");
+  ASSERT_TRUE(convertedElem != NULL);
+  EXPECT_TRUE(convertedElem->Attribute("attrC") == NULL);
+  convertedElem = convertedElem->FirstChildElement("elemD");
+  ASSERT_TRUE(convertedElem != NULL);
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Move function is working
+/// Test an invalid move
+TEST(Converter, MoveInvalid)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <move>"
+                << "     <from element='elemC::'/>"
+                << "     <to element='elemE'/>"
+                << "   </move>"
+                << " </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // In this case, we had an invalid elemC:: in the conversion, which
+  // means that the conversion quietly failed.  Make sure the new
+  // document is the same as the original.
+  // Verify the xml
+  TiXmlElement *convertElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(convertElem != NULL);
+  EXPECT_EQ(convertElem->ValueStr(), "elemA");
+  convertElem =  convertElem->FirstChildElement();
+  EXPECT_TRUE(convertElem != NULL);
+  EXPECT_EQ(convertElem->ValueStr(), "elemB");
+  convertElem =  convertElem->FirstChildElement();
+  EXPECT_TRUE(convertElem != NULL);
+  EXPECT_EQ(convertElem->ValueStr(), "elemC");
+  convertElem =  convertElem->FirstChildElement();
+  EXPECT_TRUE(convertElem != NULL);
+  EXPECT_EQ(convertElem->ValueStr(), "elemD");
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Move function is working
+/// Test an invalid move
+TEST(Converter, MoveInvalidPrefix)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <move>"
+                << "     <from element='::elemC'/>"
+                << "     <to element='elemE'/>"
+                << "   </move>"
+                << " </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // In this case, we had an invalid elemC:: in the conversion, which
+  // means that the conversion quietly failed.  Make sure the new
+  // document is the same as the original.
+  // Verify the xml
+  TiXmlElement *convertElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(convertElem != NULL);
+  EXPECT_EQ(convertElem->ValueStr(), "elemA");
+  convertElem =  convertElem->FirstChildElement();
+  EXPECT_TRUE(convertElem != NULL);
+  EXPECT_EQ(convertElem->ValueStr(), "elemB");
+  convertElem =  convertElem->FirstChildElement();
+  EXPECT_TRUE(convertElem != NULL);
+  EXPECT_EQ(convertElem->ValueStr(), "elemC");
+  convertElem =  convertElem->FirstChildElement();
+  EXPECT_TRUE(convertElem != NULL);
+  EXPECT_EQ(convertElem->ValueStr(), "elemD");
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Move function is working
+/// Test moving from elem to elem
+TEST(Converter, CopyElemElem)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != NULL);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Test moving from elem to elem
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <copy>"
+                << "     <from element='elemC::elemD'/>"
+                << "     <to element='elemE'/>"
+                << "   </copy>"
+                << " </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  TiXmlElement *elemB = convertedElem->FirstChildElement();
+  ASSERT_TRUE(elemB != NULL);
+  EXPECT_EQ(elemB->ValueStr(), "elemB");
+  TiXmlElement *elemC = elemB->FirstChild("elemC")->ToElement();
+  EXPECT_TRUE(elemC != NULL);
+  TiXmlElement *elemD = elemC->FirstChildElement();
+  EXPECT_TRUE(elemD != NULL);
+  std::string elemValue = elemD->GetText();
+  EXPECT_EQ(elemValue, "D");
+  TiXmlElement *elemE = elemB->FirstChild("elemE")->ToElement();
+  EXPECT_TRUE(elemE != NULL);
+  elemValue = elemE->GetText();
+  EXPECT_EQ(elemValue, "D");
+}
+
+TEST(Converter, GazeboToSDF)
+{
+  std::stringstream stream;
+  stream << "<gazebo version='1.2'>"
+         << "</gazebo>";
+  std::string xmlString = stream.str();
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  sdf::Converter::Convert(&xmlDoc, "1.3");
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChild("sdf")->ToElement();
+  EXPECT_TRUE(convertedElem != NULL);
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
