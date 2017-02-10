@@ -14,12 +14,6 @@ but with improved human-readability..
 
 ## SDFormat 5.x to 6.x
 
-### Deprecations
-
-1. **sdf/SDFImpl.hh**
-    + ***Deprecation:*** static void Version(const std::string &_version)
-    + ***Replacement:*** It isn't possible to set the version anymore.
-
 ## SDFormat 4.x to 5.x
 
 ### Deletions
