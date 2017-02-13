@@ -48,9 +48,9 @@ Console::Console()
   try
   {
 #ifndef _WIN32
-    char *home = getenv("HOME");
+    const char *home = std::getenv("HOME");
 #else
-    const char *home = sdf::winGetEnv("HOMEPATH");
+    const char *home = std::getenv("HOMEPATH");
 #endif
     if (!home)
     {

@@ -40,13 +40,6 @@
 
 namespace sdf
 {
-  /// \brief Windows equivalent of getEnv.
-  /// Should only be called when using windows.
-  /// \param[in] _name Name of the environment variable to get.
-  /// \return Environment variable contents, or NULL on error.
-  SDFORMAT_VISIBLE
-  const char *winGetEnv(const char *_name);
-
   /// \brief Split a string using the delimiter in splitter.
   /// \param[in] str       The string to split.
   /// \param[in] splitter  The delimiter to use.
