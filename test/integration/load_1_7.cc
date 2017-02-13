@@ -17,11 +17,11 @@ TEST(SDF1_7, Load1_7World)
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf->SetFromString(xmlString);
 
-  ASSERT_TRUE(sdf->Root() != NULL);
+  ASSERT_NE(nullptr, sdf->Root());
   EXPECT_EQ(sdf->Root()->GetName(), "sdf");
 
   sdf::ElementPtr worldElem = sdf->Root()->GetElement("world");
-  ASSERT_TRUE(worldElem != NULL);
+  ASSERT_NE(nullptr, worldElem);
   EXPECT_EQ(worldElem->Get<std::string>("name"), "1_7_world_loaded");
 
 }
