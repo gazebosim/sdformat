@@ -17,7 +17,6 @@
 
 #include <vector>
 #include <set>
-#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
 #include "sdf/SDFImpl.hh"
@@ -518,8 +517,7 @@ void Converter::CheckDeprecation(TiXmlElement *_elem, TiXmlElement *_convert)
        deprecatedElem = deprecatedElem->NextSiblingElement("deprecated"))
   {
     std::string value = deprecatedElem->GetText();
-    std::vector<std::string> valueSplit;
-    boost::split(valueSplit, value, boost::is_any_of("/"));
+    std::vector<std::string> valueSplit = split(value, "/");
 
     bool found = false;
     TiXmlElement *e = _elem;
