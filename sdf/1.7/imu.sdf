@@ -1,0 +1,42 @@
+<element name="imu" required="0">
+  <description>These elements are specific to the IMU sensor.</description>
+
+  <element name="topic" type="string" default="__default_topic__" required="0">
+    <description>Topic on which data is published.</description>
+  </element>
+
+  <element name="angular_velocity" required="0">
+    <description>These elements are specific to body-frame angular velocity,
+    which is expressed in radians per second</description>
+    <element name="x" required="0">
+      <description>Angular velocity about the X axis</description>
+      <include filename="noise.sdf" required="0"/>
+    </element>
+    <element name="y" required="0">
+      <description>Angular velocity about the Y axis</description>
+      <include filename="noise.sdf" required="0"/>
+    </element>
+    <element name="z" required="0">
+      <description>Angular velocity about the Z axis</description>
+      <include filename="noise.sdf" required="0"/>
+    </element>
+  </element>
+
+  <element name="linear_acceleration" required="0">
+    <description>These elements are specific to body-frame linear acceleration,
+    which is expressed in meters per second squared</description>
+    <element name="x" required="0">
+      <description>Linear acceleration about the X axis</description>
+      <include filename="noise.sdf" required="0"/>
+    </element>
+    <element name="y" required="0">
+      <description>Linear acceleration about the Y axis</description>
+      <include filename="noise.sdf" required="0"/>
+    </element>
+    <element name="z" required="0">
+      <description>Linear acceleration about the Z axis</description>
+      <include filename="noise.sdf" required="0"/>
+    </element>
+  </element>
+
+</element>
