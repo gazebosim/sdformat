@@ -68,7 +68,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   elem->SetAttribute("version", _toVersion);
 
   std::string origVersionStr = origVersion;
-  boost::replace_all(origVersion, ".", "_");
+  std::replace(origVersion.begin(), origVersion.end(), '.', '_');
 
   std::string filename = sdf::findFile(origVersion + ".convert");
 
@@ -122,7 +122,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
         }
 
         origVersion = (*it).filename().string();
-        boost::replace_all(origVersion, ".", "_");
+        std::replace(origVersion.begin(), origVersion.end(), '.', '_');
       }
       else
       {
