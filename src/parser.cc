@@ -367,7 +367,8 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
+bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
+    bool _convert)
 {
   if (!_xmlDoc)
   {
@@ -382,7 +383,8 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
-    if (strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
+    if (_convert
+        && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
       sdfdbg << "Converting a deprecated source[" << _source << "].\n";
       Converter::Convert(_xmlDoc, SDF::Version());
@@ -417,7 +419,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
 
 //////////////////////////////////////////////////
 bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
-             const std::string &_source)
+             const std::string &_source, bool _convert)
 {
   if (!_xmlDoc)
   {
@@ -432,8 +434,8 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
-    if (strcmp(sdfNode->Attribute("version"),
-               SDF::Version().c_str()) != 0)
+    if (_convert &&
+        strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
       sdfwarn << "Converting a deprecated SDF source[" << _source << "].\n";
       Converter::Convert(_xmlDoc, SDF::Version());
@@ -961,7 +963,8 @@ bool convertFile(const std::string &_filename, const std::string &_version,
   {
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
-      return sdf::readDoc(&xmlDoc, _sdf, filename);
+      bool convertToLatest = false;
+      return sdf::readDoc(&xmlDoc, _sdf, filename, convertToLatest);
     }
   }
   else
@@ -989,7 +992,8 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
   {
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
-      return sdf::readDoc(&xmlDoc, _sdf, "data-string");
+      bool convertToLatest = false;
+      return sdf::readDoc(&xmlDoc, _sdf, "data-string", convertToLatest);
     }
   }
   else

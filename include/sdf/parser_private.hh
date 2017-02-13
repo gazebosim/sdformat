@@ -37,10 +37,11 @@ namespace sdf
   bool initXml(TiXmlElement *_xml, ElementPtr _sdf);
 
   /// \brief Populate the SDF values from a TinyXML document
-  bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source);
+  bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
+      bool _convert=true);
 
   bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
-               const std::string &_source);
+               const std::string &_source, bool _convert=true);
 
   // \brief For internal use only. Do not use this function.
   bool readXml(TiXmlElement *_xml, ElementPtr _sdf);

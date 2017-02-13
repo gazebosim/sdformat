@@ -151,7 +151,7 @@ TEST(ConverterIntegration, ParserFileConverter)
 
   sdf::ElementPtr rootElem = sdf->Root();
   ASSERT_TRUE(rootElem != NULL);
-  EXPECT_EQ(rootElem->Get<std::string>("version"), "1.6");
+  EXPECT_EQ("1.6", rootElem->Get<std::string>("version"));
 
   sdf::ElementPtr modelElem = rootElem->GetElement("model");
   ASSERT_TRUE(modelElem != NULL);
@@ -170,6 +170,23 @@ TEST(ConverterIntegration, ParserFileConverter)
 
   sdf::ElementPtr sourceElem = linkElem->GetElement("audio_source");
   ASSERT_TRUE(sourceElem != NULL);
+}
+
+/////////////////////////////////////////////////
+/// Convert to a previous SDF version
+TEST(ConverterIntegration, convertFileToNotLatestVersion)
+{
+  std::string filename = std::string(PROJECT_SOURCE_PATH) +
+    "/test/integration/audio.sdf";
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+  sdf::init(sdf);
+
+  EXPECT_TRUE(sdf::convertFile(filename, "1.5", sdf));
+
+  sdf::ElementPtr rootElem = sdf->Root();
+  ASSERT_TRUE(rootElem != NULL);
+  EXPECT_EQ("1.5", rootElem->Get<std::string>("version"));
 }
 
 /////////////////////////////////////////////////
@@ -194,6 +211,7 @@ TEST(ConverterIntegration, ParserStringConverter)
   EXPECT_TRUE(sdf::convertString(xmlString, "1.6", sdf));
   ASSERT_TRUE(sdf->Root() != NULL);
   EXPECT_EQ(sdf->Root()->GetName(), "sdf");
+  EXPECT_EQ("1.6", sdf->Root()->Get<std::string>("version"));
 
   sdf::ElementPtr worldElem = sdf->Root()->GetElement("world");
   ASSERT_TRUE(worldElem != NULL);

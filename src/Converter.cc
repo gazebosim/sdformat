@@ -24,6 +24,7 @@
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
+#include "sdf/sdf_config.h"
 
 using namespace sdf;
 
@@ -69,71 +70,64 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   std::string origVersionStr = origVersion;
   boost::replace_all(origVersion, ".", "_");
 
-  std::string filename = sdf::findFile(origVersion + ".convert");
+  bool success = false;
 
-  // Use convert file in the current sdf version folder for conversion. If file
-  // does not exist, then find intermediate convert files and iteratively
-  // convert the sdf elem. Ideally, users should use gzsdf convert so that the
-  // latest sdf versioned file is written and no subsequent conversions are
-  // necessary.
-  TiXmlDocument xmlDoc;
-  if (!xmlDoc.LoadFile(filename))
+  // find intermediate convert files and iteratively convert the sdf elem.
+  // Ideally, users should use gzsdf convert so that the latest sdf versioned
+  // file is written and no subsequent conversions are necessary.
+  std::string sdfPath = sdf::findFile("sdformat/");
+
+  // find all sdf version dirs in resource path
+  boost::filesystem::directory_iterator endIter;
+  std::set<boost::filesystem::path> sdfDirs;
+  if (boost::filesystem::exists(sdfPath)
+      && boost::filesystem::is_directory(sdfPath))
   {
-    std::string sdfPath = sdf::findFile("sdformat/");
-
-    // find all sdf version dirs in resource path
-    boost::filesystem::directory_iterator endIter;
-    std::set<boost::filesystem::path> sdfDirs;
-    if (boost::filesystem::exists(sdfPath)
-        && boost::filesystem::is_directory(sdfPath))
+    for (boost::filesystem::directory_iterator dirIter(sdfPath);
+         dirIter != endIter ; ++dirIter)
     {
-      for (boost::filesystem::directory_iterator dirIter(sdfPath);
-           dirIter != endIter ; ++dirIter)
+      if (boost::filesystem::is_directory(dirIter->status()))
       {
-        if (boost::filesystem::is_directory(dirIter->status()))
+        if (boost::algorithm::ilexicographical_compare(
+            origVersionStr, (*dirIter).path().filename().string()))
         {
-          if (boost::algorithm::ilexicographical_compare(
-              origVersionStr, (*dirIter).path().filename().string()))
-          {
-            sdfDirs.insert((*dirIter));
-          }
+          sdfDirs.insert((*dirIter));
         }
       }
     }
-
-    // loop through sdf dirs and do the intermediate conversions
-    for (std::set<boost::filesystem::path>::iterator it = sdfDirs.begin();
-        it != sdfDirs.end(); ++it)
-    {
-      boost::filesystem::path convertFile
-         = boost::filesystem::operator/((*it).string(), origVersion+".convert");
-      if (boost::filesystem::exists(convertFile))
-      {
-        if (!xmlDoc.LoadFile(convertFile.string()))
-        {
-            sdferr << "Unable to load file[" << convertFile << "]\n";
-            return false;
-        }
-        ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
-        if ((*it).filename() == _toVersion)
-          return true;
-
-        origVersion = (*it).filename().string();
-        boost::replace_all(origVersion, ".", "_");
-      }
-      else
-      {
-        continue;
-      }
-    }
-    sdferr << "Unable to convert from SDF version " << origVersionStr
-        << " to " << _toVersion << "\n";
-    return false;
   }
 
-  ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
+  TiXmlDocument xmlDoc;
+  // loop through sdf dirs and do the intermediate conversions
+  for (std::set<boost::filesystem::path>::iterator it = sdfDirs.begin();
+      it != sdfDirs.end(); ++it)
+  {
+    boost::filesystem::path convertFile
+       = boost::filesystem::operator/((*it).string(), origVersion+".convert");
+    if (boost::filesystem::exists(convertFile))
+    {
+      if (!xmlDoc.LoadFile(convertFile.string()))
+      {
+          sdferr << "Unable to load file[" << convertFile << "]\n";
+          break;
+      }
+      ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
+      if ((*it).filename() == _toVersion)
+      {
+        success = true;
+        break;
+      }
+      origVersion = (*it).filename().string();
+      boost::replace_all(origVersion, ".", "_");
+    }
+  }
 
-  return true;
+  if (!success)
+  {
+    sdferr << "Unable to convert from SDF version " << origVersionStr
+        << " to " << _toVersion << "\n";
+  }
+  return success;
 }
 
 /////////////////////////////////////////////////
