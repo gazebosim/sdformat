@@ -29,6 +29,12 @@
 using namespace sdf;
 
 /////////////////////////////////////////////////
+static bool icmp(const char &a, const char &b)
+{
+  return tolower(a) < tolower(b);
+}
+
+/////////////////////////////////////////////////
 bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
                         bool _quiet)
 {
@@ -93,8 +99,12 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
       {
         if (boost::filesystem::is_directory(dirIter->status()))
         {
-          if (boost::algorithm::ilexicographical_compare(
-              origVersionStr, (*dirIter).path().filename().string()))
+          std::string fname = (*dirIter).path().filename().string();
+          if (std::lexicographical_compare(origVersionStr.begin(),
+                                           origVersionStr.end(),
+                                           fname.begin(),
+                                           fname.end(),
+                                           icmp))
           {
             sdfDirs.insert((*dirIter));
           }
