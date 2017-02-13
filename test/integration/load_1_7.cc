@@ -5,7 +5,7 @@
 
 /////////////////////////////////////////////////
 /// Test conversion using the parser sdf string converter interface.
-TEST(ConverterIntegration, ParserStringConverter)
+TEST(SDF1_7, Load1_7World)
 {
   // The gravity and magnetic_field in 1.5 format
   std::string xmlString = R"(
