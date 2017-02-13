@@ -4,10 +4,9 @@
 #include "test_config.h"
 
 /////////////////////////////////////////////////
-/// Test conversion using the parser sdf string converter interface.
+/// Test that a world with SDF version 1.7 can be loaded
 TEST(SDF1_7, Load1_7World)
 {
-  // The gravity and magnetic_field in 1.5 format
   std::string xmlString = R"(
 <?xml version="1.0" ?>
 <sdf version="1.7">
