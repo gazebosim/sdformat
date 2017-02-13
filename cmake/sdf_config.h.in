@@ -6,7 +6,7 @@
  * use SDF_PROTOCOL_VERSION or SDF_PKG_VERSION
  *
  * SDF_VERSION is here to keep backwards compatibility. It was used
- * when the package version and protocol version were the same 
+ * when the package version and protocol version were the same
  */
 #define SDF_VERSION "${SDF_PROTOCOL_VERSION}"
 

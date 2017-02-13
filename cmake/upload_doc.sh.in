@@ -3,7 +3,7 @@
 # Usage: Only an administrator of OSRF's amazon s3 bucket will be able to use
 # this script.
 #
-# sh build/upload_doc.sh 
+# sh build/upload_doc.sh
 
 # Check if the node was configured to use s3cmd
 # This is done by running s3cmd --configure

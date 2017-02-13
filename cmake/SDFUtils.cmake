@@ -172,21 +172,21 @@ macro (sdf_build_tests)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${IGNITION-MATH_LIBRARY_DIRS}/${IGNITION-MATH_LIBRARIES}.dll"
         $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
-  
+
       # Copy in boost libraries
       foreach(lib ${Boost_LIBRARIES})
         if (EXISTS ${lib})
           add_custom_command(TARGET ${BINARY_NAME}
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${lib}"
             $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
-  
+
           string(REPLACE ".lib" ".dll" dll ${lib})
           if (EXISTS ${dll})
-            add_custom_command(TARGET ${BINARY_NAME}
+           add_custom_command(TARGET ${BINARY_NAME}
               COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dll}"
               $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
           endif()
-          
+
           # Check if there is a .dll in the /bin/ directory, sibling of /lib/ 
           # This is the structure used by vcpkg boost port
           string(REPLACE "/lib/" "/bin/" alt_dll ${dll})
@@ -195,7 +195,7 @@ macro (sdf_build_tests)
               COMMAND ${CMAKE_COMMAND} -E copy_if_different "${alt_dll}"
               $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
           endif()
-  
+
         endif()
       endforeach()
     endif()

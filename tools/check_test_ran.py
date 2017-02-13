@@ -56,15 +56,15 @@ def check_main():
     if len(sys.argv) < 2:
         usage()
     test_file = sys.argv[1]
-        
+
     print("Checking for test results in %s"%test_file)
-    
+
     if not os.path.exists(test_file):
         if not os.path.exists(os.path.dirname(test_file)):
             os.makedirs(os.path.dirname(test_file))
-            
+
         print("Cannot find results, writing failure results to", test_file)
-        
+
         with open(test_file, 'w') as f:
             test_name = os.path.basename(test_file)
             d = {'test': test_name, 'test_file': test_file }
@@ -77,5 +77,3 @@ def check_main():
 
 if __name__ == '__main__':
     check_main()
-
-

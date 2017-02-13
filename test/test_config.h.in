@@ -2,9 +2,9 @@
 #define PROJECT_BINARY_DIR  "${CMAKE_BINARY_DIR}"
 #define SDF_PROTOCOL_VERSION "${SDF_PROTOCOL_VERSION}"
 
-/* 
+/*
  * setenv/unstenv are not present in Windows. Define them to make the code
- * portable 
+ * portable
  */
 #if (_MSC_VER >= 1400) // Visual Studio 2005
 #include <sstream>

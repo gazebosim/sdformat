@@ -116,7 +116,7 @@ def printDocumentation(_file, _spaces, _doc)
 
   _file.printf("%*s</xsd:documentation>\n", _spaces, "")
   _spaces -= 2
-  
+
   _file.printf("%*s</xsd:annotation>\n", _spaces, "")
 end
 
@@ -162,7 +162,7 @@ def printAttribute(_file, _spaces, _attr)
   _file.printf("%*s<xsd:attribute name='%s' type='%s' %s %s>\n", _spaces,
                "", name, type, use, default)
 
-  if !_attr.elements["description"].nil? && 
+  if !_attr.elements["description"].nil? &&
      !_attr.elements["description"].text.nil?
     printDocumentation(_file, _spaces+2, _attr.elements["description"].text)
   end
@@ -294,9 +294,9 @@ doc.elements.each_with_index("element") do |elem, i|
 
   file.print("<?xml version='1.0' encoding='UTF-8'?>\n")
   file.print("<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema'>\n")
- 
-  printXSD(file, spaces, elem) 
-  
+
+  printXSD(file, spaces, elem)
+
   file.print("</xsd:schema>\n")
   file.close()
 end

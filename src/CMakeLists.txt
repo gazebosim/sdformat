@@ -39,12 +39,12 @@ if (USE_EXTERNAL_TINYXML)
   include_directories(${tinyxml_INCLUDE_DIRS})
 else()
   set(sources ${sources}
-    win/tinyxml/tinystr.cpp  
+    win/tinyxml/tinystr.cpp
     win/tinyxml/tinyxmlerror.cpp
     win/tinyxml/tinyxml.cpp
     win/tinyxml/tinyxmlparser.cpp)
-    
-    install (FILES win/tinyxml/tinyxml.h 
+
+    install (FILES win/tinyxml/tinyxml.h
 	    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sdformat-${SDF_VERSION})
 endif()
 
