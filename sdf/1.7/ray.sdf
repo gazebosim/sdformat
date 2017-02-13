@@ -1,6 +1,13 @@
 <element name="ray" required="0">
   <description>These elements are specific to the ray (laser) sensor.</description>
 
+  <element name="names_to_ignore" required="0">
+    <description>Contains one or more names of elements (collisions, visuals) that should be ignored by the sensor.</description>
+    <element name="name" type="string" default="" required="*">
+      <description>A name of an element that should be ignored by this sensor</description>
+    </element>
+  </element>
+
   <element name="scan" required="1">
     <description></description>
     <element name="horizontal" required="1">
