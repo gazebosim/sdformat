@@ -523,6 +523,9 @@ TEST_F(SDFUpdate, GetAny)
 TEST_F(SDFUpdate, Version)
 {
   EXPECT_STREQ(SDF_VERSION, sdf::SDF::Version().c_str());
+
+  sdf::SDF::Version("0.2.3");
+  EXPECT_STREQ("0.2.3", sdf::SDF::Version().c_str());
 }
 
 /////////////////////////////////////////////////
