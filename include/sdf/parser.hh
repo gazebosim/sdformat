@@ -30,39 +30,39 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool init(SDFPtr _sdf);
 
-  // \brief Initialize the SDF interface using a file
+  /// \brief Initialize the SDF interface using a file
   SDFORMAT_VISIBLE
   bool initFile(const std::string &_filename, SDFPtr _sdf);
 
-  // \brief Initialize and SDFElement interface using a file
+  /// \brief Initialize and SDFElement interface using a file
   SDFORMAT_VISIBLE
   bool initFile(const std::string &_filename, ElementPtr _sdf);
 
-  // \brief Initialize the SDF interface using a string
+  /// \brief Initialize the SDF interface using a string
   SDFORMAT_VISIBLE
   bool initString(const std::string &_xmlString, SDFPtr _sdf);
 
   /// \brief Populate the SDF values from a file
-  //
-  //  This populates the given sdf pointer from a file. If the file is a URDF
-  //  file it is converted to SDF first. All files are converted to the latest
-  //  SDF version
+  ///
+  /// This populates the given sdf pointer from a file. If the file is a URDF
+  /// file it is converted to SDF first. All files are converted to the latest
+  /// SDF version
   SDFORMAT_VISIBLE
   bool readFile(const std::string &_filename, SDFPtr _sdf);
 
   /// \brief Populate the SDF values from a string
-  //
-  //  This populates the sdf pointer from a string. If the string is a URDF
-  //  file it is converted to SDF first. All files are converted to the latest
-  //  SDF version
+  ///
+  /// This populates the sdf pointer from a string. If the string is a URDF
+  /// file it is converted to SDF first. All files are converted to the latest
+  /// SDF version
   SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, SDFPtr _sdf);
 
   /// \brief Populate the SDF values from a string
-  //
-  //  This populates the sdf pointer from a string. If the string is a URDF
-  //  file it is converted to SDF first. All files are converted to the latest
-  //  SDF version
+  ///
+  /// This populates the sdf pointer from a string. If the string is a URDF
+  /// file it is converted to SDF first. All files are converted to the latest
+  /// SDF version
   SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, ElementPtr _sdf);
 
