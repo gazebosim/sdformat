@@ -20,79 +20,66 @@
 #include "sdf/sdf.hh"
 #include "sdf/parser_urdf.hh"
 
-class URDFParser : public ::testing::Test
+std::string get_minimal_urdf_txt()
 {
-  public:
-      TiXmlDocument get_empty()
-      {
-          return TiXmlDocument();
-      }
-
-      std::string get_minimal_urdf_txt()
-      {
-          std::ostringstream stream;
-          stream << "<robot name='test_robot'>"
-                 << "<link name='link1' />"
-                 << "</robot>";
-          return stream.str();
-      }
-
-      std::string get_minimal_sdf_txt()
-      {
-          std::ostringstream stream;
-          // Use hard-coded "1.4" for version string
-          // until parser_urdf.cc exports version "1.5"
-          // see `sdf->SetAttribute("version", "1.4");`
-          // in URDF2SDF::InitModelString()
-          stream << "<sdf version='" << "1.4" << "'>"
-                 << "<model name='test_robot' />"
-                 << "</sdf>";
-          return stream.str();
-      }
-
-      TiXmlDocument convert_str_to_xml(const std::string& urdf)
-      {
-          TiXmlDocument tmp;
-          tmp.Parse(urdf.c_str());
-          return tmp;
-      }
-
-    protected:
-        sdf::URDF2SDF parser_;
-};
+  std::ostringstream stream;
+  stream << "<robot name='test_robot'>"
+         << "  <link name='link1' />"
+         << "</robot>";
+  return stream.str();
+}
 
 /* By design, errors are only reported in std output */
-TEST_F(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
+TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
 {
    ASSERT_NO_THROW(
-     TiXmlDocument doc = get_empty();
+     TiXmlDocument doc = TiXmlDocument();
+     sdf::URDF2SDF parser_;
      TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
    );
 }
 
-TEST_F(URDFParser, InitModelDoc_BasicModel_NoThrow)
+TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
 {
     ASSERT_NO_THROW(
-      std::string urdf = get_minimal_urdf_txt();
-      TiXmlDocument doc = convert_str_to_xml(urdf);
+      TiXmlDocument doc;
+      doc.Parse(get_minimal_urdf_txt().c_str());
+      sdf::URDF2SDF parser_;
       TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
     );
 }
 
-TEST_F(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
+TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
 {
    // URDF -> SDF
-   std::string urdf = get_minimal_urdf_txt();
-   TiXmlDocument doc = convert_str_to_xml(urdf);
+   TiXmlDocument doc;
+   doc.Parse(get_minimal_urdf_txt().c_str());
+   sdf::URDF2SDF parser_;
    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
    std::string sdf_result_str;
    sdf_result_str << sdf_result;
 
    // SDF -> SDF
-   std::string sdf = get_minimal_sdf_txt();
-   TiXmlDocument sdf_doc = convert_str_to_xml(sdf);
+   std::ostringstream stream;
+   // Use hard-coded "1.4" for version string
+   // until parser_urdf.cc exports version "1.5"
+   // see `sdf->SetAttribute("version", "1.4");`
+   // in URDF2SDF::InitModelString()
+   stream << "<sdf version='" << "1.4" << "'>"
+          << "  <model name='test_robot' />"
+          << "</sdf>";
+   TiXmlDocument sdf_doc;
+   sdf_doc.Parse(stream.str().c_str());
    std::string sdf_same_result_str;
    sdf_same_result_str << sdf_doc;
 
    ASSERT_EQ(sdf_same_result_str, sdf_result_str);
+}
+
+/////////////////////////////////////////////////
+/// Main
+int main(int argc, char **argv)
+{
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
