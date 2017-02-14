@@ -62,19 +62,33 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->dataPtr->set = false;
 
   if (this->dataPtr->typeName == "bool")
+  {
     this->Init<bool>(_default);
+  }
   else if (this->dataPtr->typeName == "int")
+  {
     this->Init<int>(_default);
+  }
   else if (this->dataPtr->typeName == "unsigned int")
+  {
     this->Init<unsigned int>(_default);
+  }
   else if (this->dataPtr->typeName == "uint64_t")
+  {
     this->Init<uint64_t>(_default);
+  }
   else if (this->dataPtr->typeName == "double")
+  {
     this->Init<double>(_default);
+  }
   else if (this->dataPtr->typeName == "float")
+  {
     this->Init<float>(_default);
+  }
   else if (this->dataPtr->typeName == "char")
+  {
     this->Init<char>(_default);
+  }
   else if (this->dataPtr->typeName == "std::string" ||
            this->dataPtr->typeName == "string")
   {
@@ -117,7 +131,9 @@ Param::Param(const std::string &_key, const std::string &_typeName,
     this->Init<ignition::math::Quaterniond>(_default);
   }
   else
+  {
     sdferr << "Unknown parameter type[" << this->dataPtr->typeName << "]\n";
+  }
 }
 
 //////////////////////////////////////////////////
@@ -134,105 +150,135 @@ bool Param::GetAny(boost::any &_anyVal) const
   {
     int ret = 0;
     if (!this->Get<int>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<uint64_t>())
   {
     uint64_t ret = 0;
     if (!this->Get<uint64_t>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<double>())
   {
     double ret = 0;
     if (!this->Get<double>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<float>())
   {
     float ret = 0;
     if (!this->Get<float>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<bool>())
   {
     bool ret = false;
     if (!this->Get<bool>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<std::string>())
   {
     std::string ret;
     if (!this->Get<std::string>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<unsigned int>())
   {
     unsigned int ret = 0;
     if (!this->Get<unsigned int>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<char>())
   {
     char ret = 0;
     if (!this->Get<char>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<sdf::Time>())
   {
     sdf::Time ret;
     if (!this->Get<sdf::Time>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<sdf::Color>())
   {
     sdf::Color ret;
     if (!this->Get<sdf::Color>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<ignition::math::Vector3d>())
   {
     ignition::math::Vector3d ret;
     if (!this->Get<ignition::math::Vector3d>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<ignition::math::Vector2i>())
   {
     ignition::math::Vector2i ret;
     if (!this->Get<ignition::math::Vector2i>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<ignition::math::Vector2d>())
   {
     ignition::math::Vector2d ret;
     if (!this->Get<ignition::math::Vector2d>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<ignition::math::Pose3d>())
   {
     ignition::math::Pose3d ret;
     if (!this->Get<ignition::math::Pose3d>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else if (this->IsType<ignition::math::Quaterniond>())
   {
     ignition::math::Quaterniond ret;
     if (!this->Get<ignition::math::Quaterniond>(ret))
+    {
       return false;
+    }
     _anyVal = ret;
   }
   else
@@ -302,9 +348,13 @@ bool Param::SetFromString(const std::string &_value)
 
   // "true" and "false" doesn't work properly
   if (lowerTmp == "true")
+  {
     tmp = "1";
+  }
   else if (lowerTmp == "false")
+  {
     tmp = "0";
+  }
 
   bool isHex = tmp.compare(0, 2, "0x") == 0;
 
@@ -315,21 +365,31 @@ bool Param::SetFromString(const std::string &_value)
     // Use boost lexical cast as a last resort.
     int numericBase = 10;
     if (isHex)
+    {
         numericBase = 16;
+    }
 
     if (this->dataPtr->typeName == "int")
+    {
       this->dataPtr->value = std::stoi(tmp, NULL, numericBase);
+    }
     else if (this->dataPtr->typeName == "unsigned int")
     {
       this->dataPtr->value = static_cast<unsigned int>(
           std::stoul(tmp, NULL, numericBase));
     }
     else if (this->dataPtr->typeName == "double")
+    {
       this->dataPtr->value = std::stod(tmp);
+    }
     else if (this->dataPtr->typeName == "float")
+    {
       this->dataPtr->value = std::stof(tmp);
+    }
     else
+    {
       boost::apply_visitor(string_set(tmp), this->dataPtr->value);
+    }
   }
 
   // Catch invalid argument exception from std::stoi/stoul/stod/stof

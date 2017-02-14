@@ -149,7 +149,9 @@ namespace sdf
   Console::ConsoleStream &Console::ConsoleStream::operator<<(const T &_rhs)
   {
     if (this->stream)
+    {
       *this->stream << _rhs;
+    }
 
     if (Console::Instance()->dataPtr->logFileStream.is_open())
     {

@@ -116,7 +116,9 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
         }
         ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
         if ((*it).filename() == _toVersion)
+        {
           return true;
+        }
 
         origVersion = (*it).filename().string();
         boost::replace_all(origVersion, ".", "_");

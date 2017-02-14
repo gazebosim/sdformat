@@ -260,9 +260,13 @@ namespace sdf
         std::string strValue =
           boost::lexical_cast<std::string>(this->dataPtr->value);
         if (strValue == "true" || strValue  == "1")
+        {
           _value = boost::lexical_cast<T>("1");
+        }
         else
+        {
           _value = boost::lexical_cast<T>("0");
+        }
       }
       else if (typeid(T) == this->dataPtr->value.type())
       {
@@ -325,9 +329,13 @@ namespace sdf
         std::transform(strValue.begin(), strValue.end(),
                        strValue.begin(), ::tolower);
         if (strValue == "true" || strValue == "1")
+        {
           this->dataPtr->value = true;
+        }
         else
+        {
           this->dataPtr->value = false;
+        }
       }
       else
       {

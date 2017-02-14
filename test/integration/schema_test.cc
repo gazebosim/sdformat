@@ -44,9 +44,13 @@ class SDFSchemaGenerator : public testing::Test
                                 SDF_ROOT_SCHEMA + " " + model;
       std::cout << "CMD[" << xmllintCmd << "]\n";
       if (system(xmllintCmd.c_str()) != 0)
-          FAIL() << "Fail in parsing the model";
+      {
+        FAIL() << "Fail in parsing the model";
+      }
       else
-          SUCCEED();
+      {
+        SUCCEED();
+      }
     }
 };
 

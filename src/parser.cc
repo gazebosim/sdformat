@@ -41,7 +41,9 @@ bool init(SDFPtr _sdf)
   std::string fileToFind = "root.sdf";
 
   if (sdf::SDF::Version() == "1.0" || sdf::SDF::Version() == "1.2")
+  {
     fileToFind = "gazebo.sdf";
+  }
 
   filename = sdf::findFile(fileToFind);
 
@@ -74,9 +76,13 @@ inline bool _initFile(const std::string &_filename, TPtr _sdf)
 
   TiXmlDocument xmlDoc;
   if (xmlDoc.LoadFile(filename))
+  {
     return initDoc(&xmlDoc, _sdf);
+  }
   else
+  {
     sdferr << "Unable to load file[" << _filename << "]\n";
+  }
 
   return false;
 }
@@ -155,7 +161,9 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
 {
   const char *refString = _xml->Attribute("ref");
   if (refString)
+  {
     _sdf->SetReferenceSDF(std::string(refString));
+  }
 
   const char *nameString = _xml->Attribute("name");
   if (!nameString)
@@ -181,7 +189,9 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
     std::string description;
     TiXmlElement *descChild = _xml->FirstChildElement("description");
     if (descChild && descChild->GetText())
+    {
       description = descChild->GetText();
+    }
 
     _sdf->AddValue(elemTypeString, elemDefaultValue, required, description);
   }
@@ -223,7 +233,9 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
     std::string description;
 
     if (descriptionChild && descriptionChild->GetText())
+    {
       description = descriptionChild->GetText();
+    }
 
     _sdf->AddAttribute(name, type, defaultValue, required, description);
   }
@@ -267,7 +279,9 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
     // override description for include elements
     TiXmlElement *description = child->FirstChildElement("description");
     if (description)
+    {
       element->SetDescription(description->GetText());
+    }
 
     _sdf->AddElementDescription(element);
   }
@@ -295,7 +309,9 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
     return false;
   }
   if (readDoc(&xmlDoc, _sdf, filename))
+  {
     return true;
+  }
   else
   {
     sdf::URDF2SDF u2g;
@@ -326,7 +342,9 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
     return false;
   }
   if (readDoc(&xmlDoc, _sdf, "data-string"))
+  {
     return true;
+  }
   else
   {
     sdf::URDF2SDF u2g;
@@ -357,7 +375,9 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
     return false;
   }
   if (readDoc(&xmlDoc, _sdf, "data-string"))
+  {
     return true;
+  }
   else
   {
     sdferr << "parse as sdf version " << SDF::Version() << " failed, "
@@ -378,7 +398,9 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
   // check sdf version, use old parser if necessary
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
+  {
     sdfNode = _xmlDoc->FirstChildElement("gazebo");
+  }
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
@@ -400,15 +422,21 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
   {
     // try to use the old deprecated parser
     if (!sdfNode)
+    {
       sdfdbg << "No <sdf> element in file[" << _source << "]\n";
+    }
     else if (!sdfNode->Attribute("version"))
+    {
       sdfdbg << "SDF <sdf> element has no version in file["
              << _source << "]\n";
+    }
     else if (strcmp(sdfNode->Attribute("version"),
                     SDF::Version().c_str()) != 0)
+    {
       sdfdbg << "SDF version ["
-            << sdfNode->Attribute("version")
-            << "] is not " << SDF::Version() << "\n";
+             << sdfNode->Attribute("version")
+             << "] is not " << SDF::Version() << "\n";
+    }
     return false;
   }
 
@@ -428,7 +456,9 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   // check sdf version, use old parser if necessary
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
+  {
     sdfNode = _xmlDoc->FirstChildElement("gazebo");
+  }
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
@@ -458,14 +488,20 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   {
     // try to use the old deprecated parser
     if (!sdfNode)
+    {
       sdfdbg << "SDF has no <sdf> element\n";
+    }
     else if (!sdfNode->Attribute("version"))
+    {
       sdfdbg << "<sdf> element has no version\n";
+    }
     else if (strcmp(sdfNode->Attribute("version"),
                     SDF::Version().c_str()) != 0)
+    {
       sdfdbg << "SDF version ["
-            << sdfNode->Attribute("version")
-            << "] is not " << SDF::Version() << "\n";
+             << sdfNode->Attribute("version")
+             << "] is not " << SDF::Version() << "\n";
+    }
     return false;
   }
 
@@ -489,7 +525,9 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
       return false;
     }
     else
+    {
       return true;
+    }
   }
 
   if (_xml->GetText() != NULL && _sdf->GetValue())
@@ -624,8 +662,10 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           {
             TiXmlElement *modelXML = manifestDoc.FirstChildElement("model");
             if (!modelXML)
+            {
               sdferr << "No <model> element in manifest["
-                    << manifestPath << "]\n";
+                     << manifestPath << "]\n";
+            }
             else
             {
               TiXmlElement *sdfXML = modelXML->FirstChildElement("sdf");
@@ -708,7 +748,9 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
           const char *frame = poseElemXml->Attribute("frame");
           if (frame)
+          {
             poseElem->GetAttribute("frame")->SetFromString(frame);
+          }
         }
 
         if (elemXml->FirstChildElement("static"))
@@ -764,7 +806,9 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           ElementPtr element = elemDesc->Clone();
           element->SetParent(_sdf);
           if (readXml(elemXml, element))
+          {
             _sdf->InsertElement(element);
+          }
           else
           {
             sdferr << "Error reading element <" << elemXml->Value() << ">\n";
@@ -841,7 +885,9 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
       // copy value
       std::string value = elemXml->GetText();
       if (!value.empty())
-          element->GetValue()->SetFromString(value);
+      {
+        element->GetValue()->SetFromString(value);
+      }
       copyChildren(element, elemXml);
     }
     else
@@ -850,7 +896,9 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
       element->SetParent(_sdf);
       element->SetName(elem_name);
       if (elemXml->GetText() != NULL)
+      {
         element->AddValue("string", elemXml->GetText(), "1");
+      }
 
       for (TiXmlAttribute *attribute = elemXml->FirstAttribute();
            attribute; attribute = attribute->Next())

@@ -275,9 +275,13 @@ urdf::Vector3 ParseVector3(const std::string &_str, double _scale)
   }
 
   if (vals.size() == 3)
+  {
     return urdf::Vector3(vals[0], vals[1], vals[2]);
+  }
   else
+  {
     return urdf::Vector3(0, 0, 0);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -364,12 +368,16 @@ void ReduceCollisionToParent(UrdfLinkPtr _parentLink,
   std::vector<UrdfCollisionPtr>::iterator colIt =
     find(cols->begin(), cols->end(), _collision);
   if (colIt != cols->end())
+  {
     sdfwarn << "attempted to add collision to link ["
-      << _parentLink->name
-      << "], but it already exists under group ["
-      << _name << "]\n";
+            << _parentLink->name
+            << "], but it already exists under group ["
+            << _name << "]\n";
+  }
   else
+  {
     cols->push_back(_collision);
+  }
 #else
   // added a check to see if _collision already exist in
   // _parentLink::collision_array if not, add it.
@@ -445,12 +453,16 @@ void ReduceVisualToParent(UrdfLinkPtr _parentLink,
   std::vector<UrdfVisualPtr>::iterator visIt
     = find(viss->begin(), viss->end(), _visual);
   if (visIt != viss->end())
+  {
     sdfwarn << "attempted to add visual to link ["
-      << _parentLink->name
-      << "], but it already exists under group ["
-      << _name << "]\n";
+            << _parentLink->name
+            << "], but it already exists under group ["
+            << _name << "]\n";
+  }
   else
+  {
     viss->push_back(_visual);
+  }
 #else
   // added a check to see if _visual already exist in
   // _parentLink::visual_array if not, add it.
@@ -482,8 +494,12 @@ void ReduceFixedJoints(TiXmlElement *_root, UrdfLinkPtr _link)
   // if child is attached to self by fixed _link first go up the tree,
   //   check it's children recursively
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
+  {
     if (FixedJointShouldBeReduced(_link->child_links[i]->parent_joint))
+    {
       ReduceFixedJoints(_root, _link->child_links[i]);
+    }
+  }
 
   // reduce this _link's stuff up the tree to parent but skip first joint
   //   if it's the world
@@ -505,8 +521,12 @@ void ReduceFixedJoints(TiXmlElement *_root, UrdfLinkPtr _link)
 
   // continue down the tree for non-fixed joints
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
+  {
     if (!FixedJointShouldBeReduced(_link->child_links[i]->parent_joint))
+    {
       ReduceFixedJoints(_root, _link->child_links[i]);
+    }
+  }
 }
 
 // ODE dMatrix
@@ -724,12 +744,17 @@ void dMassTranslate (dMass *m, double x, double y, double z)
   a[0] = x + m->c[0];
   a[1] = y + m->c[1];
   a[2] = z + m->c[2];
-  dSetZero (ahat,12);
-  dSetCrossMatrixPlus (ahat,a,4);
-  dMultiply0_333 (t1,ahat,ahat);
-  dMultiply0_333 (t2,chat,chat);
-  for (i=0; i<3; i++) for (j=0; j<3; j++)
-    m->_I(i,j) += m->mass * (t2[i*4+j]-t1[i*4+j]);
+  dSetZero(ahat, 12);
+  dSetCrossMatrixPlus(ahat, a, 4);
+  dMultiply0_333(t1, ahat, ahat);
+  dMultiply0_333(t2, chat, chat);
+  for (i = 0; i < 3; i++)
+  {
+    for (j = 0; j < 3; j++)
+    {
+      m->_I(i,j) += m->mass * (t2[i*4+j]-t1[i*4+j]);
+    }
+  }
 
   // ensure perfect symmetry
   m->_I(1,0) = m->_I(0,1);
@@ -745,10 +770,16 @@ void dMassTranslate (dMass *m, double x, double y, double z)
 void dMassAdd (dMass *a, const dMass *b)
 {
   int i;
-  double denom = dRecip (a->mass + b->mass);
-  for (i=0; i<3; i++) a->c[i] = (a->c[i]*a->mass + b->c[i]*b->mass)*denom;
+  double denom = dRecip(a->mass + b->mass);
+  for (i = 0; i < 3; i++)
+  {
+    a->c[i] = (a->c[i]*a->mass + b->c[i]*b->mass)*denom;
+  }
   a->mass += b->mass;
-  for (i=0; i<12; i++) a->I[i] += b->I[i];
+  for (i = 0; i < 12; i++)
+  {
+    a->I[i] += b->I[i];
+  }
 }
 
 /////////////////////////////////////////////////
@@ -801,7 +832,9 @@ void ReduceInertialToParent(UrdfLinkPtr _link)
     dMass parentMass;
 
     if (!_link->getParent()->inertial)
+    {
       _link->getParent()->inertial.reset(new urdf::Inertial);
+    }
 
     dMassSetParameters(&parentMass, _link->getParent()->inertial->mass,
         0, 0, 0,
@@ -1218,7 +1251,9 @@ std::string Values2str(unsigned int _count, const double *_values)
   for (unsigned int i = 0 ; i < _count ; ++i)
   {
     if (i > 0)
+    {
       ss << " ";
+    }
     ss << _values[i];
   }
   return ss.str();
@@ -1233,14 +1268,18 @@ void AddKeyValue(TiXmlElement *_elem, const std::string &_key,
   {
     std::string oldValue = GetKeyValueAsString(childElem);
     if (oldValue != _value)
+    {
       sdfwarn << "multiple inconsistent <" << _key
-        << "> exists due to fixed joint reduction"
-        << " overwriting previous value [" << oldValue
-        << "] with [" << _value << "].\n";
+              << "> exists due to fixed joint reduction"
+              << " overwriting previous value [" << oldValue
+              << "] with [" << _value << "].\n";
+    }
     else
+    {
        sdfdbg << "multiple consistent <" << _key
               << "> exists with [" << _value
               << "] due to fixed joint reduction.\n";
+    }
     _elem->RemoveChild(childElem);  // remove old _elem
   }
 
@@ -1413,9 +1452,13 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         // default of setting static flag is false
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
             valueStr == "1")
+        {
           sdf->setStaticFlag = true;
+        }
         else
+        {
           sdf->setStaticFlag = false;
+        }
       }
       else if (childElem->ValueStr() == "turnGravityOff")
       {
@@ -1424,9 +1467,13 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         // default of gravity is true
         if (lowerStr(valueStr) == "false" || lowerStr(valueStr) == "no" ||
             valueStr == "0")
+        {
           sdf->gravity = true;
+        }
         else
+        {
           sdf->gravity = false;
+        }
       }
       else if (childElem->ValueStr() == "dampingFactor")
       {
@@ -1481,9 +1528,13 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         // default of selfCollide is false
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
             valueStr == "1")
+        {
           sdf->selfCollide = true;
+        }
         else
+        {
           sdf->selfCollide = false;
+        }
       }
       else if (childElem->ValueStr() == "maxContacts")
       {
@@ -1550,9 +1601,13 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
 
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
             valueStr == "1")
+        {
           sdf->provideFeedback = true;
+        }
         else
+        {
           sdf->provideFeedback = false;
+        }
       }
       else if (childElem->ValueStr() == "canonicalBody")
       {
@@ -1562,18 +1617,24 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
                childElem->ValueStr() == "implicitSpringDamper")
       {
         if (childElem->ValueStr() == "cfmDamping")
+        {
           sdfwarn << "Note that cfmDamping is being deprecated by "
                   << "implicitSpringDamper, please replace instances "
                   << "of cfmDamping with implicitSpringDamper in your model.\n";
+        }
 
         sdf->isImplicitSpringDamper = true;
         std::string valueStr = GetKeyValueAsString(childElem);
 
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
             valueStr == "1")
+        {
           sdf->implicitSpringDamper = true;
+        }
         else
+        {
           sdf->implicitSpringDamper = false;
+        }
       }
       else if (childElem->ValueStr() == "disableFixedJointLumping")
       {
@@ -1956,8 +2017,10 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
         //   - _elem (destination for blob, which is a visual sdf).
 
         if (!_elem->Attribute("name"))
+        {
           sdferr << "ERROR: visual _elem has no name,"
                  << " something is wrong" << "\n";
+        }
 
         std::string sdfVisualName(_elem->Attribute("name"));
 
@@ -1981,8 +2044,10 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
           sdfVisualName.find(g_lumpPrefix) != std::string::npos;
 
         if (!visualNameContainsLinkname)
+        {
           sdferr << "visual name does not contain link name,"
                  << " file an issue.\n";
+        }
 
         // if the visual _elem was not reduced,
         // its name should not have g_lumpPrefix in it.
@@ -2132,9 +2197,13 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
       {
         // insert gravity
         if ((*ge)->gravity)
+        {
           AddKeyValue(_elem, "gravity", "true");
+        }
         else
+        {
           AddKeyValue(_elem, "gravity", "false");
+        }
 
         // damping factor
         TiXmlElement *velocityDecay = new TiXmlElement("velocity_decay");
@@ -2277,20 +2346,32 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
 
         // insert fudgeFactor
         if ((*ge)->isFudgeFactor)
+        {
           AddKeyValue(physicsOde, "fudge_factor",
-              Values2str(1, &(*ge)->fudgeFactor));
+                      Values2str(1, &(*ge)->fudgeFactor));
+        }
 
         if (newDynamics)
+        {
           axis->LinkEndChild(dynamics);
+        }
         if (newAxis)
+        {
           _elem->LinkEndChild(axis);
+        }
 
         if (newLimit)
+        {
           physicsOde->LinkEndChild(limit);
+        }
         if (newPhysicsOde)
+        {
           physics->LinkEndChild(physicsOde);
+        }
         if (newPhysics)
+        {
           _elem->LinkEndChild(physics);
+        }
 
         // insert all additional blobs into joint
         for (std::vector<TiXmlElementPtr>::iterator
@@ -2319,9 +2400,13 @@ void InsertSDFExtensionRobot(TiXmlElement *_elem)
       {
         // insert static flag
         if ((*ge)->setStaticFlag)
+        {
           AddKeyValue(_elem, "static", "true");
+        }
         else
+        {
           AddKeyValue(_elem, "static", "false");
+        }
 
         // copy extension containing blobs and without reference
         for (std::vector<TiXmlElementPtr>::iterator
@@ -2641,7 +2726,9 @@ void ReduceSDFExtensionToParent(UrdfLinkPtr _link)
     // move sdf extensions from _link into the parent _link's extensions
     for (std::vector<SDFExtensionPtr>::iterator ge = ext->second.begin();
         ge != ext->second.end(); ++ge)
+    {
       parentExt->second.push_back(*ge);
+    }
     ext->second.clear();
   }
 
@@ -2655,7 +2742,9 @@ void ReduceSDFExtensionToParent(UrdfLinkPtr _link)
     // update reduction transform (for contacts, rays, cameras for now).
     for (std::vector<SDFExtensionPtr>::iterator
         ge = sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
+    {
       ReduceSDFExtensionFrameReplace(*ge, _link);
+    }
   }
 
   // this->ListSDFExtensions();
@@ -2786,22 +2875,28 @@ void CreateSDF(TiXmlElement *_root,
       ((!_link->inertial) || ignition::math::equal(_link->inertial->mass, 0.0)))
   {
     if (!_link->child_links.empty())
+    {
       sdfdbg << "urdf2sdf: link[" << _link->name
-        << "] has no inertia, ["
-        << static_cast<int>(_link->child_links.size())
-        << "] children links ignored.\n";
+             << "] has no inertia, ["
+             << static_cast<int>(_link->child_links.size())
+             << "] children links ignored.\n";
+    }
 
     if (!_link->child_joints.empty())
+    {
       sdfdbg << "urdf2sdf: link[" << _link->name
-        << "] has no inertia, ["
-        << static_cast<int>(_link->child_links.size())
-        << "] children joints ignored.\n";
+             << "] has no inertia, ["
+             << static_cast<int>(_link->child_links.size())
+             << "] children joints ignored.\n";
+    }
 
     if (_link->parent_joint)
+    {
       sdfdbg << "urdf2sdf: link[" << _link->name
-        << "] has no inertia, "
-        << "parent joint [" << _link->parent_joint->name
-        << "] ignored.\n";
+             << "] has no inertia, "
+             << "parent joint [" << _link->parent_joint->name
+             << "] ignored.\n";
+    }
 
     sdfdbg << "urdf2sdf: link[" << _link->name
       << "] has no inertia, not modeled in sdf\n";
@@ -2813,11 +2908,15 @@ void CreateSDF(TiXmlElement *_root,
       !g_reduceFixedJoints ||
       (!_link->parent_joint ||
        !FixedJointShouldBeReduced(_link->parent_joint)))
+  {
     CreateLink(_root, _link, _currentTransform);
+  }
 
   // recurse into children
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
+  {
     CreateSDF(_root, _link->child_links[i], _currentTransform);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2870,7 +2969,9 @@ void CreateLink(TiXmlElement *_root,
     _currentTransform = localTransform * _currentTransform;
   }
   else
+  {
     sdfdbg << "[" << _link->name << "] has no parent joint\n";
+  }
 
   // create origin tag for this element
   AddTransform(elem, _currentTransform);
@@ -2995,7 +3096,9 @@ void CreateCollisions(TiXmlElement* _elem,
     // otherwise, use the link name
     std::string collisionName = (*collision)->name;
     if (collisionName.empty())
+    {
       collisionName = _link->name;
+    }
 
     // add _collision extension
     collisionName = collisionName + g_collisionExt;
@@ -3117,7 +3220,9 @@ void CreateVisuals(TiXmlElement* _elem,
     // otherwise, use the link name
     std::string visualName = (*visual)->name;
     if (visualName.empty())
+    {
       visualName = _link->name;
+    }
 
     // add _visual extension
     visualName = visualName + g_visualExt;
@@ -3213,15 +3318,22 @@ void CreateJoint(TiXmlElement *_root,
   //   because there's no lumping there
   if (_link->getParent() && _link->getParent()->name != "world"
       && FixedJointShouldBeReduced(_link->parent_joint)
-      && g_reduceFixedJoints) return;
+      && g_reduceFixedJoints)
+  {
+    return;
+  }
 
   if (!jtype.empty())
   {
     TiXmlElement *joint = new TiXmlElement("joint");
     if (jtype == "fixed")
+    {
       joint->SetAttribute("type", "revolute");
+    }
     else
+    {
       joint->SetAttribute("type", jtype);
+    }
     joint->SetAttribute("name", _link->parent_joint->name);
     AddKeyValue(joint, "child", _link->name);
     AddKeyValue(joint, "parent", _link->getParent()->name);
@@ -3452,8 +3564,10 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   // using the disabledFixedJointLumping option is possible to disable
   // fixed joint lumping only for selected joints
   if (g_reduceFixedJoints)
+  {
     ReduceFixedJoints(robot,
-        (boost::const_pointer_cast< urdf::Link >(rootLink)));
+                      (boost::const_pointer_cast< urdf::Link >(rootLink)));
+  }
 
   if (rootLink->name == "world")
   {
@@ -3461,7 +3575,9 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
     for (std::vector<UrdfLinkPtr>::const_iterator
         child = rootLink->child_links.begin();
         child != rootLink->child_links.end(); ++child)
+    {
       CreateSDF(robot, (*child), transform);
+    }
   }
   else
   {
@@ -3508,7 +3624,9 @@ TiXmlDocument URDF2SDF::InitModelFile(const std::string &_filename)
     return this->InitModelDoc(&xmlDoc);
   }
   else
+  {
     sdferr << "Unable to load file[" << _filename << "].\n";
+  }
 
   return xmlDoc;
 }
@@ -3548,7 +3666,9 @@ void ReduceSDFExtensionSensorTransformReduction(
       /// @todo: FIXME:  we should read xyz, rpy and aggregate it to
       /// reductionTransform instead of just throwing the info away.
       if (oldPoseKey)
+      {
         (*_blobIt)->RemoveChild(oldPoseKey);
+      }
     }
 
     // convert reductionTransform to values
@@ -3601,7 +3721,10 @@ void ReduceSDFExtensionProjectorTransformReduction(
     // read pose and save it
 
     // remove the tag for now
-    if (poseKey) (*_blobIt)->RemoveChild(poseKey);
+    if (poseKey)
+    {
+      (*_blobIt)->RemoveChild(poseKey);
+    }
 
     // convert reductionTransform to values
     urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
