@@ -1347,9 +1347,25 @@ void ParseRobotOrigin(TiXmlDocument &_urdfXml)
   TiXmlElement *originXml = robotXml->FirstChildElement("origin");
   if (originXml)
   {
-    g_initialRobotPose.position = ParseVector3(
-        std::string(originXml->Attribute("xyz")));
-    urdf::Vector3 rpy = ParseVector3(std::string(originXml->Attribute("rpy")));
+    const char *xyzstr = originXml->Attribute("xyz");
+    if (xyzstr == NULL)
+    {
+      g_initialRobotPose.position = urdf::Vector3(0, 0, 0);
+    }
+    else
+    {
+      g_initialRobotPose.position = ParseVector3(std::string(xyzstr));
+    }
+    const char *rpystr = originXml->Attribute("rpy");
+    urdf::Vector3 rpy;
+    if (rpystr == NULL)
+    {
+      rpy = urdf::Vector3(0, 0, 0);
+    }
+    else
+    {
+      rpy = ParseVector3(std::string(rpystr));
+    }
     g_initialRobotPose.rotation.setFromRPY(rpy.x, rpy.y, rpy.z);
     g_initialRobotPoseValid = true;
   }

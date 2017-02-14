@@ -76,6 +76,45 @@ TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
    ASSERT_EQ(sdf_same_result_str, sdf_result_str);
 }
 
+TEST(URDFParser, ParseRobotOriginXYZBlank)
+{
+  std::ostringstream stream;
+  stream << "<robot name=\"test\">"
+         << "  <origin />"
+         << "  <link name=\"link\" />"
+         << "</robot>";
+  TiXmlDocument doc;
+  doc.Parse(stream.str().c_str());
+  sdf::URDF2SDF parser_;
+  TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+  TiXmlElement* sdf = sdf_result.FirstChildElement("sdf");
+  EXPECT_TRUE(sdf != NULL);
+  TiXmlElement* model = sdf->FirstChildElement("model");
+  EXPECT_TRUE(model != NULL);
+  TiXmlElement* pose = model->FirstChildElement("pose");
+  ASSERT_TRUE(pose != NULL);
+}
+
+TEST(URDFParser, ParseRobotOriginRPYBlank)
+{
+  std::ostringstream stream;
+  stream << "<robot name=\"test\">"
+         << "  <origin xyz=\"0 0 0\"/>"
+         << "  <link name=\"link\" />"
+         << "</robot>";
+  TiXmlDocument doc;
+  sdf::URDF2SDF parser_;
+  doc.Parse(stream.str().c_str());
+  TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+  TiXmlElement* sdf = sdf_result.FirstChildElement("sdf");
+  EXPECT_TRUE(sdf != NULL);
+  TiXmlElement* model = sdf->FirstChildElement("model");
+  EXPECT_TRUE(model != NULL);
+  TiXmlElement* pose = model->FirstChildElement("pose");
+  ASSERT_TRUE(pose != NULL);
+}
+
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
