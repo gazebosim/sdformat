@@ -185,7 +185,7 @@ TEST(ConverterIntegration, convertFileToNotLatestVersion)
   EXPECT_TRUE(sdf::convertFile(filename, "1.5", sdf));
 
   sdf::ElementPtr rootElem = sdf->Root();
-  ASSERT_TRUE(rootElem != NULL);
+  ASSERT_NE(nullptr, rootElem);
   EXPECT_EQ("1.5", rootElem->Get<std::string>("version"));
 }
 
