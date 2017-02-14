@@ -114,6 +114,24 @@ TEST(URDFParser, ParseRobotOriginRPYBlank)
   ASSERT_TRUE(pose != NULL);
 }
 
+TEST(URDFParser, ParseRobotOriginInvalidXYZ)
+{
+  std::ostringstream stream;
+  stream << "<robot name=\"test\">"
+         << "  <origin xyz=\"0 foo 0\" rpy=\"0 0 0\"/>"
+         << "  <link name=\"link\" />"
+         << "</robot>";
+  TiXmlDocument doc;
+  sdf::URDF2SDF parser_;
+  doc.Parse(stream.str().c_str());
+  TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+  TiXmlElement* sdf = sdf_result.FirstChildElement("sdf");
+  EXPECT_TRUE(sdf != NULL);
+  TiXmlElement* model = sdf->FirstChildElement("model");
+  EXPECT_TRUE(model != NULL);
+  TiXmlElement* pose = model->FirstChildElement("pose");
+  ASSERT_TRUE(pose != NULL);
+}
 
 /////////////////////////////////////////////////
 /// Main
