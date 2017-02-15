@@ -71,6 +71,7 @@ set (gtest_sources
   Exception_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc
+  parser_TEST.cc
 )
 sdf_build_tests(${gtest_sources})
 
