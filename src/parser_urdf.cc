@@ -1279,6 +1279,20 @@ std::string Values2str(unsigned int _count, const double *_values)
   return ss.str();
 }
 
+std::string Values2str(unsigned int _count, const int *_values)
+{
+  std::stringstream ss;
+  for (unsigned int i = 0 ; i < _count ; ++i)
+  {
+    if (i > 0)
+    {
+      ss << " ";
+    }
+    ss << _values[i];
+  }
+  return ss.str();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 void AddKeyValue(TiXmlElement *_elem, const std::string &_key,
                  const std::string &_value)
@@ -1984,7 +1998,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           if ((*ge)->isMaxContacts)
           {
             AddKeyValue(_elem, "max_contacts",
-                        boost::lexical_cast<std::string>((*ge)->maxContacts));
+                        Values2str(1, &(*ge)->maxContacts));
           }
         }
       }
