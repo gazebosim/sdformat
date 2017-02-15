@@ -20,7 +20,6 @@ if (USE_EXTERNAL_TINYXML)
 endif()
 
 set (sources
-  Assert.cc
   Console.cc
   Converter.cc
   Element.cc
