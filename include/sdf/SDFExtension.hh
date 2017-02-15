@@ -100,16 +100,14 @@ namespace sdf
     public: double laserRetro;
 
     // joint, joint limit dynamics
-    public: bool isStopCfm, isStopErp, isInitialJointPosition, isFudgeFactor;
-    public: double stopCfm, stopErp, initialJointPosition, fudgeFactor;
+    public: bool isStopCfm, isStopErp, isFudgeFactor;
+    public: double stopCfm, stopErp, fudgeFactor;
     public: bool isSpringReference, isSpringStiffness;
     public: double springReference, springStiffness;
     public: bool isProvideFeedback;
     public: bool provideFeedback;
     public: bool isImplicitSpringDamper;
     public: bool implicitSpringDamper;
-    public: bool isStopKp, isStopKd;
-    public: double stopKp, stopKd;
 
     // blobs into body or robot
     public: std::vector<std::shared_ptr<TiXmlElement> > blobs;

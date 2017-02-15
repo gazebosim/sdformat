@@ -1595,21 +1595,6 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         sdf->isStopErp = true;
         sdf->stopErp = std::stod(GetKeyValueAsString(childElem));
       }
-      else if (childElem->ValueStr() == "stopKp")
-      {
-        sdf->isStopKp = true;
-        sdf->stopKp = std::stod(GetKeyValueAsString(childElem));
-      }
-      else if (childElem->ValueStr() == "stopKd")
-      {
-        sdf->isStopKd = true;
-        sdf->stopKd = std::stod(GetKeyValueAsString(childElem));
-      }
-      else if (childElem->ValueStr() == "initialJointPosition")
-      {
-        sdf->isInitialJointPosition = true;
-        sdf->initialJointPosition = std::stod(GetKeyValueAsString(childElem));
-      }
       else if (childElem->ValueStr() == "fudgeFactor")
       {
         sdf->isFudgeFactor = true;
@@ -2329,9 +2314,6 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
           AddKeyValue(dynamics, "spring_stiffness",
                       Values2str(1, &(*ge)->springStiffness));
         }
-        // if ((*ge)->isInitialJointPosition)
-        //    AddKeyValue(_elem, "initialJointPosition",
-        //      Values2str(1, &(*ge)->initialJointPosition));
 
         // insert provideFeedback
         if ((*ge)->isProvideFeedback)
