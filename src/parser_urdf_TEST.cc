@@ -17,6 +17,8 @@
 
 #include <gtest/gtest.h>
 
+#include <list>
+
 #include "sdf/sdf.hh"
 #include "sdf/parser_urdf.hh"
 
@@ -131,6 +133,96 @@ TEST(URDFParser, ParseRobotOriginInvalidXYZ)
   EXPECT_TRUE(model != NULL);
   TiXmlElement* pose = model->FirstChildElement("pose");
   ASSERT_TRUE(pose != NULL);
+}
+
+TEST(URDFParser, ParseGazeboLinkFactors)
+{
+  std::multimap<std::string, std::vector<std::string>> elements
+  {
+    {"dampingFactor", {"model", "link", "velocity_decay", "linear", "25.2"}},
+    {"dampingFactor", {"model", "link", "velocity_decay", "angular", "25.2"}},
+    {"maxVel", {"model", "link", "collision", "surface", "contact", "ode",
+                "max_vel", "1.7"}},
+    {"minDepth", {"model", "link", "collision", "surface", "contact", "ode",
+                  "min_depth", "0.001"}},
+    {"mu1", {"model", "link", "collision", "surface", "friction", "ode",
+             "mu", "8.9"}},
+    {"mu2", {"model", "link", "collision", "surface", "friction", "ode",
+             "mu2", "12.5"}},
+    {"kp", {"model", "link", "collision", "surface", "contact", "ode",
+            "kp", "1000.2"}},
+    {"kd", {"model", "link", "collision", "surface", "contact", "ode",
+            "kd", "100.1"}},
+    {"maxContacts", {"model", "link", "collision", "max_contacts", "99"}},
+    {"laserRetro", {"model", "link", "collision", "laser_retro", "72.8"}},
+  };
+
+  for (std::map<std::string, std::vector<std::string>>::iterator it =
+         elements.begin(); it != elements.end(); ++it)
+  {
+    std::string value = it->second[it->second.size() - 1];
+    std::ostringstream stream;
+    stream << "<robot name=\"test\">"
+           << "  <link name=\"wheel_left_link\">"
+           << "    <collision>"
+           << "      <geometry>"
+           << "        <cylinder length=\"0.0206\" radius=\"0.0352\"/>"
+           << "      </geometry>"
+           << "      <origin rpy=\"0 0 0\" xyz=\"0 0 0\"/>"
+           << "    </collision>"
+           << "    <inertial>"
+           << "      <mass value=\"0.01\" />"
+           << "      <origin xyz=\"0 0 0\" />"
+           << "      <inertia ixx=\"0.001\" ixy=\"0.0\" ixz=\"0.0\""
+           << "               iyy=\"0.001\" iyz=\"0.0\""
+           << "               izz=\"0.001\" />"
+           << "    </inertial>"
+           << "  </link>"
+           << "  <gazebo reference=\"wheel_left_link\">"
+           << "    <" << it->first << ">" << value << "</" << it->first << ">"
+           << "  </gazebo>"
+           << "</robot>";
+
+    TiXmlDocument doc;
+    sdf::URDF2SDF parser_;
+    doc.Parse(stream.str().c_str());
+    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+
+    TiXmlElement* tmp = sdf_result.FirstChildElement("sdf");
+    EXPECT_TRUE(tmp != NULL);
+
+    unsigned int i;
+
+    for (i = 0; i < it->second.size() - 1; ++i)
+    {
+      tmp = tmp->FirstChildElement(it->second[i]);
+      EXPECT_TRUE(tmp != NULL);
+    }
+
+    // For the last element, check that it is exactly what we expect
+    EXPECT_EQ(tmp->FirstChild()->ValueStr(), it->second[i]);
+  }
+}
+
+TEST(URDFParser, ParseGazeboInvalidDampingFactor)
+{
+  std::ostringstream stream;
+  stream << "<robot name=\"test\">"
+         << "  <origin xyz=\"0 0 0\" rpy=\"0 0 0\"/>"
+         << "  <link name=\"link\">"
+         << "    <inertial>"
+         << "      <mass value=\"0.5\" />"
+         << "    </inertial>"
+         << "  </link>"
+         << "  <gazebo reference=\"link\">"
+         << "    <dampingFactor>foo</dampingFactor>"
+         << "  </gazebo>"
+         << "</robot>";
+  TiXmlDocument doc;
+  sdf::URDF2SDF parser_;
+  doc.Parse(stream.str().c_str());
+  ASSERT_THROW(TiXmlDocument sdf_result = parser_.InitModelDoc(&doc),
+               std::invalid_argument);
 }
 
 /////////////////////////////////////////////////
