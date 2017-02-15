@@ -75,10 +75,10 @@ namespace sdf
     /// \return the output stream
     public: friend std::ostream &operator<< (std::ostream &_out,
                                              const Color &_pt)
-            {
-              _out << _pt.r << " " << _pt.g << " " << _pt.b << " " << _pt.a;
-              return _out;
-            }
+    {
+      _out << _pt.r << " " << _pt.g << " " << _pt.b << " " << _pt.a;
+      return _out;
+    }
 
     /// \brief Stream insertion operator
     /// \param[in] _in the input stream
@@ -95,12 +95,12 @@ namespace sdf
     /// \param[in] _clr The color to check for equality
     /// \return True if the this color equals _clf
     public: bool operator ==(const Color &_clr) const
-            {
-              return equal(this->r, _clr.r) &&
-                equal(this->g, _clr.g) &&
-                equal(this->b, _clr.b) &&
-                equal(this->a, _clr.a);
-            }
+    {
+      return equal(this->r, _clr.r) &&
+        equal(this->g, _clr.g) &&
+        equal(this->b, _clr.b) &&
+        equal(this->a, _clr.a);
+    }
 
     /// \brief Red value
     public: float r;
@@ -138,32 +138,32 @@ namespace sdf
     /// \param[in] _time time to write to the stream
     /// \return the output stream
     public: friend std::ostream &operator<<(std::ostream &_out,
-                const Time &_time)
-            {
-              _out << _time.sec << " " << _time.nsec;
-              return _out;
-            }
+                                            const Time &_time)
+    {
+      _out << _time.sec << " " << _time.nsec;
+      return _out;
+    }
 
     /// \brief Stream extraction operator
     /// \param[in] _in the input stream
     /// \param[in] _time time to read from to the stream
     /// \return the input stream
     public: friend std::istream &operator>>(std::istream &_in,
-                Time &_time)
-            {
-              // Skip white spaces
-              _in.setf(std::ios_base::skipws);
-              _in >> _time.sec >> _time.nsec;
-              return _in;
-            }
+                                            Time &_time)
+    {
+      // Skip white spaces
+      _in.setf(std::ios_base::skipws);
+      _in >> _time.sec >> _time.nsec;
+      return _in;
+    }
 
     /// \brief Equal to operator.
     /// \param[in] _time the time to compare to.
     /// \return true if values are the same, false otherwise.
     public: bool operator ==(const Time &_time) const
-            {
-              return this->sec == _time.sec && this->nsec == _time.nsec;
-            }
+    {
+      return this->sec == _time.sec && this->nsec == _time.nsec;
+    }
 
     /// \brief Seconds.
     public: int32_t sec;

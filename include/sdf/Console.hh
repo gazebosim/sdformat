@@ -39,20 +39,19 @@ namespace sdf
   /// \{
 
   /// \brief Output a debug message
-  #define sdfdbg (sdf::Console::Instance()->Log("Dbg", \
-    __FILE__, __LINE__))
+  #define sdfdbg (sdf::Console::Instance()->Log("Dbg", __FILE__, __LINE__))
 
   /// \brief Output a message
   #define sdfmsg (sdf::Console::Instance()->ColorMsg("Msg", \
-    __FILE__, __LINE__, 32))
+                                                     __FILE__, __LINE__, 32))
 
   /// \brief Output a warning message
   #define sdfwarn (sdf::Console::Instance()->ColorMsg("Warning", \
-        __FILE__, __LINE__, 33))
+                                                      __FILE__, __LINE__, 33))
 
   /// \brief Output an error message
   #define sdferr (sdf::Console::Instance()->ColorMsg("Error", \
-        __FILE__, __LINE__, 31))
+                                                     __FILE__, __LINE__, 31))
 
   class ConsolePrivate;
   class Console;

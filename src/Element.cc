@@ -340,8 +340,8 @@ void Element::PrintDocRightPane(std::string &_html, int _spacing, int &_index)
 
       stream << "<font style='font-weight:bold'>Type: </font>"
              << (*aiter)->GetTypeName() << "&nbsp;&nbsp;&nbsp;"
-        << "<font style='font-weight:bold'>Default: </font>"
-        << (*aiter)->GetDefaultAsString() << "<br>";
+             << "<font style='font-weight:bold'>Default: </font>"
+             << (*aiter)->GetDefaultAsString() << "<br>";
       stream << "</div>\n";
 
       stream << "</div>\n";
@@ -391,7 +391,7 @@ void Element::PrintValues(std::string _prefix)
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
     std::cout << " " << (*aiter)->GetKey() << "='"
-      << (*aiter)->GetAsString() << "'";
+              << (*aiter)->GetAsString() << "'";
   }
 
   if (this->dataPtr->elements.size() > 0)
@@ -410,7 +410,7 @@ void Element::PrintValues(std::string _prefix)
     if (this->dataPtr->value)
     {
       std::cout << ">" << this->dataPtr->value->GetAsString()
-        << "</" << this->dataPtr->name << ">\n";
+                << "</" << this->dataPtr->name << ">\n";
     }
     else
     {

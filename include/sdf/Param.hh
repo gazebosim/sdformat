@@ -133,7 +133,7 @@ namespace sdf
 
     /// \brief Get the value of the parameter as a boost::any.
     /// \param[out] _anyVal The boost::any object to set.
-    /// \return True if successfully set _anyVal, false otherwise.
+    /// \return True if successfully fetched _anyVal, false otherwise.
     public: bool GetAny(boost::any &_anyVal) const;
 
     /// \brief Get the value of the parameter.
@@ -207,7 +207,7 @@ namespace sdf
     public: std::function<boost::any ()> updateFunc;
 
     /// \def ParamVariant
-    /// \briead Variant type def.
+    /// \brief Variant type def.
     public: typedef boost::variant<bool, char, std::string, int, uint64_t,
                unsigned int, double, float, sdf::Time, sdf::Color,
                ignition::math::Vector3d, ignition::math::Vector2i,

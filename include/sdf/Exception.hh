@@ -72,10 +72,10 @@ namespace sdf
     /// \param[in] _out the output stream
     /// \param[in] _err the exception
     public: friend std::ostream &operator<<(std::ostream& _out,
-                const sdf::Exception &_err)
-            {
-              return _out << _err.GetErrorStr();
-            }
+                                            const sdf::Exception &_err)
+    {
+      return _out << _err.GetErrorStr();
+    }
 
     /// \brief Private data pointer.
     private: ExceptionPrivate *dataPtr;

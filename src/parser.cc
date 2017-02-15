@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <map>
@@ -198,7 +198,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
 
   // Get all attributes
   for (TiXmlElement *child = _xml->FirstChildElement("attribute");
-      child; child = child->NextSiblingElement("attribute"))
+       child; child = child->NextSiblingElement("attribute"))
   {
     TiXmlElement *descriptionChild = child->FirstChildElement("description");
     const char *name = child->Attribute("name");
@@ -249,7 +249,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
 
   // Get all child elements
   for (TiXmlElement *child = _xml->FirstChildElement("element");
-      child; child = child->NextSiblingElement("element"))
+       child; child = child->NextSiblingElement("element"))
   {
     const char *copyDataString = child->Attribute("copy_data");
     if (copyDataString &&
@@ -268,7 +268,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
 
   // Get all include elements
   for (TiXmlElement *child = _xml->FirstChildElement("include");
-      child; child = child->NextSiblingElement("include"))
+       child; child = child->NextSiblingElement("include"))
   {
     std::string filename = child->Attribute("filename");
 
@@ -381,7 +381,7 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
   else
   {
     sdferr << "parse as sdf version " << SDF::Version() << " failed, "
-          << "should try to parse as old deprecated format\n";
+           << "should try to parse as old deprecated format\n";
     return false;
   }
 }
@@ -480,7 +480,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
     if (!readXml(elemXml, _sdf))
     {
       sdfwarn << "Unable to parse sdf element["
-             << _sdf->GetName() << "]\n";
+              << _sdf->GetName() << "]\n";
       return false;
     }
   }
@@ -625,7 +625,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             if ( modelFound != 0u)
             {
               sdferr << "Invalid uri[" << uri << "]. Should be model://"
-                    << uri << "\n";
+                     << uri << "\n";
             }
             continue;
           }
@@ -651,8 +651,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           else
           {
             sdfwarn << "The manifest.xml for a model is deprecated. "
-                   << "Please rename manifest.xml to "
-                   << "model.config" << ".\n";
+                    << "Please rename manifest.xml to "
+                    << "model.config" << ".\n";
 
             manifestPath /= "manifest.xml";
           }
@@ -700,7 +700,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           if (elemXml->Attribute("filename"))
           {
             sdferr << "<include filename='...'/> is deprecated. Should be "
-                  << "<include><uri>...</uri></include\n";
+                   << "<include><uri>...</uri></include\n";
 
             filename = sdf::findFile(elemXml->Attribute("filename"), false);
           }
@@ -821,10 +821,10 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
       if (descCounter == _sdf->GetElementDescriptionCount())
       {
         sdfwarn << "XML Element[" << elemXml->Value()
-          << "], child of element[" << _xml->Value()
-          << "] not defined in SDF. Ignoring[" << elemXml->Value() << "]. "
-          << "You may have an incorrect SDF file, or an sdformat version "
-          << "that doesn't support this element.\n";
+               << "], child of element[" << _xml->Value()
+               << "] not defined in SDF. Ignoring[" << elemXml->Value() << "]. "
+               << "You may have an incorrect SDF file, or an sdformat version "
+               << "that doesn't support this element.\n";
         continue;
       }
     }
@@ -994,7 +994,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
 
 /////////////////////////////////////////////////
 bool convertFile(const std::string &_filename, const std::string &_version,
-    SDFPtr _sdf)
+                 SDFPtr _sdf)
 {
   std::string filename = sdf::findFile(_filename);
 
@@ -1022,7 +1022,7 @@ bool convertFile(const std::string &_filename, const std::string &_version,
 
 /////////////////////////////////////////////////
 bool convertString(const std::string &_sdfString, const std::string &_version,
-    SDFPtr _sdf)
+                   SDFPtr _sdf)
 {
   if (_sdfString.empty())
   {

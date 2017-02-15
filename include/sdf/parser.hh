@@ -34,7 +34,7 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool initFile(const std::string &_filename, SDFPtr _sdf);
 
-  // \brief Initialize and SDFElement interface using a file
+  // \brief Initialize an SDFElement interface using a file
   SDFORMAT_VISIBLE
   bool initFile(const std::string &_filename, ElementPtr _sdf);
 

@@ -302,7 +302,7 @@ void Param::Update()
     catch(boost::bad_lexical_cast &/*e*/)
     {
       sdferr << "Unable to set value using Update for key["
-        << this->dataPtr->key << "]\n";
+             << this->dataPtr->key << "]\n";
     }
   }
 }
@@ -333,7 +333,7 @@ bool Param::SetFromString(const std::string &_value)
   if (str.empty() && this->dataPtr->required)
   {
     sdferr << "Empty string used when setting a required parameter. Key["
-      << this->GetKey() << "]\n";
+           << this->GetKey() << "]\n";
     return false;
   }
   else if (str.empty())
@@ -396,16 +396,16 @@ bool Param::SetFromString(const std::string &_value)
   catch(std::invalid_argument &)
   {
     sdferr << "Invalid argument. Unable to set value ["
-      << str << " ] for key["
-      << this->dataPtr->key << "].\n";
+           << str << " ] for key["
+           << this->dataPtr->key << "].\n";
     return false;
   }
   // Catch out of range exception from std::stoi/stoul/stod/stof
   catch(std::out_of_range &)
   {
     sdferr << "Out of range. Unable to set value ["
-      << str << " ] for key["
-      << this->dataPtr->key << "].\n";
+           << str << " ] for key["
+           << this->dataPtr->key << "].\n";
     return false;
   }
   // Catch boost lexical cast exceptions
@@ -416,12 +416,12 @@ bool Param::SetFromString(const std::string &_value)
       // in this case, the parser complains, but seems to assign the
       // right values
       sdfmsg << "INFO [sdf::Param]: boost throws when lexical casting "
-        << "inf's, but the values are usually passed through correctly\n";
+             << "inf's, but the values are usually passed through correctly\n";
     }
     else
     {
       sdferr << "Unable to set value [" <<  str
-        << "] for key[" << this->dataPtr->key << "]\n";
+             << "] for key[" << this->dataPtr->key << "]\n";
       return false;
     }
   }
@@ -441,8 +441,8 @@ void Param::Reset()
 ParamPtr Param::Clone() const
 {
   return ParamPtr(new Param(this->dataPtr->key, this->dataPtr->typeName,
-      this->GetAsString(), this->dataPtr->required,
-      this->dataPtr->description));
+                            this->GetAsString(), this->dataPtr->required,
+                            this->dataPtr->description));
 }
 
 //////////////////////////////////////////////////
