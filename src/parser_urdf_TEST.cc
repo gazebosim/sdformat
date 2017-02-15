@@ -225,6 +225,84 @@ TEST(URDFParser, ParseGazeboInvalidDampingFactor)
                std::invalid_argument);
 }
 
+TEST(URDFParser, ParseGazeboJointElements)
+{
+  std::map<std::string, std::vector<std::string>> elements
+  {
+    {"stopCfm", {"model", "joint", "physics", "ode", "limit", "cfm", "0.8"}},
+    {"stopErp", {"model", "joint", "physics", "ode", "limit", "erp", "0.8"}},
+    {"fudgeFactor", {"model", "joint", "physics", "ode", "fudge_factor", "11.1"}},
+  };
+
+  for (std::map<std::string, std::vector<std::string>>::iterator it =
+         elements.begin(); it != elements.end(); ++it)
+  {
+    std::string value = it->second[it->second.size() - 1];
+    std::ostringstream stream;
+    stream << "<robot name=\"test\">"
+           << "  <link name=\"chest_link\">"
+           << "    <inertial>"
+           << "      <mass value=\"10\" />"
+           << "      <origin xyz=\"0 0 -0.1\" />"
+           << "      <inertia ixx=\"1E-4\""
+           << "               iyy=\"1E-4\""
+           << "               izz=\"1E-4\""
+           << "               ixy=\"1E-7\""
+           << "               ixz=\"1E-7\""
+           << "               iyz=\"1E-7\"/>"
+           << "    </inertial>"
+           << "    <collision>"
+           << "      <origin xyz=\"0 0 -0.2337\" rpy=\"0.0 0.0 0.0\" />"
+           << "    </collision>"
+           << "  </link>"
+           << "  <link name=\"neck_tilt\">"
+           << "    <inertial>"
+           << "      <mass value=\"0.940\" />"
+           << "	     <origin xyz=\"0.000061 0.003310 0.028798\"/>"
+           << "	     <inertia ixx=\"0.001395\""
+           << "	              iyy=\"0.001345\""
+           << "	              izz=\"0.000392\""
+           << "	              ixy=\"-0.000000\""
+           << "	              ixz=\"-0.000000\""
+           << "	              iyz=\"-0.000085\" />"
+           << "    </inertial>"
+           << "    <collision>"
+           << "	     <origin xyz=\"0 0 0\" rpy=\"0.0 0.0 0.0\" />"
+           << "    </collision>"
+           << "  </link>"
+           << "  <joint name=\"head_j0\" type=\"revolute\">"
+           << "    <axis xyz=\"0 -1 0\" />"
+           << "    <origin xyz=\"0.0 0.0 0.07785\" rpy=\"0 0 0\" />"
+           << "    <parent link=\"chest_link\"/>"
+           << "    <child link=\"neck_tilt\"/>"
+           << "    <limit effort=\"100\" velocity=\"0.349\" lower=\"-0.314\" upper=\"0.017\" />"
+           << "  </joint>"
+           << "  <gazebo reference=\"head_j0\">"
+           << "    <" << it->first << ">" << value << "</" << it->first << ">"
+           << "  </gazebo>"
+           << "</robot>";
+
+    TiXmlDocument doc;
+    sdf::URDF2SDF parser_;
+    doc.Parse(stream.str().c_str());
+    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+
+    TiXmlElement* tmp = sdf_result.FirstChildElement("sdf");
+    EXPECT_TRUE(tmp != NULL);
+
+    unsigned int i;
+
+    for (i = 0; i < it->second.size() - 1; ++i)
+    {
+      tmp = tmp->FirstChildElement(it->second[i]);
+      EXPECT_TRUE(tmp != NULL);
+    }
+
+    // For the last element, check that it is exactly what we expect
+    EXPECT_EQ(tmp->FirstChild()->ValueStr(), it->second[i]);
+  }
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
