@@ -146,10 +146,6 @@ void CreateSDF(TiXmlElement *_root, ConstUrdfLinkPtr _link,
 void CreateLink(TiXmlElement *_root, ConstUrdfLinkPtr _link,
                 ignition::math::Pose3d &_currentTransform);
 
-
-/// print collision groups for debugging purposes
-void PrintCollisionGroups(UrdfLinkPtr _link);
-
 /// reduced fixed joints:  apply appropriate frame updates in joint
 ///   inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionJointFrameReplace(
@@ -219,9 +215,6 @@ std::string Values2str(unsigned int _count, const double *_values);
 
 void CreateGeometry(TiXmlElement* _elem,
                     boost::shared_ptr<urdf::Geometry> _geometry);
-
-std::string GetGeometryBoundingBox(boost::shared_ptr<urdf::Geometry> _geometry,
-                                   double *_sizeVals);
 
 ignition::math::Pose3d inverseTransformToParentFrame(
     ignition::math::Pose3d _transformInLinkFrame,
@@ -1161,7 +1154,6 @@ void ReduceCollisionsToParent(UrdfLinkPtr _link)
       }
     }
   }
-  // this->PrintCollisionGroups(_link->getParent());
 #else
   for (std::vector<UrdfCollisionPtr>::iterator
       collisionIt = _link->collision_array.begin();
@@ -2549,85 +2541,6 @@ void CreateGeometry(TiXmlElement* _elem,
     sdfGeometry->LinkEndChild(geometryType);
     _elem->LinkEndChild(sdfGeometry);
   }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-std::string GetGeometryBoundingBox(
-    boost::shared_ptr<urdf::Geometry> _geom, double *_sizeVals)
-{
-  std::string type;
-
-  switch (_geom->type)
-  {
-    case urdf::Geometry::BOX:
-      type = "box";
-      {
-        boost::shared_ptr<const urdf::Box> box;
-        box = boost::dynamic_pointer_cast<const urdf::Box >(_geom);
-        _sizeVals[0] = box->dim.x;
-        _sizeVals[1] = box->dim.y;
-        _sizeVals[2] = box->dim.z;
-      }
-      break;
-    case urdf::Geometry::CYLINDER:
-      type = "cylinder";
-      {
-        boost::shared_ptr<const urdf::Cylinder> cylinder;
-        cylinder = boost::dynamic_pointer_cast<const urdf::Cylinder >(_geom);
-        _sizeVals[0] = cylinder->radius * 2;
-        _sizeVals[1] = cylinder->radius * 2;
-        _sizeVals[2] = cylinder->length;
-      }
-      break;
-    case urdf::Geometry::SPHERE:
-      type = "sphere";
-      {
-        boost::shared_ptr<const urdf::Sphere> sphere;
-        sphere = boost::dynamic_pointer_cast<const urdf::Sphere >(_geom);
-        _sizeVals[0] = _sizeVals[1] = _sizeVals[2] = sphere->radius * 2;
-      }
-      break;
-    case urdf::Geometry::MESH:
-      type = "trimesh";
-      {
-        boost::shared_ptr<const urdf::Mesh> mesh;
-        mesh = boost::dynamic_pointer_cast<const urdf::Mesh >(_geom);
-        _sizeVals[0] = mesh->scale.x;
-        _sizeVals[1] = mesh->scale.y;
-        _sizeVals[2] = mesh->scale.z;
-      }
-      break;
-    default:
-      _sizeVals[0] = _sizeVals[1] = _sizeVals[2] = 0;
-      sdfwarn << "Unknown body type: [" << static_cast<int>(_geom->type)
-              << "] skipped in geometry\n";
-      break;
-  }
-
-  return type;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void PrintCollisionGroups(UrdfLinkPtr _link)
-{
-#ifndef URDF_GE_0P3
-  sdfdbg << "COLLISION LUMPING: link: [" << _link->name << "] contains ["
-         << static_cast<int>(_link->collision_groups.size())
-         << "] collisions.\n";
-  for (std::map<std::string,
-      boost::shared_ptr<std::vector<UrdfCollisionPtr > > >::iterator
-      colsIt = _link->collision_groups.begin();
-      colsIt != _link->collision_groups.end(); ++colsIt)
-  {
-    sdfdbg << "    collision_groups: [" << colsIt->first << "] has ["
-           << static_cast<int>(colsIt->second->size())
-           << "] Collision objects\n";
-  }
-#else
-  sdfdbg << "COLLISION LUMPING: link: [" << _link->name << "] contains ["
-         << static_cast<int>(_link->collision_array.size())
-         << "] collisions.\n";
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
