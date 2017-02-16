@@ -95,9 +95,9 @@ TEST(URDFParser, ParseRobotOriginXYZBlank)
   sdf::URDF2SDF parser_;
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
-  EXPECT_TRUE(sdf != nullptr);
+  ASSERT_TRUE(sdf != nullptr);
   TiXmlElement *model = sdf->FirstChildElement("model");
-  EXPECT_TRUE(model != nullptr);
+  ASSERT_TRUE(model != nullptr);
   TiXmlElement *pose = model->FirstChildElement("pose");
   ASSERT_TRUE(pose != nullptr);
 }
@@ -115,9 +115,9 @@ TEST(URDFParser, ParseRobotOriginRPYBlank)
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
-  EXPECT_TRUE(sdf != nullptr);
+  ASSERT_TRUE(sdf != nullptr);
   TiXmlElement *model = sdf->FirstChildElement("model");
-  EXPECT_TRUE(model != nullptr);
+  ASSERT_TRUE(model != nullptr);
   TiXmlElement *pose = model->FirstChildElement("pose");
   ASSERT_TRUE(pose != nullptr);
 }
@@ -135,9 +135,9 @@ TEST(URDFParser, ParseRobotOriginInvalidXYZ)
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
-  EXPECT_TRUE(sdf != nullptr);
+  ASSERT_TRUE(sdf != nullptr);
   TiXmlElement *model = sdf->FirstChildElement("model");
-  EXPECT_TRUE(model != nullptr);
+  ASSERT_TRUE(model != nullptr);
   TiXmlElement *pose = model->FirstChildElement("pose");
   ASSERT_TRUE(pose != nullptr);
 }
@@ -197,14 +197,14 @@ TEST(URDFParser, ParseGazeboLinkFactors)
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
     TiXmlElement *tmp = sdf_result.FirstChildElement("sdf");
-    EXPECT_TRUE(tmp != nullptr);
+    ASSERT_TRUE(tmp != nullptr);
 
     unsigned int i;
 
     for (i = 0; i < it->second.size() - 1; ++i)
     {
       tmp = tmp->FirstChildElement(it->second[i]);
-      EXPECT_TRUE(tmp != nullptr);
+      ASSERT_TRUE(tmp != nullptr);
     }
 
     // For the last element, check that it is exactly what we expect
@@ -298,14 +298,14 @@ TEST(URDFParser, ParseGazeboJointElements)
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
     TiXmlElement *tmp = sdf_result.FirstChildElement("sdf");
-    EXPECT_TRUE(tmp != nullptr);
+    ASSERT_TRUE(tmp != nullptr);
 
     unsigned int i;
 
     for (i = 0; i < it->second.size() - 1; ++i)
     {
       tmp = tmp->FirstChildElement(it->second[i]);
-      EXPECT_TRUE(tmp != nullptr);
+      ASSERT_TRUE(tmp != nullptr);
     }
 
     // For the last element, check that it is exactly what we expect
