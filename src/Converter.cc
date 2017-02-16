@@ -116,7 +116,9 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
         }
         ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
         if ((*it).filename() == _toVersion)
+        {
           return true;
+        }
 
         origVersion = (*it).filename().string();
         boost::replace_all(origVersion, ".", "_");
@@ -127,7 +129,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
       }
     }
     sdferr << "Unable to convert from SDF version " << origVersionStr
-        << " to " << _toVersion << "\n";
+           << " to " << _toVersion << "\n";
     return false;
   }
 
@@ -519,8 +521,8 @@ void Converter::CheckDeprecation(TiXmlElement *_elem, TiXmlElement *_convert)
 {
   // Process deprecated elements
   for (TiXmlElement *deprecatedElem = _convert->FirstChildElement("deprecated");
-      deprecatedElem;
-      deprecatedElem = deprecatedElem->NextSiblingElement("deprecated"))
+       deprecatedElem;
+       deprecatedElem = deprecatedElem->NextSiblingElement("deprecated"))
   {
     std::string value = deprecatedElem->GetText();
     std::vector<std::string> valueSplit;
@@ -553,6 +555,6 @@ void Converter::CheckDeprecation(TiXmlElement *_elem, TiXmlElement *_convert)
     }
 
     sdfwarn << "Deprecated SDF Values in original file:\n"
-           << stream.str() << "\n\n";
+            << stream.str() << "\n\n";
   }
 }

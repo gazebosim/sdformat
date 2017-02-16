@@ -113,19 +113,19 @@ TEST(ConverterIntegration, IMU_15_to_16)
     EXPECT_STREQ(linAccAxisNoiseElem->Attribute("type"), "gaussian");
 
     EXPECT_STREQ(angVelAxisNoiseElem->FirstChildElement("mean")->GetText(),
-        "0");
+                 "0");
     EXPECT_STREQ(linAccAxisNoiseElem->FirstChildElement("mean")->GetText(),
-        "0");
+                 "0");
 
     EXPECT_STREQ(angVelAxisNoiseElem->FirstChildElement("stddev")->GetText(),
-        "0.0002");
+                 "0.0002");
     EXPECT_STREQ(linAccAxisNoiseElem->FirstChildElement("stddev")->GetText(),
-        "0.017");
+                 "0.017");
 
     EXPECT_STREQ(angVelAxisNoiseElem->FirstChildElement("bias_mean")->GetText(),
-        "7.5e-06");
+                 "7.5e-06");
     EXPECT_STREQ(linAccAxisNoiseElem->FirstChildElement("bias_mean")->GetText(),
-        "0.1");
+                 "0.1");
 
     EXPECT_STREQ(angVelAxisNoiseElem->FirstChildElement(
           "bias_stddev")->GetText(), "8e-07");
@@ -207,12 +207,12 @@ TEST(ConverterIntegration, ParserStringConverter)
   sdf::ElementPtr gravityElem = worldElem->GetElement("gravity");
   ASSERT_TRUE(gravityElem != NULL);
   EXPECT_EQ(gravityElem->Get<ignition::math::Vector3d>(),
-      ignition::math::Vector3d(0, 0, -9.8));
+            ignition::math::Vector3d(0, 0, -9.8));
 
   sdf::ElementPtr magElem = worldElem->GetElement("magnetic_field");
   ASSERT_TRUE(magElem != NULL);
   EXPECT_EQ(magElem->Get<ignition::math::Vector3d>(),
-      ignition::math::Vector3d(1, 2, 3));
+            ignition::math::Vector3d(1, 2, 3));
 }
 
 /////////////////////////////////////////////////

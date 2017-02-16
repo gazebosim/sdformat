@@ -61,10 +61,10 @@
         e = 0,                       v <= vc
           = 1 - d*v,               vc < v < vp
           = e_min,                   v >= vp
-  
+
         dissipation factor = d*min(v,vp)   [compliant]
         cor = e                            [rigid]
-  
+
         Combining rule e = 0,               e1==e2==0
                          = 2*e1*e2/(e1+e2), otherwise]]>
       </description>
@@ -77,7 +77,7 @@
         <description>dissipation coefficient to be used in compliant contact;
     if not given it is (1-min_cor)/plastic_impact_velocity</description>
       </element>
-    
+
       <element name="plastic_coef_restitution" type="double"
                default="0.5" required="0">
         <description>this is the COR to be used at high velocities for rigid

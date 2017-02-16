@@ -92,7 +92,9 @@ ConsolePtr Console::Instance()
 {
   std::lock_guard<std::mutex> lock(g_instance_mutex);
   if (!myself)
+  {
     myself.reset(new Console());
+  }
 
   return myself;
 }

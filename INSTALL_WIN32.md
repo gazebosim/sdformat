@@ -4,7 +4,7 @@ This documentation describes how to set up a workspace for trying to compile sdf
 
 ## Supported compilers
 
-At this moment, compilation has been tested on Windows 7 and 8.1 and is supported 
+At this moment, compilation has been tested on Windows 7 and 8.1 and is supported
 when using Visual Studio 2013. Patches for other versions are welcome.
 
 ## Installation

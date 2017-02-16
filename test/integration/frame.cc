@@ -62,7 +62,7 @@ TEST(Frame, ModelFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(1, 1, 0, 0, 0, 0));
+            ignition::math::Pose3d(1, 1, 0, 0, 0, 0));
 
   // model pose
   EXPECT_TRUE(modelElem->HasElement("pose"));
@@ -70,7 +70,7 @@ TEST(Frame, ModelFrame)
   EXPECT_TRUE(modelPoseElem->HasAttribute("frame"));
   EXPECT_EQ(modelPoseElem->Get<std::string>("frame"), "mframe");
   EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(1, 0, 0, 0, 0, 0));
+            ignition::math::Pose3d(1, 0, 0, 0, 0, 0));
 
   // link
   EXPECT_TRUE(modelElem->HasElement("link"));
@@ -117,7 +117,7 @@ TEST(Frame, FrameDefaultPose)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+            ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
 
   // link
   EXPECT_TRUE(modelElem->HasElement("link"));
@@ -164,7 +164,7 @@ TEST(Frame, NoFrame)
     EXPECT_TRUE(poseElem->HasAttribute("frame"));
     EXPECT_EQ(poseElem->Get<std::string>("frame"), "");
     EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-        ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+              ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
   }
 
   // link
@@ -186,7 +186,7 @@ TEST(Frame, NoFrame)
     EXPECT_TRUE(poseElem->HasAttribute("frame"));
     EXPECT_EQ(poseElem->Get<std::string>("frame"), "");
     EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-        ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+              ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
   }
 }
 
@@ -238,7 +238,7 @@ TEST(Frame, LinkFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "model");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(1, 0, 2, 0, 0, 0));
+            ignition::math::Pose3d(1, 0, 2, 0, 0, 0));
 
   // link pose
   EXPECT_TRUE(linkElem->HasElement("pose"));
@@ -246,7 +246,7 @@ TEST(Frame, LinkFrame)
   EXPECT_TRUE(linkPoseElem->HasAttribute("frame"));
   EXPECT_EQ(linkPoseElem->Get<std::string>("frame"), "lframe");
   EXPECT_EQ(linkPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(0, 5, 0, 0, 0, 0));
+            ignition::math::Pose3d(0, 5, 0, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -316,7 +316,7 @@ TEST(Frame, JointFrame)
 
   EXPECT_TRUE(axisElem->HasElement("xyz"));
   EXPECT_EQ(axisElem->Get<ignition::math::Vector3d>("xyz"),
-      ignition::math::Vector3d(1, 0, 0));
+            ignition::math::Vector3d(1, 0, 0));
 
   // joint frame
   EXPECT_TRUE(jointElem->HasElement("frame"));
@@ -330,7 +330,7 @@ TEST(Frame, JointFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "child");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(0, 0, 1, 0, 0, 0));
+            ignition::math::Pose3d(0, 0, 1, 0, 0, 0));
 
   // joint pose
   EXPECT_TRUE(jointElem->HasElement("pose"));
@@ -338,7 +338,7 @@ TEST(Frame, JointFrame)
   EXPECT_TRUE(jointPoseElem->HasAttribute("frame"));
   EXPECT_EQ(jointPoseElem->Get<std::string>("frame"), "jframe");
   EXPECT_EQ(jointPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(0, 2, 1, 0, 0, 0));
+            ignition::math::Pose3d(0, 2, 1, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -397,7 +397,7 @@ TEST(Frame, CollisionFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(1, 3, 1, 0, 0, 0));
+            ignition::math::Pose3d(1, 3, 1, 0, 0, 0));
 
   // collision pose
   EXPECT_TRUE(collisionElem->HasElement("pose"));
@@ -405,7 +405,7 @@ TEST(Frame, CollisionFrame)
   EXPECT_TRUE(collisionPoseElem->HasAttribute("frame"));
   EXPECT_EQ(collisionPoseElem->Get<std::string>("frame"), "cframe");
   EXPECT_EQ(collisionPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(0, 2, 0, 0, 0, 0));
+            ignition::math::Pose3d(0, 2, 0, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -464,7 +464,7 @@ TEST(Frame, VisualFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(1, 1, 1, 0, 0, 0));
+            ignition::math::Pose3d(1, 1, 1, 0, 0, 0));
 
   // visual pose
   EXPECT_TRUE(visualElem->HasElement("pose"));
@@ -472,7 +472,7 @@ TEST(Frame, VisualFrame)
   EXPECT_TRUE(visualPoseElem->HasAttribute("frame"));
   EXPECT_EQ(visualPoseElem->Get<std::string>("frame"), "vframe");
   EXPECT_EQ(visualPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(2, 2, 2, 0, 0, 0));
+            ignition::math::Pose3d(2, 2, 2, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -529,7 +529,7 @@ TEST(Frame, InertialFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
+            ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
 
   // inertial pose
   EXPECT_TRUE(inertialElem->HasElement("pose"));
@@ -537,7 +537,7 @@ TEST(Frame, InertialFrame)
   EXPECT_TRUE(inertialPoseElem->HasAttribute("frame"));
   EXPECT_EQ(inertialPoseElem->Get<std::string>("frame"), "iframe");
   EXPECT_EQ(inertialPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(3, 2, 1, 0, 0, 0));
+            ignition::math::Pose3d(3, 2, 1, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -584,7 +584,7 @@ TEST(Frame, LightFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(0.1, 10, 0, 0, 0, 0));
+            ignition::math::Pose3d(0.1, 10, 0, 0, 0, 0));
 
   // light pose
   EXPECT_TRUE(lightElem->HasElement("pose"));
@@ -592,7 +592,7 @@ TEST(Frame, LightFrame)
   EXPECT_TRUE(lightPoseElem->HasAttribute("frame"));
   EXPECT_EQ(lightPoseElem->Get<std::string>("frame"), "lframe");
   EXPECT_EQ(lightPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(0.1, 0, 0, 0, 0, 0));
+            ignition::math::Pose3d(0.1, 0, 0, 0, 0, 0));
 
   // diffuse
   EXPECT_TRUE(lightElem->HasElement("diffuse"));
@@ -603,7 +603,7 @@ TEST(Frame, LightFrame)
   EXPECT_TRUE(lightElem->HasElement("specular"));
   sdf::ElementPtr specularElem = lightElem->GetElement("specular");
   EXPECT_EQ(specularElem->Get<sdf::Color>(),
-      sdf::Color(0.3f, 0.4f, 0.5f, 1.0f));
+            sdf::Color(0.3f, 0.4f, 0.5f, 1.0f));
 }
 
 ////////////////////////////////////////
@@ -653,7 +653,7 @@ TEST(Frame, ActorFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(1, 5, 0, 0, 0, 0));
+            ignition::math::Pose3d(1, 5, 0, 0, 0, 0));
 
   // actor pose
   EXPECT_TRUE(actorElem->HasElement("pose"));
@@ -661,7 +661,7 @@ TEST(Frame, ActorFrame)
   EXPECT_TRUE(actorPoseElem->HasAttribute("frame"));
   EXPECT_EQ(actorPoseElem->Get<std::string>("frame"), "aframe");
   EXPECT_EQ(actorPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(0.1, 3, 0, 0, 0, 0));
+            ignition::math::Pose3d(0.1, 3, 0, 0, 0, 0));
 
   // skin
   EXPECT_TRUE(actorElem->HasElement("skin"));
@@ -741,7 +741,7 @@ TEST(NestedModel, StateFrame)
     EXPECT_TRUE(poseElem->HasAttribute("frame"));
     EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
     EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-        ignition::math::Pose3d(1, 0, 2, 0, 0, 0));
+              ignition::math::Pose3d(1, 0, 2, 0, 0, 0));
 
     // model pose
     EXPECT_TRUE(modelStateElem->HasElement("pose"));
@@ -749,7 +749,7 @@ TEST(NestedModel, StateFrame)
     EXPECT_TRUE(modelPoseElem->HasAttribute("frame"));
     EXPECT_EQ(modelPoseElem->Get<std::string>("frame"), "mframe");
     EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
-        ignition::math::Pose3d(3, 3, 9, 0, 0, 0));
+              ignition::math::Pose3d(3, 3, 9, 0, 0, 0));
   }
 
   // link
@@ -771,7 +771,7 @@ TEST(NestedModel, StateFrame)
     EXPECT_TRUE(poseElem->HasAttribute("frame"));
     EXPECT_EQ(poseElem->Get<std::string>("frame"), "mframe");
     EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-        ignition::math::Pose3d(8, 5, 2, 0, 0, 0));
+              ignition::math::Pose3d(8, 5, 2, 0, 0, 0));
 
     // link pose
     EXPECT_TRUE(linkStateElem->HasElement("pose"));
@@ -779,7 +779,7 @@ TEST(NestedModel, StateFrame)
     EXPECT_TRUE(linkPoseElem->HasAttribute("frame"));
     EXPECT_EQ(linkPoseElem->Get<std::string>("frame"), "lframe");
     EXPECT_EQ(linkPoseElem->Get<ignition::math::Pose3d>(),
-        ignition::math::Pose3d(111, 3, 0, 0, 0, 0));
+              ignition::math::Pose3d(111, 3, 0, 0, 0, 0));
   }
 
   EXPECT_TRUE(stateElem->HasElement("light"));
@@ -802,7 +802,7 @@ TEST(NestedModel, StateFrame)
     EXPECT_TRUE(poseElem->HasAttribute("frame"));
     EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
     EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-        ignition::math::Pose3d(1, 0, 1, 0, 0, 0));
+              ignition::math::Pose3d(1, 0, 1, 0, 0, 0));
 
     // light pose
     EXPECT_TRUE(lightStateElem->HasElement("pose"));
@@ -810,7 +810,7 @@ TEST(NestedModel, StateFrame)
     EXPECT_TRUE(lightPoseElem->HasAttribute("frame"));
     EXPECT_EQ(lightPoseElem->Get<std::string>("frame"), "lframe");
     EXPECT_EQ(lightPoseElem->Get<ignition::math::Pose3d>(),
-        ignition::math::Pose3d(99, 0, 22, 0, 0, 0));
+              ignition::math::Pose3d(99, 0, 22, 0, 0, 0));
   }
 }
 
@@ -870,7 +870,7 @@ TEST(Frame, ProjectorFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(1, -1, 0, 0, 0, 0));
+            ignition::math::Pose3d(1, -1, 0, 0, 0, 0));
 
   // projector pose
   EXPECT_TRUE(projectorElem->HasElement("pose"));
@@ -878,7 +878,7 @@ TEST(Frame, ProjectorFrame)
   EXPECT_TRUE(projectorPoseElem->HasAttribute("frame"));
   EXPECT_EQ(projectorPoseElem->Get<std::string>("frame"), "pframe");
   EXPECT_EQ(projectorPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(-1, 0, 0, 0, 0, 0));
+            ignition::math::Pose3d(-1, 0, 0, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -939,7 +939,7 @@ TEST(Frame, SensorFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(1, -1, 1, 0, 0, 0));
+            ignition::math::Pose3d(1, -1, 1, 0, 0, 0));
 
   // sensor pose
   EXPECT_TRUE(sensorElem->HasElement("pose"));
@@ -947,7 +947,7 @@ TEST(Frame, SensorFrame)
   EXPECT_TRUE(sensorPoseElem->HasAttribute("frame"));
   EXPECT_EQ(sensorPoseElem->Get<std::string>("frame"), "sframe");
   EXPECT_EQ(sensorPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(1, 2, 2, 0, 0, 0));
+            ignition::math::Pose3d(1, 2, 2, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -1014,7 +1014,7 @@ TEST(Frame, CameraFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(-1.3, 0, 1, 0, 0, 0));
+            ignition::math::Pose3d(-1.3, 0, 1, 0, 0, 0));
 
   // camera pose
   EXPECT_TRUE(cameraElem->HasElement("pose"));
@@ -1022,7 +1022,7 @@ TEST(Frame, CameraFrame)
   EXPECT_TRUE(cameraPoseElem->HasAttribute("frame"));
   EXPECT_EQ(cameraPoseElem->Get<std::string>("frame"), "cframe");
   EXPECT_EQ(cameraPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(4, 2, 2, 0, 0, 0));
+            ignition::math::Pose3d(4, 2, 2, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -1079,7 +1079,7 @@ TEST(Frame, AudioSourceFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(0, -1, 0, 0, 0, 0));
+            ignition::math::Pose3d(0, -1, 0, 0, 0, 0));
 
   // audio source pose
   EXPECT_TRUE(audioSourceElem->HasElement("pose"));
@@ -1087,7 +1087,7 @@ TEST(Frame, AudioSourceFrame)
   EXPECT_TRUE(audioSourcePoseElem->HasAttribute("frame"));
   EXPECT_EQ(audioSourcePoseElem->Get<std::string>("frame"), "asframe");
   EXPECT_EQ(audioSourcePoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(0, 0, 2, 0, 0, 0));
+            ignition::math::Pose3d(0, 0, 2, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -1134,7 +1134,7 @@ TEST(Frame, PopulationFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(0, 1, 0, 0, 0, 0));
+            ignition::math::Pose3d(0, 1, 0, 0, 0, 0));
 
   // population pose
   EXPECT_TRUE(populationElem->HasElement("pose"));
@@ -1142,7 +1142,7 @@ TEST(Frame, PopulationFrame)
   EXPECT_TRUE(populationPoseElem->HasAttribute("frame"));
   EXPECT_EQ(populationPoseElem->Get<std::string>("frame"), "pframe");
   EXPECT_EQ(populationPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(0, 0, 0.2, 0, 0, 0));
+            ignition::math::Pose3d(0, 0, 0.2, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -1195,7 +1195,7 @@ TEST(Frame, GuiCameraFrame)
   EXPECT_TRUE(poseElem->HasAttribute("frame"));
   EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(1.2, 1, 0, 0, 0, 0));
+            ignition::math::Pose3d(1.2, 1, 0, 0, 0, 0));
 
   // camera pose
   EXPECT_TRUE(cameraElem->HasElement("pose"));
@@ -1203,7 +1203,7 @@ TEST(Frame, GuiCameraFrame)
   EXPECT_TRUE(cameraPoseElem->HasAttribute("frame"));
   EXPECT_EQ(cameraPoseElem->Get<std::string>("frame"), "cframe");
   EXPECT_EQ(cameraPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(3.1, 22, 0, 0, 0, 0));
+            ignition::math::Pose3d(3.1, 22, 0, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -1248,5 +1248,5 @@ TEST(Frame, IncludeFrame)
   EXPECT_TRUE(modelPoseElem->HasAttribute("frame"));
   EXPECT_EQ(modelPoseElem->Get<std::string>("frame"), "/world");
   EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
-      ignition::math::Pose3d(5, -2, 1, 0, 0, 0));
+            ignition::math::Pose3d(5, -2, 1, 0, 0, 0));
 }

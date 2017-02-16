@@ -32,7 +32,9 @@ std::string custom_exec(std::string _cmd)
 #endif
 
   if (!pipe)
+  {
     return "ERROR";
+  }
 
   char buffer[128];
   std::string result = "";
@@ -40,7 +42,9 @@ std::string custom_exec(std::string _cmd)
   while (!feof(pipe))
   {
     if (fgets(buffer, 128, pipe) != NULL)
+    {
       result += buffer;
+    }
   }
 
 #ifdef _WIN32

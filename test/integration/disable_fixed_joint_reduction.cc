@@ -38,8 +38,8 @@ bool findJointInModel(std::string desired_joint_name, sdf::SDFPtr robot)
     std::string jointName = joint->Get<std::string>("name");
     if (jointName == desired_joint_name)
     {
-        found = true;
-        break;
+      found = true;
+      break;
     }
   }
 

@@ -28,7 +28,9 @@ const char *sdf::winGetEnv(const char *_name)
   const DWORD buffSize = 65535;
   static char buffer[buffSize];
   if (GetEnvironmentVariable(_name, buffer, buffSize))
+  {
     return buffer;
+  }
   return NULL;
 }
 #else

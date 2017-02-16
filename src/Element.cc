@@ -156,7 +156,9 @@ ElementPtr Element::Clone() const
   }
 
   if (this->dataPtr->value)
+  {
     clone->dataPtr->value = this->dataPtr->value->Clone();
+  }
 
   return clone;
 }
@@ -175,7 +177,9 @@ void Element::Copy(const ElementPtr _elem)
        iter != _elem->dataPtr->attributes.end(); ++iter)
   {
     if (!this->HasAttribute((*iter)->GetKey()))
+    {
       this->dataPtr->attributes.push_back((*iter)->Clone());
+    }
     ParamPtr param = this->GetAttribute((*iter)->GetKey());
     (*param) = (**iter);
   }
@@ -183,9 +187,13 @@ void Element::Copy(const ElementPtr _elem)
   if (_elem->GetValue())
   {
     if (!this->dataPtr->value)
+    {
       this->dataPtr->value = _elem->GetValue()->Clone();
+    }
     else
+    {
       *(this->dataPtr->value) = *(_elem->GetValue());
+    }
   }
 
   this->dataPtr->elementDescriptions.clear();
@@ -230,7 +238,9 @@ void Element::PrintDescription(const std::string &_prefix)
   }
 
   if (this->GetCopyChildren())
+  {
     std::cout << _prefix << "  <element copy_data ='true' required ='*'/>\n";
+  }
 
 
   std::string refSDF = this->ReferenceSDF();
@@ -274,9 +284,13 @@ void Element::PrintDocRightPane(std::string &_html, int _spacing, int &_index)
 
   stream << "<font style='font-weight:bold'>Description: </font>";
   if (!this->dataPtr->description.empty())
+  {
     stream << this->dataPtr->description << "<br>\n";
+  }
   else
+  {
     stream << "none<br>\n";
+  }
 
   stream << "<font style='font-weight:bold'>Required: </font>"
          << this->dataPtr->required << "&nbsp;&nbsp;&nbsp;\n";
@@ -290,7 +304,9 @@ void Element::PrintDocRightPane(std::string &_html, int _spacing, int &_index)
            << this->dataPtr->value->GetDefaultAsString() << '\n';
   }
   else
+  {
     stream << "n/a\n";
+  }
 
   stream << "</div>";
 
@@ -314,14 +330,18 @@ void Element::PrintDocRightPane(std::string &_html, int _spacing, int &_index)
       stream << "<div style='float:left; padding-left: 4px; width: 300px;'>\n";
 
       if (!(*aiter)->GetDescription().empty())
+      {
           stream << (*aiter)->GetDescription() << "<br>\n";
+      }
       else
+      {
           stream << "no description<br>\n";
+      }
 
       stream << "<font style='font-weight:bold'>Type: </font>"
              << (*aiter)->GetTypeName() << "&nbsp;&nbsp;&nbsp;"
-        << "<font style='font-weight:bold'>Default: </font>"
-        << (*aiter)->GetDefaultAsString() << "<br>";
+             << "<font style='font-weight:bold'>Default: </font>"
+             << (*aiter)->GetDefaultAsString() << "<br>";
       stream << "</div>\n";
 
       stream << "</div>\n";
@@ -371,7 +391,7 @@ void Element::PrintValues(std::string _prefix)
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
     std::cout << " " << (*aiter)->GetKey() << "='"
-      << (*aiter)->GetAsString() << "'";
+              << (*aiter)->GetAsString() << "'";
   }
 
   if (this->dataPtr->elements.size() > 0)
@@ -390,7 +410,7 @@ void Element::PrintValues(std::string _prefix)
     if (this->dataPtr->value)
     {
       std::cout << ">" << this->dataPtr->value->GetAsString()
-        << "</" << this->dataPtr->name << ">\n";
+                << "</" << this->dataPtr->name << ">\n";
     }
     else
     {
@@ -466,7 +486,9 @@ bool Element::GetAttributeSet(const std::string &_key)
   bool result = false;
   ParamPtr p = this->GetAttribute(_key);
   if (p)
+  {
     result = p->GetSet();
+  }
 
   return result;
 }
@@ -479,7 +501,9 @@ ParamPtr Element::GetAttribute(const std::string &_key)
       iter != this->dataPtr->attributes.end(); ++iter)
   {
     if ((*iter)->GetKey() == _key)
+    {
       return (*iter);
+    }
   }
   return ParamPtr();
 }
@@ -495,7 +519,9 @@ ParamPtr Element::GetAttribute(unsigned int _index) const
 {
   ParamPtr result;
   if (_index < this->dataPtr->attributes.size())
+  {
     result = this->dataPtr->attributes[_index];
+  }
 
   return result;
 }
@@ -511,7 +537,9 @@ ElementPtr Element::GetElementDescription(unsigned int _index) const
 {
   ElementPtr result;
   if (_index < this->dataPtr->elementDescriptions.size())
+  {
     result = this->dataPtr->elementDescriptions[_index];
+  }
   return result;
 }
 
@@ -523,7 +551,9 @@ ElementPtr Element::GetElementDescription(const std::string &_key) const
        iter != this->dataPtr->elementDescriptions.end(); ++iter)
   {
     if ((*iter)->GetName() == _key)
+    {
       return (*iter);
+    }
   }
 
   return ElementPtr();
@@ -543,7 +573,9 @@ bool Element::HasElement(const std::string &_name) const
        iter != this->dataPtr->elements.end(); ++iter)
   {
     if ((*iter)->GetName() == _name)
+    {
       return true;
+    }
   }
 
   return false;
@@ -557,7 +589,9 @@ ElementPtr Element::GetElementImpl(const std::string &_name) const
        iter != this->dataPtr->elements.end(); ++iter)
   {
     if ((*iter)->GetName() == _name)
+    {
       return (*iter);
+    }
   }
 
   // gzdbg << "Unable to find element [" << _name << "] return empty\n";
@@ -568,9 +602,13 @@ ElementPtr Element::GetElementImpl(const std::string &_name) const
 ElementPtr Element::GetFirstElement() const
 {
   if (this->dataPtr->elements.empty())
+  {
     return ElementPtr();
+  }
   else
+  {
     return this->dataPtr->elements.front();
+  }
 }
 
 /////////////////////////////////////////////////
@@ -590,15 +628,21 @@ ElementPtr Element::GetNextElement(const std::string &_name) const
 
     ++iter;
     if (iter == parent->dataPtr->elements.end())
+    {
       return ElementPtr();
+    }
     else if (_name.empty())
+    {
       return *(iter);
+    }
     else
     {
       for (; iter != parent->dataPtr->elements.end(); ++iter)
       {
         if ((*iter)->GetName() == _name)
+        {
           return (*iter);
+        }
       }
     }
   }
@@ -610,9 +654,13 @@ ElementPtr Element::GetNextElement(const std::string &_name) const
 ElementPtr Element::GetElement(const std::string &_name)
 {
   if (this->HasElement(_name))
+  {
     return this->GetElementImpl(_name);
+  }
   else
+  {
     return this->AddElement(_name);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -713,7 +761,9 @@ void Element::Update()
   }
 
   if (this->dataPtr->value)
+  {
     this->dataPtr->value->Update();
+  }
 }
 
 /////////////////////////////////////////////////
@@ -723,7 +773,9 @@ void Element::Reset()
       iter != this->dataPtr->elements.end(); ++iter)
   {
     if (*iter)
+    {
       (*iter)->Reset();
+    }
     (*iter).reset();
   }
 
@@ -731,7 +783,9 @@ void Element::Reset()
       iter != this->dataPtr->elementDescriptions.end(); ++iter)
   {
     if (*iter)
+    {
       (*iter)->Reset();
+    }
     (*iter).reset();
   }
   this->dataPtr->elements.clear();
@@ -824,14 +878,22 @@ boost::any Element::GetAny(const std::string &_key)
     if (param)
     {
       if (!this->GetAttribute(_key)->GetAny(result))
+      {
         sdferr << "Couldn't get attribute [" << _key << "] as boost::any\n";
+      }
     }
     else if (this->HasElement(_key))
+    {
       result = this->GetElementImpl(_key)->GetAny();
+    }
     else if (this->HasElementDescription(_key))
+    {
       result = this->GetElementDescription(_key)->GetAny();
+    }
     else
+    {
       sdferr << "Unable to find value for key [" << _key << "]\n";
+    }
   }
   return result;
 }

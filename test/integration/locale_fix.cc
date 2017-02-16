@@ -33,7 +33,9 @@ TEST(CheckFixForLocal, MakeTestToFail)
   FILE *fp = popen("locale -a | grep '^es\\|^pt_\\|^it_' | head -n 1", "r");
 
   if (!fp)
+  {
     FAIL() << "locale -a call failed";
+  }
 
   char buffer[1024];
   char *line = fgets(buffer, sizeof(buffer), fp);
