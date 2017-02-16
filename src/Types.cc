@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 
+#include "sdf/Types.hh"
+
 namespace sdf
 {
 /////////////////////////////////////////////////
@@ -44,8 +46,8 @@ const char *winGetEnv(const char * /*_name*/)
 #endif
 
 /////////////////////////////////////////////////
-std::vector<std::string> split(const std::string& str,
-                               const std::string& splitter)
+std::vector<std::string> split(const std::string &_str,
+                               const std::string &_splitter)
 {
   std::vector<std::string> ret;
   size_t next = 0;
@@ -53,9 +55,9 @@ std::vector<std::string> split(const std::string& str,
 
   while (next != std::string::npos)
   {
-    next = str.find(splitter, current);
-    ret.push_back(str.substr(current, next - current));
-    current = next + splitter.length();
+    next = _str.find(_splitter, current);
+    ret.push_back(_str.substr(current, next - current));
+    current = next + _splitter.length();
   }
 
   return ret;

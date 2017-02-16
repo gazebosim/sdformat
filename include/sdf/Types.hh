@@ -22,8 +22,8 @@
 #include <cmath>
 #include <cstdint>
 #include <sstream>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "sdf/system_util.hh"
 
@@ -52,8 +52,8 @@ namespace sdf
   /// \param[in] splitter  The delimiter to use.
   /// \return A vector of strings containing the split tokens.
   SDFORMAT_VISIBLE
-  std::vector<std::string> split(const std::string& str,
-                                 const std::string& splitter);
+  std::vector<std::string> split(const std::string &_str,
+                                 const std::string &_splitter);
 
   /// \brief check if two values are equal, within a tolerance
   /// \param[in] _a the first value

@@ -1271,6 +1271,7 @@ std::string Values2str(unsigned int _count, const double *_values)
   return ss.str();
 }
 
+/////////////////////////////////////////////////
 std::string Values2str(unsigned int _count, const int *_values)
 {
   std::stringstream ss;
@@ -1352,7 +1353,7 @@ void ParseRobotOrigin(TiXmlDocument &_urdfXml)
   if (originXml)
   {
     const char *xyzstr = originXml->Attribute("xyz");
-    if (xyzstr == NULL)
+    if (xyzstr == nullptr)
     {
       g_initialRobotPose.position = urdf::Vector3(0, 0, 0);
     }
@@ -1362,7 +1363,7 @@ void ParseRobotOrigin(TiXmlDocument &_urdfXml)
     }
     const char *rpystr = originXml->Attribute("rpy");
     urdf::Vector3 rpy;
-    if (rpystr == NULL)
+    if (rpystr == nullptr)
     {
       rpy = urdf::Vector3(0, 0, 0);
     }
