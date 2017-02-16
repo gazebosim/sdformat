@@ -252,10 +252,9 @@ urdf::Pose CopyPose(ignition::math::Pose3d _pose);
 /////////////////////////////////////////////////
 urdf::Vector3 ParseVector3(const std::string &_str, double _scale)
 {
-  std::vector<std::string> pieces;
+  std::vector<std::string> pieces = sdf::split(_str, " ");
   std::vector<double> vals;
 
-  boost::split(pieces, _str, boost::is_any_of(" "));
   for (unsigned int i = 0; i < pieces.size(); ++i)
   {
     if (pieces[i] != "")
