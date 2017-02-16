@@ -227,8 +227,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
       sdferr << "Attribute is missing a required string\n";
       return false;
     }
-    std::string requiredStr = requiredString;
-    boost::trim(requiredStr);
+    std::string requiredStr = sdf::trim(requiredString);
     bool required = requiredStr == "1" ? true : false;
     std::string description;
 

@@ -60,4 +60,20 @@ std::vector<std::string> split(const std::string& str,
 
   return ret;
 }
+
+//////////////////////////////////////////////////
+std::string trim(const char *in)
+{
+  std::string str(in);
+
+  const size_t strBegin = str.find_first_not_of(" \t");
+  if (strBegin == std::string::npos)
+  {
+    return "";  // no content
+  }
+
+  const size_t strRange = str.find_last_not_of(" \t") - strBegin + 1;
+
+  return str.substr(strBegin, strRange);
+}
 }
