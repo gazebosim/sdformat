@@ -27,6 +27,22 @@
 
 ## SDFormat 4.0
 
+### SDFormat 4.x.x (2016-xx-xx)
+
+1. Added `sampling` parameter to `<heightmap>` SDF element.
+    * [Pull request 293](https://bitbucket.org/osrf/sdformat/pull-request/293)
+
+### SDFormat 4.2.0 (2016-10-10)
+
+1. Added tag to specify ODE friction model.
+    * [Pull request 294](https://bitbucket.org/osrf/sdformat/pull-request/294)
+
+1. Fix URDF to SDF `self_collide` bug.
+    * [Pull request 287](https://bitbucket.org/osrf/sdformat/pull-request/287)
+
+1. Added IMU orientation specification to SDF.
+    * [Pull request 284](https://bitbucket.org/osrf/sdformat/pull-request/284)
+
 ### SDFormat 4.1.1 (2016-07-08)
 
 1. Added documentation and animation to `<actor>` element.

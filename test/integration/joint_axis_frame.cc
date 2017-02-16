@@ -21,7 +21,7 @@
 
 #include "test_config.h"
 
-std::string get_sdf_string(std::string _version)
+std::string get_sdf_string(const std::string &_version)
 {
   std::ostringstream stream;
   stream
