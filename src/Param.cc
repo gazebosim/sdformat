@@ -327,8 +327,7 @@ bool Param::SetFromString(const std::string &_value)
   // to fail. See bug #60 for more information. Force to use always C
   setlocale(LC_NUMERIC, "C");
 
-  std::string str = _value;
-  boost::trim(str);
+  std::string str = sdf::trim(_value.c_str());
 
   if (str.empty() && this->dataPtr->required)
   {
