@@ -53,7 +53,7 @@ namespace sdf
   /// \brief Populate the SDF values from a string
   ///
   /// This populates the sdf pointer from a string. If the string is a URDF
-  /// file it is converted to SDF first. All files are converted to the latest
+  /// string it is converted to SDF first. All string are converted to the latest
   /// SDF version
   SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, SDFPtr _sdf);
@@ -61,7 +61,7 @@ namespace sdf
   /// \brief Populate the SDF values from a string
   ///
   /// This populates the sdf pointer from a string. If the string is a URDF
-  /// file it is converted to SDF first. All files are converted to the latest
+  /// string it is converted to SDF first. All strings are converted to the latest
   /// SDF version
   SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, ElementPtr _sdf);
