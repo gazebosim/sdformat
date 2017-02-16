@@ -138,7 +138,6 @@
       <velocity_decay/>
       <gravity>1</gravity>
       <velocity_decay/>
-      <self_collide>0</self_collide>
     </link>
   </model>
 </sdf>
