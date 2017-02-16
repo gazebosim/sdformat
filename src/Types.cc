@@ -19,11 +19,14 @@
 #include <Windows.h>
 #endif
 
-#include "sdf/Types.hh"
+#include <string>
+#include <vector>
 
+namespace sdf
+{
 /////////////////////////////////////////////////
 #ifdef _WIN32
-const char *sdf::winGetEnv(const char *_name)
+const char *winGetEnv(const char *_name)
 {
   const DWORD buffSize = 65535;
   static char buffer[buffSize];
@@ -34,8 +37,27 @@ const char *sdf::winGetEnv(const char *_name)
   return NULL;
 }
 #else
-const char *sdf::winGetEnv(const char * /*_name*/)
+const char *winGetEnv(const char * /*_name*/)
 {
   return NULL;
 }
 #endif
+
+/////////////////////////////////////////////////
+std::vector<std::string> split(const std::string& str,
+                               const std::string& splitter)
+{
+  std::vector<std::string> ret;
+  size_t next = 0;
+  size_t current = next;
+
+  while (next != std::string::npos)
+  {
+    next = str.find(splitter, current);
+    ret.push_back(str.substr(current, next - current));
+    current = next + splitter.length();
+  }
+
+  return ret;
+}
+}
