@@ -32,6 +32,7 @@
 
 using namespace sdf;
 
+namespace sdf {
 typedef boost::shared_ptr<urdf::Collision> UrdfCollisionPtr;
 typedef boost::shared_ptr<urdf::Visual> UrdfVisualPtr;
 typedef boost::shared_ptr<urdf::Link> UrdfLinkPtr;
@@ -3937,4 +3938,5 @@ void ReduceSDFExtensionJointFrameReplace(
     }
     /// @todo add anchor offsets if parent link changes location!
   }
+}
 }
