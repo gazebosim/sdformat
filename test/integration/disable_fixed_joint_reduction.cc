@@ -28,7 +28,7 @@ const std::string SDF_FIXED_JNT_NO_LUMPING = std::string(PROJECT_SOURCE_PATH)
   + "/test/integration/fixed_joint_reduction_disabled.urdf";
 
 /////////////////////////////////////////////////
-bool findJointInModel(std::string desired_joint_name, sdf::SDFPtr robot)
+bool findJointInModel(const std::string &desired_joint_name, sdf::SDFPtr robot)
 {
   bool found = false;
   sdf::ElementPtr model = robot->Root()->GetElement("model");

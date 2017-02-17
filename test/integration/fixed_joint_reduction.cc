@@ -135,6 +135,7 @@ void FixedJointReductionCollisionVisualExtension(
   for (sdf::ElementPtr link = urdfModel->GetElement("link"); link;
        link = link->GetNextElement("link"))
   {
+    EXPECT_FALSE(link->HasElement("self_collide"));
     for (sdf::ElementPtr col = link->GetElement("collision"); col;
          col = col->GetNextElement("collision"))
     {
@@ -184,6 +185,7 @@ void FixedJointReductionCollisionVisualExtension(
   for (sdf::ElementPtr link = sdfModel->GetElement("link"); link;
        link = link->GetNextElement("link"))
   {
+    EXPECT_FALSE(link->HasElement("self_collide"));
     for (sdf::ElementPtr col = link->GetElement("collision"); col;
          col = col->GetNextElement("collision"))
     {
