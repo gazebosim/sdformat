@@ -62,20 +62,11 @@ else()
   pkg_check_modules(URDF urdfdom>=0.3)
 
   if (NOT URDF_FOUND)
-    # version >= 0.3.x not found, check for urdfdom again with no version
-    # restriction.
-    pkg_check_modules(URDF urdfdom)
+    BUILD_ERROR("URDF library >= 0.3 not found.  Please install it")
+  endif()
 
-    if (NOT URDF_FOUND)
-      BUILD_ERROR ("URDF library not found. Please install it")
-    else()
-      # urdfdom library found < 0.3, unset flag
-      set (URDF_GE_0P3 FALSE)
-    endif()
-
-  else()
-    # urdfdom library found >= 0.3, set flag
-    set (URDF_GE_0P3 TRUE)
+  if (URDF_VERSION GREATER 0.4.2)
+    BUILD_ERROR("URDF library too new; please install URDF 0.3 or 0.4")
   endif()
 
   # what am I doing here? pkg-config and cmake
