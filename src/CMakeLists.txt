@@ -11,9 +11,7 @@ link_directories(
   ${IGNITION-MATH_LIBRARY_DIRS}
 )
 
-if (USE_EXTERNAL_URDF)
-  link_directories(${URDF_LIBRARY_DIRS})
-endif()
+link_directories(${URDF_LIBRARY_DIRS})
 
 if (USE_EXTERNAL_TINYXML)
   link_directories(${tinyxml_LIBRARY_DIRS})
@@ -47,21 +45,7 @@ else()
 	    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sdformat-${SDF_VERSION})
 endif()
 
-if (USE_EXTERNAL_URDF)
-  include_directories(${URDF_INCLUDE_DIRS})
-else()
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/urdf)
-  set(sources ${sources}
-  urdf/urdf_parser/model.cpp
-  urdf/urdf_parser/link.cpp
-  urdf/urdf_parser/joint.cpp
-  urdf/urdf_parser/pose.cpp
-  urdf/urdf_parser/twist.cpp
-  urdf/urdf_parser/urdf_model_state.cpp
-  urdf/urdf_parser/urdf_sensor.cpp
-  urdf/urdf_parser/world.cpp
-)
-endif()
+include_directories(${URDF_INCLUDE_DIRS})
 
 set (gtest_sources
   SDF_TEST.cc
@@ -84,8 +68,6 @@ endif()
 message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
 message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
 
-if (USE_EXTERNAL_URDF)
-  target_link_libraries(sdformat ${URDF_LIBRARIES})
-endif()
+target_link_libraries(sdformat ${URDF_LIBRARIES})
 
 sdf_install_library(sdformat)

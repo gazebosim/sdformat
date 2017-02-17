@@ -13,9 +13,7 @@ link_directories(
   ${IGNITION-MATH_LIBRARY_DIRS}
 )
 
-if (USE_EXTERNAL_URDF)
-  link_directories(${URDF_LIBRARY_DIRS})
-endif()
+link_directories(${URDF_LIBRARY_DIRS})
 
 if (USE_EXTERNAL_TINYXML)
   link_directories(${tinyxml_LIBRARY_DIRS})

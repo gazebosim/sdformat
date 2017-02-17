@@ -22,9 +22,9 @@
 #include <set>
 #include <ignition/math.hh>
 
-#include "urdf_model/model.h"
-#include "urdf_model/link.h"
-#include "urdf_parser/urdf_parser.h"
+#include <urdf_model/model.h>
+#include <urdf_model/link.h>
+#include <urdf_parser/urdf_parser.h>
 
 #include "sdf/SDFExtension.hh"
 #include "sdf/parser_urdf.hh"

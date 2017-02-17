@@ -19,9 +19,6 @@ steps:
  - sudo make install
 
 sdformat supported cmake parameters at configuring time:
- - USE_EXTERNAL_URDF (bool) [default False]
-   Do not use the internal copy of urdfdom and use the one installed in the
-   system instead. Recommended if you have a working installation of urdfdom.
  - USE_UPSTREAM_CFLAGS (bool) [default True]
    Use the sdformat team compilation flags instead of the common set defined
    by cmake.
