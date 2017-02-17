@@ -7,7 +7,7 @@
 
 ## SDFormat 5.0
 
-### SDFormat 5.0.0 (xxxx-xx-xx)
+### SDFormat 5.0.0 (2017-01-25)
 
 1. Removed SDFormat 4 deprecations
     * [Pull request 295](https://bitbucket.org/osrf/sdformat/pull-requests/295)
@@ -15,14 +15,40 @@
 1. Added an example
     * [Pull request 275](https://bitbucket.org/osrf/sdformat/pull-requests/275)
 
-1. Move functions that use TinyXML classes in private headers by creating
-   `parser_private.hh` from `parser.hh` and by not installing `Converter.hh`.
+1. Move functions that use TinyXML classes in private headers
+   A contribution from Silvio Traversaro
     * [Pull request 262](https://bitbucket.org/osrf/sdformat/pull-requests/262)
+
+1. Fix issues found by the Coverity tool
+   A contribution from Olivier Crave
+    * [Pull request 259](https://bitbucket.org/osrf/sdformat/pull-requests/259)
+
+1. Add tag to allow for specification of initial joint position
+    * [Pull request 279](https://bitbucket.org/osrf/sdformat/pull-requests/279)
 
 1. Require ignition-math3 as dependency
     * [Pull request 299](https://bitbucket.org/osrf/sdformat/pull-requests/299)
 
+1. Simplifier way of retrieving a value from SDF using Get
+    * [Pull request 285](https://bitbucket.org/osrf/sdformat/pull-requests/285)
+
 ## SDFormat 4.0
+
+### SDFormat 4.x.x (2016-xx-xx)
+
+1. Added `sampling` parameter to `<heightmap>` SDF element.
+    * [Pull request 293](https://bitbucket.org/osrf/sdformat/pull-request/293)
+
+### SDFormat 4.2.0 (2016-10-10)
+
+1. Added tag to specify ODE friction model.
+    * [Pull request 294](https://bitbucket.org/osrf/sdformat/pull-request/294)
+
+1. Fix URDF to SDF `self_collide` bug.
+    * [Pull request 287](https://bitbucket.org/osrf/sdformat/pull-request/287)
+
+1. Added IMU orientation specification to SDF.
+    * [Pull request 284](https://bitbucket.org/osrf/sdformat/pull-request/284)
 
 ### SDFormat 4.1.1 (2016-07-08)
 
