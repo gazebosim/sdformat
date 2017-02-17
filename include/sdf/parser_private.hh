@@ -27,13 +27,13 @@
 /// \brief namespace for Simulation Description Format parser
 namespace sdf
 {
-  // \brief Initialize the SDF interface using a TinyXML document
+  /// \brief Initialize the SDF interface using a TinyXML document
   bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf);
 
-  // \brief Initialize and SDF Element using a TinyXML document
+  /// \brief Initialize and SDF Element using a TinyXML document
   bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf);
 
-  // \brief For internal use only. Do not use this function.
+  /// \brief For internal use only. Do not use this function.
   bool initXml(TiXmlElement *_xml, ElementPtr _sdf);
 
   /// \brief Populate the SDF values from a TinyXML document
@@ -42,7 +42,7 @@ namespace sdf
   bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
                const std::string &_source);
 
-  // \brief For internal use only. Do not use this function.
+  /// \brief For internal use only. Do not use this function.
   bool readXml(TiXmlElement *_xml, ElementPtr _sdf);
 
   void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);
