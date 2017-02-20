@@ -59,14 +59,10 @@ if (NOT PKG_CONFIG_FOUND)
   BUILD_ERROR ("pkgconfig not found. Please install it to find the urdf library.")
 else()
   # check for urdfdom with pkg-config
-  pkg_check_modules(URDF urdfdom>=0.3)
+  pkg_check_modules(URDF urdfdom>=1.0)
 
   if (NOT URDF_FOUND)
-    BUILD_ERROR("URDF library >= 0.3 not found.  Please install it")
-  endif()
-
-  if (URDF_VERSION GREATER 0.4.2)
-    BUILD_ERROR("URDF library too new; please install URDF 0.3 or 0.4")
+    BUILD_ERROR("URDF library >= 1.0 not found.  Please install it")
   endif()
 
   # what am I doing here? pkg-config and cmake
