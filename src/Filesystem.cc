@@ -58,6 +58,12 @@ bool is_directory(const std::string &_path)
 
   return S_ISDIR(path_stat.st_mode);
 }
+
+//////////////////////////////////////////////////
+bool create_directory(const std::string &_path)
+{
+  return ::mkdir(_path.c_str(), S_IRWXU|S_IRWXG|S_IRWXO) == 0;
+}
 #else  // Windows
 //////////////////////////////////////////////////
 std::wstring widen(const std::string &_str)
@@ -281,6 +287,12 @@ bool is_directory(const std::string &_path)
   }
 
   return attr & FILE_ATTRIBUTE_DIRECTORY;
+}
+
+//////////////////////////////////////////////////
+bool create_directory(const std::string &_path)
+{
+  return ::CreateDirectoryW(widen(_path).c_str(), 0) != 0;
 }
 #endif
 }

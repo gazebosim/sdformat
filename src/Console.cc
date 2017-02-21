@@ -65,7 +65,7 @@ Console::Console()
     boost::filesystem::path logDir = logFile.parent_path();
     if (!sdf::filesystem::exists(logDir.string()))
     {
-      boost::filesystem::create_directory(logDir);
+      sdf::filesystem::create_directory(logDir.string());
     }
     else if (!sdf::filesystem::is_directory(logDir.string()))
     {

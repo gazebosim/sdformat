@@ -37,6 +37,13 @@ namespace sdf
     /// \return True if given path exists and is a directory, false otherwise.
     SDFORMAT_VISIBLE
     bool is_directory(const std::string &_path);
+
+    /// \brief Create a new directory on the filesystem.  Intermediate
+    ///        directories must already exist.
+    /// \param[in] _path  The new directory path to create
+    /// \return True if directory creation was successful, false otherwise.
+    SDFORMAT_VISIBLE
+    bool create_directory(const std::string &_path);
   }
 }
 
