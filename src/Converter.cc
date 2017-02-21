@@ -28,7 +28,7 @@
 using namespace sdf;
 
 /////////////////////////////////////////////////
-static bool icmp(const char &a, const char &b)
+static bool case_insensitive_cmp(const char &a, const char &b)
 {
   return tolower(a) < tolower(b);
 }
@@ -105,7 +105,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
                                            origVersionStr.end(),
                                            fname.begin(),
                                            fname.end(),
-                                           icmp))
+                                           case_insensitive_cmp))
           {
             sdfDirs.insert((*dirIter));
           }
