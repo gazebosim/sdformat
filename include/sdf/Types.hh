@@ -59,7 +59,7 @@ namespace sdf
   /// \param[in] in  The string to trim.
   /// \return A string containing the trimmed value.
   SDFORMAT_VISIBLE
-  std::string trim(const char *in);
+  std::string trim(const char *_in);
 
   /// \brief check if two values are equal, within a tolerance
   /// \param[in] _a the first value
