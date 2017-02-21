@@ -37,7 +37,7 @@ static bool case_insensitive_cmp(const char &_a, const char &_b)
 bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
                         bool _quiet)
 {
-  SDF_ASSERT(_doc != NULL, "SDF XML doc is NULL");
+  SDF_ASSERT(_doc != nullptr, "SDF XML doc is NULL");
 
   TiXmlElement *elem = _doc->FirstChildElement("gazebo");
 
