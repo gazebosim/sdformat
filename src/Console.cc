@@ -19,7 +19,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sstream>
-#include <boost/filesystem.hpp>
 
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
@@ -46,41 +45,31 @@ Console::Console()
   : dataPtr(new ConsolePrivate)
 {
   // Set up the file that we'll log to.
-  try
-  {
 #ifndef _WIN32
-    const char *home = std::getenv("HOME");
+  const char *home = std::getenv("HOME");
 #else
-    const char *home = std::getenv("HOMEPATH");
+  const char *home = std::getenv("HOMEPATH");
 #endif
-    if (!home)
-    {
-      std::cerr << "No HOME defined in the environment. Will not log."
-                << std::endl;
-      return;
-    }
-    boost::filesystem::path logFile(home);
-    logFile /= ".sdformat";
-    logFile /= "sdformat.log";
-    boost::filesystem::path logDir = logFile.parent_path();
-    if (!sdf::filesystem::exists(logDir.string()))
-    {
-      sdf::filesystem::create_directory(logDir.string());
-    }
-    else if (!sdf::filesystem::is_directory(logDir.string()))
-    {
-      std::cerr << logDir << " exists but is not a directory.  Will not log."
-                << std::endl;
-      return;
-    }
-    this->dataPtr->logFileStream.open(logFile.string().c_str(), std::ios::out);
-  }
-  catch(const boost::filesystem::filesystem_error& e)
+  if (!home)
   {
-    std::cerr << "Exception while setting up logging: " << e.what()
+    std::cerr << "No HOME defined in the environment. Will not log."
               << std::endl;
     return;
   }
+  std::string logDir(home);
+  logDir = sdf::filesystem::append(logDir, ".sdformat");
+  if (!sdf::filesystem::exists(logDir))
+  {
+    sdf::filesystem::create_directory(logDir);
+  }
+  else if (!sdf::filesystem::is_directory(logDir))
+  {
+    std::cerr << logDir << " exists but is not a directory.  Will not log."
+              << std::endl;
+    return;
+  }
+  std::string logFile = sdf::filesystem::append(logDir, "sdformat.log");
+  this->dataPtr->logFileStream.open(logFile.c_str(), std::ios::out);
 }
 
 //////////////////////////////////////////////////

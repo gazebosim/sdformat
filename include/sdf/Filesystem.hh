@@ -44,6 +44,26 @@ namespace sdf
     /// \return True if directory creation was successful, false otherwise.
     SDFORMAT_VISIBLE
     bool create_directory(const std::string &_path);
+
+    // The below is C++ variadic template magic to allow an append
+    // method that takes 1-n number of arguments to append together.
+    SDFORMAT_VISIBLE
+    std::string const separator(std::string const &_s);
+
+    /// \brief Append one or more additional path elements to the first
+    ///        passed in argument.
+    /// \param[in] args  The paths to append together
+    /// \return A new string with the paths appended together.
+    template<typename... Args>
+    SDFORMAT_VISIBLE
+    std::string append(Args const &... args)
+    {
+      std::string result;
+      int unpack[] {
+        0, (result += separator(args), 0)...};
+      static_cast<void>(unpack);
+      return result.substr(0, result.length() - 1);
+    }
   }
 }
 

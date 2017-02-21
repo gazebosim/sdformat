@@ -64,6 +64,12 @@ bool create_directory(const std::string &_path)
 {
   return ::mkdir(_path.c_str(), S_IRWXU|S_IRWXG|S_IRWXO) == 0;
 }
+
+//////////////////////////////////////////////////
+std::string const separator(const std::string &_p)
+{
+  return _p + "/";
+}
 #else  // Windows
 //////////////////////////////////////////////////
 std::wstring widen(const std::string &_str)
@@ -293,6 +299,12 @@ bool is_directory(const std::string &_path)
 bool create_directory(const std::string &_path)
 {
   return ::CreateDirectoryW(widen(_path).c_str(), 0) != 0;
+}
+
+//////////////////////////////////////////////////
+std::string const separator(const std::string &_p)
+{
+  return _p + "\\";
 }
 #endif
 }
