@@ -740,23 +740,6 @@ TEST(Converter, GazeboToSDF)
   EXPECT_TRUE(convertedElem != NULL);
 }
 
-// This test is failing on Windows for some reason, so disable
-// it for now.
-#if 0
-TEST(Converter, NullDoc)
-{
-  TiXmlDocument xmlDoc;
-  TiXmlDocument convertXmlDoc;
-
-  ASSERT_THROW(sdf::Converter::Convert(NULL, &convertXmlDoc),
-               sdf::AssertionInternalError);
-  ASSERT_THROW(sdf::Converter::Convert(&xmlDoc, NULL),
-               sdf::AssertionInternalError);
-  ASSERT_THROW(sdf::Converter::Convert(NULL, "1.4"),
-               sdf::AssertionInternalError);
-}
-#endif
-
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
