@@ -29,7 +29,7 @@
 
 using namespace sdf;
 
-typedef std::list<boost::filesystem::path> PathList;
+typedef std::list<std::string> PathList;
 typedef std::map<std::string, PathList> URIPathMap;
 
 URIPathMap g_uriPathMap;
@@ -48,7 +48,7 @@ void sdf::setFindCallback(std::function<std::string (const std::string &)> _cb)
 std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
                           bool _useCallback)
 {
-  boost::filesystem::path path = _filename;
+  std::string path = _filename;
 
   // Check to see if _filename is URI. If so, resolve the URI path.
   for (URIPathMap::iterator iter = g_uriPathMap.begin();
@@ -70,7 +70,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
            pathIter != iter->second.end(); ++pathIter)
       {
         // Return the path string if the path + suffix exists.
-        std::string path_suffix = ((*pathIter) / suffix).string();
+        std::string path_suffix = sdf::filesystem::append(*pathIter, suffix);
         if (sdf::filesystem::exists(path_suffix))
         {
           return path_suffix;
@@ -80,18 +80,18 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   }
 
   // Next check the install path.
-  path = boost::filesystem::path(SDF_SHARE_PATH) / _filename;
-  if (sdf::filesystem::exists(path.string()))
+  path = sdf::filesystem::append(SDF_SHARE_PATH, _filename);
+  if (sdf::filesystem::exists(path))
   {
-    return path.string();
+    return path;
   }
 
   // Next check the versioned install path.
-  path = boost::filesystem::path(SDF_SHARE_PATH) / "sdformat" /
-    sdf::SDF::Version() / _filename;
-  if (sdf::filesystem::exists(path.string()))
+  path = sdf::filesystem::append(SDF_SHARE_PATH, "sdformat",
+                                 sdf::SDF::Version(), _filename);
+  if (sdf::filesystem::exists(path))
   {
-    return path.string();
+    return path;
   }
 
   // Next check SDF_PATH environment variable
@@ -103,29 +103,29 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
     for (std::vector<std::string>::iterator iter = paths.begin();
          iter != paths.end(); ++iter)
     {
-      path = boost::filesystem::path(*iter) / _filename;
-      if (sdf::filesystem::exists(path.string()))
+      path = sdf::filesystem::append(*iter, _filename);
+      if (sdf::filesystem::exists(path))
       {
-        return path.string();
+        return path;
       }
     }
   }
 
   // Next check to see if the given file exists.
-  path = boost::filesystem::path(_filename);
-  if (sdf::filesystem::exists(path.string()))
+  path = _filename;
+  if (sdf::filesystem::exists(path))
   {
-    return path.string();
+    return path;
   }
 
   // Finally check the local path, if the flag is set.
   if (_searchLocalPath)
   {
-    path = boost::filesystem::current_path() / _filename;
-
-    if (sdf::filesystem::exists(path.string()))
+    path = sdf::filesystem::append(boost::filesystem::current_path().string(),
+                                   _filename);
+    if (sdf::filesystem::exists(path))
     {
-      return path.string();
+      return path;
     }
   }
 
@@ -158,12 +158,10 @@ void sdf::addURIPath(const std::string &_uri, const std::string &_path)
   for (std::vector<std::string>::iterator iter = parts.begin();
        iter != parts.end(); ++iter)
   {
-    boost::filesystem::path path = *iter;
-
     // Only add valid paths
-    if (!(*iter).empty() && sdf::filesystem::is_directory(path.string()))
+    if (!(*iter).empty() && sdf::filesystem::is_directory(*iter))
     {
-      g_uriPathMap[_uri].push_back(path);
+      g_uriPathMap[_uri].push_back(*iter);
     }
   }
 }
