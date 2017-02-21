@@ -28,9 +28,9 @@
 using namespace sdf;
 
 /////////////////////////////////////////////////
-static bool case_insensitive_cmp(const char &a, const char &b)
+static bool case_insensitive_cmp(const char &_a, const char &_b)
 {
-  return tolower(a) < tolower(b);
+  return tolower(_a) < tolower(_b);
 }
 
 /////////////////////////////////////////////////
