@@ -740,9 +740,6 @@ TEST(Converter, GazeboToSDF)
   EXPECT_TRUE(convertedElem != NULL);
 }
 
-// This test is failing on Windows for some reason, so disable
-// it for now.
-#if 0
 TEST(Converter, NullDoc)
 {
   TiXmlDocument xmlDoc;
@@ -755,7 +752,6 @@ TEST(Converter, NullDoc)
   ASSERT_THROW(sdf::Converter::Convert(NULL, "1.4"),
                sdf::AssertionInternalError);
 }
-#endif
 
 /////////////////////////////////////////////////
 /// Main
