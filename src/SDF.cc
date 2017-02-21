@@ -162,7 +162,7 @@ void sdf::addURIPath(const std::string &_uri, const std::string &_path)
 
     // Only add valid paths
     if (!(*iter).empty() && sdf::filesystem::exists(path.string()) &&
-        boost::filesystem::is_directory(path))
+        sdf::filesystem::is_directory(path.string()))
     {
       g_uriPathMap[_uri].push_back(path);
     }

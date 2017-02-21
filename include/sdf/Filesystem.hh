@@ -31,6 +31,12 @@ namespace sdf
     /// \return True if the path exists on the filesystem, false otherwise.
     SDFORMAT_VISIBLE
     bool exists(const std::string &_path);
+
+    /// \brief Determine whether the given path is a directory.
+    /// \param[in] _path  The path to check
+    /// \return True if given path exists and is a directory, false otherwise.
+    SDFORMAT_VISIBLE
+    bool is_directory(const std::string &_path);
   }
 }
 

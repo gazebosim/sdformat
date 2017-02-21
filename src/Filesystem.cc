@@ -45,6 +45,19 @@ bool exists(const std::string &_path)
 
   return ::stat(_path.c_str(), &path_stat) == 0;
 }
+
+//////////////////////////////////////////////////
+bool is_directory(const std::string &_path)
+{
+  struct stat path_stat;
+
+  if (::stat(_path.c_str(), &path_stat) != 0)
+  {
+    return false;
+  }
+
+  return S_ISDIR(path_stat.st_mode);
+}
 #else  // Windows
 //////////////////////////////////////////////////
 std::wstring widen(const std::string &_str)
@@ -230,6 +243,44 @@ bool exists(const std::string &_path)
   }
 
   return true;
+}
+
+//////////////////////////////////////////////////
+bool is_directory(const std::string &_path)
+{
+  DWORD attr(::GetFileAttributesW(widen(_path).c_str()));
+  if (attr == 0xFFFFFFFF)
+  {
+    return process_status_failure();
+  }
+
+  //  reparse point handling;
+  //    since GetFileAttributesW does not resolve symlinks, try to open a file
+  //    handle to discover if the file exists
+  if (attr & FILE_ATTRIBUTE_REPARSE_POINT)
+  {
+    handle_wrapper h(
+      create_file_handle(
+        _path,
+        0,  // dwDesiredAccess; attributes only
+        FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
+        0,  // lpSecurityAttributes
+        OPEN_EXISTING,
+        FILE_FLAG_BACKUP_SEMANTICS,
+        0));  // hTemplateFile
+
+    if (h.handle == INVALID_HANDLE_VALUE)
+    {
+      return process_status_failure();
+    }
+
+    if (!is_reparse_point_a_symlink(_path))
+    {
+      return true;
+    }
+  }
+
+  return attr & FILE_ATTRIBUTE_DIRECTORY;
 }
 #endif
 }

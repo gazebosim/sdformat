@@ -67,7 +67,7 @@ Console::Console()
     {
       boost::filesystem::create_directory(logDir);
     }
-    else if (!boost::filesystem::is_directory(logDir))
+    else if (!sdf::filesystem::is_directory(logDir.string()))
     {
       std::cerr << logDir << " exists but is not a directory.  Will not log."
                 << std::endl;
