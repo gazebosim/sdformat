@@ -859,19 +859,22 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-static void replace_all(std::string& str,
-                        const std::string& from,
-                        const std::string& to)
+static void replace_all(std::string &_str,
+                        const std::string &_from,
+                        const std::string &_to)
 {
-  if (from.empty())
+  if (_from.empty())
   {
     return;
   }
   size_t start_pos = 0;
-  while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+  while ((start_pos = str.find(_from, start_pos)) != std::string::npos)
   {
-    str.replace(start_pos, from.length(), to);
-    start_pos += to.length();  // In case 'to' contains 'from'
+    _str.replace(start_pos, _from.length(), _to);
+    // We need to advance our starting position beyond what we
+    // just replaced to deal with the case where the '_to' string
+    // happens to contain a piece of '_from'.
+    start_pos += _to.length();
   }
 }
 
