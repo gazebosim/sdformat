@@ -631,8 +631,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           else
           {
             boost::filesystem::path dir(modelPath);
-            if (!sdf::filesystem::exists(dir.string()) ||
-                !sdf::filesystem::is_directory(dir.string()))
+            if (!sdf::filesystem::is_directory(dir.string()))
             {
               sdferr << "Directory doesn't exist[" << modelPath << "]\n";
               continue;

@@ -93,8 +93,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
     // find all sdf version dirs in resource path
     boost::filesystem::directory_iterator endIter;
     std::set<boost::filesystem::path> sdfDirs;
-    if (sdf::filesystem::exists(sdfPath)
-        && sdf::filesystem::is_directory(sdfPath))
+    if (sdf::filesystem::is_directory(sdfPath))
     {
       for (boost::filesystem::directory_iterator dirIter(sdfPath);
            dirIter != endIter ; ++dirIter)
