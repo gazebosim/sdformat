@@ -17,7 +17,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <map>
-#include <boost/filesystem.hpp>
 
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
@@ -630,21 +629,21 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           }
           else
           {
-            boost::filesystem::path dir(modelPath);
-            if (!sdf::filesystem::is_directory(dir.string()))
+            if (!sdf::filesystem::is_directory(modelPath))
             {
               sdferr << "Directory doesn't exist[" << modelPath << "]\n";
               continue;
             }
           }
 
-          boost::filesystem::path manifestPath = modelPath;
+          std::string manifestPath;
 
           /// \todo This hardcoded bit is very Gazebo centric. It should
           /// be abstracted away, possibly through a plugin to SDF.
-          if (sdf::filesystem::exists((manifestPath / "model.config").string()))
+          if (sdf::filesystem::exists(sdf::filesystem::append(modelPath,
+                                                              "model.config")))
           {
-            manifestPath /= "model.config";
+            manifestPath = sdf::filesystem::append(modelPath, "model.config");
           }
           else
           {
@@ -652,11 +651,11 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
                     << "Please rename manifest.xml to "
                     << "model.config" << ".\n";
 
-            manifestPath /= "manifest.xml";
+            manifestPath = sdf::filesystem::append(modelPath, "manifest.xml");
           }
 
           TiXmlDocument manifestDoc;
-          if (manifestDoc.LoadFile(manifestPath.string()))
+          if (manifestDoc.LoadFile(manifestPath))
           {
             TiXmlElement *modelXML = manifestDoc.FirstChildElement("model");
             if (!modelXML)
@@ -689,7 +688,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           else
           {
             sdferr << "Error parsing XML in file ["
-                   << manifestPath.string() << "]: "
+                   << manifestPath << "]: "
                    << manifestDoc.ErrorDesc() << '\n';
           }
         }
