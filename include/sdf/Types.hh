@@ -56,7 +56,7 @@ namespace sdf
                                  const std::string& splitter);
 
   /// \brief Trim leading and trailing whitespace from a string.
-  /// \param[in] in  The string to trim.
+  /// \param[in] _in The string to trim.
   /// \return A string containing the trimmed value.
   SDFORMAT_VISIBLE
   std::string trim(const char *_in);

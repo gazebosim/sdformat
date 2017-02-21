@@ -868,7 +868,7 @@ static void replace_all(std::string &_str,
     return;
   }
   size_t start_pos = 0;
-  while ((start_pos = str.find(_from, start_pos)) != std::string::npos)
+  while ((start_pos = _str.find(_from, start_pos)) != std::string::npos)
   {
     _str.replace(start_pos, _from.length(), _to);
     // We need to advance our starting position beyond what we
