@@ -64,6 +64,11 @@ namespace sdf
       static_cast<void>(unpack);
       return result.substr(0, result.length() - 1);
     }
+
+    /// \brief Get the current working path.
+    /// \return Current working path if successful, the empty path on error.
+    SDFORMAT_VISIBLE
+    std::string current_path();
   }
 }
 

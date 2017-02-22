@@ -70,6 +70,31 @@ std::string const separator(const std::string &_p)
 {
   return _p + "/";
 }
+
+//////////////////////////////////////////////////
+std::string current_path()
+{
+  std::string cur;
+
+  for (int32_t path_max = 128;; path_max *= 2)  // loop 'til buffer large enough
+  {
+    std::vector<char> buf(path_max);
+
+    if (::getcwd(buf.data(), buf.size()) == 0)
+    {
+      if (errno != ERANGE)
+      {
+        break;
+      }
+    }
+    else
+    {
+      cur = std::string(buf.data());
+      break;
+    }
+  }
+  return cur;
+}
 #else  // Windows
 //////////////////////////////////////////////////
 std::wstring widen(const std::string &_str)
@@ -83,6 +108,14 @@ std::wstring widen(const std::string &_str)
   }
 
   return wstm.str();
+}
+
+//////////////////////////////////////////////////
+std::string narrow(const std::wstring &_str)
+{
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+
+  return converter.to_bytes(_str);
 }
 
 //////////////////////////////////////////////////
@@ -306,6 +339,29 @@ std::string const separator(const std::string &_p)
 {
   return _p + "\\";
 }
+
+//////////////////////////////////////////////////
+std::string current_path()
+{
+  DWORD sz;
+  if ((sz = ::GetCurrentDirectoryW(0, nullptr)) == 0)
+  {
+    sz = 1;
+  }
+
+  std::vector<wchar_t> buf(sz);
+
+  if (::GetCurrentDirectoryW(sz, buf.data()) == 0)
+  {
+    // error
+    return std::string("");
+  }
+  else
+  {
+    return narrow(buf.data());
+  }
+}
+
 #endif
 }
 }

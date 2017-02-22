@@ -15,7 +15,6 @@
  *
  */
 
-#include <boost/filesystem.hpp>
 #include <map>
 #include <list>
 
@@ -121,8 +120,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   // Finally check the local path, if the flag is set.
   if (_searchLocalPath)
   {
-    path = sdf::filesystem::append(boost::filesystem::current_path().string(),
-                                   _filename);
+    path = sdf::filesystem::append(sdf::filesystem::current_path(), _filename);
     if (sdf::filesystem::exists(path))
     {
       return path;
