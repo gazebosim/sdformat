@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <map>
@@ -368,7 +368,7 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 
 //////////////////////////////////////////////////
 bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
-    bool _convert)
+             bool _convert)
 {
   if (!_xmlDoc)
   {
