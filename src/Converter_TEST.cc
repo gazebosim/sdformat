@@ -16,6 +16,7 @@
  */
 
 #include <gtest/gtest.h>
+#include "sdf/Exception.hh"
 #include "sdf/Converter.hh"
 
 ////////////////////////////////////////////////////

@@ -17,7 +17,6 @@
 
 #include <vector>
 #include <set>
-#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
 #include "sdf/SDFImpl.hh"
@@ -29,9 +28,17 @@
 using namespace sdf;
 
 /////////////////////////////////////////////////
+static bool case_insensitive_cmp(const char &_a, const char &_b)
+{
+  return tolower(_a) < tolower(_b);
+}
+
+/////////////////////////////////////////////////
 bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
                         bool _quiet)
 {
+  SDF_ASSERT(_doc != nullptr, "SDF XML doc is NULL");
+
   TiXmlElement *elem = _doc->FirstChildElement("gazebo");
 
   // Replace <gazebo> with <sdf>
@@ -68,7 +75,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   elem->SetAttribute("version", _toVersion);
 
   std::string origVersionStr = origVersion;
-  boost::replace_all(origVersion, ".", "_");
+  std::replace(origVersion.begin(), origVersion.end(), '.', '_');
 
   std::string filename = sdf::findFile(origVersion + ".convert");
 
@@ -93,8 +100,12 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
       {
         if (boost::filesystem::is_directory(dirIter->status()))
         {
-          if (boost::algorithm::ilexicographical_compare(
-              origVersionStr, (*dirIter).path().filename().string()))
+          std::string fname = (*dirIter).path().filename().string();
+          if (std::lexicographical_compare(origVersionStr.begin(),
+                                           origVersionStr.end(),
+                                           fname.begin(),
+                                           fname.end(),
+                                           case_insensitive_cmp))
           {
             sdfDirs.insert((*dirIter));
           }
@@ -122,7 +133,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
         }
 
         origVersion = (*it).filename().string();
-        boost::replace_all(origVersion, ".", "_");
+        std::replace(origVersion.begin(), origVersion.end(), '.', '_');
       }
       else
       {
@@ -508,8 +519,7 @@ void Converter::CheckDeprecation(TiXmlElement *_elem, TiXmlElement *_convert)
        deprecatedElem = deprecatedElem->NextSiblingElement("deprecated"))
   {
     std::string value = deprecatedElem->GetText();
-    std::vector<std::string> valueSplit;
-    boost::split(valueSplit, value, boost::is_any_of("/"));
+    std::vector<std::string> valueSplit = split(value, "/");
 
     bool found = false;
     TiXmlElement *e = _elem;
