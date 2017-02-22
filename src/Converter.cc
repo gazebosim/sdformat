@@ -19,10 +19,11 @@
 #include <set>
 #include <boost/filesystem.hpp>
 
-#include "sdf/SDFImpl.hh"
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
+#include "sdf/Filesystem.hh"
+#include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
 
 using namespace sdf;
@@ -92,7 +93,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
     // find all sdf version dirs in resource path
     boost::filesystem::directory_iterator endIter;
     std::set<boost::filesystem::path> sdfDirs;
-    if (boost::filesystem::exists(sdfPath)
+    if (sdf::filesystem::exists(sdfPath)
         && boost::filesystem::is_directory(sdfPath))
     {
       for (boost::filesystem::directory_iterator dirIter(sdfPath);
@@ -119,7 +120,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
     {
       boost::filesystem::path convertFile
          = boost::filesystem::operator/((*it).string(), origVersion+".convert");
-      if (boost::filesystem::exists(convertFile))
+      if (sdf::filesystem::exists(convertFile.string()))
       {
         if (!xmlDoc.LoadFile(convertFile.string()))
         {

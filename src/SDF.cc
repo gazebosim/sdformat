@@ -22,6 +22,7 @@
 #include "sdf/parser.hh"
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
+#include "sdf/Filesystem.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
@@ -69,9 +70,10 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
            pathIter != iter->second.end(); ++pathIter)
       {
         // Return the path string if the path + suffix exists.
-        if (boost::filesystem::exists((*pathIter) / suffix))
+        std::string path_suffix = ((*pathIter) / suffix).string();
+        if (sdf::filesystem::exists(path_suffix))
         {
-          return ((*pathIter) / suffix).string();
+          return path_suffix;
         }
       }
     }
@@ -79,7 +81,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
 
   // Next check the install path.
   path = boost::filesystem::path(SDF_SHARE_PATH) / _filename;
-  if (boost::filesystem::exists(path))
+  if (sdf::filesystem::exists(path.string()))
   {
     return path.string();
   }
@@ -87,7 +89,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   // Next check the versioned install path.
   path = boost::filesystem::path(SDF_SHARE_PATH) / "sdformat" /
     sdf::SDF::Version() / _filename;
-  if (boost::filesystem::exists(path))
+  if (sdf::filesystem::exists(path.string()))
   {
     return path.string();
   }
@@ -102,7 +104,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
          iter != paths.end(); ++iter)
     {
       path = boost::filesystem::path(*iter) / _filename;
-      if (boost::filesystem::exists(path))
+      if (sdf::filesystem::exists(path.string()))
       {
         return path.string();
       }
@@ -111,7 +113,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
 
   // Next check to see if the given file exists.
   path = boost::filesystem::path(_filename);
-  if (boost::filesystem::exists(path))
+  if (sdf::filesystem::exists(path.string()))
   {
     return path.string();
   }
@@ -121,7 +123,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   {
     path = boost::filesystem::current_path() / _filename;
 
-    if (boost::filesystem::exists(path))
+    if (sdf::filesystem::exists(path.string()))
     {
       return path.string();
     }
@@ -159,7 +161,7 @@ void sdf::addURIPath(const std::string &_uri, const std::string &_path)
     boost::filesystem::path path = *iter;
 
     // Only add valid paths
-    if (!(*iter).empty() && boost::filesystem::exists(path) &&
+    if (!(*iter).empty() && sdf::filesystem::exists(path.string()) &&
         boost::filesystem::is_directory(path))
     {
       g_uriPathMap[_uri].push_back(path);

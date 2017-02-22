@@ -22,6 +22,7 @@
 #include <boost/filesystem.hpp>
 
 #include "sdf/Console.hh"
+#include "sdf/Filesystem.hh"
 #include "sdf/Types.hh"
 
 using namespace sdf;
@@ -62,7 +63,7 @@ Console::Console()
     logFile /= ".sdformat";
     logFile /= "sdformat.log";
     boost::filesystem::path logDir = logFile.parent_path();
-    if (!boost::filesystem::exists(logDir))
+    if (!sdf::filesystem::exists(logDir.string()))
     {
       boost::filesystem::create_directory(logDir);
     }

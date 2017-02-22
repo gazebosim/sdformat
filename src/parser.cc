@@ -21,8 +21,9 @@
 
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
-#include "sdf/SDFImpl.hh"
+#include "sdf/Filesystem.hh"
 #include "sdf/Param.hh"
+#include "sdf/SDFImpl.hh"
 #include "sdf/parser.hh"
 #include "sdf/parser_private.hh"
 #include "sdf/sdf_config.h"
@@ -616,7 +617,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           if (modelPath.empty())
           {
             sdferr << "Unable to find uri["
-              << elemXml->FirstChildElement("uri")->GetText() << "]\n";
+                   << elemXml->FirstChildElement("uri")->GetText() << "]\n";
 
             std::string uri = elemXml->FirstChildElement("uri")->GetText();
             size_t modelFound = uri.find("model://");
@@ -630,7 +631,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           else
           {
             boost::filesystem::path dir(modelPath);
-            if (!boost::filesystem::exists(dir) ||
+            if (!sdf::filesystem::exists(dir.string()) ||
                 !boost::filesystem::is_directory(dir))
             {
               sdferr << "Directory doesn't exist[" << modelPath << "]\n";
@@ -641,8 +642,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           boost::filesystem::path manifestPath = modelPath;
 
           /// \todo This hardcoded bit is very Gazebo centric. It should
-          /// be abstracted away, possible through a plugin to SDF.
-          if (boost::filesystem::exists(manifestPath / "model.config"))
+          /// be abstracted away, possibly through a plugin to SDF.
+          if (sdf::filesystem::exists((manifestPath / "model.config").string()))
           {
             manifestPath /= "model.config";
           }
