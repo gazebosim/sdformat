@@ -146,10 +146,6 @@ void CreateSDF(TiXmlElement *_root, ConstUrdfLinkPtr _link,
 void CreateLink(TiXmlElement *_root, ConstUrdfLinkPtr _link,
                 ignition::math::Pose3d &_currentTransform);
 
-
-/// print collision groups for debugging purposes
-void PrintCollisionGroups(UrdfLinkPtr _link);
-
 /// reduced fixed joints:  apply appropriate frame updates in joint
 ///   inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionJointFrameReplace(
@@ -220,9 +216,6 @@ std::string Values2str(unsigned int _count, const double *_values);
 void CreateGeometry(TiXmlElement* _elem,
                     boost::shared_ptr<urdf::Geometry> _geometry);
 
-std::string GetGeometryBoundingBox(boost::shared_ptr<urdf::Geometry> _geometry,
-                                   double *_sizeVals);
-
 ignition::math::Pose3d inverseTransformToParentFrame(
     ignition::math::Pose3d _transformInLinkFrame,
     urdf::Pose _parentToLinkTransform);
@@ -252,20 +245,18 @@ urdf::Pose CopyPose(ignition::math::Pose3d _pose);
 /////////////////////////////////////////////////
 urdf::Vector3 ParseVector3(const std::string &_str, double _scale)
 {
-  std::vector<std::string> pieces;
+  std::vector<std::string> pieces = sdf::split(_str, " ");
   std::vector<double> vals;
 
-  boost::split(pieces, _str, boost::is_any_of(" "));
   for (unsigned int i = 0; i < pieces.size(); ++i)
   {
     if (pieces[i] != "")
     {
       try
       {
-        vals.push_back(_scale
-            * boost::lexical_cast<double>(pieces[i].c_str()));
+        vals.push_back(_scale * std::stod(pieces[i]));
       }
-      catch(boost::bad_lexical_cast &)
+      catch(std::invalid_argument &)
       {
         sdferr << "xml key [" << _str
                << "][" << i << "] value [" << pieces[i]
@@ -1163,7 +1154,6 @@ void ReduceCollisionsToParent(UrdfLinkPtr _link)
       }
     }
   }
-  // this->PrintCollisionGroups(_link->getParent());
 #else
   for (std::vector<UrdfCollisionPtr>::iterator
       collisionIt = _link->collision_array.begin();
@@ -1281,6 +1271,21 @@ std::string Values2str(unsigned int _count, const double *_values)
   return ss.str();
 }
 
+/////////////////////////////////////////////////
+std::string Values2str(unsigned int _count, const int *_values)
+{
+  std::stringstream ss;
+  for (unsigned int i = 0 ; i < _count ; ++i)
+  {
+    if (i > 0)
+    {
+      ss << " ";
+    }
+    ss << _values[i];
+  }
+  return ss.str();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 void AddKeyValue(TiXmlElement *_elem, const std::string &_key,
                  const std::string &_value)
@@ -1347,9 +1352,25 @@ void ParseRobotOrigin(TiXmlDocument &_urdfXml)
   TiXmlElement *originXml = robotXml->FirstChildElement("origin");
   if (originXml)
   {
-    g_initialRobotPose.position = ParseVector3(
-        std::string(originXml->Attribute("xyz")));
-    urdf::Vector3 rpy = ParseVector3(std::string(originXml->Attribute("rpy")));
+    const char *xyzstr = originXml->Attribute("xyz");
+    if (xyzstr == nullptr)
+    {
+      g_initialRobotPose.position = urdf::Vector3(0, 0, 0);
+    }
+    else
+    {
+      g_initialRobotPose.position = ParseVector3(std::string(xyzstr));
+    }
+    const char *rpystr = originXml->Attribute("rpy");
+    urdf::Vector3 rpy;
+    if (rpystr == nullptr)
+    {
+      rpy = urdf::Vector3(0, 0, 0);
+    }
+    else
+    {
+      rpy = ParseVector3(std::string(rpystr));
+    }
     g_initialRobotPose.rotation.setFromRPY(rpy.x, rpy.y, rpy.z);
     g_initialRobotPoseValid = true;
   }
@@ -1500,32 +1521,27 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       else if (childElem->ValueStr() == "dampingFactor")
       {
         sdf->isDampingFactor = true;
-        sdf->dampingFactor = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->dampingFactor = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "maxVel")
       {
         sdf->isMaxVel = true;
-        sdf->maxVel = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->maxVel = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "minDepth")
       {
         sdf->isMinDepth = true;
-        sdf->minDepth = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->minDepth = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "mu1")
       {
         sdf->isMu1 = true;
-        sdf->mu1 = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->mu1 = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "mu2")
       {
         sdf->isMu2 = true;
-        sdf->mu2 = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->mu2 = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "fdir1")
       {
@@ -1534,14 +1550,12 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       else if (childElem->ValueStr() == "kp")
       {
         sdf->isKp = true;
-        sdf->kp = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->kp = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "kd")
       {
         sdf->isKd = true;
-        sdf->kd = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->kd = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "selfCollide")
       {
@@ -1562,14 +1576,12 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       else if (childElem->ValueStr() == "maxContacts")
       {
         sdf->isMaxContacts = true;
-        sdf->maxContacts = boost::lexical_cast<int>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->maxContacts = std::stoi(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "laserRetro")
       {
         sdf->isLaserRetro = true;
-        sdf->laserRetro = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->laserRetro = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "springReference")
       {
@@ -1584,38 +1596,17 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       else if (childElem->ValueStr() == "stopCfm")
       {
         sdf->isStopCfm = true;
-        sdf->stopCfm = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->stopCfm = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "stopErp")
       {
         sdf->isStopErp = true;
-        sdf->stopErp = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
-      }
-      else if (childElem->ValueStr() == "stopKp")
-      {
-        sdf->isStopKp = true;
-        sdf->stopKp = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
-      }
-      else if (childElem->ValueStr() == "stopKd")
-      {
-        sdf->isStopKd = true;
-        sdf->stopKd = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
-      }
-      else if (childElem->ValueStr() == "initialJointPosition")
-      {
-        sdf->isInitialJointPosition = true;
-        sdf->initialJointPosition = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->stopErp = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "fudgeFactor")
       {
         sdf->isFudgeFactor = true;
-        sdf->fudgeFactor = boost::lexical_cast<double>(
-            GetKeyValueAsString(childElem).c_str());
+        sdf->fudgeFactor = std::stod(GetKeyValueAsString(childElem));
       }
       else if (childElem->ValueStr() == "provideFeedback")
       {
@@ -2001,7 +1992,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           if ((*ge)->isMaxContacts)
           {
             AddKeyValue(_elem, "max_contacts",
-                        boost::lexical_cast<std::string>((*ge)->maxContacts));
+                        Values2str(1, &(*ge)->maxContacts));
           }
         }
       }
@@ -2331,9 +2322,6 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
           AddKeyValue(dynamics, "spring_stiffness",
                       Values2str(1, &(*ge)->springStiffness));
         }
-        // if ((*ge)->isInitialJointPosition)
-        //    AddKeyValue(_elem, "initialJointPosition",
-        //      Values2str(1, &(*ge)->initialJointPosition));
 
         // insert provideFeedback
         if ((*ge)->isProvideFeedback)
@@ -2555,85 +2543,6 @@ void CreateGeometry(TiXmlElement* _elem,
     sdfGeometry->LinkEndChild(geometryType);
     _elem->LinkEndChild(sdfGeometry);
   }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-std::string GetGeometryBoundingBox(
-    boost::shared_ptr<urdf::Geometry> _geom, double *_sizeVals)
-{
-  std::string type;
-
-  switch (_geom->type)
-  {
-    case urdf::Geometry::BOX:
-      type = "box";
-      {
-        boost::shared_ptr<const urdf::Box> box;
-        box = boost::dynamic_pointer_cast<const urdf::Box >(_geom);
-        _sizeVals[0] = box->dim.x;
-        _sizeVals[1] = box->dim.y;
-        _sizeVals[2] = box->dim.z;
-      }
-      break;
-    case urdf::Geometry::CYLINDER:
-      type = "cylinder";
-      {
-        boost::shared_ptr<const urdf::Cylinder> cylinder;
-        cylinder = boost::dynamic_pointer_cast<const urdf::Cylinder >(_geom);
-        _sizeVals[0] = cylinder->radius * 2;
-        _sizeVals[1] = cylinder->radius * 2;
-        _sizeVals[2] = cylinder->length;
-      }
-      break;
-    case urdf::Geometry::SPHERE:
-      type = "sphere";
-      {
-        boost::shared_ptr<const urdf::Sphere> sphere;
-        sphere = boost::dynamic_pointer_cast<const urdf::Sphere >(_geom);
-        _sizeVals[0] = _sizeVals[1] = _sizeVals[2] = sphere->radius * 2;
-      }
-      break;
-    case urdf::Geometry::MESH:
-      type = "trimesh";
-      {
-        boost::shared_ptr<const urdf::Mesh> mesh;
-        mesh = boost::dynamic_pointer_cast<const urdf::Mesh >(_geom);
-        _sizeVals[0] = mesh->scale.x;
-        _sizeVals[1] = mesh->scale.y;
-        _sizeVals[2] = mesh->scale.z;
-      }
-      break;
-    default:
-      _sizeVals[0] = _sizeVals[1] = _sizeVals[2] = 0;
-      sdfwarn << "Unknown body type: [" << static_cast<int>(_geom->type)
-              << "] skipped in geometry\n";
-      break;
-  }
-
-  return type;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void PrintCollisionGroups(UrdfLinkPtr _link)
-{
-#ifndef URDF_GE_0P3
-  sdfdbg << "COLLISION LUMPING: link: [" << _link->name << "] contains ["
-         << static_cast<int>(_link->collision_groups.size())
-         << "] collisions.\n";
-  for (std::map<std::string,
-      boost::shared_ptr<std::vector<UrdfCollisionPtr > > >::iterator
-      colsIt = _link->collision_groups.begin();
-      colsIt != _link->collision_groups.end(); ++colsIt)
-  {
-    sdfdbg << "    collision_groups: [" << colsIt->first << "] has ["
-           << static_cast<int>(colsIt->second->size())
-           << "] Collision objects\n";
-  }
-#else
-  sdfdbg << "COLLISION LUMPING: link: [" << _link->name << "] contains ["
-         << static_cast<int>(_link->collision_array.size())
-         << "] collisions.\n";
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////

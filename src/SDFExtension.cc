@@ -43,9 +43,6 @@ SDFExtension::SDFExtension()
   this->isSpringStiffness = false;
   this->isStopCfm = false;
   this->isStopErp = false;
-  this->isStopKp = false;
-  this->isStopKd = false;
-  this->isInitialJointPosition = false;
   this->isFudgeFactor = false;
   this->isProvideFeedback = false;
   this->isImplicitSpringDamper = false;
@@ -64,9 +61,6 @@ SDFExtension::SDFExtension()
   this->springStiffness = 0;
   this->stopCfm = 0;
   this->stopErp = 0.1;
-  this->stopKp = 100000000;
-  this->stopKd = 1;
-  this->initialJointPosition = 0;
   this->fudgeFactor = 1;
 
   this->provideFeedback = false;
@@ -94,11 +88,8 @@ SDFExtension::SDFExtension(const SDFExtension &_ge)
   this->isLaserRetro = _ge.isLaserRetro;
   this->isSpringReference = _ge.isSpringReference;
   this->isSpringStiffness = _ge.isSpringStiffness;
-  this->isStopKp = _ge.isStopKp;
-  this->isStopKd = _ge.isStopKd;
   this->isStopCfm = _ge.isStopCfm;
   this->isStopErp = _ge.isStopErp;
-  this->isInitialJointPosition = _ge.isInitialJointPosition;
   this->isFudgeFactor = _ge.isFudgeFactor;
   this->isProvideFeedback = _ge.isProvideFeedback;
   this->isImplicitSpringDamper = _ge.isImplicitSpringDamper;
@@ -119,10 +110,7 @@ SDFExtension::SDFExtension(const SDFExtension &_ge)
   this->laserRetro = _ge.laserRetro;
   this->springReference = _ge.springReference;
   this->springStiffness = _ge.springStiffness;
-  this->stopKp = _ge.stopKp;
-  this->stopKd = _ge.stopKd;
   this->stopCfm = _ge.stopCfm;
   this->stopErp = _ge.stopErp;
-  this->initialJointPosition = _ge.initialJointPosition;
   this->fudgeFactor = _ge.fudgeFactor;
 }
