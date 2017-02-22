@@ -53,6 +53,10 @@ namespace sdf
                       int64_t _line,
                       std::string _msg);
 
+    /// \brief Copy constructor
+    /// \param[in] _e Exception to copy.
+    public: Exception(const Exception &_e);
+
     /// \brief Destructor
     public: virtual ~Exception();
 
