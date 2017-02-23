@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 Open Source Robotics Foundation
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1271,6 +1271,7 @@ std::string Values2str(unsigned int _count, const double *_values)
   return ss.str();
 }
 
+/////////////////////////////////////////////////
 std::string Values2str(unsigned int _count, const int *_values)
 {
   std::stringstream ss;
@@ -1352,7 +1353,7 @@ void ParseRobotOrigin(TiXmlDocument &_urdfXml)
   if (originXml)
   {
     const char *xyzstr = originXml->Attribute("xyz");
-    if (xyzstr == NULL)
+    if (xyzstr == nullptr)
     {
       g_initialRobotPose.position = urdf::Vector3(0, 0, 0);
     }
@@ -1362,7 +1363,7 @@ void ParseRobotOrigin(TiXmlDocument &_urdfXml)
     }
     const char *rpystr = originXml->Attribute("rpy");
     urdf::Vector3 rpy;
-    if (rpystr == NULL)
+    if (rpystr == nullptr)
     {
       rpy = urdf::Vector3(0, 0, 0);
     }
@@ -1558,6 +1559,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       }
       else if (childElem->ValueStr() == "selfCollide")
       {
+        sdf->isSelfCollide = true;
         std::string valueStr = GetKeyValueAsString(childElem);
 
         // default of selfCollide is false
@@ -2229,10 +2231,10 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
         }
         _elem->LinkEndChild(velocityDecay);
         // selfCollide tag
-        if ((*ge)->selfCollide)
-          AddKeyValue(_elem, "self_collide", "true");
-        else
-          AddKeyValue(_elem, "self_collide", "false");
+        if ((*ge)->isSelfCollide)
+        {
+          AddKeyValue(_elem, "self_collide", (*ge)->selfCollide ? "1" : "0");
+        }
         // insert blobs into body
         for (std::vector<TiXmlElementPtr>::iterator
             blobIt = (*ge)->blobs.begin();

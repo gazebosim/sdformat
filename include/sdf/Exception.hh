@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 Open Source Robotics Foundation
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,10 @@ namespace sdf
     public: Exception(const char *_file,
                       int64_t _line,
                       std::string _msg);
+
+    /// \brief Copy constructor
+    /// \param[in] _e Exception to copy.
+    public: Exception(const Exception &_e);
 
     /// \brief Destructor
     public: virtual ~Exception();

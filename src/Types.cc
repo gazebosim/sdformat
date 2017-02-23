@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2017 Open Source Robotics Foundation
+ * Copyright 2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,13 @@
 #include <string>
 #include <vector>
 
+#include "sdf/Types.hh"
+
 namespace sdf
 {
 /////////////////////////////////////////////////
-std::vector<std::string> split(const std::string& str,
-                               const std::string& splitter)
+std::vector<std::string> split(const std::string &_str,
+                               const std::string &_splitter)
 {
   std::vector<std::string> ret;
   size_t next = 0;
@@ -30,18 +32,18 @@ std::vector<std::string> split(const std::string& str,
 
   while (next != std::string::npos)
   {
-    next = str.find(splitter, current);
-    ret.push_back(str.substr(current, next - current));
-    current = next + splitter.length();
+    next = _str.find(_splitter, current);
+    ret.push_back(_str.substr(current, next - current));
+    current = next + _splitter.length();
   }
 
   return ret;
 }
 
 //////////////////////////////////////////////////
-std::string trim(const char *in)
+std::string trim(const char *_in)
 {
-  std::string str(in);
+  std::string str(_in);
 
   const size_t strBegin = str.find_first_not_of(" \t");
   if (strBegin == std::string::npos)

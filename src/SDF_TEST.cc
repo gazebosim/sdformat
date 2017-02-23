@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 Open Source Robotics Foundation
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -523,6 +523,9 @@ TEST_F(SDFUpdate, GetAny)
 TEST_F(SDFUpdate, Version)
 {
   EXPECT_STREQ(SDF_VERSION, sdf::SDF::Version().c_str());
+
+  sdf::SDF::Version("0.2.3");
+  EXPECT_STREQ("0.2.3", sdf::SDF::Version().c_str());
 }
 
 /////////////////////////////////////////////////

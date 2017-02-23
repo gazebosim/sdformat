@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 Open Source Robotics Foundation
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #include "sdf/sdf.hh"
 #include "sdf/parser_urdf.hh"
 
+/////////////////////////////////////////////////
 std::string get_minimal_urdf_txt()
 {
   std::ostringstream stream;
@@ -31,6 +32,7 @@ std::string get_minimal_urdf_txt()
   return stream.str();
 }
 
+/////////////////////////////////////////////////
 /* By design, errors are only reported in std output */
 TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
 {
@@ -41,6 +43,7 @@ TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
    );
 }
 
+/////////////////////////////////////////////////
 TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
 {
     ASSERT_NO_THROW(
@@ -51,6 +54,7 @@ TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
     );
 }
 
+/////////////////////////////////////////////////
 TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
 {
    // URDF -> SDF
@@ -78,6 +82,7 @@ TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
    ASSERT_EQ(sdf_same_result_str, sdf_result_str);
 }
 
+/////////////////////////////////////////////////
 TEST(URDFParser, ParseRobotOriginXYZBlank)
 {
   std::ostringstream stream;
@@ -89,14 +94,15 @@ TEST(URDFParser, ParseRobotOriginXYZBlank)
   doc.Parse(stream.str().c_str());
   sdf::URDF2SDF parser_;
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  TiXmlElement* sdf = sdf_result.FirstChildElement("sdf");
-  EXPECT_TRUE(sdf != NULL);
-  TiXmlElement* model = sdf->FirstChildElement("model");
-  EXPECT_TRUE(model != NULL);
-  TiXmlElement* pose = model->FirstChildElement("pose");
-  ASSERT_TRUE(pose != NULL);
+  TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
+  ASSERT_TRUE(sdf != nullptr);
+  TiXmlElement *model = sdf->FirstChildElement("model");
+  ASSERT_TRUE(model != nullptr);
+  TiXmlElement *pose = model->FirstChildElement("pose");
+  ASSERT_TRUE(pose != nullptr);
 }
 
+/////////////////////////////////////////////////
 TEST(URDFParser, ParseRobotOriginRPYBlank)
 {
   std::ostringstream stream;
@@ -108,14 +114,15 @@ TEST(URDFParser, ParseRobotOriginRPYBlank)
   sdf::URDF2SDF parser_;
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  TiXmlElement* sdf = sdf_result.FirstChildElement("sdf");
-  EXPECT_TRUE(sdf != NULL);
-  TiXmlElement* model = sdf->FirstChildElement("model");
-  EXPECT_TRUE(model != NULL);
-  TiXmlElement* pose = model->FirstChildElement("pose");
-  ASSERT_TRUE(pose != NULL);
+  TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
+  ASSERT_TRUE(sdf != nullptr);
+  TiXmlElement *model = sdf->FirstChildElement("model");
+  ASSERT_TRUE(model != nullptr);
+  TiXmlElement *pose = model->FirstChildElement("pose");
+  ASSERT_TRUE(pose != nullptr);
 }
 
+/////////////////////////////////////////////////
 TEST(URDFParser, ParseRobotOriginInvalidXYZ)
 {
   std::ostringstream stream;
@@ -127,14 +134,15 @@ TEST(URDFParser, ParseRobotOriginInvalidXYZ)
   sdf::URDF2SDF parser_;
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  TiXmlElement* sdf = sdf_result.FirstChildElement("sdf");
-  EXPECT_TRUE(sdf != NULL);
-  TiXmlElement* model = sdf->FirstChildElement("model");
-  EXPECT_TRUE(model != NULL);
-  TiXmlElement* pose = model->FirstChildElement("pose");
-  ASSERT_TRUE(pose != NULL);
+  TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
+  ASSERT_TRUE(sdf != nullptr);
+  TiXmlElement *model = sdf->FirstChildElement("model");
+  ASSERT_TRUE(model != nullptr);
+  TiXmlElement *pose = model->FirstChildElement("pose");
+  ASSERT_TRUE(pose != nullptr);
 }
 
+/////////////////////////////////////////////////
 TEST(URDFParser, ParseGazeboLinkFactors)
 {
   std::multimap<std::string, std::vector<std::string>> elements
@@ -188,15 +196,15 @@ TEST(URDFParser, ParseGazeboLinkFactors)
     doc.Parse(stream.str().c_str());
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
-    TiXmlElement* tmp = sdf_result.FirstChildElement("sdf");
-    EXPECT_TRUE(tmp != NULL);
+    TiXmlElement *tmp = sdf_result.FirstChildElement("sdf");
+    ASSERT_TRUE(tmp != nullptr);
 
     unsigned int i;
 
     for (i = 0; i < it->second.size() - 1; ++i)
     {
       tmp = tmp->FirstChildElement(it->second[i]);
-      EXPECT_TRUE(tmp != NULL);
+      ASSERT_TRUE(tmp != nullptr);
     }
 
     // For the last element, check that it is exactly what we expect
@@ -204,6 +212,7 @@ TEST(URDFParser, ParseGazeboLinkFactors)
   }
 }
 
+/////////////////////////////////////////////////
 TEST(URDFParser, ParseGazeboInvalidDampingFactor)
 {
   std::ostringstream stream;
@@ -225,6 +234,7 @@ TEST(URDFParser, ParseGazeboInvalidDampingFactor)
                std::invalid_argument);
 }
 
+/////////////////////////////////////////////////
 TEST(URDFParser, ParseGazeboJointElements)
 {
   std::map<std::string, std::vector<std::string>> elements
@@ -287,15 +297,15 @@ TEST(URDFParser, ParseGazeboJointElements)
     doc.Parse(stream.str().c_str());
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
-    TiXmlElement* tmp = sdf_result.FirstChildElement("sdf");
-    EXPECT_TRUE(tmp != NULL);
+    TiXmlElement *tmp = sdf_result.FirstChildElement("sdf");
+    ASSERT_TRUE(tmp != nullptr);
 
     unsigned int i;
 
     for (i = 0; i < it->second.size() - 1; ++i)
     {
       tmp = tmp->FirstChildElement(it->second[i]);
-      EXPECT_TRUE(tmp != NULL);
+      ASSERT_TRUE(tmp != nullptr);
     }
 
     // For the last element, check that it is exactly what we expect

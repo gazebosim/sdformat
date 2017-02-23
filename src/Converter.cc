@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 Open Source Robotics Foundation
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,16 +28,16 @@
 using namespace sdf;
 
 /////////////////////////////////////////////////
-static bool icmp(const char &a, const char &b)
+static bool case_insensitive_cmp(const char &_a, const char &_b)
 {
-  return tolower(a) < tolower(b);
+  return tolower(_a) < tolower(_b);
 }
 
 /////////////////////////////////////////////////
 bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
                         bool _quiet)
 {
-  SDF_ASSERT(_doc != NULL, "SDF XML doc is NULL");
+  SDF_ASSERT(_doc != nullptr, "SDF XML doc is NULL");
 
   TiXmlElement *elem = _doc->FirstChildElement("gazebo");
 
@@ -105,7 +105,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
                                            origVersionStr.end(),
                                            fname.begin(),
                                            fname.end(),
-                                           icmp))
+                                           case_insensitive_cmp))
           {
             sdfDirs.insert((*dirIter));
           }
