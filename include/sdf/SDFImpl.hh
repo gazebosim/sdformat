@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 Open Source Robotics Foundation
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,13 +103,15 @@ namespace sdf
 
     /// \brief Set the version string
     /// \param[in] _version SDF version string.
-    /// \deprecated It isn't possible to set the version anymore.
-    public: static void Version(const std::string &_version)
-        SDF_DEPRECATED(5.0);
+    public: static void Version(const std::string &_version);
 
     /// \internal
     /// \brief Pointer to private data.
     private: std::unique_ptr<SDFPrivate> dataPtr;
+
+    /// \brief The SDF version. Set to SDF_VERSION by default, or through
+    /// the Version function at runtime.
+    private: static std::string version;
   };
   /// \}
 }

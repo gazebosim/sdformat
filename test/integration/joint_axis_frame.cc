@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 Open Source Robotics Foundation
+ * Copyright 2014 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 
 #include "test_config.h"
 
-std::string get_sdf_string(std::string _version)
+std::string get_sdf_string(const std::string &_version)
 {
   std::ostringstream stream;
   stream

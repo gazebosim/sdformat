@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 Open Source Robotics Foundation
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -739,23 +739,6 @@ TEST(Converter, GazeboToSDF)
   TiXmlElement *convertedElem =  xmlDoc.FirstChild("sdf")->ToElement();
   EXPECT_TRUE(convertedElem != NULL);
 }
-
-// This test is failing on Windows for some reason, so disable
-// it for now.
-#if 0
-TEST(Converter, NullDoc)
-{
-  TiXmlDocument xmlDoc;
-  TiXmlDocument convertXmlDoc;
-
-  ASSERT_THROW(sdf::Converter::Convert(NULL, &convertXmlDoc),
-               sdf::AssertionInternalError);
-  ASSERT_THROW(sdf::Converter::Convert(&xmlDoc, NULL),
-               sdf::AssertionInternalError);
-  ASSERT_THROW(sdf::Converter::Convert(NULL, "1.4"),
-               sdf::AssertionInternalError);
-}
-#endif
 
 /////////////////////////////////////////////////
 /// Main

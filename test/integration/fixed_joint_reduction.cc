@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Open Source Robotics Foundation
+ * Copyright 2013 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,6 +135,7 @@ void FixedJointReductionCollisionVisualExtension(
   for (sdf::ElementPtr link = urdfModel->GetElement("link"); link;
        link = link->GetNextElement("link"))
   {
+    EXPECT_FALSE(link->HasElement("self_collide"));
     for (sdf::ElementPtr col = link->GetElement("collision"); col;
          col = col->GetNextElement("collision"))
     {
@@ -184,6 +185,7 @@ void FixedJointReductionCollisionVisualExtension(
   for (sdf::ElementPtr link = sdfModel->GetElement("link"); link;
        link = link->GetNextElement("link"))
   {
+    EXPECT_FALSE(link->HasElement("self_collide"));
     for (sdf::ElementPtr col = link->GetElement("collision"); col;
          col = col->GetNextElement("collision"))
     {

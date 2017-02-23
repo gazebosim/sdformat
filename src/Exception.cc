@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 Open Source Robotics Foundation
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,10 +38,19 @@ Exception::Exception(const char *_file, int64_t _line, std::string _msg)
 }
 
 //////////////////////////////////////////////////
+Exception::Exception(const Exception &_e)
+  : dataPtr(new ExceptionPrivate)
+{
+  this->dataPtr->file = _e.dataPtr->file;
+  this->dataPtr->line = _e.dataPtr->line;
+  this->dataPtr->str = _e.dataPtr->str;
+}
+
+//////////////////////////////////////////////////
 Exception::~Exception()
 {
   delete this->dataPtr;
-  this->dataPtr = NULL;
+  this->dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////

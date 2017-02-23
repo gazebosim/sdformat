@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 Open Source Robotics Foundation
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ typedef std::map<std::string, PathList> URIPathMap;
 URIPathMap g_uriPathMap;
 
 std::function<std::string (const std::string &)> g_findFileCB;
+
+std::string SDF::version = SDF_VERSION;
 
 /////////////////////////////////////////////////
 void sdf::setFindCallback(std::function<std::string (const std::string &)> _cb)
@@ -367,12 +369,11 @@ void SDF::Root(const ElementPtr _root)
 /////////////////////////////////////////////////
 std::string SDF::Version()
 {
-  return SDF_VERSION;
+  return version;
 }
 
 /////////////////////////////////////////////////
-void SDF::Version(const std::string &/*_version*/)
+void SDF::Version(const std::string &_version)
 {
-  sdferr << "SDF::Version(std::string) is deprecated. " <<
-      "The version can't be changed at runtime anymore.\n";
+  version = _version;
 }

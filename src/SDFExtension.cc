@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2017 Open Source Robotics Foundation
+ * Copyright 2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ SDFExtension::SDFExtension()
   this->isMu2 = false;
   this->isKp = false;
   this->isKd = false;
+  this->isSelfCollide = false;
   this->selfCollide = false;
   this->isLaserRetro = false;
   this->isSpringReference = false;
