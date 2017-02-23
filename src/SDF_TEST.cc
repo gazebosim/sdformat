@@ -180,7 +180,7 @@ TEST_F(SDFUpdate, ElementRemoveFromParent)
 
   // Select the second model named 'model2'
   elem = elem->GetNextElement("model");
-  ASSERT_TRUE(elem != NULL);
+  ASSERT_TRUE(elem != nullptr);
   EXPECT_TRUE(elem->HasAttribute("name"));
   EXPECT_EQ(elem->Get<std::string>("name"), "model2");
   EXPECT_EQ(elem->Get<std::string>("name", "default_value").first, "model2");
@@ -245,7 +245,7 @@ TEST_F(SDFUpdate, ElementRemoveChild)
 
   // Select the static element in model1
   elem2 = elem->GetElement("static");
-  EXPECT_TRUE(elem2 != NULL);
+  EXPECT_TRUE(elem2 != nullptr);
   EXPECT_FALSE(elem2->Get<bool>());
   elem->RemoveChild(elem2);
 

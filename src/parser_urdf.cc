@@ -280,10 +280,10 @@ urdf::Vector3 ParseVector3(const std::string &_str, double _scale)
 /////////////////////////////////////////////////
 urdf::Vector3 ParseVector3(TiXmlNode *_key, double _scale)
 {
-  if (_key != NULL)
+  if (_key != nullptr)
   {
     TiXmlElement *key = _key->ToElement();
-    if (key != NULL)
+    if (key != nullptr)
     {
       return ParseVector3(GetKeyValueAsString(key), _scale);
     }
@@ -291,7 +291,7 @@ urdf::Vector3 ParseVector3(TiXmlNode *_key, double _scale)
   }
   else
   {
-    sdferr << "Pointer to XML node _key is NULL\n";
+    sdferr << "Pointer to XML node _key is nullptr\n";
   }
 
   return urdf::Vector3(0, 0, 0);
@@ -1702,10 +1702,10 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
       //           << sdfIt->first << "]\n";
       // if _elem already has a surface element, use it
       TiXmlNode *surface = _elem->FirstChild("surface");
-      TiXmlNode *friction = NULL;
-      TiXmlNode *frictionOde = NULL;
-      TiXmlNode *contact = NULL;
-      TiXmlNode *contactOde = NULL;
+      TiXmlNode *friction = nullptr;
+      TiXmlNode *frictionOde = nullptr;
+      TiXmlNode *contact = nullptr;
+      TiXmlNode *contactOde = nullptr;
 
       // loop through all the gazebo extensions stored in sdfIt->second
       for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
@@ -1785,7 +1785,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
                 // we end up with multiple copies of <surface>.
                 // Also, get pointers (contact[Ode], friction[Ode])
                 // below for backwards (non-blob) compatibility.
-                if (surface == NULL)
+                if (surface == nullptr)
                 {
                   // <surface> do not exist, it simple,
                   // just add it to the current collision
@@ -1820,12 +1820,12 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
                 // Get contact[Ode] and friction[Ode] node pointers
                 // if they exist.
                 contact  = surface->FirstChild("contact");
-                if (contact != NULL)
+                if (contact != nullptr)
                 {
                   contactOde  = contact->FirstChild("ode");
                 }
                 friction = surface->FirstChild("friction");
-                if (friction != NULL)
+                if (friction != nullptr)
                 {
                   frictionOde  = friction->FirstChild("ode");
                 }
@@ -1857,7 +1857,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           // So there's no need for custom code for each property.
 
           // construct new elements if not in blobs
-          if (surface == NULL)
+          if (surface == nullptr)
           {
             surface  = new TiXmlElement("surface");
             if (!surface)
@@ -1870,9 +1870,9 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           }
 
           // construct new elements if not in blobs
-          if (contact == NULL)
+          if (contact == nullptr)
           {
-            if (surface->FirstChild("contact") == NULL)
+            if (surface->FirstChild("contact") == nullptr)
             {
               contact  = new TiXmlElement("contact");
               if (!contact)
@@ -1889,10 +1889,10 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
             }
           }
 
-          if (contactOde == NULL)
+          if (contactOde == nullptr)
           {
 
-            if (contact->FirstChild("ode") == NULL)
+            if (contact->FirstChild("ode") == nullptr)
             {
               contactOde  = new TiXmlElement("ode");
               if (!contactOde)
@@ -1909,9 +1909,9 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
             }
           }
 
-          if (friction == NULL)
+          if (friction == nullptr)
           {
-            if (surface->FirstChild("friction") == NULL)
+            if (surface->FirstChild("friction") == nullptr)
             {
               friction  = new TiXmlElement("friction");
               if (!friction)
@@ -1928,9 +1928,9 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
             }
           }
 
-          if (frictionOde == NULL)
+          if (frictionOde == nullptr)
           {
-            if (friction->FirstChild("ode") == NULL)
+            if (friction->FirstChild("ode") == nullptr)
             {
               frictionOde  = new TiXmlElement("ode");
               if (!frictionOde)
@@ -2020,7 +2020,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
       //           << sdfIt->first << "]\n";
       // if _elem already has a material element, use it
       TiXmlNode *material = _elem->FirstChild("material");
-      TiXmlElement *script = NULL;
+      TiXmlElement *script = nullptr;
 
       // loop through all the gazebo extensions stored in sdfIt->second
       for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
@@ -2099,7 +2099,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
                 // we end up with multiple copies of <material>.
                 // Also, get pointers (script)
                 // below for backwards (non-blob) compatibility.
-                if (material == NULL)
+                if (material == nullptr)
                 {
                   // <material> do not exist, it simple,
                   // just add it to the current visual
@@ -2148,7 +2148,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
           // So there's no need for custom code for each property.
 
           // construct new elements if not in blobs
-          if (material == NULL)
+          if (material == nullptr)
           {
             material  = new TiXmlElement("material");
             if (!material)
@@ -2160,9 +2160,9 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
             _elem->LinkEndChild(material);
           }
 
-          if (script == NULL)
+          if (script == nullptr)
           {
-            if (material->FirstChildElement("script") == NULL)
+            if (material->FirstChildElement("script") == nullptr)
             {
               script  = new TiXmlElement("script");
               if (!script)
@@ -2265,7 +2265,7 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
 
         TiXmlElement *physics = _elem->FirstChildElement("physics");
         bool newPhysics = false;
-        if (physics == NULL)
+        if (physics == nullptr)
         {
           physics = new TiXmlElement("physics");
           newPhysics = true;
@@ -2273,7 +2273,7 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
 
         TiXmlElement *physicsOde = physics->FirstChildElement("ode");
         bool newPhysicsOde = false;
-        if (physicsOde == NULL)
+        if (physicsOde == nullptr)
         {
           physicsOde = new TiXmlElement("ode");
           newPhysicsOde = true;
@@ -2281,7 +2281,7 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
 
         TiXmlElement *limit = physicsOde->FirstChildElement("limit");
         bool newLimit = false;
-        if (limit == NULL)
+        if (limit == nullptr)
         {
           limit = new TiXmlElement("limit");
           newLimit = true;
@@ -2289,7 +2289,7 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
 
         TiXmlElement *axis = _elem->FirstChildElement("axis");
         bool newAxis = false;
-        if (axis == NULL)
+        if (axis == nullptr)
         {
           axis = new TiXmlElement("axis");
           newAxis = true;
@@ -2297,7 +2297,7 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
 
         TiXmlElement *dynamics = axis->FirstChildElement("dynamics");
         bool newDynamics = false;
-        if (dynamics == NULL)
+        if (dynamics == nullptr)
         {
           dynamics = new TiXmlElement("dynamics");
           newDynamics = true;
@@ -2440,7 +2440,7 @@ void CreateGeometry(TiXmlElement* _elem,
   TiXmlElement *sdfGeometry = new TiXmlElement("geometry");
 
   std::string type;
-  TiXmlElement *geometryType = NULL;
+  TiXmlElement *geometryType = nullptr;
 
   switch (_geom->type)
   {
@@ -3220,7 +3220,7 @@ void CreateJoint(TiXmlElement *_root,
   // compute the joint tag
   std::string jtype;
   jtype.clear();
-  if (_link->parent_joint != NULL)
+  if (_link->parent_joint != nullptr)
   {
     switch (_link->parent_joint->type)
     {

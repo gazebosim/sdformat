@@ -528,7 +528,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     }
   }
 
-  if (_xml->GetText() != NULL && _sdf->GetValue())
+  if (_xml->GetText() != nullptr && _sdf->GetValue())
   {
     _sdf->GetValue()->SetFromString(_xml->GetText());
   }
@@ -599,7 +599,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     std::string filename;
 
     // Iterate over all the child elements
-    TiXmlElement *elemXml = NULL;
+    TiXmlElement *elemXml = nullptr;
     for (elemXml = _xml->FirstChildElement(); elemXml;
          elemXml = elemXml->NextSiblingElement())
     {
@@ -882,7 +882,7 @@ static void replace_all(std::string &_str,
 void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
 {
   // Iterate over all the child elements
-  TiXmlElement *elemXml = NULL;
+  TiXmlElement *elemXml = nullptr;
   for (elemXml = _xml->FirstChildElement(); elemXml;
        elemXml = elemXml->NextSiblingElement())
   {
@@ -913,7 +913,7 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
       ElementPtr element(new Element);
       element->SetParent(_sdf);
       element->SetName(elem_name);
-      if (elemXml->GetText() != NULL)
+      if (elemXml->GetText() != nullptr)
       {
         element->AddValue("string", elemXml->GetText(), "1");
       }

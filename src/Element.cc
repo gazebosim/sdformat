@@ -32,7 +32,7 @@ Element::Element()
 Element::~Element()
 {
   delete this->dataPtr;
-  this->dataPtr = NULL;
+  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -477,7 +477,7 @@ void Element::ToString(const std::string &_prefix,
 /////////////////////////////////////////////////
 bool Element::HasAttribute(const std::string &_key)
 {
-  return this->GetAttribute(_key) != NULL;
+  return this->GetAttribute(_key) != nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -847,7 +847,7 @@ void Element::RemoveFromParent()
 /////////////////////////////////////////////////
 void Element::RemoveChild(ElementPtr _child)
 {
-  SDF_ASSERT(_child, "Cannot remove a NULL child pointer");
+  SDF_ASSERT(_child, "Cannot remove a nullptr child pointer");
 
   ElementPtr_V::iterator iter;
   iter = std::find(this->dataPtr->elements.begin(),

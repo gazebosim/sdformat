@@ -38,7 +38,7 @@ static bool g_quiet = false;
 static bool g_quiet = true;
 #endif
 
-static Console::ConsoleStream g_NullStream(NULL);
+static Console::ConsoleStream g_NullStream(nullptr);
 
 //////////////////////////////////////////////////
 Console::Console()
