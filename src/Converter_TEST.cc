@@ -745,11 +745,11 @@ TEST(Converter, NullDoc)
   TiXmlDocument xmlDoc;
   TiXmlDocument convertXmlDoc;
 
-  ASSERT_THROW(sdf::Converter::Convert(NULL, &convertXmlDoc),
+  ASSERT_THROW(sdf::Converter::Convert(nullptr, &convertXmlDoc),
                sdf::AssertionInternalError);
-  ASSERT_THROW(sdf::Converter::Convert(&xmlDoc, NULL),
+  ASSERT_THROW(sdf::Converter::Convert(&xmlDoc, nullptr),
                sdf::AssertionInternalError);
-  ASSERT_THROW(sdf::Converter::Convert(NULL, "1.4"),
+  ASSERT_THROW(sdf::Converter::Convert(nullptr, "1.4"),
                sdf::AssertionInternalError);
 }
 
