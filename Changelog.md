@@ -5,6 +5,10 @@
 1. Remove boost regex and iostreams as dependencies
    * [Pull request 302](https://bitbucket.org/osrf/sdformat/pull-requests/302)
 
+2. Change certain error checks from asserts to throwing
+   sdf::AssertionInternalError, which is more appropriate for a library.
+   * [Pull request 315](https://bitbucket.org/osrf/sdformat/pull-requests/315)
+
 ## SDFormat 5.0
 
 ### SDFormat 5.0.0 (xxxx-xx-xx)
