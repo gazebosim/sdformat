@@ -1,5 +1,10 @@
 ## SDFormat 5.0
 
+### SDFormat 5.x.x (TBD)
+
+1. Fixed `sdf::convertFile` and `sdf::convertString` always converting to latest version
+    * [Pull request 320](https://bitbucket.org/osrf/sdformat/pull-requests/320)
+
 ### SDFormat 5.0.0 (2017-01-25)
 
 1. Removed SDFormat 4 deprecations
