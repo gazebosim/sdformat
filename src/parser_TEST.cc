@@ -19,6 +19,7 @@
 #include "sdf/parser.hh"
 #include "sdf/Element.hh"
 
+/////////////////////////////////////////////////
 TEST(parser, initStringTrim)
 {
   sdf::SDFPtr sdf(new sdf::SDF());
@@ -32,9 +33,9 @@ TEST(parser, initStringTrim)
 
   EXPECT_TRUE(sdf::initString(stream.str(), sdf));
   sdf::ElementPtr root = sdf->Root();
-  EXPECT_TRUE(root != NULL);
+  EXPECT_TRUE(root != nullptr);
   sdf::ParamPtr attr = root->GetAttribute("name");
-  EXPECT_TRUE(attr != NULL);
+  EXPECT_TRUE(attr != nullptr);
   EXPECT_TRUE(attr->GetRequired());
 }
 

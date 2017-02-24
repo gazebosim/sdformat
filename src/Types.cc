@@ -48,7 +48,7 @@ std::string trim(const char *_in)
   const size_t strBegin = str.find_first_not_of(" \t");
   if (strBegin == std::string::npos)
   {
-    return "";  // no content
+    return "";
   }
 
   const size_t strRange = str.find_last_not_of(" \t") - strBegin + 1;
