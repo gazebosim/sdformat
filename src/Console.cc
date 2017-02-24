@@ -48,9 +48,9 @@ Console::Console()
   try
   {
 #ifndef _WIN32
-    char *home = getenv("HOME");
+    const char *home = std::getenv("HOME");
 #else
-    const char *home = sdf::winGetEnv("HOMEPATH");
+    const char *home = std::getenv("HOMEPATH");
 #endif
     if (!home)
     {
@@ -132,18 +132,13 @@ Console::ConsoleStream &Console::Log(const std::string &lbl,
 
 //////////////////////////////////////////////////
 void Console::ConsoleStream::Prefix(const std::string &_lbl,
-    const std::string &_file,
-    unsigned int _line,
-    // This is here to prevent a compilation warning about an unused variable.
-#ifndef _WIN32
-    int _color
-#else
-    int /*_color*/
-#endif
-)
+                                    const std::string &_file,
+                                    unsigned int _line,
+                                    int _color)
 {
   size_t index = _file.find_last_of("/") + 1;
 
+  (void)_color;
   if (this->stream)
   {
 #ifndef _WIN32

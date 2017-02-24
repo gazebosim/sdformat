@@ -23,7 +23,6 @@
   #include <boost/lexical_cast.hpp>
   #include <boost/any.hpp>
   #include <boost/variant.hpp>
-  #include <boost/version.hpp>
 #endif
 
 #include <memory>
