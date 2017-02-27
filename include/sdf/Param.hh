@@ -284,6 +284,8 @@ namespace sdf
       {
         std::string strValue =
           boost::lexical_cast<std::string>(this->dataPtr->value);
+        std::transform(strValue.begin(), strValue.end(),
+                       strValue.begin(), ::tolower);
         if (strValue == "true" || strValue  == "1")
           _value = boost::lexical_cast<T>("1");
         else
