@@ -61,6 +61,14 @@ TEST(Param, Bool)
   strParam.Get<bool>(value);
   EXPECT_FALSE(value);
 
+  strParam.Set("True");
+  strParam.Get<bool>(value);
+  EXPECT_TRUE(value);
+
+  strParam.Set("TRUE");
+  strParam.Get<bool>(value);
+  EXPECT_TRUE(value);
+
   // Anything other than 1 or true is treated as a false value
   strParam.Set("%");
   strParam.Get<bool>(value);
