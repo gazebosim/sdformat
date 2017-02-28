@@ -1415,8 +1415,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       refStr = std::string(ref);
     }
 
-    if (g_extensions.find(refStr) ==
-        g_extensions.end())
+    if (g_extensions.find(refStr) == g_extensions.end())
     {
       // create extension map for reference
       std::vector<SDFExtensionPtr> ge;

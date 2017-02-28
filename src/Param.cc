@@ -365,7 +365,7 @@ bool Param::SetFromString(const std::string &_value)
     int numericBase = 10;
     if (isHex)
     {
-        numericBase = 16;
+      numericBase = 16;
     }
 
     if (this->dataPtr->typeName == "int")

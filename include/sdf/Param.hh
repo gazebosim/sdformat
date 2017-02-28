@@ -168,11 +168,11 @@ namespace sdf
     /// \param[in] _p The parameter to output.
     /// \return The output stream.
     public: friend std::ostream &operator<<(std::ostream &_out,
-                                             const Param &_p)
-            {
-              _out << _p.GetAsString();
-              return _out;
-            }
+                                            const Param &_p)
+    {
+      _out << _p.GetAsString();
+      return _out;
+    }
 
     /// \brief Initialize the value. This is called from the constructor.
     /// \param[in] _value Value to set the parameter to.
@@ -208,10 +208,12 @@ namespace sdf
     /// \def ParamVariant
     /// \brief Variant type def.
     public: typedef boost::variant<bool, char, std::string, int, uint64_t,
-               unsigned int, double, float, sdf::Time, sdf::Color,
-               ignition::math::Vector3d, ignition::math::Vector2i,
-               ignition::math::Vector2d, ignition::math::Quaterniond,
-               ignition::math::Pose3d> ParamVariant;
+                                   unsigned int, double, float, sdf::Time,
+                                   sdf::Color, ignition::math::Vector3d,
+                                   ignition::math::Vector2i,
+                                   ignition::math::Vector2d,
+                                   ignition::math::Quaterniond,
+                                   ignition::math::Pose3d> ParamVariant;
 
     /// \brief This parameter's value
     public: ParamVariant value;
@@ -253,8 +255,7 @@ namespace sdf
   {
     try
     {
-      if (typeid(T) == typeid(bool) &&
-          this->dataPtr->typeName == "string")
+      if (typeid(T) == typeid(bool) && this->dataPtr->typeName == "string")
       {
         std::string strValue =
           boost::lexical_cast<std::string>(this->dataPtr->value);
