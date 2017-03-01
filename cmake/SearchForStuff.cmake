@@ -1,4 +1,3 @@
-include (${sdf_cmake_dir}/FindOS.cmake)
 include (FindPkgConfig)
 
 # Detect the architecture
