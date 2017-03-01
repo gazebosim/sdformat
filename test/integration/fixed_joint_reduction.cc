@@ -50,8 +50,8 @@ const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF =
 const double gc_tolerance = 1e-6;
 
 void FixedJointReductionEquivalence(const std::string &_file);
-void FixedJointReductionCollisionVisualExtension(
-  const std::string &_urdfFile, const std::string &_sdfFile);
+void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
+                                                 const std::string &_sdfFile);
 void FixedJointReductionCollisionVisualExtensionEmptyRoot(
   const std::string &_urdfFile, const std::string &_sdfFile);
 
@@ -108,8 +108,8 @@ TEST(SDFParser, FixedJointReductionCollisionVisualExtensionEmptyRootTest)
 #endif
 
 /////////////////////////////////////////////////
-void FixedJointReductionCollisionVisualExtension(
-  const std::string &_urdfFile, const std::string &_sdfFile)
+void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
+                                                 const std::string &_sdfFile)
 {
   // load urdf file, load sdf file.
   // check to see that urdf load results are consistent with sdf load.

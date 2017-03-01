@@ -67,8 +67,8 @@ namespace sdf
     public: class SDFORMAT_VISIBLE ConsoleStream
     {
       /// \brief Constructor.
-      /// \param[in] _stream Pointer to an output stream operator. Can bee
-      /// NULL.
+      /// \param[in] _stream Pointer to an output stream operator. Can be
+      /// NULL/nullptr.
       public: ConsoleStream(std::ostream *_stream) :
               stream(_stream) {}
 
@@ -88,7 +88,7 @@ namespace sdf
                           const std::string &_file,
                           unsigned int _line, int _color);
 
-      /// \brief The ostream to log to; can be NULL.
+      /// \brief The ostream to log to; can be NULL/nullptr.
       private: std::ostream *stream;
     };
 
@@ -131,7 +131,7 @@ namespace sdf
   class ConsolePrivate
   {
     /// \brief Constructor
-    public: ConsolePrivate() : msgStream(&std::cerr), logStream(NULL) {}
+    public: ConsolePrivate() : msgStream(&std::cerr), logStream(nullptr) {}
 
     /// \brief message stream
     public: Console::ConsoleStream msgStream;

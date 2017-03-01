@@ -277,8 +277,10 @@ namespace sdf
 
 
     private: ParamPtr CreateParam(const std::string &_key,
-                 const std::string &_type, const std::string &_defaultValue,
-                 bool _required, const std::string &_description="");
+                                  const std::string &_type,
+                                  const std::string &_defaultValue,
+                                  bool _required,
+                                  const std::string &_description="");
 
 
     /// \brief Private data pointer
@@ -330,18 +332,28 @@ namespace sdf
     T result = T();
 
     if (_key.empty() && this->dataPtr->value)
+    {
       this->dataPtr->value->Get<T>(result);
+    }
     else if (!_key.empty())
     {
       ParamPtr param = this->GetAttribute(_key);
       if (param)
+      {
         param->Get(result);
+      }
       else if (this->HasElement(_key))
+      {
         result = this->GetElementImpl(_key)->Get<T>();
+      }
       else if (this->HasElementDescription(_key))
+      {
         result = this->GetElementDescription(_key)->Get<T>();
+      }
       else
+      {
         sdferr << "Unable to find value for key[" << _key << "]\n";
+      }
     }
     return result;
   }
@@ -354,18 +366,28 @@ namespace sdf
     std::pair<T, bool> result(_defaultValue, true);
 
     if (_key.empty() && this->dataPtr->value)
+    {
       this->dataPtr->value->Get<T>(result.first);
+    }
     else if (!_key.empty())
     {
       ParamPtr param = this->GetAttribute(_key);
       if (param)
+      {
         param->Get(result.first);
+      }
       else if (this->HasElement(_key))
+      {
         result.first = this->GetElementImpl(_key)->Get<T>();
+      }
       else if (this->HasElementDescription(_key))
+      {
         result.first = this->GetElementDescription(_key)->Get<T>();
+      }
       else
+      {
         result.second = false;
+      }
     }
     else
     {

@@ -292,7 +292,7 @@ TEST(Frame, JointFrame)
   EXPECT_TRUE(linkElem->HasAttribute("name"));
   EXPECT_EQ(linkElem->Get<std::string>("name"), "parent");
   linkElem = linkElem->GetNextElement("link");
-  EXPECT_TRUE(linkElem != NULL);
+  EXPECT_TRUE(linkElem != nullptr);
   EXPECT_TRUE(linkElem->HasAttribute("name"));
   EXPECT_EQ(linkElem->Get<std::string>("name"), "child");
 

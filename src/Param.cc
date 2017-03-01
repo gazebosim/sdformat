@@ -140,7 +140,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
 Param::~Param()
 {
   delete this->dataPtr;
-  this->dataPtr = NULL;
+  this->dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -365,17 +365,17 @@ bool Param::SetFromString(const std::string &_value)
     int numericBase = 10;
     if (isHex)
     {
-        numericBase = 16;
+      numericBase = 16;
     }
 
     if (this->dataPtr->typeName == "int")
     {
-      this->dataPtr->value = std::stoi(tmp, NULL, numericBase);
+      this->dataPtr->value = std::stoi(tmp, nullptr, numericBase);
     }
     else if (this->dataPtr->typeName == "unsigned int")
     {
       this->dataPtr->value = static_cast<unsigned int>(
-          std::stoul(tmp, NULL, numericBase));
+          std::stoul(tmp, nullptr, numericBase));
     }
     else if (this->dataPtr->typeName == "double")
     {

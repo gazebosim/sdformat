@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #include <gtest/gtest.h>
 #include <map>
@@ -32,19 +32,30 @@ TEST(SDFParser, ForceTorqueSensorTest)
   ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
 
   sdf::ElementPtr model = robot->Root()->GetElement("model");
+  unsigned int jointBitMask = 0;
   for (sdf::ElementPtr joint = model->GetElement("joint"); joint;
        joint = joint->GetNextElement("joint"))
   {
     std::string jointName = joint->Get<std::string>("name");
     if (jointName == "joint_1")
     {
+      jointBitMask |= 0x1;
+
       // Sensor tag was specified
       EXPECT_TRUE(joint->HasElement("sensor"));
     }
     else if (jointName == "joint_2")
     {
+      jointBitMask |= 0x2;
+
       // No sensor tag was specified
       EXPECT_FALSE(joint->HasElement("sensor"));
     }
+    else
+    {
+      FAIL() << "Unexpected joint name[" << jointName << "]";
+    }
   }
+
+  EXPECT_EQ(jointBitMask, 0x3u);
 }

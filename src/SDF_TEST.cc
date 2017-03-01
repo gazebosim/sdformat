@@ -60,11 +60,11 @@ TEST_F(SDFUpdate, UpdateAttribute)
   sdfParsed.SetFromString(stream.str());
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
+  ASSERT_TRUE(sdfParsed.Root()->HasElement("model"));
   sdf::ElementPtr modelElem = sdfParsed.Root()->GetElement("model");
 
   // Read name attribute value
-  EXPECT_TRUE(modelElem->HasAttribute("name"));
+  ASSERT_TRUE(modelElem->HasAttribute("name"));
   sdf::ParamPtr nameParam = modelElem->GetAttribute("name");
   EXPECT_TRUE(nameParam->IsType<std::string>());
 
@@ -106,16 +106,16 @@ TEST_F(SDFUpdate, UpdateElement)
   sdfParsed.SetFromString(stream.str());
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
+  ASSERT_TRUE(sdfParsed.Root()->HasElement("model"));
   sdf::ElementPtr modelElem = sdfParsed.Root()->GetElement("model");
 
   // Read static element value
-  EXPECT_TRUE(modelElem->HasElement("static"));
+  ASSERT_TRUE(modelElem->HasElement("static"));
   sdf::ParamPtr staticParam = modelElem->GetElement("static")->GetValue();
   EXPECT_TRUE(staticParam->IsType<bool>());
 
   // Read pose element value
-  EXPECT_TRUE(modelElem->HasElement("pose"));
+  ASSERT_TRUE(modelElem->HasElement("pose"));
   sdf::ParamPtr poseParam = modelElem->GetElement("pose")->GetValue();
   EXPECT_TRUE(poseParam->IsType<ignition::math::Pose3d>());
 
@@ -175,12 +175,12 @@ TEST_F(SDFUpdate, ElementRemoveFromParent)
   sdf::ElementPtr elem;
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
+  ASSERT_TRUE(sdfParsed.Root()->HasElement("model"));
   elem = sdfParsed.Root()->GetElement("model");
 
   // Select the second model named 'model2'
   elem = elem->GetNextElement("model");
-  EXPECT_TRUE(elem != NULL);
+  ASSERT_TRUE(elem != nullptr);
   EXPECT_TRUE(elem->HasAttribute("name"));
   EXPECT_EQ(elem->Get<std::string>("name"), "model2");
   EXPECT_EQ(elem->Get<std::string>("name", "default_value").first, "model2");
@@ -240,12 +240,12 @@ TEST_F(SDFUpdate, ElementRemoveChild)
   sdf::ElementPtr elem, elem2;
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.Root()->HasElement("model"));
+  ASSERT_TRUE(sdfParsed.Root()->HasElement("model"));
   elem = sdfParsed.Root()->GetElement("model");
 
   // Select the static element in model1
   elem2 = elem->GetElement("static");
-  EXPECT_TRUE(elem2 != NULL);
+  EXPECT_TRUE(elem2 != nullptr);
   EXPECT_FALSE(elem2->Get<bool>());
   elem->RemoveChild(elem2);
 
@@ -396,12 +396,12 @@ TEST_F(SDFUpdate, GetAny)
   sdfParsed.SetFromString(stream.str());
 
   // Verify correct parsing
-  EXPECT_TRUE(sdfParsed.Root()->HasElement("world"));
+  ASSERT_TRUE(sdfParsed.Root()->HasElement("world"));
   sdf::ElementPtr worldElem = sdfParsed.Root()->GetElement("world");
 
-  EXPECT_TRUE(worldElem->HasElement("model"));
+  ASSERT_TRUE(worldElem->HasElement("model"));
   sdf::ElementPtr modelElem = worldElem->GetElement("model");
-  EXPECT_TRUE(worldElem->HasElement("physics"));
+  ASSERT_TRUE(worldElem->HasElement("physics"));
   sdf::ElementPtr physicsElem = worldElem->GetElement("physics");
 
   {

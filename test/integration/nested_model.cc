@@ -63,7 +63,7 @@ TEST(NestedModel, NestedModel)
   EXPECT_TRUE(linklElem->HasAttribute("name"));
   EXPECT_EQ(linklElem->Get<std::string>("name"), "parent");
   linklElem = linklElem->GetNextElement("link");
-  EXPECT_TRUE(linklElem != NULL);
+  EXPECT_TRUE(linklElem != nullptr);
   EXPECT_TRUE(linklElem->HasAttribute("name"));
   EXPECT_EQ(linklElem->Get<std::string>("name"), "child");
 

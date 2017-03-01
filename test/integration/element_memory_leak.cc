@@ -41,7 +41,7 @@ std::string custom_exec(std::string _cmd)
 
   while (!feof(pipe))
   {
-    if (fgets(buffer, 128, pipe) != NULL)
+    if (fgets(buffer, 128, pipe) != nullptr)
     {
       result += buffer;
     }
