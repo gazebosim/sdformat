@@ -22,14 +22,15 @@
   </element>
 
   <element name="insertions" required="0">
-    <description>A list of new model names</description>
+    <description>A list containing the entire description of entities inserted.</description>
     <include filename="model.sdf" required="+"/>
+    <include filename="light.sdf" required="+"/>
   </element>
 
   <element name="deletions" required="0">
-    <description>A list of deleted model names</description>
+    <description>A list of names of deleted entities/</description>
     <element name="name" type="string" default="__default__" required="+">
-      <description>The name of a deleted model</description>
+      <description>The name of a deleted entity.</description>
     </element>
   </element>
 
