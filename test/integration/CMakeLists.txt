@@ -2,6 +2,7 @@ set(TEST_TYPE "INTEGRATION")
 
 set(tests
   audio.cc
+  category_bitmask.cc
   cfm_damping_implicit_spring_damper.cc
   converter.cc
   disable_fixed_joint_reduction.cc
@@ -18,7 +19,6 @@ set(tests
   provide_feedback.cc
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
-  category_bitmask.cc
 )
 
 if (PYTHONINTERP_FOUND AND PY_PSUTIL)

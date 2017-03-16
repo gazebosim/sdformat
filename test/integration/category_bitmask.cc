@@ -62,6 +62,7 @@ TEST(CategoryBitmask, WasSpecified)
   ASSERT_NE(nullptr, contact);
 
   EXPECT_TRUE(contact->HasElement("category_bitmask"));
+  EXPECT_EQ(1234, contact->Get<int>("category_bitmask"));
 }
 
 TEST(CategoryBitmask, WasNotSpecified)
