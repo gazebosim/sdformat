@@ -573,16 +573,14 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
         if (elemXml->FirstChildElement("uri"))
         {
-          modelPath = sdf::findFile(
-              elemXml->FirstChildElement("uri")->GetText(), true, true);
+          std::string uri = elemXml->FirstChildElement("uri")->GetText();
+          modelPath = sdf::findFile(uri, true, true);
 
           // Test the model path
           if (modelPath.empty())
           {
-            sdferr << "Unable to find uri["
-              << elemXml->FirstChildElement("uri")->GetText() << "]\n";
+            sdferr << "Unable to find uri[" << uri << "]\n";
 
-            std::string uri = elemXml->FirstChildElement("uri")->GetText();
             size_t modelFound = uri.find("model://");
             if ( modelFound != 0u)
             {
@@ -634,6 +632,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
               // If a match is not found, use the latest version of the element
               // that is not older than the SDF parser.
+              ignition::math::SemanticVersion sdfParserVersion(SDF_VERSION);
+              std::string bestVersionStr = "0.0";
               while (sdfSearch)
               {
                 if (sdfSearch->Attribute("version"))
@@ -653,10 +653,9 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
                     else
                     {
                       sdfwarn << "Ignoring version " << version
-                              << " for model " << _uri
+                              << " for model " << uri
                               << " because is newer than this sdf parser"
-                              << " (version " << SDF_VERSION << ")"
-                              << std::endl;
+                              << " (version " << SDF_VERSION << ")\n";
                     }
                   }
                 }
