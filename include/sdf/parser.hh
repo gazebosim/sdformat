@@ -79,6 +79,13 @@ namespace sdf
   bool readXml(TiXmlElement *_xml, ElementPtr _sdf);
 
   SDFORMAT_VISIBLE
+  std::string getBestSupportedModelVersion(TiXmlElement *&configFileXML,
+                                           const std::string &modelName);
+  SDFORMAT_VISIBLE
+  std::string getModelFilePath(const std::string &modelPath,
+                               const std::string &modelName);
+
+  SDFORMAT_VISIBLE
   void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);
 
   SDFORMAT_VISIBLE
