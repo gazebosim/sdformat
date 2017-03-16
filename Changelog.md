@@ -1,5 +1,24 @@
 ## SDFormat 4.0
 
+### SDFormat 4.x.x (2016-xx-xx)
+
+1. Added `sampling` parameter to `<heightmap>` SDF element.
+    * [Pull request 293](https://bitbucket.org/osrf/sdformat/pull-request/293)
+
+1. Case insensitive boolean strings
+    * [Pull request 322](https://bitbucket.org/osrf/sdformat/pull-request/322)
+
+### SDFormat 4.2.0 (2016-10-10)
+
+1. Added tag to specify ODE friction model.
+    * [Pull request 294](https://bitbucket.org/osrf/sdformat/pull-request/294)
+
+1. Fix URDF to SDF `self_collide` bug.
+    * [Pull request 287](https://bitbucket.org/osrf/sdformat/pull-request/287)
+
+1. Added IMU orientation specification to SDF.
+    * [Pull request 284](https://bitbucket.org/osrf/sdformat/pull-request/284)
+
 ### SDFormat 4.1.1 (2016-07-08)
 
 1. Added documentation and animation to `<actor>` element.
@@ -15,11 +34,11 @@
 
 1. Added an upload script
     * [Pull request 256](https://bitbucket.org/osrf/sdformat/pull-request/256)
- 
+
 ### SDFormat 4.0.0 (2015-01-12)
 
 1. Boost pointers and boost::function in the public API have been replaced
-   by their std::equivalents (C++11 standard) 
+   by their std::equivalents (C++11 standard)
 1. Move gravity and magnetic_field tags from physics to world
     * [Pull request 247](https://bitbucket.org/osrf/sdformat/pull-request/247)
 1. Switch lump link prefix from lump:: to lump_
@@ -35,7 +54,7 @@
 1. Fix memory leaks.
    A contribution from Silvio Traversaro
     * [Pull request 249](https://bitbucket.org/osrf/sdformat/pull-request/249)
-1. Update SDF to version 1.6: new style for representing the noise properties 
+1. Update SDF to version 1.6: new style for representing the noise properties
    of an `imu`
     * [Pull request 243](https://bitbucket.org/osrf/sdformat/pull-request/243)
     * [Pull request 199](https://bitbucket.org/osrf/sdformat/pull-requests/199)

@@ -36,6 +36,7 @@ SDFExtension::SDFExtension()
   this->isMu2 = false;
   this->isKp = false;
   this->isKd = false;
+  this->isSelfCollide = false;
   this->selfCollide = false;
   this->isLaserRetro = false;
   this->isSpringReference = false;
