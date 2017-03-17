@@ -20,6 +20,7 @@
 
 #include "test_config.h"
 
+/////////////////////////////////////////////////
 TEST(CategoryBitmask, WasSpecified)
 {
   std::string xmlString = R"(
@@ -65,6 +66,7 @@ TEST(CategoryBitmask, WasSpecified)
   EXPECT_EQ(1234, contact->Get<int>("category_bitmask"));
 }
 
+/////////////////////////////////////////////////
 TEST(CategoryBitmask, WasNotSpecified)
 {
   std::string xmlString = R"(
