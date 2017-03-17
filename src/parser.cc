@@ -472,10 +472,10 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   return true;
 }
 
-std::string getBestSupportedModelVersion(TiXmlElement *&configFileXML,
-                                         const std::string &modelName)
+std::string getBestSupportedModelVersion(TiXmlElement *&_configFileXML,
+                                         const std::string &_modelName)
 {
-  TiXmlElement *sdfSearch = configFileXML;
+  TiXmlElement *sdfSearch = _configFileXML;
 
   // If a match is not found, use the latest version of the element
   // that is not older than the SDF parser.
@@ -494,13 +494,13 @@ std::string getBestSupportedModelVersion(TiXmlElement *&configFileXML,
         if (modelVersion <= sdfParserVersion)
         {
           // the parser can read it
-          configFileXML  = sdfSearch;
+          _configFileXML  = sdfSearch;
           bestVersionStr = version;
         }
         else
         {
           sdfwarn << "Ignoring version " << version
-                  << " for model " << modelName
+                  << " for model " << _modelName
                   << " because is newer than this sdf parser"
                   << " (version " << SDF_VERSION << ")\n";
         }
@@ -512,10 +512,10 @@ std::string getBestSupportedModelVersion(TiXmlElement *&configFileXML,
   return bestVersionStr;
 }
 
-std::string getModelFilePath(const std::string &modelPath,
-                             const std::string &modelName)
+std::string getModelFilePath(const std::string &_modelDirPath,
+                             const std::string &_modelName)
 {
-  boost::filesystem::path configFilePath = modelPath;
+  boost::filesystem::path configFilePath = _modelDirPath;
 
   /// \todo This hardcoded bit is very Gazebo centric. It should
   /// be abstracted away, possible through a plugin to SDF.
@@ -523,7 +523,7 @@ std::string getModelFilePath(const std::string &modelPath,
   {
     configFilePath /= "model.config";
   }
-  else
+  else if (boost::filesystem::exists(configFilePath / "manifest.xml"))
   {
     sdfwarn << "The manifest.xml for a model is deprecated. "
            << "Please rename configFile.xml to "
@@ -553,9 +553,9 @@ std::string getModelFilePath(const std::string &modelPath,
   TiXmlElement *sdfXML = modelXML->FirstChildElement("sdf");
 
   // The call will update the pointer sdfXML to the best version XML code
-  auto bestSupportedVersion = getBestSupportedModelVersion(sdfXML, modelName);
+  auto bestSupportedVersion = getBestSupportedModelVersion(sdfXML, _modelName);
 
-  return modelPath + "/" + sdfXML->GetText();
+  return _modelDirPath + "/" + sdfXML->GetText();
 }
 
 //////////////////////////////////////////////////
