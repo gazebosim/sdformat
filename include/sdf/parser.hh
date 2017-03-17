@@ -79,7 +79,7 @@ namespace sdf
   bool readXml(TiXmlElement *_xml, ElementPtr _sdf);
 
   /// \brief Get the best SDF version from models supported by this sdformat
-  /// \param[in] _modelXML XML element from config file poiniting to the
+  /// \param[in] _modelXML XML element from config file pointing to the
   ///            model XML tag
   /// \param[out] _modelFileName file name of the best model file
   /// \return string with the best SDF version supported
