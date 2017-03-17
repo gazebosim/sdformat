@@ -2,6 +2,7 @@ set(TEST_TYPE "INTEGRATION")
 
 set(tests
   audio.cc
+  category_bitmask.cc
   cfm_damping_implicit_spring_damper.cc
   converter.cc
   disable_fixed_joint_reduction.cc
