@@ -22,7 +22,7 @@
 
 TEST(ModelVersionsTest, Empty_ModelFilePath)
 {
-  std::string modelPath = sdf::getModelFilePath("", "my_test");
+  std::string modelPath = sdf::getModelFilePath("");
 
   EXPECT_EQ(modelPath, "");
 }
@@ -32,7 +32,7 @@ TEST(ModelVersionsTest, NonExistent_ModelFilePath)
   const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
       + "/test/integration/model/non-existent/";
 
-  std::string modelPath = sdf::getModelFilePath(MODEL_PATH, "my_test");
+  std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 
   EXPECT_EQ(modelPath, "");
 }
@@ -42,7 +42,7 @@ TEST(ModelVersionsTest, Correct_ModelFilePath)
   const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
       + "/test/integration/model/cococan/";
 
-  std::string modelPath = sdf::getModelFilePath(MODEL_PATH, "my_test");
+  std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 
   EXPECT_EQ(modelPath, MODEL_PATH + "/model-1_4.sdf");
 }

@@ -472,10 +472,11 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   return true;
 }
 
-std::string getBestSupportedModelVersion(TiXmlElement *&_configFileXML,
-                                         const std::string &_modelName)
+std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
+                                         std::string &_modelFileName)
 {
-  TiXmlElement *sdfSearch = _configFileXML;
+  TiXmlElement *sdfSearch = _modelXML->FirstChildElement("sdf");
+  TiXmlElement *nameSearch = _modelXML->FirstChildElement("name");
 
   // If a match is not found, use the latest version of the element
   // that is not older than the SDF parser.
@@ -494,13 +495,13 @@ std::string getBestSupportedModelVersion(TiXmlElement *&_configFileXML,
         if (modelVersion <= sdfParserVersion)
         {
           // the parser can read it
-          _configFileXML  = sdfSearch;
+          _modelXML  = sdfSearch;
           bestVersionStr = version;
         }
         else
         {
           sdfwarn << "Ignoring version " << version
-                  << " for model " << _modelName
+                  << " for model " << nameSearch->GetText()
                   << " because is newer than this sdf parser"
                   << " (version " << SDF_VERSION << ")\n";
         }
@@ -509,11 +510,11 @@ std::string getBestSupportedModelVersion(TiXmlElement *&_configFileXML,
     sdfSearch = sdfSearch->NextSiblingElement("sdf");
   }
 
+  _modelFileName = _modelXML->GetText();
   return bestVersionStr;
 }
 
-std::string getModelFilePath(const std::string &_modelDirPath,
-                             const std::string &_modelName)
+std::string getModelFilePath(const std::string &_modelDirPath)
 {
   boost::filesystem::path configFilePath = _modelDirPath;
 
@@ -550,12 +551,10 @@ std::string getModelFilePath(const std::string &_modelDirPath,
     return std::string();
   }
 
-  TiXmlElement *sdfXML = modelXML->FirstChildElement("sdf");
-
-  // The call will update the pointer sdfXML to the best version XML code
-  auto bestSupportedVersion = getBestSupportedModelVersion(sdfXML, _modelName);
-
-  return _modelDirPath + "/" + sdfXML->GetText();
+  std::string modelFileName;
+  auto bestSupportedVersion = getBestSupportedModelVersion(modelXML,
+                                                           modelFileName);
+  return _modelDirPath + "/" + modelFileName;
 }
 
 //////////////////////////////////////////////////
@@ -687,7 +686,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           }
 
           // Get the config.xml filename
-          filename = getModelFilePath(modelPath, uri);
+          filename = getModelFilePath(modelPath);
         }
         else
         {
