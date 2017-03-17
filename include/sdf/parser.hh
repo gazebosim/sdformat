@@ -78,12 +78,25 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool readXml(TiXmlElement *_xml, ElementPtr _sdf);
 
+  /// \brief Get the best SDF version from models supported by this sdformat
+  /// \param[in, out] _configFileXML XML element from config file poiniting
+  ///                 to first sdf tag, it will be updated to point to the
+  ///                 best sdf tag found
+  /// \param[in] _modelName name of the model (used to improve debug)
+  /// \return string with the best SDF version supported
   SDFORMAT_VISIBLE
-  std::string getBestSupportedModelVersion(TiXmlElement *&configFileXML,
-                                           const std::string &modelName);
+  std::string getBestSupportedModelVersion(TiXmlElement *&_configFileXML,
+                                           const std::string &_modelName);
+
+  /// \brief Get the file path to the model file
+  /// \param[in] _modelDirPath directory system path of the model
+  /// \param[in] _modelName name of the model (used to improve debug)
+  /// \return string with the full filesystem path to the best version (greater
+  ///         SDF protocol supported by this sdformat version) of the .sdf
+  ///         model files hosted by _modelDirPath.
   SDFORMAT_VISIBLE
-  std::string getModelFilePath(const std::string &modelPath,
-                               const std::string &modelName);
+  std::string getModelFilePath(const std::string &_modelDirPath,
+                               const std::string &_modelName);
 
   SDFORMAT_VISIBLE
   void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);
