@@ -11,6 +11,7 @@ set(tests
   include.cc
   joint_axis_frame.cc
   locale_fix.cc
+  model_versions.cc
   nested_model.cc
   parser_error_detection.cc
   plugin_attribute.cc

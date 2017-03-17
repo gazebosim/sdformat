@@ -472,6 +472,91 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   return true;
 }
 
+std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
+                                         std::string &_modelFileName)
+{
+  TiXmlElement *sdfSearch = _modelXML->FirstChildElement("sdf");
+  TiXmlElement *nameSearch = _modelXML->FirstChildElement("name");
+
+  // If a match is not found, use the latest version of the element
+  // that is not older than the SDF parser.
+  ignition::math::SemanticVersion sdfParserVersion(SDF_VERSION);
+  std::string bestVersionStr = "0.0";
+  while (sdfSearch)
+  {
+    if (sdfSearch->Attribute("version"))
+    {
+      auto version = std::string(sdfSearch->Attribute("version"));
+      ignition::math::SemanticVersion modelVersion(version);
+      ignition::math::SemanticVersion bestVersion(bestVersionStr);
+      if (modelVersion > bestVersion)
+      {
+        // this model is better than the previous one
+        if (modelVersion <= sdfParserVersion)
+        {
+          // the parser can read it
+          _modelXML  = sdfSearch;
+          bestVersionStr = version;
+        }
+        else
+        {
+          sdfwarn << "Ignoring version " << version
+                  << " for model " << nameSearch->GetText()
+                  << " because is newer than this sdf parser"
+                  << " (version " << SDF_VERSION << ")\n";
+        }
+      }
+    }
+    sdfSearch = sdfSearch->NextSiblingElement("sdf");
+  }
+
+  _modelFileName = _modelXML->GetText();
+  return bestVersionStr;
+}
+
+std::string getModelFilePath(const std::string &_modelDirPath)
+{
+  boost::filesystem::path configFilePath = _modelDirPath;
+
+  /// \todo This hardcoded bit is very Gazebo centric. It should
+  /// be abstracted away, possible through a plugin to SDF.
+  if (boost::filesystem::exists(configFilePath / "model.config"))
+  {
+    configFilePath /= "model.config";
+  }
+  else if (boost::filesystem::exists(configFilePath / "manifest.xml"))
+  {
+    sdfwarn << "The manifest.xml for a model is deprecated. "
+           << "Please rename configFile.xml to "
+           << "model.config" << ".\n";
+
+    configFilePath /= "manifest.xml";
+  }
+
+  TiXmlDocument configFileDoc;
+  if (!configFileDoc.LoadFile(configFilePath.string()))
+  {
+    sdferr << "Error parsing XML in file ["
+           << configFilePath.string() << "]: "
+           << configFileDoc.ErrorDesc() << '\n';
+    return std::string();
+  }
+
+  TiXmlElement *modelXML = configFileDoc.FirstChildElement("model");
+
+  if (!modelXML)
+  {
+    sdferr << "No <model> element in configFile["
+          << configFilePath << "]\n";
+    return std::string();
+  }
+
+  std::string modelFileName;
+  auto bestSupportedVersion = getBestSupportedModelVersion(modelXML,
+                                                           modelFileName);
+  return _modelDirPath + "/" + modelFileName;
+}
+
 //////////////////////////////////////////////////
 bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 {
@@ -600,77 +685,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             }
           }
 
-          boost::filesystem::path manifestPath = modelPath;
-
-          /// \todo This hardcoded bit is very Gazebo centric. It should
-          /// be abstracted away, possible through a plugin to SDF.
-          if (boost::filesystem::exists(manifestPath / "model.config"))
-          {
-            manifestPath /= "model.config";
-          }
-          else
-          {
-            sdfwarn << "The manifest.xml for a model is deprecated. "
-                   << "Please rename manifest.xml to "
-                   << "model.config" << ".\n";
-
-            manifestPath /= "manifest.xml";
-          }
-
-          TiXmlDocument manifestDoc;
-          if (manifestDoc.LoadFile(manifestPath.string()))
-          {
-            TiXmlElement *modelXML = manifestDoc.FirstChildElement("model");
-            if (!modelXML)
-              sdferr << "No <model> element in manifest["
-                    << manifestPath << "]\n";
-            else
-            {
-              TiXmlElement *sdfXML = modelXML->FirstChildElement("sdf");
-
-              TiXmlElement *sdfSearch = sdfXML;
-
-              // If a match is not found, use the latest version of the element
-              // that is not older than the SDF parser.
-              ignition::math::SemanticVersion sdfParserVersion(SDF_VERSION);
-              std::string bestVersionStr = "0.0";
-              while (sdfSearch)
-              {
-                if (sdfSearch->Attribute("version"))
-                {
-                  auto version = std::string(sdfSearch->Attribute("version"));
-                  ignition::math::SemanticVersion modelVersion(version);
-                  ignition::math::SemanticVersion bestVersion(bestVersionStr);
-                  if (modelVersion > bestVersion)
-                  {
-                    // this model is better than the previous one
-                    if (modelVersion <= sdfParserVersion)
-                    {
-                      // the parser can read it
-                      sdfXML = sdfSearch;
-                      bestVersionStr = version;
-                    }
-                    else
-                    {
-                      sdfwarn << "Ignoring version " << version
-                              << " for model " << uri
-                              << " because is newer than this sdf parser"
-                              << " (version " << SDF_VERSION << ")\n";
-                    }
-                  }
-                }
-                sdfSearch = sdfSearch->NextSiblingElement("sdf");
-              }
-
-              filename = modelPath + "/" + sdfXML->GetText();
-            }
-          }
-          else
-          {
-            sdferr << "Error parsing XML in file ["
-                   << manifestPath.string() << "]: "
-                   << manifestDoc.ErrorDesc() << '\n';
-          }
+          // Get the config.xml filename
+          filename = getModelFilePath(modelPath);
         }
         else
         {
