@@ -509,7 +509,6 @@ std::string getBestSupportedModelVersion(TiXmlElement *&configFileXML,
     sdfSearch = sdfSearch->NextSiblingElement("sdf");
   }
 
-  sdfwarn << configFileXML->GetText() << "\n";
   return bestVersionStr;
 }
 
@@ -555,7 +554,6 @@ std::string getModelFilePath(const std::string &modelPath,
 
   // The call will update the pointer sdfXML to the best version XML code
   auto bestSupportedVersion = getBestSupportedModelVersion(sdfXML, modelName);
-  sdfwarn << sdfXML->GetText() << "\n";
 
   return modelPath + "/" + sdfXML->GetText();
 }
