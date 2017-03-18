@@ -55,19 +55,21 @@ endif()
 
 ################################################
 # Find urdfdom parser
-if (NOT PKG_CONFIG_FOUND)
-  BUILD_ERROR ("pkgconfig not found. Please install it to find the urdf library.")
-else()
-  # check for urdfdom with pkg-config
-  pkg_check_modules(URDF urdfdom>=1.0)
+if (NOT USE_INTERNAL_URDF)
+  if (NOT PKG_CONFIG_FOUND)
+      BUILD_ERROR ("pkgconfig not found. Please install it to check for urdf support")
+  else()
+    # check for urdfdom with pkg-config
+    pkg_check_modules(URDF urdfdom>=1.0)
 
-  if (NOT URDF_FOUND)
-    BUILD_ERROR("URDF library >= 1.0 not found.  Please install it")
+    if (NOT URDF_FOUND)
+      BUILD_ERROR("URDF library >= 1.0 not found.  Please install it")
+    endif()
+    
+    # what am I doing here? pkg-config and cmake
+    set(URDF_INCLUDE_DIRS ${URDF_INCLUDEDIR})
+    set(URDF_LIBRARY_DIRS ${URDF_LIBDIR})
   endif()
-
-  # what am I doing here? pkg-config and cmake
-  set(URDF_INCLUDE_DIRS ${URDF_INCLUDEDIR})
-  set(URDF_LIBRARY_DIRS ${URDF_LIBDIR})
 endif()
 
 ################################################
