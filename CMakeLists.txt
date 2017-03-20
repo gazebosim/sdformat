@@ -28,7 +28,7 @@ string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 set (SDF_PROTOCOL_VERSION 1.6)
 
 set (SDF_MAJOR_VERSION 4)
-set (SDF_MINOR_VERSION 2)
+set (SDF_MINOR_VERSION 3)
 set (SDF_PATCH_VERSION 0)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
@@ -55,9 +55,9 @@ if(LD_LIBRARY_PATH)
   set (ENV{LD_LIBRARY_PATH} ${LD_LIBRARY_PATH}:$ENV{LD_LIBRARY_PATH})
 endif()
 
-set (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}/sdformat-${SDF_VERSION}/sdf") 
-set (LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE STRING "Installation directory for libraries (relative to CMAKE_INSTALL_PREFIX)") 
-set (BIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR} CACHE STRING "Installation directory for binaries (relative to CMAKE_INSTALL_PREFIX)") 
+set (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}/sdformat-${SDF_VERSION}/sdf")
+set (LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE STRING "Installation directory for libraries (relative to CMAKE_INSTALL_PREFIX)")
+set (BIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR} CACHE STRING "Installation directory for binaries (relative to CMAKE_INSTALL_PREFIX)")
 
 set (USE_FULL_RPATH OFF CACHE BOOL "Set to true to enable full rpath")
 
@@ -65,17 +65,17 @@ set (USE_FULL_RPATH OFF CACHE BOOL "Set to true to enable full rpath")
 if (USE_FULL_RPATH)
   # use, i.e. don't skip the full RPATH for the build tree
   set(CMAKE_SKIP_BUILD_RPATH  FALSE)
-  
+
   # when building, don't use the install RPATH already
   # (but later on when installing)
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
-  
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
-  
+
   # add the automatically determined parts of the RPATH
   # which point to directories outside the build tree to the install RPATH
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-  
+
   # the RPATH to be used when installing, but only if its not a system directory
   list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}" isSystemDir)
   if("${isSystemDir}" STREQUAL "-1")
@@ -110,7 +110,7 @@ message (STATUS "----------------------------------------\n")
 #####################################
 # Set the default build type
 if (NOT CMAKE_BUILD_TYPE)
-  set (CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING 
+  set (CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING
     "Choose the type of build, options are: Debug Release RelWithDebInfo Profile Check" FORCE)
 endif (NOT CMAKE_BUILD_TYPE)
 string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPERCASE)
@@ -229,13 +229,13 @@ else (buid_errors)
   message (STATUS "C Flags:${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
   message (STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
   message (STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
- 
+
   if (BUILD_SDF)
     include_directories(include
       ${PROJECT_BINARY_DIR}
       ${PROJECT_BINARY_DIR}/include
       )
-  
+
     link_directories(${PROJECT_BINARY_DIR}/src)
 
     add_subdirectory(test)
@@ -267,21 +267,21 @@ else (buid_errors)
   # Use write_basic_package_version_file to generate a ConfigVersion file that
   # allow users of gazebo to specify the API or version to depend on
   # TODO: keep this instruction until deprecate Ubuntu/Precise and update with
-  # https://github.com/Kitware/CMake/blob/v2.8.8/Modules/CMakePackageConfigHelpers.cmake 
+  # https://github.com/Kitware/CMake/blob/v2.8.8/Modules/CMakePackageConfigHelpers.cmake
   include(WriteBasicConfigVersionFile)
   write_basic_config_version_file(
       ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_version_file}
       VERSION "${SDF_VERSION_FULL}"
       COMPATIBILITY SameMajorVersion)
-  install(FILES 
+  install(FILES
             ${CMAKE_CURRENT_BINARY_DIR}/SDFormatConfig.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_version_file}
-          DESTINATION 
-	    ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/ 
+          DESTINATION
+	    ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/
 	  COMPONENT cmake)
 
   ########################################
-  # Package Creation: 
+  # Package Creation:
   include (${sdf_cmake_dir}/sdf_cpack.cmake)
   set (CPACK_PACKAGE_VERSION "${SDF_VERSION_FULL}")
   set (CPACK_PACKAGE_VERSION_MAJOR "${SDF_MAJOR_VERSION}")
