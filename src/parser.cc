@@ -472,6 +472,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   return true;
 }
 
+//////////////////////////////////////////////////
 std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
                                          std::string &_modelFileName)
 {
@@ -514,6 +515,7 @@ std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
   return bestVersionStr;
 }
 
+//////////////////////////////////////////////////
 std::string getModelFilePath(const std::string &_modelDirPath)
 {
   boost::filesystem::path configFilePath = _modelDirPath;
@@ -552,8 +554,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
   }
 
   std::string modelFileName;
-  auto bestSupportedVersion = getBestSupportedModelVersion(modelXML,
-                                                           modelFileName);
+  getBestSupportedModelVersion(modelXML, modelFileName);
   return _modelDirPath + "/" + modelFileName;
 }
 
