@@ -529,8 +529,8 @@ std::string getModelFilePath(const std::string &_modelDirPath)
   else if (boost::filesystem::exists(configFilePath / "manifest.xml"))
   {
     sdfwarn << "The manifest.xml for a model is deprecated. "
-           << "Please rename configFile.xml to "
-           << "model.config" << ".\n";
+            << "Please rename configFile.xml to "
+            << "model.config" << ".\n";
 
     configFilePath /= "manifest.xml";
   }
@@ -548,8 +548,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 
   if (!modelXML)
   {
-    sdferr << "No <model> element in configFile["
-          << configFilePath << "]\n";
+    sdferr << "No <model> element in configFile[" << configFilePath << "]\n";
     return std::string();
   }
 
