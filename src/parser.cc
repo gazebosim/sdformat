@@ -476,13 +476,15 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
 std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
                                          std::string &_modelFileName)
 {
-  TiXmlElement *sdfSearch = _modelXML->FirstChildElement("sdf");
+  TiXmlElement *sdfXML = _modelXML->FirstChildElement("sdf");
   TiXmlElement *nameSearch = _modelXML->FirstChildElement("name");
 
   // If a match is not found, use the latest version of the element
   // that is not older than the SDF parser.
   ignition::math::SemanticVersion sdfParserVersion(SDF_VERSION);
   std::string bestVersionStr = "0.0";
+
+  TiXmlElement *sdfSearch = sdfXML;
   while (sdfSearch)
   {
     if (sdfSearch->Attribute("version"))
@@ -496,7 +498,7 @@ std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
         if (modelVersion <= sdfParserVersion)
         {
           // the parser can read it
-          _modelXML  = sdfSearch;
+          sdfXML  = sdfSearch;
           bestVersionStr = version;
         }
         else
@@ -511,7 +513,25 @@ std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
     sdfSearch = sdfSearch->NextSiblingElement("sdf");
   }
 
-  _modelFileName = _modelXML->GetText();
+  if (!sdfXML || !sdfXML->GetText())
+  {
+    sdferr << "Failure to detect an sdf tag in the model config file"
+           << " for model: " << nameSearch->GetText() << "\n";
+
+    _modelFileName = "";
+    return "";
+  }
+
+  if (!sdfXML->Attribute("version"))
+  {
+    sdfwarn << "Can not find the XML attribute 'version'"
+            << " in sdf XML tag for model: " << nameSearch->GetText() << "."
+            << " Please specify the SDF protocol supported in the model"
+            << " configuration file. The first sdf tag in the config file"
+            << " will be used \n";
+  }
+
+  _modelFileName = sdfXML->GetText();
   return bestVersionStr;
 }
 
@@ -553,7 +573,9 @@ std::string getModelFilePath(const std::string &_modelDirPath)
   }
 
   std::string modelFileName;
-  getBestSupportedModelVersion(modelXML, modelFileName);
+  if (getBestSupportedModelVersion(modelXML, modelFileName).empty())
+    return std::string();
+
   return _modelDirPath + "/" + modelFileName;
 }
 
