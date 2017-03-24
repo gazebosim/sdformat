@@ -526,11 +526,11 @@ std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
       return "";
     }
 
-    sdferr << "Can not find the XML attribute 'version'"
-           << " in sdf XML tag for model: " << nameSearch->GetText() << "."
-           << " Please specify the SDF protocol supported in the model"
-           << " configuration file. The first sdf tag in the config file"
-           << " will be used \n";
+    sdfwarn << "Can not find the XML attribute 'version'"
+            << " in sdf XML tag for model: " << nameSearch->GetText() << "."
+            << " Please specify the SDF protocol supported in the model"
+            << " configuration file. The first sdf tag in the config file"
+            << " will be used \n";
   }
 
   _modelFileName = _modelXML->GetText();
