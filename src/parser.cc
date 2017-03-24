@@ -511,13 +511,13 @@ std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
     sdfSearch = sdfSearch->NextSiblingElement("sdf");
   }
 
-  if (! _modelXML || !_modelXML->GetText())
+  if (!_modelXML || !_modelXML->GetText())
   {
     // Try to get the first element in the configuration file
     _modelXML = _modelXML->FirstChildElement("sdf");
 
     // Check if not even an sdf tag has been defined
-    if (! _modelXML || !_modelXML->GetText())
+    if (!_modelXML || !_modelXML->GetText())
     {
       sdferr << "Failure to detect an sdf tag in the model config file"
              << " for model: " << nameSearch->GetText() << "\n";
