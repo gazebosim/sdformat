@@ -476,13 +476,15 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
 std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
                                          std::string &_modelFileName)
 {
-  TiXmlElement *sdfSearch = _modelXML->FirstChildElement("sdf");
+  TiXmlElement *sdfXML = _modelXML->FirstChildElement("sdf");
   TiXmlElement *nameSearch = _modelXML->FirstChildElement("name");
 
   // If a match is not found, use the latest version of the element
   // that is not older than the SDF parser.
   ignition::math::SemanticVersion sdfParserVersion(SDF_VERSION);
   std::string bestVersionStr = "0.0";
+
+  TiXmlElement *sdfSearch = sdfXML;
   while (sdfSearch)
   {
     if (sdfSearch->Attribute("version"))
@@ -496,7 +498,7 @@ std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
         if (modelVersion <= sdfParserVersion)
         {
           // the parser can read it
-          _modelXML  = sdfSearch;
+          sdfXML  = sdfSearch;
           bestVersionStr = version;
         }
         else
@@ -511,21 +513,17 @@ std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
     sdfSearch = sdfSearch->NextSiblingElement("sdf");
   }
 
-  if (!_modelXML || !_modelXML->GetText())
+  if (!sdfXML || !sdfXML->GetText())
   {
-    // Try to get the first element in the configuration file
-    _modelXML = _modelXML->FirstChildElement("sdf");
+    sdferr << "Failure to detect an sdf tag in the model config file"
+           << " for model: " << nameSearch->GetText() << "\n";
 
-    // Check if not even an sdf tag has been defined
-    if (!_modelXML || !_modelXML->GetText())
-    {
-      sdferr << "Failure to detect an sdf tag in the model config file"
-             << " for model: " << nameSearch->GetText() << "\n";
+    _modelFileName = "";
+    return "";
+  }
 
-      _modelFileName = "";
-      return "";
-    }
-
+  if (!sdfXML->Attribute("version"))
+  {
     sdfwarn << "Can not find the XML attribute 'version'"
             << " in sdf XML tag for model: " << nameSearch->GetText() << "."
             << " Please specify the SDF protocol supported in the model"
@@ -533,7 +531,7 @@ std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
             << " will be used \n";
   }
 
-  _modelFileName = _modelXML->GetText();
+  _modelFileName = sdfXML->GetText();
   return bestVersionStr;
 }
 
