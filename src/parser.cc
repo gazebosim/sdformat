@@ -511,6 +511,28 @@ std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
     sdfSearch = sdfSearch->NextSiblingElement("sdf");
   }
 
+  if (! _modelXML || !_modelXML->GetText())
+  {
+    // Try to get the first element in the configuration file
+    _modelXML = _modelXML->FirstChildElement("sdf");
+
+    // Check if not even an sdf tag has been defined
+    if (! _modelXML || !_modelXML->GetText())
+    {
+      sdferr << "Failure to detect an sdf tag in the model config file"
+             << " for model: " << nameSearch->GetText() << "\n";
+
+      _modelFileName = "";
+      return "";
+    }
+
+    sdferr << "Can not find the XML attribute 'version'"
+           << " in sdf XML tag for model: " << nameSearch->GetText() << "."
+           << " Please specify the SDF protocol supported in the model"
+           << " configuration file. The first sdf tag in the config file"
+           << " will be used \n";
+  }
+
   _modelFileName = _modelXML->GetText();
   return bestVersionStr;
 }
@@ -553,7 +575,9 @@ std::string getModelFilePath(const std::string &_modelDirPath)
   }
 
   std::string modelFileName;
-  getBestSupportedModelVersion(modelXML, modelFileName);
+  if (getBestSupportedModelVersion(modelXML, modelFileName).empty())
+    return std::string();
+
   return _modelDirPath + "/" + modelFileName;
 }
 

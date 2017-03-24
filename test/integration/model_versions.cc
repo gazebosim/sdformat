@@ -37,6 +37,26 @@ TEST(ModelVersionsTest, NonExistent_ModelFilePath)
   EXPECT_EQ(modelPath, "");
 }
 
+TEST(ModelVersionsTest, MalFormed_ModelFilePath)
+{
+  const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
+      + "/test/integration/model/cococan_malformed/";
+
+  std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
+
+  EXPECT_EQ(modelPath, "");
+}
+
+TEST(ModelVersionsTest, NoVersionTag_ModelFilePath)
+{
+  const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
+      + "/test/integration/model/cococan_noversiontag/";
+
+  std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
+
+  EXPECT_EQ(modelPath, MODEL_PATH + "/model-1_2.sdf");
+}
+
 TEST(ModelVersionsTest, Correct_ModelFilePath)
 {
   const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
