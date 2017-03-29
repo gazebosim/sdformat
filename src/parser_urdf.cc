@@ -315,27 +315,6 @@ std::string Vector32Str(const urdf::Vector3 _vector)
 ///            urdfdom 0.2: collision name with lumped
 ///            collision info (see ReduceCollisionsToParent).
 /// \param[in] _collision move this collision to _parentLink
-////////////////////////////////////////////////////////////////
-// IMPORTANT NOTE: URDF_GE_OP3
-// IMPORTANT NOTE: on change from urdfdom_headers 0.2.x to 0.3.x
-////////////////////////////////////////////////////////////////
-// In urdfdom_headers 0.2.x, there are group names for
-// visuals and collisions in Link class:
-//   std::map<std::string,
-//     boost::shared_ptr<std::vector<boost::shared_ptr<Visual> > >
-//     > visual_groups;
-//   std::map<std::string,
-//     boost::shared_ptr<std::vector<boost::shared_ptr<Collision> > >
-//     > collision_groups;
-// and we have Visual::group_name and
-//             Collision::group_name
-// In urdfdom_headers 0.3.x,
-//   - Link::visual_groups and Link::collision_groups are removed
-//   - method Link::getVisuals(group_name) has been removed
-//   - method Link::getCollisions(group_name) has been removed
-//   - Visual::group_name renamed to Visual::name
-//   - Collision::group_name renamed to Collision::name
-////////////////////////////////////////////////////////////////
 void ReduceCollisionToParent(urdf::LinkSharedPtr _parentLink,
                              const std::string &_name,
                              urdf::CollisionSharedPtr _collision)
@@ -369,27 +348,6 @@ void ReduceCollisionToParent(urdf::LinkSharedPtr _parentLink,
 ///            urdfdom 0.2: visual name with lumped
 ///            visual info (see ReduceVisualsToParent).
 /// \param[in] _visual move this visual to _parentLink
-////////////////////////////////////////////////////////////////
-// IMPORTANT NOTE: URDF_GE_OP3
-// IMPORTANT NOTE: on change from urdfdom_headers 0.2.x to 0.3.x
-////////////////////////////////////////////////////////////////
-// In urdfdom_headers 0.2.x, there are group names for
-// visuals and collisions in Link class:
-//   std::map<std::string,
-//     boost::shared_ptr<std::vector<boost::shared_ptr<Visual> > >
-//     > visual_groups;
-//   std::map<std::string,
-//     boost::shared_ptr<std::vector<boost::shared_ptr<Collision> > >
-//     > collision_groups;
-// and we have Visual::group_name and
-//             Collision::group_name
-// In urdfdom_headers 0.3.x,
-//   - Link::visual_groups and Link::collision_groups are removed
-//   - method Link::getVisuals(group_name) has been removed
-//   - method Link::getCollisions(group_name) has been removed
-//   - Visual::group_name renamed to Visual::name
-//   - Collision::group_name renamed to Collision::name
-////////////////////////////////////////////////////////////////
 void ReduceVisualToParent(urdf::LinkSharedPtr _parentLink,
                           const std::string &_name,
                           urdf::VisualSharedPtr _visual)
