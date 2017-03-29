@@ -65,7 +65,7 @@ if (NOT USE_INTERNAL_URDF)
     if (NOT URDF_FOUND)
       BUILD_ERROR("URDF library >= 1.0 not found.  Please install it")
     endif()
-    
+
     # what am I doing here? pkg-config and cmake
     set(URDF_INCLUDE_DIRS ${URDF_INCLUDEDIR})
     set(URDF_LIBRARY_DIRS ${URDF_LIBDIR})
