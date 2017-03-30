@@ -183,7 +183,14 @@ public:
                     this->y * this->y +
                     this->z * this->z +
                     this->w * this->w);
+
+#ifndef _WIN32
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#endif
     if (s == 0.0)
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
     {
       this->x = 0.0;
       this->y = 0.0;

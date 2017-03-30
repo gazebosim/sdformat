@@ -33,7 +33,7 @@
 *********************************************************************/
 
 /* Author: Wim Meeussen */
-
+#pragma warning(push, 0)
 
 #include <urdf_parser/urdf_parser.h>
 #include <urdf_model/link.h>
@@ -675,3 +675,5 @@ bool exportLink(Link &link, TiXmlElement* xml)
 }
 
 }
+
+#pragma warning(pop)

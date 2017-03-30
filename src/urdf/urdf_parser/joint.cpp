@@ -33,6 +33,7 @@
 *********************************************************************/
 
 /* Author: John Hsu */
+#pragma warning(push, 0)
 
 #include <sstream>
 #include <stdexcept>
@@ -689,3 +690,5 @@ bool exportJoint(Joint &joint, TiXmlElement* xml)
 
 
 }
+
+#pragma warning(pop)

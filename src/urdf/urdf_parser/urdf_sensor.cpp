@@ -33,7 +33,7 @@
 *********************************************************************/
 
 /* Author: John Hsu */
-
+#pragma warning(push, 0)
 
 #include <urdf_sensor/sensor.h>
 #include <fstream>
@@ -392,4 +392,4 @@ bool parseSensor(Sensor &sensor, TiXmlElement* config)
 
 }
 
-
+#pragma warning(pop)
