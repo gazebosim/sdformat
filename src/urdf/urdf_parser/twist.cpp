@@ -33,7 +33,7 @@
 *********************************************************************/
 
 /* Author: John Hsu */
-
+#pragma warning(push, 0)
 
 #include <urdf_model/twist.h>
 #include <fstream>
@@ -78,5 +78,4 @@ bool parseTwist(Twist &twist, TiXmlElement* xml)
 
 }
 
-
-
+#pragma warning(pop)

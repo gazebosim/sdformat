@@ -33,6 +33,7 @@
 *********************************************************************/
 
 /* Author: Wim Meeussen */
+#pragma warning(push, 0)
 
 #include "urdf_parser/urdf_parser.h"
 #include <iostream>
@@ -120,3 +121,4 @@ int main(int argc, char** argv)
   return 0;
 }
 
+#pragma warning(pop)

@@ -33,6 +33,7 @@
 *********************************************************************/
 
 /* Author: Wim Meeussen */
+#pragma warning(push, 0)
 
 #include <vector>
 #include "urdf_parser/urdf_parser.h"
@@ -260,3 +261,4 @@ TiXmlDocument*  exportURDF(ModelInterfaceSharedPtr &model)
 
 }
 
+#pragma warning(pop)

@@ -33,7 +33,7 @@
 *********************************************************************/
 
 /* Author: Wim Meeussen */
-
+#pragma warning(push, 0)
 
 #include <urdf_world/world.h>
 #include <urdf_model/model.h>
@@ -68,3 +68,5 @@ bool exportWorld(World &world, TiXmlElement* xml)
 }
 
 }
+
+#pragma warning(pop)

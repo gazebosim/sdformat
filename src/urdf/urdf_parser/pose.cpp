@@ -33,7 +33,7 @@
 *********************************************************************/
 
 /* Author: Wim Meeussen, John Hsu */
-
+#pragma warning(push, 0)
 
 #include <urdf_model/pose.h>
 #include <fstream>
@@ -130,4 +130,4 @@ bool exportPose(Pose &pose, TiXmlElement* xml)
 
 }
 
-
+#pragma warning(pop)

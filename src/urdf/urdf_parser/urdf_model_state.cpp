@@ -33,7 +33,7 @@
 *********************************************************************/
 
 /* Author: John Hsu */
-
+#pragma warning(push, 0)
 
 #include <urdf_model_state/model_state.h>
 #include <urdf_model/utils.h>
@@ -163,4 +163,4 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
 
 }
 
-
+#pragma warning(pop)
