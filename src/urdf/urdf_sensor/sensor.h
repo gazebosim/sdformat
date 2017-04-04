@@ -61,19 +61,18 @@
 #ifndef URDF_SENSOR_H
 #define URDF_SENSOR_H
 
-#include "visible.h"
 #include <string>
 #include <vector>
 #include <map>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
 #include "urdf_model/pose.h"
 #include "urdf_model/joint.h"
 #include "urdf_model/link.h"
+#include "urdf_model/types.h"
+#include "urdf_sensor/types.h"
 
 namespace urdf{
 
-class SDFORMAT_HIDDEN VisualSensor
+class VisualSensor
 {
 public:
   enum {CAMERA, RAY} type;
@@ -82,7 +81,7 @@ public:
   }
 };
 
-class SDFORMAT_HIDDEN Camera : public VisualSensor
+class Camera : public VisualSensor
 {
 public:
   Camera() { this->clear(); };
@@ -105,7 +104,7 @@ public:
   };
 };
 
-class SDFORMAT_HIDDEN Ray : public VisualSensor
+class Ray : public VisualSensor
 {
 public:
   Ray() { this->clear(); };
@@ -133,7 +132,7 @@ public:
 };
 
 
-class SDFORMAT_HIDDEN Sensor
+class Sensor
 {
 public:
   Sensor() { this->clear(); };
@@ -149,16 +148,16 @@ public:
   Pose origin;
 
   /// sensor
-  boost::shared_ptr<VisualSensor> sensor;
+  VisualSensorSharedPtr sensor;
 
 
   /// Parent link element name.  A pointer is stored in parent_link_.
   std::string parent_link_name;
 
-  boost::shared_ptr<Link> getParent() const
+  LinkSharedPtr getParent() const
   {return parent_link_.lock();};
 
-  void setParent(boost::shared_ptr<Link> parent)
+  void setParent(LinkSharedPtr parent)
   {  this->parent_link_ = parent; }
   
   void clear()
@@ -170,7 +169,7 @@ public:
   };
 
 private:
-  boost::weak_ptr<Link> parent_link_;
+  LinkWeakPtr parent_link_;
 
 };
 }

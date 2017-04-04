@@ -31,43 +31,38 @@
 *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
-#ifndef _WIN32
-#pragma GCC system_header
-#endif
+
 /* Author: Wim Meeussen */
 
 #ifndef URDF_PARSER_URDF_PARSER_H
 #define URDF_PARSER_URDF_PARSER_H
 
-#include "visible.h"
 #include <string>
 #include <map>
 #include <tinyxml.h>
-#include <boost/function.hpp>
 #include <urdf_model/model.h>
 #include <urdf_model/color.h>
+#include <urdf_world/types.h>
+
+#include "exportdecl.h"
 
 namespace urdf_export_helpers {
 
-SDFORMAT_HIDDEN
-std::string values2str(unsigned int count, const double *values, double (*conv)(double) = NULL);
-SDFORMAT_HIDDEN
-std::string values2str(urdf::Vector3 vec);
-SDFORMAT_HIDDEN
-std::string values2str(urdf::Rotation rot);
-SDFORMAT_HIDDEN
-std::string values2str(urdf::Color c);
-SDFORMAT_HIDDEN
-std::string values2str(double d);
+URDFDOM_DLLAPI std::string values2str(unsigned int count, const double *values, double (*conv)(double) = NULL);
+URDFDOM_DLLAPI std::string values2str(urdf::Vector3 vec);
+URDFDOM_DLLAPI std::string values2str(urdf::Rotation rot);
+URDFDOM_DLLAPI std::string values2str(urdf::Color c);
+URDFDOM_DLLAPI std::string values2str(double d);
 
 }
 
 namespace urdf{
 
-  SDFORMAT_HIDDEN
-  boost::shared_ptr<ModelInterface> parseURDF(const std::string &xml_string);
-  TiXmlDocument*  exportURDF(boost::shared_ptr<ModelInterface> &model);
-
+  URDFDOM_DLLAPI ModelInterfaceSharedPtr parseURDF(const std::string &xml_string);
+  URDFDOM_DLLAPI ModelInterfaceSharedPtr parseURDFFile(const std::string &path);
+  URDFDOM_DLLAPI TiXmlDocument*  exportURDF(ModelInterfaceSharedPtr &model);
+  URDFDOM_DLLAPI TiXmlDocument*  exportURDF(const ModelInterface &model);
+  URDFDOM_DLLAPI bool parsePose(Pose&, TiXmlElement*);
 }
 
 #endif

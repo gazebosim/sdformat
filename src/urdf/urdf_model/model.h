@@ -36,23 +36,22 @@
 
 #ifndef URDF_INTERFACE_MODEL_H
 #define URDF_INTERFACE_MODEL_H
-#include "visible.h"
 
 #include <string>
 #include <map>
-#include <boost/function.hpp>
 #include <urdf_model/link.h>
+#include <urdf_model/types.h>
 #include <urdf_exception/exception.h>
 
 namespace urdf {
 
-class SDFORMAT_HIDDEN ModelInterface
+class ModelInterface
 {
 public:
-  boost::shared_ptr<const Link> getRoot(void) const{return this->root_link_;};
-  boost::shared_ptr<const Link> getLink(const std::string& name) const
+  LinkConstSharedPtr getRoot(void) const{return this->root_link_;};
+  LinkConstSharedPtr getLink(const std::string& name) const
   {
-    boost::shared_ptr<const Link> ptr;
+    LinkConstSharedPtr ptr;
     if (this->links_.find(name) == this->links_.end())
       ptr.reset();
     else
@@ -60,9 +59,9 @@ public:
     return ptr;
   };
   
-  boost::shared_ptr<const Joint> getJoint(const std::string& name) const
+  JointConstSharedPtr getJoint(const std::string& name) const
   {
-    boost::shared_ptr<const Joint> ptr;
+    JointConstSharedPtr ptr;
     if (this->joints_.find(name) == this->joints_.end())
       ptr.reset();
     else
@@ -72,9 +71,9 @@ public:
   
   
   const std::string& getName() const {return name_;};
-  void getLinks(std::vector<boost::shared_ptr<Link> >& links) const
+  void getLinks(std::vector<LinkSharedPtr >& links) const
   {
-    for (std::map<std::string,boost::shared_ptr<Link> >::const_iterator link = this->links_.begin();link != this->links_.end(); link++)
+    for (std::map<std::string,LinkSharedPtr>::const_iterator link = this->links_.begin();link != this->links_.end(); link++)
     {
       links.push_back(link->second);
     }
@@ -90,9 +89,9 @@ public:
   };
   
   /// non-const getLink()
-  void getLink(const std::string& name,boost::shared_ptr<Link> &link) const
+  void getLink(const std::string& name, LinkSharedPtr &link) const
   {
-    boost::shared_ptr<Link> ptr;
+    LinkSharedPtr ptr;
     if (this->links_.find(name) == this->links_.end())
       ptr.reset();
     else
@@ -101,9 +100,9 @@ public:
   };
   
   /// non-const getMaterial()
-  boost::shared_ptr<Material> getMaterial(const std::string& name) const
+  MaterialSharedPtr getMaterial(const std::string& name) const
   {
-    boost::shared_ptr<Material> ptr;
+    MaterialSharedPtr ptr;
     if (this->materials_.find(name) == this->materials_.end())
       ptr.reset();
     else
@@ -114,7 +113,7 @@ public:
   void initTree(std::map<std::string, std::string> &parent_link_tree)
   {
     // loop through all joints, for every link, assign children links and children joints
-    for (std::map<std::string,boost::shared_ptr<Joint> >::iterator joint = this->joints_.begin();joint != this->joints_.end(); joint++)
+    for (std::map<std::string, JointSharedPtr>::iterator joint = this->joints_.begin();joint != this->joints_.end(); joint++)
     {
       std::string parent_link_name = joint->second->parent_link_name;
       std::string child_link_name = joint->second->child_link_name;
@@ -126,7 +125,7 @@ public:
       else
       {
         // find child and parent links
-        boost::shared_ptr<Link> child_link, parent_link;
+        LinkSharedPtr child_link, parent_link;
         this->getLink(child_link_name, child_link);
         if (!child_link)
         {
@@ -161,7 +160,7 @@ public:
     this->root_link_.reset();
     
     // find the links that have no parent in the tree
-    for (std::map<std::string, boost::shared_ptr<Link> >::const_iterator l=this->links_.begin(); l!=this->links_.end(); l++)  
+    for (std::map<std::string, LinkSharedPtr>::const_iterator l=this->links_.begin(); l!=this->links_.end(); l++)
     {
       std::map<std::string, std::string >::const_iterator parent = parent_link_tree.find(l->first);
       if (parent == parent_link_tree.end())
@@ -186,17 +185,17 @@ public:
   
   
   /// \brief complete list of Links
-  std::map<std::string, boost::shared_ptr<Link> > links_;
+  std::map<std::string, LinkSharedPtr> links_;
   /// \brief complete list of Joints
-  std::map<std::string, boost::shared_ptr<Joint> > joints_;
+  std::map<std::string, JointSharedPtr> joints_;
   /// \brief complete list of Materials
-  std::map<std::string, boost::shared_ptr<Material> > materials_;
+  std::map<std::string, MaterialSharedPtr> materials_;
 
   /// \brief The name of the robot model
   std::string name_;
 
   /// \brief The root is always a link (the parent of the tree describing the robot)
-  boost::shared_ptr<Link> root_link_;
+  LinkSharedPtr root_link_;
 
 
 

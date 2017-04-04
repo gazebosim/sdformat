@@ -1,23 +1,23 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
-*  Copyright (c) 2008, Willow Garage, Inc.
+*
+*  Copyright (c) 2016, Open Source Robotics Foundation (OSRF)
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
 *     copyright notice, this list of conditions and the following
 *     disclaimer in the documentation and/or other materials provided
 *     with the distribution.
-*   * Neither the name of the Willow Garage nor the names of its
+*   * Neither the name of the OSRF nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -32,11 +32,36 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-#ifndef URDF_MODEL_STATE_TWIST_
-#define URDF_MODEL_STATE_TWIST_
+/* Author: Steve Peters */
 
-#warning "Please Use #include <urdf_model/twist.h>"
+#ifndef URDF_INTERFACE_UTILS_H
+#define URDF_INTERFACE_UTILS_H
 
-#include <urdf_model/twist.h>
+#include <string>
+#include <vector>
+
+namespace urdf {
+
+// Replacement for boost::split( ... , ... , boost::is_any_of(" "))
+inline
+void split_string(std::vector<std::string> &result,
+                  const std::string &input,
+                  const std::string &isAnyOf)
+{
+  std::string::size_type start = 0;
+  std::string::size_type end = input.find_first_of(isAnyOf, start);
+  while (end != std::string::npos)
+  {
+    result.push_back(input.substr(start, end-start));
+    start = end + 1;
+    end = input.find_first_of(isAnyOf, start);
+  }
+  if (start < input.length())
+  {
+    result.push_back(input.substr(start));
+  }
+}
+
+}
 
 #endif

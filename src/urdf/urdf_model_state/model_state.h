@@ -36,21 +36,30 @@
 
 #ifndef URDF_MODEL_STATE_H
 #define URDF_MODEL_STATE_H
-#include "visible.h"
 
 #include <string>
 #include <vector>
 #include <map>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
 
 #include "urdf_model/pose.h"
 #include <urdf_model/twist.h>
+#include "urdf_model_state/types.h"
 
 
 namespace urdf{
 
-class SDFORMAT_HIDDEN Time
+//round is not defined in C++98
+//So in Visual Studio <= 2012 is necessary to define it
+#ifdef _MSC_VER
+#if (_MSC_VER <= 1700)
+double round(double value)
+{
+    return (value >= 0.0f)?(floor(value + 0.5f)):(ceil(value - 0.5f));
+}
+#endif 
+#endif
+
+class Time
 {
 public:
   Time() { this->clear(); };
@@ -94,7 +103,7 @@ private:
 };
 
 
-class SDFORMAT_HIDDEN JointState
+class JointState
 {
 public:
   JointState() { this->clear(); };
@@ -115,7 +124,7 @@ public:
   }
 };
 
-class SDFORMAT_HIDDEN ModelState
+class ModelState
 {
 public:
   ModelState() { this->clear(); };
@@ -132,7 +141,7 @@ public:
     this->joint_states.clear();
   };
 
-  std::vector<boost::shared_ptr<JointState> > joint_states;
+  std::vector<JointStateSharedPtr> joint_states;
 
 };
 

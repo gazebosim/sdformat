@@ -35,7 +35,7 @@ CHECK_FILE_DIRS="./src ./include ./examples ./test/performance ./test/integratio
 CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS"
 CPPCHECK_BASE2="cppcheck -q --suppressions-list=$SUPPRESS2"
 CPPCHECK_FILES=`find $CHECK_FILE_DIRS -name "*.cc"`
-CPPCHECK_INCLUDES="-I include -I . -I src/urdf -I $builddir -I $builddir/include"
+CPPCHECK_INCLUDES="-I include -I . -I $builddir -I $builddir/include"
 CPPCHECK_COMMAND1="-j 4 --enable=style,performance,portability,information $CPPCHECK_FILES"
 # Unused function checking must happen in one job
 CPPCHECK_COMMAND2="--enable=unusedFunction $CPPCHECK_FILES"
