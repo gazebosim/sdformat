@@ -646,14 +646,13 @@ ElementPtr Element::GetNextElement(const std::string &_name) const
 /////////////////////////////////////////////////
 ElementPtr Element::GetElement(const std::string &_name)
 {
-  if (this->HasElement(_name))
+  ElementPtr result = this->GetElementImpl(_name);
+  if (result == ElementPtr())
   {
-    return this->GetElementImpl(_name);
+    result = this->AddElement(_name);
   }
-  else
-  {
-    return this->AddElement(_name);
-  }
+
+  return result;
 }
 
 /////////////////////////////////////////////////
@@ -863,17 +862,25 @@ boost::any Element::GetAny(const std::string &_key)
         sdferr << "Couldn't get attribute [" << _key << "] as boost::any\n";
       }
     }
-    else if (this->HasElement(_key))
-    {
-      result = this->GetElementImpl(_key)->GetAny();
-    }
-    else if (this->HasElementDescription(_key))
-    {
-      result = this->GetElementDescription(_key)->GetAny();
-    }
     else
     {
-      sdferr << "Unable to find value for key [" << _key << "]\n";
+      ElementPtr tmp = this->GetElementImpl(_key);
+      if (tmp != ElementPtr())
+      {
+        result = tmp->GetAny();
+      }
+      else
+      {
+        tmp = this->GetElementDescription(_key);
+        if (tmp != ElementPtr())
+        {
+          result = tmp->GetAny();
+        }
+        else
+        {
+          sdferr << "Unable to find value for key [" << _key << "]\n";
+        }
+      }
     }
   }
   return result;
