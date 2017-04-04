@@ -99,10 +99,10 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   {
     this->Init<sdf::Time>(_default);
   }
-  else if (this->dataPtr->typeName == "sdf::Color" ||
+  else if (this->dataPtr->typeName == "ignition::math::Color" ||
            this->dataPtr->typeName == "color")
   {
-    this->Init<sdf::Color>(_default);
+    this->Init<ignition::math::Color>(_default);
   }
   else if (this->dataPtr->typeName == "ignition::math::Vector2i" ||
            this->dataPtr->typeName == "vector2i")
@@ -227,10 +227,10 @@ bool Param::GetAny(boost::any &_anyVal) const
     }
     _anyVal = ret;
   }
-  else if (this->IsType<sdf::Color>())
+  else if (this->IsType<ignition::math::Color>())
   {
-    sdf::Color ret;
-    if (!this->Get<sdf::Color>(ret))
+    ignition::math::Color ret;
+    if (!this->Get<ignition::math::Color>(ret))
     {
       return false;
     }

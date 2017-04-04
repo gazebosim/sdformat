@@ -209,9 +209,10 @@ namespace sdf
     /// \brief Variant type def.
     public: typedef boost::variant<bool, char, std::string, int, uint64_t,
                                    unsigned int, double, float, sdf::Time,
-                                   sdf::Color, ignition::math::Vector3d,
+                                   ignition::math::Color,
                                    ignition::math::Vector2i,
                                    ignition::math::Vector2d,
+                                   ignition::math::Vector3d,
                                    ignition::math::Quaterniond,
                                    ignition::math::Pose3d> ParamVariant;
 

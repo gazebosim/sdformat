@@ -597,13 +597,14 @@ TEST(Frame, LightFrame)
   // diffuse
   EXPECT_TRUE(lightElem->HasElement("diffuse"));
   sdf::ElementPtr diffuseElem = lightElem->GetElement("diffuse");
-  EXPECT_EQ(diffuseElem->Get<sdf::Color>(), sdf::Color(0.2f, 0.3f, 0.4f, 1.0f));
+  EXPECT_EQ(diffuseElem->Get<ignition::math::Color>(),
+      ignition::math::Color(0.2f, 0.3f, 0.4f, 1.0f));
 
   // specular
   EXPECT_TRUE(lightElem->HasElement("specular"));
   sdf::ElementPtr specularElem = lightElem->GetElement("specular");
-  EXPECT_EQ(specularElem->Get<sdf::Color>(),
-            sdf::Color(0.3f, 0.4f, 0.5f, 1.0f));
+  EXPECT_EQ(specularElem->Get<ignition::math::Color>(),
+            ignition::math::Color(0.3f, 0.4f, 0.5f, 1.0f));
 }
 
 ////////////////////////////////////////

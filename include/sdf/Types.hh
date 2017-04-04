@@ -14,9 +14,8 @@
  * limitations under the License.
  *
 */
-
-#ifndef _SDF_TYPES_HH_
-#define _SDF_TYPES_HH_
+#ifndef SDFORMAT_TYPES_HH_
+#define SDFORMAT_TYPES_HH_
 
 #include <algorithm>
 #include <cmath>
@@ -73,9 +72,11 @@ namespace sdf
     /// \param[in] _g Green value (range 0 to 1
     /// \param[in] _b Blue value (range 0 to 1
     /// \param[in] _a Alpha value (0=transparent, 1=opaque)
+    /// \deprecated Use ignition::math::Color
     public: Color(float _r = 0.0f, float _g = 0.0f,
-                  float _b = 0.0f, float _a = 1.0f)
-            : r(_r), g(_g), b(_b), a(_a) {}
+                  float _b = 0.0f, float _a = 1.0f) SDF_DEPRECATED(6.0)
+            : r(_r), g(_g), b(_b), a(_a)
+    {}
 
     /// \brief Stream insertion operator
     /// \param[in] _out the output stream

@@ -266,11 +266,12 @@ void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
             "file://media/materials/scripts/gazebo.material");
 
   EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
-            Get<sdf::Color>("ambient"), sdf::Color(0, 1, 0, 1));
+            Get<ignition::math::Color>("ambient"),
+            ignition::math::Color(0, 1, 0, 1));
   EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
-            Get<sdf::Color>("ambient"),
+            Get<ignition::math::Color>("ambient"),
              sdf_child_link_1_vis->GetElement("material")->
-            Get<sdf::Color>("ambient"));
+            Get<ignition::math::Color>("ambient"));
 
   // child_link_1a
   //   <collision name='base_link_fixed_joint_lump__child_link_1a_collision_3'>
@@ -316,11 +317,12 @@ void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
 
   // ambient unassigned should be 0, 0, 0, 1
   EXPECT_EQ(urdf_child_link_1a_vis->GetElement("material")->
-            Get<sdf::Color>("ambient"), sdf::Color(0, 0, 0, 1));
+            Get<ignition::math::Color>("ambient"),
+            ignition::math::Color(0, 0, 0, 1));
   EXPECT_EQ(urdf_child_link_1a_vis->GetElement("material")->
-            Get<sdf::Color>("ambient"),
+            Get<ignition::math::Color>("ambient"),
             sdf_child_link_1a_vis->GetElement("material")->
-            Get<sdf::Color>("ambient"));
+            Get<ignition::math::Color>("ambient"));
 
   // child_link_2
   //   <collision name='base_link_fixed_joint_lump__child_link_2_collision_2'>
@@ -362,11 +364,12 @@ void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
 
   // ambient unassigned should be 0, 0, 0, 1
   EXPECT_EQ(urdf_child_link_2_vis->GetElement("material")->
-            Get<sdf::Color>("ambient"), sdf::Color(0, 0, 0, 1));
+            Get<ignition::math::Color>("ambient"),
+            ignition::math::Color(0, 0, 0, 1));
   EXPECT_EQ(urdf_child_link_2_vis->GetElement("material")->
-            Get<sdf::Color>("ambient"),
+            Get<ignition::math::Color>("ambient"),
             sdf_child_link_2_vis->GetElement("material")->
-            Get<sdf::Color>("ambient"));
+            Get<ignition::math::Color>("ambient"));
 }
 
 /////////////////////////////////////////////////
@@ -490,11 +493,12 @@ void FixedJointReductionCollisionVisualExtensionEmptyRoot(
             "file://media/materials/scripts/gazebo.material");
 
   EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
-            Get<sdf::Color>("ambient"), sdf::Color(0, 1, 0, 1));
+            Get<ignition::math::Color>("ambient"),
+            ignition::math::Color(0, 1, 0, 1));
   EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
-            Get<sdf::Color>("ambient"),
+            Get<ignition::math::Color>("ambient"),
             sdf_child_link_1_vis->GetElement("material")->
-            Get<sdf::Color>("ambient"));
+            Get<ignition::math::Color>("ambient"));
 }
 
 /////////////////////////////////////////////////
