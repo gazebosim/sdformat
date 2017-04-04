@@ -32,26 +32,31 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-#ifndef _WIN32
-#pragma GCC system_header
-#endif
 /* Author: Wim Meeussen */
 
 #ifndef URDF_INTERFACE_POSE_H
-#include "visible.h"
 #define URDF_INTERFACE_POSE_H
 
-#include <string>
-#include <sstream>
-#include <vector>
+//For using the M_PI macro in visual studio it
+//is necessary to define _USE_MATH_DEFINES
+#ifdef _MSC_VER
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+#endif
+
 #include <cmath>
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 #include <urdf_exception/exception.h>
+#include <urdf_model/utils.h>
 
 namespace urdf{
 
-class SDFORMAT_HIDDEN Vector3
+class Vector3
 {
 public:
   Vector3(double _x,double _y, double _z) {this->x=_x;this->y=_y;this->z=_z;};
@@ -66,21 +71,23 @@ public:
     this->clear();
     std::vector<std::string> pieces;
     std::vector<double> xyz;
-    boost::split( pieces, vector_str, boost::is_any_of(" "));
+    urdf::split_string( pieces, vector_str, " ");
     for (unsigned int i = 0; i < pieces.size(); ++i){
       if (pieces[i] != ""){
         try {
-          xyz.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
+          xyz.push_back(std::stod(pieces[i]));
         }
-        catch (boost::bad_lexical_cast &) {
-          throw ParseError("Unable to parse component [" + pieces[i]
-              + "] to a double (while parsing a vector value)");
+        catch (std::invalid_argument &/*e*/) {
+          throw ParseError("Unable to parse component [" + pieces[i] + "] to a double (while parsing a vector value)");
+        }
+        catch (std::out_of_range &/*e*/) {
+          throw ParseError("Unable to parse component [" + pieces[i] + "] to a double, out of range (while parsing a vector value)");
         }
       }
     }
 
     if (xyz.size() != 3)
-      throw ParseError("Parser found " + boost::lexical_cast<std::string>(xyz.size())  + " elements but 3 expected while parsing vector [" + vector_str + "]");
+      throw ParseError("Parser found " + std::to_string(xyz.size())  + " elements but 3 expected while parsing vector [" + vector_str + "]");
 
     this->x = xyz[0];
     this->y = xyz[1];
@@ -93,7 +100,7 @@ public:
   };
 };
 
-class SDFORMAT_HIDDEN Rotation
+class Rotation
 {
 public:
   Rotation(double _x,double _y, double _z, double _w) {this->x=_x;this->y=_y;this->z=_z;this->w=_w;};
@@ -117,10 +124,21 @@ public:
     sqz = this->z * this->z;
     sqw = this->w * this->w;
 
-    roll  = atan2(2 * (this->y*this->z + this->w*this->x), sqw - sqx - sqy + sqz);
+    // Cases derived from https://orbitalstation.wordpress.com/tag/quaternion/
     double sarg = -2 * (this->x*this->z - this->w*this->y);
-    pitch = sarg <= -1.0 ? -0.5*M_PI : (sarg >= 1.0 ? 0.5*M_PI : asin(sarg));
-    yaw   = atan2(2 * (this->x*this->y + this->w*this->z), sqw + sqx - sqy - sqz);
+    if (sarg <= -0.99999) {
+      pitch = -0.5*M_PI;
+      roll  = 0;
+      yaw   = 2 * atan2(this->x, -this->y);
+    } else if (sarg >= 0.99999) {
+      pitch = 0.5*M_PI;
+      roll  = 0;
+      yaw   = 2 * atan2(-this->x, this->y);
+    } else {
+      pitch = asin(sarg);
+      roll  = atan2(2 * (this->y*this->z + this->w*this->x), sqw - sqx - sqy + sqz);
+      yaw   = atan2(2 * (this->x*this->y + this->w*this->z), sqw + sqx - sqy - sqz);
+    }
 
   };
   void setFromQuaternion(double quat_x,double quat_y,double quat_z,double quat_w)
@@ -233,7 +251,7 @@ public:
 
 };
 
-class SDFORMAT_HIDDEN Pose
+class Pose
 {
 public:
   Pose() { this->clear(); };

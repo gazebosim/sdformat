@@ -5,9 +5,15 @@
 1. Remove boost regex and iostreams as dependencies
    * [Pull request 302](https://bitbucket.org/osrf/sdformat/pull-requests/302)
 
-2. Change certain error checks from asserts to throwing
+1. Change certain error checks from asserts to throwing
    sdf::AssertionInternalError, which is more appropriate for a library.
    * [Pull request 315](https://bitbucket.org/osrf/sdformat/pull-requests/315)
+
+1. Updated the internal copy of urdfdom to 1.0, removing more of boost.
+   * [Pull request 324](https://bitbucket.org/osrf/sdformat/pull-requests/324)
+
+1. urdfdom 1.0 is now required on all platforms.
+   * [Pull request 324](https://bitbucket.org/osrf/sdformat/pull-requests/324)
 
 ## SDFormat 5.0
 

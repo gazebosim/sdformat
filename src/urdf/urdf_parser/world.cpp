@@ -40,7 +40,6 @@
 #include <urdf_parser/urdf_parser.h>
 #include <fstream>
 #include <sstream>
-#include <boost/lexical_cast.hpp>
 #include <algorithm>
 #include <tinyxml.h>
 //#include <console_bridge/console.h>

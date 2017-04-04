@@ -36,20 +36,19 @@
 
 #ifndef URDF_INTERFACE_JOINT_H
 #define URDF_INTERFACE_JOINT_H
-#include "visible.h"
 
 #include <string>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 
 #include "urdf_model/pose.h"
+#include "urdf_model/types.h"
 
 
 namespace urdf{
 
-class SDFORMAT_HIDDEN Link;
+class Link;
 
-class SDFORMAT_HIDDEN JointDynamics
+class JointDynamics
 {
 public:
   JointDynamics() { this->clear(); };
@@ -63,7 +62,7 @@ public:
   };
 };
 
-class SDFORMAT_HIDDEN JointLimits
+class JointLimits
 {
 public:
   JointLimits() { this->clear(); };
@@ -82,7 +81,7 @@ public:
 };
 
 /// \brief Parameters for Joint Safety Controllers
-class SDFORMAT_HIDDEN JointSafety
+class JointSafety
 {
 public:
   /// clear variables on construction
@@ -134,12 +133,12 @@ public:
 };
 
 
-class SDFORMAT_HIDDEN JointCalibration
+class JointCalibration
 {
 public:
   JointCalibration() { this->clear(); };
   double reference_position;
-  boost::shared_ptr<double> rising, falling;
+  DoubleSharedPtr rising, falling;
 
   void clear()
   {
@@ -147,7 +146,7 @@ public:
   };
 };
 
-class SDFORMAT_HIDDEN JointMimic
+class JointMimic
 {
 public:
   JointMimic() { this->clear(); };
@@ -164,7 +163,7 @@ public:
 };
 
 
-class SDFORMAT_HIDDEN Joint
+class Joint
 {
 public:
 
@@ -197,19 +196,19 @@ public:
   Pose  parent_to_joint_origin_transform;
 
   /// Joint Dynamics
-  boost::shared_ptr<JointDynamics> dynamics;
+  JointDynamicsSharedPtr dynamics;
 
   /// Joint Limits
-  boost::shared_ptr<JointLimits> limits;
+  JointLimitsSharedPtr limits;
 
   /// Unsupported Hidden Feature
-  boost::shared_ptr<JointSafety> safety;
+  JointSafetySharedPtr safety;
 
   /// Unsupported Hidden Feature
-  boost::shared_ptr<JointCalibration> calibration;
+  JointCalibrationSharedPtr calibration;
 
   /// Option to Mimic another Joint
-  boost::shared_ptr<JointMimic> mimic;
+  JointMimicSharedPtr mimic;
 
   void clear()
   {
@@ -221,6 +220,7 @@ public:
     this->limits.reset();
     this->safety.reset();
     this->calibration.reset();
+    this->mimic.reset();
     this->type = UNKNOWN;
   };
 };

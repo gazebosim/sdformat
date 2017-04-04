@@ -55,38 +55,21 @@ endif()
 
 ################################################
 # Find urdfdom parser
-if (USE_EXTERNAL_URDF)
+if (NOT USE_INTERNAL_URDF)
   if (NOT PKG_CONFIG_FOUND)
-      BUILD_ERROR ("pkgconfig not found. Please install to so USE_EXTERNAL_URDF can found the urdf library")
+      BUILD_ERROR ("pkgconfig not found. Please install it to check for urdf support")
   else()
     # check for urdfdom with pkg-config
-    pkg_check_modules(URDF urdfdom>=0.3)
+    pkg_check_modules(URDF urdfdom>=1.0)
 
     if (NOT URDF_FOUND)
-      # version >= 0.3.x not found, check for urdfdom again with no version
-      # restriction.
-      pkg_check_modules(URDF urdfdom)
-
-
-      if (NOT URDF_FOUND)
-        BUILD_ERROR ("URDF library not found. Please install it to use with USE_EXTERNAL_URDF or set this flag to false to use internal URDF code")
-      else()
-        # urdfdom library found < 0.3, unset flag
-        set (URDF_GE_0P3 FALSE)
-      endif()
-
-    else()
-      # urdfdom library found >= 0.3, set flag
-      set (URDF_GE_0P3 TRUE)
+      BUILD_ERROR("URDF library >= 1.0 not found.  Please install it")
     endif()
 
     # what am I doing here? pkg-config and cmake
     set(URDF_INCLUDE_DIRS ${URDF_INCLUDEDIR})
     set(URDF_LIBRARY_DIRS ${URDF_LIBDIR})
   endif()
-else()
-  # the internal copy is currently 0.3.0
-  set (URDF_GE_0P3 TRUE)
 endif()
 
 ################################################

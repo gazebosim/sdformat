@@ -70,29 +70,27 @@
 #ifndef USDF_STATE_H
 #define USDF_STATE_H
 
-#include "visible.h"
 #include <string>
 #include <vector>
 #include <map>
 #include <tinyxml.h>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
 
 #include "urdf_model/model.h"
 #include "urdf_model/pose.h"
 #include "urdf_model/twist.h"
+#include "urdf_world/types.h"
 
 namespace urdf{
 
-class SDFORMAT_HIDDEN Entity
+class Entity
 {
 public:
-  boost::shared_ptr<ModelInterface> model;
+  ModelInterfaceSharedPtr model;
   Pose origin;
   Twist twist;
 };
 
-class SDFORMAT_HIDDEN World
+class World
 {
 public:
   World() { this->clear(); };

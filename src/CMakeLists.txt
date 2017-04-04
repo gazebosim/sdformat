@@ -11,7 +11,7 @@ link_directories(
   ${IGNITION-MATH_LIBRARY_DIRS}
 )
 
-if (USE_EXTERNAL_URDF)
+if (NOT USE_INTERNAL_URDF)
   link_directories(${URDF_LIBRARY_DIRS})
 endif()
 
@@ -47,9 +47,7 @@ else()
 	    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sdformat-${SDF_VERSION})
 endif()
 
-if (USE_EXTERNAL_URDF)
-  include_directories(${URDF_INCLUDE_DIRS})
-else()
+if (USE_INTERNAL_URDF)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/urdf)
   set(sources ${sources}
   urdf/urdf_parser/model.cpp
@@ -59,8 +57,9 @@ else()
   urdf/urdf_parser/twist.cpp
   urdf/urdf_parser/urdf_model_state.cpp
   urdf/urdf_parser/urdf_sensor.cpp
-  urdf/urdf_parser/world.cpp
-)
+  urdf/urdf_parser/world.cpp)
+else()
+  include_directories(${URDF_INCLUDE_DIRS})
 endif()
 
 set (gtest_sources
@@ -84,7 +83,7 @@ endif()
 message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
 message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
 
-if (USE_EXTERNAL_URDF)
+if (NOT USE_INTERNAL_URDF)
   target_link_libraries(sdformat ${URDF_LIBRARIES})
 endif()
 

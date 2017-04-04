@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-*
+* 
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-*
+* 
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-*
+* 
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-*
+* 
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -36,12 +36,14 @@
 
 
 #include <urdf_model_state/model_state.h>
+#include <urdf_model/utils.h>
 #include <fstream>
 #include <sstream>
-#include <boost/lexical_cast.hpp>
+#include <stdexcept>
+#include <string>
 #include <algorithm>
 #include <tinyxml.h>
-//#include <console_bridge/console.h>
+// #include <console_bridge/console.h>
 
 namespace urdf{
 
@@ -52,7 +54,6 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
   const char *name_char = config->Attribute("name");
   if (!name_char)
   {
-    //logError("No name given for the model_state.");
     return false;
   }
   ms.name = std::string(name_char);
@@ -61,11 +62,13 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
   if (time_stamp_char)
   {
     try {
-      double sec = boost::lexical_cast<double>(time_stamp_char);
+      double sec = std::stod(time_stamp_char);
       ms.time_stamp.set(sec);
     }
-    catch (boost::bad_lexical_cast &/*e*/) {
-      //logError("Parsing time stamp [%s] failed: %s", time_stamp_char, e.what());
+    catch (std::invalid_argument &e) {
+      return false;
+    }
+    catch (std::out_of_range &e) {
       return false;
     }
   }
@@ -73,7 +76,7 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
   TiXmlElement *joint_state_elem = config->FirstChildElement("joint_state");
   if (joint_state_elem)
   {
-    boost::shared_ptr<JointState> joint_state;
+    JointStateSharedPtr joint_state;
     joint_state.reset(new JointState());
 
     const char *joint_char = joint_state_elem->Attribute("joint");
@@ -81,24 +84,26 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
       joint_state->joint = std::string(joint_char);
     else
     {
-      //logError("No joint name given for the model_state.");
       return false;
     }
-
+    
     // parse position
     const char *position_char = joint_state_elem->Attribute("position");
     if (position_char)
     {
 
       std::vector<std::string> pieces;
-      boost::split( pieces, position_char, boost::is_any_of(" "));
+      urdf::split_string( pieces, position_char, " ");
       for (unsigned int i = 0; i < pieces.size(); ++i){
         if (pieces[i] != ""){
           try {
-            joint_state->position.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
+            joint_state->position.push_back(std::stod(pieces[i].c_str()));
           }
-          catch (boost::bad_lexical_cast &/*e*/) {
+          catch (std::invalid_argument &/*e*/) {
             throw ParseError("position element ("+ pieces[i] +") is not a valid float");
+          }
+          catch (std::out_of_range &/*e*/) {
+            throw ParseError("position element ("+ pieces[i] +") is out of range");
           }
         }
       }
@@ -110,14 +115,17 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
     {
 
       std::vector<std::string> pieces;
-      boost::split( pieces, velocity_char, boost::is_any_of(" "));
+      urdf::split_string( pieces, velocity_char, " ");
       for (unsigned int i = 0; i < pieces.size(); ++i){
         if (pieces[i] != ""){
           try {
-            joint_state->velocity.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
+            joint_state->velocity.push_back(std::stod(pieces[i].c_str()));
           }
-          catch (boost::bad_lexical_cast &/*e*/) {
+          catch (std::invalid_argument &/*e*/) {
             throw ParseError("velocity element ("+ pieces[i] +") is not a valid float");
+          }
+          catch (std::out_of_range &/*e*/) {
+            throw ParseError("velocity element ("+ pieces[i] +") is out of range");
           }
         }
       }
@@ -129,14 +137,17 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
     {
 
       std::vector<std::string> pieces;
-      boost::split( pieces, effort_char, boost::is_any_of(" "));
+      urdf::split_string( pieces, effort_char, " ");
       for (unsigned int i = 0; i < pieces.size(); ++i){
         if (pieces[i] != ""){
           try {
-            joint_state->effort.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
+            joint_state->effort.push_back(std::stod(pieces[i].c_str()));
           }
-          catch (boost::bad_lexical_cast &/*e*/) {
+          catch (std::invalid_argument &/*e*/) {
             throw ParseError("effort element ("+ pieces[i] +") is not a valid float");
+          }
+          catch (std::out_of_range &/*e*/) {
+            throw ParseError("effort element ("+ pieces[i] +") is out of range");
           }
         }
       }

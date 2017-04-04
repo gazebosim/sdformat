@@ -8,7 +8,7 @@
 *  modification, are permitted provided that the following conditions
 *  are met:
 * 
-*   * Redistributions of source code must retain the above copyright
+*   * Redstributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
 *     copyright notice, this list of conditions and the following
@@ -39,37 +39,58 @@
 #include <fstream>
 
 using namespace urdf;
+using namespace std;
 
-void printTree(LinkConstSharedPtr link,int level = 0)
+void addChildLinkNames(LinkConstSharedPtr link, ofstream& os)
 {
-  level+=2;
-  int count = 0;
+  os << "\"" << link->name << "\" [label=\"" << link->name << "\"];" << endl;
   for (std::vector<LinkSharedPtr>::const_iterator child = link->child_links.begin(); child != link->child_links.end(); child++)
-  {
-    if (*child)
-    {
-      for(int j=0;j<level;j++) std::cout << "  "; //indent
-      std::cout << "child(" << (count++)+1 << "):  " << (*child)->name  << std::endl;
-      // first grandchild
-      printTree(*child,level);
-    }
-    else
-    {
-      for(int j=0;j<level;j++) std::cout << " "; //indent
-      std::cout << "root link: " << link->name << " has a null child!" << *child << std::endl;
-    }
-  }
-
+    addChildLinkNames(*child, os);
 }
+
+void addChildJointNames(LinkConstSharedPtr link, ofstream& os)
+{
+  double r, p, y;
+  for (std::vector<LinkSharedPtr>::const_iterator child = link->child_links.begin(); child != link->child_links.end(); child++){
+    (*child)->parent_joint->parent_to_joint_origin_transform.rotation.getRPY(r,p,y);
+    os << "\"" << link->name << "\" -> \"" << (*child)->parent_joint->name 
+       << "\" [label=\"xyz: "
+       << (*child)->parent_joint->parent_to_joint_origin_transform.position.x << " " 
+       << (*child)->parent_joint->parent_to_joint_origin_transform.position.y << " " 
+       << (*child)->parent_joint->parent_to_joint_origin_transform.position.z << " " 
+       << "\\nrpy: " << r << " " << p << " " << y << "\"]" << endl;
+    os << "\"" << (*child)->parent_joint->name << "\" -> \"" << (*child)->name << "\"" << endl;
+    addChildJointNames(*child, os);
+  }
+}
+
+
+void printTree(LinkConstSharedPtr link, string file)
+{
+  std::ofstream os;
+  os.open(file.c_str());
+  os << "digraph G {" << endl;
+
+  os << "node [shape=box];" << endl;
+  addChildLinkNames(link, os);
+
+  os << "node [shape=ellipse, color=blue, fontcolor=blue];" << endl;
+  addChildJointNames(link, os);
+
+  os << "}" << endl;
+  os.close();
+}
+
 
 
 int main(int argc, char** argv)
 {
-  if (argc < 2){
-    std::cerr << "Expect URDF xml file to parse" << std::endl;
+  if (argc != 2){
+    std::cerr << "Usage: urdf_to_graphiz input.xml" << std::endl;
     return -1;
   }
 
+  // get the entire file
   std::string xml_string;
   std::fstream xml_file(argv[1], std::fstream::in);
   while ( xml_file.good() )
@@ -85,19 +106,17 @@ int main(int argc, char** argv)
     std::cerr << "ERROR: Model Parsing the xml failed" << std::endl;
     return -1;
   }
-  std::cout << "robot name is: " << robot->getName() << std::endl;
+  string output = robot->getName();
 
-  // get info from parser
-  std::cout << "---------- Successfully Parsed XML ---------------" << std::endl;
-  // get root link
-  LinkConstSharedPtr root_link=robot->getRoot();
-  if (!root_link) return -1;
+  // print entire tree to file
+  printTree(robot->getRoot(), output+".gv");
+  cout << "Created file " << output << ".gv" << endl;
 
-  std::cout << "root Link: " << root_link->name << " has " << root_link->child_links.size() << " child(ren)" << std::endl;
-
-
-  // print entire tree
-  printTree(root_link);
+  string command = "dot -Tpdf "+output+".gv  -o "+output+".pdf";
+  if (system(command.c_str()) != -1)
+    cout << "Created file " << output << ".pdf" << endl;
+  else
+    cout << "There was an error executing '" << command << "'" << endl;
   return 0;
 }
 
