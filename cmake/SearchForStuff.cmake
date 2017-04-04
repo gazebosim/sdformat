@@ -58,7 +58,7 @@ endif()
 if (NOT USE_INTERNAL_URDF)
   if (NOT PKG_CONFIG_FOUND)
     # if we didn't find pkg-config, use the built-in urdf instead.
-    BUILD_WARNING("Couldn't find pkg-config for urdfdom, using internal copy")
+    message("Couldn't find pkg-config for urdfdom, using internal copy")
     set(USE_INTERNAL_URDF true)
   else()
     # check for urdfdom with pkg-config
@@ -67,7 +67,7 @@ if (NOT USE_INTERNAL_URDF)
     if (NOT URDF_FOUND)
       # if we didn't find an external urdf, print a warning and use the
       # internal copy instead.
-      BUILD_WARNING("Couldn't find urdfdom >= 1.0, using internal copy")
+      message("Couldn't find urdfdom >= 1.0, using internal copy")
       set(USE_INTERNAL_URDF true)
     else()
       # what am I doing here? pkg-config and cmake
