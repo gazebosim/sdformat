@@ -97,8 +97,9 @@ std::string Element::ReferenceSDF() const
 
 /////////////////////////////////////////////////
 void Element::AddValue(const std::string &_type,
-    const std::string &_defaultValue, bool _required,
-    const std::string &_description)
+                       const std::string &_defaultValue,
+                       bool _required,
+                       const std::string &_description)
 {
   this->dataPtr->value = this->CreateParam(this->dataPtr->name,
       _type, _defaultValue, _required, _description);
@@ -106,17 +107,21 @@ void Element::AddValue(const std::string &_type,
 
 /////////////////////////////////////////////////
 ParamPtr Element::CreateParam(const std::string &_key,
-    const std::string &_type, const std::string &_defaultValue, bool _required,
-    const std::string &_description)
+                              const std::string &_type,
+                              const std::string &_defaultValue,
+                              bool _required,
+                              const std::string &_description)
 {
   return ParamPtr(
       new Param(_key, _type, _defaultValue, _required, _description));
 }
 
 /////////////////////////////////////////////////
-void Element::AddAttribute(const std::string &_key, const std::string &_type,
-    const std::string &_defaultValue, bool _required,
-    const std::string &_description)
+void Element::AddAttribute(const std::string &_key,
+                           const std::string &_type,
+                           const std::string &_defaultValue,
+                           bool _required,
+                           const std::string &_description)
 {
   this->dataPtr->attributes.push_back(
       this->CreateParam(_key, _type, _defaultValue, _required, _description));
@@ -129,7 +134,6 @@ ElementPtr Element::Clone() const
   clone->dataPtr->description = this->dataPtr->description;
   clone->dataPtr->name = this->dataPtr->name;
   clone->dataPtr->required = this->dataPtr->required;
-  // clone->parent = this->dataPtr->parent;
   clone->dataPtr->copyChildren = this->dataPtr->copyChildren;
   clone->dataPtr->includeFilename = this->dataPtr->includeFilename;
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
@@ -594,7 +598,6 @@ ElementPtr Element::GetElementImpl(const std::string &_name) const
     }
   }
 
-  // gzdbg << "Unable to find element [" << _name << "] return empty\n";
   return ElementPtr();
 }
 
