@@ -307,9 +307,12 @@ namespace sdf
   template<typename T>
   bool Param::GetDefault(T &_value) const
   {
+    std::stringstream ss;
+
     try
     {
-      _value = boost::lexical_cast<T>(this->dataPtr->defaultValue);
+      ss << this->dataPtr->defaultValue;
+      ss >> _value;
     }
     catch(...)
     {
@@ -320,6 +323,7 @@ namespace sdf
              << "type[" << typeid(T).name() << "]\n";
       return false;
     }
+
     return true;
   }
 
