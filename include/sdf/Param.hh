@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef _SDF_PARAM_HH_
-#define _SDF_PARAM_HH_
+#ifndef SDFORMAT_PARAM_HH_
+#define SDFORMAT_PARAM_HH_
 
 // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
