@@ -572,17 +572,7 @@ ParamPtr Element::GetValue()
 /////////////////////////////////////////////////
 bool Element::HasElement(const std::string &_name) const
 {
-  ElementPtr_V::const_iterator iter;
-  for (iter = this->dataPtr->elements.begin();
-       iter != this->dataPtr->elements.end(); ++iter)
-  {
-    if ((*iter)->GetName() == _name)
-    {
-      return true;
-    }
-  }
-
-  return false;
+  return this->GetElementImpl(_name) != ElementPtr();
 }
 
 /////////////////////////////////////////////////
@@ -675,19 +665,7 @@ void Element::InsertElement(ElementPtr _elem)
 /////////////////////////////////////////////////
 bool Element::HasElementDescription(const std::string &_name)
 {
-  bool result = false;
-  ElementPtr_V::const_iterator iter;
-  for (iter = this->dataPtr->elementDescriptions.begin();
-       iter != this->dataPtr->elementDescriptions.end(); ++iter)
-  {
-    if ((*iter)->dataPtr->name == _name)
-    {
-      result = true;
-      break;
-    }
-  }
-
-  return result;
+  return this->GetElementDescription(_name) != ElementPtr();
 }
 
 /////////////////////////////////////////////////
