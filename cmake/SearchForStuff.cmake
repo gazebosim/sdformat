@@ -54,26 +54,36 @@ else()
 endif()
 
 ################################################
-# Find urdfdom parser
-if (NOT USE_INTERNAL_URDF)
-  if (NOT PKG_CONFIG_FOUND)
-    # if we didn't find pkg-config, use the built-in urdf instead.
-    message("Couldn't find pkg-config for urdfdom, using internal copy")
-    set(USE_INTERNAL_URDF true)
-  else()
-    # check for urdfdom with pkg-config
-    pkg_check_modules(URDF urdfdom>=1.0)
+# Find urdfdom parser. Logic:
+#
+#  1. if USE_INTERNAL_URDF is unset, try to use system installation, fallback to internal copy
+#  2. if USE_INTERNAL_URDF is set to True, use the internal copy
+#  3. if USE_INTERNAL_URDF is set to False, force to search system installation, fail on error
 
-    if (NOT URDF_FOUND)
-      # if we didn't find an external urdf, print a warning and use the
-      # internal copy instead.
-      message("Couldn't find urdfdom >= 1.0, using internal copy")
+if (NOT PKG_CONFIG_FOUND)
+  if (NOT DEFINED USE_INTERNAL_URDF)
+    BUILD_WARNING("Couldn't find pkg-config for urdfdom, using internal copy")
+    set(USE_INTERNAL_URDF true)
+  elseif(NOT USE_INTERNAL_URDF)
+    BUILD_ERROR("Couldn't find pkg-config for urdfdom")
+  endif()
+endif()
+
+if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
+  # check for urdfdom with pkg-config
+  pkg_check_modules(URDF urdfdom>=1.0)
+
+  if (NOT URDF_FOUND)
+    if (NOT DEFINED USE_INTERNAL_URDF)
+      message(STATUS "Couldn't find urdfdom >= 1.0, using internal copy")
       set(USE_INTERNAL_URDF true)
     else()
-      # what am I doing here? pkg-config and cmake
-      set(URDF_INCLUDE_DIRS ${URDF_INCLUDEDIR})
-      set(URDF_LIBRARY_DIRS ${URDF_LIBDIR})
+      BUILD_ERROR("Couldn't find the urdfdom system installation")
     endif()
+  else()
+    # what am I doing here? pkg-config and cmake
+    set(URDF_INCLUDE_DIRS ${URDF_INCLUDEDIR})
+    set(URDF_LIBRARY_DIRS ${URDF_LIBDIR})
   endif()
 endif()
 
