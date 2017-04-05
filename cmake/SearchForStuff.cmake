@@ -78,7 +78,7 @@ if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
       message(STATUS "Couldn't find urdfdom >= 1.0, using internal copy")
       set(USE_INTERNAL_URDF true)
     else()
-      BUILD_ERROR("Couldn't find the urdfdom system installation")
+      BUILD_ERROR("Couldn't find the urdfdom >= 1.0 system installation")
     endif()
   else()
     # what am I doing here? pkg-config and cmake
