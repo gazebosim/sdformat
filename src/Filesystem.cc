@@ -325,7 +325,7 @@ bool is_directory(const std::string &_path)
     }
   }
 
-  return attr & FILE_ATTRIBUTE_DIRECTORY;
+  return (attr & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }
 
 //////////////////////////////////////////////////
