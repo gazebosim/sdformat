@@ -20,6 +20,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Param.hh"
 
+/////////////////////////////////////////////////
 TEST(Element, New)
 {
   sdf::Element elem;
@@ -29,6 +30,7 @@ TEST(Element, New)
   ASSERT_EQ(elem.GetParent(), nullptr);
 }
 
+/////////////////////////////////////////////////
 TEST(Element, Child)
 {
   sdf::Element child;
@@ -41,6 +43,7 @@ TEST(Element, Child)
   ASSERT_NE(child.GetParent(), nullptr);
 }
 
+/////////////////////////////////////////////////
 TEST(Element, Name)
 {
   sdf::Element elem;
@@ -52,6 +55,7 @@ TEST(Element, Name)
   ASSERT_EQ(elem.GetName(), "test");
 }
 
+/////////////////////////////////////////////////
 TEST(Element, Required)
 {
   sdf::Element elem;
@@ -63,6 +67,7 @@ TEST(Element, Required)
   ASSERT_EQ(elem.GetRequired(), "1");
 }
 
+/////////////////////////////////////////////////
 TEST(Element, CopyChildren)
 {
   sdf::Element elem;
@@ -74,6 +79,7 @@ TEST(Element, CopyChildren)
   ASSERT_TRUE(elem.GetCopyChildren());
 }
 
+/////////////////////////////////////////////////
 TEST(Element, ReferenceSDF)
 {
   sdf::Element elem;
@@ -85,6 +91,7 @@ TEST(Element, ReferenceSDF)
   ASSERT_EQ(elem.ReferenceSDF(), "test");
 }
 
+/////////////////////////////////////////////////
 TEST(Element, AddValue)
 {
   sdf::Element elem;
@@ -101,6 +108,7 @@ TEST(Element, AddValue)
   ASSERT_EQ(param->GetDescription(), "foo description");
 }
 
+/////////////////////////////////////////////////
 TEST(Element, AddAttribute)
 {
   sdf::Element elem;
@@ -128,6 +136,7 @@ TEST(Element, AddAttribute)
   ASSERT_EQ(param->GetDescription(), "float description");
 }
 
+/////////////////////////////////////////////////
 TEST(Element, Include)
 {
   sdf::Element elem;
@@ -139,6 +148,7 @@ TEST(Element, Include)
   ASSERT_EQ(elem.GetInclude(), "foo.txt");
 }
 
+/////////////////////////////////////////////////
 TEST(Element, Description)
 {
   sdf::Element elem;
@@ -150,6 +160,7 @@ TEST(Element, Description)
   ASSERT_EQ(elem.GetDescription(), "Element description");
 }
 
+/////////////////////////////////////////////////
 TEST(Element, AddElementNoDescription)
 {
   sdf::Element elem;
@@ -159,6 +170,7 @@ TEST(Element, AddElementNoDescription)
   ASSERT_EQ(ptr, sdf::ElementPtr());
 }
 
+/////////////////////////////////////////////////
 TEST(Element, AddElementReferenceSDF)
 {
   // TODO(clalancette): The Element class uses shared_from_this(), and one of
