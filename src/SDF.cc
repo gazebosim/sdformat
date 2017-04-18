@@ -69,10 +69,10 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
            pathIter != iter->second.end(); ++pathIter)
       {
         // Return the path string if the path + suffix exists.
-        std::string path_suffix = sdf::filesystem::append(*pathIter, suffix);
-        if (sdf::filesystem::exists(path_suffix))
+        std::string pathSuffix = sdf::filesystem::append(*pathIter, suffix);
+        if (sdf::filesystem::exists(pathSuffix))
         {
-          return path_suffix;
+          return pathSuffix;
         }
       }
     }
