@@ -97,8 +97,9 @@ std::string Element::ReferenceSDF() const
 
 /////////////////////////////////////////////////
 void Element::AddValue(const std::string &_type,
-    const std::string &_defaultValue, bool _required,
-    const std::string &_description)
+                       const std::string &_defaultValue,
+                       bool _required,
+                       const std::string &_description)
 {
   this->dataPtr->value = this->CreateParam(this->dataPtr->name,
       _type, _defaultValue, _required, _description);
@@ -106,17 +107,21 @@ void Element::AddValue(const std::string &_type,
 
 /////////////////////////////////////////////////
 ParamPtr Element::CreateParam(const std::string &_key,
-    const std::string &_type, const std::string &_defaultValue, bool _required,
-    const std::string &_description)
+                              const std::string &_type,
+                              const std::string &_defaultValue,
+                              bool _required,
+                              const std::string &_description)
 {
   return ParamPtr(
       new Param(_key, _type, _defaultValue, _required, _description));
 }
 
 /////////////////////////////////////////////////
-void Element::AddAttribute(const std::string &_key, const std::string &_type,
-    const std::string &_defaultValue, bool _required,
-    const std::string &_description)
+void Element::AddAttribute(const std::string &_key,
+                           const std::string &_type,
+                           const std::string &_defaultValue,
+                           bool _required,
+                           const std::string &_description)
 {
   this->dataPtr->attributes.push_back(
       this->CreateParam(_key, _type, _defaultValue, _required, _description));
@@ -129,7 +134,6 @@ ElementPtr Element::Clone() const
   clone->dataPtr->description = this->dataPtr->description;
   clone->dataPtr->name = this->dataPtr->name;
   clone->dataPtr->required = this->dataPtr->required;
-  // clone->parent = this->dataPtr->parent;
   clone->dataPtr->copyChildren = this->dataPtr->copyChildren;
   clone->dataPtr->includeFilename = this->dataPtr->includeFilename;
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
@@ -568,17 +572,7 @@ ParamPtr Element::GetValue()
 /////////////////////////////////////////////////
 bool Element::HasElement(const std::string &_name) const
 {
-  ElementPtr_V::const_iterator iter;
-  for (iter = this->dataPtr->elements.begin();
-       iter != this->dataPtr->elements.end(); ++iter)
-  {
-    if ((*iter)->GetName() == _name)
-    {
-      return true;
-    }
-  }
-
-  return false;
+  return this->GetElementImpl(_name) != ElementPtr();
 }
 
 /////////////////////////////////////////////////
@@ -594,7 +588,6 @@ ElementPtr Element::GetElementImpl(const std::string &_name) const
     }
   }
 
-  // gzdbg << "Unable to find element [" << _name << "] return empty\n";
   return ElementPtr();
 }
 
@@ -653,14 +646,13 @@ ElementPtr Element::GetNextElement(const std::string &_name) const
 /////////////////////////////////////////////////
 ElementPtr Element::GetElement(const std::string &_name)
 {
-  if (this->HasElement(_name))
+  ElementPtr result = this->GetElementImpl(_name);
+  if (result == ElementPtr())
   {
-    return this->GetElementImpl(_name);
+    result = this->AddElement(_name);
   }
-  else
-  {
-    return this->AddElement(_name);
-  }
+
+  return result;
 }
 
 /////////////////////////////////////////////////
@@ -672,19 +664,7 @@ void Element::InsertElement(ElementPtr _elem)
 /////////////////////////////////////////////////
 bool Element::HasElementDescription(const std::string &_name)
 {
-  bool result = false;
-  ElementPtr_V::const_iterator iter;
-  for (iter = this->dataPtr->elementDescriptions.begin();
-       iter != this->dataPtr->elementDescriptions.end(); ++iter)
-  {
-    if ((*iter)->dataPtr->name == _name)
-    {
-      result = true;
-      break;
-    }
-  }
-
-  return result;
+  return this->GetElementDescription(_name) != ElementPtr();
 }
 
 /////////////////////////////////////////////////
@@ -882,17 +862,25 @@ boost::any Element::GetAny(const std::string &_key)
         sdferr << "Couldn't get attribute [" << _key << "] as boost::any\n";
       }
     }
-    else if (this->HasElement(_key))
-    {
-      result = this->GetElementImpl(_key)->GetAny();
-    }
-    else if (this->HasElementDescription(_key))
-    {
-      result = this->GetElementDescription(_key)->GetAny();
-    }
     else
     {
-      sdferr << "Unable to find value for key [" << _key << "]\n";
+      ElementPtr tmp = this->GetElementImpl(_key);
+      if (tmp != ElementPtr())
+      {
+        result = tmp->GetAny();
+      }
+      else
+      {
+        tmp = this->GetElementDescription(_key);
+        if (tmp != ElementPtr())
+        {
+          result = tmp->GetAny();
+        }
+        else
+        {
+          sdferr << "Unable to find value for key [" << _key << "]\n";
+        }
+      }
     }
   }
   return result;
