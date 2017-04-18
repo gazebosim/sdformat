@@ -47,6 +47,11 @@ namespace sdf
 
     // The below is C++ variadic template magic to allow an append
     // method that takes 1-n number of arguments to append together.
+
+    /// \brief Append the preferred path separator character for this platform
+    ///        onto the passed-in string.
+    /// \param[in]  The path to start with.
+    /// \return The original path with the platform path separator appended.
     SDFORMAT_VISIBLE
     std::string const separator(std::string const &_s);
 
