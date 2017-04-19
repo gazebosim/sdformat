@@ -89,8 +89,11 @@ std::string current_path()
     else
     {
       char resolved[PATH_MAX];
-      realpath(buf.data(), resolved);
-      cur = std::string(resolved);
+
+      if (realpath(buf.data(), resolved) != NULL)
+      {
+        cur = std::string(resolved);
+      }
       break;
     }
   }
