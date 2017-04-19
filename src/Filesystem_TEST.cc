@@ -18,9 +18,11 @@
 #include <gtest/gtest.h>
 
 #ifndef _WIN32
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 /////////////////////////////////////////////////
@@ -49,7 +51,13 @@ bool create_new_temp_dir(std::string &_new_temp_path)
     return false;
   }
 
-  _new_temp_path = std::string(dtemp);
+  char resolved[PATH_MAX];
+  if (realpath(dtemp, resolved) == NULL)
+  {
+    return false;
+  }
+
+  _new_temp_path = std::string(resolved);
 
   return true;
 }

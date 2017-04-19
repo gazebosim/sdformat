@@ -19,10 +19,12 @@
 #include <vector>
 
 #ifndef _WIN32
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <errno.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #else
 #include <windows.h>
 #include <winnt.h>
@@ -86,7 +88,9 @@ std::string current_path()
     }
     else
     {
-      cur = std::string(buf.data());
+      char resolved[PATH_MAX];
+      realpath(buf.data(), resolved);
+      cur = std::string(resolved);
       break;
     }
   }
