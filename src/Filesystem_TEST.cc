@@ -42,7 +42,7 @@ bool create_new_temp_dir(std::string &_new_temp_path)
   tmppath += "/XXXXXX";
 
   char *dtemp = mkdtemp(const_cast<char *>(tmppath.c_str()));
-  if (dtemp == NULL)
+  if (dtemp == nullptr)
   {
     return false;
   }
@@ -52,7 +52,7 @@ bool create_new_temp_dir(std::string &_new_temp_path)
   }
 
   char resolved[PATH_MAX];
-  if (realpath(dtemp, resolved) == NULL)
+  if (realpath(dtemp, resolved) == nullptr)
   {
     return false;
   }
@@ -122,7 +122,7 @@ bool create_new_temp_dir(std::string &_new_temp_path)
     return false;
   }
   std::string path_to_create(temp_path);
-  srand(static_cast<uint32_t>(time(NULL)));
+  srand(static_cast<uint32_t>(time(nullptr)));
 
   for (int count = 0; count < 50; ++count)
   {

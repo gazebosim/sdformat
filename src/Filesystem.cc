@@ -90,7 +90,7 @@ std::string current_path()
     {
       char resolved[PATH_MAX];
 
-      if (realpath(buf.data(), resolved) != NULL)
+      if (realpath(buf.data(), resolved) != nullptr)
       {
         cur = std::string(resolved);
       }
