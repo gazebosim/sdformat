@@ -164,11 +164,6 @@ std::string preferred_separator()
 /////////////////////////////////////////////////
 TEST(Filesystem, exists)
 {
-  // In order to have reliable tests, we really need to use a clean, temporary
-  // directory structure.  In order for that to work under Windows, we would
-  // have to port a lot more of boost::filesystem, which didn't seem like it
-  // was worth it.  For now, we use Unix calls to make the temporary directory,
-  // and restrict the tests to only work on Unix platforms.
   std::string new_temp_dir;
   create_new_temp_dir(new_temp_dir);
   ASSERT_TRUE(create_new_empty_file("newfile"));
