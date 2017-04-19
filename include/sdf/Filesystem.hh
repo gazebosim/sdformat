@@ -60,7 +60,6 @@ namespace sdf
     /// \param[in] args  The paths to append together
     /// \return A new string with the paths appended together.
     template<typename... Args>
-    SDFORMAT_VISIBLE
     std::string append(Args const &... args)
     {
       std::string result;
