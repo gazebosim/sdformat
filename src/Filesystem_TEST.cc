@@ -76,6 +76,8 @@ std::string preferred_separator()
 #else
 #include <windows.h>
 #include <winnt.h>
+#include <cstdint>
+
 /////////////////////////////////////////////////
 std::string int_to_string(int _value)
 {
