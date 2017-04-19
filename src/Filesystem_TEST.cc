@@ -57,7 +57,7 @@ bool create_new_temp_dir(std::string &_new_temp_path)
 /////////////////////////////////////////////////
 bool create_new_empty_file(const std::string &_filename)
 {
-  int fd = open(_filename.c_str(), O_RDWR | O_CREAT);
+  int fd = open(_filename.c_str(), O_RDWR | O_CREAT, 0644);
   if (fd < 0)
   {
     return false;
