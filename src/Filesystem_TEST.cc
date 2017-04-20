@@ -87,32 +87,6 @@ std::string preferred_separator()
 #include <cstdint>
 
 /////////////////////////////////////////////////
-std::string int_to_string(int _value)
-{
-  const int kOutputBufSize = 3 * sizeof(_value) + 1;
-
-  std::string outbuf(kOutputBufSize, 0);
-  bool is_neg = _value < 0;
-  unsigned int res = static_cast<unsigned int>(_value < 0 ? -_value : _value);
-
-  for (std::string::iterator it = outbuf.end();;)
-  {
-    --it;
-    *it = static_cast<std::string::value_type>((res % 10) + '0');
-    res /= 10;
-    if (res == 0)
-    {
-      if (is_neg)
-      {
-        --it;
-        *it = static_cast<std::string::value_type>('-');
-      }
-      return std::string(it, outbuf.end());
-    }
-  }
-}
-
-/////////////////////////////////////////////////
 bool create_new_temp_dir(std::string &_new_temp_path)
 {
   char temp_path[MAX_PATH + 1];
@@ -130,14 +104,14 @@ bool create_new_temp_dir(std::string &_new_temp_path)
     // If the one we chose exists, keep trying another path name until we reach
     // some limit.
     std::string new_dir_name;
-    new_dir_name.append(int_to_string(::GetCurrentProcessId()));
+    new_dir_name.append(std::to_string(::GetCurrentProcessId()));
     new_dir_name.push_back('_');
     // On Windows, rand_r() doesn't exist as an alternative to rand(), so the
     // cpplint warning is spurious.  This program is not multi-threaded, so
     // it is safe to suppress the threadsafe_fn warning here.
     new_dir_name.append(
-       int_to_string(rand()    // NOLINT(runtime/threadsafe_fn)
-                     % ((int16_t)0x7fff)));
+       std::to_string(rand()    // NOLINT(runtime/threadsafe_fn)
+                      % ((int16_t)0x7fff)));
 
     path_to_create += new_dir_name;
     if (::CreateDirectoryA(path_to_create.c_str(), nullptr))
