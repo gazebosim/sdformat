@@ -26,7 +26,7 @@
 #include <unistd.h>
 
 /////////////////////////////////////////////////
-bool create_new_temp_dir(std::string &_new_temp_path)
+bool create_and_switch_to_temp_dir(std::string &_new_temp_path)
 {
   std::string tmppath;
   const char *tmp = getenv("TMPDIR");
@@ -87,7 +87,7 @@ std::string preferred_separator()
 #include <cstdint>
 
 /////////////////////////////////////////////////
-bool create_new_temp_dir(std::string &_new_temp_path)
+bool create_and_switch_to_temp_dir(std::string &_new_temp_path)
 {
   char temp_path[MAX_PATH + 1];
   DWORD path_len = ::GetTempPathA(MAX_PATH, temp_path);
@@ -149,7 +149,7 @@ std::string preferred_separator()
 TEST(Filesystem, exists)
 {
   std::string new_temp_dir;
-  create_new_temp_dir(new_temp_dir);
+  create_and_switch_to_temp_dir(new_temp_dir);
   ASSERT_TRUE(create_new_empty_file("newfile"));
 
   sdf::filesystem::create_directory("fstestexists");
@@ -167,7 +167,7 @@ TEST(Filesystem, exists)
 TEST(Filesystem, current_path)
 {
   std::string new_temp_dir;
-  create_new_temp_dir(new_temp_dir);
+  create_and_switch_to_temp_dir(new_temp_dir);
 
   std::string path = sdf::filesystem::current_path();
   EXPECT_EQ(path, new_temp_dir);
