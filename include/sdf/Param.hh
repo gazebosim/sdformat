@@ -20,7 +20,6 @@
 
 // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
-  #include <boost/lexical_cast.hpp>
   #include <boost/any.hpp>
   #include <boost/variant.hpp>
 #endif
@@ -131,8 +130,7 @@ namespace sdf
 
     /// \brief Set the parameter's value.
     ///
-    /// The passed in value must conform to the boost::lexical_cast spec.
-    /// This means the value must have an input and output stream operator.
+    /// The passed in value value must have an input and output stream operator.
     /// \param[in] _value The value to set the parameter to.
     /// \return True if the value was successfully set.
     public: template<typename T>
@@ -252,8 +250,7 @@ namespace sdf
       sdferr << "Unable to set parameter["
              << this->dataPtr->key << "]."
              << "Type type used must have a stream input and output"
-             << "operator, which allow boost::lexical_cast to"
-             << "function properly.\n";
+             << "operator, which allows proper functioning of Param.\n";
       return false;
     }
     return true;

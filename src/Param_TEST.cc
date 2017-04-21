@@ -214,7 +214,7 @@ TEST(Param, uint64t)
 }
 
 ////////////////////////////////////////////////////
-/// Unknown type, should fall back to lexical_cast
+/// Unknown type, should fall back to stream operators
 TEST(Param, UnknownType)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
