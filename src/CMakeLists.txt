@@ -24,6 +24,7 @@ set (sources
   Converter.cc
   Element.cc
   Exception.cc
+  Filesystem.cc
   parser.cc
   parser_urdf.cc
   Param.cc
@@ -68,6 +69,7 @@ set (gtest_sources
   Converter_TEST.cc
   Element_TEST.cc
   Exception_TEST.cc
+  Filesystem_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc

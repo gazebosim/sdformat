@@ -5,6 +5,7 @@ set (headers
   Console.hh
   Element.hh
   Exception.hh
+  Filesystem.hh
   Param.hh
   parser.hh
   SDFImpl.hh
