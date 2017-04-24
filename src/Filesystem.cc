@@ -35,7 +35,6 @@
  * libs/filesystem/include/boost/filesystem/operations.hpp.
  */
 
-#include <codecvt>
 #include <locale>
 #include <sstream>
 #include <string>
@@ -51,6 +50,7 @@
 #else
 #include <windows.h>
 #include <winnt.h>
+#include <codecvt>
 #endif
 
 #include "sdf/Filesystem.hh"
