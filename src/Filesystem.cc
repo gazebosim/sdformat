@@ -35,7 +35,6 @@
  * libs/filesystem/include/boost/filesystem/operations.hpp.
  */
 
-#include <locale>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -50,7 +49,6 @@
 #else
 #include <windows.h>
 #include <winnt.h>
-#include <codecvt>
 #endif
 
 #include "sdf/Filesystem.hh"
@@ -123,28 +121,6 @@ std::string current_path()
   return cur;
 }
 #else  // Windows
-//////////////////////////////////////////////////
-std::wstring widen(const std::string &_str)
-{
-  std::wostringstream wstm;
-  const std::ctype<wchar_t> &ctfacet =
-    std::use_facet<std::ctype<wchar_t> >(wstm.getloc());
-  for (size_t i = 0; i < _str.size(); ++i)
-  {
-    wstm << ctfacet.widen(_str[i]);
-  }
-
-  return wstm.str();
-}
-
-//////////////////////////////////////////////////
-std::string narrow(const std::wstring &_str)
-{
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-
-  return converter.to_bytes(_str);
-}
-
 //////////////////////////////////////////////////
 static bool not_found_error(int _errval)
 {
@@ -231,7 +207,7 @@ HANDLE create_file_handle(const std::string &_path, DWORD _dwDesiredAccess,
                           DWORD _dwFlagsAndAttributes,
                           HANDLE _hTemplateFile)
 {
-  return ::CreateFileW(widen(_path).c_str(), _dwDesiredAccess,
+  return ::CreateFileA(_path.c_str(), _dwDesiredAccess,
                        _dwShareMode, _lpSecurityAttributes,
                        _dwCreationDisposition, _dwFlagsAndAttributes,
                        _hTemplateFile);
@@ -283,7 +259,7 @@ bool is_reparse_point_a_symlink(const std::string &_path)
 //////////////////////////////////////////////////
 bool exists(const std::string &_path)
 {
-  DWORD attr(::GetFileAttributesW(widen(_path).c_str()));
+  DWORD attr(::GetFileAttributesA(_path.c_str()));
   if (attr == 0xFFFFFFFF)
   {
     return process_status_failure();
@@ -320,7 +296,7 @@ bool exists(const std::string &_path)
 //////////////////////////////////////////////////
 bool is_directory(const std::string &_path)
 {
-  DWORD attr(::GetFileAttributesW(widen(_path).c_str()));
+  DWORD attr(::GetFileAttributesA(_path.c_str()));
   if (attr == 0xFFFFFFFF)
   {
     return process_status_failure();
@@ -358,7 +334,7 @@ bool is_directory(const std::string &_path)
 //////////////////////////////////////////////////
 bool create_directory(const std::string &_path)
 {
-  return ::CreateDirectoryW(widen(_path).c_str(), 0) != 0;
+  return ::CreateDirectoryA(_path.c_str(), 0) != 0;
 }
 
 //////////////////////////////////////////////////
@@ -371,21 +347,21 @@ std::string const separator(const std::string &_p)
 std::string current_path()
 {
   DWORD sz;
-  if ((sz = ::GetCurrentDirectoryW(0, nullptr)) == 0)
+  if ((sz = ::GetCurrentDirectoryA(0, nullptr)) == 0)
   {
     sz = 1;
   }
 
-  std::vector<wchar_t> buf(sz);
+  std::vector<char> buf(sz);
 
-  if (::GetCurrentDirectoryW(sz, buf.data()) == 0)
+  if (::GetCurrentDirectoryA(sz, buf.data()) == 0)
   {
     // error
     return std::string("");
   }
   else
   {
-    return narrow(buf.data());
+    return buf.data();
   }
 }
 
