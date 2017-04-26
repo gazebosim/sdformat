@@ -76,6 +76,27 @@ bool create_new_empty_file(const std::string &_filename)
   return true;
 }
 
+/////////////////////////////////////////////////
+bool create_new_file_symlink(const std::string &_symlink,
+                             const std::string &_target)
+{
+  return symlink(_target.c_str(), _symlink.c_str()) == 0;
+}
+
+/////////////////////////////////////////////////
+bool create_new_dir_symlink(const std::string &_symlink,
+                            const std::string &_target)
+{
+  return symlink(_target.c_str(), _symlink.c_str()) == 0;
+}
+
+/////////////////////////////////////////////////
+bool create_new_file_hardlink(const std::string &_hardlink,
+                              const std::string &_target)
+{
+  return link(_target.c_str(), _hardlink.c_str()) == 0;
+}
+
 #else
 #include <windows.h>
 #include <winnt.h>
@@ -131,6 +152,27 @@ bool create_new_empty_file(const std::string &_filename)
                        nullptr) != INVALID_HANDLE_VALUE;
 }
 
+/////////////////////////////////////////////////
+bool create_new_file_symlink(const std::string &_symlink,
+                             const std::string &_target)
+{
+  return ::CreateSymbolicLinkA(_symlink.c_str(), _target.c_str(), 0) == TRUE;
+}
+
+/////////////////////////////////////////////////
+bool create_new_dir_symlink(const std::string &_symlink,
+                            const std::string &_target)
+{
+  return ::CreateSymbolicLinkA(_symlink.c_str(), _target.c_str(),
+                               SYMBOLIC_LINK_FLAG_DIRECTORY) == TRUE;
+}
+
+/////////////////////////////////////////////////
+bool create_new_file_hardlink(const std::string &_hardlink,
+                              const std::string &_target)
+{
+  return ::CreateHardLinkA(_hardlink.c_str(), _target.c_str(), nullptr) == TRUE;
+}
 #endif
 
 #include "sdf/Filesystem.hh"
@@ -141,8 +183,8 @@ TEST(Filesystem, exists)
   std::string new_temp_dir;
   create_and_switch_to_temp_dir(new_temp_dir);
   ASSERT_TRUE(create_new_empty_file("newfile"));
+  ASSERT_TRUE(sdf::filesystem::create_directory("fstestexists"));
 
-  sdf::filesystem::create_directory("fstestexists");
   EXPECT_TRUE(sdf::filesystem::exists("fstestexists"));
   EXPECT_TRUE(sdf::filesystem::is_directory("fstestexists"));
 
@@ -151,6 +193,42 @@ TEST(Filesystem, exists)
 
   EXPECT_TRUE(sdf::filesystem::exists("newfile"));
   EXPECT_FALSE(sdf::filesystem::is_directory("newfile"));
+}
+
+/////////////////////////////////////////////////
+TEST(Filesystem, symlink_exists)
+{
+  // There are 5 cases we want to test for links (Unix doesn't allow hard links
+  // to directories or to non-existent files):
+  // 1. symbolic link to existing file
+  // 2. symbolic link to non-existent file
+  // 3. symbolic link to existing directory
+  // 4. symbolic link to non-existent directory
+  // 5. hard link to existing file
+  std::string new_temp_dir;
+  create_and_switch_to_temp_dir(new_temp_dir);
+  ASSERT_TRUE(create_new_empty_file("newfile"));
+  ASSERT_TRUE(sdf::filesystem::create_directory("newdir"));
+
+  // Case 1
+  ASSERT_TRUE(create_new_file_symlink("symlink-file", "newfile"));
+  EXPECT_TRUE(sdf::filesystem::exists("symlink-file"));
+
+  // Case 2
+  ASSERT_TRUE(create_new_file_symlink("symlink-file-broken", "nonexistent"));
+  EXPECT_FALSE(sdf::filesystem::exists("symlink-file-broken"));
+
+  // Case 3
+  ASSERT_TRUE(create_new_dir_symlink("symlink-dir", "newdir"));
+  EXPECT_TRUE(sdf::filesystem::exists("symlink-dir"));
+
+  // Case 4
+  ASSERT_TRUE(create_new_dir_symlink("symlink-dir-broken", "nonexistent-dir"));
+  EXPECT_FALSE(sdf::filesystem::exists("symlink-dir-broken"));
+
+  // Case 5
+  ASSERT_TRUE(create_new_file_hardlink("hardlink-file", "newfile"));
+  EXPECT_TRUE(sdf::filesystem::exists("hardlink-file"));
 }
 
 /////////////////////////////////////////////////
