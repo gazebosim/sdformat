@@ -76,11 +76,6 @@ bool create_new_empty_file(const std::string &_filename)
   return true;
 }
 
-/////////////////////////////////////////////////
-std::string preferred_separator()
-{
-  return "/";
-}
 #else
 #include <windows.h>
 #include <winnt.h>
@@ -136,11 +131,6 @@ bool create_new_empty_file(const std::string &_filename)
                        nullptr) != INVALID_HANDLE_VALUE;
 }
 
-/////////////////////////////////////////////////
-std::string preferred_separator()
-{
-  return "\\";
-}
 #endif
 
 #include "sdf/Filesystem.hh"
@@ -179,13 +169,13 @@ TEST(Filesystem, append)
   std::string path = "tmp";
   path = sdf::filesystem::append(path, "hello");
 
-  ASSERT_EQ(path, "tmp" + preferred_separator() + "hello");
+  ASSERT_EQ(path, sdf::filesystem::separator("tmp") + "hello");
 
   path = sdf::filesystem::append(path, "there", "again");
 
-  ASSERT_EQ(path, "tmp" + preferred_separator() +
-            "hello" + preferred_separator() +
-            "there" + preferred_separator() + "again");
+  ASSERT_EQ(path, sdf::filesystem::separator("tmp") +
+            sdf::filesystem::separator("hello") +
+            sdf::filesystem::separator("there") + "again");
 }
 
 /////////////////////////////////////////////////
