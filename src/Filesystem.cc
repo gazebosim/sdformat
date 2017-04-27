@@ -58,6 +58,9 @@ namespace sdf
 namespace filesystem
 {
 #ifndef _WIN32
+
+static const char preferred_separator = '/';
+
 //////////////////////////////////////////////////
 bool exists(const std::string &_path)
 {
@@ -83,12 +86,6 @@ bool is_directory(const std::string &_path)
 bool create_directory(const std::string &_path)
 {
   return ::mkdir(_path.c_str(), S_IRWXU|S_IRWXG|S_IRWXO) == 0;
-}
-
-//////////////////////////////////////////////////
-std::string const separator(const std::string &_p)
-{
-  return _p + "/";
 }
 
 //////////////////////////////////////////////////
@@ -121,6 +118,9 @@ std::string current_path()
   return cur;
 }
 #else  // Windows
+
+static const char preferred_separator = '\\';
+
 //////////////////////////////////////////////////
 static bool not_found_error(int _errval)
 {
@@ -321,12 +321,6 @@ bool create_directory(const std::string &_path)
 }
 
 //////////////////////////////////////////////////
-std::string const separator(const std::string &_p)
-{
-  return _p + "\\";
-}
-
-//////////////////////////////////////////////////
 std::string current_path()
 {
   DWORD sz;
@@ -349,5 +343,11 @@ std::string current_path()
 }
 
 #endif
+
+//////////////////////////////////////////////////
+std::string const separator(const std::string &_p)
+{
+  return _p + preferred_separator;
+}
 }
 }
