@@ -257,9 +257,9 @@ bool is_reparse_point_a_symlink(const std::string &_path)
 }
 
 //////////////////////////////////////////////////
-bool exists(const std::string &_path)
+bool internal_check_path(const std::string &_path, DWORD &attr)
 {
-  DWORD attr(::GetFileAttributesA(_path.c_str()));
+  attr = ::GetFileAttributesA(_path.c_str());
   if (attr == 0xFFFFFFFF)
   {
     return process_status_failure();
@@ -294,41 +294,24 @@ bool exists(const std::string &_path)
 }
 
 //////////////////////////////////////////////////
+bool exists(const std::string &_path)
+{
+  DWORD attr;
+
+  return internal_check_path(_path, attr);
+}
+
+//////////////////////////////////////////////////
 bool is_directory(const std::string &_path)
 {
-  DWORD attr(::GetFileAttributesA(_path.c_str()));
-  if (attr == 0xFFFFFFFF)
+  DWORD attr;
+
+  if (internal_check_path(_path, attr))
   {
-    return process_status_failure();
+    return (attr & FILE_ATTRIBUTE_DIRECTORY) != 0;
   }
 
-  //  reparse point handling;
-  //    since GetFileAttributesW does not resolve symlinks, try to open a file
-  //    handle to discover if the file exists
-  if (attr & FILE_ATTRIBUTE_REPARSE_POINT)
-  {
-    handle_wrapper h(
-      create_file_handle(
-        _path,
-        0,  // dwDesiredAccess; attributes only
-        FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
-        0,  // lpSecurityAttributes
-        OPEN_EXISTING,
-        FILE_FLAG_BACKUP_SEMANTICS,
-        0));  // hTemplateFile
-
-    if (h.handle == INVALID_HANDLE_VALUE)
-    {
-      return process_status_failure();
-    }
-
-    if (!is_reparse_point_a_symlink(_path))
-    {
-      return true;
-    }
-  }
-
-  return (attr & FILE_ATTRIBUTE_DIRECTORY) != 0;
+  return false;
 }
 
 //////////////////////////////////////////////////
