@@ -14,7 +14,7 @@ if (WIN32)
 endif()
 
 include(FindBoost)
-find_package(Boost ${MIN_BOOST_VERSION} REQUIRED system filesystem program_options)
+find_package(Boost ${MIN_BOOST_VERSION} REQUIRED system)
 
 if (NOT Boost_FOUND)
   set (BUILD_SDF OFF CACHE INTERNAL "Build SDF" FORCE)

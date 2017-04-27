@@ -173,6 +173,7 @@ bool create_new_file_hardlink(const std::string &_hardlink,
 {
   return ::CreateHardLinkA(_hardlink.c_str(), _target.c_str(), nullptr) == TRUE;
 }
+
 #endif
 
 #include "sdf/Filesystem.hh"
@@ -271,6 +272,79 @@ TEST(Filesystem, current_path_error)
 
   EXPECT_EQ(sdf::filesystem::current_path(), "");
 #endif
+}
+
+/////////////////////////////////////////////////
+TEST(Filesystem, basename)
+{
+  std::string absolute = sdf::filesystem::append("", "home", "bob", "foo");
+  EXPECT_EQ(sdf::filesystem::basename(absolute), "foo");
+
+  std::string relative = sdf::filesystem::append("baz", "foobar");
+  EXPECT_EQ(sdf::filesystem::basename(relative), "foobar");
+
+  std::string basename = "bzzz";
+  EXPECT_EQ(sdf::filesystem::basename(basename), "bzzz");
+
+  std::string nobase = sdf::filesystem::append("baz", "");
+  EXPECT_EQ(sdf::filesystem::basename(nobase), "baz");
+
+  std::string multiple_slash = sdf::filesystem::append("baz", "", "", "");
+  EXPECT_EQ(sdf::filesystem::basename(multiple_slash), "baz");
+
+  std::string multiple_slash_middle = sdf::filesystem::append("", "home", "",
+                                                              "", "bob", "foo");
+  EXPECT_EQ(sdf::filesystem::basename(multiple_slash_middle), "foo");
+
+  std::string multiple_slash_start = sdf::filesystem::append("", "", "", "home",
+                                                             "bob", "foo");
+  EXPECT_EQ(sdf::filesystem::basename(multiple_slash_start), "foo");
+
+  std::string slash_only = sdf::filesystem::append("", "");
+  EXPECT_EQ(sdf::filesystem::basename(slash_only),
+            sdf::filesystem::append("", ""));
+
+  std::string multiple_slash_only = sdf::filesystem::append("", "", "", "");
+  EXPECT_EQ(sdf::filesystem::basename(multiple_slash_only),
+            sdf::filesystem::append("", ""));
+}
+
+/////////////////////////////////////////////////
+TEST(Filesystem, directory_iterator)
+{
+  std::string new_temp_dir;
+  ASSERT_TRUE(create_and_switch_to_temp_dir(new_temp_dir));
+  ASSERT_TRUE(create_new_empty_file("newfile"));
+  ASSERT_TRUE(sdf::filesystem::create_directory("newdir"));
+  ASSERT_TRUE(create_new_file_symlink("symlink-file", "newfile"));
+  ASSERT_TRUE(create_new_file_symlink("symlink-file-broken", "nonexistent"));
+  ASSERT_TRUE(create_new_dir_symlink("symlink-dir", "newdir"));
+  ASSERT_TRUE(create_new_dir_symlink("symlink-dir-broken", "nonexistent-dir"));
+  ASSERT_TRUE(create_new_file_hardlink("hardlink-file", "newfile"));
+
+  std::set<std::string> found_items;
+
+  sdf::filesystem::DirIter endIter;
+  for (sdf::filesystem::DirIter dirIter("."); dirIter != endIter; ++dirIter)
+  {
+    found_items.insert(sdf::filesystem::basename(*dirIter));
+  }
+
+  EXPECT_FALSE(found_items.find("newfile") == found_items.end());
+  EXPECT_FALSE(found_items.find("newdir") == found_items.end());
+  EXPECT_FALSE(found_items.find("symlink-file") == found_items.end());
+  EXPECT_FALSE(found_items.find("symlink-file-broken") == found_items.end());
+  EXPECT_FALSE(found_items.find("symlink-dir") == found_items.end());
+  EXPECT_FALSE(found_items.find("symlink-dir-broken") == found_items.end());
+  EXPECT_FALSE(found_items.find("hardlink-file") == found_items.end());
+
+  found_items.clear();
+  for (sdf::filesystem::DirIter dirIter(""); dirIter != endIter; ++dirIter)
+  {
+    found_items.insert(sdf::filesystem::basename(*dirIter));
+  }
+
+  EXPECT_EQ(found_items.size(), 0UL);
 }
 
 /////////////////////////////////////////////////

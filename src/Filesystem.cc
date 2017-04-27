@@ -40,9 +40,11 @@
 #include <vector>
 
 #ifndef _WIN32
+#include <dirent.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -117,6 +119,55 @@ std::string current_path()
   }
   return cur;
 }
+
+//////////////////////////////////////////////////
+DirIter::DirIter(std::string _in) : internal(new DirIterInternal), end(false)
+{
+  this->internal->dirname = _in;
+
+  this->internal->current = "";
+
+  this->handle = opendir(_in.c_str());
+  if (this->handle == nullptr)
+  {
+    this->end = true;
+  }
+  else
+  {
+    next();
+  }
+}
+
+//////////////////////////////////////////////////
+void DirIter::next()
+{
+  struct dirent entry;
+  struct dirent *result;
+
+  while (true)
+  {
+    if (readdir_r(reinterpret_cast<DIR*>(this->handle), &entry, &result) != 0
+        || result == nullptr)
+    {
+      this->end = true;
+      this->internal->current = "";
+      break;
+    }
+
+    if ((strcmp(entry.d_name, ".") != 0) && (strcmp(entry.d_name, "..") != 0))
+    {
+      this->internal->current = std::string(entry.d_name);
+      break;
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void DirIter::close_handle()
+{
+  closedir(reinterpret_cast<DIR*>(this->handle));
+}
+
 #else  // Windows
 
 static const char preferred_separator = '\\';
@@ -342,12 +393,154 @@ std::string current_path()
   }
 }
 
-#endif
+//////////////////////////////////////////////////
+DirIter::DirIter(std::string _in) : internal(new DirIterInternal), end(false)
+{
+  // use a form of search Sebastian Martel reports will work with Win98
+  this->internal->dirname = _in;
+
+  this->internal->current = "";
+
+  if (_in == "")
+  {
+    // To be compatible with Unix, if we are given an empty string, assume this
+    // is the end.
+    this->end = true;
+    return;
+  }
+
+  std::string dirpath(_in);
+  dirpath += (dirpath.empty()
+              || (dirpath[dirpath.size()-1] != '\\'
+                  && dirpath[dirpath.size()-1] != '/'
+                  && dirpath[dirpath.size()-1] != ':'))? "\\*" : "*";
+
+  WIN32_FIND_DATAA data;
+  if ((this->handle = ::FindFirstFileA(dirpath.c_str(), &data))
+      == INVALID_HANDLE_VALUE)
+  {
+    this->handle = nullptr;  // signal eof
+    this->end = true;
+  }
+  else
+  {
+    this->internal->current = std::string(data.cFileName);
+  }
+}
+
+//////////////////////////////////////////////////
+void DirIter::next()
+{
+  WIN32_FIND_DATAA data;
+  if (::FindNextFileA(this->handle, &data) == 0)  // fails
+  {
+    this->end = true;
+    this->internal->current = "";
+  }
+  else
+  {
+    this->internal->current = std::string(data.cFileName);
+  }
+}
+
+//////////////////////////////////////////////////
+void DirIter::close_handle()
+{
+  ::FindClose(this->handle);
+}
+
+#endif  // _WIN32
 
 //////////////////////////////////////////////////
 const std::string separator(const std::string &_p)
 {
   return _p + preferred_separator;
 }
+
+//////////////////////////////////////////////////
+std::string basename(const std::string &_path)
+{
+  bool last_was_slash = false;
+  std::string basename;
+
+  basename.reserve(_path.length());
+
+  for (size_t i = 0; i < _path.length(); ++i)
+  {
+    if (_path[i] == preferred_separator)
+    {
+      if (i == (_path.length() - 1))
+      {
+        // if this is the last character, then according to basename we
+        // should return the portion of the path *before* the slash, i.e.
+        // the one we were just building.  However, as a special case, if
+        // basename is empty, we return just a "/".
+        if (basename.size() == 0)
+        {
+          basename.push_back(preferred_separator);
+        }
+        break;
+      }
+
+      last_was_slash = true;
+    }
+    else
+    {
+      if (last_was_slash)
+      {
+        last_was_slash = false;
+        basename.clear();
+      }
+
+      basename.push_back(_path[i]);
+    }
+  }
+
+  return basename;
 }
+
+//////////////////////////////////////////////////
+DirIter::DirIter() : handle(nullptr), internal(new DirIterInternal), end(true)
+{
+  this->internal->current = "";
+
+  this->internal->dirname = "";
 }
+
+//////////////////////////////////////////////////
+std::string DirIter::operator*() const
+{
+  return this->internal->dirname + preferred_separator +
+    this->internal->current;
+}
+
+//////////////////////////////////////////////////
+// prefix operator; note that we don't support the postfix operator
+// because it is complicated to do so
+const DirIter& DirIter::operator++()
+{
+  next();
+
+  return *this;
+}
+
+//////////////////////////////////////////////////
+bool DirIter::operator!=(const DirIter &_other) const
+{
+  return this->end != _other.end;
+}
+
+//////////////////////////////////////////////////
+DirIter::~DirIter()
+{
+  if (this->handle != nullptr)
+  {
+    close_handle();
+    this->handle = nullptr;
+  }
+
+  delete this->internal;
+  this->internal = nullptr;
+}
+}  // filesystem
+}  // namespace sdf
