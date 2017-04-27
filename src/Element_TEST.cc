@@ -137,6 +137,19 @@ TEST(Element, AddAttribute)
 }
 
 /////////////////////////////////////////////////
+TEST(Element, GetAttributeSet)
+{
+  sdf::Element elem;
+  ASSERT_EQ(elem.GetAttributeCount(), 0UL);
+  elem.AddAttribute("test", "string", "foo", false, "foo description");
+  ASSERT_EQ(elem.GetAttributeCount(), 1UL);
+
+  EXPECT_FALSE(elem.GetAttributeSet("test"));
+  elem.GetAttribute("test")->Set("asdf");
+  EXPECT_TRUE(elem.GetAttributeSet("test"));
+}
+
+/////////////////////////////////////////////////
 TEST(Element, Include)
 {
   sdf::Element elem;
