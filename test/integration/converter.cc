@@ -15,6 +15,9 @@
  *
 */
 
+#include <array>
+#include <string>
+
 #include <gtest/gtest.h>
 #include "sdf/sdf.hh"
 #include "sdf/Converter.hh"
