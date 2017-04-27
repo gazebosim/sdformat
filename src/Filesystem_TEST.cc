@@ -181,7 +181,7 @@ bool create_new_file_hardlink(const std::string &_hardlink,
 TEST(Filesystem, exists)
 {
   std::string new_temp_dir;
-  create_and_switch_to_temp_dir(new_temp_dir);
+  ASSERT_TRUE(create_and_switch_to_temp_dir(new_temp_dir));
   ASSERT_TRUE(create_new_empty_file("newfile"));
   ASSERT_TRUE(sdf::filesystem::create_directory("fstestexists"));
 
@@ -206,7 +206,7 @@ TEST(Filesystem, symlink_exists)
   // 4. symbolic link to non-existent directory
   // 5. hard link to existing file
   std::string new_temp_dir;
-  create_and_switch_to_temp_dir(new_temp_dir);
+  ASSERT_TRUE(create_and_switch_to_temp_dir(new_temp_dir));
   ASSERT_TRUE(create_new_empty_file("newfile"));
   ASSERT_TRUE(sdf::filesystem::create_directory("newdir"));
 
@@ -235,7 +235,7 @@ TEST(Filesystem, symlink_exists)
 TEST(Filesystem, current_path)
 {
   std::string new_temp_dir;
-  create_and_switch_to_temp_dir(new_temp_dir);
+  ASSERT_TRUE(create_and_switch_to_temp_dir(new_temp_dir));
 
   std::string path = sdf::filesystem::current_path();
   EXPECT_EQ(path, new_temp_dir);
