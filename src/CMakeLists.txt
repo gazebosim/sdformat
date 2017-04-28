@@ -73,6 +73,7 @@ set (gtest_sources
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
+  Types_TEST.cc
 )
 sdf_build_tests(${gtest_sources})
 
