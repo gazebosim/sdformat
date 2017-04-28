@@ -345,7 +345,7 @@ std::string current_path()
 #endif
 
 //////////////////////////////////////////////////
-std::string const separator(const std::string &_p)
+const std::string separator(const std::string &_p)
 {
   return _p + preferred_separator;
 }
