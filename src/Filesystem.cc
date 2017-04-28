@@ -35,7 +35,6 @@
  * libs/filesystem/include/boost/filesystem/operations.hpp.
  */
 
-#include <locale>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -50,7 +49,6 @@
 #else
 #include <windows.h>
 #include <winnt.h>
-#include <codecvt>
 #endif
 
 #include "sdf/Filesystem.hh"
@@ -60,6 +58,9 @@ namespace sdf
 namespace filesystem
 {
 #ifndef _WIN32
+
+static const char preferred_separator = '/';
+
 //////////////////////////////////////////////////
 bool exists(const std::string &_path)
 {
@@ -85,12 +86,6 @@ bool is_directory(const std::string &_path)
 bool create_directory(const std::string &_path)
 {
   return ::mkdir(_path.c_str(), S_IRWXU|S_IRWXG|S_IRWXO) == 0;
-}
-
-//////////////////////////////////////////////////
-std::string const separator(const std::string &_p)
-{
-  return _p + "/";
 }
 
 //////////////////////////////////////////////////
@@ -123,27 +118,8 @@ std::string current_path()
   return cur;
 }
 #else  // Windows
-//////////////////////////////////////////////////
-std::wstring widen(const std::string &_str)
-{
-  std::wostringstream wstm;
-  const std::ctype<wchar_t> &ctfacet =
-    std::use_facet<std::ctype<wchar_t> >(wstm.getloc());
-  for (size_t i = 0; i < _str.size(); ++i)
-  {
-    wstm << ctfacet.widen(_str[i]);
-  }
 
-  return wstm.str();
-}
-
-//////////////////////////////////////////////////
-std::string narrow(const std::wstring &_str)
-{
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-
-  return converter.to_bytes(_str);
-}
+static const char preferred_separator = '\\';
 
 //////////////////////////////////////////////////
 static bool not_found_error(int _errval)
@@ -231,7 +207,7 @@ HANDLE create_file_handle(const std::string &_path, DWORD _dwDesiredAccess,
                           DWORD _dwFlagsAndAttributes,
                           HANDLE _hTemplateFile)
 {
-  return ::CreateFileW(widen(_path).c_str(), _dwDesiredAccess,
+  return ::CreateFileA(_path.c_str(), _dwDesiredAccess,
                        _dwShareMode, _lpSecurityAttributes,
                        _dwCreationDisposition, _dwFlagsAndAttributes,
                        _hTemplateFile);
@@ -281,9 +257,9 @@ bool is_reparse_point_a_symlink(const std::string &_path)
 }
 
 //////////////////////////////////////////////////
-bool exists(const std::string &_path)
+bool internal_check_path(const std::string &_path, DWORD &attr)
 {
-  DWORD attr(::GetFileAttributesW(widen(_path).c_str()));
+  attr = ::GetFileAttributesA(_path.c_str());
   if (attr == 0xFFFFFFFF)
   {
     return process_status_failure();
@@ -318,77 +294,60 @@ bool exists(const std::string &_path)
 }
 
 //////////////////////////////////////////////////
+bool exists(const std::string &_path)
+{
+  DWORD attr;
+
+  return internal_check_path(_path, attr);
+}
+
+//////////////////////////////////////////////////
 bool is_directory(const std::string &_path)
 {
-  DWORD attr(::GetFileAttributesW(widen(_path).c_str()));
-  if (attr == 0xFFFFFFFF)
+  DWORD attr;
+
+  if (internal_check_path(_path, attr))
   {
-    return process_status_failure();
+    return (attr & FILE_ATTRIBUTE_DIRECTORY) != 0;
   }
 
-  //  reparse point handling;
-  //    since GetFileAttributesW does not resolve symlinks, try to open a file
-  //    handle to discover if the file exists
-  if (attr & FILE_ATTRIBUTE_REPARSE_POINT)
-  {
-    handle_wrapper h(
-      create_file_handle(
-        _path,
-        0,  // dwDesiredAccess; attributes only
-        FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
-        0,  // lpSecurityAttributes
-        OPEN_EXISTING,
-        FILE_FLAG_BACKUP_SEMANTICS,
-        0));  // hTemplateFile
-
-    if (h.handle == INVALID_HANDLE_VALUE)
-    {
-      return process_status_failure();
-    }
-
-    if (!is_reparse_point_a_symlink(_path))
-    {
-      return true;
-    }
-  }
-
-  return (attr & FILE_ATTRIBUTE_DIRECTORY) != 0;
+  return false;
 }
 
 //////////////////////////////////////////////////
 bool create_directory(const std::string &_path)
 {
-  return ::CreateDirectoryW(widen(_path).c_str(), 0) != 0;
-}
-
-//////////////////////////////////////////////////
-std::string const separator(const std::string &_p)
-{
-  return _p + "\\";
+  return ::CreateDirectoryA(_path.c_str(), 0) != 0;
 }
 
 //////////////////////////////////////////////////
 std::string current_path()
 {
   DWORD sz;
-  if ((sz = ::GetCurrentDirectoryW(0, nullptr)) == 0)
+  if ((sz = ::GetCurrentDirectoryA(0, nullptr)) == 0)
   {
     sz = 1;
   }
 
-  std::vector<wchar_t> buf(sz);
+  std::vector<char> buf(sz);
 
-  if (::GetCurrentDirectoryW(sz, buf.data()) == 0)
+  if (::GetCurrentDirectoryA(sz, buf.data()) == 0)
   {
     // error
     return std::string("");
   }
   else
   {
-    return narrow(buf.data());
+    return buf.data();
   }
 }
 
 #endif
+
+//////////////////////////////////////////////////
+const std::string separator(const std::string &_p)
+{
+  return _p + preferred_separator;
+}
 }
 }
