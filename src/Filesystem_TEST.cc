@@ -251,9 +251,26 @@ TEST(Filesystem, append)
 
   path = sdf::filesystem::append(path, "there", "again");
 
-  ASSERT_EQ(path, sdf::filesystem::separator("tmp") +
+  EXPECT_EQ(path, sdf::filesystem::separator("tmp") +
             sdf::filesystem::separator("hello") +
             sdf::filesystem::separator("there") + "again");
+}
+
+/////////////////////////////////////////////////
+TEST(Filesystem, current_path_error)
+{
+  // This test intentionally creates a directory, switches to it, removes
+  // the directory, and then tries to call current_path() on it to cause
+  // current_path() to fail.  Windows does not allow you to remove an
+  // in-use directory, so this test is restricted to Unix.
+#ifndef _WIN32
+  std::string new_temp_dir;
+  ASSERT_TRUE(create_and_switch_to_temp_dir(new_temp_dir));
+
+  ASSERT_EQ(rmdir(new_temp_dir.c_str()), 0);
+
+  EXPECT_EQ(sdf::filesystem::current_path(), "");
+#endif
 }
 
 /////////////////////////////////////////////////
