@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #include <gtest/gtest.h>
 #include "sdf/Exception.hh"
@@ -22,11 +22,17 @@
 /// Test exception throwing
 TEST(Exception, Throwing)
 {
-  // This test fails on Windows
-#ifndef _MSC_VER
   EXPECT_ANY_THROW(sdfthrow("throw message"));
   EXPECT_THROW(sdfthrow("throw message"), sdf::Exception);
-#endif
+
+  EXPECT_ANY_THROW(throw sdf::Exception());
+  EXPECT_THROW(throw sdf::Exception(), sdf::Exception);
+
+  sdf::Exception ex = sdf::Exception(__FILE__, __LINE__, "testmsg\n");
+  EXPECT_EQ(ex.GetErrorFile(), __FILE__);
+
+  EXPECT_ANY_THROW(throw sdf::InternalError());
+  EXPECT_THROW(throw sdf::InternalError(), sdf::InternalError);
 }
 
 /////////////////////////////////////////////////
