@@ -121,16 +121,19 @@ std::string current_path()
 }
 
 //////////////////////////////////////////////////
-DirIter::DirIter(std::string _in) : internal(new DirIterInternal), end(false)
+DirIter::DirIter(std::string _in) : internal(new DirIterInternal)
 {
   this->internal->dirname = _in;
 
   this->internal->current = "";
 
-  this->handle = opendir(_in.c_str());
-  if (this->handle == nullptr)
+  this->internal->handle = opendir(_in.c_str());
+
+  this->internal->end = false;
+
+  if (this->internal->handle == nullptr)
   {
-    this->end = true;
+    this->internal->end = true;
   }
   else
   {
@@ -146,10 +149,11 @@ void DirIter::next()
 
   while (true)
   {
-    if (readdir_r(reinterpret_cast<DIR*>(this->handle), &entry, &result) != 0
+    if (readdir_r(reinterpret_cast<DIR*>(this->internal->handle), &entry,
+                  &result) != 0
         || result == nullptr)
     {
-      this->end = true;
+      this->internal->end = true;
       this->internal->current = "";
       break;
     }
@@ -165,7 +169,7 @@ void DirIter::next()
 //////////////////////////////////////////////////
 void DirIter::close_handle()
 {
-  closedir(reinterpret_cast<DIR*>(this->handle));
+  closedir(reinterpret_cast<DIR*>(this->internal->handle));
 }
 
 #else  // Windows
@@ -394,18 +398,20 @@ std::string current_path()
 }
 
 //////////////////////////////////////////////////
-DirIter::DirIter(std::string _in) : internal(new DirIterInternal), end(false)
+DirIter::DirIter(std::string _in) : internal(new DirIterInternal)
 {
   // use a form of search Sebastian Martel reports will work with Win98
   this->internal->dirname = _in;
 
   this->internal->current = "";
 
+  this->internal->end = false;
+
   if (_in == "")
   {
     // To be compatible with Unix, if we are given an empty string, assume this
     // is the end.
-    this->end = true;
+    this->internal->end = true;
     return;
   }
 
@@ -416,11 +422,11 @@ DirIter::DirIter(std::string _in) : internal(new DirIterInternal), end(false)
                   && dirpath[dirpath.size()-1] != ':'))? "\\*" : "*";
 
   WIN32_FIND_DATAA data;
-  if ((this->handle = ::FindFirstFileA(dirpath.c_str(), &data))
+  if ((this->internal->handle = ::FindFirstFileA(dirpath.c_str(), &data))
       == INVALID_HANDLE_VALUE)
   {
-    this->handle = nullptr;  // signal eof
-    this->end = true;
+    this->internal->handle = nullptr;  // signal eof
+    this->internal->end = true;
   }
   else
   {
@@ -432,9 +438,9 @@ DirIter::DirIter(std::string _in) : internal(new DirIterInternal), end(false)
 void DirIter::next()
 {
   WIN32_FIND_DATAA data;
-  if (::FindNextFileA(this->handle, &data) == 0)  // fails
+  if (::FindNextFileA(this->internal->handle, &data) == 0)  // fails
   {
-    this->end = true;
+    this->internal->end = true;
     this->internal->current = "";
   }
   else
@@ -446,7 +452,7 @@ void DirIter::next()
 //////////////////////////////////////////////////
 void DirIter::close_handle()
 {
-  ::FindClose(this->handle);
+  ::FindClose(this->internal->handle);
 }
 
 #endif  // _WIN32
@@ -500,11 +506,15 @@ std::string basename(const std::string &_path)
 }
 
 //////////////////////////////////////////////////
-DirIter::DirIter() : handle(nullptr), internal(new DirIterInternal), end(true)
+DirIter::DirIter() : internal(new DirIterInternal)
 {
   this->internal->current = "";
 
   this->internal->dirname = "";
+
+  this->internal->handle = nullptr;
+
+  this->internal->end = true;
 }
 
 //////////////////////////////////////////////////
@@ -527,16 +537,16 @@ const DirIter& DirIter::operator++()
 //////////////////////////////////////////////////
 bool DirIter::operator!=(const DirIter &_other) const
 {
-  return this->end != _other.end;
+  return this->internal->end != _other.internal->end;
 }
 
 //////////////////////////////////////////////////
 DirIter::~DirIter()
 {
-  if (this->handle != nullptr)
+  if (this->internal->handle != nullptr)
   {
     close_handle();
-    this->handle = nullptr;
+    this->internal->handle = nullptr;
   }
 
   delete this->internal;

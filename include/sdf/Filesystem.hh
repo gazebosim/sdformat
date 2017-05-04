@@ -117,17 +117,8 @@ namespace sdf
       /// \brief Close an open directory handle.
       private: void close_handle();
 
-      /// \def handle
-      /// \brief Opaque handle for holding the directory iterator.
-      private: void *handle;
-
       /// \brief Private data.
       private: DirIterInternal *internal;
-
-      /// \def end
-      /// \brief Private variable to indicate whether the iterator has reached
-      ///        the end.
-      private: bool end;
     };
 
     /// \internal
@@ -139,6 +130,15 @@ namespace sdf
 
       /// \brief The original path to the directory.
       public: std::string dirname;
+
+      /// \def handle
+      /// \brief Opaque handle for holding the directory iterator.
+      public: void *handle;
+
+      /// \def end
+      /// \brief Private variable to indicate whether the iterator has reached
+      ///        the end.
+      public: bool end;
     };
   }
 }
