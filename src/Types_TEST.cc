@@ -17,58 +17,76 @@
 
 #include <gtest/gtest.h>
 
+#include <string>
+#include <vector>
+
 #include "sdf/Types.hh"
 
-TEST(Types, split)
+TEST(Types, split_nothing)
 {
   std::vector<std::string> split = sdf::split("hello", "/");
   ASSERT_EQ(split.size(), 1UL);
-  ASSERT_EQ(split[0], "hello");
-
-  split = sdf::split("hello/there", "/");
-  ASSERT_EQ(split.size(), 2UL);
-  ASSERT_EQ(split[0], "hello");
-  ASSERT_EQ(split[1], "there");
-
-  split = sdf::split("", "/");
-  ASSERT_EQ(split.size(), 1UL);
-  ASSERT_EQ(split[0], "");
-
-  split = sdf::split("hello", "");
-  ASSERT_EQ(split.size(), 1UL);
-  ASSERT_EQ(split[0], "hello");
-
-  split = sdf::split("", "");
-  ASSERT_EQ(split.size(), 1UL);
-  ASSERT_EQ(split[0], "");
-
-  split = sdf::split("hello/there", ":");
-  ASSERT_EQ(split.size(), 1UL);
-  ASSERT_EQ(split[0], "hello/there");
+  EXPECT_EQ(split[0], "hello");
 }
 
-TEST(Types, trim)
+TEST(Types, split_single)
+{
+  std::vector<std::string> split = sdf::split("hello/there", "/");
+  ASSERT_EQ(split.size(), 2UL);
+  EXPECT_EQ(split[0], "hello");
+  EXPECT_EQ(split[1], "there");
+}
+
+TEST(Types, split_blank)
+{
+  std::vector<std::string> split = sdf::split("", "/");
+  ASSERT_EQ(split.size(), 1UL);
+  EXPECT_EQ(split[0], "");
+}
+
+TEST(Types, split_empty_splitter)
+{
+  std::vector<std::string> split = sdf::split("hello", "");
+  ASSERT_EQ(split.size(), 1UL);
+  EXPECT_EQ(split[0], "hello");
+}
+
+TEST(Types, split_empty_string_and_splitter)
+{
+  std::vector<std::string> split = sdf::split("", "");
+  ASSERT_EQ(split.size(), 1UL);
+  EXPECT_EQ(split[0], "");
+}
+
+TEST(Types, split_no_matches)
+{
+  std::vector<std::string> split = sdf::split("hello/there", ":");
+  ASSERT_EQ(split.size(), 1UL);
+  EXPECT_EQ(split[0], "hello/there");
+}
+
+TEST(Types, trim_nothing)
 {
   std::string out = sdf::trim("hello");
-  ASSERT_EQ(out, "hello");
+  EXPECT_EQ(out, "hello");
 
   out = sdf::trim("   hello   ");
-  ASSERT_EQ(out, "hello");
+  EXPECT_EQ(out, "hello");
 
   out = sdf::trim("");
-  ASSERT_EQ(out, "");
+  EXPECT_EQ(out, "");
 
   out = sdf::trim(" hello there  ");
-  ASSERT_EQ(out, "hello there");
+  EXPECT_EQ(out, "hello there");
 
   out = sdf::trim("     ");
-  ASSERT_EQ(out, "");
+  EXPECT_EQ(out, "");
 
   out = sdf::trim("\t\t");
-  ASSERT_EQ(out, "");
+  EXPECT_EQ(out, "");
 
   out = sdf::trim("\txyz\t");
-  ASSERT_EQ(out, "xyz");
+  EXPECT_EQ(out, "xyz");
 }
 
 /////////////////////////////////////////////////
