@@ -30,7 +30,7 @@ std::vector<std::string> split(const std::string &_str,
   size_t next = 0;
   size_t current = next;
 
-  if (_splitter == "")
+  if (_splitter.empty())
   {
     // If the splitter is blank, just return the original
     ret.push_back(_str);
