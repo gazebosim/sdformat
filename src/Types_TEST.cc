@@ -63,6 +63,12 @@ TEST(Types, trim)
 
   out = sdf::trim("     ");
   ASSERT_EQ(out, "");
+
+  out = sdf::trim("\t\t");
+  ASSERT_EQ(out, "");
+
+  out = sdf::trim("\txyz\t");
+  ASSERT_EQ(out, "xyz");
 }
 
 /////////////////////////////////////////////////
