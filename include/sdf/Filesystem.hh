@@ -131,28 +131,6 @@ namespace sdf
       /// \brief Private data.
       private: std::unique_ptr<DirIterPrivate> dataPtr;
     };
-
-    /// \internal
-    /// \brief Private data for the DirIter class.
-    class DirIterPrivate
-    {
-      /// \def current
-      /// \brief The current directory item.
-      public: std::string current;
-
-      /// \def dirname
-      /// \brief The original path to the directory.
-      public: std::string dirname;
-
-      /// \def handle
-      /// \brief Opaque handle for holding the directory iterator.
-      public: void *handle;
-
-      /// \def end
-      /// \brief Private variable to indicate whether the iterator has reached
-      ///        the end.
-      public: bool end;
-    };
   }
 }
 
