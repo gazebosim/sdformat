@@ -95,14 +95,17 @@ namespace sdf
       public: DirIter();
 
       /// \brief Dereference operator; returns current directory record.
+      /// \return A string representing the entire path of the directory record.
       public: std::string operator*() const;
 
       /// \brief Pre-increment operator; moves to next directory record.
+      /// \return This iterator.
       public: const DirIter& operator++();
 
       /// \brief Comparison operator to see if this iterator is at the
       ///        same point as another iterator.
       /// \param[in] _other  The other iterator to compare against.
+      /// \return true if the iterators are equal, false otherwise.
       public: bool operator!=(const DirIter &_other) const;
 
       /// \brief Destructor
@@ -125,9 +128,11 @@ namespace sdf
     /// \brief Private data for the DirIter class.
     class DirIterInternal
     {
+      /// \def current
       /// \brief The current directory item.
       public: std::string current;
 
+      /// \def dirname
       /// \brief The original path to the directory.
       public: std::string dirname;
 
