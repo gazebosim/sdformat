@@ -398,7 +398,7 @@ std::string current_path()
 }
 
 //////////////////////////////////////////////////
-DirIter::DirIter(std::string _in) : dataPtr(new DirIterPrivate)
+DirIter::DirIter(const std::string &_in) : dataPtr(new DirIterPrivate)
 {
   // use a form of search Sebastian Martel reports will work with Win98
   this->dataPtr->dirname = _in;
