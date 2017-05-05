@@ -407,7 +407,7 @@ DirIter::DirIter(std::string _in) : dataPtr(new DirIterPrivate)
 
   this->dataPtr->end = false;
 
-  if (_in == "")
+  if (_in.empty())
   {
     // To be compatible with Unix, if we are given an empty string, assume this
     // is the end.
