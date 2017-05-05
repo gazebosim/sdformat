@@ -15,9 +15,8 @@
  *
 */
 
+#include <list>
 #include <vector>
-#include <set>
-#include <boost/filesystem.hpp>
 
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
@@ -91,26 +90,23 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
     std::string sdfPath = sdf::findFile("sdformat/");
 
     // find all sdf version dirs in resource path
-    boost::filesystem::directory_iterator endIter;
+    sdf::filesystem::DirIter endIter;
     std::list<std::pair<std::string, std::string>> sdfDirs;
     if (sdf::filesystem::is_directory(sdfPath))
     {
-      for (boost::filesystem::directory_iterator dirIter(sdfPath);
+      for (sdf::filesystem::DirIter dirIter(sdfPath);
            dirIter != endIter ; ++dirIter)
       {
-        if (sdf::filesystem::is_directory(
-            (*dirIter).path().filename().string()))
+        if (sdf::filesystem::is_directory(*dirIter))
         {
-          std::string fname = (*dirIter).path().filename().string();
+          std::string fname = sdf::filesystem::basename(*dirIter);
           if (std::lexicographical_compare(origVersionStr.begin(),
                                            origVersionStr.end(),
                                            fname.begin(),
                                            fname.end(),
                                            case_insensitive_cmp))
           {
-            sdfDirs.push_back(
-               std::make_pair((*dirIter).path().string(),
-                              (*dirIter).path().filename().string()));
+            sdfDirs.push_back(std::make_pair(*dirIter, fname));
           }
         }
       }

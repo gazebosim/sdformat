@@ -14,11 +14,11 @@ if (WIN32)
 endif()
 
 include(FindBoost)
-find_package(Boost ${MIN_BOOST_VERSION} REQUIRED system filesystem program_options)
+find_package(Boost ${MIN_BOOST_VERSION} REQUIRED system)
 
 if (NOT Boost_FOUND)
   set (BUILD_SDF OFF CACHE INTERNAL "Build SDF" FORCE)
-  BUILD_ERROR ("Boost not found. Please install system filesystem program_options boost version ${MIN_BOOST_VERSION} or higher.")
+  BUILD_ERROR ("Boost not found. Please install system boost version ${MIN_BOOST_VERSION} or higher.")
 endif()
 
 if (USE_EXTERNAL_TINYXML)

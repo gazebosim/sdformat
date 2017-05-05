@@ -15,6 +15,11 @@
 1. urdfdom 1.0 is now required on all platforms.
    * [Pull request 324](https://bitbucket.org/osrf/sdformat/pull-requests/324)
 
+1. Remove boost filesystem as a dependency
+   * [Pull request 335](https://bitbucket.org/osrf/sdformat/pull-requests/335)
+   * [Pull request 338](https://bitbucket.org/osrf/sdformat/pull-requests/338)
+   * [Pull request 339](https://bitbucket.org/osrf/sdformat/pull-requests/339)
+
 ## SDFormat 5.0
 
 ### SDFormat 5.0.0 (2017-01-25)
