@@ -18,9 +18,17 @@
 #ifndef _SDF_FILESYSTEM_HH_
 #define _SDF_FILESYSTEM_HH_
 
+#include <memory>
 #include <string>
 
 #include "sdf/system_util.hh"
+
+#ifdef _WIN32
+// Disable warning C4251 which is triggered by
+// std::unique_ptr
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 namespace sdf
 {
@@ -81,7 +89,7 @@ namespace sdf
     std::string basename(const std::string &_path);
 
     /// \internal
-    class DirIterInternal;
+    class DirIterPrivate;
 
     /// \class DirIter Filesystem.hh
     /// \brief A class for iterating over all items in a directory.
@@ -89,7 +97,7 @@ namespace sdf
     {
       /// \brief Constructor.
       /// \param[in] _in  Directory to iterate over.
-      public: explicit DirIter(std::string _in);
+      public: explicit DirIter(const std::string &_in);
 
       /// \brief Constructor for end element.
       public: DirIter();
@@ -121,12 +129,12 @@ namespace sdf
       private: void close_handle();
 
       /// \brief Private data.
-      private: DirIterInternal *internal;
+      private: std::unique_ptr<DirIterPrivate> dataPtr;
     };
 
     /// \internal
     /// \brief Private data for the DirIter class.
-    class DirIterInternal
+    class DirIterPrivate
     {
       /// \def current
       /// \brief The current directory item.

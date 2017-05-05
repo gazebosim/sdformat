@@ -121,19 +121,19 @@ std::string current_path()
 }
 
 //////////////////////////////////////////////////
-DirIter::DirIter(std::string _in) : internal(new DirIterInternal)
+DirIter::DirIter(const std::string &_in) : dataPtr(new DirIterPrivate)
 {
-  this->internal->dirname = _in;
+  this->dataPtr->dirname = _in;
 
-  this->internal->current = "";
+  this->dataPtr->current = "";
 
-  this->internal->handle = opendir(_in.c_str());
+  this->dataPtr->handle = opendir(_in.c_str());
 
-  this->internal->end = false;
+  this->dataPtr->end = false;
 
-  if (this->internal->handle == nullptr)
+  if (this->dataPtr->handle == nullptr)
   {
-    this->internal->end = true;
+    this->dataPtr->end = true;
   }
   else
   {
@@ -149,18 +149,18 @@ void DirIter::next()
 
   while (true)
   {
-    if (readdir_r(reinterpret_cast<DIR*>(this->internal->handle), &entry,
+    if (readdir_r(reinterpret_cast<DIR*>(this->dataPtr->handle), &entry,
                   &result) != 0
         || result == nullptr)
     {
-      this->internal->end = true;
-      this->internal->current = "";
+      this->dataPtr->end = true;
+      this->dataPtr->current = "";
       break;
     }
 
     if ((strcmp(entry.d_name, ".") != 0) && (strcmp(entry.d_name, "..") != 0))
     {
-      this->internal->current = std::string(entry.d_name);
+      this->dataPtr->current = std::string(entry.d_name);
       break;
     }
   }
@@ -169,7 +169,7 @@ void DirIter::next()
 //////////////////////////////////////////////////
 void DirIter::close_handle()
 {
-  closedir(reinterpret_cast<DIR*>(this->internal->handle));
+  closedir(reinterpret_cast<DIR*>(this->dataPtr->handle));
 }
 
 #else  // Windows
@@ -398,20 +398,20 @@ std::string current_path()
 }
 
 //////////////////////////////////////////////////
-DirIter::DirIter(std::string _in) : internal(new DirIterInternal)
+DirIter::DirIter(std::string _in) : dataPtr(new DirIterPrivate)
 {
   // use a form of search Sebastian Martel reports will work with Win98
-  this->internal->dirname = _in;
+  this->dataPtr->dirname = _in;
 
-  this->internal->current = "";
+  this->dataPtr->current = "";
 
-  this->internal->end = false;
+  this->dataPtr->end = false;
 
   if (_in == "")
   {
     // To be compatible with Unix, if we are given an empty string, assume this
     // is the end.
-    this->internal->end = true;
+    this->dataPtr->end = true;
     return;
   }
 
@@ -422,15 +422,15 @@ DirIter::DirIter(std::string _in) : internal(new DirIterInternal)
                   && dirpath[dirpath.size()-1] != ':'))? "\\*" : "*";
 
   WIN32_FIND_DATAA data;
-  if ((this->internal->handle = ::FindFirstFileA(dirpath.c_str(), &data))
+  if ((this->dataPtr->handle = ::FindFirstFileA(dirpath.c_str(), &data))
       == INVALID_HANDLE_VALUE)
   {
-    this->internal->handle = nullptr;  // signal eof
-    this->internal->end = true;
+    this->dataPtr->handle = nullptr;  // signal eof
+    this->dataPtr->end = true;
   }
   else
   {
-    this->internal->current = std::string(data.cFileName);
+    this->dataPtr->current = std::string(data.cFileName);
   }
 }
 
@@ -438,21 +438,21 @@ DirIter::DirIter(std::string _in) : internal(new DirIterInternal)
 void DirIter::next()
 {
   WIN32_FIND_DATAA data;
-  if (::FindNextFileA(this->internal->handle, &data) == 0)  // fails
+  if (::FindNextFileA(this->dataPtr->handle, &data) == 0)  // fails
   {
-    this->internal->end = true;
-    this->internal->current = "";
+    this->dataPtr->end = true;
+    this->dataPtr->current = "";
   }
   else
   {
-    this->internal->current = std::string(data.cFileName);
+    this->dataPtr->current = std::string(data.cFileName);
   }
 }
 
 //////////////////////////////////////////////////
 void DirIter::close_handle()
 {
-  ::FindClose(this->internal->handle);
+  ::FindClose(this->dataPtr->handle);
 }
 
 #endif  // _WIN32
@@ -506,22 +506,22 @@ std::string basename(const std::string &_path)
 }
 
 //////////////////////////////////////////////////
-DirIter::DirIter() : internal(new DirIterInternal)
+DirIter::DirIter() : dataPtr(new DirIterPrivate)
 {
-  this->internal->current = "";
+  this->dataPtr->current = "";
 
-  this->internal->dirname = "";
+  this->dataPtr->dirname = "";
 
-  this->internal->handle = nullptr;
+  this->dataPtr->handle = nullptr;
 
-  this->internal->end = true;
+  this->dataPtr->end = true;
 }
 
 //////////////////////////////////////////////////
 std::string DirIter::operator*() const
 {
-  return this->internal->dirname + preferred_separator +
-    this->internal->current;
+  return this->dataPtr->dirname + preferred_separator +
+    this->dataPtr->current;
 }
 
 //////////////////////////////////////////////////
@@ -537,20 +537,17 @@ const DirIter& DirIter::operator++()
 //////////////////////////////////////////////////
 bool DirIter::operator!=(const DirIter &_other) const
 {
-  return this->internal->end != _other.internal->end;
+  return this->dataPtr->end != _other.dataPtr->end;
 }
 
 //////////////////////////////////////////////////
 DirIter::~DirIter()
 {
-  if (this->internal->handle != nullptr)
+  if (this->dataPtr->handle != nullptr)
   {
     close_handle();
-    this->internal->handle = nullptr;
+    this->dataPtr->handle = nullptr;
   }
-
-  delete this->internal;
-  this->internal = nullptr;
 }
 }  // filesystem
 }  // namespace sdf
