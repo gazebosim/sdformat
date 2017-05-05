@@ -571,5 +571,5 @@ DirIter::~DirIter()
     this->dataPtr->handle = nullptr;
   }
 }
-}  // filesystem
+}  // namespace filesystem
 }  // namespace sdf

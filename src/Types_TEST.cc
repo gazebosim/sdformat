@@ -22,6 +22,7 @@
 
 #include "sdf/Types.hh"
 
+/////////////////////////////////////////////////
 TEST(Types, split_nothing)
 {
   std::vector<std::string> split = sdf::split("hello", "/");
@@ -29,6 +30,7 @@ TEST(Types, split_nothing)
   EXPECT_EQ(split[0], "hello");
 }
 
+/////////////////////////////////////////////////
 TEST(Types, split_single)
 {
   std::vector<std::string> split = sdf::split("hello/there", "/");
@@ -37,6 +39,7 @@ TEST(Types, split_single)
   EXPECT_EQ(split[1], "there");
 }
 
+/////////////////////////////////////////////////
 TEST(Types, split_blank)
 {
   std::vector<std::string> split = sdf::split("", "/");
@@ -44,6 +47,7 @@ TEST(Types, split_blank)
   EXPECT_EQ(split[0], "");
 }
 
+/////////////////////////////////////////////////
 TEST(Types, split_empty_splitter)
 {
   std::vector<std::string> split = sdf::split("hello", "");
@@ -51,6 +55,7 @@ TEST(Types, split_empty_splitter)
   EXPECT_EQ(split[0], "hello");
 }
 
+/////////////////////////////////////////////////
 TEST(Types, split_empty_string_and_splitter)
 {
   std::vector<std::string> split = sdf::split("", "");
@@ -58,6 +63,7 @@ TEST(Types, split_empty_string_and_splitter)
   EXPECT_EQ(split[0], "");
 }
 
+/////////////////////////////////////////////////
 TEST(Types, split_no_matches)
 {
   std::vector<std::string> split = sdf::split("hello/there", ":");
@@ -65,6 +71,7 @@ TEST(Types, split_no_matches)
   EXPECT_EQ(split[0], "hello/there");
 }
 
+/////////////////////////////////////////////////
 TEST(Types, trim_nothing)
 {
   std::string out = sdf::trim("hello");
