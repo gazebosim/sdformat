@@ -122,7 +122,7 @@ namespace sdf
       /// \brief Move to the next directory record, skipping . and .. records.
       private: void next();
 
-      /// \brief Set the inernal variable to the empty string.
+      /// \brief Set the internal variable to the empty string.
       private: void set_internal_empty();
 
       /// \brief Close an open directory handle.
