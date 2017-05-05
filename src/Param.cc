@@ -139,8 +139,6 @@ Param::Param(const std::string &_key, const std::string &_typeName,
 //////////////////////////////////////////////////
 Param::~Param()
 {
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////
