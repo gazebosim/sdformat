@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef _SDF_CONSOLE_HH_
 #define _SDF_CONSOLE_HH_
 
-#include <iostream>
 #include <fstream>
-#include <string>
-
+#include <iostream>
 #include <memory>
+#include <string>
 
 #include "sdf/system_util.hh"
 
@@ -100,6 +99,9 @@ namespace sdf
 
     /// \brief Return an instance to this class.
     public: static ConsolePtr Instance();
+
+    /// \brief Clear out the current console to make room for a new one.
+    public: static void Clear();
 
     /// \brief Set quiet output
     /// \param[in] q True to prevent warning
