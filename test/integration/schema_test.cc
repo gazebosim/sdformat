@@ -55,7 +55,7 @@ class SDFSchemaGenerator : public testing::Test
 };
 
 /////////////////////////////////////////////////
-TEST_F(SDFSchemaGenerator, TestDoblePendulum)
+TEST_F(SDFSchemaGenerator, TestDoublePendulum)
 {
   runXMLlint(SDF_TEST_PENDULUM);
 }

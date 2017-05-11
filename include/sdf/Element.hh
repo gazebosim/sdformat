@@ -17,9 +17,9 @@
 #ifndef _SDF_ELEMENT_HH_
 #define _SDF_ELEMENT_HH_
 
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 #include <utility>
 
 #include "sdf/Param.hh"
@@ -284,7 +284,7 @@ namespace sdf
 
 
     /// \brief Private data pointer
-    private: ElementPrivate *dataPtr;
+    private: std::unique_ptr<ElementPrivate> dataPtr;
   };
 
   /// \internal

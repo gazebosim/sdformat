@@ -15,14 +15,14 @@
  *
 */
 
+#include <list>
 #include <vector>
-#include <set>
-#include <boost/filesystem.hpp>
 
-#include "sdf/SDFImpl.hh"
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
+#include "sdf/Filesystem.hh"
+#include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
 
 using namespace sdf;
@@ -90,49 +90,48 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
     std::string sdfPath = sdf::findFile("sdformat/");
 
     // find all sdf version dirs in resource path
-    boost::filesystem::directory_iterator endIter;
-    std::set<boost::filesystem::path> sdfDirs;
-    if (boost::filesystem::exists(sdfPath)
-        && boost::filesystem::is_directory(sdfPath))
+    sdf::filesystem::DirIter endIter;
+    std::list<std::pair<std::string, std::string>> sdfDirs;
+    if (sdf::filesystem::is_directory(sdfPath))
     {
-      for (boost::filesystem::directory_iterator dirIter(sdfPath);
+      for (sdf::filesystem::DirIter dirIter(sdfPath);
            dirIter != endIter ; ++dirIter)
       {
-        if (boost::filesystem::is_directory(dirIter->status()))
+        if (sdf::filesystem::is_directory(*dirIter))
         {
-          std::string fname = (*dirIter).path().filename().string();
+          std::string fname = sdf::filesystem::basename(*dirIter);
           if (std::lexicographical_compare(origVersionStr.begin(),
                                            origVersionStr.end(),
                                            fname.begin(),
                                            fname.end(),
                                            case_insensitive_cmp))
           {
-            sdfDirs.insert((*dirIter));
+            sdfDirs.push_back(std::make_pair(*dirIter, fname));
           }
         }
       }
     }
 
     // loop through sdf dirs and do the intermediate conversions
-    for (std::set<boost::filesystem::path>::iterator it = sdfDirs.begin();
-        it != sdfDirs.end(); ++it)
+    for (std::list<std::pair<std::string, std::string> >::iterator it =
+           sdfDirs.begin(); it != sdfDirs.end(); ++it)
     {
-      boost::filesystem::path convertFile
-         = boost::filesystem::operator/((*it).string(), origVersion+".convert");
-      if (boost::filesystem::exists(convertFile))
+      std::string convertFile = sdf::filesystem::append((*it).first,
+                                                        origVersion+".convert");
+      if (sdf::filesystem::exists(convertFile))
       {
-        if (!xmlDoc.LoadFile(convertFile.string()))
+        if (!xmlDoc.LoadFile(convertFile))
         {
             sdferr << "Unable to load file[" << convertFile << "]\n";
             return false;
         }
         ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
-        if ((*it).filename() == _toVersion)
+        if ((*it).second == _toVersion)
         {
           return true;
         }
 
-        origVersion = (*it).filename().string();
+        origVersion = (*it).second;
         std::replace(origVersion.begin(), origVersion.end(), '.', '_');
       }
       else

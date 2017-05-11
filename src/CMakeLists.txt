@@ -24,6 +24,7 @@ set (sources
   Converter.cc
   Element.cc
   Exception.cc
+  Filesystem.cc
   parser.cc
   parser_urdf.cc
   Param.cc
@@ -66,10 +67,13 @@ set (gtest_sources
   SDF_TEST.cc
   Console_TEST.cc
   Converter_TEST.cc
+  Element_TEST.cc
   Exception_TEST.cc
+  Filesystem_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
+  Types_TEST.cc
 )
 sdf_build_tests(${gtest_sources})
 

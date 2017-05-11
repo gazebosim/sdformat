@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #include <gtest/gtest.h>
 #include <boost/version.hpp>
@@ -22,12 +22,12 @@
 
 bool check_double(std::string num)
 {
-    const std::string name = "number";
-    const std::string type = "double";
-    const std::string def = "0.0";
+  const std::string name = "number";
+  const std::string type = "double";
+  const std::string def = "0.0";
 
-    sdf::Param param(name, type, def, true);
-    return param.SetFromString(num);
+  sdf::Param param(name, type, def, true);
+  return param.SetFromString(num);
 }
 
 ////////////////////////////////////////////////////

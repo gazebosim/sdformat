@@ -25,17 +25,25 @@
   #include <boost/variant.hpp>
 #endif
 
-#include <memory>
-#include <functional>
 #include <algorithm>
+#include <functional>
+#include <memory>
 #include <typeinfo>
 #include <string>
 #include <vector>
+
 #include <ignition/math.hh>
 
 #include "sdf/Console.hh"
 #include "sdf/system_util.hh"
 #include "sdf/Types.hh"
+
+#ifdef _WIN32
+// Disable warning C4251 which is triggered by
+// std::unique_ptr
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 namespace sdf
 {
@@ -180,7 +188,7 @@ namespace sdf
              void Init(const std::string &_value);
 
     /// \brief Private data
-    private: ParamPrivate *dataPtr;
+    private: std::unique_ptr<ParamPrivate> dataPtr;
   };
 
   /// \internal
