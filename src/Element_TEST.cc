@@ -16,6 +16,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <algorithm>
 
 #include "sdf/Element.hh"
 #include "sdf/Param.hh"
@@ -147,6 +148,26 @@ TEST(Element, GetAttributeSet)
   EXPECT_FALSE(elem.GetAttributeSet("test"));
   elem.GetAttribute("test")->Set("asdf");
   EXPECT_TRUE(elem.GetAttributeSet("test"));
+}
+
+//////////////////////////////////////////////////
+TEST(Element, Children)
+{
+  sdf::ElementPtr child1 = std::make_shared<sdf::Element>();
+  sdf::ElementPtr child2 = std::make_shared<sdf::Element>();
+  sdf::ElementPtr child2Child1 = std::make_shared<sdf::Element>();
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+
+  parent->InsertElement(child1);
+  parent->InsertElement(child2);
+  child2->InsertElement(child2Child1);
+
+  auto uut = parent->Children();
+
+  EXPECT_EQ(2u, uut.size());
+  EXPECT_NE(uut.end(), std::find(uut.begin(), uut.end(), child1));
+  EXPECT_NE(uut.end(), std::find(uut.begin(), uut.end(), child2));
+  EXPECT_EQ(uut.end(), std::find(uut.begin(), uut.end(), child2Child1));
 }
 
 /////////////////////////////////////////////////

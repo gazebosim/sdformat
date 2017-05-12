@@ -589,6 +589,12 @@ ElementPtr Element::GetElementImpl(const std::string &_name) const
   return ElementPtr();
 }
 
+//////////////////////////////////////////////////
+const std::vector<ElementPtr> &Element::Children()
+{
+  return this->dataPtr->elements;
+}
+
 /////////////////////////////////////////////////
 ElementPtr Element::GetFirstElement() const
 {

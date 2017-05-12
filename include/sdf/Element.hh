@@ -236,6 +236,10 @@ namespace sdf
 
     public: bool HasElement(const std::string &_name) const;
 
+    /// \brief Get first level of elements (xml tags) below this one
+    /// \description "<a><b/><c><d></c></a>" a.Children() returns b and c
+    public: const std::vector<ElementPtr> &Children();
+
     public: ElementPtr GetElement(const std::string &_name) const;
     public: ElementPtr GetFirstElement() const;
 
