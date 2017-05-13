@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef _SDF_PARAM_HH_
-#define _SDF_PARAM_HH_
+#ifndef SDFORMAT_PARAM_HH_
+#define SDFORMAT_PARAM_HH_
 
 // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
@@ -217,9 +217,10 @@ namespace sdf
     /// \brief Variant type def.
     public: typedef boost::variant<bool, char, std::string, int, uint64_t,
                                    unsigned int, double, float, sdf::Time,
-                                   sdf::Color, ignition::math::Vector3d,
+                                   ignition::math::Color,
                                    ignition::math::Vector2i,
                                    ignition::math::Vector2d,
+                                   ignition::math::Vector3d,
                                    ignition::math::Quaterniond,
                                    ignition::math::Pose3d> ParamVariant;
 

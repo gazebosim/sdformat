@@ -346,10 +346,11 @@ TEST_F(SDFUpdate, EmptyValues)
       ignition::math::Pose3d(1, 2, 3, 4, 5, 6).Rot().Euler());
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Color>(emptyString), sdf::Color());
+  EXPECT_EQ(elem->Get<ignition::math::Color>(emptyString),
+      ignition::math::Color());
   elem->AddValue("color", ".1 .2 .3 1.0", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Color>(emptyString),
-            sdf::Color(.1f, .2f, .3f, 1.0f));
+  EXPECT_EQ(elem->Get<ignition::math::Color>(emptyString),
+            ignition::math::Color(.1f, .2f, .3f, 1.0f));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<sdf::Time>(emptyString), sdf::Time());
@@ -509,8 +510,8 @@ TEST_F(SDFUpdate, GetAny)
     boost::any anyValue = materialElem->GetElement("ambient")->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<sdf::Color>(anyValue),
-          sdf::Color(0.1f, 0.1f, 0.1f, 1.0f));
+      EXPECT_EQ(boost::any_cast<ignition::math::Color>(anyValue),
+          ignition::math::Color(0.1f, 0.1f, 0.1f, 1.0f));
     }
     catch(boost::bad_any_cast &/*_e*/)
     {

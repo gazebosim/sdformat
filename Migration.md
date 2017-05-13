@@ -14,6 +14,12 @@ but with improved human-readability..
 
 ## SDFormat 5.x to 6.x
 
+### Deprecations
+
+1. **sdf/Types.hh**
+   + ***Deprecated:*** sdf::Color class
+   + ***Replacement:*** ignition::math::Color class
+
 ## SDFormat 4.x to 5.x
 
 ### Deletions

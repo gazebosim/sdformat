@@ -20,6 +20,9 @@
    * [Pull request 338](https://bitbucket.org/osrf/sdformat/pull-requests/338)
    * [Pull request 339](https://bitbucket.org/osrf/sdformat/pull-requests/339)
 
+1. Deprecated sdf::Color, and switch to use ignition::math::Color
+   * [Pull request 330](https://bitbucket.org/osrf/sdformat/pull-requests/330)
+
 ## SDFormat 5.0
 
 ### SDFormat 5.0.0 (2017-01-25)
