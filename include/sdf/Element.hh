@@ -234,13 +234,13 @@ namespace sdf
     /// \returns A smart pointer to the first child of this element
     public: ElementPtr GetFirstElement() const;
 
-    /// \brief Retrieve the closest sibling of this element
+    /// \brief Get the next sibling of this element
     /// \param[in] _name if given then filter siblings by their xml tag
     /// \returns the next sibling element or sdf::ElementPtr(nullptr)
     ///
     /// This can be used in combination with GetFirstElement() to walk the SDF
     /// tree. First call parent->GetFirstElement() to get the first child. Call
-    /// child->GetNextElement() to iterate through its siblings.
+    /// child->GetNextElement() to iterate through the children of parent.
     public: ElementPtr GetNextElement(const std::string &_name = "") const;
 
     public: ElementPtr GetElement(const std::string &_name);
