@@ -182,10 +182,9 @@ namespace sdf
       return _out;
     }
 
-    /// \brief Initialize the value. This is called from the constructor.
+    /// \brief Private method to set the Element from a passed-in string.
     /// \param[in] _value Value to set the parameter to.
-    private: template<typename T>
-             void Init(const std::string &_value);
+    private: bool valueFromString(const std::string &_value);
 
     /// \brief Private data
     private: std::unique_ptr<ParamPrivate> dataPtr;
@@ -244,7 +243,9 @@ namespace sdf
   {
     try
     {
-      this->SetFromString(boost::lexical_cast<std::string>(_value));
+      std::stringstream ss;
+      ss << _value;
+      this->SetFromString(ss.str());
     }
     catch(...)
     {
@@ -320,41 +321,6 @@ namespace sdf
       return false;
     }
     return true;
-  }
-
-  ///////////////////////////////////////////////
-  template<typename T>
-  void Param::Init(const std::string &_value)
-  {
-    try
-    {
-      this->dataPtr->value = boost::lexical_cast<T>(_value);
-    }
-    catch(...)
-    {
-      if (this->dataPtr->typeName == "bool")
-      {
-        std::string strValue = _value;
-        std::transform(strValue.begin(), strValue.end(),
-                       strValue.begin(), ::tolower);
-        if (strValue == "true" || strValue == "1")
-        {
-          this->dataPtr->value = true;
-        }
-        else
-        {
-          this->dataPtr->value = false;
-        }
-      }
-      else
-      {
-        sdferr << "Unable to init parameter value from string["
-               << _value << "]\n";
-      }
-    }
-
-    this->dataPtr->defaultValue = this->dataPtr->value;
-    this->dataPtr->set = false;
   }
 
   ///////////////////////////////////////////////
