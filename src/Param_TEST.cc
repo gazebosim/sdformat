@@ -223,6 +223,16 @@ TEST(Param, UnknownType)
   EXPECT_DOUBLE_EQ(value.Radian(), 1.0);
 }
 
+////////////////////////////////////////////////////
+TEST(Param, Vector2i)
+{
+  sdf::Param vect2iParam("key", "vector2i", "0 0", false, "description");
+  ignition::math::Vector2i value;
+
+  EXPECT_TRUE(vect2iParam.Get<ignition::math::Vector2i>(value));
+  EXPECT_EQ(value, ignition::math::Vector2i(0, 0));
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
