@@ -130,8 +130,6 @@ namespace sdf
     /// \param[in] _prefix String value to prefix to the output.
     public: void PrintValues(std::string _prefix);
 
-    public: void PrintWiki(std::string _prefix);
-
     /// \brief Helper function for SDF::PrintDoc
     ///
     /// This generates the SDF html documentation.
