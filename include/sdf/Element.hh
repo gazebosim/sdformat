@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 #ifndef _SDF_ELEMENT_HH_
 #define _SDF_ELEMENT_HH_
 
@@ -93,9 +93,9 @@ namespace sdf
 
     /// \brief Set the requirement type.
     /// \param[in] _req Requirement type for this element:
-    /// 0: Not required
-    /// 1: Exactly one element is required
-    /// +: One or more elements are required
+    /// 0: Not required.
+    /// 1: Exactly one element is required.
+    /// +: One or more elements are required.
     /// *: Zero or more elements are required.
     public: void SetRequired(const std::string &_req);
 
@@ -142,7 +142,7 @@ namespace sdf
     /// \brief Helper function for SDF::PrintDoc
     ///
     /// This generates the SDF html documentation.
-    /// \param[out] _html Accumulated HTML for output
+    /// \param[out] _html Accumulated HTML for output.
     /// \param[in] _spacing Amount of spacing for this element.
     public: void PrintDocRightPane(std::string &_html,
                                   int _spacing, int &_index);
@@ -176,34 +176,50 @@ namespace sdf
                           const std::string &_description="");
 
     /// \brief Get the param of an attribute.
-    /// \param[in] _key the name of the attribute
+    /// \param[in] _key the name of the attribute.
     /// \return The parameter attribute value. NULL if the key is invalid.
     public: ParamPtr GetAttribute(const std::string &_key);
 
-    /// \brief Get the number of attributes
+    /// \brief Get the number of attributes.
+    /// \return The number of attributes.
     public: size_t GetAttributeCount() const;
 
-    /// \brief Get an attribute using an index
+    /// \brief Get an attribute using an index.
+    /// \param[in] _index the index of the attribute to get.
+    /// \return A Param pointer to the attribute.
     public: ParamPtr GetAttribute(unsigned int _index) const;
 
-    /// \brief Get the number of element descriptions
+    /// \brief Get the number of element descriptions.
+    /// \return The number of element descriptions.
     public: size_t GetElementDescriptionCount() const;
 
     /// \brief Get an element description using an index
+    /// \param[in] _index the index of the element description to get.
+    /// \return An Element pointer to the found element.
     public: ElementPtr GetElementDescription(unsigned int _index) const;
 
-    /// \brief Get an element descriptio using a key
+    /// \brief Get an element description using a key
+    /// \param[in] _key the key to use to find the element.
+    /// \return An Element pointer to the found element.
     public: ElementPtr GetElementDescription(const std::string &_key) const;
 
-    /// \brief Return true if an element description exists
+    /// \brief Return true if an element description exists.
+    /// \param[in] _name the name of the element to find.
+    /// \return True if the element description exists, false otherwise.
     public: bool HasElementDescription(const std::string &_name);
 
+    /// \brief Return true if an attribute exists.
+    /// \param[in] _key the key to use to find the attribute.
+    /// \return True if the attribute exists, false otherwise.
     public: bool HasAttribute(const std::string &_key);
 
     /// \brief Return true if the attribute was set (i.e. not default value)
+    /// \param[in] _key the key to use to find the attribute.
+    /// \return True if the attribute is set, false otherwise.
     public: bool GetAttributeSet(const std::string &_key);
 
     /// \brief Get the param of the elements value
+    /// return A Param pointer to the value of this element.
     public: ParamPtr GetValue();
 
     /// \brief Get the element value/attribute as a boost::any.
@@ -214,7 +230,7 @@ namespace sdf
 
     /// \brief Get the value of a key. This function assumes the _key
     /// exists.
-    /// \param[in] _key The name of a child attribute or element.
+    /// \param[in] _key the name of a child attribute or element.
     /// \return The value of the _key.
     /// \sa std::pair<T, bool> Get(const std::string &_key,
     /// const T &_defaultValue)
@@ -222,8 +238,8 @@ namespace sdf
             T Get(const std::string &_key = "");
 
     /// \brief Get the value of a key.
-    /// \param[in] _key The name of a child attribute or element.
-    /// \param[in] _defaultValue A default value to use if _key is not
+    /// \param[in] _key the name of a child attribute or element.
+    /// \param[in] _defaultValue a default value to use if _key is not
     /// found.
     /// \return A pair where the first element is the value of _key, and the
     /// second element is true when the _key was found and false otherwise.
@@ -232,9 +248,9 @@ namespace sdf
                                    const T &_defaultValue);
 
     /// \brief Get the value of a key.
-    /// \param[in] _key The name of a child attribute or element.
-    /// \param[out] _param The parameter output
-    /// \param[in] _defaultValue A default value to use if _key is not
+    /// \param[in] _key the name of a child attribute or element.
+    /// \param[out] _param the parameter output
+    /// \param[in] _defaultValue a default value to use if _key is not
     /// found.
     /// \return True when the _key was found and false otherwise.
     public: template<typename T>
@@ -242,18 +258,39 @@ namespace sdf
                      T &_param,
                      const T &_defaultValue);
 
+    /// \brief Set the value of this element.
+    /// \param[in] _value the value to set.
+    /// \return True if the value was successfully set, false otherwise.
     public: template<typename T>
             bool Set(const T &_value);
 
+    /// \brief Return true if the named element exists.
+    /// \param[in] _name the name of the element to look for.
+    /// \return True if the named element was found, false otherwise.
     public: bool HasElement(const std::string &_name) const;
 
-    public: ElementPtr GetElement(const std::string &_name) const;
+    /// \brief Get the first element.
+    /// \return A pointer to the first element if it exists, nullptr otherwise.
     public: ElementPtr GetFirstElement() const;
 
+    /// \brief Get the next, optionally named, element.
+    /// \param[in] _name the name of the next element to find.
+    /// \return A pointer to the next element if it exists, nullptr otherwise.
     public: ElementPtr GetNextElement(const std::string &_name = "") const;
 
+    /// \brief Get a pointer to the named element.  If the element does not
+    ///        exist, it will be added.
+    /// \param[in] _name the name of the element to look for.
+    /// \return A pointer to the named element.
     public: ElementPtr GetElement(const std::string &_name);
+
+    /// \brief Add a named element.
+    /// \param[in] _name the name of the element to add.
+    /// \return A pointer to the newly created Element object.
     public: ElementPtr AddElement(const std::string &_name);
+
+    /// \brief Add an element object.
+    /// \param[in] _elem the element object to add.
     public: void InsertElement(ElementPtr _elem);
 
     /// \brief Remove this element from its parent.
@@ -266,27 +303,55 @@ namespace sdf
     /// \brief Remove all child elements.
     public: void ClearElements();
 
+    /// \brief Call the Update() callback on each element, as well as
+    ///        the embedded Param.
     public: void Update();
+
+    /// \brief Call reset on each element and element description
+    ///        before deleting all of them.  Also clear out the
+    ///        embedded Param.
     public: void Reset();
 
+    /// \brief Set the include filename to the passed in filename.
+    /// \param[in] _filename the filename to set the include filename to.
     public: void SetInclude(const std::string &_filename);
+
+    /// \brief Get the include filename.
+    /// \return The include filename.
     public: std::string GetInclude() const;
 
-    /// \brief Get a text description of the element
+    /// \brief Get a text description of the element.
+    /// \return The text description of the element.
     public: std::string GetDescription() const;
 
-    /// \brief Set a text description for the element
+    /// \brief Set a text description for the element.
+    /// \param[in] _desc the text description to set for the element.
     public: void SetDescription(const std::string &_desc);
 
     /// \brief Add a new element description
+    /// \param[in] _elem the Element object to add to the descriptions.
     public: void AddElementDescription(ElementPtr _elem);
 
+    /// \brief Get a pointer to the named element.
+    /// \param[in] _name the name of the element to look for.
+    /// \return A pointer to the named element if found, nullptr otherwise.
     public: ElementPtr GetElementImpl(const std::string &_name) const;
 
+    /// \brief Generate a string (XML) representation of this object.
+    /// \param[in] _prefix arbitrary prefix to put on the string.
+    /// \param[out] _out the std::ostreamstream to write output to.
     private: void ToString(const std::string &_prefix,
                            std::ostringstream &_out) const;
 
 
+    /// \brief Create a new Param object and return it.
+    /// \param[in] _key Key for the parameter.
+    /// \param[in] _type String name for the value type (double,
+    /// int,...).
+    /// \param[in] _defaultValue Default value.
+    /// \param[in] _required True if the parameter is required to be set.
+    /// \param[in] _description Description of the parameter.
+    /// \return A pointer to the new Param object.
     private: ParamPtr CreateParam(const std::string &_key,
                                   const std::string &_type,
                                   const std::string &_defaultValue,

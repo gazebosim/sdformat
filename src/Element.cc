@@ -252,8 +252,8 @@ void Element::PrintDescription(const std::string &_prefix)
   std::string refSDF = this->ReferenceSDF();
   if (!refSDF.empty())
   {
-    std::cout << _prefix << "  <element ref ='" << refSDF <<
-        "' required ='*'/>\n";
+    std::cout << _prefix << "  <element ref ='" << refSDF
+              << "' required ='*'/>\n";
   }
 
   ElementPtr_V::iterator eiter;
