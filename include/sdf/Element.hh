@@ -233,6 +233,17 @@ namespace sdf
             std::pair<T, bool> Get(const std::string &_key,
                                    const T &_defaultValue);
 
+    /// \brief Get the value of a key.
+    /// \param[in] _key The name of a child attribute or element.
+    /// \param[out] _param The parameter output
+    /// \param[in] _defaultValue A default value to use if _key is not
+    /// found.
+    /// \return True when the _key was found and false otherwise.
+    public: template<typename T>
+            bool Get(const std::string &_key,
+                     T &_param,
+                     const T &_defaultValue);
+
     public: template<typename T>
             bool Set(const T &_value);
 
@@ -333,31 +344,20 @@ namespace sdf
   {
     T result = T();
 
-    if (_key.empty() && this->dataPtr->value)
-    {
-      this->dataPtr->value->Get<T>(result);
-    }
-    else if (!_key.empty())
-    {
-      ParamPtr param = this->GetAttribute(_key);
-      if (param)
-      {
-        param->Get(result);
-      }
-      else if (this->HasElement(_key))
-      {
-        result = this->GetElementImpl(_key)->Get<T>();
-      }
-      else if (this->HasElementDescription(_key))
-      {
-        result = this->GetElementDescription(_key)->Get<T>();
-      }
-      else
-      {
-        sdferr << "Unable to find value for key[" << _key << "]\n";
-      }
-    }
-    return result;
+    std::pair<T, bool> ret = this->Get<T>(_key, result);
+
+    return ret.first;
+  }
+
+  ///////////////////////////////////////////////
+  template<typename T>
+  bool Element::Get(const std::string &_key,
+                    T &_param,
+                    const T &_defaultValue)
+  {
+    std::pair<T, bool> ret = this->Get<T>(_key, _defaultValue);
+    _param = ret.first;
+    return ret.second;
   }
 
   ///////////////////////////////////////////////

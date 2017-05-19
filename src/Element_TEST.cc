@@ -100,7 +100,6 @@ TEST(Element, AddValue)
   elem.AddValue("string", "foo", false, "foo description");
 
   sdf::ParamPtr param = elem.GetValue();
-  fprintf(stderr, "type: %s\n", param->GetTypeName().c_str());
   ASSERT_TRUE(param->IsType<std::string>());
   ASSERT_EQ(param->GetKey(), "test");
   ASSERT_EQ(param->GetTypeName(), "string");
@@ -230,6 +229,25 @@ TEST(Element, AddElementReferenceSDF)
   child->Reset();
   ASSERT_EQ(child->GetElementDescriptionCount(), 0UL);
   ASSERT_EQ(child->GetAttributeCount(), 0UL);
+}
+
+/////////////////////////////////////////////////
+TEST(Element, GetTemplates)
+{
+  sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+
+  elem->AddAttribute("test", "string", "foo", false, "foo description");
+
+  std::string out = elem->Get<std::string>("test");
+  ASSERT_EQ(out, "foo");
+
+  std::pair<std::string, bool> pairout = elem->Get<std::string>("test", "def");
+  ASSERT_EQ(pairout.first, "foo");
+  ASSERT_EQ(pairout.second, true);
+
+  bool found = elem->Get<std::string>("test", out, "def");
+  ASSERT_EQ(out, "foo");
+  ASSERT_EQ(found, true);
 }
 
 /////////////////////////////////////////////////
