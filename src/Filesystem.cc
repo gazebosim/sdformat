@@ -166,23 +166,30 @@ DirIter::DirIter(const std::string &_in) : dataPtr(new DirIterPrivate)
 //////////////////////////////////////////////////
 void DirIter::next()
 {
-  struct dirent entry;
-  struct dirent *result;
-
   while (true)
   {
-    if (readdir_r(reinterpret_cast<DIR*>(this->dataPtr->handle), &entry,
-                  &result) != 0
-        || result == nullptr)
+    // It is OK to use readdir() instead of readdir_r() for a couple of reasons:
+    // 1.  This iterator class is not thread-safe for other reasons.
+    // 2.  As of glibc 2.24, readdir_r is deprecated.
+    //
+    // The NOLINT annotation is there to prevent cpplint from complaining about
+    // this use of readdir.
+    DIR *dirp = reinterpret_cast<DIR*>(this->dataPtr->handle);
+    struct dirent *entry = readdir(dirp);  // NOLINT(runtime/threadsafe_fn)
+    if (entry == nullptr)
     {
       this->dataPtr->end = true;
       this->dataPtr->current = "";
       break;
     }
 
-    if ((strcmp(entry.d_name, ".") != 0) && (strcmp(entry.d_name, "..") != 0))
+    // The construct below is much faster than strcmp().
+    int len = strlen(entry->d_name);
+    bool dot_or_dotdot = (len == 1 && entry->d_name[0] == '.') ||
+      (len == 2 && entry->d_name[0] == '.' && entry->d_name[1] == '.');
+    if (!dot_or_dotdot)
     {
-      this->dataPtr->current = std::string(entry.d_name);
+      this->dataPtr->current = std::string(entry->d_name);
       break;
     }
   }
