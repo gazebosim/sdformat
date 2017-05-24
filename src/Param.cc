@@ -18,6 +18,7 @@
 #include <locale.h>
 #include <math.h>
 
+#include "sdf/Assert.hh"
 #include "sdf/Param.hh"
 
 using namespace sdf;
@@ -47,7 +48,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->dataPtr->description = _description;
   this->dataPtr->set = false;
 
-  this->valueFromString(_default);
+  SDF_ASSERT(this->valueFromString(_default), "Invalid parameter");
   this->dataPtr->defaultValue = this->dataPtr->value;
 }
 

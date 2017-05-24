@@ -18,6 +18,8 @@
 #include <gtest/gtest.h>
 #include <boost/version.hpp>
 #include <ignition/math/Angle.hh>
+
+#include "sdf/Exception.hh"
 #include "sdf/Param.hh"
 
 bool check_double(std::string num)
@@ -231,6 +233,13 @@ TEST(Param, Vector2i)
 
   EXPECT_TRUE(vect2iParam.Get<ignition::math::Vector2i>(value));
   EXPECT_EQ(value, ignition::math::Vector2i(0, 0));
+}
+
+////////////////////////////////////////////////////
+TEST(Param, InvalidConstructor)
+{
+  ASSERT_THROW(sdf::Param badParam("key", "badtype", "0", false, "description"),
+               sdf::AssertionInternalError);
 }
 
 /////////////////////////////////////////////////
