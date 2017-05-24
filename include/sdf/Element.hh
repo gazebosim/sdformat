@@ -343,6 +343,11 @@ namespace sdf
     private: void ToString(const std::string &_prefix,
                            std::ostringstream &_out) const;
 
+    /// \brief Generate a string (XML) representation of this object.
+    /// \param[in] _prefix arbitrary prefix to put on the string.
+    /// \param[out] _out the std::ostreamstream to write output to.
+    private: void PrintValuesImpl(const std::string &_prefix,
+                                  std::ostringstream &_out) const;
 
     /// \brief Create a new Param object and return it.
     /// \param[in] _key Key for the parameter.
