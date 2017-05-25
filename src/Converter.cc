@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
-#include <list>
+#include <algorithm>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "sdf/Assert.hh"
@@ -74,10 +78,11 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 
   elem->SetAttribute("version", _toVersion);
 
-  std::string origVersionStr = origVersion;
-  std::replace(origVersion.begin(), origVersion.end(), '.', '_');
+  std::string currFilenameVersion = origVersion;
+  std::replace(currFilenameVersion.begin(), currFilenameVersion.end(),
+               '.', '_');
 
-  std::string filename = sdf::findFile(origVersion + ".convert");
+  std::string filename = sdf::findFile(currFilenameVersion + ".convert");
 
   // Use convert file in the current sdf version folder for conversion. If file
   // does not exist, then find intermediate convert files and iteratively
@@ -91,7 +96,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 
     // find all sdf version dirs in resource path
     sdf::filesystem::DirIter endIter;
-    std::list<std::pair<std::string, std::string>> sdfDirs;
+    std::set<std::pair<std::string, std::string>> sdfDirs;
     if (sdf::filesystem::is_directory(sdfPath))
     {
       for (sdf::filesystem::DirIter dirIter(sdfPath);
@@ -100,30 +105,30 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
         if (sdf::filesystem::is_directory(*dirIter))
         {
           std::string fname = sdf::filesystem::basename(*dirIter);
-          if (std::lexicographical_compare(origVersionStr.begin(),
-                                           origVersionStr.end(),
+          if (std::lexicographical_compare(origVersion.begin(),
+                                           origVersion.end(),
                                            fname.begin(),
                                            fname.end(),
                                            case_insensitive_cmp))
           {
-            sdfDirs.push_back(std::make_pair(*dirIter, fname));
+            sdfDirs.insert(std::make_pair(*dirIter, fname));
           }
         }
       }
     }
 
     // loop through sdf dirs and do the intermediate conversions
-    for (std::list<std::pair<std::string, std::string> >::iterator it =
+    for (std::set<std::pair<std::string, std::string> >::iterator it =
            sdfDirs.begin(); it != sdfDirs.end(); ++it)
     {
       std::string convertFile = sdf::filesystem::append((*it).first,
-                                                        origVersion+".convert");
+          currFilenameVersion + ".convert");
       if (sdf::filesystem::exists(convertFile))
       {
         if (!xmlDoc.LoadFile(convertFile))
         {
-            sdferr << "Unable to load file[" << convertFile << "]\n";
-            return false;
+          sdferr << "Unable to load file[" << convertFile << "]\n";
+          return false;
         }
         ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
         if ((*it).second == _toVersion)
@@ -131,15 +136,16 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
           return true;
         }
 
-        origVersion = (*it).second;
-        std::replace(origVersion.begin(), origVersion.end(), '.', '_');
+        currFilenameVersion = (*it).second;
+        std::replace(currFilenameVersion.begin(), currFilenameVersion.end(),
+                     '.', '_');
       }
       else
       {
         continue;
       }
     }
-    sdferr << "Unable to convert from SDF version " << origVersionStr
+    sdferr << "Unable to convert from SDF version " << origVersion
            << " to " << _toVersion << "\n";
     return false;
   }
@@ -204,7 +210,7 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
     else if (childElem->ValueStr() != "convert")
     {
       std::cerr <<  "Unknown convert element[" << childElem->ValueStr()
-        << "]\n";
+                << "]\n";
     }
   }
 }
@@ -418,8 +424,7 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   // be specified in the sdf.
   if (fromElemStr)
   {
-    TiXmlElement *moveFrom =
-        fromElem->FirstChildElement(fromName);
+    TiXmlElement *moveFrom = fromElem->FirstChildElement(fromName);
 
     // No matching element, so return.
     if (!moveFrom)
