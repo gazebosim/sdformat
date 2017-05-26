@@ -25,6 +25,7 @@ set (sources
   Element.cc
   Exception.cc
   Filesystem.cc
+  ign.cc
   parser.cc
   parser_urdf.cc
   Param.cc
@@ -96,3 +97,5 @@ if (NOT USE_INTERNAL_URDF)
 endif()
 
 sdf_install_library(sdformat)
+
+add_subdirectory(cmd)
