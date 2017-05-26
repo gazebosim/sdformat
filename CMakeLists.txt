@@ -242,7 +242,6 @@ else (buid_errors)
     add_subdirectory(src)
     add_subdirectory(include/sdf)
     add_subdirectory(sdf)
-    add_subdirectory(conf)
     add_subdirectory(doc)
   endif(BUILD_SDF)
 

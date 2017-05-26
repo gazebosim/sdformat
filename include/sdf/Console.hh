@@ -20,8 +20,9 @@
 
 #include <iostream>
 #include <fstream>
-#include <memory>
 #include <string>
+
+#include <memory>
 
 #include "sdf/system_util.hh"
 
