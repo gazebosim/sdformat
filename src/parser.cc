@@ -747,7 +747,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             sdferr << "<include filename='...'/> is deprecated. Should be "
                    << "<include><uri>...</uri></include\n";
 
-            filename = sdf::findFile(elemXml->Attribute("filename"), false);
+            filename = sdf::findFile(elemXml->Attribute("filename"));
           }
           else
           {
