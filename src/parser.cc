@@ -33,6 +33,23 @@
 namespace sdf
 {
 //////////////////////////////////////////////////
+template <typename TPtr>
+static inline bool _initFile(const std::string &_filename, TPtr _sdf)
+{
+  TiXmlDocument xmlDoc;
+  if (xmlDoc.LoadFile(_filename))
+  {
+    return initDoc(&xmlDoc, _sdf);
+  }
+  else
+  {
+    sdferr << "Unable to load file[" << _filename << "]\n";
+  }
+
+  return false;
+}
+
+//////////////////////////////////////////////////
 bool init(SDFPtr _sdf)
 {
   bool result = false;
@@ -51,14 +68,7 @@ bool init(SDFPtr _sdf)
   if (ftest)
   {
     fclose(ftest);
-    if (initFile(filename, _sdf))
-    {
-      result = true;
-    }
-    else
-    {
-      sdferr << "Unable to init SDF file[" << filename << "]\n";
-    }
+    result = _initFile(filename, _sdf);
   }
   else
   {
@@ -69,34 +79,15 @@ bool init(SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-template <typename TPtr>
-inline bool _initFile(const std::string &_filename, TPtr _sdf)
-{
-  std::string filename = sdf::findFile(_filename);
-
-  TiXmlDocument xmlDoc;
-  if (xmlDoc.LoadFile(filename))
-  {
-    return initDoc(&xmlDoc, _sdf);
-  }
-  else
-  {
-    sdferr << "Unable to load file[" << _filename << "]\n";
-  }
-
-  return false;
-}
-
-//////////////////////////////////////////////////
 bool initFile(const std::string &_filename, SDFPtr _sdf)
 {
-  return _initFile(_filename, _sdf);
+  return _initFile(sdf::findFile(_filename), _sdf);
 }
 
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, ElementPtr _sdf)
 {
-  return _initFile(_filename, _sdf);
+  return _initFile(sdf::findFile(_filename), _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -1040,11 +1031,11 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
   for (std::map<std::string, std::string>::iterator iter = replace.begin();
        iter != replace.end(); ++iter)
   {
-    replace_all(str, std::string("\"")+iter->first + "\"",
+    replace_all(str, std::string("\"") + iter->first + "\"",
                 std::string("\"") + iter->second + "\"");
-    replace_all(str, std::string("'")+iter->first + "'",
+    replace_all(str, std::string("'") + iter->first + "'",
                 std::string("'") + iter->second + "'");
-    replace_all(str, std::string(">")+iter->first + "<",
+    replace_all(str, std::string(">") + iter->first + "<",
                 std::string(">") + iter->second + "<");
   }
 
