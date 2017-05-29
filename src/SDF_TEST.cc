@@ -21,19 +21,6 @@
 #include "test_config.h"
 #include "sdf/sdf.hh"
 
-////////////////////////////////////////////////////
-// Testing fixture
-class SDFUpdate : public testing::Test
-{
-  protected: SDFUpdate()
-             {
-             }
-
-  protected: virtual ~SDFUpdate()
-             {
-             }
-};
-
 class SDFUpdateFixture
 {
   public:  std::string GetName() const {return this->name;}
@@ -46,7 +33,7 @@ class SDFUpdateFixture
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Update is working for attributes
-TEST_F(SDFUpdate, UpdateAttribute)
+TEST(SDF, UpdateAttribute)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
@@ -92,7 +79,7 @@ TEST_F(SDFUpdate, UpdateAttribute)
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Update is working for elements
-TEST_F(SDFUpdate, UpdateElement)
+TEST(SDF, UpdateElement)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
@@ -151,7 +138,7 @@ TEST_F(SDFUpdate, UpdateElement)
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Element::RemoveFromParent is working
-TEST_F(SDFUpdate, ElementRemoveFromParent)
+TEST(SDF, ElementRemoveFromParent)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
@@ -216,7 +203,7 @@ TEST_F(SDFUpdate, ElementRemoveFromParent)
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Element::RemoveChild is working
-TEST_F(SDFUpdate, ElementRemoveChild)
+TEST(SDF, ElementRemoveChild)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
@@ -283,7 +270,7 @@ TEST_F(SDFUpdate, ElementRemoveChild)
 
 ////////////////////////////////////////////////////
 /// Ensure that getting empty values with empty keys returns correct values.
-TEST_F(SDFUpdate, EmptyValues)
+TEST(SDF, EmptyValues)
 {
   std::string emptyString;
   sdf::ElementPtr elem;
@@ -369,7 +356,7 @@ TEST_F(SDFUpdate, EmptyValues)
 }
 
 /////////////////////////////////////////////////
-TEST_F(SDFUpdate, GetAny)
+TEST(SDF, GetAny)
 {
   std::ostringstream stream;
   // Test types double, bool, string, int, vector3, color, pose
@@ -521,7 +508,7 @@ TEST_F(SDFUpdate, GetAny)
 }
 
 /////////////////////////////////////////////////
-TEST_F(SDFUpdate, Version)
+TEST(SDF, Version)
 {
   EXPECT_STREQ(SDF_VERSION, sdf::SDF::Version().c_str());
 
