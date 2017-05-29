@@ -37,9 +37,9 @@ using namespace sdf;
 typedef std::list<std::string> PathList;
 typedef std::map<std::string, PathList> URIPathMap;
 
-URIPathMap g_uriPathMap;
+static URIPathMap g_uriPathMap;
 
-std::function<std::string(const std::string &)> g_findFileCB;
+static std::function<std::string(const std::string &)> g_findFileCB;
 
 std::string SDF::version = SDF_VERSION;
 
