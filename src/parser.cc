@@ -875,8 +875,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     }
 
     // Check that all required elements have been set
-    unsigned int descCounter = 0;
-    for (descCounter = 0;
+    for (unsigned int descCounter = 0;
          descCounter != _sdf->GetElementDescriptionCount(); ++descCounter)
     {
       ElementPtr elemDesc = _sdf->GetElementDescription(descCounter);
@@ -889,7 +888,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
               _sdf->Get<std::string>("type") != "ball")
           {
             sdferr << "XML Missing required element[" << elemDesc->GetName()
-              << "], child of element[" << _sdf->GetName() << "]\n";
+                   << "], child of element[" << _sdf->GetName() << "]\n";
             return false;
           }
           else
