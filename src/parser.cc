@@ -721,7 +721,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             sdferr << "Unable to find uri[" << uri << "]\n";
 
             size_t modelFound = uri.find("model://");
-            if ( modelFound != 0u)
+            if (modelFound != 0u)
             {
               sdferr << "Invalid uri[" << uri << "]. Should be model://"
                      << uri << "\n";
