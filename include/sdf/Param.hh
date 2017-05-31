@@ -70,6 +70,7 @@ namespace sdf
     /// \param[in] _default Default value.
     /// \param[in] _required True if the parameter is required to be set.
     /// \param[in] _description Description of the parameter.
+    /// \throws sdf::AssertionInternalError if an invalid type is given.
     public: Param(const std::string &_key, const std::string &_typeName,
                   const std::string &_default, bool _required,
                   const std::string &_description = "");
