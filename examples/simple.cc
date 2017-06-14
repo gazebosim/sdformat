@@ -26,15 +26,13 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  // Create and initialize the data structure that will hold the parsed SDF data
-  sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
-
   // Read an SDF file, and store the result in sdfParsed.
-  if (sdf::readFile(argv[1], sdfParsed))
+  auto sdf = sdf::readFile(argv[1]);
+
+  if (sdf)
   {
     // Get a pointer to the model element
-    sdf::ElementPtr model = sdfParsed->Root()->GetElement("model");
+    sdf::ElementPtr model = sdf->Root()->GetElement("model");
 
     // Get the "name" attribute from the model
     std::string modelName = model->Get<std::string>("name");

@@ -44,6 +44,10 @@ namespace sdf
 
   /// \brief Populate the SDF values from a file
   SDFORMAT_VISIBLE
+  sdf::SDFPtr readFile(const std::string &_filename);
+
+  /// \brief Populate the SDF values from a file
+  SDFORMAT_VISIBLE
   bool readFile(const std::string &_filename, SDFPtr _sdf);
 
   /// \brief Populate the SDF values from a string

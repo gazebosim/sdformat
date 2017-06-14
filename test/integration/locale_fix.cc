@@ -52,9 +52,8 @@ TEST(CheckFixForLocal, MakeTestToFail)
   setlocale(LC_NUMERIC, line);
 
   // fix to allow make test without make install
-  sdf::SDFPtr p(new sdf::SDF());
-  sdf::init(p);
-  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, p));
+  sdf::SDFPtr p = sdf::readFile(SDF_TEST_FILE);
+  ASSERT_TRUE(p != sdf::SDFPtr());
 
   sdf::ElementPtr elem = p->Root()->GetElement("world")
     ->GetElement("physics")->GetElement("ode")->GetElement("solver")
