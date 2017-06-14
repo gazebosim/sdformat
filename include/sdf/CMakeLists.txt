@@ -6,7 +6,6 @@ set (headers
   Element.hh
   Exception.hh
   Filesystem.hh
-  ign.hh
   Param.hh
   parser.hh
   SDFImpl.hh
