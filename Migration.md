@@ -32,6 +32,7 @@ but with improved human-readability..
     + bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf, const std::string &_source);
     + bool readXml(TiXmlElement *_xml, ElementPtr _sdf);
     + void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);
+    + std::string getBestSupportedModelVersion(TiXmlElement *_modelXML, std::string &_modelFileName);
 
 ### Deprecations
 

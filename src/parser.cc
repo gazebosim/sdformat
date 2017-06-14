@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <map>
+#include <ignition/math/SemanticVersion.hh>
 
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
@@ -400,7 +401,8 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
+bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
+             bool _convert)
 {
   if (!_xmlDoc)
   {
@@ -417,7 +419,8 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
-    if (strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
+    if (_convert
+        && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
       sdfdbg << "Converting a deprecated source[" << _source << "].\n";
       Converter::Convert(_xmlDoc, SDF::Version());
@@ -458,7 +461,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source)
 
 //////////////////////////////////////////////////
 bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
-             const std::string &_source)
+             const std::string &_source, bool _convert)
 {
   if (!_xmlDoc)
   {
@@ -475,8 +478,8 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
-    if (strcmp(sdfNode->Attribute("version"),
-               SDF::Version().c_str()) != 0)
+    if (_convert
+        && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
       sdfwarn << "Converting a deprecated SDF source[" << _source << "].\n";
       Converter::Convert(_xmlDoc, SDF::Version());
@@ -519,6 +522,115 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   }
 
   return true;
+}
+
+//////////////////////////////////////////////////
+std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
+                                         std::string &_modelFileName)
+{
+  TiXmlElement *sdfXML = _modelXML->FirstChildElement("sdf");
+  TiXmlElement *nameSearch = _modelXML->FirstChildElement("name");
+
+  // If a match is not found, use the latest version of the element
+  // that is not older than the SDF parser.
+  ignition::math::SemanticVersion sdfParserVersion(SDF_VERSION);
+  std::string bestVersionStr = "0.0";
+
+  TiXmlElement *sdfSearch = sdfXML;
+  while (sdfSearch)
+  {
+    if (sdfSearch->Attribute("version"))
+    {
+      auto version = std::string(sdfSearch->Attribute("version"));
+      ignition::math::SemanticVersion modelVersion(version);
+      ignition::math::SemanticVersion bestVersion(bestVersionStr);
+      if (modelVersion > bestVersion)
+      {
+        // this model is better than the previous one
+        if (modelVersion <= sdfParserVersion)
+        {
+          // the parser can read it
+          sdfXML  = sdfSearch;
+          bestVersionStr = version;
+        }
+        else
+        {
+          sdfwarn << "Ignoring version " << version
+                  << " for model " << nameSearch->GetText()
+                  << " because is newer than this sdf parser"
+                  << " (version " << SDF_VERSION << ")\n";
+        }
+      }
+    }
+    sdfSearch = sdfSearch->NextSiblingElement("sdf");
+  }
+
+  if (!sdfXML || !sdfXML->GetText())
+  {
+    sdferr << "Failure to detect an sdf tag in the model config file"
+           << " for model: " << nameSearch->GetText() << "\n";
+
+    _modelFileName = "";
+    return "";
+  }
+
+  if (!sdfXML->Attribute("version"))
+  {
+    sdfwarn << "Can not find the XML attribute 'version'"
+            << " in sdf XML tag for model: " << nameSearch->GetText() << "."
+            << " Please specify the SDF protocol supported in the model"
+            << " configuration file. The first sdf tag in the config file"
+            << " will be used \n";
+  }
+
+  _modelFileName = sdfXML->GetText();
+  return bestVersionStr;
+}
+
+//////////////////////////////////////////////////
+std::string getModelFilePath(const std::string &_modelDirPath)
+{
+  std::string configFilePath;
+
+  /// \todo This hardcoded bit is very Gazebo centric. It should
+  /// be abstracted away, possibly through a plugin to SDF.
+  if (sdf::filesystem::exists(sdf::filesystem::append(_modelDirPath,
+                                                      "model.config")))
+  {
+    configFilePath = sdf::filesystem::append(_modelDirPath, "model.config");
+  }
+  else if (sdf::filesystem::exists(sdf::filesystem::append(_modelDirPath,
+                                                      "manifest.xml")))
+  {
+    sdfwarn << "The manifest.xml for a model is deprecated. "
+            << "Please rename configFile.xml to "
+            << "model.config" << ".\n";
+
+    configFilePath = sdf::filesystem::append(_modelDirPath, "manifest.xml");
+  }
+
+  TiXmlDocument configFileDoc;
+  if (!configFileDoc.LoadFile(configFilePath))
+  {
+    sdferr << "Error parsing XML in file ["
+           << configFilePath << "]: "
+           << configFileDoc.ErrorDesc() << '\n';
+    return std::string();
+  }
+
+  TiXmlElement *modelXML = configFileDoc.FirstChildElement("model");
+
+  if (!modelXML)
+  {
+    sdferr << "No <model> element in configFile[" << configFilePath << "]\n";
+    return std::string();
+  }
+
+  std::string modelFileName;
+  if (getBestSupportedModelVersion(modelXML, modelFileName).empty())
+    return std::string();
+
+  return _modelDirPath + "/" + modelFileName;
 }
 
 //////////////////////////////////////////////////
@@ -624,16 +736,14 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
         if (elemXml->FirstChildElement("uri"))
         {
-          modelPath = sdf::findFile(
-              elemXml->FirstChildElement("uri")->GetText(), true, true);
+          std::string uri = elemXml->FirstChildElement("uri")->GetText();
+          modelPath = sdf::findFile(uri, true, true);
 
           // Test the model path
           if (modelPath.empty())
           {
-            sdferr << "Unable to find uri["
-                   << elemXml->FirstChildElement("uri")->GetText() << "]\n";
+            sdferr << "Unable to find uri[" << uri << "]\n";
 
-            std::string uri = elemXml->FirstChildElement("uri")->GetText();
             size_t modelFound = uri.find("model://");
             if ( modelFound != 0u)
             {
@@ -651,61 +761,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             }
           }
 
-          std::string manifestPath;
-
-          /// \todo This hardcoded bit is very Gazebo centric. It should
-          /// be abstracted away, possibly through a plugin to SDF.
-          if (sdf::filesystem::exists(sdf::filesystem::append(modelPath,
-                                                              "model.config")))
-          {
-            manifestPath = sdf::filesystem::append(modelPath, "model.config");
-          }
-          else
-          {
-            sdfwarn << "The manifest.xml for a model is deprecated. "
-                    << "Please rename manifest.xml to "
-                    << "model.config" << ".\n";
-
-            manifestPath = sdf::filesystem::append(modelPath, "manifest.xml");
-          }
-
-          TiXmlDocument manifestDoc;
-          if (manifestDoc.LoadFile(manifestPath))
-          {
-            TiXmlElement *modelXML = manifestDoc.FirstChildElement("model");
-            if (!modelXML)
-            {
-              sdferr << "No <model> element in manifest["
-                     << manifestPath << "]\n";
-            }
-            else
-            {
-              TiXmlElement *sdfXML = modelXML->FirstChildElement("sdf");
-
-              TiXmlElement *sdfSearch = sdfXML;
-
-              // Find the SDF element that matches our current SDF version.
-              while (sdfSearch)
-              {
-                if (sdfSearch->Attribute("version") &&
-                    std::string(sdfSearch->Attribute("version")) == SDF_VERSION)
-                {
-                  sdfXML = sdfSearch;
-                  break;
-                }
-
-                sdfSearch = sdfSearch->NextSiblingElement("sdf");
-              }
-
-              filename = modelPath + "/" + sdfXML->GetText();
-            }
-          }
-          else
-          {
-            sdferr << "Error parsing XML in file ["
-                   << manifestPath << "]: "
-                   << manifestDoc.ErrorDesc() << '\n';
-          }
+          // Get the config.xml filename
+          filename = getModelFilePath(modelPath);
         }
         else
         {
@@ -1041,7 +1098,8 @@ bool convertFile(const std::string &_filename, const std::string &_version,
   {
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
-      return sdf::readDoc(&xmlDoc, _sdf, filename);
+      bool convertToLatest = false;
+      return sdf::readDoc(&xmlDoc, _sdf, filename, convertToLatest);
     }
   }
   else
@@ -1069,7 +1127,8 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
   {
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
-      return sdf::readDoc(&xmlDoc, _sdf, "data-string");
+      bool convertToLatest = false;
+      return sdf::readDoc(&xmlDoc, _sdf, "data-string", convertToLatest);
     }
   }
   else

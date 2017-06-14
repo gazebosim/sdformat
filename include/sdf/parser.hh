@@ -30,15 +30,15 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool init(SDFPtr _sdf);
 
-  // \brief Initialize the SDF interface using a file
+  /// \brief Initialize the SDF interface using a file
   SDFORMAT_VISIBLE
   bool initFile(const std::string &_filename, SDFPtr _sdf);
 
-  // \brief Initialize an SDFElement interface using a file
+  /// \brief Initialize an SDFElement interface using a file
   SDFORMAT_VISIBLE
   bool initFile(const std::string &_filename, ElementPtr _sdf);
 
-  // \brief Initialize the SDF interface using a string
+  /// \brief Initialize the SDF interface using a string
   SDFORMAT_VISIBLE
   bool initString(const std::string &_xmlString, SDFPtr _sdf);
 
@@ -48,17 +48,38 @@ namespace sdf
   sdf::SDFPtr readFile(const std::string &_filename);
 
   /// \brief Populate the SDF values from a file
+  ///
+  /// This populates the given sdf pointer from a file. If the file is a URDF
+  /// file it is converted to SDF first. All files are converted to the latest
+  /// SDF version
   /// \param[in] _filename Name of the SDF file
   /// \param[in] _sdf Pointer to an SDF object.
   SDFORMAT_VISIBLE
   bool readFile(const std::string &_filename, SDFPtr _sdf);
 
   /// \brief Populate the SDF values from a string
+  ///
+  /// This populates the sdf pointer from a string. If the string is a URDF
+  /// string it is converted to SDF first. All string are converted to the
+  /// latest SDF version
   SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, SDFPtr _sdf);
 
+  /// \brief Populate the SDF values from a string
+  ///
+  /// This populates the sdf pointer from a string. If the string is a URDF
+  /// string it is converted to SDF first. All strings are converted to the
+  /// latest SDF version
   SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, ElementPtr _sdf);
+
+  /// \brief Get the file path to the model file
+  /// \param[in] _modelDirPath directory system path of the model
+  /// \return string with the full filesystem path to the best version (greater
+  ///         SDF protocol supported by this sdformat version) of the .sdf
+  ///         model files hosted by _modelDirPath.
+  SDFORMAT_VISIBLE
+  std::string getModelFilePath(const std::string &_modelDirPath);
 
   SDFORMAT_VISIBLE
   void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF);
