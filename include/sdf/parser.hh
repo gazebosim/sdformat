@@ -66,6 +66,14 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, ElementPtr _sdf);
 
+  /// \brief Get the file path to the model file
+  /// \param[in] _modelDirPath directory system path of the model
+  /// \return string with the full filesystem path to the best version (greater
+  ///         SDF protocol supported by this sdformat version) of the .sdf
+  ///         model files hosted by _modelDirPath.
+  SDFORMAT_VISIBLE
+  std::string getModelFilePath(const std::string &_modelDirPath);
+
   SDFORMAT_VISIBLE
   void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF);
 
