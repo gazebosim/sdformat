@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# Copyright (C) 2014 Open Source Robotics Foundation
+# Copyright (C) 2015 Open Source Robotics Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,9 +43,10 @@ COMMANDS = {  'sdf' =>
             }
 
 #
-# Class for the Ignition transport command line tools.
+# Class for the SDF command line tools.
 #
 class Cmd
+
   #
   # Return a structure describing the options.
   #
@@ -86,11 +87,15 @@ class Cmd
     options['command'] = ARGV[0]
 
     options
-  end  # parse()
+  end
 
+  #
+  # Execute the command
+  #
   def execute(args)
     options = parse(args)
 
+    # Debugging:
     # puts 'Parsed:'
     # puts options
 

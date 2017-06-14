@@ -34,6 +34,12 @@ extern "C" SDFORMAT_VISIBLE void cmdCheck(const char *_path)
 
   sdf::SDFPtr sdf(new sdf::SDF());
 
+  if (!sdf::init(sdf))
+  {
+    std::cerr << "ERROR: SDF parsing the xml failed" << std::endl;
+    return;
+  }
+
   if (!sdf::readFile(_path, sdf))
   {
     std::cerr << "Error: SDF parsing the xml failed\n";

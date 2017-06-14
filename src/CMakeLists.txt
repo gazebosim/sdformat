@@ -65,6 +65,7 @@ else()
 endif()
 
 set (gtest_sources
+  ign_TEST.cc
   SDF_TEST.cc
   Console_TEST.cc
   Converter_TEST.cc
