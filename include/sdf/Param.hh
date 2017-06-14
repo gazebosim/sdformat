@@ -183,7 +183,7 @@ namespace sdf
 
     /// \brief Private method to set the Element from a passed-in string.
     /// \param[in] _value Value to set the parameter to.
-    private: bool valueFromString(const std::string &_value);
+    private: bool ValueFromString(const std::string &_value);
 
     /// \brief Private data
     private: std::unique_ptr<ParamPrivate> dataPtr;

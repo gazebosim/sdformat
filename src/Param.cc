@@ -48,7 +48,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->dataPtr->description = _description;
   this->dataPtr->set = false;
 
-  SDF_ASSERT(this->valueFromString(_default), "Invalid parameter");
+  SDF_ASSERT(this->ValueFromString(_default), "Invalid parameter");
   this->dataPtr->defaultValue = this->dataPtr->value;
 }
 
@@ -240,7 +240,7 @@ std::string Param::GetDefaultAsString() const
 }
 
 //////////////////////////////////////////////////
-bool Param::valueFromString(const std::string &_value)
+bool Param::ValueFromString(const std::string &_value)
 {
   std::string tmp(_value);
   std::string lowerTmp(_value);
@@ -430,7 +430,7 @@ bool Param::SetFromString(const std::string &_value)
     return true;
   }
 
-  if (!this->valueFromString(str))
+  if (!this->ValueFromString(str))
   {
     return false;
   }
