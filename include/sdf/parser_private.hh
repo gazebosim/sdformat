@@ -27,22 +27,31 @@
 /// \brief namespace for Simulation Description Format parser
 namespace sdf
 {
-  // \brief Initialize the SDF interface using a TinyXML document
+  /// \brief Get the best SDF version from models supported by this sdformat
+  /// \param[in] _modelXML XML element from config file pointing to the
+  ///            model XML tag
+  /// \param[out] _modelFileName file name of the best model file
+  /// \return string with the best SDF version supported
+  std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
+                                           std::string &_modelFileName);
+
+  /// \brief Initialize the SDF interface using a TinyXML document
   bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf);
 
-  // \brief Initialize and SDF Element using a TinyXML document
+  /// \brief Initialize and SDF Element using a TinyXML document
   bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf);
 
-  // \brief For internal use only. Do not use this function.
+  /// \brief For internal use only. Do not use this function.
   bool initXml(TiXmlElement *_xml, ElementPtr _sdf);
 
   /// \brief Populate the SDF values from a TinyXML document
-  bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source);
+  bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
+      bool _convert = true);
 
   bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
-               const std::string &_source);
+      const std::string &_source, bool _convert = true);
 
-  // \brief For internal use only. Do not use this function.
+  /// \brief For internal use only. Do not use this function.
   bool readXml(TiXmlElement *_xml, ElementPtr _sdf);
 
   void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);

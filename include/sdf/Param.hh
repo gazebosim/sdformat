@@ -271,6 +271,8 @@ namespace sdf
         std::string strValue;
 
         ss >> strValue;
+        std::transform(strValue.begin(), strValue.end(),
+                       strValue.begin(), ::tolower);
 
         std::stringstream tmp;
         if (strValue == "true" || strValue  == "1")
