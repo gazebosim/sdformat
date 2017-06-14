@@ -243,7 +243,14 @@ namespace sdf
     /// child->GetNextElement() to iterate through the children of parent.
     public: ElementPtr GetNextElement(const std::string &_name = "") const;
 
+    /// \brief Return a pointer to the child element with the provided name.
+    /// A new child element, with the provided name, is added to this element
+    /// if there is no existing child element.
+    /// \param[in] _name Name of the child element to retreive.
+    /// \return Pointer to the existing child element, or a new child
+    /// element if an existing child element did not exist.
     public: ElementPtr GetElement(const std::string &_name);
+
     public: ElementPtr AddElement(const std::string &_name);
     public: void InsertElement(ElementPtr _elem);
 
