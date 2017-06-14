@@ -32,6 +32,8 @@ std::string get_sdf_string()
     << "    <value2>1</value2>"
     << "    <value3>false</value3>"
     << "    <value4>0</value4>"
+    << "    <value5>True</value5>"
+    << "    <value6>TRUE</value6>"
     << "  </plugin>"
     << "</model>"
     << "</sdf>";
@@ -60,4 +62,10 @@ TEST(PluginBool, ParseBoolValue)
 
   ASSERT_TRUE(plugin->HasElement("value4"));
   EXPECT_FALSE(plugin->Get<bool>("value4"));
+
+  ASSERT_TRUE(plugin->HasElement("value5"));
+  EXPECT_TRUE(plugin->Get<bool>("value5"));
+
+  ASSERT_TRUE(plugin->HasElement("value6"));
+  EXPECT_TRUE(plugin->Get<bool>("value6"));
 }
