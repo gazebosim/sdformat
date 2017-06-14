@@ -25,6 +25,13 @@
 
 ## SDFormat 5.0
 
+### SDFormat 5.1.0 (2017-02-22)
+
+1. Fixed `sdf::convertFile` and `sdf::convertString` always converting to latest version
+    * [Pull request 320](https://bitbucket.org/osrf/sdformat/pull-requests/320)
+1. Added back the ability to set sdf version at runtime
+    * [Pull request 307](https://bitbucket.org/osrf/sdformat/pull-requests/307)
+
 ### SDFormat 5.0.0 (2017-01-25)
 
 1. Removed SDFormat 4 deprecations
@@ -56,6 +63,9 @@
 
 1. Added `sampling` parameter to `<heightmap>` SDF element.
     * [Pull request 293](https://bitbucket.org/osrf/sdformat/pull-request/293)
+
+1. Case insensitive boolean strings
+    * [Pull request 322](https://bitbucket.org/osrf/sdformat/pull-request/322)
 
 ### SDFormat 4.2.0 (2016-10-10)
 
