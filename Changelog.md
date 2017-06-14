@@ -39,6 +39,9 @@
 1. Added `sampling` parameter to `<heightmap>` SDF element.
     * [Pull request 293](https://bitbucket.org/osrf/sdformat/pull-request/293)
 
+1. Case insensitive boolean strings
+    * [Pull request 322](https://bitbucket.org/osrf/sdformat/pull-request/322)
+
 ### SDFormat 4.2.0 (2016-10-10)
 
 1. Added tag to specify ODE friction model.
