@@ -2,6 +2,9 @@
 
 ### SDFormat 6.0.0 (xxxx-xx-xx)
 
+1. Add simplified ```readFile`` function.
+   * [Pull request 347](https://bitbucket.org/osrf/sdformat/pull-requests/347)
+
 1. Remove boost regex and iostreams as dependencies
    * [Pull request 302](https://bitbucket.org/osrf/sdformat/pull-requests/302)
 

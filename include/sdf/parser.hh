@@ -43,10 +43,13 @@ namespace sdf
   bool initString(const std::string &_xmlString, SDFPtr _sdf);
 
   /// \brief Populate the SDF values from a file
+  /// \param[in] _filename Name of the SDF file
   SDFORMAT_VISIBLE
   sdf::SDFPtr readFile(const std::string &_filename);
 
   /// \brief Populate the SDF values from a file
+  /// \param[in] _filename Name of the SDF file
+  /// \param[in] _sdf Pointer to an SDF object.
   SDFORMAT_VISIBLE
   bool readFile(const std::string &_filename, SDFPtr _sdf);
 
