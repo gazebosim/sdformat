@@ -160,6 +160,7 @@ namespace sdf
     /// \param[in] _defaultValue Default value for the attribute.
     /// \param[in] _required Requirement string. \as Element::SetRequired.
     /// \param[in] _description A text description of the attribute.
+    /// \throws sdf::AssertionInternalError if an invalid type is given.
     public: void AddAttribute(const std::string &_key,
                               const std::string &_type,
                               const std::string &_defaultvalue,
@@ -171,6 +172,7 @@ namespace sdf
     /// \param[in] _defaultValue Default value for the attribute.
     /// \param[in] _required Requirement string. \as Element::SetRequired.
     /// \param[in] _description A text description of the attribute.
+    /// \throws sdf::AssertionInternalError if an invalid type is given.
     public: void AddValue(const std::string &_type,
                           const std::string &_defaultValue, bool _required,
                           const std::string &_description="");
