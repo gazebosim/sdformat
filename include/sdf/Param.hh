@@ -20,7 +20,6 @@
 
 // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
-  #include <boost/lexical_cast.hpp>
   #include <boost/any.hpp>
   #include <boost/variant.hpp>
 #endif
@@ -71,6 +70,7 @@ namespace sdf
     /// \param[in] _default Default value.
     /// \param[in] _required True if the parameter is required to be set.
     /// \param[in] _description Description of the parameter.
+    /// \throws sdf::AssertionInternalError if an invalid type is given.
     public: Param(const std::string &_key, const std::string &_typeName,
                   const std::string &_default, bool _required,
                   const std::string &_description = "");
@@ -131,8 +131,7 @@ namespace sdf
 
     /// \brief Set the parameter's value.
     ///
-    /// The passed in value must conform to the boost::lexical_cast spec.
-    /// This means the value must have an input and output stream operator.
+    /// The passed in value value must have an input and output stream operator.
     /// \param[in] _value The value to set the parameter to.
     /// \return True if the value was successfully set.
     public: template<typename T>
@@ -182,10 +181,9 @@ namespace sdf
       return _out;
     }
 
-    /// \brief Initialize the value. This is called from the constructor.
+    /// \brief Private method to set the Element from a passed-in string.
     /// \param[in] _value Value to set the parameter to.
-    private: template<typename T>
-             void Init(const std::string &_value);
+    private: bool ValueFromString(const std::string &_value);
 
     /// \brief Private data
     private: std::unique_ptr<ParamPrivate> dataPtr;
@@ -244,15 +242,16 @@ namespace sdf
   {
     try
     {
-      this->SetFromString(boost::lexical_cast<std::string>(_value));
+      std::stringstream ss;
+      ss << _value;
+      this->SetFromString(ss.str());
     }
     catch(...)
     {
       sdferr << "Unable to set parameter["
              << this->dataPtr->key << "]."
              << "Type type used must have a stream input and output"
-             << "operator, which allow boost::lexical_cast to"
-             << "function properly.\n";
+             << "operator, which allows proper functioning of Param.\n";
       return false;
     }
     return true;
@@ -266,30 +265,39 @@ namespace sdf
     {
       if (typeid(T) == typeid(bool) && this->dataPtr->typeName == "string")
       {
-        std::string strValue =
-          boost::lexical_cast<std::string>(this->dataPtr->value);
+        std::stringstream ss;
+        ss << this->dataPtr->value;
+
+        std::string strValue;
+
+        ss >> strValue;
         std::transform(strValue.begin(), strValue.end(),
                        strValue.begin(), ::tolower);
+
+        std::stringstream tmp;
         if (strValue == "true" || strValue  == "1")
         {
-          _value = boost::lexical_cast<T>("1");
+          tmp << "1";
         }
         else
         {
-          _value = boost::lexical_cast<T>("0");
+          tmp << "0";
         }
+        tmp >> _value;
       }
       else if (typeid(T) == this->dataPtr->value.type())
       {
 #if BOOST_VERSION < 105800
-         _value = boost::get<T>(this->dataPtr->value);
+        _value = boost::get<T>(this->dataPtr->value);
 #else
-         _value = boost::relaxed_get<T>(this->dataPtr->value);
+        _value = boost::relaxed_get<T>(this->dataPtr->value);
 #endif
       }
       else
       {
-        _value = boost::lexical_cast<T>(this->dataPtr->value);
+        std::stringstream ss;
+        ss << this->dataPtr->value;
+        ss >> _value;
       }
     }
     catch(...)
@@ -308,9 +316,12 @@ namespace sdf
   template<typename T>
   bool Param::GetDefault(T &_value) const
   {
+    std::stringstream ss;
+
     try
     {
-      _value = boost::lexical_cast<T>(this->dataPtr->defaultValue);
+      ss << this->dataPtr->defaultValue;
+      ss >> _value;
     }
     catch(...)
     {
@@ -321,42 +332,8 @@ namespace sdf
              << "type[" << typeid(T).name() << "]\n";
       return false;
     }
+
     return true;
-  }
-
-  ///////////////////////////////////////////////
-  template<typename T>
-  void Param::Init(const std::string &_value)
-  {
-    try
-    {
-      this->dataPtr->value = boost::lexical_cast<T>(_value);
-    }
-    catch(...)
-    {
-      if (this->dataPtr->typeName == "bool")
-      {
-        std::string strValue = _value;
-        std::transform(strValue.begin(), strValue.end(),
-                       strValue.begin(), ::tolower);
-        if (strValue == "true" || strValue == "1")
-        {
-          this->dataPtr->value = true;
-        }
-        else
-        {
-          this->dataPtr->value = false;
-        }
-      }
-      else
-      {
-        sdferr << "Unable to init parameter value from string["
-               << _value << "]\n";
-      }
-    }
-
-    this->dataPtr->defaultValue = this->dataPtr->value;
-    this->dataPtr->set = false;
   }
 
   ///////////////////////////////////////////////

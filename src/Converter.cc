@@ -169,8 +169,8 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
   for (TiXmlElement *convertElem = _convert->FirstChildElement("convert");
        convertElem; convertElem = convertElem->NextSiblingElement("convert"))
   {
-    TiXmlElement *elem = NULL;
-    elem = _elem->FirstChildElement(convertElem->Attribute("name"));
+    TiXmlElement *elem = _elem->FirstChildElement(
+        convertElem->Attribute("name"));
     while (elem)
     {
       ConvertImpl(elem, convertElem);
