@@ -784,7 +784,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
             if (!readXml(childElemXml, pluginElem))
             {
-              sdferr << "Error reading element <" << childElemXml->Value() << ">\n";
+              sdferr << "Error reading plugin element\n";
               return false;
             }
           }
