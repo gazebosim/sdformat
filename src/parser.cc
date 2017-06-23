@@ -694,7 +694,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     if (p->GetRequired() && !p->GetSet())
     {
       sdferr << "Required attribute[" << p->GetKey()
-        << "] in element[" << _xml->Value() << "] is not specified in SDF.\n";
+             << "] in element[" << _xml->Value()
+             << "] is not specified in SDF.\n";
       return false;
     }
   }
