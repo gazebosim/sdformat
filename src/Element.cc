@@ -15,6 +15,10 @@
  *
  */
 
+#include <algorithm>
+#include <sstream>
+#include <string>
+
 #include "sdf/Assert.hh"
 #include "sdf/Element.hh"
 

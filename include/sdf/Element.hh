@@ -19,8 +19,8 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include "sdf/Param.hh"
 #include "sdf/system_util.hh"
