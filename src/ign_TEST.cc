@@ -65,7 +65,7 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/box_bad_test.world";
 
-    // Check box_plane_low_friction_test.world
+    // Check box_bad_test.world
     std::string output =
       custom_exec_str(std::string("ign sdf -k ") + path);
     EXPECT_TRUE(output.find("Unable to set value") != std::string::npos);
