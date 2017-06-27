@@ -65,7 +65,6 @@ else()
 endif()
 
 set (gtest_sources
-  ign_TEST.cc
   SDF_TEST.cc
   Console_TEST.cc
   Converter_TEST.cc
@@ -77,6 +76,14 @@ set (gtest_sources
   parser_TEST.cc
   Types_TEST.cc
 )
+
+# Build this test file only if Ignition Tools is installed.
+if (IGNITION-TOOLS_BINARY_DIRS)
+  set (gtest_sources ${gtest_sources}
+    ign_TEST.cc
+  )
+endif()
+
 sdf_build_tests(${gtest_sources})
 
 sdf_add_library(sdformat ${sources})

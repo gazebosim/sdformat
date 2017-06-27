@@ -86,6 +86,12 @@ if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
   endif()
 endif()
 
+#################################################
+# Find ign command line utility:
+if (NOT IGNITION-TOOLS_BINARY_DIRS)
+  BUILD_WARNING ("ignition-tools not found, for command line utilities, please install ignition-tools.")
+endif()
+
 ################################################
 # Find the Python interpreter for running the
 # check_test_ran.py script
