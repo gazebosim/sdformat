@@ -131,8 +131,8 @@ class Cmd
       case options['command']
       when 'sdf'
         if options.key?('check')
-          Importer.extern 'void cmdCheck(const char *)'
-          Importer.cmdCheck(options['check'])
+          Importer.extern 'int cmdCheck(const char *)'
+          exit(Importer.cmdCheck(options['check']))
         else
           puts 'Command error: I do not have an implementation '\
                'for this command.'

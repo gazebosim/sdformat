@@ -58,7 +58,7 @@ TEST(check, SDF)
     // Check box_plane_low_friction_test.world
     std::string output =
       custom_exec_str(std::string("ign sdf -k ") + path);
-    EXPECT_EQ(output, "Check complete\n");
+    EXPECT_EQ(output, "Valid.\n");
   }
 
   // Check a bad SDF file

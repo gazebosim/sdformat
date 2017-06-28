@@ -24,29 +24,30 @@
 #include "sdf/system_util.hh"
 
 //////////////////////////////////////////////////
-extern "C" SDFORMAT_VISIBLE void cmdCheck(const char *_path)
+extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 {
   if (!sdf::filesystem::exists(_path))
   {
-    std::cerr << "Error: File [" << _path << "] does not exist" << std::endl;
-    return;
+    std::cerr << "Error: File [" << _path << "] does not exist." << std::endl;
+    return 1;
   }
 
   sdf::SDFPtr sdf(new sdf::SDF());
 
   if (!sdf::init(sdf))
   {
-    std::cerr << "ERROR: SDF parsing the xml failed" << std::endl;
-    return;
+    std::cerr << "Error: SDF parsing the xml failed." << std::endl;
+    return 1;
   }
 
   if (!sdf::readFile(_path, sdf))
   {
-    std::cerr << "Error: SDF parsing the xml failed\n";
-    return;
+    std::cerr << "Error: SDF parsing the xml failed.\n";
+    return 1;
   }
 
-  std::cout << "Check complete\n";
+  std::cout << "Valid.\n";
+  return 0;
 }
 
 //////////////////////////////////////////////////
