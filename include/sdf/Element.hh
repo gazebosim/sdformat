@@ -124,11 +124,11 @@ namespace sdf
 
     /// \brief Output Element's description to stdout.
     /// \param[in] _prefix String value to prefix to the output.
-    public: void PrintDescription(const std::string &_prefix);
+    public: void PrintDescription(const std::string &_prefix) const;
 
     /// \brief Output Element's values to stdout.
     /// \param[in] _prefix String value to prefix to the output.
-    public: void PrintValues(std::string _prefix);
+    public: void PrintValues(std::string _prefix) const;
 
     /// \brief Helper function for SDF::PrintDoc
     ///
@@ -137,7 +137,7 @@ namespace sdf
     /// \param[in] _spacing Amount of spacing for this element.
     /// \param[in] _index Unique index for this element.
     public: void PrintDocLeftPane(std::string &_html,
-                                  int _spacing, int &_index);
+                                  int _spacing, int &_index) const;
 
     /// \brief Helper function for SDF::PrintDoc
     ///
@@ -145,7 +145,7 @@ namespace sdf
     /// \param[out] _html Accumulated HTML for output.
     /// \param[in] _spacing Amount of spacing for this element.
     public: void PrintDocRightPane(std::string &_html,
-                                  int _spacing, int &_index);
+                                  int _spacing, int &_index) const;
 
     /// \brief Convert the element values to a string representation.
     /// \param[in] _prefix String value to prefix to the output.
@@ -178,7 +178,7 @@ namespace sdf
     /// \brief Get the param of an attribute.
     /// \param[in] _key the name of the attribute.
     /// \return The parameter attribute value. NULL if the key is invalid.
-    public: ParamPtr GetAttribute(const std::string &_key);
+    public: ParamPtr GetAttribute(const std::string &_key) const;
 
     /// \brief Get the number of attributes.
     /// \return The number of attributes.
@@ -206,27 +206,27 @@ namespace sdf
     /// \brief Return true if an element description exists.
     /// \param[in] _name the name of the element to find.
     /// \return True if the element description exists, false otherwise.
-    public: bool HasElementDescription(const std::string &_name);
+    public: bool HasElementDescription(const std::string &_name) const;
 
     /// \brief Return true if an attribute exists.
     /// \param[in] _key the key to use to find the attribute.
     /// \return True if the attribute exists, false otherwise.
-    public: bool HasAttribute(const std::string &_key);
+    public: bool HasAttribute(const std::string &_key) const;
 
     /// \brief Return true if the attribute was set (i.e. not default value)
     /// \param[in] _key the key to use to find the attribute.
     /// \return True if the attribute is set, false otherwise.
-    public: bool GetAttributeSet(const std::string &_key);
+    public: bool GetAttributeSet(const std::string &_key) const;
 
     /// \brief Get the param of the elements value
     /// return A Param pointer to the value of this element.
-    public: ParamPtr GetValue();
+    public: ParamPtr GetValue() const;
 
     /// \brief Get the element value/attribute as a boost::any.
     /// \param[in] _key The key of the attribute. If empty, get the value of
     /// the element. Defaults to empty.
     /// \return The element as a boost::any.
-    public: boost::any GetAny(const std::string &_key = "");
+    public: boost::any GetAny(const std::string &_key = "") const;
 
     /// \brief Get the value of a key. This function assumes the _key
     /// exists.
@@ -235,7 +235,7 @@ namespace sdf
     /// \sa std::pair<T, bool> Get(const std::string &_key,
     /// const T &_defaultValue)
     public: template<typename T>
-            T Get(const std::string &_key = "");
+            T Get(const std::string &_key = "") const;
 
     /// \brief Get the value of a key.
     /// \param[in] _key the name of a child attribute or element.
@@ -245,7 +245,7 @@ namespace sdf
     /// second element is true when the _key was found and false otherwise.
     public: template<typename T>
             std::pair<T, bool> Get(const std::string &_key,
-                                   const T &_defaultValue);
+                                   const T &_defaultValue) const;
 
     /// \brief Get the value of a key.
     /// \param[in] _key the name of a child attribute or element.
@@ -256,7 +256,7 @@ namespace sdf
     public: template<typename T>
             bool Get(const std::string &_key,
                      T &_param,
-                     const T &_defaultValue);
+                     const T &_defaultValue) const;
 
     /// \brief Set the value of this element.
     /// \param[in] _value the value to set.
@@ -408,7 +408,7 @@ namespace sdf
 
   ///////////////////////////////////////////////
   template<typename T>
-  T Element::Get(const std::string &_key)
+  T Element::Get(const std::string &_key) const
   {
     T result = T();
 
@@ -421,7 +421,7 @@ namespace sdf
   template<typename T>
   bool Element::Get(const std::string &_key,
                     T &_param,
-                    const T &_defaultValue)
+                    const T &_defaultValue) const
   {
     std::pair<T, bool> ret = this->Get<T>(_key, _defaultValue);
     _param = ret.first;
@@ -431,7 +431,7 @@ namespace sdf
   ///////////////////////////////////////////////
   template<typename T>
   std::pair<T, bool> Element::Get(const std::string &_key,
-                                  const T &_defaultValue)
+                                  const T &_defaultValue) const
   {
     std::pair<T, bool> result(_defaultValue, true);
 
