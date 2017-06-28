@@ -29,7 +29,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!sdf::filesystem::exists(_path))
   {
     std::cerr << "Error: File [" << _path << "] does not exist." << std::endl;
-    return 1;
+    return -1;
   }
 
   sdf::SDFPtr sdf(new sdf::SDF());
@@ -37,13 +37,13 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!sdf::init(sdf))
   {
     std::cerr << "Error: SDF parsing the xml failed." << std::endl;
-    return 1;
+    return -1;
   }
 
   if (!sdf::readFile(_path, sdf))
   {
     std::cerr << "Error: SDF parsing the xml failed.\n";
-    return 1;
+    return -1;
   }
 
   std::cout << "Valid.\n";

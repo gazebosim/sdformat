@@ -24,7 +24,7 @@
 
 /// \brief External hook to execute 'ign sdf -k' from the command line.
 /// \param[in] _path Path to the file to validate.
-/// \return Zero on success, one otherwise.
+/// \return Zero on success, negative one otherwise.
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path);
 
 /// \brief External hook to read the library version.
