@@ -88,6 +88,7 @@ endif()
 
 #################################################
 # Find ign command line utility:
+find_package(ignition-tools)
 if (NOT IGNITION-TOOLS_BINARY_DIRS)
   BUILD_WARNING ("ignition-tools not found, for command line utilities, please install ignition-tools.")
 endif()
