@@ -96,6 +96,9 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 
     // find all sdf version dirs in resource path
     sdf::filesystem::DirIter endIter;
+    // Using a set here seems like overkill, since we mostly use it as a simple
+    // iterator.  However, we have to make sure that anything we insert is
+    // lexicographical order, and a set fits the bill.
     std::set<std::pair<std::string, std::string>> sdfDirs;
     if (sdf::filesystem::is_directory(sdfPath))
     {
