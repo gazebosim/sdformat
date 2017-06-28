@@ -238,6 +238,22 @@ ignition::math::Pose3d CopyPose(urdf::Pose _pose);
 ///   math::Pose
 urdf::Pose CopyPose(ignition::math::Pose3d _pose);
 
+bool URDF2SDF::IsURDF(const std::string &_filename)
+{
+  TiXmlDocument xmlDoc;
+
+  if (xmlDoc.LoadFile(_filename))
+  {
+    std::ostringstream stream;
+    stream << xmlDoc;
+    std::string urdfStr = stream.str();
+    urdf::ModelInterfaceSharedPtr robotModel = urdf::parseURDF(urdfStr);
+    return robotModel != nullptr;
+  }
+
+  return false;
+}
+
 /////////////////////////////////////////////////
 urdf::Vector3 ParseVector3(const std::string &_str, double _scale)
 {

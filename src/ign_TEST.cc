@@ -62,14 +62,14 @@ TEST(check, SDF)
     // Check box_plane_low_friction_test.world
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_EQ(output, "Check complete\n");
+    EXPECT_EQ(output, "Valid.\n");
   }
 
   // Check a bad SDF file
   {
     std::string path = pathBase +"/box_bad_test.world";
 
-    // Check box_plane_low_friction_test.world
+    // Check box_bad_test.world
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_TRUE(output.find("Unable to set value") != std::string::npos);
