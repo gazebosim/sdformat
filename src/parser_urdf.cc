@@ -1615,25 +1615,25 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       }
     }
 
-    // Handle fixed joints for which both disableFixedJointLumping
-    // and preserveFixedJoint options are present
-    for (auto& fixedJointConvertedToRevolute:
-          g_fixedJointsTransformedInRevoluteJoints)
-    {
-      // If both options are present, the model creator is aware of the
-      // existence of the preserveFixedJoint option and the
-      // disableFixedJointLumping option is there only for backward compatibility
-      // For this reason, if both options are present then the preserveFixedJoint
-      // option has the precedence
-      if (g_fixedJointsTransformedInFixedJoints.find(fixedJointConvertedToRevolute) !=
-          g_fixedJointsTransformedInFixedJoints.end())
-      {
-        g_fixedJointsTransformedInRevoluteJoints.erase(fixedJointConvertedToRevolute);
-      }
-    }
-
     // insert into my map
     (g_extensions.find(refStr))->second.push_back(sdf);
+  }
+
+  // Handle fixed joints for which both disableFixedJointLumping
+  // and preserveFixedJoint options are present
+  for (auto& fixedJointConvertedToFixed:
+             g_fixedJointsTransformedInFixedJoints)
+  {
+    // If both options are present, the model creator is aware of the
+    // existence of the preserveFixedJoint option and the
+    // disableFixedJointLumping option is there only for backward compatibility
+    // For this reason, if both options are present then the preserveFixedJoint
+    // option has the precedence
+    if (g_fixedJointsTransformedInRevoluteJoints.find(fixedJointConvertedToFixed) !=
+        g_fixedJointsTransformedInRevoluteJoints.end())
+    {
+      g_fixedJointsTransformedInRevoluteJoints.erase(fixedJointConvertedToFixed);
+    }
   }
 }
 
