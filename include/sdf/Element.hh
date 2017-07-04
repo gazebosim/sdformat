@@ -231,7 +231,8 @@ namespace sdf
     public: ElementPtr GetElement(const std::string &_name) const;
 
     /// \brief Get the first child element
-    /// \returns A smart pointer to the first child of this element
+    /// \returns A smart pointer to the first child of this element, or
+    ///          sdf::ElementPtr(nullptr) if there are no children
     public: ElementPtr GetFirstElement() const;
 
     /// \brief Get the next sibling of this element
