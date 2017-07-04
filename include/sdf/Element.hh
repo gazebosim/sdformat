@@ -237,11 +237,15 @@ namespace sdf
 
     /// \brief Get the next sibling of this element
     /// \param[in] _name if given then filter siblings by their xml tag
+    /// \remarks This function does not alter or store any state
+    ///          Repeated calls to "GetNextElement()" on an element will
+    ///          always return a pointer to the same element, the one which
+    ///          is adjacent to this element.
     /// \returns the next sibling element or sdf::ElementPtr(nullptr)
     ///
     /// This can be used in combination with GetFirstElement() to walk the SDF
     /// tree. First call parent->GetFirstElement() to get the first child. Call
-    /// child->GetNextElement() to iterate through the children of parent.
+    /// child = child->GetNextElement() to iterate through the children.
     public: ElementPtr GetNextElement(const std::string &_name = "") const;
 
     /// \brief Return a pointer to the child element with the provided name.
