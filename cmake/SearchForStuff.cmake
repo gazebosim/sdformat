@@ -89,7 +89,9 @@ endif()
 #################################################
 # Find ign command line utility:
 find_package(ignition-tools)
-if (NOT IGNITION-TOOLS_BINARY_DIRS)
+if (IGNITION-TOOLS_BINARY_DIRS)
+  message(STATUS "Looking for ignition-tools-config.cmake - found")
+else()
   BUILD_WARNING ("ignition-tools not found, for command line utilities, please install ignition-tools.")
 endif()
 
