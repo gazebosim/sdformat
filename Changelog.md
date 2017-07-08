@@ -1,12 +1,43 @@
 ## SDFormat 4.0
 
-### SDFormat 4.x.x (2016-xx-xx)
+### SDFormat 4.x.x (2017-xx-xx)
+
+### SDFormat 4.3.1 (2017-03-24)
+
+1. Fix segmentation Fault in `sdf::getBestSupportedModelVersion`
+    * [Pull request 327](https://bitbucket.org/osrf/sdformat/pull-requests/327)
+    * [Issue 152](https://bitbucket.org/osrf/sdformat/issues/152)
+
+### SDFormat 4.3.0 (2017-03-20)
+
+1. Choosing models with more recent sdf version with `<include>` tag
+    * [Pull request 291](https://bitbucket.org/osrf/sdformat/pull-request/291)
+    * [Issue 123](https://bitbucket.org/osrf/sdformat/issues/123)
+
+1. Added `<category_bitmask>` to 1.6 surface contact parameters
+    * [Pull request 318](https://bitbucket.org/osrf/sdformat/pull-request/318)
+
+1. Support light insertion in state
+    * [Pull request 325](https://bitbucket.org/osrf/sdformat/pull-request/325)
+
+1. Case insensitive boolean strings
+    * [Pull request 322](https://bitbucket.org/osrf/sdformat/pull-request/322)
+
+1. Enable coverage testing
+    * [Pull request 317](https://bitbucket.org/osrf/sdformat/pull-request/317)
+
+1. Add `friction_model` parameter to ode solver
+    * [Pull request 294](https://bitbucket.org/osrf/sdformat/pull-request/294)
+    * [Gazebo pull request 1522](https://bitbucket.org/osrf/gazebo/pull-request/1522)
 
 1. Added `sampling` parameter to `<heightmap>` SDF element.
     * [Pull request 293](https://bitbucket.org/osrf/sdformat/pull-request/293)
 
-1. Case insensitive boolean strings
-    * [Pull request 322](https://bitbucket.org/osrf/sdformat/pull-request/322)
+1. Added Migration guide
+    * [Pull request 290](https://bitbucket.org/osrf/sdformat/pull-request/290)
+
+1. Add cmake `@PKG_NAME@_LIBRARY_DIRS` variable to cmake config file
+    * [Pull request 292](https://bitbucket.org/osrf/sdformat/pull-request/292)
 
 ### SDFormat 4.2.0 (2016-10-10)
 
