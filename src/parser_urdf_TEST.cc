@@ -106,7 +106,7 @@ TEST_F(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
    ASSERT_EQ(sdf_same_result_str, sdf_result_str);
 }
 
-TEST_F(URDFParser, CheckFixedJointOptions)
+TEST_F(URDFParser, CheckFixedJointOptions_NoOption)
 {
   // Convert a fixed joint with no options (i.e. it will be lumped)
   std::ostringstream fixedJointNoOptions;
@@ -142,8 +142,10 @@ TEST_F(URDFParser, CheckFixedJointOptions)
   ASSERT_TRUE(elem->HasElement("model"));
   elem = elem->GetElement("model");
   ASSERT_FALSE(elem->HasElement("joint"));
+}
 
-
+TEST_F(URDFParser, CheckFixedJointOptions_disableJointLumping)
+{
   // Convert a fixed joint with disableJointLumping (i.e. converted to fake revolute joint)
   std::ostringstream fixedJointDisableJointLumping;
   fixedJointDisableJointLumping << "<robot name='test_robot'>"
@@ -176,7 +178,7 @@ TEST_F(URDFParser, CheckFixedJointOptions)
   // Check that there is a revolute joint in the converted SDF
   sdf::SDF fixedJointDisableJointLumpingSDF;
   convert_urdf_str_to_sdf(fixedJointDisableJointLumping.str(), fixedJointDisableJointLumpingSDF);
-  elem = fixedJointDisableJointLumpingSDF.Root();
+  sdf::ElementPtr elem = fixedJointDisableJointLumpingSDF.Root();
   ASSERT_TRUE(elem != nullptr);
   ASSERT_TRUE(elem->HasElement("model"));
   elem = elem->GetElement("model");
@@ -184,7 +186,10 @@ TEST_F(URDFParser, CheckFixedJointOptions)
   elem = elem->GetElement("joint");
   std::string jointType = elem->Get<std::string>("type");
   ASSERT_EQ(jointType, "revolute");
+}
 
+TEST_F(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
+{
   // Convert a fixed joint with disableJointLumping and preserveFixedJoint (i.e. converted to fixed joint)
   std::ostringstream fixedJointPreserveFixedJoint;
   fixedJointPreserveFixedJoint << "<robot name='test_robot'>"
@@ -220,12 +225,12 @@ TEST_F(URDFParser, CheckFixedJointOptions)
   // Check that there is a fixed joint in the converted SDF
   sdf::SDF fixedJointPreserveFixedJointSDF;
   convert_urdf_str_to_sdf(fixedJointPreserveFixedJoint.str(), fixedJointPreserveFixedJointSDF);
-  elem = fixedJointPreserveFixedJointSDF.Root();
+  sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
   ASSERT_TRUE(elem != nullptr);
   ASSERT_TRUE(elem->HasElement("model"));
   elem = elem->GetElement("model");
   ASSERT_TRUE(elem->HasElement("joint"));
   elem = elem->GetElement("joint");
-  jointType = elem->Get<std::string>("type");
+  std::string jointType = elem->Get<std::string>("type");
   ASSERT_EQ(jointType, "fixed");
 }
