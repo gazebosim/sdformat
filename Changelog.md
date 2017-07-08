@@ -2,6 +2,12 @@
 
 ### SDFormat 4.x.x (2017-xx-xx)
 
+1. Add documentation for `Element::GetFirstElement()` and `Element::GetNextElement()`
+    * [Pull request 341](https://bitbucket.org/osrf/sdformat/pull-request/341)
+
+1. Fix parser to read plugin child elements within an `<include>`
+    * [Pull request 350](https://bitbucket.org/osrf/sdformat/pull-request/350)
+
 ### SDFormat 4.3.1 (2017-03-24)
 
 1. Fix segmentation Fault in `sdf::getBestSupportedModelVersion`
