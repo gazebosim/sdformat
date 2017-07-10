@@ -25,10 +25,12 @@
 #endif
 
 #include <algorithm>
+#include <cstdint>
 #include <functional>
 #include <memory>
-#include <typeinfo>
+#include <sstream>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 #include <ignition/math.hh>
@@ -213,7 +215,7 @@ namespace sdf
 
     /// \def ParamVariant
     /// \brief Variant type def.
-    public: typedef boost::variant<bool, char, std::string, int, uint64_t,
+    public: typedef boost::variant<bool, char, std::string, int, std::uint64_t,
                                    unsigned int, double, float, sdf::Time,
                                    ignition::math::Color,
                                    ignition::math::Vector2i,

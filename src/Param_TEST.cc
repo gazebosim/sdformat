@@ -15,8 +15,12 @@
  *
  */
 
+#include <cstdint>
+
 #include <gtest/gtest.h>
+
 #include <boost/version.hpp>
+
 #include <ignition/math/Angle.hh>
 
 #include "sdf/Exception.hh"
@@ -213,13 +217,13 @@ TEST(Param, HexDouble)
 TEST(Param, uint64t)
 {
   sdf::Param uint64tParam("key", "uint64_t", "1", false, "description");
-  uint64_t value;
-  EXPECT_TRUE(uint64tParam.Get<uint64_t>(value));
+  std::uint64_t value;
+  EXPECT_TRUE(uint64tParam.Get<std::uint64_t>(value));
   EXPECT_EQ(value, 1u);
 
   // Max uint64_t
   EXPECT_TRUE(uint64tParam.SetFromString("18446744073709551615"));
-  EXPECT_TRUE(uint64tParam.Get<uint64_t>(value));
+  EXPECT_TRUE(uint64tParam.Get<std::uint64_t>(value));
   EXPECT_EQ(value, UINT64_MAX);
 }
 
