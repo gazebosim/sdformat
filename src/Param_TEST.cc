@@ -376,6 +376,21 @@ TEST(Param, GetAny)
   EXPECT_TRUE(quatParam.GetAny(anyValue));
 }
 
+////////////////////////////////////////////////////
+TEST(Param, SetTemplate)
+{
+  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  double value;
+
+  EXPECT_TRUE(doubleParam.Get<double>(value));
+  EXPECT_DOUBLE_EQ(value, 1.0);
+
+  doubleParam.Set<double>(25.456);
+
+  EXPECT_TRUE(doubleParam.Get<double>(value));
+  EXPECT_DOUBLE_EQ(value, 25.456);
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)

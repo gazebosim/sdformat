@@ -252,8 +252,8 @@ namespace sdf
     {
       sdferr << "Unable to set parameter["
              << this->dataPtr->key << "]."
-             << "Type type used must have a stream input and output"
-             << "operator, which allows proper functioning of Param.\n";
+             << "Type used must have a stream input and output operator,"
+             << "which allows proper functioning of Param.\n";
       return false;
     }
   }
