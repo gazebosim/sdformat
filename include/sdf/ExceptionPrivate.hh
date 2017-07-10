@@ -19,6 +19,7 @@
 #define _SDF_EXCEPTION_PRIVATE_HH_
 
 #include <string>
+
 #include <stdint.h>
 
 namespace sdf

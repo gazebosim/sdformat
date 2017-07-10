@@ -15,6 +15,8 @@
  *
  */
 
+#include <string>
+
 #include "sdf/ExceptionPrivate.hh"
 #include "sdf/Console.hh"
 #include "sdf/Exception.hh"
@@ -49,8 +51,6 @@ Exception::Exception(const Exception &_e)
 //////////////////////////////////////////////////
 Exception::~Exception()
 {
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////
