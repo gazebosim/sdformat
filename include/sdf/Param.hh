@@ -246,7 +246,7 @@ namespace sdf
     {
       std::stringstream ss;
       ss << _value;
-      this->SetFromString(ss.str());
+      return this->SetFromString(ss.str());
     }
     catch(...)
     {
@@ -256,7 +256,6 @@ namespace sdf
              << "operator, which allows proper functioning of Param.\n";
       return false;
     }
-    return true;
   }
 
   ///////////////////////////////////////////////
