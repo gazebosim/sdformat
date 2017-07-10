@@ -343,4 +343,9 @@ namespace sdf
     return this->dataPtr->value.type() == typeid(Type);
   }
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
+
 #endif
