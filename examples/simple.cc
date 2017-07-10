@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  // Read an SDF file, and store the result in sdfParsed.
+  // Read an SDF file, and store the result in sdf.
   auto sdf = sdf::readFile(argv[1]);
 
   if (sdf)
