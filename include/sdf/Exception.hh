@@ -18,12 +18,11 @@
 #ifndef _SDF_EXCEPTION_HH_
 #define _SDF_EXCEPTION_HH_
 
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <sstream>
 #include <string>
-
-#include <stdint.h>
 
 #include "sdf/system_util.hh"
 
@@ -59,7 +58,7 @@ namespace sdf
     /// \param[in] _line Line number where the error occurred
     /// \param[in] _msg Error message
     public: Exception(const char *_file,
-                      int64_t _line,
+                      std::int64_t _line,
                       std::string _msg);
 
     /// \brief Copy constructor
@@ -107,7 +106,7 @@ namespace sdf
     /// \param[in] _file File name
     /// \param[in] _line Line number where the error occurred
     /// \param[in] _msg Error message
-    public: InternalError(const char *_file, int64_t _line,
+    public: InternalError(const char *_file, std::int64_t _line,
                           const std::string _msg);
 
     /// \brief Destructor
@@ -129,7 +128,7 @@ namespace sdf
     /// \param[in] _function Function where assertion failed
     /// \param[in] _msg Function where assertion failed
     public: AssertionInternalError(const char *_file,
-                                   int64_t _line,
+                                   std::int64_t _line,
                                    const std::string _expr,
                                    const std::string _function,
                                    const std::string _msg = "");
