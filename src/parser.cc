@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
 #include <map>
+#include <string>
+
 #include <ignition/math/SemanticVersion.hh>
 
 #include "sdf/Console.hh"
@@ -26,9 +27,8 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/parser.hh"
 #include "sdf/parser_private.hh"
-#include "sdf/sdf_config.h"
-
 #include "sdf/parser_urdf.hh"
+#include "sdf/sdf_config.h"
 
 namespace sdf
 {
