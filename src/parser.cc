@@ -570,19 +570,23 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 
   /// \todo This hardcoded bit is very Gazebo centric. It should
   /// be abstracted away, possibly through a plugin to SDF.
-  if (sdf::filesystem::exists(sdf::filesystem::append(_modelDirPath,
-                                                      "model.config")))
+  configFilePath = sdf::filesystem::append(_modelDirPath, "model.config");
+  if (!sdf::filesystem::exists(configFilePath))
   {
-    configFilePath = sdf::filesystem::append(_modelDirPath, "model.config");
+    // We didn't find model.config, look for manifest.xml instead
+    configFilePath = sdf::filesystem::append(_modelDirPath, "manifest.xml");
+    if (!sdf::filesystem::exists(configFilePath))
+    {
+      // We didn't find manifest.xml either, output an error and get out.
+      sdferr << "Could not find model.config or manifest.xml for the model\n";
+      return std::string();
+    }
   }
-  else if (sdf::filesystem::exists(sdf::filesystem::append(_modelDirPath,
-                                                           "manifest.xml")))
+  else
   {
     sdfwarn << "The manifest.xml for a model is deprecated. "
-            << "Please rename configFile.xml to "
+            << "Please rename manifest.xml to "
             << "model.config" << ".\n";
-
-    configFilePath = sdf::filesystem::append(_modelDirPath, "manifest.xml");
   }
 
   TiXmlDocument configFileDoc;
