@@ -576,7 +576,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     configFilePath = sdf::filesystem::append(_modelDirPath, "model.config");
   }
   else if (sdf::filesystem::exists(sdf::filesystem::append(_modelDirPath,
-                                                      "manifest.xml")))
+                                                           "manifest.xml")))
   {
     sdfwarn << "The manifest.xml for a model is deprecated. "
             << "Please rename configFile.xml to "
@@ -604,9 +604,11 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 
   std::string modelFileName;
   if (getBestSupportedModelVersion(modelXML, modelFileName).empty())
+  {
     return std::string();
+  }
 
-  return _modelDirPath + "/" + modelFileName;
+  return sdf::filesystem::append(_modelDirPath, modelFileName);
 }
 
 //////////////////////////////////////////////////
