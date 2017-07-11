@@ -19,13 +19,14 @@
 #include <string>
 
 #include <gtest/gtest.h>
+
 #include "sdf/sdf.hh"
 #include "sdf/Converter.hh"
 
 #include "test_config.h"
 
 const std::string CONVERT_DOC =
-  std::string(PROJECT_SOURCE_PATH) + "/sdf/1.6/1_5.convert";
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.6", "1_5.convert");
 
 /////////////////////////////////////////////////
 /// Test conversion of imu in 1.5 to 1.6
@@ -144,8 +145,8 @@ TEST(ConverterIntegration, IMU_15_to_16)
 /// Test conversion using the parser sdf file converter interface.
 TEST(ConverterIntegration, ParserFileConverter)
 {
-  std::string filename = std::string(PROJECT_SOURCE_PATH) +
-    "/test/integration/audio.sdf";
+  std::string filename = sdf::filesystem::append(PROJECT_SOURCE_PATH, "test",
+                                                 "integration", "audio.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
@@ -179,8 +180,8 @@ TEST(ConverterIntegration, ParserFileConverter)
 /// Convert to a previous SDF version
 TEST(ConverterIntegration, convertFileToNotLatestVersion)
 {
-  std::string filename = std::string(PROJECT_SOURCE_PATH) +
-    "/test/integration/audio.sdf";
+  std::string filename = sdf::filesystem::append(PROJECT_SOURCE_PATH, "test",
+                                                 "integration", "audio.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);

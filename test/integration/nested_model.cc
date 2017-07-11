@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <sstream>
+#include <string>
 
 #include <gtest/gtest.h>
-#include <string>
-#include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "sdf/sdf.hh"
 
 ////////////////////////////////////////
 // Test parsing nested model with joint
@@ -97,7 +98,7 @@ TEST(NestedModel, NestedModel)
 
   EXPECT_TRUE(axisElem->HasElement("xyz"));
   EXPECT_EQ(axisElem->Get<ignition::math::Vector3d>("xyz"),
-      ignition::math::Vector3d(1, 0, 0));
+    ignition::math::Vector3d(1, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -157,7 +158,7 @@ TEST(NestedModel, State)
   EXPECT_EQ(modelStateElem->Get<std::string>("name"), "model_00");
   EXPECT_TRUE(modelStateElem->HasElement("pose"));
   EXPECT_EQ(modelStateElem->Get<ignition::math::Pose3d>("pose"),
-      ignition::math::Pose3d(0, 0, 0.5, 0, 0, 0));
+    ignition::math::Pose3d(0, 0, 0.5, 0, 0, 0));
   EXPECT_TRUE(!modelStateElem->HasElement("joint"));
 
   // link sdf
@@ -167,46 +168,46 @@ TEST(NestedModel, State)
   EXPECT_EQ(linkStateElem->Get<std::string>("name"), "link_00");
   EXPECT_TRUE(linkStateElem->HasElement("pose"));
   EXPECT_EQ(linkStateElem->Get<ignition::math::Pose3d>("pose"),
-      ignition::math::Pose3d(0, 0, 0.5, 0, 0, 0));
+    ignition::math::Pose3d(0, 0, 0.5, 0, 0, 0));
   EXPECT_TRUE(linkStateElem->HasElement("velocity"));
   EXPECT_EQ(linkStateElem->Get<ignition::math::Pose3d>("velocity"),
-      ignition::math::Pose3d(0.001, 0, 0, 0, 0, 0));
+    ignition::math::Pose3d(0.001, 0, 0, 0, 0, 0));
   EXPECT_TRUE(linkStateElem->HasElement("acceleration"));
   EXPECT_EQ(linkStateElem->Get<ignition::math::Pose3d>("acceleration"),
-      ignition::math::Pose3d(0, 0.006121, 0, 0.012288, 0, 0.001751));
+    ignition::math::Pose3d(0, 0.006121, 0, 0.012288, 0, 0.001751));
   EXPECT_TRUE(linkStateElem->HasElement("wrench"));
   EXPECT_EQ(linkStateElem->Get<ignition::math::Pose3d>("wrench"),
-      ignition::math::Pose3d(0, 0.006121, 0, 0, 0, 0));
+    ignition::math::Pose3d(0, 0.006121, 0, 0, 0, 0));
 
   // nested model sdf
   EXPECT_TRUE(modelStateElem->HasElement("model"));
   sdf::ElementPtr nestedModelStateElem =
-      modelStateElem->GetElement("model");
+    modelStateElem->GetElement("model");
   EXPECT_TRUE(nestedModelStateElem->HasAttribute("name"));
   EXPECT_EQ(nestedModelStateElem->Get<std::string>("name"), "model_01");
   EXPECT_TRUE(nestedModelStateElem->HasElement("pose"));
   EXPECT_EQ(nestedModelStateElem->Get<ignition::math::Pose3d>("pose"),
-      ignition::math::Pose3d(1, 0, 0.5, 0, 0, 0));
+    ignition::math::Pose3d(1, 0, 0.5, 0, 0, 0));
   EXPECT_TRUE(!nestedModelStateElem->HasElement("joint"));
 
   // nested model's link sdf
   EXPECT_TRUE(nestedModelStateElem->HasElement("link"));
   sdf::ElementPtr nestedLinkStateElem =
-      nestedModelStateElem->GetElement("link");
+    nestedModelStateElem->GetElement("link");
   EXPECT_TRUE(nestedLinkStateElem->HasAttribute("name"));
   EXPECT_EQ(nestedLinkStateElem->Get<std::string>("name"), "link_01");
   EXPECT_TRUE(nestedLinkStateElem->HasElement("pose"));
   EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("pose"),
-      ignition::math::Pose3d(1.25, 0, 0.5, 0, 0, 0));
+    ignition::math::Pose3d(1.25, 0, 0.5, 0, 0, 0));
   EXPECT_TRUE(nestedLinkStateElem->HasElement("velocity"));
   EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("velocity"),
-      ignition::math::Pose3d(0, -0.001, 0, 0, 0, 0));
+    ignition::math::Pose3d(0, -0.001, 0, 0, 0, 0));
   EXPECT_TRUE(nestedLinkStateElem->HasElement("acceleration"));
   EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("acceleration"),
-      ignition::math::Pose3d(0, 0.000674, 0, -0.001268, 0, 0));
+    ignition::math::Pose3d(0, 0.000674, 0, -0.001268, 0, 0));
   EXPECT_TRUE(nestedLinkStateElem->HasElement("wrench"));
   EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("wrench"),
-      ignition::math::Pose3d(0, 0.000674, 0, 0, 0, 0));
+    ignition::math::Pose3d(0, 0.000674, 0, 0, 0, 0));
 
   // double nested model sdf
   EXPECT_TRUE(nestedModelStateElem->HasElement("model"));
@@ -215,7 +216,7 @@ TEST(NestedModel, State)
   EXPECT_EQ(nestedModelStateElem->Get<std::string>("name"), "model_02");
   EXPECT_TRUE(nestedModelStateElem->HasElement("pose"));
   EXPECT_EQ(nestedModelStateElem->Get<ignition::math::Pose3d>("pose"),
-      ignition::math::Pose3d(1, 1, 0.5, 0, 0, 0));
+    ignition::math::Pose3d(1, 1, 0.5, 0, 0, 0));
   EXPECT_TRUE(!nestedModelStateElem->HasElement("joint"));
 
   // double nested model's link sdf
@@ -225,14 +226,14 @@ TEST(NestedModel, State)
   EXPECT_EQ(nestedLinkStateElem->Get<std::string>("name"), "link_02");
   EXPECT_TRUE(nestedLinkStateElem->HasElement("pose"));
   EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("pose"),
-      ignition::math::Pose3d(1.25, 1, 0.5, 0, 0, 0));
+    ignition::math::Pose3d(1.25, 1, 0.5, 0, 0, 0));
   EXPECT_TRUE(nestedLinkStateElem->HasElement("velocity"));
   EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("velocity"),
-      ignition::math::Pose3d(0, 0, 0.001, 0, 0, 0));
+    ignition::math::Pose3d(0, 0, 0.001, 0, 0, 0));
   EXPECT_TRUE(nestedLinkStateElem->HasElement("acceleration"));
   EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("acceleration"),
-      ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+    ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
   EXPECT_TRUE(nestedLinkStateElem->HasElement("wrench"));
   EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("wrench"),
-      ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+    ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
 }

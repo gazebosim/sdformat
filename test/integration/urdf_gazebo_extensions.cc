@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <string>
 
 #include <gtest/gtest.h>
-#include <map>
+
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
 
-const std::string URDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/urdf_gazebo_extensions.urdf";
+const std::string URDF_TEST_FILE =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                          "urdf_gazebo_extensions.urdf");
 
 /////////////////////////////////////////////////
 TEST(SDFParser, UrdfGazeboExtensionURDFTest)
