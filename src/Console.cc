@@ -15,10 +15,11 @@
  *
  */
 
+#include <cstdlib>
+#include <memory>
 #include <mutex>
-#include <string.h>
-#include <stdlib.h>
 #include <sstream>
+#include <string>
 
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
@@ -56,8 +57,7 @@ Console::Console()
               << std::endl;
     return;
   }
-  std::string logDir(home);
-  logDir = sdf::filesystem::append(logDir, ".sdformat");
+  std::string logDir = sdf::filesystem::append(home, ".sdformat");
   if (!sdf::filesystem::exists(logDir))
   {
     sdf::filesystem::create_directory(logDir);
@@ -87,6 +87,14 @@ ConsolePtr Console::Instance()
   }
 
   return myself;
+}
+
+//////////////////////////////////////////////////
+void Console::Clear()
+{
+  std::lock_guard<std::mutex> lock(g_instance_mutex);
+
+  myself = nullptr;
 }
 
 //////////////////////////////////////////////////
