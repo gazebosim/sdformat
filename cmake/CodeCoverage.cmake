@@ -91,20 +91,20 @@ ENDIF() # NOT CMAKE_BUILD_TYPE STREQUAL "Debug"
 #   Pass them in list form, e.g.: "-j;2" for -j 2
 FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _outputname)
 
-	IF(NOT LCOV_PATH)
-		MESSAGE(FATAL_ERROR "lcov not found! Aborting...")
-	ENDIF() # NOT LCOV_PATH
+  IF(NOT LCOV_PATH)
+    MESSAGE(FATAL_ERROR "lcov not found! Aborting...")
+  ENDIF() # NOT LCOV_PATH
+
+  IF(NOT GENHTML_PATH)
+    MESSAGE(FATAL_ERROR "genhtml not found! Aborting...")
+  ENDIF() # NOT GENHTML_PATH
 
   IF(NOT GREP_PATH)
     MESSAGE(FATAL_ERROR "grep not found! Run code coverage on linux or mac.")
   ENDIF()
 
-	IF(NOT GENHTML_PATH)
-		MESSAGE(FATAL_ERROR "genhtml not found! Aborting...")
-	ENDIF() # NOT GENHTML_PATH
-
-	# Setup target
-	ADD_CUSTOM_TARGET(${_targetname}
+  # Setup target
+  ADD_CUSTOM_TARGET(${_targetname}
 
   # Capturing lcov counters and generating report
   COMMAND ${LCOV_PATH} -q --no-checksum --directory ${PROJECT_BINARY_DIR}
