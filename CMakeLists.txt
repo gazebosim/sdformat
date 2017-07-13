@@ -160,10 +160,10 @@ if (MSVC)
   set(WARN_LEVEL "/W4")
 
   # Unable to be filtered flags (failing due to limitations in filter_valid_compiler_warnings)
-  # Handling exceptions rightly
-  set(UNFILTERED_FLAGS "/EHsc")
+  # Handling exceptions rightly and ignore unknown pragmas
+  set(UNFILTERED_FLAGS "/EHsc /wd4068")
 else()
-  # Equivalent to Wall (according to man gcc) but removed the unknown pragams since we use
+  # Equivalent to Wall (according to man gcc) but removed the unknown pragmas since we use
   # MSVC only pragmas all over the code
   list(APPEND WARN_LEVEL -Waddress -Warray-bounds -Wcomment -Wformat -Wnonnull)
   list(APPEND WARN_LEVEL -Wparentheses -Wreorder -Wreturn-type)
@@ -188,7 +188,9 @@ if (UNIX)
   sdf_setup_unix()
 else (WIN32)
   sdf_setup_windows()
-else (APPLE)
+endif()
+
+if(APPLE)
   sdf_setup_apple()
 endif()
 
@@ -208,7 +210,8 @@ configure_file(
   "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
 add_custom_target(uninstall
-  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake")
+  "${CMAKE_COMMAND}" -P
+  "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake")
 
 if (build_errors)
   message(STATUS "BUILD ERRORS: These must be resolved before compiling.")
