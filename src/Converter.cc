@@ -212,8 +212,7 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
     }
     else if (childElem->ValueStr() != "convert")
     {
-      std::cerr <<  "Unknown convert element[" << childElem->ValueStr()
-                << "]\n";
+      sdferr << "Unknown convert element[" << childElem->ValueStr() << "]\n";
     }
   }
 }
