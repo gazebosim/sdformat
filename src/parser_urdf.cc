@@ -1629,11 +1629,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
     // disableFixedJointLumping option is there only for backward compatibility
     // For this reason, if both options are present then the preserveFixedJoint
     // option has the precedence
-    if (g_fixedJointsTransformedInRevoluteJoints.find(fixedJointConvertedToFixed) !=
-        g_fixedJointsTransformedInRevoluteJoints.end())
-    {
-      g_fixedJointsTransformedInRevoluteJoints.erase(fixedJointConvertedToFixed);
-    }
+    g_fixedJointsTransformedInRevoluteJoints.erase(fixedJointConvertedToFixed);
   }
 }
 
