@@ -2,6 +2,8 @@
 
 ### SDFormat 4.x.x (2017-xx-xx)
 
+### SDFormat 4.3.2 (2017-07-19)
+
 1. Add documentation for `Element::GetFirstElement()` and `Element::GetNextElement()`
     * [Pull request 341](https://bitbucket.org/osrf/sdformat/pull-request/341)
 
