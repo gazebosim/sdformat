@@ -38,7 +38,7 @@
     <element name="solver" required="1">
       <description></description>
       <element name="type" type="string" default="dantzig" required="1">
-        <description>One of the following types: pgs, dantzig.</description>
+        <description>One of the following types: pgs, dantzig. PGS stands for Projected Gauss-Seidel.</description>
       </element>
     </element>
   </element>
