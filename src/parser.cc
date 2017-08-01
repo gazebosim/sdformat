@@ -581,12 +581,13 @@ std::string getModelFilePath(const std::string &_modelDirPath)
       sdferr << "Could not find model.config or manifest.xml for the model\n";
       return std::string();
     }
-  }
-  else
-  {
-    sdfwarn << "The manifest.xml for a model is deprecated. "
-            << "Please rename manifest.xml to "
-            << "model.config" << ".\n";
+    else
+    {
+      // We found manifest.xml, but since it is deprecated print a warning.
+      sdfwarn << "The manifest.xml for a model is deprecated. "
+              << "Please rename manifest.xml to "
+              << "model.config" << ".\n";
+    }
   }
 
   TiXmlDocument configFileDoc;
