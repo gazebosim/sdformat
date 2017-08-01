@@ -822,10 +822,11 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             pluginElem = includeSDF->Root()->GetElement(
                 "model")->AddElement("plugin");
 
-            pluginElem->GetAttribute("filename")->SetFromString(
-                childElemXml->Attribute("filename"));
-            pluginElem->GetAttribute("name")->SetFromString(
-                childElemXml->Attribute("name"));
+            if (!readXml(childElemXml, pluginElem))
+            {
+              sdferr << "Error reading plugin element\n";
+              return false;
+            }
           }
         }
 
