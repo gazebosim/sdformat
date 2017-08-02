@@ -33,6 +33,16 @@
     <description>Maximum number of contacts allowed between two entities. This value can be over ridden by a max_contacts element in a collision element.</description>
   </element>
 
+  <element name="dart" required="0">
+    <description>DART specific physics properties</description>
+    <element name="solver" required="1">
+      <description></description>
+      <element name="solver_type" type="string" default="dantzig" required="1">
+        <description>One of the following types: pgs, dantzig. PGS stands for Projected Gauss-Seidel.</description>
+      </element>
+    </element>
+  </element>
+
   <element name="simbody" required="0">
     <description>Simbody specific physics properties</description>
     <element name="min_step_size" type="double" default="0.0001" required="0">
