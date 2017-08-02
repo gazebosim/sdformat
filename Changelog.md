@@ -2,6 +2,9 @@
 
 ### SDFormat 5.x.x (2017-xx-xx)
 
+1. Added a block for DART-specific physics properties.
+    * [Pull request 369](https://bitbucket.org/osrf/sdformat/pull-requests/369)
+
 1. Fix parser to read plugin child elements within an `<include>`
     * [Pull request 350](https://bitbucket.org/osrf/sdformat/pull-request/350)
 
