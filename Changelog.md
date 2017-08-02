@@ -2,11 +2,36 @@
 
 ### SDFormat 5.x.x (2017-xx-xx)
 
+### SDFormat 5.2.0 (2017-08-02)
+
 1. Added a block for DART-specific physics properties.
     * [Pull request 369](https://bitbucket.org/osrf/sdformat/pull-requests/369)
 
 1. Fix parser to read plugin child elements within an `<include>`
     * [Pull request 350](https://bitbucket.org/osrf/sdformat/pull-request/350)
+
+1. Choosing models with more recent sdf version with `<include>` tag
+    * [Pull request 291](https://bitbucket.org/osrf/sdformat/pull-request/291)
+    * [Issue 123](https://bitbucket.org/osrf/sdformat/issues/123)
+
+1. Added `<category_bitmask>` to 1.6 surface contact parameters
+    * [Pull request 318](https://bitbucket.org/osrf/sdformat/pull-request/318)
+
+1. Support light insertion in state
+    * [Pull request 325](https://bitbucket.org/osrf/sdformat/pull-request/325)
+
+1. Case insensitive boolean strings
+    * [Pull request 322](https://bitbucket.org/osrf/sdformat/pull-request/322)
+
+1. Enable coverage testing
+    * [Pull request 317](https://bitbucket.org/osrf/sdformat/pull-request/317)
+
+1. Add `friction_model` parameter to ode solver
+    * [Pull request 294](https://bitbucket.org/osrf/sdformat/pull-request/294)
+    * [Gazebo pull request 1522](https://bitbucket.org/osrf/gazebo/pull-request/1522)
+
+1. Add cmake `@PKG_NAME@_LIBRARY_DIRS` variable to cmake config file
+    * [Pull request 292](https://bitbucket.org/osrf/sdformat/pull-request/292)
 
 ### SDFormat 5.1.0 (2017-02-22)
 
