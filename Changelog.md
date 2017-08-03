@@ -2,7 +2,7 @@
 
 ### SDFormat 5.x.x (2017-xx-xx)
 
-### SDFormat 5.2.0 (2017-08-02)
+### SDFormat 5.2.0 (2017-08-03)
 
 1. Added a block for DART-specific physics properties.
     * [Pull request 369](https://bitbucket.org/osrf/sdformat/pull-requests/369)
