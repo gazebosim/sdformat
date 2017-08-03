@@ -29,7 +29,7 @@ set (SDF_PROTOCOL_VERSION 1.6)
 
 set (SDF_MAJOR_VERSION 4)
 set (SDF_MINOR_VERSION 3)
-set (SDF_PATCH_VERSION 1)
+set (SDF_PATCH_VERSION 2)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
 set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION})
@@ -186,13 +186,15 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}${WARNING_CXX_FLAGS} ${UNFILTERED_FLAGS}
 # OS Specific initialization
 if (UNIX)
   sdf_setup_unix()
-else (WIN32)
-  sdf_setup_windows()
-endif()
+endif ()
 
-if(APPLE)
+if (WIN32)
+  sdf_setup_windows()
+endif ()
+
+if (APPLE)
   sdf_setup_apple()
-endif()
+endif ()
 
 #################################################
 # Print warnings and errors
