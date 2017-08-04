@@ -17,6 +17,7 @@
 
 #include <cstdlib>
 #include <fstream>
+#include <sstream>
 #include <functional>
 #include <list>
 #include <map>
@@ -377,3 +378,17 @@ void SDF::Version(const std::string &_version)
 {
   version = _version;
 }
+
+/////////////////////////////////////////////////
+ElementPtr SDF::WrapInRoot(const ElementPtr &_sdf)
+{
+  ElementPtr root(new Element);
+  root->SetName("sdf");
+  std::stringstream version;
+  version << sdf::SDF::Version();
+  root->AddAttribute("version", "string", version.str(), true, "version");
+  root->InsertElement(_sdf->Clone());
+  return root;
+}
+
+
