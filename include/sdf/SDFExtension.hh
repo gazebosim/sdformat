@@ -18,13 +18,13 @@
 #ifndef _SDFORMAT_SDFEXTENSION_HH_
 #define _SDFORMAT_SDFEXTENSION_HH_
 
+#include <tinyxml.h>
+
 #include <memory>
 #include <string>
 #include <vector>
 
 #include <ignition/math/Pose3.hh>
-
-#include <tinyxml.h>
 
 #include "sdf/Types.hh"
 
