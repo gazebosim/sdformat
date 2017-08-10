@@ -18,6 +18,7 @@
 #define SDF_PARSER_PRIVATE_HH_
 
 #include <tinyxml.h>
+
 #include <string>
 
 #include "sdf/SDFImpl.hh"

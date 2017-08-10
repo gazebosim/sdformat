@@ -18,6 +18,7 @@
 #define _SDFORMAT_URDF2SDF_HH_
 
 #include <tinyxml.h>
+
 #include <string>
 
 #include "sdf/Console.hh"
