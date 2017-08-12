@@ -20,6 +20,7 @@
 
 #include "test_config.h"
 
+// testing the wrapper around an sdf element WrapInRoot(const ElementPtr &_sdf)
 TEST(BasicTest, RootWrapper)
 {
   // create a test element
