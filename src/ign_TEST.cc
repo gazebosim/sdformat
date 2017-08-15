@@ -18,10 +18,14 @@
 #include <gtest/gtest.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <string>
 
+#include "sdf/sdf_config.h"
 #include "test_config.h"
+
+static const std::string g_sdfVersion(" --force-version " +
+  std::string(SDF_VERSION_FULL));
+static const std::string g_ignCommand(std::string(IGN_PATH) + "/ign");
 
 /////////////////////////////////////////////////
 std::string custom_exec_str(std::string _cmd)
@@ -57,7 +61,7 @@ TEST(check, SDF)
 
     // Check box_plane_low_friction_test.world
     std::string output =
-      custom_exec_str(std::string("ign sdf -k ") + path);
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ(output, "Valid.\n");
   }
 
@@ -67,7 +71,25 @@ TEST(check, SDF)
 
     // Check box_bad_test.world
     std::string output =
-      custom_exec_str(std::string("ign sdf -k ") + path);
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_TRUE(output.find("Unable to set value") != std::string::npos);
   }
+}
+
+/////////////////////////////////////////////////
+/// Main
+int main(int argc, char **argv)
+{
+  // Set IGN_CONFIG_PATH to the directory where the .yaml configuration file
+  // is located.
+  setenv("IGN_CONFIG_PATH", IGN_CONFIG_PATH, 1);
+
+  // Make sure that we load the library recently built and not the one installed
+  // in your system.
+#ifndef _WIN32
+  setenv("LD_LIBRARY_PATH", IGN_TEST_LIBRARY_PATH, 1);
+#endif
+
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
