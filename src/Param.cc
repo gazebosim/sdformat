@@ -15,26 +15,13 @@
  *
 */
 
-#include <math.h>
 #include <locale.h>
-#include <boost/algorithm/string.hpp>
+#include <math.h>
+
+#include "sdf/Assert.hh"
 #include "sdf/Param.hh"
 
 using namespace sdf;
-
-class string_set : public boost::static_visitor<>
-{
-  public: explicit string_set(const std::string &_value)
-    : value(_value)
-          {}
-
-  public: template <typename T>
-          void operator()(T & _operand) const
-          {
-            _operand = boost::lexical_cast<T>(this->value);
-          }
-  public: std::string value;
-};
 
 class any_set : public boost::static_visitor<>
 {
@@ -61,79 +48,8 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->dataPtr->description = _description;
   this->dataPtr->set = false;
 
-  if (this->dataPtr->typeName == "bool")
-  {
-    this->Init<bool>(_default);
-  }
-  else if (this->dataPtr->typeName == "int")
-  {
-    this->Init<int>(_default);
-  }
-  else if (this->dataPtr->typeName == "unsigned int")
-  {
-    this->Init<unsigned int>(_default);
-  }
-  else if (this->dataPtr->typeName == "uint64_t")
-  {
-    this->Init<uint64_t>(_default);
-  }
-  else if (this->dataPtr->typeName == "double")
-  {
-    this->Init<double>(_default);
-  }
-  else if (this->dataPtr->typeName == "float")
-  {
-    this->Init<float>(_default);
-  }
-  else if (this->dataPtr->typeName == "char")
-  {
-    this->Init<char>(_default);
-  }
-  else if (this->dataPtr->typeName == "std::string" ||
-           this->dataPtr->typeName == "string")
-  {
-    this->Init<std::string>(_default);
-  }
-  else if (this->dataPtr->typeName == "sdf::Time" ||
-           this->dataPtr->typeName == "time")
-  {
-    this->Init<sdf::Time>(_default);
-  }
-  else if (this->dataPtr->typeName == "ignition::math::Color" ||
-           this->dataPtr->typeName == "color")
-  {
-    this->Init<ignition::math::Color>(_default);
-  }
-  else if (this->dataPtr->typeName == "ignition::math::Vector2i" ||
-           this->dataPtr->typeName == "vector2i")
-  {
-    this->Init<ignition::math::Vector2i>(_default);
-  }
-  else if (this->dataPtr->typeName == "ignition::math::Vector2d" ||
-           this->dataPtr->typeName == "vector2d")
-  {
-    this->Init<ignition::math::Vector2d>(_default);
-  }
-  else if (this->dataPtr->typeName == "ignition::math::Vector3d" ||
-           this->dataPtr->typeName == "vector3")
-  {
-    this->Init<ignition::math::Vector3d>(_default);
-  }
-  else if (this->dataPtr->typeName == "ignition::math::Pose3d" ||
-           this->dataPtr->typeName == "pose" ||
-           this->dataPtr->typeName == "Pose")
-  {
-    this->Init<ignition::math::Pose3d>(_default);
-  }
-  else if (this->dataPtr->typeName == "ignition::math::Quaterniond" ||
-           this->dataPtr->typeName == "quaternion")
-  {
-    this->Init<ignition::math::Quaterniond>(_default);
-  }
-  else
-  {
-    sdferr << "Unknown parameter type[" << this->dataPtr->typeName << "]\n";
-  }
+  SDF_ASSERT(this->ValueFromString(_default), "Invalid parameter");
+  this->dataPtr->defaultValue = this->dataPtr->value;
 }
 
 //////////////////////////////////////////////////
@@ -297,7 +213,7 @@ void Param::Update()
       boost::apply_visitor(any_set(this->dataPtr->updateFunc()),
       this->dataPtr->value);
     }
-    catch(boost::bad_lexical_cast &/*e*/)
+    catch(...)
     {
       sdferr << "Unable to set value using Update for key["
              << this->dataPtr->key << "]\n";
@@ -308,13 +224,188 @@ void Param::Update()
 //////////////////////////////////////////////////
 std::string Param::GetAsString() const
 {
-  return boost::lexical_cast<std::string>(this->dataPtr->value);
+  std::stringstream ss;
+
+  ss << this->dataPtr->value;
+  return ss.str();
 }
 
 //////////////////////////////////////////////////
 std::string Param::GetDefaultAsString() const
 {
-  return boost::lexical_cast<std::string>(this->dataPtr->defaultValue);
+  std::stringstream ss;
+
+  ss << this->dataPtr->defaultValue;
+  return ss.str();
+}
+
+//////////////////////////////////////////////////
+bool Param::ValueFromString(const std::string &_value)
+{
+  std::string tmp(_value);
+  std::string lowerTmp(_value);
+  std::transform(lowerTmp.begin(), lowerTmp.end(), lowerTmp.begin(), ::tolower);
+
+  // "true" and "false" doesn't work properly
+  if (lowerTmp == "true")
+  {
+    tmp = "1";
+  }
+  else if (lowerTmp == "false")
+  {
+    tmp = "0";
+  }
+
+  bool isHex = lowerTmp.compare(0, 2, "0x") == 0;
+
+  try
+  {
+    // Try to use stoi and stoul for integers, and
+    // stof and stod for floating point values.
+    int numericBase = 10;
+    if (isHex)
+    {
+      numericBase = 16;
+    }
+
+    if (this->dataPtr->typeName == "bool")
+    {
+      if (lowerTmp == "true" || lowerTmp == "1")
+      {
+        this->dataPtr->value = true;
+      }
+      else if (lowerTmp == "false" || lowerTmp == "0")
+      {
+        this->dataPtr->value = false;
+      }
+      else
+      {
+        sdferr << "Invalid boolean value\n";
+        return false;
+      }
+    }
+    else if (this->dataPtr->typeName == "char")
+    {
+      this->dataPtr->value = tmp[0];
+    }
+    else if (this->dataPtr->typeName == "std::string" ||
+             this->dataPtr->typeName == "string")
+    {
+      this->dataPtr->value = tmp;
+    }
+    else if (this->dataPtr->typeName == "int")
+    {
+      this->dataPtr->value = std::stoi(tmp, nullptr, numericBase);
+    }
+    else if (this->dataPtr->typeName == "uint64_t")
+    {
+      std::stringstream ss(tmp);
+      uint64_t u64tmp;
+
+      ss >> u64tmp;
+      this->dataPtr->value = u64tmp;
+    }
+    else if (this->dataPtr->typeName == "unsigned int")
+    {
+      this->dataPtr->value = static_cast<unsigned int>(
+          std::stoul(tmp, nullptr, numericBase));
+    }
+    else if (this->dataPtr->typeName == "double")
+    {
+      this->dataPtr->value = std::stod(tmp);
+    }
+    else if (this->dataPtr->typeName == "float")
+    {
+      this->dataPtr->value = std::stof(tmp);
+    }
+    else if (this->dataPtr->typeName == "sdf::Time" ||
+             this->dataPtr->typeName == "time")
+    {
+      std::stringstream ss(tmp);
+      sdf::Time timetmp;
+
+      ss >> timetmp;
+      this->dataPtr->value = timetmp;
+    }
+    else if (this->dataPtr->typeName == "ignition::math::Color" ||
+             this->dataPtr->typeName == "color")
+    {
+      std::stringstream ss(tmp);
+      ignition::math::Color colortmp;
+
+      ss >> colortmp;
+      this->dataPtr->value = colortmp;
+    }
+    else if (this->dataPtr->typeName == "ignition::math::Vector2i" ||
+             this->dataPtr->typeName == "vector2i")
+    {
+      std::stringstream ss(tmp);
+      ignition::math::Vector2i vectmp;
+
+      ss >> vectmp;
+      this->dataPtr->value = vectmp;
+    }
+    else if (this->dataPtr->typeName == "ignition::math::Vector2d" ||
+             this->dataPtr->typeName == "vector2d")
+    {
+      std::stringstream ss(tmp);
+      ignition::math::Vector2d vectmp;
+
+      ss >> vectmp;
+      this->dataPtr->value = vectmp;
+    }
+    else if (this->dataPtr->typeName == "ignition::math::Vector3d" ||
+             this->dataPtr->typeName == "vector3")
+    {
+      std::stringstream ss(tmp);
+      ignition::math::Vector3d vectmp;
+
+      ss >> vectmp;
+      this->dataPtr->value = vectmp;
+    }
+    else if (this->dataPtr->typeName == "ignition::math::Pose3d" ||
+             this->dataPtr->typeName == "pose" ||
+             this->dataPtr->typeName == "Pose")
+    {
+      std::stringstream ss(tmp);
+      ignition::math::Pose3d posetmp;
+
+      ss >> posetmp;
+      this->dataPtr->value = posetmp;
+    }
+    else if (this->dataPtr->typeName == "ignition::math::Quaterniond" ||
+             this->dataPtr->typeName == "quaternion")
+    {
+      std::stringstream ss(tmp);
+      ignition::math::Quaterniond quattmp;
+
+      ss >> quattmp;
+      this->dataPtr->value = quattmp;
+    }
+    else
+    {
+      sdferr << "Unknown parameter type[" << this->dataPtr->typeName << "]\n";
+      return false;
+    }
+  }
+  // Catch invalid argument exception from std::stoi/stoul/stod/stof
+  catch(std::invalid_argument &)
+  {
+    sdferr << "Invalid argument. Unable to set value ["
+           << _value << " ] for key["
+           << this->dataPtr->key << "].\n";
+    return false;
+  }
+  // Catch out of range exception from std::stoi/stoul/stod/stof
+  catch(std::out_of_range &)
+  {
+    sdferr << "Out of range. Unable to set value ["
+           << _value << " ] for key["
+           << this->dataPtr->key << "].\n";
+    return false;
+  }
+
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -339,88 +430,9 @@ bool Param::SetFromString(const std::string &_value)
     return true;
   }
 
-  std::string tmp(str);
-  std::string lowerTmp(str);
-  std::transform(lowerTmp.begin(), lowerTmp.end(), lowerTmp.begin(), ::tolower);
-
-  // "true" and "false" doesn't work properly
-  if (lowerTmp == "true")
+  if (!this->ValueFromString(str))
   {
-    tmp = "1";
-  }
-  else if (lowerTmp == "false")
-  {
-    tmp = "0";
-  }
-
-  bool isHex = tmp.compare(0, 2, "0x") == 0;
-
-  try
-  {
-    // Try to use stoi and stoul for integers, and
-    // stof and stod for floating point values.
-    // Use boost lexical cast as a last resort.
-    int numericBase = 10;
-    if (isHex)
-    {
-      numericBase = 16;
-    }
-
-    if (this->dataPtr->typeName == "int")
-    {
-      this->dataPtr->value = std::stoi(tmp, nullptr, numericBase);
-    }
-    else if (this->dataPtr->typeName == "unsigned int")
-    {
-      this->dataPtr->value = static_cast<unsigned int>(
-          std::stoul(tmp, nullptr, numericBase));
-    }
-    else if (this->dataPtr->typeName == "double")
-    {
-      this->dataPtr->value = std::stod(tmp);
-    }
-    else if (this->dataPtr->typeName == "float")
-    {
-      this->dataPtr->value = std::stof(tmp);
-    }
-    else
-    {
-      boost::apply_visitor(string_set(tmp), this->dataPtr->value);
-    }
-  }
-
-  // Catch invalid argument exception from std::stoi/stoul/stod/stof
-  catch(std::invalid_argument &)
-  {
-    sdferr << "Invalid argument. Unable to set value ["
-           << str << " ] for key["
-           << this->dataPtr->key << "].\n";
     return false;
-  }
-  // Catch out of range exception from std::stoi/stoul/stod/stof
-  catch(std::out_of_range &)
-  {
-    sdferr << "Out of range. Unable to set value ["
-           << str << " ] for key["
-           << this->dataPtr->key << "].\n";
-    return false;
-  }
-  // Catch boost lexical cast exceptions
-  catch(boost::bad_lexical_cast &)
-  {
-    if (str == "inf" || str == "-inf")
-    {
-      // in this case, the parser complains, but seems to assign the
-      // right values
-      sdfmsg << "INFO [sdf::Param]: boost throws when lexical casting "
-             << "inf's, but the values are usually passed through correctly\n";
-    }
-    else
-    {
-      sdferr << "Unable to set value [" <<  str
-             << "] for key[" << this->dataPtr->key << "]\n";
-      return false;
-    }
   }
 
   this->dataPtr->set = true;

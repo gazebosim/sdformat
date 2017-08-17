@@ -14,12 +14,17 @@
  * limitations under the License.
  *
  */
-#include <fstream>
-#include <sstream>
+
 #include <algorithm>
+#include <fstream>
+#include <map>
 #include <memory>
-#include <string>
 #include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <ignition/math.hh>
 
 #include <urdf_model/model.h>
@@ -1810,7 +1815,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
 
 ////////////////////////////////////////////////////////////////////////////////
 void InsertSDFExtensionVisual(TiXmlElement *_elem,
-    const std::string &_linkName)
+                              const std::string &_linkName)
 {
   // loop through extensions for the whole model
   // and see which ones belong to _linkName

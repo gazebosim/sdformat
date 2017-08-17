@@ -186,11 +186,15 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}${WARNING_CXX_FLAGS} ${UNFILTERED_FLAGS}
 # OS Specific initialization
 if (UNIX)
   sdf_setup_unix()
-else (WIN32)
+endif ()
+
+if (WIN32)
   sdf_setup_windows()
-else (APPLE)
+endif ()
+
+if (APPLE)
   sdf_setup_apple()
-endif()
+endif ()
 
 #################################################
 # Print warnings and errors

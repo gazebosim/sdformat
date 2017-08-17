@@ -18,6 +18,7 @@
 #define _SDF_CONVERTER_HH_
 
 #include <tinyxml.h>
+
 #include <string>
 
 #include "sdf/system_util.hh"

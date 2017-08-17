@@ -18,8 +18,8 @@
 #ifndef _SDF_EXCEPTION_PRIVATE_HH_
 #define _SDF_EXCEPTION_PRIVATE_HH_
 
+#include <cstdint>
 #include <string>
-#include <stdint.h>
 
 namespace sdf
 {
@@ -31,7 +31,7 @@ namespace sdf
     public: std::string file;
 
     /// \brief Line the error occured on
-    public: int64_t line;
+    public: std::int64_t line;
 
     /// \brief The error string
     public: std::string str;

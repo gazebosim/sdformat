@@ -18,6 +18,8 @@
 #include <gtest/gtest.h>
 #include <boost/version.hpp>
 #include <ignition/math/Angle.hh>
+
+#include "sdf/Exception.hh"
 #include "sdf/Param.hh"
 
 bool check_double(std::string num)
@@ -60,6 +62,14 @@ TEST(Param, Bool)
   strParam.Set("0");
   strParam.Get<bool>(value);
   EXPECT_FALSE(value);
+
+  strParam.Set("True");
+  strParam.Get<bool>(value);
+  EXPECT_TRUE(value);
+
+  strParam.Set("TRUE");
+  strParam.Get<bool>(value);
+  EXPECT_TRUE(value);
 
   // Anything other than 1 or true is treated as a false value
   strParam.Set("%");
@@ -214,13 +224,30 @@ TEST(Param, uint64t)
 }
 
 ////////////////////////////////////////////////////
-/// Unknown type, should fall back to lexical_cast
+/// Unknown type, should fall back to stream operators
 TEST(Param, UnknownType)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
   ignition::math::Angle value;
   EXPECT_TRUE(doubleParam.Get<ignition::math::Angle>(value));
   EXPECT_DOUBLE_EQ(value.Radian(), 1.0);
+}
+
+////////////////////////////////////////////////////
+TEST(Param, Vector2i)
+{
+  sdf::Param vect2iParam("key", "vector2i", "0 0", false, "description");
+  ignition::math::Vector2i value;
+
+  EXPECT_TRUE(vect2iParam.Get<ignition::math::Vector2i>(value));
+  EXPECT_EQ(value, ignition::math::Vector2i(0, 0));
+}
+
+////////////////////////////////////////////////////
+TEST(Param, InvalidConstructor)
+{
+  ASSERT_THROW(sdf::Param badParam("key", "badtype", "0", false, "description"),
+               sdf::AssertionInternalError);
 }
 
 /////////////////////////////////////////////////
