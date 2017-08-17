@@ -17,9 +17,9 @@
 #ifndef _SDFIMPL_HH_
 #define _SDFIMPL_HH_
 
-#include <string>
-#include <memory>
 #include <functional>
+#include <memory>
+#include <string>
 
 #include "sdf/Param.hh"
 #include "sdf/Element.hh"
@@ -114,4 +114,9 @@ namespace sdf
   };
   /// \}
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
+
 #endif

@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
 #include <map>
+#include <string>
+
 #include <ignition/math/SemanticVersion.hh>
 
 #include "sdf/Console.hh"
@@ -26,12 +27,28 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/parser.hh"
 #include "sdf/parser_private.hh"
-#include "sdf/sdf_config.h"
-
 #include "sdf/parser_urdf.hh"
+#include "sdf/sdf_config.h"
 
 namespace sdf
 {
+//////////////////////////////////////////////////
+template <typename TPtr>
+static inline bool _initFile(const std::string &_filename, TPtr _sdf)
+{
+  TiXmlDocument xmlDoc;
+  if (xmlDoc.LoadFile(_filename))
+  {
+    return initDoc(&xmlDoc, _sdf);
+  }
+  else
+  {
+    sdferr << "Unable to load file[" << _filename << "]\n";
+  }
+
+  return false;
+}
+
 //////////////////////////////////////////////////
 bool init(SDFPtr _sdf)
 {
@@ -51,14 +68,7 @@ bool init(SDFPtr _sdf)
   if (ftest)
   {
     fclose(ftest);
-    if (initFile(filename, _sdf))
-    {
-      result = true;
-    }
-    else
-    {
-      sdferr << "Unable to init SDF file[" << filename << "]\n";
-    }
+    result = _initFile(filename, _sdf);
   }
   else
   {
@@ -69,34 +79,15 @@ bool init(SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-template <typename TPtr>
-inline bool _initFile(const std::string &_filename, TPtr _sdf)
-{
-  std::string filename = sdf::findFile(_filename);
-
-  TiXmlDocument xmlDoc;
-  if (xmlDoc.LoadFile(filename))
-  {
-    return initDoc(&xmlDoc, _sdf);
-  }
-  else
-  {
-    sdferr << "Unable to load file[" << _filename << "]\n";
-  }
-
-  return false;
-}
-
-//////////////////////////////////////////////////
 bool initFile(const std::string &_filename, SDFPtr _sdf)
 {
-  return _initFile(_filename, _sdf);
+  return _initFile(sdf::findFile(_filename), _sdf);
 }
 
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, ElementPtr _sdf)
 {
-  return _initFile(_filename, _sdf);
+  return _initFile(sdf::findFile(_filename), _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -579,19 +570,24 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 
   /// \todo This hardcoded bit is very Gazebo centric. It should
   /// be abstracted away, possibly through a plugin to SDF.
-  if (sdf::filesystem::exists(sdf::filesystem::append(_modelDirPath,
-                                                      "model.config")))
+  configFilePath = sdf::filesystem::append(_modelDirPath, "model.config");
+  if (!sdf::filesystem::exists(configFilePath))
   {
-    configFilePath = sdf::filesystem::append(_modelDirPath, "model.config");
-  }
-  else if (sdf::filesystem::exists(sdf::filesystem::append(_modelDirPath,
-                                                      "manifest.xml")))
-  {
-    sdfwarn << "The manifest.xml for a model is deprecated. "
-            << "Please rename configFile.xml to "
-            << "model.config" << ".\n";
-
+    // We didn't find model.config, look for manifest.xml instead
     configFilePath = sdf::filesystem::append(_modelDirPath, "manifest.xml");
+    if (!sdf::filesystem::exists(configFilePath))
+    {
+      // We didn't find manifest.xml either, output an error and get out.
+      sdferr << "Could not find model.config or manifest.xml for the model\n";
+      return std::string();
+    }
+    else
+    {
+      // We found manifest.xml, but since it is deprecated print a warning.
+      sdfwarn << "The manifest.xml for a model is deprecated. "
+              << "Please rename manifest.xml to "
+              << "model.config" << ".\n";
+    }
   }
 
   TiXmlDocument configFileDoc;
@@ -613,9 +609,11 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 
   std::string modelFileName;
   if (getBestSupportedModelVersion(modelXML, modelFileName).empty())
+  {
     return std::string();
+  }
 
-  return _modelDirPath + "/" + modelFileName;
+  return sdf::filesystem::append(_modelDirPath, modelFileName);
 }
 
 //////////////////////////////////////////////////
@@ -697,7 +695,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     if (p->GetRequired() && !p->GetSet())
     {
       sdferr << "Required attribute[" << p->GetKey()
-        << "] in element[" << _xml->Value() << "] is not specified in SDF.\n";
+             << "] in element[" << _xml->Value()
+             << "] is not specified in SDF.\n";
       return false;
     }
   }
@@ -730,7 +729,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             sdferr << "Unable to find uri[" << uri << "]\n";
 
             size_t modelFound = uri.find("model://");
-            if ( modelFound != 0u)
+            if (modelFound != 0u)
             {
               sdferr << "Invalid uri[" << uri << "]. Should be model://"
                      << uri << "\n";
@@ -756,7 +755,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             sdferr << "<include filename='...'/> is deprecated. Should be "
                    << "<include><uri>...</uri></include\n";
 
-            filename = sdf::findFile(elemXml->Attribute("filename"), false);
+            filename = elemXml->Attribute("filename");
           }
           else
           {
@@ -823,10 +822,11 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             pluginElem = includeSDF->Root()->GetElement(
                 "model")->AddElement("plugin");
 
-            pluginElem->GetAttribute("filename")->SetFromString(
-                childElemXml->Attribute("filename"));
-            pluginElem->GetAttribute("name")->SetFromString(
-                childElemXml->Attribute("name"));
+            if (!readXml(childElemXml, pluginElem))
+            {
+              sdferr << "Error reading plugin element\n";
+              return false;
+            }
           }
         }
 
@@ -884,8 +884,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     }
 
     // Check that all required elements have been set
-    unsigned int descCounter = 0;
-    for (descCounter = 0;
+    for (unsigned int descCounter = 0;
          descCounter != _sdf->GetElementDescriptionCount(); ++descCounter)
     {
       ElementPtr elemDesc = _sdf->GetElementDescription(descCounter);
@@ -898,7 +897,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
               _sdf->Get<std::string>("type") != "ball")
           {
             sdferr << "XML Missing required element[" << elemDesc->GetName()
-              << "], child of element[" << _sdf->GetName() << "]\n";
+                   << "], child of element[" << _sdf->GetName() << "]\n";
             return false;
           }
           else
@@ -1040,11 +1039,11 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
   for (std::map<std::string, std::string>::iterator iter = replace.begin();
        iter != replace.end(); ++iter)
   {
-    replace_all(str, std::string("\"")+iter->first + "\"",
+    replace_all(str, std::string("\"") + iter->first + "\"",
                 std::string("\"") + iter->second + "\"");
-    replace_all(str, std::string("'")+iter->first + "'",
+    replace_all(str, std::string("'") + iter->first + "'",
                 std::string("'") + iter->second + "'");
-    replace_all(str, std::string(">")+iter->first + "<",
+    replace_all(str, std::string(">") + iter->first + "<",
                 std::string(">") + iter->second + "<");
   }
 

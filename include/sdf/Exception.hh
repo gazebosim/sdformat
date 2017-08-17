@@ -18,12 +18,20 @@
 #ifndef _SDF_EXCEPTION_HH_
 #define _SDF_EXCEPTION_HH_
 
+#include <cstdint>
 #include <iostream>
+#include <memory>
 #include <sstream>
-#include <stdint.h>
 #include <string>
 
 #include "sdf/system_util.hh"
+
+#ifdef _WIN32
+// Disable warning C4251 which is triggered by
+// std::unique_ptr
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 namespace sdf
 {
@@ -50,7 +58,7 @@ namespace sdf
     /// \param[in] _line Line number where the error occurred
     /// \param[in] _msg Error message
     public: Exception(const char *_file,
-                      int64_t _line,
+                      std::int64_t _line,
                       std::string _msg);
 
     /// \brief Copy constructor
@@ -82,7 +90,7 @@ namespace sdf
     }
 
     /// \brief Private data pointer.
-    private: ExceptionPrivate *dataPtr;
+    private: std::unique_ptr<ExceptionPrivate> dataPtr;
   };
 
   /// \class InternalError Exception.hh common/common.hh
@@ -98,7 +106,7 @@ namespace sdf
     /// \param[in] _file File name
     /// \param[in] _line Line number where the error occurred
     /// \param[in] _msg Error message
-    public: InternalError(const char *_file, int64_t _line,
+    public: InternalError(const char *_file, std::int64_t _line,
                           const std::string _msg);
 
     /// \brief Destructor
@@ -120,7 +128,7 @@ namespace sdf
     /// \param[in] _function Function where assertion failed
     /// \param[in] _msg Function where assertion failed
     public: AssertionInternalError(const char *_file,
-                                   int64_t _line,
+                                   std::int64_t _line,
                                    const std::string _expr,
                                    const std::string _function,
                                    const std::string _msg = "");
@@ -129,5 +137,9 @@ namespace sdf
   };
   /// \}
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif
