@@ -261,7 +261,7 @@ TEST(Param, SetDescription)
 
   uint64Param.SetDescription("new desc");
 
-  ASSERT_EQ(uint64Param.GetDescription(), "new desc");
+  ASSERT_EQ("new desc", uint64Param.GetDescription());
 }
 
 ////////////////////////////////////////////////////
@@ -273,12 +273,12 @@ TEST(Param, Reset)
   uint64Param.SetFromString("89");
 
   uint64Param.Get<uint64_t>(val);
-  ASSERT_EQ(val, 89UL);
+  ASSERT_EQ(89UL, val);
 
   uint64Param.Reset();
 
   uint64Param.Get<uint64_t>(val);
-  ASSERT_EQ(val, 1UL);
+  ASSERT_EQ(1UL, val);
 }
 
 ////////////////////////////////////////////////////
@@ -290,7 +290,7 @@ TEST(Param, EmptyRequiredSetFromString)
   ASSERT_FALSE(uint64Param.SetFromString(""));
   uint64Param.Get<uint64_t>(val);
 
-  ASSERT_EQ(val, 1UL);
+  ASSERT_EQ(1UL, val);
 }
 
 ////////////////////////////////////////////////////
@@ -305,7 +305,7 @@ TEST(Param, EmptySetFromString)
   ASSERT_TRUE(uint64Param.SetFromString(""));
   uint64Param.Get<uint64_t>(val);
 
-  ASSERT_EQ(val, 1UL);
+  ASSERT_EQ(1UL, val);
 }
 
 ////////////////////////////////////////////////////
