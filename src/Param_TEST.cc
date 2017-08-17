@@ -324,6 +324,7 @@ TEST(Param, InvalidInt)
   ASSERT_FALSE(intParam.SetFromString("abc"));
 }
 
+////////////////////////////////////////////////////
 TEST(Param, GetAny)
 {
   boost::any anyValue;
