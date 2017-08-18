@@ -15,8 +15,14 @@
  *
  */
 
-#include <map>
+#include <cstdlib>
+#include <fstream>
+#include <functional>
 #include <list>
+#include <map>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include "sdf/parser.hh"
 #include "sdf/Assert.hh"
@@ -31,14 +37,14 @@ using namespace sdf;
 typedef std::list<std::string> PathList;
 typedef std::map<std::string, PathList> URIPathMap;
 
-URIPathMap g_uriPathMap;
+static URIPathMap g_uriPathMap;
 
-std::function<std::string (const std::string &)> g_findFileCB;
+static std::function<std::string(const std::string &)> g_findFileCB;
 
 std::string SDF::version = SDF_VERSION;
 
 /////////////////////////////////////////////////
-void sdf::setFindCallback(std::function<std::string (const std::string &)> _cb)
+void sdf::setFindCallback(std::function<std::string(const std::string &)> _cb)
 {
   g_findFileCB = _cb;
 }

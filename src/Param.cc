@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <algorithm>
+#include <cstdint>
+#include <sstream>
+#include <string>
 
 #include <locale.h>
 #include <math.h>
 
 #include "sdf/Assert.hh"
 #include "sdf/Param.hh"
+#include "sdf/Types.hh"
 
 using namespace sdf;
 
@@ -69,10 +75,10 @@ bool Param::GetAny(boost::any &_anyVal) const
     }
     _anyVal = ret;
   }
-  else if (this->IsType<uint64_t>())
+  else if (this->IsType<std::uint64_t>())
   {
     uint64_t ret = 0;
-    if (!this->Get<uint64_t>(ret))
+    if (!this->Get<std::uint64_t>(ret))
     {
       return false;
     }
@@ -300,7 +306,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "uint64_t")
     {
       std::stringstream ss(tmp);
-      uint64_t u64tmp;
+      std::uint64_t u64tmp;
 
       ss >> u64tmp;
       this->dataPtr->value = u64tmp;

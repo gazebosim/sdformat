@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #include <gtest/gtest.h>
 
@@ -36,50 +36,50 @@ std::string get_minimal_urdf_txt()
 /* By design, errors are only reported in std output */
 TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
 {
-   ASSERT_NO_THROW(
-     TiXmlDocument doc = TiXmlDocument();
-     sdf::URDF2SDF parser_;
-     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-   );
+  ASSERT_NO_THROW(
+    TiXmlDocument doc = TiXmlDocument();
+    sdf::URDF2SDF parser_;
+    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+  );
 }
 
 /////////////////////////////////////////////////
 TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
 {
-    ASSERT_NO_THROW(
-      TiXmlDocument doc;
-      doc.Parse(get_minimal_urdf_txt().c_str());
-      sdf::URDF2SDF parser_;
-      TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-    );
+  ASSERT_NO_THROW(
+    TiXmlDocument doc;
+    doc.Parse(get_minimal_urdf_txt().c_str());
+    sdf::URDF2SDF parser_;
+    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+  );
 }
 
 /////////////////////////////////////////////////
 TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
 {
-   // URDF -> SDF
-   TiXmlDocument doc;
-   doc.Parse(get_minimal_urdf_txt().c_str());
-   sdf::URDF2SDF parser_;
-   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-   std::string sdf_result_str;
-   sdf_result_str << sdf_result;
+  // URDF -> SDF
+  TiXmlDocument doc;
+  doc.Parse(get_minimal_urdf_txt().c_str());
+  sdf::URDF2SDF parser_;
+  TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+  std::string sdf_result_str;
+  sdf_result_str << sdf_result;
 
-   // SDF -> SDF
-   std::ostringstream stream;
-   // Use hard-coded "1.4" for version string
-   // until parser_urdf.cc exports version "1.5"
-   // see `sdf->SetAttribute("version", "1.4");`
-   // in URDF2SDF::InitModelString()
-   stream << "<sdf version='" << "1.4" << "'>"
-          << "  <model name='test_robot' />"
-          << "</sdf>";
-   TiXmlDocument sdf_doc;
-   sdf_doc.Parse(stream.str().c_str());
-   std::string sdf_same_result_str;
-   sdf_same_result_str << sdf_doc;
+  // SDF -> SDF
+  std::ostringstream stream;
+  // Use hard-coded "1.4" for version string
+  // until parser_urdf.cc exports version "1.5"
+  // see `sdf->SetAttribute("version", "1.4");`
+  // in URDF2SDF::InitModelString()
+  stream << "<sdf version='" << "1.4" << "'>"
+         << "  <model name='test_robot' />"
+         << "</sdf>";
+  TiXmlDocument sdf_doc;
+  sdf_doc.Parse(stream.str().c_str());
+  std::string sdf_same_result_str;
+  sdf_same_result_str << sdf_doc;
 
-   ASSERT_EQ(sdf_same_result_str, sdf_result_str);
+  ASSERT_EQ(sdf_same_result_str, sdf_result_str);
 }
 
 /////////////////////////////////////////////////
