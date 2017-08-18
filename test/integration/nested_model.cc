@@ -19,6 +19,8 @@
 #include <string>
 
 #include <gtest/gtest.h>
+#include <ignition/math/Pose3.hh>
+#include <ignition/math/Vector3.hh>
 
 #include "sdf/sdf.hh"
 
