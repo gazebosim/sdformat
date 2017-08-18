@@ -16,18 +16,11 @@ fi
 
 # Use a suppression file for spurious errors
 SUPPRESS=/tmp/sdf_cpp_check.suppress
-echo "*:test/integration/locale_fix.cc:35" > $SUPPRESS
+echo "*:test/integration/locale_fix.cc:40" > $SUPPRESS
 
 # Use another suppression file for unused function checking
 SUPPRESS2=/tmp/sdf_cpp_check2.suppress
-echo "*:src/SDF.cc" > $SUPPRESS2
-echo "*:src/Assert.cc" >> $SUPPRESS2
-echo "*:src/Console.cc" >> $SUPPRESS2
-echo "*:src/parser.cc" >> $SUPPRESS2
 echo "*:src/parser_urdf.cc" >> $SUPPRESS2
-echo "*:src/Element.cc:484" >> $SUPPRESS2
-echo "*:src/Element.cc:39" >> $SUPPRESS2
-echo "*:src/Filesystem.cc:59" >> $SUPPRESS2
 
 CHECK_FILE_DIRS="./src ./include ./examples ./test/performance ./test/integration"
 

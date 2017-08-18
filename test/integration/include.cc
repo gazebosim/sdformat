@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <sstream>
+#include <string>
 
 #include <gtest/gtest.h>
-#include "test_config.h"
+
 #include "sdf/sdf.hh"
+
+#include "test_config.h"
 
 ////////////////////////////////////////////////////
 /// Ensure that include sdf descriptions can be overriden
 TEST(Include, IncludeDescription)
 {
-  const std::string SDF_DESCRITPTION_PATH = std::string(PROJECT_SOURCE_PATH)
-      + "/test/integration/include_description.sdf";
+  const std::string SDF_DESCRIPTION_PATH =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                            "include_description.sdf");
 
   std::ostringstream stream;
   std::string version = SDF_VERSION;
@@ -33,7 +39,7 @@ TEST(Include, IncludeDescription)
     << "  <pose>0 0 0 0 0 0</pose>"
     << "</sdf>";
 
-  std::string filename = SDF_DESCRITPTION_PATH;
+  std::string filename = SDF_DESCRIPTION_PATH;
 
   sdf::SDFPtr sdf(new sdf::SDF());
   EXPECT_TRUE(sdf::initFile(filename, sdf));
