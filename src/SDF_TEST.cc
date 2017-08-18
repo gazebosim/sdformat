@@ -21,19 +21,6 @@
 
 #include "sdf/sdf.hh"
 
-////////////////////////////////////////////////////
-// Testing fixture
-class SDFUpdate : public testing::Test
-{
-  protected: SDFUpdate()
-             {
-             }
-
-  protected: virtual ~SDFUpdate()
-             {
-             }
-};
-
 class SDFUpdateFixture
 {
   public:  std::string GetName() const {return this->name;}
@@ -46,15 +33,15 @@ class SDFUpdateFixture
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Update is working for attributes
-TEST_F(SDFUpdate, UpdateAttribute)
+TEST(SDF, UpdateAttribute)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
   stream << "<sdf version='1.3'>"
-         << "<model name='test_model'>"
-         << "  <pose>0 1 2  0 0 0</pose>"
-         << "  <static>false</static>"
-         << "</model>"
+         << "  <model name='test_model'>"
+         << "    <pose>0 1 2  0 0 0</pose>"
+         << "    <static>false</static>"
+         << "  </model>"
          << "</sdf>";
   sdf::SDF sdfParsed;
   sdfParsed.SetFromString(stream.str());
@@ -92,15 +79,15 @@ TEST_F(SDFUpdate, UpdateAttribute)
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Update is working for elements
-TEST_F(SDFUpdate, UpdateElement)
+TEST(SDF, UpdateElement)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
   stream << "<sdf version='1.3'>"
-         << "<model name='test_model'>"
-         << "  <pose>0 1 2  0 0 0</pose>"
-         << "  <static>false</static>"
-         << "</model>"
+         << "  <model name='test_model'>"
+         << "    <pose>0 1 2  0 0 0</pose>"
+         << "    <static>false</static>"
+         << "  </model>"
          << "</sdf>";
   sdf::SDF sdfParsed;
   sdfParsed.SetFromString(stream.str());
@@ -151,23 +138,23 @@ TEST_F(SDFUpdate, UpdateElement)
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Element::RemoveFromParent is working
-TEST_F(SDFUpdate, ElementRemoveFromParent)
+TEST(SDF, ElementRemoveFromParent)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
   stream << "<sdf version='1.3'>"
-         << "<model name='model1'>"
-         << "  <pose>0 1 2  0 0 0</pose>"
-         << "  <static>false</static>"
-         << "</model>"
-         << "<model name='model2'>"
-         << "  <pose>0 1 2  0 0 0</pose>"
-         << "  <static>false</static>"
-         << "</model>"
-         << "<model name='model3'>"
-         << "  <pose>0 1 2  0 0 0</pose>"
-         << "  <static>false</static>"
-         << "</model>"
+         << "  <model name='model1'>"
+         << "    <pose>0 1 2  0 0 0</pose>"
+         << "    <static>false</static>"
+         << "  </model>"
+         << "  <model name='model2'>"
+         << "    <pose>0 1 2  0 0 0</pose>"
+         << "    <static>false</static>"
+         << "  </model>"
+         << "  <model name='model3'>"
+         << "    <pose>0 1 2  0 0 0</pose>"
+         << "    <static>false</static>"
+         << "  </model>"
          << "</sdf>";
   sdf::SDF sdfParsed;
   sdfParsed.SetFromString(stream.str());
@@ -216,23 +203,23 @@ TEST_F(SDFUpdate, ElementRemoveFromParent)
 
 ////////////////////////////////////////////////////
 /// Ensure that SDF::Element::RemoveChild is working
-TEST_F(SDFUpdate, ElementRemoveChild)
+TEST(SDF, ElementRemoveChild)
 {
   // Set up a simple sdf model file
   std::ostringstream stream;
   stream << "<sdf version='1.3'>"
-         << "<model name='model1'>"
-         << "  <pose>0 1 2  0 0 0</pose>"
-         << "  <static>false</static>"
-         << "</model>"
-         << "<model name='model2'>"
-         << "  <pose>0 1 2  0 0 0</pose>"
-         << "  <static>false</static>"
-         << "</model>"
-         << "<model name='model3'>"
-         << "  <pose>0 1 2  0 0 0</pose>"
-         << "  <static>false</static>"
-         << "</model>"
+         << "  <model name='model1'>"
+         << "    <pose>0 1 2  0 0 0</pose>"
+         << "    <static>false</static>"
+         << "  </model>"
+         << "  <model name='model2'>"
+         << "    <pose>0 1 2  0 0 0</pose>"
+         << "    <static>false</static>"
+         << "  </model>"
+         << "  <model name='model3'>"
+         << "    <pose>0 1 2  0 0 0</pose>"
+         << "    <static>false</static>"
+         << "  </model>"
          << "</sdf>";
   sdf::SDF sdfParsed;
   sdfParsed.SetFromString(stream.str());
@@ -283,7 +270,7 @@ TEST_F(SDFUpdate, ElementRemoveChild)
 
 ////////////////////////////////////////////////////
 /// Ensure that getting empty values with empty keys returns correct values.
-TEST_F(SDFUpdate, EmptyValues)
+TEST(SDF, EmptyValues)
 {
   std::string emptyString;
   sdf::ElementPtr elem;
@@ -369,29 +356,29 @@ TEST_F(SDFUpdate, EmptyValues)
 }
 
 /////////////////////////////////////////////////
-TEST_F(SDFUpdate, GetAny)
+TEST(SDF, GetAny)
 {
   std::ostringstream stream;
   // Test types double, bool, string, int, vector3, color, pose
   stream << "<sdf version='1.6'>"
-         << "<world name='test'>"
-         << "   <gravity> 0 0 -7.1 </gravity>"
-         << "   <physics type='ode'>"
-         << "     <max_contacts>8</max_contacts>"
-         << "     <max_step_size>0.002</max_step_size>"
-         << "   </physics>"
-         << "   <model name='test_model'>"
-         << "     <pose>0 1 2 0 0 0</pose>"
-         << "     <static>true</static>"
-         << "     <link name='link1'>"
-         << "       <visual name='visual'>"
-         << "         <material>"
-         << "           <ambient>0.1 0.1 0.1 1</ambient>"
-         << "         </material>"
-         << "       </visual>"
-         << "     </link>"
-         << "   </model>"
-         << "</world>"
+         << "  <world name='test'>"
+         << "     <gravity> 0 0 -7.1 </gravity>"
+         << "     <physics type='ode'>"
+         << "       <max_contacts>8</max_contacts>"
+         << "       <max_step_size>0.002</max_step_size>"
+         << "     </physics>"
+         << "     <model name='test_model'>"
+         << "       <pose>0 1 2 0 0 0</pose>"
+         << "       <static>true</static>"
+         << "       <link name='link1'>"
+         << "         <visual name='visual'>"
+         << "           <material>"
+         << "             <ambient>0.1 0.1 0.1 1</ambient>"
+         << "           </material>"
+         << "         </visual>"
+         << "       </link>"
+         << "     </model>"
+         << "  </world>"
          << "</sdf>";
   sdf::SDF sdfParsed;
   sdfParsed.SetFromString(stream.str());
@@ -521,7 +508,7 @@ TEST_F(SDFUpdate, GetAny)
 }
 
 /////////////////////////////////////////////////
-TEST_F(SDFUpdate, Version)
+TEST(SDF, Version)
 {
   EXPECT_STREQ(SDF_VERSION, sdf::SDF::Version().c_str());
 

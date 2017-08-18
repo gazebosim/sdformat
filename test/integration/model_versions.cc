@@ -32,8 +32,8 @@ TEST(ModelVersionsTest, Empty_ModelFilePath)
 
 TEST(ModelVersionsTest, NonExistent_ModelFilePath)
 {
-  const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
-      + "/test/integration/model/non-existent/";
+  const std::string MODEL_PATH = sdf::filesystem::append(PROJECT_SOURCE_PATH,
+    "test", "integration", "model", "non-existent");
 
   std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 
@@ -42,8 +42,8 @@ TEST(ModelVersionsTest, NonExistent_ModelFilePath)
 
 TEST(ModelVersionsTest, MalFormed_ModelFilePath)
 {
-  const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
-      + "/test/integration/model/cococan_malformed/";
+  const std::string MODEL_PATH = sdf::filesystem::append(PROJECT_SOURCE_PATH,
+    "test", "integration", "model", "cococan_malformed");
 
   std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 
@@ -52,22 +52,22 @@ TEST(ModelVersionsTest, MalFormed_ModelFilePath)
 
 TEST(ModelVersionsTest, NoVersionTag_ModelFilePath)
 {
-  const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
-      + "/test/integration/model/cococan_noversiontag/";
+  const std::string MODEL_PATH = sdf::filesystem::append(PROJECT_SOURCE_PATH,
+    "test", "integration", "model", "cococan_noversiontag");
 
   std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 
-  EXPECT_EQ(modelPath, MODEL_PATH + "/model-1_2.sdf");
+  EXPECT_EQ(modelPath, sdf::filesystem::append(MODEL_PATH, "model-1_2.sdf"));
 }
 
 TEST(ModelVersionsTest, Correct_ModelFilePath)
 {
-  const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
-      + "/test/integration/model/cococan/";
+  const std::string MODEL_PATH = sdf::filesystem::append(PROJECT_SOURCE_PATH,
+    "test", "integration", "model", "cococan");
 
   std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 
-  EXPECT_EQ(modelPath, MODEL_PATH + "/model-1_4.sdf");
+  EXPECT_EQ(modelPath, sdf::filesystem::append(MODEL_PATH, "model-1_4.sdf"));
 }
 
 /////////////////////////////////////////////////
