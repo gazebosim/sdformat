@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <sstream>
+#include <string>
 
 #include <gtest/gtest.h>
-#include <string>
+
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
@@ -1211,8 +1214,9 @@ TEST(Frame, GuiCameraFrame)
 // Test parsing a include element that has a pose element
 TEST(Frame, IncludeFrame)
 {
-  const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
-      + "/test/integration/model/box";
+  const std::string MODEL_PATH =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                            "model", "box");
 
   std::ostringstream stream;
   std::string version = SDF_VERSION;

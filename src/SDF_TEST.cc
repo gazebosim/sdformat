@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 #include <boost/any.hpp>
 #include <ignition/math.hh>
-#include "test_config.h"
+
 #include "sdf/sdf.hh"
 
 class SDFUpdateFixture

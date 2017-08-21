@@ -13,26 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <cstdlib>
+#include <iostream>
+#include <string>
 
 #include <gtest/gtest.h>
-#include <map>
-#include <stdlib.h>
+
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
 
-const std::string SDF_ROOT_SCHEMA = std::string(PROJECT_BINARY_DIR)
-  + "/sdf/" + SDF_PROTOCOL_VERSION + "/root.xsd";
+const std::string SDF_ROOT_SCHEMA =
+  sdf::filesystem::append(PROJECT_BINARY_DIR, "sdf", SDF_PROTOCOL_VERSION,
+                          "root.xsd");
 
-const std::string SDF_TEST_PR2 = std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/model/pr2.sdf";
+const std::string SDF_TEST_PR2 =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
+                          "pr2.sdf");
 
-const std::string SDF_TEST_TURTLEBOT = std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/model/turtlebot.sdf";
+const std::string SDF_TEST_TURTLEBOT =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
+                          "turtlebot.sdf");
 
-const std::string SDF_TEST_PENDULUM = std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/model/double_pendulum.sdf";
+const std::string SDF_TEST_PENDULUM =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
+                          "double_pendulum.sdf");
 
 
 class SDFSchemaGenerator : public testing::Test

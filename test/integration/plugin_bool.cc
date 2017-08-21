@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <sstream>
+#include <string>
 
 #include <gtest/gtest.h>
-#include <string>
-#include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "sdf/sdf.hh"
 
 std::string get_sdf_string()
 {
