@@ -77,5 +77,3 @@ TEST(Frame, LinkLight)
   EXPECT_EQ(specularElem->Get<sdf::Color>(),
       sdf::Color(0.3f, 0.4f, 0.5f, 1.0f));
 }
-
-
