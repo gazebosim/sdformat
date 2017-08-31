@@ -111,3 +111,5 @@ endif(NOT SSSE3_FOUND)
 if(NOT SSE4_1_FOUND)
       MESSAGE(STATUS "Could not find hardware support for SSE4.1 on this machine.")
 endif(NOT SSE4_1_FOUND)
+
+mark_as_advanced(SSE2_FOUND SSE3_FOUND SSSE3_FOUND SSE4_1_FOUND)
