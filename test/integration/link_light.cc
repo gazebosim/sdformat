@@ -66,6 +66,10 @@ TEST(Frame, LinkLight)
   EXPECT_TRUE(lightElem->HasAttribute("type"));
   EXPECT_EQ(lightElem->Get<std::string>("type"), "point");
 
+  EXPECT_TRUE(lightElem->HasElement("pose"));
+  auto pose = lightElem->Get<ignition::math::Pose3d>("pose");
+  EXPECT_EQ(ignition::math::Pose3d(0.1, 0, 0, 0, 0, 0), pose);
+
   // diffuse
   EXPECT_TRUE(lightElem->HasElement("diffuse"));
   sdf::ElementPtr diffuseElem = lightElem->GetElement("diffuse");
