@@ -182,7 +182,7 @@ macro (sdf_build_tests)
 
           string(REPLACE ".lib" ".dll" dll ${lib})
           if (EXISTS ${dll})
-           add_custom_command(TARGET ${BINARY_NAME}
+            add_custom_command(TARGET ${BINARY_NAME}
               COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dll}"
               $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
           endif()
