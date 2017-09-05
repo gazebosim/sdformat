@@ -17,7 +17,7 @@ if (USE_EXTERNAL_TINYXML)
   link_directories(${tinyxml_LIBRARY_DIRS})
 endif()
 
-configure_file (test_config.h.in ${PROJECT_BINARY_DIR}/test_config.h)
+configure_file(test_config.h.in ${PROJECT_BINARY_DIR}/test_config.h)
 
 # Build gtest
 add_library(gtest STATIC gtest/src/gtest-all.cc)

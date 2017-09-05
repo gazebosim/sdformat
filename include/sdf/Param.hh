@@ -25,10 +25,12 @@
 #endif
 
 #include <algorithm>
+#include <cstdint>
 #include <functional>
 #include <memory>
-#include <typeinfo>
+#include <sstream>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 #include <ignition/math.hh>
@@ -213,7 +215,7 @@ namespace sdf
 
     /// \def ParamVariant
     /// \brief Variant type def.
-    public: typedef boost::variant<bool, char, std::string, int, uint64_t,
+    public: typedef boost::variant<bool, char, std::string, int, std::uint64_t,
                                    unsigned int, double, float, sdf::Time,
                                    ignition::math::Color,
                                    ignition::math::Vector2i,
@@ -244,17 +246,16 @@ namespace sdf
     {
       std::stringstream ss;
       ss << _value;
-      this->SetFromString(ss.str());
+      return this->SetFromString(ss.str());
     }
     catch(...)
     {
       sdferr << "Unable to set parameter["
              << this->dataPtr->key << "]."
-             << "Type type used must have a stream input and output"
-             << "operator, which allows proper functioning of Param.\n";
+             << "Type used must have a stream input and output operator,"
+             << "which allows proper functioning of Param.\n";
       return false;
     }
-    return true;
   }
 
   ///////////////////////////////////////////////
