@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <string>
 
 #include <gtest/gtest.h>
 
@@ -22,11 +24,12 @@
 
 #include "test_config.h"
 
-
-const std::string URDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH) + "/test/performance/parser_urdf_atlas.urdf";
-
 TEST(URDFParser, AtlasURDF_5runs_performance)
 {
+  const std::string
+    URDF_TEST_FILE = sdf::filesystem::append(PROJECT_SOURCE_PATH, "test",
+                                             "performance",
+                                             "parser_urdf_atlas.urdf");
   sdf::URDF2SDF parser;
   for (int i = 0; i < 5; i++)
   {

@@ -15,6 +15,10 @@
  *
  */
 
+#include <algorithm>
+#include <sstream>
+#include <string>
+
 #include "sdf/Assert.hh"
 #include "sdf/Element.hh"
 
@@ -218,7 +222,7 @@ void Element::Copy(const ElementPtr _elem)
 }
 
 /////////////////////////////////////////////////
-void Element::PrintDescription(const std::string &_prefix)
+void Element::PrintDescription(const std::string &_prefix) const
 {
   std::cout << _prefix << "<element name ='" << this->dataPtr->name
             << "' required ='" << this->dataPtr->required << "'>\n";
@@ -248,8 +252,8 @@ void Element::PrintDescription(const std::string &_prefix)
   std::string refSDF = this->ReferenceSDF();
   if (!refSDF.empty())
   {
-    std::cout << _prefix << "  <element ref ='" << refSDF <<
-        "' required ='*'/>\n";
+    std::cout << _prefix << "  <element ref ='" << refSDF
+              << "' required ='*'/>\n";
   }
 
   ElementPtr_V::iterator eiter;
@@ -263,7 +267,8 @@ void Element::PrintDescription(const std::string &_prefix)
 }
 
 /////////////////////////////////////////////////
-void Element::PrintDocRightPane(std::string &_html, int _spacing, int &_index)
+void Element::PrintDocRightPane(std::string &_html, int _spacing,
+                                int &_index) const
 {
   std::ostringstream stream;
   ElementPtr_V::iterator eiter;
@@ -358,7 +363,8 @@ void Element::PrintDocRightPane(std::string &_html, int _spacing, int &_index)
 }
 
 /////////////////////////////////////////////////
-void Element::PrintDocLeftPane(std::string &_html, int _spacing, int &_index)
+void Element::PrintDocLeftPane(std::string &_html, int _spacing,
+                               int &_index) const
 {
   std::ostringstream stream;
   ElementPtr_V::iterator eiter;
@@ -383,42 +389,50 @@ void Element::PrintDocLeftPane(std::string &_html, int _spacing, int &_index)
   _html += "</div>\n";
 }
 
-/////////////////////////////////////////////////
-void Element::PrintValues(std::string _prefix)
+void Element::PrintValuesImpl(const std::string &_prefix,
+                              std::ostringstream &_out) const
 {
-  std::cout << _prefix << "<" << this->dataPtr->name;
+  _out << _prefix << "<" << this->dataPtr->name;
 
-  Param_V::iterator aiter;
+  Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
-    std::cout << " " << (*aiter)->GetKey() << "='"
-              << (*aiter)->GetAsString() << "'";
+    _out << " " << (*aiter)->GetKey() << "='"
+         << (*aiter)->GetAsString() << "'";
   }
 
   if (this->dataPtr->elements.size() > 0)
   {
-    std::cout << ">\n";
-    ElementPtr_V::iterator eiter;
+    _out << ">\n";
+    ElementPtr_V::const_iterator eiter;
     for (eiter = this->dataPtr->elements.begin();
-        eiter != this->dataPtr->elements.end(); ++eiter)
+         eiter != this->dataPtr->elements.end(); ++eiter)
     {
-      (*eiter)->PrintValues(_prefix + "  ");
+      (*eiter)->ToString(_prefix + "  ", _out);
     }
-    std::cout << _prefix << "</" << this->dataPtr->name << ">\n";
+    _out << _prefix << "</" << this->dataPtr->name << ">\n";
   }
   else
   {
     if (this->dataPtr->value)
     {
-      std::cout << ">" << this->dataPtr->value->GetAsString()
-                << "</" << this->dataPtr->name << ">\n";
+      _out << ">" << this->dataPtr->value->GetAsString()
+           << "</" << this->dataPtr->name << ">\n";
     }
     else
     {
-      std::cout << "/>\n";
+      _out << "/>\n";
     }
   }
+}
+
+/////////////////////////////////////////////////
+void Element::PrintValues(std::string _prefix) const
+{
+  std::ostringstream ss;
+  PrintValuesImpl(_prefix, ss);
+  std::cout << ss.str();
 }
 
 /////////////////////////////////////////////////
@@ -435,39 +449,7 @@ void Element::ToString(const std::string &_prefix,
 {
   if (this->dataPtr->includeFilename.empty())
   {
-    _out << _prefix << "<" << this->dataPtr->name;
-
-    Param_V::const_iterator aiter;
-    for (aiter = this->dataPtr->attributes.begin();
-        aiter != this->dataPtr->attributes.end(); ++aiter)
-    {
-      _out << " " << (*aiter)->GetKey() << "='"
-           << (*aiter)->GetAsString() << "'";
-    }
-
-    if (this->dataPtr->elements.size() > 0)
-    {
-      _out << ">\n";
-      ElementPtr_V::const_iterator eiter;
-      for (eiter = this->dataPtr->elements.begin();
-          eiter != this->dataPtr->elements.end(); ++eiter)
-      {
-        (*eiter)->ToString(_prefix + "  ", _out);
-      }
-      _out << _prefix << "</" << this->dataPtr->name << ">\n";
-    }
-    else
-    {
-      if (this->dataPtr->value)
-      {
-        _out << ">" << this->dataPtr->value->GetAsString()
-             << "</" << this->dataPtr->name << ">\n";
-      }
-      else
-      {
-        _out << "/>\n";
-      }
-    }
+    PrintValuesImpl(_prefix, _out);
   }
   else
   {
@@ -477,13 +459,13 @@ void Element::ToString(const std::string &_prefix,
 }
 
 /////////////////////////////////////////////////
-bool Element::HasAttribute(const std::string &_key)
+bool Element::HasAttribute(const std::string &_key) const
 {
   return this->GetAttribute(_key) != nullptr;
 }
 
 /////////////////////////////////////////////////
-bool Element::GetAttributeSet(const std::string &_key)
+bool Element::GetAttributeSet(const std::string &_key) const
 {
   bool result = false;
   ParamPtr p = this->GetAttribute(_key);
@@ -496,7 +478,7 @@ bool Element::GetAttributeSet(const std::string &_key)
 }
 
 /////////////////////////////////////////////////
-ParamPtr Element::GetAttribute(const std::string &_key)
+ParamPtr Element::GetAttribute(const std::string &_key) const
 {
   Param_V::const_iterator iter;
   for (iter = this->dataPtr->attributes.begin();
@@ -562,7 +544,7 @@ ElementPtr Element::GetElementDescription(const std::string &_key) const
 }
 
 /////////////////////////////////////////////////
-ParamPtr Element::GetValue()
+ParamPtr Element::GetValue() const
 {
   return this->dataPtr->value;
 }
@@ -660,7 +642,7 @@ void Element::InsertElement(ElementPtr _elem)
 }
 
 /////////////////////////////////////////////////
-bool Element::HasElementDescription(const std::string &_name)
+bool Element::HasElementDescription(const std::string &_name) const
 {
   return this->GetElementDescription(_name) != ElementPtr();
 }
@@ -839,7 +821,7 @@ void Element::RemoveChild(ElementPtr _child)
 }
 
 /////////////////////////////////////////////////
-boost::any Element::GetAny(const std::string &_key)
+boost::any Element::GetAny(const std::string &_key) const
 {
   boost::any result;
   if (_key.empty() && this->dataPtr->value)

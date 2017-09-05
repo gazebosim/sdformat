@@ -15,6 +15,9 @@
  *
  */
 
+#include <cstdint>
+#include <string>
+
 #include "sdf/ExceptionPrivate.hh"
 #include "sdf/Console.hh"
 #include "sdf/Exception.hh"
@@ -28,7 +31,7 @@ Exception::Exception()
 }
 
 //////////////////////////////////////////////////
-Exception::Exception(const char *_file, int64_t _line, std::string _msg)
+Exception::Exception(const char *_file, std::int64_t _line, std::string _msg)
   : dataPtr(new ExceptionPrivate)
 {
   this->dataPtr->file = _file;
@@ -49,8 +52,6 @@ Exception::Exception(const Exception &_e)
 //////////////////////////////////////////////////
 Exception::~Exception()
 {
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -79,7 +80,7 @@ InternalError::InternalError()
 }
 
 //////////////////////////////////////////////////
-InternalError::InternalError(const char *_file, int64_t _line,
+InternalError::InternalError(const char *_file, std::int64_t _line,
                              const std::string _msg) :
   Exception(_file, _line, _msg)
 {
@@ -92,7 +93,7 @@ InternalError::~InternalError()
 
 //////////////////////////////////////////////////
 AssertionInternalError::AssertionInternalError(
-    const char * _file, int64_t _line,
+    const char * _file, std::int64_t _line,
     const std::string _expr,
     const std::string _function,
     const std::string _msg) :

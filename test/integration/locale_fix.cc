@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <iostream>
+#include <string>
 
 #include <gtest/gtest.h>
+
 #include "sdf/sdf.hh"
 #include "sdf/parser_urdf.hh"
 
 #include "test_config.h"
 
-const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/numeric.sdf";
+const std::string SDF_TEST_FILE =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                          "numeric.sdf");
 
 // Windows supports the setlocale call but we can not extract the
 // available locales using the Linux call

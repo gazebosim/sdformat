@@ -182,12 +182,12 @@ macro (sdf_build_tests)
 
           string(REPLACE ".lib" ".dll" dll ${lib})
           if (EXISTS ${dll})
-           add_custom_command(TARGET ${BINARY_NAME}
+            add_custom_command(TARGET ${BINARY_NAME}
               COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dll}"
               $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
           endif()
 
-          # Check if there is a .dll in the /bin/ directory, sibling of /lib/ 
+          # Check if there is a .dll in the /bin/ directory, sibling of /lib/
           # This is the structure used by vcpkg boost port
           string(REPLACE "/lib/" "/bin/" alt_dll ${dll})
           if (EXISTS ${alt_dll})
