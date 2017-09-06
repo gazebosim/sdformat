@@ -2,6 +2,9 @@
 
 ### SDFormat 6.0.0 (xxxx-xx-xx)
 
+1. Add simplified ```readFile`` function.
+   * [Pull request 347](https://bitbucket.org/osrf/sdformat/pull-requests/347)
+
 1. Remove boost::lexical cast instances
    * [Pull request 342](https://bitbucket.org/osrf/sdformat/pull-requests/342)
 

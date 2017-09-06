@@ -115,9 +115,8 @@ void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
   // check to see that urdf load results are consistent with sdf load.
 
   // load urdf
-  sdf::SDFPtr urdfRobot(new sdf::SDF());
-  sdf::init(urdfRobot);
-  ASSERT_TRUE(sdf::readFile(_urdfFile, urdfRobot));
+  sdf::SDFPtr urdfRobot = sdf::readFile(_urdfFile);
+  ASSERT_TRUE(urdfRobot != sdf::SDFPtr());
 
   // load sdf
   sdf::SDFPtr sdfRobot(new sdf::SDF());
