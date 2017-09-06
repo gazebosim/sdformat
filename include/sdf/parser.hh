@@ -55,6 +55,7 @@ namespace sdf
   /// SDF version
   /// \param[in] _filename Name of the SDF file
   /// \param[in] _sdf Pointer to an SDF object.
+  /// \return True if successful.
   SDFORMAT_VISIBLE
   bool readFile(const std::string &_filename, SDFPtr _sdf);
 
