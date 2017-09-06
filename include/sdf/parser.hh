@@ -44,6 +44,7 @@ namespace sdf
 
   /// \brief Populate the SDF values from a file
   /// \param[in] _filename Name of the SDF file
+  /// \return Populated SDF pointer.
   SDFORMAT_VISIBLE
   sdf::SDFPtr readFile(const std::string &_filename);
 
