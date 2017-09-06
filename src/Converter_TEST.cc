@@ -64,10 +64,10 @@ TEST(Converter, MoveElemElem)
   convertStream << "<convert name='elemA'>"
                 << "  <convert name='elemB'>"
                 << "    <move>"
-                << "     <from element='elemC::elemD'/>"
-                << "     <to element='elemE'/>"
-                << "   </move>"
-                << " </convert>"
+                << "      <from element='elemC::elemD'/>"
+                << "      <to element='elemE'/>"
+                << "    </move>"
+                << "  </convert>"
                 << "</convert>";
   TiXmlDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
@@ -102,10 +102,10 @@ TEST(Converter, MoveElemAttr)
   convertStream << "<convert name='elemA'>"
                 << "  <convert name='elemB'>"
                 << "    <move>"
-                << "     <from element='elemC::elemD'/>"
-                << "     <to attribute='attrE'/>"
-                << "   </move>"
-                << " </convert>"
+                << "      <from element='elemC::elemD'/>"
+                << "      <to attribute='attrE'/>"
+                << "    </move>"
+                << "  </convert>"
                 << "</convert>";
   TiXmlDocument convertXmlDoc2;
   convertXmlDoc2.Parse(convertStream.str().c_str());
@@ -140,10 +140,10 @@ TEST(Converter, MoveAttrAttr)
   convertStream << "<convert name='elemA'>"
                 << "  <convert name='elemB'>"
                 << "    <move>"
-                << "     <from attribute='elemC::attrC'/>"
-                << "     <to attribute='attrE'/>"
-                << "   </move>"
-                << " </convert>"
+                << "      <from attribute='elemC::attrC'/>"
+                << "      <to attribute='attrE'/>"
+                << "    </move>"
+                << "  </convert>"
                 << "</convert>";
   TiXmlDocument convertXmlDoc3;
   convertXmlDoc3.Parse(convertStream.str().c_str());
@@ -181,10 +181,10 @@ TEST(Converter, MoveAttrElem)
   convertStream << "<convert name='elemA'>"
                 << "  <convert name='elemB'>"
                 << "    <move>"
-                << "     <from attribute='elemC::attrC'/>"
-                << "     <to element='elemE'/>"
-                << "   </move>"
-                << " </convert>"
+                << "      <from attribute='elemC::attrC'/>"
+                << "      <to element='elemE'/>"
+                << "    </move>"
+                << "  </convert>"
                 << "</convert>";
   TiXmlDocument convertXmlDoc4;
   convertXmlDoc4.Parse(convertStream.str().c_str());
@@ -221,8 +221,8 @@ TEST(Converter, MoveElemElemMultipleLevels)
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
                 << "  <move>"
-                << "   <from element='elemB::elemC::elemD'/>"
-                << "   <to element='elemE'/>"
+                << "    <from element='elemB::elemC::elemD'/>"
+                << "    <to element='elemE'/>"
                 << "  </move>"
                 << "</convert>";
   TiXmlDocument convertXmlDoc5;
@@ -256,8 +256,8 @@ TEST(Converter, MoveAttrAttrMultipleLevels)
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
                 << "  <move>"
-                << "   <from attribute='elemB::elemC::attrC'/>"
-                << "   <to attribute='attrE'/>"
+                << "    <from attribute='elemB::elemC::attrC'/>"
+                << "    <to attribute='attrE'/>"
                 << "  </move>"
                 << "</convert>";
   TiXmlDocument convertXmlDoc6;
@@ -294,8 +294,8 @@ TEST(Converter, MoveElemAttrMultipleLevels)
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
                 << "  <move>"
-                << "   <from element='elemB::elemC::elemD'/>"
-                << "   <to attribute='attrE'/>"
+                << "    <from element='elemB::elemC::elemD'/>"
+                << "    <to attribute='attrE'/>"
                 << "  </move>"
                 << "</convert>";
   TiXmlDocument convertXmlDoc7;
@@ -329,8 +329,8 @@ TEST(Converter, MoveAttrElemMultipleLevels)
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
                 << "  <move>"
-                << "   <from attribute='elemB::elemC::attrC'/>"
-                << "   <to element='elemE'/>"
+                << "    <from attribute='elemB::elemC::attrC'/>"
+                << "    <to element='elemE'/>"
                 << "  </move>"
                 << "</convert>";
   TiXmlDocument convertXmlDoc8;
@@ -586,10 +586,10 @@ TEST(Converter, MoveInvalid)
   convertStream << "<convert name='elemA'>"
                 << "  <convert name='elemB'>"
                 << "    <move>"
-                << "     <from element='elemC::'/>"
-                << "     <to element='elemE'/>"
-                << "   </move>"
-                << " </convert>"
+                << "      <from element='elemC::'/>"
+                << "      <to element='elemE'/>"
+                << "    </move>"
+                << "  </convert>"
                 << "</convert>";
   TiXmlDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
@@ -642,10 +642,10 @@ TEST(Converter, MoveInvalidPrefix)
   convertStream << "<convert name='elemA'>"
                 << "  <convert name='elemB'>"
                 << "    <move>"
-                << "     <from element='::elemC'/>"
-                << "     <to element='elemE'/>"
-                << "   </move>"
-                << " </convert>"
+                << "      <from element='::elemC'/>"
+                << "      <to element='elemE'/>"
+                << "    </move>"
+                << "  </convert>"
                 << "</convert>";
   TiXmlDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
@@ -699,10 +699,10 @@ TEST(Converter, CopyElemElem)
   convertStream << "<convert name='elemA'>"
                 << "  <convert name='elemB'>"
                 << "    <copy>"
-                << "     <from element='elemC::elemD'/>"
-                << "     <to element='elemE'/>"
-                << "   </copy>"
-                << " </convert>"
+                << "      <from element='elemC::elemD'/>"
+                << "      <to element='elemE'/>"
+                << "    </copy>"
+                << "  </convert>"
                 << "</convert>";
   TiXmlDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
@@ -725,6 +725,97 @@ TEST(Converter, CopyElemElem)
   EXPECT_EQ(elemValue, "D");
 }
 
+////////////////////////////////////////////////////
+TEST(Converter, RenameElemElem)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  EXPECT_TRUE(childElem != nullptr);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != nullptr);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != nullptr);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem =  childElem->FirstChildElement();
+  EXPECT_TRUE(childElem != nullptr);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Test moving from elem to elem
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <convert name='elemC'>"
+                << "      <rename>"
+                << "        <from element='elemD'/>"
+                << "        <to element='elemE'/>"
+                << "      </rename>"
+                << "    </convert>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  TiXmlElement *elemB = convertedElem->FirstChildElement();
+  ASSERT_TRUE(elemB != nullptr);
+  EXPECT_EQ(elemB->ValueStr(), "elemB");
+  TiXmlElement *elemC = elemB->FirstChild("elemC")->ToElement();
+  EXPECT_TRUE(elemC != nullptr);
+  TiXmlElement *elemE = elemC->FirstChildElement();
+  EXPECT_TRUE(elemE != nullptr);
+  EXPECT_EQ(elemE->ValueStr(), "elemE");
+  std::string elemValue = elemE->GetText();
+  ASSERT_EQ(elemValue, "D");
+}
+
+////////////////////////////////////////////////////
+TEST(Converter, RenameAttrAttr)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Test moving from attr to attr
+  TiXmlDocument xmlDoc3;
+  xmlDoc3.Parse(xmlString.c_str());
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <convert name='elemC'>"
+                << "      <rename>"
+                << "        <from attribute='attrC'/>"
+                << "        <to element='elemE' attribute='attrE'/>"
+                << "      </rename>"
+                << "    </convert>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc3;
+  convertXmlDoc3.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3);
+
+  TiXmlElement *convertedElem =  xmlDoc3.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_TRUE(convertedElem != nullptr);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_TRUE(convertedElem != nullptr);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  convertedElem = convertedElem->FirstChild("elemE")->ToElement();
+  std::string attrValue = convertedElem->Attribute("attrE");
+  EXPECT_EQ(attrValue, "C");
+}
+
+////////////////////////////////////////////////////
 TEST(Converter, GazeboToSDF)
 {
   std::stringstream stream;
@@ -740,6 +831,7 @@ TEST(Converter, GazeboToSDF)
   EXPECT_TRUE(convertedElem != nullptr);
 }
 
+////////////////////////////////////////////////////
 TEST(Converter, NullDoc)
 {
   TiXmlDocument xmlDoc;
@@ -751,6 +843,50 @@ TEST(Converter, NullDoc)
                sdf::AssertionInternalError);
   ASSERT_THROW(sdf::Converter::Convert(nullptr, "1.4"),
                sdf::AssertionInternalError);
+}
+
+////////////////////////////////////////////////////
+TEST(Converter, NoVersion)
+{
+  std::string xmlString("<sdf></sdf>");
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  ASSERT_FALSE(sdf::Converter::Convert(&xmlDoc, "1.3"));
+}
+
+////////////////////////////////////////////////////
+TEST(Converter, SameVersion)
+{
+  std::string xmlString("<sdf version='1.3'></sdf>");
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.3"));
+}
+
+////////////////////////////////////////////////////
+TEST(Converter, NewerVersion)
+{
+  std::string xmlString("<sdf version='1.5'></sdf>");
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6"));
+}
+
+////////////////////////////////////////////////////
+TEST(Converter, MuchNewerVersion)
+{
+  std::string xmlString("<sdf version='1.3'></sdf>");
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6"));
 }
 
 /////////////////////////////////////////////////
