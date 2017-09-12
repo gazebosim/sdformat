@@ -13,39 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <map>
+#include <string>
 
 #include <gtest/gtest.h>
-#include <map>
+
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
 
-const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/fixed_joint_reduction.urdf";
+const std::string SDF_TEST_FILE =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+    "fixed_joint_reduction.urdf");
 const std::string SDF_TEST_FILE_COLLISION =
-  std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/fixed_joint_reduction_collision.urdf";
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+    "fixed_joint_reduction_collision.urdf");
 const std::string SDF_TEST_FILE_SIMPLE =
-  std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/fixed_joint_reduction_simple.urdf";
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+    "fixed_joint_reduction_simple.urdf");
 const std::string SDF_TEST_FILE_VISUAL =
-  std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/fixed_joint_reduction_visual.urdf";
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+    "fixed_joint_reduction_visual.urdf");
 const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION =
-  std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/fixed_joint_reduction_collision_visual_extension.urdf";
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+    "fixed_joint_reduction_collision_visual_extension.urdf");
 const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_SDF =
-  std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/fixed_joint_reduction_collision_visual_extension.sdf";
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+    "fixed_joint_reduction_collision_visual_extension.sdf");
 const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT =
-  std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/"
-  + "fixed_joint_reduction_collision_visual_empty_root.urdf";
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+    "fixed_joint_reduction_collision_visual_empty_root.urdf");
 const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF =
-  std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/"
-  + "fixed_joint_reduction_collision_visual_empty_root.sdf";
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+    "fixed_joint_reduction_collision_visual_empty_root.sdf");
 
 const double gc_tolerance = 1e-6;
 
@@ -113,9 +115,8 @@ void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
   // check to see that urdf load results are consistent with sdf load.
 
   // load urdf
-  sdf::SDFPtr urdfRobot(new sdf::SDF());
-  sdf::init(urdfRobot);
-  ASSERT_TRUE(sdf::readFile(_urdfFile, urdfRobot));
+  sdf::SDFPtr urdfRobot = sdf::readFile(_urdfFile);
+  ASSERT_TRUE(urdfRobot != sdf::SDFPtr());
 
   // load sdf
   sdf::SDFPtr sdfRobot(new sdf::SDF());

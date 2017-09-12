@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <string>
 
 #include <gtest/gtest.h>
-#include <map>
+
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
 
-const std::string SDF_FIXED_JNT = std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/fixed_joint_reduction.urdf";
+const std::string SDF_FIXED_JNT =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                          "fixed_joint_reduction.urdf");
 
-const std::string SDF_FIXED_JNT_NO_LUMPING = std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/fixed_joint_reduction_disabled.urdf";
+const std::string SDF_FIXED_JNT_NO_LUMPING =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                          "fixed_joint_reduction_disabled.urdf");
 
 /////////////////////////////////////////////////
 bool findJointInModel(const std::string &desired_joint_name, sdf::SDFPtr robot)

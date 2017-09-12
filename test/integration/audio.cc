@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <string>
 
 #include <gtest/gtest.h>
+
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
 
 const std::string SDF_TEST_FILE =
-  std::string(PROJECT_SOURCE_PATH) + "/test/integration/audio.sdf";
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                          "audio.sdf");
 
 TEST(SDFParser, AudioSDF_FullParameters_noThrow)
 {
