@@ -19,9 +19,9 @@ set(tests
   plugin_bool.cc
   plugin_include.cc
   provide_feedback.cc
+  sdf_basic.cc
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
-  sdf_basic.cc
 )
 
 if (PYTHONINTERP_FOUND AND PY_PSUTIL)
