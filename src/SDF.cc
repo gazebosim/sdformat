@@ -384,7 +384,7 @@ ElementPtr SDF::WrapInRoot(const ElementPtr &_sdf)
   ElementPtr root(new Element);
   root->SetName("sdf");
   std::stringstream version;
-  version << sdf::SDF::Version();
+  version << Version();
   root->AddAttribute("version", "string", version.str(), true, "version");
   root->InsertElement(_sdf->Clone());
   return root;
