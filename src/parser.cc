@@ -279,6 +279,21 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
   return true;
 }
 
+//////////////////////////////////////////////////
+SDFPtr readFile(const std::string &_filename)
+{
+  // Create and initialize the data structure that will hold the parsed SDF data
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+
+  // Read an SDF file, and store the result in sdfParsed.
+  if (!sdf::readFile(_filename, sdfParsed))
+  {
+    return SDFPtr();
+  }
+
+  return sdfParsed;
+}
 
 //////////////////////////////////////////////////
 bool readFile(const std::string &_filename, SDFPtr _sdf)
