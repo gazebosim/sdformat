@@ -8,6 +8,11 @@ The format of SDF is also described by XML, which facilitates updates and
 allows conversion from previous versions. A parser is also contained within
 this package that reads SDF files and returns a C++ interface.
 
+Test coverage:
+
+[![codecov](https://codecov.io/bb/osrf/sdformat/branch/default/graph/badge.svg)](https://codecov.io/bb/osrf/sdformat)
+
+
 ## Installation ##
 
 Standard installation can be performed in UNIX systems using the following
