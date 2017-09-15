@@ -72,6 +72,18 @@ but with improved human-readability..
     + required: 0
     + [pull request 246](https://bitbucket.org/osrf/sdformat/pull-requests/246)
 
+1. **state.sdf** allow `light` tags within `insertions` element
+    * [pull request 325](https://bitbucket.org/osrf/sdformat/pull-request/325)
+
+1. **surface.sdf** `category_bitmask` element
+    + description: Bitmask for category of collision filtering.
+      Collision happens if `((category1 & collision2) | (category2 & collision1))` is not zero.
+      If not specified, the category_bitmask should be interpreted as being the same as collide_bitmask.
+    + type: unsigned int
+    + default: 65535
+    + required: 0
+    + [pull request 318](https://bitbucket.org/osrf/sdformat/pull-requests/318)
+
 1. **world.sdf** `wind` element
     + description: The wind tag specifies the type and properties of the wind.
     + required: 0

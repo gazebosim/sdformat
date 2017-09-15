@@ -11,12 +11,14 @@ set(tests
   frame.cc
   include.cc
   joint_axis_frame.cc
+  link_light.cc
   locale_fix.cc
   model_versions.cc
   nested_model.cc
   parser_error_detection.cc
   plugin_attribute.cc
   plugin_bool.cc
+  plugin_include.cc
   provide_feedback.cc
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
