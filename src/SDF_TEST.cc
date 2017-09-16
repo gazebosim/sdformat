@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 Open Source Robotics Foundation
+ * Copyright 2012 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 */
 
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
 #include <boost/any.hpp>
+#include <ignition/math.hh>
 #include "test_config.h"
 #include "sdf/sdf.hh"
 
@@ -27,37 +27,21 @@ class SDFUpdate : public testing::Test
 {
   protected: SDFUpdate()
              {
-               boost::filesystem::path path =
-                 boost::filesystem::path(PROJECT_SOURCE_PATH)
-                 / "sdf" / SDF_VERSION;
-
-               // Store original env var.
-               this->origSDFPath = getenv("SDF_PATH");
-
-               setenv("SDF_PATH", path.string().c_str(), 1);
              }
 
   protected: virtual ~SDFUpdate()
              {
-               // Restore original env var.
-               // osx segfaults unless this check is in place
-               // some discussion of portability of setenv at:
-               // http://www.greenend.org.uk/rjk/tech/putenv.html
-               if (this->origSDFPath)
-                 setenv("SDF_PATH", this->origSDFPath, 1);
              }
-
-  private: char *origSDFPath;
 };
 
 class SDFUpdateFixture
 {
   public:  std::string GetName() const {return this->name;}
   public:  bool GetFlag() const {return this->flag;}
-  public:  sdf::Pose GetPose() const {return this->pose;}
+  public:  ignition::math::Pose3d GetPose() const {return this->pose;}
   public:  std::string name;
   public:  bool flag;
-  public:  sdf::Pose pose;
+  public:  ignition::math::Pose3d pose;
 };
 
 ////////////////////////////////////////////////////
@@ -82,20 +66,20 @@ TEST_F(SDFUpdate, UpdateAttribute)
   // Read name attribute value
   EXPECT_TRUE(modelElem->HasAttribute("name"));
   sdf::ParamPtr nameParam = modelElem->GetAttribute("name");
-  EXPECT_EQ(nameParam->GetType(), typeid(std::string));
+  EXPECT_TRUE(nameParam->IsType<std::string>());
 
   // Set test class variables based on sdf values
   // Set parameter update functions to test class accessors
   SDFUpdateFixture fixture;
   nameParam->Get(fixture.name);
-  nameParam->SetUpdateFunc(boost::bind(&SDFUpdateFixture::GetName, &fixture));
+  nameParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetName, &fixture));
 
   std::string nameCheck;
   int i;
   for (i = 0; i < 4; i++)
   {
     // Update test class variables
-    fixture.name[0] = 'd' + i;
+    fixture.name[0] = 'd' + static_cast<char>(i);
 
     // Update root sdf element
     sdfParsed.Root()->Update();
@@ -128,31 +112,31 @@ TEST_F(SDFUpdate, UpdateElement)
   // Read static element value
   EXPECT_TRUE(modelElem->HasElement("static"));
   sdf::ParamPtr staticParam = modelElem->GetElement("static")->GetValue();
-  EXPECT_TRUE(staticParam->GetType() == typeid(bool));
+  EXPECT_TRUE(staticParam->IsType<bool>());
 
   // Read pose element value
   EXPECT_TRUE(modelElem->HasElement("pose"));
   sdf::ParamPtr poseParam = modelElem->GetElement("pose")->GetValue();
-  EXPECT_TRUE(poseParam->GetType() == typeid(sdf::Pose));
+  EXPECT_TRUE(poseParam->IsType<ignition::math::Pose3d>());
 
   // Set test class variables based on sdf values
   // Set parameter update functions to test class accessors
   SDFUpdateFixture fixture;
   staticParam->Get(fixture.flag);
-  staticParam->SetUpdateFunc(boost::bind(&SDFUpdateFixture::GetFlag, &fixture));
+  staticParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetFlag, &fixture));
   poseParam->Get(fixture.pose);
-  poseParam->SetUpdateFunc(boost::bind(&SDFUpdateFixture::GetPose, &fixture));
+  poseParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetPose, &fixture));
 
   bool flagCheck;
-  sdf::Pose poseCheck;
+  ignition::math::Pose3d poseCheck;
   int i;
   for (i = 0; i < 4; i++)
   {
     // Update test class variables
     fixture.flag = !fixture.flag;
-    fixture.pose.pos.x = i;
-    fixture.pose.pos.y = i+10;
-    fixture.pose.pos.z = -i*i*i;
+    fixture.pose.Pos().X() = i;
+    fixture.pose.Pos().Y() = i+10;
+    fixture.pose.Pos().Z() = -i*i*i;
 
     // Update root sdf element
     sdfParsed.Root()->Update();
@@ -322,31 +306,40 @@ TEST_F(SDFUpdate, EmptyValues)
   EXPECT_EQ(elem->Get<std::string>(emptyString), "hello");
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Vector2d>(emptyString), sdf::Vector2d());
+  EXPECT_EQ(elem->Get<ignition::math::Vector2d>(emptyString),
+      ignition::math::Vector2d());
   elem->AddValue("vector2d", "1 2", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Vector2d>(emptyString), sdf::Vector2d(1, 2));
+  EXPECT_EQ(elem->Get<ignition::math::Vector2d>(emptyString),
+      ignition::math::Vector2d(1, 2));
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Vector3>(emptyString), sdf::Vector3());
+  EXPECT_EQ(elem->Get<ignition::math::Vector3d>(emptyString),
+      ignition::math::Vector3d());
   elem->AddValue("vector3", "1 2 3", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Vector3>(emptyString), sdf::Vector3(1, 2, 3));
+  EXPECT_EQ(elem->Get<ignition::math::Vector3d>(emptyString),
+      ignition::math::Vector3d(1, 2, 3));
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Quaternion>(emptyString), sdf::Quaternion());
+  EXPECT_EQ(elem->Get<ignition::math::Quaterniond>(emptyString),
+            ignition::math::Quaterniond());
   elem->AddValue("quaternion", "1 2 3", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Quaternion>(emptyString),
-            sdf::Quaternion(-2.14159, 1.14159, -0.141593));
+  EXPECT_EQ(elem->Get<ignition::math::Quaterniond>(emptyString),
+            ignition::math::Quaterniond(-2.14159, 1.14159, -0.141593));
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<sdf::Pose>(emptyString), sdf::Pose());
-  elem->AddValue("pose", "1 2 3 4 5 6", "0", "description");
-  EXPECT_EQ(elem->Get<sdf::Pose>(emptyString), sdf::Pose(1, 2, 3, 4, 5, 6));
+  EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString),
+      ignition::math::Pose3d());
+  elem->AddValue("pose", "1.0 2.0 3.0 4.0 5.0 6.0", "0", "description");
+  EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString).Pos(),
+      ignition::math::Pose3d(1, 2, 3, 4, 5, 6).Pos());
+  EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString).Rot().Euler(),
+      ignition::math::Pose3d(1, 2, 3, 4, 5, 6).Rot().Euler());
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<sdf::Color>(emptyString), sdf::Color());
   elem->AddValue("color", ".1 .2 .3 1.0", "0", "description");
   EXPECT_EQ(elem->Get<sdf::Color>(emptyString),
-            sdf::Color(.1, .2, .3, 1.0));
+            sdf::Color(.1f, .2f, .3f, 1.0f));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<sdf::Time>(emptyString), sdf::Time());
@@ -369,10 +362,10 @@ TEST_F(SDFUpdate, GetAny)
 {
   std::ostringstream stream;
   // Test types double, bool, string, int, vector3, color, pose
-  stream << "<sdf version='1.5'>"
+  stream << "<sdf version='1.6'>"
          << "<world name='test'>"
+         << "   <gravity> 0 0 -7.1 </gravity>"
          << "   <physics type='ode'>"
-         << "     <gravity> 0 0 -7.1 </gravity>"
          << "     <max_contacts>8</max_contacts>"
          << "     <max_step_size>0.002</max_step_size>"
          << "   </physics>"
@@ -419,8 +412,8 @@ TEST_F(SDFUpdate, GetAny)
     boost::any anyValue = poseElem->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<sdf::Pose>(anyValue),
-          sdf::Pose(0, 1, 2, 0, 0, 0));
+      EXPECT_EQ(boost::any_cast<ignition::math::Pose3d>(anyValue),
+          ignition::math::Pose3d(0, 1, 2, 0, 0, 0));
     }
     catch(boost::bad_any_cast &/*_e*/)
     {
@@ -429,12 +422,12 @@ TEST_F(SDFUpdate, GetAny)
   }
 
   {
-    EXPECT_TRUE(physicsElem->HasElement("gravity"));
-    boost::any anyValue = physicsElem->GetElement("gravity")->GetAny();
+    EXPECT_TRUE(worldElem->HasElement("gravity"));
+    boost::any anyValue = worldElem->GetElement("gravity")->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<sdf::Vector3>(anyValue),
-          sdf::Vector3(0, 0, -7.1));
+      EXPECT_EQ(boost::any_cast<ignition::math::Vector3d>(anyValue),
+          ignition::math::Vector3d(0, 0, -7.1));
     }
     catch(boost::bad_any_cast &/*_e*/)
     {
@@ -469,12 +462,12 @@ TEST_F(SDFUpdate, GetAny)
   }
 
   {
-    EXPECT_TRUE(physicsElem->HasElement("gravity"));
-    boost::any anyValue = physicsElem->GetElement("gravity")->GetAny();
+    EXPECT_TRUE(worldElem->HasElement("gravity"));
+    boost::any anyValue = worldElem->GetElement("gravity")->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<sdf::Vector3>(anyValue),
-          sdf::Vector3(0, 0, -7.1));
+      EXPECT_EQ(boost::any_cast<ignition::math::Vector3d>(anyValue),
+          ignition::math::Vector3d(0, 0, -7.1));
     }
     catch(boost::bad_any_cast &/*_e*/)
     {

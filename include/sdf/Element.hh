@@ -19,32 +19,46 @@
 
 #include <string>
 #include <vector>
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
+#include <memory>
 
-#include "sdf/Types.hh"
 #include "sdf/Param.hh"
 #include "sdf/system_util.hh"
 
+/// \todo Remove this diagnositic push/pop in version 5
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#include "sdf/Types.hh"
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
+
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
-// boost::enable_shared_from_this
+// std::enable_shared_from_this
 #pragma warning(push)
 #pragma warning(disable: 4251)
 #endif
 
+/// \ingroup sdf_parser
+/// \brief namespace for Simulation Description Format parser
 namespace sdf
 {
   class ElementPrivate;
   class SDFORMAT_VISIBLE Element;
 
   /// \def ElementPtr
-  /// \brief boost shared pointer to an SDF Element
-  typedef boost::shared_ptr<Element> ElementPtr;
+  /// \brief Shared pointer to an SDF Element
+  typedef std::shared_ptr<Element> ElementPtr;
+
+  /// \def ElementWeakPtr
+  /// \brief Weak pointer to an SDF Element
+  typedef std::weak_ptr<Element> ElementWeakPtr;
 
   /// \def ElementPtr_V
   /// \brief Vector of ElementPtr
-  typedef std::vector< ElementPtr > ElementPtr_V;
+  typedef std::vector<ElementPtr> ElementPtr_V;
 
   /// \addtogroup sdf
   /// \{
@@ -52,7 +66,7 @@ namespace sdf
   /// \class Element Element.hh sdf/sdf.hh
   /// \brief SDF Element class
   class SDFORMAT_VISIBLE Element :
-    public boost::enable_shared_from_this<Element>
+    public std::enable_shared_from_this<Element>
   {
     /// \brief Constructor.
     public: Element();
@@ -62,7 +76,7 @@ namespace sdf
 
     /// \brief Create a copy of this Element.
     /// \return A copy of this Element.
-    public: boost::shared_ptr<Element> Clone() const;
+    public: ElementPtr Clone() const;
 
     /// \brief Copy values from an Element.
     /// \param[in] _elem Element to copy value from.
@@ -107,6 +121,14 @@ namespace sdf
     /// during parsing.
     /// \return True to copy child elements during parsing.
     public: bool GetCopyChildren() const;
+
+    /// \brief Set reference SDF element.
+    /// \param[in] _value Name of the reference sdf element.
+    public: void SetReferenceSDF(const std::string &_value);
+
+    /// \brief Get the name of the reference SDF element.
+    /// \return Name of the reference SDF element.
+    public: std::string ReferenceSDF() const;
 
     /// \brief Output Element's description to stdout.
     /// \param[in] _prefix String value to prefix to the output.
@@ -207,11 +229,35 @@ namespace sdf
     public: bool HasElement(const std::string &_name) const;
 
     public: ElementPtr GetElement(const std::string &_name) const;
+
+    /// \brief Get the first child element
+    /// \returns A smart pointer to the first child of this element, or
+    ///          sdf::ElementPtr(nullptr) if there are no children
     public: ElementPtr GetFirstElement() const;
 
+    /// \brief Get the next sibling of this element
+    /// \param[in] _name if given then filter siblings by their xml tag
+    /// \remarks This function does not alter or store any state
+    ///          Repeated calls to "GetNextElement()" with the same string will
+    ///          always return a pointer to the same element.
+    /// \returns the next sibling element or sdf::ElementPtr(nullptr)
+    ///
+    /// This can be used in combination with GetFirstElement() to walk the SDF
+    /// tree. First call parent->GetFirstElement() to get the first child. Call
+    /// child = child->GetNextElement() to iterate through the children.
     public: ElementPtr GetNextElement(const std::string &_name = "") const;
 
+    /// \brief Return a pointer to the child element with the provided name.
+    ///
+    /// A new child element, with the provided name, is added to this element
+    /// if there is no existing child element.
+    /// \remarks If there are multiple elements with the given tag, it returns
+    ///          the first one.
+    /// \param[in] _name Name of the child element to retreive.
+    /// \return Pointer to the existing child element, or a new child
+    /// element if an existing child element did not exist.
     public: ElementPtr GetElement(const std::string &_name);
+
     public: ElementPtr AddElement(const std::string &_name);
     public: void InsertElement(ElementPtr _elem);
 
@@ -246,7 +292,7 @@ namespace sdf
                            std::ostringstream &_out) const;
 
 
-    private: boost::shared_ptr<Param> CreateParam(const std::string &_key,
+    private: ParamPtr CreateParam(const std::string &_key,
                  const std::string &_type, const std::string &_defaultValue,
                  bool _required, const std::string &_description="");
 
@@ -272,7 +318,7 @@ namespace sdf
     public: bool copyChildren;
 
     /// \brief Element's parent
-    public: ElementPtr parent;
+    public: ElementWeakPtr parent;
 
     // Attributes of this element
     public: Param_V attributes;
@@ -288,6 +334,9 @@ namespace sdf
 
     /// name of the include file that was used to create this element
     public: std::string includeFilename;
+
+    /// \brief Name of reference sdf.
+    public: std::string referenceSDF;
   };
 
   ///////////////////////////////////////////////

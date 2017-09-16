@@ -17,8 +17,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <map>
-
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <ignition/math/SemanticVersion.hh>
 
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
@@ -45,27 +46,35 @@ bool init(SDFPtr _sdf)
   filename = sdf::findFile(fileToFind);
 
   FILE *ftest = fopen(filename.c_str(), "r");
-  if (ftest && initFile(filename, _sdf))
+  if (ftest)
   {
-    result = true;
     fclose(ftest);
+    if (initFile(filename, _sdf))
+    {
+      result = true;
+    }
+    else
+    {
+      sdferr << "Unable to init SDF file[" << filename << "]\n";
+    }
   }
   else
+  {
     sdferr << "Unable to find or open SDF file[" << fileToFind << "]\n";
+  }
 
   return result;
 }
 
 //////////////////////////////////////////////////
-bool initFile(const std::string &_filename, SDFPtr _sdf)
+template <typename TPtr>
+inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
   std::string filename = sdf::findFile(_filename);
 
   TiXmlDocument xmlDoc;
   if (xmlDoc.LoadFile(filename))
-  {
     return initDoc(&xmlDoc, _sdf);
-  }
   else
     sdferr << "Unable to load file[" << _filename << "]\n";
 
@@ -73,17 +82,15 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
+bool initFile(const std::string &_filename, SDFPtr _sdf)
+{
+  return _initFile(_filename, _sdf);
+}
+
+//////////////////////////////////////////////////
 bool initFile(const std::string &_filename, ElementPtr _sdf)
 {
-  std::string filename = sdf::findFile(_filename);
-
-  TiXmlDocument xmlDoc;
-  if (xmlDoc.LoadFile(filename))
-    return initDoc(&xmlDoc, _sdf);
-  else
-    sdferr << "Unable to load file[" << _filename << "]\n";
-
-  return false;
+  return _initFile(_filename, _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -91,51 +98,65 @@ bool initString(const std::string &_xmlString, SDFPtr _sdf)
 {
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
+  if (xmlDoc.Error())
+  {
+    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
 
   return initDoc(&xmlDoc, _sdf);
 }
 
 //////////////////////////////////////////////////
-bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf)
+inline TiXmlElement *_initDocGetElement(TiXmlDocument *_xmlDoc)
 {
   if (!_xmlDoc)
   {
     sdferr << "Could not parse the xml\n";
-    return false;
+    return nullptr;
   }
 
-  TiXmlElement *xml = _xmlDoc->FirstChildElement("element");
-  if (!xml)
+  TiXmlElement *element = _xmlDoc->FirstChildElement("element");
+  if (!element)
   {
     sdferr << "Could not find the 'element' element in the xml file\n";
+    return nullptr;
+  }
+
+  return element;
+}
+
+//////////////////////////////////////////////////
+bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf)
+{
+  auto element = _initDocGetElement(_xmlDoc);
+  if (!element)
+  {
     return false;
   }
 
-  return initXml(xml, _sdf->Root());
+  return initXml(element, _sdf->Root());
 }
 
 //////////////////////////////////////////////////
 bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf)
 {
-  if (!_xmlDoc)
+  auto element = _initDocGetElement(_xmlDoc);
+  if (!element)
   {
-    sdferr << "Could not parse the xml\n";
     return false;
   }
 
-  TiXmlElement *xml = _xmlDoc->FirstChildElement("element");
-  if (!xml)
-  {
-    sdferr << "Could not find the 'element' element in the xml file\n";
-    return false;
-  }
-
-  return initXml(xml, _sdf);
+  return initXml(element, _sdf);
 }
 
 //////////////////////////////////////////////////
 bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
 {
+  const char *refString = _xml->Attribute("ref");
+  if (refString)
+    _sdf->SetReferenceSDF(std::string(refString));
+
   const char *nameString = _xml->Attribute("name");
   if (!nameString)
   {
@@ -242,6 +263,12 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
     ElementPtr element(new Element);
 
     initFile(filename, element);
+
+    // override description for include elements
+    TiXmlElement *description = child->FirstChildElement("description");
+    if (description)
+      element->SetDescription(description->GetText());
+
     _sdf->AddElementDescription(element);
   }
 
@@ -261,7 +288,12 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
     return false;
   }
 
-  xmlDoc.LoadFile(filename);
+  if (!xmlDoc.LoadFile(filename))
+  {
+    sdferr << "Error parsing XML in file [" << filename << "]: "
+           << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
   if (readDoc(&xmlDoc, _sdf, filename))
     return true;
   else
@@ -288,6 +320,11 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 {
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
+  if (xmlDoc.Error())
+  {
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
   if (readDoc(&xmlDoc, _sdf, "data-string"))
     return true;
   else
@@ -314,6 +351,11 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 {
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
+  if (xmlDoc.Error())
+  {
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
+    return false;
+  }
   if (readDoc(&xmlDoc, _sdf, "data-string"))
     return true;
   else
@@ -397,7 +439,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
       Converter::Convert(_xmlDoc, SDF::Version());
     }
 
-    TiXmlElement* elemXml = sdfNode;
+    TiXmlElement *elemXml = sdfNode;
     if (sdfNode->Value() != _sdf->GetName() &&
         sdfNode->FirstChildElement(_sdf->GetName()))
     {
@@ -431,6 +473,113 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
 }
 
 //////////////////////////////////////////////////
+std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
+                                         std::string &_modelFileName)
+{
+  TiXmlElement *sdfXML = _modelXML->FirstChildElement("sdf");
+  TiXmlElement *nameSearch = _modelXML->FirstChildElement("name");
+
+  // If a match is not found, use the latest version of the element
+  // that is not older than the SDF parser.
+  ignition::math::SemanticVersion sdfParserVersion(SDF_VERSION);
+  std::string bestVersionStr = "0.0";
+
+  TiXmlElement *sdfSearch = sdfXML;
+  while (sdfSearch)
+  {
+    if (sdfSearch->Attribute("version"))
+    {
+      auto version = std::string(sdfSearch->Attribute("version"));
+      ignition::math::SemanticVersion modelVersion(version);
+      ignition::math::SemanticVersion bestVersion(bestVersionStr);
+      if (modelVersion > bestVersion)
+      {
+        // this model is better than the previous one
+        if (modelVersion <= sdfParserVersion)
+        {
+          // the parser can read it
+          sdfXML  = sdfSearch;
+          bestVersionStr = version;
+        }
+        else
+        {
+          sdfwarn << "Ignoring version " << version
+                  << " for model " << nameSearch->GetText()
+                  << " because is newer than this sdf parser"
+                  << " (version " << SDF_VERSION << ")\n";
+        }
+      }
+    }
+    sdfSearch = sdfSearch->NextSiblingElement("sdf");
+  }
+
+  if (!sdfXML || !sdfXML->GetText())
+  {
+    sdferr << "Failure to detect an sdf tag in the model config file"
+           << " for model: " << nameSearch->GetText() << "\n";
+
+    _modelFileName = "";
+    return "";
+  }
+
+  if (!sdfXML->Attribute("version"))
+  {
+    sdfwarn << "Can not find the XML attribute 'version'"
+            << " in sdf XML tag for model: " << nameSearch->GetText() << "."
+            << " Please specify the SDF protocol supported in the model"
+            << " configuration file. The first sdf tag in the config file"
+            << " will be used \n";
+  }
+
+  _modelFileName = sdfXML->GetText();
+  return bestVersionStr;
+}
+
+//////////////////////////////////////////////////
+std::string getModelFilePath(const std::string &_modelDirPath)
+{
+  boost::filesystem::path configFilePath = _modelDirPath;
+
+  /// \todo This hardcoded bit is very Gazebo centric. It should
+  /// be abstracted away, possible through a plugin to SDF.
+  if (boost::filesystem::exists(configFilePath / "model.config"))
+  {
+    configFilePath /= "model.config";
+  }
+  else if (boost::filesystem::exists(configFilePath / "manifest.xml"))
+  {
+    sdfwarn << "The manifest.xml for a model is deprecated. "
+            << "Please rename configFile.xml to "
+            << "model.config" << ".\n";
+
+    configFilePath /= "manifest.xml";
+  }
+
+  TiXmlDocument configFileDoc;
+  if (!configFileDoc.LoadFile(configFilePath.string()))
+  {
+    sdferr << "Error parsing XML in file ["
+           << configFilePath.string() << "]: "
+           << configFileDoc.ErrorDesc() << '\n';
+    return std::string();
+  }
+
+  TiXmlElement *modelXML = configFileDoc.FirstChildElement("model");
+
+  if (!modelXML)
+  {
+    sdferr << "No <model> element in configFile[" << configFilePath << "]\n";
+    return std::string();
+  }
+
+  std::string modelFileName;
+  if (getBestSupportedModelVersion(modelXML, modelFileName).empty())
+    return std::string();
+
+  return _modelDirPath + "/" + modelFileName;
+}
+
+//////////////////////////////////////////////////
 bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 {
   if (_sdf->GetRequired() == "-1")
@@ -453,6 +602,18 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
   if (_xml->GetText() != NULL && _sdf->GetValue())
   {
     _sdf->GetValue()->SetFromString(_xml->GetText());
+  }
+
+  // check for nested sdf
+  std::string refSDFStr = _sdf->ReferenceSDF();
+  if (!refSDFStr.empty())
+  {
+    ElementPtr refSDF;
+    refSDF.reset(new Element);
+    std::string refFilename = refSDFStr + ".sdf";
+    initFile(refFilename, refSDF);
+    _sdf->RemoveFromParent();
+    _sdf->Copy(refSDF);
   }
 
   TiXmlAttribute *attribute = _xml->FirstAttribute();
@@ -481,8 +642,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     if (i == _sdf->GetAttributeCount())
     {
       sdfwarn << "XML Attribute[" << attribute->Name()
-             << "] in element[" << _xml->Value()
-             << "] not defined in SDF, ignoring.\n";
+              << "] in element[" << _xml->Value()
+              << "] not defined in SDF, ignoring.\n";
     }
 
     attribute = attribute->Next();
@@ -509,7 +670,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     std::string filename;
 
     // Iterate over all the child elements
-    TiXmlElement* elemXml = NULL;
+    TiXmlElement *elemXml = NULL;
     for (elemXml = _xml->FirstChildElement(); elemXml;
          elemXml = elemXml->NextSiblingElement())
     {
@@ -519,16 +680,14 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
         if (elemXml->FirstChildElement("uri"))
         {
-          modelPath = sdf::findFile(
-              elemXml->FirstChildElement("uri")->GetText(), true, true);
+          std::string uri = elemXml->FirstChildElement("uri")->GetText();
+          modelPath = sdf::findFile(uri, true, true);
 
           // Test the model path
           if (modelPath.empty())
           {
-            sdferr << "Unable to find uri["
-              << elemXml->FirstChildElement("uri")->GetText() << "]\n";
+            sdferr << "Unable to find uri[" << uri << "]\n";
 
-            std::string uri = elemXml->FirstChildElement("uri")->GetText();
             size_t modelFound = uri.find("model://");
             if ( modelFound != 0u)
             {
@@ -548,52 +707,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             }
           }
 
-          boost::filesystem::path manifestPath = modelPath;
-
-          /// \todo This hardcoded bit is very Gazebo centric. It should
-          /// be abstracted away, possible through a plugin to SDF.
-          if (boost::filesystem::exists(manifestPath / "model.config"))
-          {
-            manifestPath /= "model.config";
-          }
-          else
-          {
-            sdfwarn << "The manifest.xml for a model is deprecated. "
-                   << "Please rename manifest.xml to "
-                   << "model.config" << ".\n";
-
-            manifestPath /= "manifest.xml";
-          }
-
-          TiXmlDocument manifestDoc;
-          if (manifestDoc.LoadFile(manifestPath.string()))
-          {
-            TiXmlElement *modelXML = manifestDoc.FirstChildElement("model");
-            if (!modelXML)
-              sdferr << "No <model> element in manifest["
-                    << manifestPath << "]\n";
-            else
-            {
-              TiXmlElement *sdfXML = modelXML->FirstChildElement("sdf");
-
-              TiXmlElement *sdfSearch = sdfXML;
-
-              // Find the SDF element that matches our current SDF version.
-              while (sdfSearch)
-              {
-                if (sdfSearch->Attribute("version") &&
-                    std::string(sdfSearch->Attribute("version")) == SDF_VERSION)
-                {
-                  sdfXML = sdfSearch;
-                  break;
-                }
-
-                sdfSearch = sdfSearch->NextSiblingElement("sdf");
-              }
-
-              filename = modelPath + "/" + sdfXML->GetText();
-            }
-          }
+          // Get the config.xml filename
+          filename = getModelFilePath(modelPath);
         }
         else
         {
@@ -638,11 +753,17 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
                 elemXml->FirstChildElement("name")->GetText());
         }
 
-        if (elemXml->FirstChildElement("pose"))
+        TiXmlElement *poseElemXml = elemXml->FirstChildElement("pose");
+        if (poseElemXml)
         {
-          includeSDF->Root()->GetElement("model")->GetElement(
-              "pose")->GetValue()->SetFromString(
-                elemXml->FirstChildElement("pose")->GetText());
+          sdf::ElementPtr poseElem =
+              includeSDF->Root()->GetElement("model")->GetElement("pose");
+
+          poseElem->GetValue()->SetFromString(poseElemXml->GetText());
+
+          const char *frame = poseElemXml->Attribute("frame");
+          if (frame)
+            poseElem->GetAttribute("frame")->SetFromString(frame);
         }
 
         if (elemXml->FirstChildElement("static"))
@@ -661,10 +782,11 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             pluginElem = includeSDF->Root()->GetElement(
                 "model")->AddElement("plugin");
 
-            pluginElem->GetAttribute("filename")->SetFromString(
-                childElemXml->Attribute("filename"));
-            pluginElem->GetAttribute("name")->SetFromString(
-                childElemXml->Attribute("name"));
+            if (!readXml(childElemXml, pluginElem))
+            {
+              sdferr << "Error reading plugin element\n";
+              return false;
+            }
           }
         }
 
@@ -719,7 +841,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
       }
     }
 
-    // Chek that all required elements have been set
+    // Check that all required elements have been set
     unsigned int descCounter = 0;
     for (descCounter = 0;
          descCounter != _sdf->GetElementDescriptionCount(); ++descCounter)
@@ -754,7 +876,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
 {
   // Iterate over all the child elements
-  TiXmlElement* elemXml = NULL;
+  TiXmlElement *elemXml = NULL;
   for (elemXml = _xml->FirstChildElement(); elemXml;
        elemXml = elemXml->NextSiblingElement())
   {
@@ -807,8 +929,8 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
   ElementPtr elem = modelPtr->GetFirstElement();
   std::map<std::string, std::string> replace;
 
-  Pose modelPose =
-    modelPtr->Get<Pose>("pose");
+  ignition::math::Pose3d modelPose =
+    modelPtr->Get<ignition::math::Pose3d>("pose");
 
   std::string modelName = modelPtr->Get<std::string>("name");
   while (elem)
@@ -820,10 +942,12 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
       replace[elemName] = newName;
       if (elem->HasElementDescription("pose"))
       {
-        Pose newPose = Pose(
-          modelPose.pos +
-            modelPose.rot.RotateVector(elem->Get<Pose>("pose").pos),
-            modelPose.rot * elem->Get<Pose>("pose").rot);
+        ignition::math::Pose3d offsetPose =
+          elem->Get<ignition::math::Pose3d>("pose");
+        ignition::math::Pose3d newPose = ignition::math::Pose3d(
+          modelPose.Pos() +
+            modelPose.Rot().RotateVector(offsetPose.Pos()),
+            modelPose.Rot() * offsetPose.Rot());
         elem->GetElement("pose")->Set(newPose);
       }
     }
@@ -838,8 +962,8 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
       if (elem->HasElement("axis"))
       {
         ElementPtr axisElem = elem->GetElement("axis");
-        Vector3 newAxis =  modelPose.rot.RotateVector(
-          axisElem->Get<Vector3>("xyz"));
+        ignition::math::Vector3d newAxis =  modelPose.Rot().RotateVector(
+          axisElem->Get<ignition::math::Vector3d>("xyz"));
         axisElem->GetElement("xyz")->Set(newAxis);
       }
     }
@@ -874,5 +998,61 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
     }
     elem = nextElem;
   }
+}
+
+/////////////////////////////////////////////////
+bool convertFile(const std::string &_filename, const std::string &_version,
+    SDFPtr _sdf)
+{
+  std::string filename = sdf::findFile(_filename);
+
+  if (filename.empty())
+  {
+    sdferr << "Error finding file [" << _filename << "].\n";
+    return false;
+  }
+
+  TiXmlDocument xmlDoc;
+  if (xmlDoc.LoadFile(filename))
+  {
+    if (sdf::Converter::Convert(&xmlDoc, _version, true))
+    {
+      return sdf::readDoc(&xmlDoc, _sdf, filename);
+    }
+  }
+  else
+  {
+    sdferr << "Error parsing file[" << filename << "]\n";
+  }
+
+  return false;
+}
+
+/////////////////////////////////////////////////
+bool convertString(const std::string &_sdfString, const std::string &_version,
+    SDFPtr _sdf)
+{
+  if (_sdfString.empty())
+  {
+    sdferr << "SDF string is empty.\n";
+    return false;
+  }
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(_sdfString.c_str());
+
+  if (!xmlDoc.Error())
+  {
+    if (sdf::Converter::Convert(&xmlDoc, _version, true))
+    {
+      return sdf::readDoc(&xmlDoc, _sdf, "data-string");
+    }
+  }
+  else
+  {
+    sdferr << "Error parsing XML from string[" << _sdfString << "]\n";
+  }
+
+  return false;
 }
 }

@@ -23,7 +23,6 @@
 #include <cstdint>
 #include <sstream>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 
 #include "sdf/system_util.hh"
 
@@ -116,6 +115,7 @@ namespace sdf
     public: float a;
   };
 
+  /// \deprecated Use ignition::math::Vector2i
   /// \brief Generic integer x, y vector
   class SDFORMAT_VISIBLE Vector2i
   {
@@ -162,8 +162,9 @@ namespace sdf
 
     /// \brief y data
     public: int y;
-  };
+  } SDF_DEPRECATED(4.0);
 
+  /// \deprecated Use ignition::math::Vector2d
   /// \brief Generic double x, y vector
   class SDFORMAT_VISIBLE Vector2d
   {
@@ -212,8 +213,9 @@ namespace sdf
 
     /// \brief y data
     public: double y;
-  };
+  } SDF_DEPRECATED(4.0);
 
+  /// \deprecated Use ignition::math::Vector3d
   /// \brief The Vector3 class represents the generic vector containing 3
   ///        elements.  Since it's commonly used to keep coordinate system
   ///        related information, its elements are labeled by x, y, z.
@@ -315,8 +317,9 @@ namespace sdf
 
     /// \brief z Data
     public: double z;
-  };
+  } SDF_DEPRECATED(4.0);
 
+  /// \deprecated Use ignition::math::Quaterniond
   /// \brief A quaternion class
   class SDFORMAT_VISIBLE Quaternion
   {
@@ -587,8 +590,9 @@ namespace sdf
 
     /// \brief w data
     public: double w;
-  };
+  } SDF_DEPRECATED(4.0);
 
+  /// \deprecated Use ignition::math::Pose3d
   /// \brief Encapsulates a position and rotation in three space
   class SDFORMAT_VISIBLE Pose
   {
@@ -685,7 +689,7 @@ namespace sdf
 
     /// \brief Orientation data
     public: Quaternion rot;
-  };
+  } SDF_DEPRECATED(4.0);
 
   /// \brief A Time class, can be used to hold wall- or sim-time.
   /// stored as sec and nano-sec.

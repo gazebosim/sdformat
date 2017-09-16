@@ -16,7 +16,6 @@
 */
 
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
 #include <string>
 #include "sdf/sdf.hh"
 
@@ -33,8 +32,11 @@ std::string get_sdf_string()
     << "    <value2>1</value2>"
     << "    <value3>false</value3>"
     << "    <value4>0</value4>"
+    << "    <value5>True</value5>"
+    << "    <value6>TRUE</value6>"
     << "  </plugin>"
-    << "</model>";
+    << "</model>"
+    << "</sdf>";
   return stream.str();
 }
 
@@ -42,22 +44,9 @@ std::string get_sdf_string()
 // make sure that we can read boolean values from inside a plugin
 TEST(PluginBool, ParseBoolValue)
 {
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr model(new sdf::SDF());
   sdf::init(model);
   ASSERT_TRUE(sdf::readString(get_sdf_string(), model));
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 
   sdf::ElementPtr plugin =
     model->Root()->GetElement("model")->GetElement("plugin");
@@ -73,4 +62,10 @@ TEST(PluginBool, ParseBoolValue)
 
   ASSERT_TRUE(plugin->HasElement("value4"));
   EXPECT_FALSE(plugin->Get<bool>("value4"));
+
+  ASSERT_TRUE(plugin->HasElement("value5"));
+  EXPECT_TRUE(plugin->Get<bool>("value5"));
+
+  ASSERT_TRUE(plugin->HasElement("value6"));
+  EXPECT_TRUE(plugin->Get<bool>("value6"));
 }

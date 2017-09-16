@@ -78,10 +78,45 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool readXml(TiXmlElement *_xml, ElementPtr _sdf);
 
+  /// \brief Get the best SDF version from models supported by this sdformat
+  /// \param[in] _modelXML XML element from config file pointing to the
+  ///            model XML tag
+  /// \param[out] _modelFileName file name of the best model file
+  /// \return string with the best SDF version supported
+  SDFORMAT_VISIBLE
+  std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
+                                           std::string &_modelFileName);
+
+  /// \brief Get the file path to the model file
+  /// \param[in] _modelDirPath directory system path of the model
+  /// \return string with the full filesystem path to the best version (greater
+  ///         SDF protocol supported by this sdformat version) of the .sdf
+  ///         model files hosted by _modelDirPath.
+  SDFORMAT_VISIBLE
+  std::string getModelFilePath(const std::string &_modelDirPath);
+
   SDFORMAT_VISIBLE
   void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);
 
   SDFORMAT_VISIBLE
   void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF);
+
+  /// \brief Convert an SDF file to a specific SDF version.
+  /// \param[in] _filename Name of the SDF file to convert.
+  /// \param[in] _version Version to convert _filename to.
+  /// \param[out] _sdf Pointer to the converted SDF document.
+  /// \return True on success.
+  SDFORMAT_VISIBLE
+  bool convertFile(const std::string &_filename, const std::string &_version,
+                   SDFPtr _sdf);
+
+  /// \brief Convert an SDF string to a specific SDF version.
+  /// \param[in] _sdfString The SDF string to convert.
+  /// \param[in] _version Version to convert _filename to.
+  /// \param[out] _sdf Pointer to the converted SDF document.
+  /// \return True on success.
+  SDFORMAT_VISIBLE
+  bool convertString(const std::string &_sdfString,
+                     const std::string &_version, SDFPtr _sdf);
 }
 #endif

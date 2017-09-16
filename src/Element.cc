@@ -25,45 +25,20 @@ Element::Element()
   : dataPtr(new ElementPrivate)
 {
   this->dataPtr->copyChildren = false;
+  this->dataPtr->referenceSDF = "";
 }
 
 /////////////////////////////////////////////////
 Element::~Element()
 {
-  this->dataPtr->parent.reset();
-  for (Param_V::iterator iter = this->dataPtr->attributes.begin();
-      iter != this->dataPtr->attributes.end(); ++iter)
-  {
-    (*iter).reset();
-  }
-  this->dataPtr->attributes.clear();
-
-  for (ElementPtr_V::iterator iter = this->dataPtr->elements.begin();
-      iter != this->dataPtr->elements.end(); ++iter)
-  {
-    (*iter).reset();
-  }
-
-  for (ElementPtr_V::iterator iter = this->dataPtr->elementDescriptions.begin();
-      iter != this->dataPtr->elementDescriptions.end(); ++iter)
-  {
-    (*iter).reset();
-  }
-  this->dataPtr->elements.clear();
-  this->dataPtr->elementDescriptions.clear();
-
-  this->dataPtr->value.reset();
-
   delete this->dataPtr;
   this->dataPtr = NULL;
-
-  // this->Reset();
 }
 
 /////////////////////////////////////////////////
 ElementPtr Element::GetParent() const
 {
-  return this->dataPtr->parent;
+  return this->dataPtr->parent.lock();
 }
 
 /////////////////////////////////////////////////
@@ -109,6 +84,18 @@ bool Element::GetCopyChildren() const
 }
 
 /////////////////////////////////////////////////
+void Element::SetReferenceSDF(const std::string &_value)
+{
+  this->dataPtr->referenceSDF = _value;
+}
+
+/////////////////////////////////////////////////
+std::string Element::ReferenceSDF() const
+{
+  return this->dataPtr->referenceSDF;
+}
+
+/////////////////////////////////////////////////
 void Element::AddValue(const std::string &_type,
     const std::string &_defaultValue, bool _required,
     const std::string &_description)
@@ -118,12 +105,12 @@ void Element::AddValue(const std::string &_type,
 }
 
 /////////////////////////////////////////////////
-boost::shared_ptr<Param> Element::CreateParam(const std::string &_key,
+ParamPtr Element::CreateParam(const std::string &_key,
     const std::string &_type, const std::string &_defaultValue, bool _required,
     const std::string &_description)
 {
-  return boost::shared_ptr<Param>(
-        new Param(_key, _type, _defaultValue, _required, _description));
+  return ParamPtr(
+      new Param(_key, _type, _defaultValue, _required, _description));
 }
 
 /////////////////////////////////////////////////
@@ -145,6 +132,7 @@ ElementPtr Element::Clone() const
   // clone->parent = this->dataPtr->parent;
   clone->dataPtr->copyChildren = this->dataPtr->copyChildren;
   clone->dataPtr->includeFilename = this->dataPtr->includeFilename;
+  clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
@@ -181,6 +169,7 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->required = _elem->GetRequired();
   this->dataPtr->copyChildren = _elem->GetCopyChildren();
   this->dataPtr->includeFilename = _elem->dataPtr->includeFilename;
+  this->dataPtr->referenceSDF = _elem->ReferenceSDF();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
        iter != _elem->dataPtr->attributes.end(); ++iter)
@@ -242,6 +231,14 @@ void Element::PrintDescription(const std::string &_prefix)
 
   if (this->GetCopyChildren())
     std::cout << _prefix << "  <element copy_data ='true' required ='*'/>\n";
+
+
+  std::string refSDF = this->ReferenceSDF();
+  if (!refSDF.empty())
+  {
+    std::cout << _prefix << "  <element ref ='" << refSDF <<
+        "' required ='*'/>\n";
+  }
 
   ElementPtr_V::iterator eiter;
   for (eiter = this->dataPtr->elementDescriptions.begin();
@@ -579,25 +576,26 @@ ElementPtr Element::GetFirstElement() const
 /////////////////////////////////////////////////
 ElementPtr Element::GetNextElement(const std::string &_name) const
 {
-  if (this->dataPtr->parent)
+  auto parent = this->dataPtr->parent.lock();
+  if (parent)
   {
     ElementPtr_V::const_iterator iter;
-    iter = std::find(this->dataPtr->parent->dataPtr->elements.begin(),
-        this->dataPtr->parent->dataPtr->elements.end(), shared_from_this());
+    iter = std::find(parent->dataPtr->elements.begin(),
+        parent->dataPtr->elements.end(), shared_from_this());
 
-    if (iter == this->dataPtr->parent->dataPtr->elements.end())
+    if (iter == parent->dataPtr->elements.end())
     {
       return ElementPtr();
     }
 
     ++iter;
-    if (iter == this->dataPtr->parent->dataPtr->elements.end())
+    if (iter == parent->dataPtr->elements.end())
       return ElementPtr();
     else if (_name.empty())
       return *(iter);
     else
     {
-      for (; iter != this->dataPtr->parent->dataPtr->elements.end(); ++iter)
+      for (; iter != parent->dataPtr->elements.end(); ++iter)
       {
         if ((*iter)->GetName() == _name)
           return (*iter);
@@ -644,6 +642,20 @@ bool Element::HasElementDescription(const std::string &_name)
 /////////////////////////////////////////////////
 ElementPtr Element::AddElement(const std::string &_name)
 {
+  // if this element is a reference sdf and does not have any element
+  // descriptions then get them from its parent
+  auto parent = this->dataPtr->parent.lock();
+  if (!this->dataPtr->referenceSDF.empty() &&
+      this->dataPtr->elementDescriptions.empty() && parent &&
+      parent->GetName() == this->dataPtr->name)
+  {
+    for (unsigned int i = 0; i < parent->GetElementDescriptionCount(); ++i)
+    {
+      this->dataPtr->elementDescriptions.push_back(
+          parent->GetElementDescription(i)->Clone());
+    }
+  }
+
   ElementPtr_V::const_iterator iter, iter2;
   for (iter = this->dataPtr->elementDescriptions.begin();
       iter != this->dataPtr->elementDescriptions.end(); ++iter)
@@ -668,6 +680,7 @@ ElementPtr Element::AddElement(const std::string &_name)
       return this->dataPtr->elements.back();
     }
   }
+
   sdferr << "Missing element description for [" << _name << "]\n";
   return ElementPtr();
 }
@@ -762,16 +775,17 @@ void Element::SetDescription(const std::string &_desc)
 /////////////////////////////////////////////////
 void Element::RemoveFromParent()
 {
-  if (this->dataPtr->parent)
+  auto parent = this->dataPtr->parent.lock();
+  if (parent)
   {
     ElementPtr_V::iterator iter;
-    iter = std::find(this->dataPtr->parent->dataPtr->elements.begin(),
-        this->dataPtr->parent->dataPtr->elements.end(), shared_from_this());
+    iter = std::find(parent->dataPtr->elements.begin(),
+        parent->dataPtr->elements.end(), shared_from_this());
 
-    if (iter != this->dataPtr->parent->dataPtr->elements.end())
+    if (iter != parent->dataPtr->elements.end())
     {
-      this->dataPtr->parent->dataPtr->elements.erase(iter);
-      this->dataPtr->parent.reset();
+      parent->dataPtr->elements.erase(iter);
+      parent.reset();
     }
   }
 }

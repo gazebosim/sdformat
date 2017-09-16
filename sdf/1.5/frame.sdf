@@ -1,0 +1,11 @@
+<!-- Frame -->
+<element name="frame" required="*">
+  <description>A frame of reference to which a pose is relative.</description>
+
+  <attribute name="name" type="string" default="" required="1">
+    <description>Name of the frame. This name must not match another frame defined inside the parent that this frame is attached to.</description>
+  </attribute>
+
+  <include filename="pose.sdf" required="0"/>
+
+</element> <!-- End Frame -->

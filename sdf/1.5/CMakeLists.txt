@@ -1,12 +1,15 @@
 set (sdfs
   actor.sdf
+  altimeter.sdf
   audio_source.sdf
   audio_sink.sdf
+  battery.sdf
   box_shape.sdf
   camera.sdf
   collision.sdf
   contact.sdf
   cylinder_shape.sdf
+  frame.sdf
   forcetorque.sdf
   geometry.sdf
   gps.sdf
@@ -18,17 +21,22 @@ set (sdfs
   inertial.sdf
   joint.sdf
   light.sdf
+  light_state.sdf
   link.sdf
+  link_state.sdf
+  logical_camera.sdf
   magnetometer.sdf
   material.sdf
   mesh_shape.sdf
   model.sdf
+  model_state.sdf
   noise.sdf
   physics.sdf
   plane_shape.sdf
   plugin.sdf
   polyline_shape.sdf
   population.sdf
+  pose.sdf
   projector.sdf
   ray.sdf
   rfidtag.sdf
@@ -64,9 +72,9 @@ foreach(FIL ${sdfs})
     VERBATIM)
 endforeach()
 
-add_custom_target(schema ALL DEPENDS ${SDF_SCHEMA})
+add_custom_target(schema1_5 ALL DEPENDS ${SDF_SCHEMA})
 
 set_source_files_properties(${SDF_SCHEMA} PROPERTIES GENERATED TRUE)
-  
-install(FILES 1_4.convert ${sdfs} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.5)
-install(FILES ${SDF_SCHEMA} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.5)
+
+install(FILES 1_4.convert ${sdfs} DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/sdformat/1.5)
+install(FILES ${SDF_SCHEMA} DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/sdformat/1.5)

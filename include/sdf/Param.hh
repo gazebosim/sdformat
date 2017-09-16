@@ -21,32 +21,42 @@
 // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
   #include <boost/lexical_cast.hpp>
-  #include <boost/bind.hpp>
-  #include <boost/algorithm/string.hpp>
   #include <boost/any.hpp>
-  #include <boost/shared_ptr.hpp>
   #include <boost/variant.hpp>
-  #include <boost/function.hpp>
+  #include <boost/version.hpp>
 #endif
 
+#include <memory>
+#include <functional>
+#include <algorithm>
 #include <typeinfo>
 #include <string>
 #include <vector>
+#include <ignition/math.hh>
 
 #include "sdf/Console.hh"
-#include "sdf/Types.hh"
 #include "sdf/system_util.hh"
+
+/// \todo Remove this diagnositic push/pop in version 5
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#include "sdf/Types.hh"
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
 namespace sdf
 {
   class SDFORMAT_VISIBLE Param;
 
   /// \def ParamPtr
-  /// \brief boost shared_ptr to a Param
-  typedef boost::shared_ptr<Param> ParamPtr;
+  /// \brief Shared pointer to a Param
+  typedef std::shared_ptr<Param> ParamPtr;
 
   /// \def Param_V
-  /// \brief vector or boost shared_ptrs to a Param
+  /// \brief vector of shared pointers to a Param
   typedef std::vector<ParamPtr> Param_V;
 
   /// \internal
@@ -91,7 +101,15 @@ namespace sdf
 
     /// \brief Get the type of the value stored.
     /// \return The std::type_info.
-    public: const std::type_info &GetType() const;
+    /// \deprecated GetType is unstable. Use IsType().
+    /// \sa IsType
+    public: const std::type_info &GetType() const SDF_DEPRECATED(4.0);
+
+    /// \brief Return true if the param is a particular type
+    /// \return True if the type held by this Param matches the Type
+    /// template parameter.
+    public: template<typename Type>
+            bool IsType() const;
 
     /// \brief Get the type name value.
     /// \return The type name.
@@ -107,7 +125,7 @@ namespace sdf
 
     /// \brief Clone the parameter.
     /// \return A new parameter that is the clone of this.
-    public: boost::shared_ptr<Param> Clone() const;
+    public: ParamPtr Clone() const;
 
     /// \brief Set the update function. The updateFunc will be used to
     /// set the parameter's value when Param::Update is called.
@@ -201,14 +219,25 @@ namespace sdf
     public: std::string description;
 
     /// \brief Update function pointer.
-    public: boost::function<boost::any ()> updateFunc;
+    public: std::function<boost::any ()> updateFunc;
 
+/// \todo Remove this diagnositic push/pop in version 5
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
     /// \def ParamVariant
     /// \briead Variant type def.
-    public: typedef boost::variant<bool, char, std::string, int,
-               unsigned int, double, float, sdf::Vector3, sdf::Vector2i,
-               sdf::Vector2d, sdf::Quaternion, sdf::Pose, sdf::Color,
-               sdf::Time> ParamVariant;
+    public: typedef boost::variant<bool, char, std::string, int, uint64_t,
+               unsigned int, double, float, sdf::Time, sdf::Color,
+               sdf::Vector3, sdf::Vector2i, sdf::Vector2d,
+               sdf::Quaternion, sdf::Pose,
+               ignition::math::Vector3d, ignition::math::Vector2i,
+               ignition::math::Vector2d, ignition::math::Quaterniond,
+               ignition::math::Pose3d> ParamVariant;
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
 
     /// \brief This parameter's value
     public: ParamVariant value;
@@ -255,10 +284,20 @@ namespace sdf
       {
         std::string strValue =
           boost::lexical_cast<std::string>(this->dataPtr->value);
+        std::transform(strValue.begin(), strValue.end(),
+                       strValue.begin(), ::tolower);
         if (strValue == "true" || strValue  == "1")
           _value = boost::lexical_cast<T>("1");
         else
           _value = boost::lexical_cast<T>("0");
+      }
+      else if (typeid(T) == this->dataPtr->value.type())
+      {
+#if BOOST_VERSION < 105800
+         _value = boost::get<T>(this->dataPtr->value);
+#else
+         _value = boost::relaxed_get<T>(this->dataPtr->value);
+#endif
       }
       else
       {
@@ -310,7 +349,8 @@ namespace sdf
       if (this->dataPtr->typeName == "bool")
       {
         std::string strValue = _value;
-        boost::algorithm::to_lower(strValue);
+        std::transform(strValue.begin(), strValue.end(),
+                       strValue.begin(), ::tolower);
         if (strValue == "true" || strValue == "1")
           this->dataPtr->value = true;
         else
@@ -325,6 +365,13 @@ namespace sdf
 
     this->dataPtr->defaultValue = this->dataPtr->value;
     this->dataPtr->set = false;
+  }
+
+  ///////////////////////////////////////////////
+  template<typename Type>
+  bool Param::IsType() const
+  {
+    return this->dataPtr->value.type() == typeid(Type);
   }
 }
 #endif

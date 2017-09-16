@@ -15,20 +15,39 @@
  *
  */
 
+#include <mutex>
 #include <string.h>
 #include <stdlib.h>
 #include <sstream>
 #include <boost/filesystem.hpp>
-#include <boost/thread/mutex.hpp>
 
+/// \todo Remove this diagnositic push/pop in version 5
+#ifndef _WIN32
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 #include "sdf/Types.hh"
+#ifndef _WIN32
+#pragma GCC diagnostic pop
+#endif
+
 #include "sdf/Console.hh"
 
 using namespace sdf;
 
 /// Static pointer to the console.
-static boost::shared_ptr<Console> myself;
-static boost::mutex g_instance_mutex;
+static std::shared_ptr<Console> myself;
+static std::mutex g_instance_mutex;
+
+/// \todo Output disabled for windows, to allow tests to pass. We should
+/// disable output just for tests on windows.
+#ifndef _WIN32
+static bool g_quiet = false;
+#else
+static bool g_quiet = true;
+#endif
+
+static Console::ConsoleStream g_NullStream(NULL);
 
 //////////////////////////////////////////////////
 Console::Console()
@@ -44,7 +63,8 @@ Console::Console()
 #endif
     if (!home)
     {
-      sdfwarn << "No HOME defined in the environment. Will not log.";
+      std::cerr << "No HOME defined in the environment. Will not log."
+                << std::endl;
       return;
     }
     boost::filesystem::path logFile(home);
@@ -57,14 +77,16 @@ Console::Console()
     }
     else if (!boost::filesystem::is_directory(logDir))
     {
-      sdfwarn << logDir << " exists but is not a directory.  Will not log.";
+      std::cerr << logDir << " exists but is not a directory.  Will not log."
+                << std::endl;
       return;
     }
     this->dataPtr->logFileStream.open(logFile.string().c_str(), std::ios::out);
   }
   catch(const boost::filesystem::filesystem_error& e)
   {
-    sdfwarn << "Exception while setting up logging: " << e.what();
+    std::cerr << "Exception while setting up logging: " << e.what()
+              << std::endl;
     return;
   }
 }
@@ -75,9 +97,9 @@ Console::~Console()
 }
 
 //////////////////////////////////////////////////
-boost::shared_ptr<Console> Console::Instance()
+ConsolePtr Console::Instance()
 {
-  boost::mutex::scoped_lock lock(g_instance_mutex);
+  std::lock_guard<std::mutex> lock(g_instance_mutex);
   if (!myself)
     myself.reset(new Console());
 
@@ -85,8 +107,9 @@ boost::shared_ptr<Console> Console::Instance()
 }
 
 //////////////////////////////////////////////////
-void Console::SetQuiet(bool)
+void Console::SetQuiet(bool _quiet)
 {
+  g_quiet = _quiet;
 }
 
 //////////////////////////////////////////////////
@@ -94,8 +117,15 @@ Console::ConsoleStream &Console::ColorMsg(const std::string &lbl,
                                           const std::string &file,
                                           unsigned int line, int color)
 {
-  this->dataPtr->msgStream.Prefix(lbl, file, line, color);
-  return this->dataPtr->msgStream;
+  if (!g_quiet)
+  {
+    this->dataPtr->msgStream.Prefix(lbl, file, line, color);
+    return this->dataPtr->msgStream;
+  }
+  else
+  {
+    return g_NullStream;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -109,16 +139,28 @@ Console::ConsoleStream &Console::Log(const std::string &lbl,
 
 //////////////////////////////////////////////////
 void Console::ConsoleStream::Prefix(const std::string &_lbl,
-                          const std::string &_file,
-                          unsigned int _line, int _color)
+    const std::string &_file,
+    unsigned int _line,
+    // This is here to prevent a compilation warning about an unused variable.
+#ifndef _WIN32
+    int _color
+#else
+    int /*_color*/
+#endif
+)
 {
   size_t index = _file.find_last_of("/") + 1;
 
   if (this->stream)
   {
+#ifndef _WIN32
     *this->stream << "\033[1;" << _color << "m" << _lbl << " [" <<
-      _file.substr(index , _file.size() - index)<< ":" << _line <<
+      _file.substr(index , _file.size() - index) << ":" << _line <<
       "]\033[0m ";
+#else
+    *this->stream << _lbl << " [" <<
+      _file.substr(index , _file.size() - index) << ":" << _line << "] ";
+#endif
   }
 
   if (Console::Instance()->dataPtr->logFileStream.is_open())
@@ -127,4 +169,3 @@ void Console::ConsoleStream::Prefix(const std::string &_lbl,
       _file.substr(index , _file.size() - index)<< ":" << _line << "] ";
   }
 }
-
