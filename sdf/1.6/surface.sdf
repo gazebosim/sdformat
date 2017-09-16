@@ -72,9 +72,9 @@
           If the friction pyramid model is in use,
           and this value is set to a unit vector for one of the
           colliding surfaces,
-          the Collide function will align the friction pyramid directions
+          the ODE Collide callback function will align the friction pyramid directions
           with a reference frame fixed to that collision surface.
-          If neither surface has this value set to a unit vector,
+          If both surfaces have this value set to a vector of zeros,
           the friction pyramid directions will be aligned with the world frame.
           If this value is set for both surfaces, the behavior is undefined.
         </description>
@@ -118,9 +118,9 @@
           If the friction pyramid model is in use,
           and this value is set to a unit vector for one of the
           colliding surfaces,
-          the Collide function will align the friction pyramid directions
+          the friction pyramid directions will be aligned
           with a reference frame fixed to that collision surface.
-          If neither surface has this value set to a unit vector,
+          If both surfaces have this value set to a vector of zeros,
           the friction pyramid directions will be aligned with the world frame.
           If this value is set for both surfaces, the behavior is undefined.
         </description>
