@@ -17,7 +17,7 @@
       <description>Parameters for torsional friction</description>
       <element name="coefficient" type="double" default="1.0" min="0.0" required="0">
         <description>
-          Torsional friction coefficient, maximum ratio of
+          Torsional friction coefficient, unitless maximum ratio of
           tangential stress to normal stress.
         </description>
       </element>
@@ -54,13 +54,15 @@
       <element name="mu" type="double" default="1" min="0.0" required="0">
         <description>
           Coefficient of friction in first friction pyramid direction,
-          the maximum ratio of tangential force to normal force.
+          the unitless maximum ratio of force in first friction pyramid
+          direction to normal force.
         </description>
       </element>
       <element name="mu2" type="double" default="1" min="0.0" required="0">
         <description>
           Coefficient of friction in second friction pyramid direction,
-          the maximum ratio of tangential force to normal force.
+          the unitless maximum ratio of force in second friction pyramid
+          direction to normal force.
         </description>
       </element>
       <element name="fdir1" type="vector3" default="0 0 0" required="0">
@@ -98,13 +100,15 @@
       <element name="friction" type="double" default="1" min="0.0" required="0">
         <description>
           Coefficient of friction in first friction pyramid direction,
-          the maximum ratio of tangential force to normal force.
+          the unitless maximum ratio of force in first friction pyramid
+          direction to normal force.
         </description>
       </element>
       <element name="friction2" type="double" default="1" min="0.0" required="0">
         <description>
           Coefficient of friction in second friction pyramid direction,
-          the maximum ratio of tangential force to normal force.
+          the unitless maximum ratio of force in second friction pyramid
+          direction to normal force.
         </description>
       </element>
       <element name="fdir1" type="vector3" default="0 0 0" required="0">
@@ -146,7 +150,7 @@
 
     <element name="poissons_ratio" type="double" default="0.3" required="0">
       <description>
-        Poisson's ratio is the ratio between transverse and axial strain.
+        Poisson's ratio is the unitless ratio between transverse and axial strain.
         This value must lie between (-1, 0.5).  Defaults to 0.3 for typical steel.
         Note typical silicone elastomers have Poisson's ratio near 0.49 ~ 0.50.
 
