@@ -6,7 +6,7 @@ include (${project_cmake_dir}/SDFUtils.cmake)
 if (APPLE)
   set(IGN_LIBRARY_NAME lib${PROJECT_NAME_LOWER}${SDF_MAJOR_VERSION}.dylib)
 else()
-  set(IGN_LIBRARY_NAME lib${PROJECT_NAME_LOWER}${SDF_MAJOR_VERSION}.so)
+  set(IGN_LIBRARY_NAME lib${PROJECT_NAME_LOWER}.so.${SDF_MAJOR_VERSION})
 endif()
 configure_file(
   "cmdsdformat.rb.in"

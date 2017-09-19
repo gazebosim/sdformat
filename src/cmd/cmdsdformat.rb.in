@@ -105,8 +105,8 @@ class Cmd
 
     begin
       Importer.dlload plugin
-    rescue DLError
-      puts "Library error: [#{plugin}] not found."
+    rescue => exception
+      puts "Library error: #{exception.message}"
       exit(-1)
     end
 

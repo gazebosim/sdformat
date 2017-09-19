@@ -3,7 +3,7 @@
   <world name="default">
     <model name="box">
     <pose>0 0.5 0.0 0.0 0.0</pose>
-      <link name="link">
+      <link>
         <inertial>
           <mass>0.05</mass>
         </inertial>
