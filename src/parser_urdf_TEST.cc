@@ -190,6 +190,50 @@ TEST_F(URDFParser, CheckFixedJointOptions_disableJointLumping)
 
 TEST_F(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
 {
+  // Convert a fixed joint with only preserveFixedJoint (i.e. converted to fixed joint)
+  std::ostringstream fixedJointPreserveFixedJoint;
+  fixedJointPreserveFixedJoint << "<robot name='test_robot'>"
+    << "  <link name='link1'>"
+    << "    <inertial>"
+    << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+    << "      <mass value='1.0'/>"
+    << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+    << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+    << "    </inertial>"
+    << "  </link>"
+    << "  <link name='link2'>"
+    << "    <inertial>"
+    << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+    << "      <mass value='1.0'/>"
+    << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+    << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+    << "    </inertial>"
+    << "  </link>"
+    << "  <joint name='joint1_2' type='fixed'>"
+    << "    <parent link='link1' />"
+    << "    <child  link='link2' />"
+    << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0' />"
+    << "  </joint>"
+    << "  <gazebo reference='joint1_2'>"
+    << "    <preserveFixedJoint>true</preserveFixedJoint>"
+    << "  </gazebo>"
+    << "</robot>";
+
+  // Check that there is a fixed joint in the converted SDF
+  sdf::SDF fixedJointPreserveFixedJointSDF;
+  convert_urdf_str_to_sdf(fixedJointPreserveFixedJoint.str(), fixedJointPreserveFixedJointSDF);
+  sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
+  ASSERT_TRUE(elem != nullptr);
+  ASSERT_TRUE(elem->HasElement("model"));
+  elem = elem->GetElement("model");
+  ASSERT_TRUE(elem->HasElement("joint"));
+  elem = elem->GetElement("joint");
+  std::string jointType = elem->Get<std::string>("type");
+  ASSERT_EQ(jointType, "fixed");
+}
+
+TEST_F(URDFParser, CheckFixedJointOptions_preserveFixedJoint_and_disableJointLumping)
+{
   // Convert a fixed joint with disableJointLumping and preserveFixedJoint (i.e. converted to fixed joint)
   std::ostringstream fixedJointPreserveFixedJoint;
   fixedJointPreserveFixedJoint << "<robot name='test_robot'>"
