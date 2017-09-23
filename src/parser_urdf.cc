@@ -3489,6 +3489,8 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   TiXmlDocument urdfXml;
   urdfXml.Parse(_urdfStr.c_str());
   g_extensions.clear();
+  g_fixedJointsTransformedInFixedJoints.clear();
+  g_fixedJointsTransformedInRevoluteJoints.clear();
   this->ParseSDFExtension(urdfXml);
 
   // Parse robot pose

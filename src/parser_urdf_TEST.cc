@@ -234,3 +234,43 @@ TEST_F(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
   std::string jointType = elem->Get<std::string>("type");
   ASSERT_EQ(jointType, "fixed");
 }
+
+TEST_F(URDFParser, CheckFixedJointOptions_NoOption_Repeated)
+{
+  // Convert a fixed joint with no options (i.e. it will be lumped)
+  // Converting again to make sure that the map
+  // joint names ---> lumped options has been correctly reset
+  std::ostringstream fixedJointNoOptions;
+  fixedJointNoOptions << "<robot name='test_robot'>"
+    << "  <link name='link1'>"
+    << "    <inertial>"
+    << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+    << "      <mass value='1.0'/>"
+    << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+    << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+    << "    </inertial>"
+    << "  </link>"
+    << "  <link name='link2'>"
+    << "    <inertial>"
+    << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+    << "      <mass value='1.0'/>"
+    << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+    << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+    << "    </inertial>"
+    << "  </link>"
+    << "  <joint name='joint1_2' type='fixed'>"
+    << "    <parent link='link1' />"
+    << "    <child  link='link2' />"
+    << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0' />"
+    << "  </joint>"
+    << "</robot>";
+
+  // Check that there are no joints in the converted SDF
+  sdf::SDF fixedJointNoOptionsSDF;
+  convert_urdf_str_to_sdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
+  sdf::ElementPtr elem = fixedJointNoOptionsSDF.Root();
+  ASSERT_TRUE(elem != nullptr);
+  ASSERT_TRUE(elem->HasElement("model"));
+  elem = elem->GetElement("model");
+  ASSERT_FALSE(elem->HasElement("joint"));
+}
