@@ -127,6 +127,8 @@ endmacro()
 
 ########################################
 # Find ignition math
+# Set a variable for generating ProjectConfig.cmake
+set(IGNITION-MATH_REQUIRED_MAJOR_VERSION 4)
 find_package(ignition-math3 QUIET)
 if (NOT ignition-math3_FOUND)
   message(STATUS "Looking for ignition-math3-config.cmake - not found")
