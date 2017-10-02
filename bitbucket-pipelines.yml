@@ -6,7 +6,7 @@ pipelines:
         script:
           - apt update
           - apt -y install cmake build-essential lcov curl mercurial lsb-release wget
-            libtinyxml-dev libxml2-utils ruby-dev libboost-system-dev
+            libtinyxml-dev libxml2-utils ruby-dev libboost-dev
           - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-latest.list'
           - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
           - apt update
