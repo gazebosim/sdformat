@@ -1,13 +1,12 @@
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 include_directories(
-  ${Boost_INCLUDE_DIR}
+  ${Boost_INCLUDE_DIRS}
   ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
 link_directories(
   ${PROJECT_BINARY_DIR}/test
-  ${Boost_LIBRARY_DIR}
   ${IGNITION-MATH_LIBRARY_DIRS}
 )
 
@@ -32,8 +31,6 @@ set (sources
   SDFExtension.cc
   Types.cc
 )
-
-include_directories(${Boost_INCLUDE_DIRS})
 
 if (USE_EXTERNAL_TINYXML)
   include_directories(${tinyxml_INCLUDE_DIRS})
@@ -78,7 +75,7 @@ set (gtest_sources
 sdf_build_tests(${gtest_sources})
 
 sdf_add_library(sdformat ${sources})
-target_link_libraries(sdformat ${Boost_LIBRARIES} ${IGNITION-MATH_LIBRARIES})
+target_link_libraries(sdformat ${IGNITION-MATH_LIBRARIES})
 
 if (USE_EXTERNAL_TINYXML)
   target_link_libraries(sdformat ${tinyxml_LIBRARIES})
