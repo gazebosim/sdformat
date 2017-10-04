@@ -9,7 +9,6 @@ include_directories (
 )
 
 link_directories(
-  ${Boost_LIBRARY_DIRS}
   ${IGNITION-MATH_LIBRARY_DIRS}
 )
 

@@ -17,10 +17,10 @@
 
 #include <cstdlib>
 #include <fstream>
+#include <sstream>
 #include <functional>
 #include <list>
 #include <map>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -377,3 +377,17 @@ void SDF::Version(const std::string &_version)
 {
   version = _version;
 }
+
+/////////////////////////////////////////////////
+ElementPtr SDF::WrapInRoot(const ElementPtr &_sdf)
+{
+  ElementPtr root(new Element);
+  root->SetName("sdf");
+  std::stringstream v;
+  v << Version();
+  root->AddAttribute("version", "string", v.str(), true, "version");
+  root->InsertElement(_sdf->Clone());
+  return root;
+}
+
+
