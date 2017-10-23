@@ -19,6 +19,7 @@
 #include <boost/filesystem.hpp>
 #include <map>
 #include <list>
+#include <sstream>
 
 #include "sdf/parser.hh"
 #include "sdf/Assert.hh"
@@ -360,4 +361,16 @@ std::string SDF::Version()
 void SDF::Version(const std::string &_version)
 {
   version = _version;
+}
+
+/////////////////////////////////////////////////
+ElementPtr SDF::WrapInRoot(const ElementPtr &_sdf)
+{
+  ElementPtr root(new Element);
+  root->SetName("sdf");
+  std::stringstream v;
+  v << Version();
+  root->AddAttribute("version", "string", v.str(), true, "version");
+  root->InsertElement(_sdf->Clone());
+  return root;
 }
