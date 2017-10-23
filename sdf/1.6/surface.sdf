@@ -16,7 +16,10 @@
     <element name="torsional" required="0">
       <description>Parameters for torsional friction</description>
       <element name="coefficient" type="double" default="1.0" min="0.0" required="0">
-        <description>Torsional friction coefficient in the range of [0..1].</description>
+        <description>
+          Torsional friction coefficient, unitless maximum ratio of
+          tangential stress to normal stress.
+        </description>
       </element>
       <element name="use_patch_radius" type="bool" default="1" required="0">
         <description>
@@ -36,7 +39,12 @@
       <element name="ode" required="0">
         <description>Torsional friction parameters for ODE</description>
         <element name="slip" type="double" default="0.0" required="0">
-          <description>Force dependent slip for torsional friction, between the range of [0..1].</description>
+          <description>
+            Force dependent slip for torsional friction,
+            equivalent to inverse of viscous damping coefficient
+            with units of rad/s/(Nm).
+            A slip value of 0 is infinitely viscous.
+          </description>
         </element>
       </element> <!-- End ODE -->
     </element> <!-- End torsional -->
@@ -44,33 +52,81 @@
     <element name="ode" required="0">
       <description>ODE friction parameters</description>
       <element name="mu" type="double" default="1" min="0.0" required="0">
-        <description>Coefficient of friction in the range of [0..1].</description>
+        <description>
+          Coefficient of friction in first friction pyramid direction,
+          the unitless maximum ratio of force in first friction pyramid
+          direction to normal force.
+        </description>
       </element>
       <element name="mu2" type="double" default="1" min="0.0" required="0">
-        <description>Second coefficient of friction in the range of [0..1]</description>
+        <description>
+          Coefficient of friction in second friction pyramid direction,
+          the unitless maximum ratio of force in second friction pyramid
+          direction to normal force.
+        </description>
       </element>
       <element name="fdir1" type="vector3" default="0 0 0" required="0">
-        <description>3-tuple specifying direction of mu1 in the collision local reference frame.</description>
+        <description>
+          Unit vector specifying first friction pyramid direction in
+          collision-fixed reference frame.
+          If the friction pyramid model is in use,
+          and this value is set to a unit vector for one of the
+          colliding surfaces,
+          the ODE Collide callback function will align the friction pyramid directions
+          with a reference frame fixed to that collision surface.
+          If both surfaces have this value set to a vector of zeros,
+          the friction pyramid directions will be aligned with the world frame.
+          If this value is set for both surfaces, the behavior is undefined.
+        </description>
       </element>
       <element name="slip1" type="double" default="0.0" required="0">
-        <description>Force dependent slip direction 1 in collision local frame, between the range of [0..1].</description>
+        <description>
+          Force dependent slip in first friction pyramid direction,
+          equivalent to inverse of viscous damping coefficient
+          with units of m/s/N.
+          A slip value of 0 is infinitely viscous.
+        </description>
       </element>
       <element name="slip2" type="double" default="0.0" required="0">
-        <description>Force dependent slip direction 2 in collision local frame, between the range of [0..1].</description>
+        <description>
+          Force dependent slip in second friction pyramid direction,
+          equivalent to inverse of viscous damping coefficient
+          with units of m/s/N.
+          A slip value of 0 is infinitely viscous.
+        </description>
       </element>
     </element> <!-- End ODE -->
     <element name="bullet" required="0">
       <element name="friction" type="double" default="1" min="0.0" required="0">
-        <description>Coefficient of friction in the range of [0..1].</description>
+        <description>
+          Coefficient of friction in first friction pyramid direction,
+          the unitless maximum ratio of force in first friction pyramid
+          direction to normal force.
+        </description>
       </element>
       <element name="friction2" type="double" default="1" min="0.0" required="0">
-        <description>Coefficient of friction in the range of [0..1].</description>
+        <description>
+          Coefficient of friction in second friction pyramid direction,
+          the unitless maximum ratio of force in second friction pyramid
+          direction to normal force.
+        </description>
       </element>
       <element name="fdir1" type="vector3" default="0 0 0" required="0">
-        <description>3-tuple specifying direction of mu1 in the collision local reference frame.</description>
+        <description>
+          Unit vector specifying first friction pyramid direction in
+          collision-fixed reference frame.
+          If the friction pyramid model is in use,
+          and this value is set to a unit vector for one of the
+          colliding surfaces,
+          the friction pyramid directions will be aligned
+          with a reference frame fixed to that collision surface.
+          If both surfaces have this value set to a vector of zeros,
+          the friction pyramid directions will be aligned with the world frame.
+          If this value is set for both surfaces, the behavior is undefined.
+        </description>
       </element>
       <element name="rolling_friction" type="double" default="1" required="0">
-        <description> coefficient of friction in the range of [0..1]</description>
+        <description>Coefficient of rolling friction</description>
       </element>
     </element> <!-- End Bullet -->
   </element> <!-- End Friction -->
@@ -94,13 +150,13 @@
 
     <element name="poissons_ratio" type="double" default="0.3" required="0">
       <description>
-        Poisson's ratio is the ratio between transverse and axial strain.
+        Poisson's ratio is the unitless ratio between transverse and axial strain.
         This value must lie between (-1, 0.5).  Defaults to 0.3 for typical steel.
         Note typical silicone elastomers have Poisson's ratio near 0.49 ~ 0.50.
 
         For reference, approximate values for Material:(Young's Modulus, Poisson's Ratio)
         for some of the typical materials are:
-          Plastic:  (1e8 ~ 3e9 Pa,  0.35 ~ 0.41), 
+          Plastic:  (1e8 ~ 3e9 Pa,  0.35 ~ 0.41),
           Wood:     (4e9 ~ 1e10 Pa, 0.22 ~ 0.50),
           Aluminum: (7e10 Pa,       0.32 ~ 0.35),
           Steel:    (2e11 Pa,       0.26 ~ 0.31).
@@ -114,7 +170,7 @@
 
         For reference, approximate values for Material:(Young's Modulus, Poisson's Ratio)
         for some of the typical materials are:
-          Plastic:  (1e8 ~ 3e9 Pa,  0.35 ~ 0.41), 
+          Plastic:  (1e8 ~ 3e9 Pa,  0.35 ~ 0.41),
           Wood:     (4e9 ~ 1e10 Pa, 0.22 ~ 0.50),
           Aluminum: (7e10 Pa,       0.32 ~ 0.35),
           Steel:    (2e11 Pa,       0.26 ~ 0.31).
