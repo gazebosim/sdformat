@@ -2,6 +2,17 @@
 
 ### SDFormat 4.x.x (2017-xx-xx)
 
+### SDFormat 4.4.0 (2017-10-23)
+
+1. surface.sdf: expand documentation of friction and slip coefficients
+    * [Pull request 343](https://bitbucket.org/osrf/sdformat/pull-request/343)
+
+1. Add preserveFixedJoint option to the URDF parser
+    * [Pull request 352](https://bitbucket.org/osrf/sdformat/pull-request/352)
+
+1. Add light as child of link
+    * [Pull request 373](https://bitbucket.org/osrf/sdformat/pull-request/373)
+
 ### SDFormat 4.3.2 (2017-07-19)
 
 1. Add documentation for `Element::GetFirstElement()` and `Element::GetNextElement()`
