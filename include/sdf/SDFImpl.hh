@@ -105,6 +105,11 @@ namespace sdf
     /// \param[in] _version SDF version string.
     public: static void Version(const std::string &_version);
 
+    /// \brief wraps the SDF element into a root element with the version info.
+    /// \param[in] _sdf the sdf element. Will be cloned by this function.
+    /// \return a wrapped clone of the SDF element
+    public: static ElementPtr WrapInRoot(const ElementPtr &_sdf);
+
     /// \internal
     /// \brief Pointer to private data.
     private: std::unique_ptr<SDFPrivate> dataPtr;
