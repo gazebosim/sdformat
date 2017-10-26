@@ -2,7 +2,7 @@
 
 ### SDFormat 4.x.x (2017-xx-xx)
 
-### SDFormat 4.4.0 (2017-10-23)
+### SDFormat 4.4.0 (2017-10-26)
 
 1. Add ODE parallelization parameters: threaded islands and position correction
     * [Pull request 380](https://bitbucket.org/osrf/sdformat/pull-request/380)
