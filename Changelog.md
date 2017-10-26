@@ -2,6 +2,9 @@
 
 ### SDFormat 4.x.x (2017-xx-xx)
 
+1. Add ODE parallelization parameters: threaded islands and position correction
+    * [Pull request 380](https://bitbucket.org/osrf/sdformat/pull-request/380)
+
 ### SDFormat 4.3.2 (2017-07-19)
 
 1. Add documentation for `Element::GetFirstElement()` and `Element::GetNextElement()`

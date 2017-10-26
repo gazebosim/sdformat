@@ -72,6 +72,20 @@ but with improved human-readability..
     + required: 0
     + [pull request 246](https://bitbucket.org/osrf/sdformat/pull-requests/246)
 
+1. **physics.sdf** `island_threads` element under `ode::solver`
+    + description: Number of threads to use for "islands" of disconnected models.
+    + type: int
+    + default: 0
+    + required: 0
+    + [pull request 380](https://bitbucket.org/osrf/sdformat/pull-requests/380)
+
+1. **physics.sdf** `thread_position_correction` element under `ode::solver`
+    + description: Flag to use threading to speed up position correction computation.
+    + type: bool
+    + default: 0
+    + required: 0
+    + [pull request 380](https://bitbucket.org/osrf/sdformat/pull-requests/380)
+
 1. **state.sdf** allow `light` tags within `insertions` element
     * [pull request 325](https://bitbucket.org/osrf/sdformat/pull-request/325)
 
