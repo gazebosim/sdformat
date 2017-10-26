@@ -57,6 +57,11 @@ but with improved human-readability..
     + required: 0
     + [pull request 240](https://bitbucket.org/osrf/sdformat/pull-requests/240)
 
+1. **link.sdf** `light` element
+    + included from `light.sdf` with required="*",
+      so a link can have any number of attached lights.
+    + [pull request 373](https://bitbucket.org/osrf/sdformat/pull-requests/373)
+
 1. **model.sdf** `enable_wind` element
     + description: If set to true, all links in the model will be affected by
       the wind.  Can be overriden by the link wind property.
