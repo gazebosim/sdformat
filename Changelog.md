@@ -4,6 +4,9 @@
 
 ### SDFormat 4.4.0 (2017-10-23)
 
+1. Add ODE parallelization parameters: threaded islands and position correction
+    * [Pull request 380](https://bitbucket.org/osrf/sdformat/pull-request/380)
+
 1. surface.sdf: expand documentation of friction and slip coefficients
     * [Pull request 343](https://bitbucket.org/osrf/sdformat/pull-request/343)
 
