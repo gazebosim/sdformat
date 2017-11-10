@@ -2,6 +2,12 @@
 
 ### SDFormat 5.x.x (2017-xx-xx)
 
+### SDFormat 5.3.0 (2017-11-10)
+
+1. Added wrapper around root SDF for an SDF element
+    * [Pull request 378](https://bitbucket.org/osrf/sdformat/pull-request/378)
+    * [Pull request 372](https://bitbucket.org/osrf/sdformat/pull-request/372)
+
 1. Add ODE parallelization parameters: threaded islands and position correction
     * [Pull request 380](https://bitbucket.org/osrf/sdformat/pull-request/380)
 
