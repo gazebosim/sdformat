@@ -2,7 +2,7 @@
 
 ### SDFormat 5.x.x (2017-xx-xx)
 
-### SDFormat 5.3.0 (2017-11-10)
+### SDFormat 5.3.0 (2017-11-13)
 
 1. Added wrapper around root SDF for an SDF element
     * [Pull request 378](https://bitbucket.org/osrf/sdformat/pull-request/378)
