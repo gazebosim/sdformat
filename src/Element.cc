@@ -229,10 +229,10 @@ void Element::PrintDescription(const std::string &_prefix) const
 
   if (this->dataPtr->value)
   {
-   std::cout << " type ='" << this->dataPtr->value->GetTypeName()
-             << "'";
-   std::cout << " default ='" << this->dataPtr->value->GetDefaultAsString()
-             << "'";
+    std::cout << " type ='" << this->dataPtr->value->GetTypeName()
+              << "'"
+              << " default ='" << this->dataPtr->value->GetDefaultAsString()
+              << "'";
   }
 
   std::cout << ">\n";
