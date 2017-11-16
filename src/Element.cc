@@ -225,7 +225,7 @@ void Element::Copy(const ElementPtr _elem)
 void Element::PrintDescription(const std::string &_prefix) const
 {
   std::cout << _prefix << "<element name ='" << this->dataPtr->name
-        << "' required ='" << this->dataPtr->required << "'";
+            << "' required ='" << this->dataPtr->required << "'";
 
   if (this->dataPtr->value)
   {
