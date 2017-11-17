@@ -24,7 +24,8 @@ TEST(parser, initStringTrim)
 {
   sdf::SDFPtr sdf(new sdf::SDF());
   std::ostringstream stream;
-  stream << "<element name=\"visual\" required=\"*\">"
+  stream << "<element name=\"visual\" required=\"*\" "
+         <<          "type=\"string\" default=\"_default_value_\">"
          << "  <attribute name=\"name\" type=\"string\" required=\" 1\""
          << "             default=\"__default__\">"
          << "    <description>test</description>"
@@ -34,6 +35,14 @@ TEST(parser, initStringTrim)
   EXPECT_TRUE(sdf::initString(stream.str(), sdf));
   sdf::ElementPtr root = sdf->Root();
   EXPECT_TRUE(root != nullptr);
+
+  EXPECT_EQ("visual", root->GetName());
+  EXPECT_EQ("*", root->GetRequired());
+  sdf::ParamPtr value = root->GetValue();
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ("string", value->GetTypeName());
+  EXPECT_EQ("_default_value_", value->GetDefaultAsString());
+
   sdf::ParamPtr attr = root->GetAttribute("name");
   EXPECT_TRUE(attr != nullptr);
   EXPECT_TRUE(attr->GetRequired());
