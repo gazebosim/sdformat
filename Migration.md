@@ -111,6 +111,11 @@ but with improved human-readability..
     + required: 0
     + [pull request 240](https://bitbucket.org/osrf/sdformat/pull-requests/240)
 
+1. **link.sdf** `light` element
+    + included from `light.sdf` with required="*",
+      so a link can have any number of attached lights.
+    + [pull request 373](https://bitbucket.org/osrf/sdformat/pull-requests/373)
+
 1. **model.sdf** `enable_wind` element
     + description: If set to true, all links in the model will be affected by
       the wind.  Can be overriden by the link wind property.
@@ -125,6 +130,20 @@ but with improved human-readability..
     + default: "1 1 1"
     + required: 0
     + [pull request 246](https://bitbucket.org/osrf/sdformat/pull-requests/246)
+
+1. **physics.sdf** `island_threads` element under `ode::solver`
+    + description: Number of threads to use for "islands" of disconnected models.
+    + type: int
+    + default: 0
+    + required: 0
+    + [pull request 380](https://bitbucket.org/osrf/sdformat/pull-requests/380)
+
+1. **physics.sdf** `thread_position_correction` element under `ode::solver`
+    + description: Flag to use threading to speed up position correction computation.
+    + type: bool
+    + default: 0
+    + required: 0
+    + [pull request 380](https://bitbucket.org/osrf/sdformat/pull-requests/380)
 
 1. **state.sdf** allow `light` tags within `insertions` element
     * [pull request 325](https://bitbucket.org/osrf/sdformat/pull-request/325)
