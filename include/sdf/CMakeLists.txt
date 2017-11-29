@@ -6,6 +6,7 @@ set (headers
   Element.hh
   Exception.hh
   Filesystem.hh
+  Model.hh
   Param.hh
   parser.hh
   SDFImpl.hh

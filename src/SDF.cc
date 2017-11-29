@@ -140,7 +140,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
     if (!g_findFileCB)
     {
       sdferr << "Tried to use callback in sdf::findFile(), but the callback "
-        "is empty.  Did you call sdf::setFindCallback()?";
+        "is empty.  Did you call sdf::setFindCallback()?\n";
       return std::string();
     }
     else

@@ -24,6 +24,7 @@ set (sources
   Element.cc
   Exception.cc
   Filesystem.cc
+  Model.cc
   parser.cc
   parser_urdf.cc
   Param.cc
