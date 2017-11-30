@@ -19,10 +19,8 @@
 #include "sdf/parser.hh"
 #include "sdf/Model.hh"
 
-using namespace sdf;
-
 /////////////////////////////////////////////////
-bool loadName(sdf::ElementPtr _sdf, std::string &_name)
+bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
 {
   // Read the name
   std::pair<std::string, bool> namePair = _sdf->Get<std::string>("name", "");
@@ -32,7 +30,7 @@ bool loadName(sdf::ElementPtr _sdf, std::string &_name)
 }
 
 /////////////////////////////////////////////////
-bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
+bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
               std::string &_frame)
 {
   // Read the frame. An empty frame implies the parent frame.
@@ -47,9 +45,9 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
   return true;
 }
 
-
 /////////////////////////////////////////////////
-bool loadLights(sdf::ElementPtr _sdf, std::map<std::string, Light> &_lights)
+bool sdf::loadLights(sdf::ElementPtr _sdf,
+                     std::map<std::string, Light> &_lights)
 {
   bool result = true;
 
@@ -81,7 +79,8 @@ bool loadLights(sdf::ElementPtr _sdf, std::map<std::string, Light> &_lights)
 }
 
 /////////////////////////////////////////////////
-bool loadModels(sdf::ElementPtr _sdf, std::map<std::string, Model> &_models)
+bool sdf::loadModels(sdf::ElementPtr _sdf,
+                     std::map<std::string, Model> &_models)
 {
   bool result = true;
 
@@ -110,6 +109,34 @@ bool loadModels(sdf::ElementPtr _sdf, std::map<std::string, Model> &_models)
   }
 
   return result;
+}
+
+/// \brief Private data for sdf::Root
+class sdf::RootPrivate
+{
+  /// \brief Version string
+  public: std::string version = "";
+
+  /// \brief The worlds specified under the root SDF element
+  public: std::map<std::string, World> worlds;
+
+  /// \brief The models specified under the root SDF element
+  public: std::map<std::string, Model> models;
+
+  /// \brief The lights specified under the root SDF element
+  public: std::map<std::string, Light> lights;
+};
+
+/////////////////////////////////////////////////
+Root::Root()
+  : dataPtr(new RootPrivate)
+{
+}
+
+/////////////////////////////////////////////////
+Root::~Root()
+{
+  delete this->dataPtr;
 }
 
 /////////////////////////////////////////////////
@@ -147,7 +174,7 @@ bool Root::Load(sdf::ElementPtr _sdf)
     result = false;
   }
   else
-    this->version = versionPair.first;
+    this->dataPtr->version = versionPair.first;
 
   // Read all the worlds
   if (_sdf->HasElement("world"))
@@ -161,24 +188,26 @@ bool Root::Load(sdf::ElementPtr _sdf)
       if (world.Load(elem))
       {
         // Check that the world's name does not exist.
-        if (this->worlds.find(world.Name()) != this->worlds.end())
+        if (this->dataPtr->worlds.find(world.Name()) !=
+            this->dataPtr->worlds.end())
         {
           std::cerr << "World with name[" << world.Name() << "] already exists."
             << " Each world must have a unique name. Skipping this world.\n";
           result = false;
         }
 
-        this->worlds.insert(std::make_pair(world.Name(), std::move(world)));
+        this->dataPtr->worlds.insert(std::make_pair(world.Name(),
+                                                    std::move(world)));
       }
       elem = elem->GetNextElement("world");
     }
   }
 
   // Read all the models
-  result = result && loadModels(_sdf, this->models);
+  result = result && loadModels(_sdf, this->dataPtr->models);
 
   // Read all the lights
-  result = result && loadLights(_sdf, this->lights);
+  result = result && loadLights(_sdf, this->dataPtr->lights);
 
   return result;
 }
@@ -186,37 +215,47 @@ bool Root::Load(sdf::ElementPtr _sdf)
 /////////////////////////////////////////////////
 std::string Root::Version() const
 {
-  return this->version;
+  return this->dataPtr->version;
 }
 
 /////////////////////////////////////////////////
 void Root::Print(const std::string &_prefix) const
 {
-  std::cout << "SDF Version: " << this->version << "\n";
+  std::cout << "SDF Version: " << this->Version() << "\n";
 
-  for (auto const &world: this->worlds)
+  for (auto const &world: this->dataPtr->worlds)
   {
     world.second.Print(_prefix + "  ");
   }
 
-  for (auto const &model: this->models)
+  for (auto const &model: this->dataPtr->models)
   {
     model.second.Print(_prefix + "  ");
   }
 
-  for (auto const &light: this->lights)
+  for (auto const &light: this->dataPtr->lights)
   {
     light.second.Print(_prefix + "  ");
   }
 }
 
 /////////////////////////////////////////////////
+World::World()
+  : dataPtr(new WorldPrivate)
+{
+}
+
+/////////////////////////////////////////////////
+World::~World()
+{
+  delete this->dataPtr;
+}
+
+/////////////////////////////////////////////////
 bool World::Load(sdf::ElementPtr _sdf)
 {
-  sdf::ElementPtr worldElem = _sdf;
-
   // Check that the provided SDF element is a <world>
-  if (worldElem->GetName() != "world")
+  if (_sdf->GetName() != "world")
   {
     std::cerr << "Attempting to load a World, but the provided "
       << "SDF element is not a <world>\n";
@@ -228,17 +267,43 @@ bool World::Load(sdf::ElementPtr _sdf)
   bool result = true;
 
   // Read the world's name
-  if (!loadName(_sdf, this->name))
+  if (!loadName(_sdf, this->dataPtr->name))
   {
     std::cerr << "A world name is required, but is not set.\n";
     result = false;
   }
 
   // Read all the models
-  result = result && loadModels(_sdf, this->models);
+  result = result && loadModels(_sdf, this->dataPtr->models);
 
   // Read all the lights
-  result = result && loadLights(_sdf, this->lights);
+  result = result && loadLights(_sdf, this->dataPtr->lights);
+
+  // Read the audio element
+  if (_sdf->HasElement("audio"))
+  {
+    sdf::ElementPtr elem = _sdf->GetElement("audio");
+    this->dataPtr->audioDevice = elem->Get<std::string>("device",
+        this->dataPtr->audioDevice).first;
+  }
+
+  // Read the wind element
+  if (_sdf->HasElement("wind"))
+  {
+    sdf::ElementPtr elem = _sdf->GetElement("wind");
+    this->dataPtr->windLinearVelocity =
+      elem->Get<ignition::math::Vector3d>("wind",
+          this->dataPtr->windLinearVelocity).first;
+  }
+
+  // Read gravity.
+  this->dataPtr->gravity = _sdf->Get<ignition::math::Vector3d>("gravity",
+        this->dataPtr->gravity).first;
+
+  // Read the magnetic field.
+  this->dataPtr->magneticField =
+    _sdf->Get<ignition::math::Vector3d>("magnetic_field",
+        this->dataPtr->magneticField).first;
 
   return result;
 }
@@ -246,15 +311,18 @@ bool World::Load(sdf::ElementPtr _sdf)
 /////////////////////////////////////////////////
 void World::Print(const std::string &_prefix) const
 {
-  std::cout << _prefix << "# World: " << this->name << "\n"
-            << _prefix << "  * Model count: " << this->models.size() << "\n"
-            << _prefix << "  * Light count: " << this->models.size() << "\n";
-  for (auto const &model: this->models)
+  std::cout << _prefix << "# World: " << this->Name() << "\n"
+            << _prefix << "  * Model count: "
+            << this->dataPtr->models.size() << "\n"
+            << _prefix << "  * Light count: "
+            << this->dataPtr->models.size() << "\n";
+
+  for (auto const &model: this->dataPtr->models)
   {
     model.second.Print(_prefix + "  ");
   }
 
-  for (auto const &light: this->lights)
+  for (auto const &light: this->dataPtr->lights)
   {
     light.second.Print(_prefix + "  ");
   }
@@ -263,7 +331,19 @@ void World::Print(const std::string &_prefix) const
 /////////////////////////////////////////////////
 std::string World::Name() const
 {
-  return this->name;
+  return this->dataPtr->name;
+}
+
+/////////////////////////////////////////////////
+std::string World::AudioDevice() const
+{
+  return this->dataPtr->audioDevice;
+}
+
+/////////////////////////////////////////////////
+ignition::math::Vector3d World::WindLinearVelocity() const
+{
+  return this->dataPtr->windLinearVelocity;
 }
 
 /////////////////////////////////////////////////
@@ -531,4 +611,128 @@ void Light::Print(const std::string &_prefix) const
             << _prefix << "  * Cast shadows: " << this->CastShadows() << "\n"
             << _prefix << "  * Diffuse: " << this->Diffuse() << "\n"
             << _prefix << "  * Specular: " << this->Specular() << "\n";
+}
+
+/////////////////////////////////////////////////
+bool SphericalCoordinates::Load(ElementPtr _sdf)
+{
+  if (_sdf->GetName() != "spherical_coordinates")
+  {
+    std::cerr << "Provided element pointer is not a <spherical_coordinates> "
+      << "element.\n";
+    return false;
+  }
+
+  bool result = true;
+
+  // Get the surface model
+  std::pair<std::string, bool> surfaceModelPair =
+    _sdf->Get<std::string>("surface_model", this->surfaceModel);
+  if (!surfaceModelPair.second)
+  {
+    std::cerr << "Missing <surface_model> element, "
+      << "child of <spherical_coordinates>. Using default value of "
+      << this->surfaceModel << std::endl;
+    result = false;
+  }
+  this->surfaceModel = surfaceModelPair.first;
+
+  // Get the world frame orientation
+  std::pair<std::string, bool> worldOrientPair =
+    _sdf->Get<std::string>("world_frame_orientation",
+        this->worldFrameOrientation);
+  if (!worldOrientPair.second)
+  {
+    std::cerr << "Missing <world_frame_orientation> element, "
+      << "child of <spherical_coordinates>. Using default value of "
+      << this->worldFrameOrientation << std::endl;
+    result = false;
+  }
+  this->worldFrameOrientation = worldOrientPair.first;
+
+  // Get the latitude
+  std::pair<double, bool> latPair = _sdf->Get<double>("latitude_deg",
+        this->latitude);
+  if (!latPair.second)
+  {
+    std::cerr << "Missing <latitude> element, "
+      << "child of <spherical_coordinates>. Using default value of "
+      << this->latitude << std::endl;
+    result = false;
+  }
+  this->latitude = latPair.first;
+
+  // Get the longitude
+  std::pair<double, bool> lonPair = _sdf->Get<double>("longitude_deg",
+        this->longitude);
+  if (!lonPair.second)
+  {
+    std::cerr << "Missing <longitude> element, "
+      << "child of <spherical_coordinates>. Using default value of "
+      << this->longitude << std::endl;
+    result = false;
+  }
+  this->longitude = lonPair.first;
+
+  // Get the elevation
+  std::pair<double, bool> elevationPair = _sdf->Get<double>("elevation",
+        this->elevation);
+  if (!elevationPair.second)
+  {
+    std::cerr << "Missing <elevation> element, "
+      << "child of <spherical_coordinates>. Using default value of "
+      << this->elevation << std::endl;
+    result = false;
+  }
+  this->elevation = elevationPair.first;
+
+  // Get the heading
+  std::pair<double, bool> headingPair = _sdf->Get<double>("heading",
+        this->heading);
+  if (!headingPair.second)
+  {
+    std::cerr << "Missing <heading> element, "
+      << "child of <spherical_coordinates>. Using default value of "
+      << this->heading << std::endl;
+    result = false;
+  }
+  this->heading = headingPair.first;
+
+  return result;
+}
+
+/////////////////////////////////////////////////
+std::string SphericalCoordinates::SurfaceModel()
+{
+  return this->surfaceModel;
+}
+
+/////////////////////////////////////////////////
+std::string SphericalCoordinates::WorldFrameOrientation()
+{
+  return this->worldFrameOrientation;
+}
+
+/////////////////////////////////////////////////
+double SphericalCoordinates::Latitude()
+{
+  return this->latitude;
+}
+
+/////////////////////////////////////////////////
+double SphericalCoordinates::Longitude()
+{
+  return this->longitude;
+}
+
+/////////////////////////////////////////////////
+double SphericalCoordinates::Elevation()
+{
+  return this->elevation;
+}
+
+/////////////////////////////////////////////////
+double SphericalCoordinates::Heading()
+{
+  return this->heading;
 }

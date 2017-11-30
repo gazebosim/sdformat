@@ -6,12 +6,20 @@ set (headers
   Element.hh
   Exception.hh
   Filesystem.hh
-  Model.hh
   Param.hh
   parser.hh
   SDFImpl.hh
   Types.hh
   system_util.hh
+
+  dom/Entity.hh
+  dom/Joint.hh
+  dom/Light.hh
+  dom/Link.hh
+  dom/Model.hh
+  dom/Root.hh
+  dom/SphericalCoordinates.hh
+  dom/World.hh
 )
 
 set (sdf_headers "" CACHE INTERNAL "SDF headers" FORCE)

@@ -19,12 +19,21 @@ if (USE_EXTERNAL_TINYXML)
 endif()
 
 set (sources
+  dom/Entity.cc
+  dom/Utils.cc
+  dom/Root.cc
+  dom/World.cc
+  dom/Model.cc
+  dom/Link.cc
+  dom/Light.cc
+  dom/Joint.cc
+  dom/SphericalCoordinates.cc
+
   Console.cc
   Converter.cc
   Element.cc
   Exception.cc
   Filesystem.cc
-  Model.cc
   parser.cc
   parser_urdf.cc
   Param.cc
@@ -32,6 +41,7 @@ set (sources
   SDFExtension.cc
   Types.cc
 )
+
 
 if (USE_EXTERNAL_TINYXML)
   include_directories(${tinyxml_INCLUDE_DIRS})
