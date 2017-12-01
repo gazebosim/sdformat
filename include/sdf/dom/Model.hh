@@ -5,6 +5,7 @@
 
 #include "sdf/Element.hh"
 #include "sdf/system_util.hh"
+#include "sdf/dom/Entity.hh"
 
 namespace sdf
 {
@@ -14,7 +15,7 @@ namespace sdf
   // Forward declare private data class.
   class ModelPrivate;
 
-  class SDFORMAT_VISIBLE Model
+  class SDFORMAT_VISIBLE Model : public Entity
   {
     /// \brief Default constructor
     public: Model();
@@ -25,10 +26,6 @@ namespace sdf
     public: bool Load(sdf::ElementPtr _sdf);
 
     public: void Print(const std::string &_prefix = "") const;
-
-    /// \brief Return the name of the model. A model name must be unique.
-    /// \return Name of the model
-    public: std::string Name() const;
 
     /// \brief Get the number of links.
     /// \return Number of links in the model.

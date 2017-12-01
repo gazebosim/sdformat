@@ -24,23 +24,36 @@
 
 using namespace sdf;
 
+/// \brief Private data class for model
 class sdf::ModelPrivate
 {
-  public: std::string name = "";
+  /// The set of links that belong to the model.
   public: std::map<std::string, sdf::Link> links;
+
+  /// The set of joints that belong to the model.
   public: std::map<std::string, sdf::Joint> joints;
+
+  /// The set of nested models that belong to the model.
   public: std::map<std::string, sdf::Model> models;
-  public: ignition::math::Pose3d pose;
-  public: std::string frame;
+
+  /// \brief True indicates the model is static (immovable).
   public: bool isStatic;
+
+  /// \brief True indicates the model should perform self-collision checks.
   public: bool selfCollide;
+
+  /// \brief True indicates the model should auto-disable. This is
+  /// a feature of some physics engine, where objects that stop moving are
+  /// no longer computed until a collision occurs.
   public: bool autoDisable;
+
+  /// \brief True indicates that wind should affect this model.
   public: bool enableWind;
 };
 
 /////////////////////////////////////////////////
 Model::Model()
-  : dataPtr(new ModelPrivate)
+  : Entity(), dataPtr(new ModelPrivate)
 {
 }
 
@@ -48,6 +61,7 @@ Model::Model()
 Model::~Model()
 {
   delete this->dataPtr;
+  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -55,17 +69,14 @@ bool Model::Load(sdf::ElementPtr _sdf)
 {
   bool result = true;
 
-  if (!loadName(_sdf, this->dataPtr->name))
+  if (!this->LoadName(_sdf))
   {
     std::cerr << "A model name is required, but is not set.\n";
     result = false;
   }
 
-  if (!loadPose(_sdf, this->dataPtr->pose, this->dataPtr->frame))
-  {
-    std::cerr << "Unable to load the model[" << this->Name() << "]'s pose.\n";
-    result = false;
-  }
+  // A model doesn't require a pose. No need to check the return value.
+  this->LoadPose(_sdf);
 
   this->dataPtr->isStatic = _sdf->Get<bool>("static", "false").first;
   this->dataPtr->selfCollide = _sdf->Get<bool>("self_collide", "false").first;
@@ -123,9 +134,9 @@ bool Model::Load(sdf::ElementPtr _sdf)
 /////////////////////////////////////////////////
 void Model::Print(const std::string &_prefix) const
 {
-  std::cout << _prefix << " ## Model: " << this->dataPtr->name << "\n"
-            << _prefix << "   * Pose:  " << this->dataPtr->pose << "\n"
-            << _prefix << "   * Frame:  " << this->dataPtr->frame << "\n"
+  std::cout << _prefix << " ## Model: " << this->Name() << "\n"
+            << _prefix << "   * Pose:  " << this->Pose() << "\n"
+            << _prefix << "   * Frame:  " << this->Frame() << "\n"
             << _prefix << "   * Static:  " << this->dataPtr->isStatic << "\n"
             << _prefix << "   * Enable wind:  "
             << this->dataPtr->enableWind << "\n"
@@ -154,12 +165,6 @@ void Model::Print(const std::string &_prefix) const
   {
     model.second.Print(_prefix + "  ");
   }
-}
-
-/////////////////////////////////////////////////
-std::string Model::Name() const
-{
-  return this->dataPtr->name;
 }
 
 /////////////////////////////////////////////////

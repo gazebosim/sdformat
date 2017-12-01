@@ -49,6 +49,7 @@ bool Link::Load(sdf::ElementPtr _sdf)
     result = false;
   }
 
+  // A link doesn't require a pose. No need to check the return value.
   this->LoadPose(_sdf);
 
   return true;
