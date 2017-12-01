@@ -1,0 +1,20 @@
+image: ubuntu:xenial
+
+pipelines:
+  default:
+    - step:
+        script:
+          - apt update
+          - apt -y install cmake build-essential lcov curl mercurial lsb-release wget
+            libtinyxml-dev libxml2-utils ruby-dev libboost-dev
+          - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-latest.list'
+          - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+          - apt update
+          - apt install -y libignition-math3-dev
+          - mkdir build
+          - cd build
+          - cmake .. -DCMAKE_BUILD_TYPE=coverage
+          - make
+          - make test
+          - make coverage
+          - bash <(curl -s https://codecov.io/bash)
