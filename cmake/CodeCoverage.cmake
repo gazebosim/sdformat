@@ -48,7 +48,7 @@ ENDIF() # NOT GCOV_PATH
 IF(NOT CMAKE_COMPILER_IS_GNUCXX)
 	# Clang version 3.0.0 and greater now supports gcov as well.
 	MESSAGE(WARNING "Compiler is not GNU gcc! Clang Version 3.0.0 and greater supports gcov as well, but older versions don't.")
-	
+
 	IF(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 		MESSAGE(FATAL_ERROR "Compiler is not GNU gcc! Aborting...")
 	ENDIF()
@@ -106,6 +106,8 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _outputname)
   # Setup target
   ADD_CUSTOM_TARGET(${_targetname}
 
+  COMMAND ${CMAKE_COMMAND} -E remove ${_outputname}.info.cleaned
+    ${_outputname}.info
   # Capturing lcov counters and generating report
   COMMAND ${LCOV_PATH} -q --no-checksum --directory ${PROJECT_BINARY_DIR}
     --capture --output-file ${_outputname}.info 2>/dev/null
@@ -115,14 +117,14 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _outputname)
     ${_outputname}.info.cleaned
   COMMAND ${LCOV_PATH} --summary ${_outputname}.info.cleaned 2>&1 | grep "lines" | cut -d ' ' -f 4 | cut -d '%' -f 1 > coverage/lines.txt
   COMMAND ${LCOV_PATH} --summary ${_outputname}.info.cleaned 2>&1 | grep "functions" | cut -d ' ' -f 4 | cut -d '%' -f 1 > coverage/functions.txt
-  COMMAND ${CMAKE_COMMAND} -E remove ${_outputname}.info
-    ${_outputname}.info.cleaned
-		
+  COMMAND ${CMAKE_COMMAND} -E rename ${_outputname}.info.cleaned
+    ${_outputname}.info
+
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   COMMENT "Resetting code coverage counters to zero.\n"
           "Processing code coverage counters and generating report."
   )
-	
+
   # Show info where to find the report
   ADD_CUSTOM_COMMAND(TARGET ${_targetname} POST_BUILD
     COMMAND COMMAND ${LCOV_PATH} -q --zerocounters --directory ${PROJECT_BINARY_DIR};
