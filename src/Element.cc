@@ -225,7 +225,17 @@ void Element::Copy(const ElementPtr _elem)
 void Element::PrintDescription(const std::string &_prefix) const
 {
   std::cout << _prefix << "<element name ='" << this->dataPtr->name
-            << "' required ='" << this->dataPtr->required << "'>\n";
+            << "' required ='" << this->dataPtr->required << "'";
+
+  if (this->dataPtr->value)
+  {
+    std::cout << " type ='" << this->dataPtr->value->GetTypeName()
+              << "'"
+              << " default ='" << this->dataPtr->value->GetDefaultAsString()
+              << "'";
+  }
+
+  std::cout << ">\n";
 
   std::cout << _prefix << "  <description>" << this->dataPtr->description
             << "</description>\n";

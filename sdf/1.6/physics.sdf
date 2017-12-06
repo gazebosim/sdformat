@@ -11,7 +11,7 @@
   </attribute>
 
   <attribute name="type" type="string" default="ode" required="1">
-    <description>The type of the dynamics engine. Current options are ode, bullet, simbody and rtql8.  Defaults to ode if left unspecified.</description>
+    <description>The type of the dynamics engine. Current options are ode, bullet, simbody and dart.  Defaults to ode if left unspecified.</description>
   </attribute>
 
   <element name="max_step_size" type="double" default="0.001" required="1">
