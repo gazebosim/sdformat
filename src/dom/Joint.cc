@@ -40,7 +40,7 @@ namespace sdf
   class JointPrivate
   {
     /// \brief The joint type.
-    public: Joint::JointType type = Joint::JointType::UNKNOWN;
+    public: JointType type = JointType::UNKNOWN;
   };
 }
 
@@ -119,7 +119,7 @@ bool Joint::Load(sdf::ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-Joint::JointType Joint::Type() const
+JointType Joint::Type() const
 {
   return this->dataPtr->type;
 }

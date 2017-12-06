@@ -28,26 +28,27 @@ namespace sdf
   // Forward declare private data class.
   class LightPrivate;
 
+  /// \enum LightType
+  /// \brief This enum contains the set of supported light types. A light
+  /// type defines how light should be generated.
+  enum class LightType
+  {
+    /// \brief A directional light has parallel light rays.
+    DIRECTIONAL,
+
+    /// \brief A point light acts like a light buld.
+    POINT,
+
+    /// \brief A spot light generates a cone of light.
+    SPOT,
+
+    /// \brief An unknown or unsupported light type.
+    UNKNOWN
+  };
+
   /// \brief A light represents a source of visible light.
   class SDFORMAT_VISIBLE Light : public Entity
   {
-    /// \enum LightType
-    /// \brief This enum contains the set of supported light types. A light
-    /// type defines how light should be generated.
-    public: enum class LightType
-    {
-      /// \brief A directional light has parallel light rays.
-      DIRECTIONAL,
-
-      /// \brief A point light acts like a light buld.
-      POINT,
-
-      /// \brief A spot light generates a cone of light.
-      SPOT,
-
-      /// \brief An unknown or unsupported light type.
-      UNKNOWN
-    };
 
     /// \brief Constructor
     public: Light();

@@ -28,47 +28,47 @@ namespace sdf
   // Forward declare private data class.
   class JointPrivate;
 
+  /// \enum JointType
+  /// \brief This enum contains the set of supported joint types. A joint
+  /// type defines the kinematic behavior of the joint.
+  enum class JointType
+  {
+    /// \brief A ball and socket joint.
+    BALL,
+
+    /// \brief A joint with zero degrees of freedom that rigidly connects
+    /// two links.
+    FIXED,
+
+    /// \brief A geared revolute joint.
+    GEARBOX,
+
+    /// \brief A joint that slides along an axis with a limited
+    /// range specified by upper and lower limits.
+    PRISMATIC,
+
+    /// \brief A hinge joint that rotates on a single axis with either
+    /// a fixed or continuous range of motion.
+    REVOLUTE,
+
+    /// \brief Same as two revolute joints connected in series.
+    REVOLUTE2,
+
+    /// \brief A single degree of freedom joint with coupled sliding and
+    /// rotational motion
+    SCREW,
+
+    /// \brief Like a ball joint, but constrains one degree of freedom
+    UNIVERSAL,
+
+    /// \brief Unknown or unsupported joint type
+    UNKNOWN
+  };
+
   /// \brief A joint connects two links with kinematic and dynamic
   /// properties. This class contains information for a single joint.
   class SDFORMAT_VISIBLE Joint : public Entity
   {
-    /// \enum JointType
-    /// \brief This enum contains the set of supported joint types. A joint
-    /// type defines the kinematic behavior of the joint.
-    public: enum class JointType
-    {
-      /// \brief A ball and socket joint.
-      BALL,
-
-      /// \brief A joint with zero degrees of freedom that rigidly connects
-      /// two links.
-      FIXED,
-
-      /// \brief A geared revolute joint.
-      GEARBOX,
-
-      /// \brief A joint that slides along an axis with a limited
-      /// range specified by upper and lower limits.
-      PRISMATIC,
-
-      /// \brief A hinge joint that rotates on a single axis with either
-      /// a fixed or continuous range of motion.
-      REVOLUTE,
-
-      /// \brief Same as two revolute joints connected in series.
-      REVOLUTE2,
-
-      /// \brief A single degree of freedom joint with coupled sliding and
-      /// rotational motion
-      SCREW,
-
-      /// \brief Like a ball joint, but constrains one degree of freedom
-      UNIVERSAL,
-
-      /// \brief Unknown or unsupported joint type
-      UNKNOWN
-    };
-
     /// \brief Constructor
     public: Joint();
 

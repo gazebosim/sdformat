@@ -35,7 +35,7 @@ namespace sdf
   class LightPrivate
   {
     /// \brief Type of light.
-    public: Light::LightType type = Light::LightType::UNKNOWN;
+    public: LightType type = LightType::UNKNOWN;
 
     /// \brief True if the light should cast shadows.
     public: bool castShadows = false;
@@ -123,7 +123,7 @@ std::string Light::Typename() const
 }
 
 /////////////////////////////////////////////////
-Light::LightType Light::Type() const
+LightType Light::Type() const
 {
   return this->dataPtr->type;
 }

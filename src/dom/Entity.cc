@@ -25,7 +25,7 @@ class sdf::EntityPrivate
   /// \brief Name of the entity.
   public: std::string name = "";
 
-  /// \brief Pose of the light relative to the entity.
+  /// \brief Pose of the entity relative to the frame.
   public: ignition::math::Pose3d pose;
 
   /// \brief Frame of reference for the entity.

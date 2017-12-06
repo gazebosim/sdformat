@@ -42,9 +42,6 @@ namespace sdf
     /// \return True when no errors were encountered.
     public: virtual bool Load(sdf::ElementPtr _sdf) = 0;
 
-    protected: bool LoadName(sdf::ElementPtr _sdf);
-    protected: bool LoadPose(sdf::ElementPtr _sdf);
-
     /// \brief Get the name of the entity.
     /// \return Name of the entity.
     public: std::string Name() const;
@@ -73,6 +70,17 @@ namespace sdf
     /// \brief Set the pose of the entity.
     /// \param[in] _pose Pose of the entity.
     public: void SetPose(const ignition::math::Pose3d &_pose);
+
+    /// \brief Helper function that loads an entity's name from SDF.
+    /// \param[in] _sdf Pointer to the SDF element that contains the name.
+    /// \return True if no errors were encountered.
+    protected: bool LoadName(sdf::ElementPtr _sdf);
+
+    /// \brief Helper function that loads an entity's pose from SDF.
+    /// \param[in] _sdf Pointer to the SDF element that contains the pose.
+    /// \return True if no errors were encountered. A pose is optional for
+    /// entities, so this function should return true.
+    protected: bool LoadPose(sdf::ElementPtr _sdf);
 
     /// \brief Private data pointer
     private: EntityPrivate *dataPtr;
