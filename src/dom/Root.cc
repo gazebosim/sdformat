@@ -135,6 +135,12 @@ std::string Root::Version() const
 }
 
 /////////////////////////////////////////////////
+void Root::SetVersion(const std::string &_version)
+{
+  this->dataPtr->version = _version;
+}
+
+/////////////////////////////////////////////////
 void Root::Print(const std::string &_prefix) const
 {
   std::cout << "SDF Version: " << this->Version() << "\n";

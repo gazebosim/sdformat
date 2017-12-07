@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "sdf/SDFImpl.hh"
 #include "sdf/Element.hh"
 #include "sdf/system_util.hh"
 

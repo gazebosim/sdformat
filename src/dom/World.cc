@@ -145,13 +145,67 @@ std::string World::Name() const
 }
 
 /////////////////////////////////////////////////
+void World::Name(const std::string &_name) const
+{
+  this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
 std::string World::AudioDevice() const
 {
   return this->dataPtr->audioDevice;
 }
 
 /////////////////////////////////////////////////
+void World::SetAudioDevice(const std::string &_device)
+{
+  this->dataPtr->audioDevice = _device;
+}
+
+/////////////////////////////////////////////////
 ignition::math::Vector3d World::WindLinearVelocity() const
 {
   return this->dataPtr->windLinearVelocity;
+}
+
+/////////////////////////////////////////////////
+void World::SetWindLinearVelocity(const ignition::math::Vector3d &_wind)
+{
+  this->dataPtr->windLinearVelocity = _wind;
+}
+
+/////////////////////////////////////////////////
+ignition::math::Vector3d World::Gravity() const
+{
+  return this->dataPtr->gravity;
+}
+
+/////////////////////////////////////////////////
+void World::SetGravity(const ignition::math::Vector3d &_gravity)
+{
+  this->dataPtr->gravity = _gravity;
+}
+
+/////////////////////////////////////////////////
+ignition::math::Vector3d World::MagneticField() const
+{
+  return this->dataPtr->magneticField;
+}
+
+/////////////////////////////////////////////////
+void World::MagneticField(const ignition::math::Vector3d &_mag)
+{
+  this->dataPtr->magneticField = _mag;
+}
+
+/////////////////////////////////////////////////
+size_t World::ModelCount() const
+{
+  return this->dataPtr->models.size();
+}
+
+/////////////////////////////////////////////////
+size_t World::LightCount() const
+{
+  return this->dataPtr->lights.size();
 }

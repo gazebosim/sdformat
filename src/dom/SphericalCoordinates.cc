@@ -19,13 +19,26 @@
 
 using namespace sdf;
 
+namespace sdf
+{
+  /// \brief Names that correspond to the JointType enum.
+  static std::string SphericalCoordinatesWorldFrameOrientationNames[] =
+  {
+    "enu",
+    "ned",
+    "nwu",
+    "unknown"
+  };
+}
+
 class sdf::SphericalCoordinatesPrivate
 {
   /// \brief The surface model.
   public: std::string surfaceModel = "EARTH_WGS84";
 
   /// \brief The world frame orientation.
-  public: std::string worldFrameOrientation = "ENU";
+  public: SphericalCoordinatesWorldFrameOrientation worldFrameOrientation =
+          SphericalCoordinatesWorldFrameOrientation::ENU;
 
   /// \brief Latitude at origin of the reference frame
   public: double latitude = 0.0;
@@ -80,15 +93,41 @@ bool SphericalCoordinates::Load(ElementPtr _sdf)
   // Get the world frame orientation
   std::pair<std::string, bool> worldOrientPair =
     _sdf->Get<std::string>("world_frame_orientation",
-        this->dataPtr->worldFrameOrientation);
+        sdf::SphericalCoordinatesWorldFrameOrientationNames[
+        static_cast<int>(this->dataPtr->worldFrameOrientation)]);
   if (!worldOrientPair.second)
   {
     std::cerr << "Missing <world_frame_orientation> element, "
       << "child of <spherical_coordinates>. Using default value of "
-      << this->dataPtr->worldFrameOrientation << std::endl;
+      << sdf::SphericalCoordinatesWorldFrameOrientationNames[
+      static_cast<int>(this->dataPtr->worldFrameOrientation)] << std::endl;
     result = false;
   }
-  this->dataPtr->worldFrameOrientation = worldOrientPair.first;
+  else
+  {
+    if (worldOrientPair.first == "ENU")
+    {
+      this->dataPtr->worldFrameOrientation =
+        SphericalCoordinatesWorldFrameOrientation::ENU;
+    }
+    else if (worldOrientPair.first == "NED")
+    {
+      this->dataPtr->worldFrameOrientation =
+        SphericalCoordinatesWorldFrameOrientation::NED;
+    }
+    else if (worldOrientPair.first == "NED")
+    {
+      this->dataPtr->worldFrameOrientation =
+        SphericalCoordinatesWorldFrameOrientation::NWU;
+    }
+    else
+    {
+      std::cerr << "Unknown spherical coordinates world frame orientation["
+                << worldOrientPair.first << "]\n";
+      this->dataPtr->worldFrameOrientation =
+        SphericalCoordinatesWorldFrameOrientation::UNKNOWN;
+    }
+  }
 
   // Get the latitude
   std::pair<double, bool> latPair = _sdf->Get<double>("latitude_deg",
@@ -142,37 +181,82 @@ bool SphericalCoordinates::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-std::string SphericalCoordinates::SurfaceModel()
+std::string SphericalCoordinates::SurfaceModel() const
 {
   return this->dataPtr->surfaceModel;
 }
 
 /////////////////////////////////////////////////
-std::string SphericalCoordinates::WorldFrameOrientation()
+void SphericalCoordinates::SetSurfaceModel(const std::string &_surfaceModel)
+{
+  this->dataPtr->surfaceModel = _surfaceModel;
+}
+
+/////////////////////////////////////////////////
+SphericalCoordinatesWorldFrameOrientation
+SphericalCoordinates::WorldFrameOrientation() const
 {
   return this->dataPtr->worldFrameOrientation;
 }
 
 /////////////////////////////////////////////////
-double SphericalCoordinates::Latitude()
+void SphericalCoordinates::SetWorldFrameOrientation(
+    const SphericalCoordinatesWorldFrameOrientation _orientation)
+{
+  this->dataPtr->worldFrameOrientation = _orientation;
+}
+
+/////////////////////////////////////////////////
+std::string SphericalCoordinates::WorldFrameOrientationName() const
+{
+  return SphericalCoordinatesWorldFrameOrientationNames[
+    static_cast<int>(this->dataPtr->worldFrameOrientation)];
+}
+
+/////////////////////////////////////////////////
+double SphericalCoordinates::Latitude() const
 {
   return this->dataPtr->latitude;
 }
 
 /////////////////////////////////////////////////
-double SphericalCoordinates::Longitude()
+void SphericalCoordinates::SetLatitude(const double _latitude)
+{
+  this->dataPtr->latitude = _latitude;
+}
+
+/////////////////////////////////////////////////
+double SphericalCoordinates::Longitude() const
 {
   return this->dataPtr->longitude;
 }
 
 /////////////////////////////////////////////////
-double SphericalCoordinates::Elevation()
+void SphericalCoordinates::SetLongitude(const double _longitude)
+{
+  this->dataPtr->longitude = _longitude;
+}
+
+/////////////////////////////////////////////////
+double SphericalCoordinates::Elevation() const
 {
   return this->dataPtr->elevation;
 }
 
 /////////////////////////////////////////////////
-double SphericalCoordinates::Heading()
+void SphericalCoordinates::SetElevation(const double _elevation)
+{
+  this->dataPtr->elevation = _elevation;
+}
+
+/////////////////////////////////////////////////
+double SphericalCoordinates::Heading() const
 {
   return this->dataPtr->heading;
+}
+
+/////////////////////////////////////////////////
+void SphericalCoordinates::SetHeading(const double _heading)
+{
+  this->dataPtr->heading = _heading;
 }
