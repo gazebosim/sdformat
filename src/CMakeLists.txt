@@ -83,8 +83,9 @@ set (gtest_sources
   parser_TEST.cc
   Types_TEST.cc
 )
-sdf_build_tests(${gtest_sources})
 add_subdirectory(dom)
+
+sdf_build_tests(${gtest_sources})
 
 sdf_add_library(sdformat ${sources})
 target_link_libraries(sdformat ${IGNITION-MATH_LIBRARIES})
