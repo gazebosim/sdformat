@@ -12,6 +12,7 @@ set (headers
   Types.hh
   system_util.hh
 )
+add_subdirectory(dom)
 
 set (sdf_headers "" CACHE INTERNAL "SDF headers" FORCE)
 foreach (hdr ${headers})

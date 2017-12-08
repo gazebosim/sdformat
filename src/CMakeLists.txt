@@ -72,6 +72,7 @@ set (gtest_sources
   parser_TEST.cc
   Types_TEST.cc
 )
+add_subdirectory(dom)
 sdf_build_tests(${gtest_sources})
 
 sdf_add_library(sdformat ${sources})
