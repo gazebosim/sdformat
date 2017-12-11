@@ -52,7 +52,9 @@ std::string g_visualExt = "_visual";
 std::string g_lumpPrefix = "_fixed_joint_lump__";
 urdf::Pose g_initialRobotPose;
 bool g_initialRobotPoseValid = false;
-std::set<std::string> g_fixedJointsNotReduced;
+std::set<std::string> g_fixedJointsTransformedInRevoluteJoints;
+std::set<std::string> g_fixedJointsTransformedInFixedJoints;
+
 
 /// \brief parser xml string into urdf::Vector3
 /// \param[in] _key XML key where vector3 value might be
@@ -1454,7 +1456,17 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
             valueStr == "1")
         {
-          g_fixedJointsNotReduced.insert(refStr);
+          g_fixedJointsTransformedInRevoluteJoints.insert(refStr);
+        }
+      }
+      else if (childElem->ValueStr() == "preserveFixedJoint")
+      {
+        std::string valueStr = GetKeyValueAsString(childElem);
+
+        if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
+            valueStr == "1")
+        {
+          g_fixedJointsTransformedInFixedJoints.insert(refStr);
         }
       }
       else
@@ -1476,6 +1488,19 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
 
     // insert into my map
     (g_extensions.find(refStr))->second.push_back(sdf);
+  }
+
+  // Handle fixed joints for which both disableFixedJointLumping
+  // and preserveFixedJoint options are present
+  for (auto& fixedJointConvertedToFixed:
+             g_fixedJointsTransformedInFixedJoints)
+  {
+    // If both options are present, the model creator is aware of the
+    // existence of the preserveFixedJoint option and the
+    // disableFixedJointLumping option is there only for backward compatibility
+    // For this reason, if both options are present then the preserveFixedJoint
+    // option has the precedence
+    g_fixedJointsTransformedInRevoluteJoints.erase(fixedJointConvertedToFixed);
   }
 }
 
@@ -2879,7 +2904,20 @@ void CreateJoint(TiXmlElement *_root,
     }
   }
 
-  // skip if joint type is fixed and we are not faking it with a hinge,
+  // If this is a fixed joint and the legacy option disableFixedJointLumping
+  // is present and the new option preserveFixedJoint is not, then the fixed
+  // joint should be converted to a revolute joint with max and mim position
+  // limits set to (0, 0) for backward compatibility
+  bool fixedJointConvertedToRevoluteJoint = false;
+  if (jtype == "fixed")
+  {
+    fixedJointConvertedToRevoluteJoint =
+      (g_fixedJointsTransformedInRevoluteJoints.find( _link->parent_joint->name) !=
+       g_fixedJointsTransformedInRevoluteJoints.end());
+  }
+
+
+  // skip if joint type is fixed and it is lumped
   //   skip/return with the exception of root link being world,
   //   because there's no lumping there
   if (_link->getParent() && _link->getParent()->name != "world"
@@ -2892,7 +2930,7 @@ void CreateJoint(TiXmlElement *_root,
   if (!jtype.empty())
   {
     TiXmlElement *joint = new TiXmlElement("joint");
-    if (jtype == "fixed")
+    if (jtype == "fixed" && fixedJointConvertedToRevoluteJoint)
     {
       joint->SetAttribute("type", "revolute");
     }
@@ -2907,14 +2945,14 @@ void CreateJoint(TiXmlElement *_root,
     TiXmlElement *jointAxis = new TiXmlElement("axis");
     TiXmlElement *jointAxisLimit = new TiXmlElement("limit");
     TiXmlElement *jointAxisDynamics = new TiXmlElement("dynamics");
-    if (jtype == "fixed")
+    if (jtype == "fixed" && fixedJointConvertedToRevoluteJoint)
     {
       AddKeyValue(jointAxisLimit, "lower", "0");
       AddKeyValue(jointAxisLimit, "upper", "0");
       AddKeyValue(jointAxisDynamics, "damping", "0");
       AddKeyValue(jointAxisDynamics, "friction", "0");
     }
-    else
+    else if (jtype != "fixed")
     {
       ignition::math::Vector3d rotatedJointAxis =
         _currentTransform.Rot().RotateVector(
@@ -2973,9 +3011,22 @@ void CreateJoint(TiXmlElement *_root,
         }
       }
     }
-    jointAxis->LinkEndChild(jointAxisLimit);
-    jointAxis->LinkEndChild(jointAxisDynamics);
-    joint->LinkEndChild(jointAxis);
+
+    if (jtype == "fixed" && !fixedJointConvertedToRevoluteJoint)
+    {
+      delete jointAxisLimit;
+      jointAxisLimit = 0;
+      delete jointAxisDynamics;
+      jointAxisDynamics = 0;
+      delete jointAxis;
+      jointAxis = 0;
+    }
+    else
+    {
+      jointAxis->LinkEndChild(jointAxisLimit);
+      jointAxis->LinkEndChild(jointAxisDynamics);
+      joint->LinkEndChild(jointAxis);
+    }
 
     // copy sdf extensions data
     InsertSDFExtensionJoint(joint, _link->parent_joint->name);
@@ -3114,6 +3165,8 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   TiXmlDocument urdfXml;
   urdfXml.Parse(_urdfStr.c_str());
   g_extensions.clear();
+  g_fixedJointsTransformedInFixedJoints.clear();
+  g_fixedJointsTransformedInRevoluteJoints.clear();
   this->ParseSDFExtension(urdfXml);
 
   // Parse robot pose
@@ -3126,8 +3179,8 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   // set reduceFixedJoints to false will replace fixed joints with
   // zero limit revolute joints, otherwise, we reduce it down to its
   // parent link recursively
-  // using the disabledFixedJointLumping option is possible to disable
-  // fixed joint lumping only for selected joints
+  // using the disabledFixedJointLumping or preserveFixedJoint options
+  // is possible to disable fixed joint lumping only for selected joints
   if (g_reduceFixedJoints)
   {
     ReduceFixedJoints(robot, urdf::const_pointer_cast<urdf::Link>(rootLink));
@@ -3199,10 +3252,13 @@ TiXmlDocument URDF2SDF::InitModelFile(const std::string &_filename)
 bool FixedJointShouldBeReduced(urdf::JointSharedPtr _jnt)
 {
     // A joint should be lumped only if its type is fixed and
-    // the disabledFixedJointLumping joint option is not set
+    // the disabledFixedJointLumping or preserveFixedJoint
+    // joint options are not set
     return (_jnt->type == urdf::Joint::FIXED &&
-              (g_fixedJointsNotReduced.find(_jnt->name) ==
-                 g_fixedJointsNotReduced.end()) );
+              (g_fixedJointsTransformedInRevoluteJoints.find(_jnt->name) ==
+                 g_fixedJointsTransformedInRevoluteJoints.end()) &&
+              (g_fixedJointsTransformedInFixedJoints.find(_jnt->name) ==
+                 g_fixedJointsTransformedInFixedJoints.end()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

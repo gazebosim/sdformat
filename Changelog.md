@@ -33,6 +33,24 @@
 
 ### SDFormat 5.x.x (2017-xx-xx)
 
+### SDFormat 5.3.0 (2017-11-13)
+
+1. Added wrapper around root SDF for an SDF element
+    * [Pull request 378](https://bitbucket.org/osrf/sdformat/pull-request/378)
+    * [Pull request 372](https://bitbucket.org/osrf/sdformat/pull-request/372)
+
+1. Add ODE parallelization parameters: threaded islands and position correction
+    * [Pull request 380](https://bitbucket.org/osrf/sdformat/pull-request/380)
+
+1. surface.sdf: expand documentation of friction and slip coefficients
+    * [Pull request 343](https://bitbucket.org/osrf/sdformat/pull-request/343)
+
+1. Add preserveFixedJoint option to the URDF parser
+    * [Pull request 352](https://bitbucket.org/osrf/sdformat/pull-request/352)
+
+1. Add light as child of link
+    * [Pull request 373](https://bitbucket.org/osrf/sdformat/pull-request/373)
+
 ### SDFormat 5.2.0 (2017-08-03)
 
 1. Added a block for DART-specific physics properties.
@@ -99,6 +117,20 @@
 ## SDFormat 4.0
 
 ### SDFormat 4.x.x (2017-xx-xx)
+
+### SDFormat 4.4.0 (2017-10-26)
+
+1. Add ODE parallelization parameters: threaded islands and position correction
+    * [Pull request 380](https://bitbucket.org/osrf/sdformat/pull-request/380)
+
+1. surface.sdf: expand documentation of friction and slip coefficients
+    * [Pull request 343](https://bitbucket.org/osrf/sdformat/pull-request/343)
+
+1. Add preserveFixedJoint option to the URDF parser
+    * [Pull request 352](https://bitbucket.org/osrf/sdformat/pull-request/352)
+
+1. Add light as child of link
+    * [Pull request 373](https://bitbucket.org/osrf/sdformat/pull-request/373)
 
 ### SDFormat 4.3.2 (2017-07-19)
 
