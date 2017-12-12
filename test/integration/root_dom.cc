@@ -18,7 +18,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include "sdf/dom/Root.hh"
+#include "sdf/Root.hh"
 #include "sdf/Filesystem.hh"
 #include "test_config.h"
 

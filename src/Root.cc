@@ -19,7 +19,7 @@
 
 #include "sdf/sdf_config.h"
 #include "sdf/parser.hh"
-#include "sdf/dom/Root.hh"
+#include "sdf/Root.hh"
 
 using namespace sdf;
 

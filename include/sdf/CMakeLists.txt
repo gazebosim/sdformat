@@ -8,11 +8,11 @@ set (headers
   Filesystem.hh
   Param.hh
   parser.hh
+  Root.hh
   SDFImpl.hh
   Types.hh
   system_util.hh
 )
-add_subdirectory(dom)
 
 set (sdf_headers "" CACHE INTERNAL "SDF headers" FORCE)
 foreach (hdr ${headers})

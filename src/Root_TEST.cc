@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/sdf_config.h"
-#include "sdf/dom/Root.hh"
+#include "sdf/Root.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMRoot, Construction)

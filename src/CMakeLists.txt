@@ -27,6 +27,7 @@ set (sources
   parser.cc
   parser_urdf.cc
   Param.cc
+  Root.cc
   SDF.cc
   SDFExtension.cc
   Types.cc
@@ -70,9 +71,9 @@ set (gtest_sources
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
+  Root_TEST.cc
   Types_TEST.cc
 )
-add_subdirectory(dom)
 sdf_build_tests(${gtest_sources})
 
 sdf_add_library(sdformat ${sources})

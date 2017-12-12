@@ -15,7 +15,7 @@
  *
 */
 #include <iostream>
-#include <sdf/dom/Root.hh>
+#include <sdf/Root.hh>
 
 int main(int argc, char **argv)
 {
