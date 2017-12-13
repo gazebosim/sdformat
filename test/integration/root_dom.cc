@@ -30,6 +30,6 @@ TEST(DOMRoot, Load)
         "empty.sdf");
 
   sdf::Root root;
-  EXPECT_EQ(root.Load(testFile), true);
+  EXPECT_EQ(root.Load(testFile), false);
   EXPECT_EQ(root.Version(), "1.6");
 }

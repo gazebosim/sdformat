@@ -23,7 +23,7 @@
 TEST(Error, DefaultConstruction)
 {
   sdf::Error error;
-  EXPECT_EQ(error, true);
+  EXPECT_EQ(error, false);
   EXPECT_EQ(error.Code(), sdf::ErrorCode::NONE);
   EXPECT_TRUE(error.Message().empty());
 }
@@ -32,7 +32,7 @@ TEST(Error, DefaultConstruction)
 TEST(Error, ValueConstruction)
 {
   sdf::Error error(sdf::ErrorCode::READ_FILE, "Unable to read a file");
-  EXPECT_EQ(error, false);
+  EXPECT_EQ(error, true);
   EXPECT_EQ(error.Code(), sdf::ErrorCode::READ_FILE);
   EXPECT_EQ(error.Message(), "Unable to read a file");
 }
