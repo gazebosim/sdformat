@@ -66,6 +66,14 @@ bool Root::Load(sdf::ElementPtr _sdf)
 {
   bool result = true;
 
+  if (_sdf->GetName() != "sdf")
+  {
+    std::cerr << "Attempting to load an SDF root element, but the provided "
+      << "SDF element pointer is[" << _sdf->GetName() << "] when "
+      << " it shoud be <sdf>.\n";
+    return false;
+  }
+
   // Get the SDF version
   std::pair<std::string, bool> versionPair =
     _sdf->Get<std::string>("version", SDF_VERSION);
