@@ -52,8 +52,8 @@ namespace sdf
     /// \return True if the file was parsed without any errors.
     public: bool Load(const std::string &_filename);
 
-    /// \brief Parse the given SDF pointer, and generate objects based on types
-    /// specified in the SDF pointer.
+    /// \brief Process the given SDF pointer, and generate objects based on
+    /// types specified in the SDF pointer.
     /// An SDF pointer can be acquired by the sdf::readFile function. For
     /// example:
     ///
