@@ -32,4 +32,5 @@ TEST(DOMRoot, Set)
   sdf::Root root;
   EXPECT_STREQ(root.Version().c_str(), "");
   root.SetVersion(SDF_PROTOCOL_VERSION);
-  EXPECT_STREQ(root.Version().c_str(), SDF_PROTOCOL_VERSION); }
+  EXPECT_STREQ(root.Version().c_str(), SDF_PROTOCOL_VERSION);
+}
