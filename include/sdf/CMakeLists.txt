@@ -4,6 +4,7 @@ set (headers
   Assert.hh
   Console.hh
   Element.hh
+  Error.hh
   Exception.hh
   Filesystem.hh
   Param.hh

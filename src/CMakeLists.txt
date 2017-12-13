@@ -22,6 +22,7 @@ set (sources
   Console.cc
   Converter.cc
   Element.cc
+  Error.cc
   Exception.cc
   Filesystem.cc
   parser.cc
@@ -66,6 +67,7 @@ set (gtest_sources
   Console_TEST.cc
   Converter_TEST.cc
   Element_TEST.cc
+  Error_TEST.cc
   Exception_TEST.cc
   Filesystem_TEST.cc
   parser_urdf_TEST.cc

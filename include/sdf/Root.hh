@@ -14,11 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef SDF_DOM_ROOT_HH_
-#define SDF_DOM_ROOT_HH_
+#ifndef SDF_ROOT_HH_
+#define SDF_ROOT_HH_
 
 #include <string>
 
+#include "sdf/Error.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/Element.hh"
 #include "sdf/system_util.hh"
@@ -49,8 +50,10 @@ namespace sdf
     /// \brief Parse the given SDF file, and generate objects based on types
     /// specified in the SDF file.
     /// \param[in] _filename Name of the SDF file to parse.
-    /// \return True if the file was parsed without any errors.
-    public: bool Load(const std::string &_filename);
+    /// \return Error object that includes an error code and message. An
+    /// ErrorCode of NONE indicates no error.
+    /// \sa Error
+    public: Error Load(const std::string &_filename);
 
     /// \brief Get the SDF version specified in the parsed file or SDF
     /// pointer.

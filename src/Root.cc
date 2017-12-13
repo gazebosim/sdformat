@@ -17,9 +17,9 @@
 #include <iostream>
 #include <map>
 
+#include "sdf/Root.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/parser.hh"
-#include "sdf/Root.hh"
 
 using namespace sdf;
 
@@ -43,7 +43,7 @@ Root::~Root()
 }
 
 /////////////////////////////////////////////////
-bool Root::Load(const std::string &_filename)
+Error Root::Load(const std::string &_filename)
 {
   // Read an SDF file, and store the result in sdfParsed.
   sdf::SDFPtr sdfParsed = sdf::readFile(_filename);
@@ -57,16 +57,14 @@ bool Root::Load(const std::string &_filename)
     // Check that the version exists.
     if (!versionPair.second)
     {
-      std::cerr << "SDF does not have a version.\n";
-      return false;
+      return Error(ErrorCode::NO_ATTRIBUTE, "SDF does not have a version.");
     }
 
     this->dataPtr->version = versionPair.first;
-    return true;
+    return Error();
   }
 
-  std::cerr << "Unable to read file[" << _filename << "]\n";
-  return false;
+  return Error(ErrorCode::READ_FILE, "Unable to read file:" + _filename);
 }
 
 /////////////////////////////////////////////////
