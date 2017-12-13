@@ -28,7 +28,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 {
   if (!sdf::filesystem::exists(_path))
   {
-    std::cerr << "Error: File [" << _path << "] does not exist." << std::endl;
+    std::cerr << "Error: File [" << _path << "] does not exist.\n";
     return -1;
   }
 
@@ -36,7 +36,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 
   if (!sdf::init(sdf))
   {
-    std::cerr << "Error: SDF parsing the xml failed." << std::endl;
+    std::cerr << "Error: SDF schema initialization failed.\n";
     return -1;
   }
 
