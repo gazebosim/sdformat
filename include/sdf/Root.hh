@@ -95,7 +95,7 @@ namespace sdf
 
     /// \brief Output debug information to standard out.
     /// \param[in] _prefix String to prefix all output.
-    public: void Print(const std::string &_prefix = "") const;
+    public: void DebugPrint(const std::string &_prefix = "") const;
 
     /// \brief Private data pointer
     private: RootPrivate *dataPtr;
