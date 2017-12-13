@@ -19,4 +19,4 @@ configure_file(
     "${CMAKE_CURRENT_BINARY_DIR}/sdformat${SDF_MAJOR_VERSION}.yaml" @ONLY)
 
 # Install the yaml configuration files in an unversioned location.
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sdformat${SDF_MAJOR_VERSION}.yaml DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/ignition/)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sdformat${SDF_MAJOR_VERSION}.yaml DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/ignition/)
