@@ -2,4 +2,4 @@ syntax: glob
 
 build
 build_*
-*.sw?
+*.*.sw?
