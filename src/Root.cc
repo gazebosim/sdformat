@@ -49,45 +49,24 @@ bool Root::Load(const std::string &_filename)
   sdf::SDFPtr sdfParsed = sdf::readFile(_filename);
 
   if (sdfParsed)
-    return this->Load(sdfParsed->Root());
+  {
+    // Get the SDF version
+    std::pair<std::string, bool> versionPair =
+      sdfParsed->Root()->Get<std::string>("version", SDF_VERSION);
+
+    // Check that the version exists.
+    if (!versionPair.second)
+    {
+      std::cerr << "SDF does not have a version.\n";
+      return false;
+    }
+
+    this->dataPtr->version = versionPair.first;
+    return true;
+  }
 
   std::cerr << "Unable to read file[" << _filename << "]\n";
   return false;
-}
-
-/////////////////////////////////////////////////
-bool Root::Load(const sdf::SDFPtr _sdf)
-{
-  return this->Load(_sdf->Root());
-}
-
-/////////////////////////////////////////////////
-bool Root::Load(sdf::ElementPtr _sdf)
-{
-  bool result = true;
-
-  if (_sdf->GetName() != "sdf")
-  {
-    std::cerr << "Attempting to load an SDF root element, but the provided "
-      << "SDF element pointer is[" << _sdf->GetName() << "] when "
-      << " it shoud be <sdf>.\n";
-    return false;
-  }
-
-  // Get the SDF version
-  std::pair<std::string, bool> versionPair =
-    _sdf->Get<std::string>("version", SDF_VERSION);
-
-  // Check that the version exists.
-  if (!versionPair.second)
-  {
-    std::cerr << "SDF does not have a version.\n";
-    result = false;
-  }
-  else
-    this->dataPtr->version = versionPair.first;
-
-  return result;
 }
 
 /////////////////////////////////////////////////

@@ -52,36 +52,6 @@ namespace sdf
     /// \return True if the file was parsed without any errors.
     public: bool Load(const std::string &_filename);
 
-    /// \brief Process the given SDF pointer, and generate objects based on
-    /// types specified in the SDF pointer.
-    /// An SDF pointer can be acquired by the sdf::readFile function. For
-    /// example:
-    ///
-    /// ```
-    /// sdf::SDFPtr sdfParsed = sdf::readFile(_filename);
-    /// sdf::Root root;
-    /// root.Load(sdfParsed);
-    /// ```
-    ///
-    /// \param[in] _sdf Pointer to an SDF object
-    /// \return True if the SDF pointer was parsed without any errors.
-    /// \sa sdf::readFile(const std::string &_filename)
-    public: bool Load(const sdf::SDFPtr _sdf);
-
-    /// \brief Parse the given SDF Element pointer, and generate objects based
-    /// on types specified in the SDF Element pointer.
-    /// One way to get an SDF Element pointer is though the SDF::Root()
-    /// function. For example:
-    ///
-    /// ```
-    /// sdf::SDFPtr sdfParsed = sdf::readFile(_filename);
-    /// sdf::Root root;
-    /// root.Load(sdfParsed->Root());
-    /// ```
-    ///
-    /// \return True if the SDF Element pointer was parsed without any errors.
-    public: bool Load(ElementPtr _sdf);
-
     /// \brief Get the SDF version specified in the parsed file or SDF
     /// pointer.
     /// \return SDF version string.
