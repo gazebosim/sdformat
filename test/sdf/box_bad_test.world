@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+    <model name="box">
+    <pose>0 0.5 0.0 0.0 0.0</pose>
+      <link>
+        <inertial>
+          <mass>0.05</mass>
+        </inertial>
+
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1.0 1.0 1.0</size>
+            </box>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1.0 1.0 1.0</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>.1</mu>
+                <mu2>.1</mu2>
+              </ode>
+            </friction>
+          </surface>
+
+        </collision>
+      </link>
+    </model>
+  </world>
+</sdf>

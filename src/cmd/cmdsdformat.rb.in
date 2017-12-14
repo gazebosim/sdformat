@@ -1,0 +1,149 @@
+#!/usr/bin/ruby
+
+# Copyright (C) 2017 Open Source Robotics Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# We use 'dl' for Ruby <= 1.9.x and 'fiddle' for Ruby >= 2.0.x
+if RUBY_VERSION.split('.')[0] < '2'
+  require 'dl'
+  require 'dl/import'
+  include DL
+else
+  require 'fiddle'
+  require 'fiddle/import'
+  include Fiddle
+end
+
+require 'optparse'
+
+# Constants.
+LIBRARY_NAME = '@IGN_LIBRARY_NAME@'
+LIBRARY_VERSION = '@SDF_VERSION_FULL@'
+COMMON_OPTIONS =
+               "  -h [ --help ]              Print this help message.\n"\
+               "  --force-version <VERSION>  Use a specific library version.\n"\
+               '  --versions                 Show the available versions.'
+COMMANDS = {  'sdf' =>
+                       "Utilities for SDF files.\n\n"\
+                       "  ign sdf [options]\n\n"\
+                       "Options:\n\n"\
+                       "  -k [ --check ] arg         Validate arg.\n" +
+                       COMMON_OPTIONS
+            }
+
+#
+# Class for the SDF command line tools.
+#
+class Cmd
+
+  #
+  # Return a structure describing the options.
+  #
+  def parse(args)
+    options = {}
+
+    usage = COMMANDS[args[0]]
+
+    # Read the command line arguments.
+    opt_parser = OptionParser.new do |opts|
+      opts.banner = usage
+
+      opts.on('-h', '--help", "Print this help message') do
+        puts usage
+        exit(0)
+      end
+
+      opts.on('-k arg', '--check arg', String,
+              'Validate arg') do |arg|
+        options['check'] = arg
+      end
+    end
+    begin
+      opt_parser.parse!(args)
+    rescue
+      puts usage
+      exit(-1)
+    end
+
+    # Check that there is at least one command and there is a plugin that knows
+    # how to handle it.
+    if ARGV.empty? || !COMMANDS.key?(ARGV[0]) ||
+       options.empty?
+      puts usage
+      exit(-1)
+    end
+
+    options['command'] = ARGV[0]
+
+    options
+  end
+
+  #
+  # Execute the command
+  #
+  def execute(args)
+    options = parse(args)
+
+    # Debugging:
+    # puts 'Parsed:'
+    # puts options
+
+    # Read the plugin that handles the command.
+    plugin = LIBRARY_NAME
+    conf_version = LIBRARY_VERSION
+
+    begin
+      Importer.dlload plugin
+    rescue => exception
+      puts "Library error: #{exception.message}"
+      exit(-1)
+    end
+
+    # Read the library version.
+    Importer.extern 'char* ignitionVersion()'
+    begin
+      plugin_version = Importer.ignitionVersion.to_s
+    rescue DLError
+      puts "Library error: Problem running 'ignitionVersion()' from #{plugin}."
+      exit(-1)
+    end
+
+    # Sanity check: Verify that the version of the yaml file matches the version
+    # of the library that we are using.
+    unless plugin_version.eql? conf_version
+      puts "Error: Version mismatch. Your configuration file version is
+            [#{conf_version}] but #{plugin} version is [#{plugin_version}]."
+      exit(-1)
+    end
+
+    begin
+      case options['command']
+      when 'sdf'
+        if options.key?('check')
+          Importer.extern 'int cmdCheck(const char *)'
+          exit(Importer.cmdCheck(options['check']))
+        else
+          puts 'Command error: I do not have an implementation '\
+               'for this command.'
+        end
+      else
+        puts 'Command error: I do not have an implementation for '\
+             "command [ign #{options['command']}]."
+      end
+    rescue
+      puts "Library error: Problem running [#{options['command']}]() "\
+           "from #{plugin}."
+    end
+  end
+end

@@ -317,7 +317,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
   {
     return true;
   }
-  else
+  else if (sdf::URDF2SDF::IsURDF(filename))
   {
     sdf::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelFile(filename);
@@ -421,7 +421,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
     TiXmlElement *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName());
     if (!readXml(elemXml, _sdf->Root()))
     {
-      sdferr << "Unable to read element <" << _sdf->Root()->GetName() << ">\n";
+      sdferr << "Error reading element <" << _sdf->Root()->GetName() << ">\n";
       return false;
     }
   }
@@ -655,7 +655,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
   if (_xml->GetText() != nullptr && _sdf->GetValue())
   {
-    _sdf->GetValue()->SetFromString(_xml->GetText());
+    if (!_sdf->GetValue()->SetFromString(_xml->GetText()))
+      return false;
   }
 
   // check for nested sdf

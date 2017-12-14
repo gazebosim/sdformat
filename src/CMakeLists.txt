@@ -24,6 +24,7 @@ set (sources
   Element.cc
   Exception.cc
   Filesystem.cc
+  ign.cc
   parser.cc
   parser_urdf.cc
   Param.cc
@@ -72,6 +73,14 @@ set (gtest_sources
   parser_TEST.cc
   Types_TEST.cc
 )
+
+# Build this test file only if Ignition Tools is installed.
+if (IGNITION-TOOLS_BINARY_DIRS)
+  set (gtest_sources ${gtest_sources}
+    ign_TEST.cc
+  )
+endif()
+
 sdf_build_tests(${gtest_sources})
 
 sdf_add_library(sdformat ${sources})
@@ -93,3 +102,5 @@ if (NOT USE_INTERNAL_URDF)
 endif()
 
 sdf_install_library(sdformat)
+
+add_subdirectory(cmd)

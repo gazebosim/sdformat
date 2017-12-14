@@ -53,6 +53,11 @@ namespace sdf
     public: TiXmlDocument InitModelString(const std::string &_urdfStr,
                                           bool _enforceLimits = true);
 
+    /// \brief Return true if the filename is a URDF model.
+    /// \param[in] _filename File to check.
+    /// \return True if _filename is a URDF model.
+    public: static bool IsURDF(const std::string &_filename);
+
     /// things that do not belong in urdf but should be mapped into sdf
     /// @todo: do this using sdf definitions, not hard coded stuff
     private: void ParseSDFExtension(TiXmlDocument &_urdfXml);
