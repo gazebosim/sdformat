@@ -22,12 +22,14 @@ set (sources
   Console.cc
   Converter.cc
   Element.cc
+  Error.cc
   Exception.cc
   Filesystem.cc
   ign.cc
   parser.cc
   parser_urdf.cc
   Param.cc
+  Root.cc
   SDF.cc
   SDFExtension.cc
   Types.cc
@@ -66,11 +68,13 @@ set (gtest_sources
   Console_TEST.cc
   Converter_TEST.cc
   Element_TEST.cc
+  Error_TEST.cc
   Exception_TEST.cc
   Filesystem_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
+  Root_TEST.cc
   Types_TEST.cc
 )
 

@@ -4,10 +4,12 @@ set (headers
   Assert.hh
   Console.hh
   Element.hh
+  Error.hh
   Exception.hh
   Filesystem.hh
   Param.hh
   parser.hh
+  Root.hh
   SDFImpl.hh
   Types.hh
   system_util.hh

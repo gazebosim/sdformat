@@ -20,6 +20,7 @@ set(tests
   plugin_bool.cc
   plugin_include.cc
   provide_feedback.cc
+  root_dom.cc
   sdf_basic.cc
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
