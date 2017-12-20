@@ -34,3 +34,17 @@ TEST(DOMRoot, Set)
   root.SetVersion(SDF_PROTOCOL_VERSION);
   EXPECT_STREQ(root.Version().c_str(), SDF_PROTOCOL_VERSION);
 }
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, Print)
+{
+  std::stringstream buffer;
+  auto old = std::cout.rdbuf(buffer.rdbuf());
+
+  sdf::Root root;
+  root.DebugPrint();
+
+  EXPECT_NE(buffer.str().find("SDF Version"), std::string::npos);
+
+  std::cout.rdbuf(old);
+}
