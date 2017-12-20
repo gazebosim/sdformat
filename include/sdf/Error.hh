@@ -23,7 +23,11 @@
 namespace sdf
 {
   /// \enum ErrorCode
-  /// \brief Set of error codes.
+  /// \brief Set of error codes. Usually one or more errors are returned in
+  /// an Errors vector. This collection of errors should be take as a whole,
+  /// where errors toward the begining of the vector can inform errors
+  /// toward the end of the vector.
+  /// \sa Errors
   enum class ErrorCode
   {
     // \brief No error
@@ -34,6 +38,22 @@ namespace sdf
 
     /// \brief Indicates that reading an SDF file failed.
     READ_FILE,
+
+    /// \brief This error indicates that an SDF element is invalid.
+    /// Generally, other errors should accompany this error.
+    INVALID_ELEMENT,
+
+    /// \brief Indicates that an  incorrect SDF element type was
+    /// encountered. This error is used when an element of certain type is
+    /// expected, and an element of a different type was received.
+    INCORRECT_ELEMENT_TYPE,
+
+    /// \brief A duplicate name was found for an element where unique names
+    /// are required.
+    DUPLICATE_NAME,
+
+    /// \brief A required element is missing.
+    REQUIRED_ELEMENT
   };
 
   class SDFORMAT_VISIBLE Error

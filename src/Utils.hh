@@ -13,29 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */
+*/
+#ifndef SDFORMAT_UTILS_HH
+#define SDFORMAT_UTILS_HH
 
 #include <string>
-#include <gtest/gtest.h>
+#include "sdf/Element.hh"
 
-#include "sdf/Root.hh"
-#include "sdf/World.hh"
-#include "sdf/Filesystem.hh"
-#include "test_config.h"
-
-TEST(DOMRoot, Load)
+namespace sdf
 {
-  const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "empty.sdf");
-
-  sdf::Root root;
-  EXPECT_EQ(root.WorldCount(), 0u);
-  EXPECT_EQ(root.Load(testFile).empty(), true);
-  EXPECT_EQ(root.Version(), "1.6");
-  EXPECT_EQ(root.WorldCount(), 1u);
-  EXPECT_TRUE(root.WorldByIndex(0) != nullptr);
-  EXPECT_TRUE(root.WorldByIndex(1) == nullptr);
-
-  EXPECT_EQ(root.WorldByIndex(0)->Name(), "default");
+  /// \brief Read the "name" attribute from an element.
+  /// \param[in] _sdf SDF element pointer which contains the name.
+  /// \param[out] _name String to hold the name value.
+  /// \return True when the "name" attribute exists.
+  bool loadName(sdf::ElementPtr _sdf, std::string &_name);
 }
+#endif

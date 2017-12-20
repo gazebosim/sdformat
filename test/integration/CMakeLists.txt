@@ -24,6 +24,7 @@ set(tests
   sdf_basic.cc
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
+  world_dom.cc
 )
 
 if (PYTHONINTERP_FOUND AND PY_PSUTIL)

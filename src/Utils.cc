@@ -13,29 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */
+*/
+#include "Utils.hh"
 
-#include <string>
-#include <gtest/gtest.h>
-
-#include "sdf/Root.hh"
-#include "sdf/World.hh"
-#include "sdf/Filesystem.hh"
-#include "test_config.h"
-
-TEST(DOMRoot, Load)
+/////////////////////////////////////////////////
+bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
 {
-  const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "empty.sdf");
+  // Read the name
+  std::pair<std::string, bool> namePair = _sdf->Get<std::string>("name", "");
 
-  sdf::Root root;
-  EXPECT_EQ(root.WorldCount(), 0u);
-  EXPECT_EQ(root.Load(testFile).empty(), true);
-  EXPECT_EQ(root.Version(), "1.6");
-  EXPECT_EQ(root.WorldCount(), 1u);
-  EXPECT_TRUE(root.WorldByIndex(0) != nullptr);
-  EXPECT_TRUE(root.WorldByIndex(1) == nullptr);
-
-  EXPECT_EQ(root.WorldByIndex(0)->Name(), "default");
+  _name = namePair.first;
+  return namePair.second;
 }

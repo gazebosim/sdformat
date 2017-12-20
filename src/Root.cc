@@ -18,6 +18,7 @@
 #include <map>
 
 #include "sdf/Root.hh"
+#include "sdf/World.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/parser.hh"
 
@@ -28,6 +29,9 @@ class sdf::RootPrivate
 {
   /// \brief Version string
   public: std::string version = "";
+
+  /// \brief The worlds specified under the root SDF element
+  public: std::vector<World> worlds;
 };
 
 /////////////////////////////////////////////////
@@ -40,31 +44,76 @@ Root::Root()
 Root::~Root()
 {
   delete this->dataPtr;
+  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
-Error Root::Load(const std::string &_filename)
+Errors Root::Load(const std::string &_filename)
 {
+  Errors errors;
+
   // Read an SDF file, and store the result in sdfParsed.
   sdf::SDFPtr sdfParsed = sdf::readFile(_filename);
 
-  if (sdfParsed)
+  // Return if we were not able to read the file.
+  if (!sdfParsed)
   {
-    // Get the SDF version
-    std::pair<std::string, bool> versionPair =
-      sdfParsed->Root()->Get<std::string>("version", SDF_VERSION);
-
-    // Check that the version exists.
-    if (!versionPair.second)
-    {
-      return Error(ErrorCode::NO_ATTRIBUTE, "SDF does not have a version.");
-    }
-
-    this->dataPtr->version = versionPair.first;
-    return Error();
+    errors.push_back(
+        {ErrorCode::READ_FILE, "Unable to read file:" + _filename});
+    return errors;
   }
 
-  return Error(ErrorCode::READ_FILE, "Unable to read file:" + _filename);
+  sdf::ElementPtr sdf = sdfParsed->Root();
+
+  // Get the SDF version
+  std::pair<std::string, bool> versionPair =
+    sdf->Get<std::string>("version", SDF_VERSION);
+
+  // Check that the version exists. Exit if the version is missing.
+  if (!versionPair.second)
+  {
+    errors.push_back(
+        {ErrorCode::NO_ATTRIBUTE, "SDF does not have a version."});
+    return errors;
+  }
+
+  this->dataPtr->version = versionPair.first;
+
+  // Read all the worlds
+  if (sdf->HasElement("world"))
+  {
+    sdf::ElementPtr elem = sdf->GetElement("world");
+    while (elem)
+    {
+      World world;
+
+      Errors worldErrors = world.Load(elem);
+      // Attempt to load the world
+      if (worldErrors.empty())
+      {
+        // Check that the world's name does not exist.
+        if (this->WorldNameExists(world.Name()))
+        {
+          errors.push_back({ErrorCode::DUPLICATE_NAME,
+                "World with name[" + world.Name() + "] already exists."
+                " Each world must have a unique name. Skipping this world."});
+        }
+        else
+        {
+          this->dataPtr->worlds.push_back(std::move(world));
+        }
+      }
+      else
+      {
+        std::move(worldErrors.begin(), worldErrors.end(),
+                  std::back_inserter(errors));
+        errors.push_back({ErrorCode::INVALID_ELEMENT,
+                          "Failed to load a world."});
+      }
+      elem = elem->GetNextElement("world");
+    }
+  }
+  return errors;
 }
 
 /////////////////////////////////////////////////
@@ -83,4 +132,31 @@ void Root::SetVersion(const std::string &_version)
 void Root::DebugPrint(const std::string &_prefix) const
 {
   std::cout << "SDF Version: " << this->Version() << "\n";
+}
+
+/////////////////////////////////////////////////
+uint64_t Root::WorldCount() const
+{
+  return this->dataPtr->worlds.size();
+}
+
+/////////////////////////////////////////////////
+const World *Root::WorldByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->worlds.size())
+    return &this->dataPtr->worlds[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Root::WorldNameExists(const std::string &_name) const
+{
+  for (auto const &w : this->dataPtr->worlds)
+  {
+    if (w.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
 }

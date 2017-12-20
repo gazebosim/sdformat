@@ -24,6 +24,11 @@ TEST(DOMRoot, Construction)
 {
   sdf::Root root;
   EXPECT_EQ(root.Version(), "");
+  EXPECT_FALSE(root.WorldNameExists("default"));
+  EXPECT_FALSE(root.WorldNameExists(""));
+  EXPECT_EQ(root.WorldCount(), 0u);
+  EXPECT_TRUE(root.WorldByIndex(0) == nullptr);
+  EXPECT_TRUE(root.WorldByIndex(1) == nullptr);
 }
 
 /////////////////////////////////////////////////

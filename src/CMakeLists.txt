@@ -33,6 +33,8 @@ set (sources
   SDF.cc
   SDFExtension.cc
   Types.cc
+  Utils.cc
+  World.cc
 )
 
 if (USE_EXTERNAL_TINYXML)
@@ -76,6 +78,7 @@ set (gtest_sources
   parser_TEST.cc
   Root_TEST.cc
   Types_TEST.cc
+  World_TEST.cc
 )
 
 # Build this test file only if Ignition Tools is installed.

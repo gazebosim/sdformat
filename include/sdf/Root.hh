@@ -19,15 +19,14 @@
 
 #include <string>
 
-#include "sdf/Error.hh"
-#include "sdf/SDFImpl.hh"
-#include "sdf/Element.hh"
+#include "sdf/Types.hh"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
-  // Forward declare private data class.
+  // Forward declarations.
   class RootPrivate;
+  class World;
 
   /// \brief Root class that acts as an entry point to the SDF document
   /// model.
@@ -50,10 +49,9 @@ namespace sdf
     /// \brief Parse the given SDF file, and generate objects based on types
     /// specified in the SDF file.
     /// \param[in] _filename Name of the SDF file to parse.
-    /// \return Error object that includes an error code and message. An
-    /// ErrorCode of NONE indicates no error.
-    /// \sa Error
-    public: Error Load(const std::string &_filename);
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(const std::string &_filename);
 
     /// \brief Get the SDF version specified in the parsed file or SDF
     /// pointer.
@@ -70,8 +68,24 @@ namespace sdf
     /// \param[in] _prefix String to prefix all output.
     public: void DebugPrint(const std::string &_prefix = "") const;
 
+    /// \brief Get the number of worlds.
+    /// \return Number of worlds contained in this Root object.
+    public: uint64_t WorldCount() const;
+
+    /// \brief Get a world based on an index.
+    /// \param[in] _index Index of the world. The index should be in the
+    /// range [0..WorldCount()).
+    /// \return Pointer to the world. Nullptr if the index does not exist.
+    /// \sa uint64_t WorldCount() const
+    public: const World *WorldByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a world name exists.
+    /// \param[in] _name Name of the world to check.
+    /// \return True if there exists a world with name == _name.
+    public: bool WorldNameExists(const std::string &_name) const;
+
     /// \brief Private data pointer
-    private: RootPrivate *dataPtr;
+    private: RootPrivate *dataPtr = nullptr;
   };
 }
 #endif

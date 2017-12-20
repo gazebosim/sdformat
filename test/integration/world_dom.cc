@@ -27,15 +27,18 @@ TEST(DOMRoot, Load)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "empty.sdf");
+        "world_complete.sdf");
 
   sdf::Root root;
-  EXPECT_EQ(root.WorldCount(), 0u);
   EXPECT_EQ(root.Load(testFile).empty(), true);
   EXPECT_EQ(root.Version(), "1.6");
   EXPECT_EQ(root.WorldCount(), 1u);
-  EXPECT_TRUE(root.WorldByIndex(0) != nullptr);
-  EXPECT_TRUE(root.WorldByIndex(1) == nullptr);
 
-  EXPECT_EQ(root.WorldByIndex(0)->Name(), "default");
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_TRUE(world != nullptr);
+  EXPECT_EQ(world->Name(), "default");
+  EXPECT_EQ(world->AudioDevice(), "/dev/audio");
+  EXPECT_EQ(world->WindLinearVelocity(), ignition::math::Vector3d(4, 5, 6));
+  EXPECT_EQ(world->Gravity(), ignition::math::Vector3d(1, 2, 3));
+  EXPECT_EQ(world->MagneticField(), ignition::math::Vector3d(-1, 0.5, 10));
 }
