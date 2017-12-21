@@ -53,27 +53,29 @@ Errors Root::Load(const std::string &_filename)
   Errors errors;
 
   // Read an SDF file, and store the result in sdfParsed.
-  sdf::SDFPtr sdfParsed = sdf::readFile(_filename);
+  sdf::SDFPtr sdfParsed = sdf::readFile(_filename, errors);
 
   // Return if we were not able to read the file.
   if (!sdfParsed)
   {
     errors.push_back(
-        {ErrorCode::READ_FILE, "Unable to read file:" + _filename});
+        {ErrorCode::FILE_READ, "Unable to read file:" + _filename});
     return errors;
   }
 
   sdf::ElementPtr sdf = sdfParsed->Root();
 
-  // Get the SDF version
+  // Get the SDF version.
   std::pair<std::string, bool> versionPair =
     sdf->Get<std::string>("version", SDF_VERSION);
 
   // Check that the version exists. Exit if the version is missing.
+  // sdf::readFile will fail if the version is missing, so this
+  // check should never be triggered.
   if (!versionPair.second)
   {
     errors.push_back(
-        {ErrorCode::NO_ATTRIBUTE, "SDF does not have a version."});
+        {ErrorCode::ATTRIBUTE_MISSING, "SDF does not have a version."});
     return errors;
   }
 
@@ -107,7 +109,7 @@ Errors Root::Load(const std::string &_filename)
       {
         std::move(worldErrors.begin(), worldErrors.end(),
                   std::back_inserter(errors));
-        errors.push_back({ErrorCode::INVALID_ELEMENT,
+        errors.push_back({ErrorCode::ELEMENT_INVALID,
                           "Failed to load a world."});
       }
       elem = elem->GetNextElement("world");

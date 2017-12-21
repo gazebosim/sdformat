@@ -17,6 +17,7 @@
 #ifndef SDF_ERROR_HH_
 #define SDF_ERROR_HH_
 
+#include <iostream>
 #include <string>
 #include "sdf/system_util.hh"
 
@@ -33,27 +34,44 @@ namespace sdf
     // \brief No error
     NONE = 0,
 
-    /// \brief Indicates that an SDF attribute is missing.
-    NO_ATTRIBUTE,
-
     /// \brief Indicates that reading an SDF file failed.
-    READ_FILE,
-
-    /// \brief This error indicates that an SDF element is invalid.
-    /// Generally, other errors should accompany this error.
-    INVALID_ELEMENT,
-
-    /// \brief Indicates that an  incorrect SDF element type was
-    /// encountered. This error is used when an element of certain type is
-    /// expected, and an element of a different type was received.
-    INCORRECT_ELEMENT_TYPE,
+    FILE_READ,
 
     /// \brief A duplicate name was found for an element where unique names
     /// are required.
     DUPLICATE_NAME,
 
-    /// \brief A required element is missing.
-    REQUIRED_ELEMENT
+    /// \brief Indicates that a required SDF attribute is missing.
+    ATTRIBUTE_MISSING,
+
+    /// \brief This error indicates that an SDF attribute is invalid.
+    ATTRIBUTE_INVALID,
+
+    /// \brief This error indicates that an SDF attribute is deprecated.
+    ATTRIBUTE_DEPRECATED,
+
+    /// \brief Indicates that a required SDF element is missing.
+    ELEMENT_MISSING,
+
+    /// \brief This error indicates that an SDF element is invalid.
+    ELEMENT_INVALID,
+
+    /// \brief This error indicates that an SDF element is deprecated.
+    ELEMENT_DEPRECATED,
+
+    /// \brief Indicates that an  incorrect SDF element type was
+    /// encountered. This error is used when an element of certain type is
+    /// expected, and an element of a different type was received.
+    ELEMENT_INCORRECT_TYPE,
+
+    /// \brief A URI is invalid.
+    URI_INVALID,
+
+    /// \brief A error occured while trying to resolve a URI.
+    URI_LOOKUP,
+
+    /// \brief A filesystem directory does not exist.
+    DIRECTORY_NONEXISTANT,
   };
 
   class SDFORMAT_VISIBLE Error
@@ -89,6 +107,15 @@ namespace sdf
     /// and false is returned otherwise.
     /// \sa explicit operator bool() const
     public: bool operator==(const bool _value) const;
+
+    public: friend std::ostream &operator<<(std::ostream &_out,
+                                            const sdf::Error &_err)
+    {
+      _out << "Error Code: "
+        << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
+        << " Msg: " << _err.Message();
+      return _out;
+    }
 
     /// \brief The error code value.
     private: ErrorCode code = ErrorCode::NONE;

@@ -23,6 +23,34 @@
 #include "sdf/Filesystem.hh"
 #include "test_config.h"
 
+/////////////////////////////////////////////////
+TEST(DOMRoot, InvalidSDF)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "empty_invalid.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FILE_READ);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, NoVersion)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "empty_noversion.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_FALSE(errors.empty());
+  std::cout << errors[0].Message() << std::endl;
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FILE_READ);
+}
+
+/////////////////////////////////////////////////
 TEST(DOMRoot, Load)
 {
   const std::string testFile =
@@ -31,7 +59,7 @@ TEST(DOMRoot, Load)
 
   sdf::Root root;
   EXPECT_EQ(root.WorldCount(), 0u);
-  EXPECT_EQ(root.Load(testFile).empty(), true);
+  EXPECT_TRUE(root.Load(testFile).empty());
   EXPECT_EQ(root.Version(), "1.6");
   EXPECT_EQ(root.WorldCount(), 1u);
   EXPECT_TRUE(root.WorldByIndex(0) != nullptr);

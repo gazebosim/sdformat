@@ -47,13 +47,17 @@ namespace sdf
 
   /// \brief Populate the SDF values from a TinyXML document
   bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
-      bool _convert = true);
+      bool _convert, Errors &_errors);
 
   bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
-      const std::string &_source, bool _convert = true);
+      const std::string &_source, bool _convert, Errors &_errors);
 
   /// \brief For internal use only. Do not use this function.
-  bool readXml(TiXmlElement *_xml, ElementPtr _sdf);
+  /// \param[in] _xml Pointer to the XML document
+  /// \param[in,out] _sdf SDF pointer to parse data into.
+  /// \param[out] _errors Captures errors found during parsing.
+  /// \return True on success, false on error.
+  bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors);
 
   void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);
 }

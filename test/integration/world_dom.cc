@@ -15,24 +15,77 @@
  *
  */
 
+#include <iostream>
 #include <string>
 #include <gtest/gtest.h>
 
+#include "sdf/SDFImpl.hh"
+#include "sdf/parser.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "sdf/Filesystem.hh"
 #include "test_config.h"
 
-TEST(DOMRoot, Load)
+//////////////////////////////////////////////////
+TEST(DOMWorld, NoName)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_noname.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_FALSE(errors.empty());
+
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+}
+
+//////////////////////////////////////////////////
+TEST(DOMWorld, Duplicate)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_duplicate.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_FALSE(errors.empty());
+  EXPECT_TRUE(errors[0].Code() == sdf::ErrorCode::DUPLICATE_NAME);
+}
+
+//////////////////////////////////////////////////
+TEST(DOMWorld, LoadIncorrectElement)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_complete.sdf");
+
+  sdf::Errors errors;
+  // Read an SDF file, and store the result in sdfParsed.
+  sdf::SDFPtr sdfParsed = sdf::readFile(testFile, errors);
+  ASSERT_TRUE(errors.empty());
+
+  sdf::World world;
+  errors = world.Load(sdfParsed->Root());
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_INCORRECT_TYPE);
+  EXPECT_TRUE(errors[0].Message().find("Attempting to load a World") !=
+      std::string::npos);
+}
+
+
+//////////////////////////////////////////////////
+TEST(DOMWorld, Load)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
         "world_complete.sdf");
 
   sdf::Root root;
-  EXPECT_EQ(root.Load(testFile).empty(), true);
+  EXPECT_TRUE(root.Load(testFile).empty());
   EXPECT_EQ(root.Version(), "1.6");
   EXPECT_EQ(root.WorldCount(), 1u);
+  EXPECT_TRUE(root.WorldNameExists("default"));
 
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_TRUE(world != nullptr);

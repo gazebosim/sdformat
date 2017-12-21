@@ -71,7 +71,7 @@ Errors World::Load(sdf::ElementPtr _sdf)
   // This is an error that cannot be recovered, so return an error.
   if (_sdf->GetName() != "world")
   {
-    errors.push_back({ErrorCode::INCORRECT_ELEMENT_TYPE,
+    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
         "Attempting to load a World, but the provided SDF element is not a "
         "<world>."});
     return errors;
@@ -80,8 +80,8 @@ Errors World::Load(sdf::ElementPtr _sdf)
   // Read the world's name
   if (!loadName(_sdf, this->dataPtr->name))
   {
-    errors.push_back({ErrorCode::REQUIRED_ELEMENT,
-                     "A world name is required, but is not set."});
+    errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+                     "A world name is required, but the name is not set."});
   }
 
   // Read the audio element
