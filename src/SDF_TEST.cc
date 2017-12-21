@@ -593,6 +593,14 @@ bool create_new_temp_dir(std::string &_new_temp_path)
 }
 
 /////////////////////////////////////////////////
+bool g_findFileCbCalled{false};
+std::string findFileCb(const std::string &)
+{
+  g_findFileCbCalled = true;
+  return "coconut";
+}
+
+/////////////////////////////////////////////////
 TEST(SDF, WriteURIPath)
 {
   // Create temp dir
@@ -612,8 +620,17 @@ TEST(SDF, WriteURIPath)
   // Add temp dir to path
   sdf::addURIPath("test://", tempDir);
 
+  // Find file callback
+  sdf::setFindCallback(findFileCb);
+
   // Find file
   EXPECT_EQ(sdf::findFile("test://test.sdf"), tempFile);
+
+  // Can't find file, fallback to user callback
+  EXPECT_EQ(sdf::findFile("banana", false, true), "coconut");
+
+  // Check callback was called
+  EXPECT_TRUE(g_findFileCbCalled);
 
   // Cleanup
   ASSERT_EQ(std::remove(tempFile.c_str()), 0);

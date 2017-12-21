@@ -18,6 +18,13 @@ fi
 SUPPRESS=/tmp/sdf_cpp_check.suppress
 echo "*:test/integration/locale_fix.cc:40" > $SUPPRESS
 
+# Functions tested via command line
+echo "*:src/ign.cc:27" > $SUPPRESS
+echo "*:src/ign.cc:54" > $SUPPRESS
+
+# cppcheck doesn't realize operator bool is called in a test (see coverage)
+echo "*:src/Error.cc:42" > $SUPPRESS
+
 # Use another suppression file for unused function checking
 SUPPRESS2=/tmp/sdf_cpp_check2.suppress
 echo "*:src/parser_urdf.cc" >> $SUPPRESS2

@@ -24,8 +24,6 @@
 #include "sdf/system_util.hh"
 
 //////////////////////////////////////////////////
-// This function is tested via a command
-// cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 {
   if (!sdf::filesystem::exists(_path))
@@ -53,8 +51,6 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 }
 
 //////////////////////////////////////////////////
-// This function is tested via a command
-// cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
 {
   return sdf_strdup(SDF_VERSION_FULL);
