@@ -593,7 +593,7 @@ bool create_new_temp_dir(std::string &_new_temp_path)
 }
 
 /////////////////////////////////////////////////
-bool g_findFileCbCalled{false};
+bool g_findFileCbCalled = false;
 std::string findFileCb(const std::string &)
 {
   g_findFileCbCalled = true;
