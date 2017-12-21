@@ -36,7 +36,6 @@ TEST(Error, ValueConstruction)
 {
   sdf::Error error(sdf::ErrorCode::READ_FILE, "Unable to read a file");
   EXPECT_EQ(error, true);
-  EXPECT_TRUE(error == true);
   EXPECT_EQ(error.Code(), sdf::ErrorCode::READ_FILE);
   EXPECT_EQ(error.Message(), "Unable to read a file");
 
