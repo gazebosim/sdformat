@@ -81,7 +81,7 @@ namespace sdf
 
     /// \brief Get whether a world name exists.
     /// \param[in] _name Name of the world to check.
-    /// \return True if there exists a world with name == _name.
+    /// \return True if there exists a world with the given name.
     public: bool WorldNameExists(const std::string &_name) const;
 
     /// \brief Private data pointer

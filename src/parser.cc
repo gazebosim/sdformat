@@ -702,8 +702,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
   {
     if (_sdf->GetRequired() == "1" || _sdf->GetRequired() =="+")
     {
-      std::string errStr = "SDF Element<" + _sdf->GetName() + "> is missing";
-      _errors.push_back({ErrorCode::ELEMENT_MISSING, errStr});
+      _errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "SDF Element<" + _sdf->GetName() + "> is missing"});
       return false;
     }
     else
@@ -743,13 +743,11 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
       ParamPtr p = _sdf->GetAttribute(i);
       if (p->GetKey() == attribute->Name())
       {
-
         // Set the value of the SDF attribute
         if (!p->SetFromString(attribute->ValueStr()))
         {
-          std::string errStr =
-            "Unable to read attribute[" + p->GetKey() + "]";
-          _errors.push_back({ErrorCode::ATTRIBUTE_INVALID, errStr});
+          _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+              "Unable to read attribute[" + p->GetKey() + "]"});
           return false;
         }
         break;
@@ -772,10 +770,9 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
     ParamPtr p = _sdf->GetAttribute(i);
     if (p->GetRequired() && !p->GetSet())
     {
-      std::string errStr = "Required attribute[" + p->GetKey()
-        + "] in element[" + _xml->Value()
-        + "] is not specified in SDF.";
-      _errors.push_back({ErrorCode::ATTRIBUTE_MISSING, errStr});
+      _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+          "Required attribute[" + p->GetKey() + "] in element[" + _xml->Value()
+          + "] is not specified in SDF."});
       return false;
     }
   }
@@ -805,14 +802,14 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           // Test the model path
           if (modelPath.empty())
           {
-            std::string errStr = "Unable to find uri[" + uri + "]";
-            _errors.push_back({ErrorCode::URI_LOOKUP, errStr});
+            _errors.push_back({ErrorCode::URI_LOOKUP,
+                "Unable to find uri[" + uri + "]"});
 
             size_t modelFound = uri.find("model://");
             if (modelFound != 0u)
             {
-              errStr = "Invalid uri[" + uri + "]. Should be model://" + uri;
-              _errors.push_back({ErrorCode::URI_INVALID, errStr});
+              _errors.push_back({ErrorCode::URI_INVALID,
+                  "Invalid uri[" + uri + "]. Should be model://" + uri});
             }
             continue;
           }
@@ -820,9 +817,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           {
             if (!sdf::filesystem::is_directory(modelPath))
             {
-              std::string errStr =
-                "Directory doesn't exist[" + modelPath + "]";
-              _errors.push_back({ErrorCode::DIRECTORY_NONEXISTANT, errStr});
+              _errors.push_back({ErrorCode::DIRECTORY_NONEXISTANT,
+                  "Directory doesn't exist[" + modelPath + "]"});
               continue;
             }
           }

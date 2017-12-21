@@ -25,8 +25,8 @@ namespace sdf
 {
   /// \enum ErrorCode
   /// \brief Set of error codes. Usually one or more errors are returned in
-  /// an Errors vector. This collection of errors should be take as a whole,
-  /// where errors toward the begining of the vector can inform errors
+  /// an Errors vector. The collection of Errors should be take as a whole,
+  /// where an error toward the begining of the vector can inform errors
   /// toward the end of the vector.
   /// \sa Errors
   enum class ErrorCode
@@ -108,6 +108,10 @@ namespace sdf
     /// \sa explicit operator bool() const
     public: bool operator==(const bool _value) const;
 
+    /// \brief Output operator for an error.
+    /// \param[in,out] _out The output stream.
+    /// \param[in] _err The error to output.
+    /// \return Reference to the given output stream
     public: friend std::ostream &operator<<(std::ostream &_out,
                                             const sdf::Error &_err)
     {
