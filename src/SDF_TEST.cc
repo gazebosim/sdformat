@@ -620,13 +620,13 @@ TEST(SDF, WriteURIPath)
   // Add temp dir to path
   sdf::addURIPath("test://", tempDir);
 
-  // Find file callback
-  sdf::setFindCallback(findFileCb);
-
   // Find file
   EXPECT_EQ(sdf::findFile("test://test.sdf"), tempFile);
 
   // Can't find file, fallback to user callback
+  EXPECT_EQ(sdf::findFile("banana", false, true), "");
+
+  sdf::setFindCallback(findFileCb);
   EXPECT_EQ(sdf::findFile("banana", false, true), "coconut");
 
   // Check callback was called
