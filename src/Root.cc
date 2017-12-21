@@ -82,5 +82,5 @@ void Root::SetVersion(const std::string &_version)
 /////////////////////////////////////////////////
 void Root::DebugPrint(const std::string &_prefix) const
 {
-  std::cout << "SDF Version: " << this->Version() << "\n";
+  std::cout << _prefix << "SDF Version: " << this->Version() << "\n";
 }
