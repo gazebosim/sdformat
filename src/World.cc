@@ -113,6 +113,7 @@ Errors World::Load(sdf::ElementPtr _sdf)
   return errors;
 }
 
+// LCOV_EXCL_START
 /////////////////////////////////////////////////
 void World::DebugPrint(const std::string &_prefix) const
 {
@@ -124,6 +125,7 @@ void World::DebugPrint(const std::string &_prefix) const
     << _prefix << "  * Magnetic Field: "
     << this->MagneticField() << "\n";
 }
+// LCOV_EXCL_STOP
 
 /////////////////////////////////////////////////
 std::string World::Name() const
