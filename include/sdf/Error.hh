@@ -20,13 +20,6 @@
 #include <string>
 #include "sdf/system_util.hh"
 
-#ifdef _WIN32
-  // Disable warning C4251 which is triggered by
-  // std::string
-  #pragma warning(push)
-  #pragma warning(disable: 4251)
-#endif
-
 namespace sdf
 {
   /// \enum ErrorCode
@@ -80,13 +73,17 @@ namespace sdf
     /// \brief The error code value.
     private: ErrorCode code = ErrorCode::NONE;
 
+#ifdef _WIN32
+  // Disable warning C4251 which is triggered by
+  // std::string
+  #pragma warning(push)
+  #pragma warning(disable: 4251)
+#endif
     /// \brief Description of the error.
     private: std::string message = "";
-  };
-}
-
 #ifdef _WIN32
   #pragma warning(pop)
 #endif
-
+  };
+}
 #endif
