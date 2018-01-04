@@ -4,6 +4,7 @@ pipelines:
   default:
     - step:
         script:
+          # Dependencies
           - apt update
           - apt -y install cmake build-essential lcov curl mercurial lsb-release wget
             libtinyxml-dev libxml2-utils ruby-dev libboost-dev
@@ -13,10 +14,20 @@ pipelines:
           - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
           - apt update
           - apt install -y libignition-math3-dev
+          # SDFormat
           - mkdir build
           - cd build
           - cmake .. -DCMAKE_BUILD_TYPE=coverage
-          - make
+          - make -j4
           - make test
           - make coverage
           - bash <(curl -s https://codecov.io/bash)
+          - make install
+          # Examples
+          - cd ..
+          - cd examples
+          - mkdir build
+          - cd build
+          - cmake ..
+          - make -j4
+          - ./simple
