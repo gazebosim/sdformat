@@ -30,4 +30,4 @@ pipelines:
           - cd build
           - cmake ..
           - make -j4
-          - ./simple
+          - ./simple ../simple.sdf
