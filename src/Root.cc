@@ -130,14 +130,6 @@ void Root::SetVersion(const std::string &_version)
   this->dataPtr->version = _version;
 }
 
-// LCOV_EXCL_START
-/////////////////////////////////////////////////
-void Root::DebugPrint(const std::string &_prefix) const
-{
-  std::cout << "SDF Version: " << this->Version() << "\n";
-}
-// LCOV_EXCL_STOP
-
 /////////////////////////////////////////////////
 uint64_t Root::WorldCount() const
 {

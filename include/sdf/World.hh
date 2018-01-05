@@ -48,10 +48,6 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
 
-    /// \brief Print debug information to standard out.
-    /// \param[in] _prefix String to prefix all output.
-    public: void DebugPrint(const std::string &_prefix = "") const;
-
     /// \brief Get the name of the world.
     /// \return Name of the world.
     public: std::string Name() const;
