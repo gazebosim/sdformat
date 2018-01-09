@@ -33,7 +33,7 @@ namespace sdf
   /// \enum ErrorCode
   /// \brief Set of error codes. Usually one or more errors are returned in
   /// an Errors vector. The collection of Errors should be take as a whole,
-  /// where an error toward the begining of the vector can inform errors
+  /// where an error toward the beginning of the vector can inform errors
   /// toward the end of the vector.
   /// \sa Errors
   enum class ErrorCode
