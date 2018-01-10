@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+
+#include <iostream>
 #include <cstdlib>
 #include <map>
 #include <string>
@@ -280,14 +282,14 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-SDFPtr readFile(const std::string &_filename)
+SDFPtr readFile(const std::string &_filename, Errors &_errors)
 {
   // Create and initialize the data structure that will hold the parsed SDF data
   sdf::SDFPtr sdfParsed(new sdf::SDF());
   sdf::init(sdfParsed);
 
   // Read an SDF file, and store the result in sdfParsed.
-  if (!sdf::readFile(_filename, sdfParsed))
+  if (!sdf::readFile(_filename, sdfParsed, _errors))
   {
     return SDFPtr();
   }
@@ -296,7 +298,33 @@ SDFPtr readFile(const std::string &_filename)
 }
 
 //////////////////////////////////////////////////
+SDFPtr readFile(const std::string &_filename)
+{
+  Errors errors;
+  SDFPtr result = readFile(_filename, errors);
+
+  // Output errors
+  for (auto const &e : errors)
+    std::cerr << e << std::endl;
+
+  return result;
+}
+
+//////////////////////////////////////////////////
 bool readFile(const std::string &_filename, SDFPtr _sdf)
+{
+  Errors errors;
+  bool result = readFile(_filename, _sdf, errors);
+
+  // Output errors
+  for (auto const &e : errors)
+    std::cerr << e << std::endl;
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
   TiXmlDocument xmlDoc;
   std::string filename = sdf::findFile(_filename);
@@ -313,7 +341,8 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
            << xmlDoc.ErrorDesc() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, filename))
+
+  if (readDoc(&xmlDoc, _sdf, filename, true, _errors))
   {
     return true;
   }
@@ -321,7 +350,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
   {
     sdf::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelFile(filename);
-    if (sdf::readDoc(&doc, _sdf, "urdf file"))
+    if (sdf::readDoc(&doc, _sdf, "urdf file", true, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
       return true;
@@ -339,6 +368,19 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, SDFPtr _sdf)
 {
+  Errors errors;
+  bool result = readString(_xmlString, _sdf, errors);
+
+  // Output errors
+  for (auto const &e : errors)
+    std::cerr << e << std::endl;
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
+{
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
@@ -346,7 +388,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, "data-string"))
+  if (readDoc(&xmlDoc, _sdf, "data-string", true, _errors))
   {
     return true;
   }
@@ -354,7 +396,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
   {
     sdf::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelString(_xmlString);
-    if (sdf::readDoc(&doc, _sdf, "urdf string"))
+    if (sdf::readDoc(&doc, _sdf, "urdf string", true, _errors))
     {
       sdfdbg << "Parsing from urdf.\n";
       return true;
@@ -372,6 +414,19 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, ElementPtr _sdf)
 {
+  Errors errors;
+  bool result = readString(_xmlString, _sdf, errors);
+
+  // Output errors
+  for (auto const &e : errors)
+    std::cerr << e << std::endl;
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
+{
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
@@ -379,7 +434,7 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, "data-string"))
+  if (readDoc(&xmlDoc, _sdf, "data-string", true, _errors))
   {
     return true;
   }
@@ -393,7 +448,7 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 
 //////////////////////////////////////////////////
 bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
-             bool _convert)
+             bool _convert, Errors &_errors)
 {
   if (!_xmlDoc)
   {
@@ -419,9 +474,10 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
 
     // parse new sdf xml
     TiXmlElement *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName());
-    if (!readXml(elemXml, _sdf->Root()))
+    if (!readXml(elemXml, _sdf->Root(), _errors))
     {
-      sdferr << "Error reading element <" << _sdf->Root()->GetName() << ">\n";
+      _errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Error reading element <" + _sdf->Root()->GetName() + ">"});
       return false;
     }
   }
@@ -452,7 +508,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
 
 //////////////////////////////////////////////////
 bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
-             const std::string &_source, bool _convert)
+             const std::string &_source, bool _convert, Errors &_errors)
 {
   if (!_xmlDoc)
   {
@@ -483,11 +539,11 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
       elemXml = sdfNode->FirstChildElement(_sdf->GetName());
     }
 
-    /* parse new sdf xml */
-    if (!readXml(elemXml, _sdf))
+    // parse new sdf xml
+    if (!readXml(elemXml, _sdf, _errors))
     {
-      sdfwarn << "Unable to parse sdf element["
-              << _sdf->GetName() << "]\n";
+      _errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Unable to parse sdf element["+ _sdf->GetName() + "]"});
       return false;
     }
   }
@@ -632,11 +688,13 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 }
 
 //////////////////////////////////////////////////
-bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
+bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 {
+  // Check if the element pointer is deprecated.
   if (_sdf->GetRequired() == "-1")
   {
-    sdfwarn << "SDF Element[" << _sdf->GetName() << "] is deprecated\n";
+    _errors.push_back({ErrorCode::ELEMENT_DEPRECATED,
+        "SDF Element[" + _sdf->GetName() + "] is deprecated"});
     return true;
   }
 
@@ -644,7 +702,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
   {
     if (_sdf->GetRequired() == "1" || _sdf->GetRequired() =="+")
     {
-      sdferr << "SDF Element<" << _sdf->GetName() << "> is missing\n";
+      _errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "SDF Element<" + _sdf->GetName() + "> is missing"});
       return false;
     }
     else
@@ -687,7 +746,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
         // Set the value of the SDF attribute
         if (!p->SetFromString(attribute->ValueStr()))
         {
-          sdferr << "Unable to read attribute[" << p->GetKey() << "]\n";
+          _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+              "Unable to read attribute[" + p->GetKey() + "]"});
           return false;
         }
         break;
@@ -710,9 +770,9 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
     ParamPtr p = _sdf->GetAttribute(i);
     if (p->GetRequired() && !p->GetSet())
     {
-      sdferr << "Required attribute[" << p->GetKey()
-             << "] in element[" << _xml->Value()
-             << "] is not specified in SDF.\n";
+      _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+          "Required attribute[" + p->GetKey() + "] in element[" + _xml->Value()
+          + "] is not specified in SDF."});
       return false;
     }
   }
@@ -742,13 +802,14 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           // Test the model path
           if (modelPath.empty())
           {
-            sdferr << "Unable to find uri[" << uri << "]\n";
+            _errors.push_back({ErrorCode::URI_LOOKUP,
+                "Unable to find uri[" + uri + "]"});
 
             size_t modelFound = uri.find("model://");
             if (modelFound != 0u)
             {
-              sdferr << "Invalid uri[" << uri << "]. Should be model://"
-                     << uri << "\n";
+              _errors.push_back({ErrorCode::URI_INVALID,
+                  "Invalid uri[" + uri + "]. Should be model://" + uri});
             }
             continue;
           }
@@ -756,7 +817,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           {
             if (!sdf::filesystem::is_directory(modelPath))
             {
-              sdferr << "Directory doesn't exist[" << modelPath << "]\n";
+              _errors.push_back({ErrorCode::DIRECTORY_NONEXISTANT,
+                  "Directory doesn't exist[" + modelPath + "]"});
               continue;
             }
           }
@@ -766,18 +828,9 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
         }
         else
         {
-          if (elemXml->Attribute("filename"))
-          {
-            sdferr << "<include filename='...'/> is deprecated. Should be "
-                   << "<include><uri>...</uri></include\n";
-
-            filename = elemXml->Attribute("filename");
-          }
-          else
-          {
-            sdferr << "<include> element missing 'uri' attribute\n";
-            continue;
-          }
+          _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+              "<include> element missing 'uri' attribute"});
+          continue;
         }
 
         // NOTE: sdf::init is an expensive call. For performance reason,
@@ -796,7 +849,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
 
         if (!readFile(filename, includeSDF))
         {
-          sdferr << "Unable to read file[" << filename << "]\n";
+          _errors.push_back({ErrorCode::FILE_READ,
+              "Unable to read file[" + filename + "]"});
           return false;
         }
 
@@ -838,9 +892,10 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
             pluginElem = includeSDF->Root()->GetElement(
                 "model")->AddElement("plugin");
 
-            if (!readXml(childElemXml, pluginElem))
+            if (!readXml(childElemXml, pluginElem, _errors))
             {
-              sdferr << "Error reading plugin element\n";
+              _errors.push_back({ErrorCode::ELEMENT_INVALID,
+                                 "Error reading plugin element"});
               return false;
             }
           }
@@ -875,13 +930,15 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
         {
           ElementPtr element = elemDesc->Clone();
           element->SetParent(_sdf);
-          if (readXml(elemXml, element))
+          if (readXml(elemXml, element, _errors))
           {
             _sdf->InsertElement(element);
           }
           else
           {
-            sdferr << "Error reading element <" << elemXml->Value() << ">\n";
+            _errors.push_back({ErrorCode::ELEMENT_INVALID,
+                std::string("Error reading element <") +
+                elemXml->Value() + ">"});
             return false;
           }
           break;
@@ -912,8 +969,9 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf)
           if (_sdf->GetName() == "joint" &&
               _sdf->Get<std::string>("type") != "ball")
           {
-            sdferr << "XML Missing required element[" << elemDesc->GetName()
-                   << "], child of element[" << _sdf->GetName() << "]\n";
+            _errors.push_back({ErrorCode::ELEMENT_MISSING,
+                "XML Missing required element[" + elemDesc->GetName() +
+                "], child of element[" + _sdf->GetName() + "]"});
             return false;
           }
           else
@@ -1098,8 +1156,14 @@ bool convertFile(const std::string &_filename, const std::string &_version,
   {
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
-      bool convertToLatest = false;
-      return sdf::readDoc(&xmlDoc, _sdf, filename, convertToLatest);
+      Errors errors;
+      bool result = sdf::readDoc(&xmlDoc, _sdf, filename, false, errors);
+
+      // Output errors
+      for (auto const &e : errors)
+        std::cerr << e << std::endl;
+
+      return result;
     }
   }
   else
@@ -1127,8 +1191,14 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
   {
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
-      bool convertToLatest = false;
-      return sdf::readDoc(&xmlDoc, _sdf, "data-string", convertToLatest);
+      Errors errors;
+      bool result = sdf::readDoc(&xmlDoc, _sdf, "data-string", false, errors);
+
+      // Output errors
+      for (auto const &e : errors)
+        std::cerr << e << std::endl;
+
+      return result;
     }
   }
   else

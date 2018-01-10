@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright 2017 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,14 @@
  * limitations under the License.
  *
 */
-
-#include <gtest/gtest.h>
-#include "sdf/sdf_config.h"
-#include "sdf/Error.hh"
+#include "Utils.hh"
 
 /////////////////////////////////////////////////
-TEST(Error, DefaultConstruction)
+bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
 {
-  sdf::Error error;
-  EXPECT_EQ(error, false);
-  EXPECT_EQ(error.Code(), sdf::ErrorCode::NONE);
-  EXPECT_TRUE(error.Message().empty());
-}
+  // Read the name
+  std::pair<std::string, bool> namePair = _sdf->Get<std::string>("name", "");
 
-/////////////////////////////////////////////////
-TEST(Error, ValueConstruction)
-{
-  sdf::Error error(sdf::ErrorCode::FILE_READ, "Unable to read a file");
-  EXPECT_EQ(error, true);
-  EXPECT_EQ(error.Code(), sdf::ErrorCode::FILE_READ);
-  EXPECT_EQ(error.Message(), "Unable to read a file");
+  _name = namePair.first;
+  return namePair.second;
 }
