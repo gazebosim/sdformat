@@ -22,18 +22,11 @@ echo "*:test/integration/locale_fix.cc:40" > $SUPPRESS
 SUPPRESS2=/tmp/sdf_cpp_check2.suppress
 echo "*:src/parser_urdf.cc" >> $SUPPRESS2
 
-# Functions tested via command line
-echo "*:src/ign.cc:27" >> $SUPPRESS2
-echo "*:src/ign.cc:54" >> $SUPPRESS2
-
-# cppcheck doesn't realize operator bool is called in a test (see coverage)
-echo "*:src/Error.cc:42" >> $SUPPRESS2
-
 CHECK_FILE_DIRS="./src ./include ./examples ./test/performance ./test/integration"
 
 #cppcheck
-CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS"
-CPPCHECK_BASE2="cppcheck -q --suppressions-list=$SUPPRESS2"
+CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS --inline-suppr"
+CPPCHECK_BASE2="cppcheck -q --suppressions-list=$SUPPRESS2 --inline-suppr"
 CPPCHECK_FILES=`find $CHECK_FILE_DIRS -name "*.cc"`
 CPPCHECK_INCLUDES="-I include -I . -I $builddir -I $builddir/include"
 CPPCHECK_COMMAND1="-j 4 --enable=style,performance,portability,information $CPPCHECK_FILES"
