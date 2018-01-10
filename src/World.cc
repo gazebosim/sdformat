@@ -113,20 +113,6 @@ Errors World::Load(sdf::ElementPtr _sdf)
   return errors;
 }
 
-// LCOV_EXCL_START
-/////////////////////////////////////////////////
-void World::DebugPrint(const std::string &_prefix) const
-{
-  std::cout << _prefix << "# World: " << this->Name() << "\n"
-    << _prefix << "  * Gravity: " << this->Gravity() << "\n"
-    << _prefix << "  * Audio device: " << this->AudioDevice() << "\n"
-    << _prefix << "  * Wind Linear Velocity: "
-    << this->WindLinearVelocity() << "\n"
-    << _prefix << "  * Magnetic Field: "
-    << this->MagneticField() << "\n";
-}
-// LCOV_EXCL_STOP
-
 /////////////////////////////////////////////////
 std::string World::Name() const
 {

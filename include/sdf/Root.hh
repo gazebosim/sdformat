@@ -64,10 +64,6 @@ namespace sdf
     /// \sa std::string Version()
     public: void SetVersion(const std::string &_version);
 
-    /// \brief Output debug information to standard out.
-    /// \param[in] _prefix String to prefix all output.
-    public: void DebugPrint(const std::string &_prefix = "") const;
-
     /// \brief Get the number of worlds.
     /// \return Number of worlds contained in this Root object.
     public: uint64_t WorldCount() const;
