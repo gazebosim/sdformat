@@ -25,11 +25,11 @@ echo "*:src/parser_urdf.cc" >> $SUPPRESS2
 CHECK_FILE_DIRS="./src ./include ./examples ./test/performance ./test/integration"
 
 #cppcheck
-CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS --inline-suppr"
+CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS"
 CPPCHECK_BASE2="cppcheck -q --suppressions-list=$SUPPRESS2 --inline-suppr"
 CPPCHECK_FILES=`find $CHECK_FILE_DIRS -name "*.cc"`
 CPPCHECK_INCLUDES="-I include -I . -I $builddir -I $builddir/include"
-CPPCHECK_COMMAND1="-j 4 --enable=style,performance,portability,information,unusedFunction $CPPCHECK_FILES"
+CPPCHECK_COMMAND1="-j 4 --enable=style,performance,portability,information $CPPCHECK_FILES"
 # Unused function checking must happen in one job
 CPPCHECK_COMMAND2="--enable=unusedFunction $CPPCHECK_FILES"
 # -j 4 was used previously in CPPCHECK_COMMAND3 but it will generate a false
