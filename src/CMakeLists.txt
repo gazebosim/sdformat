@@ -26,6 +26,7 @@ set (sources
   Exception.cc
   Filesystem.cc
   ign.cc
+  Joint.cc
   parser.cc
   parser_urdf.cc
   Param.cc
@@ -73,6 +74,7 @@ set (gtest_sources
   Error_TEST.cc
   Exception_TEST.cc
   Filesystem_TEST.cc
+  Joint_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
