@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "sdf/system_util.hh"
+#include "sdf/Error.hh"
 
 #if defined(__GNUC__)
 #define SDF_DEPRECATED(version) __attribute__((deprecated))
@@ -63,6 +64,9 @@ namespace sdf
   {
     return std::fabs(_a - _b) <= _epsilon;
   }
+
+  /// \brief A vector of Error.
+  using Errors = std::vector<Error>;
 
   /// \brief Defines a color
   class SDFORMAT_VISIBLE Color

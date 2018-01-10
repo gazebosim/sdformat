@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+    <audio>
+      <device>/dev/audio</device>
+    </audio>
+    <wind>
+      <linear_velocity>4 5 6</linear_velocity>
+    </wind>
+    <gravity>1 2 3</gravity>
+    <magnetic_field>-1 0.5 10</magnetic_field>
+  </world>
+</sdf>
