@@ -24,6 +24,7 @@ set(tests
   sdf_basic.cc
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
+  visual_dom.cc
   world_dom.cc
 )
 
