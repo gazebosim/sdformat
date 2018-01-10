@@ -17,6 +17,11 @@
 #ifndef SDF_MODEL_HH_
 #define SDF_MODEL_HH_
 
+#include <string>
+#include "sdf/Element.hh"
+#include "sdf/Types.hh"
+#include "sdf/system_util.hh"
+
 namespace sdf
 {
   // Forward declare private data class.
@@ -41,10 +46,6 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
-
-    /// \brief Print debug information to standard out.
-    /// \param[in] _prefix String to prefix all output.
-    public: void DebugPrint(const std::string &_prefix = "") const;
 
     /// \brief Get the name of the model.
     /// \return Name of the model.

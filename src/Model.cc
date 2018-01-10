@@ -21,13 +21,15 @@
 
 using namespace sdf;
 
-class sdf::WorldPrivate
+class sdf::ModelPrivate
 {
+  /// \brief Name of the model.
+  public: std::string name = "";
 };
 
 /////////////////////////////////////////////////
 Model::Model()
-  : dataPtr(new WorldPrivate)
+  : dataPtr(new ModelPrivate)
 {
 }
 
@@ -41,19 +43,36 @@ Model::~Model()
 /////////////////////////////////////////////////
 Errors Model::Load(ElementPtr _sdf)
 {
-}
+  Errors errors;
 
-/////////////////////////////////////////////////
-void Model::DebugPrint(const std::string &_prefix = "") const
-{
+  // Check that the provided SDF element is a <model>
+  // This is an error that cannot be recovered, so return an error.
+  if (_sdf->GetName() != "model")
+  {
+    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
+        "Attempting to load a Model, but the provided SDF element is not a "
+        "<model>."});
+    return errors;
+  }
+
+  // Read the models's name
+  if (!loadName(_sdf, this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+                     "A model name is required, but the name is not set."});
+  }
+
+  return errors;
 }
 
 /////////////////////////////////////////////////
 std::string Model::Name() const
 {
+  return this->dataPtr->name;
 }
 
 /////////////////////////////////////////////////
 void Model::SetName(const std::string &_name) const
 {
+  this->dataPtr->name = _name;
 }
