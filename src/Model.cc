@@ -14,8 +14,6 @@
  * limitations under the License.
  *
 */
-#include <iostream>
-
 #include "sdf/Model.hh"
 #include "Utils.hh"
 
