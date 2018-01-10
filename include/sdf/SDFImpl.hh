@@ -52,6 +52,7 @@ namespace sdf
   /// working directory.
   /// \param[in] _useCallback True to find a file based on a registered
   /// callback if the file is not found via the normal mechanism.
+  /// \return File's full path.
   SDFORMAT_VISIBLE
   std::string findFile(const std::string &_filename,
                        bool _searchLocalPath = true,
