@@ -48,12 +48,12 @@ namespace sdf
     public: Errors Load(ElementPtr _sdf);
 
     /// \brief Get the name of the joint.
-    /// The name of the joint must be unique within the scope of a Model.
+    /// The name of the joint must be unique within the scope of a Link.
     /// \return Name of the joint.
     public: std::string Name() const;
 
     /// \brief Set the name of the joint.
-    /// The name of the joint must be unique within the scope of a Model.
+    /// The name of the joint must be unique within the scope of a Link.
     /// \param[in] _name Name of the joint.
     public: void SetName(const std::string &_name) const;
 
