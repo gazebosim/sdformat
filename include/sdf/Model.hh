@@ -48,10 +48,12 @@ namespace sdf
     public: Errors Load(ElementPtr _sdf);
 
     /// \brief Get the name of the model.
+    /// The name of the model should be unique within the scope of a World.
     /// \return Name of the model.
     public: std::string Name() const;
 
     /// \brief Set the name of the model.
+    /// The name of the model should be unique within the scope of a World.
     /// \param[in] _name Name of the model.
     public: void SetName(const std::string &_name) const;
 
