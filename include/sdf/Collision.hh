@@ -48,10 +48,12 @@ namespace sdf
     public: Errors Load(ElementPtr _sdf);
 
     /// \brief Get the name of the collision.
+    /// The name of the collision must be unique within the scope of a Link.
     /// \return Name of the collision.
     public: std::string Name() const;
 
     /// \brief Set the name of the collision.
+    /// The name of the collision must be unique within the scope of a Link.
     /// \param[in] _name Name of the collision.
     public: void SetName(const std::string &_name) const;
 
