@@ -48,10 +48,12 @@ namespace sdf
     public: Errors Load(ElementPtr _sdf);
 
     /// \brief Get the name of the visual.
+    /// The name of the visual must be unique within the scope of a Link.
     /// \return Name of the visual.
     public: std::string Name() const;
 
     /// \brief Set the name of the visual.
+    /// The name of the visual must be unique within the scope of a Link.
     /// \param[in] _name Name of the visual.
     public: void SetName(const std::string &_name) const;
 
