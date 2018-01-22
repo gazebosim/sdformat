@@ -48,10 +48,12 @@ namespace sdf
     public: Errors Load(ElementPtr _sdf);
 
     /// \brief Get the name of the link.
+    /// The name of a link must be unique within the scope of a Model.
     /// \return Name of the link.
     public: std::string Name() const;
 
     /// \brief Set the name of the link.
+    /// The name of a link must be unique within the scope of a Model.
     /// \param[in] _name Name of the link.
     public: void SetName(const std::string &_name) const;
 
