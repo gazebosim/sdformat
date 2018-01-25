@@ -15,13 +15,13 @@
  *
  */
 
-#include <iostream>
 #include <string>
 #include <gtest/gtest.h>
 
 #include "sdf/Element.hh"
-#include "sdf/Model.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Model.hh"
+#include "sdf/Types.hh"
 #include "test_config.h"
 
 //////////////////////////////////////////////////
