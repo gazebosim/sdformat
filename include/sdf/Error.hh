@@ -122,7 +122,7 @@ namespace sdf
     public: friend std::ostream &operator<<(std::ostream &_out,
                                             const sdf::Error &_err)
     {
-      _out << "Error Code: "
+      _out << "SDF_Error Code: "
         << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
         << " Msg: " << _err.Message();
       return _out;
