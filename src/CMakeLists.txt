@@ -19,6 +19,7 @@ if (USE_EXTERNAL_TINYXML)
 endif()
 
 set (sources
+  Collision.cc
   Console.cc
   Converter.cc
   Element.cc
@@ -67,7 +68,7 @@ else()
 endif()
 
 set (gtest_sources
-  SDF_TEST.cc
+  Collision_TEST.cc
   Console_TEST.cc
   Converter_TEST.cc
   Element_TEST.cc
@@ -78,6 +79,7 @@ set (gtest_sources
   Param_TEST.cc
   parser_TEST.cc
   Root_TEST.cc
+  SDF_TEST.cc
   Types_TEST.cc
   Visual_TEST.cc
   World_TEST.cc

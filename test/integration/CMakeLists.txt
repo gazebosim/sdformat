@@ -4,6 +4,7 @@ set(tests
   audio.cc
   category_bitmask.cc
   cfm_damping_implicit_spring_damper.cc
+  collision_dom.cc
   converter.cc
   disable_fixed_joint_reduction.cc
   fixed_joint_reduction.cc
