@@ -8,6 +8,7 @@ set (headers
   Exception.hh
   Filesystem.hh
   Joint.hh
+  Link.hh
   Param.hh
   parser.hh
   Root.hh
