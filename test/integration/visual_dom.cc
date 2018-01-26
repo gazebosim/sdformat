@@ -15,11 +15,11 @@
  *
  */
 
-#include <iostream>
 #include <string>
 #include <gtest/gtest.h>
 
 #include "sdf/Element.hh"
+#include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "test_config.h"
 
