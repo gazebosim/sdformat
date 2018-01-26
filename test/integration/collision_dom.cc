@@ -15,13 +15,12 @@
  *
  */
 
-#include <iostream>
 #include <string>
 #include <gtest/gtest.h>
 
-#include "sdf/Element.hh"
 #include "sdf/Collision.hh"
-#include "sdf/Filesystem.hh"
+#include "sdf/Element.hh"
+#include "sdf/Types.hh"
 #include "test_config.h"
 
 //////////////////////////////////////////////////
