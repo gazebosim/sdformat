@@ -34,6 +34,7 @@ set (sources
   SDFExtension.cc
   Types.cc
   Utils.cc
+  Visual.cc
   World.cc
 )
 
@@ -79,6 +80,7 @@ set (gtest_sources
   Root_TEST.cc
   Types_TEST.cc
   Utils_TEST.cc
+  Visual_TEST.cc
   World_TEST.cc
 )
 
