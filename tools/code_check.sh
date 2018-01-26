@@ -26,7 +26,7 @@ CHECK_FILE_DIRS="./src ./include ./examples ./test/performance ./test/integratio
 
 #cppcheck
 CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS"
-CPPCHECK_BASE2="cppcheck -q --suppressions-list=$SUPPRESS2"
+CPPCHECK_BASE2="cppcheck -q --suppressions-list=$SUPPRESS2 --inline-suppr"
 CPPCHECK_FILES=`find $CHECK_FILE_DIRS -name "*.cc"`
 CPPCHECK_INCLUDES="-I include -I . -I $builddir -I $builddir/include"
 CPPCHECK_COMMAND1="-j 4 --enable=style,performance,portability,information $CPPCHECK_FILES"

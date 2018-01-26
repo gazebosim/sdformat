@@ -39,6 +39,7 @@ std::string Error::Message() const
 }
 
 /////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
 Error::operator bool() const
 {
   return this->code != ErrorCode::NONE;

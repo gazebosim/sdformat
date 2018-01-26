@@ -1,11 +1,17 @@
 ## SDFormat 6.0
 
-### SDFormat 6.0.0 (xxxx-xx-xx)
+### SDFormat 6.1.0 (xxxx-xx-xx)
+
+1. SDF DOM: Additions to the document object model.
+   * [Pull request 393](https://bitbucket.org/osrf/sdformat/pull-requests/393)
+   * [Pull request 396](https://bitbucket.org/osrf/sdformat/pull-requests/396)
+   * [Pull request 397](https://bitbucket.org/osrf/sdformat/pull-requests/397)
+
+### SDFormat 6.0.0 (2018-01-25)
 
 1. SDF DOM: Added a document object model.
    * [Pull request 387](https://bitbucket.org/osrf/sdformat/pull-requests/387)
    * [Pull request 389](https://bitbucket.org/osrf/sdformat/pull-requests/389)
-   * [Pull request 393](https://bitbucket.org/osrf/sdformat/pull-requests/393)
 
 1. Add simplified ```readFile`` function.
    * [Pull request 347](https://bitbucket.org/osrf/sdformat/pull-requests/347)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,14 @@
 */
 
 #include <gtest/gtest.h>
-#include "sdf/sdf_config.h"
-#include "sdf/Error.hh"
+#include "sdf/Collision.hh"
 
 /////////////////////////////////////////////////
-TEST(Error, DefaultConstruction)
+TEST(DOMcollision, Construction)
 {
-  sdf::Error error;
-  EXPECT_EQ(error, false);
-  EXPECT_EQ(error.Code(), sdf::ErrorCode::NONE);
-  EXPECT_TRUE(error.Message().empty());
+  sdf::Collision collison;
+  EXPECT_TRUE(collison.Name().empty());
 
-  if (error)
-    FAIL();
-}
-
-/////////////////////////////////////////////////
-TEST(Error, ValueConstruction)
-{
-  sdf::Error error(sdf::ErrorCode::FILE_READ, "Unable to read a file");
-  EXPECT_EQ(error, true);
-  EXPECT_EQ(error.Code(), sdf::ErrorCode::FILE_READ);
-  EXPECT_EQ(error.Message(), "Unable to read a file");
-
-  if (!error)
-    FAIL();
+  collison.SetName("test_collison");
+  EXPECT_EQ(collison.Name(), "test_collison");
 }

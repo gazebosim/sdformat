@@ -517,6 +517,128 @@ TEST(SDF, Version)
 }
 
 /////////////////////////////////////////////////
+TEST(SDF, PrintDoc)
+{
+  std::stringstream buffer;
+  auto old = std::cout.rdbuf(buffer.rdbuf());
+
+  sdf::SDF sdf;
+  sdf.PrintDoc();
+
+  EXPECT_GT(buffer.str().size(), 2000u);
+  EXPECT_NE(buffer.str().find("HTML"), std::string::npos);
+  EXPECT_NE(buffer.str().find("SDF"), std::string::npos);
+  EXPECT_NE(buffer.str().find("Usage"), std::string::npos);
+  EXPECT_NE(buffer.str().find("Meta-Tags"), std::string::npos);
+
+  std::cout.rdbuf(old);
+}
+
+/////////////////////////////////////////////////
+TEST(SDF, PrintDescription)
+{
+  std::stringstream buffer;
+  auto old = std::cout.rdbuf(buffer.rdbuf());
+
+  sdf::SDF sdf;
+  sdf.PrintDescription();
+
+  EXPECT_GT(buffer.str().size(), 70u);
+  EXPECT_NE(buffer.str().find("<element"), std::string::npos);
+  EXPECT_NE(buffer.str().find("<description>"), std::string::npos);
+
+  std::cout.rdbuf(old);
+}
+
+/////////////////////////////////////////////////
+TEST(SDF, PrintValues)
+{
+  std::stringstream buffer;
+  auto old = std::cout.rdbuf(buffer.rdbuf());
+
+  sdf::SDF sdf;
+  sdf.PrintValues();
+
+  EXPECT_GT(buffer.str().size(), 3u);
+  EXPECT_NE(buffer.str().find("</>"), std::string::npos);
+
+  std::cout.rdbuf(old);
+}
+
+#ifndef _WIN32
+bool create_new_temp_dir(std::string &_new_temp_path)
+{
+  std::string tmppath;
+  const char *tmp = getenv("TMPDIR");
+  if (tmp)
+  {
+    tmppath = std::string(tmp);
+  }
+  else
+  {
+    tmppath = std::string("/tmp");
+  }
+
+  tmppath += "/XXXXXX";
+
+  char *dtemp = mkdtemp(const_cast<char *>(tmppath.c_str()));
+  if (dtemp == nullptr)
+  {
+    return false;
+  }
+
+  _new_temp_path = std::string(dtemp);
+
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool g_findFileCbCalled = false;
+std::string findFileCb(const std::string &)
+{
+  g_findFileCbCalled = true;
+  return "coconut";
+}
+
+/////////////////////////////////////////////////
+TEST(SDF, WriteURIPath)
+{
+  // Create temp dir
+  std::string tempDir;
+  ASSERT_TRUE(create_new_temp_dir(tempDir));
+
+  // Write to file
+  auto tempFile = tempDir + "/test.sdf";
+
+  sdf::SDF sdf;
+  sdf.Write(tempFile);
+
+  // Check file was created
+  auto fp = fopen(tempFile.c_str(), "r");
+  ASSERT_NE(nullptr, fp);
+
+  // Add temp dir to path
+  sdf::addURIPath("test://", tempDir);
+
+  // Find file
+  EXPECT_EQ(sdf::findFile("test://test.sdf"), tempFile);
+
+  // Can't find file, fallback to user callback
+  EXPECT_EQ(sdf::findFile("banana", false, true), "");
+
+  sdf::setFindCallback(findFileCb);
+  EXPECT_EQ(sdf::findFile("banana", false, true), "coconut");
+
+  // Check callback was called
+  EXPECT_TRUE(g_findFileCbCalled);
+
+  // Cleanup
+  ASSERT_EQ(std::remove(tempFile.c_str()), 0);
+  ASSERT_EQ(rmdir(tempDir.c_str()), 0);
+}
+#endif  // _WIN32
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {
