@@ -78,6 +78,7 @@ set (gtest_sources
   parser_TEST.cc
   Root_TEST.cc
   Types_TEST.cc
+  Utils_TEST.cc
   World_TEST.cc
 )
 

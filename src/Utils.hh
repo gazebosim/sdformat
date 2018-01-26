@@ -18,6 +18,7 @@
 #define SDFORMAT_UTILS_HH
 
 #include <string>
+#include "sdf/system_util.hh"
 #include "sdf/Element.hh"
 
 namespace sdf
@@ -26,6 +27,20 @@ namespace sdf
   /// \param[in] _sdf SDF element pointer which contains the name.
   /// \param[out] _name String to hold the name value.
   /// \return True when the "name" attribute exists.
+  SDFORMAT_VISIBLE
   bool loadName(sdf::ElementPtr _sdf, std::string &_name);
+
+  /// \brief Read a pose element from and SDF pointer, and return (via
+  /// function parameters) the pose value and coordinate frame.
+  /// \param[in] _sdf Pointer to an SDF element that is a pose element.
+  /// \param[out] _pose Value of the pose element. The default value is
+  /// ignition::math::Pose3d::Zero.
+  /// \param[out] _frame Value of the frame attribute. The default value is
+  /// and empty string.
+  /// \return True if the pose element contained an ignition::math::Pose3d
+  /// value.
+  SDFORMAT_VISIBLE
+  bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
+                std::string &_frame);
 }
 #endif
