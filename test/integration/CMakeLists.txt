@@ -12,6 +12,7 @@ set(tests
   frame.cc
   include.cc
   joint_axis_frame.cc
+  joint_dom.cc
   link_dom.cc
   link_light.cc
   locale_fix.cc

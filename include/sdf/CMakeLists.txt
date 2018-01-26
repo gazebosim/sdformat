@@ -7,6 +7,7 @@ set (headers
   Error.hh
   Exception.hh
   Filesystem.hh
+  Joint.hh
   Link.hh
   Model.hh
   Param.hh
