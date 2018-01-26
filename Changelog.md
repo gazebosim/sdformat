@@ -4,6 +4,7 @@
 
 1. SDF DOM: Additions to the document object model.
    * [Pull request 393](https://bitbucket.org/osrf/sdformat/pull-requests/393)
+   * [Pull request 394](https://bitbucket.org/osrf/sdformat/pull-requests/394)
    * [Pull request 396](https://bitbucket.org/osrf/sdformat/pull-requests/396)
    * [Pull request 397](https://bitbucket.org/osrf/sdformat/pull-requests/397)
 
