@@ -33,6 +33,7 @@ TEST(URDFParser, AtlasURDF_5runs_performance)
   sdf::URDF2SDF parser;
   for (int i = 0; i < 5; i++)
   {
-    TiXmlDocument sdf_result = parser.InitModelFile(URDF_TEST_FILE);
+    tinyxml2::XMLDocument sdf_result;
+    parser.InitModelFile(&sdf_result, URDF_TEST_FILE);
   }
 }

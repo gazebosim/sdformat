@@ -36,9 +36,11 @@ std::string get_minimal_urdf_txt()
 void convert_urdf_str_to_sdf(const std::string& urdf, sdf::SDF& _sdf)
 {
   sdf::URDF2SDF parser_;
-  TiXmlDocument sdf_result = parser_.InitModelString(urdf);
-  std::string sdf_result_string;
-  sdf_result_string << sdf_result;
+  tinyxml2::XMLDocument sdf_result;
+  parser_.InitModelString(&sdf_result, urdf);
+  tinyxml2::XMLPrinter printer;
+  sdf_result.Print(&printer);
+  std::string sdf_result_string = printer.CStr();
   _sdf.SetFromString(sdf_result_string);
   return;
 }
@@ -48,9 +50,10 @@ void convert_urdf_str_to_sdf(const std::string& urdf, sdf::SDF& _sdf)
 TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
 {
   ASSERT_NO_THROW(
-    TiXmlDocument doc = TiXmlDocument();
+    tinyxml2::XMLDocument doc;
     sdf::URDF2SDF parser_;
-    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+    tinyxml2::XMLDocument sdf_result;
+    parser_.InitModelDoc(&sdf_result, &doc);
   );
 }
 
@@ -58,10 +61,11 @@ TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
 TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
 {
   ASSERT_NO_THROW(
-    TiXmlDocument doc;
+    tinyxml2::XMLDocument doc;
     doc.Parse(get_minimal_urdf_txt().c_str());
     sdf::URDF2SDF parser_;
-    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+    tinyxml2::XMLDocument sdf_result;
+    parser_.InitModelDoc(&sdf_result, &doc);
   );
 }
 
@@ -69,12 +73,15 @@ TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
 TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
 {
   // URDF -> SDF
-  TiXmlDocument doc;
+  tinyxml2::XMLDocument doc;
   doc.Parse(get_minimal_urdf_txt().c_str());
   sdf::URDF2SDF parser_;
-  TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  std::string sdf_result_str;
-  sdf_result_str << sdf_result;
+  tinyxml2::XMLDocument sdf_result;
+  parser_.InitModelDoc(&sdf_result, &doc);
+
+  tinyxml2::XMLPrinter printer;
+  sdf_result.Print(&printer);
+  std::string sdf_result_str = printer.CStr();
 
   // SDF -> SDF
   std::ostringstream stream;
@@ -85,10 +92,12 @@ TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
   stream << "<sdf version='" << "1.4" << "'>"
          << "  <model name='test_robot' />"
          << "</sdf>";
-  TiXmlDocument sdf_doc;
+  tinyxml2::XMLDocument sdf_doc;
   sdf_doc.Parse(stream.str().c_str());
-  std::string sdf_same_result_str;
-  sdf_same_result_str << sdf_doc;
+
+  tinyxml2::XMLPrinter printer2;
+  sdf_doc.Print(&printer2);
+  std::string sdf_same_result_str = printer2.CStr();
 
   ASSERT_EQ(sdf_same_result_str, sdf_result_str);
 }
@@ -101,15 +110,16 @@ TEST(URDFParser, ParseRobotOriginXYZBlank)
          << "  <origin />"
          << "  <link name=\"link\" />"
          << "</robot>";
-  TiXmlDocument doc;
+  tinyxml2::XMLDocument doc;
   doc.Parse(stream.str().c_str());
   sdf::URDF2SDF parser_;
-  TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
+  tinyxml2::XMLDocument sdf_result;
+  parser_.InitModelDoc(&sdf_result, &doc);
+  tinyxml2::XMLElement *sdf = sdf_result.FirstChildElement("sdf");
   ASSERT_TRUE(sdf != nullptr);
-  TiXmlElement *model = sdf->FirstChildElement("model");
+  tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
   ASSERT_TRUE(model != nullptr);
-  TiXmlElement *pose = model->FirstChildElement("pose");
+  tinyxml2::XMLElement *pose = model->FirstChildElement("pose");
   ASSERT_TRUE(pose != nullptr);
 }
 
@@ -121,15 +131,16 @@ TEST(URDFParser, ParseRobotOriginRPYBlank)
          << "  <origin xyz=\"0 0 0\"/>"
          << "  <link name=\"link\" />"
          << "</robot>";
-  TiXmlDocument doc;
+  tinyxml2::XMLDocument doc;
   sdf::URDF2SDF parser_;
   doc.Parse(stream.str().c_str());
-  TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
+  tinyxml2::XMLDocument sdf_result;
+  parser_.InitModelDoc(&sdf_result, &doc);
+  tinyxml2::XMLElement *sdf = sdf_result.FirstChildElement("sdf");
   ASSERT_TRUE(sdf != nullptr);
-  TiXmlElement *model = sdf->FirstChildElement("model");
+  tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
   ASSERT_TRUE(model != nullptr);
-  TiXmlElement *pose = model->FirstChildElement("pose");
+  tinyxml2::XMLElement *pose = model->FirstChildElement("pose");
   ASSERT_TRUE(pose != nullptr);
 }
 
@@ -141,15 +152,16 @@ TEST(URDFParser, ParseRobotOriginInvalidXYZ)
          << "  <origin xyz=\"0 foo 0\" rpy=\"0 0 0\"/>"
          << "  <link name=\"link\" />"
          << "</robot>";
-  TiXmlDocument doc;
+  tinyxml2::XMLDocument doc;
   sdf::URDF2SDF parser_;
   doc.Parse(stream.str().c_str());
-  TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
+  tinyxml2::XMLDocument sdf_result;
+  parser_.InitModelDoc(&sdf_result, &doc);
+  tinyxml2::XMLElement *sdf = sdf_result.FirstChildElement("sdf");
   ASSERT_TRUE(sdf != nullptr);
-  TiXmlElement *model = sdf->FirstChildElement("model");
+  tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
   ASSERT_TRUE(model != nullptr);
-  TiXmlElement *pose = model->FirstChildElement("pose");
+  tinyxml2::XMLElement *pose = model->FirstChildElement("pose");
   ASSERT_TRUE(pose != nullptr);
 }
 
@@ -202,24 +214,25 @@ TEST(URDFParser, ParseGazeboLinkFactors)
            << "  </gazebo>"
            << "</robot>";
 
-    TiXmlDocument doc;
+    tinyxml2::XMLDocument doc;
     sdf::URDF2SDF parser_;
     doc.Parse(stream.str().c_str());
-    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+    tinyxml2::XMLDocument sdf_result;
+    parser_.InitModelDoc(&sdf_result, &doc);
 
-    TiXmlElement *tmp = sdf_result.FirstChildElement("sdf");
+    tinyxml2::XMLElement *tmp = sdf_result.FirstChildElement("sdf");
     ASSERT_TRUE(tmp != nullptr);
 
     unsigned int i;
 
     for (i = 0; i < it->second.size() - 1; ++i)
     {
-      tmp = tmp->FirstChildElement(it->second[i]);
+      tmp = tmp->FirstChildElement(it->second[i].c_str());
       ASSERT_TRUE(tmp != nullptr);
     }
 
     // For the last element, check that it is exactly what we expect
-    EXPECT_EQ(tmp->FirstChild()->ValueStr(), it->second[i]);
+    EXPECT_EQ(tmp->FirstChild()->Value(), it->second[i]);
   }
 }
 
@@ -238,11 +251,11 @@ TEST(URDFParser, ParseGazeboInvalidDampingFactor)
          << "    <dampingFactor>foo</dampingFactor>"
          << "  </gazebo>"
          << "</robot>";
-  TiXmlDocument doc;
+  tinyxml2::XMLDocument doc;
   sdf::URDF2SDF parser_;
   doc.Parse(stream.str().c_str());
-  ASSERT_THROW(TiXmlDocument sdf_result = parser_.InitModelDoc(&doc),
-               std::invalid_argument);
+  ASSERT_THROW(tinyxml2::XMLDocument sdf_result;
+  parser_.InitModelDoc(&sdf_result, &doc), std::invalid_argument);
 }
 
 /////////////////////////////////////////////////
@@ -303,24 +316,25 @@ TEST(URDFParser, ParseGazeboJointElements)
            << "  </gazebo>"
            << "</robot>";
 
-    TiXmlDocument doc;
+    tinyxml2::XMLDocument doc;
     sdf::URDF2SDF parser_;
     doc.Parse(stream.str().c_str());
-    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+    tinyxml2::XMLDocument sdf_result;
+    parser_.InitModelDoc(&sdf_result, &doc);
 
-    TiXmlElement *tmp = sdf_result.FirstChildElement("sdf");
+    tinyxml2::XMLElement *tmp = sdf_result.FirstChildElement("sdf");
     ASSERT_TRUE(tmp != nullptr);
 
     unsigned int i;
 
     for (i = 0; i < it->second.size() - 1; ++i)
     {
-      tmp = tmp->FirstChildElement(it->second[i]);
+      tmp = tmp->FirstChildElement(it->second[i].c_str());
       ASSERT_TRUE(tmp != nullptr);
     }
 
     // For the last element, check that it is exactly what we expect
-    EXPECT_EQ(tmp->FirstChild()->ValueStr(), it->second[i]);
+    EXPECT_EQ(tmp->FirstChild()->Value(), it->second[i]);
   }
 }
 

@@ -39,7 +39,7 @@
 
 #include <string>
 #include <map>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 #include <urdf_model/model.h>
 #include <urdf_model/color.h>
 #include <urdf_world/types.h>
@@ -60,9 +60,9 @@ namespace urdf{
 
   URDFDOM_DLLAPI ModelInterfaceSharedPtr parseURDF(const std::string &xml_string);
   URDFDOM_DLLAPI ModelInterfaceSharedPtr parseURDFFile(const std::string &path);
-  URDFDOM_DLLAPI TiXmlDocument*  exportURDF(ModelInterfaceSharedPtr &model);
-  URDFDOM_DLLAPI TiXmlDocument*  exportURDF(const ModelInterface &model);
-  URDFDOM_DLLAPI bool parsePose(Pose&, TiXmlElement*);
+  URDFDOM_DLLAPI tinyxml2::XMLDocument*  exportURDF(ModelInterfaceSharedPtr &model);
+  URDFDOM_DLLAPI tinyxml2::XMLDocument*  exportURDF(const ModelInterface &model);
+  URDFDOM_DLLAPI bool parsePose(Pose&, tinyxml2::XMLElement*);
 }
 
 #endif

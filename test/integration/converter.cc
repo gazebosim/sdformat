@@ -63,42 +63,47 @@ TEST(ConverterIntegration, IMU_15_to_16)
   </world>
 </sdf>)";
 
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
   // Convert
-  TiXmlDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(CONVERT_DOC);
+  tinyxml2::XMLDocument convertXmlDoc;
+  tinyxml2::XMLError error_code = convertXmlDoc.LoadFile(CONVERT_DOC.c_str());
+  if(error_code) {
+    sdferr << "Unable to load file [" << CONVERT_DOC << "]:" << convertXmlDoc.ErrorName() << '\n';
+  }
+  ASSERT_EQ(error_code, tinyxml2::XML_SUCCESS );
+
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements
-  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "sdf");
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "sdf");
   convertedElem = convertedElem->FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "world");
+  EXPECT_STREQ(convertedElem->Name(), "world");
   convertedElem = convertedElem->FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "model");
+  EXPECT_STREQ(convertedElem->Name(), "model");
   convertedElem = convertedElem->FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "link");
+  EXPECT_STREQ(convertedElem->Name(), "link");
   convertedElem = convertedElem->FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "sensor");
+  EXPECT_STREQ(convertedElem->Name(), "sensor");
 
   // Get the imu
-  TiXmlElement *imuElem = convertedElem->FirstChildElement();
-  EXPECT_EQ(imuElem->ValueStr(), "imu");
+  tinyxml2::XMLElement *imuElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(imuElem->Name(), "imu");
 
   // Get the angular_velocity
-  TiXmlElement *angVelElem = imuElem->FirstChildElement();
-  EXPECT_EQ(angVelElem->ValueStr(), "angular_velocity");
+  tinyxml2::XMLElement *angVelElem = imuElem->FirstChildElement();
+  EXPECT_STREQ(angVelElem->Name(), "angular_velocity");
 
   // Get the linear_acceleration
-  TiXmlElement *linAccElem = angVelElem->NextSiblingElement();
-  EXPECT_EQ(linAccElem->ValueStr(), "linear_acceleration");
+  tinyxml2::XMLElement *linAccElem = angVelElem->NextSiblingElement();
+  EXPECT_STREQ(linAccElem->Name(), "linear_acceleration");
 
   std::array<char, 3> axis = {'x', 'y', 'z'};
 
-  TiXmlElement *angVelAxisElem = angVelElem->FirstChildElement();
-  TiXmlElement *linAccAxisElem = linAccElem->FirstChildElement();
+  tinyxml2::XMLElement *angVelAxisElem = angVelElem->FirstChildElement();
+  tinyxml2::XMLElement *linAccAxisElem = linAccElem->FirstChildElement();
 
   // Iterate over <x>, <y>, and <z> elements under <angular_velocity> and
   // <linear_acceleration>
@@ -107,11 +112,11 @@ TEST(ConverterIntegration, IMU_15_to_16)
     EXPECT_EQ(angVelAxisElem->Value()[0], a);
     EXPECT_EQ(linAccAxisElem->Value()[0], a);
 
-    TiXmlElement *angVelAxisNoiseElem = angVelAxisElem->FirstChildElement();
-    TiXmlElement *linAccAxisNoiseElem = linAccAxisElem->FirstChildElement();
+    tinyxml2::XMLElement *angVelAxisNoiseElem = angVelAxisElem->FirstChildElement();
+    tinyxml2::XMLElement *linAccAxisNoiseElem = linAccAxisElem->FirstChildElement();
 
-    EXPECT_EQ(angVelAxisNoiseElem->ValueStr(), "noise");
-    EXPECT_EQ(linAccAxisNoiseElem->ValueStr(), "noise");
+    EXPECT_STREQ(angVelAxisNoiseElem->Name(), "noise");
+    EXPECT_STREQ(linAccAxisNoiseElem->Name(), "noise");
 
     EXPECT_STREQ(angVelAxisNoiseElem->Attribute("type"), "gaussian");
     EXPECT_STREQ(linAccAxisNoiseElem->Attribute("type"), "gaussian");
@@ -151,7 +156,7 @@ TEST(ConverterIntegration, ParserFileConverter)
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
 
-  EXPECT_TRUE(sdf::convertFile(filename, "1.6", sdf));
+  ASSERT_TRUE(sdf::convertFile(filename, "1.6", sdf));
 
   sdf::ElementPtr rootElem = sdf->Root();
   ASSERT_TRUE(rootElem != nullptr);
@@ -186,7 +191,7 @@ TEST(ConverterIntegration, convertFileToNotLatestVersion)
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
 
-  EXPECT_TRUE(sdf::convertFile(filename, "1.5", sdf));
+  ASSERT_TRUE(sdf::convertFile(filename, "1.5", sdf));
 
   sdf::ElementPtr rootElem = sdf->Root();
   ASSERT_NE(nullptr, rootElem);
@@ -212,7 +217,7 @@ TEST(ConverterIntegration, ParserStringConverter)
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
 
-  EXPECT_TRUE(sdf::convertString(xmlString, "1.6", sdf));
+  ASSERT_TRUE(sdf::convertString(xmlString, "1.6", sdf));
   ASSERT_TRUE(sdf->Root() != nullptr);
   EXPECT_EQ(sdf->Root()->GetName(), "sdf");
   EXPECT_EQ("1.6", sdf->Root()->Get<std::string>("version"));
@@ -253,29 +258,35 @@ TEST(ConverterIntegration, World_15_to_16)
   </world>
 </sdf>)";
 
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
   // Convert
-  TiXmlDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(CONVERT_DOC);
+  tinyxml2::XMLDocument convertXmlDoc;
+  tinyxml2::XMLError error_code = convertXmlDoc.LoadFile(CONVERT_DOC.c_str());
+  if(error_code)
+  {
+    sdferr << "Unable to load file [" << CONVERT_DOC << "]:" << convertXmlDoc.ErrorName() << '\n';
+  }
+  ASSERT_EQ(error_code, tinyxml2::XML_SUCCESS );
+
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements
-  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "sdf");
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "sdf");
   convertedElem = convertedElem->FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "world");
+  EXPECT_STREQ(convertedElem->Name(), "world");
   convertedElem = convertedElem->FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "physics");
+  EXPECT_STREQ(convertedElem->Name(), "physics");
 
   // Get the gravity
-  TiXmlElement *gravityElem = convertedElem->NextSiblingElement("gravity");
+  tinyxml2::XMLElement *gravityElem = convertedElem->NextSiblingElement("gravity");
   ASSERT_TRUE(gravityElem != nullptr);
   EXPECT_STREQ(gravityElem->GetText(), "0 0 -9.8");
 
   // Get the magnetic_field
-  TiXmlElement *magneticFieldElem =
+  tinyxml2::XMLElement *magneticFieldElem =
     convertedElem->NextSiblingElement("magnetic_field");
   ASSERT_TRUE(magneticFieldElem != nullptr);
   EXPECT_STREQ(magneticFieldElem->GetText(), "1 2 3");

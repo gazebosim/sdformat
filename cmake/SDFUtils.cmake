@@ -149,7 +149,7 @@ macro (sdf_build_tests)
         libgtest_main.a
         sdformat
         pthread
-        ${tinyxml_LIBRARIES}
+        ${tinyxml2_LIBRARIES}
         ${IGNITION-MATH_LIBRARIES}
       )
     elseif(WIN32)

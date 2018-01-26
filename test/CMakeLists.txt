@@ -12,8 +12,8 @@ link_directories(
   ${IGNITION-MATH_LIBRARY_DIRS}
 )
 
-if (USE_EXTERNAL_TINYXML)
-  link_directories(${tinyxml_LIBRARY_DIRS})
+if (USE_EXTERNAL_TINYXML2)
+  link_directories(${tinyxml2_LIBRARY_DIRS})
 endif()
 
 configure_file(test_config.h.in ${PROJECT_BINARY_DIR}/test_config.h)

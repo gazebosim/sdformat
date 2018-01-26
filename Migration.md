@@ -25,14 +25,14 @@ but with improved human-readability..
 ### Deletions
 
 1. **Removed the following functions from `parser.hh`**
-    + bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf);
-    + bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf);
-    + bool initXml(TiXmlElement *_xml, ElementPtr _sdf);
-    + bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source);
-    + bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf, const std::string &_source);
-    + bool readXml(TiXmlElement *_xml, ElementPtr _sdf);
-    + void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);
-    + std::string getBestSupportedModelVersion(TiXmlElement *_modelXML, std::string &_modelFileName);
+    + bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf);
+    + bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf);
+    + bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf);
+    + bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source);
+    + bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf, const std::string &_source);
+    + bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf);
+    + void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml);
+    + std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML, std::string &_modelFileName);
 
 ### Deprecations
 

@@ -43,20 +43,20 @@ TEST(Converter, MoveElemElem)
   std::string xmlString = getXmlString();
 
   // Verify the xml
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
-  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  EXPECT_STREQ(childElem->Name(), "elemA");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  EXPECT_STREQ(childElem->Name(), "elemB");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  EXPECT_STREQ(childElem->Name(), "elemC");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemD");
+  EXPECT_STREQ(childElem->Name(), "elemD");
 
   // Test moving from elem to elem
   // Set up a convert file
@@ -69,15 +69,15 @@ TEST(Converter, MoveElemElem)
                 << "    </move>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc;
+  tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_STREQ(convertedElem->Name(), "elemB");
   EXPECT_TRUE(convertedElem->FirstChildElement("elemC") != nullptr);
   EXPECT_TRUE(convertedElem->FirstChildElement("elemE") != nullptr);
   std::string elemValue = convertedElem->FirstChildElement("elemE")->GetText();
@@ -96,7 +96,7 @@ TEST(Converter, MoveElemAttr)
   std::string xmlString = getXmlString();
 
   // Test moving from elem to attr
-  TiXmlDocument xmlDoc2;
+  tinyxml2::XMLDocument xmlDoc2;
   xmlDoc2.Parse(xmlString.c_str());
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
@@ -107,21 +107,21 @@ TEST(Converter, MoveElemAttr)
                 << "    </move>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc2;
+  tinyxml2::XMLDocument convertXmlDoc2;
   convertXmlDoc2.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc2, &convertXmlDoc2);
 
-  TiXmlElement *convertedElem =  xmlDoc2.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  tinyxml2::XMLElement *convertedElem =  xmlDoc2.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_STREQ(convertedElem->Name(), "elemB");
   EXPECT_TRUE(convertedElem->Attribute("attrE") != nullptr);
   std::string attrValue = convertedElem->Attribute("attrE");
   EXPECT_EQ(attrValue, "D");
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  EXPECT_STREQ(convertedElem->Name(), "elemC");
   EXPECT_FALSE(convertedElem->FirstChildElement("elemD"));
 }
 
@@ -134,7 +134,7 @@ TEST(Converter, MoveAttrAttr)
   std::string xmlString = getXmlString();
 
   // Test moving from attr to attr
-  TiXmlDocument xmlDoc3;
+  tinyxml2::XMLDocument xmlDoc3;
   xmlDoc3.Parse(xmlString.c_str());
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
@@ -145,25 +145,25 @@ TEST(Converter, MoveAttrAttr)
                 << "    </move>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc3;
+  tinyxml2::XMLDocument convertXmlDoc3;
   convertXmlDoc3.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3);
 
-  TiXmlElement *convertedElem =  xmlDoc3.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  tinyxml2::XMLElement *convertedElem =  xmlDoc3.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_STREQ(convertedElem->Name(), "elemB");
   EXPECT_TRUE(convertedElem->Attribute("attrE") != nullptr);
   std::string attrValue = convertedElem->Attribute("attrE");
   EXPECT_EQ(attrValue, "C");
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  EXPECT_STREQ(convertedElem->Name(), "elemC");
   EXPECT_FALSE(convertedElem->Attribute("attrC"));
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemD");
+  EXPECT_STREQ(convertedElem->Name(), "elemD");
 }
 
 ////////////////////////////////////////////////////
@@ -175,7 +175,7 @@ TEST(Converter, MoveAttrElem)
   std::string xmlString = getXmlString();
 
   // Test moving from attr to elem
-  TiXmlDocument xmlDoc4;
+  tinyxml2::XMLDocument xmlDoc4;
   xmlDoc4.Parse(xmlString.c_str());
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
@@ -186,15 +186,15 @@ TEST(Converter, MoveAttrElem)
                 << "    </move>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc4;
+  tinyxml2::XMLDocument convertXmlDoc4;
   convertXmlDoc4.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc4, &convertXmlDoc4);
 
-  TiXmlElement *convertedElem =  xmlDoc4.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  tinyxml2::XMLElement *convertedElem =  xmlDoc4.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_STREQ(convertedElem->Name(), "elemB");
   EXPECT_TRUE(convertedElem->FirstChildElement("elemE") != nullptr);
   std::string elemValue = convertedElem->FirstChildElement("elemE")->GetText();
   EXPECT_EQ(elemValue, "C");
@@ -204,7 +204,7 @@ TEST(Converter, MoveAttrElem)
   EXPECT_FALSE(convertedElem->Attribute("attrC"));
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemD");
+  EXPECT_STREQ(convertedElem->Name(), "elemD");
 }
 
 ////////////////////////////////////////////////////
@@ -216,7 +216,7 @@ TEST(Converter, MoveElemElemMultipleLevels)
   std::string xmlString = getXmlString();
 
   // Test moving from elem to elem across multiple levels
-  TiXmlDocument xmlDoc5;
+  tinyxml2::XMLDocument xmlDoc5;
   xmlDoc5.Parse(xmlString.c_str());
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
@@ -225,12 +225,12 @@ TEST(Converter, MoveElemElemMultipleLevels)
                 << "    <to element='elemE'/>"
                 << "  </move>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc5;
+  tinyxml2::XMLDocument convertXmlDoc5;
   convertXmlDoc5.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc5, &convertXmlDoc5);
 
-  TiXmlElement *convertedElem =  xmlDoc5.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  tinyxml2::XMLElement *convertedElem =  xmlDoc5.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   EXPECT_TRUE(convertedElem->FirstChildElement("elemE") != nullptr);
   std::string elemValue = convertedElem->FirstChildElement("elemE")->GetText();
   EXPECT_EQ(elemValue, "D");
@@ -238,7 +238,7 @@ TEST(Converter, MoveElemElemMultipleLevels)
   ASSERT_TRUE(convertedElem != nullptr);
   convertedElem = convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  EXPECT_STREQ(convertedElem->Name(), "elemC");
   EXPECT_FALSE(convertedElem->FirstChildElement("elemD"));
 }
 
@@ -251,7 +251,7 @@ TEST(Converter, MoveAttrAttrMultipleLevels)
   std::string xmlString = getXmlString();
 
   // Test moving from attr to attr across multiple levels
-  TiXmlDocument xmlDoc6;
+  tinyxml2::XMLDocument xmlDoc6;
   xmlDoc6.Parse(xmlString.c_str());
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
@@ -260,24 +260,24 @@ TEST(Converter, MoveAttrAttrMultipleLevels)
                 << "    <to attribute='attrE'/>"
                 << "  </move>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc6;
+  tinyxml2::XMLDocument convertXmlDoc6;
   convertXmlDoc6.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc6, &convertXmlDoc6);
 
-  TiXmlElement *convertedElem =  xmlDoc6.FirstChildElement();
+  tinyxml2::XMLElement *convertedElem =  xmlDoc6.FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   std::string attrValue = convertedElem->Attribute("attrE");
   EXPECT_EQ(attrValue, "C");
   convertedElem = convertedElem->FirstChildElement("elemB");
   ASSERT_TRUE(convertedElem != nullptr);
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  EXPECT_STREQ(convertedElem->Name(), "elemC");
   EXPECT_FALSE(convertedElem->Attribute("attrC"));
   convertedElem = convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemD");
+  EXPECT_STREQ(convertedElem->Name(), "elemD");
 }
 
 ////////////////////////////////////////////////////
@@ -289,7 +289,7 @@ TEST(Converter, MoveElemAttrMultipleLevels)
   std::string xmlString = getXmlString();
 
   // Test moving from elem to attr across multiple levels
-  TiXmlDocument xmlDoc7;
+  tinyxml2::XMLDocument xmlDoc7;
   xmlDoc7.Parse(xmlString.c_str());
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
@@ -298,20 +298,20 @@ TEST(Converter, MoveElemAttrMultipleLevels)
                 << "    <to attribute='attrE'/>"
                 << "  </move>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc7;
+  tinyxml2::XMLDocument convertXmlDoc7;
   convertXmlDoc7.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc7, &convertXmlDoc7);
 
-  TiXmlElement *convertedElem =  xmlDoc7.FirstChildElement();
+  tinyxml2::XMLElement *convertedElem =  xmlDoc7.FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   std::string attrValue = convertedElem->Attribute("attrE");
   EXPECT_EQ(attrValue, "D");
   convertedElem = convertedElem->FirstChildElement("elemB");
   ASSERT_TRUE(convertedElem != nullptr);
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  EXPECT_STREQ(convertedElem->Name(), "elemC");
   EXPECT_FALSE(convertedElem->FirstChildElement("elemD"));
 }
 
@@ -324,7 +324,7 @@ TEST(Converter, MoveAttrElemMultipleLevels)
   std::string xmlString = getXmlString();
 
   // Test moving from attr to elem across multiple levels
-  TiXmlDocument xmlDoc8;
+  tinyxml2::XMLDocument xmlDoc8;
   xmlDoc8.Parse(xmlString.c_str());
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
@@ -333,13 +333,13 @@ TEST(Converter, MoveAttrElemMultipleLevels)
                 << "    <to element='elemE'/>"
                 << "  </move>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc8;
+  tinyxml2::XMLDocument convertXmlDoc8;
   convertXmlDoc8.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc8, &convertXmlDoc8);
 
-  TiXmlElement *convertedElem =  xmlDoc8.FirstChildElement();
+  tinyxml2::XMLElement *convertedElem =  xmlDoc8.FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   EXPECT_TRUE(convertedElem->FirstChildElement("elemE") != nullptr);
   std::string elemValue = convertedElem->FirstChildElement("elemE")->GetText();
   EXPECT_EQ(elemValue, "C");
@@ -347,11 +347,11 @@ TEST(Converter, MoveAttrElemMultipleLevels)
   ASSERT_TRUE(convertedElem != nullptr);
   convertedElem = convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  EXPECT_STREQ(convertedElem->Name(), "elemC");
   EXPECT_FALSE(convertedElem->Attribute("attrC"));
   convertedElem = convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemD");
+  EXPECT_STREQ(convertedElem->Name(), "elemD");
 }
 
 ////////////////////////////////////////////////////
@@ -363,20 +363,20 @@ TEST(Converter, Add)
   std::string xmlString = getXmlString();
 
   // Verify the xml
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
-  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  EXPECT_STREQ(childElem->Name(), "elemA");
   childElem = childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  EXPECT_STREQ(childElem->Name(), "elemB");
   childElem = childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  EXPECT_STREQ(childElem->Name(), "elemC");
   childElem = childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemD");
+  EXPECT_STREQ(childElem->Name(), "elemD");
 
   // Test adding element
   // Set up a convert file
@@ -391,15 +391,15 @@ TEST(Converter, Add)
                 << "    </convert>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc;
+  tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem = convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_STREQ(convertedElem->Name(), "elemB");
   EXPECT_TRUE(convertedElem->FirstChildElement("elemC") != nullptr);
   EXPECT_TRUE(convertedElem->FirstChildElement("elemBB") != nullptr);
   std::string elemValue = convertedElem->FirstChildElement("elemBB")->GetText();
@@ -421,20 +421,20 @@ TEST(Converter, RemoveElement)
   std::string xmlString = getXmlString();
 
   // Verify the xml
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
-  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  EXPECT_STREQ(childElem->Name(), "elemA");
   childElem = childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  EXPECT_STREQ(childElem->Name(), "elemB");
   childElem = childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  EXPECT_STREQ(childElem->Name(), "elemC");
   childElem = childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemD");
+  EXPECT_STREQ(childElem->Name(), "elemD");
 
   // Test adding element
   // Set up a convert file
@@ -446,15 +446,15 @@ TEST(Converter, RemoveElement)
                 << "    </convert>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc;
+  tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem = convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_STREQ(convertedElem->Name(), "elemB");
   EXPECT_TRUE(convertedElem->FirstChildElement("elemC") != nullptr);
   convertedElem = convertedElem->FirstChildElement("elemC");
   ASSERT_TRUE(convertedElem != nullptr);
@@ -471,20 +471,20 @@ TEST(Converter, RemoveElementSubElement)
   std::string xmlString = getXmlString();
 
   // Verify the xml
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
-  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  EXPECT_STREQ(childElem->Name(), "elemA");
   childElem = childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  EXPECT_STREQ(childElem->Name(), "elemB");
   childElem = childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  EXPECT_STREQ(childElem->Name(), "elemC");
   childElem = childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemD");
+  EXPECT_STREQ(childElem->Name(), "elemD");
 
   // Test adding element
   // Set up a convert file
@@ -494,15 +494,15 @@ TEST(Converter, RemoveElementSubElement)
                 << "    <remove element='elemC'/>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc;
+  tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem = convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_STREQ(convertedElem->Name(), "elemB");
   ASSERT_TRUE(convertedElem->FirstChildElement("elemC") == nullptr);
 }
 
@@ -515,20 +515,20 @@ TEST(Converter, RemoveAttr)
   std::string xmlString = getXmlString();
 
   // Verify the xml
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
-  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  EXPECT_STREQ(childElem->Name(), "elemA");
   childElem = childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  EXPECT_STREQ(childElem->Name(), "elemB");
   childElem = childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  EXPECT_STREQ(childElem->Name(), "elemC");
   childElem = childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemD");
+  EXPECT_STREQ(childElem->Name(), "elemD");
 
   // Test adding element
   // Set up a convert file
@@ -540,15 +540,15 @@ TEST(Converter, RemoveAttr)
                 << "    </convert>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc;
+  tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem = convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_STREQ(convertedElem->Name(), "elemB");
   EXPECT_TRUE(convertedElem->FirstChildElement("elemC") != nullptr);
   convertedElem = convertedElem->FirstChildElement("elemC");
   ASSERT_TRUE(convertedElem != nullptr);
@@ -566,20 +566,20 @@ TEST(Converter, MoveInvalid)
   std::string xmlString = getXmlString();
 
   // Verify the xml
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
-  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  EXPECT_STREQ(childElem->Name(), "elemA");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  EXPECT_STREQ(childElem->Name(), "elemB");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  EXPECT_STREQ(childElem->Name(), "elemC");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemD");
+  EXPECT_STREQ(childElem->Name(), "elemD");
 
   // Set up a convert file
   std::stringstream convertStream;
@@ -591,7 +591,7 @@ TEST(Converter, MoveInvalid)
                 << "    </move>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc;
+  tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
@@ -599,18 +599,18 @@ TEST(Converter, MoveInvalid)
   // means that the conversion quietly failed.  Make sure the new
   // document is the same as the original.
   // Verify the xml
-  TiXmlElement *convertElem =  xmlDoc.FirstChildElement();
+  tinyxml2::XMLElement *convertElem =  xmlDoc.FirstChildElement();
   EXPECT_TRUE(convertElem != nullptr);
-  EXPECT_EQ(convertElem->ValueStr(), "elemA");
+  EXPECT_STREQ(convertElem->Name(), "elemA");
   convertElem =  convertElem->FirstChildElement();
   EXPECT_TRUE(convertElem != nullptr);
-  EXPECT_EQ(convertElem->ValueStr(), "elemB");
+  EXPECT_STREQ(convertElem->Name(), "elemB");
   convertElem =  convertElem->FirstChildElement();
   EXPECT_TRUE(convertElem != nullptr);
-  EXPECT_EQ(convertElem->ValueStr(), "elemC");
+  EXPECT_STREQ(convertElem->Name(), "elemC");
   convertElem =  convertElem->FirstChildElement();
   EXPECT_TRUE(convertElem != nullptr);
-  EXPECT_EQ(convertElem->ValueStr(), "elemD");
+  EXPECT_STREQ(convertElem->Name(), "elemD");
 }
 
 ////////////////////////////////////////////////////
@@ -622,20 +622,20 @@ TEST(Converter, MoveInvalidPrefix)
   std::string xmlString = getXmlString();
 
   // Verify the xml
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
-  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  EXPECT_STREQ(childElem->Name(), "elemA");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  EXPECT_STREQ(childElem->Name(), "elemB");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  EXPECT_STREQ(childElem->Name(), "elemC");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemD");
+  EXPECT_STREQ(childElem->Name(), "elemD");
 
   // Set up a convert file
   std::stringstream convertStream;
@@ -647,7 +647,7 @@ TEST(Converter, MoveInvalidPrefix)
                 << "    </move>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc;
+  tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
@@ -655,18 +655,18 @@ TEST(Converter, MoveInvalidPrefix)
   // means that the conversion quietly failed.  Make sure the new
   // document is the same as the original.
   // Verify the xml
-  TiXmlElement *convertElem =  xmlDoc.FirstChildElement();
+  tinyxml2::XMLElement *convertElem =  xmlDoc.FirstChildElement();
   EXPECT_TRUE(convertElem != nullptr);
-  EXPECT_EQ(convertElem->ValueStr(), "elemA");
+  EXPECT_STREQ(convertElem->Name(), "elemA");
   convertElem =  convertElem->FirstChildElement();
   EXPECT_TRUE(convertElem != nullptr);
-  EXPECT_EQ(convertElem->ValueStr(), "elemB");
+  EXPECT_STREQ(convertElem->Name(), "elemB");
   convertElem =  convertElem->FirstChildElement();
   EXPECT_TRUE(convertElem != nullptr);
-  EXPECT_EQ(convertElem->ValueStr(), "elemC");
+  EXPECT_STREQ(convertElem->Name(), "elemC");
   convertElem =  convertElem->FirstChildElement();
   EXPECT_TRUE(convertElem != nullptr);
-  EXPECT_EQ(convertElem->ValueStr(), "elemD");
+  EXPECT_STREQ(convertElem->Name(), "elemD");
 }
 
 ////////////////////////////////////////////////////
@@ -678,20 +678,20 @@ TEST(Converter, CopyElemElem)
   std::string xmlString = getXmlString();
 
   // Verify the xml
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
-  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  EXPECT_STREQ(childElem->Name(), "elemA");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  EXPECT_STREQ(childElem->Name(), "elemB");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  EXPECT_STREQ(childElem->Name(), "elemC");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemD");
+  EXPECT_STREQ(childElem->Name(), "elemD");
 
   // Test moving from elem to elem
   // Set up a convert file
@@ -704,22 +704,22 @@ TEST(Converter, CopyElemElem)
                 << "    </copy>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc;
+  tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
-  TiXmlElement *elemB = convertedElem->FirstChildElement();
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
+  tinyxml2::XMLElement *elemB = convertedElem->FirstChildElement();
   ASSERT_TRUE(elemB != nullptr);
-  EXPECT_EQ(elemB->ValueStr(), "elemB");
-  TiXmlElement *elemC = elemB->FirstChild("elemC")->ToElement();
+  EXPECT_STREQ(elemB->Name(), "elemB");
+  tinyxml2::XMLElement *elemC = elemB->FirstChildElement("elemC");
   EXPECT_TRUE(elemC != nullptr);
-  TiXmlElement *elemD = elemC->FirstChildElement();
+  tinyxml2::XMLElement *elemD = elemC->FirstChildElement();
   EXPECT_TRUE(elemD != nullptr);
   std::string elemValue = elemD->GetText();
   EXPECT_EQ(elemValue, "D");
-  TiXmlElement *elemE = elemB->FirstChild("elemE")->ToElement();
+  tinyxml2::XMLElement *elemE = elemB->FirstChildElement("elemE");
   EXPECT_TRUE(elemE != nullptr);
   elemValue = elemE->GetText();
   EXPECT_EQ(elemValue, "D");
@@ -732,20 +732,20 @@ TEST(Converter, RenameElemElem)
   std::string xmlString = getXmlString();
 
   // Verify the xml
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
-  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  EXPECT_STREQ(childElem->Name(), "elemA");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  EXPECT_STREQ(childElem->Name(), "elemB");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  EXPECT_STREQ(childElem->Name(), "elemC");
   childElem =  childElem->FirstChildElement();
   EXPECT_TRUE(childElem != nullptr);
-  EXPECT_EQ(childElem->ValueStr(), "elemD");
+  EXPECT_STREQ(childElem->Name(), "elemD");
 
   // Test moving from elem to elem
   // Set up a convert file
@@ -760,20 +760,20 @@ TEST(Converter, RenameElemElem)
                 << "    </convert>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc;
+  tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
-  TiXmlElement *elemB = convertedElem->FirstChildElement();
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
+  tinyxml2::XMLElement *elemB = convertedElem->FirstChildElement();
   ASSERT_TRUE(elemB != nullptr);
-  EXPECT_EQ(elemB->ValueStr(), "elemB");
-  TiXmlElement *elemC = elemB->FirstChild("elemC")->ToElement();
+  EXPECT_STREQ(elemB->Name(), "elemB");
+  tinyxml2::XMLElement *elemC = elemB->FirstChildElement("elemC");
   EXPECT_TRUE(elemC != nullptr);
-  TiXmlElement *elemE = elemC->FirstChildElement();
+  tinyxml2::XMLElement *elemE = elemC->FirstChildElement();
   EXPECT_TRUE(elemE != nullptr);
-  EXPECT_EQ(elemE->ValueStr(), "elemE");
+  EXPECT_STREQ(elemE->Name(), "elemE");
   std::string elemValue = elemE->GetText();
   ASSERT_EQ(elemValue, "D");
 }
@@ -785,7 +785,7 @@ TEST(Converter, RenameAttrAttr)
   std::string xmlString = getXmlString();
 
   // Test moving from attr to attr
-  TiXmlDocument xmlDoc3;
+  tinyxml2::XMLDocument xmlDoc3;
   xmlDoc3.Parse(xmlString.c_str());
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
@@ -798,19 +798,19 @@ TEST(Converter, RenameAttrAttr)
                 << "    </convert>"
                 << "  </convert>"
                 << "</convert>";
-  TiXmlDocument convertXmlDoc3;
+  tinyxml2::XMLDocument convertXmlDoc3;
   convertXmlDoc3.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3);
 
-  TiXmlElement *convertedElem =  xmlDoc3.FirstChildElement();
-  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  tinyxml2::XMLElement *convertedElem =  xmlDoc3.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_STREQ(convertedElem->Name(), "elemB");
   convertedElem =  convertedElem->FirstChildElement();
   ASSERT_TRUE(convertedElem != nullptr);
-  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
-  convertedElem = convertedElem->FirstChild("elemE")->ToElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemC");
+  convertedElem = convertedElem->FirstChildElement("elemE");
   std::string attrValue = convertedElem->Attribute("attrE");
   EXPECT_EQ(attrValue, "C");
 }
@@ -823,19 +823,19 @@ TEST(Converter, GazeboToSDF)
          << "</gazebo>";
   std::string xmlString = stream.str();
 
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
-  sdf::Converter::Convert(&xmlDoc, "1.3");
+  EXPECT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.3"));
 
-  TiXmlElement *convertedElem =  xmlDoc.FirstChild("sdf")->ToElement();
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement("sdf");
   EXPECT_TRUE(convertedElem != nullptr);
 }
 
 ////////////////////////////////////////////////////
 TEST(Converter, NullDoc)
 {
-  TiXmlDocument xmlDoc;
-  TiXmlDocument convertXmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
+  tinyxml2::XMLDocument convertXmlDoc;
 
   ASSERT_THROW(sdf::Converter::Convert(nullptr, &convertXmlDoc),
                sdf::AssertionInternalError);
@@ -850,7 +850,7 @@ TEST(Converter, NoVersion)
 {
   std::string xmlString("<sdf></sdf>");
 
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
   ASSERT_FALSE(sdf::Converter::Convert(&xmlDoc, "1.3"));
@@ -861,7 +861,7 @@ TEST(Converter, SameVersion)
 {
   std::string xmlString("<sdf version='1.3'></sdf>");
 
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
   ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.3"));
@@ -872,7 +872,7 @@ TEST(Converter, NewerVersion)
 {
   std::string xmlString("<sdf version='1.5'></sdf>");
 
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
   ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6"));
@@ -883,7 +883,7 @@ TEST(Converter, MuchNewerVersion)
 {
   std::string xmlString("<sdf version='1.3'></sdf>");
 
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
   ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6"));

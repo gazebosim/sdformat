@@ -14,8 +14,8 @@ if (NOT USE_INTERNAL_URDF)
   link_directories(${URDF_LIBRARY_DIRS})
 endif()
 
-if (USE_EXTERNAL_TINYXML)
-  link_directories(${tinyxml_LIBRARY_DIRS})
+if (USE_EXTERNAL_TINYXML2)
+  link_directories(${tinyxml2_LIBRARY_DIRS})
 endif()
 
 set (sources
@@ -35,10 +35,11 @@ set (sources
   Types.cc
   Utils.cc
   World.cc
+  xml_util.cc
 )
 
-if (USE_EXTERNAL_TINYXML)
-  include_directories(${tinyxml_INCLUDE_DIRS})
+if (USE_EXTERNAL_TINYXML2)
+  include_directories(${tinyxml2_INCLUDE_DIRS})
 else()
   set(sources ${sources}
     win/tinyxml/tinystr.cpp
@@ -93,8 +94,8 @@ sdf_build_tests(${gtest_sources})
 sdf_add_library(sdformat ${sources})
 target_link_libraries(sdformat ${IGNITION-MATH_LIBRARIES})
 
-if (USE_EXTERNAL_TINYXML)
-  target_link_libraries(sdformat ${tinyxml_LIBRARIES})
+if (USE_EXTERNAL_TINYXML2)
+  target_link_libraries(sdformat ${tinyxml2_LIBRARIES})
 else()
   # Ignore the warnings from the internal library
   set_target_properties(sdformat PROPERTIES

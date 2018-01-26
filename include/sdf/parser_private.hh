@@ -17,7 +17,7 @@
 #ifndef SDF_PARSER_PRIVATE_HH_
 #define SDF_PARSER_PRIVATE_HH_
 
-#include <tinyxml.h>
+#include <tinyxml2.h>
 
 #include <string>
 
@@ -33,23 +33,23 @@ namespace sdf
   ///            model XML tag
   /// \param[out] _modelFileName file name of the best model file
   /// \return string with the best SDF version supported
-  std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
+  std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
                                            std::string &_modelFileName);
 
   /// \brief Initialize the SDF interface using a TinyXML document
-  bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf);
+  bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf);
 
   /// \brief Initialize and SDF Element using a TinyXML document
-  bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf);
+  bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf);
 
   /// \brief For internal use only. Do not use this function.
-  bool initXml(TiXmlElement *_xml, ElementPtr _sdf);
+  bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf);
 
   /// \brief Populate the SDF values from a TinyXML document
-  bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
+  bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
       bool _convert, Errors &_errors);
 
-  bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
+  bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
       const std::string &_source, bool _convert, Errors &_errors);
 
   /// \brief For internal use only. Do not use this function.
@@ -57,8 +57,8 @@ namespace sdf
   /// \param[in,out] _sdf SDF pointer to parse data into.
   /// \param[out] _errors Captures errors found during parsing.
   /// \return True on success, false on error.
-  bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors);
+  bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors);
 
-  void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);
+  void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml);
 }
 #endif
