@@ -15,6 +15,7 @@ set(tests
   link_dom.cc
   link_light.cc
   locale_fix.cc
+  model_dom.cc
   model_versions.cc
   nested_model.cc
   parser_error_detection.cc
