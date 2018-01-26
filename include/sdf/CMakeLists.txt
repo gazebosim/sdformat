@@ -7,12 +7,14 @@ set (headers
   Error.hh
   Exception.hh
   Filesystem.hh
+  Link.hh
   Param.hh
   parser.hh
   Root.hh
   SDFImpl.hh
   Types.hh
   system_util.hh
+  Visual.hh
   World.hh
 )
 
