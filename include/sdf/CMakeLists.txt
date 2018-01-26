@@ -9,6 +9,7 @@ set (headers
   Filesystem.hh
   Joint.hh
   Link.hh
+  Model.hh
   Param.hh
   parser.hh
   Root.hh
