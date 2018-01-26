@@ -4,6 +4,7 @@ set(tests
   audio.cc
   category_bitmask.cc
   cfm_damping_implicit_spring_damper.cc
+  collision_dom.cc
   converter.cc
   disable_fixed_joint_reduction.cc
   fixed_joint_reduction.cc
@@ -25,6 +26,7 @@ set(tests
   sdf_basic.cc
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
+  visual_dom.cc
   world_dom.cc
 )
 
