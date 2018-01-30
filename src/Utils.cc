@@ -25,3 +25,40 @@ bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
   _name = namePair.first;
   return namePair.second;
 }
+
+/////////////////////////////////////////////////
+Errors sdf::loadModels(sdf::ElementPtr _sdf,
+                     std::map<std::string, Model> &_models)
+{
+  Errors errors;
+
+  // Read all the models
+  if (_sdf->HasElement("model"))
+  {
+    sdf::ElementPtr elem = _sdf->GetElement("model");
+    while (elem)
+    {
+      Model model;
+
+      // Attempt to load the model
+      if (model.Load(elem))
+      {
+        // Check that the model's name does not exist.
+        if (_models.find(model.Name()) != _models.end())
+        {
+          std::cerr << "Model with name[" << model.Name() << "] already exists."
+            << " Each model must have a unique name.\n";
+          result = false;
+        }
+        _models.insert(std::make_pair(model.Name(), std::move(model)));
+      }
+      elem = elem->GetNextElement("model");
+    }
+  }
+  else
+  {
+    errors.push_back({ErrorCode::ELEMENT_MISSING, "No model element present"});
+  }
+
+  return errors;
+}
