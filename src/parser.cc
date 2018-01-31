@@ -777,7 +777,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
     }
   }
 
-  if (_sdf->GetCopyChildren())
+  if (_sdf-eGetCopyChildren())
   {
     copyChildren(_sdf, _xml);
   }

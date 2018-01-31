@@ -40,6 +40,9 @@ class sdf::WorldPrivate
   /// \brief Magnetic field.
   public: ignition::math::Vector3d magneticField =
            ignition::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6);
+
+  /// \brief The models specified in this world.
+  public: std::vector<Model> models;
 };
 
 /////////////////////////////////////////////////
@@ -110,6 +113,10 @@ Errors World::Load(sdf::ElementPtr _sdf)
     _sdf->Get<ignition::math::Vector3d>("magnetic_field",
         this->dataPtr->magneticField).first;
 
+  // Load all the models.
+  Errors modelLoadErrors = loadModels(_sdf, this->dataPtr->models);
+  errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
+
   return errors;
 }
 
@@ -171,4 +178,31 @@ ignition::math::Vector3d World::MagneticField() const
 void World::SetMagneticField(const ignition::math::Vector3d &_mag)
 {
   this->dataPtr->magneticField = _mag;
+}
+
+/////////////////////////////////////////////////
+uint64_t World::ModelCount() const
+{
+  return this->dataPtr->models.size();
+}
+
+/////////////////////////////////////////////////
+const Model *World::ModelByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->models.size())
+    return &this->dataPtr->models[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool World::ModelNameExists(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
 }

@@ -28,6 +28,12 @@ TEST(DOMWorld, Construction)
       ignition::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6));
   EXPECT_STREQ(world.AudioDevice().c_str(), "default");
   EXPECT_EQ(world.WindLinearVelocity(), ignition::math::Vector3d::Zero);
+
+  EXPECT_EQ(world.ModelCount(), 0u);
+  EXPECT_EQ(world.ModelByIndex(0), nullptr);
+  EXPECT_EQ(world.ModelByIndex(1), nullptr);
+  EXPECT_FALSE(world.ModelNameExists(""));
+  EXPECT_FALSE(world.ModelNameExists("default"));
 }
 
 /////////////////////////////////////////////////

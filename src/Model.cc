@@ -32,6 +32,13 @@ Model::Model()
 }
 
 /////////////////////////////////////////////////
+Model::Model(Model &&_model)
+{
+  this->dataPtr = _model.dataPtr;
+  _model.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
 Model::~Model()
 {
   delete this->dataPtr;

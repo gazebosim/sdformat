@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <algorithm>
 #include "Utils.hh"
 
 /////////////////////////////////////////////////
@@ -27,38 +28,55 @@ bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
 }
 
 /////////////////////////////////////////////////
-Errors sdf::loadModels(sdf::ElementPtr _sdf,
-                     std::map<std::string, Model> &_models)
+sdf::Errors sdf::loadModels(sdf::ElementPtr _sdf, std::vector<Model> &_models)
 {
   Errors errors;
 
-  // Read all the models
+  // Check that a model element exists.
   if (_sdf->HasElement("model"))
   {
+    // Read all the models.
     sdf::ElementPtr elem = _sdf->GetElement("model");
     while (elem)
     {
       Model model;
 
-      // Attempt to load the model
-      if (model.Load(elem))
+      // Load the model and capture the errors.
+      Errors modelLoadErrors = model.Load(elem);
+
+      // If there are no errors...
+      if (modelLoadErrors.empty())
       {
+        auto it = std::find_if(_models.begin(), _models.end(),
+            [&model](const Model &_m) {return _m.Name() == model.Name();});
+
         // Check that the model's name does not exist.
-        if (_models.find(model.Name()) != _models.end())
+        if (it != _models.end())
         {
-          std::cerr << "Model with name[" << model.Name() << "] already exists."
-            << " Each model must have a unique name.\n";
-          result = false;
+          errors.push_back({ErrorCode::DUPLICATE_NAME,
+              "Model with name[" + model.Name() + "] already exists."});
         }
-        _models.insert(std::make_pair(model.Name(), std::move(model)));
+        else
+        {
+          // Add the model to the result if no errors have been encountered.
+          _models.push_back(std::move(model));
+        }
       }
+      else
+      {
+        // Add the load errors to the master error list.
+        errors.insert(errors.end(), modelLoadErrors.begin(),
+                      modelLoadErrors.end());
+      }
+
       elem = elem->GetNextElement("model");
     }
   }
-  else
-  {
-    errors.push_back({ErrorCode::ELEMENT_MISSING, "No model element present"});
-  }
+  // Do not add an error if the model tag is missing. This is an internal
+  // function that is used by Root and World. Both of these classes call
+  // this function without checking if a model element actually exists. This
+  // is a bit of safe code reduction.
 
+  std::cout << "Utils::loadmodel[" << _models.size() << "]\n";
   return errors;
 }

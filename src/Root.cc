@@ -18,9 +18,11 @@
 #include <map>
 
 #include "sdf/Root.hh"
+#include "sdf/Model.hh"
 #include "sdf/World.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/parser.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -32,6 +34,9 @@ class sdf::RootPrivate
 
   /// \brief The worlds specified under the root SDF element
   public: std::vector<World> worlds;
+
+  /// \brief The models specified under the root SDF element
+  public: std::vector<Model> models;
 };
 
 /////////////////////////////////////////////////
@@ -52,8 +57,10 @@ Errors Root::Load(const std::string &_filename)
 {
   Errors errors;
 
+  std::cout << "1\n";
   // Read an SDF file, and store the result in sdfParsed.
   sdf::SDFPtr sdfParsed = sdf::readFile(_filename, errors);
+  std::cout << "2\n";
 
   // Return if we were not able to read the file.
   if (!sdfParsed)
@@ -63,7 +70,9 @@ Errors Root::Load(const std::string &_filename)
     return errors;
   }
 
+  std::cout << "3\n";
   sdf::ElementPtr sdf = sdfParsed->Root();
+  std::cout << "4\n";
 
   // Get the SDF version.
   std::pair<std::string, bool> versionPair =
@@ -115,6 +124,12 @@ Errors Root::Load(const std::string &_filename)
       elem = elem->GetNextElement("world");
     }
   }
+
+  // Load all the models.
+  Errors modelLoadErrors = loadModels(sdf, this->dataPtr->models);
+  errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
+  std::cout << "Size[" << this->dataPtr->models.size() << "]\n";
+
   return errors;
 }
 
@@ -150,6 +165,33 @@ bool Root::WorldNameExists(const std::string &_name) const
   for (auto const &w : this->dataPtr->worlds)
   {
     if (w.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+uint64_t Root::ModelCount() const
+{
+  return this->dataPtr->models.size();
+}
+
+/////////////////////////////////////////////////
+const Model *Root::ModelByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->models.size())
+    return &this->dataPtr->models[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Root::ModelNameExists(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
     {
       return true;
     }

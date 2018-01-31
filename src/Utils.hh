@@ -17,7 +17,10 @@
 #ifndef SDFORMAT_UTILS_HH
 #define SDFORMAT_UTILS_HH
 
+#include <map>
 #include <string>
+#include "sdf/Error.hh"
+#include "sdf/Model.hh"
 #include "sdf/Element.hh"
 
 namespace sdf
@@ -27,5 +30,17 @@ namespace sdf
   /// \param[out] _name String to hold the name value.
   /// \return True when the "name" attribute exists.
   bool loadName(sdf::ElementPtr _sdf, std::string &_name);
+
+  /// \brief Load all the models in an sdf element. No error is returned if
+  /// a model element is not present.
+  /// \param[in] _sdf The SDF element that contains one or more models.
+  /// \param[in,out] _models Models in _sdf are added to this map, unless an
+  /// error is encountered during model load or a duplicate model name
+  /// exists.
+  /// \return The vector of errors. An empty vector indicates no errors were
+  /// experienced.
+  Errors loadModels(const sdf::ElementPtr _sdf,
+                    std::vector<Model> &_models);
+
 }
 #endif
