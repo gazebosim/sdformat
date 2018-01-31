@@ -106,24 +106,3 @@ TEST(DOMRoot, LoadDuplicateModels)
   EXPECT_FALSE(errors.empty());
   EXPECT_EQ(root.ModelCount(), 1u);
 }
-
-/////////////////////////////////////////////////
-TEST(DOMRoot, LoadMultipleModelsOneBade)
-{
-  const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "root_multiple_models_one_bad.sdf");
-
-  sdf::Root root;
-  sdf::Errors errors = root.Load(testFile);
-  EXPECT_FALSE(errors.empty());
-
-  for (const auto &e : errors)
-    std::cout << e.Message() << std::endl;
-
-
-  EXPECT_EQ(root.ModelCount(), 2u);
-  EXPECT_TRUE(root.ModelNameExists("robot1"));
-  EXPECT_TRUE(root.ModelNameExists("robot2"));
-
-}

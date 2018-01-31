@@ -77,6 +77,5 @@ sdf::Errors sdf::loadModels(sdf::ElementPtr _sdf, std::vector<Model> &_models)
   // this function without checking if a model element actually exists. This
   // is a bit of safe code reduction.
 
-  std::cout << "Utils::loadmodel[" << _models.size() << "]\n";
   return errors;
 }

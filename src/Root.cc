@@ -57,10 +57,8 @@ Errors Root::Load(const std::string &_filename)
 {
   Errors errors;
 
-  std::cout << "1\n";
   // Read an SDF file, and store the result in sdfParsed.
   sdf::SDFPtr sdfParsed = sdf::readFile(_filename, errors);
-  std::cout << "2\n";
 
   // Return if we were not able to read the file.
   if (!sdfParsed)
@@ -70,9 +68,7 @@ Errors Root::Load(const std::string &_filename)
     return errors;
   }
 
-  std::cout << "3\n";
   sdf::ElementPtr sdf = sdfParsed->Root();
-  std::cout << "4\n";
 
   // Get the SDF version.
   std::pair<std::string, bool> versionPair =
@@ -128,7 +124,6 @@ Errors Root::Load(const std::string &_filename)
   // Load all the models.
   Errors modelLoadErrors = loadModels(sdf, this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
-  std::cout << "Size[" << this->dataPtr->models.size() << "]\n";
 
   return errors;
 }
