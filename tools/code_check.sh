@@ -16,16 +16,16 @@ fi
 
 # Use a suppression file for spurious errors
 SUPPRESS=/tmp/sdf_cpp_check.suppress
-echo "*:test/integration/locale_fix.cc:46" > $SUPPRESS
+echo "" > $SUPPRESS
 
 # Use another suppression file for unused function checking
 SUPPRESS2=/tmp/sdf_cpp_check2.suppress
-echo "*:src/parser_urdf.cc" >> $SUPPRESS2
+echo "*:src/parser_urdf.cc" > $SUPPRESS2
 
 CHECK_FILE_DIRS="./src ./include ./examples ./test/performance ./test/integration"
 
 #cppcheck
-CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS"
+CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS --inline-suppr"
 CPPCHECK_BASE2="cppcheck -q --suppressions-list=$SUPPRESS2 --inline-suppr"
 CPPCHECK_FILES=`find $CHECK_FILE_DIRS -name "*.cc"`
 CPPCHECK_INCLUDES="-I include -I . -I $builddir -I $builddir/include"

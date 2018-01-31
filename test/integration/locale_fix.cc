@@ -37,12 +37,16 @@ TEST(CheckFixForLocal, MakeTestToFail)
   // Check if any of the latin locales is avilable
   FILE *fp = popen("locale -a | grep '^es\\|^pt_\\|^it_' | head -n 1", "r");
 
+  // cppcheck-suppress nullPointerRedundantCheck
+  // cppcheck-suppress unmatchedSuppression
   if (!fp)
   {
     FAIL() << "locale -a call failed";
   }
 
   char buffer[1024];
+  // cppcheck-suppress nullPointerRedundantCheck
+  // cppcheck-suppress unmatchedSuppression
   char *line = fgets(buffer, sizeof(buffer), fp);
   pclose(fp);
 
