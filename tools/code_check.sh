@@ -16,7 +16,7 @@ fi
 
 # Use a suppression file for spurious errors
 SUPPRESS=/tmp/sdf_cpp_check.suppress
-echo "*:test/integration/locale_fix.cc:40" > $SUPPRESS
+echo "*:test/integration/locale_fix.cc:46" > $SUPPRESS
 
 # Use another suppression file for unused function checking
 SUPPRESS2=/tmp/sdf_cpp_check2.suppress
