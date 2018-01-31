@@ -65,9 +65,6 @@ namespace sdf
     return std::fabs(_a - _b) <= _epsilon;
   }
 
-  /// \brief A vector of Error.
-  using Errors = std::vector<Error>;
-
   /// \brief Defines a color
   class SDFORMAT_VISIBLE Color
   {

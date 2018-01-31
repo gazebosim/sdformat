@@ -30,6 +30,19 @@
 
 namespace sdf
 {
+  /// \enum SeverityCode
+  /// \brief Set of error codes. Usually one or more errors are returned in
+  /// an Errors vector. The collection of Errors should be take as a whole,
+  /// where an error toward the beginning of the vector can inform errors
+  /// toward the end of the vector.
+  /// \sa Errors
+  enum class SeverityCode
+  {
+    MINOR = 0,
+    MAJOR = 1,
+    CRITICAL = 2,
+  };
+
   /// \enum ErrorCode
   /// \brief Set of error codes. Usually one or more errors are returned in
   /// an Errors vector. The collection of Errors should be take as a whole,
@@ -90,7 +103,8 @@ namespace sdf
     /// \param[in] _code The error code.
     /// \param[in] _message A description of the error.
     /// \sa ErrorCode.
-    public: Error(const ErrorCode _code, const std::string &_message);
+    public: Error(const ErrorCode _code, const std::string &_message,
+                  const SeverityCode _severity);
 
     /// \brief Get the error code.
     /// \return An error code.
@@ -100,6 +114,11 @@ namespace sdf
     /// \brief Get the error message, which is a description of the error.
     /// \return Error message.
     public: std::string Message() const;
+
+    /// \brief Get the severity.
+    /// \return A severity code.
+    /// \sa Severity.
+    public: SeverityCode Severity() const;
 
     /// \brief Safe bool conversion.
     /// \return True if this Error's Code() != NONE. In otherwords, this is
@@ -142,6 +161,19 @@ namespace sdf
 #ifdef _WIN32
   #pragma warning(pop)
 #endif
+  };
+
+  /// \brief Encapsulates a set of errors.
+  class Errors
+  {
+    /// \brief Default constructor
+    public: Errors() = default;
+
+    /// \brief Get the number of errors with a specify severity.
+    public: int ErrorCount(const SeverityCode &_severity);
+
+    /// \brief The set of errors.
+    private: std::vector<Error> errors;
   };
 }
 #ifdef _WIN32

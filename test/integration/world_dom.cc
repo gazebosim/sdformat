@@ -95,3 +95,32 @@ TEST(DOMWorld, Load)
   EXPECT_EQ(world->Gravity(), ignition::math::Vector3d(1, 2, 3));
   EXPECT_EQ(world->MagneticField(), ignition::math::Vector3d(-1, 0.5, 10));
 }
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, LoadDuplicateModels)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_duplicate_models.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  for (const auto &e : errors)
+    std::cout << "Error[" << e.Message() << "]\n";
+
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(root.WorldCount(), 1u);
+/*
+
+  sdf::Errors errors;
+  // Read an SDF file, and store the result in sdfParsed.
+  sdf::SDFPtr sdfParsed = sdf::readFile(testFile, errors);
+  ASSERT_TRUE(errors.empty());
+
+  sdf::World world;
+  errors = world.Load(sdfParsed->Root());
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(world.ModelCount(), 1u);
+  // EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_INCORRECT_TYPE);
+  */
+}
