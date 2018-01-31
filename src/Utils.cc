@@ -48,7 +48,10 @@ sdf::Errors sdf::loadModels(sdf::ElementPtr _sdf, std::vector<Model> &_models)
       if (modelLoadErrors.empty())
       {
         auto it = std::find_if(_models.begin(), _models.end(),
-            [&model](const Model &_m) {return _m.Name() == model.Name();});
+            [&model](const Model &_m)
+            {
+              return _m.Name() == model.Name();
+            });
 
         // Check that the model's name does not exist.
         if (it != _models.end())

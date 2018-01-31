@@ -68,7 +68,7 @@ TEST(DOMRoot, Load)
   EXPECT_EQ(root.WorldByIndex(0)->Name(), "default");
 
   EXPECT_EQ(root.WorldByIndex(0)->ModelCount(), 1u);
-  ASSERT_TRUE(root.WorldByIndex(0)->ModelByIndex(0) != nullptr );
+  ASSERT_TRUE(root.WorldByIndex(0)->ModelByIndex(0) != nullptr);
   EXPECT_EQ(root.WorldByIndex(0)->ModelByIndex(0)->Name(), "ground_plane");
   EXPECT_TRUE(root.WorldByIndex(0)->ModelNameExists("ground_plane"));
 }

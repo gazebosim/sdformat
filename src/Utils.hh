@@ -17,8 +17,8 @@
 #ifndef SDFORMAT_UTILS_HH
 #define SDFORMAT_UTILS_HH
 
-#include <map>
 #include <string>
+#include <vector>
 #include "sdf/Error.hh"
 #include "sdf/Model.hh"
 #include "sdf/Element.hh"
@@ -41,6 +41,5 @@ namespace sdf
   /// experienced.
   Errors loadModels(const sdf::ElementPtr _sdf,
                     std::vector<Model> &_models);
-
 }
 #endif
