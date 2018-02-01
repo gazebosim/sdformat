@@ -118,7 +118,8 @@ Errors World::Load(sdf::ElementPtr _sdf)
         this->dataPtr->magneticField).first;
 
   // Load all the models.
-  Errors modelLoadErrors = loadModels(_sdf, this->dataPtr->models);
+  Errors modelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
+      this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
   return errors;

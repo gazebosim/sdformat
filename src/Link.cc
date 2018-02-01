@@ -15,6 +15,8 @@
  *
 */
 #include "sdf/Link.hh"
+#include "sdf/Collision.hh"
+#include "sdf/Visual.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -23,12 +25,25 @@ class sdf::LinkPrivate
 {
   /// \brief Name of the link.
   public: std::string name = "";
+
+  /// \brief The visuals specified in this link.
+  public: std::vector<Visual> visuals;
+
+  /// \brief The collisions specified in this link.
+  public: std::vector<Collision> collisions;
 };
 
 /////////////////////////////////////////////////
 Link::Link()
   : dataPtr(new LinkPrivate)
 {
+}
+
+/////////////////////////////////////////////////
+Link::Link(Link &&_link)
+{
+  this->dataPtr = _link.dataPtr;
+  _link.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -60,6 +75,16 @@ Errors Link::Load(ElementPtr _sdf)
                      "A link name is required, but the name is not set."});
   }
 
+  // Load all the visuals.
+  Errors visLoadErrors = loadUniqueRepeated<Visual>(_sdf, "visual",
+      this->dataPtr->visuals);
+  errors.insert(errors.end(), visLoadErrors.begin(), visLoadErrors.end());
+
+  // Load all the collisions.
+  Errors collLoadErrors = loadUniqueRepeated<Collision>(_sdf, "collision",
+      this->dataPtr->collisions);
+  errors.insert(errors.end(), collLoadErrors.begin(), collLoadErrors.end());
+
   return errors;
 }
 
@@ -73,4 +98,58 @@ std::string Link::Name() const
 void Link::SetName(const std::string &_name) const
 {
   this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
+uint64_t Link::VisualCount() const
+{
+  return this->dataPtr->visuals.size();
+}
+
+/////////////////////////////////////////////////
+const Visual *Link::VisualByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->visuals.size())
+    return &this->dataPtr->visuals[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Link::VisualNameExists(const std::string &_name) const
+{
+  for (auto const &j : this->dataPtr->visuals)
+  {
+    if (j.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+uint64_t Link::CollisionCount() const
+{
+  return this->dataPtr->collisions.size();
+}
+
+/////////////////////////////////////////////////
+const Collision *Link::CollisionByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->collisions.size())
+    return &this->dataPtr->collisions[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Link::CollisionNameExists(const std::string &_name) const
+{
+  for (auto const &c : this->dataPtr->collisions)
+  {
+    if (c.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
 }

@@ -20,8 +20,11 @@
 
 #include "sdf/Element.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Link.hh"
 #include "sdf/Model.hh"
+#include "sdf/Root.hh"
 #include "sdf/Types.hh"
+#include "sdf/World.hh"
 #include "test_config.h"
 
 //////////////////////////////////////////////////
@@ -45,11 +48,71 @@ TEST(DOMModel, NoName)
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("model");
 
-  element->PrintValues("  ");
   sdf::Model model;
   sdf::Errors errors = model.Load(element);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   EXPECT_TRUE(errors[0].Message().find("model name is required") !=
                std::string::npos);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, LoadLinkCheck)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "empty.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first world
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_TRUE(world != nullptr);
+  EXPECT_EQ("default", world->Name());
+
+  // Get the first model
+  const sdf::Model *model = world->ModelByIndex(0);
+  ASSERT_TRUE(model != nullptr);
+  EXPECT_EQ("ground_plane", model->Name());
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_FALSE(nullptr == model->LinkByIndex(0));
+  EXPECT_TRUE(nullptr == model->LinkByIndex(1));
+  EXPECT_TRUE(model->LinkNameExists("link"));
+  EXPECT_FALSE(model->LinkNameExists("links"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, LoadDoublePendulum)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "double_pendulum.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_TRUE(model != nullptr);
+  EXPECT_EQ("double_pendulum_with_base", model->Name());
+  EXPECT_EQ(3u, model->LinkCount());
+  EXPECT_FALSE(nullptr == model->LinkByIndex(0));
+  EXPECT_FALSE(nullptr == model->LinkByIndex(1));
+  EXPECT_FALSE(nullptr == model->LinkByIndex(2));
+  EXPECT_TRUE(nullptr == model->LinkByIndex(3));
+
+  EXPECT_TRUE(model->LinkNameExists("base"));
+  EXPECT_TRUE(model->LinkNameExists("upper_link"));
+  EXPECT_TRUE(model->LinkNameExists("lower_link"));
+
+  EXPECT_EQ(2u, model->JointCount());
+  EXPECT_FALSE(nullptr == model->JointByIndex(0));
+  EXPECT_FALSE(nullptr == model->JointByIndex(1));
+  EXPECT_TRUE(nullptr == model->JointByIndex(2));
+
+  EXPECT_TRUE(model->JointNameExists("upper_joint"));
+  EXPECT_TRUE(model->JointNameExists("lower_joint"));
 }
