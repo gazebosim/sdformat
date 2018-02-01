@@ -14,8 +14,10 @@
  * limitations under the License.
  *
 */
-#include "sdf/Link.hh"
+#include <string>
+#include <vector>
 #include "sdf/Collision.hh"
+#include "sdf/Link.hh"
 #include "sdf/Visual.hh"
 #include "Utils.hh"
 

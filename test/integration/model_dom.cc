@@ -36,7 +36,7 @@ TEST(DOMModel, NotAModel)
   sdf::Model model;
   sdf::Errors errors = model.Load(element);
   ASSERT_FALSE(errors.empty());
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_INCORRECT_TYPE);
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
   EXPECT_TRUE(errors[0].Message().find("Attempting to load a Model") !=
                std::string::npos);
 }
@@ -51,7 +51,7 @@ TEST(DOMModel, NoName)
   sdf::Model model;
   sdf::Errors errors = model.Load(element);
   ASSERT_FALSE(errors.empty());
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(sdf::ErrorCode::ATTRIBUTE_MISSING, errors[0].Code());
   EXPECT_TRUE(errors[0].Message().find("model name is required") !=
                std::string::npos);
 }

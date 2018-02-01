@@ -14,9 +14,12 @@
  * limitations under the License.
  *
 */
-#include "sdf/Model.hh"
+#include <string>
+#include <vector>
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
+#include "sdf/Model.hh"
+#include "sdf/Types.hh"
 #include "Utils.hh"
 
 using namespace sdf;

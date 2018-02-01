@@ -16,8 +16,9 @@
 */
 
 #include <gtest/gtest.h>
-#include "sdf/Visual.hh"
+#include "sdf/Collision.hh"
 #include "sdf/Link.hh"
+#include "sdf/Visual.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMLink, Construction)
@@ -26,7 +27,7 @@ TEST(DOMLink, Construction)
   EXPECT_TRUE(link.Name().empty());
 
   link.SetName("test_link");
-  EXPECT_EQ(link.Name(), "test_link");
+  EXPECT_EQ("test_link", link.Name());
 
   EXPECT_EQ(0u, link.VisualCount());
   EXPECT_EQ(nullptr, link.VisualByIndex(0));

@@ -16,6 +16,8 @@
 */
 
 #include <gtest/gtest.h>
+#include "sdf/Joint.hh"
+#include "sdf/Link.hh"
 #include "sdf/Model.hh"
 
 /////////////////////////////////////////////////
@@ -25,7 +27,7 @@ TEST(DOMModel, Construction)
   EXPECT_TRUE(model.Name().empty());
 
   model.SetName("test_model");
-  EXPECT_EQ(model.Name(), "test_model");
+  EXPECT_EQ("test_model", model.Name());
 
   EXPECT_EQ(0u, model.LinkCount());
   EXPECT_EQ(nullptr, model.LinkByIndex(0));

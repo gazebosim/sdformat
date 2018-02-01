@@ -17,6 +17,7 @@
 #ifndef SDFORMAT_UTILS_HH
 #define SDFORMAT_UTILS_HH
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include "sdf/Element.hh"
