@@ -15,6 +15,12 @@
  *
 */
 #include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
+#include "sdf/Error.hh"
+#include "sdf/Model.hh"
+#include "sdf/Types.hh"
 #include "Utils.hh"
 
 /////////////////////////////////////////////////

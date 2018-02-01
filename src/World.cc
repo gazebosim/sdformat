@@ -14,8 +14,12 @@
  * limitations under the License.
  *
 */
-#include <iostream>
+#include <string>
+#include <vector>
+#include <ignition/math/Vector3.hh>
 
+#include "sdf/Model.hh"
+#include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "Utils.hh"
 

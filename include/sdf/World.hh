@@ -18,6 +18,7 @@
 #define SDF_WORLD_HH_
 
 #include <string>
+#include <ignition/math/Vector3.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
@@ -77,7 +78,7 @@ namespace sdf
 
     /// \brief Set the wind linear velocity in the global/world coordinate
     /// frame. Units are meters per second \f$(\frac{m}{s})\f$
-    /// \param[in] _win The new linear velocity of wind.
+    /// \param[in] _wind The new linear velocity of wind.
     /// \sa ignition::math::Vector3d WindLinearVelocity() const
     public: void SetWindLinearVelocity(const ignition::math::Vector3d &_wind);
 
@@ -95,7 +96,7 @@ namespace sdf
 
     /// \brief Get the magnetic vector in Tesla, expressed in
     /// a coordinate frame defined by the SphericalCoordinates property.
-    /// A spherical coordindate can be specified in SDF using the
+    /// A spherical coordinate can be specified in SDF using the
     /// <spherical_coordinates> element.
     /// \return Magnetic field vector.
     /// \sa SphericalCoordinates
@@ -103,7 +104,7 @@ namespace sdf
 
     /// \brief Set the magnetic vector in Tesla, expressed in
     /// a coordinate frame defined by the SphericalCoordinate.
-    /// A spherical coordindate can be specified in SDF using the
+    /// A spherical coordinate can be specified in SDF using the
     /// <spherical_coordinates> element.
     /// \param[in] _mag The new magnetic field vector.
     /// \sa SphericalCoordinates
