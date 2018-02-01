@@ -25,6 +25,7 @@
 namespace sdf
 {
   // Forward declarations.
+  class Model;
   class RootPrivate;
   class World;
 
@@ -79,6 +80,22 @@ namespace sdf
     /// \param[in] _name Name of the world to check.
     /// \return True if there exists a world with the given name.
     public: bool WorldNameExists(const std::string &_name) const;
+
+    /// \brief Get the number of models.
+    /// \return Number of models contained in this Root object.
+    public: uint64_t ModelCount() const;
+
+    /// \brief Get a model based on an index.
+    /// \param[in] _index Index of the model. The index should be in the
+    /// range [0..ModelCount()).
+    /// \return Pointer to the model. Nullptr if the index does not exist.
+    /// \sa uint64_t ModelCount() const
+    public: const Model *ModelByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a model name exists.
+    /// \param[in] _name Name of the model to check.
+    /// \return True if there exists a model with the given name.
+    public: bool ModelNameExists(const std::string &_name) const;
 
     /// \brief Private data pointer
     private: RootPrivate *dataPtr = nullptr;
