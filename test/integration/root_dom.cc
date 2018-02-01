@@ -18,9 +18,12 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include "sdf/Root.hh"
-#include "sdf/World.hh"
+#include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Model.hh"
+#include "sdf/Root.hh"
+#include "sdf/Types.hh"
+#include "sdf/World.hh"
 #include "test_config.h"
 
 /////////////////////////////////////////////////
@@ -33,7 +36,7 @@ TEST(DOMRoot, InvalidSDF)
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FILE_READ);
+  EXPECT_EQ(sdf::ErrorCode::FILE_READ, errors[0].Code());
 }
 
 /////////////////////////////////////////////////
@@ -46,8 +49,7 @@ TEST(DOMRoot, NoVersion)
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
-  std::cout << errors[0].Message() << std::endl;
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FILE_READ);
+  EXPECT_EQ(sdf::ErrorCode::FILE_READ, errors[0].Code());
 }
 
 /////////////////////////////////////////////////
@@ -58,12 +60,51 @@ TEST(DOMRoot, Load)
         "empty.sdf");
 
   sdf::Root root;
-  EXPECT_EQ(root.WorldCount(), 0u);
+  EXPECT_EQ(0u, root.WorldCount());
   EXPECT_TRUE(root.Load(testFile).empty());
-  EXPECT_EQ(root.Version(), "1.6");
-  EXPECT_EQ(root.WorldCount(), 1u);
+  EXPECT_EQ("1.6", root.Version());
+  EXPECT_EQ(1u, root.WorldCount());
   EXPECT_TRUE(root.WorldByIndex(0) != nullptr);
   EXPECT_TRUE(root.WorldByIndex(1) == nullptr);
 
-  EXPECT_EQ(root.WorldByIndex(0)->Name(), "default");
+  EXPECT_EQ("default", root.WorldByIndex(0)->Name());
+
+  EXPECT_EQ(1u, root.WorldByIndex(0)->ModelCount());
+  ASSERT_TRUE(root.WorldByIndex(0)->ModelByIndex(0) != nullptr);
+  EXPECT_EQ("ground_plane", root.WorldByIndex(0)->ModelByIndex(0)->Name());
+  EXPECT_TRUE(root.WorldByIndex(0)->ModelNameExists("ground_plane"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, LoadMultipleModels)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "root_multiple_models.sdf");
+
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+  EXPECT_EQ(3u, root.ModelCount());
+
+  EXPECT_EQ("robot1", root.ModelByIndex(0)->Name());
+  EXPECT_EQ("robot2", root.ModelByIndex(1)->Name());
+  EXPECT_EQ("last_robot", root.ModelByIndex(2)->Name());
+
+  EXPECT_FALSE(root.ModelNameExists("robot"));
+  EXPECT_TRUE(root.ModelNameExists("robot1"));
+  EXPECT_TRUE(root.ModelNameExists("robot2"));
+  EXPECT_TRUE(root.ModelNameExists("last_robot"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, LoadDuplicateModels)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "root_duplicate_models.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(1u, root.ModelCount());
 }
