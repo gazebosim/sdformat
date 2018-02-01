@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <ignition/math/Vector3.hh>
 #include "sdf/World.hh"
 
 /////////////////////////////////////////////////
@@ -23,15 +24,15 @@ TEST(DOMWorld, Construction)
 {
   sdf::World world;
   EXPECT_TRUE(world.Name().empty());
-  EXPECT_EQ(world.Gravity(), ignition::math::Vector3d(0, 0, -9.80665));
-  EXPECT_EQ(world.MagneticField(),
-      ignition::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6));
-  EXPECT_STREQ(world.AudioDevice().c_str(), "default");
-  EXPECT_EQ(world.WindLinearVelocity(), ignition::math::Vector3d::Zero);
+  EXPECT_EQ(ignition::math::Vector3d(0, 0, -9.80665), world.Gravity());
+  EXPECT_EQ(ignition::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6),
+            world.MagneticField());
+  EXPECT_STREQ("default", world.AudioDevice().c_str());
+  EXPECT_EQ(ignition::math::Vector3d::Zero, world.WindLinearVelocity());
 
-  EXPECT_EQ(world.ModelCount(), 0u);
-  EXPECT_EQ(world.ModelByIndex(0), nullptr);
-  EXPECT_EQ(world.ModelByIndex(1), nullptr);
+  EXPECT_EQ(0u, world.ModelCount());
+  EXPECT_EQ(nullptr, world.ModelByIndex(0));
+  EXPECT_EQ(nullptr, world.ModelByIndex(1));
   EXPECT_FALSE(world.ModelNameExists(""));
   EXPECT_FALSE(world.ModelNameExists("default"));
 }
@@ -43,17 +44,17 @@ TEST(DOMWorld, Set)
   EXPECT_TRUE(world.Name().empty());
 
   world.SetName("default");
-  EXPECT_EQ(world.Name(), "default");
+  EXPECT_EQ("default", world.Name());
 
   world.SetAudioDevice("/dev/audio");
-  EXPECT_EQ(world.AudioDevice(), "/dev/audio");
+  EXPECT_EQ("/dev/audio", world.AudioDevice());
 
   world.SetWindLinearVelocity({0, 1 , 2});
-  EXPECT_EQ(world.WindLinearVelocity(), ignition::math::Vector3d(0, 1, 2));
+  EXPECT_EQ(ignition::math::Vector3d(0, 1, 2), world.WindLinearVelocity());
 
   world.SetGravity({1, -2, 4});
-  EXPECT_EQ(world.Gravity(), ignition::math::Vector3d(1, -2, 4));
+  EXPECT_EQ(ignition::math::Vector3d(1, -2, 4), world.Gravity());
 
   world.SetMagneticField({1.2, -2.3, 4.5});
-  EXPECT_EQ(world.MagneticField(), ignition::math::Vector3d(1.2, -2.3, 4.5));
+  EXPECT_EQ(ignition::math::Vector3d(1.2, -2.3, 4.5), world.MagneticField());
 }

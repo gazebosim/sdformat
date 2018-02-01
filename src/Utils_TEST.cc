@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 */
 
 #include <gtest/gtest.h>
+#include <string>
+#include <ignition/math/Pose3.hh>
+#include "sdf/Element.hh"
 #include "Utils.hh"
 
 /////////////////////////////////////////////////
@@ -30,7 +33,7 @@ TEST(DOMUtils, PoseDefaultValues)
   std::string frame;
   EXPECT_TRUE(sdf::loadPose(element, pose, frame));
 
-  EXPECT_EQ(pose, ignition::math::Pose3d::Zero);
+  EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
   EXPECT_TRUE(frame.empty());
 }
 
@@ -45,7 +48,7 @@ TEST(DOMUtils, PoseNoFrame)
   std::string frame;
   EXPECT_TRUE(sdf::loadPose(element, pose, frame));
 
-  EXPECT_EQ(pose, ignition::math::Pose3d::Zero);
+  EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
   EXPECT_TRUE(frame.empty());
 }
 
@@ -62,8 +65,8 @@ TEST(DOMUtils, PoseWithFrame)
   std::string frame;
   EXPECT_TRUE(sdf::loadPose(element, pose, frame));
 
-  EXPECT_EQ(pose, ignition::math::Pose3d::Zero);
-  EXPECT_EQ(frame, "frame_name");
+  EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
+  EXPECT_EQ("frame_name", frame);
 }
 
 /////////////////////////////////////////////////
@@ -80,6 +83,6 @@ TEST(DOMUtils, PoseWithValue)
   std::string frame;
   EXPECT_TRUE(sdf::loadPose(element, pose, frame));
 
-  EXPECT_EQ(pose, ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
-  EXPECT_EQ(frame, "another frame");
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3), pose);
+  EXPECT_EQ("another frame", frame);
 }

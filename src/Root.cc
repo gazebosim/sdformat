@@ -14,14 +14,16 @@
  * limitations under the License.
  *
 */
-#include <iostream>
-#include <map>
+#include <string>
+#include <vector>
+#include <utility>
 
-#include "sdf/Root.hh"
 #include "sdf/Model.hh"
+#include "sdf/Root.hh"
+#include "sdf/Types.hh"
 #include "sdf/World.hh"
-#include "sdf/sdf_config.h"
 #include "sdf/parser.hh"
+#include "sdf/sdf_config.h"
 #include "Utils.hh"
 
 using namespace sdf;
