@@ -3317,7 +3317,7 @@ void CreateJoint(TiXmlElement *_root,
             sdfwarn << "urdf2sdf: revolute joint ["
               << _link->parent_joint->name
               << "] with limits: lowStop[" << *lowstop
-              << "] > highStop[" << highstop
+              << "] > highStop[" << *highstop
               << "], switching the two.\n";
             double tmp = *lowstop;
             *lowstop = *highstop;
