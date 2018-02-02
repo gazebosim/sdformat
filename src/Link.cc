@@ -118,9 +118,9 @@ const Visual *Link::VisualByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 bool Link::VisualNameExists(const std::string &_name) const
 {
-  for (auto const &j : this->dataPtr->visuals)
+  for (auto const &v : this->dataPtr->visuals)
   {
-    if (j.Name() == _name)
+    if (v.Name() == _name)
     {
       return true;
     }

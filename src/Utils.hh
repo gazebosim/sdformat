@@ -36,6 +36,7 @@ namespace sdf
   /// is returned if an element is not present. This function assumes that
   /// an element has a "name" attribute that must be unique.
   /// \param[in] _sdf The SDF element that contains zero or more elements.
+  /// \param[in] _sdfName Name of the sdf element, such as "model".
   /// \param[out] _objs Elements that match _sdfName in _sdf are added to this
   /// vector, unless an error is encountered during load or a duplicate name
   /// exists.

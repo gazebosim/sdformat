@@ -9,6 +9,7 @@
    * [Pull request 396](https://bitbucket.org/osrf/sdformat/pull-requests/396)
    * [Pull request 397](https://bitbucket.org/osrf/sdformat/pull-requests/397)
    * [Pull request 397](https://bitbucket.org/osrf/sdformat/pull-requests/407)
+   * [Pull request 406](https://bitbucket.org/osrf/sdformat/pull-requests/406)
 
 ### SDFormat 6.0.0 (2018-01-25)
 
