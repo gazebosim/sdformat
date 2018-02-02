@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <vector>
 #include "sdf/Model.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"

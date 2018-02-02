@@ -17,10 +17,11 @@
 #ifndef SDFORMAT_UTILS_HH
 #define SDFORMAT_UTILS_HH
 
+#include <algorithm>
 #include <string>
 #include <vector>
+#include "sdf/Error.hh"
 #include "sdf/Element.hh"
-#include "sdf/Model.hh"
 #include "sdf/Types.hh"
 
 namespace sdf
