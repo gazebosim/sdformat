@@ -15,8 +15,8 @@
  *
 */
 #include <vector>
-#include "sdf/Link.hh"
 #include "sdf/Collision.hh"
+#include "sdf/Link.hh"
 #include "sdf/Visual.hh"
 #include "Utils.hh"
 
