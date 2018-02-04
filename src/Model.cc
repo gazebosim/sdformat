@@ -15,9 +15,9 @@
  *
 */
 #include <vector>
-#include "sdf/Model.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
+#include "sdf/Model.hh"
 #include "Utils.hh"
 
 using namespace sdf;
