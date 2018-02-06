@@ -27,6 +27,9 @@ class sdf::ModelPrivate
   /// \brief Name of the model.
   public: std::string name = "";
 
+  /// \brief Pose of the model
+  public: ignition::math::Pose3d pose;
+
   /// \brief The links specified in this model.
   public: std::vector<Link> links;
 
