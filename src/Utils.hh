@@ -32,6 +32,18 @@ namespace sdf
   /// \return True when the "name" attribute exists.
   bool loadName(sdf::ElementPtr _sdf, std::string &_name);
 
+  /// \brief Read a pose element from and SDF pointer, and return (via
+  /// function parameters) the pose value and coordinate frame.
+  /// \param[in] _sdf Pointer to an SDF element that is a pose element.
+  /// \param[out] _pose Value of the pose element. The default value is
+  /// ignition::math::Pose3d::Zero.
+  /// \param[out] _frame Value of the frame attribute. The default value is
+  /// and empty string.
+  /// \return True if the pose element contained an ignition::math::Pose3d
+  /// value.
+  bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
+                std::string &_frame);
+
   /// \brief Load all objects of a specific sdf element type. No error
   /// is returned if an element is not present. This function assumes that
   /// an element has a "name" attribute that must be unique.
