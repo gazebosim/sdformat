@@ -124,7 +124,8 @@ Errors Root::Load(const std::string &_filename)
   }
 
   // Load all the models.
-  Errors modelLoadErrors = loadModels(sdf, this->dataPtr->models);
+  Errors modelLoadErrors = loadUniqueRepeated<Model>(sdf, "model",
+      this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
   return errors;

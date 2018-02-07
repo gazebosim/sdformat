@@ -14,6 +14,9 @@
  * limitations under the License.
  *
 */
+#include <vector>
+#include "sdf/Joint.hh"
+#include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "Utils.hh"
 
@@ -23,6 +26,12 @@ class sdf::ModelPrivate
 {
   /// \brief Name of the model.
   public: std::string name = "";
+
+  /// \brief The links specified in this model.
+  public: std::vector<Link> links;
+
+  /// \brief The joints specified in this model.
+  public: std::vector<Joint> joints;
 };
 
 /////////////////////////////////////////////////
@@ -67,6 +76,16 @@ Errors Model::Load(ElementPtr _sdf)
                      "A model name is required, but the name is not set."});
   }
 
+  // Load all the links.
+  Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
+    this->dataPtr->links);
+  errors.insert(errors.end(), linkLoadErrors.begin(), linkLoadErrors.end());
+
+  // Load all the joints.
+  Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
+    this->dataPtr->joints);
+  errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
+
   return errors;
 }
 
@@ -80,4 +99,58 @@ std::string Model::Name() const
 void Model::SetName(const std::string &_name) const
 {
   this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
+uint64_t Model::LinkCount() const
+{
+  return this->dataPtr->links.size();
+}
+
+/////////////////////////////////////////////////
+const Link *Model::LinkByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->links.size())
+    return &this->dataPtr->links[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Model::LinkNameExists(const std::string &_name) const
+{
+  for (auto const &l : this->dataPtr->links)
+  {
+    if (l.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+uint64_t Model::JointCount() const
+{
+  return this->dataPtr->joints.size();
+}
+
+/////////////////////////////////////////////////
+const Joint *Model::JointByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->joints.size())
+    return &this->dataPtr->joints[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Model::JointNameExists(const std::string &_name) const
+{
+  for (auto const &j : this->dataPtr->joints)
+  {
+    if (j.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
 }

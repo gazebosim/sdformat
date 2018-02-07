@@ -32,6 +32,13 @@ Collision::Collision()
 }
 
 /////////////////////////////////////////////////
+Collision::Collision(Collision &&_collision)
+{
+  this->dataPtr = _collision.dataPtr;
+  _collision.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
 Collision::~Collision()
 {
   delete this->dataPtr;

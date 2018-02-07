@@ -32,6 +32,13 @@ Visual::Visual()
 }
 
 /////////////////////////////////////////////////
+Visual::Visual(Visual &&_visual)
+{
+  this->dataPtr = _visual.dataPtr;
+  _visual.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
 Visual::~Visual()
 {
   delete this->dataPtr;
