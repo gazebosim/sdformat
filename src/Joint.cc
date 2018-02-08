@@ -46,6 +46,13 @@ Joint::Joint()
 }
 
 /////////////////////////////////////////////////
+Joint::Joint(Joint &&_joint)
+{
+  this->dataPtr = _joint.dataPtr;
+  _joint.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
 Joint::~Joint()
 {
   delete this->dataPtr;

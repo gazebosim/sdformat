@@ -24,7 +24,9 @@
 
 namespace sdf
 {
-  // Forward declare private data class.
+  // Forward declarations.
+  class Collision;
+  class Visual;
   class LinkPrivate;
 
   class SDFORMAT_VISIBLE Link
@@ -56,6 +58,38 @@ namespace sdf
     /// The name of a link must be unique within the scope of a Model.
     /// \param[in] _name Name of the link.
     public: void SetName(const std::string &_name) const;
+
+    /// \brief Get the number of visuals.
+    /// \return Number of visuals contained in this Link object.
+    public: uint64_t VisualCount() const;
+
+    /// \brief Get a visual based on an index.
+    /// \param[in] _index Index of the visual. The index should be in the
+    /// range [0..VisualCount()).
+    /// \return Pointer to the visual. Nullptr if the index does not exist.
+    /// \sa uint64_t VisualCount() const
+    public: const Visual *VisualByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a visual name exists.
+    /// \param[in] _name Name of the visual to check.
+    /// \return True if there exists a visual with the given name.
+    public: bool VisualNameExists(const std::string &_name) const;
+
+    /// \brief Get the number of collisions.
+    /// \return Number of collisions contained in this Link object.
+    public: uint64_t CollisionCount() const;
+
+    /// \brief Get a collision based on an index.
+    /// \param[in] _index Index of the collision. The index should be in the
+    /// range [0..CollisionCount()).
+    /// \return Pointer to the collision. Nullptr if the index does not exist.
+    /// \sa uint64_t CollisionCount() const
+    public: const Collision *CollisionByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a collision name exists.
+    /// \param[in] _name Name of the collision to check.
+    /// \return True if there exists a collision with the given name.
+    public: bool CollisionNameExists(const std::string &_name) const;
 
     /// \brief Private data pointer.
     private: LinkPrivate *dataPtr = nullptr;

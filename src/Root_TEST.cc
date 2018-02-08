@@ -23,19 +23,25 @@
 TEST(DOMRoot, Construction)
 {
   sdf::Root root;
-  EXPECT_EQ(root.Version(), "");
+  EXPECT_EQ("", root.Version());
   EXPECT_FALSE(root.WorldNameExists("default"));
   EXPECT_FALSE(root.WorldNameExists(""));
-  EXPECT_EQ(root.WorldCount(), 0u);
+  EXPECT_EQ(0u, root.WorldCount());
   EXPECT_TRUE(root.WorldByIndex(0) == nullptr);
   EXPECT_TRUE(root.WorldByIndex(1) == nullptr);
+
+  EXPECT_FALSE(root.ModelNameExists("default"));
+  EXPECT_FALSE(root.ModelNameExists(""));
+  EXPECT_EQ(0u, root.ModelCount());
+  EXPECT_TRUE(root.ModelByIndex(0) == nullptr);
+  EXPECT_TRUE(root.ModelByIndex(1) == nullptr);
 }
 
 /////////////////////////////////////////////////
 TEST(DOMRoot, Set)
 {
   sdf::Root root;
-  EXPECT_STREQ(root.Version().c_str(), "");
+  EXPECT_STREQ("", root.Version().c_str());
   root.SetVersion(SDF_PROTOCOL_VERSION);
-  EXPECT_STREQ(root.Version().c_str(), SDF_PROTOCOL_VERSION);
+  EXPECT_STREQ(SDF_PROTOCOL_VERSION, root.Version().c_str());
 }
