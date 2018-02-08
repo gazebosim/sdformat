@@ -32,6 +32,9 @@ class sdf::LinkPrivate
 
   /// \brief The collisions specified in this link.
   public: std::vector<Collision> collisions;
+
+  /// \brief The inertial information for this link.
+  public: ignition::math::Inertial inertial;
 };
 
 /////////////////////////////////////////////////
@@ -85,6 +88,34 @@ Errors Link::Load(ElementPtr _sdf)
   Errors collLoadErrors = loadUniqueRepeated<Collision>(_sdf, "collision",
       this->dataPtr->collisions);
   errors.insert(errors.end(), collLoadErrors.begin(), collLoadErrors.end());
+
+  if (_sdf->HasElement("inertial"))
+  {
+    sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
+
+    // Get the mass.
+    double mass = inertialElem->Get<double>("mass", 1.0);
+    ignition::math::Vector3d xxyyzz = ignition::math::Vector3d::One;
+    ignition::math::Vector3d xyxzyz = ignition::math::Vector3d::Zero;
+
+    if (inertialElem->HasElement("inertia"))
+    {
+      sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
+
+      xxyyzz.X(inertiaElem->Get<double>("ixx", 1.0));
+      xxyyzz.Y(inertiaElem->Get<double>("iyy", 1.0));
+      xxyyzz.Z(inertiaElem->Get<double>("izz", 1.0));
+
+      xyxzyz.X(inertiaElem->Get<double>("ixy", 0.0));
+      xyxzyz.Y(inertiaElem->Get<double>("ixz", 0.0));
+      xxyyzz.Z(inertiaElem->Get<double>("iyz", 0.0));
+    }
+
+    this->dataPtr->inertial.SetMassMatrix(
+        ignition::math::MassMatrix3(mass, xxyyzz, xyxzyz));
+
+    this->dataPtr->inertial.SetPose(inertiaPose);
+  }
 
   return errors;
 }
