@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="model">
+    <link name="link">
+      <inertial>
+        <pose>0.01 0 0.02 0 0 0</pose>
+        <mass>18</mass>
+        <inertia>
+          <ixx>0.2</ixx>
+          <ixy>0.0008</ixy>
+          <ixz>-0.0005</ixz>
+          <iyy>0.1</iyy>
+          <iyz>-0.0007</iyz>
+          <izz>0.3</izz>
+        </inertia>
+      </inertial>
+    </link>
+  </model>
+</sdf>

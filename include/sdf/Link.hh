@@ -91,6 +91,25 @@ namespace sdf
     /// \return True if there exists a collision with the given name.
     public: bool CollisionNameExists(const std::string &_name) const;
 
+    /// \brief Get the inertial value for this link. The inertial object
+    /// consists of the link's mass, a 3x3 rotational inertia matrix, and
+    /// a pose for the inertial reference frame. The units for mass is
+    /// kilograms with a default value of 1kg. The 3x3 rotational inertia
+    /// matrix is symmetric and only 6 above-diagonal elements of this matrix
+    /// are specified the Interial's ignition::math::MassMatrix3 property.
+    ///
+    /// The origin of the inertial reference frame needs to be at the center
+    /// of gravity. The axes of the inertial reference frame do not need to
+    /// be aligned with the principal axes of the inertia.
+    /// \return The link's inertial value.
+    /// \sa void SetInertial(const ignition::math::Inertiald &_inertial)
+    public: const ignition::math::Inertiald &Inertial() const;
+
+    /// \brief Set the inertial value for this link.
+    /// \param[in] _inertial The link's inertial value.
+    /// \sa const ignition::math::Inertiald &Inertial() const
+    public: void SetInertial(const ignition::math::Inertiald &_inertial);
+
     /// \brief Private data pointer.
     private: LinkPrivate *dataPtr = nullptr;
   };

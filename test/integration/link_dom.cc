@@ -101,3 +101,75 @@ TEST(DOMLink, LoadVisualCollision)
   ASSERT_TRUE(collision != nullptr);
   EXPECT_EQ("collision", collision->Name());
 }
+
+//////////////////////////////////////////////////
+TEST(DOMLink, InertialDoublePendulum)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "double_pendulum.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_TRUE(model != nullptr);
+
+  const sdf::Link *baseLink = model->LinkByIndex(0);
+  ASSERT_TRUE(baseLink != nullptr);
+
+  const ignition::math::Inertiald inertial = baseLink->Inertial();
+  EXPECT_DOUBLE_EQ(100.0, inertial.MassMatrix().Mass());
+  EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().X());
+  EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().Y());
+  EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().Z());
+  EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().X());
+  EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().Y());
+  EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().Z());
+
+  const sdf::Link *upperLink = model->LinkByIndex(1);
+  ASSERT_TRUE(upperLink != nullptr);
+
+  const ignition::math::Inertiald inertialUpper = upperLink->Inertial();
+  EXPECT_DOUBLE_EQ(1.0, inertialUpper.MassMatrix().Mass());
+  EXPECT_DOUBLE_EQ(1.0, inertialUpper.MassMatrix().DiagonalMoments().X());
+  EXPECT_DOUBLE_EQ(1.0, inertialUpper.MassMatrix().DiagonalMoments().Y());
+  EXPECT_DOUBLE_EQ(1.0, inertialUpper.MassMatrix().DiagonalMoments().Z());
+  EXPECT_DOUBLE_EQ(0.0, inertialUpper.MassMatrix().OffDiagonalMoments().X());
+  EXPECT_DOUBLE_EQ(0.0, inertialUpper.MassMatrix().OffDiagonalMoments().Y());
+  EXPECT_DOUBLE_EQ(0.0, inertialUpper.MassMatrix().OffDiagonalMoments().Z());
+  EXPECT_DOUBLE_EQ(0.0, inertialUpper.Pose().Pos().X());
+  EXPECT_DOUBLE_EQ(0.0, inertialUpper.Pose().Pos().Y());
+  EXPECT_DOUBLE_EQ(0.5, inertialUpper.Pose().Pos().Z());
+}
+
+//////////////////////////////////////////////////
+TEST(DOMLink, InertialComplete)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "inertial_complete.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_TRUE(model != nullptr);
+
+  const sdf::Link *link = model->LinkByIndex(0);
+  ASSERT_TRUE(link != nullptr);
+
+  const ignition::math::Inertiald inertial = link->Inertial();
+  EXPECT_DOUBLE_EQ(18.0, inertial.MassMatrix().Mass());
+  EXPECT_DOUBLE_EQ(0.2, inertial.MassMatrix().DiagonalMoments().X());
+  EXPECT_DOUBLE_EQ(0.1, inertial.MassMatrix().DiagonalMoments().Y());
+  EXPECT_DOUBLE_EQ(0.3, inertial.MassMatrix().DiagonalMoments().Z());
+  EXPECT_DOUBLE_EQ(0.0008, inertial.MassMatrix().OffDiagonalMoments().X());
+  EXPECT_DOUBLE_EQ(-0.0005, inertial.MassMatrix().OffDiagonalMoments().Y());
+  EXPECT_DOUBLE_EQ(-0.0007, inertial.MassMatrix().OffDiagonalMoments().Z());
+  EXPECT_DOUBLE_EQ(0.01, inertial.Pose().Pos().X());
+  EXPECT_DOUBLE_EQ(0.0, inertial.Pose().Pos().Y());
+  EXPECT_DOUBLE_EQ(0.02, inertial.Pose().Pos().Z());
+}
