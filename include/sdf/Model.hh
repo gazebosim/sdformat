@@ -24,7 +24,9 @@
 
 namespace sdf
 {
-  // Forward declare private data class.
+  // Forward declarations.
+  class Joint;
+  class Link;
   class ModelPrivate;
 
   class SDFORMAT_VISIBLE Model
@@ -56,6 +58,45 @@ namespace sdf
     /// The name of the model should be unique within the scope of a World.
     /// \param[in] _name Name of the model.
     public: void SetName(const std::string &_name) const;
+
+    /// \brief Get the number of links.
+    /// \return Number of links contained in this Model object.
+    public: uint64_t LinkCount() const;
+
+    /// \brief Get a link based on an index.
+    /// \param[in] _index Index of the link. The index should be in the
+    /// range [0..LinkCount()).
+    /// \return Pointer to the link. Nullptr if the index does not exist.
+    /// \sa uint64_t LinkCount() const
+    public: const Link *LinkByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a link name exists.
+    /// \param[in] _name Name of the link to check.
+    /// \return True if there exists a link with the given name.
+    public: bool LinkNameExists(const std::string &_name) const;
+
+    /// \brief Get the number of joints.
+    /// \return Number of joints contained in this Model object.
+    public: uint64_t JointCount() const;
+
+    /// \brief Get a joint based on an index.
+    /// \param[in] _index Index of the joint. The index should be in the
+    /// range [0..JointCount()).
+    /// \return Pointer to the joint. Nullptr if the index does not exist.
+    /// \sa uint64_t JointCount() const
+    public: const Joint *JointByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a joint name exists.
+    /// \param[in] _name Name of the joint to check.
+    /// \return True if there exists a joint with the given name.
+    public: bool JointNameExists(const std::string &_name) const;
+
+    /// \brief Get a joint based on a name.
+    /// \param[in] _name Name of the joint.
+    /// \return Pointer to the joint. Nullptr if a joint with the given name
+    ///  does not exist.
+    /// \sa bool JointNameExists(const std::string &_name) const
+    public: const Joint *JointByName(const std::string &_name) const;
 
     /// \brief Private data pointer.
     private: ModelPrivate *dataPtr = nullptr;
