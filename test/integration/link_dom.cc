@@ -190,6 +190,7 @@ TEST(DOMLink, InertialInvalid)
   EXPECT_FALSE(errors.empty());
   EXPECT_EQ(1u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::LINK_INERTIA_INVALID);
+  EXPECT_EQ(errors[0].Message(), "A link named link has invalid inertia.");
 
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_EQ(model, nullptr);

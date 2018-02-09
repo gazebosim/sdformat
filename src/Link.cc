@@ -126,7 +126,9 @@ Errors Link::Load(ElementPtr _sdf)
       ignition::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
   {
     errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
-                     "A link has invalid inertia."});
+                     "A link named " +
+                     this->Name() +
+                     " has invalid inertia."});
   }
 
   /// \todo: Handle inertia frame properly
