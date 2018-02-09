@@ -142,6 +142,7 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_DOUBLE_EQ(0.0, inertialUpper.Pose().Pos().X());
   EXPECT_DOUBLE_EQ(0.0, inertialUpper.Pose().Pos().Y());
   EXPECT_DOUBLE_EQ(0.5, inertialUpper.Pose().Pos().Z());
+  EXPECT_TRUE(inertial.MassMatrix().IsValid());
 }
 
 //////////////////////////////////////////////////
@@ -162,14 +163,16 @@ TEST(DOMLink, InertialComplete)
   ASSERT_TRUE(link != nullptr);
 
   const ignition::math::Inertiald inertial = link->Inertial();
-  EXPECT_DOUBLE_EQ(18.0, inertial.MassMatrix().Mass());
-  EXPECT_DOUBLE_EQ(0.2, inertial.MassMatrix().DiagonalMoments().X());
-  EXPECT_DOUBLE_EQ(0.1, inertial.MassMatrix().DiagonalMoments().Y());
-  EXPECT_DOUBLE_EQ(0.3, inertial.MassMatrix().DiagonalMoments().Z());
+  EXPECT_DOUBLE_EQ(17.982, inertial.MassMatrix().Mass());
+  EXPECT_DOUBLE_EQ(0.125569, inertial.MassMatrix().DiagonalMoments().X());
+  EXPECT_DOUBLE_EQ(0.0972062, inertial.MassMatrix().DiagonalMoments().Y());
+  EXPECT_DOUBLE_EQ(0.117937, inertial.MassMatrix().DiagonalMoments().Z());
   EXPECT_DOUBLE_EQ(0.0008, inertial.MassMatrix().OffDiagonalMoments().X());
-  EXPECT_DOUBLE_EQ(-0.0005, inertial.MassMatrix().OffDiagonalMoments().Y());
-  EXPECT_DOUBLE_EQ(-0.0007, inertial.MassMatrix().OffDiagonalMoments().Z());
+  EXPECT_DOUBLE_EQ(-0.000499757,
+      inertial.MassMatrix().OffDiagonalMoments().Y());
+  EXPECT_DOUBLE_EQ(-0.0005, inertial.MassMatrix().OffDiagonalMoments().Z());
   EXPECT_DOUBLE_EQ(0.01, inertial.Pose().Pos().X());
   EXPECT_DOUBLE_EQ(0.0, inertial.Pose().Pos().Y());
   EXPECT_DOUBLE_EQ(0.02, inertial.Pose().Pos().Z());
+  EXPECT_TRUE(inertial.MassMatrix().IsValid());
 }

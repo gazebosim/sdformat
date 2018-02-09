@@ -122,8 +122,12 @@ Errors Link::Load(ElementPtr _sdf)
       xyxzyz.Z(inertiaElem->Get<double>("iyz", 0.0).first);
     }
   }
-  this->dataPtr->inertial.SetMassMatrix(
-      ignition::math::MassMatrix3d(mass, xxyyzz, xyxzyz));
+  if (!this->dataPtr->inertial.SetMassMatrix(
+      ignition::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
+  {
+    errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
+                     "A link has invalid inertia."});
+  }
 
   /// \todo: Handle inertia frame properly
   this->dataPtr->inertial.SetPose(inertiaPose);
@@ -204,7 +208,8 @@ const ignition::math::Inertiald &Link::Inertial() const
 }
 
 /////////////////////////////////////////////////
-void Link::SetInertial(const ignition::math::Inertiald &_inertial)
+bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 {
   this->dataPtr->inertial = _inertial;
+  return _inertial.MassMatrix().IsValid();
 }

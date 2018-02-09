@@ -107,8 +107,9 @@ namespace sdf
 
     /// \brief Set the inertial value for this link.
     /// \param[in] _inertial The link's inertial value.
+    /// \return True if the inertial is valid, false otherwise.
     /// \sa const ignition::math::Inertiald &Inertial() const
-    public: void SetInertial(const ignition::math::Inertiald &_inertial);
+    public: bool SetInertial(const ignition::math::Inertiald &_inertial);
 
     /// \brief Private data pointer.
     private: LinkPrivate *dataPtr = nullptr;
