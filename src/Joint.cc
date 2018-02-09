@@ -14,6 +14,10 @@
  * limitations under the License.
  *
 */
+#include <algorithm>
+#include <array>
+#include <memory>
+#include <utility>
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
 #include "Utils.hh"
@@ -36,7 +40,7 @@ class sdf::JointPrivate
 
   /// \brief Joint axis
   // cppcheck-suppress
-  public: std::array<JointAxis *, 2> axis = {{nullptr, nullptr}};
+  public: std::array<std::unique_ptr<JointAxis>, 2> axis = {{nullptr, nullptr}};
 };
 
 /////////////////////////////////////////////////
@@ -104,14 +108,14 @@ Errors Joint::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("axis"))
   {
-    this->dataPtr->axis[0] = new JointAxis();
+    this->dataPtr->axis[0].reset(new JointAxis());
     Errors axisErrors = this->dataPtr->axis[0]->Load(_sdf->GetElement("axis"));
     errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
   }
 
   if (_sdf->HasElement("axis2"))
   {
-    this->dataPtr->axis[1] = new JointAxis();
+    this->dataPtr->axis[1].reset(new JointAxis());
     Errors axisErrors = this->dataPtr->axis[1]->Load(_sdf->GetElement("axis2"));
     errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
   }
@@ -209,5 +213,5 @@ void Joint::SetChildLinkName(const std::string &_name) const
 /////////////////////////////////////////////////
 const JointAxis *Joint::Axis(const unsigned int _index) const
 {
-  return this->dataPtr->axis[std::min(_index, 1u)];
+  return this->dataPtr->axis[std::min(_index, 1u)].get();
 }

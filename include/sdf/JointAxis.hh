@@ -192,6 +192,7 @@ namespace sdf
     public: double Stiffness() const;
 
     /// \brief Get the joint stop stiffness.
+    /// \param[in] _stiffness The joint stop stiffness.
     /// \return The joint stop stiffness.
     /// \sa double Stiffness() const
     public: void SetStiffness(const double _stiffness) const;
