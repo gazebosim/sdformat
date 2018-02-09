@@ -142,6 +142,7 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_DOUBLE_EQ(0.0, inertialUpper.Pose().Pos().X());
   EXPECT_DOUBLE_EQ(0.0, inertialUpper.Pose().Pos().Y());
   EXPECT_DOUBLE_EQ(0.5, inertialUpper.Pose().Pos().Z());
+  EXPECT_TRUE(inertial.MassMatrix().IsValid());
 }
 
 //////////////////////////////////////////////////
@@ -153,7 +154,7 @@ TEST(DOMLink, InertialComplete)
 
   // Load the SDF file
   sdf::Root root;
-  EXPECT_TRUE(root.Load(testFile).empty());
+  EXPECT_FALSE(root.Load(testFile).empty());
 
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_TRUE(model != nullptr);
@@ -172,4 +173,5 @@ TEST(DOMLink, InertialComplete)
   EXPECT_DOUBLE_EQ(0.01, inertial.Pose().Pos().X());
   EXPECT_DOUBLE_EQ(0.0, inertial.Pose().Pos().Y());
   EXPECT_DOUBLE_EQ(0.02, inertial.Pose().Pos().Z());
+  EXPECT_FALSE(inertial.MassMatrix().IsValid());
 }
