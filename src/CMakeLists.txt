@@ -18,11 +18,31 @@ if (USE_EXTERNAL_TINYXML)
   link_directories(${tinyxml_LIBRARY_DIRS})
 endif()
 
+# We want to embed the sdf XML files directly into the library so we don't
+# have to go looking around the filesystem for them in the normal case.  To
+# accomplish that, we generate a C++ source and header file pair that contains
+# the strings representing the XML data located in the 'sdf' directory.
+# The main generator is a python file, which ideally we would pass a list of
+# the globbed filenames to.  However, that list is much too long for the
+# command-line, so instead we output the list of files to another file, then
+# pass the name of *that* filename into the python script.  The python script
+# takes the output filename and the input filename containing the list of files
+# and generates the C++ and header file necessary for each one.
+file(GLOB xml_files ../sdf/**/*.sdf ../sdf/**/*.convert)
+file(WRITE "${PROJECT_BINARY_DIR}/filelist.txt" "${xml_files}")
+add_custom_command(
+  OUTPUT "${PROJECT_BINARY_DIR}/EmbeddedXML.cc"
+  COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/embed_xml_in_cpp_string.py" "${PROJECT_BINARY_DIR}/EmbeddedXML.cc" "${PROJECT_BINARY_DIR}/EmbeddedXML.hh" "${PROJECT_BINARY_DIR}/filelist.txt"
+  DEPENDS "${CMAKE_CURRENT_LIST_DIR}/embed_xml_in_cpp_string.py" "${PROJECT_BINARY_DIR}/filelist.txt" "${xml_files}"
+  COMMENT "Generate Embedded XML data for the library"
+)
+
 set (sources
   Collision.cc
   Console.cc
   Converter.cc
   Element.cc
+  "${PROJECT_BINARY_DIR}/EmbeddedXML.cc"
   Error.cc
   Exception.cc
   Filesystem.cc
