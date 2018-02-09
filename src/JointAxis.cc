@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+#include <ignition/math/Vector3.hh>
+#include "sdf/Error.hh"
 #include "sdf/JointAxis.hh"
 
 using namespace sdf;
@@ -132,7 +134,7 @@ Errors JointAxis::Load(ElementPtr _sdf)
     sdf::ElementPtr limitElement = _sdf->GetElement("limit");
 
     this->dataPtr->lower = limitElement->Get<double>("lower", -1e16).first;
-    this->dataPtr->upper = limitElement->Get<double>("upper", -1e16).first;
+    this->dataPtr->upper = limitElement->Get<double>("upper", 1e16).first;
     this->dataPtr->effort = limitElement->Get<double>("effort", -1).first;
     this->dataPtr->velocity = limitElement->Get<double>("velocity", -1).first;
     this->dataPtr->stiffness = limitElement->Get<double>(

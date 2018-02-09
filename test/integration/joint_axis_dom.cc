@@ -16,6 +16,7 @@
  */
 
 #include <string>
+#include <vector>
 #include <gtest/gtest.h>
 
 #include "sdf/Element.hh"
