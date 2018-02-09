@@ -17,11 +17,9 @@
 #include <algorithm>
 #include <array>
 #include <memory>
-#include <string>
 #include <utility>
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
-#include "sdf/Types.hh"
 #include "Utils.hh"
 
 using namespace sdf;
