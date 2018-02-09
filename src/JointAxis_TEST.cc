@@ -32,7 +32,7 @@ TEST(DOMJointAxis, Construction)
   EXPECT_DOUBLE_EQ(-1e16, axis.Lower());
   EXPECT_DOUBLE_EQ(1e16, axis.Upper());
   EXPECT_DOUBLE_EQ(-1, axis.Effort());
-  EXPECT_DOUBLE_EQ(-1, axis.Velocity());
+  EXPECT_DOUBLE_EQ(-1, axis.MaxVelocity());
   EXPECT_DOUBLE_EQ(1e8, axis.Stiffness());
   EXPECT_DOUBLE_EQ(1.0, axis.Dissipation());
 
@@ -66,8 +66,8 @@ TEST(DOMJointAxis, Construction)
   axis.SetEffort(3.2);
   EXPECT_DOUBLE_EQ(3.2, axis.Effort());
 
-  axis.SetVelocity(54.2);
-  EXPECT_DOUBLE_EQ(54.2, axis.Velocity());
+  axis.SetMaxVelocity(54.2);
+  EXPECT_DOUBLE_EQ(54.2, axis.MaxVelocity());
 
   axis.SetStiffness(1e2);
   EXPECT_DOUBLE_EQ(1e2, axis.Stiffness());

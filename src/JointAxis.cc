@@ -61,7 +61,7 @@ class sdf::JointAxisPrivate
   public: double effort = -1;
 
   /// \brief A value for enforcing the maximum joint velocity.
-  public: double velocity = -1;
+  public: double maxVelocity = -1;
 
   /// \brief Joint stop stiffness.
   public: double stiffness = 1e8;
@@ -136,7 +136,8 @@ Errors JointAxis::Load(ElementPtr _sdf)
     this->dataPtr->lower = limitElement->Get<double>("lower", -1e16).first;
     this->dataPtr->upper = limitElement->Get<double>("upper", 1e16).first;
     this->dataPtr->effort = limitElement->Get<double>("effort", -1).first;
-    this->dataPtr->velocity = limitElement->Get<double>("velocity", -1).first;
+    this->dataPtr->maxVelocity = limitElement->Get<double>(
+        "velocity", -1).first;
     this->dataPtr->stiffness = limitElement->Get<double>(
         "stiffness", 1e8).first;
     this->dataPtr->dissipation = limitElement->Get<double>(
@@ -269,15 +270,15 @@ void JointAxis::SetEffort(double _effort)
 }
 
 /////////////////////////////////////////////////
-double JointAxis::Velocity() const
+double JointAxis::MaxVelocity() const
 {
-  return this->dataPtr->velocity;
+  return this->dataPtr->maxVelocity;
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetVelocity(const double _velocity) const
+void JointAxis::SetMaxVelocity(const double _velocity) const
 {
-  this->dataPtr->velocity = _velocity;
+  this->dataPtr->maxVelocity = _velocity;
 }
 
 /////////////////////////////////////////////////

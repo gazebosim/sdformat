@@ -91,8 +91,8 @@ TEST(DOMJointAxis, Complete)
   EXPECT_DOUBLE_EQ(123.4, axis->Effort());
   EXPECT_DOUBLE_EQ(0.5, axis2->Effort());
 
-  EXPECT_DOUBLE_EQ(12.0, axis->Velocity());
-  EXPECT_DOUBLE_EQ(200.0, axis2->Velocity());
+  EXPECT_DOUBLE_EQ(12.0, axis->MaxVelocity());
+  EXPECT_DOUBLE_EQ(200.0, axis2->MaxVelocity());
 
   EXPECT_DOUBLE_EQ(0.1, axis->Damping());
   EXPECT_DOUBLE_EQ(0.0, axis2->Damping());

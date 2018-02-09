@@ -179,12 +179,12 @@ namespace sdf
     /// default value is -1.
     /// \return The value for enforcing the maximum joint velocity.
     /// \sa void SetVelocity(const double _velocity) const
-    public: double Velocity() const;
+    public: double MaxVelocity() const;
 
     /// \brief Set the value for enforcing the maximum joint velocity.
     /// \param[in] _velocity The value for enforcing the maximum joint velocity.
     /// \sa double Velocity() const
-    public: void SetVelocity(const double _velocity) const;
+    public: void SetMaxVelocity(const double _velocity) const;
 
     /// \brief Get the joint stop stiffness. The default value is 1e8.
     /// \return The joint stop stiffness.
