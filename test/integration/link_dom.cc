@@ -176,3 +176,21 @@ TEST(DOMLink, InertialComplete)
   EXPECT_DOUBLE_EQ(0.02, inertial.Pose().Pos().Z());
   EXPECT_TRUE(inertial.MassMatrix().IsValid());
 }
+
+//////////////////////////////////////////////////
+TEST(DOMLink, InertialInvalid)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "inertial_invalid.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::LINK_INERTIA_INVALID);
+
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_EQ(model, nullptr);
+}
