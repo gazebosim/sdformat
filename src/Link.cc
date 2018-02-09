@@ -36,7 +36,7 @@ class sdf::LinkPrivate
   public: std::vector<Collision> collisions;
 
   /// \brief The inertial information for this link.
-  public: ignition::math::Inertiald inertial{{1.0,
+  public: ignition::math::Inertiald inertial {{1.0,
             ignition::math::Vector3d::One, ignition::math::Vector3d::Zero},
             ignition::math::Pose3d::Zero};
 };

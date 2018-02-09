@@ -51,10 +51,10 @@ TEST(DOMLink, Construction)
   EXPECT_FALSE(link.CollisionNameExists(""));
   EXPECT_FALSE(link.CollisionNameExists("default"));
 
-  ignition::math::Inertiald inertial2{
+  ignition::math::Inertiald inertial2 {
     {2.3, ignition::math::Vector3d(0.1, 0.2, 0.3),
       ignition::math::Vector3d(1.2, 2.3, 3.4)},
-      ignition::math::Pose3d(1, 2, 3, 0,0 ,0)};
+      ignition::math::Pose3d(1, 2, 3, 0, 0, 0)};
 
   link.SetInertial(inertial2);
 
