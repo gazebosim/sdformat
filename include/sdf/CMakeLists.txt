@@ -8,6 +8,7 @@ set (headers
   Exception.hh
   Filesystem.hh
   Joint.hh
+  JointAxis.hh
   Link.hh
   Model.hh
   Param.hh

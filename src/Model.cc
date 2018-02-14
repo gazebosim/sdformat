@@ -154,3 +154,16 @@ bool Model::JointNameExists(const std::string &_name) const
   }
   return false;
 }
+
+/////////////////////////////////////////////////
+const Joint *Model::JointByName(const std::string &_name) const
+{
+  for (auto const &j : this->dataPtr->joints)
+  {
+    if (j.Name() == _name)
+    {
+      return &j;
+    }
+  }
+  return nullptr;
+}
