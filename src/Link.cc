@@ -15,6 +15,8 @@
  *
 */
 #include <vector>
+#include <ignition/math/Inertial.hh>
+
 #include "sdf/Collision.hh"
 #include "sdf/Link.hh"
 #include "sdf/Visual.hh"
@@ -32,6 +34,11 @@ class sdf::LinkPrivate
 
   /// \brief The collisions specified in this link.
   public: std::vector<Collision> collisions;
+
+  /// \brief The inertial information for this link.
+  public: ignition::math::Inertiald inertial {{1.0,
+            ignition::math::Vector3d::One, ignition::math::Vector3d::Zero},
+            ignition::math::Pose3d::Zero};
 };
 
 /////////////////////////////////////////////////
@@ -85,6 +92,47 @@ Errors Link::Load(ElementPtr _sdf)
   Errors collLoadErrors = loadUniqueRepeated<Collision>(_sdf, "collision",
       this->dataPtr->collisions);
   errors.insert(errors.end(), collLoadErrors.begin(), collLoadErrors.end());
+
+  ignition::math::Vector3d xxyyzz = ignition::math::Vector3d::One;
+  ignition::math::Vector3d xyxzyz = ignition::math::Vector3d::Zero;
+  ignition::math::Pose3d inertiaPose;
+  std::string inertiaFrame = "";
+  double mass = 1.0;
+
+  if (_sdf->HasElement("inertial"))
+  {
+    sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
+
+    if (inertialElem->HasElement("pose"))
+      loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
+
+    // Get the mass.
+    mass = inertialElem->Get<double>("mass", 1.0).first;
+
+    if (inertialElem->HasElement("inertia"))
+    {
+      sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
+
+      xxyyzz.X(inertiaElem->Get<double>("ixx", 1.0).first);
+      xxyyzz.Y(inertiaElem->Get<double>("iyy", 1.0).first);
+      xxyyzz.Z(inertiaElem->Get<double>("izz", 1.0).first);
+
+      xyxzyz.X(inertiaElem->Get<double>("ixy", 0.0).first);
+      xyxzyz.Y(inertiaElem->Get<double>("ixz", 0.0).first);
+      xyxzyz.Z(inertiaElem->Get<double>("iyz", 0.0).first);
+    }
+  }
+  if (!this->dataPtr->inertial.SetMassMatrix(
+      ignition::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
+  {
+    errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
+                     "A link named " +
+                     this->Name() +
+                     " has invalid inertia."});
+  }
+
+  /// \todo: Handle inertia frame properly
+  this->dataPtr->inertial.SetPose(inertiaPose);
 
   return errors;
 }
@@ -153,4 +201,17 @@ bool Link::CollisionNameExists(const std::string &_name) const
     }
   }
   return false;
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Inertiald &Link::Inertial() const
+{
+  return this->dataPtr->inertial;
+}
+
+/////////////////////////////////////////////////
+bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
+{
+  this->dataPtr->inertial = _inertial;
+  return _inertial.MassMatrix().IsValid();
 }
