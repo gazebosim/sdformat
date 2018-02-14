@@ -91,6 +91,13 @@ namespace sdf
     /// \return True if there exists a joint with the given name.
     public: bool JointNameExists(const std::string &_name) const;
 
+    /// \brief Get a joint based on a name.
+    /// \param[in] _name Name of the joint.
+    /// \return Pointer to the joint. Nullptr if a joint with the given name
+    ///  does not exist.
+    /// \sa bool JointNameExists(const std::string &_name) const
+    public: const Joint *JointByName(const std::string &_name) const;
+
     /// \brief Private data pointer.
     private: ModelPrivate *dataPtr = nullptr;
   };

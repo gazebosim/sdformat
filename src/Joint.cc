@@ -14,7 +14,12 @@
  * limitations under the License.
  *
 */
+#include <algorithm>
+#include <array>
+#include <memory>
+#include <utility>
 #include "sdf/Joint.hh"
+#include "sdf/JointAxis.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -23,6 +28,19 @@ class sdf::JointPrivate
 {
   /// \brief Name of the joint.
   public: std::string name = "";
+
+  /// \brief Name of the parent link.
+  public: std::string parentLinkName = "";
+
+  /// \brief Name of the child link.
+  public: std::string childLinkName = "";
+
+  /// \brief the joint type.
+  public: JointType type = JointType::INVALID;
+
+  /// \brief Joint axis
+  // cppcheck-suppress
+  public: std::array<std::unique_ptr<JointAxis>, 2> axis = {{nullptr, nullptr}};
 };
 
 /////////////////////////////////////////////////
@@ -67,11 +85,85 @@ Errors Joint::Load(ElementPtr _sdf)
                      "A joint name is required, but the name is not set."});
   }
 
+  // Read the parent link name
+  std::pair<std::string, bool> parentPair =
+    _sdf->Get<std::string>("parent", "");
+  if (parentPair.second)
+    this->dataPtr->parentLinkName = parentPair.first;
+  else
+  {
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "The parent element is missing."});
+  }
+
+  // Read the child link name
+  std::pair<std::string, bool> childPair = _sdf->Get<std::string>("child", "");
+  if (childPair.second)
+    this->dataPtr->childLinkName = childPair.first;
+  else
+  {
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "The child element is missing."});
+  }
+
+  if (_sdf->HasElement("axis"))
+  {
+    this->dataPtr->axis[0].reset(new JointAxis());
+    Errors axisErrors = this->dataPtr->axis[0]->Load(_sdf->GetElement("axis"));
+    errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
+  }
+
+  if (_sdf->HasElement("axis2"))
+  {
+    this->dataPtr->axis[1].reset(new JointAxis());
+    Errors axisErrors = this->dataPtr->axis[1]->Load(_sdf->GetElement("axis2"));
+    errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
+  }
+
+  // Read the type
+  std::pair<std::string, bool> typePair = _sdf->Get<std::string>("type", "");
+  if (typePair.second)
+  {
+    std::transform(typePair.first.begin(), typePair.first.end(),
+                   typePair.first.begin(), ::tolower);
+    if (typePair.first == "ball")
+      this->dataPtr->type = JointType::BALL;
+    else if (typePair.first == "continuous")
+      this->dataPtr->type = JointType::CONTINUOUS;
+    else if (typePair.first == "fixed")
+      this->dataPtr->type = JointType::FIXED;
+    else if (typePair.first == "gearbox")
+      this->dataPtr->type = JointType::GEARBOX;
+    else if (typePair.first == "prismatic")
+      this->dataPtr->type = JointType::PRISMATIC;
+    else if (typePair.first == "revolute")
+      this->dataPtr->type = JointType::REVOLUTE;
+    else if (typePair.first == "revolute2")
+      this->dataPtr->type = JointType::REVOLUTE2;
+    else if (typePair.first == "screw")
+      this->dataPtr->type = JointType::SCREW;
+    else if (typePair.first == "universal")
+      this->dataPtr->type = JointType::UNIVERSAL;
+    else
+    {
+      this->dataPtr->type = JointType::INVALID;
+      errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+          "Joint type of " + typePair.first +
+          " is invalid. Refer to the SDF documentation for a list of "
+          "valid joint types"});
+    }
+  }
+  else
+  {
+    errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+        "A joint type is required, but is not set."});
+  }
+
   return errors;
 }
 
 /////////////////////////////////////////////////
-std::string Joint::Name() const
+const std::string &Joint::Name() const
 {
   return this->dataPtr->name;
 }
@@ -80,4 +172,46 @@ std::string Joint::Name() const
 void Joint::SetName(const std::string &_name) const
 {
   this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
+JointType Joint::Type() const
+{
+  return this->dataPtr->type;
+}
+
+/////////////////////////////////////////////////
+void Joint::SetType(const JointType _jointType)
+{
+  this->dataPtr->type = _jointType;
+}
+
+/////////////////////////////////////////////////
+const std::string &Joint::ParentLinkName() const
+{
+  return this->dataPtr->parentLinkName;
+}
+
+/////////////////////////////////////////////////
+void Joint::SetParentLinkName(const std::string &_name) const
+{
+  this->dataPtr->parentLinkName = _name;
+}
+
+/////////////////////////////////////////////////
+const std::string &Joint::ChildLinkName() const
+{
+  return this->dataPtr->childLinkName;
+}
+
+/////////////////////////////////////////////////
+void Joint::SetChildLinkName(const std::string &_name) const
+{
+  this->dataPtr->childLinkName = _name;
+}
+
+/////////////////////////////////////////////////
+const JointAxis *Joint::Axis(const unsigned int _index) const
+{
+  return this->dataPtr->axis[std::min(_index, 1u)].get();
 }

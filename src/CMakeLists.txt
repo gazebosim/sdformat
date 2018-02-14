@@ -28,6 +28,7 @@ set (sources
   Filesystem.cc
   ign.cc
   Joint.cc
+  JointAxis.cc
   Link.cc
   Model.cc
   parser.cc
@@ -79,6 +80,7 @@ set (gtest_sources
   Exception_TEST.cc
   Filesystem_TEST.cc
   Joint_TEST.cc
+  JointAxis_TEST.cc
   Link_TEST.cc
   Model_TEST.cc
   parser_urdf_TEST.cc
