@@ -32,15 +32,21 @@ bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
 bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
               std::string &_frame)
 {
+  sdf::ElementPtr sdf = _sdf;
   if (_sdf->GetName() != "pose")
+  {
+    if (_sdf->HasElement("pose"))
+      sdf = _sdf->GetElement("pose");
     return false;
+  }
+
 
   // Read the frame. An empty frame implies the parent frame.
-  std::pair<std::string, bool> framePair = _sdf->Get<std::string>("frame", "");
+  std::pair<std::string, bool> framePair = sdf->Get<std::string>("frame", "");
 
   // Read the pose value.
   std::pair<ignition::math::Pose3d, bool> posePair =
-    _sdf->Get<ignition::math::Pose3d>("", ignition::math::Pose3d::Zero);
+    sdf->Get<ignition::math::Pose3d>("", ignition::math::Pose3d::Zero);
 
   // Set output.
   _pose = posePair.first;

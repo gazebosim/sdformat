@@ -35,6 +35,9 @@ class sdf::ModelPrivate
 
   /// \brief The joints specified in this model.
   public: std::vector<Joint> joints;
+
+  public: ignition::math::UndirectedGraph<
+            ignition::math::Matrix4d, int> frameGraph;
 };
 
 /////////////////////////////////////////////////
@@ -78,6 +81,9 @@ Errors Model::Load(ElementPtr _sdf)
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A model name is required, but the name is not set."});
   }
+
+  // Load the pose.
+  loadPose(_sdf, this->dataPtr->pose);
 
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",

@@ -39,6 +39,9 @@ class sdf::LinkPrivate
   public: ignition::math::Inertiald inertial {{1.0,
             ignition::math::Vector3d::One, ignition::math::Vector3d::Zero},
             ignition::math::Pose3d::Zero};
+
+  /// \brief Pose of the link
+  public: ignition::math::Pose3d pose;
 };
 
 /////////////////////////////////////////////////
