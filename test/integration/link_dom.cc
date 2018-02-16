@@ -72,17 +72,17 @@ TEST(DOMLink, LoadVisualCollision)
 
   // Get the first world
   const sdf::World *world = root.WorldByIndex(0);
-  ASSERT_TRUE(world != nullptr);
+  ASSERT_NE(nullptr, world);
   EXPECT_EQ("default", world->Name());
 
   // Get the first model
   const sdf::Model *model = world->ModelByIndex(0);
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
   EXPECT_EQ("ground_plane", model->Name());
 
   // Get the first link
   const sdf::Link *link = model->LinkByIndex(0);
-  ASSERT_TRUE(link != nullptr);
+  ASSERT_NE(nullptr, link);
   EXPECT_EQ("link", link->Name());
 
   // Get the first visual
@@ -90,7 +90,7 @@ TEST(DOMLink, LoadVisualCollision)
   EXPECT_TRUE(link->VisualNameExists("visual"));
   EXPECT_FALSE(link->VisualNameExists("visuals"));
   const sdf::Visual *visual = link->VisualByIndex(0);
-  ASSERT_TRUE(visual != nullptr);
+  ASSERT_NE(nullptr, visual);
   EXPECT_EQ("visual", visual->Name());
 
   // Get the first collision
@@ -98,7 +98,7 @@ TEST(DOMLink, LoadVisualCollision)
   EXPECT_TRUE(link->CollisionNameExists("collision"));
   EXPECT_FALSE(link->CollisionNameExists("collisions"));
   const sdf::Collision *collision = link->CollisionByIndex(0);
-  ASSERT_TRUE(collision != nullptr);
+  ASSERT_NE(nullptr, collision);
   EXPECT_EQ("collision", collision->Name());
 }
 
@@ -114,10 +114,10 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_TRUE(root.Load(testFile).empty());
 
   const sdf::Model *model = root.ModelByIndex(0);
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
 
   const sdf::Link *baseLink = model->LinkByIndex(0);
-  ASSERT_TRUE(baseLink != nullptr);
+  ASSERT_NE(nullptr, baseLink);
 
   const ignition::math::Inertiald inertial = baseLink->Inertial();
   EXPECT_DOUBLE_EQ(100.0, inertial.MassMatrix().Mass());
@@ -129,7 +129,7 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().Z());
 
   const sdf::Link *upperLink = model->LinkByIndex(1);
-  ASSERT_TRUE(upperLink != nullptr);
+  ASSERT_NE(nullptr, upperLink);
 
   const ignition::math::Inertiald inertialUpper = upperLink->Inertial();
   EXPECT_DOUBLE_EQ(1.0, inertialUpper.MassMatrix().Mass());
@@ -157,10 +157,10 @@ TEST(DOMLink, InertialComplete)
   EXPECT_TRUE(root.Load(testFile).empty());
 
   const sdf::Model *model = root.ModelByIndex(0);
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
 
   const sdf::Link *link = model->LinkByIndex(0);
-  ASSERT_TRUE(link != nullptr);
+  ASSERT_NE(nullptr, link);
 
   const ignition::math::Inertiald inertial = link->Inertial();
   EXPECT_DOUBLE_EQ(17.982, inertial.MassMatrix().Mass());

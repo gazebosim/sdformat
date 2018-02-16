@@ -69,12 +69,12 @@ TEST(DOMRoot, LoadLinkCheck)
 
   // Get the first world
   const sdf::World *world = root.WorldByIndex(0);
-  ASSERT_TRUE(world != nullptr);
+  ASSERT_NE(nullptr, world);
   EXPECT_EQ("default", world->Name());
 
   // Get the first model
   const sdf::Model *model = world->ModelByIndex(0);
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
   EXPECT_EQ("ground_plane", model->Name());
   EXPECT_EQ(1u, model->LinkCount());
   EXPECT_FALSE(nullptr == model->LinkByIndex(0));
@@ -96,7 +96,7 @@ TEST(DOMRoot, LoadDoublePendulum)
 
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
   EXPECT_EQ("double_pendulum_with_base", model->Name());
   EXPECT_EQ(3u, model->LinkCount());
   EXPECT_FALSE(nullptr == model->LinkByIndex(0));
