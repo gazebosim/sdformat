@@ -3167,12 +3167,6 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
     return sdfXmlOut;
   }
 
-  // create root element and define needed namespaces
-  TiXmlElement *robot = new TiXmlElement("model");
-
-  // set model name to urdf robot name if not specified
-  robot->SetAttribute("name", robotModel->getName());
-
   // initialize transform for the model, urdf is recursive,
   // while sdf defines all links relative to model frame
   ignition::math::Pose3d transform;
@@ -3190,51 +3184,67 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
 
   urdf::LinkConstSharedPtr rootLink = robotModel->getRoot();
 
-  // Fixed Joint Reduction
-  // if link connects to parent via fixed joint, lump down and remove link
-  // set reduceFixedJoints to false will replace fixed joints with
-  // zero limit revolute joints, otherwise, we reduce it down to its
-  // parent link recursively
-  // using the disabledFixedJointLumping or preserveFixedJoint options
-  // is possible to disable fixed joint lumping only for selected joints
-  if (g_reduceFixedJoints)
-  {
-    ReduceFixedJoints(robot, urdf::const_pointer_cast<urdf::Link>(rootLink));
-  }
+  // create root element and define needed namespaces
+  TiXmlElement *robot = new TiXmlElement("model");
 
-  if (rootLink->name == "world")
-  {
-    // convert all children link
-    for (std::vector<urdf::LinkSharedPtr>::const_iterator
-        child = rootLink->child_links.begin();
-        child != rootLink->child_links.end(); ++child)
+  TiXmlElement *sdf;
+
+  try {
+    // set model name to urdf robot name if not specified
+    robot->SetAttribute("name", robotModel->getName());
+
+    // Fixed Joint Reduction
+    // if link connects to parent via fixed joint, lump down and remove link
+    // set reduceFixedJoints to false will replace fixed joints with
+    // zero limit revolute joints, otherwise, we reduce it down to its
+    // parent link recursively
+    // using the disabledFixedJointLumping or preserveFixedJoint options
+    // is possible to disable fixed joint lumping only for selected joints
+    if (g_reduceFixedJoints)
     {
-      CreateSDF(robot, (*child), transform);
+      ReduceFixedJoints(robot, urdf::const_pointer_cast<urdf::Link>(rootLink));
     }
+
+    if (rootLink->name == "world")
+    {
+      // convert all children link
+      for (std::vector<urdf::LinkSharedPtr>::const_iterator
+          child = rootLink->child_links.begin();
+          child != rootLink->child_links.end(); ++child)
+      {
+        CreateSDF(robot, (*child), transform);
+      }
+    }
+    else
+    {
+      // convert, starting from root link
+      CreateSDF(robot, rootLink, transform);
+    }
+
+    // insert the extensions without reference into <robot> root level
+    InsertSDFExtensionRobot(robot);
+
+    InsertRobotOrigin(robot);
+
+    // Create new sdf
+    sdf = new TiXmlElement("sdf");
+
+    try {
+      // URDF is compatible with version 1.4. The automatic conversion script
+      // will up-convert URDF to SDF.
+      sdf->SetAttribute("version", "1.4");
+      // add robot to sdf
+      sdf->LinkEndChild(robot);
+    } catch(...) {
+      delete sdf;
+      throw;
+    }
+  } catch(...) {
+    delete robot;
+    throw;
   }
-  else
-  {
-    // convert, starting from root link
-    CreateSDF(robot, rootLink, transform);
-  }
 
-  // insert the extensions without reference into <robot> root level
-  InsertSDFExtensionRobot(robot);
-
-  InsertRobotOrigin(robot);
-
-  // add robot to sdfXmlOut
-  TiXmlElement *sdf = new TiXmlElement("sdf");
-
-  // URDF is compatible with version 1.4. The automatic conversion script
-  // will up-convert URDF to SDF.
-  sdf->SetAttribute("version", "1.4");
-
-  sdf->LinkEndChild(robot);
   sdfXmlOut.LinkEndChild(sdf);
-
-  // debug
-  // sdfXmlOut.Print();
 
   return sdfXmlOut;
 }
