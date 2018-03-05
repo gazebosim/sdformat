@@ -15,6 +15,7 @@
  *
 */
 #include <vector>
+#include <ignition/math/graph/Graph.hh>
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -36,8 +37,7 @@ class sdf::ModelPrivate
   /// \brief The joints specified in this model.
   public: std::vector<Joint> joints;
 
-  public: ignition::math::UndirectedGraph<
-            ignition::math::Matrix4d, int> frameGraph;
+  public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
 };
 
 /////////////////////////////////////////////////
@@ -61,8 +61,19 @@ Model::~Model()
 }
 
 /////////////////////////////////////////////////
+Errors Model::Load(ElementPtr _sdf,
+    std::shared_ptr<FrameGraph> _frameGraph)
+{
+  this->dataPtr->frameGraph = _frameGraph;
+  return this->Load(_sdf);
+}
+
+/////////////////////////////////////////////////
 Errors Model::Load(ElementPtr _sdf)
 {
+  if (!this->dataPtr->frameGraph)
+    this->dataPtr->frameGraph.reset(new FrameGraph);
+
   Errors errors;
 
   // Check that the provided SDF element is a <model>
@@ -83,16 +94,21 @@ Errors Model::Load(ElementPtr _sdf)
   }
 
   // Load the pose.
-  loadPose(_sdf, this->dataPtr->pose);
+  ignition::math::Pose3d pose;
+  std::string frame;
+  loadPose(_sdf, pose, frame);
+
+  this->dataPtr->frameGraph->AddVertex(this->dataPtr->name,
+                                       ignition::math::Matrix4d(pose));
 
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
-    this->dataPtr->links);
+    this->dataPtr->links, this->dataPtr->frameGraph);
   errors.insert(errors.end(), linkLoadErrors.begin(), linkLoadErrors.end());
 
   // Load all the joints.
   Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
-    this->dataPtr->joints);
+    this->dataPtr->joints, this->dataPtr->frameGraph);
   errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
 
   return errors;

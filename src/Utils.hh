@@ -56,7 +56,8 @@ namespace sdf
   /// experienced.
   template<typename Class>
   sdf::Errors loadUniqueRepeated(sdf::ElementPtr _sdf,
-      const std::string &_sdfName, std::vector<Class> &_objs)
+      const std::string &_sdfName, std::vector<Class> &_objs,
+      std::shared_ptr<FrameGraph> _frameGraph)
   {
     Errors errors;
 
@@ -72,7 +73,7 @@ namespace sdf
         Class obj;
 
         // Load the model and capture the errors.
-        Errors loadErrors = obj.Load(elem);
+        Errors loadErrors = obj.Load(elem, _frameGraph);
 
         // If there are no errors...
         if (loadErrors.empty())

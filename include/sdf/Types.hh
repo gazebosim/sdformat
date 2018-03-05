@@ -23,6 +23,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <ignition/math/graph/Graph.hh>
+#include <ignition/math/Matrix4.hh>
 
 #include "sdf/system_util.hh"
 #include "sdf/Error.hh"
@@ -40,6 +42,9 @@
 
 namespace sdf
 {
+  using FrameGraph = ignition::math::graph::DirectedGraph<
+    ignition::math::Matrix4d, int>;
+
   /// \brief Split a string using the delimiter in splitter.
   /// \param[in] str       The string to split.
   /// \param[in] splitter  The delimiter to use.

@@ -34,7 +34,8 @@ TEST(DOMJoint, NotAJoint)
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("world");
   sdf::Joint joint;
-  sdf::Errors errors = joint.Load(element);
+  std::shared_ptr<sdf::FrameGraph> frameGraph(new sdf::FrameGraph);
+  sdf::Errors errors = joint.Load(element, frameGraph);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_INCORRECT_TYPE);
   EXPECT_TRUE(errors[0].Message().find("Attempting to load a Joint") !=
@@ -49,7 +50,8 @@ TEST(DOMJoint, NoName)
   element->SetName("joint");
 
   sdf::Joint joint;
-  sdf::Errors errors = joint.Load(element);
+  std::shared_ptr<sdf::FrameGraph> frameGraph(new sdf::FrameGraph);
+  sdf::Errors errors = joint.Load(element, frameGraph);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   EXPECT_TRUE(errors[0].Message().find("joint name is required") !=

@@ -37,9 +37,9 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
   {
     if (_sdf->HasElement("pose"))
       sdf = _sdf->GetElement("pose");
-    return false;
+    else
+      return false;
   }
-
 
   // Read the frame. An empty frame implies the parent frame.
   std::pair<std::string, bool> framePair = sdf->Get<std::string>("frame", "");
@@ -48,9 +48,12 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
   std::pair<ignition::math::Pose3d, bool> posePair =
     sdf->Get<ignition::math::Pose3d>("", ignition::math::Pose3d::Zero);
 
-  // Set output.
-  _pose = posePair.first;
-  _frame = framePair.first;
+  // Set output, but only if the return value is true.
+  if (posePair.second)
+  {
+    _pose = posePair.first;
+    _frame = framePair.first;
+  }
 
   // The frame attribute is optional, so only return true or false based
   // on the pose element value.

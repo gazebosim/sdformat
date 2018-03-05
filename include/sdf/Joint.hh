@@ -88,7 +88,8 @@ namespace sdf
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    public: Errors Load(ElementPtr _sdf);
+    public: Errors Load(ElementPtr _sdf,
+                std::shared_ptr<FrameGraph> _frameGraph);
 
     /// \brief Get the name of the joint.
     /// The name of the joint must be unique within the scope of a Model.

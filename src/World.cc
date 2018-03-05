@@ -117,9 +117,11 @@ Errors World::Load(sdf::ElementPtr _sdf)
     _sdf->Get<ignition::math::Vector3d>("magnetic_field",
         this->dataPtr->magneticField).first;
 
+
+  std::shared_ptr<FrameGraph> frameGraph(new FrameGraph);
   // Load all the models.
   Errors modelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
-      this->dataPtr->models);
+      this->dataPtr->models, frameGraph);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
   return errors;

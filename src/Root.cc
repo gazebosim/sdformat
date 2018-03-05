@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <ignition/math/graph/Graph.hh>
 
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
@@ -123,9 +124,11 @@ Errors Root::Load(const std::string &_filename)
     }
   }
 
+  std::shared_ptr<FrameGraph> frameGraph(new FrameGraph);
+
   // Load all the models.
   Errors modelLoadErrors = loadUniqueRepeated<Model>(sdf, "model",
-      this->dataPtr->models);
+      this->dataPtr->models, frameGraph);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
   return errors;

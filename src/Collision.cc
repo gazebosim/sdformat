@@ -23,6 +23,14 @@ class sdf::CollisionPrivate
 {
   /// \brief Name of the collision.
   public: std::string name = "";
+
+  /// \brief The pose of the collision, as specified in SDF.
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+
+  /// \brief The frame of the pose
+  public: std::string poseFrame = "";
+
+  public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
 };
 
 /////////////////////////////////////////////////
@@ -46,7 +54,7 @@ Collision::~Collision()
 }
 
 /////////////////////////////////////////////////
-Errors Collision::Load(ElementPtr _sdf)
+Errors Collision::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 {
   Errors errors;
 
@@ -65,6 +73,16 @@ Errors Collision::Load(ElementPtr _sdf)
   {
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A collision name is required, but the name is not set."});
+  }
+
+  // Load the pose. Ignore the return value because the pose is optional.
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+
+  if (_frameGraph)
+  {
+    _frameGraph->AddVertex(this->dataPtr->name,
+        ignition::math::Matrix4d(this->dataPtr->pose));
+    this->dataPtr->frameGraph = _frameGraph;
   }
 
   return errors;

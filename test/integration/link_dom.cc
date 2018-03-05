@@ -37,7 +37,8 @@ TEST(DOMLink, NotALink)
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("world");
   sdf::Link link;
-  sdf::Errors errors = link.Load(element);
+  std::shared_ptr<sdf::FrameGraph> frameGraph(new sdf::FrameGraph);
+  sdf::Errors errors = link.Load(element, frameGraph);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
   EXPECT_TRUE(errors[0].Message().find("Attempting to load a Link") !=
@@ -52,7 +53,8 @@ TEST(DOMLink, NoName)
   element->SetName("link");
 
   sdf::Link link;
-  sdf::Errors errors = link.Load(element);
+  std::shared_ptr<sdf::FrameGraph> frameGraph(new sdf::FrameGraph);
+  sdf::Errors errors = link.Load(element, frameGraph);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(sdf::ErrorCode::ATTRIBUTE_MISSING, errors[0].Code());
   EXPECT_TRUE(errors[0].Message().find("link name is required") !=
@@ -119,6 +121,8 @@ TEST(DOMLink, InertialDoublePendulum)
   const sdf::Link *baseLink = model->LinkByIndex(0);
   ASSERT_TRUE(baseLink != nullptr);
 
+  // baseLink->Pose("double_pendulum_with_base");
+
   const ignition::math::Inertiald inertial = baseLink->Inertial();
   EXPECT_DOUBLE_EQ(100.0, inertial.MassMatrix().Mass());
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().X());
@@ -143,6 +147,8 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_DOUBLE_EQ(0.0, inertialUpper.Pose().Pos().Y());
   EXPECT_DOUBLE_EQ(0.5, inertialUpper.Pose().Pos().Z());
   EXPECT_TRUE(inertial.MassMatrix().IsValid());
+
+  const sdf::Link *lowerLink = model->LinkByIndex(2);
 }
 
 //////////////////////////////////////////////////
@@ -195,4 +201,29 @@ TEST(DOMLink, InertialInvalid)
   // TODO: make this failure less severe?
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_EQ(model, nullptr);
+}
+
+//////////////////////////////////////////////////
+TEST(DOMLink, LinkChain)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "link_chain.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_TRUE(model != nullptr);
+
+  const sdf::Link *linkOne = model->LinkByIndex(0);
+  const sdf::Link *linkTwo = model->LinkByIndex(1);
+
+  ignition::math::Pose3d pose1 = linkOne->Pose("link_chain");
+  std::cout << pose1 << std::endl;
+
+  /*ignition::math::Pose3d pose2 = linkTwo->Pose("one");
+  std::cout << pose2 << std::endl;
+  */
 }

@@ -47,7 +47,8 @@ namespace sdf
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    public: Errors Load(ElementPtr _sdf);
+    public: Errors Load(ElementPtr _sdf,
+                std::shared_ptr<FrameGraph> _frameGraph);
 
     /// \brief Get the name of the link.
     /// The name of a link must be unique within the scope of a Model.
@@ -110,6 +111,8 @@ namespace sdf
     /// \return True if the inertial is valid, false otherwise.
     /// \sa const ignition::math::Inertiald &Inertial() const
     public: bool SetInertial(const ignition::math::Inertiald &_inertial);
+
+    public: ignition::math::Pose3d Pose(const std::string &_frame) const;
 
     /// \brief Private data pointer.
     private: LinkPrivate *dataPtr = nullptr;

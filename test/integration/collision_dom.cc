@@ -30,7 +30,8 @@ TEST(DOMCollision, NotACollision)
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("world");
   sdf::Collision collision;
-  sdf::Errors errors = collision.Load(element);
+  std::shared_ptr<sdf::FrameGraph> frameGraph(new sdf::FrameGraph);
+  sdf::Errors errors = collision.Load(element, frameGraph);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_INCORRECT_TYPE);
   EXPECT_TRUE(errors[0].Message().find("Attempting to load a Collision") !=
@@ -46,7 +47,8 @@ TEST(DOMCollision, NoName)
 
   element->PrintValues("  ");
   sdf::Collision collision;
-  sdf::Errors errors = collision.Load(element);
+  std::shared_ptr<sdf::FrameGraph> frameGraph(new sdf::FrameGraph);
+  sdf::Errors errors = collision.Load(element, frameGraph);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   EXPECT_TRUE(errors[0].Message().find("collision name is required") !=

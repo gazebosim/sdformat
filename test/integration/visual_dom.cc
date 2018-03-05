@@ -30,7 +30,8 @@ TEST(DOMVisual, NotAVisual)
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("world");
   sdf::Visual visual;
-  sdf::Errors errors = visual.Load(element);
+  std::shared_ptr<sdf::FrameGraph> frameGraph(new sdf::FrameGraph);
+  sdf::Errors errors = visual.Load(element, frameGraph);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_INCORRECT_TYPE);
   EXPECT_TRUE(errors[0].Message().find("Attempting to load a Visual") !=
@@ -46,7 +47,8 @@ TEST(DOMVisual, NoName)
 
   element->PrintValues("  ");
   sdf::Visual visual;
-  sdf::Errors errors = visual.Load(element);
+  std::shared_ptr<sdf::FrameGraph> frameGraph(new sdf::FrameGraph);
+  sdf::Errors errors = visual.Load(element, frameGraph);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   EXPECT_TRUE(errors[0].Message().find("visual name is required") !=

@@ -47,6 +47,15 @@ namespace sdf
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(ElementPtr _sdf,
+                std::shared_ptr<FrameGraph> _frameGraph);
+
+    /// \brief Load the model based on a element pointer. This is *not* the
+    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// object.
+    /// \param[in] _sdf The SDF Element pointer
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
 
     /// \brief Get the name of the model.
