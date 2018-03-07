@@ -35,6 +35,15 @@ TEST(DOMLink, Construction)
   EXPECT_FALSE(link.VisualNameExists(""));
   EXPECT_FALSE(link.VisualNameExists("default"));
 
+  EXPECT_EQ(ignition::math::Pose3d::Zero, link.Pose());
+  EXPECT_TRUE(link.PoseFrame().empty());
+
+  link.SetPose({10, 20, 30, 0, IGN_PI, 0});
+  EXPECT_EQ(ignition::math::Pose3d(10, 20, 30, 0, IGN_PI, 0), link.Pose());
+
+  link.SetPoseFrame("model");
+  EXPECT_EQ("model", link.PoseFrame());
+
   // Get the default interial
   const ignition::math::Inertiald inertial = link.Inertial();
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().Mass());

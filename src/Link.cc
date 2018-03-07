@@ -29,6 +29,12 @@ class sdf::LinkPrivate
   /// \brief Name of the link.
   public: std::string name = "";
 
+  /// \brief Pose of the link
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+
+  /// \brief Frame of the pose.
+  public: std::string poseFrame = "";
+
   /// \brief The visuals specified in this link.
   public: std::vector<Visual> visuals;
 
@@ -82,6 +88,9 @@ Errors Link::Load(ElementPtr _sdf)
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A link name is required, but the name is not set."});
   }
+
+  // Load the pose. Ignore the return value since the pose is optional.
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
   // Load all the visuals.
   Errors visLoadErrors = loadUniqueRepeated<Visual>(_sdf, "visual",
@@ -214,4 +223,28 @@ bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 {
   this->dataPtr->inertial = _inertial;
   return _inertial.MassMatrix().IsValid();
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Link::Pose() const
+{
+  return this->dataPtr->pose;
+}
+
+/////////////////////////////////////////////////
+const std::string &Link::PoseFrame() const
+{
+  return this->dataPtr->poseFrame;
+}
+
+/////////////////////////////////////////////////
+void Link::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->dataPtr->pose = _pose;
+}
+
+/////////////////////////////////////////////////
+void Link::SetPoseFrame(const std::string &_frame)
+{
+  this->dataPtr->poseFrame = _frame;
 }

@@ -18,6 +18,7 @@
 #define SDF_LINK_HH_
 
 #include <string>
+#include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
@@ -110,6 +111,28 @@ namespace sdf
     /// \return True if the inertial is valid, false otherwise.
     /// \sa const ignition::math::Inertiald &Inertial() const
     public: bool SetInertial(const ignition::math::Inertiald &_inertial);
+
+    /// \brief Get the pose of the link. This is the pose of the link
+    /// as specified in SDF (<link> <pose> ... </pose></link>).
+    /// \return The pose of the link.
+    public: const ignition::math::Pose3d &Pose() const;
+
+    /// \brief Set the pose of the link.
+    /// \sa const ignition::math::Pose3d &Pose() const
+    /// \param[in] _pose The new link pose.
+    public: void SetPose(const ignition::math::Pose3d &_pose);
+
+    /// \brief Get the name of the coordinate frame in which this link's
+    /// pose is expressed. A empty value indicates that the frame is the
+    /// parent model.
+    /// \return The name of the pose frame.
+    public: const std::string &PoseFrame() const;
+
+    /// \brief Set the name of the coordinate frame in which this link's
+    /// pose is expressed. A empty value indicates that the frame is the
+    /// parent model.
+    /// \param[in] _frame The name of the pose frame.
+    public: void SetPoseFrame(const std::string &_frame);
 
     /// \brief Private data pointer.
     private: LinkPrivate *dataPtr = nullptr;
