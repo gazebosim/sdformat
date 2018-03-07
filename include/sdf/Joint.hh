@@ -18,6 +18,7 @@
 #define SDF_JOINT_HH_
 
 #include <string>
+#include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
