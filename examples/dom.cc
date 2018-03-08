@@ -38,7 +38,7 @@ int main(int argc, char **argv)
   else
   {
     std::cerr << "Errors encountered: \n";
-    for (const auto e : errors)
+    for (auto const &e : errors)
     {
       std::cout << e << std::endl;
     }
