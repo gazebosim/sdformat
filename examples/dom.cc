@@ -15,6 +15,7 @@
  *
 */
 #include <iostream>
+#include <sdf/Error.hh>
 #include <sdf/Root.hh>
 
 int main(int argc, char **argv)
@@ -28,11 +29,19 @@ int main(int argc, char **argv)
 
   /// [rootUsage]
   sdf::Root root;
-  if (root.Load(argv[1]))
+  sdf::Errors errors = root.Load(argv[1]);
+  if (errors.empty())
   {
-    root.Print();
-    std::cerr << "Valid SDF file. Parsed values shown above.\n";
+    std::cerr << "Valid SDF file.\n";
     return 0;
+  }
+  else
+  {
+    std::cerr << "Errors encountered: \n";
+    for (const auto e : errors)
+    {
+      std::cout << e << std::endl;
+    }
   }
   /// [rootUsage]
 
