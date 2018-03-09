@@ -17,9 +17,13 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <string>
 #include <utility>
+#include <ignition/math/Pose3.hh>
+#include "sdf/Error.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
+#include "sdf/Types.hh"
 #include "Utils.hh"
 
 using namespace sdf;

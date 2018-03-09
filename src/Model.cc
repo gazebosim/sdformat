@@ -14,10 +14,14 @@
  * limitations under the License.
  *
 */
+#include <string>
 #include <vector>
+#include <ignition/math/Pose3.hh>
+#include "sdf/Error.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
+#include "sdf/Types.hh"
 #include "Utils.hh"
 
 using namespace sdf;

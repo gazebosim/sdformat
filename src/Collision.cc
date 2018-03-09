@@ -14,7 +14,11 @@
  * limitations under the License.
  *
 */
+#include <string>
+#include <ignition/math/Pose3.hh>
 #include "sdf/Collision.hh"
+#include "sdf/Error.hh"
+#include "sdf/Types.hh"
 #include "Utils.hh"
 
 using namespace sdf;
