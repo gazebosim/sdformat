@@ -82,6 +82,9 @@ namespace sdf
 
     /// \brief A link has invalid inertia.
     LINK_INERTIA_INVALID,
+
+    /// \brief An uncategorized error.
+    OTHER,
   };
 
   class SDFORMAT_VISIBLE Error

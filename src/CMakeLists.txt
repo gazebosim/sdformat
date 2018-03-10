@@ -19,13 +19,16 @@ if (USE_EXTERNAL_TINYXML)
 endif()
 
 set (sources
+  Box.cc
   Collision.cc
   Console.cc
   Converter.cc
+  Cylinder.cc
   Element.cc
   Error.cc
   Exception.cc
   Filesystem.cc
+  Geometry.cc
   ign.cc
   Joint.cc
   JointAxis.cc
@@ -34,9 +37,11 @@ set (sources
   parser.cc
   parser_urdf.cc
   Param.cc
+  Plane.cc
   Root.cc
   SDF.cc
   SDFExtension.cc
+  Sphere.cc
   Types.cc
   Utils.cc
   Visual.cc

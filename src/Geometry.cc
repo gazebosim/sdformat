@@ -21,20 +21,13 @@ using namespace sdf;
 // Private data class
 class sdf::GeometryPrivate
 {
-  public: ignition::math::Vector3d size;
+  public: GeometryType type = GeometryType::INVALID;
 };
 
 /////////////////////////////////////////////////
 Geometry::Geometry()
   : dataPtr(new GeometryPrivate)
 {
-}
-
-/////////////////////////////////////////////////
-Geometry::Geometry(Geometry &&_geometry)
-{
-  this->dataPtr = _collision.dataPtr;
-  _collision.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -45,29 +38,13 @@ Geometry::~Geometry()
 }
 
 /////////////////////////////////////////////////
-Errors Geometry::Load(ElementPtr _sdf)
+GeometryType Geometry::Type() const
 {
-  Errors errors;
+  return this->dataPtr->type;
+}
 
-  // Check that the provided SDF element is a <geometry>
-  // This is an error that cannot be recovered, so return an error.
-  if (_sdf->GetName() != "geometry")
-  {
-    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a Geometry, but the provided SDF element is not a "
-        "<geometry>."});
-    return errors;
-  }
-
-  if (_sdf->HasElement("box"))
-  {
-    sdf::ElementPtr boxElem = _sdf->GetElement("box");
-    std::pair<ignition::math::Vector3d, bool> sizePair =
-      boxElem->Get<ignition::math::Vector3d>("size",
-          ignition::math::Vector3d::Zero);
-
-    if (!sizePair.second)
-      // HERE
-  }
-
+/////////////////////////////////////////////////
+void Geometry::SetType(const GeometryType _type)
+{
+  this->dataPtr->type = _type;
 }
