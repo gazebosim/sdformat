@@ -401,7 +401,7 @@ TEST(Converter, Add)
   ASSERT_NE(nullptr, convertedElem);
   EXPECT_EQ(convertedElem->ValueStr(), "elemB");
   EXPECT_NE(nullptr, convertedElem->FirstChildElement("elemC"));
-  EXPECT_NE(nullptr, convertedElem->FirstChildElement("elemBB"));
+  ASSERT_NE(nullptr, convertedElem->FirstChildElement("elemBB"));
   std::string elemValue = convertedElem->FirstChildElement("elemBB")->GetText();
   EXPECT_EQ(elemValue, "BB");
   convertedElem = convertedElem->FirstChildElement("elemC");
