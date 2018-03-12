@@ -816,6 +816,80 @@ TEST(Converter, RenameAttrAttr)
 }
 
 ////////////////////////////////////////////////////
+TEST(Converter, RenameNoFrom)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Test failing to move since there is nothing specified in the "from" element
+  TiXmlDocument xmlDoc3;
+  xmlDoc3.Parse(xmlString.c_str());
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <convert name='elemC'>"
+                << "      <rename>"
+                << "        <from/>"
+                << "        <to element='elemE' attribute='attrE'/>"
+                << "      </rename>"
+                << "    </convert>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc3;
+  convertXmlDoc3.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3);
+
+  TiXmlElement *convertedElem =  xmlDoc3.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemD");
+}
+
+////////////////////////////////////////////////////
+TEST(Converter, RenameNoTo)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Test failing to move since there is nothing specified in the "to" element
+  TiXmlDocument xmlDoc3;
+  xmlDoc3.Parse(xmlString.c_str());
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <convert name='elemC'>"
+                << "      <rename>"
+                << "        <from attribute='attrC'/>"
+                << "        <to attribute='attrE'/>"
+                << "      </rename>"
+                << "    </convert>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc3;
+  convertXmlDoc3.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3);
+
+  TiXmlElement *convertedElem =  xmlDoc3.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemD");
+}
+
+////////////////////////////////////////////////////
 TEST(Converter, GazeboToSDF)
 {
   std::stringstream stream;
