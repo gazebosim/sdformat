@@ -3189,7 +3189,8 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
 
   TiXmlElement *sdf;
 
-  try {
+  try
+  {
     // set model name to urdf robot name if not specified
     robot->SetAttribute("name", robotModel->getName());
 
@@ -3229,17 +3230,22 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
     // Create new sdf
     sdf = new TiXmlElement("sdf");
 
-    try {
+    try
+    {
       // URDF is compatible with version 1.4. The automatic conversion script
       // will up-convert URDF to SDF.
       sdf->SetAttribute("version", "1.4");
       // add robot to sdf
       sdf->LinkEndChild(robot);
-    } catch(...) {
+    }
+    catch(...)
+    {
       delete sdf;
       throw;
     }
-  } catch(...) {
+  }
+  catch(...)
+  {
     delete robot;
     throw;
   }
