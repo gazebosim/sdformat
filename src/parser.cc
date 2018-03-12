@@ -54,36 +54,19 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 //////////////////////////////////////////////////
 bool init(SDFPtr _sdf)
 {
-  bool result = false;
-
-  std::string filename;
-  std::string fileToFind = "root.sdf";
-
-  if (sdf::SDF::Version() == "1.0" || sdf::SDF::Version() == "1.2")
-  {
-    fileToFind = "gazebo.sdf";
-  }
-
-  filename = sdf::findFile(fileToFind);
-
-  FILE *ftest = fopen(filename.c_str(), "r");
-  if (ftest)
-  {
-    fclose(ftest);
-    result = _initFile(filename, _sdf);
-  }
-  else
-  {
-    sdferr << "Unable to find or open SDF file[" << fileToFind << "]\n";
-  }
-
-  return result;
+  std::string xmldata = sdf::getXMLData();
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmldata.c_str());
+  return initDoc(&xmlDoc, _sdf);
 }
 
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, SDFPtr _sdf)
 {
-  return _initFile(sdf::findFile(_filename), _sdf);
+  std::string xmldata = sdf::getXMLDataFromFilename(_filename);
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmldata.c_str());
+  return initDoc(&xmlDoc, _sdf);
 }
 
 //////////////////////////////////////////////////

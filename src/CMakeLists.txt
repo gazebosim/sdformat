@@ -31,8 +31,8 @@ endif()
 file(GLOB xml_files ../sdf/**/*.sdf ../sdf/**/*.convert)
 file(WRITE "${PROJECT_BINARY_DIR}/filelist.txt" "${xml_files}")
 add_custom_command(
-  OUTPUT "${PROJECT_BINARY_DIR}/EmbeddedXML.cc"
-  COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/embed_xml_in_cpp_string.py" "${PROJECT_BINARY_DIR}/EmbeddedXML.cc" "${PROJECT_BINARY_DIR}/EmbeddedXML.hh" "${PROJECT_BINARY_DIR}/filelist.txt"
+  OUTPUT "${PROJECT_BINARY_DIR}/src/EmbeddedXML.cc" "${PROJECT_BINARY_DIR}/include/sdf/EmbeddedXML.hh"
+  COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/embed_xml_in_cpp_string.py" "${PROJECT_BINARY_DIR}/src/EmbeddedXML.cc" "${PROJECT_BINARY_DIR}/include/sdf/EmbeddedXML.hh" "${PROJECT_BINARY_DIR}/filelist.txt"
   DEPENDS "${CMAKE_CURRENT_LIST_DIR}/embed_xml_in_cpp_string.py" "${PROJECT_BINARY_DIR}/filelist.txt" "${xml_files}"
   COMMENT "Generate Embedded XML data for the library"
 )
@@ -42,7 +42,7 @@ set (sources
   Console.cc
   Converter.cc
   Element.cc
-  "${PROJECT_BINARY_DIR}/EmbeddedXML.cc"
+  "${PROJECT_BINARY_DIR}/src/EmbeddedXML.cc"
   Error.cc
   Exception.cc
   Filesystem.cc
