@@ -35,7 +35,6 @@ class sdf::PlanePrivate
 Plane::Plane()
   : dataPtr(new PlanePrivate)
 {
-  this->SetType(GeometryType::PLANE);
 }
 
 /////////////////////////////////////////////////
@@ -82,7 +81,7 @@ Errors Plane::Load(ElementPtr _sdf)
           "Invalid <normal> data for a <plane> geometry. "
           "Using a normal of 0, 0, 1."});
     }
-    this->dataPtr->normal = pair.first;
+    this->SetNormal(pair.first);
   }
   else
   {
@@ -112,4 +111,29 @@ Errors Plane::Load(ElementPtr _sdf)
   }
 
   return errors;
+}
+
+//////////////////////////////////////////////////
+ignition::math::Vector3d Plane::Normal() const
+{
+  return this->dataPtr->normal;
+}
+
+//////////////////////////////////////////////////
+void Plane::SetNormal(const ignition::math::Vector3d &_normal)
+{
+  this->dataPtr->normal = _normal;
+  this->dataPtr->normal.Normalize();
+}
+
+//////////////////////////////////////////////////
+ignition::math::Vector2d Plane::Size() const
+{
+  return this->dataPtr->size;
+}
+
+//////////////////////////////////////////////////
+void Plane::SetSize(const ignition::math::Vector2d &_size)
+{
+  this->dataPtr->size = _size;
 }

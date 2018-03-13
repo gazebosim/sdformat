@@ -19,14 +19,13 @@
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
-#include <sdf/Geometry.hh>
 
 namespace sdf
 {
   // Forward declare private data class.
   class SpherePrivate;
 
-  class Sphere : public Geometry
+  class SDFORMAT_VISIBLE Sphere
   {
     /// \brief Constructor
     public: Sphere();
@@ -40,7 +39,15 @@ namespace sdf
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    public: Errors Load(ElementPtr _sdf) = 0;
+    public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Get the sphere's radius in meters.
+    /// \return The radius of the sphere in meters.
+    public: double Radius() const;
+
+    /// \brief Set the sphere's radius in meters.
+    /// \param[in] _radius The radius of the sphere in meters.
+    public: void SetRadius(const double _radius);
 
     /// \brief Private data pointer.
     private: SpherePrivate *dataPtr;

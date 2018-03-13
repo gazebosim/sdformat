@@ -19,14 +19,13 @@
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
-#include <sdf/Geometry.hh>
 
 namespace sdf
 {
   // Forward declare private data class.
   class BoxPrivate;
 
-  class Box : public Geometry
+  class SDFORMAT_VISIBLE Box
   {
     /// \brief Constructor
     public: Box();
@@ -40,7 +39,15 @@ namespace sdf
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    public: Errors Load(ElementPtr _sdf) = 0;
+    public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Get the box size in meters.
+    /// \return Size of the box in meters.
+    public: ignition::math::Vector3d Size() const;
+
+    /// \brief Set the box size in meters.
+    /// \param[in] _size Size of the box in meters.
+    public: void SetSize(const ignition::math::Vector3d &_size);
 
     /// \brief Private data pointer.
     private: BoxPrivate *dataPtr;

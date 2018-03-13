@@ -77,7 +77,9 @@ TEST(DOMRoot, LoadLinkCheck)
   ASSERT_TRUE(model != nullptr);
   EXPECT_EQ("ground_plane", model->Name());
   EXPECT_EQ(1u, model->LinkCount());
-  EXPECT_FALSE(nullptr == model->LinkByIndex(0));
+  ASSERT_FALSE(nullptr == model->LinkByIndex(0));
+  ASSERT_FALSE(nullptr == model->LinkByName("link"));
+  EXPECT_EQ(model->LinkByName("link")->Name(), model->LinkByIndex(0)->Name());
   EXPECT_TRUE(nullptr == model->LinkByIndex(1));
   EXPECT_TRUE(model->LinkNameExists("link"));
   EXPECT_FALSE(model->LinkNameExists("links"));

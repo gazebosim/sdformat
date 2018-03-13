@@ -75,6 +75,11 @@ namespace sdf
     /// \return True if there exists a visual with the given name.
     public: bool VisualNameExists(const std::string &_name) const;
 
+    /// \brief Get a visual based on a name.
+    /// \param[in] _name Name of the visual.
+    /// \return Pointer to the visual. Nullptr if the name does not exist.
+    public: const Visual *VisualByName(const std::string &_name) const;
+
     /// \brief Get the number of collisions.
     /// \return Number of collisions contained in this Link object.
     public: uint64_t CollisionCount() const;
@@ -90,6 +95,11 @@ namespace sdf
     /// \param[in] _name Name of the collision to check.
     /// \return True if there exists a collision with the given name.
     public: bool CollisionNameExists(const std::string &_name) const;
+
+    /// \brief Get a collision based on a name.
+    /// \param[in] _name Name of the collision.
+    /// \return Pointer to the collision. Nullptr if the name does not exist.
+    public: const Collision *CollisionByName(const std::string &_name) const;
 
     /// \brief Get the inertial value for this link. The inertial object
     /// consists of the link's mass, a 3x3 rotational inertia matrix, and

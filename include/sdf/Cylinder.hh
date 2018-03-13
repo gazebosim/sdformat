@@ -19,14 +19,13 @@
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
-#include <sdf/Geometry.hh>
 
 namespace sdf
 {
   // Forward declare private data class.
   class CylinderPrivate;
 
-  class Cylinder : public Geometry
+  class SDFORMAT_VISIBLE Cylinder
   {
     /// \brief Constructor
     public: Cylinder();
@@ -40,7 +39,23 @@ namespace sdf
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    public: Errors Load(ElementPtr _sdf) = 0;
+    public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Get the cylinder's radius in meters.
+    /// \return The radius of the cylinder in meters.
+    public: double Radius() const;
+
+    /// \brief Set the cylinder's radius in meters.
+    /// \param[in] _radius The radius of the cylinder in meters.
+    public: void SetRadius(const double _radius);
+
+    /// \brief Get the cylinder's length in meters.
+    /// \return The length of the cylinder in meters.
+    public: double Length() const;
+
+    /// \brief Set the cylinder's length in meters.
+    /// \param[in] _length The length of the cylinder in meters.
+    public: void SetLength(const double _length);
 
     /// \brief Private data pointer.
     private: CylinderPrivate *dataPtr;

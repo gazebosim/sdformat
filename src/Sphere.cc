@@ -23,14 +23,13 @@ using namespace sdf;
 class sdf::SpherePrivate
 {
   // Radius of the sphere
-  public: double radius = 0.5;
+  public: double radius = 1.0;
 };
 
 /////////////////////////////////////////////////
 Sphere::Sphere()
   : dataPtr(new SpherePrivate)
 {
-  this->SetType(GeometryType::SPHERE);
 }
 
 /////////////////////////////////////////////////
@@ -75,7 +74,7 @@ Errors Sphere::Load(ElementPtr _sdf)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Invalid <radius> data for a <sphere> geometry. "
-          "Using a radius of 0.5."});
+          "Using a radius of 1.0."});
     }
     this->dataPtr->radius = pair.first;
   }
@@ -83,8 +82,20 @@ Errors Sphere::Load(ElementPtr _sdf)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
         "Sphere geometry is missing a <radius> child element. "
-        "Using a radius of 0.5."});
+        "Using a radius of 1.0."});
   }
 
   return errors;
+}
+
+//////////////////////////////////////////////////
+double Sphere::Radius() const
+{
+  return this->dataPtr->radius;
+}
+
+//////////////////////////////////////////////////
+void Sphere::SetRadius(const double _radius)
+{
+  this->dataPtr->radius = _radius;
 }

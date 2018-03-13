@@ -77,9 +77,11 @@ else()
 endif()
 
 set (gtest_sources
+  Box_TEST.cc
   Collision_TEST.cc
   Console_TEST.cc
   Converter_TEST.cc
+  Cylinder_TEST.cc
   Element_TEST.cc
   Error_TEST.cc
   Exception_TEST.cc
@@ -91,8 +93,10 @@ set (gtest_sources
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
+  Plane_TEST.cc
   Root_TEST.cc
   SDF_TEST.cc
+  Sphere_TEST.cc
   Types_TEST.cc
   Visual_TEST.cc
   World_TEST.cc

@@ -70,6 +70,11 @@ namespace sdf
     /// \sa uint64_t LinkCount() const
     public: const Link *LinkByIndex(const uint64_t _index) const;
 
+    /// \brief Get a link based on a name.
+    /// \param[in] _name Name of the link.
+    /// \return Pointer to the link. Nullptr if the name does not exist.
+    public: const Link *LinkByName(const std::string &_name) const;
+
     /// \brief Get whether a link name exists.
     /// \param[in] _name Name of the link to check.
     /// \return True if there exists a link with the given name.

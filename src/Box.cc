@@ -31,7 +31,6 @@ class sdf::BoxPrivate
 Box::Box()
   : dataPtr(new BoxPrivate)
 {
-  this->SetType(GeometryType::BOX);
 }
 
 /////////////////////////////////////////////////
@@ -88,4 +87,16 @@ Errors Box::Load(ElementPtr _sdf)
   }
 
   return errors;
+}
+
+//////////////////////////////////////////////////
+ignition::math::Vector3d Box::Size() const
+{
+  return this->dataPtr->size;
+}
+
+//////////////////////////////////////////////////
+void Box::SetSize(const ignition::math::Vector3d &_size)
+{
+  this->dataPtr->size = _size;
 }

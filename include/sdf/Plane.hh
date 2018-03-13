@@ -19,14 +19,13 @@
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
-#include <sdf/Geometry.hh>
 
 namespace sdf
 {
   // Forward declare private data class.
   class PlanePrivate;
 
-  class Plane : public Geometry
+  class SDFORMAT_VISIBLE Plane
   {
     /// \brief Constructor
     public: Plane();
@@ -40,7 +39,24 @@ namespace sdf
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    public: Errors Load(ElementPtr _sdf) = 0;
+    public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Get the plane normal vector.
+    /// \return The plane normal vector.
+    public: ignition::math::Vector3d Normal() const;
+
+    /// \brief Set the plane normal vector. The _normal vector will be
+    /// normalized.
+    /// \param[in] _normal The plane normal vector.
+    public: void SetNormal(const ignition::math::Vector3d &_normal);
+
+    /// \brief Get the plane size in meters.
+    /// \return The plane size in meters.
+    public: ignition::math::Vector2d Size() const;
+
+    /// \brief Set the plane size in meters.
+    /// \param[in] _size The plane size in meters.
+    public: void SetSize(const ignition::math::Vector2d &_size);
 
     /// \brief Private data pointer.
     private: PlanePrivate *dataPtr;

@@ -167,3 +167,16 @@ const Joint *Model::JointByName(const std::string &_name) const
   }
   return nullptr;
 }
+
+/////////////////////////////////////////////////
+const Link *Model::LinkByName(const std::string &_name) const
+{
+  for (auto const &l : this->dataPtr->links)
+  {
+    if (l.Name() == _name)
+    {
+      return &l;
+    }
+  }
+  return nullptr;
+}

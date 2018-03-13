@@ -23,7 +23,7 @@ using namespace sdf;
 class sdf::CylinderPrivate
 {
   // Radius of the cylinder
-  public: double radius = 0.5;
+  public: double radius = 1.0;
 
   // Length of the cylinder
   public: double length = 1.0;
@@ -33,7 +33,6 @@ class sdf::CylinderPrivate
 Cylinder::Cylinder()
   : dataPtr(new CylinderPrivate)
 {
-  this->SetType(GeometryType::CYLINDER);
 }
 
 /////////////////////////////////////////////////
@@ -110,4 +109,28 @@ Errors Cylinder::Load(ElementPtr _sdf)
   }
 
   return errors;
+}
+
+//////////////////////////////////////////////////
+double Cylinder::Radius() const
+{
+  return this->dataPtr->radius;
+}
+
+//////////////////////////////////////////////////
+void Cylinder::SetRadius(const double _radius)
+{
+  this->dataPtr->radius = _radius;
+}
+
+//////////////////////////////////////////////////
+double Cylinder::Length() const
+{
+  return this->dataPtr->length;
+}
+
+//////////////////////////////////////////////////
+void Cylinder::SetLength(const double _length)
+{
+  this->dataPtr->length = _length;
 }

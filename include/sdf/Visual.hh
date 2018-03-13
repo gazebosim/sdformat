@@ -18,7 +18,11 @@
 #define SDF_VISUAL_HH_
 
 #include <string>
+#include "sdf/Box.hh"
+#include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
+#include "sdf/Plane.hh"
+#include "sdf/Sphere.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
 

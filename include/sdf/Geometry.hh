@@ -46,13 +46,13 @@ namespace sdf
     SPHERE = 4,
   };
 
-  class SDFORMAT_VISIBLE Geometry
+  class SDFORMAT_VISIBLE GeometryDecorator
   {
     /// \brief Default constructor
-    public: Geometry();
+    public: GeometryDecorator();
 
     /// \brief Destructor
-    public: virtual ~Geometry();
+    public: virtual ~GeometryDecorator();
 
     /// \brief Load the geometry based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -61,6 +61,31 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: virtual Errors Load(ElementPtr _sdf) = 0;
+
+    /// \brief Get the box geometry, or nullptr if the contained geometry is
+    /// not a box.
+    /// \return Pointer to the visual's box geometry, or nullptr if the
+    /// geometry is not a box.
+    public: const Box *BoxGeom() const;
+
+    /// \brief Get the cylinder geometry, or nullptr if the contained
+    /// geometry is not a cylinder.
+    /// \return Pointer to the visual's cylinder geometry, or nullptr if the
+    /// geometry is not a cylinder.
+    public: const Cylinder *CylinderGeom() const;
+
+    /// \brief Get the sphere geometry, or nullptr if the contained geometry is
+    /// not a sphere.
+    /// \return Pointer to the visual's sphere geometry, or nullptr if the
+    /// geometry is not a sphere.
+    public: const Sphere *SphereGeom() const;
+
+    /// \brief Get the plane geometry, or nullptr if the contained geometry is
+    /// not a plane.
+    /// \return Pointer to the visual's plane geometry, or nullptr if the
+    /// geometry is not a plane.
+    public: const Plane *PlaneGeom() const;
+
 
     /// \brief Get the type of geometry.
     /// \return The geometry type.
