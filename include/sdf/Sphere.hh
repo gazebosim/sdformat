@@ -25,6 +25,8 @@ namespace sdf
   // Forward declare private data class.
   class SpherePrivate;
 
+  /// \brief Sphere represents a sphere shape, and is usually accessed through a
+  /// Geometry.
   class SDFORMAT_VISIBLE Sphere
   {
     /// \brief Constructor

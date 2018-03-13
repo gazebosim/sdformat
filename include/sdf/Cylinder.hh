@@ -25,6 +25,8 @@ namespace sdf
   // Forward declare private data class.
   class CylinderPrivate;
 
+  /// \brief Cylinder represents a cylinder shape, and is usually accessed
+  /// through a Geometry.
   class SDFORMAT_VISIBLE Cylinder
   {
     /// \brief Constructor

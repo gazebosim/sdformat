@@ -451,8 +451,7 @@ namespace sdf
 
     if (_key.empty() && this->dataPtr->value)
     {
-      std::cout << "Empty key\n";
-      result.second = this->dataPtr->value->Get<T>(result.first);
+      this->dataPtr->value->Get<T>(result.first);
     }
     else if (!_key.empty())
     {
@@ -463,11 +462,11 @@ namespace sdf
       }
       else if (this->HasElement(_key))
       {
-        result = this->GetElementImpl(_key)->Get<T>("", _defaultValue);
+        result.first = this->GetElementImpl(_key)->Get<T>();
       }
       else if (this->HasElementDescription(_key))
       {
-        result = this->GetElementDescription(_key)->Get<T>("", _defaultValue);
+        result.first = this->GetElementDescription(_key)->Get<T>();
       }
       else
       {

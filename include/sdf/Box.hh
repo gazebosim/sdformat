@@ -17,6 +17,7 @@
 #ifndef SDF_BOX_HH_
 #define SDF_BOX_HH_
 
+#include <ignition/math/Vector3.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 
@@ -25,6 +26,8 @@ namespace sdf
   // Forward declare private data class.
   class BoxPrivate;
 
+  /// \brief Box represents a box shape, and is usually accessed through a
+  /// Geometry.
   class SDFORMAT_VISIBLE Box
   {
     /// \brief Constructor

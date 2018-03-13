@@ -16,7 +16,6 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
 #include "sdf/Visual.hh"
 #include "sdf/Geometry.hh"
 

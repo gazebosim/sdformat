@@ -17,6 +17,8 @@
 #ifndef SDF_PLANE_HH_
 #define SDF_PLANE_HH_
 
+#include <ignition/math/Vector3.hh>
+#include <ignition/math/Vector2.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 
@@ -25,6 +27,8 @@ namespace sdf
   // Forward declare private data class.
   class PlanePrivate;
 
+  /// \brief Plane represents a plane shape, and is usually accessed through a
+  /// Geometry.
   class SDFORMAT_VISIBLE Plane
   {
     /// \brief Constructor

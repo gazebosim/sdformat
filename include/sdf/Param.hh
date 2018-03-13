@@ -296,7 +296,6 @@ namespace sdf
       }
       else
       {
-        std::cout << "HERE[" << this->dataPtr->value << "\n";
         std::stringstream ss;
         ss << this->dataPtr->value;
         ss >> _value;
