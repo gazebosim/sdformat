@@ -14,10 +14,14 @@
  * limitations under the License.
  *
 */
+#include <string>
 #include <vector>
+#include <ignition/math/Pose3.hh>
+#include "sdf/Error.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
+#include "sdf/Types.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -26,6 +30,12 @@ class sdf::ModelPrivate
 {
   /// \brief Name of the model.
   public: std::string name = "";
+
+  /// \brief Pose of the model
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+
+  /// \brief Frame of the pose.
+  public: std::string poseFrame = "";
 
   /// \brief The links specified in this model.
   public: std::vector<Link> links;
@@ -75,6 +85,9 @@ Errors Model::Load(ElementPtr _sdf)
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A model name is required, but the name is not set."});
   }
+
+  // Load the pose. Ignore the return value since the model pose is optional.
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
@@ -166,6 +179,30 @@ const Joint *Model::JointByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Model::Pose() const
+{
+  return this->dataPtr->pose;
+}
+
+/////////////////////////////////////////////////
+const std::string &Model::PoseFrame() const
+{
+  return this->dataPtr->poseFrame;
+}
+
+/////////////////////////////////////////////////
+void Model::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->dataPtr->pose = _pose;
+}
+
+/////////////////////////////////////////////////
+void Model::SetPoseFrame(const std::string &_frame)
+{
+  this->dataPtr->poseFrame = _frame;
 }
 
 /////////////////////////////////////////////////

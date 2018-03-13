@@ -88,7 +88,7 @@ TEST(DOMWorld, Load)
   EXPECT_TRUE(root.WorldNameExists("default"));
 
   const sdf::World *world = root.WorldByIndex(0);
-  ASSERT_TRUE(world != nullptr);
+  ASSERT_NE(nullptr, world);
   EXPECT_EQ(world->Name(), "default");
   EXPECT_EQ(world->AudioDevice(), "/dev/audio");
   EXPECT_EQ(world->WindLinearVelocity(), ignition::math::Vector3d(4, 5, 6));

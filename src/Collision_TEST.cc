@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <ignition/math/Pose3.hh>
 #include "sdf/Collision.hh"
 #include "sdf/Geometry.hh"
 
@@ -27,6 +28,16 @@ TEST(DOMcollision, Construction)
 
   collision.SetName("test_collison");
   EXPECT_EQ(collision.Name(), "test_collison");
+
+  EXPECT_EQ(ignition::math::Pose3d::Zero, collision.Pose());
+  EXPECT_TRUE(collision.PoseFrame().empty());
+
+  collision.SetPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+            collision.Pose());
+
+  collision.SetPoseFrame("link");
+  EXPECT_EQ("link", collision.PoseFrame());
 
   ASSERT_NE(nullptr, collision.Geom());
   EXPECT_EQ(sdf::GeometryType::EMPTY, collision.Geom()->Type());

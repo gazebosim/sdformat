@@ -16,6 +16,9 @@
 */
 
 #include <gtest/gtest.h>
+#include <ignition/math/Inertial.hh>
+#include <ignition/math/Pose3.hh>
+#include <ignition/math/Vector3.hh>
 #include "sdf/Collision.hh"
 #include "sdf/Link.hh"
 #include "sdf/Visual.hh"
@@ -34,6 +37,15 @@ TEST(DOMLink, Construction)
   EXPECT_EQ(nullptr, link.VisualByIndex(1));
   EXPECT_FALSE(link.VisualNameExists(""));
   EXPECT_FALSE(link.VisualNameExists("default"));
+
+  EXPECT_EQ(ignition::math::Pose3d::Zero, link.Pose());
+  EXPECT_TRUE(link.PoseFrame().empty());
+
+  link.SetPose({10, 20, 30, 0, IGN_PI, 0});
+  EXPECT_EQ(ignition::math::Pose3d(10, 20, 30, 0, IGN_PI, 0), link.Pose());
+
+  link.SetPoseFrame("model");
+  EXPECT_EQ("model", link.PoseFrame());
 
   // Get the default interial
   const ignition::math::Inertiald inertial = link.Inertial();
