@@ -14,11 +14,16 @@
  * limitations under the License.
  *
 */
+#include <string>
 #include <vector>
 #include <ignition/math/Inertial.hh>
+#include <ignition/math/Pose3.hh>
+#include <ignition/math/Vector3.hh>
 
 #include "sdf/Collision.hh"
+#include "sdf/Error.hh"
 #include "sdf/Link.hh"
+#include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "Utils.hh"
 
