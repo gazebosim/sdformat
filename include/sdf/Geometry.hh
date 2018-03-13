@@ -24,14 +24,17 @@ namespace sdf
 {
   // Forward declare private data class.
   class GeometryPrivate;
+  class Box;
+  class Cylinder;
+  class Plane;
+  class Sphere;
 
   /// \enum GeometryType
-  /// \brief The set of geometry types. INVALID indicates an invalid or
-  /// geometry.
+  /// \brief The set of geometry types.
   enum class GeometryType
   {
-    /// \brief Invalid geometry.
-    INVALID = 0,
+    /// \brief Empty geometry. This means no shape has been defined.
+    EMPTY = 0,
 
     /// \brief A box geometry.
     BOX = 1,
@@ -46,13 +49,13 @@ namespace sdf
     SPHERE = 4,
   };
 
-  class SDFORMAT_VISIBLE GeometryDecorator
+  class SDFORMAT_VISIBLE Geometry
   {
     /// \brief Default constructor
-    public: GeometryDecorator();
+    public: Geometry();
 
     /// \brief Destructor
-    public: virtual ~GeometryDecorator();
+    public: virtual ~Geometry();
 
     /// \brief Load the geometry based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -60,32 +63,7 @@ namespace sdf
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    public: virtual Errors Load(ElementPtr _sdf) = 0;
-
-    /// \brief Get the box geometry, or nullptr if the contained geometry is
-    /// not a box.
-    /// \return Pointer to the visual's box geometry, or nullptr if the
-    /// geometry is not a box.
-    public: const Box *BoxGeom() const;
-
-    /// \brief Get the cylinder geometry, or nullptr if the contained
-    /// geometry is not a cylinder.
-    /// \return Pointer to the visual's cylinder geometry, or nullptr if the
-    /// geometry is not a cylinder.
-    public: const Cylinder *CylinderGeom() const;
-
-    /// \brief Get the sphere geometry, or nullptr if the contained geometry is
-    /// not a sphere.
-    /// \return Pointer to the visual's sphere geometry, or nullptr if the
-    /// geometry is not a sphere.
-    public: const Sphere *SphereGeom() const;
-
-    /// \brief Get the plane geometry, or nullptr if the contained geometry is
-    /// not a plane.
-    /// \return Pointer to the visual's plane geometry, or nullptr if the
-    /// geometry is not a plane.
-    public: const Plane *PlaneGeom() const;
-
+    public: Errors Load(ElementPtr _sdf);
 
     /// \brief Get the type of geometry.
     /// \return The geometry type.
@@ -94,6 +72,34 @@ namespace sdf
     /// \brief Set the type of geometry.
     /// \param[in] _type The geometry type.
     public: void SetType(const GeometryType _type);
+
+    /// \brief Get the box geometry, or nullptr if the contained geometry is
+    /// not a box.
+    /// \return Pointer to the visual's box geometry, or nullptr if the
+    /// geometry is not a box.
+    /// \sa GeometryType Type() const
+    public: const Box *BoxShape() const;
+
+    /// \brief Get the cylinder geometry, or nullptr if the contained
+    /// geometry is not a cylinder.
+    /// \return Pointer to the visual's cylinder geometry, or nullptr if the
+    /// geometry is not a cylinder.
+    /// \sa GeometryType Type() const
+    public: const Cylinder *CylinderShape() const;
+
+    /// \brief Get the sphere geometry, or nullptr if the contained geometry is
+    /// not a sphere.
+    /// \return Pointer to the visual's sphere geometry, or nullptr if the
+    /// geometry is not a sphere.
+    /// \sa GeometryType Type() const
+    public: const Sphere *SphereShape() const;
+
+    /// \brief Get the plane geometry, or nullptr if the contained geometry is
+    /// not a plane.
+    /// \return Pointer to the visual's plane geometry, or nullptr if the
+    /// geometry is not a plane.
+    /// \sa GeometryType Type() const
+    public: const Plane *PlaneShape() const;
 
     /// \brief Private data pointer.
     private: GeometryPrivate *dataPtr;

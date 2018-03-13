@@ -16,6 +16,8 @@
 */
 
 #include <gtest/gtest.h>
+#include <ignition/math/Vector3.hh>
+#include <ignition/math/Vector2.hh>
 #include "sdf/Plane.hh"
 
 /////////////////////////////////////////////////
@@ -34,4 +36,47 @@ TEST(DOMPlane, Construction)
 
   plane.SetSize({1.2, 3.4});
   EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPlane, Load)
+{
+  sdf::Plane plane;
+  sdf::Errors errors;
+
+  // Null element name
+  errors = plane.Load(nullptr);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
+
+  // Bad element name
+  sdf::ElementPtr sdf(new sdf::Element());
+  sdf->SetName("bad");
+  errors = plane.Load(sdf);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+
+  // Missing <normal> and <size> elements
+  sdf->SetName("plane");
+  errors = plane.Load(sdf);
+  ASSERT_EQ(2u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <normal>"));
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[1].Code());
+  EXPECT_NE(std::string::npos, errors[1].Message().find("missing a <size>"));
+
+  // Add a normal element
+  sdf::ElementPtr normalDesc(new sdf::Element());
+  normalDesc->SetName("normal");
+  normalDesc->AddValue("vector3", "0 0 1", "1", "normal");
+  sdf->AddElementDescription(normalDesc);
+  sdf::ElementPtr normalElem = sdf->AddElement("normal");
+  normalElem->Set<ignition::math::Vector3d>({1, 0, 0});
+
+  // Missing <size> element
+  sdf->SetName("plane");
+  errors = plane.Load(sdf);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <size>"));
 }

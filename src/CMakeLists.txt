@@ -86,6 +86,7 @@ set (gtest_sources
   Error_TEST.cc
   Exception_TEST.cc
   Filesystem_TEST.cc
+  Geometry_TEST.cc
   Joint_TEST.cc
   JointAxis_TEST.cc
   Link_TEST.cc

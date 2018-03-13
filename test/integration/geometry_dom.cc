@@ -20,8 +20,10 @@
 
 #include "sdf/Box.hh"
 #include "sdf/Cylinder.hh"
+#include "sdf/Collision.hh"
 #include "sdf/Element.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Geometry.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Plane.hh"
@@ -45,42 +47,84 @@ TEST(DOMGeometry, Shapes)
 
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
 
   const sdf::Link *link = model->LinkByIndex(0);
-  ASSERT_TRUE(link != nullptr);
+  ASSERT_NE(nullptr, link);
 
-  // Test box visual and collision
+  // Test box collision
+  const sdf::Collision *boxCol = link->CollisionByName("box_col");
+  ASSERT_NE(nullptr, boxCol);
+  ASSERT_NE(nullptr, boxCol->Geom());
+  EXPECT_EQ(sdf::GeometryType::BOX, boxCol->Geom()->Type());
+  const sdf::Box *boxColGeom = boxCol->Geom()->BoxShape();
+  ASSERT_NE(nullptr, boxColGeom);
+  EXPECT_EQ(ignition::math::Vector3d(3, 4, 5), boxColGeom->Size());
+
+  // Test box visual
   const sdf::Visual *boxVis = link->VisualByName("box_vis");
-  ASSERT_TRUE(boxVis != nullptr);
-
-  const sdf::Box *boxVisGeom = boxVis->BoxGeom();
-  ASSERT_TRUE(boxVisGeom != nullptr);
+  ASSERT_NE(nullptr, boxVis);
+  ASSERT_NE(nullptr, boxVis->Geom());
+  EXPECT_EQ(sdf::GeometryType::BOX, boxVis->Geom()->Type());
+  const sdf::Box *boxVisGeom = boxVis->Geom()->BoxShape();
+  ASSERT_NE(nullptr, boxVisGeom);
   EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), boxVisGeom->Size());
 
-  // Test cylinder visual and collision
-  const sdf::Visual *cylinderVis = link->VisualByName("cylinder_vis");
-  ASSERT_TRUE(cylinderVis != nullptr);
+  // Test cylinder collision
+  const sdf::Collision *cylinderCol = link->CollisionByName("cylinder_col");
+  ASSERT_NE(nullptr, cylinderCol);
+  ASSERT_NE(nullptr, cylinderCol->Geom());
+  EXPECT_EQ(sdf::GeometryType::CYLINDER, cylinderCol->Geom()->Type());
+  const sdf::Cylinder *cylinderColGeom = cylinderCol->Geom()->CylinderShape();
+  ASSERT_NE(nullptr, cylinderColGeom);
+  EXPECT_DOUBLE_EQ(0.2, cylinderColGeom->Radius());
+  EXPECT_DOUBLE_EQ(0.1, cylinderColGeom->Length());
 
-  const sdf::Cylinder *cylinderVisGeom = cylinderVis->CylinderGeom();
-  ASSERT_TRUE(cylinderVisGeom != nullptr);
+  // Test cylinder visual
+  const sdf::Visual *cylinderVis = link->VisualByName("cylinder_vis");
+  ASSERT_NE(nullptr, cylinderVis);
+  ASSERT_NE(nullptr, cylinderVis->Geom());
+  EXPECT_EQ(sdf::GeometryType::CYLINDER, cylinderVis->Geom()->Type());
+  const sdf::Cylinder *cylinderVisGeom = cylinderVis->Geom()->CylinderShape();
+  ASSERT_NE(nullptr, cylinderVisGeom);
   EXPECT_DOUBLE_EQ(2.1, cylinderVisGeom->Radius());
   EXPECT_DOUBLE_EQ(10.2, cylinderVisGeom->Length());
 
-  // Test sphere visual and collision
-  const sdf::Visual *sphereVis = link->VisualByName("sphere_vis");
-  ASSERT_TRUE(sphereVis != nullptr);
+  // Test plane collision
+  const sdf::Collision *planeCol = link->CollisionByName("plane_col");
+  ASSERT_NE(nullptr, planeCol);
+  ASSERT_NE(nullptr, planeCol->Geom());
+  EXPECT_EQ(sdf::GeometryType::PLANE, planeCol->Geom()->Type());
+  const sdf::Plane *planeColGeom = planeCol->Geom()->PlaneShape();
+  ASSERT_NE(nullptr, planeColGeom);
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, planeColGeom->Normal());
+  EXPECT_EQ(ignition::math::Vector2d(1.4, 6.3), planeColGeom->Size());
 
-  const sdf::Sphere *sphereVisGeom = sphereVis->SphereGeom();
-  ASSERT_TRUE(sphereVisGeom != nullptr);
-  EXPECT_DOUBLE_EQ(100.2, sphereVisGeom->Radius());
-
-  // Test plane visual and collision
+  // Test plane visual
   const sdf::Visual *planeVis = link->VisualByName("plane_vis");
-  ASSERT_TRUE(planeVis != nullptr);
-
-  const sdf::Plane *planeVisGeom = planeVis->PlaneGeom();
-  ASSERT_TRUE(planeVisGeom != nullptr);
+  ASSERT_NE(nullptr, planeVis);
+  ASSERT_NE(nullptr, planeVis->Geom());
+  EXPECT_EQ(sdf::GeometryType::PLANE, planeVis->Geom()->Type());
+  const sdf::Plane *planeVisGeom = planeVis->Geom()->PlaneShape();
+  ASSERT_NE(nullptr, planeVisGeom);
   EXPECT_EQ(ignition::math::Vector3d::UnitY, planeVisGeom->Normal());
   EXPECT_EQ(ignition::math::Vector2d(2, 4), planeVisGeom->Size());
+
+  // Test sphere collision
+  const sdf::Collision *sphereCol = link->CollisionByName("sphere_col");
+  ASSERT_NE(nullptr, sphereCol);
+  ASSERT_NE(nullptr, sphereCol->Geom());
+  EXPECT_EQ(sdf::GeometryType::SPHERE, sphereCol->Geom()->Type());
+  const sdf::Sphere *sphereColGeom = sphereCol->Geom()->SphereShape();
+  ASSERT_NE(nullptr, sphereColGeom);
+  EXPECT_DOUBLE_EQ(23.4, sphereColGeom->Radius());
+
+  // Test sphere visual
+  const sdf::Visual *sphereVis = link->VisualByName("sphere_vis");
+  ASSERT_NE(nullptr, sphereVis);
+  ASSERT_NE(nullptr, sphereVis->Geom());
+  EXPECT_EQ(sdf::GeometryType::SPHERE, sphereVis->Geom()->Type());
+  const sdf::Sphere *sphereVisGeom = sphereVis->Geom()->SphereShape();
+  ASSERT_NE(nullptr, sphereVisGeom);
+  EXPECT_DOUBLE_EQ(100.2, sphereVisGeom->Radius());
 }

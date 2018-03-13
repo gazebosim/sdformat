@@ -49,31 +49,28 @@ Errors Plane::Load(ElementPtr _sdf)
 {
   Errors errors;
 
-  // Check that the provided SDF element is a <geometry>
-  // This is an error that cannot be recovered, so return an error.
-  if (_sdf->GetName() != "geometry")
+  // Check that sdf is a valid pointer
+  if (!_sdf)
   {
-    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a Geometry, but the provided SDF element is not a "
-        "<geometry>."});
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Attempting to load a plane, but the provided SDF "
+        "element is null."});
     return errors;
   }
 
-  // We need a plane child element
-  if (!_sdf->HasElement("plane"))
+  // We need a plane element
+  if (_sdf->GetName() != "plane")
   {
     errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a plane geometry, but the provided <geometry> "
-        "SDF element does not contain a <plane> element."});
+        "Attempting to load a plane geometry, but the provided SDF "
+        "element is not a <plane>."});
     return errors;
   }
 
-  ElementPtr sdf = _sdf->GetElement("plane");
-
-  if (sdf->HasElement("normal"))
+  if (_sdf->HasElement("normal"))
   {
     std::pair<ignition::math::Vector3d, bool> pair =
-      sdf->Get<ignition::math::Vector3d>("normal", this->dataPtr->normal);
+      _sdf->Get<ignition::math::Vector3d>("normal", this->dataPtr->normal);
 
     if (!pair.second)
     {
@@ -90,10 +87,10 @@ Errors Plane::Load(ElementPtr _sdf)
         "Using a normal of 0, 0, 1."});
   }
 
-  if (sdf->HasElement("size"))
+  if (_sdf->HasElement("size"))
   {
     std::pair<ignition::math::Vector2d, bool> pair =
-      sdf->Get<ignition::math::Vector2d>("size", this->dataPtr->size);
+      _sdf->Get<ignition::math::Vector2d>("size", this->dataPtr->size);
 
     if (!pair.second)
     {

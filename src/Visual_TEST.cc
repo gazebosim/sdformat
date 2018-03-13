@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Visual.hh"
+#include "sdf/Geometry.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMVisual, Construction)
@@ -26,4 +27,11 @@ TEST(DOMVisual, Construction)
 
   visual.SetName("test_visual");
   EXPECT_EQ(visual.Name(), "test_visual");
+
+  ASSERT_NE(nullptr, visual.Geom());
+  EXPECT_EQ(sdf::GeometryType::EMPTY, visual.Geom()->Type());
+  EXPECT_EQ(nullptr, visual.Geom()->BoxShape());
+  EXPECT_EQ(nullptr, visual.Geom()->CylinderShape());
+  EXPECT_EQ(nullptr, visual.Geom()->PlaneShape());
+  EXPECT_EQ(nullptr, visual.Geom()->SphereShape());
 }

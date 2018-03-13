@@ -45,32 +45,31 @@ Errors Box::Load(ElementPtr _sdf)
 {
   Errors errors;
 
-  // Check that the provided SDF element is a <geometry>
-  // This is an error that cannot be recovered, so return an error.
-  if (_sdf->GetName() != "geometry")
+  // Check that sdf is a valid pointer
+  if (!_sdf)
   {
-    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a Geometry, but the provided SDF element is not a "
-        "<geometry>."});
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Attempting to load a box, but the provided SDF "
+        "element is null."});
     return errors;
   }
 
-  // We need a box child element
-  if (!_sdf->HasElement("box"))
+  // We need a box element
+  if (_sdf->GetName() != "box")
   {
     errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a box geometry, but the provided <geometry> SDF "
-        "element does not contain a <box> element."});
+        "Attempting to load a box geometry, but the provided SDF "
+        "element is not a <box>."});
     return errors;
   }
 
-  ElementPtr sdf = _sdf->GetElement("box");
-
-  if (sdf->HasElement("size"))
+  if (_sdf->HasElement("size"))
   {
     std::pair<ignition::math::Vector3d, bool> pair =
-      sdf->Get<ignition::math::Vector3d>("size", this->dataPtr->size);
+      _sdf->Get<ignition::math::Vector3d>("size", this->dataPtr->size);
 
+    std::cout << pair.first << std::endl;
+    std::cout << pair.second << std::endl;
     if (!pair.second)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,

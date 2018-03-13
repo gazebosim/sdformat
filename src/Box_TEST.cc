@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Box.hh"
+#include "sdf/Element.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMBox, Construction)
@@ -27,4 +28,30 @@ TEST(DOMBox, Construction)
 
   box.SetSize(ignition::math::Vector3d::Zero);
   EXPECT_EQ(ignition::math::Vector3d::Zero, box.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, Load)
+{
+  sdf::Box box;
+  sdf::Errors errors;
+
+  // Null element name
+  errors = box.Load(nullptr);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
+
+  // Bad element name
+  sdf::ElementPtr sdf(new sdf::Element());
+  sdf->SetName("bad");
+  errors = box.Load(sdf);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+
+  // Missing <size> element
+  sdf->SetName("box");
+  errors = box.Load(sdf);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <size>"));
 }

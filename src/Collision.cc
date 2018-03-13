@@ -15,6 +15,7 @@
  *
 */
 #include "sdf/Collision.hh"
+#include "sdf/Geometry.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -23,6 +24,10 @@ class sdf::CollisionPrivate
 {
   /// \brief Name of the collision.
   public: std::string name = "";
+
+  /// \brief The collisions's a geometry.
+  public: Geometry geom;
+
 };
 
 /////////////////////////////////////////////////
@@ -67,6 +72,10 @@ Errors Collision::Load(ElementPtr _sdf)
                      "A collision name is required, but the name is not set."});
   }
 
+  // Load the geometry
+  Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
+  errors.insert(errors.end(), geomErr.begin(), geomErr.end());
+
   return errors;
 }
 
@@ -80,4 +89,10 @@ std::string Collision::Name() const
 void Collision::SetName(const std::string &_name) const
 {
   this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
+const Geometry *Collision::Geom() const
+{
+  return &this->dataPtr->geom;
 }

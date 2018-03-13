@@ -2,14 +2,6 @@
 <sdf version="1.6">
   <model name="shapes">
     <link name="link">
-      <visual name="box_vis">
-        <geometry>
-          <box>
-            <size>1 2 3</size>
-          </box>
-        </geometry>
-      </visual>
-
       <collision name="box_col">
         <geometry>
           <box>
@@ -18,12 +10,11 @@
         </geometry>
       </collision>
 
-      <visual name="cylinder_vis">
+      <visual name="box_vis">
         <geometry>
-          <cylinder>
-            <radius>2.1</radius>
-            <length>10.2</length>
-          </cylinder>
+          <box>
+            <size>1 2 3</size>
+          </box>
         </geometry>
       </visual>
 
@@ -36,19 +27,21 @@
         </geometry>
       </collision>
 
-      <visual name="sphere_vis">
+      <visual name="cylinder_vis">
         <geometry>
-          <sphere>
-            <radius>100.2</radius>
-          </sphere>
+          <cylinder>
+            <radius>2.1</radius>
+            <length>10.2</length>
+          </cylinder>
         </geometry>
       </visual>
 
-      <collision name="sphere_col">
+      <collision name="plane_col">
         <geometry>
-          <sphere>
-            <radius>23.4</radius>
-          </sphere>
+          <plane>
+            <normal>1 0 0</normal>
+            <size>1.4 6.3</size>
+          </plane>
         </geometry>
       </collision>
 
@@ -61,14 +54,21 @@
         </geometry>
       </visual>
 
-      <collision name="plane_col">
+      <collision name="sphere_col">
         <geometry>
-          <plane>
-            <normal>0 0 1</normal>
-            <size>1.4 6.3</size>
-          </plane>
+          <sphere>
+            <radius>23.4</radius>
+          </sphere>
         </geometry>
       </collision>
+
+      <visual name="sphere_vis">
+        <geometry>
+          <sphere>
+            <radius>100.2</radius>
+          </sphere>
+        </geometry>
+      </visual>
     </link>
   </model>
 </sdf>

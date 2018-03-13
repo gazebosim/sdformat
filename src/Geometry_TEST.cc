@@ -16,42 +16,42 @@
 */
 
 #include <gtest/gtest.h>
-#include "sdf/Sphere.hh"
+#include "sdf/Geometry.hh"
 
 /////////////////////////////////////////////////
-TEST(DOMSphere, Construction)
+TEST(DOMGeometry, Construction)
 {
-  sdf::Sphere sphere;
+  sdf::Geometry geom;
+  EXPECT_EQ(sdf::GeometryType::EMPTY, geom.Type());
 
-  EXPECT_DOUBLE_EQ(1.0, sphere.Radius());
+  geom.SetType(sdf::GeometryType::BOX);
+  EXPECT_EQ(sdf::GeometryType::BOX, geom.Type());
 
-  sphere.SetRadius(0.5);
+  geom.SetType(sdf::GeometryType::CYLINDER);
+  EXPECT_EQ(sdf::GeometryType::CYLINDER, geom.Type());
 
-  EXPECT_DOUBLE_EQ(0.5, sphere.Radius());
+  geom.SetType(sdf::GeometryType::PLANE);
+  EXPECT_EQ(sdf::GeometryType::PLANE, geom.Type());
+
+  geom.SetType(sdf::GeometryType::SPHERE);
+  EXPECT_EQ(sdf::GeometryType::SPHERE, geom.Type());
 }
 
 /////////////////////////////////////////////////
-TEST(DOMSphere, Load)
+TEST(DOMGeometry, Load)
 {
-  sdf::Sphere sphere;
+  sdf::Geometry geom;
   sdf::Errors errors;
 
   // Null element name
-  errors = sphere.Load(nullptr);
+  errors = geom.Load(nullptr);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
 
   // Bad element name
   sdf::ElementPtr sdf(new sdf::Element());
   sdf->SetName("bad");
-  errors = sphere.Load(sdf);
+  errors = geom.Load(sdf);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
-
-  // Missing <radius> element
-  sdf->SetName("sphere");
-  errors = sphere.Load(sdf);
-  ASSERT_EQ(1u, errors.size());
-  EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
-  EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <radius>"));
 }

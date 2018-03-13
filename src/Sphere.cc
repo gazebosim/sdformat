@@ -44,30 +44,27 @@ Errors Sphere::Load(ElementPtr _sdf)
 {
   Errors errors;
 
-  // Check that the provided SDF element is a <geometry>
-  // This is an error that cannot be recovered, so return an error.
-  if (_sdf->GetName() != "geometry")
+  // Check that sdf is a valid pointer
+  if (!_sdf)
   {
-    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a Geometry, but the provided SDF element is not a "
-        "<geometry>."});
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Attempting to load a plane, but the provided SDF "
+        "element is null."});
     return errors;
   }
 
-  // We need a sphere child element
-  if (!_sdf->HasElement("sphere"))
+  // We need a sphere element
+  if (_sdf->GetName() != "sphere")
   {
     errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a sphere geometry, but the provided <geometry> SDF "
-        "element does not contain a <sphere> element."});
+        "Attempting to load a sphere geometry, but the provided SDF "
+        "element is not a <sphere>."});
     return errors;
   }
 
-  ElementPtr sdf = _sdf->GetElement("sphere");
-
-  if (sdf->HasElement("radius"))
+  if (_sdf->HasElement("radius"))
   {
-    std::pair<double, bool> pair = sdf->Get<double>("radius",
+    std::pair<double, bool> pair = _sdf->Get<double>("radius",
         this->dataPtr->radius);
 
     if (!pair.second)

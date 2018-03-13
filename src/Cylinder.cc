@@ -47,30 +47,27 @@ Errors Cylinder::Load(ElementPtr _sdf)
 {
   Errors errors;
 
-  // Check that the provided SDF element is a <geometry>
-  // This is an error that cannot be recovered, so return an error.
-  if (_sdf->GetName() != "geometry")
+  // Check that sdf is a valid pointer
+  if (!_sdf)
   {
-    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a Geometry, but the provided SDF element is not a "
-        "<geometry>."});
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Attempting to load a cylinder, but the provided SDF "
+        "element is null."});
     return errors;
   }
 
   // We need a cylinder child element
-  if (!_sdf->HasElement("cylinder"))
+  if (_sdf->GetName() != "cylinder")
   {
     errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a cylinder geometry, but the provided <geometry> "
-        "SDF element does not contain a <cylinder> element."});
+        "Attempting to load a cylinder geometry, but the provided SDF "
+        "element is not a <cylinder>."});
     return errors;
   }
 
-  ElementPtr sdf = _sdf->GetElement("cylinder");
-
-  if (sdf->HasElement("radius"))
+  if (_sdf->HasElement("radius"))
   {
-    std::pair<double, bool> pair = sdf->Get<double>("radius",
+    std::pair<double, bool> pair = _sdf->Get<double>("radius",
         this->dataPtr->radius);
 
     if (!pair.second)
@@ -88,9 +85,9 @@ Errors Cylinder::Load(ElementPtr _sdf)
         "Using a radius of 1."});
   }
 
-  if (sdf->HasElement("length"))
+  if (_sdf->HasElement("length"))
   {
-    std::pair<double, bool> pair = sdf->Get<double>("length",
+    std::pair<double, bool> pair = _sdf->Get<double>("length",
         this->dataPtr->length);
 
     if (!pair.second)

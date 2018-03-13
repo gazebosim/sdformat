@@ -25,17 +25,8 @@ class sdf::VisualPrivate
   /// \brief Name of the visual.
   public: std::string name = "";
 
-  /// \brief Pointer to a box geometry.
-  public: std::unique_ptr<Box> box = nullptr;
-
-  /// \brief Pointer to a cylinder geometry.
-  public: std::unique_ptr<Cylinder> cylinder = nullptr;
-
-  /// \brief Pointer to a sphere geometry.
-  public: std::unique_ptr<Sphere> sphere = nullptr;
-
-  /// \brief Pointer to a plane geometry.
-  public: std::unique_ptr<Plane> plane = nullptr;
+  /// \brief The visual's a geometry.
+  public: Geometry geom;
 };
 
 /////////////////////////////////////////////////
@@ -81,34 +72,8 @@ Errors Visual::Load(ElementPtr _sdf)
   }
 
   // Load the geometry
-  if (_sdf->HasElement("geometry"))
-  {
-    sdf::ElementPtr geom = _sdf->GetElement("geometry");
-    if (geom->HasElement("box"))
-    {
-      this->dataPtr->box.reset(new Box());
-      Errors err = this->dataPtr->box->Load(geom);
-      errors.insert(errors.end(), err.begin(), err.end());
-    }
-    if (geom->HasElement("cylinder"))
-    {
-      this->dataPtr->cylinder.reset(new Cylinder());
-      Errors err = this->dataPtr->cylinder->Load(geom);
-      errors.insert(errors.end(), err.begin(), err.end());
-    }
-    if (geom->HasElement("plane"))
-    {
-      this->dataPtr->plane.reset(new Plane());
-      Errors err = this->dataPtr->plane->Load(geom);
-      errors.insert(errors.end(), err.begin(), err.end());
-    }
-    if (geom->HasElement("sphere"))
-    {
-      this->dataPtr->sphere.reset(new Sphere());
-      Errors err = this->dataPtr->sphere->Load(geom);
-      errors.insert(errors.end(), err.begin(), err.end());
-    }
-  }
+  Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
+  errors.insert(errors.end(), geomErr.begin(), geomErr.end());
 
   return errors;
 }
@@ -126,25 +91,7 @@ void Visual::SetName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-const Box *Visual::BoxGeom() const
+const Geometry *Visual::Geom() const
 {
-  return this->dataPtr->box.get();
-}
-
-/////////////////////////////////////////////////
-const Sphere *Visual::SphereGeom() const
-{
-  return this->dataPtr->sphere.get();
-}
-
-/////////////////////////////////////////////////
-const Cylinder *Visual::CylinderGeom() const
-{
-  return this->dataPtr->cylinder.get();
-}
-
-/////////////////////////////////////////////////
-const Plane *Visual::PlaneGeom() const
-{
-  return this->dataPtr->plane.get();
+  return &this->dataPtr->geom;
 }

@@ -28,8 +28,9 @@
 
 namespace sdf
 {
-  // Forward declare private data class.
+  // Forward declarations.
   class VisualPrivate;
+  class Geometry;
 
   class SDFORMAT_VISIBLE Visual
   {
@@ -60,6 +61,10 @@ namespace sdf
     /// The name of the visual must be unique within the scope of a Link.
     /// \param[in] _name Name of the visual.
     public: void SetName(const std::string &_name) const;
+
+    /// \brief Get a pointer to the visual's geometry.
+    /// \return The visual's geometry.
+    public: const Geometry *Geom() const;
 
     /// \brief Private data pointer.
     private: VisualPrivate *dataPtr = nullptr;
