@@ -14,6 +14,10 @@
  * limitations under the License.
  *
 */
+#include <string>
+#include <ignition/math/Pose3.hh>
+#include "sdf/Error.hh"
+#include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "Utils.hh"
 
@@ -23,6 +27,12 @@ class sdf::VisualPrivate
 {
   /// \brief Name of the visual.
   public: std::string name = "";
+
+  /// \brief Pose of the collision object
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+
+  /// \brief Frame of the pose.
+  public: std::string poseFrame = "";
 };
 
 /////////////////////////////////////////////////
@@ -67,6 +77,9 @@ Errors Visual::Load(ElementPtr _sdf)
                      "A visual name is required, but the name is not set."});
   }
 
+  // Load the pose. Ignore the return value since the pose is optional.
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+
   return errors;
 }
 
@@ -80,4 +93,28 @@ std::string Visual::Name() const
 void Visual::SetName(const std::string &_name) const
 {
   this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Visual::Pose() const
+{
+  return this->dataPtr->pose;
+}
+
+/////////////////////////////////////////////////
+const std::string &Visual::PoseFrame() const
+{
+  return this->dataPtr->poseFrame;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->dataPtr->pose = _pose;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetPoseFrame(const std::string &_frame)
+{
+  this->dataPtr->poseFrame = _frame;
 }

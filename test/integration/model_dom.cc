@@ -18,7 +18,9 @@
 #include <string>
 #include <gtest/gtest.h>
 
+#include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
+#include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -103,6 +105,8 @@ TEST(DOMRoot, LoadDoublePendulum)
   EXPECT_FALSE(nullptr == model->LinkByIndex(1));
   EXPECT_FALSE(nullptr == model->LinkByIndex(2));
   EXPECT_TRUE(nullptr == model->LinkByIndex(3));
+  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ("", model->PoseFrame());
 
   EXPECT_TRUE(model->LinkNameExists("base"));
   EXPECT_TRUE(model->LinkNameExists("upper_link"));

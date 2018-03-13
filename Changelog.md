@@ -11,6 +11,7 @@
    * [Pull request 406](https://bitbucket.org/osrf/sdformat/pull-requests/406)
    * [Pull request 407](https://bitbucket.org/osrf/sdformat/pull-requests/407)
    * [Pull request 410](https://bitbucket.org/osrf/sdformat/pull-requests/410)
+   * [Pull request 415](https://bitbucket.org/osrf/sdformat/pull-requests/415)
 
 ### SDFormat 6.0.0 (2018-01-25)
 
@@ -18,7 +19,7 @@
    * [Pull request 387](https://bitbucket.org/osrf/sdformat/pull-requests/387)
    * [Pull request 389](https://bitbucket.org/osrf/sdformat/pull-requests/389)
 
-1. Add simplified ```readFile`` function.
+1. Add simplified ``readFile`` function.
    * [Pull request 347](https://bitbucket.org/osrf/sdformat/pull-requests/347)
 
 1. Remove boost::lexical cast instances

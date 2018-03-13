@@ -16,14 +16,25 @@
 */
 
 #include <gtest/gtest.h>
+#include <ignition/math/Pose3.hh>
 #include "sdf/Collision.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMcollision, Construction)
 {
-  sdf::Collision collison;
-  EXPECT_TRUE(collison.Name().empty());
+  sdf::Collision collision;
+  EXPECT_TRUE(collision.Name().empty());
 
-  collison.SetName("test_collison");
-  EXPECT_EQ(collison.Name(), "test_collison");
+  collision.SetName("test_collison");
+  EXPECT_EQ(collision.Name(), "test_collison");
+
+  EXPECT_EQ(ignition::math::Pose3d::Zero, collision.Pose());
+  EXPECT_TRUE(collision.PoseFrame().empty());
+
+  collision.SetPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+            collision.Pose());
+
+  collision.SetPoseFrame("link");
+  EXPECT_EQ("link", collision.PoseFrame());
 }

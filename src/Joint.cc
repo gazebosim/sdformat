@@ -17,9 +17,13 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <string>
 #include <utility>
+#include <ignition/math/Pose3.hh>
+#include "sdf/Error.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
+#include "sdf/Types.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -37,6 +41,12 @@ class sdf::JointPrivate
 
   /// \brief the joint type.
   public: JointType type = JointType::INVALID;
+
+  /// \brief Pose of the joint
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+
+  /// \brief Frame of the pose.
+  public: std::string poseFrame = "";
 
   /// \brief Joint axis
   // cppcheck-suppress
@@ -84,6 +94,9 @@ Errors Joint::Load(ElementPtr _sdf)
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A joint name is required, but the name is not set."});
   }
+
+  // Load the pose. Ignore the return value since the pose is optional.
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
   // Read the parent link name
   std::pair<std::string, bool> parentPair =
@@ -214,4 +227,28 @@ void Joint::SetChildLinkName(const std::string &_name) const
 const JointAxis *Joint::Axis(const unsigned int _index) const
 {
   return this->dataPtr->axis[std::min(_index, 1u)].get();
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Joint::Pose() const
+{
+  return this->dataPtr->pose;
+}
+
+/////////////////////////////////////////////////
+const std::string &Joint::PoseFrame() const
+{
+  return this->dataPtr->poseFrame;
+}
+
+/////////////////////////////////////////////////
+void Joint::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->dataPtr->pose = _pose;
+}
+
+/////////////////////////////////////////////////
+void Joint::SetPoseFrame(const std::string &_frame)
+{
+  this->dataPtr->poseFrame = _frame;
 }
