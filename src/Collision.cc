@@ -27,7 +27,6 @@ class sdf::CollisionPrivate
 
   /// \brief The collisions's a geometry.
   public: Geometry geom;
-
 };
 
 /////////////////////////////////////////////////
