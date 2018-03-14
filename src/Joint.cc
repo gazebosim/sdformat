@@ -30,6 +30,14 @@ using namespace sdf;
 
 class sdf::JointPrivate
 {
+  public: JointPrivate()
+  {
+    // Initialize here because windows does not support list initialization
+    // at member initialization (ie ... axis = {{nullptr, nullpter}};).
+    this->axis[0] = nullptr;
+    this->axis[1] = nullptr;
+  }
+
   /// \brief Name of the joint.
   public: std::string name = "";
 
@@ -50,7 +58,7 @@ class sdf::JointPrivate
 
   /// \brief Joint axis
   // cppcheck-suppress
-  public: std::array<std::unique_ptr<JointAxis>, 2> axis = {{nullptr, nullptr}};
+  public: std::array<std::unique_ptr<JointAxis>, 2> axis;
 };
 
 /////////////////////////////////////////////////
