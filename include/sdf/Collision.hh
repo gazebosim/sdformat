@@ -38,6 +38,8 @@ namespace sdf
     /// \brief Default constructor
     public: Collision();
 
+    public: Collision(const Collision &_collision);
+
     /// \brief Move constructor
     /// \param[in] _collision Collision to move.
     public: Collision(Collision &&_collision);

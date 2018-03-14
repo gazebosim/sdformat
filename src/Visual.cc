@@ -26,6 +26,9 @@ using namespace sdf;
 
 class sdf::VisualPrivate
 {
+  public: VisualPrivate() = default;
+  public: VisualPrivate(const VisualPrivate &_collision) = default;
+
   /// \brief Name of the visual.
   public: std::string name = "";
 
@@ -42,6 +45,12 @@ class sdf::VisualPrivate
 /////////////////////////////////////////////////
 Visual::Visual()
   : dataPtr(new VisualPrivate)
+{
+}
+
+/////////////////////////////////////////////////
+Visual::Visual(const Visual &_visual)
+  : dataPtr(new VisualPrivate(*_visual.dataPtr))
 {
 }
 

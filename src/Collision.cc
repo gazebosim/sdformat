@@ -26,6 +26,9 @@ using namespace sdf;
 
 class sdf::CollisionPrivate
 {
+  public: CollisionPrivate() = default;
+  public: CollisionPrivate(const CollisionPrivate &_collision) = default;
+
   /// \brief Name of the collision.
   public: std::string name = "";
 
@@ -42,6 +45,11 @@ class sdf::CollisionPrivate
 /////////////////////////////////////////////////
 Collision::Collision()
   : dataPtr(new CollisionPrivate)
+{
+}
+
+Collision::Collision(const Collision &_collision)
+  : dataPtr(new CollisionPrivate(*_collision.dataPtr))
 {
 }
 

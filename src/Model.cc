@@ -115,6 +115,11 @@ void Model::SetName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+const Link *Model::AddLink(const Link)
+{
+}
+
+/////////////////////////////////////////////////
 uint64_t Model::LinkCount() const
 {
   return this->dataPtr->links.size();

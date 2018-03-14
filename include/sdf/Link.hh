@@ -35,6 +35,12 @@ namespace sdf
     /// \brief Default constructor
     public: Link();
 
+    public: Link(const std::string &_name, const ignition::math::Pose3d &_pose);
+
+    /// \brief Copy constructor
+    /// \param[in] _link Link to move.
+    public: Link(const Link &_link);
+
     /// \brief Move constructor
     /// \param[in] _link Link to move.
     public: Link(Link &&_link);

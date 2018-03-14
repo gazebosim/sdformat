@@ -38,6 +38,8 @@ namespace sdf
     /// \brief Default constructor
     public: Visual();
 
+    public: Visual(const Visual &_visual);
+
     /// \brief Move constructor
     /// \param[in] _visual Visual to move.
     public: Visual(Visual &&_visual);

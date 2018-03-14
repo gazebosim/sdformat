@@ -31,6 +31,9 @@ using namespace sdf;
 
 class sdf::LinkPrivate
 {
+  public: LinkPrivate() = default;
+  public: LinkPrivate(const LinkPrivate &_link) = default;
+
   /// \brief Name of the link.
   public: std::string name = "";
 
@@ -40,21 +43,36 @@ class sdf::LinkPrivate
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
 
+  /// \brief The inertial information for this link.
+  public: ignition::math::Inertiald inertial {{1.0,
+            ignition::math::Vector3d::One, ignition::math::Vector3d::Zero},
+            ignition::math::Pose3d::Zero};
+
   /// \brief The visuals specified in this link.
   public: std::vector<Visual> visuals;
 
   /// \brief The collisions specified in this link.
   public: std::vector<Collision> collisions;
-
-  /// \brief The inertial information for this link.
-  public: ignition::math::Inertiald inertial {{1.0,
-            ignition::math::Vector3d::One, ignition::math::Vector3d::Zero},
-            ignition::math::Pose3d::Zero};
 };
 
 /////////////////////////////////////////////////
 Link::Link()
   : dataPtr(new LinkPrivate)
+{
+}
+
+/////////////////////////////////////////////////
+Link::Link(const std::string &_name,
+           const ignition::math::Pose3d &_pose)
+  : dataPtr(new LinkPrivate)
+{
+  this->SetName(_name);
+  this->SetPose(_pose);
+}
+
+/////////////////////////////////////////////////
+Link::Link(const Link &_link)
+  : dataPtr(new LinkPrivate(*_link.dataPtr))
 {
 }
 
