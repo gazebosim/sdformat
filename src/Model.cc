@@ -115,8 +115,17 @@ void Model::SetName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-const Link *Model::AddLink(const Link)
+Link *Model::AddLink(const Link &_link)
 {
+  Link *result = nullptr;
+
+  if (!this->LinkNameExists(_link.Name()))
+  {
+    this->dataPtr->links.push_back(_link);
+    result = &this->dataPtr->links.back();
+  }
+
+  return result;
 }
 
 /////////////////////////////////////////////////

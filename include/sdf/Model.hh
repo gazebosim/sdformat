@@ -60,7 +60,7 @@ namespace sdf
     /// \param[in] _name Name of the model.
     public: void SetName(const std::string &_name) const;
 
-    public: const Link *AddLink(const Link);
+    public: Link *AddLink(const Link &_link);
 
     /// \brief Get the number of links.
     /// \return Number of links contained in this Model object.
