@@ -16,8 +16,8 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
 #include "sdf/Collision.hh"
+#include "sdf/Geometry.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMcollision, Construction)
@@ -37,4 +37,11 @@ TEST(DOMcollision, Construction)
 
   collision.SetPoseFrame("link");
   EXPECT_EQ("link", collision.PoseFrame());
+
+  ASSERT_NE(nullptr, collision.Geom());
+  EXPECT_EQ(sdf::GeometryType::EMPTY, collision.Geom()->Type());
+  EXPECT_EQ(nullptr, collision.Geom()->BoxShape());
+  EXPECT_EQ(nullptr, collision.Geom()->CylinderShape());
+  EXPECT_EQ(nullptr, collision.Geom()->PlaneShape());
+  EXPECT_EQ(nullptr, collision.Geom()->SphereShape());
 }

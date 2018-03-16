@@ -253,3 +253,29 @@ void Link::SetPoseFrame(const std::string &_frame)
 {
   this->dataPtr->poseFrame = _frame;
 }
+
+/////////////////////////////////////////////////
+const Visual *Link::VisualByName(const std::string &_name) const
+{
+  for (auto const &v : this->dataPtr->visuals)
+  {
+    if (v.Name() == _name)
+    {
+      return &v;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+const Collision *Link::CollisionByName(const std::string &_name) const
+{
+  for (auto const &c : this->dataPtr->collisions)
+  {
+    if (c.Name() == _name)
+    {
+      return &c;
+    }
+  }
+  return nullptr;
+}

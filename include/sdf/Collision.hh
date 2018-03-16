@@ -25,9 +25,14 @@
 
 namespace sdf
 {
-  // Forward declare private data class.
+  // Forward declaration.
   class CollisionPrivate;
+  class Geometry;
 
+  /// \brief A collision element descibes the collison properties associated
+  /// with a link. This can be different from the visual properties of a link.
+  /// For example, simple collision models are often used to reduce
+  /// computation time.
   class SDFORMAT_VISIBLE Collision
   {
     /// \brief Default constructor
@@ -57,6 +62,10 @@ namespace sdf
     /// The name of the collision must be unique within the scope of a Link.
     /// \param[in] _name Name of the collision.
     public: void SetName(const std::string &_name) const;
+
+    /// \brief Get a pointer to the collisions's geometry.
+    /// \return The collision's geometry.
+    public: const Geometry *Geom() const;
 
     /// \brief Get the pose of the collision object. This is the pose of the
     /// collison as specified in SDF

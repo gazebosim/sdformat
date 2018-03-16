@@ -204,3 +204,16 @@ void Model::SetPoseFrame(const std::string &_frame)
 {
   this->dataPtr->poseFrame = _frame;
 }
+
+/////////////////////////////////////////////////
+const Link *Model::LinkByName(const std::string &_name) const
+{
+  for (auto const &l : this->dataPtr->links)
+  {
+    if (l.Name() == _name)
+    {
+      return &l;
+    }
+  }
+  return nullptr;
+}

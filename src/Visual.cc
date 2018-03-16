@@ -19,6 +19,7 @@
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
+#include "sdf/Geometry.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -33,6 +34,9 @@ class sdf::VisualPrivate
 
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
+
+  /// \brief The visual's a geometry.
+  public: Geometry geom;
 };
 
 /////////////////////////////////////////////////
@@ -80,6 +84,10 @@ Errors Visual::Load(ElementPtr _sdf)
   // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
+  // Load the geometry
+  Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
+  errors.insert(errors.end(), geomErr.begin(), geomErr.end());
+
   return errors;
 }
 
@@ -117,4 +125,10 @@ void Visual::SetPose(const ignition::math::Pose3d &_pose)
 void Visual::SetPoseFrame(const std::string &_frame)
 {
   this->dataPtr->poseFrame = _frame;
+}
+
+/////////////////////////////////////////////////
+const Geometry *Visual::Geom() const
+{
+  return &this->dataPtr->geom;
 }

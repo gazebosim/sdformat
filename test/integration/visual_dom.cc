@@ -18,7 +18,6 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"

@@ -17,6 +17,7 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Collision.hh"
+#include "sdf/Geometry.hh"
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
 #include "Utils.hh"
@@ -33,6 +34,9 @@ class sdf::CollisionPrivate
 
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
+
+  /// \brief The collisions's a geometry.
+  public: Geometry geom;
 };
 
 /////////////////////////////////////////////////
@@ -80,6 +84,10 @@ Errors Collision::Load(ElementPtr _sdf)
   // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
+  // Load the geometry
+  Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
+  errors.insert(errors.end(), geomErr.begin(), geomErr.end());
+
   return errors;
 }
 
@@ -93,6 +101,12 @@ std::string Collision::Name() const
 void Collision::SetName(const std::string &_name) const
 {
   this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
+const Geometry *Collision::Geom() const
+{
+  return &this->dataPtr->geom;
 }
 
 /////////////////////////////////////////////////

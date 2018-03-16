@@ -16,8 +16,8 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
 #include "sdf/Visual.hh"
+#include "sdf/Geometry.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMVisual, Construction)
@@ -37,4 +37,11 @@ TEST(DOMVisual, Construction)
 
   visual.SetPoseFrame("link");
   EXPECT_EQ("link", visual.PoseFrame());
+
+  ASSERT_NE(nullptr, visual.Geom());
+  EXPECT_EQ(sdf::GeometryType::EMPTY, visual.Geom()->Type());
+  EXPECT_EQ(nullptr, visual.Geom()->BoxShape());
+  EXPECT_EQ(nullptr, visual.Geom()->CylinderShape());
+  EXPECT_EQ(nullptr, visual.Geom()->PlaneShape());
+  EXPECT_EQ(nullptr, visual.Geom()->SphereShape());
 }
