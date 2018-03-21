@@ -168,14 +168,16 @@ macro (sdf_build_tests)
         $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
 
       # Copy in ignition-math library
-      if (EXISTS ${IGNITION-MATH_LIBRARIES})
-	set(MATH_DLL_PATH ${IGNITION-MATH_LIBRARIES})
+      # Depending on the context, IGNITION-MATH_LIBRARIES can host just the name of 
+      # DLL or a list with the name of the DLL + the full path to the .lib file
+      list(GET IGNITION-MATH_LIBRARIES 0 MATH_DLL_LIB)
+      if (NOT EXISTS ${MATH_DLL_LIB})
+        set(MATH_DLL_PATH "${MATH_DLL_LIB}")
       else()
-	list(GET IGNITION-MATH_LIBRARIES 0 MATH_DLL_LIB_NAME)
-	set(MATH_DLL_PATH "${IGNITION-MATH_LIBRARY_DIRS}/${MATH_DLL_LIB_NAME}.dll")
-	if (NOT EXISTS ${MATH_DLL_PATH})
-	  message(FATAL_ERROR "ignition math dll not found in PATH ${MATH_DLL_PATH}")
-	 endif()
+        set(MATH_DLL_PATH "${IGNITION-MATH_LIBRARY_DIRS}/${MATH_DLL_LIB_NAME}.dll")
+        if (NOT EXISTS ${MATH_DLL_PATH})
+          message(FATAL_ERROR "ignition math dll not found in PATH ${MATH_DLL_PATH}")
+        endif()
       endif()
 
       add_custom_command(TARGET ${BINARY_NAME}
