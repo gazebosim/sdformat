@@ -167,12 +167,20 @@ macro (sdf_build_tests)
         $<TARGET_FILE:sdformat>
         $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
 
-      list(GET IGNITION-MATH_LIBRARIES 0 MATH_DLL_LIB_NAME)
-
       # Copy in ignition-math library
+      if (EXISTS ${IGNITION-MATH_LIBRARIES})
+	set(MATH_DLL_PATH ${IGNITION-MATH_LIBRARIES})
+      else()
+	list(GET IGNITION-MATH_LIBRARIES 0 MATH_DLL_LIB_NAME)
+	set(MATH_DLL_PATH "${IGNITION-MATH_LIBRARY_DIRS}/${MATH_DLL_LIB_NAME}.dll")
+	if (NOT EXISTS ${MATH_DLL_PATH})
+	  message(FATAL_ERROR "ignition math dll not found in PATH ${MATH_DLL_PATH}")
+	 endif()
+      endif()
+
       add_custom_command(TARGET ${BINARY_NAME}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-	"${IGNITION-MATH_LIBRARY_DIRS}/${MATH_DLL_LIB_NAME}.dll"
+	"${MATH_DLL_PATH}"
         $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
 
       # Copy in boost libraries
