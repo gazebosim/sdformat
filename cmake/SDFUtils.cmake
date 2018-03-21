@@ -167,10 +167,12 @@ macro (sdf_build_tests)
         $<TARGET_FILE:sdformat>
         $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
 
+      list(GET IGNITION-MATH_LIBRARIES 0 MATH_DLL_LIB_NAME)
+
       # Copy in ignition-math library
       add_custom_command(TARGET ${BINARY_NAME}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${IGNITION-MATH_LIBRARY_DIRS}/${IGNITION-MATH_LIBRARIES}.dll"
+	"${IGNITION-MATH_LIBRARY_DIRS}/${MATH_DLL_LIB_NAME}.dll"
         $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
 
       # Copy in boost libraries
