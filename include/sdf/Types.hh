@@ -25,7 +25,7 @@
 #include <vector>
 
 #include "sdf/system_util.hh"
-#include "sdf/Error.hh"
+#include <sdf/Error.hh>
 
 #if defined(__GNUC__)
 #define SDF_DEPRECATED(version) __attribute__((deprecated))
