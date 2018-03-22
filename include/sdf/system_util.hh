@@ -50,11 +50,5 @@
   #endif
 #endif
 
-// Use safer functions on Windows
-#ifdef _MSC_VER
-  #define sdf_strdup _strdup
-#else
-  #define sdf_strdup strdup
+// SDFORMAT_VISIBLE_HH
 #endif
-
-#endif /* SDFORMAT_VISIBLE_HH */
