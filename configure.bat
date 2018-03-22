@@ -9,5 +9,4 @@ cmake -G "NMake Makefiles"^
   -DBOOST_ROOT:STRING="%cd%\..\..\boost_1_56_0"^
   -DBOOST_LIBRARYDIR:STRING="%cd%\..\..\boost_1_56_0\lib64-msvc-12.0"^
   -DCMAKE_INSTALL_PREFIX="install/%build_type%"^
-  -DIGNITION-MATH_LIBRARIES="ignition-math2"^
   -DCMAKE_BUILD_TYPE="%build_type%" ..
