@@ -50,7 +50,7 @@ namespace sdf
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
-  /// Type function to deterime the type of shape contained within a
+  /// Type function to determine the type of shape contained within a
   /// Geometry. Access to shape data, such as a box's size, is achieved
   /// through the shape accessors, such as const Box *BoxShape() const.
   class SDFORMAT_VISIBLE Geometry

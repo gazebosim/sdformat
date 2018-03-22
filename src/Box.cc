@@ -68,8 +68,6 @@ Errors Box::Load(ElementPtr _sdf)
     std::pair<ignition::math::Vector3d, bool> pair =
       _sdf->Get<ignition::math::Vector3d>("size", this->dataPtr->size);
 
-    std::cout << pair.first << std::endl;
-    std::cout << pair.second << std::endl;
     if (!pair.second)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,

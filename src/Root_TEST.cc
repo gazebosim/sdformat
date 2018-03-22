@@ -17,6 +17,10 @@
 
 #include <gtest/gtest.h>
 #include "sdf/sdf_config.h"
+#include "sdf/Collision.hh"
+#include "sdf/Error.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
 #include "sdf/Root.hh"
 
 /////////////////////////////////////////////////
@@ -35,6 +39,45 @@ TEST(DOMRoot, Construction)
   EXPECT_EQ(0u, root.ModelCount());
   EXPECT_TRUE(root.ModelByIndex(0) == nullptr);
   EXPECT_TRUE(root.ModelByIndex(1) == nullptr);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, StringParse)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+    " <sdf version=\"1.6\">"
+    "   <model name='shapes'>"
+    "     <link name='link'>"
+    "       <collision name='box_col'>"
+    "         <geometry>"
+    "           <box>"
+    "             <size>3 4 5</size>"
+    "           </box>"
+    "         </geometry>"
+    "       </collision>"
+    "     </link>"
+    "   </model>"
+    " </sdf>";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(sdf);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_EQ(1u, root.ModelCount());
+
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  EXPECT_EQ("shapes", model->Name());
+  EXPECT_EQ(1u, model->LinkCount());
+
+  const sdf::Link *link = model->LinkByIndex(0);
+  ASSERT_NE(nullptr, link);
+  EXPECT_EQ("link", link->Name());
+  EXPECT_EQ(1u, link->CollisionCount());
+
+  const sdf::Collision *collision = link->CollisionByIndex(0);
+  ASSERT_NE(nullptr, collision);
+  EXPECT_EQ("box_col", collision->Name());
 }
 
 /////////////////////////////////////////////////
