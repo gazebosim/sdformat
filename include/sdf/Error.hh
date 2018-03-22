@@ -81,7 +81,7 @@ namespace sdf
     DIRECTORY_NONEXISTANT,
 
     /// \brief A link has invalid inertia.
-    LINK_INERTIA_INVALID,
+    LINK_INERTIA_INVALID
   };
 
   class SDFORMAT_VISIBLE Error

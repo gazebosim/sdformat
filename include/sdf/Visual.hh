@@ -18,14 +18,20 @@
 #define SDF_VISUAL_HH_
 
 #include <string>
+#include <ignition/math/Pose3.hh>
+#include "sdf/Box.hh"
+#include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
+#include "sdf/Plane.hh"
+#include "sdf/Sphere.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
-  // Forward declare private data class.
+  // Forward declarations.
   class VisualPrivate;
+  class Geometry;
 
   class SDFORMAT_VISIBLE Visual
   {
@@ -56,6 +62,33 @@ namespace sdf
     /// The name of the visual must be unique within the scope of a Link.
     /// \param[in] _name Name of the visual.
     public: void SetName(const std::string &_name) const;
+
+    /// \brief Get a pointer to the visual's geometry.
+    /// \return The visual's geometry.
+    public: const Geometry *Geom() const;
+
+    /// \brief Get the pose of the visual object. This is the pose of the
+    /// visual as specified in SDF
+    /// (<visual><pose> ... </pose></visual>).
+    /// \return The pose of the visual object.
+    public: const ignition::math::Pose3d &Pose() const;
+
+    /// \brief Set the pose of the visual object.
+    /// \sa const ignition::math::Pose3d &Pose() const
+    /// \param[in] _pose The pose of the visual object.
+    public: void SetPose(const ignition::math::Pose3d &_pose);
+
+    /// \brief Get the name of the coordinate frame in which this visual
+    /// object's pose is expressed. A empty value indicates that the frame is
+    /// the parent link.
+    /// \return The name of the pose frame.
+    public: const std::string &PoseFrame() const;
+
+    /// \brief Set the name of the coordinate frame in which this visual
+    /// object's pose is expressed. A empty value indicates that the frame is
+    /// the parent link.
+    /// \return The name of the pose frame.
+    public: void SetPoseFrame(const std::string &_pose);
 
     /// \brief Private data pointer.
     private: VisualPrivate *dataPtr = nullptr;

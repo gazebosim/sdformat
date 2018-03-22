@@ -19,6 +19,11 @@
 #include <gtest/gtest.h>
 
 #include "sdf/Element.hh"
+#include "sdf/Error.hh"
+#include "sdf/Filesystem.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
+#include "sdf/Root.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "test_config.h"
@@ -51,4 +56,34 @@ TEST(DOMVisual, NoName)
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   EXPECT_TRUE(errors[0].Message().find("visual name is required") !=
                std::string::npos);
+}
+
+//////////////////////////////////////////////////
+TEST(DOMVisual, DoublePendulum)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "double_pendulum.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_TRUE(model != nullptr);
+
+  const sdf::Link *baseLink = model->LinkByIndex(0);
+  ASSERT_TRUE(baseLink != nullptr);
+
+  const sdf::Visual *plateVis = baseLink->VisualByIndex(0);
+  ASSERT_TRUE(plateVis != nullptr);
+
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateVis->Pose());
+  EXPECT_EQ("", plateVis->PoseFrame());
+
+  const sdf::Visual *poleVis = baseLink->VisualByIndex(1);
+  ASSERT_TRUE(poleVis != nullptr);
+
+  EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0), poleVis->Pose());
+  EXPECT_EQ("", poleVis->PoseFrame());
 }

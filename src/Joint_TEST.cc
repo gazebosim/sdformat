@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <ignition/math/Pose3.hh>
 #include "sdf/Joint.hh"
 
 /////////////////////////////////////////////////
@@ -26,6 +27,15 @@ TEST(DOMJoint, Construction)
   EXPECT_EQ(sdf::JointType::INVALID, joint.Type());
   EXPECT_TRUE(joint.ParentLinkName().empty());
   EXPECT_TRUE(joint.ChildLinkName().empty());
+  EXPECT_EQ(ignition::math::Pose3d::Zero, joint.Pose());
+  EXPECT_TRUE(joint.PoseFrame().empty());
+
+  joint.SetPose({-1, -2, -3, IGN_PI, IGN_PI, 0});
+  EXPECT_EQ(ignition::math::Pose3d(-1, -2, -3, IGN_PI, IGN_PI, 0),
+            joint.Pose());
+
+  joint.SetPoseFrame("link");
+  EXPECT_EQ("link", joint.PoseFrame());
 
   joint.SetName("test_joint");
   EXPECT_EQ("test_joint", joint.Name());

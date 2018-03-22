@@ -18,6 +18,7 @@
 #define SDF_MODEL_HH_
 
 #include <string>
+#include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
@@ -70,6 +71,11 @@ namespace sdf
     /// \sa uint64_t LinkCount() const
     public: const Link *LinkByIndex(const uint64_t _index) const;
 
+    /// \brief Get a link based on a name.
+    /// \param[in] _name Name of the link.
+    /// \return Pointer to the link. Nullptr if the name does not exist.
+    public: const Link *LinkByName(const std::string &_name) const;
+
     /// \brief Get whether a link name exists.
     /// \param[in] _name Name of the link to check.
     /// \return True if there exists a link with the given name.
@@ -97,6 +103,30 @@ namespace sdf
     ///  does not exist.
     /// \sa bool JointNameExists(const std::string &_name) const
     public: const Joint *JointByName(const std::string &_name) const;
+
+    /// \brief Get the pose of the model. This is the pose of the model
+    /// as specified in SDF (<model> <pose> ... </pose></model>), and is
+    /// typically used to express the position and rotation of a model in a
+    /// global coordinate frame.
+    /// \return The pose of the model.
+    public: const ignition::math::Pose3d &Pose() const;
+
+    /// \brief Set the pose of the model.
+    /// \sa const ignition::math::Pose3d &Pose() const
+    /// \param[in] _pose The new model pose.
+    public: void SetPose(const ignition::math::Pose3d &_pose);
+
+    /// \brief Get the name of the coordinate frame in which this model's
+    /// pose is expressed. A empty value indicates that the frame is the
+    /// global/world coordinate frame.
+    /// \return The name of the pose frame.
+    public: const std::string &PoseFrame() const;
+
+    /// \brief Set the name of the coordinate frame in which this model's
+    /// pose is expressed. A empty value indicates that the frame is the
+    /// global/world coordinate frame.
+    /// \param[in] _frame The name of the pose frame.
+    public: void SetPoseFrame(const std::string &_frame);
 
     /// \brief Private data pointer.
     private: ModelPrivate *dataPtr = nullptr;

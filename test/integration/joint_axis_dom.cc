@@ -42,7 +42,7 @@ TEST(DOMJointAxis, Complete)
 
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
 
   // The model should have nine joints.
   EXPECT_EQ(9u, model->JointCount());
@@ -66,16 +66,16 @@ TEST(DOMJointAxis, Complete)
 
   // Get the joint
   const sdf::Joint *joint = model->JointByIndex(0);
-  ASSERT_TRUE(joint != nullptr);
+  ASSERT_NE(nullptr, joint);
   EXPECT_EQ(sdf::JointType::REVOLUTE, joint->Type());
 
   // Get the first axis
   const sdf::JointAxis *axis = joint->Axis();
-  ASSERT_TRUE(axis != nullptr);
+  ASSERT_NE(nullptr, axis);
 
   // Get the second axis
   const sdf::JointAxis *axis2 = joint->Axis(1);
-  ASSERT_TRUE(axis2 != nullptr);
+  ASSERT_NE(nullptr, axis2);
 
   EXPECT_EQ(ignition::math::Vector3d::UnitZ, axis->Xyz());
   EXPECT_EQ(ignition::math::Vector3d::UnitY, axis2->Xyz());

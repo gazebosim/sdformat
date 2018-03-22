@@ -2,19 +2,24 @@ include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 set (headers
   Assert.hh
+  Box.hh
   Console.hh
+  Cylinder.hh
   Element.hh
   Error.hh
   Exception.hh
   Filesystem.hh
+  Geometry.hh
   Joint.hh
   JointAxis.hh
   Link.hh
   Model.hh
   Param.hh
   parser.hh
+  Plane.hh
   Root.hh
   SDFImpl.hh
+  Sphere.hh
   Types.hh
   system_util.hh
   Visual.hh
