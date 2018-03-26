@@ -16,6 +16,7 @@
 */
 
 #include <iostream>
+#include <string.h>
 
 #include "sdf/sdf_config.h"
 #include "sdf/Filesystem.hh"
@@ -55,5 +56,9 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 // cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
 {
-  return sdf_strdup(SDF_VERSION_FULL);
+#ifdef _MSC_VER
+  return _strdup(SDF_VERSION_FULL);
+#else
+  return strdup(SDF_VERSION_FULL);
+#endif
 }
