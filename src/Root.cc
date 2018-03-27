@@ -60,7 +60,7 @@ Errors Root::Load(const std::string &_filename)
   Errors errors;
 
   // Read an SDF file, and store the result in sdfParsed.
-  sdf::SDFPtr sdfParsed = sdf::readFile(_filename, errors);
+  SDFPtr sdfParsed = readFile(_filename, errors);
 
   // Return if we were not able to read the file.
   if (!sdfParsed)
@@ -70,14 +70,46 @@ Errors Root::Load(const std::string &_filename)
     return errors;
   }
 
-  sdf::ElementPtr sdf = sdfParsed->Root();
+  Errors loadErrors = this->Load(sdfParsed);
+  errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
+
+  return errors;
+}
+
+/////////////////////////////////////////////////
+Errors Root::LoadSdfString(const std::string &_sdf)
+{
+  Errors errors;
+  SDFPtr sdfParsed(new SDF());
+  init(sdfParsed);
+
+  // Read an SDF string, and store the result in sdfParsed.
+  if (!readString(_sdf, sdfParsed, errors))
+  {
+    errors.push_back(
+        {ErrorCode::STRING_READ, "Unable to SDF string: " + _sdf});
+    return errors;
+  }
+
+  Errors loadErrors = this->Load(sdfParsed);
+  errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
+
+  return errors;
+}
+
+/////////////////////////////////////////////////
+Errors Root::Load(SDFPtr _sdf)
+{
+  Errors errors;
+
+  ElementPtr sdf = _sdf->Root();
 
   // Get the SDF version.
   std::pair<std::string, bool> versionPair =
     sdf->Get<std::string>("version", SDF_VERSION);
 
   // Check that the version exists. Exit if the version is missing.
-  // sdf::readFile will fail if the version is missing, so this
+  // readFile will fail if the version is missing, so this
   // check should never be triggered.
   if (!versionPair.second)
   {
@@ -91,7 +123,7 @@ Errors Root::Load(const std::string &_filename)
   // Read all the worlds
   if (sdf->HasElement("world"))
   {
-    sdf::ElementPtr elem = sdf->GetElement("world");
+    ElementPtr elem = sdf->GetElement("world");
     while (elem)
     {
       World world;

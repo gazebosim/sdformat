@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef _SDF_VISIBLE_HH_
-#define _SDF_VISIBLE_HH_
+#ifndef SDF_VISIBLE_HH_
+#define SDF_VISIBLE_HH_
 
 /** \def SDFORMAT_VISIBLE
  * Use to represent "symbol visible" if supported
@@ -50,11 +50,5 @@
   #endif
 #endif
 
-// Use safer functions on Windows
-#ifdef _MSC_VER
-  #define sdf_strdup _strdup
-#else
-  #define sdf_strdup strdup
+// SDF_VISIBLE_HH_
 #endif
-
-#endif /* SDFORMAT_VISIBLE_HH */
