@@ -41,7 +41,7 @@
   #endif
   #define SDFORMAT_HIDDEN
 #else
-  #if __GNUC__ >= 4
+  #if __GNUC__ >= 4 && !defined SDFORMAT_STATIC_DEFINE
     #define SDFORMAT_VISIBLE __attribute__ ((visibility ("default")))
     #define SDFORMAT_HIDDEN  __attribute__ ((visibility ("hidden")))
   #else
