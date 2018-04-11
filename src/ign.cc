@@ -62,3 +62,22 @@ extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
   return strdup(SDF_VERSION_FULL);
 #endif
 }
+
+//////////////////////////////////////////////////
+/// \brief Print the full description of the SDF spec.
+/// \return 0 on success, -1 if SDF could not be initialized.
+// cppcheck-suppress unusedFunction
+extern "C" SDFORMAT_VISIBLE int cmdDescribe()
+{
+  sdf::SDFPtr sdf(new sdf::SDF());
+
+  if (!sdf::init(sdf))
+  {
+    std::cerr << "Error: SDF schema initialization failed.\n";
+    return -1;
+  }
+
+  sdf->PrintDescription();
+
+  return 0;
+}
