@@ -103,10 +103,13 @@ int main(int argc, char **argv)
   // We need to keep the existing LD_LIBRARY_PATH so that libsdformat.so can
   // find its dependency.
 #ifndef _WIN32
-  char *currentLibraryPath = std::getenv("LD_LIBRARY_PATH");
-
   std::string testLibraryPath = IGN_TEST_LIBRARY_PATH;
-  testLibraryPath = testLibraryPath + ":" + currentLibraryPath;
+
+  char *currentLibraryPath = std::getenv("LD_LIBRARY_PATH");
+  if (currentLibraryPath)
+  {
+    testLibraryPath = testLibraryPath + ":" + currentLibraryPath;
+  }
 
   setenv("LD_LIBRARY_PATH", testLibraryPath.c_str(), 1);
 #endif
