@@ -12,7 +12,9 @@ pipelines:
           - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-latest.list'
           - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
           - apt update
-          - apt install -y libignition-math4-dev
+          - apt install -y
+            libignition-math4-dev
+            libignition-tools-dev
           # SDFormat
           - mkdir build
           - cd build

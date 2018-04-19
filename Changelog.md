@@ -2,6 +2,10 @@
 
 ### SDFormat 6.1.0 (xxxx-xx-xx)
 
+1. Adds the equalivent of gz sdf -d to sdformat. The command line option
+   will print the full description of the SDF spec.
+   * [Pull request 424](https://bitbucket.org/osrf/sdformat/pull-requests/424)
+
 1. SDF DOM: Additions to the document object model.
    * [Pull request 393](https://bitbucket.org/osrf/sdformat/pull-requests/393)
    * [Pull request 394](https://bitbucket.org/osrf/sdformat/pull-requests/394)
