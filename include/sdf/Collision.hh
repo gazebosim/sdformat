@@ -18,15 +18,21 @@
 #define SDF_COLLISION_HH_
 
 #include <string>
+#include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
-  // Forward declare private data class.
+  // Forward declaration.
   class CollisionPrivate;
+  class Geometry;
 
+  /// \brief A collision element descibes the collison properties associated
+  /// with a link. This can be different from the visual properties of a link.
+  /// For example, simple collision models are often used to reduce
+  /// computation time.
   class SDFORMAT_VISIBLE Collision
   {
     /// \brief Default constructor
@@ -57,6 +63,33 @@ namespace sdf
     /// The name of the collision must be unique within the scope of a Link.
     /// \param[in] _name Name of the collision.
     public: void SetName(const std::string &_name) const;
+
+    /// \brief Get a pointer to the collisions's geometry.
+    /// \return The collision's geometry.
+    public: const Geometry *Geom() const;
+
+    /// \brief Get the pose of the collision object. This is the pose of the
+    /// collison as specified in SDF
+    /// (<collision><pose> ... </pose></collision>).
+    /// \return The pose of the collision object.
+    public: const ignition::math::Pose3d &Pose() const;
+
+    /// \brief Set the pose of the collision object.
+    /// \sa const ignition::math::Pose3d &Pose() const
+    /// \param[in] _pose The pose of the collision object.
+    public: void SetPose(const ignition::math::Pose3d &_pose);
+
+    /// \brief Get the name of the coordinate frame in which this collision
+    /// object's pose is expressed. A empty value indicates that the frame is
+    /// the parent link.
+    /// \return The name of the pose frame.
+    public: const std::string &PoseFrame() const;
+
+    /// \brief Set the name of the coordinate frame in which this collision
+    /// object's pose is expressed. A empty value indicates that the frame is
+    /// the parent link.
+    /// \param[in] _frame The name of the pose frame.
+    public: void SetPoseFrame(const std::string &_frame);
 
     /// \brief Private data pointer.
     private: CollisionPrivate *dataPtr = nullptr;

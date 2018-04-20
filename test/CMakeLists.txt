@@ -13,6 +13,7 @@ link_directories(
 )
 
 if (USE_EXTERNAL_TINYXML)
+  include_directories(${tinyxml_INCLUDE_DIRS})
   link_directories(${tinyxml_LIBRARY_DIRS})
 endif()
 

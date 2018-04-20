@@ -19,6 +19,7 @@
 
 #include <string>
 
+#include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
 
@@ -53,6 +54,20 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(const std::string &_filename);
+
+    /// \brief Parse the given SDF string, and generate objects based on types
+    /// specified in the SDF file.
+    /// \param[in] _sdf SDF string to parse.
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors LoadSdfString(const std::string &_sdf);
+
+    /// \brief Parse the given SDF pointer, and generate objects based on types
+    /// specified in the SDF file.
+    /// \param[in] _sdf SDF pointer to parse.
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(const SDFPtr _sdf);
 
     /// \brief Get the SDF version specified in the parsed file or SDF
     /// pointer.

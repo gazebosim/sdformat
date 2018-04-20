@@ -14,11 +14,16 @@
  * limitations under the License.
  *
 */
+#include <string>
 #include <vector>
 #include <ignition/math/Inertial.hh>
+#include <ignition/math/Pose3.hh>
+#include <ignition/math/Vector3.hh>
 
 #include "sdf/Collision.hh"
+#include "sdf/Error.hh"
 #include "sdf/Link.hh"
+#include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "Utils.hh"
 
@@ -28,6 +33,12 @@ class sdf::LinkPrivate
 {
   /// \brief Name of the link.
   public: std::string name = "";
+
+  /// \brief Pose of the link
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+
+  /// \brief Frame of the pose.
+  public: std::string poseFrame = "";
 
   /// \brief The visuals specified in this link.
   public: std::vector<Visual> visuals;
@@ -39,12 +50,6 @@ class sdf::LinkPrivate
   public: ignition::math::Inertiald inertial {{1.0,
             ignition::math::Vector3d::One, ignition::math::Vector3d::Zero},
             ignition::math::Pose3d::Zero};
-
-  /// \brief The pose of the link, as specified in SDF.
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
-
-  /// \brief The frame of the pose
-  public: std::string poseFrame = "";
 
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
 };
@@ -91,7 +96,7 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
                      "A link name is required, but the name is not set."});
   }
 
-  // Load the pose. Ignore the return value because the pose is optional.
+  // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
   if (this->dataPtr->poseFrame.empty() && _sdf->GetParent())
@@ -131,8 +136,8 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   {
     sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
 
-    // Load the pose. Ignore the return value because the pose is optional.
-    loadPose(inertialElem, inertiaPose, inertiaFrame);
+    if (inertialElem->HasElement("pose"))
+      loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
 
     // Get the mass.
     mass = inertialElem->Get<double>("mass", 1.0).first;
@@ -154,7 +159,9 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
       ignition::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
   {
     errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
-        "A link named " + this->Name() + " has invalid inertia."});
+                     "A link named " +
+                     this->Name() +
+                     " has invalid inertia."});
   }
 
   /// \todo: Handle inertia frame properly
@@ -326,3 +333,48 @@ ignition::math::Pose3d Link::Pose(const std::string &_frame) const
     std::cout << m.first << " " << m.second.first << " " << m.second.second << std::endl;
   }*/
 }
+
+/////////////////////////////////////////////////
+const std::string &Link::PoseFrame() const
+{
+  return this->dataPtr->poseFrame;
+}
+
+/////////////////////////////////////////////////
+void Link::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->dataPtr->pose = _pose;
+}
+
+/////////////////////////////////////////////////
+void Link::SetPoseFrame(const std::string &_frame)
+{
+  this->dataPtr->poseFrame = _frame;
+}
+
+/////////////////////////////////////////////////
+const Visual *Link::VisualByName(const std::string &_name) const
+{
+  for (auto const &v : this->dataPtr->visuals)
+  {
+    if (v.Name() == _name)
+    {
+      return &v;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+const Collision *Link::CollisionByName(const std::string &_name) const
+{
+  for (auto const &c : this->dataPtr->collisions)
+  {
+    if (c.Name() == _name)
+    {
+      return &c;
+    }
+  }
+  return nullptr;
+}
+

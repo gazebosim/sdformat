@@ -14,11 +14,15 @@
  * limitations under the License.
  *
 */
+#include <string>
 #include <vector>
 #include <ignition/math/graph/Graph.hh>
+#include <ignition/math/Pose3.hh>
+#include "sdf/Error.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
+#include "sdf/Types.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -29,7 +33,10 @@ class sdf::ModelPrivate
   public: std::string name = "";
 
   /// \brief Pose of the model
-  public: ignition::math::Pose3d pose;
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+
+  /// \brief Frame of the pose.
+  public: std::string poseFrame = "";
 
   /// \brief The links specified in this model.
   public: std::vector<Link> links;
@@ -188,6 +195,43 @@ const Joint *Model::JointByName(const std::string &_name) const
     if (j.Name() == _name)
     {
       return &j;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Model::Pose() const
+{
+  return this->dataPtr->pose;
+}
+
+/////////////////////////////////////////////////
+const std::string &Model::PoseFrame() const
+{
+  return this->dataPtr->poseFrame;
+}
+
+/////////////////////////////////////////////////
+void Model::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->dataPtr->pose = _pose;
+}
+
+/////////////////////////////////////////////////
+void Model::SetPoseFrame(const std::string &_frame)
+{
+  this->dataPtr->poseFrame = _frame;
+}
+
+/////////////////////////////////////////////////
+const Link *Model::LinkByName(const std::string &_name) const
+{
+  for (auto const &l : this->dataPtr->links)
+  {
+    if (l.Name() == _name)
+    {
+      return &l;
     }
   }
   return nullptr;

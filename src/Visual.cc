@@ -14,7 +14,12 @@
  * limitations under the License.
  *
 */
+#include <string>
+#include <ignition/math/Pose3.hh>
+#include "sdf/Error.hh"
+#include "sdf/Types.hh"
 #include "sdf/Visual.hh"
+#include "sdf/Geometry.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -24,11 +29,14 @@ class sdf::VisualPrivate
   /// \brief Name of the visual.
   public: std::string name = "";
 
-  /// \brief The pose of the visual, as specified in SDF.
+  /// \brief Pose of the collision object
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
-  /// \brief The frame of the pose
+  /// \brief Frame of the pose.
   public: std::string poseFrame = "";
+
+  /// \brief The visual's a geometry.
+  public: Geometry geom;
 
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
 };
@@ -75,7 +83,7 @@ Errors Visual::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
                      "A visual name is required, but the name is not set."});
   }
 
-  // Load the pose. Ignore the return value because the pose is optional.
+  // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
   if (_frameGraph)
@@ -84,6 +92,10 @@ Errors Visual::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
         ignition::math::Matrix4d(this->dataPtr->pose));
     this->dataPtr->frameGraph = _frameGraph;
   }
+
+  // Load the geometry
+  Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
+  errors.insert(errors.end(), geomErr.begin(), geomErr.end());
 
   return errors;
 }
@@ -98,4 +110,34 @@ std::string Visual::Name() const
 void Visual::SetName(const std::string &_name) const
 {
   this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Visual::Pose() const
+{
+  return this->dataPtr->pose;
+}
+
+/////////////////////////////////////////////////
+const std::string &Visual::PoseFrame() const
+{
+  return this->dataPtr->poseFrame;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->dataPtr->pose = _pose;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetPoseFrame(const std::string &_frame)
+{
+  this->dataPtr->poseFrame = _frame;
+}
+
+/////////////////////////////////////////////////
+const Geometry *Visual::Geom() const
+{
+  return &this->dataPtr->geom;
 }

@@ -71,7 +71,7 @@ TEST(DOMJoint, DoublePendulum)
 
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
 
   // The double pendulum should have two joints.
   EXPECT_EQ(2u, model->JointCount());
@@ -81,9 +81,9 @@ TEST(DOMJoint, DoublePendulum)
 
   // Get the two joints
   const sdf::Joint *upperJoint = model->JointByName("upper_joint");
-  ASSERT_TRUE(upperJoint != nullptr);
+  ASSERT_NE(nullptr, upperJoint);
   const sdf::Joint *lowerJoint = model->JointByName("lower_joint");
-  ASSERT_TRUE(lowerJoint != nullptr);
+  ASSERT_NE(nullptr, lowerJoint);
 
   // Check the parent and child link values
   EXPECT_EQ("base", upperJoint->ParentLinkName());
@@ -99,9 +99,9 @@ TEST(DOMJoint, DoublePendulum)
 
   // Get the first axis for each joint
   const sdf::JointAxis *upperAxis = upperJoint->Axis(0);
-  ASSERT_TRUE(upperAxis != nullptr);
+  ASSERT_NE(nullptr, upperAxis);
   const sdf::JointAxis *lowerAxis = upperJoint->Axis(0);
-  ASSERT_TRUE(lowerAxis != nullptr);
+  ASSERT_NE(nullptr, lowerAxis);
 
   // Check the xyz values for both axis.
   EXPECT_EQ(ignition::math::Vector3d::UnitX, upperAxis->Xyz());

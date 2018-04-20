@@ -18,6 +18,7 @@
 #define SDF_JOINT_HH_
 
 #include <string>
+#include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
@@ -134,6 +135,28 @@ namespace sdf
     /// return value of nullptr indicates that the axis is not
     /// specified.
     public: const JointAxis *Axis(const unsigned int _index = 0) const;
+
+    /// \brief Get the pose of the joint. This is the pose of the joint
+    /// as specified in SDF (<joint> <pose> ... </pose></joint>).
+    /// \return The pose of the joint.
+    public: const ignition::math::Pose3d &Pose() const;
+
+    /// \brief Set the pose of the joint.
+    /// \sa const ignition::math::Pose3d &Pose() const;
+    /// \param[in] _pose The pose of the joint.
+    public: void SetPose(const ignition::math::Pose3d &_pose);
+
+    /// \brief Get the name of the coordinate frame in which this joint's
+    /// pose is expressed. A empty value indicates that the frame is the
+    /// parent model.
+    /// \return The name of the pose frame.
+    public: const std::string &PoseFrame() const;
+
+    /// \brief Set the name of the coordinate frame in which this joint's
+    /// pose is expressed. A empty value indicates that the frame is the
+    /// parent model.
+    /// \param[in] _frame The name of the pose frame.
+    public: void SetPoseFrame(const std::string &_frame);
 
     /// \brief Private data pointer.
     private: JointPrivate *dataPtr = nullptr;

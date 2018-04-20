@@ -252,17 +252,30 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
   else
   {
     TiXmlText *text = new TiXmlText(value);
+    // The tinyxml function LinkEndChild takes the pointer and takes ownership
+    // of the memory, so it is responsible for freeing it later.
     replaceTo->LinkEndChild(text);
   }
 
   if (fromElemName)
   {
     TiXmlElement *replaceFrom = _elem->FirstChildElement(fromElemName);
-    _elem->ReplaceChild(replaceFrom, *replaceTo);
+    if (_elem->ReplaceChild(replaceFrom, *replaceTo) == nullptr)
+    {
+      sdferr << "Failed to rename element\n";
+      // fall through so we can reclaim memory
+    }
+
+    // In this case, the tinyxml function ReplaceChild does a deep copy of the
+    // node that is passed in, so we want to free it here.
+    delete replaceTo;
   }
   else if (fromAttrName)
   {
     _elem->RemoveAttribute(fromAttrName);
+    // In this case, the tinyxml function LinkEndChild just takes the pointer
+    // and takes ownership of the memory, so it is responsible for freeing it
+    // later.
     _elem->LinkEndChild(replaceTo);
   }
 }
