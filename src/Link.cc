@@ -113,6 +113,7 @@ Errors Link::Load(ElementPtr _sdf)
   std::string inertiaFrame = "";
   double mass = 1.0;
 
+  ignition::math::MassMatrix3d massMatrix;
   if (_sdf->HasElement("inertial"))
   {
     sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
@@ -136,6 +137,58 @@ Errors Link::Load(ElementPtr _sdf)
       xyxzyz.Z(inertiaElem->Get<double>("iyz", 0.0).first);
     }
   }
+  else
+  {
+    ignition::math::Inertiald inertial;
+
+    // Assume wood as the default material type.
+    ignition::math::Material material(ignition::math::MaterialTypes::WOOD);
+
+    // Iterate over collision objects to compute the mass.
+    for (const Collision &collision : this->dataPtr->collisions)
+    {
+      // Get the geom;
+      const Geometry *geom = collision.Geom();
+
+      // Compute the mass matrix based on the collision's geometry shape
+      ignition::math::MassMatrix3d massMatrix;
+      switch (geom->Type())
+      {
+        case GeometryType::BOX:
+          massMatrix.SetFromBox(material, geom->BoxShape()->Size(),
+              collision.Pose().Rot());
+          break;
+        case GeometryType::CYLINDER:
+          massMatrix.SetFromCylinderZ(material,
+              geom->CylinderShape()->Length(),
+              geom->CylinderShape()->Radius(),
+              collision.Pose().Rot());
+          break;
+        case GeometryType::PLANE:
+          // Ignore plane geometry type.
+          break;
+        case GeometryType::SPHERE:
+          massMatrix.SetFromSphere(material,
+              geom->CylinderShape()->Radius(),
+              collision.Pose().Rot());
+          break
+        default:
+          errors.push_back({ErrorCode::ELEMENT_INVALID,
+              "Unknown geometry shape type: " +
+              std::to_string(static_cast<int>(geom->Type()))});
+          break;
+      }
+
+      // Create the geometry's inertia.
+      ignition::math::Inertiald geomInertial;
+      geomInertial.SetPose(collision.Pose());
+      geomInertial.SetMassMatrix(geomMassMatrix);
+
+      // Sum the inertia.
+      inertial += geomInertial;
+    }
+  }
+
   if (!this->dataPtr->inertial.SetMassMatrix(
       ignition::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
   {
