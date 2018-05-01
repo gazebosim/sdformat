@@ -137,7 +137,7 @@ Errors Link::Load(ElementPtr _sdf)
     }
   }
   if (!this->dataPtr->inertial.SetMassMatrix(
-      ignition::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
+      ignition::math::MassMatrix3d(mass, xxyyzz, xyxzyz), 1e-6))
   {
     errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
                      "A link named " +
