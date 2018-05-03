@@ -45,12 +45,15 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
 
-    /// \brief Get the plane normal vector.
+    /// \brief Get the plane normal vector. When a Plane is used as a geometry
+    /// for a Visual or Collision object, then the normal is specified in the
+    /// Visual or Collision frame, respectively.
     /// \return The plane normal vector.
     public: ignition::math::Vector3d Normal() const;
 
     /// \brief Set the plane normal vector. The _normal vector will be
-    /// normalized.
+    /// normalized. See ignition::math::Vector3d Normal() for more information
+    /// about the normal vector, such as the frame in which it is specified.
     /// \param[in] _normal The plane normal vector.
     public: void SetNormal(const ignition::math::Vector3d &_normal);
 
