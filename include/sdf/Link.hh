@@ -110,7 +110,7 @@ namespace sdf
     /// are specified the Interial's ignition::math::MassMatrix3 property.
     ///
     /// The origin of the inertial reference frame needs to be at the center
-    /// of gravity expressed in this link's frame.
+    /// of mass expressed in this link's frame.
     /// The axes of the inertial reference frame do not need to
     /// be aligned with the principal axes of the inertia.
     /// \return The link's inertial value.
