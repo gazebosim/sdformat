@@ -229,7 +229,7 @@ TEST(DOMLink, LinkChain)
   const sdf::Link *linkOne = model->LinkByIndex(0);
   const sdf::Link *linkTwo = model->LinkByIndex(1);
 
-  ignition::math::Pose3d pose1 = linkOne->Pose("link_chain");
+  ignition::math::Pose3d pose1 = linkOne->Pose("two");
   std::cout << pose1 << std::endl;
 
   /*ignition::math::Pose3d pose2 = linkTwo->Pose("one");

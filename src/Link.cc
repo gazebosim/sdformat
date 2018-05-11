@@ -104,14 +104,23 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 
   if (_frameGraph)
   {
+    // Add a vertex in the frame graph for this link.
     ignition::math::graph::Vertex<ignition::math::Matrix4d> &vert =
       _frameGraph->AddVertex(this->dataPtr->name,
           ignition::math::Matrix4d(this->dataPtr->pose));
 
+    // Get the parent vertex based on this link's pose frame name.
     const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
       parentVertices = _frameGraph->Vertices(this->dataPtr->poseFrame);
 
-    _frameGraph->AddEdge({parentVertices.begin()->first, vert.Id()}, 1);
+    /// \todo check that parentVertices has an element, and potentially make
+    /// sure it has only one element.
+
+    // Connect the parent to the child
+    _frameGraph->AddEdge({parentVertices.begin()->first, vert.Id()}, -1);
+
+    // Connect the child to the parent
+    _frameGraph->AddEdge({vert.Id(), parentVertices.begin()->first}, 1);
 
     this->dataPtr->frameGraph = _frameGraph;
   }
@@ -250,7 +259,7 @@ bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Pose3d Link::Pose(const std::string &_frame) const
+const ignition::math::Pose3d &Link::Pose(const std::string &_frame) const
 {
   // If the frame is empty, then return the base pose. Otherwise, we need to
   // return the pose in the given frame.
@@ -280,7 +289,7 @@ ignition::math::Pose3d Link::Pose(const std::string &_frame) const
 
   for (auto vv : result)
   {
-    std::cout << vv.first << "->" << vv.second.second << std::endl;
+    std::cout << "DestId[" << vv.first << "] Cost[" << vv.second.first << "] PrevId[" << vv.second.second << "]" << std::endl;
   }
 
   ignition::math::graph::VertexId key = dstVertices.begin()->first;
@@ -288,50 +297,65 @@ ignition::math::Pose3d Link::Pose(const std::string &_frame) const
   ignition::math::Matrix4d finalPose = ignition::math::Matrix4d::Identity;
   while (!done)
   {
-    std::cout << key << " == "
-      << this->dataPtr->frameGraph->VertexFromId(key).Data()
-      << "::" << this->dataPtr->frameGraph->VertexFromId(key).Data().Inverse()
-      << std::endl;
+    // Get the next vertex in the path from the destination vertex to the
+    // source vertex.
+    ignition::math::graph::VertexId nextVertex =
+      result.find(key)->second.second;
 
-    ignition::math::graph::VertexRef_M<ignition::math::Matrix4d> adj =
-      this->dataPtr->frameGraph->AdjacentsTo(result[key].second);
-    bool isParent = false;
-    for (auto ref : adj)
+    // Get the edge between nextVertex and key.
+    const ignition::math::graph::DirectedEdge<int> &edge =
+      this->dataPtr->frameGraph->EdgeFromVertices(nextVertex, key);
+
+    // Make sure the edge is valid.
+    if (edge.Id() != ignition::math::graph::DirectedEdge<int>::NullEdge.Id())
     {
-      std::cout << "Adj[" << ref.first << "]\n";
-      if (ref.first == key)
+      std::cout << "Key[" << key << "] Edge From[" << edge.Head()
+        << "] To[" << edge.Tail() << "] Data[" << edge.Data() << "]\n";
+
+      // Get the direction of the edge.
+      // \todo I think we look at just the Head() and Tail() of the edge and
+      // compare those values to key and nextVertex.
+      bool inverse = edge.Data() < 0;
+
+      if (inverse)
       {
-        isParent = true;
+        finalPose = finalPose *
+          this->dataPtr->frameGraph->VertexFromId(key).Data().Inverse();
+      }
+      else
+      {
+        finalPose = finalPose *
+          this->dataPtr->frameGraph->VertexFromId(key).Data();
+      }
+
+      // Special case when the next vertex is the source vertex.
+      if (nextVertex == srcVertices.begin()->first)
+      {
+        if (inverse)
+        {
+          finalPose = finalPose *
+            ignition::math::Matrix4d(this->dataPtr->pose).Inverse();
+        }
+        else
+        {
+          finalPose = finalPose * ignition::math::Matrix4d(this->dataPtr->pose);
+        }
+        done = true;
       }
     }
-
-    std::cout << "Key[" << key << "] Next[" << result[key].second << "] IsParent[" << isParent << "]\n";
-
-    // if (!isParent)
-    if (key == 1)
-      finalPose = finalPose * this->dataPtr->frameGraph->VertexFromId(key).Data().Inverse();
     else
-
-      finalPose = finalPose * this->dataPtr->frameGraph->VertexFromId(key).Data();
-
-    key = result[key].second;
-    if (key == srcVertices.begin()->first)
     {
-      std::cout << "ThisPose[" << this->dataPtr->pose << "]\n";
-      finalPose = finalPose * ignition::math::Matrix4d(this->dataPtr->pose);
+      /// \todo This is an error case. Inform the caller somehow.
+      std::cerr << "ERRROR!\n";
       done = true;
     }
 
-    done = true;
+    // Move onto the next vertex.
+    key = nextVertex;
   }
   std::cout << "FinalPose[" << finalPose << "]\n";
 
   return finalPose.Pose();
-
-  /*for (auto m : result)
-  {
-    std::cout << m.first << " " << m.second.first << " " << m.second.second << std::endl;
-  }*/
 }
 
 /////////////////////////////////////////////////
@@ -377,4 +401,3 @@ const Collision *Link::CollisionByName(const std::string &_name) const
   }
   return nullptr;
 }
-

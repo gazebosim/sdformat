@@ -126,7 +126,8 @@ namespace sdf
     /// \brief Get the pose of the link. This is the pose of the link
     /// as specified in SDF (<link> <pose> ... </pose></link>).
     /// \return The pose of the link.
-    public: const ignition::math::Pose3d &Pose(const std::string &_frame) const;
+    public: const ignition::math::Pose3d &Pose(
+                const std::string &_frame = "") const;
 
     /// \brief Set the pose of the link.
     /// \sa const ignition::math::Pose3d &Pose() const
