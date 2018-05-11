@@ -62,7 +62,7 @@ TEST(check, SDF)
     // Check box_plane_low_friction_test.world
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_EQ(output, "Valid.\n");
+    EXPECT_EQ("Valid.\n", output);
   }
 
   // Check a bad SDF file
@@ -74,6 +74,18 @@ TEST(check, SDF)
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_TRUE(output.find("Required attribute") != std::string::npos);
   }
+}
+
+/////////////////////////////////////////////////
+TEST(describe, SDF)
+{
+  // Get the description
+  std::string output =
+    custom_exec_str(g_ignCommand + " sdf -d " + g_sdfVersion);
+  EXPECT_FALSE(output.empty());
+
+  // The first line should start with the following text.
+  EXPECT_EQ(0u, output.find("<element name ='sdf' required ='1'"));
 }
 
 /////////////////////////////////////////////////
@@ -91,10 +103,13 @@ int main(int argc, char **argv)
   // We need to keep the existing LD_LIBRARY_PATH so that libsdformat.so can
   // find its dependency.
 #ifndef _WIN32
-  char *currentLibraryPath = std::getenv("LD_LIBRARY_PATH");
-
   std::string testLibraryPath = IGN_TEST_LIBRARY_PATH;
-  testLibraryPath = testLibraryPath + ":" + currentLibraryPath;
+
+  char *currentLibraryPath = std::getenv("LD_LIBRARY_PATH");
+  if (currentLibraryPath)
+  {
+    testLibraryPath = testLibraryPath + ":" + currentLibraryPath;
+  }
 
   setenv("LD_LIBRARY_PATH", testLibraryPath.c_str(), 1);
 #endif

@@ -154,26 +154,26 @@ TEST(ConverterIntegration, ParserFileConverter)
   EXPECT_TRUE(sdf::convertFile(filename, "1.6", sdf));
 
   sdf::ElementPtr rootElem = sdf->Root();
-  ASSERT_TRUE(rootElem != nullptr);
+  ASSERT_NE(nullptr, rootElem);
   EXPECT_EQ("1.6", rootElem->Get<std::string>("version"));
 
   sdf::ElementPtr modelElem = rootElem->GetElement("model");
-  ASSERT_TRUE(modelElem != nullptr);
+  ASSERT_NE(nullptr, modelElem);
   EXPECT_EQ(modelElem->Get<std::string>("name"), "full_audio_parameters");
 
   sdf::ElementPtr linkElem = modelElem->GetElement("link");
-  ASSERT_TRUE(linkElem != nullptr);
+  ASSERT_NE(nullptr, linkElem);
   EXPECT_EQ(linkElem->Get<std::string>("name"), "link");
 
   sdf::ElementPtr collElem = linkElem->GetElement("collision");
-  ASSERT_TRUE(collElem != nullptr);
+  ASSERT_NE(nullptr, collElem);
   EXPECT_EQ(collElem->Get<std::string>("name"), "collision");
 
   sdf::ElementPtr sinkElem = linkElem->GetElement("audio_sink");
-  ASSERT_TRUE(sinkElem != nullptr);
+  ASSERT_NE(nullptr, sinkElem);
 
   sdf::ElementPtr sourceElem = linkElem->GetElement("audio_source");
-  ASSERT_TRUE(sourceElem != nullptr);
+  ASSERT_NE(nullptr, sourceElem);
 }
 
 /////////////////////////////////////////////////
@@ -213,26 +213,26 @@ TEST(ConverterIntegration, ParserStringConverter)
   sdf::init(sdf);
 
   EXPECT_TRUE(sdf::convertString(xmlString, "1.6", sdf));
-  ASSERT_TRUE(sdf->Root() != nullptr);
+  ASSERT_NE(nullptr, sdf->Root());
   EXPECT_EQ(sdf->Root()->GetName(), "sdf");
   EXPECT_EQ("1.6", sdf->Root()->Get<std::string>("version"));
 
   sdf::ElementPtr worldElem = sdf->Root()->GetElement("world");
-  ASSERT_TRUE(worldElem != nullptr);
+  ASSERT_NE(nullptr, worldElem);
   EXPECT_EQ(worldElem->Get<std::string>("name"), "default");
 
   sdf::ElementPtr physicsElem = worldElem->GetElement("physics");
-  ASSERT_TRUE(physicsElem != nullptr);
+  ASSERT_NE(nullptr, physicsElem);
   EXPECT_EQ(physicsElem->Get<std::string>("name"), "default_physics");
   EXPECT_EQ(physicsElem->Get<std::string>("type"), "ode");
 
   sdf::ElementPtr gravityElem = worldElem->GetElement("gravity");
-  ASSERT_TRUE(gravityElem != nullptr);
+  ASSERT_NE(nullptr, gravityElem);
   EXPECT_EQ(gravityElem->Get<ignition::math::Vector3d>(),
             ignition::math::Vector3d(0, 0, -9.8));
 
   sdf::ElementPtr magElem = worldElem->GetElement("magnetic_field");
-  ASSERT_TRUE(magElem != nullptr);
+  ASSERT_NE(nullptr, magElem);
   EXPECT_EQ(magElem->Get<ignition::math::Vector3d>(),
             ignition::math::Vector3d(1, 2, 3));
 }
@@ -271,12 +271,12 @@ TEST(ConverterIntegration, World_15_to_16)
 
   // Get the gravity
   TiXmlElement *gravityElem = convertedElem->NextSiblingElement("gravity");
-  ASSERT_TRUE(gravityElem != nullptr);
+  ASSERT_NE(nullptr, gravityElem);
   EXPECT_STREQ(gravityElem->GetText(), "0 0 -9.8");
 
   // Get the magnetic_field
   TiXmlElement *magneticFieldElem =
     convertedElem->NextSiblingElement("magnetic_field");
-  ASSERT_TRUE(magneticFieldElem != nullptr);
+  ASSERT_NE(nullptr, magneticFieldElem);
   EXPECT_STREQ(magneticFieldElem->GetText(), "1 2 3");
 }

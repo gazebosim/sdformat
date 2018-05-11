@@ -38,7 +38,8 @@ COMMANDS = {  'sdf' =>
                        "Utilities for SDF files.\n\n"\
                        "  ign sdf [options]\n\n"\
                        "Options:\n\n"\
-                       "  -k [ --check ] arg         Validate arg.\n" +
+                       "  -k [ --check ] arg     Validate arg.\n" +
+                       "  -d [ --describe ]      Print the SDF description.\n" +
                        COMMON_OPTIONS
             }
 
@@ -67,6 +68,9 @@ class Cmd
       opts.on('-k arg', '--check arg', String,
               'Validate arg') do |arg|
         options['check'] = arg
+      end
+      opts.on('-d', '--describe', 'Print the SDF description') do |v|
+        options['describe'] = v
       end
     end
     begin
@@ -133,6 +137,9 @@ class Cmd
         if options.key?('check')
           Importer.extern 'int cmdCheck(const char *)'
           exit(Importer.cmdCheck(options['check']))
+        elsif options.key?('describe')
+          Importer.extern 'int cmdDescribe()'
+          exit(Importer.cmdDescribe())
         else
           puts 'Command error: I do not have an implementation '\
                'for this command.'

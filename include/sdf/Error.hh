@@ -79,6 +79,12 @@ namespace sdf
 
     /// \brief A filesystem directory does not exist.
     DIRECTORY_NONEXISTANT,
+
+    /// \brief A link has invalid inertia.
+    LINK_INERTIA_INVALID,
+
+    /// \brief Indicates that reading an SDF string failed.
+    STRING_READ,
   };
 
   class SDFORMAT_VISIBLE Error

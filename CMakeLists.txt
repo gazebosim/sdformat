@@ -133,7 +133,10 @@ elseif ("${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "COVERAGE")
   set (BUILD_TYPE_DEBUG TRUE)
   SETUP_TARGET_FOR_COVERAGE(coverage ctest coverage)
 else()
-  build_error("CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} unknown. Valid options are: Debug Release RelWithDebInfo Profile Check")
+  # NONE is a valid CMAKE_BUILD_TYPE
+  if (NOT "${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "NONE")
+    build_error("CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} unknown. Valid options are: Debug Release RelWithDebInfo Profile Coverage None")
+  endif()
 endif()
 
 #####################################

@@ -18,7 +18,9 @@
 #include <string>
 #include <gtest/gtest.h>
 
+#include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
+#include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -69,15 +71,17 @@ TEST(DOMRoot, LoadLinkCheck)
 
   // Get the first world
   const sdf::World *world = root.WorldByIndex(0);
-  ASSERT_TRUE(world != nullptr);
+  ASSERT_NE(nullptr, world);
   EXPECT_EQ("default", world->Name());
 
   // Get the first model
   const sdf::Model *model = world->ModelByIndex(0);
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
   EXPECT_EQ("ground_plane", model->Name());
   EXPECT_EQ(1u, model->LinkCount());
-  EXPECT_FALSE(nullptr == model->LinkByIndex(0));
+  ASSERT_FALSE(nullptr == model->LinkByIndex(0));
+  ASSERT_FALSE(nullptr == model->LinkByName("link"));
+  EXPECT_EQ(model->LinkByName("link")->Name(), model->LinkByIndex(0)->Name());
   EXPECT_TRUE(nullptr == model->LinkByIndex(1));
   EXPECT_TRUE(model->LinkNameExists("link"));
   EXPECT_FALSE(model->LinkNameExists("links"));
@@ -96,13 +100,15 @@ TEST(DOMRoot, LoadDoublePendulum)
 
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
   EXPECT_EQ("double_pendulum_with_base", model->Name());
   EXPECT_EQ(3u, model->LinkCount());
   EXPECT_FALSE(nullptr == model->LinkByIndex(0));
   EXPECT_FALSE(nullptr == model->LinkByIndex(1));
   EXPECT_FALSE(nullptr == model->LinkByIndex(2));
   EXPECT_TRUE(nullptr == model->LinkByIndex(3));
+  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ("", model->PoseFrame());
 
   EXPECT_TRUE(model->LinkNameExists("base"));
   EXPECT_TRUE(model->LinkNameExists("upper_link"));

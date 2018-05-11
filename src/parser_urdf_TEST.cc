@@ -106,11 +106,11 @@ TEST(URDFParser, ParseRobotOriginXYZBlank)
   sdf::URDF2SDF parser_;
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
-  ASSERT_TRUE(sdf != nullptr);
+  ASSERT_NE(nullptr, sdf);
   TiXmlElement *model = sdf->FirstChildElement("model");
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
   TiXmlElement *pose = model->FirstChildElement("pose");
-  ASSERT_TRUE(pose != nullptr);
+  ASSERT_NE(nullptr, pose);
 }
 
 /////////////////////////////////////////////////
@@ -126,11 +126,11 @@ TEST(URDFParser, ParseRobotOriginRPYBlank)
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
-  ASSERT_TRUE(sdf != nullptr);
+  ASSERT_NE(nullptr, sdf);
   TiXmlElement *model = sdf->FirstChildElement("model");
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
   TiXmlElement *pose = model->FirstChildElement("pose");
-  ASSERT_TRUE(pose != nullptr);
+  ASSERT_NE(nullptr, pose);
 }
 
 /////////////////////////////////////////////////
@@ -146,11 +146,11 @@ TEST(URDFParser, ParseRobotOriginInvalidXYZ)
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
-  ASSERT_TRUE(sdf != nullptr);
+  ASSERT_NE(nullptr, sdf);
   TiXmlElement *model = sdf->FirstChildElement("model");
-  ASSERT_TRUE(model != nullptr);
+  ASSERT_NE(nullptr, model);
   TiXmlElement *pose = model->FirstChildElement("pose");
-  ASSERT_TRUE(pose != nullptr);
+  ASSERT_NE(nullptr, pose);
 }
 
 /////////////////////////////////////////////////
@@ -208,14 +208,14 @@ TEST(URDFParser, ParseGazeboLinkFactors)
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
     TiXmlElement *tmp = sdf_result.FirstChildElement("sdf");
-    ASSERT_TRUE(tmp != nullptr);
+    ASSERT_NE(nullptr, tmp);
 
     unsigned int i;
 
     for (i = 0; i < it->second.size() - 1; ++i)
     {
       tmp = tmp->FirstChildElement(it->second[i]);
-      ASSERT_TRUE(tmp != nullptr);
+      ASSERT_NE(nullptr, tmp);
     }
 
     // For the last element, check that it is exactly what we expect
@@ -309,14 +309,14 @@ TEST(URDFParser, ParseGazeboJointElements)
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
     TiXmlElement *tmp = sdf_result.FirstChildElement("sdf");
-    ASSERT_TRUE(tmp != nullptr);
+    ASSERT_NE(nullptr, tmp);
 
     unsigned int i;
 
     for (i = 0; i < it->second.size() - 1; ++i)
     {
       tmp = tmp->FirstChildElement(it->second[i]);
-      ASSERT_TRUE(tmp != nullptr);
+      ASSERT_NE(nullptr, tmp);
     }
 
     // For the last element, check that it is exactly what we expect
@@ -357,7 +357,7 @@ TEST(URDFParser, CheckFixedJointOptions_NoOption)
   sdf::SDF fixedJointNoOptionsSDF;
   convert_urdf_str_to_sdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
   sdf::ElementPtr elem = fixedJointNoOptionsSDF.Root();
-  ASSERT_TRUE(elem != nullptr);
+  ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
   elem = elem->GetElement("model");
   ASSERT_FALSE(elem->HasElement("joint"));
@@ -399,7 +399,7 @@ TEST(URDFParser, CheckFixedJointOptions_disableJointLumping)
   sdf::SDF fixedJointDisableJointLumpingSDF;
   convert_urdf_str_to_sdf(fixedJointDisableJointLumping.str(), fixedJointDisableJointLumpingSDF);
   sdf::ElementPtr elem = fixedJointDisableJointLumpingSDF.Root();
-  ASSERT_TRUE(elem != nullptr);
+  ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
   elem = elem->GetElement("model");
   ASSERT_TRUE(elem->HasElement("joint"));
@@ -444,7 +444,7 @@ TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
   sdf::SDF fixedJointPreserveFixedJointSDF;
   convert_urdf_str_to_sdf(fixedJointPreserveFixedJoint.str(), fixedJointPreserveFixedJointSDF);
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
-  ASSERT_TRUE(elem != nullptr);
+  ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
   elem = elem->GetElement("model");
   ASSERT_TRUE(elem->HasElement("joint"));
@@ -492,7 +492,7 @@ TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint_and_disableJointLumpi
   sdf::SDF fixedJointPreserveFixedJointSDF;
   convert_urdf_str_to_sdf(fixedJointPreserveFixedJoint.str(), fixedJointPreserveFixedJointSDF);
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
-  ASSERT_TRUE(elem != nullptr);
+  ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
   elem = elem->GetElement("model");
   ASSERT_TRUE(elem->HasElement("joint"));
@@ -536,7 +536,7 @@ TEST(URDFParser, CheckFixedJointOptions_NoOption_Repeated)
   sdf::SDF fixedJointNoOptionsSDF;
   convert_urdf_str_to_sdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
   sdf::ElementPtr elem = fixedJointNoOptionsSDF.Root();
-  ASSERT_TRUE(elem != nullptr);
+  ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
   elem = elem->GetElement("model");
   ASSERT_FALSE(elem->HasElement("joint"));

@@ -38,24 +38,30 @@ add_custom_command(
 )
 
 set (sources
+  Box.cc
   Collision.cc
   Console.cc
   Converter.cc
+  Cylinder.cc
   Element.cc
   "${PROJECT_BINARY_DIR}/src/EmbeddedXML.cc"
   Error.cc
   Exception.cc
   Filesystem.cc
+  Geometry.cc
   ign.cc
   Joint.cc
+  JointAxis.cc
   Link.cc
   Model.cc
   parser.cc
   parser_urdf.cc
   Param.cc
+  Plane.cc
   Root.cc
   SDF.cc
   SDFExtension.cc
+  Sphere.cc
   Types.cc
   Utils.cc
   Visual.cc
@@ -91,21 +97,27 @@ else()
 endif()
 
 set (gtest_sources
+  Box_TEST.cc
   Collision_TEST.cc
   Console_TEST.cc
   Converter_TEST.cc
+  Cylinder_TEST.cc
   Element_TEST.cc
   Error_TEST.cc
   Exception_TEST.cc
   Filesystem_TEST.cc
+  Geometry_TEST.cc
   Joint_TEST.cc
+  JointAxis_TEST.cc
   Link_TEST.cc
   Model_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
+  Plane_TEST.cc
   Root_TEST.cc
   SDF_TEST.cc
+  Sphere_TEST.cc
   Types_TEST.cc
   Visual_TEST.cc
   World_TEST.cc
