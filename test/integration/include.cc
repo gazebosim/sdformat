@@ -46,6 +46,8 @@ TEST(Include, IncludeDescription)
 
   ASSERT_TRUE(sdf::readString(stream.str(), sdf));
 
+  std::cout << sdf->ToString() << std::endl;
+
   EXPECT_TRUE(sdf->Root()->HasElement("pose"));
   sdf::ElementPtr poseElem = sdf->Root()->GetElement("pose");
   EXPECT_EQ(poseElem->GetDescription(), "override");
