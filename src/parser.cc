@@ -32,6 +32,8 @@
 #include "sdf/parser_urdf.hh"
 #include "sdf/sdf_config.h"
 
+#include "EmbeddedSdf.hh"
+
 namespace sdf
 {
 //////////////////////////////////////////////////

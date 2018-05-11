@@ -47,10 +47,10 @@ namespace sdf
   /// \{
 
   SDFORMAT_VISIBLE
-  std::string &getXMLData();
+  const std::string &getXMLData();
 
   SDFORMAT_VISIBLE
-  std::string &getXMLDataFromFilename(const std::string &_filename);
+  const std::string &getXMLDataFromFilename(const std::string &_filename);
 
   /// \brief Find the absolute path of a file.
   /// \param[in] _filename Name of the file to find.

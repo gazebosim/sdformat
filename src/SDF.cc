@@ -27,7 +27,7 @@
 #include "sdf/parser.hh"
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
-#include "sdf/EmbeddedXML.hh"
+#include "EmbeddedSdf.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/SDFImplPrivate.hh"
@@ -45,16 +45,16 @@ static std::function<std::string(const std::string &)> g_findFileCB;
 std::string SDF::version = SDF_VERSION;
 
 /////////////////////////////////////////////////
-std::string &sdf::getXMLData()
+const std::string &sdf::getXMLData()
 {
-  return sdf_1_6::xml_root_sdf;
+  return embeddedSdf.at("root.sdf");
 }
 
 /////////////////////////////////////////////////
-std::string &sdf::getXMLDataFromFilename(const std::string &_filename)
+const std::string &sdf::getXMLDataFromFilename(const std::string &_filename)
 {
   // FIXME: this is not right, we actually need to look at the filename.
-  return sdf_1_6::xml_root_sdf;
+  return embeddedSdf.at("root.sdf");
 }
 
 /////////////////////////////////////////////////
