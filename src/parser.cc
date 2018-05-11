@@ -61,6 +61,9 @@ bool init(SDFPtr _sdf)
 
   if (sdf::SDF::Version() == "1.0" || sdf::SDF::Version() == "1.2")
   {
+    // deprecated: Update this if to error out if the version < 1.3 in
+    // version 8 of libsdformat.
+    sdferr << "Versions 1.0-1.2 of the SDF spec are deprecated.\n";
     fileToFind = "gazebo.sdf";
   }
 
@@ -447,8 +450,8 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 }
 
 //////////////////////////////////////////////////
-bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
-             bool _convert, Errors &_errors)
+bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
+    const std::string &_source, bool _convert, Errors &_errors)
 {
   if (!_xmlDoc)
   {
@@ -460,6 +463,9 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
+    // deprecated: Update this if to error out  if <sdf> does not exist
+    // in version 8 of libsdformat.
+    sdferr << "Versions 1.0-1.2 of the SDF spec are deprecated.\n";
     sdfNode = _xmlDoc->FirstChildElement("gazebo");
   }
 
@@ -520,6 +526,9 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
+    // deprecated: Update this if to error out  if <sdf> does not exist
+    // in version 8 of libsdformat.
+    sdferr << "Versions 1.0-1.2 of the SDF spec are deprecated.\n";
     sdfNode = _xmlDoc->FirstChildElement("gazebo");
   }
 

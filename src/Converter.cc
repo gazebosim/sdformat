@@ -48,6 +48,9 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   // Replace <gazebo> with <sdf>
   if (elem && std::stod(_toVersion) >= 1.3)
   {
+    // deprecated: Update this if/else to only get and check for the
+    // <sdf> element in version 8 of libsdformat
+    sdferr << "Versions 1.0-1.2 of the SDF spec are deprecated.\n";
     elem->SetValue("sdf");
   }
   else if (!elem)
