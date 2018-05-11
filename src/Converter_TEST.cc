@@ -1019,10 +1019,10 @@ TEST(Converter, GazeboToSDF)
 
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
-  sdf::Converter::Convert(&xmlDoc, "1.3");
+  EXPECT_FALSE(sdf::Converter::Convert(&xmlDoc, "1.3"));
 
-  TiXmlElement *convertedElem =  xmlDoc.FirstChild("sdf")->ToElement();
-  ASSERT_NE(nullptr, convertedElem);
+  // TiXmlElement *convertedElem =  xmlDoc.FirstChild("sdf")->ToElement();
+  // ASSERT_NE(nullptr, convertedElem);
 }
 
 ////////////////////////////////////////////////////

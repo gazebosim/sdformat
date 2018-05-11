@@ -43,19 +43,13 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 {
   SDF_ASSERT(_doc != nullptr, "SDF XML doc is NULL");
 
-  TiXmlElement *elem = _doc->FirstChildElement("gazebo");
+  TiXmlElement *elem = _doc->FirstChildElement("sdf");
 
-  // Replace <gazebo> with <sdf>
-  if (elem && std::stod(_toVersion) >= 1.3)
+  // Check that the <sdf> element exists
+  if (!elem)
   {
-    // deprecated: Update this if/else to only get and check for the
-    // <sdf> element in version 8 of libsdformat
-    sdferr << "Versions 1.0-1.2 of the SDF spec are deprecated.\n";
-    elem->SetValue("sdf");
-  }
-  else if (!elem)
-  {
-    elem = _doc->FirstChildElement("sdf");
+    sdferr << "<sdf> element does not exit.\n";
+    return false;
   }
 
   if (!elem || !elem->Attribute("version"))
