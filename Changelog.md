@@ -1,3 +1,10 @@
+## SDFormat 7.0
+
+### SDFormat 7.0.0 (xxxx-xx-xx)
+
+1. Removed support for SDF spec versions 1.0 and 1.2
+   * [Pull request #432](https://bitbucket.org/osrf/sdformat/pull-requests/432)
+
 ## SDFormat 6.0
 
 ### SDFormat 6.1.0 (xxxx-xx-xx)
