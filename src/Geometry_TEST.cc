@@ -22,6 +22,7 @@
 TEST(DOMGeometry, Construction)
 {
   sdf::Geometry geom;
+  EXPECT_EQ(nullptr, geom.Element());
   EXPECT_EQ(sdf::GeometryType::EMPTY, geom.Type());
 
   geom.SetType(sdf::GeometryType::BOX);
@@ -47,6 +48,7 @@ TEST(DOMGeometry, Load)
   errors = geom.Load(nullptr);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
+  EXPECT_EQ(nullptr, geom.Element());
 
   // Bad element name
   sdf::ElementPtr sdf(new sdf::Element());
@@ -54,4 +56,5 @@ TEST(DOMGeometry, Load)
   errors = geom.Load(sdf);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+  EXPECT_NE(nullptr, geom.Element());
 }

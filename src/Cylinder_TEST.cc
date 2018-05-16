@@ -22,6 +22,7 @@
 TEST(DOMCylinder, Construction)
 {
   sdf::Cylinder cylinder;
+  EXPECT_EQ(nullptr, cylinder.Element());
 
   EXPECT_DOUBLE_EQ(1.0, cylinder.Radius());
   EXPECT_DOUBLE_EQ(1.0, cylinder.Length());
@@ -43,6 +44,7 @@ TEST(DOMCylinder, Load)
   errors = cylinder.Load(nullptr);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
+  EXPECT_EQ(nullptr, cylinder.Element());
 
   // Bad element name
   sdf::ElementPtr sdf(new sdf::Element());
@@ -50,6 +52,7 @@ TEST(DOMCylinder, Load)
   errors = cylinder.Load(sdf);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+  EXPECT_NE(nullptr, cylinder.Element());
 
   // Missing <radius> and <length> elements
   sdf->SetName("cylinder");
@@ -59,6 +62,7 @@ TEST(DOMCylinder, Load)
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <radius>"));
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[1].Code());
   EXPECT_NE(std::string::npos, errors[1].Message().find("missing a <length>"));
+  EXPECT_NE(nullptr, cylinder.Element());
 
   // Add a radius element
   sdf::ElementPtr radiusDesc(new sdf::Element());

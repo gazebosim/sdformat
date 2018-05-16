@@ -24,6 +24,7 @@
 TEST(DOMPlane, Construction)
 {
   sdf::Plane plane;
+  EXPECT_EQ(nullptr, plane.Element());
 
   EXPECT_EQ(ignition::math::Vector3d::UnitZ, plane.Normal());
   EXPECT_EQ(ignition::math::Vector2d::One, plane.Size());
@@ -48,6 +49,7 @@ TEST(DOMPlane, Load)
   errors = plane.Load(nullptr);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
+  EXPECT_EQ(nullptr, plane.Element());
 
   // Bad element name
   sdf::ElementPtr sdf(new sdf::Element());
@@ -55,6 +57,7 @@ TEST(DOMPlane, Load)
   errors = plane.Load(sdf);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+  EXPECT_NE(nullptr, plane.Element());
 
   // Missing <normal> and <size> elements
   sdf->SetName("plane");
@@ -64,6 +67,7 @@ TEST(DOMPlane, Load)
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <normal>"));
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[1].Code());
   EXPECT_NE(std::string::npos, errors[1].Message().find("missing a <size>"));
+  EXPECT_NE(nullptr, plane.Element());
 
   // Add a normal element
   sdf::ElementPtr normalDesc(new sdf::Element());

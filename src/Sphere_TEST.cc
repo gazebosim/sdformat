@@ -22,6 +22,7 @@
 TEST(DOMSphere, Construction)
 {
   sdf::Sphere sphere;
+  EXPECT_EQ(nullptr, sphere.Element());
 
   EXPECT_DOUBLE_EQ(1.0, sphere.Radius());
 
@@ -40,6 +41,7 @@ TEST(DOMSphere, Load)
   errors = sphere.Load(nullptr);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
+  EXPECT_EQ(nullptr, sphere.Element());
 
   // Bad element name
   sdf::ElementPtr sdf(new sdf::Element());
@@ -47,6 +49,7 @@ TEST(DOMSphere, Load)
   errors = sphere.Load(sdf);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+  EXPECT_NE(nullptr, sphere.Element());
 
   // Missing <radius> element
   sdf->SetName("sphere");
@@ -54,4 +57,5 @@ TEST(DOMSphere, Load)
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <radius>"));
+  EXPECT_NE(nullptr, sphere.Element());
 }

@@ -52,6 +52,12 @@ namespace sdf
     /// \param[in] _size Size of the box in meters.
     public: void SetSize(const ignition::math::Vector3d &_size);
 
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
     /// \brief Private data pointer.
     private: BoxPrivate *dataPtr;
   };
