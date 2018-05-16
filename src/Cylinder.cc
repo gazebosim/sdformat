@@ -27,6 +27,9 @@ class sdf::CylinderPrivate
 
   // Length of the cylinder
   public: double length = 1.0;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -46,6 +49,8 @@ Cylinder::~Cylinder()
 Errors Cylinder::Load(ElementPtr _sdf)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that sdf is a valid pointer
   if (!_sdf)
@@ -130,4 +135,10 @@ double Cylinder::Length() const
 void Cylinder::SetLength(const double _length)
 {
   this->dataPtr->length = _length;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Cylinder::Element() const
+{
+  return this->dataPtr->sdf;
 }

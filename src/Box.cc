@@ -25,6 +25,9 @@ class sdf::BoxPrivate
 {
   // Size of the box
   public: ignition::math::Vector3d size = ignition::math::Vector3d::One;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -44,6 +47,8 @@ Box::~Box()
 Errors Box::Load(ElementPtr _sdf)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that sdf is a valid pointer
   if (!_sdf)
@@ -96,4 +101,10 @@ ignition::math::Vector3d Box::Size() const
 void Box::SetSize(const ignition::math::Vector3d &_size)
 {
   this->dataPtr->size = _size;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Box::Element() const
+{
+  return this->dataPtr->sdf;
 }

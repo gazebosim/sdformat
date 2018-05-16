@@ -23,6 +23,7 @@
 TEST(DOMcollision, Construction)
 {
   sdf::Collision collision;
+  EXPECT_EQ(nullptr, collision.Element());
   EXPECT_TRUE(collision.Name().empty());
 
   collision.SetName("test_collison");
