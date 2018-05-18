@@ -27,7 +27,6 @@
 #include "sdf/parser.hh"
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
-#include "EmbeddedSdf.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/SDFImplPrivate.hh"
@@ -43,19 +42,6 @@ static URIPathMap g_uriPathMap;
 static std::function<std::string(const std::string &)> g_findFileCB;
 
 std::string SDF::version = SDF_VERSION;
-
-/////////////////////////////////////////////////
-const std::string &sdf::getXMLData()
-{
-  return embeddedSdf.at("root.sdf");
-}
-
-/////////////////////////////////////////////////
-const std::string &sdf::getXMLDataFromFilename(const std::string &_filename)
-{
-  // FIXME: this is not right, we actually need to look at the filename.
-  return embeddedSdf.at("root.sdf");
-}
 
 /////////////////////////////////////////////////
 void sdf::setFindCallback(std::function<std::string(const std::string &)> _cb)

@@ -32,10 +32,28 @@
 #include "sdf/parser_urdf.hh"
 #include "sdf/sdf_config.h"
 
+// cppcheck-suppress missingInclude
 #include "EmbeddedSdf.hh"
 
 namespace sdf
 {
+/////////////////////////////////////////////////
+static const std::string &getSdfDataFromFilename(
+    const std::string &_filename, const bool _quiet)
+{
+  try
+  {
+    return embeddedSdf.at(SDF::Version()).at(_filename);
+  }
+  catch(const std::out_of_range &)
+  {
+    if (!_quiet)
+      sdferr << "Unable to find SDF filename[" << _filename << "] with "
+        << "version " << SDF::Version() << "\n";
+  }
+  return emptySdfString;
+}
+
 //////////////////////////////////////////////////
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
@@ -56,7 +74,7 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 //////////////////////////////////////////////////
 bool init(SDFPtr _sdf)
 {
-  std::string xmldata = sdf::getXMLData();
+  std::string xmldata = getSdfDataFromFilename("root.sdf", false);
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(xmldata.c_str());
   return initDoc(&xmlDoc, _sdf);
@@ -65,15 +83,26 @@ bool init(SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, SDFPtr _sdf)
 {
-  std::string xmldata = sdf::getXMLDataFromFilename(_filename);
-  TiXmlDocument xmlDoc;
-  xmlDoc.Parse(xmldata.c_str());
-  return initDoc(&xmlDoc, _sdf);
+  std::string xmldata = getSdfDataFromFilename(_filename, true);
+  if (!xmldata.empty())
+  {
+    TiXmlDocument xmlDoc;
+    xmlDoc.Parse(xmldata.c_str());
+    return initDoc(&xmlDoc, _sdf);
+  }
+  return _initFile(sdf::findFile(_filename), _sdf);
 }
 
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, ElementPtr _sdf)
 {
+  std::string xmldata = getSdfDataFromFilename(_filename, true);
+  if (!xmldata.empty())
+  {
+    TiXmlDocument xmlDoc;
+    xmlDoc.Parse(xmldata.c_str());
+    return initDoc(&xmlDoc, _sdf);
+  }
   return _initFile(sdf::findFile(_filename), _sdf);
 }
 

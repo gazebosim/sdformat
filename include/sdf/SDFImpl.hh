@@ -46,12 +46,6 @@ namespace sdf
   /// \addtogroup sdf
   /// \{
 
-  SDFORMAT_VISIBLE
-  const std::string &getXMLData();
-
-  SDFORMAT_VISIBLE
-  const std::string &getXMLDataFromFilename(const std::string &_filename);
-
   /// \brief Find the absolute path of a file.
   /// \param[in] _filename Name of the file to find.
   /// \param[in] _searchLocalPath True to search for the file in the current
