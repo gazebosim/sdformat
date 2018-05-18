@@ -33,7 +33,7 @@
 #include "sdf/sdf_config.h"
 
 // cppcheck-suppress missingInclude
-#include "EmbeddedSdf.hh"
+#include "sdf/EmbeddedSdf.hh"
 
 namespace sdf
 {

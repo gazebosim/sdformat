@@ -13,7 +13,7 @@ add_dependencies(schema schema1_6)
 execute_process(
   COMMAND "${CMAKE_SOURCE_DIR}/sdf/embedSdf.rb"
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/sdf"
-  OUTPUT_FILE "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.hh"
+  OUTPUT_FILE "${PROJECT_BINARY_DIR}/include/sdf/EmbeddedSdf.hh"
 )
 
 
