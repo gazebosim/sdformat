@@ -25,6 +25,7 @@
 TEST(DOMModel, Construction)
 {
   sdf::Model model;
+  EXPECT_EQ(nullptr, model.Element());
   EXPECT_TRUE(model.Name().empty());
 
   model.SetName("test_model");

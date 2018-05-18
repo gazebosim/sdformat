@@ -23,6 +23,7 @@
 TEST(DOMVisual, Construction)
 {
   sdf::Visual visual;
+  EXPECT_EQ(nullptr, visual.Element());
   EXPECT_TRUE(visual.Name().empty());
 
   visual.SetName("test_visual");

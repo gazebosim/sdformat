@@ -59,6 +59,9 @@ class sdf::JointPrivate
   /// \brief Joint axis
   // cppcheck-suppress
   public: std::array<std::unique_ptr<JointAxis>, 2> axis;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -259,4 +262,10 @@ void Joint::SetPose(const ignition::math::Pose3d &_pose)
 void Joint::SetPoseFrame(const std::string &_frame)
 {
   this->dataPtr->poseFrame = _frame;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Joint::Element() const
+{
+  return this->dataPtr->sdf;
 }

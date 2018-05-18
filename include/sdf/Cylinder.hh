@@ -59,6 +59,12 @@ namespace sdf
     /// \param[in] _length The length of the cylinder in meters.
     public: void SetLength(const double _length);
 
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
     /// \brief Private data pointer.
     private: CylinderPrivate *dataPtr;
   };
