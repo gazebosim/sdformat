@@ -1,3 +1,10 @@
+## SDFormat 7.0
+
+### SDFormat 7.0.0 (xxxx-xx-xx)
+
+1. Embed SDF specification files directly in libsdformat.so.
+   * [Pull request 434](https://bitbucket.org/osrf/sdformat/pull-requests/434)
+
 ## SDFormat 6.0
 
 ### SDFormat 6.1.0 (xxxx-xx-xx)
