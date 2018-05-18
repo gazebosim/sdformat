@@ -110,7 +110,8 @@ namespace sdf
     /// are specified the Interial's ignition::math::MassMatrix3 property.
     ///
     /// The origin of the inertial reference frame needs to be at the center
-    /// of gravity. The axes of the inertial reference frame do not need to
+    /// of mass expressed in this link's frame.
+    /// The axes of the inertial reference frame do not need to
     /// be aligned with the principal axes of the inertia.
     /// \return The link's inertial value.
     /// \sa void SetInertial(const ignition::math::Inertiald &_inertial)
@@ -143,6 +144,12 @@ namespace sdf
     /// parent model.
     /// \param[in] _frame The name of the pose frame.
     public: void SetPoseFrame(const std::string &_frame);
+
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
     private: LinkPrivate *dataPtr = nullptr;

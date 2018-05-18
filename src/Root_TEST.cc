@@ -27,6 +27,7 @@
 TEST(DOMRoot, Construction)
 {
   sdf::Root root;
+  EXPECT_EQ(nullptr, root.Element());
   EXPECT_EQ("", root.Version());
   EXPECT_FALSE(root.WorldNameExists("default"));
   EXPECT_FALSE(root.WorldNameExists(""));
@@ -63,20 +64,24 @@ TEST(DOMRoot, StringParse)
   sdf::Errors errors = root.LoadSdfString(sdf);
   EXPECT_TRUE(errors.empty());
   EXPECT_EQ(1u, root.ModelCount());
+  EXPECT_NE(nullptr, root.Element());
 
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_NE(nullptr, model);
+  EXPECT_NE(nullptr, model->Element());
 
   EXPECT_EQ("shapes", model->Name());
   EXPECT_EQ(1u, model->LinkCount());
 
   const sdf::Link *link = model->LinkByIndex(0);
   ASSERT_NE(nullptr, link);
+  EXPECT_NE(nullptr, link->Element());
   EXPECT_EQ("link", link->Name());
   EXPECT_EQ(1u, link->CollisionCount());
 
   const sdf::Collision *collision = link->CollisionByIndex(0);
   ASSERT_NE(nullptr, collision);
+  EXPECT_NE(nullptr, collision->Element());
   EXPECT_EQ("box_col", collision->Name());
 }
 

@@ -42,6 +42,9 @@ class sdf::ModelPrivate
 
   /// \brief The joints specified in this model.
   public: std::vector<Joint> joints;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -68,6 +71,8 @@ Model::~Model()
 Errors Model::Load(ElementPtr _sdf)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that the provided SDF element is a <model>
   // This is an error that cannot be recovered, so return an error.
@@ -216,4 +221,10 @@ const Link *Model::LinkByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Model::Element() const
+{
+  return this->dataPtr->sdf;
 }

@@ -25,11 +25,23 @@ using namespace sdf;
 // Private data class
 class sdf::GeometryPrivate
 {
+  // \brief The geometry type.
   public: GeometryType type = GeometryType::EMPTY;
+
+  /// \brief Pointer to a box.
   public: std::unique_ptr<Box> box;
+
+  /// \brief Pointer to a cylinder.
   public: std::unique_ptr<Cylinder> cylinder;
+
+  /// \brief Pointer to a plane.
   public: std::unique_ptr<Plane> plane;
+
+  /// \brief Pointer to a sphere.
   public: std::unique_ptr<Sphere> sphere;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -49,6 +61,8 @@ Geometry::~Geometry()
 Errors Geometry::Load(ElementPtr _sdf)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that sdf is a valid pointer
   if (!_sdf)
@@ -135,4 +149,10 @@ const Cylinder *Geometry::CylinderShape() const
 const Plane *Geometry::PlaneShape() const
 {
   return this->dataPtr->plane.get();
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Geometry::Element() const
+{
+  return this->dataPtr->sdf;
 }

@@ -37,6 +37,9 @@ class sdf::VisualPrivate
 
   /// \brief The visual's a geometry.
   public: Geometry geom;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -63,6 +66,8 @@ Visual::~Visual()
 Errors Visual::Load(ElementPtr _sdf)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that the provided SDF element is a <visual>
   // This is an error that cannot be recovered, so return an error.
@@ -131,4 +136,10 @@ void Visual::SetPoseFrame(const std::string &_frame)
 const Geometry *Visual::Geom() const
 {
   return &this->dataPtr->geom;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Visual::Element() const
+{
+  return this->dataPtr->sdf;
 }

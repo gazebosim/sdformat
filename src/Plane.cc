@@ -29,6 +29,9 @@ class sdf::PlanePrivate
 
   // Size of the plane
   public: ignition::math::Vector2d size = ignition::math::Vector2d::One;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -48,6 +51,8 @@ Plane::~Plane()
 Errors Plane::Load(ElementPtr _sdf)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that sdf is a valid pointer
   if (!_sdf)
@@ -133,4 +138,10 @@ ignition::math::Vector2d Plane::Size() const
 void Plane::SetSize(const ignition::math::Vector2d &_size)
 {
   this->dataPtr->size = _size;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Plane::Element() const
+{
+  return this->dataPtr->sdf;
 }

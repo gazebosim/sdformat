@@ -112,6 +112,12 @@ namespace sdf
     /// \return True if there exists a model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
 
+    /// \brief Get a pointer to the SDF element that was generated during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
     /// \brief Private data pointer
     private: RootPrivate *dataPtr = nullptr;
   };
