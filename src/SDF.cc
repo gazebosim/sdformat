@@ -32,6 +32,8 @@
 #include "sdf/SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
 
+// This include file is generated at configure time. It should be include
+// only here.
 #include "sdf/EmbeddedSdf.hh"
 
 using namespace sdf;
@@ -408,6 +410,3 @@ const std::string &SDF::EmbeddedSpec(
   }
   return emptySdfString;
 }
-
-
-
