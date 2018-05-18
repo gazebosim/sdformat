@@ -48,7 +48,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   // Check that the <sdf> element exists
   if (!elem)
   {
-    sdferr << "<sdf> element does not exit.\n";
+    sdferr << "<sdf> element does not exist.\n";
     return false;
   }
 
