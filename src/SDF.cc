@@ -32,8 +32,7 @@
 #include "sdf/SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
 
-// This include file is generated at configure time. It should be include
-// only here.
+// This include file is generated at configure time.
 #include "sdf/EmbeddedSdf.hh"
 
 using namespace sdf;

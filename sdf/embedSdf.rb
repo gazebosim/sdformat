@@ -4,7 +4,8 @@
 # versions without removing the directories.
 supportedSdfVersions = ['1.6', '1.5', '1.4', '1.3', '1.2']
 
-puts "// This file should be included once and only once in src/SDF.cc"
+puts "#ifndef SDF_INTERNAL_EMBEDDEDSDF_HH_"
+puts "#define SDF_INTERNAL_EMBEDDEDSDF_HH_"
 
 # An empty SDF string is returned if a query into the emebededSdf map fails.
 puts "static const std::string emptySdfString = \"\";";
@@ -35,3 +36,4 @@ supportedSdfVersions.each do |version|
 end
 
 puts "};"
+puts "#endif"
