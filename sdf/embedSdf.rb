@@ -8,6 +8,8 @@ supportedSdfVersions = ['1.6', '1.5', '1.4', '1.3', '1.2']
 puts "#ifndef SDF_EMBEDDEDSDF_HH_"
 puts "#define SDF_EMBEDDEDSDF_HH_"
 
+puts "namespace sdf {"
+
 # An empty SDF string is returned if a query into the emebededSdf map fails.
 puts "const std::string emptySdfString = \"\";";
 
@@ -37,4 +39,7 @@ supportedSdfVersions.each do |version|
 end
 
 puts "};"
+
+# End to the namespace
+puts "}"
 puts "#endif"
