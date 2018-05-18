@@ -110,6 +110,9 @@ namespace sdf
     /// \return a wrapped clone of the SDF element
     public: static ElementPtr WrapInRoot(const ElementPtr &_sdf);
 
+    public: static const std::string &EmbeddedSpec(
+                const std::string &_filename, const bool _quiet);
+
     /// \internal
     /// \brief Pointer to private data.
     private: std::unique_ptr<SDFPrivate> dataPtr;

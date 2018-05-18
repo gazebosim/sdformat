@@ -4,19 +4,15 @@
 # versions without removing the directories.
 supportedSdfVersions = ['1.6', '1.5', '1.4', '1.3', '1.2']
 
-# Header guard
-puts "#ifndef SDF_EMBEDDEDSDF_HH_"
-puts "#define SDF_EMBEDDEDSDF_HH_"
-
-puts "namespace sdf {"
+puts "// This file should be included once and only once in src/SDF.cc"
 
 # An empty SDF string is returned if a query into the emebededSdf map fails.
-puts "const std::string emptySdfString = \"\";";
+puts "static const std::string emptySdfString = \"\";";
 
 # A map of maps where the keys in the first/parent map are SDF version
 # strings, keys in the second/child map are SDF specification filenames and
 # values are the contents of the SDF specification files.
-puts "const std::map<std::string, std::map<std::string, std::string>> embeddedSdf = {"
+puts "static const std::map<std::string, std::map<std::string, std::string>> embeddedSdf = {"
 
 # Iterate over each version
 supportedSdfVersions.each do |version|
@@ -39,7 +35,3 @@ supportedSdfVersions.each do |version|
 end
 
 puts "};"
-
-# End to the namespace
-puts "}"
-puts "#endif"
