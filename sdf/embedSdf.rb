@@ -8,7 +8,7 @@ puts %q!
 #ifndef SDF_INTERNAL_EMBEDDEDSDF_HH_
 #define SDF_INTERNAL_EMBEDDEDSDF_HH_
 
-// An empty SDF string is returned if a query into the emebededSdf map fails.
+// An empty SDF string is returned if a query into the embeddedSdf map fails.
 static const std::string emptySdfString = "";
 
 // A map of maps where the keys in the first/parent map are SDF version
