@@ -4,16 +4,18 @@
 # versions without removing the directories.
 supportedSdfVersions = ['1.6', '1.5', '1.4', '1.3', '1.2']
 
-puts "#ifndef SDF_INTERNAL_EMBEDDEDSDF_HH_"
-puts "#define SDF_INTERNAL_EMBEDDEDSDF_HH_"
+puts %q!
+#ifndef SDF_INTERNAL_EMBEDDEDSDF_HH_
+#define SDF_INTERNAL_EMBEDDEDSDF_HH_
 
-# An empty SDF string is returned if a query into the emebededSdf map fails.
-puts "static const std::string emptySdfString = \"\";";
+// An empty SDF string is returned if a query into the emebededSdf map fails.
+static const std::string emptySdfString = "";
 
-# A map of maps where the keys in the first/parent map are SDF version
-# strings, keys in the second/child map are SDF specification filenames and
-# values are the contents of the SDF specification files.
-puts "static const std::map<std::string, std::map<std::string, std::string>> embeddedSdf = {"
+// A map of maps where the keys in the first/parent map are SDF version
+// strings, keys in the second/child map are SDF specification filenames and
+// values are the contents of the SDF specification files.
+static const std::map<std::string, std::map<std::string, std::string>> embeddedSdf = {
+!
 
 # Iterate over each version
 supportedSdfVersions.each do |version|
@@ -35,5 +37,7 @@ supportedSdfVersions.each do |version|
   end
 end
 
-puts "};"
-puts "#endif"
+puts %q!
+};
+#endif
+!
