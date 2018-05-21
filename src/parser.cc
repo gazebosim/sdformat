@@ -61,7 +61,8 @@ bool init(SDFPtr _sdf)
 
   if (sdf::SDF::Version() == "1.0" || sdf::SDF::Version() == "1.2")
   {
-    fileToFind = "gazebo.sdf";
+    sdferr << "Versions 1.0-1.2 of the SDF spec are no longer supported.\n";
+    return false;
   }
 
   filename = sdf::findFile(fileToFind);
@@ -447,8 +448,8 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 }
 
 //////////////////////////////////////////////////
-bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
-             bool _convert, Errors &_errors)
+bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
+    const std::string &_source, bool _convert, Errors &_errors)
 {
   if (!_xmlDoc)
   {
@@ -456,11 +457,12 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
     return false;
   }
 
-  // check sdf version, use old parser if necessary
+  // check sdf version
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
-    sdfNode = _xmlDoc->FirstChildElement("gazebo");
+    sdferr << "Missing <sdf> element.\n";
+    return false;
   }
 
   if (sdfNode && sdfNode->Attribute("version"))
@@ -516,11 +518,12 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
     return false;
   }
 
-  // check sdf version, use old parser if necessary
+  // check sdf version
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
-    sdfNode = _xmlDoc->FirstChildElement("gazebo");
+    sdferr << "Missing <sdf> element.\n";
+    return false;
   }
 
   if (sdfNode && sdfNode->Attribute("version"))
