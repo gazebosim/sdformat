@@ -36,4 +36,29 @@ supportedSdfVersions.each do |version|
 end
 
 puts "};"
+
+puts "static const std::map<std::string, std::pair<std::string, std::string>> conversionMap = {"
+
+# Iterate over each version
+supportedSdfVersions.each do |version|
+  # from-to
+  # Make sure the directory exists. Quietly fail so that we don't pollute
+  # the output, which gets included in EmbeddedSdf.hh
+  if Dir.exist?(version)
+
+    # Iterate over each .sdf file in the version directory
+    Dir.glob("#{version}/*.convert") do |file|
+
+      basename = File.basename(file, ".*").gsub(/_/, '.')
+      # Store the contents of the file in the child map
+      puts "{\"#{basename}\", {\"#{version}\", R\"__sdf_literal__("
+      infile = File.open(file)
+      puts infile.read
+      puts ")__sdf_literal__\"}},"
+    end
+  end
+end
+
+puts "};"
+
 puts "#endif"
