@@ -39,16 +39,13 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 {
   SDF_ASSERT(_doc != nullptr, "SDF XML doc is NULL");
 
-  TiXmlElement *elem = _doc->FirstChildElement("gazebo");
+  TiXmlElement *elem = _doc->FirstChildElement("sdf");
 
-  // Replace <gazebo> with <sdf>
-  if (elem && std::stod(_toVersion) >= 1.3)
+  // Check that the <sdf> element exists
+  if (!elem)
   {
-    elem->SetValue("sdf");
-  }
-  else if (!elem)
-  {
-    elem = _doc->FirstChildElement("sdf");
+    sdferr << "<sdf> element does not exist.\n";
+    return false;
   }
 
   if (!elem || !elem->Attribute("version"))
