@@ -137,6 +137,8 @@ namespace sdf
 
     /// \brief Get the pose of the joint. This is the pose of the joint
     /// as specified in SDF (<joint> <pose> ... </pose></joint>).
+    /// The frame in which the pose is expressed is given by the
+    /// PoseFrame() function.
     /// \return The pose of the joint.
     public: const ignition::math::Pose3d &Pose() const;
 
@@ -147,13 +149,13 @@ namespace sdf
 
     /// \brief Get the name of the coordinate frame in which this joint's
     /// pose is expressed. A empty value indicates that the frame is the
-    /// parent model.
+    /// child link frame.
     /// \return The name of the pose frame.
     public: const std::string &PoseFrame() const;
 
     /// \brief Set the name of the coordinate frame in which this joint's
     /// pose is expressed. A empty value indicates that the frame is the
-    /// parent model.
+    /// child link frame.
     /// \param[in] _frame The name of the pose frame.
     public: void SetPoseFrame(const std::string &_frame);
 

@@ -1,6 +1,6 @@
 <!-- Joint -->
 <element name="joint" required="*">
-  <description>A joint connections two links with kinematic and dynamic properties.</description>
+  <description>A joint connections two links with kinematic and dynamic properties. By default, the pose of a joint is expressed in the child link frame.</description>
 
   <attribute name="name" type="string" default="__default__" required="1">
     <description>A unique name for the joint within the scope of the model.</description>
