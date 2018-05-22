@@ -4,6 +4,10 @@
 # versions without removing the directories.
 supportedSdfVersions = ['1.6', '1.5', '1.4', '1.3', '1.2']
 
+# The list of supported SDF conversions. This list includes versions that
+# a user can convert an existing SDF version to.
+supportedSdfConversions = ['1.6', '1.5', '1.4', '1.3']
+
 puts %q!
 #ifndef SDF_INTERNAL_EMBEDDEDSDF_HH_
 #define SDF_INTERNAL_EMBEDDEDSDF_HH_
@@ -42,7 +46,7 @@ puts "};"
 puts "static const std::map<std::string, std::pair<std::string, std::string>> conversionMap = {"
 
 # Iterate over each version
-supportedSdfVersions.each do |version|
+supportedSdfConversions.each do |version|
   # from-to
   # Make sure the directory exists. Quietly fail so that we don't pollute
   # the output, which gets included in EmbeddedSdf.hh
