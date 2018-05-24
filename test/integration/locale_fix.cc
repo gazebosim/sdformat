@@ -40,6 +40,7 @@ TEST(CheckFixForLocal, MakeTestToFail)
   if (!fp)
   {
     FAIL() << "locale -a call failed";
+    return;
   }
 
   char buffer[1024];
