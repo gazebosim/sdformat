@@ -196,6 +196,7 @@ TEST(Filesystem, exists)
   EXPECT_FALSE(sdf::filesystem::is_directory("newfile"));
 }
 
+#ifndef _MSC_VER
 /////////////////////////////////////////////////
 TEST(Filesystem, symlink_exists)
 {
@@ -231,6 +232,7 @@ TEST(Filesystem, symlink_exists)
   ASSERT_TRUE(create_new_file_hardlink("hardlink-file", "newfile"));
   EXPECT_TRUE(sdf::filesystem::exists("hardlink-file"));
 }
+#endif
 
 /////////////////////////////////////////////////
 TEST(Filesystem, current_path)
@@ -316,10 +318,14 @@ TEST(Filesystem, directory_iterator)
   ASSERT_TRUE(create_and_switch_to_temp_dir(new_temp_dir));
   ASSERT_TRUE(create_new_empty_file("newfile"));
   ASSERT_TRUE(sdf::filesystem::create_directory("newdir"));
+
+#ifndef _MSC_VER
   ASSERT_TRUE(create_new_file_symlink("symlink-file", "newfile"));
   ASSERT_TRUE(create_new_file_symlink("symlink-file-broken", "nonexistent"));
   ASSERT_TRUE(create_new_dir_symlink("symlink-dir", "newdir"));
   ASSERT_TRUE(create_new_dir_symlink("symlink-dir-broken", "nonexistent-dir"));
+#endif
+
   ASSERT_TRUE(create_new_file_hardlink("hardlink-file", "newfile"));
 
   std::set<std::string> found_items;
@@ -332,10 +338,14 @@ TEST(Filesystem, directory_iterator)
 
   EXPECT_FALSE(found_items.find("newfile") == found_items.end());
   EXPECT_FALSE(found_items.find("newdir") == found_items.end());
+
+#ifndef _MSC_VER
   EXPECT_FALSE(found_items.find("symlink-file") == found_items.end());
   EXPECT_FALSE(found_items.find("symlink-file-broken") == found_items.end());
   EXPECT_FALSE(found_items.find("symlink-dir") == found_items.end());
   EXPECT_FALSE(found_items.find("symlink-dir-broken") == found_items.end());
+#endif
+
   EXPECT_FALSE(found_items.find("hardlink-file") == found_items.end());
 
   found_items.clear();
