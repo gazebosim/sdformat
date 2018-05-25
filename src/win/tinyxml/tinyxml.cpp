@@ -643,10 +643,7 @@ int TiXmlElement::QueryIntAttribute( const char* name, int* ival ) const
 	return attrib->QueryIntValue( ival );
 }
 
-#ifndef _WIN32
-#pragma GCC diagnostic ignored "-Wshadow"
-#endif
-int TiXmlElement::QueryUnsignedAttribute( const char* name, unsigned* value ) const
+int TiXmlElement::QueryUnsignedAttribute( const char* name, unsigned* _value ) const
 {
 	const TiXmlAttribute* node = attributeSet.Find( name );
 	if ( !node )
@@ -654,12 +651,9 @@ int TiXmlElement::QueryUnsignedAttribute( const char* name, unsigned* value ) co
 
 	int ival = 0;
 	int result = node->QueryIntValue( &ival );
-	*value = (unsigned)ival;
+	*_value = (unsigned)ival;
 	return result;
 }
-#ifndef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 int TiXmlElement::QueryBoolAttribute( const char* name, bool* bval ) const
 {
@@ -1622,11 +1616,11 @@ TiXmlHandle TiXmlHandle::FirstChild() const
 }
 
 
-TiXmlHandle TiXmlHandle::FirstChild( const char * value ) const
+TiXmlHandle TiXmlHandle::FirstChild( const char * _value ) const
 {
 	if ( node )
 	{
-		TiXmlNode* child = node->FirstChild( value );
+		TiXmlNode* child = node->FirstChild( _value );
 		if ( child )
 			return TiXmlHandle( child );
 	}
@@ -1646,11 +1640,11 @@ TiXmlHandle TiXmlHandle::FirstChildElement() const
 }
 
 
-TiXmlHandle TiXmlHandle::FirstChildElement( const char * value ) const
+TiXmlHandle TiXmlHandle::FirstChildElement( const char * _value ) const
 {
 	if ( node )
 	{
-		TiXmlElement* child = node->FirstChildElement( value );
+		TiXmlElement* child = node->FirstChildElement( _value );
 		if ( child )
 			return TiXmlHandle( child );
 	}
@@ -1677,15 +1671,15 @@ TiXmlHandle TiXmlHandle::Child( int count ) const
 }
 
 
-TiXmlHandle TiXmlHandle::Child( const char* value, int count ) const
+TiXmlHandle TiXmlHandle::Child( const char* _value, int count ) const
 {
 	if ( node )
 	{
 		int i;
-		TiXmlNode* child = node->FirstChild( value );
+		TiXmlNode* child = node->FirstChild( _value );
 		for (	i=0;
 				child && i<count;
-				child = child->NextSibling( value ), ++i )
+				child = child->NextSibling( _value ), ++i )
 		{
 			// nothing
 		}
@@ -1715,15 +1709,15 @@ TiXmlHandle TiXmlHandle::ChildElement( int count ) const
 }
 
 
-TiXmlHandle TiXmlHandle::ChildElement( const char* value, int count ) const
+TiXmlHandle TiXmlHandle::ChildElement( const char* _value, int count ) const
 {
 	if ( node )
 	{
 		int i;
-		TiXmlElement* child = node->FirstChildElement( value );
+		TiXmlElement* child = node->FirstChildElement( _value );
 		for (	i=0;
 				child && i<count;
-				child = child->NextSiblingElement( value ), ++i )
+				child = child->NextSiblingElement( _value ), ++i )
 		{
 			// nothing
 		}
