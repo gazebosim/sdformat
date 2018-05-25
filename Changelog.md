@@ -1,3 +1,10 @@
+## SDFormat 8.0
+
+### SDFormat 8.0.0 (xxxx-xx-xx)
+
+1. Removed boost
+   * [Pull request #438](https://bitbucket.org/osrf/sdformat/pull-requests/438)
+
 ## SDFormat 7.0
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
