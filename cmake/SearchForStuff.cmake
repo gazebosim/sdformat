@@ -5,22 +5,6 @@ include (${project_cmake_dir}/TargetArch.cmake)
 target_architecture(ARCH)
 message(STATUS "Building for arch: ${ARCH}")
 
-########################################
-# Find Boost, if not specified manually
-if (WIN32)
-  set(Boost_USE_STATIC_LIBS       OFF)
-  set(Boost_USE_MULTITHREADED      ON)
-  set(Boost_USE_STATIC_RUNTIME    OFF)
-endif()
-
-include(FindBoost)
-find_package(Boost ${MIN_BOOST_VERSION})
-
-if (NOT Boost_FOUND)
-  set (BUILD_SDF OFF CACHE INTERNAL "Build SDF" FORCE)
-  BUILD_ERROR ("Boost not found. Please install system boost version ${MIN_BOOST_VERSION} or higher.")
-endif()
-
 if (USE_EXTERNAL_TINYXML)
   #################################################
   # Find tinyxml. Only debian distributions package tinyxml with a pkg-config
@@ -137,18 +121,11 @@ endmacro()
 ########################################
 # Find ignition math
 # Set a variable for generating ProjectConfig.cmake
-find_package(ignition-math4 QUIET)
-if (NOT ignition-math4_FOUND)
-  message(STATUS "Looking for ignition-math4-config.cmake - not found")
-  find_package(ignition-math3 QUIET)
-  if (NOT ignition-math3_FOUND)
-    message(STATUS "Looking for ignition-math3-config.cmake - not found")
-    BUILD_ERROR ("Missing: Ignition math (libignition-math4-dev or libignition-math3-dev)")
-  else()
-    set(IGNITION-MATH_REQUIRED_MAJOR_VERSION 3)
-    message(STATUS "Looking for ignition-math3-config.cmake - found")
-  endif()
+find_package(ignition-math5 QUIET)
+if (NOT ignition-math5_FOUND)
+  message(STATUS "Looking for ignition-math5-config.cmake - not found")
+  BUILD_ERROR ("Missing: Ignition math (libignition-math5-dev or libignition-math5-dev)")
 else()
-  set(IGNITION-MATH_REQUIRED_MAJOR_VERSION ${ignition-math4_VERSION_MAJOR})
+  set(IGNITION-MATH_REQUIRED_MAJOR_VERSION ${ignition-math5_VERSION_MAJOR})
   message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}-config.cmake - found")
 endif()

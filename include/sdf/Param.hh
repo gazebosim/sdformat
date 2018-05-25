@@ -18,12 +18,7 @@
 #ifndef SDFORMAT_PARAM_HH_
 #define SDFORMAT_PARAM_HH_
 
-// See: https://bugreports.qt-project.org/browse/QTBUG-22829
-#ifndef Q_MOC_RUN
-  #include <boost/any.hpp>
-  #include <boost/variant.hpp>
-#endif
-
+#include <any>
 #include <algorithm>
 #include <cstdint>
 #include <functional>
@@ -31,6 +26,7 @@
 #include <sstream>
 #include <string>
 #include <typeinfo>
+#include <variant>
 #include <vector>
 
 #include <ignition/math.hh>
@@ -60,6 +56,32 @@ namespace sdf
 
   /// \internal
   class ParamPrivate;
+
+  template<class T>
+  struct ParamStreamer
+  {
+    const T &val;
+  };
+
+  template<class T> ParamStreamer(T) -> ParamStreamer<T>;
+
+  template<class T>
+  std::ostream& operator<<(std::ostream &os, ParamStreamer<T> s)
+  {
+    os << s.val;
+    return os;
+  }
+
+  template<class... Ts>
+  std::ostream& operator<<(std::ostream& os,
+                           ParamStreamer<std::variant<Ts...>> sv)
+  {
+    std::visit([&os](const auto &v)
+      {
+        os << ParamStreamer{v};
+      }, sv.val);
+    return os;
+  }
 
   /// \class Param Param.hh sdf/sdf.hh
   /// \brief A parameter class
@@ -139,10 +161,10 @@ namespace sdf
     public: template<typename T>
             bool Set(const T &_value);
 
-    /// \brief Get the value of the parameter as a boost::any.
-    /// \param[out] _anyVal The boost::any object to set.
+    /// \brief Get the value of the parameter as a std::any.
+    /// \param[out] _anyVal The std::any object to set.
     /// \return True if successfully fetched _anyVal, false otherwise.
-    public: bool GetAny(boost::any &_anyVal) const;
+    public: bool GetAny(std::any &_anyVal) const;
 
     /// \brief Get the value of the parameter.
     /// \param[out] _value The value of the parameter.
@@ -211,12 +233,13 @@ namespace sdf
     public: std::string description;
 
     /// \brief Update function pointer.
-    public: std::function<boost::any ()> updateFunc;
+    public: std::function<std::any ()> updateFunc;
 
     /// \def ParamVariant
     /// \brief Variant type def.
-    public: typedef boost::variant<bool, char, std::string, int, std::uint64_t,
+    public: typedef std::variant<bool, char, std::string, int, std::uint64_t,
                                    unsigned int, double, float, sdf::Time,
+                                   ignition::math::Angle,
                                    ignition::math::Color,
                                    ignition::math::Vector2i,
                                    ignition::math::Vector2d,
@@ -266,12 +289,7 @@ namespace sdf
     {
       if (typeid(T) == typeid(bool) && this->dataPtr->typeName == "string")
       {
-        std::stringstream ss;
-        ss << this->dataPtr->value;
-
-        std::string strValue;
-
-        ss >> strValue;
+        std::string strValue = std::get<std::string>(this->dataPtr->value);
         std::transform(strValue.begin(), strValue.end(),
                        strValue.begin(), ::tolower);
 
@@ -286,19 +304,17 @@ namespace sdf
         }
         tmp >> _value;
       }
-      else if (typeid(T) == this->dataPtr->value.type())
-      {
-#if BOOST_VERSION < 105800
-        _value = boost::get<T>(this->dataPtr->value);
-#else
-        _value = boost::relaxed_get<T>(this->dataPtr->value);
-#endif
-      }
       else
       {
-        std::stringstream ss;
-        ss << this->dataPtr->value;
-        ss >> _value;
+        T *value = std::get_if<T>(&this->dataPtr->value);
+        if (value)
+          _value = *value;
+        else
+        {
+          std::stringstream ss;
+          ss << ParamStreamer{this->dataPtr->value};
+          ss >> _value;
+        }
       }
     }
     catch(...)
@@ -321,7 +337,7 @@ namespace sdf
 
     try
     {
-      ss << this->dataPtr->defaultValue;
+      ss << ParamStreamer{this->dataPtr->defaultValue};
       ss >> _value;
     }
     catch(...)
@@ -341,7 +357,7 @@ namespace sdf
   template<typename Type>
   bool Param::IsType() const
   {
-    return this->dataPtr->value.type() == typeid(Type);
+    return std::holds_alternative<Type>(this->dataPtr->value);
   }
 }
 

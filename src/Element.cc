@@ -831,15 +831,15 @@ void Element::RemoveChild(ElementPtr _child)
 }
 
 /////////////////////////////////////////////////
-boost::any Element::GetAny(const std::string &_key) const
+std::any Element::GetAny(const std::string &_key) const
 {
-  boost::any result;
+  std::any result;
   if (_key.empty() && this->dataPtr->value)
   {
     if (!this->dataPtr->value->GetAny(result))
     {
       sdferr << "Couldn't get element [" << this->GetName()
-             << "] as boost::any\n";
+             << "] as std::any\n";
     }
   }
   else if (!_key.empty())
@@ -849,7 +849,7 @@ boost::any Element::GetAny(const std::string &_key) const
     {
       if (!this->GetAttribute(_key)->GetAny(result))
       {
-        sdferr << "Couldn't get attribute [" << _key << "] as boost::any\n";
+        sdferr << "Couldn't get attribute [" << _key << "] as std::any\n";
       }
     }
     else

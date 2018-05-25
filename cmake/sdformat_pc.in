@@ -7,4 +7,4 @@ Description: Robot Modeling Language (SDF)
 Version: @SDF_VERSION_FULL@
 Requires: ignition-math@IGNITION-MATH_REQUIRED_MAJOR_VERSION@
 Libs: -L${libdir} -lsdformat
-CFlags: -I${includedir}/sdformat-@SDF_VERSION@ -std=c++11
+CFlags: -I${includedir}/sdformat-@SDF_VERSION@ -std=c++17

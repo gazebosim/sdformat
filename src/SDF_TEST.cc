@@ -16,7 +16,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <boost/any.hpp>
+#include <any>
 #include <ignition/math.hh>
 
 #include "sdf/sdf.hh"
@@ -393,12 +393,12 @@ TEST(SDF, GetAny)
   sdf::ElementPtr physicsElem = worldElem->GetElement("physics");
 
   {
-    boost::any anyValue = modelElem->GetAny("name");
+    std::any anyValue = modelElem->GetAny("name");
     try
     {
-      EXPECT_EQ(boost::any_cast<std::string>(anyValue), "test_model");
+      EXPECT_EQ(std::any_cast<std::string>(anyValue), "test_model");
     }
-    catch(boost::bad_any_cast &/*_e*/)
+    catch(std::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -407,13 +407,13 @@ TEST(SDF, GetAny)
   {
     EXPECT_TRUE(modelElem->HasElement("pose"));
     sdf::ElementPtr poseElem = modelElem->GetElement("pose");
-    boost::any anyValue = poseElem->GetAny();
+    std::any anyValue = poseElem->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<ignition::math::Pose3d>(anyValue),
+      EXPECT_EQ(std::any_cast<ignition::math::Pose3d>(anyValue),
           ignition::math::Pose3d(0, 1, 2, 0, 0, 0));
     }
-    catch(boost::bad_any_cast &/*_e*/)
+    catch(std::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -421,13 +421,13 @@ TEST(SDF, GetAny)
 
   {
     EXPECT_TRUE(worldElem->HasElement("gravity"));
-    boost::any anyValue = worldElem->GetElement("gravity")->GetAny();
+    std::any anyValue = worldElem->GetElement("gravity")->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<ignition::math::Vector3d>(anyValue),
+      EXPECT_EQ(std::any_cast<ignition::math::Vector3d>(anyValue),
           ignition::math::Vector3d(0, 0, -7.1));
     }
-    catch(boost::bad_any_cast &/*_e*/)
+    catch(std::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -435,12 +435,12 @@ TEST(SDF, GetAny)
 
   {
     EXPECT_TRUE(physicsElem->HasElement("max_step_size"));
-    boost::any anyValue = physicsElem->GetElement("max_step_size")->GetAny();
+    std::any anyValue = physicsElem->GetElement("max_step_size")->GetAny();
     try
     {
-      EXPECT_NEAR(boost::any_cast<double>(anyValue), 0.002, 1e-6);
+      EXPECT_NEAR(std::any_cast<double>(anyValue), 0.002, 1e-6);
     }
-    catch(boost::bad_any_cast &/*_e*/)
+    catch(std::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -448,12 +448,12 @@ TEST(SDF, GetAny)
 
   {
     EXPECT_TRUE(physicsElem->HasElement("max_contacts"));
-    boost::any anyValue = physicsElem->GetElement("max_contacts")->GetAny();
+    std::any anyValue = physicsElem->GetElement("max_contacts")->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<int>(anyValue), 8);
+      EXPECT_EQ(std::any_cast<int>(anyValue), 8);
     }
-    catch(boost::bad_any_cast &/*_e*/)
+    catch(std::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -461,13 +461,13 @@ TEST(SDF, GetAny)
 
   {
     EXPECT_TRUE(worldElem->HasElement("gravity"));
-    boost::any anyValue = worldElem->GetElement("gravity")->GetAny();
+    std::any anyValue = worldElem->GetElement("gravity")->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<ignition::math::Vector3d>(anyValue),
+      EXPECT_EQ(std::any_cast<ignition::math::Vector3d>(anyValue),
           ignition::math::Vector3d(0, 0, -7.1));
     }
-    catch(boost::bad_any_cast &/*_e*/)
+    catch(std::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -475,12 +475,12 @@ TEST(SDF, GetAny)
 
   {
     EXPECT_TRUE(modelElem->HasElement("static"));
-    boost::any anyValue = modelElem->GetElement("static")->GetAny();
+    std::any anyValue = modelElem->GetElement("static")->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<bool>(anyValue), true);
+      EXPECT_EQ(std::any_cast<bool>(anyValue), true);
     }
-    catch(boost::bad_any_cast &/*_e*/)
+    catch(std::bad_any_cast &/*_e*/)
     {
       FAIL();
     }
@@ -494,13 +494,13 @@ TEST(SDF, GetAny)
     sdf::ElementPtr materialElem = modelElem->GetElement("link")->
         GetElement("visual")->GetElement("material");
     EXPECT_TRUE(materialElem->HasElement("ambient"));
-    boost::any anyValue = materialElem->GetElement("ambient")->GetAny();
+    std::any anyValue = materialElem->GetElement("ambient")->GetAny();
     try
     {
-      EXPECT_EQ(boost::any_cast<ignition::math::Color>(anyValue),
+      EXPECT_EQ(std::any_cast<ignition::math::Color>(anyValue),
           ignition::math::Color(0.1f, 0.1f, 0.1f, 1.0f));
     }
-    catch(boost::bad_any_cast &/*_e*/)
+    catch(std::bad_any_cast &/*_e*/)
     {
       FAIL();
     }

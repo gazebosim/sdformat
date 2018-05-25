@@ -42,13 +42,14 @@ endif()
 # Set all the global build flags
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}}")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}}")
+set (CMAKE_CXX_EXTENSIONS off)
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}}")
 set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}}")
 set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}}")
 
-# Visual Studio enables c++11 support by default
+# Visual Studio enables c++17 support by default
 if (NOT MSVC)
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}} -std=c++11")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}} -std=c++17")
 endif()
 
 if (UNIX)
@@ -59,19 +60,20 @@ if (UNIX)
     endif()
 endif()
 
-# Compiler-specific C++11 activation.
+# Compiler-specific C++17 activation.
 if ("${CMAKE_CXX_COMPILER_ID} " MATCHES "GNU ")
     execute_process(
         COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
-    if (NOT (GCC_VERSION VERSION_GREATER 4.7))
-        message(FATAL_ERROR "${PROJECT_NAME} requires g++ 4.8 or greater.")
+    if (NOT (GCC_VERSION VERSION_GREATER_EQUAL 8.0))
+        message(STATUS "Found version ${GCC_VERSION}")
+        message(FATAL_ERROR "${PROJECT_NAME} requires g++ 8.0 or greater.")
     endif ()
 elseif ("${CMAKE_CXX_COMPILER_ID} " MATCHES "Clang ")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 elseif ("${CMAKE_CXX_COMPILER_ID} " STREQUAL "MSVC ")
-    if (MSVC_VERSION LESS 1800)
-        message(FATAL_ERROR "${PROJECT_NAME} requires VS 2013 or greater.")
+    if (MSVC_VERSION LESS 1914)
+        message(FATAL_ERROR "${PROJECT_NAME} requires VS 2017 or greater.")
     endif()
 else ()
-    message(FATAL_ERROR "Your C++ compiler does not support C++11.")
+    message(FATAL_ERROR "Your C++ compiler does not support C++17.")
 endif ()

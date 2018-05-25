@@ -29,19 +29,6 @@
 
 using namespace sdf;
 
-class any_set : public boost::static_visitor<>
-{
-  public: explicit any_set(const boost::any &_value)
-          {this->value = _value;}
-
-  public: template <typename T>
-          void operator()(T & _operand) const
-          {
-            _operand = boost::any_cast<T>(this->value);
-          }
-  public: boost::any value;
-};
-
 //////////////////////////////////////////////////
 Param::Param(const std::string &_key, const std::string &_typeName,
              const std::string &_default, bool _required,
@@ -64,7 +51,7 @@ Param::~Param()
 }
 
 //////////////////////////////////////////////////
-bool Param::GetAny(boost::any &_anyVal) const
+bool Param::GetAny(std::any &_anyVal) const
 {
   if (this->IsType<int>())
   {
@@ -216,8 +203,12 @@ void Param::Update()
   {
     try
     {
-      boost::apply_visitor(any_set(this->dataPtr->updateFunc()),
-      this->dataPtr->value);
+      std::any newValue = this->dataPtr->updateFunc();
+      std::visit([&](auto &&arg)
+        {
+          using T = std::decay_t<decltype(arg)>;
+          arg = std::any_cast<T>(newValue);
+        }, this->dataPtr->value);
     }
     catch(...)
     {
@@ -232,7 +223,7 @@ std::string Param::GetAsString() const
 {
   std::stringstream ss;
 
-  ss << this->dataPtr->value;
+  ss << ParamStreamer{ this->dataPtr->value };
   return ss.str();
 }
 
@@ -241,7 +232,7 @@ std::string Param::GetDefaultAsString() const
 {
   std::stringstream ss;
 
-  ss << this->dataPtr->defaultValue;
+  ss << ParamStreamer{ this->dataPtr->defaultValue };
   return ss.str();
 }
 
