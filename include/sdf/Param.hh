@@ -25,6 +25,7 @@
 #endif
 
 #include <algorithm>
+#include <cctype>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -272,8 +273,11 @@ namespace sdf
         std::string strValue;
 
         ss >> strValue;
-        std::transform(strValue.begin(), strValue.end(),
-                       strValue.begin(), ::tolower);
+        std::transform(strValue.begin(), strValue.end(), strValue.begin(),
+            [](unsigned char c)
+            {
+              return static_cast<unsigned char>(std::tolower(c));
+            });
 
         std::stringstream tmp;
         if (strValue == "true" || strValue  == "1")

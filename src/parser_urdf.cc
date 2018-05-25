@@ -1053,7 +1053,11 @@ void ReduceJointsToParent(urdf::LinkSharedPtr _link)
 std::string lowerStr(const std::string &_str)
 {
   std::string out = _str;
-  std::transform(out.begin(), out.end(), out.begin(), ::tolower);
+  std::transform(out.begin(), out.end(), out.begin(),
+      [](unsigned char c)
+      {
+        return static_cast<unsigned char>(std::tolower(c));
+      });
   return out;
 }
 
