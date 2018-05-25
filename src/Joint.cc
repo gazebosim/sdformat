@@ -149,7 +149,11 @@ Errors Joint::Load(ElementPtr _sdf)
   if (typePair.second)
   {
     std::transform(typePair.first.begin(), typePair.first.end(),
-                   typePair.first.begin(), ::tolower);
+        typePair.first.begin(),
+        [](unsigned char c)
+        {
+          return static_cast<unsigned char>(std::tolower(c));
+        });
     if (typePair.first == "ball")
       this->dataPtr->type = JointType::BALL;
     else if (typePair.first == "continuous")
