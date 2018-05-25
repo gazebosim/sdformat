@@ -25,9 +25,9 @@
 #endif
 
 #include <algorithm>
+#include <cctype>
 #include <cstdint>
 #include <functional>
-#include <locale>
 #include <memory>
 #include <sstream>
 #include <string>
