@@ -274,7 +274,10 @@ namespace sdf
 
         ss >> strValue;
         std::transform(strValue.begin(), strValue.end(), strValue.begin(),
-                       [](unsigned char c) { return std::tolower(c); });
+            [](unsigned char c)
+            {
+              return static_cast<unsigned char>(std::tolower(c));
+            });
 
         std::stringstream tmp;
         if (strValue == "true" || strValue  == "1")
