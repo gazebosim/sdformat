@@ -20,6 +20,7 @@
 
 #include <any>
 #include <algorithm>
+#include <cctype>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -290,8 +291,11 @@ namespace sdf
       if (typeid(T) == typeid(bool) && this->dataPtr->typeName == "string")
       {
         std::string strValue = std::get<std::string>(this->dataPtr->value);
-        std::transform(strValue.begin(), strValue.end(),
-                       strValue.begin(), ::tolower);
+        std::transform(strValue.begin(), strValue.end(), strValue.begin(),
+            [](unsigned char c)
+            {
+              return static_cast<unsigned char>(std::tolower(c));
+            });
 
         std::stringstream tmp;
         if (strValue == "true" || strValue  == "1")

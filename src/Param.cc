@@ -241,7 +241,11 @@ bool Param::ValueFromString(const std::string &_value)
 {
   std::string tmp(_value);
   std::string lowerTmp(_value);
-  std::transform(lowerTmp.begin(), lowerTmp.end(), lowerTmp.begin(), ::tolower);
+  std::transform(lowerTmp.begin(), lowerTmp.end(), lowerTmp.begin(),
+      [](unsigned char c)
+      {
+        return static_cast<unsigned char>(std::tolower(c));
+      });
 
   // "true" and "false" doesn't work properly
   if (lowerTmp == "true")
