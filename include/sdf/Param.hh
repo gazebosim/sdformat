@@ -77,7 +77,7 @@ namespace sdf
   std::ostream& operator<<(std::ostream& os,
                            ParamStreamer<std::variant<Ts...>> sv)
   {
-    std::visit([&os](const auto &v)
+    std::visit([&os](auto const &v)
       {
         os << ParamStreamer{v};
       }, sv.val);
