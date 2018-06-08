@@ -20,6 +20,7 @@
 #include <string>
 #include <ignition/math/Vector3.hh>
 
+#include "sdf/Atmosphere.hh"
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
@@ -125,6 +126,16 @@ namespace sdf
     /// \param[in] _name Name of the model to check.
     /// \return True if there exists a model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
+
+    /// \brief Get a pointer to the atmosphere model associated with this
+    /// world. A nullptr indicates that an atmosphere model has not been set.
+    /// \return Pointer to this world's atmosphere model. Nullptr inidicates
+    /// that there is no atmosphere model.
+    public: const sdf::Atmosphere *Atmosphere() const;
+
+    /// \brief Set the atmosphere model associated with this world.
+    /// \param[in] _atmosphere The new atmosphere model for this world.
+    public: void SetAtmosphere(const sdf::Atmosphere &_atmosphere) const;
 
     /// \brief Private data pointer.
     private: WorldPrivate *dataPtr = nullptr;

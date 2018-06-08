@@ -63,6 +63,8 @@ TEST(DOMWorld, LoadIncorrectElement)
   sdf::Errors errors;
   // Read an SDF file, and store the result in sdfParsed.
   sdf::SDFPtr sdfParsed = sdf::readFile(testFile, errors);
+  for (auto err : errors)
+    std::cout << err << std::endl;
   ASSERT_TRUE(errors.empty());
 
   sdf::World world;
@@ -94,4 +96,11 @@ TEST(DOMWorld, Load)
   EXPECT_EQ(world->WindLinearVelocity(), ignition::math::Vector3d(4, 5, 6));
   EXPECT_EQ(world->Gravity(), ignition::math::Vector3d(1, 2, 3));
   EXPECT_EQ(world->MagneticField(), ignition::math::Vector3d(-1, 0.5, 10));
+
+  const sdf::Atmosphere *atmosphere = world->Atmosphere();
+  ASSERT_NE(nullptr, atmosphere);
+  EXPECT_EQ(sdf::AtmosphereType::ADIABATIC, atmosphere->Type());
+  EXPECT_DOUBLE_EQ(23.1, atmosphere->Temperature().Kelvin());
+  EXPECT_DOUBLE_EQ(4.3, atmosphere->TemperatureGradient());
+  EXPECT_DOUBLE_EQ(43.1, atmosphere->Pressure());
 }
