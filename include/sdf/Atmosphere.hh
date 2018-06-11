@@ -36,9 +36,10 @@ namespace sdf
   // Forward declarations.
   class AtmospherePrivate;
 
-  /// \brief An atmosphere model that is optionally part of a World
-  /// description. The Atmosphere class describes the type of atmosphere
-  /// model, which defaults to adiabatic, and parameters.
+  /// \brief The Atmosphere class contains information about
+  /// an atmospheric model and related parameters such as temperature
+  /// and pressure at sea level. An Atmosphere instance is optionally part of
+  /// a World.
   class SDFORMAT_VISIBLE Atmosphere
   {
     /// \brief Default constructor
@@ -63,13 +64,12 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
 
-    /// \brief Get the type of the atmosphere.
+    /// \brief Get the type of the atmospheric model.
     /// \return The type of atmosphere engine, which defaults to adiabatic.
     public: AtmosphereType Type() const;
 
-    /// \brief Set the type of the atmosphere.
-    /// \param[in] _type The type of atmosphere engine. Current options are
-    /// adiabtic.
+    /// \brief Set the type of the atmospheric model.
+    /// \param[in] _type The type of atmosphere engine.
     public: void SetType(const AtmosphereType _type);
 
     /// \brief Get the temperature at sea level.
@@ -81,12 +81,12 @@ namespace sdf
     public: void SetTemperature(const ignition::math::Temperature &_temp);
 
     /// \brief Get the temperature gradient with respect to increasing
-    /// altitude at sea level in units of K/m.
+    /// altitude in units of K/m.
     /// \return The temperature gradient in K/m.
     public: double TemperatureGradient() const;
 
     /// \brief Set the temperature gradient with respect to increasing
-    /// altitude at sea level in units of K/m.
+    /// altitude in units of K/m.
     /// \param[in] _gradient The temperature gradient in K/m.
     public: void SetTemperatureGradient(const double _gradient);
 
@@ -98,6 +98,10 @@ namespace sdf
     /// \param[in] _pressure The pressure at sea level in pascals.
     public: void SetPressure(const double _pressure);
 
+    /// \brief Equality operator that returns true if this atmosphere
+    /// instance equals the given atmosphere instance.
+    /// \param[in] _atmosphere Atmosphere instance to compare.
+    /// \return True if this instance equals the given atmosphere.
     public: bool operator==(const Atmosphere &_atmosphere);
 
     /// \brief Private data pointer.
