@@ -10,6 +10,7 @@ set (headers
   Exception.hh
   Filesystem.hh
   Geometry.hh
+  Gui.hh
   Joint.hh
   JointAxis.hh
   Link.hh
