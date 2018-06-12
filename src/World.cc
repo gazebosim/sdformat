@@ -115,7 +115,10 @@ Errors World::Load(sdf::ElementPtr _sdf)
   if (_sdf->HasElement("atmosphere"))
   {
     this->dataPtr->atmosphere.reset(new sdf::Atmosphere());
-    this->dataPtr->atmosphere->Load(_sdf->GetElement("atmosphere"));
+    Errors atmosphereLoadErrors =
+      this->dataPtr->atmosphere->Load(_sdf->GetElement("atmosphere"));
+    errors.insert(errors.end(), atmosphereLoadErrors.begin(),
+        atmosphereLoadErrors.end());
   }
 
   // Read gravity.
