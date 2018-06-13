@@ -25,6 +25,7 @@
 #include "sdf/Filesystem.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Link.hh"
+#include "sdf/Mesh.hh"
 #include "sdf/Model.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Root.hh"
@@ -127,4 +128,32 @@ TEST(DOMGeometry, Shapes)
   const sdf::Sphere *sphereVisGeom = sphereVis->Geom()->SphereShape();
   ASSERT_NE(nullptr, sphereVisGeom);
   EXPECT_DOUBLE_EQ(100.2, sphereVisGeom->Radius());
+
+  // Test mesh collision
+  const sdf::Collision *meshCol = link->CollisionByName("mesh_col");
+  ASSERT_NE(nullptr, meshCol);
+  ASSERT_NE(nullptr, meshCol->Geom());
+  EXPECT_EQ(sdf::GeometryType::MESH, meshCol->Geom()->Type());
+  const sdf::Mesh *meshColGeom = meshCol->Geom()->MeshShape();
+  ASSERT_NE(nullptr, meshColGeom);
+  EXPECT_EQ("https://ignitionfuel.org/an_org/models/a_model/mesh/mesh.dae",
+      meshColGeom->Uri());
+  EXPECT_TRUE(ignition::math::Vector3d(0.1, 0.2, 0.3) ==
+      meshColGeom->Scale());
+  EXPECT_EQ("my_submesh", meshColGeom->Submesh());
+  EXPECT_TRUE(meshColGeom->CenterSubmesh());
+
+  // Test mesh visual
+  const sdf::Visual *meshVis = link->VisualByName("mesh_vis");
+  ASSERT_NE(nullptr, meshVis);
+  ASSERT_NE(nullptr, meshVis->Geom());
+  EXPECT_EQ(sdf::GeometryType::MESH, meshVis->Geom()->Type());
+  const sdf::Mesh *meshVisGeom = meshVis->Geom()->MeshShape();
+  ASSERT_NE(nullptr, meshVisGeom);
+  EXPECT_EQ("https://ignitionfuel.org/an_org/models/a_model/mesh/mesh.dae",
+      meshVisGeom->Uri());
+  EXPECT_TRUE(ignition::math::Vector3d(1.2, 2.3, 3.4) ==
+      meshVisGeom->Scale());
+  EXPECT_EQ("another_submesh", meshVisGeom->Submesh());
+  EXPECT_FALSE(meshVisGeom->CenterSubmesh());
 }
