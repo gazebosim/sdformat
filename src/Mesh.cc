@@ -23,19 +23,19 @@ using namespace sdf;
 class sdf::MeshPrivate
 {
   /// \brief The mesh's URI.
-  public: std::string uri;
+  public: std::string uri = "";
 
   /// \brief The mesh's scale.
-  public: ignition::math::Vector3d scale{1, 1, 1};
+  public: ignition::math::Vector3d scale {1, 1, 1};
 
   /// \brief The name of the submesh.
-  public: std::string submesh;
+  public: std::string submesh = "";
 
   /// \brief True to center the submesh.
-  public: bool centerSubmesh;
+  public: bool centerSubmesh = false;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: sdf::ElementPtr sdf = nullptr;
 };
 
 /////////////////////////////////////////////////

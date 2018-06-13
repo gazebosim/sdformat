@@ -17,6 +17,7 @@
 #ifndef SDF_MESH_HH_
 #define SDF_MESH_HH_
 
+#include <string>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <ignition/math/Vector3.hh>

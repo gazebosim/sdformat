@@ -27,7 +27,30 @@ TEST(DOMMesh, Construction)
   EXPECT_EQ(std::string(), mesh.Uri());
   EXPECT_EQ(std::string(), mesh.Submesh());
   EXPECT_TRUE(ignition::math::Vector3d(1, 1, 1) == mesh.Scale());
-  EXPECT_FALSE( mesh.CenterSubmesh());
+  EXPECT_FALSE(mesh.CenterSubmesh());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, Set)
+{
+  sdf::Mesh mesh;
+  EXPECT_EQ(nullptr, mesh.Element());
+
+  EXPECT_EQ(std::string(), mesh.Uri());
+  mesh.SetUri("http://myuri.com");
+  EXPECT_EQ("http://myuri.com", mesh.Uri());
+
+  EXPECT_EQ(std::string(), mesh.Submesh());
+  mesh.SetSubmesh("my_submesh");
+  EXPECT_EQ("my_submesh", mesh.Submesh());
+
+  EXPECT_TRUE(ignition::math::Vector3d(1, 1, 1) == mesh.Scale());
+  mesh.SetScale(ignition::math::Vector3d(0.2, 1.4, 7.8));
+  EXPECT_TRUE(ignition::math::Vector3d(0.2, 1.4, 7.8) == mesh.Scale());
+
+  EXPECT_FALSE(mesh.CenterSubmesh());
+  mesh.SetCenterSubmesh(true);
+  EXPECT_TRUE(mesh.CenterSubmesh());
 }
 
 /////////////////////////////////////////////////
