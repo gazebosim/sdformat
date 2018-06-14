@@ -121,11 +121,11 @@ endmacro()
 ########################################
 # Find ignition math
 # Set a variable for generating ProjectConfig.cmake
-find_package(ignition-math5 QUIET)
-if (NOT ignition-math5_FOUND)
-  message(STATUS "Looking for ignition-math5-config.cmake - not found")
-  BUILD_ERROR ("Missing: Ignition math (libignition-math5-dev or libignition-math5-dev)")
+find_package(ignition-math6 QUIET)
+if (NOT ignition-math6_FOUND)
+  message(STATUS "Looking for ignition-math6-config.cmake - not found")
+  BUILD_ERROR ("Missing: Ignition math (libignition-math6-dev or libignition-math6-dev)")
 else()
-  set(IGNITION-MATH_REQUIRED_MAJOR_VERSION ${ignition-math5_VERSION_MAJOR})
+  set(IGNITION-MATH_REQUIRED_MAJOR_VERSION ${ignition-math6_VERSION_MAJOR})
   message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}-config.cmake - found")
 endif()
