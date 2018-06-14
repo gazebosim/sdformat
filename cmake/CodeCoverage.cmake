@@ -35,7 +35,8 @@
 #
 
 # Check prereqs
-FIND_PROGRAM( GCOV_PATH gcov )
+
+FIND_PROGRAM( GCOV_PATH NAMES gcov-8 gcov )
 FIND_PROGRAM( LCOV_PATH lcov )
 FIND_PROGRAM( GREP_PATH grep )
 FIND_PROGRAM( GENHTML_PATH genhtml )
@@ -110,9 +111,9 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _outputname)
     ${_outputname}.info
   # Capturing lcov counters and generating report
   COMMAND ${LCOV_PATH} -q --no-checksum --directory ${PROJECT_BINARY_DIR}
-    --capture --output-file ${_outputname}.info 2>/dev/null
+    --gcov-tool ${GCOV_PATH} --capture --output-file ${_outputname}.info 2>/dev/null
   COMMAND ${LCOV_PATH} -q --remove ${_outputname}.info
-    'test/*' '/usr/*' '*_TEST*' --output-file ${_outputname}.info.cleaned
+    --gcov-tool ${GCOV_PATH} 'test/*' '/usr/*' '*_TEST*' --output-file ${_outputname}.info.cleaned
   COMMAND ${GENHTML_PATH} -q --legend -o ${_outputname}
     ${_outputname}.info.cleaned
   COMMAND ${LCOV_PATH} --summary ${_outputname}.info.cleaned 2>&1 | grep "lines" | cut -d ' ' -f 4 | cut -d '%' -f 1 > coverage/lines.txt
