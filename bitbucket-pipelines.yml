@@ -1,4 +1,4 @@
-image: ubuntu:xenial
+image: ubuntu:bionic
 
 pipelines:
   default:
@@ -6,17 +6,44 @@ pipelines:
         script:
           # Dependencies
           - apt update
-          - apt -y install cmake build-essential lcov curl mercurial lsb-release wget
+          - apt -y install cmake build-essential curl git mercurial lsb-release wget g++-8
             libtinyxml-dev libxml2-utils ruby-dev libboost-dev
             python-psutil cppcheck
+          - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
+          - gcc -v
+          - g++ -v
+          - gcov -v
+          # lcov
+          - git clone https://github.com/linux-test-project/lcov.git
+          - cd lcov
+          - make install
+          - cd ..
           # Static checking before building - fail fast
           - sh tools/code_check.sh
-          - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-latest.list'
-          - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
-          - apt update
-          - apt install -y
-            libignition-math4-dev
-            libignition-tools-dev
+          # Ignition cmake
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-cmake -b gz11
+          - cd ign-cmake
+          - mkdir build
+          - cd build
+          - cmake .. -DBUILD_TESTING=OFF
+          - make -j4 install
+          - cd ../..
+          # Ignition tools
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-tools
+          - cd ign-tools
+          - mkdir build
+          - cd build
+          - cmake .. # -DENABLE_TESTS_COMPILATION=false
+          - make -j4 install
+          - cd ../..
+          # Ignition math
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-math -b gz11
+          - cd ign-math
+          - mkdir build
+          - cd build
+          - cmake .. -DBUILD_TESTING=OFF
+          - make -j4 install
+          - cd ../..
           # SDFormat
           - mkdir build
           - cd build
@@ -24,7 +51,8 @@ pipelines:
           - make -j4
           - make test
           - make coverage
-          - bash <(curl -s https://codecov.io/bash)
+          # Use a special version of codecov for handling gcc8 output.
+          - bash <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/4678d212cce2078bbaaf5027af0c0dafaad6a095/codecov) -X gcovout 2>/dev/null
           - make install
           # Examples
           - cd ..
