@@ -4,7 +4,6 @@
 
 
 :: Install dependencies
-call %win_lib% :download_unzip_install boost_1.67.0_any_variant_version.zip
 call %win_lib% :install_ign_project ign-math gz11
 
 :: Set configuration variables
