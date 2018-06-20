@@ -104,6 +104,14 @@ but with improved human-readability..
     + required: 0
     + [pull request 369](https://bitbucket.org/osrf/sdformat/pull-requests/369)
 
+1. **physics.sdf** `dart::collision_detector` element
+    + description: The collision detector for DART to use.
+      Can be dart, fcl, bullet or ode.
+    + type: string
+    + default: fcl
+    + required: 0
+    + [pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
+
 1. **link.sdf** `enable_wind` element
     + description: If true, the link is affected by the wind
     + type: bool
