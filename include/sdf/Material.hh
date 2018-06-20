@@ -27,6 +27,14 @@ namespace sdf
   // Forward declarations.
   class MaterialPrivate;
 
+  enum class ShaderType : int
+  {
+    PIXEL = 0,
+    VERTEX = 1,
+    NORMAL_MAP_OBJECTSPACE = 2,
+    NORMAL_MAP_TANGENTSPACE = 3,
+  };
+
   /// \brief This class contains visual material properties.
   class SDFORMAT_VISIBLE Material
   {
@@ -110,6 +118,45 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Get the URI of the material script, if one has been set.
+    /// \return The URI of the material script, or empty string if one has
+    /// not been set.
+    public: std::string ScriptUri() const;
+
+    /// \brief Set the URI of the material script.
+    /// \param[in] _uri The URI of the material script.
+    public: void SetScriptUri(const std::string &_uri);
+
+    /// \brief Get the name of the material script, or empty if one has not
+    /// been specified. The name should match an
+    /// script element in the script located at the ScriptUri().
+    /// \return The name of the material script, or empty string if one has
+    /// not been set.
+    public: std::string ScriptName() const;
+
+    /// \brief Set the name of the material script. The name should match an
+    /// script element in the script located at the ScriptUri().
+    /// \param[in] _name The name of the material script.
+    public: void SetScriptName(const std::string &_name);
+
+    /// \brief Get the type of shader.
+    /// \return Shader type.
+    public: ShaderType Shader() const;
+
+    /// \brief Set the type of shader.
+    /// \param[in] _type Shader type.
+    public: void SetShader(const ShaderType &_type);
+
+    /// \brief Get the normal map filename. This will be an empty string if
+    /// a normal map has not been set.
+    /// \return Filename of the normal map, or empty string if a normal map
+    /// has not been specified.
+    public: std::string NormalMap() const;
+
+    /// \brief Set the normal map filename.
+    /// \param[in] _map Filename of the normal map.
+    public: void SetNormalMap(const std::string &_map);
 
     /// \brief Private data pointer.
     private: MaterialPrivate *dataPtr = nullptr;
