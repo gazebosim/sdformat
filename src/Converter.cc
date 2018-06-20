@@ -25,17 +25,13 @@
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
 
-using namespace sdf;
+// This include file is generated at configure time.
+#include "sdf/EmbeddedSdf.hh"
 
-/////////////////////////////////////////////////
-static bool case_insensitive_cmp(const char &_a, const char &_b)
-{
-  return tolower(_a) < tolower(_b);
-}
+using namespace sdf;
 
 /////////////////////////////////////////////////
 bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
@@ -75,82 +71,41 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 
   elem->SetAttribute("version", _toVersion);
 
-  std::string currFilenameVersion = origVersion;
-  std::replace(currFilenameVersion.begin(), currFilenameVersion.end(),
-               '.', '_');
+  // The conversionMap in EmbeddedSdf.hh has keys that represent a version
+  // of SDF to convert from. The values in conversionmap are pairs, where
+  // the first element is the SDF version that the second element will
+  // convert to. For example, the following will convert from 1.4 to 1.5
+  // according to "conversion_xml":
+  //
+  // {"1.4", {"1.5", "conversion_xml"}}
+  std::map<std::string, std::pair<std::string, std::string> >::const_iterator
+    fromIter = conversionMap.find(origVersion);
 
-  std::string filename = sdf::findFile(currFilenameVersion + ".convert");
-
-  // Use convert file in the current sdf version folder for conversion. If file
-  // does not exist, then find intermediate convert files and iteratively
-  // convert the sdf elem. Ideally, users should use gzsdf convert so that the
-  // latest sdf versioned file is written and no subsequent conversions are
-  // necessary.
   TiXmlDocument xmlDoc;
-  if (!xmlDoc.LoadFile(filename))
+  std::string toVer = "";
+
+  // Starting with the original SDF version, perform all the conversions
+  // necessary in order to reach the _toVersion.
+  while (fromIter->first != _toVersion && fromIter != conversionMap.end())
   {
-    std::string sdfPath = sdf::findFile("sdformat/");
+    // Get the SDF to version.
+    toVer = fromIter->second.first;
 
-    // find all sdf version dirs in resource path
-    sdf::filesystem::DirIter endIter;
-    // Using a set here seems like overkill, since we mostly use it as a simple
-    // iterator.  However, we have to make sure that anything we insert is
-    // lexicographical order, and a set fits the bill.
-    std::set<std::pair<std::string, std::string>> sdfDirs;
-    if (sdf::filesystem::is_directory(sdfPath))
-    {
-      for (sdf::filesystem::DirIter dirIter(sdfPath);
-           dirIter != endIter ; ++dirIter)
-      {
-        if (sdf::filesystem::is_directory(*dirIter))
-        {
-          std::string fname = sdf::filesystem::basename(*dirIter);
-          if (std::lexicographical_compare(origVersion.begin(),
-                                           origVersion.end(),
-                                           fname.begin(),
-                                           fname.end(),
-                                           case_insensitive_cmp))
-          {
-            sdfDirs.insert(std::make_pair(*dirIter, fname));
-          }
-        }
-      }
-    }
+    // Parse and apply the conversion XML.
+    xmlDoc.Parse(fromIter->second.second.c_str());
+    ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
 
-    // loop through sdf dirs and do the intermediate conversions
-    for (std::set<std::pair<std::string, std::string> >::iterator it =
-           sdfDirs.begin(); it != sdfDirs.end(); ++it)
-    {
-      std::string convertFile = sdf::filesystem::append((*it).first,
-          currFilenameVersion + ".convert");
-      if (sdf::filesystem::exists(convertFile))
-      {
-        if (!xmlDoc.LoadFile(convertFile))
-        {
-          sdferr << "Unable to load file[" << convertFile << "]\n";
-          return false;
-        }
-        ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
-        if ((*it).second == _toVersion)
-        {
-          return true;
-        }
+    // Get the next conversion XML map element.
+    fromIter = conversionMap.find(toVer);
+  }
 
-        currFilenameVersion = (*it).second;
-        std::replace(currFilenameVersion.begin(), currFilenameVersion.end(),
-                     '.', '_');
-      }
-      else
-      {
-        continue;
-      }
-    }
+  // Check that we actually converted to the desired final version.
+  if (toVer != _toVersion)
+  {
     sdferr << "Unable to convert from SDF version " << origVersion
            << " to " << _toVersion << "\n";
     return false;
   }
-
-  ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
 
   return true;
 }

@@ -32,6 +32,9 @@
 #include "sdf/SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
 
+// This include file is generated at configure time.
+#include "sdf/EmbeddedSdf.hh"
+
 using namespace sdf;
 
 typedef std::list<std::string> PathList;
@@ -390,4 +393,19 @@ ElementPtr SDF::WrapInRoot(const ElementPtr &_sdf)
   return root;
 }
 
-
+/////////////////////////////////////////////////
+const std::string &SDF::EmbeddedSpec(
+    const std::string &_filename, const bool _quiet)
+{
+  try
+  {
+    return embeddedSdf.at(SDF::Version()).at(_filename);
+  }
+  catch(const std::out_of_range &)
+  {
+    if (!_quiet)
+      sdferr << "Unable to find SDF filename[" << _filename << "] with "
+        << "version " << SDF::Version() << "\n";
+  }
+  return emptySdfString;
+}

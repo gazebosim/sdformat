@@ -9,6 +9,9 @@
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
 
+1. Embed SDF specification files directly in libsdformat.so.
+   * [Pull request 434](https://bitbucket.org/osrf/sdformat/pull-requests/434)
+
 1. Removed support for SDF spec versions 1.0 and 1.2
    * [Pull request #432](https://bitbucket.org/osrf/sdformat/pull-requests/432)
 
