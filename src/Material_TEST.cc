@@ -17,8 +17,8 @@
 
 #include <gtest/gtest.h>
 
-#include "sdf/Material.hh"
 #include <ignition/math/Color.hh>
+#include "sdf/Material.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMMaterial, Construction)

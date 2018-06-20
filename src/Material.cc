@@ -43,16 +43,16 @@ class sdf::MaterialPrivate
   public: bool lighting = true;
 
   /// \brief Ambient color
-  public: ignition::math::Color ambient{0, 0, 0, 1};
+  public: ignition::math::Color ambient {0, 0, 0, 1};
 
   /// \brief Diffuse color
-  public: ignition::math::Color diffuse{0, 0, 0, 1};
+  public: ignition::math::Color diffuse {0, 0, 0, 1};
 
   /// \brief Specular color
-  public: ignition::math::Color specular{0, 0, 0, 1};
+  public: ignition::math::Color specular {0, 0, 0, 1};
 
   /// \brief Emissive color
-  public: ignition::math::Color emissive{0, 0, 0, 1};
+  public: ignition::math::Color emissive {0, 0, 0, 1};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
