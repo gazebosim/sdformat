@@ -6,9 +6,7 @@ pipelines:
         script:
           # Dependencies
           - apt update
-          - apt -y install cmake build-essential curl git mercurial lsb-release wget g++-8
-            libtinyxml-dev libxml2-utils ruby-dev libboost-dev
-            python-psutil cppcheck
+          - apt -y install cmake build-essential curl git mercurial lsb-release wget g++-8 libtinyxml-dev libxml2-utils ruby-dev python-psutil cppcheck
           - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
           - gcc -v
           - g++ -v

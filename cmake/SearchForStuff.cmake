@@ -5,22 +5,6 @@ include (${project_cmake_dir}/TargetArch.cmake)
 target_architecture(ARCH)
 message(STATUS "Building for arch: ${ARCH}")
 
-########################################
-# Find Boost, if not specified manually
-if (WIN32)
-  set(Boost_USE_STATIC_LIBS       OFF)
-  set(Boost_USE_MULTITHREADED      ON)
-  set(Boost_USE_STATIC_RUNTIME    OFF)
-endif()
-
-include(FindBoost)
-find_package(Boost ${MIN_BOOST_VERSION})
-
-if (NOT Boost_FOUND)
-  set (BUILD_SDF OFF CACHE INTERNAL "Build SDF" FORCE)
-  BUILD_ERROR ("Boost not found. Please install system boost version ${MIN_BOOST_VERSION} or higher.")
-endif()
-
 if (USE_EXTERNAL_TINYXML)
   #################################################
   # Find tinyxml. Only debian distributions package tinyxml with a pkg-config
