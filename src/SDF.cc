@@ -103,7 +103,13 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   }
 
   // Next check SDF_PATH environment variable
+#ifndef _WIN32
   const char *pathCStr = std::getenv("SDF_PATH");
+#else
+  char *pathCStr;
+  size_t sz = 0;
+  _dupenv_s(&pathCStr, &sz, "SDF_PATH");
+#endif
 
   if (pathCStr)
   {

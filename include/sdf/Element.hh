@@ -17,6 +17,7 @@
 #ifndef _SDF_ELEMENT_HH_
 #define _SDF_ELEMENT_HH_
 
+#include <any>
 #include <memory>
 #include <string>
 #include <utility>
@@ -222,11 +223,11 @@ namespace sdf
     /// return A Param pointer to the value of this element.
     public: ParamPtr GetValue() const;
 
-    /// \brief Get the element value/attribute as a boost::any.
+    /// \brief Get the element value/attribute as a std::any.
     /// \param[in] _key The key of the attribute. If empty, get the value of
     /// the element. Defaults to empty.
-    /// \return The element as a boost::any.
-    public: boost::any GetAny(const std::string &_key = "") const;
+    /// \return The element as a std::any.
+    public: std::any GetAny(const std::string &_key = "") const;
 
     /// \brief Get the value of a key. This function assumes the _key
     /// exists.

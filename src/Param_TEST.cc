@@ -15,11 +15,10 @@
  *
  */
 
+#include <any>
 #include <cstdint>
 
 #include <gtest/gtest.h>
-
-#include <boost/version.hpp>
 
 #include <ignition/math/Angle.hh>
 
@@ -81,13 +80,13 @@ TEST(Param, Bool)
   EXPECT_FALSE(value);
 
   boolParam.Set(true);
-  boost::any anyValue;
+  std::any anyValue;
   EXPECT_TRUE(boolParam.GetAny(anyValue));
   try
   {
-    value = boost::any_cast<bool>(anyValue);
+    value = std::any_cast<bool>(anyValue);
   }
-  catch(boost::bad_any_cast &/*_e*/)
+  catch(std::bad_any_cast &/*_e*/)
   {
     FAIL();
   }
@@ -327,7 +326,7 @@ TEST(Param, InvalidInt)
 ////////////////////////////////////////////////////
 TEST(Param, GetAny)
 {
-  boost::any anyValue;
+  std::any anyValue;
 
   sdf::Param intParam("key", "int", "true", false, "description");
   EXPECT_TRUE(intParam.GetAny(anyValue));
