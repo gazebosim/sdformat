@@ -95,11 +95,9 @@ Errors Material::Load(sdf::ElementPtr _sdf)
     return errors;
   }
 
-    std::cout << "Loading material\n";
   // Load the script information
   if (_sdf->HasElement("script"))
   {
-    std::cout << "Loading script\n";
     sdf::ElementPtr elem = _sdf->GetElement("script");
     std::pair<std::string, bool> uriPair = elem->Get<std::string>("uri", "");
     if (uriPair.first == "__default__")
