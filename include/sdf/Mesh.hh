@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */
+*/
 #ifndef SDF_MESH_HH_
 #define SDF_MESH_HH_
 
 #include <string>
-#include <sdf/Error.hh>
-#include <sdf/Element.hh>
 #include <ignition/math/Vector3.hh>
+#include <sdf/Element.hh>
+#include <sdf/Error.hh>
 
 namespace sdf
 {
@@ -84,8 +84,7 @@ namespace sdf
     /// \param[in] _center True to center the submesh.
     public: void SetCenterSubmesh(const bool _center);
 
-    /// \brief Get a pointer to the SDF element that was used during
-    /// load.
+    /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
