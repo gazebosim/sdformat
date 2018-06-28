@@ -166,11 +166,6 @@ macro (sdf_build_tests)
         $<TARGET_FILE:sdformat>
         $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
 
-      # Copy in ignition-math library
-      add_custom_command(TARGET ${BINARY_NAME}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${IGNITION-MATH_LIBRARY_DIRS}/${IGNITION-MATH_LIBRARIES}.dll"
-        $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
     endif()
 
     add_test(${BINARY_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}
