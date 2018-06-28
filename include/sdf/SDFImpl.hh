@@ -74,7 +74,23 @@ namespace sdf
 
   class SDFPrivate;
 
-  /// \brief Base SDF class
+  /// \brief Base SDF class.
+  ///
+  /// # Finding URI resources.
+  ///
+  /// An SDF file can include resource, such as models, via <uri> elements.
+  /// For example, a world can include a robot model using:
+  ///
+  /// ```
+  /// <?xml version='1.0'?>
+  /// <sdf version='1.6'>
+  ///   <world name="my_world">
+  ///     <include>
+  ///       <uri>model://my_model</uri>
+  ///     </include>
+  ///   </world>
+  /// </sdf>
+  /// ```
   class SDFORMAT_VISIBLE SDF
   {
     public: SDF();
