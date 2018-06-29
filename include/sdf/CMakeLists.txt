@@ -13,6 +13,7 @@ set (headers
   Joint.hh
   JointAxis.hh
   Link.hh
+  Mesh.hh
   Model.hh
   Param.hh
   parser.hh
