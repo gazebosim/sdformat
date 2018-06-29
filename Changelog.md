@@ -8,6 +8,10 @@
 1. Removed support for SDF spec versions 1.0 and 1.2
    * [Pull request #432](https://bitbucket.org/osrf/sdformat/pull-requests/432)
 
+1. SDF DOM: Additions to the document object model.
+   * [Pull request
+   442](https://bitbucket.org/osrf/sdformat/pull-requests/442)
+
 ## SDFormat 6.0
 
 ### SDFormat 6.1.0 (xxxx-xx-xx)
