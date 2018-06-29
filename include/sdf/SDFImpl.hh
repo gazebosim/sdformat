@@ -81,7 +81,7 @@ namespace sdf
   /// An SDF file can include resource, such as models, via <uri> elements.
   /// For example, a world can include a robot model using:
   ///
-  /// ```
+  /// <pre>
   /// <?xml version='1.0'?>
   /// <sdf version='1.6'>
   ///   <world name="my_world">
@@ -90,7 +90,7 @@ namespace sdf
   ///     </include>
   ///   </world>
   /// </sdf>
-  /// ```
+  /// </pre>
   class SDFORMAT_VISIBLE SDF
   {
     public: SDF();
