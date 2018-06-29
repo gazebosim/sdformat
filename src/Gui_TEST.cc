@@ -27,9 +27,43 @@ TEST(DOMGui, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMGui, CopyConstruction)
+{
+  sdf::Gui gui;
+  gui.SetFullscreen(true);
+  EXPECT_TRUE(gui.Fullscreen());
+
+  sdf::Gui gui2(gui);
+  EXPECT_TRUE(gui2.Fullscreen());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGui, MoveConstruction)
+{
+  sdf::Gui gui;
+  gui.SetFullscreen(true);
+  EXPECT_TRUE(gui.Fullscreen());
+
+  sdf::Gui gui2(std::move(gui));
+  EXPECT_TRUE(gui2.Fullscreen());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMGui, Set)
 {
   sdf::Gui gui;
   gui.SetFullscreen(true);
   EXPECT_TRUE(gui.Fullscreen());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGui, Equal)
+{
+  sdf::Gui gui;
+  gui.SetFullscreen(true);
+  sdf::Gui gui2(gui);
+
+  EXPECT_TRUE(gui == gui2);
+  gui.SetFullscreen(false);
+  EXPECT_FALSE(gui == gui2);
 }

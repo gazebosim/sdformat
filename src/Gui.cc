@@ -88,5 +88,5 @@ void Gui::SetFullscreen(const bool _fullscreen) const
 /////////////////////////////////////////////////
 bool Gui::operator==(const Gui &_gui) const
 {
-  return this->dataPtr->fullscreen = _gui.dataPtr->fullscreen;
+  return this->dataPtr->fullscreen == _gui.dataPtr->fullscreen;
 }
