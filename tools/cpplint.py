@@ -2036,6 +2036,12 @@ def CheckBraces(filename, clean_lines, linenum, error):
       line = prevline + line
     else:
       break
+  # if (Search(r'{.*}\s*;', line) and
+  #     line.count('{') == line.count('}') and
+  #     not Search(r'struct|class|enum|\s*=\s*{', line)):
+  #   error(filename, linenum, 'readability/braces', 4,
+  #         "You don't need a ; after a }")
+
 
 def ReplaceableCheck(operator, macro, line):
   """Determine whether a basic CHECK can be replaced with a more specific one.
