@@ -69,6 +69,33 @@
           </sphere>
         </geometry>
       </visual>
+
+      <collision name="mesh_col">
+        <geometry>
+          <mesh>
+            <uri>https://ignitionfuel.org/an_org/models/a_model/mesh/mesh.dae</uri>
+            <submesh>
+              <name>my_submesh</name>
+              <center>true</center>
+            </submesh>
+            <scale>0.1 0.2 0.3</scale>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <visual name="mesh_vis">
+        <geometry>
+          <mesh>
+            <uri>https://ignitionfuel.org/an_org/models/a_model/mesh/mesh.dae</uri>
+            <submesh>
+              <name>another_submesh</name>
+              <center>false</center>
+            </submesh>
+            <scale>1.2 2.3 3.4</scale>
+          </mesh>
+        </geometry>
+      </visual>
+
     </link>
   </model>
 </sdf>

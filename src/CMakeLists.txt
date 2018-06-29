@@ -34,6 +34,7 @@ set (sources
   Joint.cc
   JointAxis.cc
   Link.cc
+  Mesh.cc
   Model.cc
   parser.cc
   parser_urdf.cc
@@ -92,6 +93,7 @@ set (gtest_sources
   Joint_TEST.cc
   JointAxis_TEST.cc
   Link_TEST.cc
+  Mesh_TEST.cc
   Model_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc
