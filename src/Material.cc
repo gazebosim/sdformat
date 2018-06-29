@@ -75,7 +75,7 @@ Material::~Material()
 Material::Material(Material &&_material)
 {
   this->dataPtr = _material.dataPtr;
-  _material.dataPtr = new MaterialPrivate;
+  _material.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

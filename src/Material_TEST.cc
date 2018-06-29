@@ -87,17 +87,6 @@ TEST(DOMMaterial, Set)
   EXPECT_EQ("name", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
   EXPECT_EQ("map", material2.NormalMap());
-
-  EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Ambient());
-  EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Diffuse());
-  EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Specular());
-  EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Emissive());
-  EXPECT_TRUE(material.Lighting());
-  EXPECT_EQ(nullptr, material.Element());
-  EXPECT_EQ("", material.ScriptUri());
-  EXPECT_EQ("", material.ScriptName());
-  EXPECT_EQ(sdf::ShaderType::PIXEL, material.Shader());
-  EXPECT_EQ("", material.NormalMap());
 }
 
 /////////////////////////////////////////////////
