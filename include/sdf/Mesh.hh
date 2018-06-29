@@ -51,7 +51,7 @@ namespace sdf
 
     /// \brief Set the mesh's URI.
     /// \param[in] _uri The URI of the mesh.
-    public: void SetUri(const std::string _uri);
+    public: void SetUri(const std::string &_uri);
 
     /// \brief Get the mesh's scale factor.
     /// \return The mesh's scale factor.
@@ -59,7 +59,7 @@ namespace sdf
 
     /// \brief Set the mesh's scale factor.
     /// \return The mesh's scale factor.
-    public: void SetScale(const ignition::math::Vector3d _scale);
+    public: void SetScale(const ignition::math::Vector3d &_scale);
 
     /// \brief A submesh, contained with the mesh at the specified URI, may
     /// optionally be specified. If specified, this submesh should be used
@@ -70,7 +70,7 @@ namespace sdf
     /// \brief Set the mesh's submesh. See Submesh() for more information.
     /// \param[in] _submesh Name of the submesh. The name should match a submesh
     /// within the mesh at the specified URI.
-    public: void SetSubmesh(const std::string _submesh);
+    public: void SetSubmesh(const std::string &_submesh);
 
     /// \brief Get whether the submesh should be centered at 0,0,0. This will
     /// effectively remove any transformations on the submesh before the poses

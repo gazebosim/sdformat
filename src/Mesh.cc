@@ -89,8 +89,21 @@ Errors Mesh::Load(ElementPtr _sdf)
   if (_sdf->HasElement("submesh"))
   {
     sdf::ElementPtr subMesh = _sdf->GetElement("submesh");
-    this->dataPtr->submesh = subMesh->Get<std::string>("name",
-        this->dataPtr->submesh).first;
+
+    std::pair<std::string, bool> subMeshNamePair =
+      subMesh->Get<std::string>("name", this->dataPtr->submesh);
+
+    if (subMeshNamePair.first == "__default__" ||
+        subMeshNamePair.first.empty() || !subMeshNamePair.second)
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "A <submesh> element is missing a child <name> element, or the "
+          "<name> element is empty."});
+    }
+    else
+    {
+      this->dataPtr->submesh = subMeshNamePair.first;
+    }
 
     this->dataPtr->centerSubmesh = subMesh->Get<bool>("center",
         this->dataPtr->centerSubmesh).first;
@@ -115,7 +128,7 @@ std::string Mesh::Uri() const
 }
 
 //////////////////////////////////////////////////
-void Mesh::SetUri(const std::string _uri)
+void Mesh::SetUri(const std::string &_uri)
 {
   this->dataPtr->uri = _uri;
 }
@@ -127,7 +140,7 @@ ignition::math::Vector3d Mesh::Scale() const
 }
 
 //////////////////////////////////////////////////
-void Mesh::SetScale(const ignition::math::Vector3d _scale)
+void Mesh::SetScale(const ignition::math::Vector3d &_scale)
 {
   this->dataPtr->scale = _scale;
 }
@@ -139,7 +152,7 @@ std::string Mesh::Submesh() const
 }
 
 //////////////////////////////////////////////////
-void Mesh::SetSubmesh(const std::string _submesh)
+void Mesh::SetSubmesh(const std::string &_submesh)
 {
   this->dataPtr->submesh = _submesh;
 }
