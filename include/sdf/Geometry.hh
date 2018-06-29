@@ -26,6 +26,7 @@ namespace sdf
   class GeometryPrivate;
   class Box;
   class Cylinder;
+  class Mesh;
   class Plane;
   class Sphere;
 
@@ -47,6 +48,9 @@ namespace sdf
 
     /// \brief A sphere geometry.
     SPHERE = 4,
+
+    /// \brief A mesh geometry.
+    MESH = 5,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
@@ -104,6 +108,13 @@ namespace sdf
     /// geometry is not a plane.
     /// \sa GeometryType Type() const
     public: const Plane *PlaneShape() const;
+
+    /// \brief Get the mesh geometry, or nullptr if the contained geometry is
+    /// not a mesh.
+    /// \return Pointer to the visual's mesh geometry, or nullptr if the
+    /// geometry is not a mesh.
+    /// \sa GeometryType Type() const
+    public: const Mesh *MeshShape() const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

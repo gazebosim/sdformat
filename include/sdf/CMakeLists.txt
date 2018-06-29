@@ -14,6 +14,7 @@ set (headers
   JointAxis.hh
   Link.hh
   Material.hh
+  Mesh.hh
   Model.hh
   Param.hh
   parser.hh

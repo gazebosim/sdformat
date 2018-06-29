@@ -9,6 +9,7 @@
    * [Pull request #432](https://bitbucket.org/osrf/sdformat/pull-requests/432)
 
 1. SDF DOM: Additions to the document object model.
+   * [Pull request 433](https://bitbucket.org/osrf/sdformat/pull-requests/433)
    * [Pull request 445](https://bitbucket.org/osrf/sdformat/pull-requests/445)
 
 ## SDFormat 6.0
@@ -30,7 +31,6 @@
    * [Pull request 410](https://bitbucket.org/osrf/sdformat/pull-requests/410)
    * [Pull request 415](https://bitbucket.org/osrf/sdformat/pull-requests/415)
    * [Pull request 420](https://bitbucket.org/osrf/sdformat/pull-requests/420)
-   * [Pull request 433](https://bitbucket.org/osrf/sdformat/pull-requests/433)
 
 ### SDFormat 6.0.0 (2018-01-25)
 
