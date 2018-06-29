@@ -42,7 +42,7 @@ Gui::Gui(const Gui &_gui)
 Gui::Gui(Gui &&_gui)
 {
   this->dataPtr = _gui.dataPtr;
-  _gui.dataPtr = new GuiPrivate;
+  _gui.dataPtr = nullptr;
 }
 /////////////////////////////////////////////////
 Gui::~Gui()
