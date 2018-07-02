@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="model">
+    <link name="link">
+      <visual name="visual1">
+        <material>
+          <shader type="normal_map_tangentspace">
+          </shader>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>
