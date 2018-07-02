@@ -24,17 +24,17 @@ class sdf::AtmospherePrivate
 {
   /// \brief The type of the atmosphere engine.
   /// Current options are adiabatic. Defaults to adiabatic if left unspecified.
-  public: AtmosphereType type{AtmosphereType::ADIABATIC};
+  public: AtmosphereType type {AtmosphereType::ADIABATIC};
 
   /// \brief Temperature at sea level in kelvins.
-  public: ignition::math::Temperature temperature{288.15};
+  public: ignition::math::Temperature temperature {288.15};
 
   /// \brief Temperature gradient with respect to increasing altitude at sea
   /// level in units of K/m.
-  public: double temperatureGradient{-0.065};
+  public: double temperatureGradient {-0.065};
 
   /// \brief Pressure at sea level in pascals.
-  public: double pressure{101325};
+  public: double pressure {101325};
 };
 
 //////////////////////////////////////////////////
