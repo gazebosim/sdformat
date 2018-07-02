@@ -47,6 +47,9 @@ class sdf::WorldPrivate
 
   /// \brief The models specified in this world.
   public: std::vector<Model> models;
+
+  /// \brief Pointer to Gui parameters.
+  public: std::unique_ptr<Gui> gui;
 };
 
 /////////////////////////////////////////////////
@@ -121,6 +124,14 @@ Errors World::Load(sdf::ElementPtr _sdf)
   Errors modelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
       this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
+
+  // Load the Gui
+  if (_sdf->HasElement("gui"))
+  {
+    this->dataPtr->gui.reset(new sdf::Gui());
+    Errors guiLoadErrors = this->dataPtr->gui->Load(_sdf->GetElement("gui"));
+    errors.insert(errors.end(), guiLoadErrors.begin(), guiLoadErrors.end());
+  }
 
   return errors;
 }
@@ -210,4 +221,16 @@ bool World::ModelNameExists(const std::string &_name) const
     }
   }
   return false;
+}
+
+/////////////////////////////////////////////////
+sdf::Gui *World::Gui() const
+{
+  return this->dataPtr->gui.get();
+}
+
+/////////////////////////////////////////////////
+void World::SetGui(const sdf::Gui &_gui)
+{
+  return this->dataPtr->gui.reset(new sdf::Gui(_gui));
 }
