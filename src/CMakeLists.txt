@@ -30,6 +30,7 @@ set (sources
   Exception.cc
   Filesystem.cc
   Geometry.cc
+  Gui.cc
   ign.cc
   Joint.cc
   JointAxis.cc
@@ -91,6 +92,7 @@ set (gtest_sources
   Exception_TEST.cc
   Filesystem_TEST.cc
   Geometry_TEST.cc
+  Gui_TEST.cc
   Joint_TEST.cc
   JointAxis_TEST.cc
   Link_TEST.cc

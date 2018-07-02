@@ -14,5 +14,7 @@
       <pressure>43.1</pressure>
       <temperature_gradient>4.3</temperature_gradient>
     </atmosphere>
+    <gui fullscreen="true">
+    </gui>
   </world>
 </sdf>

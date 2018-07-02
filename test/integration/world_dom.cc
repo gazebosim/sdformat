@@ -63,8 +63,6 @@ TEST(DOMWorld, LoadIncorrectElement)
   sdf::Errors errors;
   // Read an SDF file, and store the result in sdfParsed.
   sdf::SDFPtr sdfParsed = sdf::readFile(testFile, errors);
-  for (auto err : errors)
-    std::cout << err << std::endl;
   ASSERT_TRUE(errors.empty());
 
   sdf::World world;
@@ -103,4 +101,8 @@ TEST(DOMWorld, Load)
   EXPECT_DOUBLE_EQ(23.1, atmosphere->Temperature().Kelvin());
   EXPECT_DOUBLE_EQ(4.3, atmosphere->TemperatureGradient());
   EXPECT_DOUBLE_EQ(43.1, atmosphere->Pressure());
+
+  const sdf::Gui *gui = world->Gui();
+  ASSERT_NE(nullptr, gui);
+  EXPECT_TRUE(gui->Fullscreen());
 }

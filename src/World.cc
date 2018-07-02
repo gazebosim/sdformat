@@ -50,6 +50,9 @@ class sdf::WorldPrivate
 
   /// \brief Pointer to an  atmosphere model.
   public: std::unique_ptr<Atmosphere> atmosphere;
+
+  /// \brief Pointer to Gui parameters.
+  public: std::unique_ptr<Gui> gui;
 };
 
 /////////////////////////////////////////////////
@@ -134,6 +137,14 @@ Errors World::Load(sdf::ElementPtr _sdf)
   Errors modelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
       this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
+
+  // Load the Gui
+  if (_sdf->HasElement("gui"))
+  {
+    this->dataPtr->gui.reset(new sdf::Gui());
+    Errors guiLoadErrors = this->dataPtr->gui->Load(_sdf->GetElement("gui"));
+    errors.insert(errors.end(), guiLoadErrors.begin(), guiLoadErrors.end());
+  }
 
   return errors;
 }
@@ -235,4 +246,16 @@ const sdf::Atmosphere *World::Atmosphere() const
 void World::SetAtmosphere(const sdf::Atmosphere &_atmosphere) const
 {
   this->dataPtr->atmosphere.reset(new sdf::Atmosphere(_atmosphere));
+}
+
+/////////////////////////////////////////////////
+sdf::Gui *World::Gui() const
+{
+  return this->dataPtr->gui.get();
+}
+
+/////////////////////////////////////////////////
+void World::SetGui(const sdf::Gui &_gui)
+{
+  return this->dataPtr->gui.reset(new sdf::Gui(_gui));
 }

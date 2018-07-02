@@ -22,6 +22,7 @@
 
 #include "sdf/Atmosphere.hh"
 #include "sdf/Element.hh"
+#include "sdf/Gui.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
 
@@ -136,6 +137,16 @@ namespace sdf
     /// \brief Set the atmosphere model associated with this world.
     /// \param[in] _atmosphere The new atmosphere model for this world.
     public: void SetAtmosphere(const sdf::Atmosphere &_atmosphere) const;
+
+    /// \brief Get a pointer to the Gui associated with this
+    /// world. A nullptr indicates that a Gui element has not been specified.
+    /// \return Pointer to this world's Gui parameters. Nullptr inidicates
+    /// that there are no Gui parameters.
+    public: sdf::Gui *Gui() const;
+
+    /// \brief Set the Gui parameters associated with this world.
+    /// \param[in] _gui The new Gui parameter for this world
+    public: void SetGui(const sdf::Gui &_gui);
 
     /// \brief Private data pointer.
     private: WorldPrivate *dataPtr = nullptr;
