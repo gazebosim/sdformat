@@ -15,6 +15,7 @@
  *
  */
 
+#include <string>
 #include <ignition/math/Helpers.hh>
 #include "sdf/Atmosphere.hh"
 
@@ -57,7 +58,7 @@ Atmosphere::Atmosphere(const Atmosphere &_atmosphere)
 Atmosphere::Atmosphere(Atmosphere &&_atmosphere)
 {
   this->dataPtr = _atmosphere.dataPtr;
-  _atmosphere.dataPtr = new AtmospherePrivate;
+  _atmosphere.dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////

@@ -17,7 +17,6 @@
 #ifndef SDF_ATMOSPHERE_HH_
 #define SDF_ATMOSPHERE_HH_
 
-#include <string>
 #include <ignition/math/Temperature.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
