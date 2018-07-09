@@ -126,10 +126,10 @@
     <element name="intrinsics" required="0">
       <description>Camera intrinsic parameters</description>
       <element name="fx" type="double" default="1400" required="1">
-        <description>X focal length (in pixels)</description>
+        <description>X focal length (in pixels, overrides horizontal_fov)</description>
       </element>
       <element name="fy" type="double" default="1400" required="1">
-        <description>Y focal length (in pixels)</description>
+        <description>Y focal length (in pixels, overrides horizontal_fov)</description>
       </element>
       <element name="cx" type="double" default="640" required="1">
         <description>X principal point (in pixels)</description>
