@@ -94,4 +94,8 @@ TEST(DOMWorld, Load)
   EXPECT_EQ(world->WindLinearVelocity(), ignition::math::Vector3d(4, 5, 6));
   EXPECT_EQ(world->Gravity(), ignition::math::Vector3d(1, 2, 3));
   EXPECT_EQ(world->MagneticField(), ignition::math::Vector3d(-1, 0.5, 10));
+
+  const sdf::Gui *gui = world->Gui();
+  ASSERT_NE(nullptr, gui);
+  EXPECT_TRUE(gui->Fullscreen());
 }

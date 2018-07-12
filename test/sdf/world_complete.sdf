@@ -9,5 +9,7 @@
     </wind>
     <gravity>1 2 3</gravity>
     <magnetic_field>-1 0.5 10</magnetic_field>
+    <gui fullscreen="true">
+    </gui>
   </world>
 </sdf>

@@ -58,3 +58,17 @@ TEST(DOMWorld, Set)
   world.SetMagneticField({1.2, -2.3, 4.5});
   EXPECT_EQ(ignition::math::Vector3d(1.2, -2.3, 4.5), world.MagneticField());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, SetGui)
+{
+  sdf::Gui gui;
+  gui.SetFullscreen(true);
+
+  sdf::World world;
+  EXPECT_EQ(nullptr, world.Gui());
+
+  world.SetGui(gui);
+  ASSERT_NE(nullptr, world.Gui());
+  EXPECT_TRUE(world.Gui()->Fullscreen());
+}
