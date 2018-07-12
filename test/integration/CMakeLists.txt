@@ -22,6 +22,7 @@ set(tests
   model_dom.cc
   model_versions.cc
   nested_model.cc
+  parser.cc
   parser_error_detection.cc
   plugin_attribute.cc
   plugin_bool.cc

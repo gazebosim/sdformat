@@ -141,5 +141,19 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool convertString(const std::string &_sdfString,
                      const std::string &_version, SDFPtr _sdf);
+
+  /// \brief Parse a string using ERB.
+  /// \param[in] _string String to parse.
+  /// \param[out] _result ERB parsed string.
+  /// \return True on success.
+  SDFORMAT_VISIBLE
+  bool erbString(const std::string &_string, std::string &_result);
+
+  /// \brief Parse an string using ERB.
+  /// \param[in] _filename File to parse.
+  /// \param[out] _result ERB parsed file.
+  /// \return True on success.
+  SDFORMAT_VISIBLE
+  bool erbFile(const std::string &_filename, std::string &_result);
 }
 #endif

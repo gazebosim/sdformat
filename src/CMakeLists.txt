@@ -8,6 +8,7 @@ link_directories(
   ${PROJECT_BINARY_DIR}/test
   ${IGNITION-MATH_LIBRARY_DIRS}
 )
+include_directories(${RUBY_INCLUDE_DIRS})
 
 if (NOT USE_INTERNAL_URDF)
   link_directories(${URDF_LIBRARY_DIRS})
@@ -112,7 +113,7 @@ endif()
 sdf_build_tests(${gtest_sources})
 
 sdf_add_library(sdformat ${sources})
-target_link_libraries(sdformat ${IGNITION-MATH_LIBRARIES})
+target_link_libraries(sdformat ${IGNITION-MATH_LIBRARIES} ${RUBY_LIBRARY})
 
 if (USE_EXTERNAL_TINYXML)
   target_link_libraries(sdformat ${tinyxml_LIBRARIES})
