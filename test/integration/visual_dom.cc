@@ -111,10 +111,10 @@ TEST(DOMVisual, Material)
   const sdf::Material *mat = vis1->Material();
   ASSERT_NE(nullptr, mat);
 
-  EXPECT_EQ(ignition::math::Color(0.4, 0.2, 0.3, 1.0), mat->Ambient());
-  EXPECT_EQ(ignition::math::Color(0.2, 0.5, 0.1, 1.0), mat->Diffuse());
-  EXPECT_EQ(ignition::math::Color(0.7, 0.3, 0.5, 0.9), mat->Specular());
-  EXPECT_EQ(ignition::math::Color(1.0, 0.0, 0.2, 1.0), mat->Emissive());
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.2f, 0.3f, 1.0f), mat->Ambient());
+  EXPECT_EQ(ignition::math::Color(0.2f, 0.5f, 0.1f, 1.0f), mat->Diffuse());
+  EXPECT_EQ(ignition::math::Color(0.7f, 0.3f, 0.5f, 0.9f), mat->Specular());
+  EXPECT_EQ(ignition::math::Color(1.0f, 0.0f, 0.2f, 1.0f), mat->Emissive());
   EXPECT_EQ(sdf::ShaderType::VERTEX, mat->Shader());
   EXPECT_EQ("myuri", mat->ScriptUri());
   EXPECT_EQ("myname", mat->ScriptName());
