@@ -41,20 +41,20 @@ TEST(DOMMaterial, Set)
 {
   sdf::Material material;
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Ambient());
-  material.SetAmbient(ignition::math::Color(0.1, 0.2, 0.3, 0.5));
-  EXPECT_EQ(ignition::math::Color(0.1, 0.2, 0.3, 0.5), material.Ambient());
+  material.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f));
+  EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), material.Ambient());
 
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Diffuse());
-  material.SetDiffuse(ignition::math::Color(0.2, 0.3, 0.4, 0.6));
-  EXPECT_EQ(ignition::math::Color(0.2, 0.3, 0.4, 0.6), material.Diffuse());
+  material.SetDiffuse(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f));
+  EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), material.Diffuse());
 
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Specular());
-  material.SetSpecular(ignition::math::Color(0.3, 0.4, 0.5, 0.7));
-  EXPECT_EQ(ignition::math::Color(0.3, 0.4, 0.5, 0.7), material.Specular());
+  material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
+  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f), material.Specular());
 
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Emissive());
-  material.SetEmissive(ignition::math::Color(0.4, 0.5, 0.6, 0.8));
-  EXPECT_EQ(ignition::math::Color(0.4, 0.5, 0.6, 0.8), material.Emissive());
+  material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f), material.Emissive());
 
   EXPECT_TRUE(material.Lighting());
   material.SetLighting(false);
@@ -77,16 +77,16 @@ TEST(DOMMaterial, Set)
   EXPECT_EQ("map", material.NormalMap());
 
   // Move the material
-  sdf::Material material2(std::move(material));
-  EXPECT_EQ(ignition::math::Color(0.1, 0.2, 0.3, 0.5), material2.Ambient());
-  EXPECT_EQ(ignition::math::Color(0.2, 0.3, 0.4, 0.6), material2.Diffuse());
-  EXPECT_EQ(ignition::math::Color(0.3, 0.4, 0.5, 0.7), material2.Specular());
-  EXPECT_EQ(ignition::math::Color(0.4, 0.5, 0.6, 0.8), material2.Emissive());
-  EXPECT_FALSE(material2.Lighting());
-  EXPECT_EQ("uri", material2.ScriptUri());
-  EXPECT_EQ("name", material2.ScriptName());
-  EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
-  EXPECT_EQ("map", material2.NormalMap());
+  sdf::Material moved(std::move(material));
+  EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), moved.Ambient());
+  EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), moved.Diffuse());
+  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f), moved.Specular());
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f), moved.Emissive());
+  EXPECT_FALSE(moved.Lighting());
+  EXPECT_EQ("uri", moved.ScriptUri());
+  EXPECT_EQ("name", moved.ScriptName());
+  EXPECT_EQ(sdf::ShaderType::VERTEX, moved.Shader());
+  EXPECT_EQ("map", moved.NormalMap());
 }
 
 /////////////////////////////////////////////////
