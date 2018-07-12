@@ -124,7 +124,7 @@
     </element>
 
     <element name="intrinsics" required="0">
-      <description>Camera intrinsic parameters for setting a custom perspective projection matrix (cannot be used with WideAngleCamera since it uses image stitching from 6 different cameras)</description>
+      <description>Camera intrinsic parameters for setting a custom perspective projection matrix (cannot be used with WideAngleCamera since this class uses image stitching from 6 different cameras for achieving a wide field of view)</description>
       <element name="fx" type="double" default="1400" required="1">
         <description>X focal length (in pixels, overrides horizontal_fov)</description>
       </element>
