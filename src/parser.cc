@@ -449,7 +449,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
   }
 
   TiXmlDocument xmlDoc;
-  xmlDoc.Parse(erbParsed.c_str().c_str());
+  xmlDoc.Parse(erbParsed.c_str());
   if (xmlDoc.Error())
   {
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
