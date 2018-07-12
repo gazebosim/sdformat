@@ -59,11 +59,6 @@ TEST(DOMAtmosphere, MoveConstructor)
   EXPECT_DOUBLE_EQ(123.23, atmosphere2.Temperature().Kelvin());
   EXPECT_DOUBLE_EQ(-1.65, atmosphere2.TemperatureGradient());
   EXPECT_DOUBLE_EQ(76531.3, atmosphere2.Pressure());
-
-  EXPECT_EQ(sdf::AtmosphereType::ADIABATIC, atmosphere.Type());
-  EXPECT_DOUBLE_EQ(288.15, atmosphere.Temperature().Kelvin());
-  EXPECT_DOUBLE_EQ(-0.065, atmosphere.TemperatureGradient());
-  EXPECT_DOUBLE_EQ(101325, atmosphere.Pressure());
 }
 
 /////////////////////////////////////////////////
