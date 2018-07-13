@@ -142,16 +142,18 @@ namespace sdf
   bool convertString(const std::string &_sdfString,
                      const std::string &_version, SDFPtr _sdf);
 
-  /// \brief Parse a string using ERB.
+  /// \brief Parse a string using ERB. The result will equal the given
+  /// _string if the _string does not contain ERB.
   /// \param[in] _string String to parse.
   /// \param[out] _result ERB parsed string.
   /// \return True on success.
   SDFORMAT_VISIBLE
   bool erbString(const std::string &_string, std::string &_result);
 
-  /// \brief Parse an string using ERB.
+  /// \brief Parse an file using ERB. The _result will contain a copy
+  /// of _filename if the file does not contain ERB.
   /// \param[in] _filename File to parse.
-  /// \param[out] _result ERB parsed file.
+  /// \param[out] _result ERB parsed file contents.
   /// \return True on success.
   SDFORMAT_VISIBLE
   bool erbFile(const std::string &_filename, std::string &_result);

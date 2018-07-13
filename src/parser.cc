@@ -22,9 +22,10 @@
 
 #include <ignition/math/SemanticVersion.hh>
 
+// The following line prevent Ruby from complaining about std::isfinite
 #define HAVE_ISFINITE 1
 
-#include "sdf/ruby.hh"
+#include "ruby.hh"
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
 #include "sdf/Filesystem.hh"
@@ -37,7 +38,6 @@
 
 namespace sdf
 {
-/// \cond
 // Class to handle Ruby initialization.
 class RubyInitializer
 {
@@ -50,10 +50,10 @@ class RubyInitializer
     ruby_init_loadpath();
   }
 
-  /// \brief Parse a string using ERB.
-  /// \param[in] _string String to parse.
-  /// \param[out] _result ERB parsed string.
-  /// \return True on success.
+  // \brief Parse a string using ERB.
+  // \param[in] _string String to parse.
+  // \param[out] _result ERB parsed string.
+  // \return True on success.
   public: bool erbString(const std::string &_string, std::string &_result)
   {
     std::string cmd ="begin; require 'erb'; ERB.new(%Q{" +
@@ -85,7 +85,6 @@ class RubyInitializer
     return true;
   }
 };
-/// \endcond
 
 //////////////////////////////////////////////////
 template <typename TPtr>

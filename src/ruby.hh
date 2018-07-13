@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Open Source Robotics Foundation
+ * Copyright 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #define SDF_RUBY_HH_
 
 // This file exists to prevent compiler warning.
-// This file is not installed. It s only used internally by the parser.
+// This file is not installed. It is only used internally by the parser.
 
 // This disables warning messages for ruby
 #pragma GCC system_header
