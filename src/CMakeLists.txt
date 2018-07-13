@@ -29,10 +29,13 @@ set (sources
   Exception.cc
   Filesystem.cc
   Geometry.cc
+  Gui.cc
   ign.cc
   Joint.cc
   JointAxis.cc
   Link.cc
+  Material.cc
+  Mesh.cc
   Model.cc
   parser.cc
   parser_urdf.cc
@@ -87,9 +90,12 @@ set (gtest_sources
   Exception_TEST.cc
   Filesystem_TEST.cc
   Geometry_TEST.cc
+  Gui_TEST.cc
   Joint_TEST.cc
   JointAxis_TEST.cc
   Link_TEST.cc
+  Material_TEST.cc
+  Mesh_TEST.cc
   Model_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc

@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="model">
+    <link name="link">
+      <visual name="visual1">
+        <material>
+          <script>
+          </script>
+          <shader type="invalid">
+          </shader>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

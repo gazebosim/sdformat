@@ -200,12 +200,8 @@ TEST(DOMLink, InertialInvalid)
   // Load the SDF file
   sdf::Root root;
   auto errors = root.Load(testFile);
-  EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(1u, errors.size());
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::LINK_INERTIA_INVALID);
-  EXPECT_EQ(errors[0].Message(), "A link named link has invalid inertia.");
+  EXPECT_TRUE(errors.empty());
 
-  // TODO: make this failure less severe?
   const sdf::Model *model = root.ModelByIndex(0);
-  ASSERT_EQ(model, nullptr);
+  ASSERT_NE(nullptr, model);
 }

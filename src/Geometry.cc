@@ -17,6 +17,7 @@
 #include "sdf/Geometry.hh"
 #include "sdf/Box.hh"
 #include "sdf/Cylinder.hh"
+#include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
 
@@ -39,6 +40,9 @@ class sdf::GeometryPrivate
 
   /// \brief Pointer to a sphere.
   public: std::unique_ptr<Sphere> sphere;
+
+  /// \brief Pointer to a mesh.
+  public: std::unique_ptr<Mesh> mesh;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -111,6 +115,13 @@ Errors Geometry::Load(ElementPtr _sdf)
     Errors err = this->dataPtr->sphere->Load(_sdf->GetElement("sphere"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
+  else if (_sdf->HasElement("mesh"))
+  {
+    this->dataPtr->type = GeometryType::MESH;
+    this->dataPtr->mesh.reset(new Mesh());
+    Errors err = this->dataPtr->mesh->Load(_sdf->GetElement("mesh"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
 
   return errors;
 }
@@ -149,6 +160,12 @@ const Cylinder *Geometry::CylinderShape() const
 const Plane *Geometry::PlaneShape() const
 {
   return this->dataPtr->plane.get();
+}
+
+/////////////////////////////////////////////////
+const Mesh *Geometry::MeshShape() const
+{
+  return this->dataPtr->mesh.get();
 }
 
 /////////////////////////////////////////////////
