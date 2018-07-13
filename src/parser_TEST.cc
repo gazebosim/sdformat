@@ -16,6 +16,11 @@
  */
 
 #include <gtest/gtest.h>
+#include <string>
+#include <sstream>
+
+#include "test_config.h"
+#include "sdf/sdf.hh"
 #include "sdf/parser.hh"
 #include "sdf/Element.hh"
 
@@ -46,6 +51,58 @@ TEST(parser, initStringTrim)
   sdf::ParamPtr attr = root->GetAttribute("name");
   EXPECT_TRUE(attr != nullptr);
   EXPECT_TRUE(attr->GetRequired());
+}
+
+/////////////////////////////////////////////////
+TEST(Parser, ParseERB)
+{
+  std::stringstream testFile;
+  testFile << PROJECT_SOURCE_PATH << "/test/integration/erb_test.sdf.erb";
+
+  char *pathCStr = getenv("SDF_PATH");
+  std::stringstream path;
+  path << PROJECT_SOURCE_PATH << "/sdf/" << SDF_VERSION;
+  setenv("SDF_PATH", path.str().c_str(), 1);
+
+  // Parse the ERB file
+  std::string parsed;
+  EXPECT_TRUE(sdf::erbFile(testFile.str(), parsed));
+
+  // Make sure erb completion took place.
+  EXPECT_TRUE(parsed.find("<pose>0 0 0.005 0 0 0</pose>") != std::string::npos);
+
+  // Read the parsed string into an SDF object
+  sdf::SDFPtr p(new sdf::SDF());
+  sdf::init(p);
+  EXPECT_TRUE(sdf::readString(parsed, p));
+
+  // There should be a model
+  EXPECT_TRUE(p->Root()->HasElement("model"));
+  sdf::ElementPtr modelElem = p->Root()->GetElement("model");
+  ASSERT_TRUE(modelElem != NULL);
+
+  // The model should have a link
+  EXPECT_TRUE(modelElem->HasElement("link"));
+  sdf::ElementPtr linkElem = modelElem->GetElement("link");
+  ASSERT_TRUE(linkElem != NULL);
+
+  // The link should have a pose
+  EXPECT_TRUE(linkElem->HasElement("pose"));
+  sdf::ElementPtr poseElem = linkElem->GetElement("pose");
+  ASSERT_TRUE(poseElem != NULL);
+
+  // The pose.pos.z should equal 0.005
+  auto pose = linkElem->Get<ignition::math::Pose3d>("pose");
+  EXPECT_DOUBLE_EQ(pose.Pos().Z(), 0.005);
+
+  if (pathCStr)
+  {
+    setenv("SDF_PATH", pathCStr, 1);
+  }
+  else
+  {
+    unsetenv("SDF_PATH");
+  }
 }
 
 /////////////////////////////////////////////////

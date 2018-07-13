@@ -102,12 +102,14 @@ if (SDFORMAT_RUN_VALGRIND_TESTS AND NOT VALGRIND_PROGRAM)
 endif()
 
 ################################################
-# Find ruby executable to produce xml schemas
-find_program(RUBY ruby)
-if (NOT RUBY)
-    BUILD_ERROR ("Ruby version 1.9 is needed to build xml schemas")
+# Find Ruby, which is used to produce xml schemas and parse ERB files.
+find_package(Ruby)
+if (RUBY_FOUND)
+  message(STATUS "Looking for ruby - found version ${RUBY_VERSION}")
+  message(STATUS "RUBY_INCLUDE_DIRS ${RUBY_INCLUDE_DIRS}")
+  message(STATUS "RUBY_LIBRARY ${RUBY_LIBRARY}")
 else()
-    message(STATUS "Found ruby executable: ${RUBY}")
+  message(STATUS "Looking for ruby - not found")
 endif()
 
 #################################################
@@ -128,15 +130,4 @@ if (NOT ignition-math6_FOUND)
 else()
   set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
   message(STATUS "Looking for ignition-math${IGN_MATH_VER}-config.cmake - found")
-endif()
-
-########################################
-# Find Ruby
-find_package(Ruby)
-if (RUBY_FOUND)
-  message(STATUS "Looking for ruby - found version ${RUBY_VERSION}")
-  message(STATUS "RUBY_INCLUDE_DIRS ${RUBY_INCLUDE_DIRS}")
-  message(STATUS "RUBY_LIBRARY ${RUBY_LIBRARY}")
-else()
-  message(STATUS "Looking for ruby - not found")
 endif()

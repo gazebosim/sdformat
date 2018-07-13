@@ -22,6 +22,8 @@
 
 #include <ignition/math/SemanticVersion.hh>
 
+#define HAVE_ISFINITE 1
+
 #include "sdf/ruby.hh"
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
@@ -46,12 +48,6 @@ class RubyInitializer
     RUBY_INIT_STACK;
     ruby_init();
     ruby_init_loadpath();
-  }
-
-  /// \brief Destructor
-  public: virtual ~RubyInitializer()
-  {
-    ruby_finalize();
   }
 
   /// \brief Parse a string using ERB.
@@ -89,10 +85,8 @@ class RubyInitializer
     return true;
   }
 };
-
-// Instance of RubyInitializer that is constructed at startup.
-static RubyInitializer g_rubyInit;
 /// \endcond
+
 //////////////////////////////////////////////////
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
@@ -440,7 +434,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
 {
- // Parse using ERB
+  // Parse using ERB
   std::string erbParsed;
   if (!erbString(_xmlString, erbParsed))
   {
@@ -1289,6 +1283,9 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
 //////////////////////////////////////////////////
 bool erbString(const std::string &_string, std::string &_result)
 {
+  // Instance of RubyInitializer.
+  static RubyInitializer rubyInit;
+
   // Short circuit if there are no ERB tags
   if (_string.find("<%") == std::string::npos)
   {
@@ -1296,7 +1293,7 @@ bool erbString(const std::string &_string, std::string &_result)
     return true;
   }
 
-  return g_rubyInit.erbString(_string, _result);
+  return rubyInit.erbString(_string, _result);
 }
 
 //////////////////////////////////////////////////

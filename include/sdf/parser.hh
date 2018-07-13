@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef _SDF_PARSER_HH_
-#define _SDF_PARSER_HH_
+#ifndef SDF_PARSER_HH_
+#define SDF_PARSER_HH_
 
 #include <string>
 

@@ -11,7 +11,7 @@ add_dependencies(schema schema1_6)
 # Generate the EmbeddedSdf.hh file, which contains all the supported SDF
 # descriptions in a map of strings. The parser.cc file uses EmbeddedSdf.hh.
 execute_process(
-  COMMAND ${RUBY} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.rb
+  COMMAND ${RUBY_EXECUTABLE} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.rb
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/sdf"
   OUTPUT_FILE "${PROJECT_BINARY_DIR}/include/sdf/EmbeddedSdf.hh"
 )

@@ -18,14 +18,10 @@
   iyy  = mass/12.0 * (dz**2 + dx**2)
   izz  = mass/12.0 * (dx**2 + dy**2)
 %>
-<sdf version="1.5">
+<sdf version="1.6">
   <model name="wood_block_10_2_1cm">
     <link name="link">
-      <pose>
-        0 0
-        <%= dz/2 %>
-        0 0 0
-      </pose>
+      <pose>0 0 <%= dz/2 %> 0 0 0</pose>
       <inertial>
         <mass>
           <%= mass %>
