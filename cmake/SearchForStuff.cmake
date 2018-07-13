@@ -103,11 +103,12 @@ endif()
 
 ################################################
 # Find Ruby, which is used to produce xml schemas and parse ERB files.
-find_package(Ruby 1.9 QUIET)
+find_package(Ruby)
 if (RUBY_FOUND)
   message(STATUS "Looking for ruby - found version ${RUBY_VERSION}")
 else()
   message(STATUS "Looking for ruby - not found")
+  BUILD_ERROR("Couldn't find Ruby")
 endif()
 
 #################################################
