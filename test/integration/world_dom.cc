@@ -89,6 +89,7 @@ TEST(DOMWorld, Load)
 
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
+  ASSERT_NE(nullptr, world->Element());
   EXPECT_EQ(world->Name(), "default");
   EXPECT_EQ(world->AudioDevice(), "/dev/audio");
   EXPECT_EQ(world->WindLinearVelocity(), ignition::math::Vector3d(4, 5, 6));
@@ -97,5 +98,6 @@ TEST(DOMWorld, Load)
 
   const sdf::Gui *gui = world->Gui();
   ASSERT_NE(nullptr, gui);
+  ASSERT_NE(nullptr, gui->Element());
   EXPECT_TRUE(gui->Fullscreen());
 }

@@ -50,6 +50,9 @@ class sdf::WorldPrivate
 
   /// \brief Pointer to Gui parameters.
   public: std::unique_ptr<Gui> gui;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -76,6 +79,8 @@ World::World(World &&_world)
 Errors World::Load(sdf::ElementPtr _sdf)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that the provided SDF element is a <world>
   // This is an error that cannot be recovered, so return an error.
@@ -233,4 +238,10 @@ sdf::Gui *World::Gui() const
 void World::SetGui(const sdf::Gui &_gui)
 {
   return this->dataPtr->gui.reset(new sdf::Gui(_gui));
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr World::Element() const
+{
+  return this->dataPtr->sdf;
 }

@@ -23,6 +23,7 @@ TEST(DOMGui, Construction)
 {
   sdf::Gui gui;
   EXPECT_FALSE(gui.Fullscreen());
+  EXPECT_EQ(nullptr, gui.Element());
 }
 
 /////////////////////////////////////////////////
