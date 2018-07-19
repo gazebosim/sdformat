@@ -59,6 +59,13 @@ namespace sdf
   /// \return True on success, false on error.
   bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors);
 
-  void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);
+  /// \brief Copy child XML elements into the _sdf element.
+  /// \param[in] _sdf Parent Element.
+  /// \param[in] _xml Pointer to element from which child element should be
+  /// copied.
+  /// \param[in] _onlyUnkown True to copy only elements that are NOT part of
+  /// the SDF spec. Set this to false to copy everthing.
+  void copyChildren(ElementPtr _sdf, TiXmlElement *_xml,
+                    const bool _onlyUnknown);
 }
 #endif
