@@ -2,6 +2,9 @@
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
 
+1. Preserve XML elements that are not part of the SDF specification.
+   * [Pull request 449](https://bitbucket.org/osrf/sdformat/pull-requests/449)
+
 1. Embed SDF specification files directly in libsdformat.so.
    * [Pull request 434](https://bitbucket.org/osrf/sdformat/pull-requests/434)
 

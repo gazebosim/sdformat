@@ -946,7 +946,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
         copyChildren(_sdf, _xml, true);
         sdfdbg << "XML Element[" << elemXml->Value()
                << "], child of element[" << _xml->Value()
-               << "] not defined in SDF. Copying[" << elemXml->Value() << "] "
+               << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
                << "as children of [" << _xml->Value() << "].\n";
         continue;
       }
