@@ -56,7 +56,7 @@ class sdf::LightPrivate
   public: double quadraticAttenuation = 0.0;
 
   /// \brief Direction of the light source.
-  public: ignition::math::Vector3d direction{0, 0, -1};
+  public: ignition::math::Vector3d direction {0, 0, -1};
 
   /// \brief Light diffuse color.
   public: ignition::math::Color diffuse;
@@ -65,10 +65,10 @@ class sdf::LightPrivate
   public: ignition::math::Color specular;
 
   /// \brief Spot light inner angle.
-  public: ignition::math::Angle spotInnerAngle{0.0};
+  public: ignition::math::Angle spotInnerAngle {0.0};
 
   /// \brief Spot light outer angle.
-  public: ignition::math::Angle spotOuterAngle{0.0};
+  public: ignition::math::Angle spotOuterAngle {0.0};
 
   /// \brief Spot light falloff.
   public: double spotFalloff = 0.0;
@@ -279,7 +279,7 @@ double Light::LinearAttenuationFactor() const
 /////////////////////////////////////////////////
 void Light::SetLinearAttenuationFactor(const double _factor)
 {
-  this->dataPtr->linearAttenuation = ignition::math::clamp(_factor ,0.0, 1.0);
+  this->dataPtr->linearAttenuation = ignition::math::clamp(_factor, 0.0, 1.0);
 }
 
 /////////////////////////////////////////////////
