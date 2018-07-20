@@ -16,6 +16,7 @@ set(tests
   joint_axis_frame.cc
   joint_axis_dom.cc
   joint_dom.cc
+  light_dom.cc
   link_dom.cc
   link_light.cc
   locale_fix.cc

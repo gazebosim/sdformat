@@ -16,5 +16,38 @@
     </atmosphere>
     <gui fullscreen="true">
     </gui>
+
+    <light name="point_light" type="point">
+      <cast_shadows>false</cast_shadows>
+      <pose frame="world">1 2 10 0 0 0</pose>
+      <diffuse>1.0 0.0 0.5 1.0</diffuse>
+      <specular>0.2 0.1 0.0 1.0</specular>
+      <attenuation>
+        <range>123.5</range>
+        <linear>2.0</linear>
+        <constant>-2.0</constant>
+        <quadratic>20.2</quadratic>
+      </attenuation>
+    </light>
+
+    <light name="spot_light" type="spot">
+      <cast_shadows>true</cast_shadows>
+      <spot>
+        <inner_angle>0.1</inner_angle>
+        <outer_angle>0.5</outer_angle>
+        <falloff>2.2</falloff>
+      </spot>
+    </light>
+
+    <light name="directional_light" type="directional">
+      <pose>0 10 20 0 0 0</pose>
+      <attenuation>
+        <range>-123.5</range>
+        <linear>-1.0</linear>
+        <constant>2.0</constant>
+        <quadratic>-100.2</quadratic>
+      </attenuation>
+    </light>
+
   </world>
 </sdf>
