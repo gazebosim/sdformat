@@ -15,7 +15,6 @@
  *
 */
 
-#include <array>
 #include <string>
 
 #include <gtest/gtest.h>
@@ -26,7 +25,7 @@
 #include "test_config.h"
 
 /////////////////////////////////////////////////
-/// Test conversion of imu in 1.5 to 1.6
+/// Test the copy of XML elements that are not part of the specification.
 TEST(Unknown, CopyUnknownElement)
 {
   std::string xmlString = R"(
