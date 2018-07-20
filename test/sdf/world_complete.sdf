@@ -9,6 +9,11 @@
     </wind>
     <gravity>1 2 3</gravity>
     <magnetic_field>-1 0.5 10</magnetic_field>
+    <atmosphere type="adiabatic">
+      <temperature>23.1</temperature>
+      <pressure>43.1</pressure>
+      <temperature_gradient>4.3</temperature_gradient>
+    </atmosphere>
     <gui fullscreen="true">
     </gui>
   </world>

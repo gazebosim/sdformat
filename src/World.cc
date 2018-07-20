@@ -48,6 +48,9 @@ class sdf::WorldPrivate
   /// \brief The models specified in this world.
   public: std::vector<Model> models;
 
+  /// \brief Pointer to an  atmosphere model.
+  public: std::unique_ptr<Atmosphere> atmosphere;
+
   /// \brief Pointer to Gui parameters.
   public: std::unique_ptr<Gui> gui;
 
@@ -114,6 +117,16 @@ Errors World::Load(sdf::ElementPtr _sdf)
     this->dataPtr->windLinearVelocity =
       elem->Get<ignition::math::Vector3d>("linear_velocity",
           this->dataPtr->windLinearVelocity).first;
+  }
+
+  // Read the atmosphere element
+  if (_sdf->HasElement("atmosphere"))
+  {
+    this->dataPtr->atmosphere.reset(new sdf::Atmosphere());
+    Errors atmosphereLoadErrors =
+      this->dataPtr->atmosphere->Load(_sdf->GetElement("atmosphere"));
+    errors.insert(errors.end(), atmosphereLoadErrors.begin(),
+        atmosphereLoadErrors.end());
   }
 
   // Read gravity.
@@ -226,6 +239,18 @@ bool World::ModelNameExists(const std::string &_name) const
     }
   }
   return false;
+}
+
+/////////////////////////////////////////////////
+const sdf::Atmosphere *World::Atmosphere() const
+{
+  return this->dataPtr->atmosphere.get();
+}
+
+/////////////////////////////////////////////////
+void World::SetAtmosphere(const sdf::Atmosphere &_atmosphere) const
+{
+  this->dataPtr->atmosphere.reset(new sdf::Atmosphere(_atmosphere));
 }
 
 /////////////////////////////////////////////////

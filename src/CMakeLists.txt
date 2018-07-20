@@ -19,6 +19,7 @@ if (USE_EXTERNAL_TINYXML)
 endif()
 
 set (sources
+  Atmosphere.cc
   Box.cc
   Collision.cc
   Console.cc
@@ -80,6 +81,7 @@ else()
 endif()
 
 set (gtest_sources
+  Atmosphere_TEST.cc
   Box_TEST.cc
   Collision_TEST.cc
   Console_TEST.cc
