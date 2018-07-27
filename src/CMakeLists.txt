@@ -46,6 +46,7 @@ set (sources
   SDF.cc
   SDFExtension.cc
   Sphere.cc
+  SphericalCoordinates.cc
   Types.cc
   Utils.cc
   Visual.cc

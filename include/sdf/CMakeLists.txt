@@ -24,6 +24,7 @@ set (headers
   Root.hh
   SDFImpl.hh
   Sphere.hh
+  SphericalCoordinates.hh
   Types.hh
   system_util.hh
   Visual.hh
