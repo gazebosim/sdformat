@@ -167,11 +167,11 @@ Errors Light::Load(ElementPtr _sdf)
   sdf::ElementPtr spotElem = _sdf->GetElement("spot");
   if (spotElem)
   {
-    this->SetSpotInnerAngle(spotElem->Get<ignition::math::Angle>(
-        "inner_angle", this->dataPtr->spotInnerAngle).first);
+    this->SetSpotInnerAngle(spotElem->Get<double>(
+        "inner_angle", this->dataPtr->spotInnerAngle.Radian()).first);
 
-    this->SetSpotOuterAngle(spotElem->Get<ignition::math::Angle>(
-        "outer_angle", this->dataPtr->spotOuterAngle).first);
+    this->SetSpotOuterAngle(spotElem->Get<double>(
+        "outer_angle", this->dataPtr->spotOuterAngle.Radian()).first);
 
     this->SetSpotFalloff(spotElem->Get<double>(
         "falloff", this->dataPtr->spotFalloff).first);
