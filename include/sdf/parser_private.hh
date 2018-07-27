@@ -64,7 +64,7 @@ namespace sdf
   /// \param[in] _xml Pointer to element from which child elements should be
   /// copied.
   /// \param[in] _onlyUnknown True to copy only elements that are NOT part of
-  /// the SDF spec. Set this to false to copy everthing.
+  /// the SDF spec. Set this to false to copy everything.
   void copyChildren(ElementPtr _sdf, TiXmlElement *_xml,
                     const bool _onlyUnknown);
 }
