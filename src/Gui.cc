@@ -22,7 +22,11 @@ using namespace sdf;
 /// \brief Gui private data.
 class sdf::GuiPrivate
 {
+  /// \brief True if the GUI should be fullscreen.
   public: bool fullscreen = false;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -55,6 +59,8 @@ Gui::~Gui()
 Errors Gui::Load(ElementPtr _sdf)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that the provided SDF element is a <gui> element.
   // This is an error that cannot be recovered, so return an error.
@@ -89,4 +95,10 @@ void Gui::SetFullscreen(const bool _fullscreen) const
 bool Gui::operator==(const Gui &_gui) const
 {
   return this->dataPtr->fullscreen == _gui.dataPtr->fullscreen;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Gui::Element() const
+{
+  return this->dataPtr->sdf;
 }

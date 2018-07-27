@@ -22,6 +22,7 @@
 TEST(DOMJointAxis, Construction)
 {
   sdf::JointAxis axis;
+  EXPECT_EQ(nullptr, axis.Element());
   EXPECT_DOUBLE_EQ(0.0, axis.InitialPosition());
   EXPECT_EQ(ignition::math::Vector3d::UnitZ, axis.Xyz());
   EXPECT_FALSE(axis.UseParentModelFrame());
