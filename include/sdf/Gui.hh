@@ -65,6 +65,12 @@ namespace sdf
     /// \return True if this instance equals the given Gui.
     public: bool operator==(const Gui &_gui) const;
 
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
     /// \brief Private data pointer.
     private: GuiPrivate *dataPtr = nullptr;
   };

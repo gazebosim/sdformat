@@ -68,6 +68,9 @@ class sdf::JointAxisPrivate
 
   /// \brief Joint stop dissipation.
   public: double dissipation = 1.0;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -94,6 +97,8 @@ JointAxis::~JointAxis()
 Errors JointAxis::Load(ElementPtr _sdf)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Read the initial position. This is optional, with a default value of 0.
   this->dataPtr->initialPosition = _sdf->Get<double>(
@@ -303,4 +308,10 @@ double JointAxis::Dissipation() const
 void JointAxis::SetDissipation(const double _dissipation) const
 {
   this->dataPtr->dissipation = _dissipation;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr JointAxis::Element() const
+{
+  return this->dataPtr->sdf;
 }

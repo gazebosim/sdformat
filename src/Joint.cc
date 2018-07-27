@@ -89,6 +89,8 @@ Errors Joint::Load(ElementPtr _sdf)
 {
   Errors errors;
 
+  this->dataPtr->sdf = _sdf;
+
   // Check that the provided SDF element is a <joint>
   // This is an error that cannot be recovered, so return an error.
   if (_sdf->GetName() != "joint")

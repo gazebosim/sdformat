@@ -14,8 +14,10 @@
    * [Pull request 441](https://bitbucket.org/osrf/sdformat/pull-requests/441)
 
 1. SDF DOM: Additions to the document object model.
-   * [Pull request
-   442](https://bitbucket.org/osrf/sdformat/pull-requests/442)
+   * [Pull request 442](https://bitbucket.org/osrf/sdformat/pull-requests/442)
+
+1. SDF DOM: Add Element() accessor to Gui, JointAxis and World classes.
+   * [Pull request 450](https://bitbucket.org/osrf/sdformat/pull-requests/450)
 
 ## SDFormat 6.0
 
