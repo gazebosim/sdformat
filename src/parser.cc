@@ -775,7 +775,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 
   if (_sdf->GetCopyChildren())
   {
-    copyChildren(_sdf, _xml);
+    copyChildren(_sdf, _xml, false);
   }
   else
   {
@@ -943,11 +943,11 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 
       if (descCounter == _sdf->GetElementDescriptionCount())
       {
-        sdfwarn << "XML Element[" << elemXml->Value()
+        copyChildren(_sdf, _xml, true);
+        sdfdbg << "XML Element[" << elemXml->Value()
                << "], child of element[" << _xml->Value()
-               << "] not defined in SDF. Ignoring[" << elemXml->Value() << "]. "
-               << "You may have an incorrect SDF file, or an sdformat version "
-               << "that doesn't support this element.\n";
+               << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
+               << "as children of [" << _xml->Value() << "].\n";
         continue;
       }
     }
@@ -1004,7 +1004,7 @@ static void replace_all(std::string &_str,
 }
 
 /////////////////////////////////////////////////
-void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
+void copyChildren(ElementPtr _sdf, TiXmlElement *_xml, const bool _onlyUnknown)
 {
   // Iterate over all the child elements
   TiXmlElement *elemXml = nullptr;
@@ -1013,7 +1013,7 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
   {
     std::string elem_name = elemXml->ValueStr();
 
-    if (_sdf->HasElementDescription(elem_name))
+    if (!_onlyUnknown && _sdf->HasElementDescription(elem_name))
     {
       sdf::ElementPtr element = _sdf->AddElement(elem_name);
 
@@ -1031,7 +1031,7 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
       {
         element->GetValue()->SetFromString(value);
       }
-      copyChildren(element, elemXml);
+      copyChildren(element, elemXml, _onlyUnknown);
     }
     else
     {
@@ -1051,7 +1051,7 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
           attribute->ValueStr());
       }
 
-      copyChildren(element, elemXml);
+      copyChildren(element, elemXml, _onlyUnknown);
       _sdf->InsertElement(element);
     }
   }

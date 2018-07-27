@@ -165,6 +165,12 @@ namespace sdf
     /// \param[in] _gui The new Gui parameter for this world
     public: void SetGui(const sdf::Gui &_gui);
 
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
     /// \brief Private data pointer.
     private: WorldPrivate *dataPtr = nullptr;
   };
