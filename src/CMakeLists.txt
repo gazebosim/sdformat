@@ -34,6 +34,7 @@ set (sources
   ign.cc
   Joint.cc
   JointAxis.cc
+  Light.cc
   Link.cc
   Material.cc
   Mesh.cc
@@ -95,6 +96,7 @@ set (gtest_sources
   Gui_TEST.cc
   Joint_TEST.cc
   JointAxis_TEST.cc
+  Light_TEST.cc
   Link_TEST.cc
   Material_TEST.cc
   Mesh_TEST.cc
