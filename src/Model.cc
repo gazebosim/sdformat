@@ -32,17 +32,17 @@ class sdf::ModelPrivate
   public: std::string name = "";
 
   /// \brief True if this model is specified as static, false otherwise.
-  public: bool isStatic;
+  public: bool isStatic = false;
 
   /// \brief True if this model should self-collide, false otherwise.
-  public: bool selfCollide;
+  public: bool selfCollide = false;
 
   /// \brief True if this model is allowed to conserve processing power by not
   /// updating when it's at rest.
-  public: bool allowAutoDisable;
+  public: bool allowAutoDisable = true;
 
   /// \brief True if this model should be subject to wind, false otherwise.
-  public: bool enableWind;
+  public: bool enableWind = false;
 
   /// \brief Pose of the model
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
