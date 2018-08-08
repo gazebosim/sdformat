@@ -148,8 +148,14 @@ Errors Light::Load(ElementPtr _sdf)
   sdf::ElementPtr attenuationElem = _sdf->GetElement("attenuation");
   if (attenuationElem)
   {
-    this->SetAttenuationRange(attenuationElem->Get<double>("range",
-        this->dataPtr->attenuationRange).first);
+    std::pair<double, bool> doubleValue = attenuationElem->Get<double>(
+        "range", this->dataPtr->attenuationRange);
+    if (!doubleValue.second)
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "An <attenuation> requires a <range>."});
+    }
+    this->SetAttenuationRange(doubleValue.first);
 
     this->SetLinearAttenuationFactor(attenuationElem->Get<double>("linear",
           this->dataPtr->linearAttenuation).first);
@@ -161,20 +167,53 @@ Errors Light::Load(ElementPtr _sdf)
         "quadratic", this->dataPtr->quadraticAttenuation).first);
   }
 
-  this->dataPtr->direction = _sdf->Get<ignition::math::Vector3d>("direction",
-      this->dataPtr->direction).first;
+  // Read the direction
+  if (this->dataPtr->type == LightType::SPOT ||
+      this->dataPtr->type == LightType::DIRECTIONAL)
+  {
+    std::pair<ignition::math::Vector3d, bool> dirPair =
+      _sdf->Get<>("direction", this->dataPtr->direction);
+
+    if (!dirPair.second)
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "A <direction> is required for a " + typeString + "light."});
+    }
+
+    this->dataPtr->direction = dirPair.first;
+  }
 
   sdf::ElementPtr spotElem = _sdf->GetElement("spot");
-  if (spotElem)
+  if (this->dataPtr->type == LightType::SPOT && spotElem)
   {
-    this->SetSpotInnerAngle(spotElem->Get<double>(
-        "inner_angle", this->dataPtr->spotInnerAngle.Radian()).first);
+    // Check for and set inner_angle
+    std::pair<double, bool> doubleValue = spotElem->Get<double>(
+        "inner_angle", this->dataPtr->spotInnerAngle.Radian());
+    if (!doubleValue.second)
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "A spot light requires an <inner_angle>."});
+    }
+    this->SetSpotInnerAngle(doubleValue.first);
 
-    this->SetSpotOuterAngle(spotElem->Get<double>(
-        "outer_angle", this->dataPtr->spotOuterAngle.Radian()).first);
+    // Check for and set outer_angle
+    doubleValue =spotElem->Get<double>(
+        "outer_angle", this->dataPtr->spotOuterAngle.Radian());
+    if (!doubleValue.second)
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "A spot light requires an <outer_angle>."});
+    }
+    this->SetSpotOuterAngle(doubleValue.first);
 
-    this->SetSpotFalloff(spotElem->Get<double>(
-        "falloff", this->dataPtr->spotFalloff).first);
+    // Check for and set falloff
+    doubleValue =spotElem->Get<double>("falloff", this->dataPtr->spotFalloff);
+    if (!doubleValue.second)
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "A spot light requires a <falloff>."});
+    }
+    this->SetSpotFalloff(doubleValue.first);
   }
 
   return errors;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Open Source Robotics Foundation
+ * Copyright 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ TEST(DOMWorld, LoadLights)
   sdf::Errors errors = root.Load(testFile);
   for (auto e : errors)
     std::cout << e.Message() << std::endl;
-  // EXPECT_TRUE(root.Load(testFile).empty());
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
 
