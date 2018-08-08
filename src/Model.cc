@@ -81,18 +81,6 @@ Model::~Model()
 }
 
 /////////////////////////////////////////////////
-bool GetChildBooleanElement(
-    const ElementPtr &_sdf,
-    const std::string &_elementName,
-    const bool _defaultValue)
-{
-  if (!_sdf->HasElement(_elementName))
-    return _defaultValue;
-
-  return _sdf->GetElement(_elementName)->Get<bool>();
-}
-
-/////////////////////////////////////////////////
 Errors Model::Load(ElementPtr _sdf)
 {
   Errors errors;
@@ -116,17 +104,14 @@ Errors Model::Load(ElementPtr _sdf)
                      "A model name is required, but the name is not set."});
   }
 
-  this->dataPtr->isStatic =
-      GetChildBooleanElement(_sdf, "static", false);
+  this->dataPtr->isStatic = _sdf->Get<bool>("static", false).first;
 
-  this->dataPtr->selfCollide =
-      GetChildBooleanElement(_sdf, "self_collide", false);
+  this->dataPtr->selfCollide = _sdf->Get<bool>("self_collide", false).first;
 
   this->dataPtr->allowAutoDisable =
-      GetChildBooleanElement(_sdf, "allow_auto_disable", true);
+    _sdf->Get<bool>("allow_auto_disable", true).first;
 
-  this->dataPtr->enableWind =
-      GetChildBooleanElement(_sdf, "enable_wind", false);
+  this->dataPtr->enableWind = _sdf->Get<bool>("enable_wind", false).first;
 
   // Load the pose. Ignore the return value since the model pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
