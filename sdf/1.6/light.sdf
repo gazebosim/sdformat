@@ -2,7 +2,7 @@
 <element name="light" required="*">
   <description>The light element describes a light source.</description>
 
-  <attribute name="name" type="string" default="__default__" required="0">
+  <attribute name="name" type="string" default="__default__" required="1">
     <description>A unique name for the light.</description>
   </attribute>
 
@@ -17,10 +17,10 @@
   <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
 
-  <element name="diffuse" type="color" default="1 1 1 1" required="1">
+  <element name="diffuse" type="color" default="1 1 1 1" required="0">
     <description>Diffuse light color</description>
   </element>
-  <element name="specular" type="color" default=".1 .1 .1 1" required="1">
+  <element name="specular" type="color" default=".1 .1 .1 1" required="0">
     <description>Specular light color</description>
   </element>
 

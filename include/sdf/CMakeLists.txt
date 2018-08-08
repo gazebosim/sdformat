@@ -4,6 +4,7 @@ set (headers
   Assert.hh
   Atmosphere.hh
   Box.hh
+  Collision.hh
   Console.hh
   Cylinder.hh
   Element.hh
@@ -14,6 +15,7 @@ set (headers
   Gui.hh
   Joint.hh
   JointAxis.hh
+  Light.hh
   Link.hh
   Material.hh
   Mesh.hh
