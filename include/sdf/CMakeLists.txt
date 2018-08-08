@@ -4,6 +4,7 @@ set (headers
   Assert.hh
   Atmosphere.hh
   Box.hh
+  Collision.hh
   Console.hh
   Cylinder.hh
   Element.hh
