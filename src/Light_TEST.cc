@@ -44,12 +44,12 @@ TEST(DOMLight, DefaultConstruction)
   EXPECT_TRUE(light.CastShadows());
 
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), light.Diffuse());
-  light.SetDiffuse(ignition::math::Color(0.1, 0.2, 0.3, 1.0));
-  EXPECT_EQ(ignition::math::Color(0.1, 0.2, 0.3, 1), light.Diffuse());
+  light.SetDiffuse(ignition::math::Color(0.1f, 0.2f, 0.3f, 1.0));
+  EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 1), light.Diffuse());
 
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), light.Specular());
-  light.SetSpecular(ignition::math::Color(0.4, 0.6, 0.7, 1.0));
-  EXPECT_EQ(ignition::math::Color(0.4, 0.6, 0.7, 1), light.Specular());
+  light.SetSpecular(ignition::math::Color(0.4f, 0.6f, 0.7f, 1.0));
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.6f, 0.7f, 1), light.Specular());
 
   EXPECT_DOUBLE_EQ(10.0, light.AttenuationRange());
   light.SetAttenuationRange(1.2);
