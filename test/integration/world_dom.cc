@@ -116,5 +116,4 @@ TEST(DOMWorld, Load)
   EXPECT_EQ(physics, physicsDefault);
   EXPECT_TRUE(world->PhysicsNameExists("my_physics"));
   EXPECT_FALSE(world->PhysicsNameExists("invalid_physics"));
-
 }

@@ -64,8 +64,6 @@ class sdf::WorldPrivate
   /// \brief Linear velocity of wind.
   public: ignition::math::Vector3d windLinearVelocity =
            ignition::math::Vector3d::Zero;
-
-
 };
 
 /////////////////////////////////////////////////

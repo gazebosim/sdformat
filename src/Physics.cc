@@ -25,22 +25,22 @@ using namespace sdf;
 class sdf::PhysicsPrivate
 {
   /// \brief Profile name
-  public: std::string name{""};
+  public: std::string name {""};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
   /// \brief True indicates that this is the default profile.
-  public: bool isDefault{false};
+  public: bool isDefault {false};
 
   /// \brief Dynamics engine type.
-  public: std::string type{"ode"};
+  public: std::string type {"ode"};
 
   /// \brief Maximum step size.
-  public: double stepSize{0.001};
+  public: double stepSize {0.001};
 
   /// \brief Desired realtime factor.
-  public: double rtf{1.0};
+  public: double rtf {1.0};
 };
 
 /////////////////////////////////////////////////
@@ -116,7 +116,6 @@ Errors Physics::Load(sdf::ElementPtr _sdf)
     errors.push_back({ErrorCode::ELEMENT_MISSING,
         "The physics element[" + this->dataPtr->name + "] is missing "
         "child element <real_time_factor>."});
-
   }
   this->dataPtr->rtf = doublePair.first;
 
