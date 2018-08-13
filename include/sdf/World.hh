@@ -31,6 +31,7 @@ namespace sdf
   // Forward declare private data class.
   class Light;
   class Model;
+  class Physics;
   class WorldPrivate;
 
   class SDFORMAT_VISIBLE World
@@ -170,6 +171,27 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Get the number of physics profiles.
+    /// \return Number of physics profiles contained in this World object.
+    public: uint64_t PhysicsCount() const;
+
+    /// \brief Get a physics profile based on an index.
+    /// \param[in] _index Index of the physics profile.
+    /// The index should be in the range [0..PhysicsCount()).
+    /// \return Pointer to the physics profile. Nullptr if the index does not
+    /// exist.
+    ///// \sa uint64_t PhysicsCount() const
+    public: const Physics *PhysicsByIndex(const uint64_t _index) const;
+
+    /// \brief Get the default physics profile.
+    /// \return Pointer to the default physics profile.
+    public: const Physics *PhysicsDefault() const;
+
+    /// \brief Get whether a physics profile name exists.
+    /// \param[in] _name Name of the physics profile to check.
+    /// \return True if there exists a physics profile with the given name.
+    public: bool PhysicsNameExists(const std::string &_name) const;
 
     /// \brief Private data pointer.
     private: WorldPrivate *dataPtr = nullptr;

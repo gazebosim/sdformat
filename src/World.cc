@@ -20,6 +20,7 @@
 
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
+#include "sdf/Physics.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "Utils.hh"
@@ -28,19 +29,21 @@ using namespace sdf;
 
 class sdf::WorldPrivate
 {
-  /// \brief Name of the world.
-  public: std::string name = "";
+  /// \brief Pointer to an  atmosphere model.
+  public: std::unique_ptr<Atmosphere> atmosphere;
 
   /// \brief Audio device name
   public: std::string audioDevice = "default";
 
-  /// \brief Linear velocity of wind.
-  public: ignition::math::Vector3d windLinearVelocity =
-           ignition::math::Vector3d::Zero;
-
   /// \brief Gravity vector.
   public: ignition::math::Vector3d gravity =
            ignition::math::Vector3d(0, 0, -9.80665);
+
+  /// \brief Pointer to Gui parameters.
+  public: std::unique_ptr<Gui> gui;
+
+  /// \brief The lights specified in this world.
+  public: std::vector<Light> lights;
 
   /// \brief Magnetic field.
   public: ignition::math::Vector3d magneticField =
@@ -49,23 +52,27 @@ class sdf::WorldPrivate
   /// \brief The models specified in this world.
   public: std::vector<Model> models;
 
-  /// \brief The lights specified in this world.
-  public: std::vector<Light> lights;
+  /// \brief Name of the world.
+  public: std::string name = "";
 
-  /// \brief Pointer to an  atmosphere model.
-  public: std::unique_ptr<Atmosphere> atmosphere;
-
-  /// \brief Pointer to Gui parameters.
-  public: std::unique_ptr<Gui> gui;
+  /// \brief The physics profiles specified in this world.
+  public: std::vector<Physics> physics;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Linear velocity of wind.
+  public: ignition::math::Vector3d windLinearVelocity =
+           ignition::math::Vector3d::Zero;
+
+
 };
 
 /////////////////////////////////////////////////
 World::World()
   : dataPtr(new WorldPrivate)
 {
+  this->dataPtr->physics.emplace_back(Physics());
 }
 
 /////////////////////////////////////////////////
@@ -146,6 +153,16 @@ Errors World::Load(sdf::ElementPtr _sdf)
   Errors modelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
       this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
+
+  // Load all the physics.
+  if (_sdf->HasElement("physics"))
+  {
+    this->dataPtr->physics.clear();
+    Errors physicsLoadErrors = loadUniqueRepeated<Physics>(_sdf, "physics",
+        this->dataPtr->physics);
+    errors.insert(errors.end(), physicsLoadErrors.begin(),
+        physicsLoadErrors.end());
+  }
 
   // Load all the lights.
   Errors lightLoadErrors = loadUniqueRepeated<Light>(_sdf, "light",
@@ -304,5 +321,50 @@ bool World::LightNameExists(const std::string &_name) const
       return true;
     }
   }
+  return false;
+}
+
+//////////////////////////////////////////////////
+uint64_t World::PhysicsCount() const
+{
+  return this->dataPtr->physics.size();
+}
+
+//////////////////////////////////////////////////
+const Physics *World::PhysicsByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->physics.size())
+    return &this->dataPtr->physics[_index];
+  return nullptr;
+}
+
+//////////////////////////////////////////////////
+const Physics *World::PhysicsDefault() const
+{
+  if (!this->dataPtr->physics.empty())
+  {
+    for (const Physics &physics : this->dataPtr->physics)
+    {
+      if (physics.IsDefault())
+        return &physics;
+    }
+
+    return &this->dataPtr->physics.at(0);
+  }
+
+  return nullptr;
+}
+
+//////////////////////////////////////////////////
+bool World::PhysicsNameExists(const std::string &_name) const
+{
+  for (const Physics &physics : this->dataPtr->physics)
+  {
+    if (physics.Name() == _name)
+    {
+      return true;
+    }
+  }
+
   return false;
 }

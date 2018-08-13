@@ -69,3 +69,45 @@ TEST(Unknown, CopyUnknownElement)
   EXPECT_EQ("my nested xml", nestedElem->Get<std::string>("attr"));
   EXPECT_EQ("AString", nestedElem->Get<std::string>("string"));
 }
+
+/////////////////////////////////////////////////
+/// Test the copy of XML elements that are not part of the specification.
+TEST(Unknown, CollisionFilterGroup)
+{
+  std::string xmlString = R"(
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name='test_robot'>
+    <link name='link3'>
+      <visual name='link3_visual1'>
+        <geometry><empty/></geometry>
+      </visual>
+      <collision name = 'link3_collision'>
+        <geometry>
+          <box>
+            <size>1.0 2.0 3.0</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <collision_filter_group name="filter_group1">
+      <member link="link1"/>
+      <member link="link2"/>
+    </collision_filter_group>
+  </model>
+</sdf>)";
+
+  sdf::Errors errors;
+
+  // Read an SDF file, and store the result in sdfParsed.
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  sdf::readString(xmlString, sdfParsed, errors);
+
+  sdf::ElementPtr elem = sdfParsed->Root();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::ElementPtr worldElem = elem->GetElement("world");
+  ASSERT_NE(nullptr, worldElem);
+}

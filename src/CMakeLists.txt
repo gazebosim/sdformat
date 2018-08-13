@@ -42,6 +42,7 @@ set (sources
   parser.cc
   parser_urdf.cc
   Param.cc
+  Physics.cc
   Plane.cc
   Root.cc
   SDF.cc
@@ -104,6 +105,7 @@ set (gtest_sources
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
+  Physics_TEST.cc
   Plane_TEST.cc
   Root_TEST.cc
   SDF_TEST.cc
