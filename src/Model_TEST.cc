@@ -31,6 +31,22 @@ TEST(DOMModel, Construction)
   model.SetName("test_model");
   EXPECT_EQ("test_model", model.Name());
 
+  EXPECT_FALSE(model.Static());
+  model.SetStatic(true);
+  EXPECT_TRUE(model.Static());
+
+  EXPECT_FALSE(model.SelfCollide());
+  model.SetSelfCollide(true);
+  EXPECT_TRUE(model.SelfCollide());
+
+  EXPECT_TRUE(model.AllowAutoDisable());
+  model.SetAllowAutoDisable(false);
+  EXPECT_FALSE(model.AllowAutoDisable());
+
+  EXPECT_FALSE(model.EnableWind());
+  model.SetEnableWind(true);
+  EXPECT_TRUE(model.EnableWind());
+
   EXPECT_EQ(0u, model.LinkCount());
   EXPECT_EQ(nullptr, model.LinkByIndex(0));
   EXPECT_EQ(nullptr, model.LinkByIndex(1));
