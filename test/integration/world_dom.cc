@@ -73,7 +73,6 @@ TEST(DOMWorld, LoadIncorrectElement)
       std::string::npos);
 }
 
-
 //////////////////////////////////////////////////
 TEST(DOMWorld, Load)
 {
@@ -107,4 +106,14 @@ TEST(DOMWorld, Load)
   ASSERT_NE(nullptr, gui);
   ASSERT_NE(nullptr, gui->Element());
   EXPECT_TRUE(gui->Fullscreen());
+
+  ASSERT_EQ(1u, world->PhysicsCount());
+  const sdf::Physics *physics = world->PhysicsByIndex(1);
+  ASSERT_EQ(nullptr, physics);
+  physics = world->PhysicsByIndex(0);
+  ASSERT_NE(nullptr, physics);
+  const sdf::Physics *physicsDefault = world->PhysicsDefault();
+  EXPECT_EQ(physics, physicsDefault);
+  EXPECT_TRUE(world->PhysicsNameExists("my_physics"));
+  EXPECT_FALSE(world->PhysicsNameExists("invalid_physics"));
 }

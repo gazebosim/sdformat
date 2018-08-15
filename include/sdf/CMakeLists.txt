@@ -22,6 +22,7 @@ set (headers
   Model.hh
   Param.hh
   parser.hh
+  Physics.hh
   Plane.hh
   Root.hh
   SDFImpl.hh

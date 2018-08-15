@@ -25,6 +25,7 @@
    * [Pull request 445](https://bitbucket.org/osrf/sdformat/pull-requests/445)
    * [Pull request 441](https://bitbucket.org/osrf/sdformat/pull-requests/441)
    * [Pull request 451](https://bitbucket.org/osrf/sdformat/pull-requests/451)
+   * [Pull request 455](https://bitbucket.org/osrf/sdformat/pull-requests/455)
 
 1. SDF DOM: Additions to the document object model.
    * [Pull request 442](https://bitbucket.org/osrf/sdformat/pull-requests/442)
