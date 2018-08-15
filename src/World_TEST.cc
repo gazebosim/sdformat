@@ -36,6 +36,8 @@ TEST(DOMWorld, Construction)
   EXPECT_EQ(nullptr, world.ModelByIndex(1));
   EXPECT_FALSE(world.ModelNameExists(""));
   EXPECT_FALSE(world.ModelNameExists("default"));
+
+  EXPECT_EQ(1u, world.PhysicsCount());
 }
 
 /////////////////////////////////////////////////
