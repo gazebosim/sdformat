@@ -33,6 +33,10 @@ namespace sdf
   /// \brief Root class that acts as an entry point to the SDF document
   /// model.
   ///
+  /// Multiple worlds can exist in a single SDF file. A user of multiple
+  /// worlds could run parallel instances of simulation, or offer selection
+  /// of a world at runtime.
+  ///
   /// # Usage
   ///
   /// In this example, a root object is loaded from a file specified in
