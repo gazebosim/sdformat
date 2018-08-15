@@ -42,7 +42,7 @@ namespace sdf
     /// \brief Destructor
     public: ~Physics();
 
-    /// \brief Load the physics based on a element pointer. This is *not* the
+    /// \brief Load the physics based on an element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
     /// \param[in] _sdf The SDF Element pointer
@@ -96,7 +96,7 @@ namespace sdf
     /// \param[in] _step The max step size in seconds.
     public: void SetMaxStepSize(const double _step);
 
-    /// \brief Get the real time factor.
+    /// \brief Get the target real time factor.
     /// Target simulation speedup factor, defined by ratio of simulation time
     /// to real-time.
     /// \return The target real time factor.
