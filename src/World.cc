@@ -29,7 +29,7 @@ using namespace sdf;
 
 class sdf::WorldPrivate
 {
-  /// \brief Pointer to an  atmosphere model.
+  /// \brief Pointer to an atmosphere model.
   public: std::unique_ptr<Atmosphere> atmosphere;
 
   /// \brief Audio device name

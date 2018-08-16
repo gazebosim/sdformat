@@ -58,7 +58,55 @@ namespace sdf
     /// \brief Set the name of the model.
     /// The name of the model should be unique within the scope of a World.
     /// \param[in] _name Name of the model.
-    public: void SetName(const std::string &_name) const;
+    public: void SetName(const std::string &_name);
+
+    /// \brief Check if this model should be static.
+    /// A static model is one that is not subject to physical forces (in other
+    /// words, it's purely kinematic instead of dynamic).
+    /// \return true if the model should be static, false if it is dynamic.
+    public: bool Static() const;
+
+    /// \brief Set this model to be static or not static.
+    /// \param[in] _static True or false depending on whether the model should
+    /// be static.
+    /// \sa Static()
+    public: void SetStatic(bool _static);
+
+    /// \brief Check if this model should self-collide.
+    /// A self-colliding model is a model whose links will collide if they come
+    /// into contact. If a model is not self-colliding, its links will pass
+    /// through each other.
+    /// \return true if the model should self-collide, false otherwise.
+    public: bool SelfCollide() const;
+
+    /// \brief Set this model to self-collide or not self-collide.
+    /// \param[in] _selfCollide True or false depending on whether the model
+    /// should self-collide.
+    /// \sa SelfCollide()
+    public: void SetSelfCollide(bool _selfCollide);
+
+    /// \brief Check if this model should be allowed to auto-disable.
+    /// If auto-disable is allowed, a model that is at rest can choose to not
+    /// update its dynamics.
+    /// \return true if auto-disable is allowed for this model
+    public: bool AllowAutoDisable() const;
+
+    /// \brief Set this model to allow auto-disabling.
+    /// \param[in] _allowAutoDisable True or false depending on whether the
+    /// model should be allowed to auto-disable.
+    /// \sa AllowAutoDisable()
+    public: void SetAllowAutoDisable(bool _allowAutoDisable);
+
+    /// \brief Check if this model should be subject to wind.
+    /// If true, all links in the model should be affected by the wind. This can
+    /// be overridden per link.
+    /// \return true if the model should be subject to wind, false otherwise.
+    public: bool EnableWind() const;
+
+    /// \brief Set whether this model should be subject to wind.
+    /// \param[in] _enableWind True or false depending on whether the model
+    /// should be subject to wind.
+    public: void SetEnableWind(bool _enableWind);
 
     /// \brief Get the number of links.
     /// \return Number of links contained in this Model object.
