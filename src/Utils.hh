@@ -55,6 +55,13 @@ namespace sdf
   bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
                 std::string &_frame);
 
+  /// \brief If the value is negative, convert it to positive infinity.
+  /// Otherwise, return the original value.
+  /// \param[in] _value The value to convert, if necessary.
+  /// \return Infinity if the input value is negative, otherwise the original
+  /// value.
+  double infiniteIfNegative(double _value);
+
   /// \brief Load all objects of a specific sdf element type. No error
   /// is returned if an element is not present. This function assumes that
   /// an element has a "name" attribute that must be unique.

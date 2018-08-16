@@ -197,13 +197,13 @@ namespace sdf
     public: double Effort() const;
 
     /// \brief Set the value for enforcing the maximum joint effort applied.
-    /// Limit is not enforced if value is negative.
+    /// Limit is not enforced if value is infinity.
     /// \param[in] _effort Effort limit.
     /// \sa double Effort() const
     public: void SetEffort(double _effort);
 
     /// \brief Get the value for enforcing the maximum joint velocity. The
-    /// default value is -1.
+    /// default value is infinity.
     /// \return The value for enforcing the maximum joint velocity.
     /// \sa void SetVelocity(const double _velocity) const
     public: double MaxVelocity() const;
