@@ -80,7 +80,8 @@ Geometry::Geometry(const Geometry &_geometry)
 
   if (_geometry.dataPtr->plane)
   {
-    this->dataPtr->plane = std::make_unique<sdf::Plane>(*_geometry.dataPtr->plane);
+    this->dataPtr->plane = std::make_unique<sdf::Plane>(
+        *_geometry.dataPtr->plane);
   }
 
   if (_geometry.dataPtr->sphere)
@@ -115,7 +116,8 @@ Geometry &Geometry::operator=(const Geometry &_geometry)
 
   if (_geometry.dataPtr->plane)
   {
-    this->dataPtr->plane = std::make_unique<sdf::Plane>(*_geometry.dataPtr->plane);
+    this->dataPtr->plane = std::make_unique<sdf::Plane>(
+        *_geometry.dataPtr->plane);
   }
 
   if (_geometry.dataPtr->sphere)
