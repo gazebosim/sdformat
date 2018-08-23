@@ -31,6 +31,54 @@ TEST(DOMMesh, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMMesh, MoveConstructor)
+{
+  sdf::Mesh mesh;
+  mesh.SetUri("banana");
+  mesh.SetSubmesh("watermelon");
+  mesh.SetCenterSubmesh(true);
+  mesh.SetScale({0.5, 0.6, 0.7});
+
+  sdf::Mesh mesh2(std::move(mesh));
+  EXPECT_EQ("banana", mesh2.Uri());
+  EXPECT_EQ("watermelon", mesh2.Submesh());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
+  EXPECT_TRUE(mesh2.CenterSubmesh());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, CopyConstructor)
+{
+  sdf::Mesh mesh;
+  mesh.SetUri("banana");
+  mesh.SetSubmesh("watermelon");
+  mesh.SetCenterSubmesh(true);
+  mesh.SetScale({0.5, 0.6, 0.7});
+
+  sdf::Mesh mesh2(mesh);
+  EXPECT_EQ("banana", mesh2.Uri());
+  EXPECT_EQ("watermelon", mesh2.Submesh());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
+  EXPECT_TRUE(mesh2.CenterSubmesh());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, AssignemntOperator)
+{
+  sdf::Mesh mesh;
+  mesh.SetUri("banana");
+  mesh.SetSubmesh("watermelon");
+  mesh.SetCenterSubmesh(true);
+  mesh.SetScale({0.5, 0.6, 0.7});
+
+  sdf::Mesh mesh2 = mesh;
+  EXPECT_EQ("banana", mesh2.Uri());
+  EXPECT_EQ("watermelon", mesh2.Submesh());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
+  EXPECT_TRUE(mesh2.CenterSubmesh());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMMesh, Set)
 {
   sdf::Mesh mesh;

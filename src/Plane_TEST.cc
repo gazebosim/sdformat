@@ -40,6 +40,42 @@ TEST(DOMPlane, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMPlane, MoveConstructor)
+{
+  sdf::Plane plane;
+  plane.SetNormal({1, 0, 0});
+  plane.SetSize({1.2, 3.4});
+
+  sdf::Plane plane2(std::move(plane));
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
+  EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPlane, CopyConstructor)
+{
+  sdf::Plane plane;
+  plane.SetNormal({1, 0, 0});
+  plane.SetSize({1.2, 3.4});
+
+  sdf::Plane plane2(plane);
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
+  EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPlane, AssignemntOperator)
+{
+  sdf::Plane plane;
+  plane.SetNormal({1, 0, 0});
+  plane.SetSize({1.2, 3.4});
+
+  sdf::Plane plane2 = plane;
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
+  EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Size());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMPlane, Load)
 {
   sdf::Plane plane;

@@ -32,6 +32,42 @@ TEST(DOMBox, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMBox, MoveConstructor)
+{
+  const ignition::math::Vector3d size(1, 2, 3);
+
+  sdf::Box box;
+  box.SetSize(size);
+
+  sdf::Box box2(std::move(box));
+  EXPECT_EQ(size, box2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, CopyConstructor)
+{
+  const ignition::math::Vector3d size(0.1, 0.2, 0.3);
+
+  sdf::Box box;
+  box.SetSize(size);
+
+  sdf::Box box2(box);
+  EXPECT_EQ(size, box2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, AssignemntOperator)
+{
+  const ignition::math::Vector3d size(0.2, 0.3, 0.4);
+
+  sdf::Box box;
+  box.SetSize(size);
+
+  sdf::Box box2 = box;
+  EXPECT_EQ(size, box2.Size());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMBox, Load)
 {
   sdf::Box box;

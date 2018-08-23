@@ -33,8 +33,21 @@ namespace sdf
     /// \brief Constructor
     public: Box();
 
+    /// \brief Copy constructor
+    /// \param[in] _box Box to copy.
+    public: Box(const Box &_box);
+
+    /// \brief Move constructor
+    /// \param[in] _box Box to move.
+    public: Box(Box &&_box);
+
     /// \brief Destructor
     public: virtual ~Box();
+
+    /// \brief Assignment operator.
+    /// \param[in] _box The box to set values from.
+    /// \return *this
+    public: Box &operator=(const Box &_box);
 
     /// \brief Load the box geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is

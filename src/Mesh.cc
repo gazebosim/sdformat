@@ -14,7 +14,6 @@
  * limitations under the License.
  *
 */
-#include "sdf/Geometry.hh"
 #include "sdf/Mesh.hh"
 
 using namespace sdf;
@@ -49,6 +48,35 @@ Mesh::~Mesh()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Mesh::Mesh(const Mesh &_mesh)
+  : dataPtr(new MeshPrivate)
+{
+  this->dataPtr->uri = _mesh.dataPtr->uri;
+  this->dataPtr->scale = _mesh.dataPtr->scale;
+  this->dataPtr->submesh = _mesh.dataPtr->submesh;
+  this->dataPtr->centerSubmesh = _mesh.dataPtr->centerSubmesh;
+  this->dataPtr->sdf = _mesh.dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+Mesh &Mesh::operator=(const Mesh &_mesh)
+{
+  this->dataPtr->uri = _mesh.dataPtr->uri;
+  this->dataPtr->scale = _mesh.dataPtr->scale;
+  this->dataPtr->submesh = _mesh.dataPtr->submesh;
+  this->dataPtr->centerSubmesh = _mesh.dataPtr->centerSubmesh;
+  this->dataPtr->sdf = _mesh.dataPtr->sdf;
+  return *this;
+}
+
+//////////////////////////////////////////////////
+Mesh::Mesh(Mesh &&_mesh)
+{
+  this->dataPtr = _mesh.dataPtr;
+  _mesh.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

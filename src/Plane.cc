@@ -16,7 +16,6 @@
 */
 #include <ignition/math/Vector2.hh>
 #include <ignition/math/Vector3.hh>
-#include "sdf/Geometry.hh"
 #include "sdf/Plane.hh"
 
 using namespace sdf;
@@ -45,6 +44,31 @@ Plane::~Plane()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Plane::Plane(const Plane &_plane)
+  : dataPtr(new PlanePrivate)
+{
+  this->dataPtr->normal = _plane.dataPtr->normal;
+  this->dataPtr->size = _plane.dataPtr->size;
+  this->dataPtr->sdf = _plane.dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+Plane &Plane::operator=(const Plane &_plane)
+{
+  this->dataPtr->normal = _plane.dataPtr->normal;
+  this->dataPtr->size = _plane.dataPtr->size;
+  this->dataPtr->sdf = _plane.dataPtr->sdf;
+  return *this;
+}
+
+//////////////////////////////////////////////////
+Plane::Plane(Plane &&_plane)
+{
+  this->dataPtr = _plane.dataPtr;
+  _plane.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
