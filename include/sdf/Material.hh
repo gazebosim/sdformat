@@ -41,12 +41,21 @@ namespace sdf
     /// \brief Default constructor
     public: Material();
 
+    /// \brief Copy constructor
+    /// \param[in] _material Material to copy.
+    public: Material(const Material &_material);
+
     /// \brief Move constructor
     /// \param[in] _material Material to move.
     public: Material(Material &&_material);
 
     /// \brief Destructor
     public: ~Material();
+
+    /// \brief Assignment operator.
+    /// \param[in] _material The material to set values from.
+    /// \return *this
+    public: Material &operator=(const Material &_material);
 
     /// \brief Load the material based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root

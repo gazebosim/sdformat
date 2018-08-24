@@ -37,6 +37,84 @@ TEST(DOMMaterial, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMMaterial, MoveConstructor)
+{
+  sdf::Material material;
+  material.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f));
+  material.SetDiffuse(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f));
+  material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
+  material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
+  material.SetLighting(false);
+  material.SetScriptUri("banana");
+  material.SetScriptName("orange");
+  material.SetShader(sdf::ShaderType::VERTEX);
+  material.SetNormalMap("blueberry");
+
+  sdf::Material material2(std::move(material));
+  EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), material2.Ambient());
+  EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), material2.Diffuse());
+  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f), material2.Specular());
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f), material2.Emissive());
+  EXPECT_FALSE(material2.Lighting());
+  EXPECT_EQ("banana", material2.ScriptUri());
+  EXPECT_EQ("orange", material2.ScriptName());
+  EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
+  EXPECT_EQ("blueberry", material2.NormalMap());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMaterial, CopyConstructor)
+{
+  sdf::Material material;
+  material.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f));
+  material.SetDiffuse(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f));
+  material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
+  material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
+  material.SetLighting(false);
+  material.SetScriptUri("banana");
+  material.SetScriptName("orange");
+  material.SetShader(sdf::ShaderType::VERTEX);
+  material.SetNormalMap("blueberry");
+
+  sdf::Material material2(material);
+  EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), material2.Ambient());
+  EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), material2.Diffuse());
+  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f), material2.Specular());
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f), material2.Emissive());
+  EXPECT_FALSE(material2.Lighting());
+  EXPECT_EQ("banana", material2.ScriptUri());
+  EXPECT_EQ("orange", material2.ScriptName());
+  EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
+  EXPECT_EQ("blueberry", material2.NormalMap());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMaterial, AssignemntOperator)
+{
+  sdf::Material material;
+  material.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f));
+  material.SetDiffuse(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f));
+  material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
+  material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
+  material.SetLighting(false);
+  material.SetScriptUri("banana");
+  material.SetScriptName("orange");
+  material.SetShader(sdf::ShaderType::VERTEX);
+  material.SetNormalMap("blueberry");
+
+  sdf::Material material2 = material;
+  EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), material2.Ambient());
+  EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), material2.Diffuse());
+  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f), material2.Specular());
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f), material2.Emissive());
+  EXPECT_FALSE(material2.Lighting());
+  EXPECT_EQ("banana", material2.ScriptUri());
+  EXPECT_EQ("orange", material2.ScriptName());
+  EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
+  EXPECT_EQ("blueberry", material2.NormalMap());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMMaterial, Set)
 {
   sdf::Material material;
