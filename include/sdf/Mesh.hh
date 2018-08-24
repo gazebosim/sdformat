@@ -34,8 +34,21 @@ namespace sdf
     /// \brief Constructor
     public: Mesh();
 
+    /// \brief Copy constructor
+    /// \param[in] _mesh Mesh to copy.
+    public: Mesh(const Mesh &_mesh);
+
+    /// \brief Move constructor
+    /// \param[in] _mesh Mesh to move.
+    public: Mesh(Mesh &&_mesh);
+
     /// \brief Destructor
     public: virtual ~Mesh();
+
+    /// \brief Assignment operator.
+    /// \param[in] _mesh The mesh to set values from.
+    /// \return *this
+    public: Mesh &operator=(const Mesh &_mesh);
 
     /// \brief Load the mesh geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is

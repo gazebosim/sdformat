@@ -39,6 +39,36 @@ TEST(DOMGeometry, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMGeometry, MoveConstructor)
+{
+  sdf::Geometry geometry;
+  geometry.SetType(sdf::GeometryType::BOX);
+
+  sdf::Geometry geometry2(std::move(geometry));
+  EXPECT_EQ(sdf::GeometryType::BOX, geometry2.Type());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGeometry, CopyConstructor)
+{
+  sdf::Geometry geometry;
+  geometry.SetType(sdf::GeometryType::BOX);
+
+  sdf::Geometry geometry2(geometry);
+  EXPECT_EQ(sdf::GeometryType::BOX, geometry2.Type());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGeometry, AssignemntOperator)
+{
+  sdf::Geometry geometry;
+  geometry.SetType(sdf::GeometryType::BOX);
+
+  sdf::Geometry geometry2 = geometry;
+  EXPECT_EQ(sdf::GeometryType::BOX, geometry2.Type());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMGeometry, Load)
 {
   sdf::Geometry geom;

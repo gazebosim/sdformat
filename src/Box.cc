@@ -16,7 +16,6 @@
 */
 #include <ignition/math/Vector3.hh>
 #include "sdf/Box.hh"
-#include "sdf/Geometry.hh"
 
 using namespace sdf;
 
@@ -41,6 +40,29 @@ Box::~Box()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Box::Box(const Box &_box)
+  : dataPtr(new BoxPrivate)
+{
+  this->dataPtr->size = _box.dataPtr->size;
+  this->dataPtr->sdf = _box.dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+Box &Box::operator=(const Box &_box)
+{
+  this->dataPtr->size = _box.dataPtr->size;
+  this->dataPtr->sdf = _box.dataPtr->sdf;
+  return *this;
+}
+
+//////////////////////////////////////////////////
+Box::Box(Box &&_box)
+{
+  this->dataPtr = _box.dataPtr;
+  _box.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
