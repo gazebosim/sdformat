@@ -71,6 +71,39 @@ Material::~Material()
   this->dataPtr = nullptr;
 }
 
+//////////////////////////////////////////////////
+Material::Material(const Material &_material)
+  : dataPtr(new MaterialPrivate)
+{
+  this->dataPtr->scriptUri = _material.dataPtr->scriptUri;
+  this->dataPtr->scriptName = _material.dataPtr->scriptName;
+  this->dataPtr->shader = _material.dataPtr->shader;
+  this->dataPtr->normalMap = _material.dataPtr->normalMap;
+  this->dataPtr->lighting = _material.dataPtr->lighting;
+  this->dataPtr->ambient = _material.dataPtr->ambient;
+  this->dataPtr->diffuse = _material.dataPtr->diffuse;
+  this->dataPtr->specular = _material.dataPtr->specular;
+  this->dataPtr->emissive = _material.dataPtr->emissive;
+  this->dataPtr->sdf = _material.dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+Material &Material::operator=(const Material &_material)
+{
+  this->dataPtr->scriptUri = _material.dataPtr->scriptUri;
+  this->dataPtr->scriptName = _material.dataPtr->scriptName;
+  this->dataPtr->shader = _material.dataPtr->shader;
+  this->dataPtr->normalMap = _material.dataPtr->normalMap;
+  this->dataPtr->lighting = _material.dataPtr->lighting;
+  this->dataPtr->ambient = _material.dataPtr->ambient;
+  this->dataPtr->diffuse = _material.dataPtr->diffuse;
+  this->dataPtr->specular = _material.dataPtr->specular;
+  this->dataPtr->emissive = _material.dataPtr->emissive;
+  this->dataPtr->sdf = _material.dataPtr->sdf;
+
+  return *this;
+}
+
 /////////////////////////////////////////////////
 Material::Material(Material &&_material)
 {

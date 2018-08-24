@@ -8,6 +8,9 @@
 1. SDF DOM: Add copy/move constructors and assignment operator to Geometry
    * [Pull request 460](https://bitbucket.org/osrf/sdformat/pull-requests/460)
 
+1. SDF DOM: Add copy/move constructors and assignment operator to Material
+   * [Pull request 460](https://bitbucket.org/osrf/sdformat/pull-requests/460)
+
 ## SDFormat 7.0
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
