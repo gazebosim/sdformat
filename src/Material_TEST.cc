@@ -53,8 +53,10 @@ TEST(DOMMaterial, MoveConstructor)
   sdf::Material material2(std::move(material));
   EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), material2.Ambient());
   EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), material2.Diffuse());
-  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f), material2.Specular());
-  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f), material2.Emissive());
+  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f),
+      material2.Specular());
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
+      material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
@@ -79,8 +81,10 @@ TEST(DOMMaterial, CopyConstructor)
   sdf::Material material2(material);
   EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), material2.Ambient());
   EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), material2.Diffuse());
-  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f), material2.Specular());
-  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f), material2.Emissive());
+  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f),
+      material2.Specular());
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
+      material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
@@ -105,8 +109,10 @@ TEST(DOMMaterial, AssignemntOperator)
   sdf::Material material2 = material;
   EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), material2.Ambient());
   EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), material2.Diffuse());
-  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f), material2.Specular());
-  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f), material2.Emissive());
+  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f),
+      material2.Specular());
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
+      material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
