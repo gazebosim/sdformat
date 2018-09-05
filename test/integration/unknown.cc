@@ -32,6 +32,7 @@ TEST(Unknown, CopyUnknownElement)
 <?xml version="1.0" ?>
 <sdf version="1.6">
   <world name="default">
+    <gui/>
     <custom>
       <custom_child>ThisIsCustom</custom_child>
       <another test="yes">1.23</another>
@@ -54,6 +55,11 @@ TEST(Unknown, CopyUnknownElement)
 
   sdf::ElementPtr worldElem = elem->GetElement("world");
   ASSERT_NE(nullptr, worldElem);
+
+  // Expect exactly one copy of gui element
+  sdf::ElementPtr guiElem = worldElem->GetElement("gui");
+  ASSERT_NE(nullptr, guiElem);
+  EXPECT_EQ(nullptr, guiElem->GetNextElement("gui"));
 
   sdf::ElementPtr customElem = worldElem->GetElement("custom");
   ASSERT_NE(nullptr, customElem);
