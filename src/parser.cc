@@ -943,7 +943,6 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 
       if (descCounter == _sdf->GetElementDescriptionCount())
       {
-        copyChildren(_sdf, _xml, true);
         sdfdbg << "XML Element[" << elemXml->Value()
                << "], child of element[" << _xml->Value()
                << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
@@ -951,6 +950,9 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
         continue;
       }
     }
+
+    // Copy unknown elements outside the loop so it only happens one time
+    copyChildren(_sdf, _xml, true);
 
     // Check that all required elements have been set
     for (unsigned int descCounter = 0;
