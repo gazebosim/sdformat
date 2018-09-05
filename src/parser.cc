@@ -943,7 +943,6 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 
       if (descCounter == _sdf->GetElementDescriptionCount())
       {
-        copyChildren(_sdf, _xml, true);
         sdfdbg << "XML Element[" << elemXml->Value()
                << "], child of element[" << _xml->Value()
                << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
@@ -951,6 +950,9 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
         continue;
       }
     }
+
+    // Copy unknown elements outside the loop so it only happens one time
+    copyChildren(_sdf, _xml, true);
 
     // Check that all required elements have been set
     for (unsigned int descCounter = 0;
@@ -1013,25 +1015,28 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml, const bool _onlyUnknown)
   {
     std::string elem_name = elemXml->ValueStr();
 
-    if (!_onlyUnknown && _sdf->HasElementDescription(elem_name))
+    if (_sdf->HasElementDescription(elem_name))
     {
-      sdf::ElementPtr element = _sdf->AddElement(elem_name);
-
-      // FIXME: copy attributes
-      for (TiXmlAttribute *attribute = elemXml->FirstAttribute();
-           attribute; attribute = attribute->Next())
+      if (!_onlyUnknown)
       {
-        element->GetAttribute(attribute->Name())->SetFromString(
-          attribute->ValueStr());
-      }
+        sdf::ElementPtr element = _sdf->AddElement(elem_name);
 
-      // copy value
-      std::string value = elemXml->GetText();
-      if (!value.empty())
-      {
-        element->GetValue()->SetFromString(value);
+        // FIXME: copy attributes
+        for (TiXmlAttribute *attribute = elemXml->FirstAttribute();
+             attribute; attribute = attribute->Next())
+        {
+          element->GetAttribute(attribute->Name())->SetFromString(
+            attribute->ValueStr());
+        }
+
+        // copy value
+        std::string value = elemXml->GetText();
+        if (!value.empty())
+        {
+          element->GetValue()->SetFromString(value);
+        }
+        copyChildren(element, elemXml, _onlyUnknown);
       }
-      copyChildren(element, elemXml, _onlyUnknown);
     }
     else
     {
