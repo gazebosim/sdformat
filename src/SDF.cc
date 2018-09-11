@@ -35,8 +35,10 @@
 // This include file is generated at configure time.
 #include "sdf/EmbeddedSdf.hh"
 
-using namespace sdf;
-
+namespace sdf
+{
+namespace SDF_VERSION_NAMESPACE
+{
 typedef std::list<std::string> PathList;
 typedef std::map<std::string, PathList> URIPathMap;
 
@@ -47,13 +49,14 @@ static std::function<std::string(const std::string &)> g_findFileCB;
 std::string SDF::version = SDF_VERSION;
 
 /////////////////////////////////////////////////
-void sdf::setFindCallback(std::function<std::string(const std::string &)> _cb)
+// cppcheck-suppress passedByValue
+void setFindCallback(std::function<std::string(const std::string &)> _cb)
 {
   g_findFileCB = _cb;
 }
 
 /////////////////////////////////////////////////
-std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
+std::string findFile(const std::string &_filename, bool _searchLocalPath,
                           bool _useCallback)
 {
   std::string path = _filename;
@@ -64,6 +67,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   {
     // Check to see if the URI in the global map is the first part of the
     // given filename
+    // cppcheck-suppress stlIfStrFind
     if (_filename.find(iter->first) == 0)
     {
       std::string suffix = _filename;
@@ -156,7 +160,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
 }
 
 /////////////////////////////////////////////////
-void sdf::addURIPath(const std::string &_uri, const std::string &_path)
+void addURIPath(const std::string &_uri, const std::string &_path)
 {
   // Split _path on colons.
   std::vector<std::string> parts = sdf::split(_path, ":");
@@ -408,4 +412,6 @@ const std::string &SDF::EmbeddedSpec(
         << "version " << SDF::Version() << "\n";
   }
   return emptySdfString;
+}
+}
 }

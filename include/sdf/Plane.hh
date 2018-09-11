@@ -21,9 +21,14 @@
 #include <ignition/math/Vector2.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declare private data class.
   class PlanePrivate;
 
@@ -74,5 +79,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: PlanePrivate *dataPtr;
   };
+  }
 }
 #endif

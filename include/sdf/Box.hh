@@ -20,9 +20,13 @@
 #include <ignition/math/Vector3.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
   // Forward declare private data class.
   class BoxPrivate;
 
@@ -61,6 +65,7 @@ namespace sdf
     /// \brief Private data pointer.
     private: BoxPrivate *dataPtr;
   };
+  }
 }
 
 #endif
