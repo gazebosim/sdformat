@@ -1,5 +1,5 @@
 <element name="world" required="*">
-  <description>The world element encapsulates an entire world description including: models, scene, physics, joints, and plugins</description>
+  <description>The world element encapsulates an entire world description including: models, scene, physics, joints, and plugins.</description>
 
   <attribute name="name" type="string" default="__default__" required="1">
     <description>Unique name of the world</description>
