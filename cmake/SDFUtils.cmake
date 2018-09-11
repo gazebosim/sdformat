@@ -78,7 +78,7 @@ endmacro()
 #################################################
 macro (sdf_install_library _name)
   set_target_properties(${_name} PROPERTIES SOVERSION ${SDF_MAJOR_VERSION} VERSION ${SDF_VERSION_FULL})
-  install (TARGETS ${_name} LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT shlib)
+  install (TARGETS ${_name} DESTINATION ${LIB_INSTALL_DIR} COMPONENT shlib)
 endmacro ()
 
 #################################################
@@ -159,7 +159,7 @@ macro (sdf_build_tests)
       # Copy in sdformat library
       add_custom_command(TARGET ${BINARY_NAME}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:sdformat>
+        $<TARGET_FILE:sdformat${SDF_MAJOR_VERSION}>
         $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
 
     endif()
