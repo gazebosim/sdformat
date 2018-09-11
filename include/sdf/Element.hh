@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _SDF_ELEMENT_HH_
-#define _SDF_ELEMENT_HH_
+#ifndef SDF_ELEMENT_HH_
+#define SDF_ELEMENT_HH_
 
 #include <any>
 #include <memory>
@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "sdf/Param.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 #include "sdf/Types.hh"
 
@@ -38,6 +39,10 @@
 /// \brief namespace for Simulation Description Format parser
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   class ElementPrivate;
   class SDFORMAT_VISIBLE Element;
 
@@ -494,6 +499,7 @@ namespace sdf
     return false;
   }
   /// \}
+  }
 }
 
 #ifdef _WIN32

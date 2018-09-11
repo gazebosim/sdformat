@@ -21,10 +21,15 @@
 
 #include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declarations.
   class Model;
   class RootPrivate;
@@ -125,5 +130,6 @@ namespace sdf
     /// \brief Private data pointer
     private: RootPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif

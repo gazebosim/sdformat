@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 #include "sdf/Error.hh"
 
@@ -40,6 +41,10 @@
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \brief Split a string using the delimiter in splitter.
   /// \param[in] str       The string to split.
   /// \param[in] splitter  The delimiter to use.
@@ -190,5 +195,6 @@ namespace sdf
   {
     public: double mass;
   };
+  }
 }
 #endif

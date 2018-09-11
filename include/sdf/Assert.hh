@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef _SDF_ASSERT_HH_
-#define _SDF_ASSERT_HH_
+#ifndef SDF_ASSERT_HH_
+#define SDF_ASSERT_HH_
 
 #include "sdf/Exception.hh"
 
