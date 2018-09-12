@@ -39,3 +39,8 @@ configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sdf.hh.in
 
 sdf_install_includes("" ${headers} parser_urdf.hh
   ${CMAKE_CURRENT_BINARY_DIR}/sdf.hh)
+
+if (WIN32)
+  configure_file (${CMAKE_CURRENT_SOURCE_DIR}/strings.h.in
+                  ${CMAKE_BINARY_DIR}/include/strings.h)
+endif()
