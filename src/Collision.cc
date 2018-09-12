@@ -115,6 +115,12 @@ const Geometry *Collision::Geom() const
 }
 
 /////////////////////////////////////////////////
+void Collision::SetGeom(const Geometry &_geom)
+{
+  this->dataPtr->geom = _geom;
+}
+
+/////////////////////////////////////////////////
 const ignition::math::Pose3d &Collision::Pose() const
 {
   return this->dataPtr->pose;
