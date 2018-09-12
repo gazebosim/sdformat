@@ -24,7 +24,7 @@
 
 // The following line prevent Ruby from complaining about std::isfinite
 #define HAVE_ISFINITE 1
-#define HAVE_STRINGS_H 0
+#undef HAVE_STRINGS_H
 
 #include "ruby.hh"
 #include "sdf/Console.hh"
