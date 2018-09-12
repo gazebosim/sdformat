@@ -121,6 +121,10 @@ sdf_build_tests(${gtest_sources})
 sdf_add_library(sdformat ${sources})
 target_link_libraries(sdformat ${IGNITION-MATH_LIBRARIES} ${RUBY_LIBRARY})
 
+if(WIN32)
+  set_target_properties(sdformat PROPERTIES COMPILE_FLAGS "/UHAVE_STRINGS_H")
+endif()
+
 if (USE_EXTERNAL_TINYXML)
   target_link_libraries(sdformat ${tinyxml_LIBRARIES})
 else()
