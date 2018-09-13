@@ -37,7 +37,7 @@
 
 namespace sdf
 {
-namespace SDF_VERSION_NAMESPACE
+inline namespace SDF_VERSION_NAMESPACE
 {
 typedef std::list<std::string> PathList;
 typedef std::map<std::string, PathList> URIPathMap;
