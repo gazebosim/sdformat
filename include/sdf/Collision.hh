@@ -71,6 +71,10 @@ namespace sdf
     /// \return The collision's geometry.
     public: const Geometry *Geom() const;
 
+    /// \brief Set the collision's geometry
+    /// \param[in] _geom The geometry of the collision object
+    public: void SetGeom(const Geometry &_geom);
+
     /// \brief Get the pose of the collision object. This is the pose of the
     /// collison as specified in SDF
     /// (<collision><pose> ... </pose></collision>).
