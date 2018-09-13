@@ -46,3 +46,19 @@ TEST(DOMcollision, Construction)
   EXPECT_EQ(nullptr, collision.Geom()->PlaneShape());
   EXPECT_EQ(nullptr, collision.Geom()->SphereShape());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMcollision, SetGeometry)
+{
+  sdf::Collision collision;
+  EXPECT_EQ(nullptr, collision.Element());
+  EXPECT_TRUE(collision.Name().empty());
+
+  sdf::Geometry geometry;
+  geometry.SetType(sdf::GeometryType::BOX);
+
+  collision.SetGeom(geometry);
+
+  ASSERT_NE(nullptr, collision.Geom());
+  EXPECT_EQ(sdf::GeometryType::BOX, collision.Geom()->Type());
+}
