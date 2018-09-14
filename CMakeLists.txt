@@ -269,9 +269,9 @@ else (buid_errors)
   ########################################
   # Make the cmake config files
   set(PKG_NAME ${PROJECT_NAME})
-  set(cmake_conf_file "cmake/sdf_config.cmake")
+  set(cmake_conf_file         "cmake/sdformat${SDF_MAJOR_VERSION}-config.cmake")
   set(cmake_conf_version_file "cmake/sdformat${SDF_MAJOR_VERSION}-config-version.cmake")
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${cmake_conf_file}.in" "${CMAKE_CURRENT_BINARY_DIR}/sdformat${SDF_MAJOR_VERSION}-config.cmake" @ONLY)
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdf_config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_file}" @ONLY)
   # Use write_basic_package_version_file to generate a ConfigVersion file that
   # allow users of gazebo to specify the API or version to depend on
   # TODO: keep this instruction until deprecate Ubuntu/Precise and update with
@@ -282,7 +282,7 @@ else (buid_errors)
       VERSION "${SDF_VERSION_FULL}"
       COMPATIBILITY SameMajorVersion)
   install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/sdformat${SDF_MAJOR_VERSION}-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_file}
     ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_version_file}
     DESTINATION
     ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}${SDF_MAJOR_VERSION}/
