@@ -123,14 +123,14 @@ endif()
 
 sdf_build_tests(${gtest_sources})
 
-sdf_add_library(sdformat ${sources})
-target_link_libraries(sdformat ${IGNITION-MATH_LIBRARIES})
+sdf_add_library(sdformat${SDF_MAJOR_VERSION} ${sources})
+target_link_libraries(sdformat${SDF_MAJOR_VERSION} ${IGNITION-MATH_LIBRARIES})
 
 if (USE_EXTERNAL_TINYXML)
-  target_link_libraries(sdformat ${tinyxml_LIBRARIES})
+  target_link_libraries(sdformat${SDF_MAJOR_VERSION} ${tinyxml_LIBRARIES})
 else()
   # Ignore the warnings from the internal library
-  set_target_properties(sdformat PROPERTIES
+  set_target_properties(sdformat${SDF_MAJOR_VERSION} PROPERTIES
       LINK_FLAGS "/IGNORE:4049 /IGNORE:4217")
 endif()
 
@@ -138,9 +138,9 @@ message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
 message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
 
 if (NOT USE_INTERNAL_URDF)
-  target_link_libraries(sdformat ${URDF_LIBRARIES})
+  target_link_libraries(sdformat${SDF_MAJOR_VERSION} ${URDF_LIBRARIES})
 endif()
 
-sdf_install_library(sdformat)
+sdf_install_library(sdformat${SDF_MAJOR_VERSION})
 
 add_subdirectory(cmd)
