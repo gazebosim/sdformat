@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef _SDFIMPL_HH_
-#define _SDFIMPL_HH_
+#ifndef SDFIMPL_HH_
+#define SDFIMPL_HH_
 
 #include <functional>
 #include <memory>
@@ -23,6 +23,7 @@
 
 #include "sdf/Param.hh"
 #include "sdf/Element.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 #include "sdf/Types.hh"
 
@@ -37,7 +38,12 @@
 /// \brief namespace for Simulation Description Format parser
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   class SDFORMAT_VISIBLE SDF;
+  class SDFPrivate;
 
   /// \def SDFPtr
   /// \brief Shared pointer to SDF
@@ -72,7 +78,6 @@ namespace sdf
   SDFORMAT_VISIBLE
   void setFindCallback(std::function<std::string (const std::string &)> _cb);
 
-  class SDFPrivate;
 
   /// \brief Base SDF class
   class SDFORMAT_VISIBLE SDF
@@ -135,6 +140,7 @@ namespace sdf
     private: static std::string version;
   };
   /// \}
+  }
 }
 
 #ifdef _WIN32

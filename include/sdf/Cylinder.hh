@@ -19,9 +19,14 @@
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declare private data class.
   class CylinderPrivate;
 
@@ -81,5 +86,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: CylinderPrivate *dataPtr;
   };
+  }
 }
 #endif
