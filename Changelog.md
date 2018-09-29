@@ -3,35 +3,35 @@
 ### SDFormat 6.0.0 (2018-01-25)
 
 1. SDF DOM: Added a document object model.
-   * [Pull request 387](https://bitbucket.org/osrf/sdformat/pull-requests/387)
-   * [Pull request 389](https://bitbucket.org/osrf/sdformat/pull-requests/389)
+    * [Pull request 387](https://bitbucket.org/osrf/sdformat/pull-requests/387)
+    * [Pull request 389](https://bitbucket.org/osrf/sdformat/pull-requests/389)
 
 1. Add simplified ``readFile`` function.
-   * [Pull request 347](https://bitbucket.org/osrf/sdformat/pull-requests/347)
+    * [Pull request 347](https://bitbucket.org/osrf/sdformat/pull-requests/347)
 
 1. Remove boost::lexical cast instances
-   * [Pull request 342](https://bitbucket.org/osrf/sdformat/pull-requests/342)
+    * [Pull request 342](https://bitbucket.org/osrf/sdformat/pull-requests/342)
 
 1. Remove boost regex and iostreams as dependencies
-   * [Pull request 302](https://bitbucket.org/osrf/sdformat/pull-requests/302)
+    * [Pull request 302](https://bitbucket.org/osrf/sdformat/pull-requests/302)
 
 1. Change certain error checks from asserts to throwing
    sdf::AssertionInternalError, which is more appropriate for a library.
-   * [Pull request 315](https://bitbucket.org/osrf/sdformat/pull-requests/315)
+    * [Pull request 315](https://bitbucket.org/osrf/sdformat/pull-requests/315)
 
 1. Updated the internal copy of urdfdom to 1.0, removing more of boost.
-   * [Pull request 324](https://bitbucket.org/osrf/sdformat/pull-requests/324)
+    * [Pull request 324](https://bitbucket.org/osrf/sdformat/pull-requests/324)
 
 1. urdfdom 1.0 is now required on all platforms.
-   * [Pull request 324](https://bitbucket.org/osrf/sdformat/pull-requests/324)
+    * [Pull request 324](https://bitbucket.org/osrf/sdformat/pull-requests/324)
 
 1. Remove boost filesystem as a dependency
-   * [Pull request 335](https://bitbucket.org/osrf/sdformat/pull-requests/335)
-   * [Pull request 338](https://bitbucket.org/osrf/sdformat/pull-requests/338)
-   * [Pull request 339](https://bitbucket.org/osrf/sdformat/pull-requests/339)
+    * [Pull request 335](https://bitbucket.org/osrf/sdformat/pull-requests/335)
+    * [Pull request 338](https://bitbucket.org/osrf/sdformat/pull-requests/338)
+    * [Pull request 339](https://bitbucket.org/osrf/sdformat/pull-requests/339)
 
 1. Deprecated sdf::Color, and switch to use ignition::math::Color
-   * [Pull request 330](https://bitbucket.org/osrf/sdformat/pull-requests/330)
+    * [Pull request 330](https://bitbucket.org/osrf/sdformat/pull-requests/330)
 
 ## SDFormat 5.x
 
