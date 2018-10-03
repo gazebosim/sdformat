@@ -1,5 +1,26 @@
 ## SDFormat 6.0
 
+### SDFormat 6.X.X (20XX-XX-XX)
+
+
+### SDFormat 6.1.0 (2018-10-03)
+
+1. Add collision_detector to dart physics config
+    * [Pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
+
+1. Fix Windows support for SDFormat6
+    * [Pull request 401](https://bitbucket.org/osrf/sdformat/pull-requests/401)
+
+1. root.sdf: default sdf version 1.6
+    * [Pull request 425](https://bitbucket.org/osrf/sdformat/pull-requests/425)
+
+1. parser_urdf: print value of highstop instead of pointer address
+    * [Pull request 408](https://bitbucket.org/osrf/sdformat/pull-requests/408)
+
+1. Tweak error output so jenkins doesn't think it's a compiler warning
+    * [Pull request 402](https://bitbucket.org/osrf/sdformat/pull-requests/402)
+
+
 ### SDFormat 6.0.0 (2018-01-25)
 
 1. SDF DOM: Added a document object model.
