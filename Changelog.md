@@ -3,7 +3,7 @@
 ### SDFormat 6.X.X (20XX-XX-XX)
 
 
-### SDFormat 6.1.0 (2018-10-03)
+### SDFormat 6.1.0 (2018-10-04)
 
 1. Add collision_detector to dart physics config
     * [Pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
