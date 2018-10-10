@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef _SDFORMAT_SDFEXTENSION_HH_
-#define _SDFORMAT_SDFEXTENSION_HH_
+#ifndef SDFORMAT_SDFEXTENSION_HH_
+#define SDFORMAT_SDFEXTENSION_HH_
 
 #include <tinyxml.h>
 
@@ -26,10 +26,15 @@
 
 #include <ignition/math/Pose3.hh>
 
+#include <sdf/sdf_config.h>
 #include "sdf/Types.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \internal
   /// \brief A class for holding sdf extension elements in urdf
   class SDFExtension
@@ -117,5 +122,6 @@ namespace sdf
 
     friend class SDFORMAT_VISIBLE URDF2SDF;
   };
+  }
 }
 #endif

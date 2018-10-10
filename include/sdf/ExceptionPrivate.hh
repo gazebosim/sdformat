@@ -15,14 +15,19 @@
  *
  */
 
-#ifndef _SDF_EXCEPTION_PRIVATE_HH_
-#define _SDF_EXCEPTION_PRIVATE_HH_
+#ifndef SDF_EXCEPTION_PRIVATE_HH_
+#define SDF_EXCEPTION_PRIVATE_HH_
 
 #include <cstdint>
 #include <string>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \internal
   /// \brief Private data for Exception
   class ExceptionPrivate
@@ -36,6 +41,7 @@ namespace sdf
     /// \brief The error string
     public: std::string str;
   };
+  }
 }
 #endif
 

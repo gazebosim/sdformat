@@ -19,10 +19,15 @@
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declarations.
   class GuiPrivate;
 
@@ -65,8 +70,15 @@ namespace sdf
     /// \return True if this instance equals the given Gui.
     public: bool operator==(const Gui &_gui) const;
 
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
     /// \brief Private data pointer.
     private: GuiPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif

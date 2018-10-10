@@ -23,6 +23,7 @@
 TEST(DOMWorld, Construction)
 {
   sdf::World world;
+  EXPECT_EQ(nullptr, world.Element());
   EXPECT_TRUE(world.Name().empty());
   EXPECT_EQ(ignition::math::Vector3d(0, 0, -9.80665), world.Gravity());
   EXPECT_EQ(ignition::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6),
@@ -35,6 +36,8 @@ TEST(DOMWorld, Construction)
   EXPECT_EQ(nullptr, world.ModelByIndex(1));
   EXPECT_FALSE(world.ModelNameExists(""));
   EXPECT_FALSE(world.ModelNameExists("default"));
+
+  EXPECT_EQ(1u, world.PhysicsCount());
 }
 
 /////////////////////////////////////////////////

@@ -35,6 +35,42 @@ TEST(DOMCylinder, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMCylinder, MoveConstructor)
+{
+  sdf::Cylinder cylinder;
+  cylinder.SetRadius(0.2);
+  cylinder.SetLength(3.0);
+
+  sdf::Cylinder cylinder2(std::move(cylinder));
+  EXPECT_DOUBLE_EQ(0.2, cylinder2.Radius());
+  EXPECT_DOUBLE_EQ(3.0, cylinder2.Length());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCylinder, CopyConstructor)
+{
+  sdf::Cylinder cylinder;
+  cylinder.SetRadius(0.2);
+  cylinder.SetLength(3.0);
+
+  sdf::Cylinder cylinder2(cylinder);
+  EXPECT_DOUBLE_EQ(0.2, cylinder2.Radius());
+  EXPECT_DOUBLE_EQ(3.0, cylinder2.Length());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCylinder, AssignemntOperator)
+{
+  sdf::Cylinder cylinder;
+  cylinder.SetRadius(0.2);
+  cylinder.SetLength(3.0);
+
+  sdf::Cylinder cylinder2 = cylinder;
+  EXPECT_DOUBLE_EQ(0.2, cylinder2.Radius());
+  EXPECT_DOUBLE_EQ(3.0, cylinder2.Length());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMCylinder, Load)
 {
   sdf::Cylinder cylinder;

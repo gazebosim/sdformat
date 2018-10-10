@@ -22,12 +22,17 @@
 #include <string>
 
 #include "sdf/SDFImpl.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \brief Get the best SDF version from models supported by this sdformat
   /// \param[in] _modelXML XML element from config file pointing to the
   ///            model XML tag
@@ -59,6 +64,14 @@ namespace sdf
   /// \return True on success, false on error.
   bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors);
 
-  void copyChildren(ElementPtr _sdf, TiXmlElement *_xml);
+  /// \brief Copy child XML elements into the _sdf element.
+  /// \param[in] _sdf Parent Element.
+  /// \param[in] _xml Pointer to element from which child elements should be
+  /// copied.
+  /// \param[in] _onlyUnknown True to copy only elements that are NOT part of
+  /// the SDF spec. Set this to false to copy everything.
+  void copyChildren(ElementPtr _sdf, TiXmlElement *_xml,
+                    const bool _onlyUnknown);
+  }
 }
 #endif

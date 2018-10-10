@@ -45,4 +45,6 @@ TEST(DOMVisual, Construction)
   EXPECT_EQ(nullptr, visual.Geom()->CylinderShape());
   EXPECT_EQ(nullptr, visual.Geom()->PlaneShape());
   EXPECT_EQ(nullptr, visual.Geom()->SphereShape());
+
+  EXPECT_EQ(nullptr, visual.Material());
 }

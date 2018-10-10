@@ -6,7 +6,12 @@ pipelines:
         script:
           # Dependencies
           - apt update
-          - apt -y install cmake build-essential curl git mercurial lsb-release wget g++-8 libtinyxml-dev libxml2-utils ruby-dev python-psutil cppcheck
+          - apt -y install wget lsb-release gnupg
+          - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+          - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
+          - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+          - apt-get update
+          - apt -y install cmake build-essential curl git mercurial g++-8 libtinyxml-dev libxml2-utils ruby-dev python-psutil cppcheck
           - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
           - gcc -v
           - g++ -v
@@ -18,30 +23,9 @@ pipelines:
           - cd ..
           # Static checking before building - fail fast
           - sh tools/code_check.sh
-          # Ignition cmake
-          - hg clone http://bitbucket.org/ignitionrobotics/ign-cmake -b gz11
-          - cd ign-cmake
-          - mkdir build
-          - cd build
-          - cmake .. -DBUILD_TESTING=OFF
-          - make -j4 install
-          - cd ../..
-          # Ignition tools
-          - hg clone http://bitbucket.org/ignitionrobotics/ign-tools
-          - cd ign-tools
-          - mkdir build
-          - cd build
-          - cmake .. # -DENABLE_TESTS_COMPILATION=false
-          - make -j4 install
-          - cd ../..
-          # Ignition math
-          - hg clone http://bitbucket.org/ignitionrobotics/ign-math -b gz11
-          - cd ign-math
-          - mkdir build
-          - cd build
-          - cmake .. -DBUILD_TESTING=OFF
-          - make -j4 install
-          - cd ../..
+          # Dependency: Ignition packages
+          - apt-get -y install
+            libignition-cmake2-dev libignition-tools-dev libignition-math6-dev
           # SDFormat
           - mkdir build
           - cd build

@@ -20,10 +20,15 @@
 #include <string>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declare private data class.
   class JointAxisPrivate;
 
@@ -207,8 +212,15 @@ namespace sdf
     /// \sa double Dissipation() const
     public: void SetDissipation(const double _dissipation) const;
 
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
     /// \brief Private data pointer
     private: JointAxisPrivate *dataPtr;
   };
+  }
 }
 #endif

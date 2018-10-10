@@ -20,12 +20,25 @@
 #include <string>
 
 #include "sdf/SDFImpl.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser
+///
+/// The parsing functions read XML elements contained in either a file or
+/// string and translates the XML elements into SDF data structures. This
+/// translation finds errors in the provided XML, fills in default values,
+/// and performs any necessary version related conversions.
+///
+/// XML elements that are not part of the SDF specification are copied in
+/// place. This preserves the given XML structure and data.
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \brief Init based on the installed sdf_format.xml file
   SDFORMAT_VISIBLE
   bool init(SDFPtr _sdf);
@@ -157,5 +170,6 @@ namespace sdf
   /// \return True on success.
   SDFORMAT_VISIBLE
   bool erbFile(const std::string &_filename, std::string &_result);
+  }
 }
 #endif

@@ -134,7 +134,7 @@ macro (sdf_build_tests)
     endif()
 
     add_dependencies(${BINARY_NAME}
-      gtest gtest_main sdformat
+      gtest gtest_main sdformat${SDF_MAJOR_VERSION}
       )
 
     link_directories(${IGNITION-MATH_LIBRARY_DIRS})
@@ -143,7 +143,7 @@ macro (sdf_build_tests)
       target_link_libraries(${BINARY_NAME}
         libgtest.a
         libgtest_main.a
-        sdformat
+        sdformat${SDF_MAJOR_VERSION}
         pthread
         ${tinyxml_LIBRARIES}
         ${IGNITION-MATH_LIBRARIES}
@@ -153,7 +153,7 @@ macro (sdf_build_tests)
       target_link_libraries(${BINARY_NAME}
         gtest.lib
         gtest_main.lib
-        sdformat.dll
+        sdformat${SDF_MAJOR_VERSION}.dll
         ${IGNITION-MATH_LIBRARIES}
         ${RUBY_LIBRARY}
       )
@@ -161,7 +161,7 @@ macro (sdf_build_tests)
       # Copy in sdformat library
       add_custom_command(TARGET ${BINARY_NAME}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:sdformat>
+        $<TARGET_FILE:sdformat${SDF_MAJOR_VERSION}>
         $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
 
     endif()
