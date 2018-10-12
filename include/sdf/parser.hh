@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef _SDF_PARSER_HH_
-#define _SDF_PARSER_HH_
+#ifndef SDF_PARSER_HH_
+#define SDF_PARSER_HH_
 
 #include <string>
 
@@ -24,6 +24,14 @@
 
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser
+///
+/// The parsing functions read XML elements contained in either a file or
+/// string and translates the XML elements into SDF data structures. This
+/// translation finds errors in the provided XML, fills in default values,
+/// and performs any necessary version related conversions.
+///
+/// XML elements that are not part of the SDF specification are copied in
+/// place. This preserves the given XML structure and data.
 namespace sdf
 {
   /// \brief Init based on the installed sdf_format.xml file

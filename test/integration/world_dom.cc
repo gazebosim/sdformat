@@ -73,7 +73,6 @@ TEST(DOMWorld, LoadIncorrectElement)
       std::string::npos);
 }
 
-
 //////////////////////////////////////////////////
 TEST(DOMWorld, Load)
 {
@@ -89,9 +88,32 @@ TEST(DOMWorld, Load)
 
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
+  ASSERT_NE(nullptr, world->Element());
   EXPECT_EQ(world->Name(), "default");
   EXPECT_EQ(world->AudioDevice(), "/dev/audio");
   EXPECT_EQ(world->WindLinearVelocity(), ignition::math::Vector3d(4, 5, 6));
   EXPECT_EQ(world->Gravity(), ignition::math::Vector3d(1, 2, 3));
   EXPECT_EQ(world->MagneticField(), ignition::math::Vector3d(-1, 0.5, 10));
+
+  const sdf::Atmosphere *atmosphere = world->Atmosphere();
+  ASSERT_NE(nullptr, atmosphere);
+  EXPECT_EQ(sdf::AtmosphereType::ADIABATIC, atmosphere->Type());
+  EXPECT_DOUBLE_EQ(23.1, atmosphere->Temperature().Kelvin());
+  EXPECT_DOUBLE_EQ(4.3, atmosphere->TemperatureGradient());
+  EXPECT_DOUBLE_EQ(43.1, atmosphere->Pressure());
+
+  const sdf::Gui *gui = world->Gui();
+  ASSERT_NE(nullptr, gui);
+  ASSERT_NE(nullptr, gui->Element());
+  EXPECT_TRUE(gui->Fullscreen());
+
+  ASSERT_EQ(1u, world->PhysicsCount());
+  const sdf::Physics *physics = world->PhysicsByIndex(1);
+  ASSERT_EQ(nullptr, physics);
+  physics = world->PhysicsByIndex(0);
+  ASSERT_NE(nullptr, physics);
+  const sdf::Physics *physicsDefault = world->PhysicsDefault();
+  EXPECT_EQ(physics, physicsDefault);
+  EXPECT_TRUE(world->PhysicsNameExists("my_physics"));
+  EXPECT_FALSE(world->PhysicsNameExists("invalid_physics"));
 }

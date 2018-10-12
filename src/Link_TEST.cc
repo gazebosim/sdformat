@@ -27,6 +27,7 @@
 TEST(DOMLink, Construction)
 {
   sdf::Link link;
+  EXPECT_EQ(nullptr, link.Element());
   EXPECT_TRUE(link.Name().empty());
 
   link.SetName("test_link");
@@ -86,6 +87,7 @@ TEST(DOMLink, Construction)
 TEST(DOMLink, InvalidInertia)
 {
   sdf::Link link;
+  EXPECT_EQ(nullptr, link.Element());
   EXPECT_TRUE(link.Name().empty());
 
   ignition::math::Inertiald invalidInertial {

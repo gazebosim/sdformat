@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="model">
+    <link name="link">
+      <visual name="visual1">
+        <material>
+          <ambient>0.4 0.2 0.3 1.0</ambient>
+          <diffuse>0.2 0.5 0.1 1.0</diffuse>
+          <specular>0.7 0.3 0.5 0.9</specular>
+          <emissive>1.0 0.0 0.2 1.0</emissive>
+          <shader type="vertex">
+          </shader>
+          <script>
+            <uri>myuri</uri>
+            <name>myname</name>
+          </script>
+        </material>
+      </visual>
+
+      <visual name="visual2">
+        <material>
+          <shader type="pixel">
+          </shader>
+        </material>
+      </visual>
+
+      <visual name="visual3">
+        <material>
+          <shader type="normal_map_objectspace">
+            <normal_map>my_normal_map</normal_map>
+          </shader>
+        </material>
+      </visual>
+
+    </link>
+  </model>
+</sdf>

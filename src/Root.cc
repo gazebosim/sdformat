@@ -40,6 +40,9 @@ class sdf::RootPrivate
 
   /// \brief The models specified under the root SDF element
   public: std::vector<Model> models;
+
+  /// \brief The SDF element pointer generated during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -103,11 +106,11 @@ Errors Root::Load(SDFPtr _sdf)
 {
   Errors errors;
 
-  ElementPtr sdf = _sdf->Root();
+  this->dataPtr->sdf = _sdf->Root();
 
   // Get the SDF version.
   std::pair<std::string, bool> versionPair =
-    sdf->Get<std::string>("version", SDF_VERSION);
+    this->dataPtr->sdf->Get<std::string>("version", SDF_VERSION);
 
   // Check that the version exists. Exit if the version is missing.
   // readFile will fail if the version is missing, so this
@@ -122,9 +125,9 @@ Errors Root::Load(SDFPtr _sdf)
   this->dataPtr->version = versionPair.first;
 
   // Read all the worlds
-  if (sdf->HasElement("world"))
+  if (this->dataPtr->sdf->HasElement("world"))
   {
-    ElementPtr elem = sdf->GetElement("world");
+    ElementPtr elem = this->dataPtr->sdf->GetElement("world");
     while (elem)
     {
       World world;
@@ -159,8 +162,8 @@ Errors Root::Load(SDFPtr _sdf)
   std::shared_ptr<FrameGraph> frameGraph(new FrameGraph);
 
   // Load all the models.
-  Errors modelLoadErrors = loadUniqueRepeated<Model>(sdf, "model",
-      this->dataPtr->models, frameGraph);
+  Errors modelLoadErrors = loadUniqueRepeated<Model>(this->dataPtr->sdf,
+      "model", this->dataPtr->models, frameGraph);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
   return errors;
@@ -230,4 +233,10 @@ bool Root::ModelNameExists(const std::string &_name) const
     }
   }
   return false;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Root::Element() const
+{
+  return this->dataPtr->sdf;
 }

@@ -61,6 +61,9 @@ class sdf::JointPrivate
   public: std::array<std::unique_ptr<JointAxis>, 2> axis;
 
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -88,6 +91,8 @@ Errors Joint::Load(ElementPtr _sdf,
     std::shared_ptr<FrameGraph> _frameGraph)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that the provided SDF element is a <joint>
   // This is an error that cannot be recovered, so return an error.
@@ -149,7 +154,11 @@ Errors Joint::Load(ElementPtr _sdf,
   if (typePair.second)
   {
     std::transform(typePair.first.begin(), typePair.first.end(),
-                   typePair.first.begin(), ::tolower);
+        typePair.first.begin(),
+        [](unsigned char c)
+        {
+          return static_cast<unsigned char>(std::tolower(c));
+        });
     if (typePair.first == "ball")
       this->dataPtr->type = JointType::BALL;
     else if (typePair.first == "continuous")
@@ -269,4 +278,10 @@ void Joint::SetPose(const ignition::math::Pose3d &_pose)
 void Joint::SetPoseFrame(const std::string &_frame)
 {
   this->dataPtr->poseFrame = _frame;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Joint::Element() const
+{
+  return this->dataPtr->sdf;
 }

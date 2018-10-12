@@ -67,11 +67,13 @@ TEST(DOMJointAxis, Complete)
   // Get the joint
   const sdf::Joint *joint = model->JointByIndex(0);
   ASSERT_NE(nullptr, joint);
+  ASSERT_NE(nullptr, joint->Element());
   EXPECT_EQ(sdf::JointType::REVOLUTE, joint->Type());
 
   // Get the first axis
   const sdf::JointAxis *axis = joint->Axis();
   ASSERT_NE(nullptr, axis);
+  ASSERT_NE(nullptr, axis->Element());
 
   // Get the second axis
   const sdf::JointAxis *axis2 = joint->Axis(1);

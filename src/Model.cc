@@ -32,6 +32,19 @@ class sdf::ModelPrivate
   /// \brief Name of the model.
   public: std::string name = "";
 
+  /// \brief True if this model is specified as static, false otherwise.
+  public: bool isStatic = false;
+
+  /// \brief True if this model should self-collide, false otherwise.
+  public: bool selfCollide = false;
+
+  /// \brief True if this model is allowed to conserve processing power by not
+  /// updating when it's at rest.
+  public: bool allowAutoDisable = true;
+
+  /// \brief True if this model should be subject to wind, false otherwise.
+  public: bool enableWind = false;
+
   /// \brief Pose of the model
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
@@ -45,6 +58,9 @@ class sdf::ModelPrivate
   public: std::vector<Joint> joints;
 
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -80,8 +96,9 @@ Errors Model::Load(ElementPtr _sdf)
 {
   if (!this->dataPtr->frameGraph)
     this->dataPtr->frameGraph.reset(new FrameGraph);
-
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that the provided SDF element is a <model>
   // This is an error that cannot be recovered, so return an error.
@@ -99,6 +116,15 @@ Errors Model::Load(ElementPtr _sdf)
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A model name is required, but the name is not set."});
   }
+
+  this->dataPtr->isStatic = _sdf->Get<bool>("static", false).first;
+
+  this->dataPtr->selfCollide = _sdf->Get<bool>("self_collide", false).first;
+
+  this->dataPtr->allowAutoDisable =
+    _sdf->Get<bool>("allow_auto_disable", true).first;
+
+  this->dataPtr->enableWind = _sdf->Get<bool>("enable_wind", false).first;
 
   // Load the pose.
   ignition::math::Pose3d pose;
@@ -128,9 +154,57 @@ std::string Model::Name() const
 }
 
 /////////////////////////////////////////////////
-void Model::SetName(const std::string &_name) const
+void Model::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
+bool Model::Static() const
+{
+  return this->dataPtr->isStatic;
+}
+
+/////////////////////////////////////////////////
+void Model::SetStatic(const bool _static)
+{
+  this->dataPtr->isStatic = _static;
+}
+
+/////////////////////////////////////////////////
+bool Model::SelfCollide() const
+{
+  return this->dataPtr->selfCollide;
+}
+
+/////////////////////////////////////////////////
+void Model::SetSelfCollide(const bool _selfCollide)
+{
+  this->dataPtr->selfCollide = _selfCollide;
+}
+
+/////////////////////////////////////////////////
+bool Model::AllowAutoDisable() const
+{
+  return this->dataPtr->allowAutoDisable;
+}
+
+/////////////////////////////////////////////////
+void Model::SetAllowAutoDisable(const bool _allowAutoDisable)
+{
+  this->dataPtr->allowAutoDisable = _allowAutoDisable;
+}
+
+/////////////////////////////////////////////////
+bool Model::EnableWind() const
+{
+  return this->dataPtr->enableWind;
+}
+
+/////////////////////////////////////////////////
+void Model::SetEnableWind(const bool _enableWind)
+{
+  this->dataPtr->enableWind =_enableWind;
 }
 
 /////////////////////////////////////////////////
@@ -235,4 +309,10 @@ const Link *Model::LinkByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Model::Element() const
+{
+  return this->dataPtr->sdf;
 }

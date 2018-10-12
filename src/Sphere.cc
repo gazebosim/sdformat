@@ -24,6 +24,9 @@ class sdf::SpherePrivate
 {
   // Radius of the sphere
   public: double radius = 1.0;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -44,12 +47,13 @@ Errors Sphere::Load(ElementPtr _sdf)
 {
   Errors errors;
 
+  this->dataPtr->sdf = _sdf;
+
   // Check that sdf is a valid pointer
   if (!_sdf)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Attempting to load a plane, but the provided SDF "
-        "element is null."});
+        "Attempting to load a sphere, but the provided SDF element is null."});
     return errors;
   }
 
@@ -95,4 +99,10 @@ double Sphere::Radius() const
 void Sphere::SetRadius(const double _radius)
 {
   this->dataPtr->radius = _radius;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Sphere::Element() const
+{
+  return this->dataPtr->sdf;
 }

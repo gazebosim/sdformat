@@ -20,14 +20,18 @@
 #include <string>
 #include <ignition/math/Vector3.hh>
 
+#include "sdf/Atmosphere.hh"
 #include "sdf/Element.hh"
+#include "sdf/Gui.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
   // Forward declare private data class.
+  class Light;
   class Model;
+  class Physics;
   class WorldPrivate;
 
   class SDFORMAT_VISIBLE World
@@ -125,6 +129,69 @@ namespace sdf
     /// \param[in] _name Name of the model to check.
     /// \return True if there exists a model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
+
+    /// \brief Get the number of lights.
+    /// \return Number of lights contained in this World object.
+    public: uint64_t LightCount() const;
+
+    /// \brief Get a light based on an index.
+    /// \param[in] _index Index of the light. The index should be in the
+    /// range [0..LightCount()).
+    /// \return Pointer to the light. Nullptr if the index does not exist.
+    /// \sa uint64_t LightCount() const
+    public: const Light *LightByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a light name exists.
+    /// \param[in] _name Name of the light to check.
+    /// \return True if there exists a light with the given name.
+    public: bool LightNameExists(const std::string &_name) const;
+
+    /// \brief Get a pointer to the atmosphere model associated with this
+    /// world. A nullptr indicates that an atmosphere model has not been set.
+    /// \return Pointer to this world's atmosphere model. Nullptr inidicates
+    /// that there is no atmosphere model.
+    public: const sdf::Atmosphere *Atmosphere() const;
+
+    /// \brief Set the atmosphere model associated with this world.
+    /// \param[in] _atmosphere The new atmosphere model for this world.
+    public: void SetAtmosphere(const sdf::Atmosphere &_atmosphere) const;
+
+    /// \brief Get a pointer to the Gui associated with this
+    /// world. A nullptr indicates that a Gui element has not been specified.
+    /// \return Pointer to this world's Gui parameters. Nullptr inidicates
+    /// that there are no Gui parameters.
+    public: sdf::Gui *Gui() const;
+
+    /// \brief Set the Gui parameters associated with this world.
+    /// \param[in] _gui The new Gui parameter for this world
+    public: void SetGui(const sdf::Gui &_gui);
+
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
+    /// \brief Get the number of physics profiles.
+    /// \return Number of physics profiles contained in this World object.
+    public: uint64_t PhysicsCount() const;
+
+    /// \brief Get a physics profile based on an index.
+    /// \param[in] _index Index of the physics profile.
+    /// The index should be in the range [0..PhysicsCount()).
+    /// \return Pointer to the physics profile. Nullptr if the index does not
+    /// exist.
+    ///// \sa uint64_t PhysicsCount() const
+    public: const Physics *PhysicsByIndex(const uint64_t _index) const;
+
+    /// \brief Get the default physics profile.
+    /// \return Pointer to the default physics profile.
+    public: const Physics *PhysicsDefault() const;
+
+    /// \brief Get whether a physics profile name exists.
+    /// \param[in] _name Name of the physics profile to check.
+    /// \return True if there exists a physics profile with the given name.
+    public: bool PhysicsNameExists(const std::string &_name) const;
 
     /// \brief Private data pointer.
     private: WorldPrivate *dataPtr = nullptr;

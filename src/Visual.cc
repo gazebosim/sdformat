@@ -39,6 +39,12 @@ class sdf::VisualPrivate
   public: Geometry geom;
 
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
+
+  /// \brief Pointer to the visual's material properties.
+  public: std::unique_ptr<Material> material;
 };
 
 /////////////////////////////////////////////////
@@ -66,6 +72,8 @@ Errors Visual::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 {
   Errors errors;
 
+  this->dataPtr->sdf = _sdf;
+
   // Check that the provided SDF element is a <visual>
   // This is an error that cannot be recovered, so return an error.
   if (_sdf->GetName() != "visual")
@@ -81,6 +89,13 @@ Errors Visual::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   {
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A visual name is required, but the name is not set."});
+  }
+
+  if (_sdf->HasElement("material"))
+  {
+    this->dataPtr->material.reset(new sdf::Material());
+    Errors err = this->dataPtr->material->Load(_sdf->GetElement("material"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
@@ -140,4 +155,16 @@ void Visual::SetPoseFrame(const std::string &_frame)
 const Geometry *Visual::Geom() const
 {
   return &this->dataPtr->geom;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Visual::Element() const
+{
+  return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+sdf::Material *Visual::Material() const
+{
+  return this->dataPtr->material.get();
 }

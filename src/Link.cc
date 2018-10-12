@@ -52,6 +52,9 @@ class sdf::LinkPrivate
             ignition::math::Pose3d::Zero};
 
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -78,6 +81,8 @@ Link::~Link()
 Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that the provided SDF element is a <link>
   // This is an error that cannot be recovered, so return an error.
@@ -400,4 +405,10 @@ const Collision *Link::CollisionByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Link::Element() const
+{
+  return this->dataPtr->sdf;
 }

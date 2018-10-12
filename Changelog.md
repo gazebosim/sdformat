@@ -1,3 +1,31 @@
+## SDFormat 7.0
+
+### SDFormat 7.0.0 (xxxx-xx-xx)
+
+1. Preserve XML elements that are not part of the SDF specification.
+   * [Pull request 449](https://bitbucket.org/osrf/sdformat/pull-requests/449)
+
+1. Embed SDF specification files directly in libsdformat.so.
+   * [Pull request 434](https://bitbucket.org/osrf/sdformat/pull-requests/434)
+
+1. Removed support for SDF spec versions 1.0 and 1.2
+   * [Pull request #432](https://bitbucket.org/osrf/sdformat/pull-requests/432)
+
+1. SDF DOM: Additions to the document object model.
+   * [Pull request 433](https://bitbucket.org/osrf/sdformat/pull-requests/433)
+   * [Pull request 441](https://bitbucket.org/osrf/sdformat/pull-requests/441)
+   * [Pull request 442](https://bitbucket.org/osrf/sdformat/pull-requests/442)
+   * [Pull request 445](https://bitbucket.org/osrf/sdformat/pull-requests/445)
+   * [Pull request 441](https://bitbucket.org/osrf/sdformat/pull-requests/441)
+   * [Pull request 451](https://bitbucket.org/osrf/sdformat/pull-requests/451)
+   * [Pull request 455](https://bitbucket.org/osrf/sdformat/pull-requests/455)
+
+1. SDF DOM: Additions to the document object model.
+   * [Pull request 442](https://bitbucket.org/osrf/sdformat/pull-requests/442)
+
+1. SDF DOM: Add Element() accessor to Gui, JointAxis and World classes.
+   * [Pull request 450](https://bitbucket.org/osrf/sdformat/pull-requests/450)
+
 ## SDFormat 6.0
 
 ### SDFormat 6.1.0 (xxxx-xx-xx)

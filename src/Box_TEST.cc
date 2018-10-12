@@ -23,6 +23,7 @@
 TEST(DOMBox, Construction)
 {
   sdf::Box box;
+  EXPECT_EQ(nullptr, box.Element());
 
   EXPECT_EQ(ignition::math::Vector3d::One, box.Size());
 
@@ -47,6 +48,7 @@ TEST(DOMBox, Load)
   errors = box.Load(sdf);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+  EXPECT_NE(nullptr, box.Element());
 
   // Missing <size> element
   sdf->SetName("box");
@@ -54,4 +56,5 @@ TEST(DOMBox, Load)
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <size>"));
+  EXPECT_NE(nullptr, box.Element());
 }

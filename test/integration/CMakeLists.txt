@@ -6,6 +6,7 @@ set(tests
   cfm_damping_implicit_spring_damper.cc
   collision_dom.cc
   converter.cc
+  deprecated_specs.cc
   disable_fixed_joint_reduction.cc
   fixed_joint_reduction.cc
   force_torque_sensor.cc
@@ -15,6 +16,7 @@ set(tests
   joint_axis_frame.cc
   joint_axis_dom.cc
   joint_dom.cc
+  light_dom.cc
   link_dom.cc
   link_light.cc
   locale_fix.cc
@@ -28,6 +30,7 @@ set(tests
   provide_feedback.cc
   root_dom.cc
   sdf_basic.cc
+  unknown.cc
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
   visual_dom.cc

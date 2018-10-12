@@ -19,6 +19,7 @@ if (USE_EXTERNAL_TINYXML)
 endif()
 
 set (sources
+  Atmosphere.cc
   Box.cc
   Collision.cc
   Console.cc
@@ -29,14 +30,19 @@ set (sources
   Exception.cc
   Filesystem.cc
   Geometry.cc
+  Gui.cc
   ign.cc
   Joint.cc
   JointAxis.cc
+  Light.cc
   Link.cc
+  Material.cc
+  Mesh.cc
   Model.cc
   parser.cc
   parser_urdf.cc
   Param.cc
+  Physics.cc
   Plane.cc
   Root.cc
   SDF.cc
@@ -77,6 +83,7 @@ else()
 endif()
 
 set (gtest_sources
+  Atmosphere_TEST.cc
   Box_TEST.cc
   Collision_TEST.cc
   Console_TEST.cc
@@ -87,13 +94,18 @@ set (gtest_sources
   Exception_TEST.cc
   Filesystem_TEST.cc
   Geometry_TEST.cc
+  Gui_TEST.cc
   Joint_TEST.cc
   JointAxis_TEST.cc
+  Light_TEST.cc
   Link_TEST.cc
+  Material_TEST.cc
+  Mesh_TEST.cc
   Model_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
+  Physics_TEST.cc
   Plane_TEST.cc
   Root_TEST.cc
   SDF_TEST.cc

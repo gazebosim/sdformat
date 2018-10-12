@@ -39,6 +39,9 @@ class sdf::CollisionPrivate
   public: Geometry geom;
 
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -65,6 +68,8 @@ Collision::~Collision()
 Errors Collision::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that the provided SDF element is a <collision>
   // This is an error that cannot be recovered, so return an error.
@@ -140,4 +145,10 @@ void Collision::SetPose(const ignition::math::Pose3d &_pose)
 void Collision::SetPoseFrame(const std::string &_frame)
 {
   this->dataPtr->poseFrame = _frame;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Collision::Element() const
+{
+  return this->dataPtr->sdf;
 }

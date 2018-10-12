@@ -138,7 +138,9 @@ namespace sdf
 
     /// \brief Get the pose of the joint. This is the pose of the joint
     /// as specified in SDF (<joint> <pose> ... </pose></joint>).
-    /// \return The pose of the joint.
+    /// Transformations have not been applied to the return value.
+    /// \return The pose of the joint. This is the raw pose value, as set in
+    /// the SDF file.
     public: const ignition::math::Pose3d &Pose() const;
 
     /// \brief Set the pose of the joint.
@@ -148,15 +150,21 @@ namespace sdf
 
     /// \brief Get the name of the coordinate frame in which this joint's
     /// pose is expressed. A empty value indicates that the frame is the
-    /// parent model.
+    /// child link frame.
     /// \return The name of the pose frame.
     public: const std::string &PoseFrame() const;
 
     /// \brief Set the name of the coordinate frame in which this joint's
     /// pose is expressed. A empty value indicates that the frame is the
-    /// parent model.
+    /// child link frame.
     /// \param[in] _frame The name of the pose frame.
     public: void SetPoseFrame(const std::string &_frame);
+
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
     private: JointPrivate *dataPtr = nullptr;

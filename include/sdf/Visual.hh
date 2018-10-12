@@ -22,6 +22,7 @@
 #include "sdf/Box.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
+#include "sdf/Material.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
 #include "sdf/Types.hh"
@@ -90,6 +91,18 @@ namespace sdf
     /// the parent link.
     /// \return The name of the pose frame.
     public: void SetPoseFrame(const std::string &_pose);
+
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
+    /// \brief Get a pointer to the visual's material properties. This can
+    /// be a nullptr if material properties have not been set.
+    /// \return Pointer to the visual's material properties. Nullptr
+    /// indicates that material properties have not been set.
+    public: sdf::Material *Material() const;
 
     /// \brief Private data pointer.
     private: VisualPrivate *dataPtr = nullptr;

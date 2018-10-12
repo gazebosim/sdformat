@@ -54,41 +54,35 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 //////////////////////////////////////////////////
 bool init(SDFPtr _sdf)
 {
-  bool result = false;
-
-  std::string filename;
-  std::string fileToFind = "root.sdf";
-
-  if (sdf::SDF::Version() == "1.0" || sdf::SDF::Version() == "1.2")
-  {
-    fileToFind = "gazebo.sdf";
-  }
-
-  filename = sdf::findFile(fileToFind);
-
-  FILE *ftest = fopen(filename.c_str(), "r");
-  if (ftest)
-  {
-    fclose(ftest);
-    result = _initFile(filename, _sdf);
-  }
-  else
-  {
-    sdferr << "Unable to find or open SDF file[" << fileToFind << "]\n";
-  }
-
-  return result;
+  std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmldata.c_str());
+  return initDoc(&xmlDoc, _sdf);
 }
 
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, SDFPtr _sdf)
 {
+  std::string xmldata = SDF::EmbeddedSpec(_filename, true);
+  if (!xmldata.empty())
+  {
+    TiXmlDocument xmlDoc;
+    xmlDoc.Parse(xmldata.c_str());
+    return initDoc(&xmlDoc, _sdf);
+  }
   return _initFile(sdf::findFile(_filename), _sdf);
 }
 
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, ElementPtr _sdf)
 {
+  std::string xmldata = SDF::EmbeddedSpec(_filename, true);
+  if (!xmldata.empty())
+  {
+    TiXmlDocument xmlDoc;
+    xmlDoc.Parse(xmldata.c_str());
+    return initDoc(&xmlDoc, _sdf);
+  }
   return _initFile(sdf::findFile(_filename), _sdf);
 }
 
@@ -447,8 +441,8 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 }
 
 //////////////////////////////////////////////////
-bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
-             bool _convert, Errors &_errors)
+bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
+    const std::string &_source, bool _convert, Errors &_errors)
 {
   if (!_xmlDoc)
   {
@@ -456,11 +450,12 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
     return false;
   }
 
-  // check sdf version, use old parser if necessary
+  // check sdf version
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
-    sdfNode = _xmlDoc->FirstChildElement("gazebo");
+    sdferr << "Missing <sdf> element.\n";
+    return false;
   }
 
   if (sdfNode && sdfNode->Attribute("version"))
@@ -516,11 +511,12 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
     return false;
   }
 
-  // check sdf version, use old parser if necessary
+  // check sdf version
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
-    sdfNode = _xmlDoc->FirstChildElement("gazebo");
+    sdferr << "Missing <sdf> element.\n";
+    return false;
   }
 
   if (sdfNode && sdfNode->Attribute("version"))
@@ -779,7 +775,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 
   if (_sdf->GetCopyChildren())
   {
-    copyChildren(_sdf, _xml);
+    copyChildren(_sdf, _xml, false);
   }
   else
   {
@@ -947,14 +943,16 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 
       if (descCounter == _sdf->GetElementDescriptionCount())
       {
-        sdfwarn << "XML Element[" << elemXml->Value()
+        sdfdbg << "XML Element[" << elemXml->Value()
                << "], child of element[" << _xml->Value()
-               << "] not defined in SDF. Ignoring[" << elemXml->Value() << "]. "
-               << "You may have an incorrect SDF file, or an sdformat version "
-               << "that doesn't support this element.\n";
+               << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
+               << "as children of [" << _xml->Value() << "].\n";
         continue;
       }
     }
+
+    // Copy unknown elements outside the loop so it only happens one time
+    copyChildren(_sdf, _xml, true);
 
     // Check that all required elements have been set
     for (unsigned int descCounter = 0;
@@ -1008,7 +1006,7 @@ static void replace_all(std::string &_str,
 }
 
 /////////////////////////////////////////////////
-void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
+void copyChildren(ElementPtr _sdf, TiXmlElement *_xml, const bool _onlyUnknown)
 {
   // Iterate over all the child elements
   TiXmlElement *elemXml = nullptr;
@@ -1019,23 +1017,26 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
 
     if (_sdf->HasElementDescription(elem_name))
     {
-      sdf::ElementPtr element = _sdf->AddElement(elem_name);
-
-      // FIXME: copy attributes
-      for (TiXmlAttribute *attribute = elemXml->FirstAttribute();
-           attribute; attribute = attribute->Next())
+      if (!_onlyUnknown)
       {
-        element->GetAttribute(attribute->Name())->SetFromString(
-          attribute->ValueStr());
-      }
+        sdf::ElementPtr element = _sdf->AddElement(elem_name);
 
-      // copy value
-      std::string value = elemXml->GetText();
-      if (!value.empty())
-      {
-        element->GetValue()->SetFromString(value);
+        // FIXME: copy attributes
+        for (TiXmlAttribute *attribute = elemXml->FirstAttribute();
+             attribute; attribute = attribute->Next())
+        {
+          element->GetAttribute(attribute->Name())->SetFromString(
+            attribute->ValueStr());
+        }
+
+        // copy value
+        std::string value = elemXml->GetText();
+        if (!value.empty())
+        {
+          element->GetValue()->SetFromString(value);
+        }
+        copyChildren(element, elemXml, _onlyUnknown);
       }
-      copyChildren(element, elemXml);
     }
     else
     {
@@ -1055,7 +1056,7 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml)
           attribute->ValueStr());
       }
 
-      copyChildren(element, elemXml);
+      copyChildren(element, elemXml, _onlyUnknown);
       _sdf->InsertElement(element);
     }
   }

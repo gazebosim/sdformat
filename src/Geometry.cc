@@ -17,6 +17,7 @@
 #include "sdf/Geometry.hh"
 #include "sdf/Box.hh"
 #include "sdf/Cylinder.hh"
+#include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
 
@@ -25,11 +26,26 @@ using namespace sdf;
 // Private data class
 class sdf::GeometryPrivate
 {
+  // \brief The geometry type.
   public: GeometryType type = GeometryType::EMPTY;
+
+  /// \brief Pointer to a box.
   public: std::unique_ptr<Box> box;
+
+  /// \brief Pointer to a cylinder.
   public: std::unique_ptr<Cylinder> cylinder;
+
+  /// \brief Pointer to a plane.
   public: std::unique_ptr<Plane> plane;
+
+  /// \brief Pointer to a sphere.
   public: std::unique_ptr<Sphere> sphere;
+
+  /// \brief Pointer to a mesh.
+  public: std::unique_ptr<Mesh> mesh;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -49,6 +65,8 @@ Geometry::~Geometry()
 Errors Geometry::Load(ElementPtr _sdf)
 {
   Errors errors;
+
+  this->dataPtr->sdf = _sdf;
 
   // Check that sdf is a valid pointer
   if (!_sdf)
@@ -97,6 +115,13 @@ Errors Geometry::Load(ElementPtr _sdf)
     Errors err = this->dataPtr->sphere->Load(_sdf->GetElement("sphere"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
+  else if (_sdf->HasElement("mesh"))
+  {
+    this->dataPtr->type = GeometryType::MESH;
+    this->dataPtr->mesh.reset(new Mesh());
+    Errors err = this->dataPtr->mesh->Load(_sdf->GetElement("mesh"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
 
   return errors;
 }
@@ -135,4 +160,16 @@ const Cylinder *Geometry::CylinderShape() const
 const Plane *Geometry::PlaneShape() const
 {
   return this->dataPtr->plane.get();
+}
+
+/////////////////////////////////////////////////
+const Mesh *Geometry::MeshShape() const
+{
+  return this->dataPtr->mesh.get();
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Geometry::Element() const
+{
+  return this->dataPtr->sdf;
 }
