@@ -127,12 +127,11 @@ Errors Model::Load(ElementPtr _sdf)
   this->dataPtr->enableWind = _sdf->Get<bool>("enable_wind", false).first;
 
   // Load the pose.
-  ignition::math::Pose3d pose;
   std::string frame;
-  loadPose(_sdf, pose, frame);
+  loadPose(_sdf, this->dataPtr->pose, frame);
 
   this->dataPtr->frameGraph->AddVertex(this->dataPtr->name,
-                                       ignition::math::Matrix4d(pose));
+      ignition::math::Matrix4d(this->dataPtr->pose));
 
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",

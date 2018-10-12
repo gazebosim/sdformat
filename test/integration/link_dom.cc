@@ -123,7 +123,7 @@ TEST(DOMLink, InertialDoublePendulum)
   const sdf::Link *baseLink = model->LinkByIndex(0);
   ASSERT_NE(nullptr, baseLink);
   EXPECT_EQ(ignition::math::Pose3d::Zero, baseLink->Pose());
-  EXPECT_EQ("", baseLink->PoseFrame());
+  EXPECT_EQ("double_pendulum_with_base", baseLink->PoseFrame());
 
   const ignition::math::Inertiald inertial = baseLink->Inertial();
   EXPECT_DOUBLE_EQ(100.0, inertial.MassMatrix().Mass());
@@ -138,7 +138,7 @@ TEST(DOMLink, InertialDoublePendulum)
   ASSERT_NE(nullptr, upperLink);
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 2.1, -1.5708, 0, 0),
       upperLink->Pose());
-  EXPECT_EQ("", upperLink->PoseFrame());
+  EXPECT_EQ("double_pendulum_with_base", upperLink->PoseFrame());
 
   const ignition::math::Inertiald inertialUpper = upperLink->Inertial();
   EXPECT_DOUBLE_EQ(1.0, inertialUpper.MassMatrix().Mass());
@@ -157,7 +157,7 @@ TEST(DOMLink, InertialDoublePendulum)
   ASSERT_TRUE(lowerLink != nullptr);
   EXPECT_EQ(ignition::math::Pose3d(0.25, 1.0, 2.1, -2, 0, 0),
       lowerLink->Pose());
-  EXPECT_EQ("", lowerLink->PoseFrame());
+  EXPECT_EQ("double_pendulum_with_base", lowerLink->PoseFrame());
 }
 
 //////////////////////////////////////////////////
@@ -227,12 +227,12 @@ TEST(DOMLink, LinkChain)
   ASSERT_TRUE(model != nullptr);
 
   const sdf::Link *linkOne = model->LinkByIndex(0);
-  const sdf::Link *linkTwo = model->LinkByIndex(1);
 
   ignition::math::Pose3d pose1 = linkOne->Pose("two");
   std::cout << pose1 << std::endl;
 
-  /*ignition::math::Pose3d pose2 = linkTwo->Pose("one");
+  /*const sdf::Link *linkTwo = model->LinkByIndex(1);
+  ignition::math::Pose3d pose2 = linkTwo->Pose("one");
   std::cout << pose2 << std::endl;
   */
 }
