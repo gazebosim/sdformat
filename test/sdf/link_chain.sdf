@@ -2,11 +2,27 @@
 <sdf version="1.6">
   <model name="link_chain">
     <pose>0 0 0 0 0 0</pose>
+
+    <frame name="other_frame">
+      <pose frame="link_chain">10 10 10 0 0 0</pose>
+    </frame>
+
+    <frame name="frame_in_two">
+      <pose frame="two">1 2 3 0 0 0</pose>
+    </frame>
+
     <link name="one">
       <pose>1 -1 0 0 0 0</pose>
     </link>
     <link name="two">
       <pose>3 0 0 0 0 0</pose>
     </link>
+    <link name="three">
+      <pose frame="two">0 2 0 0 0 0</pose>
+    </link>
+    <link name="four">
+      <pose frame="three">0 0 -5 0 0 0</pose>
+    </link>
+
   </model>
 </sdf>

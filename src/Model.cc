@@ -26,6 +26,7 @@
 #include "Utils.hh"
 
 using namespace sdf;
+using namespace ignition::math;
 
 class sdf::ModelPrivate
 {
@@ -46,7 +47,7 @@ class sdf::ModelPrivate
   public: bool enableWind = false;
 
   /// \brief Pose of the model
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: Pose3d pose = Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
@@ -129,9 +130,25 @@ Errors Model::Load(ElementPtr _sdf)
   // Load the pose.
   std::string frame;
   loadPose(_sdf, this->dataPtr->pose, frame);
-
   this->dataPtr->frameGraph->AddVertex(this->dataPtr->name,
-      ignition::math::Matrix4d(this->dataPtr->pose));
+      Matrix4d(this->dataPtr->pose));
+
+  // Load any additional frames
+  sdf::ElementPtr elem = _sdf->GetElement("frame");
+  std::vector<std::pair<graph::Vertex<Matrix4d>, std::string>> edgesToAdd;
+  while (elem)
+  {
+    std::string frameName, poseFrame;
+    Pose3d poseValue;
+    loadPose(elem, poseValue, poseFrame);
+
+    frameName = elem->Get<std::string>("name", "" ).first;
+    graph::Vertex<Matrix4d> &vert =
+      this->dataPtr->frameGraph->AddVertex(frameName, Matrix4d(poseValue));
+
+    edgesToAdd.push_back(std::make_pair(vert, poseFrame));
+    elem = elem->GetNextElement("frame");
+  }
 
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
@@ -142,6 +159,17 @@ Errors Model::Load(ElementPtr _sdf)
   Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
     this->dataPtr->joints, this->dataPtr->frameGraph);
   errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
+
+  for (const std::pair<graph::Vertex<Matrix4d>, std::string> &edge : edgesToAdd)
+  {
+    const graph::VertexRef_M<Matrix4d> parentVertices =
+      this->dataPtr->frameGraph->Vertices(edge.second);
+
+    this->dataPtr->frameGraph->AddEdge(
+        {parentVertices.begin()->first, edge.first.Id()}, -1);
+    this->dataPtr->frameGraph->AddEdge(
+        {edge.first.Id(), parentVertices.begin()->first}, 1);
+  }
 
   return errors;
 }
@@ -274,9 +302,12 @@ const Joint *Model::JointByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Model::Pose() const
+Pose3d Model::Pose(const std::string &_frame) const
 {
-  return this->dataPtr->pose;
+  return poseInFrame(
+      this->dataPtr->name,
+      _frame.empty() ? this->PoseFrame() : _frame,
+      *this->dataPtr->frameGraph);
 }
 
 /////////////////////////////////////////////////
@@ -286,7 +317,7 @@ const std::string &Model::PoseFrame() const
 }
 
 /////////////////////////////////////////////////
-void Model::SetPose(const ignition::math::Pose3d &_pose)
+void Model::SetPose(const Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

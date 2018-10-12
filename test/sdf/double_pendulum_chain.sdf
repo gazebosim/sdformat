@@ -1,0 +1,89 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="double_pendulum">
+    <link name="base">
+      <visual name="visual">
+        <pose frame="base">0 0 0.5 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.2 0.2 1</size>
+          </box>
+        </geometry>
+      </visual>
+      <collision name="collision">
+        <pose frame="base">0 0 0.5 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.2 0.2 1</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- pin joint for upper link, at origin of upper link -->
+    <joint name="joint1" type="revolute">
+      <pose frame="base">0 0 1 0 0 0</pose>
+      <parent>base</parent>
+      <child>upper_link</child>
+      <axis>
+        <xyz>1.0 0 0</xyz>
+      </axis>
+    </joint>
+
+    <!-- upper link, length 1, IC -90 degrees -->
+    <link name="link1">
+      <pose frame="joint1">0 0 0 0 0 0</pose>
+      <visual name="visual">
+        <pose frame="link1">0 0 0.5 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.1</radius>
+            <length>1.0</length>
+          </cylinder>
+        </geometry>
+      </visual>
+      <collision name="collision">
+        <pose frame="link1">0 0 .5 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.1</radius>
+            <length>1.0</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- pin joint for lower link, at origin of child link -->
+    <joint name="joint2" type="revolute">
+      <pose frame="link1">0 0 1.0 0 0 0</pose>
+      <parent>link1</parent>
+      <child>link2</child>
+      <axis>
+        <xyz>1.0 0 0</xyz>
+      </axis>
+    </joint>
+
+    <!-- lower link, length 1, IC ~-120 degrees more -->
+    <link name="link2">
+      <pose frame="joint2">0 0 0 0 0 0</pose>
+      <visual name="visual">
+        <pose frame="link2">0 0 0.5 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.1</radius>
+            <length>1.0</length>
+          </cylinder>
+        </geometry>
+      </visual>
+      <collision name="collision">
+        <pose frame="link2">0 0 0.5 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.1</radius>
+            <length>1.0</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>

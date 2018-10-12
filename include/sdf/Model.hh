@@ -166,7 +166,7 @@ namespace sdf
     /// typically used to express the position and rotation of a model in a
     /// global coordinate frame.
     /// \return The pose of the model.
-    public: const ignition::math::Pose3d &Pose() const;
+    public: ignition::math::Pose3d Pose(const std::string &_frame = "") const;
 
     /// \brief Set the pose of the model.
     /// \sa const ignition::math::Pose3d &Pose() const

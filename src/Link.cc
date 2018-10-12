@@ -266,101 +266,10 @@ bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 /////////////////////////////////////////////////
 ignition::math::Pose3d Link::Pose(const std::string &_frame) const
 {
-  // If the frame is empty, then return the base pose. Otherwise, we need to
-  // return the pose in the given frame.
-  // \todo: If a frame has been specified in SDF, then that frame should be
-  // used to compute the return pose value.
-  if (_frame.empty())
-    return this->dataPtr->pose;
-
-  const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
-    srcVertices = this->dataPtr->frameGraph->Vertices(this->dataPtr->name);
-
-  // Get all the vertices in the frame graph that match the provided frame.
-  // The vertex count should be zero or one.
-  const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
-    dstVertices = this->dataPtr->frameGraph->Vertices(_frame);
-
-  std::cout << "Source[" << this->dataPtr->name << "] Dest[" << _frame << "]\n";
-  std::cout << "source id[" << srcVertices.begin()->first << "]\n";
-  std::cout << "dest id[" << dstVertices.begin()->first << "]\n";
-  std::cout << *this->dataPtr->frameGraph << std::endl;
-
-
-  std::map<ignition::math::graph::VertexId,
-           ignition::math::graph::CostInfo> result =
-             ignition::math::graph::Dijkstra(*this->dataPtr->frameGraph.get(),
-                 srcVertices.begin()->first, dstVertices.begin()->first);
-
-  for (auto vv : result)
-  {
-    std::cout << "DestId[" << vv.first << "] Cost[" << vv.second.first << "] PrevId[" << vv.second.second << "]" << std::endl;
-  }
-
-  ignition::math::graph::VertexId key = dstVertices.begin()->first;
-  bool done = false;
-  ignition::math::Matrix4d finalPose = ignition::math::Matrix4d::Identity;
-  while (!done)
-  {
-    // Get the next vertex in the path from the destination vertex to the
-    // source vertex.
-    ignition::math::graph::VertexId nextVertex =
-      result.find(key)->second.second;
-
-    // Get the edge between nextVertex and key.
-    const ignition::math::graph::DirectedEdge<int> &edge =
-      this->dataPtr->frameGraph->EdgeFromVertices(nextVertex, key);
-
-    // Make sure the edge is valid.
-    if (edge.Id() != ignition::math::graph::DirectedEdge<int>::NullEdge.Id())
-    {
-      std::cout << "Key[" << key << "] Edge From[" << edge.Head()
-        << "] To[" << edge.Tail() << "] Data[" << edge.Data() << "]\n";
-
-      // Get the direction of the edge.
-      // \todo I think we look at just the Head() and Tail() of the edge and
-      // compare those values to key and nextVertex.
-      bool inverse = edge.Data() < 0;
-
-      if (inverse)
-      {
-        finalPose = finalPose *
-          this->dataPtr->frameGraph->VertexFromId(key).Data().Inverse();
-      }
-      else
-      {
-        finalPose = finalPose *
-          this->dataPtr->frameGraph->VertexFromId(key).Data();
-      }
-
-      // Special case when the next vertex is the source vertex.
-      if (nextVertex == srcVertices.begin()->first)
-      {
-        if (inverse)
-        {
-          finalPose = finalPose *
-            ignition::math::Matrix4d(this->dataPtr->pose).Inverse();
-        }
-        else
-        {
-          finalPose = finalPose * ignition::math::Matrix4d(this->dataPtr->pose);
-        }
-        done = true;
-      }
-    }
-    else
-    {
-      /// \todo This is an error case. Inform the caller somehow.
-      std::cerr << "ERRROR!\n";
-      done = true;
-    }
-
-    // Move onto the next vertex.
-    key = nextVertex;
-  }
-  std::cout << "FinalPose[" << finalPose << "]\n";
-
-  return finalPose.Pose();
+  return poseInFrame(
+      this->dataPtr->name,
+      _frame.empty() ? this->PoseFrame() : _frame,
+      *this->dataPtr->frameGraph);
 }
 
 /////////////////////////////////////////////////

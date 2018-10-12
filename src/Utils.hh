@@ -44,6 +44,9 @@ namespace sdf
   bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
                 std::string &_frame);
 
+  ignition::math::Pose3d poseInFrame(
+      const std::string &_src, const std::string &_dst, FrameGraph &_graph);
+
   /// \brief Load all objects of a specific sdf element type. No error
   /// is returned if an element is not present. This function assumes that
   /// an element has a "name" attribute that must be unique.

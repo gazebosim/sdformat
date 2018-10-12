@@ -18,6 +18,8 @@
 #include <utility>
 #include "Utils.hh"
 
+using namespace ignition::math;
+
 /////////////////////////////////////////////////
 bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
 {
@@ -29,7 +31,7 @@ bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
 }
 
 /////////////////////////////////////////////////
-bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
+bool sdf::loadPose(sdf::ElementPtr _sdf, Pose3d &_pose,
               std::string &_frame)
 {
   sdf::ElementPtr sdf = _sdf;
@@ -45,8 +47,8 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
   std::pair<std::string, bool> framePair = sdf->Get<std::string>("frame", "");
 
   // Read the pose value.
-  std::pair<ignition::math::Pose3d, bool> posePair =
-    sdf->Get<ignition::math::Pose3d>("", ignition::math::Pose3d::Zero);
+  std::pair<Pose3d, bool> posePair =
+    sdf->Get<Pose3d>("", Pose3d::Zero);
 
   // Set output, but only if the return value is true.
   if (posePair.second)
@@ -58,4 +60,76 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
   // The frame attribute is optional, so only return true or false based
   // on the pose element value.
   return posePair.second;
+}
+
+//////////////////////////////////////////////////
+Pose3d sdf::poseInFrame(const std::string &_src, const std::string &_dst,
+    FrameGraph &_graph)
+{
+  // Get the destination vertex
+  const graph::VertexRef_M<Matrix4d> srcVertices = _graph.Vertices(_src);
+
+  // Get all the vertices in the frame graph that match the provided frame.
+  // The vertex count should be zero or one.
+  const graph::VertexRef_M<Matrix4d> dstVertices = _graph.Vertices(_dst);
+
+  std::map<graph::VertexId, graph::CostInfo> result =
+    graph::Dijkstra(_graph,
+        srcVertices.begin()->first, dstVertices.begin()->first);
+  std::cout << _graph << std::endl;
+
+  // Dijkstra debug output
+  // for (auto vv : result)
+  // {
+  //   std::cout << "DestId[" << vv.first << "] Cost["
+  //     << vv.second.first << "] PrevId[" << vv.second.second
+  //     << "]" << std::endl;
+  // }
+
+  Matrix4d finalPose = Matrix4d::Identity;
+  for (graph::VertexId nextVertex, key = dstVertices.begin()->first;;
+       key = nextVertex)
+  {
+    // Get the next vertex in the path from the destination vertex to the
+    // source vertex.
+    nextVertex = result.find(key)->second.second;
+
+    // Are we at the source vertex, which is the end of the line.
+    if (nextVertex == key)
+    {
+      // Compute the final pose and break
+      finalPose *= _graph.VertexFromId(key).Data();
+      break;
+    }
+
+    // Get the edge between nextVertex and key.
+    const graph::DirectedEdge<int> &edge =
+      _graph.EdgeFromVertices(nextVertex, key);
+
+    // Make sure the edge is valid.
+    if (edge.Id() != graph::DirectedEdge<int>::NullEdge.Id())
+    {
+      // Debug output:
+      // std::cout << "Key[" << key << "] Edge From[" << edge.Head()
+      //   << "] To[" << edge.Tail() << "] Data[" << edge.Data() << "]\n";
+
+      // Get the direction of the edge.
+      // \todo I think we look at just the Head() and Tail() of the edge and
+      // compare those values to key and nextVertex.
+      bool inverse = edge.Data() < 0;
+
+      if (inverse)
+        finalPose *= _graph.VertexFromId(key).Data().Inverse();
+      else
+        finalPose *=  _graph.VertexFromId(key).Data();
+    }
+    else
+    {
+      /// \todo This is an error case. Inform the caller somehow.
+      std::cerr << "ERRROR!\n";
+      break;
+    }
+  }
+
+  return finalPose.Pose();
 }
