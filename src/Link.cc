@@ -264,7 +264,7 @@ bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Link::Pose(const std::string &_frame) const
+ignition::math::Pose3d Link::Pose(const std::string &_frame) const
 {
   // If the frame is empty, then return the base pose. Otherwise, we need to
   // return the pose in the given frame.
