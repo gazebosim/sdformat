@@ -30,9 +30,6 @@ using namespace ignition::math;
 
 class sdf::ModelPrivate
 {
-  /// \brief Name of the model.
-  public: std::string name = "";
-
   /// \brief True if this model is specified as static, false otherwise.
   public: bool isStatic = false;
 
@@ -46,9 +43,6 @@ class sdf::ModelPrivate
   /// \brief True if this model should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
-  /// \brief Pose of the model
-  public: Pose3d pose = Pose3d::Zero;
-
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
 
@@ -60,6 +54,8 @@ class sdf::ModelPrivate
 
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
 
+  public: ignition::math::graph::VertexId poseVertexId;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 };
@@ -68,6 +64,10 @@ class sdf::ModelPrivate
 Model::Model()
   : dataPtr(new ModelPrivate)
 {
+  // Create the frame graph for the model, and add a node for the model.
+  this->dataPtr->frameGraph.reset(new FrameGraph);
+  this->dataPtr->poseVertexId = this->dataPtr->frameGraph->AddVertex(
+      "", Matrix4d::Identity).Id();
 }
 
 /////////////////////////////////////////////////
@@ -95,8 +95,6 @@ Errors Model::Load(ElementPtr _sdf,
 /////////////////////////////////////////////////
 Errors Model::Load(ElementPtr _sdf)
 {
-  if (!this->dataPtr->frameGraph)
-    this->dataPtr->frameGraph.reset(new FrameGraph);
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -111,8 +109,10 @@ Errors Model::Load(ElementPtr _sdf)
     return errors;
   }
 
+  std::string modelName;
+
   // Read the models's name
-  if (!loadName(_sdf, this->dataPtr->name))
+  if (!loadName(_sdf, modelName))
   {
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A model name is required, but the name is not set."});
@@ -127,11 +127,15 @@ Errors Model::Load(ElementPtr _sdf)
 
   this->dataPtr->enableWind = _sdf->Get<bool>("enable_wind", false).first;
 
+  // Reset the frame graph on load.
+  this->dataPtr->frameGraph.reset(new FrameGraph);
+
   // Load the pose.
   std::string frame;
-  loadPose(_sdf, this->dataPtr->pose, frame);
-  this->dataPtr->frameGraph->AddVertex(this->dataPtr->name,
-      Matrix4d(this->dataPtr->pose));
+  ignition::math::Pose3d pose;
+  loadPose(_sdf, pose, frame);
+  this->dataPtr->poseVertexId = this->dataPtr->frameGraph->AddVertex(
+      modelName, Matrix4d(pose)).Id();
 
   // Load any additional frames
   sdf::ElementPtr elem = _sdf->GetElement("frame");
@@ -142,11 +146,15 @@ Errors Model::Load(ElementPtr _sdf)
     Pose3d poseValue;
     loadPose(elem, poseValue, poseFrame);
 
-    frameName = elem->Get<std::string>("name", "" ).first;
-    graph::Vertex<Matrix4d> &vert =
-      this->dataPtr->frameGraph->AddVertex(frameName, Matrix4d(poseValue));
+    frameName = elem->Get<std::string>("name", "").first;
 
-    edgesToAdd.push_back(std::make_pair(vert, poseFrame));
+    if (!frameName.empty() && !poseFrame.empty())
+    {
+      graph::Vertex<Matrix4d> &vert =
+        this->dataPtr->frameGraph->AddVertex(frameName, Matrix4d(poseValue));
+
+      edgesToAdd.push_back(std::make_pair(vert, poseFrame));
+    }
     elem = elem->GetNextElement("frame");
   }
 
@@ -177,13 +185,16 @@ Errors Model::Load(ElementPtr _sdf)
 /////////////////////////////////////////////////
 std::string Model::Name() const
 {
-  return this->dataPtr->name;
+  return this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->poseVertexId).Name();
 }
 
 /////////////////////////////////////////////////
 void Model::SetName(const std::string &_name)
 {
-  this->dataPtr->name = _name;
+  // Store the name in the frame graph
+  this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->poseVertexId).SetName(_name);
 }
 
 /////////////////////////////////////////////////
@@ -305,7 +316,7 @@ const Joint *Model::JointByName(const std::string &_name) const
 Pose3d Model::Pose(const std::string &_frame) const
 {
   return poseInFrame(
-      this->dataPtr->name,
+      this->Name(),
       _frame.empty() ? this->PoseFrame() : _frame,
       *this->dataPtr->frameGraph);
 }
@@ -319,7 +330,9 @@ const std::string &Model::PoseFrame() const
 /////////////////////////////////////////////////
 void Model::SetPose(const Pose3d &_pose)
 {
-  this->dataPtr->pose = _pose;
+  // Store the pose data in the frame graph
+  this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->poseVertexId).Data() = ignition::math::Matrix4d(_pose);
 }
 
 /////////////////////////////////////////////////

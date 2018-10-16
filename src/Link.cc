@@ -32,7 +32,7 @@ using namespace sdf;
 class sdf::LinkPrivate
 {
   /// \brief Name of the link.
-  public: std::string name = "";
+  // public: std::string name = "";
 
   /// \brief Pose of the link
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
@@ -52,6 +52,7 @@ class sdf::LinkPrivate
             ignition::math::Pose3d::Zero};
 
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
+  public: ignition::math::graph::VertexId poseVertexId;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -95,7 +96,9 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   }
 
   // Read the links's name
-  if (!loadName(_sdf, this->dataPtr->name))
+  std::string linkName;
+  // if (!loadName(_sdf, this->dataPtr->name))
+  if (!loadName(_sdf, linkName))
   {
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A link name is required, but the name is not set."});
@@ -110,9 +113,8 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   if (_frameGraph)
   {
     // Add a vertex in the frame graph for this link.
-    ignition::math::graph::Vertex<ignition::math::Matrix4d> &vert =
-      _frameGraph->AddVertex(this->dataPtr->name,
-          ignition::math::Matrix4d(this->dataPtr->pose));
+    this->dataPtr->poseVertexId = _frameGraph->AddVertex(linkName,
+          ignition::math::Matrix4d(this->dataPtr->pose)).Id();
 
     // Get the parent vertex based on this link's pose frame name.
     const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
@@ -122,10 +124,12 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
     /// sure it has only one element.
 
     // Connect the parent to the child
-    _frameGraph->AddEdge({parentVertices.begin()->first, vert.Id()}, -1);
+    _frameGraph->AddEdge({parentVertices.begin()->first,
+        this->dataPtr->poseVertexId}, -1);
 
     // Connect the child to the parent
-    _frameGraph->AddEdge({vert.Id(), parentVertices.begin()->first}, 1);
+    _frameGraph->AddEdge({this->dataPtr->poseVertexId,
+        parentVertices.begin()->first}, 1);
 
     this->dataPtr->frameGraph = _frameGraph;
   }
@@ -187,13 +191,17 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 /////////////////////////////////////////////////
 std::string Link::Name() const
 {
-  return this->dataPtr->name;
+  return this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->poseVertexId).Name();
+  // return this->dataPtr->name;
 }
 
 /////////////////////////////////////////////////
 void Link::SetName(const std::string &_name) const
 {
-  this->dataPtr->name = _name;
+  // Store the name in the frame graph
+  this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->poseVertexId).SetName(_name);
 }
 
 /////////////////////////////////////////////////
@@ -266,10 +274,15 @@ bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 /////////////////////////////////////////////////
 ignition::math::Pose3d Link::Pose(const std::string &_frame) const
 {
-  return poseInFrame(
-      this->dataPtr->name,
-      _frame.empty() ? this->PoseFrame() : _frame,
-      *this->dataPtr->frameGraph);
+  if (this->dataPtr->frameGraph)
+  {
+    return poseInFrame(
+        this->Name(),
+        _frame.empty() ? this->PoseFrame() : _frame,
+        *this->dataPtr->frameGraph);
+  }
+
+  return this->dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
@@ -282,6 +295,11 @@ const std::string &Link::PoseFrame() const
 void Link::SetPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
+  if (this->dataPtr->frameGraph)
+  {
+    this->dataPtr->frameGraph->VertexFromId(
+        this->dataPtr->poseVertexId).Data() = ignition::math::Matrix4d(_pose);
+  }
 }
 
 /////////////////////////////////////////////////
