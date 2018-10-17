@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <ignition/math/Inertial.hh>
+#include <ignition/math/Matrix4.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 
@@ -28,12 +29,10 @@
 #include "Utils.hh"
 
 using namespace sdf;
+using namespace ignition::math;
 
 class sdf::LinkPrivate
 {
-  /// \brief Name of the link.
-  // public: std::string name = "";
-
   /// \brief Pose of the link
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
@@ -62,6 +61,10 @@ class sdf::LinkPrivate
 Link::Link()
   : dataPtr(new LinkPrivate)
 {
+  // Create the frame graph for the link, and add a node for the link.
+  this->dataPtr->frameGraph.reset(new FrameGraph);
+  this->dataPtr->poseVertexId = this->dataPtr->frameGraph->AddVertex(
+      "", Matrix4d::Identity).Id();
 }
 
 /////////////////////////////////////////////////
@@ -97,7 +100,6 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 
   // Read the links's name
   std::string linkName;
-  // if (!loadName(_sdf, this->dataPtr->name))
   if (!loadName(_sdf, linkName))
   {
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
@@ -105,8 +107,11 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  ignition::math::Pose3d pose;
+  loadPose(_sdf, pose, this->dataPtr->poseFrame);
 
+  // Use the SDF parent as the pose frame if the poseFrame attribute is
+  // empty.
   if (this->dataPtr->poseFrame.empty() && _sdf->GetParent())
     this->dataPtr->poseFrame = _sdf->GetParent()->Get<std::string>("name");
 
@@ -114,7 +119,7 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   {
     // Add a vertex in the frame graph for this link.
     this->dataPtr->poseVertexId = _frameGraph->AddVertex(linkName,
-          ignition::math::Matrix4d(this->dataPtr->pose)).Id();
+          ignition::math::Matrix4d(pose)).Id();
 
     // Get the parent vertex based on this link's pose frame name.
     const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
@@ -193,7 +198,6 @@ std::string Link::Name() const
 {
   return this->dataPtr->frameGraph->VertexFromId(
       this->dataPtr->poseVertexId).Name();
-  // return this->dataPtr->name;
 }
 
 /////////////////////////////////////////////////
@@ -274,15 +278,10 @@ bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 /////////////////////////////////////////////////
 ignition::math::Pose3d Link::Pose(const std::string &_frame) const
 {
-  if (this->dataPtr->frameGraph)
-  {
-    return poseInFrame(
-        this->Name(),
-        _frame.empty() ? this->PoseFrame() : _frame,
-        *this->dataPtr->frameGraph);
-  }
-
-  return this->dataPtr->pose;
+  return poseInFrame(
+      this->Name(),
+      _frame.empty() ? this->PoseFrame() : _frame,
+      *this->dataPtr->frameGraph);
 }
 
 /////////////////////////////////////////////////
@@ -294,12 +293,8 @@ const std::string &Link::PoseFrame() const
 /////////////////////////////////////////////////
 void Link::SetPose(const ignition::math::Pose3d &_pose)
 {
-  this->dataPtr->pose = _pose;
-  if (this->dataPtr->frameGraph)
-  {
-    this->dataPtr->frameGraph->VertexFromId(
-        this->dataPtr->poseVertexId).Data() = ignition::math::Matrix4d(_pose);
-  }
+  this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->poseVertexId).Data() = ignition::math::Matrix4d(_pose);
 }
 
 /////////////////////////////////////////////////

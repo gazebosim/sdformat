@@ -15,6 +15,7 @@
  *
 */
 #include <string>
+#include <ignition/math/Matrix4.hh>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
@@ -23,15 +24,10 @@
 #include "Utils.hh"
 
 using namespace sdf;
+using namespace ignition::math;
 
 class sdf::VisualPrivate
 {
-  /// \brief Name of the visual.
-  public: std::string name = "";
-
-  /// \brief Pose of the collision object
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
-
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
 
@@ -39,6 +35,7 @@ class sdf::VisualPrivate
   public: Geometry geom;
 
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
+  public: ignition::math::graph::VertexId poseVertexId;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -51,6 +48,10 @@ class sdf::VisualPrivate
 Visual::Visual()
   : dataPtr(new VisualPrivate)
 {
+  // Create the frame graph for the visual, and add a node for the visual.
+  this->dataPtr->frameGraph.reset(new FrameGraph);
+  this->dataPtr->poseVertexId = this->dataPtr->frameGraph->AddVertex(
+      "", Matrix4d::Identity).Id();
 }
 
 /////////////////////////////////////////////////
@@ -85,7 +86,8 @@ Errors Visual::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   }
 
   // Read the visuals's name
-  if (!loadName(_sdf, this->dataPtr->name))
+  std::string visualName;
+  if (!loadName(_sdf, visualName))
   {
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A visual name is required, but the name is not set."});
@@ -99,12 +101,31 @@ Errors Visual::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  Pose3d pose;
+  loadPose(_sdf, pose, this->dataPtr->poseFrame);
+
+  // Use the SDF parent as the pose frame if the poseFrame attribute is
+  // empty.
+  if (this->dataPtr->poseFrame.empty() && _sdf->GetParent())
+    this->dataPtr->poseFrame = _sdf->GetParent()->Get<std::string>("name");
 
   if (_frameGraph)
   {
-    _frameGraph->AddVertex(this->dataPtr->name,
-        ignition::math::Matrix4d(this->dataPtr->pose));
+    this->dataPtr->poseVertexId =
+      _frameGraph->AddVertex(visualName, Matrix4d(pose)).Id();
+
+    // Get the parent vertex based on this link's pose frame name.
+    const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
+      parentVertices = _frameGraph->Vertices(this->dataPtr->poseFrame);
+
+    // Connect the parent to the child
+    _frameGraph->AddEdge({parentVertices.begin()->first,
+        this->dataPtr->poseVertexId}, -1);
+
+    // Connect the child to the parent
+    _frameGraph->AddEdge({this->dataPtr->poseVertexId,
+        parentVertices.begin()->first}, 1);
+
     this->dataPtr->frameGraph = _frameGraph;
   }
 
@@ -118,19 +139,25 @@ Errors Visual::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 /////////////////////////////////////////////////
 std::string Visual::Name() const
 {
-  return this->dataPtr->name;
+  return this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->poseVertexId).Name();
 }
 
 /////////////////////////////////////////////////
 void Visual::SetName(const std::string &_name) const
 {
-  this->dataPtr->name = _name;
+  // Store the name in the frame graph
+  this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->poseVertexId).SetName(_name);
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Visual::Pose() const
+ignition::math::Pose3d Visual::Pose(const std::string &_frame) const
 {
-  return this->dataPtr->pose;
+  return poseInFrame(
+      this->Name(),
+      _frame.empty() ? this->PoseFrame() : _frame,
+      *this->dataPtr->frameGraph);
 }
 
 /////////////////////////////////////////////////
@@ -142,7 +169,8 @@ const std::string &Visual::PoseFrame() const
 /////////////////////////////////////////////////
 void Visual::SetPose(const ignition::math::Pose3d &_pose)
 {
-  this->dataPtr->pose = _pose;
+  this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->poseVertexId).Data() = ignition::math::Matrix4d(_pose);
 }
 
 /////////////////////////////////////////////////

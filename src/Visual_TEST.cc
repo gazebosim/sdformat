@@ -32,8 +32,8 @@ TEST(DOMVisual, Construction)
   EXPECT_EQ(ignition::math::Pose3d::Zero, visual.Pose());
   EXPECT_TRUE(visual.PoseFrame().empty());
 
-  visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
-  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+  visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI/4, IGN_PI_2});
+  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI/4, IGN_PI_2),
             visual.Pose());
 
   visual.SetPoseFrame("link");

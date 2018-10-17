@@ -81,11 +81,11 @@ TEST(DOMCollision, DoublePendulum)
   ASSERT_TRUE(plateCol != nullptr);
 
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateCol->Pose());
-  EXPECT_EQ("", plateCol->PoseFrame());
+  EXPECT_EQ("base", plateCol->PoseFrame());
 
   const sdf::Collision *poleCol = baseLink->CollisionByIndex(1);
   ASSERT_TRUE(poleCol != nullptr);
 
   EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0), poleCol->Pose());
-  EXPECT_EQ("", poleCol->PoseFrame());
+  EXPECT_EQ("base", poleCol->PoseFrame());
 }

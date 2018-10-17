@@ -73,7 +73,7 @@ namespace sdf
     /// visual as specified in SDF
     /// (<visual><pose> ... </pose></visual>).
     /// \return The pose of the visual object.
-    public: const ignition::math::Pose3d &Pose() const;
+    public: ignition::math::Pose3d Pose(const std::string &_frame = "") const;
 
     /// \brief Set the pose of the visual object.
     /// \sa const ignition::math::Pose3d &Pose() const

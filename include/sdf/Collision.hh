@@ -72,7 +72,7 @@ namespace sdf
     /// collison as specified in SDF
     /// (<collision><pose> ... </pose></collision>).
     /// \return The pose of the collision object.
-    public: const ignition::math::Pose3d &Pose() const;
+    public: ignition::math::Pose3d Pose(const std::string &_frame = "") const;
 
     /// \brief Set the pose of the collision object.
     /// \sa const ignition::math::Pose3d &Pose() const

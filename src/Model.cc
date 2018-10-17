@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <ignition/math/graph/Graph.hh>
+#include <ignition/math/Matrix4.hh>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
 #include "sdf/Joint.hh"
@@ -127,12 +128,9 @@ Errors Model::Load(ElementPtr _sdf)
 
   this->dataPtr->enableWind = _sdf->Get<bool>("enable_wind", false).first;
 
-  // Reset the frame graph on load.
-  this->dataPtr->frameGraph.reset(new FrameGraph);
-
   // Load the pose.
   std::string frame;
-  ignition::math::Pose3d pose;
+  Pose3d pose;
   loadPose(_sdf, pose, frame);
   this->dataPtr->poseVertexId = this->dataPtr->frameGraph->AddVertex(
       modelName, Matrix4d(pose)).Id();
