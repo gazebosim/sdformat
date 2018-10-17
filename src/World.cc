@@ -66,14 +66,14 @@ class sdf::WorldPrivate
   public: ignition::math::Vector3d windLinearVelocity =
            ignition::math::Vector3d::Zero;
 
-  public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
+  // public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
 };
 
 /////////////////////////////////////////////////
 World::World()
   : dataPtr(new WorldPrivate)
 {
-  this->dataPtr->frameGraph.reset(new FrameGraph);
+  // this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->physics.emplace_back(Physics());
 }
 
@@ -153,7 +153,7 @@ Errors World::Load(sdf::ElementPtr _sdf)
 
   // Load all the models.
   Errors modelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
-      this->dataPtr->models, this->dataPtr->frameGraph);
+      this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
   // Load all the physics.

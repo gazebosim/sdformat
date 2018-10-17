@@ -86,14 +86,6 @@ Model::~Model()
 }
 
 /////////////////////////////////////////////////
-Errors Model::Load(ElementPtr _sdf,
-    std::shared_ptr<FrameGraph> _frameGraph)
-{
-  this->dataPtr->frameGraph = _frameGraph;
-  return this->Load(_sdf);
-}
-
-/////////////////////////////////////////////////
 Errors Model::Load(ElementPtr _sdf)
 {
   Errors errors;
@@ -128,10 +120,11 @@ Errors Model::Load(ElementPtr _sdf)
 
   this->dataPtr->enableWind = _sdf->Get<bool>("enable_wind", false).first;
 
-  // Load the pose.
+  // Load the pose, and add it to the frame graph.
   std::string frame;
   Pose3d pose;
   loadPose(_sdf, pose, frame);
+  this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->poseVertexId = this->dataPtr->frameGraph->AddVertex(
       modelName, Matrix4d(pose)).Id();
 
@@ -140,19 +133,46 @@ Errors Model::Load(ElementPtr _sdf)
   std::vector<std::pair<graph::Vertex<Matrix4d>, std::string>> edgesToAdd;
   while (elem)
   {
+    // Get the pose data.
     std::string frameName, poseFrame;
     Pose3d poseValue;
     loadPose(elem, poseValue, poseFrame);
 
+    // Get the name of the frame.
     frameName = elem->Get<std::string>("name", "").first;
 
-    if (!frameName.empty() && !poseFrame.empty())
+    // This ugly if statement handles a bad aspect of this library. It will
+    // create an default element if one doesn't exist. In this case, an
+    // empty <frame> element will be created if it's not present in the SDF
+    // file.
+    if (frameName.empty() && poseFrame.empty() && poseValue == Pose3d::Zero)
     {
+      elem = elem->GetNextElement("frame");
+      continue;
+    }
+
+    // Make sure the frame name is not empty
+    if (frameName.empty())
+    {
+      errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+          "A frame name is required, but the name is not set."});
+    }
+    else
+    {
+      // Use the model frame if the pose frame is empty, per the spec.
+      if (!poseFrame.empty())
+        poseFrame = this->Name();
+
+      // Create the vertex.
       graph::Vertex<Matrix4d> &vert =
         this->dataPtr->frameGraph->AddVertex(frameName, Matrix4d(poseValue));
 
+      // Store the edge to add. Create the edges later, because the poseFrame
+      // may refer to a frame that has not been parsed yet.
       edgesToAdd.push_back(std::make_pair(vert, poseFrame));
     }
+
+    // Get the next frame, if any
     elem = elem->GetNextElement("frame");
   }
 
@@ -166,11 +186,31 @@ Errors Model::Load(ElementPtr _sdf)
     this->dataPtr->joints, this->dataPtr->frameGraph);
   errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
 
+  // Create edges in the frame graph.
   for (const std::pair<graph::Vertex<Matrix4d>, std::string> &edge : edgesToAdd)
   {
     const graph::VertexRef_M<Matrix4d> parentVertices =
       this->dataPtr->frameGraph->Vertices(edge.second);
+    // Make sure a parent vertex was found.
+    if (parentVertices.empty())
+    {
+      errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "A frame named[" + edge.first.Name()
+          + "] has an unknown pose frame of [" + edge.second + "]"});
+      continue;
+    }
 
+    // Make sure only one parent vertex was found.
+    if (parentVertices.size() > 1)
+    {
+      errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "A frame named[" + edge.first.Name()
+          + "] has a pose frame of [" + edge.second
+          + "] that resolves to multiple frames."});
+      continue;
+    }
+
+    // Create the edges.
     this->dataPtr->frameGraph->AddEdge(
         {parentVertices.begin()->first, edge.first.Id()}, -1);
     this->dataPtr->frameGraph->AddEdge(

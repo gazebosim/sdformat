@@ -159,11 +159,9 @@ Errors Root::Load(SDFPtr _sdf)
     }
   }
 
-  std::shared_ptr<FrameGraph> frameGraph(new FrameGraph);
-
   // Load all the models.
   Errors modelLoadErrors = loadUniqueRepeated<Model>(this->dataPtr->sdf,
-      "model", this->dataPtr->models, frameGraph);
+      "model", this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
   return errors;

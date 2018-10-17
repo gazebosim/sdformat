@@ -69,6 +69,9 @@ TEST(DOMCollision, DoublePendulum)
 
   // Load the SDF file
   sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto err : errors)
+    std::cout << err << std::endl;
   EXPECT_TRUE(root.Load(testFile).empty());
 
   const sdf::Model *model = root.ModelByIndex(0);

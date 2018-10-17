@@ -253,7 +253,7 @@ TEST(DOMLink, LinkChain)
   EXPECT_EQ(ignition::math::Pose3d(-7, -8, -10, 0, 0, 0), threeInOtherFrame);
 
   ignition::math::Pose3d oneInFrameInTwo = linkOne->Pose("frame_in_two");
-  EXPECT_EQ(ignition::math::Pose3d(-3, -3, -3, 0, 0, 0), oneInFrameInTwo);
+  EXPECT_EQ(ignition::math::Pose3d(0, -3, -3, 0, 0, 0), oneInFrameInTwo);
 
   ignition::math::Pose3d fourInOther = linkFour->Pose("other_frame");
   EXPECT_EQ(ignition::math::Pose3d(-7, -8, -15, 0, 0, 0), fourInOther);
