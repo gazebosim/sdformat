@@ -248,14 +248,7 @@ const Light *Link::LightByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 bool Link::LightNameExists(const std::string &_name) const
 {
-  for (auto const &c : this->dataPtr->lights)
-  {
-    if (c.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return this->LightByName(_name) != nullptr;
 }
 
 /////////////////////////////////////////////////

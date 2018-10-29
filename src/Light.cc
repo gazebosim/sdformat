@@ -105,6 +105,7 @@ Light::Light(const Light &_light)
 Light &Light::operator=(const Light &_light)
 {
   this->CopyFrom(_light);
+  return *this;
 }
 
 //////////////////////////////////////////////////
