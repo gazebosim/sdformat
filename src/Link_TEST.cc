@@ -20,6 +20,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 #include "sdf/Collision.hh"
+#include "sdf/Light.hh"
 #include "sdf/Link.hh"
 #include "sdf/Visual.hh"
 
@@ -44,6 +45,7 @@ TEST(DOMLink, Construction)
   EXPECT_EQ(nullptr, link.LightByIndex(1));
   EXPECT_FALSE(link.LightNameExists(""));
   EXPECT_FALSE(link.LightNameExists("default"));
+  EXPECT_EQ(nullptr, link.LightByName("no_such_light"));
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, link.Pose());
   EXPECT_TRUE(link.PoseFrame().empty());
