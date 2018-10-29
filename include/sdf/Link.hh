@@ -32,8 +32,9 @@ namespace sdf
 
   // Forward declarations.
   class Collision;
-  class Visual;
+  class Light;
   class LinkPrivate;
+  class Visual;
 
   class SDFORMAT_VISIBLE Link
   {
@@ -106,6 +107,27 @@ namespace sdf
     /// \param[in] _name Name of the collision.
     /// \return Pointer to the collision. Nullptr if the name does not exist.
     public: const Collision *CollisionByName(const std::string &_name) const;
+
+    /// \brief Get the number of lights.
+    /// \return Number of lights contained in this Link object.
+    public: uint64_t LightCount() const;
+
+    /// \brief Get a light based on an index.
+    /// \param[in] _index Index of the light. The index should be in the
+    /// range [0..LightCount()).
+    /// \return Pointer to the light. Nullptr if the index does not exist.
+    /// \sa uint64_t LightCount() const
+    public: const Light *LightByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a light name exists.
+    /// \param[in] _name Name of the light to check.
+    /// \return True if there exists a light with the given name.
+    public: bool LightNameExists(const std::string &_name) const;
+
+    /// \brief Get a light based on a name.
+    /// \param[in] _name Name of the light.
+    /// \return Pointer to the light. Nullptr if the name does not exist.
+    public: const Light *LightByName(const std::string &_name) const;
 
     /// \brief Get the inertial value for this link. The inertial object
     /// consists of the link's mass, a 3x3 rotational inertia matrix, and

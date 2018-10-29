@@ -39,6 +39,12 @@ TEST(DOMLink, Construction)
   EXPECT_FALSE(link.VisualNameExists(""));
   EXPECT_FALSE(link.VisualNameExists("default"));
 
+  EXPECT_EQ(0u, link.LightCount());
+  EXPECT_EQ(nullptr, link.LightByIndex(0));
+  EXPECT_EQ(nullptr, link.LightByIndex(1));
+  EXPECT_FALSE(link.LightNameExists(""));
+  EXPECT_FALSE(link.LightNameExists("default"));
+
   EXPECT_EQ(ignition::math::Pose3d::Zero, link.Pose());
   EXPECT_TRUE(link.PoseFrame().empty());
 
@@ -48,7 +54,7 @@ TEST(DOMLink, Construction)
   link.SetPoseFrame("model");
   EXPECT_EQ("model", link.PoseFrame());
 
-  // Get the default interial
+  // Get the default inertial
   const ignition::math::Inertiald inertial = link.Inertial();
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().Mass());
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().X());

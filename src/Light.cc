@@ -94,6 +94,40 @@ Light::~Light()
   this->dataPtr = nullptr;
 }
 
+//////////////////////////////////////////////////
+Light::Light(const Light &_light)
+  : dataPtr(new LightPrivate)
+{
+  this->CopyFrom(_light);
+}
+
+//////////////////////////////////////////////////
+Light &Light::operator=(const Light &_light)
+{
+  this->CopyFrom(_light);
+}
+
+//////////////////////////////////////////////////
+void Light::CopyFrom(const Light &_light)
+{
+  this->dataPtr->name= _light.dataPtr->name;
+  this->dataPtr->pose = _light.dataPtr->pose;
+  this->dataPtr->poseFrame = _light.dataPtr->poseFrame;
+  this->dataPtr->type = _light.dataPtr->type;
+  this->dataPtr->sdf = _light.dataPtr->sdf;
+  this->dataPtr->castShadows = _light.dataPtr->castShadows;
+  this->dataPtr->attenuationRange = _light.dataPtr->attenuationRange;
+  this->dataPtr->linearAttenuation = _light.dataPtr->linearAttenuation;
+  this->dataPtr->constantAttenuation = _light.dataPtr->constantAttenuation;
+  this->dataPtr->quadraticAttenuation = _light.dataPtr->quadraticAttenuation;
+  this->dataPtr->direction = _light.dataPtr->direction;
+  this->dataPtr->diffuse = _light.dataPtr->diffuse;
+  this->dataPtr->specular = _light.dataPtr->specular;
+  this->dataPtr->spotInnerAngle = _light.dataPtr->spotInnerAngle;
+  this->dataPtr->spotOuterAngle = _light.dataPtr->spotOuterAngle;
+  this->dataPtr->spotFalloff = _light.dataPtr->spotFalloff;
+}
+
 /////////////////////////////////////////////////
 Errors Light::Load(ElementPtr _sdf)
 {
