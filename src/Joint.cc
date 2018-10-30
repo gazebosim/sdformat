@@ -56,6 +56,9 @@ class sdf::JointPrivate
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
 
+  /// \brief Thread pitch for screw joints.
+  public: double threadPitch = 1.0;
+
   /// \brief Joint axis
   // cppcheck-suppress
   public: std::array<std::unique_ptr<JointAxis>, 2> axis;
@@ -199,7 +202,7 @@ const std::string &Joint::Name() const
 }
 
 /////////////////////////////////////////////////
-void Joint::SetName(const std::string &_name) const
+void Joint::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
 }
@@ -223,7 +226,7 @@ const std::string &Joint::ParentLinkName() const
 }
 
 /////////////////////////////////////////////////
-void Joint::SetParentLinkName(const std::string &_name) const
+void Joint::SetParentLinkName(const std::string &_name)
 {
   this->dataPtr->parentLinkName = _name;
 }
@@ -235,7 +238,7 @@ const std::string &Joint::ChildLinkName() const
 }
 
 /////////////////////////////////////////////////
-void Joint::SetChildLinkName(const std::string &_name) const
+void Joint::SetChildLinkName(const std::string &_name)
 {
   this->dataPtr->childLinkName = _name;
 }
@@ -244,6 +247,13 @@ void Joint::SetChildLinkName(const std::string &_name) const
 const JointAxis *Joint::Axis(const unsigned int _index) const
 {
   return this->dataPtr->axis[std::min(_index, 1u)].get();
+}
+
+/////////////////////////////////////////////////
+void Joint::SetAxis(const unsigned int _index, const JointAxis &_axis)
+{
+  this->dataPtr->axis[std::min(_index, 1u)] =
+      std::make_unique<JointAxis>(_axis);
 }
 
 /////////////////////////////////////////////////
@@ -270,6 +280,17 @@ void Joint::SetPoseFrame(const std::string &_frame)
   this->dataPtr->poseFrame = _frame;
 }
 
+/////////////////////////////////////////////////
+double Joint::ThreadPitch() const
+{
+  return this->dataPtr->threadPitch;
+}
+
+/////////////////////////////////////////////////
+void Joint::SetThreadPitch(double _threadPitch)
+{
+  this->dataPtr->threadPitch = _threadPitch;
+}
 /////////////////////////////////////////////////
 sdf::ElementPtr Joint::Element() const
 {
