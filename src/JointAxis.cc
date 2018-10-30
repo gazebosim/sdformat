@@ -75,22 +75,26 @@ class sdf::JointAxisPrivate
 
 /////////////////////////////////////////////////
 JointAxis::JointAxis()
-  : dataPtr(new JointAxisPrivate)
+  : dataPtr(std::make_unique<JointAxisPrivate>())
 {
 }
 
 /////////////////////////////////////////////////
-JointAxis::JointAxis(JointAxis &&_jointAxis)
+JointAxis::JointAxis(const JointAxis &_jointAxis)
+  : dataPtr(std::make_unique<JointAxisPrivate>(*_jointAxis.dataPtr))
 {
-  this->dataPtr = _jointAxis.dataPtr;
-  _jointAxis.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+JointAxis &JointAxis::operator=(const JointAxis &_jointAxis)
+{
+  this->dataPtr = std::make_unique<JointAxisPrivate>(*_jointAxis.dataPtr);
+  return *this;
 }
 
 /////////////////////////////////////////////////
 JointAxis::~JointAxis()
 {
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

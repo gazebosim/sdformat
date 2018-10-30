@@ -17,6 +17,7 @@
 #ifndef SDF_JOINTAXIS_HH_
 #define SDF_JOINTAXIS_HH_
 
+#include <memory>
 #include <string>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
@@ -39,9 +40,23 @@ namespace sdf
     /// \brief Default constructor
     public: JointAxis();
 
+    /// \brief Copy constructor
+    /// \param[in] _jointAxis Joint axis to move.
+    public: JointAxis(const JointAxis &_jointAxis);
+
     /// \brief Move constructor
     /// \param[in] _jointAxis Joint axis to move.
-    public: JointAxis(JointAxis &&_jointAxis);
+    public: JointAxis(JointAxis &&_jointAxis) = default;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _jointAxis JointAxis component to move.
+    /// \return Reference to this.
+    public: JointAxis &operator=(JointAxis &&_jointAxis) = default;
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _jointAxis JointAxis component to copy.
+    /// \return Reference to this.
+    public: JointAxis &operator=(const JointAxis &_jointAxis);
 
     /// \brief Destructor
     public: ~JointAxis();
@@ -219,7 +234,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer
-    private: JointAxisPrivate *dataPtr;
+    private: std::unique_ptr<JointAxisPrivate> dataPtr;
   };
   }
 }
