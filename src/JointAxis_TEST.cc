@@ -88,7 +88,7 @@ TEST(DOMJointAxis, CopyConstructor)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMJointAxis, AssignemntOperator)
+TEST(DOMJointAxis, AssignmentOperator)
 {
   sdf::JointAxis jointAxis;
   jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0));
