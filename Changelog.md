@@ -2,6 +2,9 @@
 
 ### SDFormat 8.0.0 (xxxx-xx-xx)
 
+1. SDF DOM: Add copy constructor and assignment operator to Light. Add lights to Link
+   * [Pull request 469](https://bitbucket.org/osrf/sdformat/pull-requests/469)
+
 1. Removed boost
    * [Pull request #438](https://bitbucket.org/osrf/sdformat/pull-requests/438)
 
