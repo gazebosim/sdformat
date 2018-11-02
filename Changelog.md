@@ -2,6 +2,9 @@
 
 ### SDFormat 8.0.0 (xxxx-xx-xx)
 
+1. SDF DOM: Add copy constructors and assignment operator to JointAxis
+   * [Pull request #470](https://bitbucket.org/osrf/sdformat/pull-requests/470)
+
 1. Removed boost
    * [Pull request #438](https://bitbucket.org/osrf/sdformat/pull-requests/438)
 
@@ -9,7 +12,7 @@
    * [Pull request 460](https://bitbucket.org/osrf/sdformat/pull-requests/460)
 
 1. SDF DOM: Add copy/move constructors and assignment operator to Material
-   * [Pull request 460](https://bitbucket.org/osrf/sdformat/pull-requests/460)
+   * [Pull request 461](https://bitbucket.org/osrf/sdformat/pull-requests/461)
 
 ## SDFormat 7.0
 

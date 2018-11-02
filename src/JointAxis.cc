@@ -18,9 +18,11 @@
 #include "sdf/Error.hh"
 #include "sdf/JointAxis.hh"
 
-using namespace sdf;
+namespace sdf
+{
+inline namespace SDF_VERSION_NAMESPACE {
 
-class sdf::JointAxisPrivate
+class JointAxisPrivate
 {
   /// \brief Default joint position for this joint axis.
   public: double initialPosition = 0.0;
@@ -318,4 +320,6 @@ void JointAxis::SetDissipation(const double _dissipation) const
 sdf::ElementPtr JointAxis::Element() const
 {
   return this->dataPtr->sdf;
+}
+}
 }
