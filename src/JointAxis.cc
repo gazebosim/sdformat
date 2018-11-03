@@ -90,9 +90,23 @@ JointAxis::JointAxis(const JointAxis &_jointAxis)
 /////////////////////////////////////////////////
 JointAxis &JointAxis::operator=(const JointAxis &_jointAxis)
 {
-  this->dataPtr = std::make_unique<JointAxisPrivate>(*_jointAxis.dataPtr);
+  *this->dataPtr = (*_jointAxis.dataPtr);
   return *this;
 }
+
+/////////////////////////////////////////////////
+JointAxis::JointAxis(JointAxis &&_jointAxis) noexcept
+  : dataPtr(std::move(_jointAxis.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+JointAxis &JointAxis::operator=(JointAxis &&_jointAxis)
+{
+  this->dataPtr = std::move(_jointAxis.dataPtr);
+  return *this;
+}
+
 
 /////////////////////////////////////////////////
 JointAxis::~JointAxis()

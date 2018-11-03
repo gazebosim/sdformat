@@ -96,3 +96,26 @@ TEST(DOMJointAxis, AssignmentOperator)
   sdf::JointAxis jointAxisCopy = jointAxis;
   EXPECT_EQ(jointAxis.Xyz(), jointAxisCopy.Xyz());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, MoveConstructor)
+{
+  ignition::math::Vector3d axis{0, 1, 0};
+  sdf::JointAxis jointAxis;
+  jointAxis.SetXyz(axis);
+
+  sdf::JointAxis jointAxisMoved(std::move(jointAxis));
+  EXPECT_EQ(axis, jointAxisMoved.Xyz());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, MoveAssignmentOperator)
+{
+  ignition::math::Vector3d axis{0, 1, 0};
+  sdf::JointAxis jointAxis;
+  jointAxis.SetXyz(axis);
+
+  sdf::JointAxis jointAxisMoved;
+  jointAxisMoved = std::move(jointAxis);
+  EXPECT_EQ(axis, jointAxisMoved.Xyz());
+}
