@@ -93,7 +93,8 @@ TEST(DOMJointAxis, AssignmentOperator)
   sdf::JointAxis jointAxis;
   jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0));
 
-  sdf::JointAxis jointAxisCopy = jointAxis;
+  sdf::JointAxis jointAxisCopy;
+  jointAxisCopy = jointAxis;
   EXPECT_EQ(jointAxis.Xyz(), jointAxisCopy.Xyz());
 }
 
