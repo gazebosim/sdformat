@@ -18,11 +18,9 @@
 #include "sdf/Error.hh"
 #include "sdf/JointAxis.hh"
 
-namespace sdf
-{
-inline namespace SDF_VERSION_NAMESPACE {
+using namespace sdf;
 
-class JointAxisPrivate
+class sdf::JointAxisPrivate
 {
   /// \brief Default joint position for this joint axis.
   public: double initialPosition = 0.0;
@@ -77,26 +75,43 @@ class JointAxisPrivate
 
 /////////////////////////////////////////////////
 JointAxis::JointAxis()
-  : dataPtr(std::make_unique<JointAxisPrivate>())
+  : dataPtr(new JointAxisPrivate)
 {
 }
 
 /////////////////////////////////////////////////
 JointAxis::JointAxis(const JointAxis &_jointAxis)
-  : dataPtr(std::make_unique<JointAxisPrivate>(*_jointAxis.dataPtr))
+  : dataPtr(new JointAxisPrivate(*_jointAxis.dataPtr))
 {
 }
 
 /////////////////////////////////////////////////
 JointAxis &JointAxis::operator=(const JointAxis &_jointAxis)
 {
-  this->dataPtr = std::make_unique<JointAxisPrivate>(*_jointAxis.dataPtr);
+  *this->dataPtr = (*_jointAxis.dataPtr);
+  return *this;
+}
+
+/////////////////////////////////////////////////
+JointAxis::JointAxis(JointAxis &&_jointAxis) noexcept
+{
+  this->dataPtr = _jointAxis.dataPtr;
+  _jointAxis.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+JointAxis &JointAxis::operator=(JointAxis &&_jointAxis)
+{
+  this->dataPtr = _jointAxis.dataPtr;
+  _jointAxis.dataPtr = nullptr;
   return *this;
 }
 
 /////////////////////////////////////////////////
 JointAxis::~JointAxis()
 {
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -320,6 +335,4 @@ void JointAxis::SetDissipation(const double _dissipation) const
 sdf::ElementPtr JointAxis::Element() const
 {
   return this->dataPtr->sdf;
-}
-}
 }
