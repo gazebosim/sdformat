@@ -17,6 +17,15 @@
 1. Removed boost
    * [Pull request #438](https://bitbucket.org/osrf/sdformat/pull-requests/438)
 
+1. Versioned namespace
+   * [Pull request 464](https://bitbucket.org/osrf/sdformat/pull-requests/464)
+
+1. Versioned library install
+   * [Pull request 463](https://bitbucket.org/osrf/sdformat/pull-requests/463)
+
+1. Add SetGeom to Collision
+   * [Pull request 465](https://bitbucket.org/osrf/sdformat/pull-requests/465)
+
 1. SDF DOM: Add copy/move constructors and assignment operator to Geometry
    * [Pull request 460](https://bitbucket.org/osrf/sdformat/pull-requests/460)
 
