@@ -177,7 +177,7 @@ namespace sdf
     public: double ThreadPitch() const;
 
     /// \brief Set the thread pitch (only valid for screw joints)
-    /// \parem[in] _threadPitch The thread pitch of the joint
+    /// \param[in] _threadPitch The thread pitch of the joint
     public: void SetThreadPitch(double _threadPitch);
 
     /// \brief Get a pointer to the SDF element that was used during
