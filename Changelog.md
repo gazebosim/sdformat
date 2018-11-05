@@ -5,6 +5,15 @@
 1. SDF DOM: Add copy constructor and assignment operator to Light. Add lights to Link
    * [Pull request 469](https://bitbucket.org/osrf/sdformat/pull-requests/469)
 
+1. Make `<limit>` a required element for `<axis2>`
+   * [Pull request #472](https://bitbucket.org/osrf/sdformat/pull-requests/472)
+
+1. SDF DOM: Add DOM methods for setting axis and thread pitch in `sdf::Joint`
+   * [Pull request #471](https://bitbucket.org/osrf/sdformat/pull-requests/471)
+
+1. SDF DOM: Add copy constructors and assignment operator to JointAxis
+   * [Pull request #470](https://bitbucket.org/osrf/sdformat/pull-requests/470)
+
 1. Removed boost
    * [Pull request #438](https://bitbucket.org/osrf/sdformat/pull-requests/438)
 
@@ -12,7 +21,7 @@
    * [Pull request 460](https://bitbucket.org/osrf/sdformat/pull-requests/460)
 
 1. SDF DOM: Add copy/move constructors and assignment operator to Material
-   * [Pull request 460](https://bitbucket.org/osrf/sdformat/pull-requests/460)
+   * [Pull request 461](https://bitbucket.org/osrf/sdformat/pull-requests/461)
 
 ## SDFormat 7.0
 

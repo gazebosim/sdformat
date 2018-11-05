@@ -39,9 +39,23 @@ namespace sdf
     /// \brief Default constructor
     public: JointAxis();
 
+    /// \brief Copy constructor
+    /// \param[in] _jointAxis Joint axis to move.
+    public: JointAxis(const JointAxis &_jointAxis);
+
     /// \brief Move constructor
     /// \param[in] _jointAxis Joint axis to move.
-    public: JointAxis(JointAxis &&_jointAxis);
+    public: JointAxis(JointAxis &&_jointAxis) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _jointAxis JointAxis component to move.
+    /// \return Reference to this.
+    public: JointAxis &operator=(JointAxis &&_jointAxis);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _jointAxis JointAxis component to copy.
+    /// \return Reference to this.
+    public: JointAxis &operator=(const JointAxis &_jointAxis);
 
     /// \brief Destructor
     public: ~JointAxis();
