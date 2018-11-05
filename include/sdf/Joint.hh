@@ -144,8 +144,8 @@ namespace sdf
     /// \param[in] _index This value specifies which axis to set. A value of
     /// zero corresponds to the first axis, which is the <axis> SDF
     /// element. Any other value will set the second axis, which is the
-    /// \param[in] _axis The JointAxis of the joint
     /// <axis2> SDF element.
+    /// \param[in] _axis The JointAxis of the joint
     public: void SetAxis(const unsigned int _index, const JointAxis &_axis);
 
     /// \brief Get the pose of the joint. This is the pose of the joint
