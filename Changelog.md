@@ -2,6 +2,9 @@
 
 ### SDFormat 8.0.0 (xxxx-xx-xx)
 
+1. Make `<limit>` a required element for `<axis2>`
+   * [Pull request #472](https://bitbucket.org/osrf/sdformat/pull-requests/472)
+
 1. SDF DOM: Add DOM methods for setting axis and thread pitch in `sdf::Joint`
    * [Pull request #471](https://bitbucket.org/osrf/sdformat/pull-requests/471)
 
