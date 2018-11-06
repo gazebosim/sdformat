@@ -44,7 +44,18 @@ namespace sdf
   bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
                 std::string &_frame);
 
-  ignition::math::Pose3d poseInFrame(
+  /// \brief Compute the pose of _src in the _dst frame according to
+  /// the provided frame graph.
+  /// \param[in] _src The source frame name. This value must not be empty,
+  /// and must be the name of one and only one vertex in _graph.
+  /// \param[in] _src The destination frame name. This value must be empty,
+  /// or a name of one and only one vertex in _graph. If empty, then the
+  /// _src frame will be returned.
+  /// \param[in] _graph The frame graph that contains both _src and _dst.
+  /// \return Optional pose of _src in the _dst frame. If an error occurred,
+  /// such as _src being empty or not present in _graph, then std::nullopt is
+  /// returned.
+  std::optional<ignition::math::Pose3d> poseInFrame(
       const std::string &_src, const std::string &_dst, FrameGraph &_graph);
 
   /// \brief Load all objects of a specific sdf element type. No error

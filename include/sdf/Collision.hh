@@ -49,6 +49,8 @@ namespace sdf
     /// usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
     /// \param[in] _sdf The SDF Element pointer
+    /// \param[in] _frameGraph Shared pointer to the frame graph that is
+    /// associated with this Collision object.
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf,
@@ -68,11 +70,9 @@ namespace sdf
     /// \return The collision's geometry.
     public: const Geometry *Geom() const;
 
-    /// \brief Get the pose of the collision object. This is the pose of the
-    /// collison as specified in SDF
-    /// (<collision><pose> ... </pose></collision>).
-    /// \return The pose of the collision object.
-    public: ignition::math::Pose3d Pose(const std::string &_frame = "") const;
+    /// \copydoc Model::Pose(const std::string&) const
+    public: std::optional<ignition::math::Pose3d> Pose(
+                const std::string &_frame = "") const;
 
     /// \brief Set the pose of the collision object.
     /// \sa const ignition::math::Pose3d &Pose() const
@@ -80,16 +80,20 @@ namespace sdf
     public: void SetPose(const ignition::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame in which this collision
-    /// object's pose is expressed. A empty value indicates that the frame is
-    /// the parent link.
+    /// object's pose is expressed. An empty value indicates that this object
+    /// has not been properly configured. The Load function can be used to
+    /// set pose frame information from SDF elements, or use the SetPoseFrame
+    /// function.
     /// \return The name of the pose frame.
     public: const std::string &PoseFrame() const;
 
     /// \brief Set the name of the coordinate frame in which this collision
-    /// object's pose is expressed. A empty value indicates that the frame is
-    /// the parent link.
-    /// \param[in] _frame The name of the pose frame.
-    public: void SetPoseFrame(const std::string &_frame);
+    /// object's pose is expressed.
+    /// \param[in] _frame The name of the pose frame. This should not be
+    /// empty.
+    /// \return True if the pose frame was set, false otherwise. An empty
+    /// _frame parameter value was result in a false return value.
+    public: bool SetPoseFrame(const std::string &_frame);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

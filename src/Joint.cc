@@ -60,6 +60,7 @@ class sdf::JointPrivate
   // cppcheck-suppress
   public: std::array<std::unique_ptr<JointAxis>, 2> axis;
 
+  /// \brief Pointer to the frame graph.
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
 
   /// \brief The SDF element pointer used during load.
@@ -275,9 +276,13 @@ void Joint::SetPose(const ignition::math::Pose3d &_pose)
 }
 
 /////////////////////////////////////////////////
-void Joint::SetPoseFrame(const std::string &_frame)
+bool Joint::SetPoseFrame(const std::string &_frame)
 {
+  if (_frame.empty())
+    return false;
+
   this->dataPtr->poseFrame = _frame;
+  return true;
 }
 
 /////////////////////////////////////////////////

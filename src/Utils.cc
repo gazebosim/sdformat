@@ -63,20 +63,29 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, Pose3d &_pose,
 }
 
 //////////////////////////////////////////////////
-Pose3d sdf::poseInFrame(const std::string &_src, const std::string &_dst,
-    FrameGraph &_graph)
+std::optional<Pose3d> sdf::poseInFrame(const std::string &_src,
+    const std::string &_dst, FrameGraph &_graph)
 {
-  // Get the destination vertex
+  if (_src.empty())
+    return std::nullopt;
+
+  // Get the source vertex.
   const graph::VertexRef_M<Matrix4d> srcVertices = _graph.Vertices(_src);
 
   // Get all the vertices in the frame graph that match the provided frame.
-  // The vertex count should be zero or one.
+  // If _dst is empty, then the result of this function (poseInFrame) will
+  // be the pose of the _src frame.
   const graph::VertexRef_M<Matrix4d> dstVertices = _graph.Vertices(_dst);
 
+  // There should be only one vertex for the source vertex, and 1 or
+  // 0 vertices for the destination vertex.
+  if (srcVertices.size() != 1 || dstVertices.size() > 1)
+    return std::nullopt;
+
+  // Run Dijkstra to find a path from _src to _dst
   std::map<graph::VertexId, graph::CostInfo> result =
     graph::Dijkstra(_graph,
         srcVertices.begin()->first, dstVertices.begin()->first);
-  std::cout << _graph << std::endl;
 
   // Dijkstra debug output
   // for (auto vv : result)
@@ -131,5 +140,5 @@ Pose3d sdf::poseInFrame(const std::string &_src, const std::string &_dst,
     }
   }
 
-  return finalPose.Pose();
+  return std::optional<Pose3d>(finalPose.Pose());
 }

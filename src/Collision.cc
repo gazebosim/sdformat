@@ -34,8 +34,11 @@ class sdf::CollisionPrivate
   /// \brief The collisions's a geometry.
   public: Geometry geom;
 
+  /// \brief Pointer to the frame graph.
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
-  public: ignition::math::graph::VertexId poseVertexId;
+
+  /// \brief Id of the frame for this object
+  public: ignition::math::graph::VertexId frameVertexId;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -47,7 +50,7 @@ Collision::Collision()
 {
   // Create the frame graph for the model, and add a node for the model.
   this->dataPtr->frameGraph.reset(new FrameGraph);
-  this->dataPtr->poseVertexId = this->dataPtr->frameGraph->AddVertex(
+  this->dataPtr->frameVertexId = this->dataPtr->frameGraph->AddVertex(
       "", Matrix4d::Identity).Id();
 }
 
@@ -101,7 +104,7 @@ Errors Collision::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 
   if (_frameGraph)
   {
-    this->dataPtr->poseVertexId =
+    this->dataPtr->frameVertexId =
       _frameGraph->AddVertex(collisionName, Matrix4d(pose)).Id();
 
     // Get the parent vertex based on this link's pose frame name.
@@ -110,10 +113,10 @@ Errors Collision::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 
     // Connect the parent to the child
     _frameGraph->AddEdge({parentVertices.begin()->first,
-        this->dataPtr->poseVertexId}, -1);
+        this->dataPtr->frameVertexId}, -1);
 
     // Connect the child to the parent
-    _frameGraph->AddEdge({this->dataPtr->poseVertexId,
+    _frameGraph->AddEdge({this->dataPtr->frameVertexId,
         parentVertices.begin()->first}, 1);
 
     this->dataPtr->frameGraph = _frameGraph;
@@ -130,7 +133,7 @@ Errors Collision::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 std::string Collision::Name() const
 {
   return this->dataPtr->frameGraph->VertexFromId(
-      this->dataPtr->poseVertexId).Name();
+      this->dataPtr->frameVertexId).Name();
 }
 
 /////////////////////////////////////////////////
@@ -138,7 +141,7 @@ void Collision::SetName(const std::string &_name) const
 {
   // Store the name in the frame graph
   this->dataPtr->frameGraph->VertexFromId(
-      this->dataPtr->poseVertexId).SetName(_name);
+      this->dataPtr->frameVertexId).SetName(_name);
 }
 
 /////////////////////////////////////////////////
@@ -148,7 +151,7 @@ const Geometry *Collision::Geom() const
 }
 
 /////////////////////////////////////////////////
-ignition::math::Pose3d Collision::Pose(const std::string &_frame) const
+std::optional<Pose3d> Collision::Pose(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),
@@ -166,13 +169,17 @@ const std::string &Collision::PoseFrame() const
 void Collision::SetPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->frameGraph->VertexFromId(
-      this->dataPtr->poseVertexId).Data() = ignition::math::Matrix4d(_pose);
+      this->dataPtr->frameVertexId).Data() = ignition::math::Matrix4d(_pose);
 }
 
 /////////////////////////////////////////////////
-void Collision::SetPoseFrame(const std::string &_frame)
+bool Collision::SetPoseFrame(const std::string &_frame)
 {
+  if (_frame.empty())
+    return false;
+
   this->dataPtr->poseFrame = _frame;
+  return true;
 }
 
 /////////////////////////////////////////////////
