@@ -36,7 +36,9 @@ TEST(DOMcollision, Construction)
   EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
             collision.Pose());
 
-  collision.SetPoseFrame("link");
+  EXPECT_TRUE(collision.SetPoseFrame("link"));
+  EXPECT_EQ("link", collision.PoseFrame());
+  EXPECT_FALSE(collision.SetPoseFrame(""));
   EXPECT_EQ("link", collision.PoseFrame());
 
   ASSERT_NE(nullptr, collision.Geom());

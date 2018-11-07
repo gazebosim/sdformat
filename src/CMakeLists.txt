@@ -111,6 +111,7 @@ set (gtest_sources
   SDF_TEST.cc
   Sphere_TEST.cc
   Types_TEST.cc
+  Utils_TEST.cc
   Visual_TEST.cc
   World_TEST.cc
 )

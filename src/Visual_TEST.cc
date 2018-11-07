@@ -36,7 +36,9 @@ TEST(DOMVisual, Construction)
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI/4, IGN_PI_2),
             visual.Pose());
 
-  visual.SetPoseFrame("link");
+  EXPECT_TRUE(visual.SetPoseFrame("link"));
+  EXPECT_EQ("link", visual.PoseFrame());
+  EXPECT_FALSE(visual.SetPoseFrame(""));
   EXPECT_EQ("link", visual.PoseFrame());
 
   ASSERT_NE(nullptr, visual.Geom());

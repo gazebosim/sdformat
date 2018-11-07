@@ -45,7 +45,9 @@ TEST(DOMLink, Construction)
   link.SetPose({10, 20, 30, 0, IGN_PI, 0});
   EXPECT_EQ(ignition::math::Pose3d(10, 20, 30, 0, IGN_PI, 0), link.Pose());
 
-  link.SetPoseFrame("model");
+  EXPECT_TRUE(link.SetPoseFrame("model"));
+  EXPECT_EQ("model", link.PoseFrame());
+  EXPECT_FALSE(link.SetPoseFrame(""));
   EXPECT_EQ("model", link.PoseFrame());
 
   // Get the default interial
@@ -105,4 +107,12 @@ TEST(DOMLink, InvalidInertia)
   EXPECT_DOUBLE_EQ(2.3, link.Inertial().MassMatrix().OffDiagonalMoments().Y());
   EXPECT_DOUBLE_EQ(3.4, link.Inertial().MassMatrix().OffDiagonalMoments().Z());
   EXPECT_FALSE(link.Inertial().MassMatrix().IsValid());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLINK, OtherTests)
+{
+  sdf::Link link;
+  EXPECT_EQ(nullptr, link.VisualByName("none"));
+  EXPECT_EQ(nullptr, link.CollisionByName("none"));
 }

@@ -30,7 +30,7 @@ namespace sdf
   /// \param[in] _sdf SDF element pointer which contains the name.
   /// \param[out] _name String to hold the name value.
   /// \return True when the "name" attribute exists.
-  bool loadName(sdf::ElementPtr _sdf, std::string &_name);
+  bool SDFORMAT_VISIBLE loadName(sdf::ElementPtr _sdf, std::string &_name);
 
   /// \brief Read a pose element from and SDF pointer, and return (via
   /// function parameters) the pose value and coordinate frame.
@@ -41,8 +41,8 @@ namespace sdf
   /// and empty string.
   /// \return True if the pose element contained an ignition::math::Pose3d
   /// value.
-  bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
-                std::string &_frame);
+  bool SDFORMAT_VISIBLE loadPose(sdf::ElementPtr _sdf,
+      ignition::math::Pose3d &_pose, std::string &_frame);
 
   /// \brief Compute the pose of _src in the _dst frame according to
   /// the provided frame graph.
@@ -55,7 +55,7 @@ namespace sdf
   /// \return Optional pose of _src in the _dst frame. If an error occurred,
   /// such as _src being empty or not present in _graph, then std::nullopt is
   /// returned.
-  std::optional<ignition::math::Pose3d> poseInFrame(
+  std::optional<ignition::math::Pose3d> SDFORMAT_VISIBLE poseInFrame(
       const std::string &_src, const std::string &_dst, FrameGraph &_graph);
 
   /// \brief Load all objects of a specific sdf element type. No error
@@ -69,7 +69,7 @@ namespace sdf
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
   template<typename Class>
-  sdf::Errors loadUniqueRepeated(sdf::ElementPtr _sdf,
+  sdf::Errors SDFORMAT_VISIBLE loadUniqueRepeated(sdf::ElementPtr _sdf,
       const std::string &_sdfName, std::vector<Class> &_objs,
       std::shared_ptr<FrameGraph> _frameGraph)
   {
@@ -140,7 +140,7 @@ namespace sdf
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
   template<typename Class>
-  sdf::Errors loadUniqueRepeated(sdf::ElementPtr _sdf,
+  sdf::Errors SDFORMAT_VISIBLE loadUniqueRepeated(sdf::ElementPtr _sdf,
       const std::string &_sdfName, std::vector<Class> &_objs)
   {
     Errors errors;

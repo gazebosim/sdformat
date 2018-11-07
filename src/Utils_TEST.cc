@@ -19,19 +19,23 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
+#include "sdf/Types.hh"
 #include "Utils.hh"
+
+using namespace sdf;
+using namespace ignition::math;
 
 /////////////////////////////////////////////////
 TEST(DOMUtils, PoseDefaultValues)
 {
-  sdf::ElementPtr element(new sdf::Element);
+  ElementPtr element(new Element);
   element->SetName("pose");
   element->AddValue("pose", "0 0 0 0 0 0", true);
   element->AddAttribute("frame", "string", "", false);
 
   ignition::math::Pose3d pose;
   std::string frame;
-  EXPECT_TRUE(sdf::loadPose(element, pose, frame));
+  EXPECT_TRUE(loadPose(element, pose, frame));
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
   EXPECT_TRUE(frame.empty());
@@ -40,13 +44,13 @@ TEST(DOMUtils, PoseDefaultValues)
 /////////////////////////////////////////////////
 TEST(DOMUtils, PoseNoFrame)
 {
-  sdf::ElementPtr element(new sdf::Element);
+  ElementPtr element(new Element);
   element->SetName("pose");
   element->AddValue("pose", "0 0 0 0 0 0", true);
 
   ignition::math::Pose3d pose;
   std::string frame;
-  EXPECT_TRUE(sdf::loadPose(element, pose, frame));
+  EXPECT_TRUE(loadPose(element, pose, frame));
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
   EXPECT_TRUE(frame.empty());
@@ -55,7 +59,7 @@ TEST(DOMUtils, PoseNoFrame)
 /////////////////////////////////////////////////
 TEST(DOMUtils, PoseWithFrame)
 {
-  sdf::ElementPtr element(new sdf::Element);
+  ElementPtr element(new Element);
   element->SetName("pose");
   element->AddValue("pose", "0 0 0 0 0 0", true);
   element->AddAttribute("frame", "string", "", false);
@@ -63,7 +67,7 @@ TEST(DOMUtils, PoseWithFrame)
 
   ignition::math::Pose3d pose;
   std::string frame;
-  EXPECT_TRUE(sdf::loadPose(element, pose, frame));
+  EXPECT_TRUE(loadPose(element, pose, frame));
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
   EXPECT_EQ("frame_name", frame);
@@ -72,7 +76,7 @@ TEST(DOMUtils, PoseWithFrame)
 /////////////////////////////////////////////////
 TEST(DOMUtils, PoseWithValue)
 {
-  sdf::ElementPtr element(new sdf::Element);
+  ElementPtr element(new Element);
   element->SetName("pose");
   element->AddValue("pose", "0 0 0 0 0 0", true);
   element->AddAttribute("frame", "string", "", false);
@@ -81,8 +85,15 @@ TEST(DOMUtils, PoseWithValue)
 
   ignition::math::Pose3d pose;
   std::string frame;
-  EXPECT_TRUE(sdf::loadPose(element, pose, frame));
+  EXPECT_TRUE(loadPose(element, pose, frame));
 
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3), pose);
   EXPECT_EQ("another frame", frame);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMUtils, PoseInFrame)
+{
+  FrameGraph graph;
+  EXPECT_EQ(std::nullopt, poseInFrame("", "", graph));
 }

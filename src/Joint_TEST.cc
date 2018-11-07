@@ -35,7 +35,9 @@ TEST(DOMJoint, Construction)
   EXPECT_EQ(ignition::math::Pose3d(-1, -2, -3, IGN_PI, IGN_PI, 0),
             joint.Pose());
 
-  joint.SetPoseFrame("link");
+  EXPECT_TRUE(joint.SetPoseFrame("link"));
+  EXPECT_EQ("link", joint.PoseFrame());
+  EXPECT_FALSE(joint.SetPoseFrame(""));
   EXPECT_EQ("link", joint.PoseFrame());
 
   joint.SetName("test_joint");
