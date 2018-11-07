@@ -166,7 +166,7 @@ namespace sdf
     /// \param[in] _pose The new model pose.
     public: void SetPose(const ignition::math::Pose3d &_pose);
 
-    /// \brief Get the name of the coordinate frame in which this model's
+    /// \brief Get the name of the coordinate frame in which this object's
     /// pose is expressed. An empty value indicates that this object
     /// has not been properly configured. The Load function can be used to
     /// set pose frame information from SDF elements, or use the SetPoseFrame
@@ -174,7 +174,7 @@ namespace sdf
     /// \return The name of the pose frame.
     public: const std::string &PoseFrame() const;
 
-    /// \brief Set the name of the coordinate frame in which this model's
+    /// \brief Set the name of the coordinate frame in which this objects's
     /// pose is expressed.
     /// \param[in] _frame The name of the pose frame. This should not be
     /// empty.

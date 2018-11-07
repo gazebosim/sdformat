@@ -150,20 +150,10 @@ namespace sdf
     /// \param[in] _pose The pose of the joint.
     public: void SetPose(const ignition::math::Pose3d &_pose);
 
-    /// \brief Get the name of the coordinate frame in which this joint's
-    /// pose is expressed. An empty value indicates that this object
-    /// has not been properly configured. The Load function can be used to
-    /// set pose frame information from SDF elements, or use the SetPoseFrame
-    /// function.
-    /// \return The name of the pose frame.
+    /// \copydoc Model::PoseFrame() const
     public: const std::string &PoseFrame() const;
 
-    /// \brief Set the name of the coordinate frame in which this joint's
-    /// pose is expressed.
-    /// \param[in] _frame The name of the pose frame. This should not be
-    /// empty.
-    /// \return True if the pose frame was set, false otherwise. An empty
-    /// _frame parameter value was result in a false return value.
+    /// \copydoc Model::SetPoseFrame(const std::string&)
     public: bool SetPoseFrame(const std::string &_frame);
 
     /// \brief Get a pointer to the SDF element that was used during
