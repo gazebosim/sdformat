@@ -22,6 +22,7 @@ endif()
 
 project (SDFormat8)
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
+string(REGEX REPLACE "[0-9]+" "" PROJECT_NAME_NO_VERSION ${PROJECT_NAME})
 
 # The protocol version has nothing to do with the package version set below.
 # It represents the current version of sdformat implement by the software
