@@ -23,6 +23,8 @@ endif()
 project (SDFormat8)
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 string(REGEX REPLACE "[0-9]+" "" PROJECT_NAME_NO_VERSION ${PROJECT_NAME})
+set(PROJECT_EXPORT_NAME ${PROJECT_NAME_LOWER})
+set(PROJECT_LIBRARY_TARGET_NAME ${PROJECT_NAME_LOWER})
 
 # The protocol version has nothing to do with the package version set below.
 # It represents the current version of sdformat implement by the software
@@ -269,20 +271,31 @@ else (buid_errors)
 
   ########################################
   # Make the cmake config files
-  set(PKG_NAME ${PROJECT_NAME})
-  set(cmake_conf_file         "cmake/${PROJECT_NAME_LOWER}-config.cmake")
-  set(cmake_conf_version_file "cmake/${PROJECT_NAME_LOWER}-config-version.cmake")
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdf_config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_file}" @ONLY)
+  set(sdf_config_input  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdf_config.cmake.in")
+  set(sdf_config_output "${PROJECT_NAME_LOWER}-config.cmake")
+  set(sdf_version_output "${PROJECT_NAME_LOWER}-config-version.cmake")
+  set(sdf_config_install_dir "${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/")
+
+  #--------------------------------------
+  # Configure and install the config file
+  configure_package_config_file(
+    ${sdf_config_input}
+    ${sdf_config_output}
+    INSTALL_DESTINATION ${sdf_config_install_dir}
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+
+  #--------------------------------------
+  # Configure and install the version file
   write_basic_package_version_file(
-      ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_version_file}
+      ${CMAKE_CURRENT_BINARY_DIR}/${sdf_version_output}
       VERSION "${SDF_VERSION_FULL}"
       COMPATIBILITY SameMajorVersion)
+
   install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_file}
-    ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_version_file}
-    DESTINATION
-    ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/
-	  COMPONENT cmake)
+    ${CMAKE_CURRENT_BINARY_DIR}/${sdf_config_output}
+    ${CMAKE_CURRENT_BINARY_DIR}/${sdf_version_output}
+    DESTINATION ${sdf_config_install_dir}
+    COMPONENT cmake)
 
   ########################################
   # Package Creation:

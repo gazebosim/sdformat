@@ -143,4 +143,21 @@ endif()
 
 sdf_install_library(sdformat${SDF_MAJOR_VERSION})
 
+  set(sdf_config_install_dir "${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/")
+  set(sdf_target ${PROJECT_EXPORT_NAME})
+  set(sdf_import_target_name ${PROJECT_EXPORT_NAME}::${sdf_target})
+  set(sdf_target_output_filename "${sdf_target}-targets.cmake")
+
+# Export and install target
+export(
+  EXPORT ${sdf_target}
+  FILE ${PROJECT_BINARY_DIR}/cmake/${sdf_target_output_filename}
+  NAMESPACE ${PROJECT_EXPORT_NAME}::)
+
+install(
+  EXPORT ${sdf_target}
+  DESTINATION ${sdf_config_install_dir}
+  FILE ${sdf_target_output_filename}
+  NAMESPACE ${PROJECT_EXPORT_NAME}::)
+
 add_subdirectory(cmd)
