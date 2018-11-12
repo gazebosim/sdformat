@@ -82,10 +82,10 @@ namespace sdf
   std::ostream& operator<<(std::ostream& os,
                            ParamStreamer<std::variant<Ts...>> sv)
   {
-    //std::visit([&os](auto const &v)
-    //  {
-    //    os << ParamStreamer{v};
-    //  }, sv.val);
+    std::visit([&os](auto const &v)
+      {
+        os << ParamStreamer{v};
+      }, sv.val);
     return os;
   }
 
@@ -295,7 +295,7 @@ namespace sdf
     {
       if (typeid(T) == typeid(bool) && this->dataPtr->typeName == "string")
       {
-        std::string strValue; // = std::get<std::string>(this->dataPtr->value);
+        std::string strValue = std::get<std::string>(this->dataPtr->value);
         std::transform(strValue.begin(), strValue.end(), strValue.begin(),
             [](unsigned char c)
             {
@@ -315,7 +315,7 @@ namespace sdf
       }
       else
       {
-        T *value; // = std::get_if<T>(&this->dataPtr->value);
+        T *value = std::get_if<T>(&this->dataPtr->value);
         if (value)
           _value = *value;
         else
