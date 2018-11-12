@@ -278,8 +278,8 @@ else (build_errors)
   ########################################
   # Make the cmake config files
   set(sdf_config_input  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdf_config.cmake.in")
-  set(sdf_config_output "${sdf_target}-config.cmake")
-  set(sdf_version_output "${sdf_target}-config-version.cmake")
+  set(sdf_config_output "cmake/${sdf_target}-config.cmake")
+  set(sdf_version_output "cmake/${sdf_target}-config-version.cmake")
   set(sdf_config_install_dir "${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/")
 
   #--------------------------------------
