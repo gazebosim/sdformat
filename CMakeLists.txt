@@ -20,9 +20,7 @@ if(UNIX AND NOT WIN32)
  endif(CMAKE_UNAME)
 endif()
 
-project (SDFormat8)
-string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
-string(REGEX REPLACE "[0-9]+" "" PROJECT_NAME_NO_VERSION ${PROJECT_NAME})
+project (sdformat8)
 
 # The protocol version has nothing to do with the package version set below.
 # It represents the current version of sdformat implement by the software
@@ -34,6 +32,11 @@ set (SDF_PATCH_VERSION 0)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
 set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION}~pre2)
+
+string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
+string(REGEX REPLACE "[0-9]+" "" PROJECT_NAME_NO_VERSION ${PROJECT_NAME})
+set(PROJECT_EXPORT_NAME ${PROJECT_NAME_LOWER})
+set(PROJECT_LIBRARY_TARGET_NAME ${PROJECT_NAME_LOWER})
 
 set (project_cmake_dir ${PROJECT_SOURCE_DIR}/cmake
   CACHE PATH "Location of CMake scripts")
@@ -59,8 +62,13 @@ endif()
 set (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}/sdformat-${SDF_VERSION}/sdf")
 set (LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE STRING "Installation directory for libraries (relative to CMAKE_INSTALL_PREFIX)")
 set (BIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR} CACHE STRING "Installation directory for binaries (relative to CMAKE_INSTALL_PREFIX)")
-
 set (USE_FULL_RPATH OFF CACHE BOOL "Set to true to enable full rpath")
+
+set(PKG_NAME SDFormat)
+set(sdf_target sdformat${SDF_MAJOR_VERSION})
+set(sdf_config_install_dir "${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/")
+set(sdf_import_target_name ${PROJECT_EXPORT_NAME}::${sdf_target})
+set(sdf_target_output_filename "${sdf_target}-targets.cmake")
 
 
 if (USE_FULL_RPATH)
@@ -227,7 +235,7 @@ if (build_errors)
   message(STATUS "END BUILD ERRORS\n")
   message (FATAL_ERROR "Errors encountered in build. Please see the BUILD ERRORS above.")
 
-else (buid_errors)
+else (build_errors)
 
   ########################################
   # Write the config.h file
@@ -269,20 +277,31 @@ else (buid_errors)
 
   ########################################
   # Make the cmake config files
-  set(PKG_NAME ${PROJECT_NAME})
-  set(cmake_conf_file         "cmake/${PROJECT_NAME_LOWER}-config.cmake")
-  set(cmake_conf_version_file "cmake/${PROJECT_NAME_LOWER}-config-version.cmake")
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdf_config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_file}" @ONLY)
+  set(sdf_config_input  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdf_config.cmake.in")
+  set(sdf_config_output "cmake/${sdf_target}-config.cmake")
+  set(sdf_version_output "cmake/${sdf_target}-config-version.cmake")
+  set(sdf_config_install_dir "${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/")
+
+  #--------------------------------------
+  # Configure and install the config file
+  configure_package_config_file(
+    ${sdf_config_input}
+    ${sdf_config_output}
+    INSTALL_DESTINATION ${sdf_config_install_dir}
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+
+  #--------------------------------------
+  # Configure and install the version file
   write_basic_package_version_file(
-      ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_version_file}
+      ${CMAKE_CURRENT_BINARY_DIR}/${sdf_version_output}
       VERSION "${SDF_VERSION_FULL}"
       COMPATIBILITY SameMajorVersion)
+
   install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_file}
-    ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_version_file}
-    DESTINATION
-    ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/
-	  COMPONENT cmake)
+    ${CMAKE_CURRENT_BINARY_DIR}/${sdf_config_output}
+    ${CMAKE_CURRENT_BINARY_DIR}/${sdf_version_output}
+    DESTINATION ${sdf_config_install_dir}
+    COMPONENT cmake)
 
   ########################################
   # Package Creation:

@@ -54,7 +54,6 @@ macro (sdf_add_library _name)
   set(LIBS_DESTINATION ${PROJECT_BINARY_DIR}/src)
   set_source_files_properties(${ARGN} PROPERTIES COMPILE_DEFINITIONS "BUILDING_DLL")
   add_library(${_name} SHARED ${ARGN})
-  target_link_libraries (${_name} ${general_libraries})
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIBS_DESTINATION})
   if (MSVC)
     set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${LIBS_DESTINATION})
@@ -66,7 +65,6 @@ endmacro ()
 #################################################
 macro (sdf_add_executable _name)
   add_executable(${_name} ${ARGN})
-  target_link_libraries (${_name} ${general_libraries})
 endmacro ()
 
 
@@ -78,7 +76,24 @@ endmacro()
 #################################################
 macro (sdf_install_library _name)
   set_target_properties(${_name} PROPERTIES SOVERSION ${SDF_MAJOR_VERSION} VERSION ${SDF_VERSION_FULL})
-  install (TARGETS ${_name} DESTINATION ${LIB_INSTALL_DIR} COMPONENT shlib)
+  install (
+    TARGETS ${_name}
+    EXPORT ${_name}
+    DESTINATION ${LIB_INSTALL_DIR}
+    COMPONENT shlib)
+
+# Export and install target
+export(
+  EXPORT ${_name}
+  FILE ${PROJECT_BINARY_DIR}/cmake/${sdf_target_output_filename}
+  NAMESPACE ${PROJECT_EXPORT_NAME}::)
+
+install(
+  EXPORT ${_name}
+  DESTINATION ${sdf_config_install_dir}
+  FILE ${sdf_target_output_filename}
+  NAMESPACE ${PROJECT_EXPORT_NAME}::)
+
 endmacro ()
 
 #################################################
@@ -134,7 +149,7 @@ macro (sdf_build_tests)
     endif()
 
     add_dependencies(${BINARY_NAME}
-      gtest gtest_main sdformat${SDF_MAJOR_VERSION}
+      gtest gtest_main ${sdf_target}
       )
 
     link_directories(${IGNITION-MATH_LIBRARY_DIRS})
@@ -143,7 +158,7 @@ macro (sdf_build_tests)
       target_link_libraries(${BINARY_NAME}
         libgtest.a
         libgtest_main.a
-        sdformat${SDF_MAJOR_VERSION}
+        ${sdf_target}
         pthread
         ${tinyxml_LIBRARIES}
         ${IGNITION-MATH_LIBRARIES}
@@ -152,7 +167,7 @@ macro (sdf_build_tests)
       target_link_libraries(${BINARY_NAME}
         gtest.lib
         gtest_main.lib
-        sdformat${SDF_MAJOR_VERSION}.dll
+        ${sdf_target}
         ${IGNITION-MATH_LIBRARIES}
       )
 
