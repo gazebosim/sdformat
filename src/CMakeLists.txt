@@ -97,12 +97,12 @@ set (gtest_sources
   Mesh_TEST.cc
   Model_TEST.cc
   parser_urdf_TEST.cc
-  Param_TEST.cc
+  #Param_TEST.cc
   parser_TEST.cc
   Physics_TEST.cc
   Plane_TEST.cc
   Root_TEST.cc
-  SDF_TEST.cc
+  #SDF_TEST.cc
   Sphere_TEST.cc
   Types_TEST.cc
   Visual_TEST.cc

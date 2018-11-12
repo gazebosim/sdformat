@@ -204,11 +204,11 @@ void Param::Update()
     try
     {
       std::any newValue = this->dataPtr->updateFunc();
-      std::visit([&](auto &&arg)
-        {
-          using T = std::decay_t<decltype(arg)>;
-          arg = std::any_cast<T>(newValue);
-        }, this->dataPtr->value);
+      //std::visit([&](auto &&arg)
+      //  {
+      //    using T = std::decay_t<decltype(arg)>;
+      //    arg = std::any_cast<T>(newValue);
+      //  }, this->dataPtr->value);
     }
     catch(...)
     {
