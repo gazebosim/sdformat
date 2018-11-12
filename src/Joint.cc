@@ -149,6 +149,8 @@ Errors Joint::Load(ElementPtr _sdf)
     errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
   }
 
+  this->dataPtr->threadPitch = _sdf->Get<double>("thread_pitch", 1.0).first;
+
   // Read the type
   std::pair<std::string, bool> typePair = _sdf->Get<std::string>("type", "");
   if (typePair.second)
@@ -291,6 +293,7 @@ void Joint::SetThreadPitch(double _threadPitch)
 {
   this->dataPtr->threadPitch = _threadPitch;
 }
+
 /////////////////////////////////////////////////
 sdf::ElementPtr Joint::Element() const
 {
