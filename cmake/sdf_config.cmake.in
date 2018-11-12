@@ -26,15 +26,7 @@ endif()
 
 list(APPEND @PKG_NAME@_LIBRARY_DIRS "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@")
 
-set(sdformat@SDF_MAJOR_VERSION@lib "sdformat@SDF_MAJOR_VERSION@-NOTFOUND")
-find_library(sdformat@SDF_MAJOR_VERSION@lib sdformat@SDF_MAJOR_VERSION@
-  PATHS "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@"
-  NO_DEFAULT_PATH
-)
-if(NOT sdformat@SDF_MAJOR_VERSION@lib)
-  message(FATAL_ERROR "Library 'sdformat@SDF_MAJOR_VERSION@' in package @PKG_NAME@ is not installed properly")
-endif()
-list(APPEND @PKG_NAME@_LIBRARIES "${sdformat@SDF_MAJOR_VERSION@lib}")
+set(@PKG_NAME@_LIBRARIES @sdf_import_target_name@)
 
 # These variables are used by ignition-cmake to automatically configure the
 # pkgconfig files for ignition projects.
@@ -43,7 +35,6 @@ set(sdformat8_PKGCONFIG_TYPE PROJECT_PKGCONFIG_REQUIRES)
 
 find_package(ignition-math@IGN_MATH_VER@)
 list(APPEND @PKG_NAME@_INCLUDE_DIRS ${IGNITION-MATH_INCLUDE_DIRS})
-list(APPEND @PKG_NAME@_LIBRARIES ${IGNITION-MATH_LIBRARIES})
 list(APPEND @PKG_NAME@_LIBRARY_DIRS ${IGNITION-MATH_LIBRARY_DIRS})
 
 list(APPEND @PKG_NAME@_LDFLAGS "-L@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@")
