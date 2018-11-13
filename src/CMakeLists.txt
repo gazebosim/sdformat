@@ -49,6 +49,7 @@ set (sources
   SDFExtension.cc
   Sphere.cc
   Types.cc
+  UrdfStream.cc
   Utils.cc
   Visual.cc
   World.cc
@@ -111,6 +112,7 @@ set (gtest_sources
   SDF_TEST.cc
   Sphere_TEST.cc
   Types_TEST.cc
+  UrdfStream_TEST.cc
   Utils_TEST.cc
   Visual_TEST.cc
   World_TEST.cc

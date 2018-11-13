@@ -28,6 +28,7 @@ set (headers
   SDFImpl.hh
   Sphere.hh
   Types.hh
+  UrdfStream.hh
   system_util.hh
   Visual.hh
   World.hh
