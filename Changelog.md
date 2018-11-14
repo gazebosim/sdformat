@@ -2,6 +2,10 @@
 
 ### SDFormat 8.0.0 (xxxx-xx-xx)
 
+1. Change cmake project name to sdformat8, export cmake targets
+   * [Pull request 475](https://bitbucket.org/osrf/sdformat/pull-requests/475)
+   * [Pull request 476](https://bitbucket.org/osrf/sdformat/pull-requests/476)
+
 1. SDF DOM: Add copy constructor and assignment operator to Light. Add lights to Link
    * [Pull request 469](https://bitbucket.org/osrf/sdformat/pull-requests/469)
 
