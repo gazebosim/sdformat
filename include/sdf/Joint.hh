@@ -104,7 +104,7 @@ namespace sdf
     /// \brief Set the name of the joint.
     /// The name of the joint must be unique within the scope of a Model.
     /// \param[in] _name Name of the joint.
-    public: void SetName(const std::string &_name) const;
+    public: void SetName(const std::string &_name);
 
     /// \brief Get the joint type
     /// \return Type of joint.
@@ -120,7 +120,7 @@ namespace sdf
 
     /// \brief Set the name of the parent link.
     /// \param[in] _name Name of the parent link.
-    public: void SetParentLinkName(const std::string &_name) const;
+    public: void SetParentLinkName(const std::string &_name);
 
     /// \brief Get the name of this joint's child link.
     /// \return The name of the child link.
@@ -128,7 +128,7 @@ namespace sdf
 
     /// \brief Set the name of the child link.
     /// \param[in] _name Name of the child link.
-    public: void SetChildLinkName(const std::string &_name) const;
+    public: void SetChildLinkName(const std::string &_name);
 
     /// \brief Get a joint axis.
     /// \param[in] _index This value specifies which axis to get. A value of
@@ -139,6 +139,14 @@ namespace sdf
     /// return value of nullptr indicates that the axis is not
     /// specified.
     public: const JointAxis *Axis(const unsigned int _index = 0) const;
+
+    /// \brief Set a joint axis.
+    /// \param[in] _index This value specifies which axis to set. A value of
+    /// zero corresponds to the first axis, which is the <axis> SDF
+    /// element. Any other value will set the second axis, which is the
+    /// <axis2> SDF element.
+    /// \param[in] _axis The JointAxis of the joint
+    public: void SetAxis(const unsigned int _index, const JointAxis &_axis);
 
     /// \brief Get the pose of the joint. This is the pose of the joint
     /// as specified in SDF (<joint> <pose> ... </pose></joint>).
@@ -163,6 +171,14 @@ namespace sdf
     /// child link frame.
     /// \param[in] _frame The name of the pose frame.
     public: void SetPoseFrame(const std::string &_frame);
+
+    /// \brief Get the thread pitch (only valid for screw joints)
+    /// \return The thread pitch
+    public: double ThreadPitch() const;
+
+    /// \brief Set the thread pitch (only valid for screw joints)
+    /// \param[in] _threadPitch The thread pitch of the joint
+    public: void SetThreadPitch(double _threadPitch);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
