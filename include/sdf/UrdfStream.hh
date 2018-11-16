@@ -20,7 +20,9 @@
 #include <string>
 #include <iostream>
 
+#include <ignition/math/Pose3.hh>
 #include <sdf/Model.hh>
+#include <sdf/Geometry.hh>
 
 namespace sdf
 {
@@ -40,6 +42,12 @@ namespace sdf
       _out << _stream.String();
       return _out;
     }
+
+    private: std::string PoseToOrigin(const std::string &_prefix,
+                 const ignition::math::Pose3d &_pose) const;
+
+    private: std::string Geometry(const std::string &_prefix,
+                 const sdf::Geometry *_geom) const;
   };
 }
 

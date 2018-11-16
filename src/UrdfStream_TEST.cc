@@ -28,10 +28,8 @@ TEST(UrdfStream, Construction)
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
         "double_pendulum.sdf");
 
-
   sdf::Root root;
   root.Load(testFile);
-
 
   sdf::UrdfStream stream(*root.ModelByIndex(0));
 }
