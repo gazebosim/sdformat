@@ -14,41 +14,14 @@
  * limitations under the License.
  *
  */
-#ifndef SDF_URDFSTREAM_HH_
-#define SDF_URDFSTREAM_HH_
+#ifndef SDF_URDFCONVERTER_HH_
+#define SDF_URDFCONVERTER_HH_
 
 #include <string>
-#include <iostream>
-
-#include <ignition/math/Pose3.hh>
 #include <sdf/Model.hh>
-#include <sdf/Geometry.hh>
 
 namespace sdf
 {
-  class SDFORMAT_VISIBLE UrdfStream
-  {
-    public: UrdfStream(const sdf::Model &_model);
-
-    public: std::string String() const;
-
-    /// \brief Stream insertion operator
-    /// \param _out output stream
-    /// \param _stream UrdfStream to output
-    /// \return the stream
-    public: friend std::ostream &operator<<(
-                std::ostream &_out, const UrdfStream &_stream)
-    {
-      _out << _stream.String();
-      return _out;
-    }
-
-    private: std::string PoseToOrigin(const std::string &_prefix,
-                 const ignition::math::Pose3d &_pose) const;
-
-    private: std::string Geometry(const std::string &_prefix,
-                 const sdf::Geometry *_geom) const;
-  };
 }
 
 #endif

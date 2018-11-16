@@ -21,6 +21,7 @@
 
 #include "sdf/SDFImpl.hh"
 #include "sdf/system_util.hh"
+#include "sdf/Model.hh"
 
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser
@@ -149,5 +150,85 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool convertString(const std::string &_sdfString,
                      const std::string &_version, SDFPtr _sdf);
+
+  /// \brief Convert the first model in and SDF file to a URDF string.
+  ///
+  /// If a <model> doesn't exist in the root <sdf> scope, then the first
+  /// <model> in a <world> will be converted.
+  ///
+  /// **Example 1**
+  ///
+  /// The 'robot1' model will be converted to URDF given the following SDF.
+  ///
+  /// \code
+  /// <sdf version='1.6'>
+  ///   <model name='robot1'>...</model>
+  ///   <model name='robot2'>...</model>
+  ///   <world name='default'><model name='robot3'>...</model></world>
+  /// </sdf>
+  /// \endcode
+  ///
+  /// **Example 2**
+  ///
+  /// The 'robot2' model will be converted to URDF given the following SDF.
+  ///
+  /// \code
+  /// <sdf version='1.6'>
+  ///   <model name='robot2'>...</model>
+  ///   <world name='default'><model name='robot3'>...</model></world>
+  ///   <model name='robot1'>...</model>
+  /// </sdf>
+  /// \endcode
+  ///
+  /// **Example 3**
+  ///
+  /// The 'robot1' model will be converted to URDF given the following SDF.
+  ///
+  /// \code
+  /// <sdf version='1.6'>
+  ///   <world name='default'><model name='robot3'>...</model></world>
+  ///   <model name='robot1'>...</model>
+  ///   <model name='robot2'>...</model>
+  /// </sdf>
+  /// \endcode
+  ///
+  /// **Example 4**
+  ///
+  /// The 'robot3' model will be converted to URDF given the following SDF.
+  ///
+  /// \code
+  /// <sdf version='1.6'>
+  ///   <world name='default'>
+  ///     <model name='robot3'>...</model>
+  ///     <model name='robot4'>...</model>
+  ///   </world>
+  /// </sdf>
+  /// \endcode
+  ///
+  ///
+  /// **Usage**
+  ///
+  /// The following example will load an SDF file, and convert the first
+  /// <model> to a URDF <robot> string.
+  ///
+  /// \code
+  /// std::cout << sdf::toUrdf("my_robot.sdf") << std::endl;
+  /// \endcode
+  ///
+  /// \param[in] _filanem The SDF file to convert.
+  /// \return A URDF string that represents the first model in the provided
+  /// file. An empty string is returned when no SDF models are found or an
+  /// error occurs.
+  // Implementation in src/urdfConverter.cc
+  SDFORMAT_VISIBLE
+  std::string toUrdf(const std::string &_filename);
+
+  /// \brief Conver the provided sdf::Model to a URDF string.
+  /// \param[in] _model The sdf::Model to convert.
+  /// \return A URDF string that represents the given model. An empty string
+  /// is returned on error.
+  // Implementation in src/urdfConverter.cc
+  SDFORMAT_VISIBLE
+  std::string toUrdf(const sdf::Model *_model);
 }
 #endif

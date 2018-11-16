@@ -16,20 +16,17 @@
 */
 
 #include <gtest/gtest.h>
-#include "sdf/UrdfStream.hh"
+#include "sdf/parser.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Root.hh"
 #include "test_config.h"
 
 /////////////////////////////////////////////////
-TEST(UrdfStream, Construction)
+TEST(Urdf, Construction)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
         "double_pendulum.sdf");
 
-  sdf::Root root;
-  root.Load(testFile);
-
-  sdf::UrdfStream stream(*root.ModelByIndex(0));
+  std::cout << sdf::toUrdf(testFile) << std::endl;
 }
