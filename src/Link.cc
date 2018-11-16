@@ -33,9 +33,6 @@ using namespace ignition::math;
 
 class sdf::LinkPrivate
 {
-  /// \brief Pose of the link
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
-
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
 

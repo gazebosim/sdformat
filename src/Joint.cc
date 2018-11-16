@@ -19,6 +19,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <ignition/math/Matrix4.hh>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
 #include "sdf/Joint.hh"
@@ -27,6 +28,7 @@
 #include "Utils.hh"
 
 using namespace sdf;
+using namespace ignition::math;
 
 class sdf::JointPrivate
 {
@@ -38,9 +40,6 @@ class sdf::JointPrivate
     this->axis[1] = nullptr;
   }
 
-  /// \brief Name of the joint.
-  public: std::string name = "";
-
   /// \brief Name of the parent link.
   public: std::string parentLinkName = "";
 
@@ -51,7 +50,7 @@ class sdf::JointPrivate
   public: JointType type = JointType::INVALID;
 
   /// \brief Pose of the joint
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: Pose3d pose = Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
@@ -63,6 +62,9 @@ class sdf::JointPrivate
   /// \brief Pointer to the frame graph.
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
 
+  /// \brief Id of the frame for this object
+  public: graph::VertexId frameVertexId;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 };
@@ -71,6 +73,10 @@ class sdf::JointPrivate
 Joint::Joint()
   : dataPtr(new JointPrivate)
 {
+  // Create the frame graph for the joint, and add a node for the joint.
+  this->dataPtr->frameGraph.reset(new FrameGraph);
+  this->dataPtr->frameVertexId = this->dataPtr->frameGraph->AddVertex(
+      "", Matrix4d::Identity).Id();
 }
 
 /////////////////////////////////////////////////
@@ -106,14 +112,12 @@ Errors Joint::Load(ElementPtr _sdf,
   }
 
   // Read the joints's name
-  if (!loadName(_sdf, this->dataPtr->name))
+  std::string jointName;
+  if (!loadName(_sdf, jointName))
   {
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A joint name is required, but the name is not set."});
   }
-
-  // Load the pose. Ignore the return value since the pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
   // Read the parent link name
   std::pair<std::string, bool> parentPair =
@@ -135,6 +139,15 @@ Errors Joint::Load(ElementPtr _sdf,
     errors.push_back({ErrorCode::ELEMENT_MISSING,
         "The child element is missing."});
   }
+
+  // Load the pose. Ignore the return value since the pose is optional.
+  Pose3d pose;
+  loadPose(_sdf, pose, this->dataPtr->poseFrame);
+
+  // Use the child link frame as the pose frame if the poseFrame attribute is
+  // empty.
+  if (this->dataPtr->poseFrame.empty())
+    this->dataPtr->poseFrame = this->dataPtr->childLinkName;
 
   if (_sdf->HasElement("axis"))
   {
@@ -195,8 +208,25 @@ Errors Joint::Load(ElementPtr _sdf,
 
   if (_frameGraph)
   {
-    _frameGraph->AddVertex(this->dataPtr->name,
-        ignition::math::Matrix4d(this->dataPtr->pose));
+    // Add a vertex in the frame graph for this joint.
+    this->dataPtr->frameVertexId =
+      _frameGraph->AddVertex(jointName, Matrix4d(pose)).Id();
+
+    // Get the parent vertex based on this joints's pose frame name.
+    const graph::VertexRef_M<Matrix4d>
+      parentVertices = _frameGraph->Vertices(this->dataPtr->poseFrame);
+
+    /// \todo check that parentVertices has an element, and potentially make
+    /// sure it has only one element.
+
+    // Connect the parent to the child
+    _frameGraph->AddEdge({parentVertices.begin()->first,
+        this->dataPtr->frameVertexId}, -1);
+
+    // Connect the child to the parent
+    _frameGraph->AddEdge({this->dataPtr->frameVertexId,
+        parentVertices.begin()->first}, 1);
+
     this->dataPtr->frameGraph = _frameGraph;
   }
 
@@ -206,13 +236,16 @@ Errors Joint::Load(ElementPtr _sdf,
 /////////////////////////////////////////////////
 const std::string &Joint::Name() const
 {
-  return this->dataPtr->name;
+  return this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->frameVertexId).Name();
 }
 
 /////////////////////////////////////////////////
 void Joint::SetName(const std::string &_name) const
 {
-  this->dataPtr->name = _name;
+  // Store the name in the frame graph
+  this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->frameVertexId).SetName(_name);
 }
 
 /////////////////////////////////////////////////
@@ -258,9 +291,12 @@ const JointAxis *Joint::Axis(const unsigned int _index) const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Joint::Pose() const
+std::optional<Pose3d>  Joint::Pose(const std::string &_frame) const
 {
-  return this->dataPtr->pose;
+  return poseInFrame(
+      this->Name(),
+      _frame.empty() ? this->PoseFrame() : _frame,
+      *this->dataPtr->frameGraph);
 }
 
 /////////////////////////////////////////////////
@@ -270,9 +306,10 @@ const std::string &Joint::PoseFrame() const
 }
 
 /////////////////////////////////////////////////
-void Joint::SetPose(const ignition::math::Pose3d &_pose)
+void Joint::SetPose(const Pose3d &_pose)
 {
-  this->dataPtr->pose = _pose;
+  this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->frameVertexId).Data() = Matrix4d(_pose);
 }
 
 /////////////////////////////////////////////////
