@@ -69,6 +69,10 @@ std::optional<Pose3d> sdf::poseInFrame(const std::string &_src,
   if (_src.empty())
     return std::nullopt;
 
+  // Handle the case where the source and destination are the same.
+  if (_src == _dst)
+    return std::optional<Pose3d>(Matrix4d::Identity.Pose());
+
   // Get the source vertex.
   const graph::VertexRef_M<Matrix4d> srcVertices = _graph.Vertices(_src);
 
@@ -87,7 +91,7 @@ std::optional<Pose3d> sdf::poseInFrame(const std::string &_src,
     graph::Dijkstra(_graph,
         srcVertices.begin()->first, dstVertices.begin()->first);
 
-  // Dijkstra debug output
+  // // Dijkstra debug output
   // for (auto vv : result)
   // {
   //   std::cout << "DestId[" << vv.first << "] Cost["
@@ -118,7 +122,7 @@ std::optional<Pose3d> sdf::poseInFrame(const std::string &_src,
     // Make sure the edge is valid.
     if (edge.Id() != graph::DirectedEdge<int>::NullEdge.Id())
     {
-      // Debug output:
+      // // Debug output:
       // std::cout << "Key[" << key << "] Edge From[" << edge.Head()
       //   << "] To[" << edge.Tail() << "] Data[" << edge.Data() << "]\n";
 
@@ -129,7 +133,7 @@ std::optional<Pose3d> sdf::poseInFrame(const std::string &_src,
 
       if (inverse)
         finalPose *= _graph.VertexFromId(key).Data().Inverse();
-      else
+      else if (key != dstVertices.begin()->first)
         finalPose *=  _graph.VertexFromId(key).Data();
     }
     else

@@ -161,7 +161,8 @@ std::string VisualStr(const std::string &_prefix, const sdf::Link *_link,
 }
 
 //////////////////////////////////////////////////
-std::string JointStr(const std::string &_prefix, const sdf::Joint *_joint)
+std::string JointStr(const std::string &_prefix, const sdf::Joint *_joint,
+    const sdf::Model *_model)
 {
   if (!_joint)
   {
@@ -218,9 +219,11 @@ std::string JointStr(const std::string &_prefix, const sdf::Joint *_joint)
          << jointType << "'>\n";
 
   // Output the joint pose in the parent link frame.
-  // \todo(nkoenig) Get the joint->Pose in the parent link frame.
-  stream << PoseToOrigin(_prefix + "  ", _joint->Pose())
-         << std::endl;
+  ignition::math::Pose3d pose = *_joint->Pose(_joint->ParentLinkName());
+  // Remove the model pose from the joint pose. URDF does not support
+  // model/robot positioning.
+  pose = pose - *_model->Pose();
+  stream << PoseToOrigin(_prefix + "  ", pose) << std::endl;
 
   // Output the parent and child link names.
   stream << _prefix << "  <parent link='"
@@ -364,7 +367,7 @@ std::string toUrdf(const sdf::Model *_model)
 
   // Output each joint
   for (uint64_t index = 0; index < _model->JointCount(); ++index)
-    stream << JointStr("  ", _model->JointByIndex(index)) << std::endl;
+    stream << JointStr("  ", _model->JointByIndex(index), _model) << std::endl;
 
   // Close the robot
   stream << "</robot>";
