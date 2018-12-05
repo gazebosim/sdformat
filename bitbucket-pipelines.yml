@@ -1,4 +1,4 @@
-image: ubuntu:xenial
+image: ubuntu:bionic
 
 pipelines:
   default:
@@ -6,8 +6,9 @@ pipelines:
         script:
           # Dependencies
           - apt update
-          - apt -y install cmake build-essential lcov curl mercurial lsb-release wget
-            libtinyxml-dev libxml2-utils ruby-dev libboost-dev
+          - apt -y install cmake build-essential lcov curl mercurial git lsb-release wget
+            libtinyxml-dev libxml2-utils ruby-dev libboost-dev g++-8
+          - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
             python-psutil cppcheck
           # Static checking before building - fail fast
           - sh tools/code_check.sh
@@ -17,6 +18,11 @@ pipelines:
           - apt install -y
             libignition-math5-dev
             libignition-tools-dev
+          # lcov
+          - git clone https://github.com/linux-test-project/lcov.git
+          - cd lcov
+          - make install
+          - cd ..
           # SDFormat
           - mkdir build
           - cd build
