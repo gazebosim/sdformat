@@ -96,6 +96,18 @@ but with improved human-readability..
 
 ### Additions
 
+1. **actor.sdf** `tension` element
+    + description: The tension of the trajectory spline. The default value of
+      zero equates to a Catmull-Rom spline, which may also cause the animation
+      to overshoot keyframes. A value of one will cause the animation to stick
+      to the keyframes.
+    + type: double
+    + default: 0.0
+    + min: 0.0
+    + max: 1.0
+    + required: 0
+    + [pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
+
 1. **link.sdf** `enable_wind` element
     + description: If true, the link is affected by the wind
     + type: bool
