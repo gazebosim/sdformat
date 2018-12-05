@@ -59,10 +59,10 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/box_plane_low_friction_test.world";
 
-    std::string cmd = g_ignCommand + " sdf -k " + path + g_sdfVersion;
     // Check box_plane_low_friction_test.world
-    std::string output = custom_exec_str(cmd);
-    EXPECT_EQ("Valid.\n", output) << cmd;
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output);
   }
 
   // Check a bad SDF file
