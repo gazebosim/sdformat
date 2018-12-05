@@ -149,7 +149,6 @@ Errors Joint::Load(ElementPtr _sdf,
   if (this->dataPtr->poseFrame.empty())
     this->dataPtr->poseFrame = this->dataPtr->childLinkName;
 
-
   if (_sdf->HasElement("axis"))
   {
     this->dataPtr->axis[0].reset(new JointAxis());
@@ -213,7 +212,6 @@ Errors Joint::Load(ElementPtr _sdf,
     this->dataPtr->frameVertexId =
       _frameGraph->AddVertex(jointName, Matrix4d(pose)).Id();
 
-
     // Get the parent vertex based on this joints's pose frame name.
     const graph::VertexRef_M<Matrix4d>
       parentVertices = _frameGraph->Vertices(this->dataPtr->poseFrame);
@@ -230,8 +228,6 @@ Errors Joint::Load(ElementPtr _sdf,
         parentVertices.begin()->first}, 1);
 
     this->dataPtr->frameGraph = _frameGraph;
-
-    std::cout << "\n\nJOINT[" << jointName << "] Pose[" << pose << "] Frame[" << this->dataPtr->poseFrame << "] Computed[" << *this->Pose() << "]\n\n";
   }
 
   return errors;
@@ -297,7 +293,6 @@ const JointAxis *Joint::Axis(const unsigned int _index) const
 /////////////////////////////////////////////////
 std::optional<Pose3d> Joint::Pose(const std::string &_frame) const
 {
-  //std::cout << *this->dataPtr->frameGraph << std::endl;
   return poseInFrame(
       this->Name(),
       _frame.empty() ? this->PoseFrame() : _frame,

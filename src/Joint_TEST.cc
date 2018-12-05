@@ -27,7 +27,7 @@ TEST(DOMJoint, Construction)
   EXPECT_EQ(sdf::JointType::INVALID, joint.Type());
   EXPECT_TRUE(joint.ParentLinkName().empty());
   EXPECT_TRUE(joint.ChildLinkName().empty());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, *joint.Pose());
+  EXPECT_EQ(std::nullopt, joint.Pose());
   EXPECT_TRUE(joint.PoseFrame().empty());
   EXPECT_EQ(nullptr, joint.Element());
 
