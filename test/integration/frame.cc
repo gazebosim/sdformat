@@ -489,10 +489,7 @@ TEST(Frame, InertialFrame)
     << "<model name='my_model'>"
     << "  <link name='link'>"
     << "    <inertial>"
-    << "      <frame name='iframe'>"
-    << "        <pose frame='link'>1 2 3 0 0 0</pose>"
-    << "      </frame>"
-    << "      <pose frame='iframe'>3 2 1 0 0 0</pose>"
+    << "      <pose>3 2 1 0 0 0</pose>"
     << "    </inertial>"
     << "  </link>"
     << "</model>"
@@ -520,25 +517,9 @@ TEST(Frame, InertialFrame)
   EXPECT_TRUE(linkElem->HasElement("inertial"));
   sdf::ElementPtr inertialElem = linkElem->GetElement("inertial");
 
-  // inertial frame
-  EXPECT_TRUE(inertialElem->HasElement("frame"));
-  sdf::ElementPtr frameElem = inertialElem->GetElement("frame");
-  EXPECT_TRUE(frameElem->HasAttribute("name"));
-  EXPECT_EQ(frameElem->Get<std::string>("name"), "iframe");
-
-  // inertial frame pose
-  EXPECT_TRUE(frameElem->HasElement("pose"));
-  sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
-  EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-            ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
-
   // inertial pose
   EXPECT_TRUE(inertialElem->HasElement("pose"));
   sdf::ElementPtr inertialPoseElem = inertialElem->GetElement("pose");
-  EXPECT_TRUE(inertialPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(inertialPoseElem->Get<std::string>("frame"), "iframe");
   EXPECT_EQ(inertialPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(3, 2, 1, 0, 0, 0));
 }

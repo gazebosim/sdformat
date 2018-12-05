@@ -123,7 +123,7 @@ TEST(DOMLink, InertialDoublePendulum)
   const sdf::Link *baseLink = model->LinkByIndex(0);
   ASSERT_NE(nullptr, baseLink);
   EXPECT_EQ(ignition::math::Pose3d::Zero, baseLink->Pose("base"));
-  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), baseLink->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), *baseLink->Pose());
   EXPECT_EQ("double_pendulum_with_base", baseLink->PoseFrame());
 
   const ignition::math::Inertiald inertial = baseLink->Inertial();
@@ -137,9 +137,9 @@ TEST(DOMLink, InertialDoublePendulum)
 
   const sdf::Link *upperLink = model->LinkByIndex(1);
   ASSERT_NE(nullptr, upperLink);
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 2.1, -1.5708, 0, 0),
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0),
       upperLink->Pose("upper_link"));
-  EXPECT_EQ(ignition::math::Pose3d(1, 0, 2.1, -1.5708, 0, 0),
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 2.1, -1.5708, 0, 0),
       upperLink->Pose());
   EXPECT_EQ("double_pendulum_with_base", upperLink->PoseFrame());
 
@@ -158,10 +158,10 @@ TEST(DOMLink, InertialDoublePendulum)
 
   const sdf::Link *lowerLink = model->LinkByIndex(2);
   ASSERT_TRUE(lowerLink != nullptr);
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0),
+      *lowerLink->Pose("lower_link"));
   EXPECT_EQ(ignition::math::Pose3d(0.25, 1.0, 2.1, -2, 0, 0),
-      lowerLink->Pose("lower_link"));
-  EXPECT_EQ(ignition::math::Pose3d(1.25, 1.0, 2.1, -2, 0, 0),
-      lowerLink->Pose());
+      *lowerLink->Pose());
   EXPECT_EQ("double_pendulum_with_base", lowerLink->PoseFrame());
 }
 
@@ -239,6 +239,9 @@ TEST(DOMLink, LinkChain)
 
   ignition::math::Pose3d modelInFour = *model->Pose("four");
   EXPECT_EQ(ignition::math::Pose3d(-3, -2, 5, 0, 0, 0), modelInFour);
+
+  ignition::math::Pose3d fourInThree = *linkFour->Pose("three");
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, -5, 0, 0, 0), fourInThree);
 
   ignition::math::Pose3d oneInModelFrame = *linkOne->Pose();
   EXPECT_EQ(ignition::math::Pose3d(1, -1, 0, 0, 0, 0), oneInModelFrame);

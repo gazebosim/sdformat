@@ -144,7 +144,7 @@ Errors Joint::Load(ElementPtr _sdf,
   Pose3d pose;
   loadPose(_sdf, pose, this->dataPtr->poseFrame);
 
-  // Use the child link frame as the pose frame if the poseFrame attribute is
+  // Use the parent link frame as the pose frame if the poseFrame attribute is
   // empty.
   if (this->dataPtr->poseFrame.empty())
     this->dataPtr->poseFrame = this->dataPtr->childLinkName;
@@ -291,7 +291,7 @@ const JointAxis *Joint::Axis(const unsigned int _index) const
 }
 
 /////////////////////////////////////////////////
-std::optional<Pose3d>  Joint::Pose(const std::string &_frame) const
+std::optional<Pose3d> Joint::Pose(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),
