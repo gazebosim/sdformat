@@ -96,22 +96,6 @@ but with improved human-readability..
 
 ### Additions
 
-1. **physics.sdf** `dart::solver::solver_type` element
-    + description: The DART LCP/constraint solver to use.
-      Either dantzig or pgs (projected Gauss-Seidel)
-    + type: string
-    + default: dantzig
-    + required: 0
-    + [pull request 369](https://bitbucket.org/osrf/sdformat/pull-requests/369)
-
-1. **physics.sdf** `dart::collision_detector` element
-    + description: The collision detector for DART to use.
-      Can be dart, fcl, bullet or ode.
-    + type: string
-    + default: fcl
-    + required: 0
-    + [pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
-
 1. **link.sdf** `enable_wind` element
     + description: If true, the link is affected by the wind
     + type: bool
@@ -138,6 +122,22 @@ but with improved human-readability..
     + default: "1 1 1"
     + required: 0
     + [pull request 246](https://bitbucket.org/osrf/sdformat/pull-requests/246)
+
+1. **physics.sdf** `dart::collision_detector` element
+    + description: The collision detector for DART to use.
+      Can be dart, fcl, bullet or ode.
+    + type: string
+    + default: fcl
+    + required: 0
+    + [pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
+
+1. **physics.sdf** `dart::solver::solver_type` element
+    + description: The DART LCP/constraint solver to use.
+      Either dantzig or pgs (projected Gauss-Seidel)
+    + type: string
+    + default: dantzig
+    + required: 0
+    + [pull request 369](https://bitbucket.org/osrf/sdformat/pull-requests/369)
 
 1. **physics.sdf** `island_threads` element under `ode::solver`
     + description: Number of threads to use for "islands" of disconnected models.
