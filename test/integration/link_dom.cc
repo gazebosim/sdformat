@@ -261,3 +261,4 @@ TEST(DOMLink, LinkChain)
   ignition::math::Pose3d fourInOther = linkFour->Pose("other_frame");
   EXPECT_EQ(ignition::math::Pose3d(-7, -8, -15, 0, 0, 0), fourInOther);
 }
+

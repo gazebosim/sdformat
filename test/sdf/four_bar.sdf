@@ -1,0 +1,158 @@
+<?xml version="1.0" ?>
+<sdf version='1.6'>
+  <model name='fourbar'>
+    <link name="link1">
+      <pose>0 0.2 0.05 0 0 0</pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.0001666666666666667</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0021666666666666666</iyy>
+          <iyz>0</iyz>
+          <izz>0.0021666666666666666</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box><size>0.5 0.1 0.1</size></box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box><size>0.5 0.1 0.1</size></box>
+        </geometry>
+      </visual>
+    </link>
+
+    <link name="link2">
+      <pose>0.2 0 0.05 0 0 0</pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.0021666666666666666</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0001666666666666667</iyy>
+          <iyz>0</iyz>
+          <izz>0.0021666666666666666</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box><size>0.1 0.5 0.1</size></box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box><size>0.1 0.5 0.1</size></box>
+        </geometry>
+      </visual>
+    </link>
+
+    <link name="link3">
+      <pose>0 -0.2 0.05 0 0 0</pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.0001666666666666667</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0021666666666666666</iyy>
+          <iyz>0</iyz>
+          <izz>0.0021666666666666666</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box><size>0.5 0.1 0.1</size></box>
+        </geometry>
+      </collision>
+
+      <visual name="visual">
+        <geometry>
+          <box><size>0.5 0.1 0.1</size></box>
+        </geometry>
+      </visual>
+    </link>
+
+    <link name="link4">
+      <pose>-0.2 0 0.05 0 0 0</pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.0021666666666666666</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0001666666666666667</iyy>
+          <iyz>0</iyz>
+          <izz>0.0021666666666666666</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box><size>0.1 0.5 0.1</size></box>
+        </geometry>
+      </collision>
+
+      <visual name="visual">
+        <geometry>
+          <box><size>0.1 0.5 0.1</size></box>
+        </geometry>
+      </visual>
+    </link>
+
+    <joint name="joint1" type="revolute">
+      <parent>link1</parent>
+      <child>link2</child>
+      <pose>0 0.2 0 0 0 0</pose>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.14</lower>
+          <upper>3.14</upper>
+        </limit>
+      </axis>
+    </joint>
+
+    <joint name="joint2" type="revolute">
+      <parent>link2</parent>
+      <child>link3</child>
+      <pose>0.2 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.14</lower>
+          <upper>3.14</upper>
+        </limit>
+      </axis>
+    </joint>
+
+    <joint name="joint3" type="revolute">
+      <parent>link3</parent>
+      <child>link4</child>
+      <pose>0 -0.2 0 0 0 0</pose>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.14</lower>
+          <upper>3.14</upper>
+        </limit>
+      </axis>
+    </joint>
+
+    <joint name="joint4" type="revolute">
+      <parent>link4</parent>
+      <child>link1</child>
+      <pose>-0.2 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.14</lower>
+          <upper>3.14</upper>
+        </limit>
+      </axis>
+    </joint>
+  </model>
+</sdf>
