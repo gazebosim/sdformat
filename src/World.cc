@@ -26,7 +26,6 @@
 #include "Utils.hh"
 
 using namespace sdf;
-using namespace ignition::math;
 
 class sdf::WorldPrivate
 {
@@ -65,15 +64,12 @@ class sdf::WorldPrivate
   /// \brief Linear velocity of wind.
   public: ignition::math::Vector3d windLinearVelocity =
            ignition::math::Vector3d::Zero;
-
-  // public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
 };
 
 /////////////////////////////////////////////////
 World::World()
   : dataPtr(new WorldPrivate)
 {
-  // this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->physics.emplace_back(Physics());
 }
 

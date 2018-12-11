@@ -95,5 +95,5 @@ TEST(DOMUtils, PoseWithValue)
 TEST(DOMUtils, PoseInFrame)
 {
   FrameGraph graph;
-  EXPECT_EQ(std::nullopt, poseInFrame("", "", graph));
+  EXPECT_FALSE(poseInFrame("", "", graph).IsFinite());
 }

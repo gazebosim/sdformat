@@ -291,7 +291,7 @@ const JointAxis *Joint::Axis(const unsigned int _index) const
 }
 
 /////////////////////////////////////////////////
-std::optional<Pose3d> Joint::Pose(const std::string &_frame) const
+Pose3d Joint::Pose(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),

@@ -276,7 +276,7 @@ bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 }
 
 /////////////////////////////////////////////////
-std::optional<Pose3d> Link::Pose(const std::string &_frame) const
+Pose3d Link::Pose(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),

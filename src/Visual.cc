@@ -155,7 +155,7 @@ void Visual::SetName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-std::optional<Pose3d> Visual::Pose(const std::string &_frame) const
+Pose3d Visual::Pose(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),

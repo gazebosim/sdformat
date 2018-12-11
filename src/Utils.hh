@@ -52,10 +52,11 @@ namespace sdf
   /// or a name of one and only one vertex in _graph. If empty, then the
   /// _src frame will be returned.
   /// \param[in] _graph The frame graph that contains both _src and _dst.
-  /// \return Optional pose of _src in the _dst frame. If an error occurred,
-  /// such as _src being empty or not present in _graph, then std::nullopt is
-  /// returned.
-  std::optional<ignition::math::Pose3d> SDFORMAT_VISIBLE poseInFrame(
+  /// \return Pose of _src in the _dst frame. If an error occurred,
+  /// such as _src being empty or not present in _graph, then the return
+  /// value is not finite which can be evaluated using
+  /// ignition::math::Pose3d::IsFinite().
+  ignition::math::Pose3d SDFORMAT_VISIBLE poseInFrame(
       const std::string &_src, const std::string &_dst, FrameGraph &_graph);
 
   /// \brief Load all objects of a specific sdf element type. No error

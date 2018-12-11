@@ -123,7 +123,7 @@ TEST(DOMLink, InertialDoublePendulum)
   const sdf::Link *baseLink = model->LinkByIndex(0);
   ASSERT_NE(nullptr, baseLink);
   EXPECT_EQ(ignition::math::Pose3d::Zero, baseLink->Pose("base"));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), *baseLink->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), baseLink->Pose());
   EXPECT_EQ("double_pendulum_with_base", baseLink->PoseFrame());
 
   const ignition::math::Inertiald inertial = baseLink->Inertial();
@@ -159,9 +159,9 @@ TEST(DOMLink, InertialDoublePendulum)
   const sdf::Link *lowerLink = model->LinkByIndex(2);
   ASSERT_TRUE(lowerLink != nullptr);
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0),
-      *lowerLink->Pose("lower_link"));
+      lowerLink->Pose("lower_link"));
   EXPECT_EQ(ignition::math::Pose3d(0.25, 1.0, 2.1, -2, 0, 0),
-      *lowerLink->Pose());
+      lowerLink->Pose());
   EXPECT_EQ("double_pendulum_with_base", lowerLink->PoseFrame());
 }
 
@@ -237,27 +237,27 @@ TEST(DOMLink, LinkChain)
   const sdf::Link *linkFour = model->LinkByIndex(3);
   ASSERT_TRUE(linkFour != nullptr);
 
-  ignition::math::Pose3d modelInFour = *model->Pose("four");
+  ignition::math::Pose3d modelInFour = model->Pose("four");
   EXPECT_EQ(ignition::math::Pose3d(-3, -2, 5, 0, 0, 0), modelInFour);
 
-  ignition::math::Pose3d fourInThree = *linkFour->Pose("three");
+  ignition::math::Pose3d fourInThree = linkFour->Pose("three");
   EXPECT_EQ(ignition::math::Pose3d(0, 0, -5, 0, 0, 0), fourInThree);
 
-  ignition::math::Pose3d oneInModelFrame = *linkOne->Pose();
+  ignition::math::Pose3d oneInModelFrame = linkOne->Pose();
   EXPECT_EQ(ignition::math::Pose3d(1, -1, 0, 0, 0, 0), oneInModelFrame);
 
-  ignition::math::Pose3d oneInTwoFrame = *linkOne->Pose("two");
+  ignition::math::Pose3d oneInTwoFrame = linkOne->Pose("two");
   EXPECT_EQ(ignition::math::Pose3d(-2, -1, 0, 0, 0, 0), oneInTwoFrame);
 
-  ignition::math::Pose3d threeInModelFrame = *linkThree->Pose("link_chain");
+  ignition::math::Pose3d threeInModelFrame = linkThree->Pose("link_chain");
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 0, 0, 0, 0), threeInModelFrame);
 
-  ignition::math::Pose3d threeInOtherFrame = *linkThree->Pose("other_frame");
+  ignition::math::Pose3d threeInOtherFrame = linkThree->Pose("other_frame");
   EXPECT_EQ(ignition::math::Pose3d(-7, -8, -10, 0, 0, 0), threeInOtherFrame);
 
-  ignition::math::Pose3d oneInFrameInTwo = *linkOne->Pose("frame_in_two");
+  ignition::math::Pose3d oneInFrameInTwo = linkOne->Pose("frame_in_two");
   EXPECT_EQ(ignition::math::Pose3d(0, -3, -3, 0, 0, 0), oneInFrameInTwo);
 
-  ignition::math::Pose3d fourInOther = *linkFour->Pose("other_frame");
+  ignition::math::Pose3d fourInOther = linkFour->Pose("other_frame");
   EXPECT_EQ(ignition::math::Pose3d(-7, -8, -15, 0, 0, 0), fourInOther);
 }

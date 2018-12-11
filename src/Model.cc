@@ -353,7 +353,7 @@ const Joint *Model::JointByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-std::optional<Pose3d> Model::Pose(const std::string &_frame) const
+Pose3d Model::Pose(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),

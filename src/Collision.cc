@@ -151,7 +151,7 @@ const Geometry *Collision::Geom() const
 }
 
 /////////////////////////////////////////////////
-std::optional<Pose3d> Collision::Pose(const std::string &_frame) const
+Pose3d Collision::Pose(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),

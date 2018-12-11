@@ -127,8 +127,7 @@ namespace sdf
     public: bool SetInertial(const ignition::math::Inertiald &_inertial);
 
     /// \copydoc Model::Pose(const std::string&) const
-    public: std::optional<ignition::math::Pose3d> Pose(
-                const std::string &_frame = "") const;
+    public: ignition::math::Pose3d Pose(const std::string &_frame = "") const;
 
     /// \brief Set the pose of the link.
     /// \sa const ignition::math::Pose3d &Pose() const

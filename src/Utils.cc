@@ -63,15 +63,15 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, Pose3d &_pose,
 }
 
 //////////////////////////////////////////////////
-std::optional<Pose3d> sdf::poseInFrame(const std::string &_src,
+Pose3d sdf::poseInFrame(const std::string &_src,
     const std::string &_dst, FrameGraph &_graph)
 {
   if (_src.empty())
-    return std::nullopt;
+    return Pose3d(INF_D, INF_D, INF_D, INF_D, INF_D, INF_D);
 
   // Handle the case where the source and destination are the same.
   if (_src == _dst)
-    return std::optional<Pose3d>(Matrix4d::Identity.Pose());
+    return Matrix4d::Identity.Pose();
 
   // Get the source vertex.
   const graph::VertexRef_M<Matrix4d> srcVertices = _graph.Vertices(_src);
@@ -84,7 +84,7 @@ std::optional<Pose3d> sdf::poseInFrame(const std::string &_src,
   // There should be only one vertex for the source vertex, and 1 or
   // 0 vertices for the destination vertex.
   if (srcVertices.size() != 1 || dstVertices.size() > 1)
-    return std::nullopt;
+    return Pose3d(INF_D, INF_D, INF_D, INF_D, INF_D, INF_D);
 
   // Run Dijkstra to find a path from _src to _dst
   std::map<graph::VertexId, graph::CostInfo> result =
@@ -144,5 +144,5 @@ std::optional<Pose3d> sdf::poseInFrame(const std::string &_src,
     }
   }
 
-  return std::optional<Pose3d>(finalPose.Pose());
+  return finalPose.Pose();
 }

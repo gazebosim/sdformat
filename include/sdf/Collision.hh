@@ -71,8 +71,7 @@ namespace sdf
     public: const Geometry *Geom() const;
 
     /// \copydoc Model::Pose(const std::string&) const
-    public: std::optional<ignition::math::Pose3d> Pose(
-                const std::string &_frame = "") const;
+    public: ignition::math::Pose3d Pose(const std::string &_frame = "") const;
 
     /// \brief Set the pose of the collision object.
     /// \sa const ignition::math::Pose3d &Pose() const
