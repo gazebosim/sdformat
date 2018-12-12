@@ -27,6 +27,7 @@
 #include "sdf/Model.hh"
 #include "sdf/parser.hh"
 #include "sdf/Root.hh"
+#include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
@@ -208,4 +209,134 @@ TEST(DOMLink, InertialInvalid)
   // TODO: make this failure less severe?
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_EQ(model, nullptr);
+}
+
+//////////////////////////////////////////////////
+TEST(DOMLink, Sensors)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "sensors.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model", model->Name());
+
+  // Get the first link
+  const sdf::Link *link = model->LinkByIndex(0);
+  ASSERT_NE(nullptr, link);
+  EXPECT_EQ("link", link->Name());
+
+  // Get the altimeter sensor
+  const sdf::Sensor *altimeterSensor = link->SensorByName("altimeter_sensor");
+  ASSERT_NE(nullptr, altimeterSensor);
+  EXPECT_EQ("altimeter_sensor", altimeterSensor->Name());
+  EXPECT_EQ(sdf::SensorType::ALTIMETER, altimeterSensor->Type());
+
+  // Get the camera sensor
+  const sdf::Sensor *cameraSensor = link->SensorByName("camera_sensor");
+  ASSERT_NE(nullptr, cameraSensor);
+  EXPECT_EQ("camera_sensor", cameraSensor->Name());
+  EXPECT_EQ(sdf::SensorType::CAMERA, cameraSensor->Type());
+
+  // Get the contact sensor
+  const sdf::Sensor *contactSensor = link->SensorByName("contact_sensor");
+  ASSERT_NE(nullptr, contactSensor);
+  EXPECT_EQ("contact_sensor", contactSensor->Name());
+  EXPECT_EQ(sdf::SensorType::CONTACT, contactSensor->Type());
+
+  // Get the depth sensor
+  const sdf::Sensor *depthSensor = link->SensorByName("depth_sensor");
+  ASSERT_NE(nullptr, depthSensor);
+  EXPECT_EQ("depth_sensor", depthSensor->Name());
+  EXPECT_EQ(sdf::SensorType::DEPTH, depthSensor->Type());
+
+  // Get the force_torque sensor
+  const sdf::Sensor *forceTorqueSensor =
+    link->SensorByName("force_torque_sensor");
+  ASSERT_NE(nullptr, forceTorqueSensor);
+  EXPECT_EQ("force_torque_sensor", forceTorqueSensor->Name());
+  EXPECT_EQ(sdf::SensorType::FORCE_TORQUE, forceTorqueSensor->Type());
+
+  // Get the gps sensor
+  const sdf::Sensor *gpsSensor = link->SensorByName("gps_sensor");
+  ASSERT_NE(nullptr, gpsSensor);
+  EXPECT_EQ("gps_sensor", gpsSensor->Name());
+  EXPECT_EQ(sdf::SensorType::GPS, gpsSensor->Type());
+
+  // Get the gpuRay sensor
+  const sdf::Sensor *gpuRaySensor = link->SensorByName("gpu_ray_sensor");
+  ASSERT_NE(nullptr, gpuRaySensor);
+  EXPECT_EQ("gpu_ray_sensor", gpuRaySensor->Name());
+  EXPECT_EQ(sdf::SensorType::GPU_RAY, gpuRaySensor->Type());
+
+  // Get the imu sensor
+  const sdf::Sensor *imuSensor = link->SensorByName("imu_sensor");
+  ASSERT_NE(nullptr, imuSensor);
+  EXPECT_EQ("imu_sensor", imuSensor->Name());
+  EXPECT_EQ(sdf::SensorType::IMU, imuSensor->Type());
+
+  // Get the logical camera sensor
+  const sdf::Sensor *logicalCameraSensor =
+    link->SensorByName("logical_camera_sensor");
+  ASSERT_NE(nullptr, logicalCameraSensor);
+  EXPECT_EQ("logical_camera_sensor", logicalCameraSensor->Name());
+  EXPECT_EQ(sdf::SensorType::LOGICAL_CAMERA, logicalCameraSensor->Type());
+
+  // Get the magnetometer sensor
+  const sdf::Sensor *magnetometerSensor =
+    link->SensorByName("magnetometer_sensor");
+  ASSERT_NE(nullptr, magnetometerSensor);
+  EXPECT_EQ("magnetometer_sensor", magnetometerSensor->Name());
+  EXPECT_EQ(sdf::SensorType::MAGNETOMETER, magnetometerSensor->Type());
+
+  // Get the multicamera sensor
+  const sdf::Sensor *multicameraSensor =
+    link->SensorByName("multicamera_sensor");
+  ASSERT_NE(nullptr, multicameraSensor);
+  EXPECT_EQ("multicamera_sensor", multicameraSensor->Name());
+  EXPECT_EQ(sdf::SensorType::MULTICAMERA, multicameraSensor->Type());
+
+  // Get the ray sensor
+  const sdf::Sensor *raySensor = link->SensorByName("ray_sensor");
+  ASSERT_NE(nullptr, raySensor);
+  EXPECT_EQ("ray_sensor", raySensor->Name());
+  EXPECT_EQ(sdf::SensorType::RAY, raySensor->Type());
+
+  // Get the rfid sensor
+  const sdf::Sensor *rfidSensor = link->SensorByName("rfid_sensor");
+  ASSERT_NE(nullptr, rfidSensor);
+  EXPECT_EQ("rfid_sensor", rfidSensor->Name());
+  EXPECT_EQ(sdf::SensorType::RFID, rfidSensor->Type());
+
+  // Get the rfid tag
+  const sdf::Sensor *rfidTag = link->SensorByName("rfid_tag");
+  ASSERT_NE(nullptr, rfidTag);
+  EXPECT_EQ("rfid_tag", rfidTag->Name());
+  EXPECT_EQ(sdf::SensorType::RFIDTAG, rfidTag->Type());
+
+  // Get the sonar sensor
+  const sdf::Sensor *sonarSensor = link->SensorByName("sonar_sensor");
+  ASSERT_NE(nullptr, sonarSensor);
+  EXPECT_EQ("sonar_sensor", sonarSensor->Name());
+  EXPECT_EQ(sdf::SensorType::SONAR, sonarSensor->Type());
+
+  // Get the wireless receiver
+  const sdf::Sensor *wirelessReceiver = link->SensorByName("wireless_receiver");
+  ASSERT_NE(nullptr, wirelessReceiver);
+  EXPECT_EQ("wireless_receiver", wirelessReceiver->Name());
+  EXPECT_EQ(sdf::SensorType::WIRELESS_RECEIVER, wirelessReceiver->Type());
+
+  // Get the wireless transmitter
+  const sdf::Sensor *wirelessTransmitter =
+    link->SensorByName("wireless_transmitter");
+  ASSERT_NE(nullptr, wirelessTransmitter);
+  EXPECT_EQ("wireless_transmitter", wirelessTransmitter->Name());
+  EXPECT_EQ(sdf::SensorType::WIRELESS_TRANSMITTER, wirelessTransmitter->Type());
 }
