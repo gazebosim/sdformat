@@ -70,7 +70,7 @@ namespace sdf
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
   template<typename Class>
-  sdf::Errors SDFORMAT_VISIBLE loadUniqueRepeated(sdf::ElementPtr _sdf,
+  sdf::Errors loadUniqueRepeated(sdf::ElementPtr _sdf,
       const std::string &_sdfName, std::vector<Class> &_objs,
       std::shared_ptr<FrameGraph> _frameGraph)
   {
@@ -141,7 +141,7 @@ namespace sdf
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
   template<typename Class>
-  sdf::Errors SDFORMAT_VISIBLE loadUniqueRepeated(sdf::ElementPtr _sdf,
+  sdf::Errors loadUniqueRepeated(sdf::ElementPtr _sdf,
       const std::string &_sdfName, std::vector<Class> &_objs)
   {
     Errors errors;
