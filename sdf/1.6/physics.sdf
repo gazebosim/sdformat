@@ -41,6 +41,9 @@
         <description>One of the following types: pgs, dantzig. PGS stands for Projected Gauss-Seidel.</description>
       </element>
     </element>
+    <element name="collision_detector" type="string" default="fcl" required="0">
+      <description>Specify collision detector for DART to use. Can be dart, fcl, bullet or ode. </description>
+    </element>
   </element>
 
   <element name="simbody" required="0">
