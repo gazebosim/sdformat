@@ -22,7 +22,9 @@
 #ifdef __clang__
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wc++98-c++11-compat"
-  #include <boost/variant.hpp>
+#endif
+#include <boost/variant.hpp>
+#ifdef __clang__
   #pragma clang diagnostic pop
 #endif
 
