@@ -18,10 +18,12 @@
 #ifndef SDFORMAT_PARAM_HH_
 #define SDFORMAT_PARAM_HH_
 
-// See: https://bugreports.qt-project.org/browse/QTBUG-22829
-#ifndef Q_MOC_RUN
-  #include <boost/any.hpp>
+#include <boost/any.hpp>
+#ifdef __clang__
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wc++98-c++11-compat"
   #include <boost/variant.hpp>
+  #pragma clang diagnostic pop
 #endif
 
 #include <algorithm>
