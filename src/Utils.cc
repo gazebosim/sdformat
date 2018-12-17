@@ -86,6 +86,10 @@ Pose3d sdf::poseInFrame(const std::string &_src,
   if (srcVertices.size() != 1 || dstVertices.size() > 1)
     return Pose3d(INF_D, INF_D, INF_D, INF_D, INF_D, INF_D);
 
+  // Short circuit if the destination is empty.
+  if (dstVertices.empty())
+    return _graph.VertexFromId(srcVertices.begin()->first).Data().Pose();
+
   // Run Dijkstra to find a path from _src to _dst
   std::map<graph::VertexId, graph::CostInfo> result =
     graph::Dijkstra(_graph,
@@ -138,8 +142,7 @@ Pose3d sdf::poseInFrame(const std::string &_src,
     }
     else
     {
-      /// \todo This is an error case. Inform the caller somehow.
-      std::cerr << "ERRROR!\n";
+      /// \todo(nkoenig) This is an error case. Inform the caller somehow.
       break;
     }
   }
