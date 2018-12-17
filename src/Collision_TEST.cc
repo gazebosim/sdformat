@@ -22,29 +22,20 @@
 /////////////////////////////////////////////////
 TEST(DOMcollision, Construction)
 {
-  printf("1\n");
   sdf::Collision collision;
   EXPECT_EQ(nullptr, collision.Element());
-  printf("2\n");
   EXPECT_TRUE(collision.Name().empty());
 
-  printf("3\n");
   EXPECT_TRUE(collision.PoseFrame().empty());
   collision.SetName("test_collison");
-  printf("4\n");
   EXPECT_EQ("test_collison", collision.Name());
   EXPECT_TRUE(collision.PoseFrame().empty());
 
-  printf("5\n");
   EXPECT_EQ(ignition::math::Pose3d::Zero, collision.Pose());
-  printf("6\n");
 
-  printf("7\n");
   collision.SetPose({-10, -20, -30, 1.2, 0, 0});
-  printf("8\n");
   EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, 1.2, 0, 0),
             collision.Pose());
-  printf("9\n");
 
   EXPECT_TRUE(collision.SetPoseFrame("link"));
   EXPECT_EQ("link", collision.PoseFrame());
