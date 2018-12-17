@@ -84,12 +84,20 @@ Pose3d sdf::poseInFrame(const std::string &_src,
   // be the pose of the _src frame.
   const graph::VertexRef_M<Matrix4d> dstVertices = _graph.Vertices(_dst);
 
+  std::cout << "SIZE[" << dstVertices.size() << "]\n";
+
+  std::cout << _graph << std::endl;
+
   printf("C\n");
   // There should be only one vertex for the source vertex, and 1 or
   // 0 vertices for the destination vertex.
   if (srcVertices.size() != 1 || dstVertices.size() > 1)
     return Pose3d(INF_D, INF_D, INF_D, INF_D, INF_D, INF_D);
+
   printf("D\n");
+  if (dstVertices.empty())
+    return _graph.VertexFromId(srcVertices.begin()->first).Data().Pose();
+
 
   // Run Dijkstra to find a path from _src to _dst
   std::map<graph::VertexId, graph::CostInfo> result =

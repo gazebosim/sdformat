@@ -33,7 +33,7 @@ TEST(DOMcollision, Construction)
   collision.SetName("test_collison");
   printf("4\n");
   EXPECT_EQ("test_collison", collision.Name());
-  EXPECT_EQ("test_collison", collision.PoseFrame());
+  EXPECT_TRUE(collision.PoseFrame().empty());
 
   printf("5\n");
   EXPECT_EQ(ignition::math::Pose3d::Zero, collision.Pose());
