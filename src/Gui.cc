@@ -37,9 +37,8 @@ Gui::Gui()
 
 /////////////////////////////////////////////////
 Gui::Gui(const Gui &_gui)
-  : dataPtr(new GuiPrivate)
+  : dataPtr(new GuiPrivate(*_gui.dataPtr))
 {
-  this->dataPtr->fullscreen = _gui.dataPtr->fullscreen;
 }
 
 /////////////////////////////////////////////////
