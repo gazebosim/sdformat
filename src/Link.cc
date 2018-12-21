@@ -23,6 +23,7 @@
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Link.hh"
+#include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "Utils.hh"
@@ -45,6 +46,9 @@ class sdf::LinkPrivate
 
   /// \brief The collisions specified in this link.
   public: std::vector<Collision> collisions;
+
+  /// \brief The sensors specified in this link.
+  public: std::vector<Sensor> sensors;
 
   /// \brief The inertial information for this link.
   public: ignition::math::Inertiald inertial {{1.0,
@@ -111,6 +115,11 @@ Errors Link::Load(ElementPtr _sdf)
   Errors collLoadErrors = loadUniqueRepeated<Collision>(_sdf, "collision",
       this->dataPtr->collisions);
   errors.insert(errors.end(), collLoadErrors.begin(), collLoadErrors.end());
+
+  // Load all the sensors.
+  Errors sensorLoadErrors = loadUniqueRepeated<Sensor>(_sdf, "sensor",
+      this->dataPtr->sensors);
+  errors.insert(errors.end(), sensorLoadErrors.begin(), sensorLoadErrors.end());
 
   ignition::math::Vector3d xxyyzz = ignition::math::Vector3d::One;
   ignition::math::Vector3d xyxzyz = ignition::math::Vector3d::Zero;
@@ -193,6 +202,46 @@ bool Link::VisualNameExists(const std::string &_name) const
     }
   }
   return false;
+}
+
+/////////////////////////////////////////////////
+uint64_t Link::SensorCount() const
+{
+  return this->dataPtr->sensors.size();
+}
+
+/////////////////////////////////////////////////
+const Sensor *Link::SensorByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->sensors.size())
+    return &this->dataPtr->sensors[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Link::SensorNameExists(const std::string &_name) const
+{
+  for (auto const &s : this->dataPtr->sensors)
+  {
+    if (s.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Sensor *Link::SensorByName(const std::string &_name) const
+{
+  for (auto const &s : this->dataPtr->sensors)
+  {
+    if (s.Name() == _name)
+    {
+      return &s;
+    }
+  }
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
