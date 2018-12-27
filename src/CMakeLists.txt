@@ -41,6 +41,7 @@ set (sources
   Root.cc
   SDF.cc
   SDFExtension.cc
+  Sensor.cc
   Sphere.cc
   Types.cc
   Utils.cc
@@ -103,6 +104,7 @@ set (gtest_sources
   Plane_TEST.cc
   Root_TEST.cc
   SDF_TEST.cc
+  Sensor_TEST.cc
   Sphere_TEST.cc
   Types_TEST.cc
   Visual_TEST.cc
