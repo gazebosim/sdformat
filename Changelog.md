@@ -37,6 +37,25 @@
 1. SDF DOM: Add copy/move constructors and assignment operator to Material
    * [Pull request 461](https://bitbucket.org/osrf/sdformat/pull-requests/461)
 
+1. Add collision_detector to dart physics config
+    * [Pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
+
+1. Fix cpack now that project name has version number
+    * [Pull request 478](https://bitbucket.org/osrf/sdformat/pull-requests/478)
+
+1. Animation tension
+    * [Pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
+
+1. Add "geometry" for sonar collision shape
+    * [Pull request 479](https://bitbucket.org/osrf/sdformat/pull-requests/479)
+
+1. Fix Gui copy constructor
+    * [Pull request 486](https://bitbucket.org/osrf/sdformat/pull-requests/486)
+
+1. Sensor DOM
+    * [Pull request 488](https://bitbucket.org/osrf/sdformat/pull-requests/488)
+    * [Pull request 481](https://bitbucket.org/osrf/sdformat/pull-requests/481)
+
 ## SDFormat 7.0
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
