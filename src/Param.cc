@@ -17,10 +17,10 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <locale>
 #include <sstream>
 #include <string>
 
-#include <locale.h>
 #include <math.h>
 
 #include "sdf/Assert.hh"
@@ -28,6 +28,24 @@
 #include "sdf/Types.hh"
 
 using namespace sdf;
+
+// Private helper class
+namespace sdf
+{
+class StringStreamClassicLocal : public std::stringstream
+{
+  public: explicit StringStreamClassicLocal()
+  {
+    this->imbue(std::locale::classic());
+  }
+
+  public: explicit StringStreamClassicLocal(const std::string& str)
+    : std::stringstream(str)
+  {
+    this->imbue(std::locale::classic());
+  }
+};
+}
 
 //////////////////////////////////////////////////
 Param::Param(const std::string &_key, const std::string &_typeName,
@@ -221,7 +239,7 @@ void Param::Update()
 //////////////////////////////////////////////////
 std::string Param::GetAsString() const
 {
-  std::stringstream ss;
+  StringStreamClassicLocal ss;
 
   ss << ParamStreamer{ this->dataPtr->value };
   return ss.str();
@@ -230,7 +248,7 @@ std::string Param::GetAsString() const
 //////////////////////////////////////////////////
 std::string Param::GetDefaultAsString() const
 {
-  std::stringstream ss;
+  StringStreamClassicLocal ss;
 
   ss << ParamStreamer{ this->dataPtr->defaultValue };
   return ss.str();
@@ -261,8 +279,7 @@ bool Param::ValueFromString(const std::string &_value)
 
   try
   {
-    // Try to use stoi and stoul for integers, and
-    // stof and stod for floating point values.
+    // Try to use stoi and stoul for integers
     int numericBase = 10;
     if (isHex)
     {
@@ -300,7 +317,7 @@ bool Param::ValueFromString(const std::string &_value)
     }
     else if (this->dataPtr->typeName == "uint64_t")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocal ss(tmp);
       std::uint64_t u64tmp;
 
       ss >> u64tmp;
@@ -313,16 +330,24 @@ bool Param::ValueFromString(const std::string &_value)
     }
     else if (this->dataPtr->typeName == "double")
     {
-      this->dataPtr->value = std::stod(tmp);
+      StringStreamClassicLocal ss(tmp);
+      double doubletmp;
+
+      ss >> doubletmp;
+      this->dataPtr->value = doubletmp;
     }
     else if (this->dataPtr->typeName == "float")
     {
-      this->dataPtr->value = std::stof(tmp);
+      StringStreamClassicLocal ss(tmp);
+      double floattmp;
+
+      ss >> floattmp;
+      this->dataPtr->value = floattmp;
     }
     else if (this->dataPtr->typeName == "sdf::Time" ||
              this->dataPtr->typeName == "time")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocal ss(tmp);
       sdf::Time timetmp;
 
       ss >> timetmp;
@@ -331,7 +356,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Color" ||
              this->dataPtr->typeName == "color")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocal ss(tmp);
       ignition::math::Color colortmp;
 
       ss >> colortmp;
@@ -340,7 +365,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Vector2i" ||
              this->dataPtr->typeName == "vector2i")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocal ss(tmp);
       ignition::math::Vector2i vectmp;
 
       ss >> vectmp;
@@ -349,7 +374,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Vector2d" ||
              this->dataPtr->typeName == "vector2d")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocal ss(tmp);
       ignition::math::Vector2d vectmp;
 
       ss >> vectmp;
@@ -358,7 +383,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Vector3d" ||
              this->dataPtr->typeName == "vector3")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocal ss(tmp);
       ignition::math::Vector3d vectmp;
 
       ss >> vectmp;
@@ -368,7 +393,7 @@ bool Param::ValueFromString(const std::string &_value)
              this->dataPtr->typeName == "pose" ||
              this->dataPtr->typeName == "Pose")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocal ss(tmp);
       ignition::math::Pose3d posetmp;
 
       ss >> posetmp;
@@ -377,7 +402,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Quaterniond" ||
              this->dataPtr->typeName == "quaternion")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocal ss(tmp);
       ignition::math::Quaterniond quattmp;
 
       ss >> quattmp;
@@ -389,7 +414,7 @@ bool Param::ValueFromString(const std::string &_value)
       return false;
     }
   }
-  // Catch invalid argument exception from std::stoi/stoul/stod/stof
+  // Catch invalid argument exception from std::stoi/stoul
   catch(std::invalid_argument &)
   {
     sdferr << "Invalid argument. Unable to set value ["
@@ -397,7 +422,7 @@ bool Param::ValueFromString(const std::string &_value)
            << this->dataPtr->key << "].\n";
     return false;
   }
-  // Catch out of range exception from std::stoi/stoul/stod/stof
+  // Catch out of range exception from std::stoi/stoul
   catch(std::out_of_range &)
   {
     sdferr << "Out of range. Unable to set value ["
