@@ -32,19 +32,21 @@ using namespace sdf;
 // Private helper class
 namespace sdf
 {
-class StringStreamClassicLocal : public std::stringstream
-{
-  public: explicit StringStreamClassicLocal()
+  inline namespace SDF_VERSION_NAMESPACE {
+  class StringStreamClassicLocal : public std::stringstream
   {
-    this->imbue(std::locale::classic());
-  }
+    public: explicit StringStreamClassicLocal()
+    {
+      this->imbue(std::locale::classic());
+    }
 
-  public: explicit StringStreamClassicLocal(const std::string& str)
-    : std::stringstream(str)
-  {
-    this->imbue(std::locale::classic());
+    public: explicit StringStreamClassicLocal(const std::string& str)
+      : std::stringstream(str)
+    {
+      this->imbue(std::locale::classic());
+    }
+  };
   }
-};
 }
 
 //////////////////////////////////////////////////
@@ -437,11 +439,6 @@ bool Param::ValueFromString(const std::string &_value)
 //////////////////////////////////////////////////
 bool Param::SetFromString(const std::string &_value)
 {
-  // Under some circumstances, latin locales (es_ES or pt_BR) will return a
-  // comma for decimal position instead of a dot, making the conversion
-  // to fail. See bug #60 for more information. Force to use always C
-  setlocale(LC_NUMERIC, "C");
-
   std::string str = sdf::trim(_value.c_str());
 
   if (str.empty() && this->dataPtr->required)
