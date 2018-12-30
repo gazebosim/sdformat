@@ -21,6 +21,7 @@
 #include <sstream>
 #include <string>
 
+#include <locale.h>
 #include <math.h>
 
 #include "sdf/Assert.hh"
@@ -264,6 +265,11 @@ std::string Param::GetDefaultAsString() const
 //////////////////////////////////////////////////
 bool Param::ValueFromString(const std::string &_value)
 {
+  // Under some circumstances, latin locales (es_ES or pt_BR) will return a
+  // comma for decimal position instead of a dot, making the conversion
+  // to fail. See bug #60 for more information. Force to use always C
+  setlocale(LC_NUMERIC, "C");
+
   std::string tmp(_value);
   std::string lowerTmp(_value);
   std::transform(lowerTmp.begin(), lowerTmp.end(), lowerTmp.begin(),
@@ -286,7 +292,8 @@ bool Param::ValueFromString(const std::string &_value)
 
   try
   {
-    // Try to use stoi and stoul for integers
+    // Try to use stoi and stoul for integers, and
+    // stof and stod for scalar floating point values.
     int numericBase = 10;
     if (isHex)
     {
@@ -337,19 +344,11 @@ bool Param::ValueFromString(const std::string &_value)
     }
     else if (this->dataPtr->typeName == "double")
     {
-      StringStreamClassicLocale ss(tmp);
-      double doubletmp;
-
-      ss >> doubletmp;
-      this->dataPtr->value = doubletmp;
+      this->dataPtr->value = std::stod(tmp);
     }
     else if (this->dataPtr->typeName == "float")
     {
-      StringStreamClassicLocale ss(tmp);
-      double floattmp;
-
-      ss >> floattmp;
-      this->dataPtr->value = floattmp;
+      this->dataPtr->value = std::stof(tmp);
     }
     else if (this->dataPtr->typeName == "sdf::Time" ||
              this->dataPtr->typeName == "time")
@@ -421,7 +420,7 @@ bool Param::ValueFromString(const std::string &_value)
       return false;
     }
   }
-  // Catch invalid argument exception from std::stoi/stoul
+  // Catch invalid argument exception from std::stoi/stoul/stod/stof
   catch(std::invalid_argument &)
   {
     sdferr << "Invalid argument. Unable to set value ["
@@ -429,7 +428,7 @@ bool Param::ValueFromString(const std::string &_value)
            << this->dataPtr->key << "].\n";
     return false;
   }
-  // Catch out of range exception from std::stoi/stoul
+  // Catch out of range exception from std::stoi/stoul/stod/stof
   catch(std::out_of_range &)
   {
     sdferr << "Out of range. Unable to set value ["

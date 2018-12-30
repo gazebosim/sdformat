@@ -35,7 +35,7 @@ TEST(CheckFixForLocal, CheckFixForCxxLocal)
                                     new CommaDecimalPointFacet));
 
   // Create param with vector2d default value
-  sdf::Param param = sdf::Param("dummyDoubleParam", "vector2d",
+  sdf::Param param = sdf::Param("dummyVec2DParam", "vector2d",
                                 "1.5 2.5", true);
 
   // Verify that the default value is correctly parsed
