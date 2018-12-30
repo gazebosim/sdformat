@@ -29,18 +29,23 @@
 
 using namespace sdf;
 
-// Private helper class
+// For some locale, the decimal separator is not a point, but a
+// comma. To avoid that the SDF parsing is influenced by the current
+// global C or C++ locale, we define a custom std::stringstream variant
+// that always uses the std::locale::classic() locale.
+// See issues https://bitbucket.org/osrf/sdformat/issues/60
+// and https://bitbucket.org/osrf/sdformat/issues/207 for more details.
 namespace sdf
 {
   inline namespace SDF_VERSION_NAMESPACE {
-  class StringStreamClassicLocal : public std::stringstream
+  class StringStreamClassicLocale : public std::stringstream
   {
-    public: explicit StringStreamClassicLocal()
+    public: explicit StringStreamClassicLocale()
     {
       this->imbue(std::locale::classic());
     }
 
-    public: explicit StringStreamClassicLocal(const std::string& str)
+    public: explicit StringStreamClassicLocale(const std::string& str)
       : std::stringstream(str)
     {
       this->imbue(std::locale::classic());
@@ -241,7 +246,7 @@ void Param::Update()
 //////////////////////////////////////////////////
 std::string Param::GetAsString() const
 {
-  StringStreamClassicLocal ss;
+  StringStreamClassicLocale ss;
 
   ss << ParamStreamer{ this->dataPtr->value };
   return ss.str();
@@ -250,7 +255,7 @@ std::string Param::GetAsString() const
 //////////////////////////////////////////////////
 std::string Param::GetDefaultAsString() const
 {
-  StringStreamClassicLocal ss;
+  StringStreamClassicLocale ss;
 
   ss << ParamStreamer{ this->dataPtr->defaultValue };
   return ss.str();
@@ -319,7 +324,7 @@ bool Param::ValueFromString(const std::string &_value)
     }
     else if (this->dataPtr->typeName == "uint64_t")
     {
-      StringStreamClassicLocal ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       std::uint64_t u64tmp;
 
       ss >> u64tmp;
@@ -332,7 +337,7 @@ bool Param::ValueFromString(const std::string &_value)
     }
     else if (this->dataPtr->typeName == "double")
     {
-      StringStreamClassicLocal ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       double doubletmp;
 
       ss >> doubletmp;
@@ -340,7 +345,7 @@ bool Param::ValueFromString(const std::string &_value)
     }
     else if (this->dataPtr->typeName == "float")
     {
-      StringStreamClassicLocal ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       double floattmp;
 
       ss >> floattmp;
@@ -349,7 +354,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "sdf::Time" ||
              this->dataPtr->typeName == "time")
     {
-      StringStreamClassicLocal ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       sdf::Time timetmp;
 
       ss >> timetmp;
@@ -358,7 +363,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Color" ||
              this->dataPtr->typeName == "color")
     {
-      StringStreamClassicLocal ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       ignition::math::Color colortmp;
 
       ss >> colortmp;
@@ -367,7 +372,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Vector2i" ||
              this->dataPtr->typeName == "vector2i")
     {
-      StringStreamClassicLocal ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       ignition::math::Vector2i vectmp;
 
       ss >> vectmp;
@@ -376,7 +381,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Vector2d" ||
              this->dataPtr->typeName == "vector2d")
     {
-      StringStreamClassicLocal ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       ignition::math::Vector2d vectmp;
 
       ss >> vectmp;
@@ -385,7 +390,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Vector3d" ||
              this->dataPtr->typeName == "vector3")
     {
-      StringStreamClassicLocal ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       ignition::math::Vector3d vectmp;
 
       ss >> vectmp;
@@ -395,7 +400,7 @@ bool Param::ValueFromString(const std::string &_value)
              this->dataPtr->typeName == "pose" ||
              this->dataPtr->typeName == "Pose")
     {
-      StringStreamClassicLocal ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       ignition::math::Pose3d posetmp;
 
       ss >> posetmp;
@@ -404,7 +409,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Quaterniond" ||
              this->dataPtr->typeName == "quaternion")
     {
-      StringStreamClassicLocal ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       ignition::math::Quaterniond quattmp;
 
       ss >> quattmp;
