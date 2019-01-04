@@ -34,7 +34,7 @@ TEST(CheckFixForLocal, CheckFixForCxxLocal)
 
   // Set a global locale in which the decimal separator is the comma
   std::locale newLocale(std::locale::classic(), new CommaDecimalPointFacet);
-  std::locale original_global_locale = std::locale::global(newLocale);
+  std::locale originalGlobalLocale = std::locale::global(newLocale);
 
   // Create param with vector2d default value
   sdf::Param param = sdf::Param("dummyVec2DParam", "vector2d",
@@ -47,6 +47,6 @@ TEST(CheckFixForLocal, CheckFixForCxxLocal)
   ASSERT_DOUBLE_EQ(2.5, vectmp[1]);
 
   // Restore the original global locale
-  std::locale prevLocale = std::locale::global(original_global_locale);
+  std::locale prevLocale = std::locale::global(originalGlobalLocale);
   EXPECT_EQ(newLocale, prevLocale);
 }
