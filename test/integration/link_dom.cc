@@ -64,6 +64,23 @@ TEST(DOMLink, NoName)
 }
 
 //////////////////////////////////////////////////
+TEST(DOMLink, NoFrameGraph)
+{
+  // Create a "link"
+  sdf::ElementPtr element(new sdf::Element);
+  element->SetName("link");
+  element->AddAttribute("name", "string", "link", true, "name");
+
+  sdf::Link link;
+  sdf::Errors errors = link.Load(element, nullptr);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(sdf::ErrorCode::FUNCTION_ARGUMENT_MISSING, errors[0].Code());
+
+  EXPECT_TRUE(errors[0].Message().find("frame graph is required") !=
+               std::string::npos);
+}
+
+//////////////////////////////////////////////////
 TEST(DOMLink, LoadVisualCollision)
 {
   const std::string testFile =

@@ -229,6 +229,11 @@ Errors Joint::Load(ElementPtr _sdf,
 
     this->dataPtr->frameGraph = _frameGraph;
   }
+  else
+  {
+    errors.push_back({ErrorCode::FUNCTION_ARGUMENT_MISSING,
+        "A frame graph is required to compute pose information."});
+  }
 
   return errors;
 }

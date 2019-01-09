@@ -59,6 +59,33 @@ TEST(DOMJoint, NoName)
 }
 
 //////////////////////////////////////////////////
+TEST(DOMJoint, NoFrameGraph)
+{
+  // Create a "link"
+  sdf::ElementPtr element(new sdf::Element);
+  element->SetName("joint");
+  element->AddAttribute("name", "string", "link", true, "name");
+  element->AddAttribute("type", "string", "revolute", true, "type");
+
+  sdf::Joint joint;
+  sdf::Errors errors = joint.Load(element, nullptr);
+  ASSERT_FALSE(errors.empty());
+
+  bool found = false;
+  sdf::ErrorCode code = sdf::ErrorCode::NONE;
+  for (auto err : errors)
+  {
+    if (err.Message().find("frame graph is required") != std::string::npos)
+    {
+      found = true;
+      code = err.Code();
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
+}
+
+//////////////////////////////////////////////////
 TEST(DOMJoint, DoublePendulum)
 {
   const std::string testFile =

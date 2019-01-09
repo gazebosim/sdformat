@@ -138,6 +138,11 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 
     this->dataPtr->frameGraph = _frameGraph;
   }
+  else
+  {
+    errors.push_back({ErrorCode::FUNCTION_ARGUMENT_MISSING,
+        "A frame graph is required to compute pose information."});
+  }
 
   // Load all the visuals.
   Errors visLoadErrors = loadUniqueRepeated<Visual>(_sdf, "visual",

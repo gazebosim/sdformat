@@ -121,6 +121,11 @@ Errors Collision::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
 
     this->dataPtr->frameGraph = _frameGraph;
   }
+  else
+  {
+    errors.push_back({ErrorCode::FUNCTION_ARGUMENT_MISSING,
+        "A frame graph is required to compute pose information."});
+  }
 
   // Load the geometry
   Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));

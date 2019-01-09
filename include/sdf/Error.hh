@@ -85,6 +85,9 @@ namespace sdf
 
     /// \brief Indicates that reading an SDF string failed.
     STRING_READ,
+
+    /// \brief A required function argument is missing.
+    FUNCTION_ARGUMENT_MISSING,
   };
 
   class SDFORMAT_VISIBLE Error
