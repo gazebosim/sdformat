@@ -27,6 +27,10 @@
    will print the full description of the SDF spec.
    * [Pull request 424](https://bitbucket.org/osrf/sdformat/pull-requests/424)
 
+1. Adds the equalivent of gz sdf -p to sdformat. The command line option
+   will convert and print the specified sdf file.
+   * [Pull request 494](https://bitbucket.org/osrf/sdformat/pull-requests/494)
+
 1. SDF DOM: Additions to the document object model.
    * [Pull request 393](https://bitbucket.org/osrf/sdformat/pull-requests/393)
    * [Pull request 394](https://bitbucket.org/osrf/sdformat/pull-requests/394)
