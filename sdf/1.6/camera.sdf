@@ -125,10 +125,10 @@
 
     <element name="intrinsics" required="0">
       <description>Camera intrinsic parameters for setting a custom perspective projection matrix (cannot be used with WideAngleCamera since this class uses image stitching from 6 different cameras for achieving a wide field of view). The camera focal length is calculated as follows: focal_length_in_pixels = (image_width_in_pixels * 0.5) / tan(field_of_view_in_degrees * 0.5 * PI/180)</description>
-      <element name="fx" type="double" default="227" required="1">
+      <element name="fx" type="double" default="277" required="1">
         <description>X focal length (in pixels, overrides horizontal_fov)</description>
       </element>
-      <element name="fy" type="double" default="227" required="1">
+      <element name="fy" type="double" default="277" required="1">
         <description>Y focal length (in pixels, overrides horizontal_fov)</description>
       </element>
       <element name="cx" type="double" default="160" required="1">

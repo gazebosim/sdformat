@@ -2,6 +2,8 @@
 
 ### SDFormat 6.X.X (20XX-XX-XX)
 
+1. Add camera intrinsics (fx, fy, cx, cy, s)
+    * [Pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
 
 ### SDFormat 6.1.0 (2018-10-04)
 
