@@ -108,6 +108,10 @@ but with improved human-readability..
     + required: 0
     + [pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
 
+1. **camera.sdf** `intrinsics` sub-elements: `fx`, `fy`, `cx`, `cy`, `s`
+    + description: Camera intrinsic parameters for setting a custom perspective projection matrix.
+    + [pull request 496](https://bitbucket.org/osrf/sdformat/pull-requests/496)
+
 1. **link.sdf** `enable_wind` element
     + description: If true, the link is affected by the wind
     + type: bool
