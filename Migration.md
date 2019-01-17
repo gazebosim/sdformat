@@ -165,6 +165,13 @@ but with improved human-readability..
     + required: 0
     + [pull request 380](https://bitbucket.org/osrf/sdformat/pull-requests/380)
 
+1. **sonar.sdf** `geometry` element
+    + description: The sonar collision shape. Currently supported geometries are: "cone" and "sphere".
+    + type: string
+    + default: "cone"
+    + required: 0
+    + [pull request 495](https://bitbucket.org/osrf/sdformat/pull-requests/495)
+
 1. **state.sdf** allow `light` tags within `insertions` element
     * [pull request 325](https://bitbucket.org/osrf/sdformat/pull-request/325)
 
