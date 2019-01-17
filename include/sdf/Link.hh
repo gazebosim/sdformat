@@ -36,6 +36,7 @@ namespace sdf
   class LinkPrivate;
   class Sensor;
   class Visual;
+  class LinkPrivate;
 
   class SDFORMAT_VISIBLE Link
   {

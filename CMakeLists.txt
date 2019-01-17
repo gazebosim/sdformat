@@ -45,6 +45,15 @@ set (project_cmake_dir ${PROJECT_SOURCE_DIR}/cmake
 message (STATUS "${PROJECT_NAME} version ${SDF_VERSION_FULL}")
 set (CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 
+#============================================================================
+# We turn off extensions because (1) we do not ever want to use non-standard
+# compiler extensions, and (2) this variable is on by default, causing cmake
+# to choose the flag -std=gnu++14 instead of -std=c++14 when the C++14
+# features are requested. Explicitly turning this flag off will force cmake to
+# choose -std=c++14.
+# See https://bitbucket.org/ignitionrobotics/ign-cmake/issues/13 for more info.
+set(CMAKE_CXX_EXTENSIONS off)
+
 # Include GNUInstallDirs to get canonical paths
 include(GNUInstallDirs)
 
