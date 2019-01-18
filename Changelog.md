@@ -2,16 +2,21 @@
 
 ### SDFormat 6.X.X (20XX-XX-XX)
 
+### SDFormat 6.1.0 (2019-01-17)
+
 1. Add geometry for sonar collision shape
     * [Pull request 495](https://bitbucket.org/osrf/sdformat/pull-requests/495)
 
 1. Add camera intrinsics (fx, fy, cx, cy, s)
     * [Pull request 496](https://bitbucket.org/osrf/sdformat/pull-requests/496)
 
+1. Add actor trajectory tension parameter
+    * [Pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
+
 
 ### SDFormat 6.1.0 (2018-10-04)
 
-1. Add collision_detector to dart physics config
+1. Add collision\_detector to dart physics config
     * [Pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
 
 1. Fix Windows support for SDFormat6
@@ -20,7 +25,7 @@
 1. root.sdf: default sdf version 1.6
     * [Pull request 425](https://bitbucket.org/osrf/sdformat/pull-requests/425)
 
-1. parser_urdf: print value of highstop instead of pointer address
+1. parser\_urdf: print value of highstop instead of pointer address
     * [Pull request 408](https://bitbucket.org/osrf/sdformat/pull-requests/408)
 
 1. Tweak error output so jenkins doesn't think it's a compiler warning
