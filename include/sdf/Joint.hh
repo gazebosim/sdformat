@@ -139,8 +139,7 @@ namespace sdf
     public: const JointAxis *Axis(const unsigned int _index = 0) const;
 
     /// \copydoc Model::Pose(const std::string&) const
-    public: std::optional<ignition::math::Pose3d> Pose(
-                const std::string &_frame = "") const;
+    public: ignition::math::Pose3d Pose(const std::string &_frame = "") const;
 
     /// \brief Set the pose of the joint.
     /// \sa const ignition::math::Pose3d &Pose() const;

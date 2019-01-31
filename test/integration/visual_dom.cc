@@ -61,6 +61,23 @@ TEST(DOMVisual, NoName)
 }
 
 //////////////////////////////////////////////////
+TEST(DOMVisual, NoFrameGraph)
+{
+  // Create a "link"
+  sdf::ElementPtr element(new sdf::Element);
+  element->SetName("visual");
+  element->AddAttribute("name", "string", "link", true, "name");
+
+  sdf::Visual visual;
+  sdf::Errors errors = visual.Load(element, nullptr);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(sdf::ErrorCode::FUNCTION_ARGUMENT_MISSING, errors[0].Code());
+
+  EXPECT_TRUE(errors[0].Message().find("frame graph is required") !=
+               std::string::npos);
+}
+
+//////////////////////////////////////////////////
 TEST(DOMVisual, DoublePendulum)
 {
   const std::string testFile =

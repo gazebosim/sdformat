@@ -44,10 +44,11 @@ namespace sdf
 {
   /// \brief A directed graph used to contain frame information. Each vertex
   /// contains frame data as an ignition::math::Matrix4d. Each edge is used to
-  /// indicate direction which allows Dijsktra to be used when performing
+  /// indicate direction, which allows Dijsktra to be used when performing
   /// frame calculations. In most cases, connected vertices should have two
   /// edges between them. One edge with a value of +1 and the other a value
-  /// of -1.
+  /// of -1. An edge with a value of -1 connects from the parent to the child,
+  /// and the edge with value of +1 connects from the child to the parent.
   using FrameGraph = ignition::math::graph::DirectedGraph<
     ignition::math::Matrix4d, int>;
 

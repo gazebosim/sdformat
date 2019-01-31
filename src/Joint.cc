@@ -229,6 +229,11 @@ Errors Joint::Load(ElementPtr _sdf,
 
     this->dataPtr->frameGraph = _frameGraph;
   }
+  else
+  {
+    errors.push_back({ErrorCode::FUNCTION_ARGUMENT_MISSING,
+        "A frame graph is required to compute pose information."});
+  }
 
   return errors;
 }
@@ -291,7 +296,7 @@ const JointAxis *Joint::Axis(const unsigned int _index) const
 }
 
 /////////////////////////////////////////////////
-std::optional<Pose3d> Joint::Pose(const std::string &_frame) const
+Pose3d Joint::Pose(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),

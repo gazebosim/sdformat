@@ -63,11 +63,15 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, Pose3d &_pose,
 }
 
 //////////////////////////////////////////////////
-std::optional<Pose3d> sdf::poseInFrame(const std::string &_src,
+Pose3d sdf::poseInFrame(const std::string &_src,
     const std::string &_dst, FrameGraph &_graph)
 {
   if (_src.empty())
-    return std::nullopt;
+    return Pose3d(INF_D, INF_D, INF_D, INF_D, INF_D, INF_D);
+
+  // Handle the case where the source and destination are the same.
+  if (_src == _dst)
+    return Matrix4d::Identity.Pose();
 
   // Handle the case where the source and destination are the same.
   if (_src == _dst)
@@ -84,7 +88,11 @@ std::optional<Pose3d> sdf::poseInFrame(const std::string &_src,
   // There should be only one vertex for the source vertex, and 1 or
   // 0 vertices for the destination vertex.
   if (srcVertices.size() != 1 || dstVertices.size() > 1)
-    return std::nullopt;
+    return Pose3d(INF_D, INF_D, INF_D, INF_D, INF_D, INF_D);
+
+  // Short circuit if the destination is empty.
+  if (dstVertices.empty())
+    return _graph.VertexFromId(srcVertices.begin()->first).Data().Pose();
 
   // Run Dijkstra to find a path from _src to _dst
   std::map<graph::VertexId, graph::CostInfo> result =
@@ -138,11 +146,10 @@ std::optional<Pose3d> sdf::poseInFrame(const std::string &_src,
     }
     else
     {
-      /// \todo This is an error case. Inform the caller somehow.
-      std::cerr << "ERRROR!\n";
+      /// \todo(nkoenig) This is an error case. Inform the caller somehow.
       break;
     }
   }
 
-  return std::optional<Pose3d>(finalPose.Pose());
+  return finalPose.Pose();
 }

@@ -27,6 +27,7 @@ namespace sdf
 {
   // Forward declarations.
   class Collision;
+  class Sensor;
   class Visual;
   class LinkPrivate;
 
@@ -105,6 +106,29 @@ namespace sdf
     /// \return Pointer to the collision. Nullptr if the name does not exist.
     public: const Collision *CollisionByName(const std::string &_name) const;
 
+    /// \brief Get the number of sensors.
+    /// \return Number of sensors contained in this Link object.
+    public: uint64_t SensorCount() const;
+
+    /// \brief Get a sensor based on an index.
+    /// \param[in] _index Index of the sensor. The index should be in the
+    /// range [0..SensorCount()).
+    /// \return Pointer to the sensor. Nullptr if the index does not exist.
+    /// \sa uint64_t SensorCount() const
+    public: const Sensor *SensorByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a sensor name exists.
+    /// \param[in] _name Name of the sensor to check.
+    /// \return True if there exists a sensor with the given name.
+    public: bool SensorNameExists(const std::string &_name) const;
+
+    /// \brief Get a sensor based on a name.
+    /// \param[in] _name Name of the sensor.
+    /// \return Pointer to the sensor. Nullptr if a sensor with the given name
+    ///  does not exist.
+    /// \sa bool SensorNameExists(const std::string &_name) const
+    public: const Sensor *SensorByName(const std::string &_name) const;
+
     /// \brief Get the inertial value for this link. The inertial object
     /// consists of the link's mass, a 3x3 rotational inertia matrix, and
     /// a pose for the inertial reference frame. The units for mass is
@@ -127,8 +151,7 @@ namespace sdf
     public: bool SetInertial(const ignition::math::Inertiald &_inertial);
 
     /// \copydoc Model::Pose(const std::string&) const
-    public: std::optional<ignition::math::Pose3d> Pose(
-                const std::string &_frame = "") const;
+    public: ignition::math::Pose3d Pose(const std::string &_frame = "") const;
 
     /// \brief Set the pose of the link.
     /// \sa const ignition::math::Pose3d &Pose() const

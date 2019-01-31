@@ -157,9 +157,10 @@ namespace sdf
     /// pose. An empty _frame parameter will use the value returned by
     /// PoseFrame(). If both _frame and PoseFrame() are empty strings, then
     /// the return value will be the object's pose in it's own frame.
-    /// \return The pose of the model.
-    public: std::optional<ignition::math::Pose3d> Pose(
-                const std::string &_frame = "") const;
+    /// \return The pose of the model. If an error occurred, such as an
+    /// incorrect _frame, then the return value is not finite which can be
+    /// evaluated using ignition::math::Pose3d::IsFinite().
+    public: ignition::math::Pose3d Pose(const std::string &_frame = "") const;
 
     /// \brief Set the pose of the model.
     /// \sa const ignition::math::Pose3d &Pose() const
