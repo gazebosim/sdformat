@@ -57,8 +57,8 @@ namespace sdf
     /// \brief A GPS sensor.
     GPS = 6,
 
-    /// \brief A GPU based ray sensor.
-    GPU_RAY = 7,
+    /// \brief A GPU based lidar sensor.
+    GPU_LIDAR = 7,
 
     /// \brief An IMU sensor.
     IMU = 8,
@@ -72,8 +72,8 @@ namespace sdf
     /// \brief A multicamera sensor.
     MULTICAMERA = 11,
 
-    /// \brief A CPU based ray sensor.
-    RAY = 12,
+    /// \brief A CPU based lidar sensor.
+    LIDAR = 12,
 
     /// \brief An RFID sensor.
     RFID = 13,

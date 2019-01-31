@@ -283,7 +283,7 @@ TEST(DOMLink, Sensors)
   const sdf::Sensor *gpuRaySensor = link->SensorByName("gpu_ray_sensor");
   ASSERT_NE(nullptr, gpuRaySensor);
   EXPECT_EQ("gpu_ray_sensor", gpuRaySensor->Name());
-  EXPECT_EQ(sdf::SensorType::GPU_RAY, gpuRaySensor->Type());
+  EXPECT_EQ(sdf::SensorType::GPU_LIDAR, gpuRaySensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), gpuRaySensor->Pose());
 
   // Get the imu sensor
@@ -324,7 +324,7 @@ TEST(DOMLink, Sensors)
   const sdf::Sensor *raySensor = link->SensorByName("ray_sensor");
   ASSERT_NE(nullptr, raySensor);
   EXPECT_EQ("ray_sensor", raySensor->Name());
-  EXPECT_EQ(sdf::SensorType::RAY, raySensor->Type());
+  EXPECT_EQ(sdf::SensorType::LIDAR, raySensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), raySensor->Pose());
 
   // Get the rfid sensor
