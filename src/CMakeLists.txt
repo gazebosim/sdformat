@@ -21,6 +21,7 @@ endif()
 set (sources
   Atmosphere.cc
   Box.cc
+  Camera.cc
   Collision.cc
   Console.cc
   Converter.cc

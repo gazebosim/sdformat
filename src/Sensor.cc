@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <ignition/math/Pose3.hh>
+#include "sdf/Camera.hh"
 #include "sdf/Error.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
@@ -40,6 +41,9 @@ class sdf::SensorPrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Pointer to a camera.
+  public: std::unique_ptr<Camera> camera;
 };
 
 /////////////////////////////////////////////////
@@ -104,6 +108,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "camera")
   {
     this->dataPtr->type = SensorType::CAMERA;
+    this->dataPtr->camera.reset(new Camera());
+    Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "contact")
   {
@@ -231,4 +238,10 @@ SensorType Sensor::Type() const
 void Sensor::SetType(const SensorType _type)
 {
   this->dataPtr->type = _type;
+}
+
+/////////////////////////////////////////////////
+const Camera *Sensor::CameraSensor() const
+{
+  return this->dataPtr->camera.get();
 }

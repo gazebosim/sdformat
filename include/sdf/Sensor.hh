@@ -26,6 +26,7 @@
 namespace sdf
 {
   // Forward declarations.
+  class Camera;
   class SensorPrivate;
 
   /// \enum SensorType
@@ -155,6 +156,13 @@ namespace sdf
     /// \brief Set the sensor type.
     /// \param[in] _type The sensor type.
     public: void SetType(const SensorType _type);
+
+    /// \brief Get a pointer to a camera sensor, or nullptr if the sensor
+    /// does not contain a camera sensor.
+    /// \return Pointer to the sensor's camera, or nullptr if the sensor
+    /// is not a camera.
+    /// \sa SensorType Type() const
+    public: const Camera *CameraSensor() const;
 
     /// \brief Private data pointer.
     private: SensorPrivate *dataPtr = nullptr;
