@@ -151,7 +151,7 @@ namespace sdf
   bool convertString(const std::string &_sdfString,
                      const std::string &_version, SDFPtr _sdf);
 
-  /// \brief Convert the first model in and SDF file to a URDF string.
+  /// \brief Convert the first model in an SDF file to a URDF string.
   ///
   /// If a <model> doesn't exist in the root <sdf> scope, then the first
   /// <model> in a <world> will be converted.
@@ -223,7 +223,7 @@ namespace sdf
   SDFORMAT_VISIBLE
   std::string toUrdf(const std::string &_filename);
 
-  /// \brief Conver the provided sdf::Model to a URDF string.
+  /// \brief Convert the provided sdf::Model to a URDF string.
   /// \param[in] _model The sdf::Model to convert.
   /// \return A URDF string that represents the given model. An empty string
   /// is returned on error.

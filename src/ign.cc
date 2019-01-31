@@ -26,6 +26,20 @@
 
 //////////////////////////////////////////////////
 // cppcheck-suppress unusedFunction
+extern "C" SDFORMAT_VISIBLE int cmdUrdf(const char *_path)
+{
+  if (!sdf::filesystem::exists(_path))
+  {
+    std::cerr << "Error: File [" << _path << "] does not exist.\n";
+    return -1;
+  }
+
+  std::cout << sdf::toUrdf(_path) << std::endl;
+  return 0;
+}
+
+//////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 {
   if (!sdf::filesystem::exists(_path))

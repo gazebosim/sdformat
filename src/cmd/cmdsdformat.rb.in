@@ -38,8 +38,9 @@ COMMANDS = {  'sdf' =>
                        "Utilities for SDF files.\n\n"\
                        "  ign sdf [options]\n\n"\
                        "Options:\n\n"\
-                       "  -k [ --check ] arg     Validate arg.\n" +
-                       "  -d [ --describe ]      Print the SDF description.\n" +
+                       "  -k [ --check ] arg   Validate arg.\n" +
+                       "  -d [ --describe ]    Print the SDF description.\n" +
+                       "  -u [ --urdf ] arg    Convert an SDF file to URDF.\n" +
                        COMMON_OPTIONS
             }
 
@@ -71,6 +72,10 @@ class Cmd
       end
       opts.on('-d', '--describe', 'Print the SDF description') do |v|
         options['describe'] = v
+      end
+      opts.on('-u arg', '--urdf arg', String,
+              'Convert an SDF file to URDF') do |arg|
+        options['urdf'] = arg
       end
     end
     begin
@@ -140,6 +145,9 @@ class Cmd
         elsif options.key?('describe')
           Importer.extern 'int cmdDescribe()'
           exit(Importer.cmdDescribe())
+        elsif options.key?('urdf')
+          Importer.extern 'int cmdUrdf(const char *)'
+          exit(Importer.cmdUrdf(options['urdf']))
         else
           puts 'Command error: I do not have an implementation '\
                'for this command.'
