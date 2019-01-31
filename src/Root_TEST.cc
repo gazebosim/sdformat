@@ -95,6 +95,8 @@ TEST(DOMRoot, StringParse)
   EXPECT_NE(nullptr, collision->Element());
   EXPECT_EQ("box_col", collision->Name());
 
+  EXPECT_TRUE(root.LightNameExists("sun"));
+  EXPECT_EQ(1u, root.LightCount());
   const sdf::Light *light = root.LightByIndex(0);
   ASSERT_NE(nullptr, light);
   EXPECT_NE(nullptr, light->Element());
