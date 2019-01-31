@@ -20,6 +20,7 @@
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Link.hh"
+#include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 
@@ -40,6 +41,12 @@ TEST(DOMRoot, Construction)
   EXPECT_EQ(0u, root.ModelCount());
   EXPECT_TRUE(root.ModelByIndex(0) == nullptr);
   EXPECT_TRUE(root.ModelByIndex(1) == nullptr);
+
+  EXPECT_FALSE(root.LightNameExists("default"));
+  EXPECT_FALSE(root.LightNameExists(""));
+  EXPECT_EQ(0u, root.LightCount());
+  EXPECT_TRUE(root.LightByIndex(0) == nullptr);
+  EXPECT_TRUE(root.LightByIndex(1) == nullptr);
 }
 
 /////////////////////////////////////////////////
@@ -58,12 +65,16 @@ TEST(DOMRoot, StringParse)
     "       </collision>"
     "     </link>"
     "   </model>"
+    "   <light type='directional' name='sun'>"
+    "     <direction>-0.5 0.1 -0.9</direction>"
+    "   </light>"
     " </sdf>";
 
   sdf::Root root;
   sdf::Errors errors = root.LoadSdfString(sdf);
   EXPECT_TRUE(errors.empty());
   EXPECT_EQ(1u, root.ModelCount());
+  EXPECT_EQ(1u, root.LightCount());
   EXPECT_NE(nullptr, root.Element());
 
   const sdf::Model *model = root.ModelByIndex(0);
@@ -83,6 +94,10 @@ TEST(DOMRoot, StringParse)
   ASSERT_NE(nullptr, collision);
   EXPECT_NE(nullptr, collision->Element());
   EXPECT_EQ("box_col", collision->Name());
+
+  const sdf::Light *light = root.LightByIndex(0);
+  ASSERT_NE(nullptr, light);
+  EXPECT_NE(nullptr, light->Element());
 }
 
 /////////////////////////////////////////////////

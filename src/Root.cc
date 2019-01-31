@@ -18,6 +18,7 @@
 #include <vector>
 #include <utility>
 
+#include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
@@ -39,6 +40,9 @@ class sdf::RootPrivate
 
   /// \brief The models specified under the root SDF element
   public: std::vector<Model> models;
+
+  /// \brief The lights specified under the root SDF element
+  public: std::vector<Light> lights;
 
   /// \brief The SDF element pointer generated during load.
   public: sdf::ElementPtr sdf;
@@ -163,6 +167,11 @@ Errors Root::Load(SDFPtr _sdf)
       "model", this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
+  // Load all the lights.
+  Errors lightLoadErrors = loadUniqueRepeated<Light>(this->dataPtr->sdf,
+      "light", this->dataPtr->lights);
+  errors.insert(errors.end(), lightLoadErrors.begin(), lightLoadErrors.end());
+
   return errors;
 }
 
@@ -223,6 +232,33 @@ const Model *Root::ModelByIndex(const uint64_t _index) const
 bool Root::ModelNameExists(const std::string &_name) const
 {
   for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+uint64_t Root::LightCount() const
+{
+  return this->dataPtr->lights.size();
+}
+
+/////////////////////////////////////////////////
+const Light *Root::LightByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->lights.size())
+    return &this->dataPtr->lights[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Root::LightNameExists(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->lights)
   {
     if (m.Name() == _name)
     {
