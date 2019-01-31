@@ -73,10 +73,6 @@ Pose3d sdf::poseInFrame(const std::string &_src,
   if (_src == _dst)
     return Matrix4d::Identity.Pose();
 
-  // Handle the case where the source and destination are the same.
-  if (_src == _dst)
-    return std::optional<Pose3d>(Matrix4d::Identity.Pose());
-
   // Get the source vertex.
   const graph::VertexRef_M<Matrix4d> srcVertices = _graph.Vertices(_src);
 

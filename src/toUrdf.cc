@@ -118,7 +118,7 @@ std::string CollisionStr(const std::string &_prefix, const sdf::Link *_link,
   stream << _prefix << "<collision name='" << col->Name() << "'>\n";
 
   // Output the collision pose in the link frame
-  stream << PoseToOrigin(_prefix + "  ", *col->Pose(_link->Name())) << "\n";
+  stream << PoseToOrigin(_prefix + "  ", col->Pose(_link->Name())) << "\n";
 
   // Output the collision geometry
   stream << GeometryStr(_prefix + "  ", col->Geom()) << "\n";
@@ -150,8 +150,7 @@ std::string VisualStr(const std::string &_prefix, const sdf::Link *_link,
   stream << _prefix << "<visual name='" << vis->Name() << "'>\n";
 
   // Output the visual pose in the link frame
-  stream << PoseToOrigin(_prefix + "  ", *vis->Pose(_link->Name()))
-         << std::endl;
+  stream << PoseToOrigin(_prefix + "  ", vis->Pose(_link->Name())) << std::endl;
 
   // Output the visual pose
   stream << GeometryStr(_prefix + "  ", vis->Geom()) << "\n";
@@ -219,10 +218,10 @@ std::string JointStr(const std::string &_prefix, const sdf::Joint *_joint,
          << jointType << "'>\n";
 
   // Output the joint pose in the parent link frame.
-  ignition::math::Pose3d pose = *_joint->Pose(_joint->ParentLinkName());
+  ignition::math::Pose3d pose = _joint->Pose(_joint->ParentLinkName());
   // Remove the model pose from the joint pose. URDF does not support
   // model/robot positioning.
-  pose = pose - *_model->Pose();
+  pose = pose - _model->Pose();
   stream << PoseToOrigin(_prefix + "  ", pose) << std::endl;
 
   // Output the parent and child link names.
