@@ -152,6 +152,13 @@ namespace sdf
     /// \sa bool JointNameExists(const std::string &_name) const
     public: const Joint *JointByName(const std::string &_name) const;
 
+    /// \brief Get the pose of the model. This is the pose of the model
+    /// as specified in SDF (<model> <pose> ... </pose></model>), and is
+    /// typically used to express the position and rotation of a model in a
+    /// global coordinate frame.
+    /// \return The pose of the model.
+    public: const ignition::math::Pose3d &Pose() const;
+
     /// \brief Get the pose of the object in the specified frame.
     /// \param[in] _frame Name of the frame in which to get this object's
     /// pose. An empty _frame parameter will use the value returned by
@@ -160,7 +167,8 @@ namespace sdf
     /// \return The pose of the model. If an error occurred, such as an
     /// incorrect _frame, then the return value is not finite which can be
     /// evaluated using ignition::math::Pose3d::IsFinite().
-    public: ignition::math::Pose3d Pose(const std::string &_frame = "") const;
+    public: ignition::math::Pose3d PoseInFrame(
+        const std::string &_frame = "") const;
 
     /// \brief Set the pose of the model.
     /// \sa const ignition::math::Pose3d &Pose() const

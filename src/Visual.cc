@@ -28,6 +28,9 @@ using namespace ignition::math;
 
 class sdf::VisualPrivate
 {
+  /// \brief Pose of the collision object
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
 
@@ -104,8 +107,7 @@ Errors Visual::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  Pose3d pose;
-  loadPose(_sdf, pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
   // Use the SDF parent as the pose frame if the poseFrame attribute is
   // empty.
@@ -115,7 +117,7 @@ Errors Visual::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   if (_frameGraph)
   {
     this->dataPtr->frameVertexId =
-      _frameGraph->AddVertex(visualName, Matrix4d(pose)).Id();
+      _frameGraph->AddVertex(visualName, Matrix4d(this->dataPtr->pose)).Id();
 
     // Get the parent vertex based on this link's pose frame name.
     const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
@@ -160,12 +162,18 @@ void Visual::SetName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-Pose3d Visual::Pose(const std::string &_frame) const
+Pose3d Visual::PoseInFrame(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),
       _frame.empty() ? this->PoseFrame() : _frame,
       *this->dataPtr->frameGraph);
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Visual::Pose() const
+{
+  return this->dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
@@ -179,6 +187,7 @@ void Visual::SetPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->frameGraph->VertexFromId(
       this->dataPtr->frameVertexId).Data() = ignition::math::Matrix4d(_pose);
+  this->dataPtr->pose = _pose;
 }
 
 /////////////////////////////////////////////////

@@ -141,8 +141,7 @@ Errors Joint::Load(ElementPtr _sdf,
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  Pose3d pose;
-  loadPose(_sdf, pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
   // Use the parent link frame as the pose frame if the poseFrame attribute is
   // empty.
@@ -210,7 +209,7 @@ Errors Joint::Load(ElementPtr _sdf,
   {
     // Add a vertex in the frame graph for this joint.
     this->dataPtr->frameVertexId =
-      _frameGraph->AddVertex(jointName, Matrix4d(pose)).Id();
+      _frameGraph->AddVertex(jointName, Matrix4d(this->dataPtr->pose)).Id();
 
     // Get the parent vertex based on this joints's pose frame name.
     const graph::VertexRef_M<Matrix4d>
@@ -296,12 +295,18 @@ const JointAxis *Joint::Axis(const unsigned int _index) const
 }
 
 /////////////////////////////////////////////////
-Pose3d Joint::Pose(const std::string &_frame) const
+Pose3d Joint::PoseInFrame(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),
       _frame.empty() ? this->PoseFrame() : _frame,
       *this->dataPtr->frameGraph);
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Joint::Pose() const
+{
+  return this->dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
@@ -315,6 +320,7 @@ void Joint::SetPose(const Pose3d &_pose)
 {
   this->dataPtr->frameGraph->VertexFromId(
       this->dataPtr->frameVertexId).Data() = Matrix4d(_pose);
+  this->dataPtr->pose = _pose;
 }
 
 /////////////////////////////////////////////////

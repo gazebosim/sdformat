@@ -44,6 +44,9 @@ class sdf::ModelPrivate
   /// \brief True if this model should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
+  /// \brief Pose of the model
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
 
@@ -123,12 +126,10 @@ Errors Model::Load(ElementPtr _sdf)
   this->dataPtr->enableWind = _sdf->Get<bool>("enable_wind", false).first;
 
   // Load the pose, and add it to the frame graph.
-  std::string frame;
-  Pose3d pose;
-  loadPose(_sdf, pose, frame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
   this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->frameVertexId = this->dataPtr->frameGraph->AddVertex(
-      modelName, Matrix4d(pose)).Id();
+      modelName, Matrix4d(this->dataPtr->pose)).Id();
 
   // Load any additional frames
   sdf::ElementPtr elem = _sdf->GetElement("frame");
@@ -353,12 +354,18 @@ const Joint *Model::JointByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-Pose3d Model::Pose(const std::string &_frame) const
+Pose3d Model::PoseInFrame(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),
       _frame.empty() ? this->PoseFrame() : _frame,
       *this->dataPtr->frameGraph);
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Model::Pose() const
+{
+  return this->dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
@@ -373,6 +380,8 @@ void Model::SetPose(const Pose3d &_pose)
   // Store the pose data in the frame graph
   this->dataPtr->frameGraph->VertexFromId(
       this->dataPtr->frameVertexId).Data() = ignition::math::Matrix4d(_pose);
+  // Also store it in its original Pose3d form
+  this->dataPtr->pose = _pose;
 }
 
 /////////////////////////////////////////////////
