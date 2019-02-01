@@ -108,6 +108,10 @@ but with improved human-readability..
     + required: 0
     + [pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
 
+1. **camera.sdf** `intrinsics` sub-elements: `fx`, `fy`, `cx`, `cy`, `s`
+    + description: Camera intrinsic parameters for setting a custom perspective projection matrix.
+    + [pull request 496](https://bitbucket.org/osrf/sdformat/pull-requests/496)
+
 1. **link.sdf** `enable_wind` element
     + description: If true, the link is affected by the wind
     + type: bool
@@ -164,6 +168,13 @@ but with improved human-readability..
     + default: 0
     + required: 0
     + [pull request 380](https://bitbucket.org/osrf/sdformat/pull-requests/380)
+
+1. **sonar.sdf** `geometry` element
+    + description: The sonar collision shape. Currently supported geometries are: "cone" and "sphere".
+    + type: string
+    + default: "cone"
+    + required: 0
+    + [pull request 495](https://bitbucket.org/osrf/sdformat/pull-requests/495)
 
 1. **state.sdf** allow `light` tags within `insertions` element
     * [pull request 325](https://bitbucket.org/osrf/sdformat/pull-request/325)
