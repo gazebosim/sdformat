@@ -24,7 +24,6 @@
 #include "Utils.hh"
 
 using namespace sdf;
-using namespace ignition::math;
 
 class sdf::VisualPrivate
 {
@@ -57,7 +56,7 @@ Visual::Visual()
   // Create the frame graph for the visual, and add a node for the visual.
   this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->frameVertexId = this->dataPtr->frameGraph->AddVertex(
-      "", Matrix4d::Identity).Id();
+      "", ignition::math::Matrix4d::Identity).Id();
 }
 
 /////////////////////////////////////////////////
@@ -117,7 +116,8 @@ Errors Visual::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   if (_frameGraph)
   {
     this->dataPtr->frameVertexId =
-      _frameGraph->AddVertex(visualName, Matrix4d(this->dataPtr->pose)).Id();
+      _frameGraph->AddVertex(visualName,
+          ignition::math::Matrix4d(this->dataPtr->pose)).Id();
 
     // Get the parent vertex based on this link's pose frame name.
     const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
@@ -162,7 +162,7 @@ void Visual::SetName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-Pose3d Visual::PoseInFrame(const std::string &_frame) const
+ignition::math::Pose3d Visual::PoseInFrame(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),

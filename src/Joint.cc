@@ -28,7 +28,6 @@
 #include "Utils.hh"
 
 using namespace sdf;
-using namespace ignition::math;
 
 class sdf::JointPrivate
 {
@@ -50,7 +49,7 @@ class sdf::JointPrivate
   public: JointType type = JointType::INVALID;
 
   /// \brief Pose of the joint
-  public: Pose3d pose = Pose3d::Zero;
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
@@ -63,7 +62,7 @@ class sdf::JointPrivate
   public: std::shared_ptr<FrameGraph> frameGraph = nullptr;
 
   /// \brief Id of the frame for this object
-  public: graph::VertexId frameVertexId;
+  public: ignition::math::graph::VertexId frameVertexId;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -76,7 +75,7 @@ Joint::Joint()
   // Create the frame graph for the joint, and add a node for the joint.
   this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->frameVertexId = this->dataPtr->frameGraph->AddVertex(
-      "", Matrix4d::Identity).Id();
+      "", ignition::math::Matrix4d::Identity).Id();
 }
 
 /////////////////////////////////////////////////
@@ -209,10 +208,11 @@ Errors Joint::Load(ElementPtr _sdf,
   {
     // Add a vertex in the frame graph for this joint.
     this->dataPtr->frameVertexId =
-      _frameGraph->AddVertex(jointName, Matrix4d(this->dataPtr->pose)).Id();
+      _frameGraph->AddVertex(jointName,
+          ignition::math::Matrix4d(this->dataPtr->pose)).Id();
 
     // Get the parent vertex based on this joints's pose frame name.
-    const graph::VertexRef_M<Matrix4d>
+    const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
       parentVertices = _frameGraph->Vertices(this->dataPtr->poseFrame);
 
     /// \todo check that parentVertices has an element, and potentially make
@@ -295,7 +295,7 @@ const JointAxis *Joint::Axis(const unsigned int _index) const
 }
 
 /////////////////////////////////////////////////
-Pose3d Joint::PoseInFrame(const std::string &_frame) const
+ignition::math::Pose3d Joint::PoseInFrame(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),
@@ -316,10 +316,10 @@ const std::string &Joint::PoseFrame() const
 }
 
 /////////////////////////////////////////////////
-void Joint::SetPose(const Pose3d &_pose)
+void Joint::SetPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->frameGraph->VertexFromId(
-      this->dataPtr->frameVertexId).Data() = Matrix4d(_pose);
+      this->dataPtr->frameVertexId).Data() = ignition::math::Matrix4d(_pose);
   this->dataPtr->pose = _pose;
 }
 

@@ -24,7 +24,6 @@
 #include "Utils.hh"
 
 using namespace sdf;
-using namespace ignition::math;
 
 class sdf::CollisionPrivate
 {
@@ -54,7 +53,7 @@ Collision::Collision()
   // Create the frame graph for the model, and add a node for the model.
   this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->frameVertexId = this->dataPtr->frameGraph->AddVertex(
-      "", Matrix4d::Identity).Id();
+      "", ignition::math::Matrix4d::Identity).Id();
 }
 
 /////////////////////////////////////////////////
@@ -108,7 +107,7 @@ Errors Collision::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   {
     this->dataPtr->frameVertexId =
       _frameGraph->AddVertex(collisionName,
-                             Matrix4d(this->dataPtr->pose)).Id();
+          ignition::math::Matrix4d(this->dataPtr->pose)).Id();
 
     // Get the parent vertex based on this link's pose frame name.
     const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
@@ -159,7 +158,7 @@ const Geometry *Collision::Geom() const
 }
 
 /////////////////////////////////////////////////
-Pose3d Collision::PoseInFrame(const std::string &_frame) const
+ignition::math::Pose3d Collision::PoseInFrame(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),

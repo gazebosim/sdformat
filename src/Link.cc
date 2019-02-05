@@ -30,7 +30,6 @@
 #include "Utils.hh"
 
 using namespace sdf;
-using namespace ignition::math;
 
 class sdf::LinkPrivate
 {
@@ -71,7 +70,7 @@ Link::Link()
   // Create the frame graph for the link, and add a node for the link.
   this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->frameVertexId = this->dataPtr->frameGraph->AddVertex(
-      "", Matrix4d::Identity).Id();
+      "", ignition::math::Matrix4d::Identity).Id();
 }
 
 /////////////////////////////////////////////////
@@ -332,7 +331,7 @@ bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 }
 
 /////////////////////////////////////////////////
-Pose3d Link::PoseInFrame(const std::string &_frame) const
+ignition::math::Pose3d Link::PoseInFrame(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),
