@@ -18,8 +18,6 @@
 #include <utility>
 #include "Utils.hh"
 
-using namespace ignition::math;
-
 /////////////////////////////////////////////////
 bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
 {
@@ -31,7 +29,7 @@ bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
 }
 
 /////////////////////////////////////////////////
-bool sdf::loadPose(sdf::ElementPtr _sdf, Pose3d &_pose,
+bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
               std::string &_frame)
 {
   sdf::ElementPtr sdf = _sdf;
@@ -47,6 +45,7 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, Pose3d &_pose,
   std::pair<std::string, bool> framePair = sdf->Get<std::string>("frame", "");
 
   // Read the pose value.
+  using Pose3d = ignition::math::Pose3d;
   std::pair<Pose3d, bool> posePair =
     sdf->Get<Pose3d>("", Pose3d::Zero);
 
@@ -63,36 +62,48 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, Pose3d &_pose,
 }
 
 //////////////////////////////////////////////////
-Pose3d sdf::poseInFrame(const std::string &_src,
+ignition::math::Pose3d sdf::poseInFrame(const std::string &_src,
     const std::string &_dst, FrameGraph &_graph)
 {
+  using Matrix4d = ignition::math::Matrix4d;
+  using Pose3d = ignition::math::Pose3d;
+
+  using CostInfo = ignition::math::graph::CostInfo;
+  using VertexId = ignition::math::graph::VertexId;
+
+  const Pose3d poseInf(
+    ignition::math::INF_D, ignition::math::INF_D, ignition::math::INF_D,
+    ignition::math::INF_D, ignition::math::INF_D, ignition::math::INF_D);
+
   if (_src.empty())
-    return Pose3d(INF_D, INF_D, INF_D, INF_D, INF_D, INF_D);
+    return poseInf;
 
   // Handle the case where the source and destination are the same.
   if (_src == _dst)
     return Matrix4d::Identity.Pose();
 
   // Get the source vertex.
-  const graph::VertexRef_M<Matrix4d> srcVertices = _graph.Vertices(_src);
+  const ignition::math::graph::VertexRef_M<Matrix4d> srcVertices =
+      _graph.Vertices(_src);
 
   // Get all the vertices in the frame graph that match the provided frame.
   // If _dst is empty, then the result of this function (poseInFrame) will
   // be the pose of the _src frame.
-  const graph::VertexRef_M<Matrix4d> dstVertices = _graph.Vertices(_dst);
+  const ignition::math::graph::VertexRef_M<Matrix4d> dstVertices =
+      _graph.Vertices(_dst);
 
   // There should be only one vertex for the source vertex, and 1 or
   // 0 vertices for the destination vertex.
   if (srcVertices.size() != 1 || dstVertices.size() > 1)
-    return Pose3d(INF_D, INF_D, INF_D, INF_D, INF_D, INF_D);
+    return poseInf;
 
   // Short circuit if the destination is empty.
   if (dstVertices.empty())
     return _graph.VertexFromId(srcVertices.begin()->first).Data().Pose();
 
   // Run Dijkstra to find a path from _src to _dst
-  std::map<graph::VertexId, graph::CostInfo> result =
-    graph::Dijkstra(_graph,
+  std::map<VertexId, CostInfo> result =
+    ignition::math::graph::Dijkstra(_graph,
         srcVertices.begin()->first, dstVertices.begin()->first);
 
   // // Dijkstra debug output
@@ -104,7 +115,7 @@ Pose3d sdf::poseInFrame(const std::string &_src,
   // }
 
   Matrix4d finalPose = Matrix4d::Identity;
-  for (graph::VertexId nextVertex, key = dstVertices.begin()->first;;
+  for (VertexId nextVertex, key = dstVertices.begin()->first;;
        key = nextVertex)
   {
     // Get the next vertex in the path from the destination vertex to the
@@ -120,11 +131,11 @@ Pose3d sdf::poseInFrame(const std::string &_src,
     }
 
     // Get the edge between nextVertex and key.
-    const graph::DirectedEdge<int> &edge =
+    const ignition::math::graph::DirectedEdge<int> &edge =
       _graph.EdgeFromVertices(nextVertex, key);
 
     // Make sure the edge is valid.
-    if (edge.Id() != graph::DirectedEdge<int>::NullEdge.Id())
+    if (edge.Id() != ignition::math::graph::DirectedEdge<int>::NullEdge.Id())
     {
       // // Debug output:
       // std::cout << "Key[" << key << "] Edge From[" << edge.Head()
