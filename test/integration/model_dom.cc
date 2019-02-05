@@ -158,97 +158,98 @@ TEST(DOMModel, FourBar)
 
   // Link 1
   EXPECT_EQ(Pose3d(0, 0.2, 0.05, 0, 0, 0), linkOne->Pose());
-  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkOne->Pose("link1"));
-  EXPECT_EQ(Pose3d(-0.2, 0.2, 0, 0, 0, 0), linkOne->Pose("link2"));
-  EXPECT_EQ(Pose3d(0, 0.4, 0, 0, 0, 0), linkOne->Pose("link3"));
-  EXPECT_EQ(Pose3d(0.2, 0.2, 0, 0, 0, 0), linkOne->Pose("link4"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkOne->PoseInFrame("link1"));
+  EXPECT_EQ(Pose3d(-0.2, 0.2, 0, 0, 0, 0), linkOne->PoseInFrame("link2"));
+  EXPECT_EQ(Pose3d(0, 0.4, 0, 0, 0, 0), linkOne->PoseInFrame("link3"));
+  EXPECT_EQ(Pose3d(0.2, 0.2, 0, 0, 0, 0), linkOne->PoseInFrame("link4"));
 
-  EXPECT_EQ(Pose3d(-0.2, 0, 0, 0, 0, 0), linkOne->Pose("joint1"));
-  EXPECT_EQ(Pose3d(-0.2, 0.4, 0, 0, 0, 0), linkOne->Pose("joint2"));
-  EXPECT_EQ(Pose3d(0.2, 0.4, 0, 0, 0, 0), linkOne->Pose("joint3"));
-  EXPECT_EQ(Pose3d(0.2, 0.2, 0.05, 0, 0, 0), linkOne->Pose("joint4"));
+  EXPECT_EQ(Pose3d(-0.2, 0, 0, 0, 0, 0), linkOne->PoseInFrame("joint1"));
+  EXPECT_EQ(Pose3d(-0.2, 0.4, 0, 0, 0, 0), linkOne->PoseInFrame("joint2"));
+  EXPECT_EQ(Pose3d(0.2, 0.4, 0, 0, 0, 0), linkOne->PoseInFrame("joint3"));
+  EXPECT_EQ(Pose3d(0.2, 0.2, 0.05, 0, 0, 0), linkOne->PoseInFrame("joint4"));
 
   // Link 2
   EXPECT_EQ(Pose3d(0.2, 0, 0.05, 0, 0, 0), linkTwo->Pose());
-  EXPECT_EQ(Pose3d(0.2, -0.2, 0, 0, 0, 0), linkTwo->Pose("link1"));
-  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkTwo->Pose("link2"));
-  EXPECT_EQ(Pose3d(0.2, 0.2, 0, 0, 0, 0), linkTwo->Pose("link3"));
-  EXPECT_EQ(Pose3d(0.4, 0, 0, 0, 0, 0), linkTwo->Pose("link4"));
+  EXPECT_EQ(Pose3d(0.2, -0.2, 0, 0, 0, 0), linkTwo->PoseInFrame("link1"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkTwo->PoseInFrame("link2"));
+  EXPECT_EQ(Pose3d(0.2, 0.2, 0, 0, 0, 0), linkTwo->PoseInFrame("link3"));
+  EXPECT_EQ(Pose3d(0.4, 0, 0, 0, 0, 0), linkTwo->PoseInFrame("link4"));
 
-  EXPECT_EQ(Pose3d(0.2, -0.2, 0.05, 0, 0, 0), linkTwo->Pose("joint1"));
-  EXPECT_EQ(Pose3d(0, 0.2, 0, 0, 0, 0), linkTwo->Pose("joint2"));
-  EXPECT_EQ(Pose3d(0.4, 0.2, 0, 0, 0, 0), linkTwo->Pose("joint3"));
-  EXPECT_EQ(Pose3d(0.4, -0.2, 0, 0, 0, 0), linkTwo->Pose("joint4"));
+  EXPECT_EQ(Pose3d(0.2, -0.2, 0.05, 0, 0, 0), linkTwo->PoseInFrame("joint1"));
+  EXPECT_EQ(Pose3d(0, 0.2, 0, 0, 0, 0), linkTwo->PoseInFrame("joint2"));
+  EXPECT_EQ(Pose3d(0.4, 0.2, 0, 0, 0, 0), linkTwo->PoseInFrame("joint3"));
+  EXPECT_EQ(Pose3d(0.4, -0.2, 0, 0, 0, 0), linkTwo->PoseInFrame("joint4"));
 
   // Link 3
   EXPECT_EQ(Pose3d(0, -0.2, 0.05, 0, 0, 0), linkThree->Pose());
-  EXPECT_EQ(Pose3d(0, -0.4, 0, 0, 0, 0), linkThree->Pose("link1"));
-  EXPECT_EQ(Pose3d(-0.2, -0.2, 0, 0, 0, 0), linkThree->Pose("link2"));
-  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkThree->Pose("link3"));
-  EXPECT_EQ(Pose3d(0.2, -0.2, 0, 0, 0, 0), linkThree->Pose("link4"));
+  EXPECT_EQ(Pose3d(0, -0.4, 0, 0, 0, 0), linkThree->PoseInFrame("link1"));
+  EXPECT_EQ(Pose3d(-0.2, -0.2, 0, 0, 0, 0), linkThree->PoseInFrame("link2"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkThree->PoseInFrame("link3"));
+  EXPECT_EQ(Pose3d(0.2, -0.2, 0, 0, 0, 0), linkThree->PoseInFrame("link4"));
 
-  EXPECT_EQ(Pose3d(-0.2, -0.4, 0, 0, 0, 0), linkThree->Pose("joint1"));
-  EXPECT_EQ(Pose3d(-0.2, -0.2, 0.05, 0, 0, 0), linkThree->Pose("joint2"));
-  EXPECT_EQ(Pose3d(0.2, 0, 0, 0, 0, 0), linkThree->Pose("joint3"));
-  EXPECT_EQ(Pose3d(0.2, -0.4, 0, 0, 0, 0), linkThree->Pose("joint4"));
+  EXPECT_EQ(Pose3d(-0.2, -0.4, 0, 0, 0, 0), linkThree->PoseInFrame("joint1"));
+  EXPECT_EQ(Pose3d(-0.2, -0.2, 0.05, 0, 0, 0),
+            linkThree->PoseInFrame("joint2"));
+  EXPECT_EQ(Pose3d(0.2, 0, 0, 0, 0, 0), linkThree->PoseInFrame("joint3"));
+  EXPECT_EQ(Pose3d(0.2, -0.4, 0, 0, 0, 0), linkThree->PoseInFrame("joint4"));
 
   // Link 4
   EXPECT_EQ(Pose3d(-0.2, 0, 0.05, 0, 0, 0), linkFour->Pose());
-  EXPECT_EQ(Pose3d(-0.2, -0.2, 0, 0, 0, 0), linkFour->Pose("link1"));
-  EXPECT_EQ(Pose3d(-0.4, 0, 0, 0, 0, 0), linkFour->Pose("link2"));
-  EXPECT_EQ(Pose3d(-0.2, 0.2, 0, 0, 0, 0), linkFour->Pose("link3"));
-  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkFour->Pose("link4"));
+  EXPECT_EQ(Pose3d(-0.2, -0.2, 0, 0, 0, 0), linkFour->PoseInFrame("link1"));
+  EXPECT_EQ(Pose3d(-0.4, 0, 0, 0, 0, 0), linkFour->PoseInFrame("link2"));
+  EXPECT_EQ(Pose3d(-0.2, 0.2, 0, 0, 0, 0), linkFour->PoseInFrame("link3"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkFour->PoseInFrame("link4"));
 
-  EXPECT_EQ(Pose3d(-0.4, -0.2, 0, 0, 0, 0), linkFour->Pose("joint1"));
-  EXPECT_EQ(Pose3d(-0.4, 0.2, 0, 0, 0, 0), linkFour->Pose("joint2"));
-  EXPECT_EQ(Pose3d(-0.2, 0.2, 0.05, 0, 0, 0), linkFour->Pose("joint3"));
-  EXPECT_EQ(Pose3d(0, -0.2, 0, 0, 0, 0), linkFour->Pose("joint4"));
+  EXPECT_EQ(Pose3d(-0.4, -0.2, 0, 0, 0, 0), linkFour->PoseInFrame("joint1"));
+  EXPECT_EQ(Pose3d(-0.4, 0.2, 0, 0, 0, 0), linkFour->PoseInFrame("joint2"));
+  EXPECT_EQ(Pose3d(-0.2, 0.2, 0.05, 0, 0, 0), linkFour->PoseInFrame("joint3"));
+  EXPECT_EQ(Pose3d(0, -0.2, 0, 0, 0, 0), linkFour->PoseInFrame("joint4"));
 
   // Joint 1
   EXPECT_EQ(Pose3d(0, 0.2, 0, 0, 0, 0), jointOne->Pose());
-  EXPECT_EQ(Pose3d(0.2, 0, 0, 0, 0, 0), jointOne->Pose("link1"));
-  EXPECT_EQ(Pose3d(0, 0.2, 0, 0, 0, 0), jointOne->Pose("link2"));
-  EXPECT_EQ(Pose3d(0.2, 0.4, 0, 0, 0, 0), jointOne->Pose("link3"));
-  EXPECT_EQ(Pose3d(0.4, 0.2, 0, 0, 0, 0), jointOne->Pose("link4"));
+  EXPECT_EQ(Pose3d(0.2, 0, 0, 0, 0, 0), jointOne->PoseInFrame("link1"));
+  EXPECT_EQ(Pose3d(0, 0.2, 0, 0, 0, 0), jointOne->PoseInFrame("link2"));
+  EXPECT_EQ(Pose3d(0.2, 0.4, 0, 0, 0, 0), jointOne->PoseInFrame("link3"));
+  EXPECT_EQ(Pose3d(0.4, 0.2, 0, 0, 0, 0), jointOne->PoseInFrame("link4"));
 
-  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), jointOne->Pose("joint1"));
-  EXPECT_EQ(Pose3d(0, 0.4, 0, 0, 0, 0), jointOne->Pose("joint2"));
-  EXPECT_EQ(Pose3d(0.4, 0.4, 0, 0, 0, 0), jointOne->Pose("joint3"));
-  EXPECT_EQ(Pose3d(0.4, 0, 0, 0, 0, 0), jointOne->Pose("joint4"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), jointOne->PoseInFrame("joint1"));
+  EXPECT_EQ(Pose3d(0, 0.4, 0, 0, 0, 0), jointOne->PoseInFrame("joint2"));
+  EXPECT_EQ(Pose3d(0.4, 0.4, 0, 0, 0, 0), jointOne->PoseInFrame("joint3"));
+  EXPECT_EQ(Pose3d(0.4, 0, 0, 0, 0, 0), jointOne->PoseInFrame("joint4"));
 
   // Joint 2
   EXPECT_EQ(Pose3d(0.2, 0, 0, 0, 0, 0), jointTwo->Pose());
-  EXPECT_EQ(Pose3d(0.2, -0.4, 0, 0, 0, 0), jointTwo->Pose("link1"));
-  EXPECT_EQ(Pose3d(0, -0.2, 0, 0, 0, 0), jointTwo->Pose("link2"));
-  EXPECT_EQ(Pose3d(0.2, 0, 0, 0, 0, 0), jointTwo->Pose("link3"));
-  EXPECT_EQ(Pose3d(0.4, -0.2, 0, 0, 0, 0), jointTwo->Pose("link4"));
+  EXPECT_EQ(Pose3d(0.2, -0.4, 0, 0, 0, 0), jointTwo->PoseInFrame("link1"));
+  EXPECT_EQ(Pose3d(0, -0.2, 0, 0, 0, 0), jointTwo->PoseInFrame("link2"));
+  EXPECT_EQ(Pose3d(0.2, 0, 0, 0, 0, 0), jointTwo->PoseInFrame("link3"));
+  EXPECT_EQ(Pose3d(0.4, -0.2, 0, 0, 0, 0), jointTwo->PoseInFrame("link4"));
 
-  EXPECT_EQ(Pose3d(0, -0.4, 0, 0, 0, 0), jointTwo->Pose("joint1"));
-  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), jointTwo->Pose("joint2"));
-  EXPECT_EQ(Pose3d(0.4, 0, 0, 0, 0, 0), jointTwo->Pose("joint3"));
-  EXPECT_EQ(Pose3d(0.4, -0.4, 0, 0, 0, 0), jointTwo->Pose("joint4"));
+  EXPECT_EQ(Pose3d(0, -0.4, 0, 0, 0, 0), jointTwo->PoseInFrame("joint1"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), jointTwo->PoseInFrame("joint2"));
+  EXPECT_EQ(Pose3d(0.4, 0, 0, 0, 0, 0), jointTwo->PoseInFrame("joint3"));
+  EXPECT_EQ(Pose3d(0.4, -0.4, 0, 0, 0, 0), jointTwo->PoseInFrame("joint4"));
 
   // Joint 3
   EXPECT_EQ(Pose3d(0, -0.2, 0, 0, 0, 0), jointThree->Pose());
-  EXPECT_EQ(Pose3d(-0.2, -0.4, 0, 0, 0, 0), jointThree->Pose("link1"));
-  EXPECT_EQ(Pose3d(-0.4, -0.2, 0, 0, 0, 0), jointThree->Pose("link2"));
-  EXPECT_EQ(Pose3d(-0.2, 0, 0, 0, 0, 0), jointThree->Pose("link3"));
-  EXPECT_EQ(Pose3d(0, -0.2, 0, 0, 0, 0), jointThree->Pose("link4"));
+  EXPECT_EQ(Pose3d(-0.2, -0.4, 0, 0, 0, 0), jointThree->PoseInFrame("link1"));
+  EXPECT_EQ(Pose3d(-0.4, -0.2, 0, 0, 0, 0), jointThree->PoseInFrame("link2"));
+  EXPECT_EQ(Pose3d(-0.2, 0, 0, 0, 0, 0), jointThree->PoseInFrame("link3"));
+  EXPECT_EQ(Pose3d(0, -0.2, 0, 0, 0, 0), jointThree->PoseInFrame("link4"));
 
-  EXPECT_EQ(Pose3d(-0.4, -0.4, 0, 0, 0, 0), jointThree->Pose("joint1"));
-  EXPECT_EQ(Pose3d(-0.4, 0, 0, 0, 0, 0), jointThree->Pose("joint2"));
-  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), jointThree->Pose("joint3"));
-  EXPECT_EQ(Pose3d(0, -0.4, 0, 0, 0, 0), jointThree->Pose("joint4"));
+  EXPECT_EQ(Pose3d(-0.4, -0.4, 0, 0, 0, 0), jointThree->PoseInFrame("joint1"));
+  EXPECT_EQ(Pose3d(-0.4, 0, 0, 0, 0, 0), jointThree->PoseInFrame("joint2"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), jointThree->PoseInFrame("joint3"));
+  EXPECT_EQ(Pose3d(0, -0.4, 0, 0, 0, 0), jointThree->PoseInFrame("joint4"));
 
   // Joint 4
   EXPECT_EQ(Pose3d(-0.2, 0, 0, 0, 0, 0), jointFour->Pose());
-  EXPECT_EQ(Pose3d(-0.2, 0, 0, 0, 0, 0), jointFour->Pose("link1"));
-  EXPECT_EQ(Pose3d(-0.4, 0.2, 0, 0, 0, 0), jointFour->Pose("link2"));
-  EXPECT_EQ(Pose3d(-0.2, 0.4, 0, 0, 0, 0), jointFour->Pose("link3"));
-  EXPECT_EQ(Pose3d(0, 0.2, 0, 0, 0, 0), jointFour->Pose("link4"));
+  EXPECT_EQ(Pose3d(-0.2, 0, 0, 0, 0, 0), jointFour->PoseInFrame("link1"));
+  EXPECT_EQ(Pose3d(-0.4, 0.2, 0, 0, 0, 0), jointFour->PoseInFrame("link2"));
+  EXPECT_EQ(Pose3d(-0.2, 0.4, 0, 0, 0, 0), jointFour->PoseInFrame("link3"));
+  EXPECT_EQ(Pose3d(0, 0.2, 0, 0, 0, 0), jointFour->PoseInFrame("link4"));
 
-  EXPECT_EQ(Pose3d(-0.4, 0, 0, 0, 0, 0), jointFour->Pose("joint1"));
-  EXPECT_EQ(Pose3d(-0.4, 0.4, 0, 0, 0, 0), jointFour->Pose("joint2"));
-  EXPECT_EQ(Pose3d(0, 0.4, 0, 0, 0, 0), jointFour->Pose("joint3"));
-  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), jointFour->Pose("joint4"));
+  EXPECT_EQ(Pose3d(-0.4, 0, 0, 0, 0, 0), jointFour->PoseInFrame("joint1"));
+  EXPECT_EQ(Pose3d(-0.4, 0.4, 0, 0, 0, 0), jointFour->PoseInFrame("joint2"));
+  EXPECT_EQ(Pose3d(0, 0.4, 0, 0, 0, 0), jointFour->PoseInFrame("joint3"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), jointFour->PoseInFrame("joint4"));
 }

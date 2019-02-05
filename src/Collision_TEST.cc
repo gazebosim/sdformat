@@ -26,12 +26,11 @@ TEST(DOMcollision, Construction)
   EXPECT_EQ(nullptr, collision.Element());
   EXPECT_TRUE(collision.Name().empty());
 
-  EXPECT_TRUE(collision.PoseFrame().empty());
   collision.SetName("test_collison");
   EXPECT_EQ("test_collison", collision.Name());
-  EXPECT_TRUE(collision.PoseFrame().empty());
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, collision.Pose());
+  EXPECT_TRUE(collision.PoseFrame().empty());
 
   collision.SetPose({-10, -20, -30, 1.2, 0, 0});
   EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, 1.2, 0, 0),

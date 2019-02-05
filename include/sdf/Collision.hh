@@ -70,8 +70,15 @@ namespace sdf
     /// \return The collision's geometry.
     public: const Geometry *Geom() const;
 
-    /// \copydoc Model::Pose(const std::string&) const
-    public: ignition::math::Pose3d Pose(const std::string &_frame = "") const;
+    /// \brief Get the pose of the collision object. This is the pose of the
+    /// collison as specified in SDF
+    /// (<collision><pose> ... </pose></collision>).
+    /// \return The pose of the collision object.
+    public: const ignition::math::Pose3d &Pose() const;
+
+    /// \copydoc Model::PoseInFrame(const std::string&) const
+    public: ignition::math::Pose3d PoseInFrame(
+        const std::string &_frame = "") const;
 
     /// \brief Set the pose of the collision object.
     /// \sa const ignition::math::Pose3d &Pose() const

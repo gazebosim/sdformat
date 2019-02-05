@@ -96,9 +96,12 @@ TEST(Urdf, Construction)
   ASSERT_NE(nullptr, upperLink);
 
   EXPECT_EQ(Pose3d(0, 0, 2.1, -1.5708, 0, 0), upperLink->Pose());
-  EXPECT_EQ(Pose3d(0, 0, 2.1, -1.5708, 0, 0), upperLink->Pose("base_link"));
+  EXPECT_EQ(Pose3d(0, 0, 2.1, -1.5708, 0, 0), upperLink->PoseInFrame());
+  EXPECT_EQ(Pose3d(0, 0, 2.1, -1.5708, 0, 0),
+            upperLink->PoseInFrame("base_link"));
 
   const sdf::Joint *upperJoint = model->JointByName("upper_joint");
-  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), upperJoint->Pose("upper_link"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), upperJoint->PoseInFrame());
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), upperJoint->PoseInFrame("upper_link"));
   EXPECT_EQ("upper_joint", upperJoint->Name());
 }

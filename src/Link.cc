@@ -30,10 +30,12 @@
 #include "Utils.hh"
 
 using namespace sdf;
-using namespace ignition::math;
 
 class sdf::LinkPrivate
 {
+  /// \brief Pose of the link
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
 
@@ -68,7 +70,7 @@ Link::Link()
   // Create the frame graph for the link, and add a node for the link.
   this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->frameVertexId = this->dataPtr->frameGraph->AddVertex(
-      "", Matrix4d::Identity).Id();
+      "", ignition::math::Matrix4d::Identity).Id();
 }
 
 /////////////////////////////////////////////////
@@ -111,8 +113,7 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  ignition::math::Pose3d pose;
-  loadPose(_sdf, pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
   // Use the SDF parent as the pose frame if the poseFrame attribute is
   // empty.
@@ -123,7 +124,7 @@ Errors Link::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   {
     // Add a vertex in the frame graph for this link.
     this->dataPtr->frameVertexId = _frameGraph->AddVertex(linkName,
-          ignition::math::Matrix4d(pose)).Id();
+          ignition::math::Matrix4d(this->dataPtr->pose)).Id();
 
     // Get the parent vertex based on this link's pose frame name.
     const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
@@ -330,12 +331,18 @@ bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 }
 
 /////////////////////////////////////////////////
-Pose3d Link::Pose(const std::string &_frame) const
+ignition::math::Pose3d Link::PoseInFrame(const std::string &_frame) const
 {
   return poseInFrame(
       this->Name(),
       _frame.empty() ? this->PoseFrame() : _frame,
       *this->dataPtr->frameGraph);
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Link::Pose() const
+{
+  return this->dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
@@ -349,6 +356,7 @@ void Link::SetPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->frameGraph->VertexFromId(
       this->dataPtr->frameVertexId).Data() = ignition::math::Matrix4d(_pose);
+  this->dataPtr->pose = _pose;
 }
 
 /////////////////////////////////////////////////
