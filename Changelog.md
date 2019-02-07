@@ -2,6 +2,9 @@
 
 ### SDFormat 6.X.X (20XX-XX-XX)
 
+1. Set camera intrinsics axis skew (s) default value to 0
+    * [Pull request 496](https://bitbucket.org/osrf/sdformat/pull-requests/496)
+
 ### SDFormat 6.2.0 (2019-01-17)
 
 1. Add geometry for sonar collision shape
