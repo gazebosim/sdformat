@@ -26,6 +26,7 @@ set (headers
   Plane.hh
   Root.hh
   SDFImpl.hh
+  Sensor.hh
   Sphere.hh
   Types.hh
   system_util.hh

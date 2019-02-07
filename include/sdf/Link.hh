@@ -26,12 +26,15 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
   // Forward declarations.
   class Collision;
+  class Light;
+  class LinkPrivate;
+  class Sensor;
   class Visual;
   class LinkPrivate;
 
@@ -106,6 +109,50 @@ namespace sdf
     /// \param[in] _name Name of the collision.
     /// \return Pointer to the collision. Nullptr if the name does not exist.
     public: const Collision *CollisionByName(const std::string &_name) const;
+
+    /// \brief Get the number of lights.
+    /// \return Number of lights contained in this Link object.
+    public: uint64_t LightCount() const;
+
+    /// \brief Get a light based on an index.
+    /// \param[in] _index Index of the light. The index should be in the
+    /// range [0..LightCount()).
+    /// \return Pointer to the light. Nullptr if the index does not exist.
+    /// \sa uint64_t LightCount() const
+    public: const Light *LightByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a light name exists.
+    /// \param[in] _name Name of the light to check.
+    /// \return True if there exists a light with the given name.
+    public: bool LightNameExists(const std::string &_name) const;
+
+    /// \brief Get a light based on a name.
+    /// \param[in] _name Name of the light.
+    /// \return Pointer to the light. Nullptr if the name does not exist.
+    public: const Light *LightByName(const std::string &_name) const;
+
+    /// \brief Get the number of sensors.
+    /// \return Number of sensors contained in this Link object.
+    public: uint64_t SensorCount() const;
+
+    /// \brief Get a sensor based on an index.
+    /// \param[in] _index Index of the sensor. The index should be in the
+    /// range [0..SensorCount()).
+    /// \return Pointer to the sensor. Nullptr if the index does not exist.
+    /// \sa uint64_t SensorCount() const
+    public: const Sensor *SensorByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a sensor name exists.
+    /// \param[in] _name Name of the sensor to check.
+    /// \return True if there exists a sensor with the given name.
+    public: bool SensorNameExists(const std::string &_name) const;
+
+    /// \brief Get a sensor based on a name.
+    /// \param[in] _name Name of the sensor.
+    /// \return Pointer to the sensor. Nullptr if a sensor with the given name
+    ///  does not exist.
+    /// \sa bool SensorNameExists(const std::string &_name) const
+    public: const Sensor *SensorByName(const std::string &_name) const;
 
     /// \brief Get the inertial value for this link. The inertial object
     /// consists of the link's mass, a 3x3 rotational inertia matrix, and

@@ -1,12 +1,7 @@
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 
-include_directories(
-  ${IGNITION-MATH_INCLUDE_DIRS}
-)
-
 link_directories(
   ${PROJECT_BINARY_DIR}/test
-  ${IGNITION-MATH_LIBRARY_DIRS}
 )
 include_directories(${RUBY_INCLUDE_DIRS})
 
@@ -47,6 +42,7 @@ set (sources
   Root.cc
   SDF.cc
   SDFExtension.cc
+  Sensor.cc
   Sphere.cc
   Types.cc
   Utils.cc
@@ -109,6 +105,7 @@ set (gtest_sources
   Plane_TEST.cc
   Root_TEST.cc
   SDF_TEST.cc
+  Sensor_TEST.cc
   Sphere_TEST.cc
   Types_TEST.cc
   Visual_TEST.cc
@@ -124,11 +121,18 @@ endif()
 
 sdf_build_tests(${gtest_sources})
 
-sdf_add_library(sdformat${SDF_MAJOR_VERSION} ${sources})
-target_link_libraries(sdformat${SDF_MAJOR_VERSION} ${IGNITION-MATH_LIBRARIES} ${RUBY_LIBRARY})
+sdf_add_library(${sdf_target} ${sources})
+target_link_libraries(${sdf_target} PUBLIC ${IGNITION-MATH_LIBRARIES} ${RUBY_LIBRARY})
+
+target_include_directories(${sdf_target}
+  PUBLIC
+    ${IGNITION-MATH_INCLUDE_DIRS}
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/..>
+)
 
 if (USE_EXTERNAL_TINYXML)
-  target_link_libraries(sdformat${SDF_MAJOR_VERSION} ${tinyxml_LIBRARIES})
+  target_link_libraries(${sdf_target} PRIVATE ${tinyxml_LIBRARIES})
 else()
   # Ignore the warnings from the internal library
   set_target_properties(sdformat${SDF_MAJOR_VERSION} PROPERTIES
@@ -139,9 +143,9 @@ message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
 message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
 
 if (NOT USE_INTERNAL_URDF)
-  target_link_libraries(sdformat${SDF_MAJOR_VERSION} ${URDF_LIBRARIES})
+  target_link_libraries(${sdf_target} PRIVATE ${URDF_LIBRARIES})
 endif()
 
-sdf_install_library(sdformat${SDF_MAJOR_VERSION})
+sdf_install_library(${sdf_target})
 
 add_subdirectory(cmd)

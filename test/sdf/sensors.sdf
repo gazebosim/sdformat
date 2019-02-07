@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="model">
+    <link name="link">
+      <sensor name="altimeter_sensor" type="altimeter">
+      </sensor>
+
+      <sensor name="camera_sensor" type="camera">
+        <pose>1 2 3 0 0 0</pose>
+      </sensor>
+
+      <sensor name="contact_sensor" type="contact">
+        <pose>4 5 6 0 0 0</pose>
+      </sensor>
+
+      <sensor name="depth_sensor" type="depth">
+        <pose>7 8 9 0 0 0</pose>
+      </sensor>
+
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose>10 11 12 0 0 0</pose>
+      </sensor>
+
+      <sensor name="gps_sensor" type="gps">
+        <pose>13 14 15 0 0 0</pose>
+      </sensor>
+
+      <sensor name="gpu_ray_sensor" type="gpu_ray">
+        <pose>1 2 3 0 0 0</pose>
+      </sensor>
+
+      <sensor name="imu_sensor" type="imu">
+        <pose>4 5 6 0 0 0</pose>
+      </sensor>
+
+      <sensor name="logical_camera_sensor" type="logical_camera">
+        <pose>7 8 9 0 0 0</pose>
+      </sensor>
+
+      <sensor name="magnetometer_sensor" type="magnetometer">
+        <pose>10 11 12 0 0 0</pose>
+      </sensor>
+
+      <sensor name="multicamera_sensor" type="multicamera">
+        <pose>13 14 15 0 0 0</pose>
+      </sensor>
+
+      <sensor name="ray_sensor" type="ray">
+        <pose>1 2 3 0 0 0</pose>
+      </sensor>
+
+      <sensor name="rfid_sensor" type="rfid">
+        <pose>4 5 6 0 0 0</pose>
+      </sensor>
+
+      <sensor name="rfid_tag" type="rfidtag">
+        <pose>7 8 9 0 0 0</pose>
+      </sensor>
+
+      <sensor name="sonar_sensor" type="sonar">
+        <pose>10 11 12 0 0 0</pose>
+      </sensor>
+
+      <sensor name="wireless_receiver" type="wireless_receiver">
+        <pose>13 14 15 0 0 0</pose>
+      </sensor>
+
+      <sensor name="wireless_transmitter" type="wireless_transmitter">
+        <pose>1 2 3 0 0 0</pose>
+      </sensor>
+
+    </link>
+  </model>
+</sdf>

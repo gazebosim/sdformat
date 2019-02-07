@@ -73,6 +73,10 @@ namespace sdf
     /// \return The visual's geometry.
     public: const Geometry *Geom() const;
 
+    /// \brief Set the visual's geometry
+    /// \param[in] _geom The geometry of the visual object
+    public: void SetGeom(const Geometry &_geom);
+
     /// \brief Get the pose of the visual object. This is the pose of the
     /// visual as specified in SDF
     /// (<visual><pose> ... </pose></visual>).
@@ -107,6 +111,10 @@ namespace sdf
     /// \return Pointer to the visual's material properties. Nullptr
     /// indicates that material properties have not been set.
     public: sdf::Material *Material() const;
+
+    /// \brief Set the visual's material
+    /// \param[in] _material The material of the visual object
+    public: void SetMaterial(const sdf::Material &_material);
 
     /// \brief Private data pointer.
     private: VisualPrivate *dataPtr = nullptr;

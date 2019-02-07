@@ -1,7 +1,21 @@
-if (@PKG_NAME@_CONFIG_INCLUDED)
+# We explicitly set the desired cmake version to ensure that the policy settings
+# of users or of toolchains do not result in the wrong behavior for our modules.
+# Note that the call to find_package(~) will PUSH a new policy stack before
+# taking on these version settings, and then that stack will POP after the
+# find_package(~) has exited, so this will not affect the cmake policy settings
+# of a caller.
+cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
+
+if(@PKG_NAME@_CONFIG_INCLUDED)
   return()
 endif()
 set(@PKG_NAME@_CONFIG_INCLUDED TRUE)
+
+@PACKAGE_INIT@
+
+if(NOT TARGET @sdf_import_target_name@)
+  include("${CMAKE_CURRENT_LIST_DIR}/@sdf_target_output_filename@")
+endif()
 
 list(APPEND @PKG_NAME@_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include/sdformat-@SDF_VERSION@")
 
@@ -12,24 +26,15 @@ endif()
 
 list(APPEND @PKG_NAME@_LIBRARY_DIRS "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@")
 
-set(sdformat@SDF_MAJOR_VERSION@lib "sdformat@SDF_MAJOR_VERSION@-NOTFOUND")
-find_library(sdformat@SDF_MAJOR_VERSION@lib sdformat@SDF_MAJOR_VERSION@
-  PATHS "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@"
-  NO_DEFAULT_PATH
-)
-if(NOT sdformat@SDF_MAJOR_VERSION@lib)
-  message(FATAL_ERROR "Library 'sdformat@SDF_MAJOR_VERSION@' in package @PKG_NAME@ is not installed properly")
-endif()
-list(APPEND @PKG_NAME@_LIBRARIES "${sdformat@SDF_MAJOR_VERSION@lib}")
+set(@PKG_NAME@_LIBRARIES @sdf_import_target_name@)
 
 # These variables are used by ignition-cmake to automatically configure the
 # pkgconfig files for ignition projects.
 set(sdformat8_PKGCONFIG_ENTRY "sdformat8")
-set(sdformat8_PKGCONFIG_TYPE PROJECT_PKGCONFIG_REQUIRES)
+set(sdformat8_PKGCONFIG_TYPE PKGCONFIG_REQUIRES)
 
 find_package(ignition-math@IGN_MATH_VER@)
 list(APPEND @PKG_NAME@_INCLUDE_DIRS ${IGNITION-MATH_INCLUDE_DIRS})
-list(APPEND @PKG_NAME@_LIBRARIES ${IGNITION-MATH_LIBRARIES})
 list(APPEND @PKG_NAME@_LIBRARY_DIRS ${IGNITION-MATH_LIBRARY_DIRS})
 
 list(APPEND @PKG_NAME@_LDFLAGS "-L@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@")

@@ -27,6 +27,7 @@
 #include "sdf/Model.hh"
 #include "sdf/parser.hh"
 #include "sdf/Root.hh"
+#include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
@@ -200,8 +201,167 @@ TEST(DOMLink, InertialInvalid)
   // Load the SDF file
   sdf::Root root;
   auto errors = root.Load(testFile);
-  EXPECT_TRUE(errors.empty());
+  EXPECT_FALSE(errors.empty());
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::LINK_INERTIA_INVALID);
+  EXPECT_EQ(errors[0].Message(), "A link named link has invalid inertia.");
 
   const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_EQ(nullptr, model);
+}
+
+//////////////////////////////////////////////////
+TEST(DOMLink, Sensors)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "sensors.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model", model->Name());
+
+  // Get the first link
+  const sdf::Link *link = model->LinkByIndex(0);
+  ASSERT_NE(nullptr, link);
+  EXPECT_EQ("link", link->Name());
+  EXPECT_EQ(17u, link->SensorCount());
+
+  // Get the altimeter sensor
+  const sdf::Sensor *altimeterSensor = link->SensorByIndex(0);
+  ASSERT_NE(nullptr, altimeterSensor);
+  EXPECT_EQ("altimeter_sensor", altimeterSensor->Name());
+  EXPECT_EQ(sdf::SensorType::ALTIMETER, altimeterSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d::Zero, altimeterSensor->Pose());
+
+  // Get the camera sensor
+  EXPECT_TRUE(link->SensorNameExists("camera_sensor"));
+  EXPECT_FALSE(link->SensorNameExists("bad_camera_sensor"));
+  const sdf::Sensor *cameraSensor = link->SensorByName("camera_sensor");
+  ASSERT_NE(nullptr, cameraSensor);
+  EXPECT_EQ("camera_sensor", cameraSensor->Name());
+  EXPECT_EQ(sdf::SensorType::CAMERA, cameraSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), cameraSensor->Pose());
+
+  // Get the contact sensor
+  const sdf::Sensor *contactSensor = link->SensorByName("contact_sensor");
+  ASSERT_NE(nullptr, contactSensor);
+  EXPECT_EQ("contact_sensor", contactSensor->Name());
+  EXPECT_EQ(sdf::SensorType::CONTACT, contactSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), contactSensor->Pose());
+
+  // Get the depth sensor
+  const sdf::Sensor *depthSensor = link->SensorByName("depth_sensor");
+  ASSERT_NE(nullptr, depthSensor);
+  EXPECT_EQ("depth_sensor", depthSensor->Name());
+  EXPECT_EQ(sdf::SensorType::DEPTH, depthSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), depthSensor->Pose());
+
+  // Get the force_torque sensor
+  const sdf::Sensor *forceTorqueSensor =
+    link->SensorByName("force_torque_sensor");
+  ASSERT_NE(nullptr, forceTorqueSensor);
+  EXPECT_EQ("force_torque_sensor", forceTorqueSensor->Name());
+  EXPECT_EQ(sdf::SensorType::FORCE_TORQUE, forceTorqueSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
+      forceTorqueSensor->Pose());
+
+  // Get the gps sensor
+  const sdf::Sensor *gpsSensor = link->SensorByName("gps_sensor");
+  ASSERT_NE(nullptr, gpsSensor);
+  EXPECT_EQ("gps_sensor", gpsSensor->Name());
+  EXPECT_EQ(sdf::SensorType::GPS, gpsSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(13, 14, 15, 0, 0, 0), gpsSensor->Pose());
+
+  // Get the gpuRay sensor
+  const sdf::Sensor *gpuRaySensor = link->SensorByName("gpu_ray_sensor");
+  ASSERT_NE(nullptr, gpuRaySensor);
+  EXPECT_EQ("gpu_ray_sensor", gpuRaySensor->Name());
+  EXPECT_EQ(sdf::SensorType::GPU_LIDAR, gpuRaySensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), gpuRaySensor->Pose());
+
+  // Get the imu sensor
+  const sdf::Sensor *imuSensor = link->SensorByName("imu_sensor");
+  ASSERT_NE(nullptr, imuSensor);
+  EXPECT_EQ("imu_sensor", imuSensor->Name());
+  EXPECT_EQ(sdf::SensorType::IMU, imuSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), imuSensor->Pose());
+
+  // Get the logical camera sensor
+  const sdf::Sensor *logicalCameraSensor =
+    link->SensorByName("logical_camera_sensor");
+  ASSERT_NE(nullptr, logicalCameraSensor);
+  EXPECT_EQ("logical_camera_sensor", logicalCameraSensor->Name());
+  EXPECT_EQ(sdf::SensorType::LOGICAL_CAMERA, logicalCameraSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0),
+      logicalCameraSensor->Pose());
+
+  // Get the magnetometer sensor
+  const sdf::Sensor *magnetometerSensor =
+    link->SensorByName("magnetometer_sensor");
+  ASSERT_NE(nullptr, magnetometerSensor);
+  EXPECT_EQ("magnetometer_sensor", magnetometerSensor->Name());
+  EXPECT_EQ(sdf::SensorType::MAGNETOMETER, magnetometerSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
+      magnetometerSensor->Pose());
+
+  // Get the multicamera sensor
+  const sdf::Sensor *multicameraSensor =
+    link->SensorByName("multicamera_sensor");
+  ASSERT_NE(nullptr, multicameraSensor);
+  EXPECT_EQ("multicamera_sensor", multicameraSensor->Name());
+  EXPECT_EQ(sdf::SensorType::MULTICAMERA, multicameraSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(13, 14, 15, 0, 0, 0),
+      multicameraSensor->Pose());
+
+  // Get the ray sensor
+  const sdf::Sensor *raySensor = link->SensorByName("ray_sensor");
+  ASSERT_NE(nullptr, raySensor);
+  EXPECT_EQ("ray_sensor", raySensor->Name());
+  EXPECT_EQ(sdf::SensorType::LIDAR, raySensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), raySensor->Pose());
+
+  // Get the rfid sensor
+  const sdf::Sensor *rfidSensor = link->SensorByName("rfid_sensor");
+  ASSERT_NE(nullptr, rfidSensor);
+  EXPECT_EQ("rfid_sensor", rfidSensor->Name());
+  EXPECT_EQ(sdf::SensorType::RFID, rfidSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), rfidSensor->Pose());
+
+  // Get the rfid tag
+  const sdf::Sensor *rfidTag = link->SensorByName("rfid_tag");
+  ASSERT_NE(nullptr, rfidTag);
+  EXPECT_EQ("rfid_tag", rfidTag->Name());
+  EXPECT_EQ(sdf::SensorType::RFIDTAG, rfidTag->Type());
+  EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), rfidTag->Pose());
+
+  // Get the sonar sensor
+  const sdf::Sensor *sonarSensor = link->SensorByName("sonar_sensor");
+  ASSERT_NE(nullptr, sonarSensor);
+  EXPECT_EQ("sonar_sensor", sonarSensor->Name());
+  EXPECT_EQ(sdf::SensorType::SONAR, sonarSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0), sonarSensor->Pose());
+
+  // Get the wireless receiver
+  const sdf::Sensor *wirelessReceiver = link->SensorByName("wireless_receiver");
+  ASSERT_NE(nullptr, wirelessReceiver);
+  EXPECT_EQ("wireless_receiver", wirelessReceiver->Name());
+  EXPECT_EQ(sdf::SensorType::WIRELESS_RECEIVER, wirelessReceiver->Type());
+  EXPECT_EQ(ignition::math::Pose3d(13, 14, 15, 0, 0, 0),
+      wirelessReceiver->Pose());
+
+  // Get the wireless transmitter
+  const sdf::Sensor *wirelessTransmitter =
+    link->SensorByName("wireless_transmitter");
+  ASSERT_NE(nullptr, wirelessTransmitter);
+  EXPECT_EQ("wireless_transmitter", wirelessTransmitter->Name());
+  EXPECT_EQ(sdf::SensorType::WIRELESS_TRANSMITTER, wirelessTransmitter->Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0),
+      wirelessTransmitter->Pose());
 }

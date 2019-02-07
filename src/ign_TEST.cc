@@ -20,8 +20,15 @@
 #include <stdlib.h>
 #include <string>
 
+#include "sdf/parser.hh"
+#include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
 #include "test_config.h"
+
+#ifdef _WIN32
+  #define popen  _popen
+  #define pclose _pclose
+#endif
 
 static const std::string g_sdfVersion(" --force-version " +
   std::string(SDF_VERSION_FULL));
@@ -86,6 +93,36 @@ TEST(describe, SDF)
 
   // The first line should start with the following text.
   EXPECT_EQ(0u, output.find("<element name ='sdf' required ='1'"));
+}
+
+/////////////////////////////////////////////////
+TEST(print, SDF)
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+
+  // Check a good SDF file
+  {
+    std::string path = pathBase +"/box_plane_low_friction_test.world";
+    sdf::SDFPtr sdf(new sdf::SDF());
+    EXPECT_TRUE(sdf::init(sdf));
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+
+    // Check box_plane_low_friction_test.world
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -p " + path + g_sdfVersion);
+    EXPECT_EQ(sdf->Root()->ToString(""), output);
+  }
+
+  // Check a bad SDF file
+  {
+    std::string path = pathBase +"/box_bad_test.world";
+
+    // Check box_bad_test.world
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -p " + path + g_sdfVersion);
+    EXPECT_TRUE(output.find("Required attribute") != std::string::npos);
+  }
 }
 
 /////////////////////////////////////////////////

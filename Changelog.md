@@ -2,14 +2,59 @@
 
 ### SDFormat 8.0.0 (xxxx-xx-xx)
 
+1. Change cmake project name to sdformat8, export cmake targets
+   * [Pull request 475](https://bitbucket.org/osrf/sdformat/pull-requests/475)
+   * [Pull request 476](https://bitbucket.org/osrf/sdformat/pull-requests/476)
+
+1. SDF DOM: Add copy constructor and assignment operator to Light. Add lights to Link
+   * [Pull request 469](https://bitbucket.org/osrf/sdformat/pull-requests/469)
+
+1. Make `<limit>` a required element for `<axis2>`
+   * [Pull request #472](https://bitbucket.org/osrf/sdformat/pull-requests/472)
+
+1. SDF DOM: Add DOM methods for setting axis and thread pitch in `sdf::Joint`
+   * [Pull request #471](https://bitbucket.org/osrf/sdformat/pull-requests/471)
+   * [Pull request #474](https://bitbucket.org/osrf/sdformat/pull-requests/474)
+
+1. SDF DOM: Add copy constructors and assignment operator to JointAxis
+   * [Pull request #470](https://bitbucket.org/osrf/sdformat/pull-requests/470)
+
 1. Removed boost
    * [Pull request #438](https://bitbucket.org/osrf/sdformat/pull-requests/438)
+
+1. Versioned namespace
+   * [Pull request 464](https://bitbucket.org/osrf/sdformat/pull-requests/464)
+
+1. Versioned library install
+   * [Pull request 463](https://bitbucket.org/osrf/sdformat/pull-requests/463)
+
+1. Add SetGeom to Collision
+   * [Pull request 465](https://bitbucket.org/osrf/sdformat/pull-requests/465)
 
 1. SDF DOM: Add copy/move constructors and assignment operator to Geometry
    * [Pull request 460](https://bitbucket.org/osrf/sdformat/pull-requests/460)
 
 1. SDF DOM: Add copy/move constructors and assignment operator to Material
-   * [Pull request 460](https://bitbucket.org/osrf/sdformat/pull-requests/460)
+   * [Pull request 461](https://bitbucket.org/osrf/sdformat/pull-requests/461)
+
+1. Add collision_detector to dart physics config
+    * [Pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
+
+1. Fix cpack now that project name has version number
+    * [Pull request 478](https://bitbucket.org/osrf/sdformat/pull-requests/478)
+
+1. Animation tension
+    * [Pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
+
+1. Add "geometry" for sonar collision shape
+    * [Pull request 479](https://bitbucket.org/osrf/sdformat/pull-requests/479)
+
+1. Fix Gui copy constructor
+    * [Pull request 486](https://bitbucket.org/osrf/sdformat/pull-requests/486)
+
+1. Sensor DOM
+    * [Pull request 488](https://bitbucket.org/osrf/sdformat/pull-requests/488)
+    * [Pull request 481](https://bitbucket.org/osrf/sdformat/pull-requests/481)
 
 ## SDFormat 7.0
 
@@ -29,23 +74,20 @@
    * [Pull request 441](https://bitbucket.org/osrf/sdformat/pull-requests/441)
    * [Pull request 442](https://bitbucket.org/osrf/sdformat/pull-requests/442)
    * [Pull request 445](https://bitbucket.org/osrf/sdformat/pull-requests/445)
-   * [Pull request 441](https://bitbucket.org/osrf/sdformat/pull-requests/441)
    * [Pull request 451](https://bitbucket.org/osrf/sdformat/pull-requests/451)
    * [Pull request 455](https://bitbucket.org/osrf/sdformat/pull-requests/455)
-
-1. SDF DOM: Additions to the document object model.
-   * [Pull request 442](https://bitbucket.org/osrf/sdformat/pull-requests/442)
+   * [Pull request 481](https://bitbucket.org/osrf/sdformat/pull-requests/481)
 
 1. SDF DOM: Add Element() accessor to Gui, JointAxis and World classes.
    * [Pull request 450](https://bitbucket.org/osrf/sdformat/pull-requests/450)
 
-## SDFormat 6.0
-
-### SDFormat 6.1.0 (xxxx-xx-xx)
-
 1. Adds the equalivent of gz sdf -d to sdformat. The command line option
    will print the full description of the SDF spec.
    * [Pull request 424](https://bitbucket.org/osrf/sdformat/pull-requests/424)
+
+1. Adds the equalivent of gz sdf -p to sdformat. The command line option
+   will convert and print the specified sdf file.
+   * [Pull request 494](https://bitbucket.org/osrf/sdformat/pull-requests/494)
 
 1. SDF DOM: Additions to the document object model.
    * [Pull request 393](https://bitbucket.org/osrf/sdformat/pull-requests/393)
@@ -59,38 +101,73 @@
    * [Pull request 415](https://bitbucket.org/osrf/sdformat/pull-requests/415)
    * [Pull request 420](https://bitbucket.org/osrf/sdformat/pull-requests/420)
 
+
+## SDFormat 6.0
+
+### SDFormat 6.X.X (20XX-XX-XX)
+
+### SDFormat 6.2.0 (2019-01-17)
+
+1. Add geometry for sonar collision shape
+    * [Pull request 495](https://bitbucket.org/osrf/sdformat/pull-requests/495)
+
+1. Add camera intrinsics (fx, fy, cx, cy, s)
+    * [Pull request 496](https://bitbucket.org/osrf/sdformat/pull-requests/496)
+
+1. Add actor trajectory tension parameter
+    * [Pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
+
+
+### SDFormat 6.1.0 (2018-10-04)
+
+1. Add collision\_detector to dart physics config
+    * [Pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
+
+1. Fix Windows support for SDFormat6
+    * [Pull request 401](https://bitbucket.org/osrf/sdformat/pull-requests/401)
+
+1. root.sdf: default sdf version 1.6
+    * [Pull request 425](https://bitbucket.org/osrf/sdformat/pull-requests/425)
+
+1. parser\_urdf: print value of highstop instead of pointer address
+    * [Pull request 408](https://bitbucket.org/osrf/sdformat/pull-requests/408)
+
+1. Tweak error output so jenkins doesn't think it's a compiler warning
+    * [Pull request 402](https://bitbucket.org/osrf/sdformat/pull-requests/402)
+
+
 ### SDFormat 6.0.0 (2018-01-25)
 
 1. SDF DOM: Added a document object model.
-   * [Pull request 387](https://bitbucket.org/osrf/sdformat/pull-requests/387)
-   * [Pull request 389](https://bitbucket.org/osrf/sdformat/pull-requests/389)
+    * [Pull request 387](https://bitbucket.org/osrf/sdformat/pull-requests/387)
+    * [Pull request 389](https://bitbucket.org/osrf/sdformat/pull-requests/389)
 
 1. Add simplified ``readFile`` function.
-   * [Pull request 347](https://bitbucket.org/osrf/sdformat/pull-requests/347)
+    * [Pull request 347](https://bitbucket.org/osrf/sdformat/pull-requests/347)
 
 1. Remove boost::lexical cast instances
-   * [Pull request 342](https://bitbucket.org/osrf/sdformat/pull-requests/342)
+    * [Pull request 342](https://bitbucket.org/osrf/sdformat/pull-requests/342)
 
 1. Remove boost regex and iostreams as dependencies
-   * [Pull request 302](https://bitbucket.org/osrf/sdformat/pull-requests/302)
+    * [Pull request 302](https://bitbucket.org/osrf/sdformat/pull-requests/302)
 
 1. Change certain error checks from asserts to throwing
    sdf::AssertionInternalError, which is more appropriate for a library.
-   * [Pull request 315](https://bitbucket.org/osrf/sdformat/pull-requests/315)
+    * [Pull request 315](https://bitbucket.org/osrf/sdformat/pull-requests/315)
 
 1. Updated the internal copy of urdfdom to 1.0, removing more of boost.
-   * [Pull request 324](https://bitbucket.org/osrf/sdformat/pull-requests/324)
+    * [Pull request 324](https://bitbucket.org/osrf/sdformat/pull-requests/324)
 
 1. urdfdom 1.0 is now required on all platforms.
-   * [Pull request 324](https://bitbucket.org/osrf/sdformat/pull-requests/324)
+    * [Pull request 324](https://bitbucket.org/osrf/sdformat/pull-requests/324)
 
 1. Remove boost filesystem as a dependency
-   * [Pull request 335](https://bitbucket.org/osrf/sdformat/pull-requests/335)
-   * [Pull request 338](https://bitbucket.org/osrf/sdformat/pull-requests/338)
-   * [Pull request 339](https://bitbucket.org/osrf/sdformat/pull-requests/339)
+    * [Pull request 335](https://bitbucket.org/osrf/sdformat/pull-requests/335)
+    * [Pull request 338](https://bitbucket.org/osrf/sdformat/pull-requests/338)
+    * [Pull request 339](https://bitbucket.org/osrf/sdformat/pull-requests/339)
 
 1. Deprecated sdf::Color, and switch to use ignition::math::Color
-   * [Pull request 330](https://bitbucket.org/osrf/sdformat/pull-requests/330)
+    * [Pull request 330](https://bitbucket.org/osrf/sdformat/pull-requests/330)
 
 ## SDFormat 5.x
 

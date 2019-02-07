@@ -29,12 +29,17 @@ TEST(DOMGui, Construction)
 /////////////////////////////////////////////////
 TEST(DOMGui, CopyConstruction)
 {
+  sdf::ElementPtr sdf(std::make_shared<sdf::Element>());
+
   sdf::Gui gui;
+  gui.Load(sdf);
   gui.SetFullscreen(true);
   EXPECT_TRUE(gui.Fullscreen());
 
   sdf::Gui gui2(gui);
   EXPECT_TRUE(gui2.Fullscreen());
+  EXPECT_NE(nullptr, gui2.Element());
+  EXPECT_EQ(gui.Element(), gui2.Element());
 }
 
 /////////////////////////////////////////////////

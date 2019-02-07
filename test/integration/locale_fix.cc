@@ -73,5 +73,12 @@ TEST(CheckFixForLocal, MakeTestToFail)
   // TODO: automatic checking. Error is thrown to the log file and std::err
   // We should check for "Error [Param.cc:186] Unable to set value"
   // Problem is How to get the log file path without duplicating code
+
+  // Verify that the locale is not affecting the Param constructor
+  sdf::Param param = sdf::Param("dummyDoubleParam", "double",
+                                "1.5", true);
+  double tmp = 0.0;
+  ASSERT_TRUE(param.Get<double>(tmp));
+  ASSERT_DOUBLE_EQ(1.5, tmp);
 }
 #endif
