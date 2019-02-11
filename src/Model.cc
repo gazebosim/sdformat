@@ -149,13 +149,6 @@ Errors Model::Load(ElementPtr _sdf)
     // Get the name of the frame.
     frameName = frameElem->Get<std::string>("name", "").first;
 
-    if (frameName.empty() && poseFrame.empty() &&
-        poseValue == ignition::math::Pose3d::Zero)
-    {
-      frameElem = frameElem->GetNextElement("frame");
-      continue;
-    }
-
     // Make sure the frame name is not empty
     if (frameName.empty())
     {
