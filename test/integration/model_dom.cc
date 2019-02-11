@@ -27,6 +27,7 @@
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
+#include "sdf/parser.hh"
 #include "test_config.h"
 
 using namespace ignition::math;
@@ -252,4 +253,21 @@ TEST(DOMModel, FourBar)
   EXPECT_EQ(Pose3d(-0.4, 0.4, 0, 0, 0, 0), jointFour->PoseInFrame("joint2"));
   EXPECT_EQ(Pose3d(0, 0.4, 0, 0, 0, 0), jointFour->PoseInFrame("joint3"));
   EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), jointFour->PoseInFrame("joint4"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, ToStringSameAsSDF)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "double_pendulum.sdf");
+
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+  EXPECT_EQ(1u, root.ModelCount());
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+  ASSERT_TRUE(sdf::init(sdf));
+  ASSERT_TRUE(sdf::readFile(testFile, sdf));
+  EXPECT_EQ(sdf->Root()->ToString(""), root.Element()->ToString(""));
 }
