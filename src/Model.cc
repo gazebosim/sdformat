@@ -131,19 +131,19 @@ Errors Model::Load(ElementPtr _sdf)
       modelName, ignition::math::Matrix4d(this->dataPtr->pose)).Id();
 
   // Load any additional frames
-  sdf::ElementPtr elem = _sdf->GetElement("frame");
+  sdf::ElementPtr frameElem = _sdf->GetElement("frame");
   using VertexMatrix4d =
       ignition::math::graph::Vertex<ignition::math::Matrix4d>;
   std::vector<std::pair<VertexMatrix4d, std::string>> edgesToAdd;
-  while (elem)
+  while (frameElem)
   {
     // Get the pose data.
     std::string frameName, poseFrame;
     ignition::math::Pose3d poseValue;
-    loadPose(elem, poseValue, poseFrame);
+    loadPose(frameElem, poseValue, poseFrame);
 
     // Get the name of the frame.
-    frameName = elem->Get<std::string>("name", "").first;
+    frameName = frameElem->Get<std::string>("name", "").first;
 
     // This ugly if statement handles a bad aspect of this library. It will
     // create an default element if one doesn't exist. In this case, an
@@ -152,7 +152,7 @@ Errors Model::Load(ElementPtr _sdf)
     if (frameName.empty() && poseFrame.empty() &&
         poseValue == ignition::math::Pose3d::Zero)
     {
-      elem = elem->GetNextElement("frame");
+      frameElem = frameElem->GetNextElement("frame");
       continue;
     }
 
@@ -178,7 +178,7 @@ Errors Model::Load(ElementPtr _sdf)
     }
 
     // Get the next frame, if any
-    elem = elem->GetNextElement("frame");
+    frameElem = frameElem->GetNextElement("frame");
   }
 
   // Load all the links.
