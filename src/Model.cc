@@ -131,7 +131,11 @@ Errors Model::Load(ElementPtr _sdf)
       modelName, ignition::math::Matrix4d(this->dataPtr->pose)).Id();
 
   // Load any additional frames
-  sdf::ElementPtr frameElem = _sdf->GetElement("frame");
+  sdf::ElementPtr frameElem;
+  if (_sdf->HasElement("frame"))
+  {
+    frameElem = _sdf->GetElement("frame");
+  }
   using VertexMatrix4d =
       ignition::math::graph::Vertex<ignition::math::Matrix4d>;
   std::vector<std::pair<VertexMatrix4d, std::string>> edgesToAdd;
@@ -145,10 +149,6 @@ Errors Model::Load(ElementPtr _sdf)
     // Get the name of the frame.
     frameName = frameElem->Get<std::string>("name", "").first;
 
-    // This ugly if statement handles a bad aspect of this library. It will
-    // create an default element if one doesn't exist. In this case, an
-    // empty <frame> element will be created if it's not present in the SDF
-    // file.
     if (frameName.empty() && poseFrame.empty() &&
         poseValue == ignition::math::Pose3d::Zero)
     {
