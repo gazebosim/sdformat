@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.6">
-  <model name="duplicate_links">
+  <model name="duplicate_joints">
     <link name="link1" />
     <link name="link2" />
     <link name="link3" />
