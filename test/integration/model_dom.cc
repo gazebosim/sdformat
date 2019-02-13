@@ -108,6 +108,23 @@ TEST(DOMRoot, LoadDuplicateLinks)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMRoot, LoadDuplicateJoints)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_duplicate_joints.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "joint with name[joint] already exists"));
+}
+
+/////////////////////////////////////////////////
 TEST(DOMRoot, LoadDoublePendulum)
 {
   const std::string testFile =
