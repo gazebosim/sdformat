@@ -138,7 +138,7 @@ Errors Model::Load(ElementPtr _sdf)
   }
   using VertexMatrix4d =
       ignition::math::graph::Vertex<ignition::math::Matrix4d>;
-  std::vector<std::pair<VertexMatrix4d, std::string>> edgesToAdd;
+  std::vector<std::pair<VertexMatrix4d, std::string>> vertexPoseFramesToAdd;
   while (frameElem)
   {
     // Get the pose data.
@@ -167,7 +167,7 @@ Errors Model::Load(ElementPtr _sdf)
 
       // Store the edge to add. Create the edges later, because the poseFrame
       // may refer to a frame that has not been parsed yet.
-      edgesToAdd.push_back(std::make_pair(vert, poseFrame));
+      vertexPoseFramesToAdd.push_back(std::make_pair(vert, poseFrame));
     }
 
     // Get the next frame, if any
@@ -185,16 +185,18 @@ Errors Model::Load(ElementPtr _sdf)
   errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
 
   // Create edges in the frame graph.
-  for (const std::pair<VertexMatrix4d, std::string> &edge : edgesToAdd)
+  for (const std::pair<VertexMatrix4d, std::string> &vertexPoseFrame
+                                                   : vertexPoseFramesToAdd)
   {
     const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
-        parentVertices = this->dataPtr->frameGraph->Vertices(edge.second);
+        parentVertices =
+            this->dataPtr->frameGraph->Vertices(vertexPoseFrame.second);
     // Make sure a parent vertex was found.
     if (parentVertices.empty())
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "A frame named[" + edge.first.Name()
-          + "] has an unknown pose frame of [" + edge.second + "]"});
+          "A frame named[" + vertexPoseFrame.first.Name()
+          + "] has an unknown pose frame of [" + vertexPoseFrame.second + "]"});
       continue;
     }
 
@@ -202,17 +204,17 @@ Errors Model::Load(ElementPtr _sdf)
     if (parentVertices.size() > 1)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "A frame named[" + edge.first.Name()
-          + "] has a pose frame of [" + edge.second
+          "A frame named[" + vertexPoseFrame.first.Name()
+          + "] has a pose frame of [" + vertexPoseFrame.second
           + "] that resolves to multiple frames."});
       continue;
     }
 
     // Create the edges.
     this->dataPtr->frameGraph->AddEdge(
-        {parentVertices.begin()->first, edge.first.Id()}, -1);
+        {parentVertices.begin()->first, vertexPoseFrame.first.Id()}, -1);
     this->dataPtr->frameGraph->AddEdge(
-        {edge.first.Id(), parentVertices.begin()->first}, 1);
+        {vertexPoseFrame.first.Id(), parentVertices.begin()->first}, 1);
   }
 
   return errors;
