@@ -551,30 +551,32 @@ TEST(DOMLink, LinkChain)
   const sdf::Link *linkFour = model->LinkByIndex(3);
   ASSERT_TRUE(linkFour != nullptr);
 
-  ignition::math::Pose3d modelInFour = model->PoseInFrame("four");
-  EXPECT_EQ(ignition::math::Pose3d(-3, -2, 5, 0, 0, 0), modelInFour);
+  using Pose3d = ignition::math::Pose3d;
 
-  ignition::math::Pose3d fourInThree = linkFour->PoseInFrame("three");
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, -5, 0, 0, 0), fourInThree);
+  Pose3d modelInFour = model->PoseInFrame("four");
+  EXPECT_EQ(Pose3d(-3, -2, 5, 0, 0, 0), modelInFour);
 
-  ignition::math::Pose3d oneInModelFrame = linkOne->Pose();
-  EXPECT_EQ(ignition::math::Pose3d(1, -1, 0, 0, 0, 0), oneInModelFrame);
+  Pose3d fourInThree = linkFour->PoseInFrame("three");
+  EXPECT_EQ(Pose3d(0, 0, -5, 0, 0, 0), fourInThree);
 
-  ignition::math::Pose3d oneInTwoFrame = linkOne->PoseInFrame("two");
-  EXPECT_EQ(ignition::math::Pose3d(-2, -1, 0, 0, 0, 0), oneInTwoFrame);
+  Pose3d oneInModelFrame = linkOne->Pose();
+  EXPECT_EQ(Pose3d(1, -1, 0, 0, 0, 0), oneInModelFrame);
 
-  ignition::math::Pose3d threeInModelFrame =
+  Pose3d oneInTwoFrame = linkOne->PoseInFrame("two");
+  EXPECT_EQ(Pose3d(-2, -1, 0, 0, 0, 0), oneInTwoFrame);
+
+  Pose3d threeInModelFrame =
       linkThree->PoseInFrame("link_chain");
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 0, 0, 0, 0), threeInModelFrame);
+  EXPECT_EQ(Pose3d(3, 2, 0, 0, 0, 0), threeInModelFrame);
 
-  ignition::math::Pose3d threeInOtherFrame =
+  Pose3d threeInOtherFrame =
       linkThree->PoseInFrame("other_frame");
-  EXPECT_EQ(ignition::math::Pose3d(-7, -8, -10, 0, 0, 0), threeInOtherFrame);
+  EXPECT_EQ(Pose3d(-7, -8, -10, 0, 0, 0), threeInOtherFrame);
 
-  ignition::math::Pose3d oneInFrameInTwo = linkOne->PoseInFrame("frame_in_two");
-  EXPECT_EQ(ignition::math::Pose3d(0, -3, -3, 0, 0, 0), oneInFrameInTwo);
+  Pose3d oneInFrameInTwo = linkOne->PoseInFrame("frame_in_two");
+  EXPECT_EQ(Pose3d(0, -3, -3, 0, 0, 0), oneInFrameInTwo);
 
-  ignition::math::Pose3d fourInOther = linkFour->PoseInFrame("other_frame");
-  EXPECT_EQ(ignition::math::Pose3d(-7, -8, -15, 0, 0, 0), fourInOther);
+  Pose3d fourInOther = linkFour->PoseInFrame("other_frame");
+  EXPECT_EQ(Pose3d(-7, -8, -15, 0, 0, 0), fourInOther);
 }
 
