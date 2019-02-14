@@ -82,6 +82,23 @@ TEST(DOMLink, NoFrameGraph)
 }
 
 //////////////////////////////////////////////////
+TEST(DOMLink, CollisionSiblingsSameName)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "link_collision_siblings_same_name.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "collision with name[collision] already exists"));
+}
+
+//////////////////////////////////////////////////
 TEST(DOMLink, LoadVisualCollision)
 {
   const std::string testFile =
