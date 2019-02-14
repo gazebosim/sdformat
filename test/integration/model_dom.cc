@@ -125,6 +125,53 @@ TEST(DOMRoot, LoadDuplicateJoints)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMRoot, LoadLinkJointWithSameName)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_link_joint_same_name.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("link_joint_same_name", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_EQ(1u, model->JointCount());
+
+  const sdf::Link *linkBase = model->LinkByName("base");
+  ASSERT_TRUE(linkBase != nullptr);
+  const sdf::Link *linkAttachment = model->LinkByName("attachment");
+  ASSERT_TRUE(linkAttachment != nullptr);
+  const sdf::Joint *jointAttachment = model->JointByName("attachment");
+  ASSERT_TRUE(jointAttachment != nullptr);
+
+  EXPECT_EQ(model->Name(), linkBase->PoseFrame());
+  EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), linkBase->Pose());
+  EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), linkBase->PoseInFrame(model->Name()));
+
+  EXPECT_EQ(model->Name(), linkAttachment->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 2, 0, 0, 0, 0), linkAttachment->Pose());
+  // this link has the same name as a joint
+  // duplicate name in frame graph causes PoseInFrame to return infinite pose
+  EXPECT_FALSE(linkAttachment->PoseInFrame(model->Name()).IsFinite());
+
+  EXPECT_EQ(linkAttachment->Name(), jointAttachment->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 0, 3, 0, 0, 0), jointAttachment->Pose());
+  // this joint has the same name as a link
+  // duplicate name in frame graph causes PoseInFrame to return infinite pose
+  EXPECT_FALSE(jointAttachment->PoseInFrame(model->Name()).IsFinite());
+
+  // the attachment_offset frame is ambiguous since its pose frame "attachment"
+  // is defined by two separate vertices in the frame graph.
+  // so PoseInFrame returns an infinite pose
+  EXPECT_FALSE(jointAttachment->PoseInFrame("attachment_offset").IsFinite());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMRoot, LoadDoublePendulum)
 {
   const std::string testFile =
