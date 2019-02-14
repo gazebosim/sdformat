@@ -99,6 +99,59 @@ TEST(DOMLink, CollisionSiblingsSameName)
 }
 
 //////////////////////////////////////////////////
+TEST(DOMLink, CollisionCousinsSameName)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "link_collision_cousins_same_name.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("link_collision_cousins_same_name", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_EQ(0u, model->JointCount());
+
+  const sdf::Link *link1 = model->LinkByName("link1");
+  ASSERT_TRUE(link1 != nullptr);
+  const sdf::Link *link2 = model->LinkByName("link2");
+  ASSERT_TRUE(link2 != nullptr);
+  EXPECT_EQ(1u, link1->CollisionCount());
+  EXPECT_EQ(1u, link2->CollisionCount());
+
+  const sdf::Collision *collision1 = link1->CollisionByName("collision");
+  ASSERT_TRUE(collision1 != nullptr);
+  const sdf::Collision *collision2 = link2->CollisionByName("collision");
+  ASSERT_TRUE(collision2 != nullptr);
+
+  using Pose3d = ignition::math::Pose3d;
+
+  EXPECT_EQ(model->Name(), link1->PoseFrame());
+  EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), link1->Pose());
+  EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), link1->PoseInFrame(model->Name()));
+
+  EXPECT_EQ(model->Name(), link2->PoseFrame());
+  EXPECT_EQ(Pose3d(2, 0, 0, 0, 0, 0), link2->Pose());
+  EXPECT_EQ(Pose3d(2, 0, 0, 0, 0, 0), link2->PoseInFrame(model->Name()));
+
+  EXPECT_EQ(link1->Name(), collision1->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 1, 0, 0, 0, 0), collision1->Pose());
+  // this collision has the same name as its cousin
+  // duplicate name in frame graph causes PoseInFrame to return infinite pose
+  EXPECT_FALSE(collision1->PoseInFrame(model->Name()).IsFinite());
+
+  EXPECT_EQ(link2->Name(), collision2->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 2, 0, 0, 0, 0), collision2->Pose());
+  // this collision has the same name as its cousin
+  // duplicate name in frame graph causes PoseInFrame to return infinite pose
+  EXPECT_FALSE(collision2->PoseInFrame(model->Name()).IsFinite());
+}
+
+//////////////////////////////////////////////////
 TEST(DOMLink, LoadVisualCollision)
 {
   const std::string testFile =
