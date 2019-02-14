@@ -152,6 +152,76 @@ TEST(DOMLink, CollisionCousinsSameName)
 }
 
 //////////////////////////////////////////////////
+TEST(DOMLink, VisualSiblingsSameName)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "link_visual_siblings_same_name.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "visual with name[visual] already exists"));
+}
+
+//////////////////////////////////////////////////
+TEST(DOMLink, VisualCousinsSameName)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "link_visual_cousins_same_name.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("link_visual_cousins_same_name", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_EQ(0u, model->JointCount());
+
+  const sdf::Link *link1 = model->LinkByName("link1");
+  ASSERT_TRUE(link1 != nullptr);
+  const sdf::Link *link2 = model->LinkByName("link2");
+  ASSERT_TRUE(link2 != nullptr);
+  EXPECT_EQ(1u, link1->VisualCount());
+  EXPECT_EQ(1u, link2->VisualCount());
+
+  const sdf::Visual *visual1 = link1->VisualByName("visual");
+  ASSERT_TRUE(visual1 != nullptr);
+  const sdf::Visual *visual2 = link2->VisualByName("visual");
+  ASSERT_TRUE(visual2 != nullptr);
+
+  using Pose3d = ignition::math::Pose3d;
+
+  EXPECT_EQ(model->Name(), link1->PoseFrame());
+  EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), link1->Pose());
+  EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), link1->PoseInFrame(model->Name()));
+
+  EXPECT_EQ(model->Name(), link2->PoseFrame());
+  EXPECT_EQ(Pose3d(2, 0, 0, 0, 0, 0), link2->Pose());
+  EXPECT_EQ(Pose3d(2, 0, 0, 0, 0, 0), link2->PoseInFrame(model->Name()));
+
+  EXPECT_EQ(link1->Name(), visual1->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 1, 0, 0, 0, 0), visual1->Pose());
+  // this visual has the same name as its cousin
+  // duplicate name in frame graph causes PoseInFrame to return infinite pose
+  EXPECT_FALSE(visual1->PoseInFrame(model->Name()).IsFinite());
+
+  EXPECT_EQ(link2->Name(), visual2->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 2, 0, 0, 0, 0), visual2->Pose());
+  // this visual has the same name as its cousin
+  // duplicate name in frame graph causes PoseInFrame to return infinite pose
+  EXPECT_FALSE(visual2->PoseInFrame(model->Name()).IsFinite());
+}
+
+//////////////////////////////////////////////////
 TEST(DOMLink, LoadVisualCollision)
 {
   const std::string testFile =
