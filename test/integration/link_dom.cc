@@ -563,7 +563,8 @@ TEST(DOMLink, LinkChain)
 
   EXPECT_EQ(Pose3d(3, 2, 0, 0, 0, 0), linkThree->PoseInFrame("link_chain"));
 
-  EXPECT_EQ(Pose3d(-7, -8, -10, 0, 0, 0), linkThree->PoseInFrame("other_frame"));
+  EXPECT_EQ(Pose3d(-7, -8, -10, 0, 0, 0),
+            linkThree->PoseInFrame("other_frame"));
 
   EXPECT_EQ(Pose3d(0, -3, -3, 0, 0, 0), linkOne->PoseInFrame("frame_in_two"));
 
