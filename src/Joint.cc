@@ -142,7 +142,7 @@ Errors Joint::Load(ElementPtr _sdf,
   // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
-  // Use the parent link frame as the pose frame if the poseFrame attribute is
+  // Use the child link frame as the pose frame if the poseFrame attribute is
   // empty.
   if (this->dataPtr->poseFrame.empty())
     this->dataPtr->poseFrame = this->dataPtr->childLinkName;
