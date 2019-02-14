@@ -551,6 +551,18 @@ TEST(DOMLink, LinkChain)
   const sdf::Link *linkFour = model->LinkByIndex(3);
   ASSERT_TRUE(linkFour != nullptr);
 
+  // Expect reversing link and frame names should negate the pose
+  for (const std::string & linkNameA : {"one", "two", "three", "four"})
+  {
+    for (const std::string & linkNameB : {"one", "two", "three", "four"})
+    {
+      EXPECT_EQ(model->LinkByName(linkNameA)->PoseInFrame(linkNameB),
+               -model->LinkByName(linkNameB)->PoseInFrame(linkNameA))
+        << "linkNameA[" << linkNameA << "] "
+        << "linkNameB[" << linkNameB << "]";
+    }
+  }
+
   using Pose3d = ignition::math::Pose3d;
 
   EXPECT_EQ(Pose3d(-3, -2, 5, 0, 0, 0), model->PoseInFrame("four"));
