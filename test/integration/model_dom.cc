@@ -125,6 +125,23 @@ TEST(DOMModel, LoadDuplicateJoints)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMModel, LoadFrameAmbiguous)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_frame_ambiguous.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "resolves to multiple frames"));
+}
+
+/////////////////////////////////////////////////
 TEST(DOMModel, LoadLinkJointWithSameName)
 {
   const std::string testFile =
