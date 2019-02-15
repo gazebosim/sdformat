@@ -22,9 +22,11 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 #include <ignition/math/graph/Graph.hh>
 #include <ignition/math/Matrix4.hh>
+#include <ignition/math/Pose3.hh>
 
 #include "sdf/system_util.hh"
 #include "sdf/Error.hh"
