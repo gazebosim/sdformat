@@ -544,11 +544,13 @@ TEST(DOMLink, LinkChain)
 
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_TRUE(model != nullptr);
-  const sdf::Link *linkOne = model->LinkByIndex(0);
+  const sdf::Link *linkOne = model->LinkByName("one");
   ASSERT_TRUE(linkOne != nullptr);
-  const sdf::Link *linkThree = model->LinkByIndex(2);
+  const sdf::Link *linkTwo = model->LinkByName("two");
+  ASSERT_TRUE(linkTwo != nullptr);
+  const sdf::Link *linkThree = model->LinkByName("three");
   ASSERT_TRUE(linkThree != nullptr);
-  const sdf::Link *linkFour = model->LinkByIndex(3);
+  const sdf::Link *linkFour = model->LinkByName("four");
   ASSERT_TRUE(linkFour != nullptr);
 
   // Expect reversing link and frame names should negate the pose
