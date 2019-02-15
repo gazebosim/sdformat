@@ -619,11 +619,12 @@ TEST(DOMLink, LinkChain)
   EXPECT_EQ(Pose3d(0, 0, 5, 0, 0, 0), linkThree->PoseInFrame("four"));
   EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkFour->PoseInFrame("four"));
 
-  EXPECT_EQ(Pose3d(-7, -8, -10, 0, 0, 0),
-            linkThree->PoseInFrame("other_frame"));
+  // link poses in frame "other_frame"
+  EXPECT_EQ(-Pose3d(9, 11, 10, 0, 0, 0), linkOne->PoseInFrame("other_frame"));
+  EXPECT_EQ(-Pose3d(7, 10, 10, 0, 0, 0), linkTwo->PoseInFrame("other_frame"));
+  EXPECT_EQ(-Pose3d(7, 8, 10, 0, 0, 0), linkThree->PoseInFrame("other_frame"));
+  EXPECT_EQ(-Pose3d(7, 8, 15, 0, 0, 0), linkFour->PoseInFrame("other_frame"));
 
   EXPECT_EQ(Pose3d(0, -3, -3, 0, 0, 0), linkOne->PoseInFrame("frame_in_two"));
-
-  EXPECT_EQ(Pose3d(-7, -8, -15, 0, 0, 0), linkFour->PoseInFrame("other_frame"));
 }
 
