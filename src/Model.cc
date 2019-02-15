@@ -72,7 +72,7 @@ Model::Model()
   // Create the frame graph for the model, and add a node for the model.
   this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->frameVertexId = this->dataPtr->frameGraph->AddVertex(
-      "", ignition::math::Matrix4d::Identity).Id();
+      "", std::make_pair(this->dataPtr->pose, this->dataPtr->poseFrame)).Id();
 }
 
 /////////////////////////////////////////////////
@@ -128,7 +128,8 @@ Errors Model::Load(ElementPtr _sdf)
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
   this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->frameVertexId = this->dataPtr->frameGraph->AddVertex(
-      modelName, ignition::math::Matrix4d(this->dataPtr->pose)).Id();
+      modelName,
+      std::make_pair(this->dataPtr->pose, this->dataPtr->poseFrame)).Id();
 
   // Load any additional frames
   sdf::ElementPtr frameElem;
@@ -136,9 +137,8 @@ Errors Model::Load(ElementPtr _sdf)
   {
     frameElem = _sdf->GetElement("frame");
   }
-  using VertexMatrix4d =
-      ignition::math::graph::Vertex<ignition::math::Matrix4d>;
-  std::vector<std::pair<VertexMatrix4d, std::string>> vertexPoseFramesToAdd;
+  using Vertex = ignition::math::graph::Vertex<PoseWithFrameName>;
+  std::vector<Vertex> verticesToAdd;
   while (frameElem)
   {
     // Get the pose data.
@@ -162,12 +162,12 @@ Errors Model::Load(ElementPtr _sdf)
         poseFrame = this->Name();
 
       // Create the vertex.
-      VertexMatrix4d &vert = this->dataPtr->frameGraph->AddVertex(
-          frameName, ignition::math::Matrix4d(poseValue));
+      Vertex &vert = this->dataPtr->frameGraph->AddVertex(
+          frameName, std::make_pair(poseValue, poseFrame));
 
       // Store the edge to add. Create the edges later, because the poseFrame
       // may refer to a frame that has not been parsed yet.
-      vertexPoseFramesToAdd.push_back(std::make_pair(vert, poseFrame));
+      verticesToAdd.push_back(vert);
     }
 
     // Get the next frame, if any
@@ -185,18 +185,19 @@ Errors Model::Load(ElementPtr _sdf)
   errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
 
   // Create edges in the frame graph.
-  for (const std::pair<VertexMatrix4d, std::string> &vertexPoseFrame
-                                                   : vertexPoseFramesToAdd)
+  for (const Vertex &vertex : verticesToAdd)
   {
-    const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
-        parentVertices =
-            this->dataPtr->frameGraph->Vertices(vertexPoseFrame.second);
+    const ignition::math::Pose3d &pose = vertex.Data().first;
+    const std::string &poseFrame = vertex.Data().second;
+
+    const ignition::math::graph::VertexRef_M<PoseWithFrameName> parentVertices =
+        this->dataPtr->frameGraph->Vertices(poseFrame);
     // Make sure a parent vertex was found.
     if (parentVertices.empty())
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "A frame named[" + vertexPoseFrame.first.Name()
-          + "] has an unknown pose frame of [" + vertexPoseFrame.second + "]"});
+          "A frame named[" + vertex.Name()
+          + "] has an unknown pose frame of [" + poseFrame + "]"});
       continue;
     }
 
@@ -204,17 +205,19 @@ Errors Model::Load(ElementPtr _sdf)
     if (parentVertices.size() > 1)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "A frame named[" + vertexPoseFrame.first.Name()
-          + "] has a pose frame of [" + vertexPoseFrame.second
+          "A frame named[" + vertex.Name()
+          + "] has a pose frame of [" + poseFrame
           + "] that resolves to multiple frames."});
       continue;
     }
 
     // Create the edges.
     this->dataPtr->frameGraph->AddEdge(
-        {parentVertices.begin()->first, vertexPoseFrame.first.Id()}, -1);
+        {parentVertices.begin()->first, vertex.Id()},
+        ignition::math::Matrix4d(pose));
     this->dataPtr->frameGraph->AddEdge(
-        {vertexPoseFrame.first.Id(), parentVertices.begin()->first}, 1);
+        {vertex.Id(), parentVertices.begin()->first},
+        ignition::math::Matrix4d(pose.Inverse()));
   }
 
   return errors;
@@ -374,9 +377,10 @@ const std::string &Model::PoseFrame() const
 /////////////////////////////////////////////////
 void Model::SetPose(const ignition::math::Pose3d &_pose)
 {
-  // Store the pose data in the frame graph
+  // Store the pose data in the frame graph vertex
   this->dataPtr->frameGraph->VertexFromId(
-      this->dataPtr->frameVertexId).Data() = ignition::math::Matrix4d(_pose);
+      this->dataPtr->frameVertexId).Data().first = _pose;
+  // TODO: update the edges to parent
   // Also store it in its original Pose3d form
   this->dataPtr->pose = _pose;
 }
@@ -387,6 +391,9 @@ bool Model::SetPoseFrame(const std::string &_frame)
   if (_frame.empty())
     return false;
 
+  // Store the pose data in the frame graph vertex
+  this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->frameVertexId).Data().second = _frame;
   this->dataPtr->poseFrame = _frame;
   return true;
 }

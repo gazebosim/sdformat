@@ -56,7 +56,7 @@ Visual::Visual()
   // Create the frame graph for the visual, and add a node for the visual.
   this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->frameVertexId = this->dataPtr->frameGraph->AddVertex(
-      "", ignition::math::Matrix4d::Identity).Id();
+      "", std::make_pair(this->dataPtr->pose, this->dataPtr->poseFrame)).Id();
 }
 
 /////////////////////////////////////////////////
@@ -117,19 +117,21 @@ Errors Visual::Load(ElementPtr _sdf, std::shared_ptr<FrameGraph> _frameGraph)
   {
     this->dataPtr->frameVertexId =
       _frameGraph->AddVertex(visualName,
-          ignition::math::Matrix4d(this->dataPtr->pose)).Id();
+          std::make_pair(this->dataPtr->pose, this->dataPtr->poseFrame)).Id();
 
     // Get the parent vertex based on this link's pose frame name.
-    const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
-      parentVertices = _frameGraph->Vertices(this->dataPtr->poseFrame);
+    const ignition::math::graph::VertexRef_M<PoseWithFrameName> parentVertices =
+        _frameGraph->Vertices(this->dataPtr->poseFrame);
 
     // Connect the parent to the child
-    _frameGraph->AddEdge({parentVertices.begin()->first,
-        this->dataPtr->frameVertexId}, -1);
+    _frameGraph->AddEdge(
+        {parentVertices.begin()->first, this->dataPtr->frameVertexId},
+        ignition::math::Matrix4d(this->dataPtr->pose));
 
     // Connect the child to the parent
-    _frameGraph->AddEdge({this->dataPtr->frameVertexId,
-        parentVertices.begin()->first}, 1);
+    _frameGraph->AddEdge(
+        {this->dataPtr->frameVertexId, parentVertices.begin()->first},
+        ignition::math::Matrix4d(this->dataPtr->pose.Inverse()));
 
     this->dataPtr->frameGraph = _frameGraph;
   }
@@ -185,8 +187,10 @@ const std::string &Visual::PoseFrame() const
 /////////////////////////////////////////////////
 void Visual::SetPose(const ignition::math::Pose3d &_pose)
 {
+  // Store the pose data in the frame graph vertex
   this->dataPtr->frameGraph->VertexFromId(
-      this->dataPtr->frameVertexId).Data() = ignition::math::Matrix4d(_pose);
+      this->dataPtr->frameVertexId).Data().first = _pose;
+  // TODO: update the edges to parent
   this->dataPtr->pose = _pose;
 }
 
@@ -196,6 +200,9 @@ bool Visual::SetPoseFrame(const std::string &_frame)
   if (_frame.empty())
     return false;
 
+  // Store the pose data in the frame graph vertex
+  this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->frameVertexId).Data().second = _frame;
   this->dataPtr->poseFrame = _frame;
   return true;
 }
