@@ -158,7 +158,7 @@ Errors Model::Load(ElementPtr _sdf)
     else
     {
       // Use the model frame if the pose frame is empty, per the spec.
-      if (!poseFrame.empty())
+      if (poseFrame.empty())
         poseFrame = this->Name();
 
       // Create the vertex.
