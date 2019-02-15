@@ -567,6 +567,58 @@ TEST(DOMLink, LinkChain)
 
   using Pose3d = ignition::math::Pose3d;
 
+  // raw pose data
+  EXPECT_TRUE(model->PoseFrame().empty());
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+
+  EXPECT_EQ(model->Name(), linkOne->PoseFrame());
+  EXPECT_EQ(Pose3d(1, -1, 0, 0, 0, 0), linkOne->Pose());
+
+  EXPECT_EQ(model->Name(), linkTwo->PoseFrame());
+  EXPECT_EQ(Pose3d(3, 0, 0, 0, 0, 0), linkTwo->Pose());
+
+  EXPECT_EQ("two", linkThree->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 2, 0, 0, 0, 0), linkThree->Pose());
+
+  EXPECT_EQ("three", linkFour->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 0, -5, 0, 0, 0), linkFour->Pose());
+
+  // link poses in model frame
+  EXPECT_EQ(Pose3d(1, -1, 0, 0, 0, 0), linkOne->PoseInFrame(model->Name()));
+  EXPECT_EQ(Pose3d(3, 0, 0, 0, 0, 0), linkTwo->PoseInFrame(model->Name()));
+  EXPECT_EQ(Pose3d(3, 2, 0, 0, 0, 0), linkThree->PoseInFrame(model->Name()));
+  EXPECT_EQ(Pose3d(3, 2, -5, 0, 0, 0), linkFour->PoseInFrame(model->Name()));
+
+  // model pose in link frames should be negative of link poses in model frame
+  EXPECT_EQ(-Pose3d(1, -1, 0, 0, 0, 0), model->PoseInFrame("one"));
+  EXPECT_EQ(-Pose3d(3, 0, 0, 0, 0, 0),  model->PoseInFrame("two"));
+  EXPECT_EQ(-Pose3d(3, 2, 0, 0, 0, 0),  model->PoseInFrame("three"));
+  EXPECT_EQ(-Pose3d(3, 2, -5, 0, 0, 0), model->PoseInFrame("four"));
+
+  // link poses in frame "one"
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkOne->PoseInFrame("one"));
+  EXPECT_EQ(Pose3d(2, 1, 0, 0, 0, 0), linkTwo->PoseInFrame("one"));
+  EXPECT_EQ(Pose3d(2, 3, 0, 0, 0, 0), linkThree->PoseInFrame("one"));
+  EXPECT_EQ(Pose3d(2, 3, -5, 0, 0, 0), linkFour->PoseInFrame("one"));
+
+  // link poses in frame "two"
+  EXPECT_EQ(Pose3d(-2, -1, 0, 0, 0, 0), linkOne->PoseInFrame("two"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkTwo->PoseInFrame("two"));
+  EXPECT_EQ(Pose3d(0, 2, 0, 0, 0, 0), linkThree->PoseInFrame("two"));
+  EXPECT_EQ(Pose3d(0, 2, -5, 0, 0, 0), linkFour->PoseInFrame("two"));
+
+  // link poses in frame "three"
+  EXPECT_EQ(Pose3d(-2, -3, 0, 0, 0, 0), linkOne->PoseInFrame("three"));
+  EXPECT_EQ(Pose3d(0, -2, 0, 0, 0, 0), linkTwo->PoseInFrame("three"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkThree->PoseInFrame("three"));
+  EXPECT_EQ(Pose3d(0, 0, -5, 0, 0, 0), linkFour->PoseInFrame("three"));
+
+  // link poses in frame "four"
+  EXPECT_EQ(Pose3d(-2, -3, 5, 0, 0, 0), linkOne->PoseInFrame("four"));
+  EXPECT_EQ(Pose3d(0, -2, 5, 0, 0, 0), linkTwo->PoseInFrame("four"));
+  EXPECT_EQ(Pose3d(0, 0, 5, 0, 0, 0), linkThree->PoseInFrame("four"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkFour->PoseInFrame("four"));
+
   EXPECT_EQ(Pose3d(-3, -2, 5, 0, 0, 0), model->PoseInFrame("four"));
 
   EXPECT_EQ(Pose3d(0, 0, -5, 0, 0, 0), linkFour->PoseInFrame("three"));
