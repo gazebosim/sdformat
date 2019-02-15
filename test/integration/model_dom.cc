@@ -164,11 +164,6 @@ TEST(DOMModel, LoadLinkJointWithSameName)
   // this joint has the same name as a link
   // duplicate name in frame graph causes PoseInFrame to return infinite pose
   EXPECT_FALSE(jointAttachment->PoseInFrame(model->Name()).IsFinite());
-
-  // the attachment_offset frame is ambiguous since its pose frame "attachment"
-  // is defined by two separate vertices in the frame graph.
-  // so PoseInFrame returns an infinite pose
-  EXPECT_FALSE(jointAttachment->PoseInFrame("attachment_offset").IsFinite());
 }
 
 /////////////////////////////////////////////////
