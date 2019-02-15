@@ -22,9 +22,11 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 #include <ignition/math/graph/Graph.hh>
 #include <ignition/math/Matrix4.hh>
+#include <ignition/math/Pose3.hh>
 
 #include "sdf/system_util.hh"
 #include "sdf/Error.hh"
@@ -42,15 +44,19 @@
 
 namespace sdf
 {
+  /// \brief A Pose paired with the name of the frame in which it is defined.
+  using PoseWithFrameName = std::pair<ignition::math::Pose3d, std::string>;
+
   /// \brief A directed graph used to contain frame information. Each vertex
-  /// contains frame data as an ignition::math::Matrix4d. Each edge is used to
-  /// indicate direction, which allows Dijsktra to be used when performing
-  /// frame calculations. In most cases, connected vertices should have two
-  /// edges between them. One edge with a value of +1 and the other a value
-  /// of -1. An edge with a value of -1 connects from the parent to the child,
-  /// and the edge with value of +1 connects from the child to the parent.
+  /// corresponds to a named coordinate frame and contains a PoseWithFrameName
+  /// that stores the name of its parent frame and its pose offset.
+  /// Each edge contains a Matrix4d that represents the transformation
+  /// from one frame to the other along the edge.
+  /// In most cases, connected vertices should have two edges between them
+  /// that point in opposite directions with Matrix4d data that are inverses
+  /// of each other.
   using FrameGraph = ignition::math::graph::DirectedGraph<
-    ignition::math::Matrix4d, int>;
+    PoseWithFrameName, ignition::math::Matrix4d>;
 
   /// \brief Split a string using the delimiter in splitter.
   /// \param[in] str       The string to split.
