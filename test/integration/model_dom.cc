@@ -62,7 +62,7 @@ TEST(DOMModel, NoName)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, LoadLinkCheck)
+TEST(DOMModel, LoadLinkCheck)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -91,7 +91,7 @@ TEST(DOMRoot, LoadLinkCheck)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, LoadDuplicateLinks)
+TEST(DOMModel, LoadDuplicateLinks)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -108,7 +108,7 @@ TEST(DOMRoot, LoadDuplicateLinks)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, LoadDuplicateJoints)
+TEST(DOMModel, LoadDuplicateJoints)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -125,7 +125,7 @@ TEST(DOMRoot, LoadDuplicateJoints)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, LoadLinkJointWithSameName)
+TEST(DOMModel, LoadLinkJointWithSameName)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -172,7 +172,7 @@ TEST(DOMRoot, LoadLinkJointWithSameName)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, LoadDoublePendulum)
+TEST(DOMModel, LoadDoublePendulum)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -337,7 +337,7 @@ TEST(DOMModel, FourBar)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, ToStringSameAsSDF)
+TEST(DOMModel, ToStringSameAsSDF)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
