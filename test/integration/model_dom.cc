@@ -62,7 +62,7 @@ TEST(DOMModel, NoName)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, LoadLinkCheck)
+TEST(DOMModel, LoadLinkCheck)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -91,7 +91,7 @@ TEST(DOMRoot, LoadLinkCheck)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, LoadDuplicateLinks)
+TEST(DOMModel, LoadDuplicateLinks)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -108,7 +108,7 @@ TEST(DOMRoot, LoadDuplicateLinks)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, LoadDuplicateJoints)
+TEST(DOMModel, LoadDuplicateJoints)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -125,7 +125,24 @@ TEST(DOMRoot, LoadDuplicateJoints)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, LoadLinkJointWithSameName)
+TEST(DOMModel, LoadFrameAmbiguous)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_frame_ambiguous.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "resolves to multiple frames"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, LoadLinkJointWithSameName)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -164,15 +181,10 @@ TEST(DOMRoot, LoadLinkJointWithSameName)
   // this joint has the same name as a link
   // duplicate name in frame graph causes PoseInFrame to return infinite pose
   EXPECT_FALSE(jointAttachment->PoseInFrame(model->Name()).IsFinite());
-
-  // the attachment_offset frame is ambiguous since its pose frame "attachment"
-  // is defined by two separate vertices in the frame graph.
-  // so PoseInFrame returns an infinite pose
-  EXPECT_FALSE(jointAttachment->PoseInFrame("attachment_offset").IsFinite());
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, LoadDoublePendulum)
+TEST(DOMModel, LoadDoublePendulum)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -337,7 +349,7 @@ TEST(DOMModel, FourBar)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, ToStringSameAsSDF)
+TEST(DOMModel, ToStringSameAsSDF)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",

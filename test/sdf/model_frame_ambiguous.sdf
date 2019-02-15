@@ -1,6 +1,9 @@
 <?xml version="1.0" ?>
 <sdf version="1.6">
   <model name="link_joint_same_name">
+    <frame name="attachment_offset">
+      <pose frame="attachment">0 0 10 0 0 0</pose>
+    </frame>
     <link name="base">
       <pose>1 0 0 0 0 0</pose>
     </link>
