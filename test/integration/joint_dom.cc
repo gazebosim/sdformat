@@ -118,6 +118,11 @@ TEST(DOMJoint, DoublePendulum)
   EXPECT_EQ("upper_link", lowerJoint->ParentLinkName());
   EXPECT_EQ("lower_link", lowerJoint->ChildLinkName());
 
+  // Check the pose frame name for each joint
+  // They are unspecified in the sdf, and should default to the child link
+  EXPECT_EQ("upper_link", upperJoint->PoseFrame());
+  EXPECT_EQ("lower_link", lowerJoint->PoseFrame());
+
   // The two joinst should not have a second axis.
   EXPECT_TRUE(upperJoint->Axis(1) == nullptr);
   EXPECT_TRUE(upperJoint->Axis(2) == nullptr);
