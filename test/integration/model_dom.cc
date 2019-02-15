@@ -232,6 +232,45 @@ TEST(DOMModel, FourBar)
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_TRUE(model != nullptr);
 
+  // Expect reversing link and frame names should negate the pose
+  for (const std::string & linkNameA : {"link1", "link2", "link3", "link4"})
+  {
+    for (const std::string & linkNameB : {"link1", "link2", "link3", "link4"})
+    {
+      EXPECT_EQ(model->LinkByName(linkNameA)->PoseInFrame(linkNameB),
+               -model->LinkByName(linkNameB)->PoseInFrame(linkNameA))
+        << "linkNameA[" << linkNameA << "] "
+        << "linkNameB[" << linkNameB << "]";
+    }
+  }
+
+  // Expect reversing joint and frame names should negate the pose
+  for (const std::string & jointNameA
+            : {"joint1", "joint2", "joint3", "joint4"})
+  {
+    for (const std::string & jointNameB
+            : {"joint1", "joint2", "joint3", "joint4"})
+    {
+      EXPECT_EQ(model->JointByName(jointNameA)->PoseInFrame(jointNameB),
+               -model->JointByName(jointNameB)->PoseInFrame(jointNameA))
+        << "jointNameA[" << jointNameA << "] "
+        << "jointNameB[" << jointNameB << "]";
+    }
+  }
+
+  // Expect reversing link and joint frame names should negate the pose
+  for (const std::string & linkName : {"link1", "link2", "link3", "link4"})
+  {
+    for (const std::string & jointName
+            : {"joint1", "joint2", "joint3", "joint4"})
+    {
+      EXPECT_EQ(model->LinkByName(linkName)->PoseInFrame(jointName),
+               -model->JointByName(jointName)->PoseInFrame(linkName))
+        << "linkName[" << linkName << "] "
+        << "jointName[" << jointName << "]";
+    }
+  }
+
   const sdf::Link *linkOne = model->LinkByName("link1");
   ASSERT_TRUE(linkOne != nullptr);
   const sdf::Link *linkTwo = model->LinkByName("link2");
