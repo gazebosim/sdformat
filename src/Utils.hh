@@ -87,10 +87,8 @@ namespace sdf
       {
         Class obj;
 
-        Errors loadErrors;
-
         // Load the model and capture the errors.
-        loadErrors = obj.Load(elem, _frameGraph);
+        Errors loadErrors = obj.Load(elem, _frameGraph);
 
         // If there are no errors...
         if (loadErrors.empty())
@@ -157,10 +155,8 @@ namespace sdf
       {
         Class obj;
 
-        Errors loadErrors;
-
         // Load the model and capture the errors.
-        loadErrors = obj.Load(elem);
+        Errors loadErrors = obj.Load(elem);
 
         // If there are no errors...
         if (loadErrors.empty())

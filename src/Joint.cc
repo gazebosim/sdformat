@@ -75,7 +75,7 @@ Joint::Joint()
   // Create the frame graph for the joint, and add a node for the joint.
   this->dataPtr->frameGraph.reset(new FrameGraph);
   this->dataPtr->frameVertexId = this->dataPtr->frameGraph->AddVertex(
-      "", ignition::math::Matrix4d::Identity).Id();
+      "", std::make_pair(this->dataPtr->pose, this->dataPtr->poseFrame)).Id();
 }
 
 /////////////////////////////////////////////////
@@ -142,7 +142,7 @@ Errors Joint::Load(ElementPtr _sdf,
   // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
-  // Use the parent link frame as the pose frame if the poseFrame attribute is
+  // Use the child link frame as the pose frame if the poseFrame attribute is
   // empty.
   if (this->dataPtr->poseFrame.empty())
     this->dataPtr->poseFrame = this->dataPtr->childLinkName;
@@ -207,24 +207,25 @@ Errors Joint::Load(ElementPtr _sdf,
   if (_frameGraph)
   {
     // Add a vertex in the frame graph for this joint.
-    this->dataPtr->frameVertexId =
-      _frameGraph->AddVertex(jointName,
-          ignition::math::Matrix4d(this->dataPtr->pose)).Id();
+    this->dataPtr->frameVertexId = _frameGraph->AddVertex(jointName,
+        std::make_pair(this->dataPtr->pose, this->dataPtr->poseFrame)).Id();
 
     // Get the parent vertex based on this joints's pose frame name.
-    const ignition::math::graph::VertexRef_M<ignition::math::Matrix4d>
-      parentVertices = _frameGraph->Vertices(this->dataPtr->poseFrame);
+    const ignition::math::graph::VertexRef_M<PoseWithFrameName> parentVertices =
+        _frameGraph->Vertices(this->dataPtr->poseFrame);
 
     /// \todo check that parentVertices has an element, and potentially make
     /// sure it has only one element.
 
     // Connect the parent to the child
-    _frameGraph->AddEdge({parentVertices.begin()->first,
-        this->dataPtr->frameVertexId}, -1);
+    _frameGraph->AddEdge(
+        {parentVertices.begin()->first, this->dataPtr->frameVertexId},
+        ignition::math::Matrix4d(this->dataPtr->pose));
 
     // Connect the child to the parent
-    _frameGraph->AddEdge({this->dataPtr->frameVertexId,
-        parentVertices.begin()->first}, 1);
+    _frameGraph->AddEdge(
+        {this->dataPtr->frameVertexId, parentVertices.begin()->first},
+        ignition::math::Matrix4d(this->dataPtr->pose.Inverse()));
 
     this->dataPtr->frameGraph = _frameGraph;
   }
@@ -318,8 +319,10 @@ const std::string &Joint::PoseFrame() const
 /////////////////////////////////////////////////
 void Joint::SetPose(const ignition::math::Pose3d &_pose)
 {
+  // Store the pose data in the frame graph vertex
   this->dataPtr->frameGraph->VertexFromId(
-      this->dataPtr->frameVertexId).Data() = ignition::math::Matrix4d(_pose);
+      this->dataPtr->frameVertexId).Data().first = _pose;
+  // TODO: update the edges to parent
   this->dataPtr->pose = _pose;
 }
 
@@ -329,6 +332,9 @@ bool Joint::SetPoseFrame(const std::string &_frame)
   if (_frame.empty())
     return false;
 
+  // Store the pose data in the frame graph vertex
+  this->dataPtr->frameGraph->VertexFromId(
+      this->dataPtr->frameVertexId).Data().second = _frame;
   this->dataPtr->poseFrame = _frame;
   return true;
 }

@@ -24,6 +24,7 @@
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
+#include "sdf/parser.hh"
 #include "test_config.h"
 
 /////////////////////////////////////////////////
@@ -107,4 +108,21 @@ TEST(DOMRoot, LoadDuplicateModels)
   sdf::Errors errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
   EXPECT_EQ(1u, root.ModelCount());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, ToStringSameAsSDF)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "root_multiple_models.sdf");
+
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+  EXPECT_EQ(3u, root.ModelCount());
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+  ASSERT_TRUE(sdf::init(sdf));
+  ASSERT_TRUE(sdf::readFile(testFile, sdf));
+  EXPECT_EQ(sdf->Root()->ToString(""), root.Element()->ToString(""));
 }

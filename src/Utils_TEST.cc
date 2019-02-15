@@ -92,5 +92,17 @@ TEST(DOMUtils, PoseWithValue)
 TEST(DOMUtils, PoseInFrame)
 {
   sdf::FrameGraph graph;
+
+  // if first argument is empty string, expect Infinite pose
   EXPECT_FALSE(sdf::poseInFrame("", "", graph).IsFinite());
+
+  // if first argument is not found in frame graph, expect Infinite pose
+  // in this case, the frame graph is empty, so anything will do
+  EXPECT_FALSE(sdf::poseInFrame("not_found", "", graph).IsFinite());
+
+  using Pose3d = ignition::math::Pose3d;
+
+  // if input and output frame names are identical, expect identity pose
+  // even if those frames aren't in the frame graph
+  EXPECT_EQ(Pose3d::Zero, sdf::poseInFrame("same", "same", graph));
 }

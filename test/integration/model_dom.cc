@@ -27,6 +27,7 @@
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
+#include "sdf/parser.hh"
 #include "test_config.h"
 
 using namespace ignition::math;
@@ -61,7 +62,7 @@ TEST(DOMModel, NoName)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, LoadLinkCheck)
+TEST(DOMModel, LoadLinkCheck)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -90,7 +91,100 @@ TEST(DOMRoot, LoadLinkCheck)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, LoadDoublePendulum)
+TEST(DOMModel, LoadDuplicateLinks)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_duplicate_links.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "link with name[link] already exists"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, LoadDuplicateJoints)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_duplicate_joints.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "joint with name[joint] already exists"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, LoadFrameAmbiguous)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_frame_ambiguous.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "resolves to multiple frames"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, LoadLinkJointWithSameName)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_link_joint_same_name.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("link_joint_same_name", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_EQ(1u, model->JointCount());
+
+  const sdf::Link *linkBase = model->LinkByName("base");
+  ASSERT_TRUE(linkBase != nullptr);
+  const sdf::Link *linkAttachment = model->LinkByName("attachment");
+  ASSERT_TRUE(linkAttachment != nullptr);
+  const sdf::Joint *jointAttachment = model->JointByName("attachment");
+  ASSERT_TRUE(jointAttachment != nullptr);
+
+  EXPECT_EQ(model->Name(), linkBase->PoseFrame());
+  EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), linkBase->Pose());
+  EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), linkBase->PoseInFrame(model->Name()));
+
+  EXPECT_EQ(model->Name(), linkAttachment->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 2, 0, 0, 0, 0), linkAttachment->Pose());
+  // this link has the same name as a joint
+  // duplicate name in frame graph causes PoseInFrame to return infinite pose
+  EXPECT_FALSE(linkAttachment->PoseInFrame(model->Name()).IsFinite());
+
+  EXPECT_EQ(linkAttachment->Name(), jointAttachment->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 0, 3, 0, 0, 0), jointAttachment->Pose());
+  // this joint has the same name as a link
+  // duplicate name in frame graph causes PoseInFrame to return infinite pose
+  EXPECT_FALSE(jointAttachment->PoseInFrame(model->Name()).IsFinite());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, LoadDoublePendulum)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -138,6 +232,45 @@ TEST(DOMModel, FourBar)
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_TRUE(model != nullptr);
 
+  // Expect reversing link and frame names should negate the pose
+  for (const std::string & linkNameA : {"link1", "link2", "link3", "link4"})
+  {
+    for (const std::string & linkNameB : {"link1", "link2", "link3", "link4"})
+    {
+      EXPECT_EQ(model->LinkByName(linkNameA)->PoseInFrame(linkNameB),
+               -model->LinkByName(linkNameB)->PoseInFrame(linkNameA))
+        << "linkNameA[" << linkNameA << "] "
+        << "linkNameB[" << linkNameB << "]";
+    }
+  }
+
+  // Expect reversing joint and frame names should negate the pose
+  for (const std::string & jointNameA
+            : {"joint1", "joint2", "joint3", "joint4"})
+  {
+    for (const std::string & jointNameB
+            : {"joint1", "joint2", "joint3", "joint4"})
+    {
+      EXPECT_EQ(model->JointByName(jointNameA)->PoseInFrame(jointNameB),
+               -model->JointByName(jointNameB)->PoseInFrame(jointNameA))
+        << "jointNameA[" << jointNameA << "] "
+        << "jointNameB[" << jointNameB << "]";
+    }
+  }
+
+  // Expect reversing link and joint frame names should negate the pose
+  for (const std::string & linkName : {"link1", "link2", "link3", "link4"})
+  {
+    for (const std::string & jointName
+            : {"joint1", "joint2", "joint3", "joint4"})
+    {
+      EXPECT_EQ(model->LinkByName(linkName)->PoseInFrame(jointName),
+               -model->JointByName(jointName)->PoseInFrame(linkName))
+        << "linkName[" << linkName << "] "
+        << "jointName[" << jointName << "]";
+    }
+  }
+
   const sdf::Link *linkOne = model->LinkByName("link1");
   ASSERT_TRUE(linkOne != nullptr);
   const sdf::Link *linkTwo = model->LinkByName("link2");
@@ -157,6 +290,7 @@ TEST(DOMModel, FourBar)
   ASSERT_TRUE(jointFour != nullptr);
 
   // Link 1
+  EXPECT_EQ(model->Name(), linkOne->PoseFrame());
   EXPECT_EQ(Pose3d(0, 0.2, 0.05, 0, 0, 0), linkOne->Pose());
   EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkOne->PoseInFrame("link1"));
   EXPECT_EQ(Pose3d(-0.2, 0.2, 0, 0, 0, 0), linkOne->PoseInFrame("link2"));
@@ -166,21 +300,23 @@ TEST(DOMModel, FourBar)
   EXPECT_EQ(Pose3d(-0.2, 0, 0, 0, 0, 0), linkOne->PoseInFrame("joint1"));
   EXPECT_EQ(Pose3d(-0.2, 0.4, 0, 0, 0, 0), linkOne->PoseInFrame("joint2"));
   EXPECT_EQ(Pose3d(0.2, 0.4, 0, 0, 0, 0), linkOne->PoseInFrame("joint3"));
-  EXPECT_EQ(Pose3d(0.2, 0.2, 0.05, 0, 0, 0), linkOne->PoseInFrame("joint4"));
+  EXPECT_EQ(Pose3d(0.2, 0, 0, 0, 0, 0), linkOne->PoseInFrame("joint4"));
 
   // Link 2
+  EXPECT_EQ(model->Name(), linkTwo->PoseFrame());
   EXPECT_EQ(Pose3d(0.2, 0, 0.05, 0, 0, 0), linkTwo->Pose());
   EXPECT_EQ(Pose3d(0.2, -0.2, 0, 0, 0, 0), linkTwo->PoseInFrame("link1"));
   EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkTwo->PoseInFrame("link2"));
   EXPECT_EQ(Pose3d(0.2, 0.2, 0, 0, 0, 0), linkTwo->PoseInFrame("link3"));
   EXPECT_EQ(Pose3d(0.4, 0, 0, 0, 0, 0), linkTwo->PoseInFrame("link4"));
 
-  EXPECT_EQ(Pose3d(0.2, -0.2, 0.05, 0, 0, 0), linkTwo->PoseInFrame("joint1"));
+  EXPECT_EQ(Pose3d(0, -0.2, 0, 0, 0, 0), linkTwo->PoseInFrame("joint1"));
   EXPECT_EQ(Pose3d(0, 0.2, 0, 0, 0, 0), linkTwo->PoseInFrame("joint2"));
   EXPECT_EQ(Pose3d(0.4, 0.2, 0, 0, 0, 0), linkTwo->PoseInFrame("joint3"));
   EXPECT_EQ(Pose3d(0.4, -0.2, 0, 0, 0, 0), linkTwo->PoseInFrame("joint4"));
 
   // Link 3
+  EXPECT_EQ(model->Name(), linkThree->PoseFrame());
   EXPECT_EQ(Pose3d(0, -0.2, 0.05, 0, 0, 0), linkThree->Pose());
   EXPECT_EQ(Pose3d(0, -0.4, 0, 0, 0, 0), linkThree->PoseInFrame("link1"));
   EXPECT_EQ(Pose3d(-0.2, -0.2, 0, 0, 0, 0), linkThree->PoseInFrame("link2"));
@@ -188,12 +324,13 @@ TEST(DOMModel, FourBar)
   EXPECT_EQ(Pose3d(0.2, -0.2, 0, 0, 0, 0), linkThree->PoseInFrame("link4"));
 
   EXPECT_EQ(Pose3d(-0.2, -0.4, 0, 0, 0, 0), linkThree->PoseInFrame("joint1"));
-  EXPECT_EQ(Pose3d(-0.2, -0.2, 0.05, 0, 0, 0),
+  EXPECT_EQ(Pose3d(-0.2, 0, 0, 0, 0, 0),
             linkThree->PoseInFrame("joint2"));
   EXPECT_EQ(Pose3d(0.2, 0, 0, 0, 0, 0), linkThree->PoseInFrame("joint3"));
   EXPECT_EQ(Pose3d(0.2, -0.4, 0, 0, 0, 0), linkThree->PoseInFrame("joint4"));
 
   // Link 4
+  EXPECT_EQ(model->Name(), linkFour->PoseFrame());
   EXPECT_EQ(Pose3d(-0.2, 0, 0.05, 0, 0, 0), linkFour->Pose());
   EXPECT_EQ(Pose3d(-0.2, -0.2, 0, 0, 0, 0), linkFour->PoseInFrame("link1"));
   EXPECT_EQ(Pose3d(-0.4, 0, 0, 0, 0, 0), linkFour->PoseInFrame("link2"));
@@ -202,10 +339,11 @@ TEST(DOMModel, FourBar)
 
   EXPECT_EQ(Pose3d(-0.4, -0.2, 0, 0, 0, 0), linkFour->PoseInFrame("joint1"));
   EXPECT_EQ(Pose3d(-0.4, 0.2, 0, 0, 0, 0), linkFour->PoseInFrame("joint2"));
-  EXPECT_EQ(Pose3d(-0.2, 0.2, 0.05, 0, 0, 0), linkFour->PoseInFrame("joint3"));
+  EXPECT_EQ(Pose3d(0, 0.2, 0, 0, 0, 0), linkFour->PoseInFrame("joint3"));
   EXPECT_EQ(Pose3d(0, -0.2, 0, 0, 0, 0), linkFour->PoseInFrame("joint4"));
 
   // Joint 1
+  EXPECT_EQ(linkTwo->Name(), jointOne->PoseFrame());
   EXPECT_EQ(Pose3d(0, 0.2, 0, 0, 0, 0), jointOne->Pose());
   EXPECT_EQ(Pose3d(0.2, 0, 0, 0, 0, 0), jointOne->PoseInFrame("link1"));
   EXPECT_EQ(Pose3d(0, 0.2, 0, 0, 0, 0), jointOne->PoseInFrame("link2"));
@@ -218,6 +356,7 @@ TEST(DOMModel, FourBar)
   EXPECT_EQ(Pose3d(0.4, 0, 0, 0, 0, 0), jointOne->PoseInFrame("joint4"));
 
   // Joint 2
+  EXPECT_EQ(linkThree->Name(), jointTwo->PoseFrame());
   EXPECT_EQ(Pose3d(0.2, 0, 0, 0, 0, 0), jointTwo->Pose());
   EXPECT_EQ(Pose3d(0.2, -0.4, 0, 0, 0, 0), jointTwo->PoseInFrame("link1"));
   EXPECT_EQ(Pose3d(0, -0.2, 0, 0, 0, 0), jointTwo->PoseInFrame("link2"));
@@ -230,6 +369,7 @@ TEST(DOMModel, FourBar)
   EXPECT_EQ(Pose3d(0.4, -0.4, 0, 0, 0, 0), jointTwo->PoseInFrame("joint4"));
 
   // Joint 3
+  EXPECT_EQ(linkFour->Name(), jointThree->PoseFrame());
   EXPECT_EQ(Pose3d(0, -0.2, 0, 0, 0, 0), jointThree->Pose());
   EXPECT_EQ(Pose3d(-0.2, -0.4, 0, 0, 0, 0), jointThree->PoseInFrame("link1"));
   EXPECT_EQ(Pose3d(-0.4, -0.2, 0, 0, 0, 0), jointThree->PoseInFrame("link2"));
@@ -242,6 +382,7 @@ TEST(DOMModel, FourBar)
   EXPECT_EQ(Pose3d(0, -0.4, 0, 0, 0, 0), jointThree->PoseInFrame("joint4"));
 
   // Joint 4
+  EXPECT_EQ(linkOne->Name(), jointFour->PoseFrame());
   EXPECT_EQ(Pose3d(-0.2, 0, 0, 0, 0, 0), jointFour->Pose());
   EXPECT_EQ(Pose3d(-0.2, 0, 0, 0, 0, 0), jointFour->PoseInFrame("link1"));
   EXPECT_EQ(Pose3d(-0.4, 0.2, 0, 0, 0, 0), jointFour->PoseInFrame("link2"));
@@ -252,4 +393,21 @@ TEST(DOMModel, FourBar)
   EXPECT_EQ(Pose3d(-0.4, 0.4, 0, 0, 0, 0), jointFour->PoseInFrame("joint2"));
   EXPECT_EQ(Pose3d(0, 0.4, 0, 0, 0, 0), jointFour->PoseInFrame("joint3"));
   EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), jointFour->PoseInFrame("joint4"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, ToStringSameAsSDF)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "double_pendulum.sdf");
+
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+  EXPECT_EQ(1u, root.ModelCount());
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+  ASSERT_TRUE(sdf::init(sdf));
+  ASSERT_TRUE(sdf::readFile(testFile, sdf));
+  EXPECT_EQ(sdf->Root()->ToString(""), root.Element()->ToString(""));
 }

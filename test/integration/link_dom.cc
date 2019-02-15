@@ -82,6 +82,146 @@ TEST(DOMLink, NoFrameGraph)
 }
 
 //////////////////////////////////////////////////
+TEST(DOMLink, CollisionSiblingsSameName)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "link_collision_siblings_same_name.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "collision with name[collision] already exists"));
+}
+
+//////////////////////////////////////////////////
+TEST(DOMLink, CollisionCousinsSameName)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "link_collision_cousins_same_name.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("link_collision_cousins_same_name", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_EQ(0u, model->JointCount());
+
+  const sdf::Link *link1 = model->LinkByName("link1");
+  ASSERT_TRUE(link1 != nullptr);
+  const sdf::Link *link2 = model->LinkByName("link2");
+  ASSERT_TRUE(link2 != nullptr);
+  EXPECT_EQ(1u, link1->CollisionCount());
+  EXPECT_EQ(1u, link2->CollisionCount());
+
+  const sdf::Collision *collision1 = link1->CollisionByName("collision");
+  ASSERT_TRUE(collision1 != nullptr);
+  const sdf::Collision *collision2 = link2->CollisionByName("collision");
+  ASSERT_TRUE(collision2 != nullptr);
+
+  using Pose3d = ignition::math::Pose3d;
+
+  EXPECT_EQ(model->Name(), link1->PoseFrame());
+  EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), link1->Pose());
+  EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), link1->PoseInFrame(model->Name()));
+
+  EXPECT_EQ(model->Name(), link2->PoseFrame());
+  EXPECT_EQ(Pose3d(2, 0, 0, 0, 0, 0), link2->Pose());
+  EXPECT_EQ(Pose3d(2, 0, 0, 0, 0, 0), link2->PoseInFrame(model->Name()));
+
+  EXPECT_EQ(link1->Name(), collision1->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 1, 0, 0, 0, 0), collision1->Pose());
+  // this collision has the same name as its cousin
+  // duplicate name in frame graph causes PoseInFrame to return infinite pose
+  EXPECT_FALSE(collision1->PoseInFrame(model->Name()).IsFinite());
+
+  EXPECT_EQ(link2->Name(), collision2->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 2, 0, 0, 0, 0), collision2->Pose());
+  // this collision has the same name as its cousin
+  // duplicate name in frame graph causes PoseInFrame to return infinite pose
+  EXPECT_FALSE(collision2->PoseInFrame(model->Name()).IsFinite());
+}
+
+//////////////////////////////////////////////////
+TEST(DOMLink, VisualSiblingsSameName)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "link_visual_siblings_same_name.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "visual with name[visual] already exists"));
+}
+
+//////////////////////////////////////////////////
+TEST(DOMLink, VisualCousinsSameName)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "link_visual_cousins_same_name.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("link_visual_cousins_same_name", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_EQ(0u, model->JointCount());
+
+  const sdf::Link *link1 = model->LinkByName("link1");
+  ASSERT_TRUE(link1 != nullptr);
+  const sdf::Link *link2 = model->LinkByName("link2");
+  ASSERT_TRUE(link2 != nullptr);
+  EXPECT_EQ(1u, link1->VisualCount());
+  EXPECT_EQ(1u, link2->VisualCount());
+
+  const sdf::Visual *visual1 = link1->VisualByName("visual");
+  ASSERT_TRUE(visual1 != nullptr);
+  const sdf::Visual *visual2 = link2->VisualByName("visual");
+  ASSERT_TRUE(visual2 != nullptr);
+
+  using Pose3d = ignition::math::Pose3d;
+
+  EXPECT_EQ(model->Name(), link1->PoseFrame());
+  EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), link1->Pose());
+  EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), link1->PoseInFrame(model->Name()));
+
+  EXPECT_EQ(model->Name(), link2->PoseFrame());
+  EXPECT_EQ(Pose3d(2, 0, 0, 0, 0, 0), link2->Pose());
+  EXPECT_EQ(Pose3d(2, 0, 0, 0, 0, 0), link2->PoseInFrame(model->Name()));
+
+  EXPECT_EQ(link1->Name(), visual1->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 1, 0, 0, 0, 0), visual1->Pose());
+  // this visual has the same name as its cousin
+  // duplicate name in frame graph causes PoseInFrame to return infinite pose
+  EXPECT_FALSE(visual1->PoseInFrame(model->Name()).IsFinite());
+
+  EXPECT_EQ(link2->Name(), visual2->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 2, 0, 0, 0, 0), visual2->Pose());
+  // this visual has the same name as its cousin
+  // duplicate name in frame graph causes PoseInFrame to return infinite pose
+  EXPECT_FALSE(visual2->PoseInFrame(model->Name()).IsFinite());
+}
+
+//////////////////////////////////////////////////
 TEST(DOMLink, LoadVisualCollision)
 {
   const std::string testFile =
@@ -404,37 +544,91 @@ TEST(DOMLink, LinkChain)
 
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_TRUE(model != nullptr);
-  const sdf::Link *linkOne = model->LinkByIndex(0);
+  const sdf::Link *linkOne = model->LinkByName("one");
   ASSERT_TRUE(linkOne != nullptr);
-  const sdf::Link *linkThree = model->LinkByIndex(2);
+  const sdf::Link *linkTwo = model->LinkByName("two");
+  ASSERT_TRUE(linkTwo != nullptr);
+  const sdf::Link *linkThree = model->LinkByName("three");
   ASSERT_TRUE(linkThree != nullptr);
-  const sdf::Link *linkFour = model->LinkByIndex(3);
+  const sdf::Link *linkFour = model->LinkByName("four");
   ASSERT_TRUE(linkFour != nullptr);
 
-  ignition::math::Pose3d modelInFour = model->PoseInFrame("four");
-  EXPECT_EQ(ignition::math::Pose3d(-3, -2, 5, 0, 0, 0), modelInFour);
+  // Expect reversing link and frame names should negate the pose
+  for (const std::string & linkNameA : {"one", "two", "three", "four"})
+  {
+    for (const std::string & linkNameB : {"one", "two", "three", "four"})
+    {
+      EXPECT_EQ(model->LinkByName(linkNameA)->PoseInFrame(linkNameB),
+               -model->LinkByName(linkNameB)->PoseInFrame(linkNameA))
+        << "linkNameA[" << linkNameA << "] "
+        << "linkNameB[" << linkNameB << "]";
+    }
+  }
 
-  ignition::math::Pose3d fourInThree = linkFour->PoseInFrame("three");
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, -5, 0, 0, 0), fourInThree);
+  using Pose3d = ignition::math::Pose3d;
 
-  ignition::math::Pose3d oneInModelFrame = linkOne->Pose();
-  EXPECT_EQ(ignition::math::Pose3d(1, -1, 0, 0, 0, 0), oneInModelFrame);
+  // raw pose data
+  EXPECT_TRUE(model->PoseFrame().empty());
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
 
-  ignition::math::Pose3d oneInTwoFrame = linkOne->PoseInFrame("two");
-  EXPECT_EQ(ignition::math::Pose3d(-2, -1, 0, 0, 0, 0), oneInTwoFrame);
+  EXPECT_EQ(model->Name(), linkOne->PoseFrame());
+  EXPECT_EQ(Pose3d(1, -1, 0, 0, 0, 0), linkOne->Pose());
 
-  ignition::math::Pose3d threeInModelFrame =
-      linkThree->PoseInFrame("link_chain");
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 0, 0, 0, 0), threeInModelFrame);
+  EXPECT_EQ(model->Name(), linkTwo->PoseFrame());
+  EXPECT_EQ(Pose3d(3, 0, 0, 0, 0, 0), linkTwo->Pose());
 
-  ignition::math::Pose3d threeInOtherFrame =
-      linkThree->PoseInFrame("other_frame");
-  EXPECT_EQ(ignition::math::Pose3d(-7, -8, -10, 0, 0, 0), threeInOtherFrame);
+  EXPECT_EQ("two", linkThree->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 2, 0, 0, 0, 0), linkThree->Pose());
 
-  ignition::math::Pose3d oneInFrameInTwo = linkOne->PoseInFrame("frame_in_two");
-  EXPECT_EQ(ignition::math::Pose3d(0, -3, -3, 0, 0, 0), oneInFrameInTwo);
+  EXPECT_EQ("three", linkFour->PoseFrame());
+  EXPECT_EQ(Pose3d(0, 0, -5, 0, 0, 0), linkFour->Pose());
 
-  ignition::math::Pose3d fourInOther = linkFour->PoseInFrame("other_frame");
-  EXPECT_EQ(ignition::math::Pose3d(-7, -8, -15, 0, 0, 0), fourInOther);
+  // link poses in model frame
+  EXPECT_EQ(Pose3d(1, -1, 0, 0, 0, 0), linkOne->PoseInFrame(model->Name()));
+  EXPECT_EQ(Pose3d(3, 0, 0, 0, 0, 0), linkTwo->PoseInFrame(model->Name()));
+  EXPECT_EQ(Pose3d(3, 2, 0, 0, 0, 0), linkThree->PoseInFrame(model->Name()));
+  EXPECT_EQ(Pose3d(3, 2, -5, 0, 0, 0), linkFour->PoseInFrame(model->Name()));
+
+  // model pose in link frames should be negative of link poses in model frame
+  EXPECT_EQ(-Pose3d(1, -1, 0, 0, 0, 0), model->PoseInFrame("one"));
+  EXPECT_EQ(-Pose3d(3, 0, 0, 0, 0, 0),  model->PoseInFrame("two"));
+  EXPECT_EQ(-Pose3d(3, 2, 0, 0, 0, 0),  model->PoseInFrame("three"));
+  EXPECT_EQ(-Pose3d(3, 2, -5, 0, 0, 0), model->PoseInFrame("four"));
+
+  // link poses in frame "one"
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkOne->PoseInFrame("one"));
+  EXPECT_EQ(Pose3d(2, 1, 0, 0, 0, 0), linkTwo->PoseInFrame("one"));
+  EXPECT_EQ(Pose3d(2, 3, 0, 0, 0, 0), linkThree->PoseInFrame("one"));
+  EXPECT_EQ(Pose3d(2, 3, -5, 0, 0, 0), linkFour->PoseInFrame("one"));
+
+  // link poses in frame "two"
+  EXPECT_EQ(Pose3d(-2, -1, 0, 0, 0, 0), linkOne->PoseInFrame("two"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkTwo->PoseInFrame("two"));
+  EXPECT_EQ(Pose3d(0, 2, 0, 0, 0, 0), linkThree->PoseInFrame("two"));
+  EXPECT_EQ(Pose3d(0, 2, -5, 0, 0, 0), linkFour->PoseInFrame("two"));
+
+  // link poses in frame "three"
+  EXPECT_EQ(Pose3d(-2, -3, 0, 0, 0, 0), linkOne->PoseInFrame("three"));
+  EXPECT_EQ(Pose3d(0, -2, 0, 0, 0, 0), linkTwo->PoseInFrame("three"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkThree->PoseInFrame("three"));
+  EXPECT_EQ(Pose3d(0, 0, -5, 0, 0, 0), linkFour->PoseInFrame("three"));
+
+  // link poses in frame "four"
+  EXPECT_EQ(Pose3d(-2, -3, 5, 0, 0, 0), linkOne->PoseInFrame("four"));
+  EXPECT_EQ(Pose3d(0, -2, 5, 0, 0, 0), linkTwo->PoseInFrame("four"));
+  EXPECT_EQ(Pose3d(0, 0, 5, 0, 0, 0), linkThree->PoseInFrame("four"));
+  EXPECT_EQ(Pose3d(0, 0, 0, 0, 0, 0), linkFour->PoseInFrame("four"));
+
+  // link poses in frame "other_frame"
+  EXPECT_EQ(-Pose3d(9, 11, 10, 0, 0, 0), linkOne->PoseInFrame("other_frame"));
+  EXPECT_EQ(-Pose3d(7, 10, 10, 0, 0, 0), linkTwo->PoseInFrame("other_frame"));
+  EXPECT_EQ(-Pose3d(7, 8, 10, 0, 0, 0), linkThree->PoseInFrame("other_frame"));
+  EXPECT_EQ(-Pose3d(7, 8, 15, 0, 0, 0), linkFour->PoseInFrame("other_frame"));
+
+  // link poses in frame "frame_in_two"
+  EXPECT_EQ(Pose3d(-3, -3, -3, 0, 0, 0), linkOne->PoseInFrame("frame_in_two"));
+  EXPECT_EQ(Pose3d(-1, -2, -3, 0, 0, 0), linkTwo->PoseInFrame("frame_in_two"));
+  EXPECT_EQ(Pose3d(-1, 0, -3, 0, 0, 0), linkThree->PoseInFrame("frame_in_two"));
+  EXPECT_EQ(Pose3d(-1, 0, -8, 0, 0, 0), linkFour->PoseInFrame("frame_in_two"));
 }
 

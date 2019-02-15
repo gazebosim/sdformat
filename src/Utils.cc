@@ -80,16 +80,16 @@ ignition::math::Pose3d sdf::poseInFrame(const std::string &_src,
 
   // Handle the case where the source and destination are the same.
   if (_src == _dst)
-    return Matrix4d::Identity.Pose();
+    return Pose3d::Zero;
 
   // Get the source vertex.
-  const ignition::math::graph::VertexRef_M<Matrix4d> srcVertices =
+  const ignition::math::graph::VertexRef_M<PoseWithFrameName> srcVertices =
       _graph.Vertices(_src);
 
   // Get all the vertices in the frame graph that match the provided frame.
   // If _dst is empty, then the result of this function (poseInFrame) will
   // be the pose of the _src frame.
-  const ignition::math::graph::VertexRef_M<Matrix4d> dstVertices =
+  const ignition::math::graph::VertexRef_M<PoseWithFrameName> dstVertices =
       _graph.Vertices(_dst);
 
   // There should be only one vertex for the source vertex, and 1 or
@@ -97,66 +97,58 @@ ignition::math::Pose3d sdf::poseInFrame(const std::string &_src,
   if (srcVertices.size() != 1 || dstVertices.size() > 1)
     return poseInf;
 
+  const VertexId srcId = srcVertices.begin()->first;
+
   // Short circuit if the destination is empty.
   if (dstVertices.empty())
-    return _graph.VertexFromId(srcVertices.begin()->first).Data().Pose();
+    return _graph.VertexFromId(srcId).Data().first;
+
+  const VertexId dstId = dstVertices.begin()->first;
 
   // Run Dijkstra to find a path from _src to _dst
-  std::map<VertexId, CostInfo> result =
-    ignition::math::graph::Dijkstra(_graph,
-        srcVertices.begin()->first, dstVertices.begin()->first);
+  std::map<VertexId, CostInfo> costMap =
+    ignition::math::graph::Dijkstra(_graph, srcId, dstId);
 
   // // Dijkstra debug output
-  // for (auto vv : result)
+  // std::cerr << "src[" << srcId << "]"
+  //           << ", dst[" << dstId << "]"
+  //           << std::endl;
+  // for (auto vv : costMap)
   // {
   //   std::cout << "DestId[" << vv.first << "] Cost["
   //     << vv.second.first << "] PrevId[" << vv.second.second
   //     << "]" << std::endl;
   // }
 
-  Matrix4d finalPose = Matrix4d::Identity;
-  for (VertexId nextVertex, key = dstVertices.begin()->first;;
-       key = nextVertex)
+  Matrix4d poseResult = Matrix4d::Identity;
+
+  // Start from destination vertex and work back to the source.
+  for (VertexId current = dstId, next; current != srcId; current = next)
   {
-    // Get the next vertex in the path from the destination vertex to the
-    // source vertex.
-    nextVertex = result.find(key)->second.second;
+    // Get next vertex in path from destination to source.
+    next = costMap.find(current)->second.second;
 
-    // Are we at the source vertex, which is the end of the line.
-    if (nextVertex == key)
-    {
-      // Compute the final pose and break
-      finalPose *= _graph.VertexFromId(key).Data();
-      break;
-    }
+    // Get the edge between current and next.
+    const ignition::math::graph::DirectedEdge<Matrix4d> &edge =
+        _graph.EdgeFromVertices(current, next);
 
-    // Get the edge between nextVertex and key.
-    const ignition::math::graph::DirectedEdge<int> &edge =
-      _graph.EdgeFromVertices(nextVertex, key);
+    // std::cerr << "  current " << current
+    //           << ", next " << next
+    //           << ", edge " << edge.Id()
+    //           << std::endl;
 
     // Make sure the edge is valid.
-    if (edge.Id() != ignition::math::graph::DirectedEdge<int>::NullEdge.Id())
+    if (edge.Id() !=
+        ignition::math::graph::DirectedEdge<Matrix4d>::NullEdge.Id())
     {
-      // // Debug output:
-      // std::cout << "Key[" << key << "] Edge From[" << edge.Head()
-      //   << "] To[" << edge.Tail() << "] Data[" << edge.Data() << "]\n";
-
-      // Get the direction of the edge.
-      // \todo I think we look at just the Head() and Tail() of the edge and
-      // compare those values to key and nextVertex.
-      bool inverse = edge.Data() < 0;
-
-      if (inverse)
-        finalPose *= _graph.VertexFromId(key).Data().Inverse();
-      else if (key != dstVertices.begin()->first)
-        finalPose *=  _graph.VertexFromId(key).Data();
+      poseResult *= edge.Data();
     }
     else
     {
-      /// \todo(nkoenig) This is an error case. Inform the caller somehow.
-      break;
+      // Invalid edge, set inifinite pose to indicate error case.
+      return poseInf;
     }
   }
 
-  return finalPose.Pose();
+  return poseResult.Pose();
 }
