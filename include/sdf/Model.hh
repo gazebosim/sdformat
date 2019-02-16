@@ -188,7 +188,7 @@ namespace sdf
     /// \param[in] _frame The name of the pose frame. This should not be
     /// empty.
     /// \return True if the pose frame was set, false otherwise. An empty
-    /// _frame parameter value was result in a false return value.
+    /// _frame parameter value will result in a false return value.
     public: bool SetPoseFrame(const std::string &_frame);
 
     /// \brief Get a pointer to the SDF element that was used during
