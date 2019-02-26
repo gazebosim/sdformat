@@ -49,7 +49,7 @@ namespace sdf
     CONTACT = 3,
 
     /// \brief A depth camera sensor.
-    DEPTH = 4,
+    DEPTH_CAMERA = 4,
 
     /// \brief A force-torque sensor.
     FORCE_TORQUE = 5,

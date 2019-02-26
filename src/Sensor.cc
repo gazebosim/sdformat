@@ -109,9 +109,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   {
     this->dataPtr->type = SensorType::CONTACT;
   }
-  else if (type == "depth")
+  else if (type == "depth" || type == "depth_camera")
   {
-    this->dataPtr->type = SensorType::DEPTH;
+    this->dataPtr->type = SensorType::DEPTH_CAMERA;
   }
   else if (type == "force_torque")
   {
