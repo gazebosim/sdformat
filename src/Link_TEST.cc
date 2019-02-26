@@ -22,6 +22,7 @@
 #include "sdf/Collision.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
+#include "sdf/Sensor.hh"
 #include "sdf/Visual.hh"
 
 /////////////////////////////////////////////////
@@ -46,6 +47,13 @@ TEST(DOMLink, Construction)
   EXPECT_FALSE(link.LightNameExists(""));
   EXPECT_FALSE(link.LightNameExists("default"));
   EXPECT_EQ(nullptr, link.LightByName("no_such_light"));
+
+  EXPECT_EQ(0u, link.SensorCount());
+  EXPECT_EQ(nullptr, link.SensorByIndex(0));
+  EXPECT_EQ(nullptr, link.SensorByIndex(1));
+  EXPECT_EQ(nullptr, link.SensorByName("empty"));
+  EXPECT_FALSE(link.SensorNameExists(""));
+  EXPECT_FALSE(link.SensorNameExists("default"));
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, link.Pose());
   EXPECT_TRUE(link.PoseFrame().empty());

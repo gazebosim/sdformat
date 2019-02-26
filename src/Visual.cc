@@ -149,6 +149,12 @@ const Geometry *Visual::Geom() const
 }
 
 /////////////////////////////////////////////////
+void Visual::SetGeom(const Geometry &_geom)
+{
+  this->dataPtr->geom = _geom;
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Visual::Element() const
 {
   return this->dataPtr->sdf;
@@ -158,4 +164,10 @@ sdf::ElementPtr Visual::Element() const
 sdf::Material *Visual::Material() const
 {
   return this->dataPtr->material.get();
+}
+
+/////////////////////////////////////////////////
+void Visual::SetMaterial(const sdf::Material &_material)
+{
+  this->dataPtr->material.reset(new sdf::Material(_material));
 }

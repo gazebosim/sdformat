@@ -96,13 +96,21 @@ but with improved human-readability..
 
 ### Additions
 
-1. **physics.sdf** `dart::solver::solver_type` element
-    + description: The DART LCP/constraint solver to use.
-      Either dantzig or pgs (projected Gauss-Seidel)
-    + type: string
-    + default: dantzig
+1. **actor.sdf** `tension` element
+    + description: The tension of the trajectory spline. The default value of
+      zero equates to a Catmull-Rom spline, which may also cause the animation
+      to overshoot keyframes. A value of one will cause the animation to stick
+      to the keyframes.
+    + type: double
+    + default: 0.0
+    + min: 0.0
+    + max: 1.0
     + required: 0
-    + [pull request 369](https://bitbucket.org/osrf/sdformat/pull-requests/369)
+    + [pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
+
+1. **camera.sdf** `intrinsics` sub-elements: `fx`, `fy`, `cx`, `cy`, `s`
+    + description: Camera intrinsic parameters for setting a custom perspective projection matrix.
+    + [pull request 496](https://bitbucket.org/osrf/sdformat/pull-requests/496)
 
 1. **link.sdf** `enable_wind` element
     + description: If true, the link is affected by the wind
@@ -131,6 +139,22 @@ but with improved human-readability..
     + required: 0
     + [pull request 246](https://bitbucket.org/osrf/sdformat/pull-requests/246)
 
+1. **physics.sdf** `dart::collision_detector` element
+    + description: The collision detector for DART to use.
+      Can be dart, fcl, bullet or ode.
+    + type: string
+    + default: fcl
+    + required: 0
+    + [pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
+
+1. **physics.sdf** `dart::solver::solver_type` element
+    + description: The DART LCP/constraint solver to use.
+      Either dantzig or pgs (projected Gauss-Seidel)
+    + type: string
+    + default: dantzig
+    + required: 0
+    + [pull request 369](https://bitbucket.org/osrf/sdformat/pull-requests/369)
+
 1. **physics.sdf** `island_threads` element under `ode::solver`
     + description: Number of threads to use for "islands" of disconnected models.
     + type: int
@@ -144,6 +168,13 @@ but with improved human-readability..
     + default: 0
     + required: 0
     + [pull request 380](https://bitbucket.org/osrf/sdformat/pull-requests/380)
+
+1. **sonar.sdf** `geometry` element
+    + description: The sonar collision shape. Currently supported geometries are: "cone" and "sphere".
+    + type: string
+    + default: "cone"
+    + required: 0
+    + [pull request 495](https://bitbucket.org/osrf/sdformat/pull-requests/495)
 
 1. **state.sdf** allow `light` tags within `insertions` element
     * [pull request 325](https://bitbucket.org/osrf/sdformat/pull-request/325)
