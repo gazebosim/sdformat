@@ -1,6 +1,6 @@
 ## SDFormat 8.0
 
-### SDFormat 8.0.0 (xxxx-xx-xx)
+### SDFormat 8.0.0 (2019-03-01)
 
 1. Rename depth camera from 'depth' to 'depth_camera'
    * [Pull request 507](https://bitbucket.org/osrf/sdformat/pull-requests/507)
