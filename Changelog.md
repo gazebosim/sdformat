@@ -2,6 +2,22 @@
 
 ### SDFormat 8.0.0 (xxxx-xx-xx)
 
+1. Rename depth camera from 'depth' to 'depth_camera'
+   * [Pull request 507](https://bitbucket.org/osrf/sdformat/pull-requests/507)
+
+1. Rename enum Ray to Lidar
+   * [Pull request 502](https://bitbucket.org/osrf/sdformat/pull-requests/502)
+
+1. Add support for files that have light tags in the root
+   * [Pull request 499](https://bitbucket.org/osrf/sdformat/pull-requests/499)
+
+1. Fix locale problems of std::stringstream and of Param::ValueFromString
+   * [Pull request 492](https://bitbucket.org/osrf/sdformat/pull-requests/492)
+   * Contribution by Silvio Traversaro
+
+1. Add functions to set visual dom's geometry and material
+   * [Pull request 490](https://bitbucket.org/osrf/sdformat/pull-requests/490)
+
 1. Change cmake project name to sdformat8, export cmake targets
    * [Pull request 475](https://bitbucket.org/osrf/sdformat/pull-requests/475)
    * [Pull request 476](https://bitbucket.org/osrf/sdformat/pull-requests/476)
