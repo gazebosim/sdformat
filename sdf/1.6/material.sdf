@@ -46,7 +46,7 @@
   </element>
 
   <element name="pbr" required="0">
-    <description>Physically Based Rendering (PBR) material. There are two PBR workflows: metal and specular. While both workflows and their parameters can be specified at the same time, typically only one of them will be used (depending on the underlying rendering engine capability). It is also recommended to use the same workflow for all materials in the world.</description>
+    <description>Physically Based Rendering (PBR) material. There are two PBR workflows: metal and specular. While both workflows and their parameters can be specified at the same time, typically only one of them will be used (depending on the underlying renderer capability). It is also recommended to use the same workflow for all materials in the world.</description>
 
     <element name="metal" required="0">
       <description>PBR using the Metallic/Roughness workflow.</description>
@@ -56,7 +56,7 @@
       </element>
 
       <element name="roughness_map" type="string" default="" required="0">
-        <description>Filename of the roughness map (grayscale).</description>
+        <description>Filename of the roughness map.</description>
       </element>
 
       <element name="roughness" type="string" default="0.5" required="0">
@@ -64,7 +64,7 @@
       </element>
 
       <element name="metalness_map" type="string" default="" required="0">
-        <description>Filename of the metalness map (grayscale).</description>
+        <description>Filename of the metalness map.</description>
       </element>
 
       <element name="metalness" type="string" default="0.5" required="0">
@@ -80,7 +80,7 @@
       </element>
 
       <element name="ambient_occlusion_map" type="string" default="" required="0">
-        <description>Filename of the ambient occlusion map (grayscale). The map defines the amount of ambient lighting on the surface.</description>
+        <description>Filename of the ambient occlusion map. The map defines the amount of ambient lighting on the surface.</description>
       </element>
 
       <element name="normal_map" type="string" default="" required="0">
@@ -105,7 +105,7 @@
       </element>
 
       <element name="glossiness_map" type="string" default="" required="0">
-        <description>Filename of the glossiness map (grayscale).</description>
+        <description>Filename of the glossiness map.</description>
       </element>
 
       <element name="glossiness" type="string" default="0" required="0">
@@ -113,7 +113,7 @@
       </element>
 
       <element name="ambient_occlusion_map" type="string" default="" required="0">
-        <description>Filename of the ambient occlusion map (grayscale). The map defines the amount of ambient lighting on the surface.</description>
+        <description>Filename of the ambient occlusion map. The map defines the amount of ambient lighting on the surface.</description>
       </element>
 
       <element name="normal_map" type="string" default="" required="0">
