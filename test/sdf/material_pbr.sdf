@@ -1,0 +1,73 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="model">
+    <link name="link">
+      <visual name="visual_metal_workflow">
+        <material>
+          <diffuse>0.2 0.5 0.1 1.0</diffuse>
+          <pbr>
+            <metal>
+              <albedo_map>albedo_map.png</albedo_map>
+              <normal_map>normal_map.png</normal_map>
+              <metalness_map>metalness_map.png</metalness_map>
+              <metalness>0.3</metalness>
+              <roughness_map>roughness_map.png</roughness_map>
+              <roughness>0.4</roughness>
+              <environment_map>environment_map.png</environment_map>
+              <ambient_occlusion_map>ambient_occlusion_map.png</ambient_occlusion_map>
+            </metal>
+          </pbr>
+        </material>
+      </visual>
+
+      <visual name="visual_specular_workflow">
+        <material>
+          <diffuse>0.2 0.5 0.1 1.0</diffuse>
+          <specular>0.7 0.3 0.5 0.9</specular>
+          <pbr>
+            <specular>
+              <albedo_map>albedo_map.png</albedo_map>
+              <normal_map>normal_map.png</normal_map>
+              <specular_map>specular_map.png</specular_map>
+              <glossiness_map>glossiness_map.png</glossiness_map>
+              <glossiness>0.2</glossiness>
+              <environment_map>environment_map.png</environment_map>
+              <ambient_occlusion_map>ambient_occlusion_map.png</ambient_occlusion_map>
+            </specular>
+          </pbr>
+        </material>
+      </visual>
+
+      <visual name="visual_all">
+        <material>
+          <ambient>0.1 0.8 0.3 1.0</ambient>
+          <diffuse>0.2 0.5 0.1 1.0</diffuse>
+          <specular>0.7 0.3 0.5 0.9</specular>
+          <emissive>0.4 0.2 0.1 1.0</emissive>
+          <pbr>
+            <specular>
+              <albedo_map>albedo_map.png</albedo_map>
+              <normal_map type="tangent">normal_map_tangent.png</normal_map>
+              <specular_map>specular_map.png</specular_map>
+              <glossiness_map>glossiness_map.png</glossiness_map>
+              <glossiness>0.2</glossiness>
+              <environment_map>environment_map.png</environment_map>
+              <ambient_occlusion_map>ambient_occlusion_map.png</ambient_occlusion_map>
+            </specular>
+            <metal>
+              <albedo_map>albedo_map.png</albedo_map>
+              <normal_map type="object">normal_map_object.png</normal_map>
+              <metalness_map>metalness_map.png</metalness_map>
+              <metalness>0.3</metalness>
+              <roughness_map>roughness_map.png</roughness_map>
+              <roughness>0.4</roughness>
+              <environment_map>environment_map.png</environment_map>
+              <ambient_occlusion_map>ambient_occlusion_map.png</ambient_occlusion_map>
+            </metal>
+          </pbr>
+        </material>
+      </visual>
+    </link>
+
+  </model>
+</sdf>
