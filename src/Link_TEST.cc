@@ -19,6 +19,7 @@
 #include <ignition/math/Inertial.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
+#include "sdf/Battery.hh"
 #include "sdf/Collision.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
@@ -80,6 +81,12 @@ TEST(DOMLink, Construction)
   EXPECT_EQ(nullptr, link.CollisionByIndex(1));
   EXPECT_FALSE(link.CollisionNameExists(""));
   EXPECT_FALSE(link.CollisionNameExists("default"));
+
+  EXPECT_EQ(0u, link.BatteryCount());
+  EXPECT_EQ(nullptr, link.BatteryByIndex(0));
+  EXPECT_EQ(nullptr, link.BatteryByIndex(1));
+  EXPECT_FALSE(link.BatteryNameExists(""));
+  EXPECT_FALSE(link.BatteryNameExists("default"));
 
   ignition::math::Inertiald inertial2 {
     {2.3,
