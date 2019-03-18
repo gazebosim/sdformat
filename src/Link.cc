@@ -20,6 +20,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 
+#include "sdf/Battery.hh"
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Light.hh"
@@ -53,6 +54,9 @@ class sdf::LinkPrivate
 
   /// \brief The sensors specified in this link.
   public: std::vector<Sensor> sensors;
+
+  /// \brief The batteries specified in this link.
+  public: std::vector<Battery> batteries;
 
   /// \brief The inertial information for this link.
   public: ignition::math::Inertiald inertial {{1.0,
@@ -129,6 +133,11 @@ Errors Link::Load(ElementPtr _sdf)
   Errors sensorLoadErrors = loadUniqueRepeated<Sensor>(_sdf, "sensor",
       this->dataPtr->sensors);
   errors.insert(errors.end(), sensorLoadErrors.begin(), sensorLoadErrors.end());
+
+  // Load all the batteries.
+  Errors batteryLoadErrors = loadUniqueRepeated<Battery>(_sdf, "battery",
+      this->dataPtr->batteries);
+  errors.insert(errors.end(), batteryLoadErrors.begin(), batteryLoadErrors.end());
 
   ignition::math::Vector3d xxyyzz = ignition::math::Vector3d::One;
   ignition::math::Vector3d xyxzyz = ignition::math::Vector3d::Zero;
@@ -291,6 +300,46 @@ bool Link::SensorNameExists(const std::string &_name) const
 const Sensor *Link::SensorByName(const std::string &_name) const
 {
   for (auto const &s : this->dataPtr->sensors)
+  {
+    if (s.Name() == _name)
+    {
+      return &s;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+uint64_t Link::BatteryCount() const
+{
+  return this->dataPtr->batteries.size();
+}
+
+/////////////////////////////////////////////////
+const Battery *Link::BatteryByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->batteries.size())
+    return &this->dataPtr->batteries[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Link::BatteryNameExists(const std::string &_name) const
+{
+  for (auto const &s : this->dataPtr->batteries)
+  {
+    if (s.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Battery *Link::BatteryByName(const std::string &_name) const
+{
+  for (auto const &s : this->dataPtr->batteries)
   {
     if (s.Name() == _name)
     {

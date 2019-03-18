@@ -14,6 +14,7 @@ endif()
 
 set (sources
   Atmosphere.cc
+  Battery.cc
   Box.cc
   Collision.cc
   Console.cc
@@ -79,6 +80,7 @@ endif()
 
 set (gtest_sources
   Atmosphere_TEST.cc
+  Battery_TEST.cc
   Box_TEST.cc
   Collision_TEST.cc
   Console_TEST.cc

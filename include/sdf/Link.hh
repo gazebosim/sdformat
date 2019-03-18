@@ -31,6 +31,7 @@ namespace sdf
   //
 
   // Forward declarations.
+  class Battery;
   class Collision;
   class Light;
   class LinkPrivate;
@@ -153,6 +154,29 @@ namespace sdf
     ///  does not exist.
     /// \sa bool SensorNameExists(const std::string &_name) const
     public: const Sensor *SensorByName(const std::string &_name) const;
+
+    /// \brief Get the number of batteries.
+    /// \return Number of batteries contained in this Link object.
+    public: uint64_t BatteryCount() const;
+
+    /// \brief Get a battery based on an index.
+    /// \param[in] _index Index of the battery. The index should be in the
+    /// range [0...BatteryCount()).
+    /// \return Pointer to the battery. Nullptr if the index does not exist.
+    /// \sa uint64_t BatteryCount() const
+    public: const Battery *BatteryByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a battery name exists.
+    /// \param[in] _name Name of the battery to check.
+    /// \return True if there exists a sensor with the given name.
+    public: bool BatteryNameExists(const std::string &_name) const;
+
+    /// \brief Get a battery based on a name.
+    /// \param[in] _name Name of the battery.
+    /// \return Pointer to the battery. Nullptr if a sensor with the given name
+    /// does not exist.
+    /// \sa bool BatteryNameExists(const std::string &_name) const
+    public: const Battery *BatteryByName(const std::string &_name) const;
 
     /// \brief Get the inertial value for this link. The inertial object
     /// consists of the link's mass, a 3x3 rotational inertia matrix, and

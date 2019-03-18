@@ -3,6 +3,7 @@ include (${sdf_cmake_dir}/SDFUtils.cmake)
 set (headers
   Assert.hh
   Atmosphere.hh
+  Battery.hh
   Box.hh
   Collision.hh
   Console.hh
