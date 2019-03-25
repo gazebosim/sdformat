@@ -105,7 +105,7 @@ Errors Battery::Load(ElementPtr _sdf)
   if (!loadName(_sdf, this->dataPtr->name))
   {
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
-                     "A battery name is required, but the name is not set."});
+        "A battery name is required, but the name is not set."});
     return errors;
   }
 
@@ -113,7 +113,7 @@ Errors Battery::Load(ElementPtr _sdf)
   if (!this->dataPtr->LoadVoltage(_sdf, this->dataPtr->voltage))
   {
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
-                     "A battery voltage is required, but the voltage is not set."});
+        "A battery voltage is required, but the voltage is not set."});
     return errors;
   }
 

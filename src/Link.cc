@@ -137,7 +137,8 @@ Errors Link::Load(ElementPtr _sdf)
   // Load all the batteries.
   Errors batteryLoadErrors = loadUniqueRepeated<Battery>(_sdf, "battery",
       this->dataPtr->batteries);
-  errors.insert(errors.end(), batteryLoadErrors.begin(), batteryLoadErrors.end());
+  errors.insert(errors.end(), batteryLoadErrors.begin(),
+      batteryLoadErrors.end());
 
   ignition::math::Vector3d xxyyzz = ignition::math::Vector3d::One;
   ignition::math::Vector3d xyxzyz = ignition::math::Vector3d::Zero;
