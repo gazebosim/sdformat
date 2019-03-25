@@ -76,10 +76,6 @@
       </element>
 
       <element name="ambient_occlusion_map" type="string" default="" required="0">
-        <description>Filename of the ambient occlusion map</description>
-      </element>
-
-      <element name="ambient_occlusion_map" type="string" default="" required="0">
         <description>Filename of the ambient occlusion map. The map defines the amount of ambient lighting on the surface.</description>
       </element>
 
