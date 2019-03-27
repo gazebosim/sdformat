@@ -28,25 +28,34 @@ namespace sdf
   // Inline bracke to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
-
   // Forward declarations.
   class PbrPrivate;
   class PbrWorkflowPrivate;
 
+  /// \brief Type of PBR workflow.
   enum class PbrWorkflowType : int
   {
+    /// \brief No workflow
     NONE = 0,
+
+    /// \brief Metal/Roughness workflow
     METAL = 1,
+
+    /// \brief Specular/Glossiness workflow
     SPECULAR = 2,
   };
 
+  /// \brief Space the normal map is defined in
   enum class NormalMapSpace: int
   {
+    /// \brief Tangent space
     TANGENT = 0,
+
+    /// \brief Object space
     OBJECT = 1,
   };
 
-  /// \brief This class contains Physically-Based-Rendering(Pbr) workflow
+  /// \brief This class contains Physically-Based-Rendering (PBR) workflow
   /// properties.
   class SDFORMAT_VISIBLE PbrWorkflow
   {
@@ -64,7 +73,7 @@ namespace sdf
     /// \brief Destructor
     public: ~PbrWorkflow();
 
-    /// \brief Load the pbr workflow based on a element pointer. This is *not*
+    /// \brief Load the pbr workflow based on an element pointer. This is *not*
     /// the usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
     /// \param[in] _sdf The SDF Element pointer
@@ -170,7 +179,7 @@ namespace sdf
     /// \param[in] _map Filename of the glossiness map.
     public: void SetGlossinessMap(const std::string &_map);
 
-    /// \brief Get the roughness value of the material for specular workflow
+    /// \brief Get the glossiness value of the material for specular workflow
     /// \return Glossiness value of the material
     public: double Glossiness() const;
 
@@ -195,10 +204,10 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Get the workflow type.
-    /// \return Pbr workflow type.
+    /// \return PBR workflow type.
     public: PbrWorkflowType Type() const;
 
-    /// \brief Set the Pbr workflow to use
+    /// \brief Set the PBR workflow to use
     /// \param[in] _type Workflow type to use
     public: void SetType(PbrWorkflowType _type);
 
@@ -206,8 +215,8 @@ namespace sdf
     private: PbrWorkflowPrivate *dataPtr = nullptr;
   };
 
-  /// \brief This class contains Physically-Based-Rendering(Pbr) material
-  /// properties.
+  /// \brief This class provides access to Physically-Based-Rendering (PBR)
+  ///  material workflows.
   class SDFORMAT_VISIBLE Pbr
   {
     /// \brief Default constructor
@@ -229,7 +238,7 @@ namespace sdf
     /// \return *this
     public: Pbr &operator=(const Pbr &_pbr);
 
-    /// \brief Load the pbr based on a element pointer. This is *not* the
+    /// \brief Load the pbr based on an element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
     /// \param[in] _sdf The SDF Element pointer
@@ -237,9 +246,9 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
 
-    /// \brief Get a workflow by type
+    /// \brief Get a PBR workflow by type
+    /// \param[in] _type Type of PBR workflow
     /// \return Workflow of the specified type.
-    /// \param[in] _type Type of workflow
     /// \sa PbrWorkflowType
     public: PbrWorkflow *Workflow(PbrWorkflowType _type) const;
 
