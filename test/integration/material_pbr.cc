@@ -18,11 +18,12 @@
 #include <string>
 #include <gtest/gtest.h>
 #include "sdf/sdf.hh"
+#include "sdf/Pbr.hh"
 
 #include "test_config.h"
 
 //////////////////////////////////////////////////
-TEST(Material, MaterialPBR)
+TEST(Material, PbrDOM)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -31,6 +32,209 @@ TEST(Material, MaterialPBR)
   // Load the SDF file into DOM
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  // Get the first link
+  const sdf::Link *link = model->LinkByIndex(0);
+  ASSERT_NE(nullptr, link);
+  EXPECT_EQ("link", link->Name());
+
+  // checkt visual materials
+  EXPECT_EQ(3u, link->VisualCount());
+
+  // visual metal workflow
+  {
+    EXPECT_TRUE(link->VisualNameExists("visual_metal_workflow"));
+    const sdf::Visual *visual = link->VisualByIndex(0);
+    ASSERT_NE(nullptr, visual);
+    EXPECT_EQ("visual_metal_workflow", visual->Name());
+
+    // material
+    const sdf::Material *material = visual->Material();
+    ASSERT_NE(nullptr, material);
+
+    // diffuse
+    EXPECT_EQ(ignition::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
+        material->Diffuse());
+
+    // pbr
+    const sdf::Pbr *pbr = material->PbrMaterial();
+    ASSERT_NE(nullptr, pbr);
+
+    // metal
+    const sdf::PbrWorkflow *workflow =
+        pbr->Workflow(sdf::PbrWorkflowType::METAL);
+    ASSERT_NE(nullptr, workflow);
+    EXPECT_EQ(sdf::PbrWorkflowType::METAL, workflow->Type());
+    EXPECT_EQ(nullptr, pbr->Workflow(sdf::PbrWorkflowType::SPECULAR));
+
+    // albedo map
+    EXPECT_EQ("albedo_map.png", workflow->AlbedoMap());
+
+    // normal map
+    EXPECT_EQ("normal_map.png", workflow->NormalMap());
+
+    // metalness map
+    EXPECT_EQ("metalness_map.png", workflow->MetalnessMap());
+
+    // metalness
+    EXPECT_DOUBLE_EQ(0.3, workflow->Metalness());
+
+    // roughness map
+    EXPECT_EQ("roughness_map.png", workflow->RoughnessMap());
+
+    // roughness
+    EXPECT_DOUBLE_EQ(0.4, workflow->Roughness());
+
+    // environment map
+    EXPECT_EQ("environment_map.png", workflow->EnvironmentMap());
+
+    // ambient occlusion map
+    EXPECT_EQ("ambient_occlusion_map.png", workflow->AmbientOcclusionMap());
+  }
+
+  // visual specular workflow
+  {
+    EXPECT_TRUE(link->VisualNameExists("visual_specular_workflow"));
+    const sdf::Visual *visual = link->VisualByIndex(1);
+    ASSERT_NE(nullptr, visual);
+    EXPECT_EQ("visual_specular_workflow", visual->Name());
+
+    // material
+    const sdf::Material *material = visual->Material();
+    ASSERT_NE(nullptr, material);
+
+    // diffuse
+    EXPECT_EQ(ignition::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
+        material->Diffuse());
+
+    // pbr
+    const sdf::Pbr *pbr = material->PbrMaterial();
+    ASSERT_NE(nullptr, pbr);
+
+    // specular
+    const sdf::PbrWorkflow *workflow =
+        pbr->Workflow(sdf::PbrWorkflowType::SPECULAR);
+    ASSERT_NE(nullptr, workflow);
+    EXPECT_EQ(sdf::PbrWorkflowType::SPECULAR, workflow->Type());
+    EXPECT_EQ(nullptr, pbr->Workflow(sdf::PbrWorkflowType::METAL));
+
+    // albedo map
+    EXPECT_EQ("albedo_map.png", workflow->AlbedoMap());
+
+    // normal map
+    EXPECT_EQ("normal_map.png", workflow->NormalMap());
+
+    // metalness map
+    EXPECT_EQ("glossiness_map.png", workflow->GlossinessMap());
+
+    // glossiness
+    EXPECT_DOUBLE_EQ(0.2, workflow->Glossiness());
+
+    // specular map
+    EXPECT_EQ("specular_map.png", workflow->SpecularMap());
+
+    // environment map
+    EXPECT_EQ("environment_map.png", workflow->EnvironmentMap());
+
+    // ambient occlusion map
+    EXPECT_EQ("ambient_occlusion_map.png", workflow->AmbientOcclusionMap());
+  }
+
+  // visual all
+  {
+    EXPECT_TRUE(link->VisualNameExists("visual_all"));
+    const sdf::Visual *visual = link->VisualByIndex(2);
+    ASSERT_NE(nullptr, visual);
+    EXPECT_EQ("visual_all", visual->Name());
+
+    // material
+    const sdf::Material *material = visual->Material();
+    ASSERT_NE(nullptr, material);
+
+    // diffuse
+    EXPECT_EQ(ignition::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
+        material->Diffuse());
+
+    // pbr
+    const sdf::Pbr *pbr = material->PbrMaterial();
+    ASSERT_NE(nullptr, pbr);
+
+    // specular
+    {
+      // specular
+      const sdf::PbrWorkflow *workflow =
+          pbr->Workflow(sdf::PbrWorkflowType::SPECULAR);
+      ASSERT_NE(nullptr, workflow);
+      EXPECT_EQ(sdf::PbrWorkflowType::SPECULAR, workflow->Type());
+
+      // specular
+      EXPECT_EQ(sdf::PbrWorkflowType::SPECULAR, workflow->Type());
+
+      // albedo map
+      EXPECT_EQ("albedo_map.png", workflow->AlbedoMap());
+
+      // normal map
+      EXPECT_EQ("normal_map_tangent.png", workflow->NormalMap());
+
+      // metalness map
+      EXPECT_EQ("glossiness_map.png", workflow->GlossinessMap());
+
+      // glossiness
+      EXPECT_DOUBLE_EQ(0.2, workflow->Glossiness());
+
+      // specular map
+      EXPECT_EQ("specular_map.png", workflow->SpecularMap());
+
+      // environment map
+      EXPECT_EQ("environment_map.png", workflow->EnvironmentMap());
+
+      // ambient occlusion map
+      EXPECT_EQ("ambient_occlusion_map.png", workflow->AmbientOcclusionMap());
+    }
+    // metal
+    {
+      const sdf::PbrWorkflow *workflow =
+          pbr->Workflow(sdf::PbrWorkflowType::METAL);
+      ASSERT_NE(nullptr, workflow);
+      EXPECT_EQ(sdf::PbrWorkflowType::METAL, workflow->Type());
+
+      // albedo map
+      EXPECT_EQ("albedo_map.png", workflow->AlbedoMap());
+
+      // normal map
+      EXPECT_EQ("normal_map_object.png", workflow->NormalMap());
+
+      // metalness map
+      EXPECT_EQ("metalness_map.png", workflow->MetalnessMap());
+
+      // metalness
+      EXPECT_DOUBLE_EQ(0.3, workflow->Metalness());
+
+      // roughness map
+      EXPECT_EQ("roughness_map.png", workflow->RoughnessMap());
+
+      // roughness
+      EXPECT_DOUBLE_EQ(0.4, workflow->Roughness());
+
+      // environment map
+      EXPECT_EQ("environment_map.png", workflow->EnvironmentMap());
+
+      // ambient occlusion map
+      EXPECT_EQ("ambient_occlusion_map.png", workflow->AmbientOcclusionMap());
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+TEST(Material, MaterialPBR)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "material_pbr.sdf");
 
   // load material pbr sdf file
   sdf::Errors errors;
