@@ -173,7 +173,7 @@ namespace sdf
 
     /// \brief Get a battery based on a name.
     /// \param[in] _name Name of the battery.
-    /// \return Pointer to the battery. Nullptr if a sensor with the given name
+    /// \return Pointer to the battery. Nullptr if a battery with the given name
     /// does not exist.
     /// \sa bool BatteryNameExists(const std::string &_name) const
     public: const Battery *BatteryByName(const std::string &_name) const;

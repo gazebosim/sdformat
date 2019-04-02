@@ -34,6 +34,7 @@ class sdf::BatteryPrivate
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
+  /// \brief Read battery voltage from SDF
   public: bool LoadVoltage(sdf::ElementPtr _sdf, double &_voltage);
 };
 
@@ -45,19 +46,14 @@ Battery::Battery()
 
 /////////////////////////////////////////////////
 Battery::Battery(const Battery &_battery)
-  : dataPtr(new BatteryPrivate)
+  : dataPtr(new BatteryPrivate(*_battery.dataPtr))
 {
-  this->dataPtr->name = _battery.dataPtr->name;
-  this->dataPtr->voltage = _battery.dataPtr->voltage;
-  this->dataPtr->sdf = _battery.dataPtr->sdf;
 }
 
 /////////////////////////////////////////////////
 Battery &Battery::operator=(const Battery &_battery)
 {
-  this->dataPtr->name = _battery.dataPtr->name;
-  this->dataPtr->voltage = _battery.dataPtr->voltage;
-  this->dataPtr->sdf = _battery.dataPtr->sdf;
+  *this->dataPtr = (*_battery.dataPtr);
   return *this;
 }
 
