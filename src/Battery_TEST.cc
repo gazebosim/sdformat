@@ -69,7 +69,7 @@ TEST(DOMBattery, Load)
   EXPECT_EQ(sdf::ErrorCode::ATTRIBUTE_MISSING, errors[0].Code());
   EXPECT_NE(nullptr, battery.Element());
 
-  // No voltage 
+  // No voltage
   sdf->SetName("battery");
   sdf->AddAttribute("name", "string", "battery1", true);
   sdf::ParamPtr param = sdf->GetAttribute("name");
