@@ -28,8 +28,17 @@ TEST(DOMBattery, Construction)
   EXPECT_EQ(battery.Name(), "battery1");
 
   EXPECT_DOUBLE_EQ(battery.Voltage(), 0.0);
-
   battery.SetVoltage(1.0);
+  EXPECT_DOUBLE_EQ(battery.Voltage(), 1.0);
+
+  // Copy constructor
+  auto battery2 = sdf::Battery(battery);
+  EXPECT_EQ(battery2.Name(), "battery1");
+  EXPECT_DOUBLE_EQ(battery.Voltage(), 1.0);
+
+  // Assignment constructor
+  sdf::Battery battery3 = battery;
+  EXPECT_EQ(battery2.Name(), "battery1");
   EXPECT_DOUBLE_EQ(battery.Voltage(), 1.0);
 }
 
