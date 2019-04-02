@@ -30,16 +30,43 @@ TEST(DOMBattery, Construction)
   EXPECT_DOUBLE_EQ(battery.Voltage(), 0.0);
   battery.SetVoltage(1.0);
   EXPECT_DOUBLE_EQ(battery.Voltage(), 1.0);
+}
 
-  // Copy constructor
-  auto battery2 = sdf::Battery(battery);
-  EXPECT_EQ(battery2.Name(), "battery1");
-  EXPECT_DOUBLE_EQ(battery.Voltage(), 1.0);
+/////////////////////////////////////////////////
+TEST(DOMBattery, CopyConstructor)
+{
+  sdf::Battery battery;
+  battery.SetName("battery1");
+  battery.SetVoltage(1.0);
 
-  // Assignment constructor
-  sdf::Battery battery3 = battery;
-  EXPECT_EQ(battery2.Name(), "battery1");
-  EXPECT_DOUBLE_EQ(battery.Voltage(), 1.0);
+  auto batteryCopied = sdf::Battery(battery);
+  EXPECT_EQ(batteryCopied.Name(), "battery1");
+  EXPECT_DOUBLE_EQ(batteryCopied.Voltage(), 1.0);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBattery, AssignmentOperator)
+{
+  sdf::Battery battery;
+  battery.SetName("battery1");
+  battery.SetVoltage(1.0);
+
+  sdf::Battery batteryAssigned;
+  batteryAssigned = battery;
+  EXPECT_EQ(batteryAssigned.Name(), "battery1");
+  EXPECT_DOUBLE_EQ(batteryAssigned.Voltage(), 1.0);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBattery, MoveConstructor)
+{
+  sdf::Battery battery;
+  battery.SetName("battery1");
+  battery.SetVoltage(1.0);
+
+  sdf::Battery batteryMoved = std::move(battery);
+  EXPECT_EQ(batteryMoved.Name(), "battery1");
+  EXPECT_DOUBLE_EQ(batteryMoved.Voltage(), 1.0);
 }
 
 /////////////////////////////////////////////////
