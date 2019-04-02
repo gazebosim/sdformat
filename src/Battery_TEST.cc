@@ -24,6 +24,9 @@ TEST(DOMBattery, Construction)
   sdf::Battery battery;
   EXPECT_EQ(nullptr, battery.Element());
 
+  battery.SetName("battery1");
+  EXPECT_EQ(battery.Name(), "battery1");
+
   EXPECT_DOUBLE_EQ(battery.Voltage(), 0.0);
 
   battery.SetVoltage(1.0);
@@ -48,5 +51,36 @@ TEST(DOMBattery, Load)
   errors = battery.Load(sdf);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+  EXPECT_NE(nullptr, battery.Element());
+
+  // No battery name
+  sdf->SetName("battery");
+  errors = battery.Load(sdf);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ATTRIBUTE_MISSING, errors[0].Code());
+  EXPECT_NE(nullptr, battery.Element());
+
+  // No voltage 
+  sdf->SetName("battery");
+  sdf->AddAttribute("name", "string", "battery1", true);
+  sdf::ParamPtr param = sdf->GetAttribute("name");
+  EXPECT_NE(nullptr, param);
+  param->SetFromString("battery1");
+  errors = battery.Load(sdf);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ATTRIBUTE_MISSING, errors[0].Code());
+  EXPECT_NE(nullptr, battery.Element());
+
+  // No missing attributes
+  sdf->SetName("battery");
+  param = sdf->GetAttribute("name");
+  EXPECT_NE(nullptr, param);
+  param->SetFromString("battery2");
+  sdf->AddAttribute("voltage", "float", "12.0", true);
+  param = sdf->GetAttribute("voltage");
+  EXPECT_NE(nullptr, param);
+  param->SetFromString("12");
+  errors = battery.Load(sdf);
+  ASSERT_EQ(0u, errors.size());
   EXPECT_NE(nullptr, battery.Element());
 }
