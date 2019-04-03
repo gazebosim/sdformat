@@ -110,6 +110,76 @@ TEST(DOMPbr, MoveConstructor)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMPbr, MoveAssignmentOperator)
+{
+  {
+    // metal workflow
+    sdf::PbrWorkflow workflow;
+    workflow.SetType(sdf::PbrWorkflowType::METAL);
+    workflow.SetAlbedoMap("metal_albedo_map.png");
+    workflow.SetNormalMap("metal_normal_map.png", sdf::NormalMapSpace::TANGENT);
+    workflow.SetEnvironmentMap("metal_env_map.png");
+    workflow.SetAmbientOcclusionMap("metal_ambient_occlusion_map.png");
+    workflow.SetRoughnessMap("roughness_map.png");
+    workflow.SetMetalnessMap("metalness_map.png");
+    workflow.SetRoughness(0.8);
+    workflow.SetMetalness(0.3);
+
+    sdf::PbrWorkflow workflow2;
+    workflow2 = std::move(workflow);
+    EXPECT_EQ(sdf::PbrWorkflowType::METAL, workflow2.Type());
+    EXPECT_EQ("metal_albedo_map.png", workflow2.AlbedoMap());
+    EXPECT_EQ("metal_normal_map.png", workflow2.NormalMap());
+    EXPECT_EQ(sdf::NormalMapSpace::TANGENT, workflow2.NormalMapType());
+    EXPECT_EQ("metal_env_map.png", workflow2.EnvironmentMap());
+    EXPECT_EQ("metal_ambient_occlusion_map.png",
+        workflow2.AmbientOcclusionMap());
+    EXPECT_EQ("roughness_map.png", workflow2.RoughnessMap());
+    EXPECT_EQ("metalness_map.png", workflow2.MetalnessMap());
+    EXPECT_DOUBLE_EQ(0.8, workflow2.Roughness());
+    EXPECT_DOUBLE_EQ(0.3, workflow2.Metalness());
+
+    EXPECT_EQ(std::string(), workflow2.GlossinessMap());
+    EXPECT_EQ(std::string(), workflow2.SpecularMap());
+    EXPECT_DOUBLE_EQ(0.0, workflow2.Glossiness());
+  }
+
+  {
+    // specular workflow
+    sdf::PbrWorkflow workflow;
+    workflow.SetType(sdf::PbrWorkflowType::SPECULAR);
+    workflow.SetAlbedoMap("specular_albedo_map.png");
+    workflow.SetNormalMap("specular_normal_map.png",
+        sdf::NormalMapSpace::TANGENT);
+    workflow.SetEnvironmentMap("specular_env_map.png");
+    workflow.SetAmbientOcclusionMap("specular_ambient_occlusion_map.png");
+    workflow.SetGlossinessMap("glossiness_map.png");
+    workflow.SetSpecularMap("specular_map.png");
+    workflow.SetGlossiness(0.1);
+
+    sdf::PbrWorkflow workflow2;
+    workflow2 = std::move(workflow);
+    EXPECT_EQ(sdf::PbrWorkflowType::SPECULAR, workflow2.Type());
+    EXPECT_EQ("specular_albedo_map.png", workflow2.AlbedoMap());
+    EXPECT_EQ("specular_normal_map.png", workflow2.NormalMap());
+    EXPECT_EQ(sdf::NormalMapSpace::TANGENT, workflow2.NormalMapType());
+    EXPECT_EQ("specular_env_map.png", workflow2.EnvironmentMap());
+    EXPECT_EQ("specular_ambient_occlusion_map.png",
+        workflow2.AmbientOcclusionMap());
+    EXPECT_EQ("specular_map.png", workflow2.SpecularMap());
+    EXPECT_EQ("glossiness_map.png", workflow2.GlossinessMap());
+    EXPECT_DOUBLE_EQ(0.1, workflow2.Glossiness());
+
+    EXPECT_EQ(std::string(), workflow2.RoughnessMap());
+    EXPECT_EQ(std::string(), workflow2.MetalnessMap());
+    EXPECT_DOUBLE_EQ(0.5, workflow2.Roughness());
+    EXPECT_DOUBLE_EQ(0.5, workflow2.Metalness());
+  }
+}
+
+
+
+/////////////////////////////////////////////////
 TEST(DOMPbr, CopyConstructor)
 {
   {

@@ -68,7 +68,7 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _workflow to move.
-    public: PbrWorkflow(PbrWorkflow &&_workflow);
+    public: PbrWorkflow(PbrWorkflow &&_workflow) noexcept;
 
     /// \brief Destructor
     public: ~PbrWorkflow();
@@ -85,6 +85,11 @@ namespace sdf
     /// \param[in] _workflow The workflow to set values from.
     /// \return *this
     public: PbrWorkflow &operator=(const PbrWorkflow &_workflow);
+
+    /// \brief Move assignment operator.
+    /// \param[in] _workflow The workflow to move from.
+    /// \return *this
+    public: PbrWorkflow &operator=(PbrWorkflow &&_workflow);
 
     /// \brief Get the albedo map filename. This will be an empty string if
     /// an albedo map has not been set.
@@ -228,7 +233,7 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _pbr Pbr to move.
-    public: Pbr(Pbr &&_pbr);
+    public: Pbr(Pbr &&_pbr) noexcept;
 
     /// \brief Destructor
     public: ~Pbr();
@@ -237,6 +242,11 @@ namespace sdf
     /// \param[in] _pbr The pbr to set values from.
     /// \return *this
     public: Pbr &operator=(const Pbr &_pbr);
+
+    /// \brief Move assignment operator.
+    /// \param[in] _pbr The pbr to move values from.
+    /// \return *this
+    public: Pbr &operator=(Pbr &&_pbr);
 
     /// \brief Load the pbr based on an element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
