@@ -8,8 +8,8 @@ The format of SDF is also described by XML, which facilitates updates and
 allows conversion from previous versions.
 
 * SDFormat - The specification.
-  * SDF - Synonym for SDFormat, though SDFormat should be preferred, as "SDF"
-    is an acronym with other meanings.
+    * SDF - Synonym for SDFormat, though SDFormat should be preferred, as "SDF"
+      is an acronym with other meanings.
 * libsdformat - The C++ parsing code contained within this repository,
   which can be used to read SDF files and return a C++ interface.
 
