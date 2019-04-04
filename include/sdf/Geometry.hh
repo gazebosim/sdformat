@@ -19,9 +19,14 @@
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declare private data class.
   class GeometryPrivate;
   class Box;
@@ -62,8 +67,21 @@ namespace sdf
     /// \brief Default constructor
     public: Geometry();
 
+    /// \brief Copy constructor
+    /// \param[in] _geometry Geometry to copy.
+    public: Geometry(const Geometry &_geometry);
+
+    /// \brief Move constructor
+    /// \param[in] _geometry Geometry to move.
+    public: Geometry(Geometry &&_geometry);
+
     /// \brief Destructor
     public: virtual ~Geometry();
+
+    /// \brief Assignment operator.
+    /// \param[in] _geometry The geometry to set values from.
+    /// \return *this
+    public: Geometry &operator=(const Geometry &_geometry);
 
     /// \brief Load the geometry based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -125,5 +143,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: GeometryPrivate *dataPtr;
   };
+  }
 }
 #endif

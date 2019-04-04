@@ -206,9 +206,8 @@ TEST(DOMLink, InertialInvalid)
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::LINK_INERTIA_INVALID);
   EXPECT_EQ(errors[0].Message(), "A link named link has invalid inertia.");
 
-  // TODO: make this failure less severe?
   const sdf::Model *model = root.ModelByIndex(0);
-  ASSERT_EQ(model, nullptr);
+  ASSERT_EQ(nullptr, model);
 }
 
 //////////////////////////////////////////////////
@@ -261,7 +260,7 @@ TEST(DOMLink, Sensors)
   const sdf::Sensor *depthSensor = link->SensorByName("depth_sensor");
   ASSERT_NE(nullptr, depthSensor);
   EXPECT_EQ("depth_sensor", depthSensor->Name());
-  EXPECT_EQ(sdf::SensorType::DEPTH, depthSensor->Type());
+  EXPECT_EQ(sdf::SensorType::DEPTH_CAMERA, depthSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), depthSensor->Pose());
 
   // Get the force_torque sensor
@@ -284,7 +283,7 @@ TEST(DOMLink, Sensors)
   const sdf::Sensor *gpuRaySensor = link->SensorByName("gpu_ray_sensor");
   ASSERT_NE(nullptr, gpuRaySensor);
   EXPECT_EQ("gpu_ray_sensor", gpuRaySensor->Name());
-  EXPECT_EQ(sdf::SensorType::GPU_RAY, gpuRaySensor->Type());
+  EXPECT_EQ(sdf::SensorType::GPU_LIDAR, gpuRaySensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), gpuRaySensor->Pose());
 
   // Get the imu sensor
@@ -325,7 +324,7 @@ TEST(DOMLink, Sensors)
   const sdf::Sensor *raySensor = link->SensorByName("ray_sensor");
   ASSERT_NE(nullptr, raySensor);
   EXPECT_EQ("ray_sensor", raySensor->Name());
-  EXPECT_EQ(sdf::SensorType::RAY, raySensor->Type());
+  EXPECT_EQ(sdf::SensorType::LIDAR, raySensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), raySensor->Pose());
 
   // Get the rfid sensor

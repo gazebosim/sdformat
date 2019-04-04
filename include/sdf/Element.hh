@@ -14,15 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef _SDF_ELEMENT_HH_
-#define _SDF_ELEMENT_HH_
+#ifndef SDF_ELEMENT_HH_
+#define SDF_ELEMENT_HH_
 
+#include <any>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "sdf/Param.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 #include "sdf/Types.hh"
 
@@ -37,6 +39,10 @@
 /// \brief namespace for Simulation Description Format parser
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   class ElementPrivate;
   class SDFORMAT_VISIBLE Element;
 
@@ -222,11 +228,11 @@ namespace sdf
     /// return A Param pointer to the value of this element.
     public: ParamPtr GetValue() const;
 
-    /// \brief Get the element value/attribute as a boost::any.
+    /// \brief Get the element value/attribute as a std::any.
     /// \param[in] _key The key of the attribute. If empty, get the value of
     /// the element. Defaults to empty.
-    /// \return The element as a boost::any.
-    public: boost::any GetAny(const std::string &_key = "") const;
+    /// \return The element as a std::any.
+    public: std::any GetAny(const std::string &_key = "") const;
 
     /// \brief Get the value of a key. This function assumes the _key
     /// exists.
@@ -493,6 +499,7 @@ namespace sdf
     return false;
   }
   /// \}
+  }
 }
 
 #ifdef _WIN32

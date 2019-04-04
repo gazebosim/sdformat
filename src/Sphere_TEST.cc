@@ -32,6 +32,36 @@ TEST(DOMSphere, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMSphere, MoveConstructor)
+{
+  sdf::Sphere sphere;
+  sphere.SetRadius(0.2);
+
+  sdf::Sphere sphere2(std::move(sphere));
+  EXPECT_DOUBLE_EQ(0.2, sphere2.Radius());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, CopyConstructor)
+{
+  sdf::Sphere sphere;
+  sphere.SetRadius(0.2);
+
+  sdf::Sphere sphere2(sphere);
+  EXPECT_DOUBLE_EQ(0.2, sphere2.Radius());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, AssignemntOperator)
+{
+  sdf::Sphere sphere;
+  sphere.SetRadius(0.2);
+
+  sdf::Sphere sphere2 = sphere;
+  EXPECT_DOUBLE_EQ(0.2, sphere2.Radius());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMSphere, Load)
 {
   sdf::Sphere sphere;

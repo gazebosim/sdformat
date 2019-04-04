@@ -20,6 +20,7 @@
 #include <string>
 
 #include "sdf/SDFImpl.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 /// \ingroup sdf_parser
@@ -34,6 +35,10 @@
 /// place. This preserves the given XML structure and data.
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \brief Init based on the installed sdf_format.xml file
   SDFORMAT_VISIBLE
   bool init(SDFPtr _sdf);
@@ -149,5 +154,6 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool convertString(const std::string &_sdfString,
                      const std::string &_version, SDFPtr _sdf);
+  }
 }
 #endif

@@ -25,6 +25,10 @@
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declarations.
   class SensorPrivate;
 
@@ -45,7 +49,7 @@ namespace sdf
     CONTACT = 3,
 
     /// \brief A depth camera sensor.
-    DEPTH = 4,
+    DEPTH_CAMERA = 4,
 
     /// \brief A force-torque sensor.
     FORCE_TORQUE = 5,
@@ -53,8 +57,8 @@ namespace sdf
     /// \brief A GPS sensor.
     GPS = 6,
 
-    /// \brief A GPU based ray sensor.
-    GPU_RAY = 7,
+    /// \brief A GPU based lidar sensor.
+    GPU_LIDAR = 7,
 
     /// \brief An IMU sensor.
     IMU = 8,
@@ -68,8 +72,8 @@ namespace sdf
     /// \brief A multicamera sensor.
     MULTICAMERA = 11,
 
-    /// \brief A CPU based ray sensor.
-    RAY = 12,
+    /// \brief A CPU based lidar sensor.
+    LIDAR = 12,
 
     /// \brief An RFID sensor.
     RFID = 13,
@@ -159,5 +163,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: SensorPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif

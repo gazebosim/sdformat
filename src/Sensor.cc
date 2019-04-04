@@ -109,9 +109,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   {
     this->dataPtr->type = SensorType::CONTACT;
   }
-  else if (type == "depth")
+  else if (type == "depth" || type == "depth_camera")
   {
-    this->dataPtr->type = SensorType::DEPTH;
+    this->dataPtr->type = SensorType::DEPTH_CAMERA;
   }
   else if (type == "force_torque")
   {
@@ -121,9 +121,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   {
     this->dataPtr->type = SensorType::GPS;
   }
-  else if (type == "gpu_ray")
+  else if (type == "gpu_ray" || type == "gpu_lidar")
   {
-    this->dataPtr->type = SensorType::GPU_RAY;
+    this->dataPtr->type = SensorType::GPU_LIDAR;
   }
   else if (type == "imu")
   {
@@ -141,9 +141,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   {
     this->dataPtr->type = SensorType::MULTICAMERA;
   }
-  else if (type == "ray")
+  else if (type == "ray" || type == "lidar")
   {
-    this->dataPtr->type = SensorType::RAY;
+    this->dataPtr->type = SensorType::LIDAR;
   }
   else if (type == "rfid")
   {

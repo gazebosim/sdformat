@@ -14,7 +14,6 @@
  * limitations under the License.
  *
 */
-#include "sdf/Geometry.hh"
 #include "sdf/Cylinder.hh"
 
 using namespace sdf;
@@ -43,6 +42,31 @@ Cylinder::~Cylinder()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Cylinder::Cylinder(const Cylinder &_cylinder)
+  : dataPtr(new CylinderPrivate)
+{
+  this->dataPtr->radius = _cylinder.dataPtr->radius;
+  this->dataPtr->length = _cylinder.dataPtr->length;
+  this->dataPtr->sdf = _cylinder.dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+Cylinder &Cylinder::operator=(const Cylinder &_cylinder)
+{
+  this->dataPtr->radius = _cylinder.dataPtr->radius;
+  this->dataPtr->length = _cylinder.dataPtr->length;
+  this->dataPtr->sdf = _cylinder.dataPtr->sdf;
+  return *this;
+}
+
+//////////////////////////////////////////////////
+Cylinder::Cylinder(Cylinder &&_cylinder)
+{
+  this->dataPtr = _cylinder.dataPtr;
+  _cylinder.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

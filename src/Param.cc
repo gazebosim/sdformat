@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <locale>
 #include <sstream>
 #include <string>
 
@@ -29,18 +30,30 @@
 
 using namespace sdf;
 
-class any_set : public boost::static_visitor<>
+// For some locale, the decimal separator is not a point, but a
+// comma. To avoid that the SDF parsing is influenced by the current
+// global C or C++ locale, we define a custom std::stringstream variant
+// that always uses the std::locale::classic() locale.
+// See issues https://bitbucket.org/osrf/sdformat/issues/60
+// and https://bitbucket.org/osrf/sdformat/issues/207 for more details.
+namespace sdf
 {
-  public: explicit any_set(const boost::any &_value)
-          {this->value = _value;}
+  inline namespace SDF_VERSION_NAMESPACE {
+  class StringStreamClassicLocale : public std::stringstream
+  {
+    public: explicit StringStreamClassicLocale()
+    {
+      this->imbue(std::locale::classic());
+    }
 
-  public: template <typename T>
-          void operator()(T & _operand) const
-          {
-            _operand = boost::any_cast<T>(this->value);
-          }
-  public: boost::any value;
-};
+    public: explicit StringStreamClassicLocale(const std::string& str)
+      : std::stringstream(str)
+    {
+      this->imbue(std::locale::classic());
+    }
+  };
+  }
+}
 
 //////////////////////////////////////////////////
 Param::Param(const std::string &_key, const std::string &_typeName,
@@ -64,7 +77,7 @@ Param::~Param()
 }
 
 //////////////////////////////////////////////////
-bool Param::GetAny(boost::any &_anyVal) const
+bool Param::GetAny(std::any &_anyVal) const
 {
   if (this->IsType<int>())
   {
@@ -216,8 +229,12 @@ void Param::Update()
   {
     try
     {
-      boost::apply_visitor(any_set(this->dataPtr->updateFunc()),
-      this->dataPtr->value);
+      std::any newValue = this->dataPtr->updateFunc();
+      std::visit([&](auto &&arg)
+        {
+          using T = std::decay_t<decltype(arg)>;
+          arg = std::any_cast<T>(newValue);
+        }, this->dataPtr->value);
     }
     catch(...)
     {
@@ -230,24 +247,29 @@ void Param::Update()
 //////////////////////////////////////////////////
 std::string Param::GetAsString() const
 {
-  std::stringstream ss;
+  StringStreamClassicLocale ss;
 
-  ss << this->dataPtr->value;
+  ss << ParamStreamer{ this->dataPtr->value };
   return ss.str();
 }
 
 //////////////////////////////////////////////////
 std::string Param::GetDefaultAsString() const
 {
-  std::stringstream ss;
+  StringStreamClassicLocale ss;
 
-  ss << this->dataPtr->defaultValue;
+  ss << ParamStreamer{ this->dataPtr->defaultValue };
   return ss.str();
 }
 
 //////////////////////////////////////////////////
 bool Param::ValueFromString(const std::string &_value)
 {
+  // Under some circumstances, latin locales (es_ES or pt_BR) will return a
+  // comma for decimal position instead of a dot, making the conversion
+  // to fail. See bug #60 for more information. Force to use always C
+  setlocale(LC_NUMERIC, "C");
+
   std::string tmp(_value);
   std::string lowerTmp(_value);
   std::transform(lowerTmp.begin(), lowerTmp.end(), lowerTmp.begin(),
@@ -271,7 +293,7 @@ bool Param::ValueFromString(const std::string &_value)
   try
   {
     // Try to use stoi and stoul for integers, and
-    // stof and stod for floating point values.
+    // stof and stod for scalar floating point values.
     int numericBase = 10;
     if (isHex)
     {
@@ -309,7 +331,7 @@ bool Param::ValueFromString(const std::string &_value)
     }
     else if (this->dataPtr->typeName == "uint64_t")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       std::uint64_t u64tmp;
 
       ss >> u64tmp;
@@ -331,7 +353,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "sdf::Time" ||
              this->dataPtr->typeName == "time")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       sdf::Time timetmp;
 
       ss >> timetmp;
@@ -340,7 +362,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Color" ||
              this->dataPtr->typeName == "color")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       ignition::math::Color colortmp;
 
       ss >> colortmp;
@@ -349,7 +371,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Vector2i" ||
              this->dataPtr->typeName == "vector2i")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       ignition::math::Vector2i vectmp;
 
       ss >> vectmp;
@@ -358,7 +380,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Vector2d" ||
              this->dataPtr->typeName == "vector2d")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       ignition::math::Vector2d vectmp;
 
       ss >> vectmp;
@@ -367,7 +389,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Vector3d" ||
              this->dataPtr->typeName == "vector3")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       ignition::math::Vector3d vectmp;
 
       ss >> vectmp;
@@ -377,7 +399,7 @@ bool Param::ValueFromString(const std::string &_value)
              this->dataPtr->typeName == "pose" ||
              this->dataPtr->typeName == "Pose")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       ignition::math::Pose3d posetmp;
 
       ss >> posetmp;
@@ -386,7 +408,7 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Quaterniond" ||
              this->dataPtr->typeName == "quaternion")
     {
-      std::stringstream ss(tmp);
+      StringStreamClassicLocale ss(tmp);
       ignition::math::Quaterniond quattmp;
 
       ss >> quattmp;
@@ -421,11 +443,6 @@ bool Param::ValueFromString(const std::string &_value)
 //////////////////////////////////////////////////
 bool Param::SetFromString(const std::string &_value)
 {
-  // Under some circumstances, latin locales (es_ES or pt_BR) will return a
-  // comma for decimal position instead of a dot, making the conversion
-  // to fail. See bug #60 for more information. Force to use always C
-  setlocale(LC_NUMERIC, "C");
-
   std::string str = sdf::trim(_value.c_str());
 
   if (str.empty() && this->dataPtr->required)

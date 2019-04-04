@@ -14,18 +14,23 @@
  * limitations under the License.
  *
 */
-#ifndef _SDFORMAT_URDF2SDF_HH_
-#define _SDFORMAT_URDF2SDF_HH_
+#ifndef SDFORMAT_URDF2SDF_HH_
+#define SDFORMAT_URDF2SDF_HH_
 
 #include <tinyxml.h>
 
 #include <string>
 
 #include "sdf/Console.hh"
+#include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \brief URDF to SDF converter
   class SDFORMAT_VISIBLE URDF2SDF
   {
@@ -68,5 +73,6 @@ namespace sdf
     /// list extensions for debugging
     private: void ListSDFExtensions(const std::string &_reference);
   };
+  }
 }
 #endif
