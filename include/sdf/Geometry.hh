@@ -107,7 +107,7 @@ namespace sdf
     public: const Box *BoxShape() const;
 
     /// \brief Set the box shape.
-    /// \param[in] _type The box shape.
+    /// \param[in] _box The box shape.
     public: void SetBoxShape(const Box &_box);
 
     /// \brief Get the cylinder geometry, or nullptr if the contained
@@ -118,7 +118,7 @@ namespace sdf
     public: const Cylinder *CylinderShape() const;
 
     /// \brief Set the cylinder shape.
-    /// \param[in] _type The cylinder shape.
+    /// \param[in] _cylinder The cylinder shape.
     public: void SetCylinderShape(const Cylinder &_cylinder);
 
     /// \brief Get the sphere geometry, or nullptr if the contained geometry is
@@ -129,7 +129,7 @@ namespace sdf
     public: const Sphere *SphereShape() const;
 
     /// \brief Set the sphere shape.
-    /// \param[in] _type The sphere shape.
+    /// \param[in] _sphere The sphere shape.
     public: void SetSphereShape(const Sphere &_sphere);
 
     /// \brief Get the plane geometry, or nullptr if the contained geometry is
@@ -140,7 +140,7 @@ namespace sdf
     public: const Plane *PlaneShape() const;
 
     /// \brief Set the plane shape.
-    /// \param[in] _type The plane shape.
+    /// \param[in] _plane The plane shape.
     public: void SetPlaneShape(const Plane &_plane);
 
     /// \brief Get the mesh geometry, or nullptr if the contained geometry is
@@ -151,7 +151,7 @@ namespace sdf
     public: const Mesh *MeshShape() const;
 
     /// \brief Set the mesh shape.
-    /// \param[in] _type The mesh shape.
+    /// \param[in] _mesh The mesh shape.
     public: void SetMeshShape(const Mesh &_mesh);
 
     /// \brief Get a pointer to the SDF element that was used during
