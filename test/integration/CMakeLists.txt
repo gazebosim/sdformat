@@ -21,6 +21,7 @@ set(tests
   link_light.cc
   locale_fix.cc
   locale_fix_cxx.cc
+  material_pbr.cc
   model_dom.cc
   model_versions.cc
   nested_model.cc

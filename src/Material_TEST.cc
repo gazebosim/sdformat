@@ -34,6 +34,7 @@ TEST(DOMMaterial, Construction)
   EXPECT_EQ("", material.ScriptName());
   EXPECT_EQ(sdf::ShaderType::PIXEL, material.Shader());
   EXPECT_EQ("", material.NormalMap());
+  EXPECT_EQ(nullptr, material.PbrMaterial());
 }
 
 /////////////////////////////////////////////////
@@ -62,6 +63,7 @@ TEST(DOMMaterial, MoveConstructor)
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
   EXPECT_EQ("blueberry", material2.NormalMap());
+  EXPECT_EQ(nullptr, material2.PbrMaterial());
 }
 
 /////////////////////////////////////////////////
@@ -90,10 +92,11 @@ TEST(DOMMaterial, CopyConstructor)
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
   EXPECT_EQ("blueberry", material2.NormalMap());
+  EXPECT_EQ(nullptr, material2.PbrMaterial());
 }
 
 /////////////////////////////////////////////////
-TEST(DOMMaterial, AssignemntOperator)
+TEST(DOMMaterial, AssignmentOperator)
 {
   sdf::Material material;
   material.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f));
@@ -118,6 +121,7 @@ TEST(DOMMaterial, AssignemntOperator)
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
   EXPECT_EQ("blueberry", material2.NormalMap());
+  EXPECT_EQ(nullptr, material2.PbrMaterial());
 }
 
 /////////////////////////////////////////////////
