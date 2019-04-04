@@ -31,6 +31,7 @@ namespace sdf
 
   // Forward declarations.
   class MaterialPrivate;
+  class Pbr;
 
   enum class ShaderType : int
   {
@@ -171,6 +172,10 @@ namespace sdf
     /// \brief Set the normal map filename.
     /// \param[in] _map Filename of the normal map.
     public: void SetNormalMap(const std::string &_map);
+
+    /// \brief Get the Physically Based Rendering (PBR) material
+    /// \return Pointer to the PBR material. Null if it does not exist.
+    public: Pbr *PbrMaterial() const;
 
     /// \brief Private data pointer.
     private: MaterialPrivate *dataPtr = nullptr;

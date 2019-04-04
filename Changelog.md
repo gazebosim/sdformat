@@ -1,5 +1,10 @@
 ## SDFormat 8.0
 
+### SDFormat 8.X.X (201X-XX-XX)
+
+1. Add PBR material SDF element
+   * [Pull request 512](https://bitbucket.org/osrf/sdformat/pull-requests/512)
+
 ### SDFormat 8.0.0 (2019-03-01)
 
 1. Rename depth camera from 'depth' to 'depth_camera'
