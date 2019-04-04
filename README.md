@@ -5,8 +5,13 @@ in a manner suitable for robotic applications. SDF is capable of representing
 and describing different physic engines, lighting properties, terrain, static
 or dynamic objects, and articulated robots with various sensors, and acutators.
 The format of SDF is also described by XML, which facilitates updates and
-allows conversion from previous versions. The libsdformat parser is also contained within
-this package that reads SDF files and returns a C++ interface.
+allows conversion from previous versions.
+
+* SDFormat - The specification.
+  * SDF - Synonym for SDFormat, though SDFormat should be preferred, as "SDF"
+    is an acronym with other meanings.
+* libsdformat - The C++ parsing code contained within this repository,
+  which can be used to read SDF files and return a C++ interface.
 
 Test coverage:
 
