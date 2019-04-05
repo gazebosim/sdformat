@@ -70,6 +70,19 @@ TEST(DOMBattery, MoveConstructor)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMBattery, MoveAssignmentOperator)
+{
+  sdf::Battery battery;
+  battery.SetName("battery1");
+  battery.SetVoltage(1.0);
+
+  sdf::Battery batteryMoved;
+  batteryMoved = std::move(battery);
+  EXPECT_EQ(batteryMoved.Name(), "battery1");
+  EXPECT_DOUBLE_EQ(batteryMoved.Voltage(), 1.0);
+}
+
+/////////////////////////////////////////////////
 TEST(DOMBattery, Load)
 {
   sdf::Battery battery;

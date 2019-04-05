@@ -40,17 +40,21 @@ namespace sdf
     /// \param[in] _battery Battery to copy.
     public: Battery(const Battery &_battery);
 
-    /// \brief Move constructor
-    /// \param[in] _battery Battery to move.
-    public: Battery(Battery &&_battery);
-
-    /// \brief Destructor
-    public: ~Battery();
-
     /// \brief Assignment operator.
     /// \param[in] _battery The battery to set values from.
     /// \return *this
     public: Battery &operator=(const Battery &_battery);
+
+    /// \brief Move constructor
+    /// \param[in] _battery Battery to move.
+    public: Battery(Battery &&_battery);
+
+    /// \brief Move assignment operator
+    /// \param[in] _battery Battery to move.
+    public: Battery &operator=(Battery &&_battery);
+
+    /// \brief Destructor
+    public: ~Battery();
 
     /// \brief Load the battery based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root

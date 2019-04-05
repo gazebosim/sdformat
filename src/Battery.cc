@@ -65,6 +65,14 @@ Battery::Battery(Battery &&_battery)
 }
 
 /////////////////////////////////////////////////
+Battery &Battery::operator=(Battery &&_battery)
+{
+  this->dataPtr = _battery.dataPtr;
+  _battery.dataPtr = nullptr;
+  return *this;
+}
+
+/////////////////////////////////////////////////
 Battery::~Battery()
 {
   delete this->dataPtr;
