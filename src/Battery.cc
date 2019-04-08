@@ -59,16 +59,14 @@ Battery &Battery::operator=(const Battery &_battery)
 
 /////////////////////////////////////////////////
 Battery::Battery(Battery &&_battery)
+  : dataPtr(std::move(_battery.dataPtr))
 {
-  this->dataPtr = _battery.dataPtr;
-  _battery.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
 Battery &Battery::operator=(Battery &&_battery)
 {
-  this->dataPtr = _battery.dataPtr;
-  _battery.dataPtr = nullptr;
+  this->dataPtr = std::move(_battery.dataPtr);
   return *this;
 }
 
