@@ -5,6 +5,9 @@
 1. Add PBR material SDF element
    * [Pull request 512](https://bitbucket.org/osrf/sdformat/pull-requests/512)
 
+1. Set geometry shapes
+   * [Pull request 515](https://bitbucket.org/osrf/sdformat/pull-requests/515)
+
 ### SDFormat 8.0.0 (2019-03-01)
 
 1. Rename depth camera from 'depth' to 'depth_camera'
