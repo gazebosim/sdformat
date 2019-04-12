@@ -40,6 +40,7 @@ set (sources
   Physics.cc
   Plane.cc
   Root.cc
+  Scene.cc
   SDF.cc
   SDFExtension.cc
   Sensor.cc
@@ -105,6 +106,7 @@ set (gtest_sources
   Physics_TEST.cc
   Plane_TEST.cc
   Root_TEST.cc
+  Scene_TEST.cc
   SDF_TEST.cc
   Sensor_TEST.cc
   Sphere_TEST.cc
