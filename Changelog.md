@@ -3,7 +3,7 @@
 ### SDFormat 8.X.X (201X-XX-XX)
 
 1. Add Scene SDF DOM
-   * [Pull request ](https://bitbucket.org/osrf/sdformat/pull-requests/)
+   * [Pull request 517](https://bitbucket.org/osrf/sdformat/pull-requests/517)
 
 1. Add PBR material SDF element
    * [Pull request 512](https://bitbucket.org/osrf/sdformat/pull-requests/512)
