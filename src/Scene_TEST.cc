@@ -94,14 +94,14 @@ TEST(DOMScene, AssignmentOperator)
 {
   sdf::Scene scene;
   scene.SetAmbient(ignition::math::Color::Red);
-  scene.SetBackground(ignition::math::Color(0.2, 0.3, 0.4));
+  scene.SetBackground(ignition::math::Color(0.2f, 0.3f, 0.4f));
   scene.SetGrid(true);
   scene.SetShadows(true);
   scene.SetOriginVisual(true);
 
   sdf::Scene scene2 = scene;
   EXPECT_EQ(ignition::math::Color::Red, scene2.Ambient());
-  EXPECT_EQ(ignition::math::Color(0.2, 0.3, 0.4), scene2.Background());
+  EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f), scene2.Background());
   EXPECT_TRUE(scene2.Grid());
   EXPECT_TRUE(scene2.Shadows());
   EXPECT_TRUE(scene2.OriginVisual());
@@ -111,11 +111,11 @@ TEST(DOMScene, AssignmentOperator)
 TEST(DOMScene, Set)
 {
   sdf::Scene scene;
-  scene.SetAmbient(ignition::math::Color(0.1, 0.2, 0.3));
-  EXPECT_EQ(ignition::math::Color(0.1, 0.2, 0.3), scene.Ambient());
+  scene.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f));
+  EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f), scene.Ambient());
 
-  scene.SetBackground(ignition::math::Color(0.1, 0.2, 0.3));
-  EXPECT_EQ(ignition::math::Color(0.1, 0.2, 0.3), scene.Ambient());
+  scene.SetBackground(ignition::math::Color(0.1f, 0.2f, 0.3f));
+  EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f), scene.Ambient());
 
   scene.SetGrid(true);
   EXPECT_TRUE(scene.Grid());
