@@ -22,11 +22,11 @@
 TEST(DOMScene, Construction)
 {
   sdf::Scene scene;
-  EXPECT_EQ(ignition::math::Color::Black, scene.Ambient());
-  EXPECT_EQ(ignition::math::Color::Black, scene.Background());
-  EXPECT_FALSE(scene.Grid());
-  EXPECT_FALSE(scene.Shadows());
-  EXPECT_FALSE(scene.OriginVisual());
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.4f, 0.4f), scene.Ambient());
+  EXPECT_EQ(ignition::math::Color(0.7f, 0.7f, 0.7f), scene.Background());
+  EXPECT_TRUE(scene.Grid());
+  EXPECT_TRUE(scene.Shadows());
+  EXPECT_TRUE(scene.OriginVisual());
 }
 
 /////////////////////////////////////////////////
@@ -38,16 +38,16 @@ TEST(DOMScene, CopyConstruction)
   scene.Load(sdf);
   scene.SetAmbient(ignition::math::Color::Blue);
   scene.SetBackground(ignition::math::Color::Red);
-  scene.SetGrid(true);
-  scene.SetShadows(true);
-  scene.SetOriginVisual(true);
+  scene.SetGrid(false);
+  scene.SetShadows(false);
+  scene.SetOriginVisual(false);
 
   sdf::Scene scene2(scene);
   EXPECT_EQ(ignition::math::Color::Blue, scene2.Ambient());
   EXPECT_EQ(ignition::math::Color::Red, scene2.Background());
-  EXPECT_TRUE(scene2.Grid());
-  EXPECT_TRUE(scene2.Shadows());
-  EXPECT_TRUE(scene2.OriginVisual());
+  EXPECT_FALSE(scene2.Grid());
+  EXPECT_FALSE(scene2.Shadows());
+  EXPECT_FALSE(scene2.OriginVisual());
 
   EXPECT_NE(nullptr, scene2.Element());
   EXPECT_EQ(scene.Element(), scene2.Element());
@@ -59,16 +59,16 @@ TEST(DOMScene, MoveConstruction)
   sdf::Scene scene;
   scene.SetAmbient(ignition::math::Color::Blue);
   scene.SetBackground(ignition::math::Color::Red);
-  scene.SetGrid(true);
-  scene.SetShadows(true);
-  scene.SetOriginVisual(true);
+  scene.SetGrid(false);
+  scene.SetShadows(false);
+  scene.SetOriginVisual(false);
 
   sdf::Scene scene2(std::move(scene));
   EXPECT_EQ(ignition::math::Color::Blue, scene2.Ambient());
   EXPECT_EQ(ignition::math::Color::Red, scene2.Background());
-  EXPECT_TRUE(scene2.Grid());
-  EXPECT_TRUE(scene2.Shadows());
-  EXPECT_TRUE(scene2.OriginVisual());
+  EXPECT_FALSE(scene2.Grid());
+  EXPECT_FALSE(scene2.Shadows());
+  EXPECT_FALSE(scene2.OriginVisual());
 }
 
 /////////////////////////////////////////////////
@@ -77,16 +77,17 @@ TEST(DOMScene, MoveAssignmentOperator)
   sdf::Scene scene;
   scene.SetAmbient(ignition::math::Color::Green);
   scene.SetBackground(ignition::math::Color::White);
-  scene.SetGrid(true);
-  scene.SetShadows(true);
-  scene.SetOriginVisual(true);
+  scene.SetGrid(false);
+  scene.SetShadows(false);
+  scene.SetOriginVisual(false);
 
-  sdf::Scene scene2 = std::move(scene);
+  sdf::Scene scene2;
+  scene2 = std::move(scene);
   EXPECT_EQ(ignition::math::Color::Green, scene2.Ambient());
   EXPECT_EQ(ignition::math::Color::White, scene2.Background());
-  EXPECT_TRUE(scene2.Grid());
-  EXPECT_TRUE(scene2.Shadows());
-  EXPECT_TRUE(scene2.OriginVisual());
+  EXPECT_FALSE(scene2.Grid());
+  EXPECT_FALSE(scene2.Shadows());
+  EXPECT_FALSE(scene2.OriginVisual());
 }
 
 /////////////////////////////////////////////////
@@ -95,16 +96,17 @@ TEST(DOMScene, AssignmentOperator)
   sdf::Scene scene;
   scene.SetAmbient(ignition::math::Color::Red);
   scene.SetBackground(ignition::math::Color(0.2f, 0.3f, 0.4f));
-  scene.SetGrid(true);
-  scene.SetShadows(true);
-  scene.SetOriginVisual(true);
+  scene.SetGrid(false);
+  scene.SetShadows(false);
+  scene.SetOriginVisual(false);
 
-  sdf::Scene scene2 = scene;
+  sdf::Scene scene2;
+  scene2 = scene;
   EXPECT_EQ(ignition::math::Color::Red, scene2.Ambient());
   EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f), scene2.Background());
-  EXPECT_TRUE(scene2.Grid());
-  EXPECT_TRUE(scene2.Shadows());
-  EXPECT_TRUE(scene2.OriginVisual());
+  EXPECT_FALSE(scene2.Grid());
+  EXPECT_FALSE(scene2.Shadows());
+  EXPECT_FALSE(scene2.OriginVisual());
 }
 
 /////////////////////////////////////////////////

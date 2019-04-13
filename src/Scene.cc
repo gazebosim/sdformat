@@ -23,19 +23,21 @@ using namespace sdf;
 class sdf::ScenePrivate
 {
   /// \brief True if grid should be enabled
-  public: bool grid = false;
+  public: bool grid = true;
 
   /// \brief True if shadows should be enabled
-  public: bool shadows = false;
+  public: bool shadows = true;
 
   /// \brief True if originVisual should be enabled
-  public: bool originVisual = false;
+  public: bool originVisual = true;
 
   /// \brief Ambient light color of the scene.
-  public: ignition::math::Color ambient;
+  public: ignition::math::Color ambient =
+      ignition::math::Color(0.4f, 0.4f, 0.4f);
 
   /// \brief Background color of the scene.
-  public: ignition::math::Color background;
+  public: ignition::math::Color background =
+      ignition::math::Color(0.7f, 0.7f, .7f);
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -77,7 +79,7 @@ Scene &Scene::operator=(const Scene &_scene)
 /////////////////////////////////////////////////
 Scene &Scene::operator=(Scene &&_scene)
 {
-  this->dataPtr = _scene.dataPtr;
+  *this->dataPtr = std::move(*_scene.dataPtr);
   _scene.dataPtr = nullptr;
   return *this;
 }
