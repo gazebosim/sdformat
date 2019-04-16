@@ -42,6 +42,9 @@ class sdf::WorldPrivate
   /// \brief Pointer to Gui parameters.
   public: std::unique_ptr<Gui> gui;
 
+  /// \brief Pointer to Sene parameters.
+  public: std::unique_ptr<Scene> scene;
+
   /// \brief The lights specified in this world.
   public: std::vector<Light> lights;
 
@@ -175,6 +178,15 @@ Errors World::Load(sdf::ElementPtr _sdf)
     errors.insert(errors.end(), guiLoadErrors.begin(), guiLoadErrors.end());
   }
 
+  // Load the Scene
+  if (_sdf->HasElement("scene"))
+  {
+    this->dataPtr->scene.reset(new sdf::Scene());
+    Errors sceneLoadErrors =
+        this->dataPtr->scene->Load(_sdf->GetElement("scene"));
+    errors.insert(errors.end(), sceneLoadErrors.begin(), sceneLoadErrors.end());
+  }
+
   return errors;
 }
 
@@ -287,6 +299,18 @@ sdf::Gui *World::Gui() const
 void World::SetGui(const sdf::Gui &_gui)
 {
   return this->dataPtr->gui.reset(new sdf::Gui(_gui));
+}
+
+/////////////////////////////////////////////////
+const sdf::Scene *World::Scene() const
+{
+  return this->dataPtr->scene.get();
+}
+
+/////////////////////////////////////////////////
+void World::SetScene(const sdf::Scene &_scene)
+{
+  return this->dataPtr->scene.reset(new sdf::Scene(_scene));
 }
 
 /////////////////////////////////////////////////

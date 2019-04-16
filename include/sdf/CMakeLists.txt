@@ -25,6 +25,7 @@ set (headers
   Physics.hh
   Plane.hh
   Root.hh
+  Scene.hh
   SDFImpl.hh
   Sensor.hh
   Sphere.hh
