@@ -176,7 +176,7 @@ namespace sdf
     /// world. A nullptr indicates that a Scene element has not been specified.
     /// \return Pointer to this world's Scene parameters. Nullptr inidicates
     /// that there are no Scene parameters.
-    public: sdf::Scene *Scene() const;
+    public: const sdf::Scene *Scene() const;
 
     /// \brief Set the Scene parameters associated with this world.
     /// \param[in] _gui The new Scene parameter for this world

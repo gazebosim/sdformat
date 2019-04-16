@@ -302,7 +302,7 @@ void World::SetGui(const sdf::Gui &_gui)
 }
 
 /////////////////////////////////////////////////
-sdf::Scene *World::Scene() const
+const sdf::Scene *World::Scene() const
 {
   return this->dataPtr->scene.get();
 }
