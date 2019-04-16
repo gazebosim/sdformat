@@ -1,30 +1,30 @@
 set (sdfs
-  actor.sdf 
+  actor.sdf
   camera.sdf
-  collision.sdf 
+  collision.sdf
   contact.sdf
-  gazebo.sdf 
-  geometry.sdf 
+  gazebo.sdf
+  geometry.sdf
   gripper.sdf
   gui.sdf
-  inertial.sdf 
-  joint.sdf 
-  light.sdf 
-  link.sdf 
-  model.sdf 
-  physics.sdf 
-  plugin.sdf 
+  inertial.sdf
+  joint.sdf
+  light.sdf
+  link.sdf
+  model.sdf
+  physics.sdf
+  plugin.sdf
   projector.sdf
   ray.sdf
   rfidtag.sdf
   rfid.sdf
   road.sdf
-  scene.sdf 
-  sensor.sdf 
+  scene.sdf
+  sensor.sdf
   state.sdf
-  surface.sdf 
-  visual.sdf 
+  surface.sdf
+  visual.sdf
   world.sdf
 )
 
-install(FILES ${sdfs} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sdformat/1.0/)
+install(FILES ${sdfs} DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/sdformat/1.0/)

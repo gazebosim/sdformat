@@ -33,6 +33,7 @@
 *********************************************************************/
 
 /* Author: Wim Meeussen */
+#pragma warning(push, 0)
 
 #include "urdf_parser/urdf_parser.h"
 #include <iostream>
@@ -40,11 +41,11 @@
 
 using namespace urdf;
 
-void printTree(boost::shared_ptr<const Link> link,int level = 0)
+void printTree(LinkConstSharedPtr link,int level = 0)
 {
   level+=2;
   int count = 0;
-  for (std::vector<boost::shared_ptr<Link> >::const_iterator child = link->child_links.begin(); child != link->child_links.end(); child++)
+  for (std::vector<LinkSharedPtr>::const_iterator child = link->child_links.begin(); child != link->child_links.end(); child++)
   {
     if (*child)
     {
@@ -80,7 +81,7 @@ int main(int argc, char** argv)
   }
   xml_file.close();
 
-  boost::shared_ptr<ModelInterface> robot = parseURDF(xml_string);
+  ModelInterfaceSharedPtr robot = parseURDF(xml_string);
   if (!robot){
     std::cerr << "ERROR: Model Parsing the xml failed" << std::endl;
     return -1;
@@ -90,7 +91,7 @@ int main(int argc, char** argv)
   // get info from parser
   std::cout << "---------- Successfully Parsed XML ---------------" << std::endl;
   // get root link
-  boost::shared_ptr<const Link> root_link=robot->getRoot();
+  LinkConstSharedPtr root_link=robot->getRoot();
   if (!root_link) return -1;
 
   std::cout << "root Link: " << root_link->name << " has " << root_link->child_links.size() << " child(ren)" << std::endl;
@@ -101,3 +102,4 @@ int main(int argc, char** argv)
   return 0;
 }
 
+#pragma warning(pop)

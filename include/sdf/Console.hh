@@ -13,39 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
-#ifndef _SDF_CONSOLE_HH_
-#define _SDF_CONSOLE_HH_
+#ifndef SDF_CONSOLE_HH_
+#define SDF_CONSOLE_HH_
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <memory>
 #include <string>
 
-#include <boost/shared_ptr.hpp>
-
+#include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
+
+#ifdef _WIN32
+// Disable warning C4251 which is triggered by
+// std::unique_ptr
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \addtogroup sdf SDF
   /// \{
 
   /// \brief Output a debug message
-  #define sdfdbg (sdf::Console::Instance()->Log("Dbg", \
-    __FILE__, __LINE__))
+  #define sdfdbg (sdf::Console::Instance()->Log("Dbg", __FILE__, __LINE__))
 
   /// \brief Output a message
   #define sdfmsg (sdf::Console::Instance()->ColorMsg("Msg", \
-    __FILE__, __LINE__, 32))
+                                                     __FILE__, __LINE__, 32))
 
   /// \brief Output a warning message
   #define sdfwarn (sdf::Console::Instance()->ColorMsg("Warning", \
-        __FILE__, __LINE__, 33))
+                                                      __FILE__, __LINE__, 33))
 
   /// \brief Output an error message
   #define sdferr (sdf::Console::Instance()->ColorMsg("Error", \
-        __FILE__, __LINE__, 31))
+                                                     __FILE__, __LINE__, 31))
+
+  class ConsolePrivate;
+  class Console;
+
+  /// \def ConsolePtr
+  /// \brief Shared pointer to a Console Element
+  typedef std::shared_ptr<Console> ConsolePtr;
 
   /// \brief Message, error, warning, and logging functionality
   class SDFORMAT_VISIBLE Console
@@ -54,8 +71,8 @@ namespace sdf
     public: class SDFORMAT_VISIBLE ConsoleStream
     {
       /// \brief Constructor.
-      /// \param[in] _stream Pointer to an output stream operator. Can bee
-      /// NULL.
+      /// \param[in] _stream Pointer to an output stream operator. Can be
+      /// NULL/nullptr.
       public: ConsoleStream(std::ostream *_stream) :
               stream(_stream) {}
 
@@ -64,19 +81,7 @@ namespace sdf
       /// \param[in] _rhs Content to be logged.
       /// \return Reference to myself.
       public: template <class T>
-        ConsoleStream &operator<<(const T &_rhs)
-        {
-          if (this->stream)
-            *this->stream << _rhs;
-
-          if (Console::Instance()->logFileStream.is_open())
-          {
-            Console::Instance()->logFileStream << _rhs;
-            Console::Instance()->logFileStream.flush();
-          }
-
-          return *this;
-        }
+        ConsoleStream &operator<<(const T &_rhs);
 
       /// \brief Print a prefix to both terminal and log file.
       /// \param[in] _lbl Text label
@@ -85,25 +90,9 @@ namespace sdf
       /// \param[in] _color Color to make the label.  Used only on terminal.
       public: void Prefix(const std::string &_lbl,
                           const std::string &_file,
-                          unsigned int _line, int _color)
-        {
-          int index = _file.find_last_of("/") + 1;
+                          unsigned int _line, int _color);
 
-          if (this->stream)
-          {
-            *this->stream << "\033[1;" << _color << "m" << _lbl << " [" <<
-              _file.substr(index , _file.size() - index)<< ":" << _line <<
-              "]\033[0m ";
-          }
-
-          if (Console::Instance()->logFileStream.is_open())
-          {
-            Console::Instance()->logFileStream << _lbl << " [" <<
-              _file.substr(index , _file.size() - index)<< ":" << _line << "] ";
-          }
-        }
-
-      /// \brief The ostream to log to; can be NULL.
+      /// \brief The ostream to log to; can be NULL/nullptr.
       private: std::ostream *stream;
     };
 
@@ -114,7 +103,10 @@ namespace sdf
     public: virtual ~Console();
 
     /// \brief Return an instance to this class.
-    public: static boost::shared_ptr<Console> Instance();
+    public: static ConsolePtr Instance();
+
+    /// \brief Clear out the current console to make room for a new one.
+    public: static void Clear();
 
     /// \brief Set quiet output
     /// \param[in] q True to prevent warning
@@ -136,18 +128,52 @@ namespace sdf
                                const std::string &file,
                                unsigned int line);
 
+    /// \internal
+    /// \brief Pointer to private data.
+    private: std::unique_ptr<ConsolePrivate> dataPtr;
+  };
+
+  /// \internal
+  /// \brief Private data for Console
+  class ConsolePrivate
+  {
+    /// \brief Constructor
+    public: ConsolePrivate() : msgStream(&std::cerr), logStream(nullptr) {}
+
     /// \brief message stream
-    private: ConsoleStream msgStream;
+    public: Console::ConsoleStream msgStream;
 
     /// \brief log stream
-    private: ConsoleStream logStream;
+    public: Console::ConsoleStream logStream;
 
     /// \brief logfile stream
-    private: std::ofstream logFileStream;
-
-    /// \brief Pointer to myself
-    private: static boost::shared_ptr<Console> myself;
+    public: std::ofstream logFileStream;
   };
+
+  ///////////////////////////////////////////////
+  template <class T>
+  Console::ConsoleStream &Console::ConsoleStream::operator<<(const T &_rhs)
+  {
+    if (this->stream)
+    {
+      *this->stream << _rhs;
+    }
+
+    if (Console::Instance()->dataPtr->logFileStream.is_open())
+    {
+      Console::Instance()->dataPtr->logFileStream << _rhs;
+      Console::Instance()->dataPtr->logFileStream.flush();
+    }
+
+    return *this;
+  }
+  }
+
   /// \}
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
+
 #endif

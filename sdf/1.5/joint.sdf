@@ -7,7 +7,16 @@
   </attribute>
 
   <attribute name="type" type="string" default="__default__" required="1">
-    <description>The type of joint, which must be one of the following: (revolute) a hinge joint that rotates on a single axis with either a fixed or continuous range of motion, (gearbox) geared revolute joints, (revolute2) same as two revolute joints connected in series, (prismatic) a sliding joint that slides along an axis with a limited range specified by upper and lower limits, (ball) a ball and socket joint, (universal), like a ball joint, but constrains one degree of freedom, (piston) similar to a Slider joint except that rotation around the translation axis is possible.</description>
+    <description>The type of joint, which must be one of the following:
+      (revolute) a hinge joint that rotates on a single axis with either a fixed or continuous range of motion,
+      (gearbox) geared revolute joints,
+      (revolute2) same as two revolute joints connected in series,
+      (prismatic) a sliding joint that slides along an axis with a limited range specified by upper and lower limits,
+      (ball) a ball and socket joint,
+      (screw) a single degree of freedom joint with coupled sliding and rotational motion,
+      (universal) like a ball joint, but constrains one degree of freedom,
+      (fixed) a joint with zero degrees of freedom that rigidly connects two links.
+    </description>
   </attribute>
 
   <element name="parent" type="string" default="__default__" required="1">
@@ -17,10 +26,6 @@
   <element name="child" type="string" default="__default__" required="1">
     <description>Name of the child link</description>
   </element> <!-- End Child -->
-
-  <element name="pose"  type="pose" default="0 0 0 0 0 0" required="0">
-    <description>Pose offset from child link frame to joint frame (expressed in child link frame).</description>
-  </element>
 
   <element name="gearbox_ratio" type="double" default="1.0" required="0">
     <description>Parameter for gearbox joints.  Given theta_1 and theta_2 defined in description for gearbox_reference_body, theta_2 = -gearbox_ratio * theta_1.</description>
@@ -34,7 +39,7 @@
     <description>Parameter for screw joints.</description>
   </element>
 
-  <element name="axis" required="1">
+  <element name="axis" required="0">
     <description>
       Parameters related to the axis of rotation for revolute joints,
       the axis of translation for prismatic joints.
@@ -221,5 +226,7 @@
     </element>
   </element> <!-- End Physics -->
 
+  <include filename="frame.sdf" required="*"/>
+  <include filename="pose.sdf" required="0"/>
   <include filename="sensor.sdf" required="*"/>
 </element> <!-- End Joint -->

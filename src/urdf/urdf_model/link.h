@@ -36,20 +36,18 @@
 
 #ifndef URDF_INTERFACE_LINK_H
 #define URDF_INTERFACE_LINK_H
-#include "visible.h"
 
 #include <string>
 #include <vector>
 #include <map>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
 
 #include "joint.h"
 #include "color.h"
+#include "types.h"
 
 namespace urdf{
 
-class SDFORMAT_HIDDEN Geometry
+class Geometry
 {
 public:
   enum {SPHERE, BOX, CYLINDER, MESH} type;
@@ -59,10 +57,10 @@ public:
   }  
 };
 
-class SDFORMAT_HIDDEN Sphere : public Geometry
+class Sphere : public Geometry
 {
 public:
-  Sphere() { this->clear(); };
+  Sphere() { this->clear(); type = SPHERE; };
   double radius;
 
   void clear()
@@ -71,10 +69,10 @@ public:
   };
 };
 
-class SDFORMAT_HIDDEN Box : public Geometry
+class Box : public Geometry
 {
 public:
-  Box() { this->clear(); };
+  Box() { this->clear(); type = BOX; };
   Vector3 dim;
 
   void clear()
@@ -83,10 +81,10 @@ public:
   };
 };
 
-class SDFORMAT_HIDDEN Cylinder : public Geometry
+class Cylinder : public Geometry
 {
 public:
-  Cylinder() { this->clear(); };
+  Cylinder() { this->clear(); type = CYLINDER; };
   double length;
   double radius;
 
@@ -97,10 +95,10 @@ public:
   };
 };
 
-class SDFORMAT_HIDDEN Mesh : public Geometry
+class Mesh : public Geometry
 {
 public:
-  Mesh() { this->clear(); };
+  Mesh() { this->clear(); type = MESH; };
   std::string filename;
   Vector3 scale;
 
@@ -114,7 +112,7 @@ public:
   };
 };
 
-class SDFORMAT_HIDDEN Material
+class Material
 {
 public:
   Material() { this->clear(); };
@@ -130,7 +128,7 @@ public:
   };
 };
 
-class SDFORMAT_HIDDEN Inertial
+class Inertial
 {
 public:
   Inertial() { this->clear(); };
@@ -146,15 +144,15 @@ public:
   };
 };
 
-class SDFORMAT_HIDDEN Visual
+class Visual
 {
 public:
   Visual() { this->clear(); };
   Pose origin;
-  boost::shared_ptr<Geometry> geometry;
+  GeometrySharedPtr geometry;
 
   std::string material_name;
-  boost::shared_ptr<Material> material;
+  MaterialSharedPtr material;
 
   void clear()
   {
@@ -162,29 +160,32 @@ public:
     material_name.clear();
     material.reset();
     geometry.reset();
-    this->group_name.clear();
+    name.clear();
   };
-  std::string group_name;
+
+  std::string name;
 };
 
-class SDFORMAT_HIDDEN Collision
+class Collision
 {
 public:
   Collision() { this->clear(); };
   Pose origin;
-  boost::shared_ptr<Geometry> geometry;
+  GeometrySharedPtr geometry;
 
   void clear()
   {
     origin.clear();
     geometry.reset();
-    this->group_name.clear();
+    name.clear();
   };
-  std::string group_name;
+
+  std::string name;
+
 };
 
 
-class SDFORMAT_HIDDEN Link
+class Link
 {
 public:
   Link() { this->clear(); };
@@ -192,32 +193,32 @@ public:
   std::string name;
 
   /// inertial element
-  boost::shared_ptr<Inertial> inertial;
+  InertialSharedPtr inertial;
 
   /// visual element
-  boost::shared_ptr<Visual> visual;
+  VisualSharedPtr visual;
 
   /// collision element
-  boost::shared_ptr<Collision> collision;
+  CollisionSharedPtr collision;
 
-  /// a collection of visual elements, keyed by a string tag called "group"
-  std::map<std::string, boost::shared_ptr<std::vector<boost::shared_ptr<Visual> > > > visual_groups;
+  /// if more than one collision element is specified, all collision elements are placed in this array (the collision member points to the first element of the array)
+  std::vector<CollisionSharedPtr> collision_array;
 
-  /// a collection of collision elements, keyed by a string tag called "group"
-  std::map<std::string, boost::shared_ptr<std::vector<boost::shared_ptr<Collision> > > > collision_groups;
+  /// if more than one visual element is specified, all visual elements are placed in this array (the visual member points to the first element of the array)
+  std::vector<VisualSharedPtr> visual_array;
 
   /// Parent Joint element
   ///   explicitly stating "parent" because we want directional-ness for tree structure
   ///   every link can have one parent
-  boost::shared_ptr<Joint> parent_joint;
+  JointSharedPtr parent_joint;
 
-  std::vector<boost::shared_ptr<Joint> > child_joints;
-  std::vector<boost::shared_ptr<Link> > child_links;
+  std::vector<JointSharedPtr> child_joints;
+  std::vector<LinkSharedPtr> child_links;
 
-  boost::shared_ptr<Link> getParent() const
+  LinkSharedPtr getParent() const
   {return parent_link_.lock();};
 
-  void setParent(const boost::shared_ptr<Link> &parent)
+  void setParent(const LinkSharedPtr &parent)
   { parent_link_ = parent; }
   
   void clear()
@@ -229,32 +230,12 @@ public:
     this->parent_joint.reset();
     this->child_joints.clear();
     this->child_links.clear();
-    this->collision_groups.clear();
+    this->collision_array.clear();
+    this->visual_array.clear();
   };
 
-  boost::shared_ptr<std::vector<boost::shared_ptr<Visual > > > getVisuals(const std::string& group_name) const
-  {
-    if (this->visual_groups.find(group_name) != this->visual_groups.end())
-      return this->visual_groups.at(group_name);
-    return boost::shared_ptr<std::vector<boost::shared_ptr<Visual > > >();
-  }
-
-  boost::shared_ptr<std::vector<boost::shared_ptr<Collision > > > getCollisions(const std::string& group_name) const
-  {
-    if (this->collision_groups.find(group_name) != this->collision_groups.end())
-      return this->collision_groups.at(group_name);
-    return boost::shared_ptr<std::vector<boost::shared_ptr<Collision > > >();
-  }
-  
-  /*
-  void setParentJoint(boost::shared_ptr<Joint> child);
-  void addChild(boost::shared_ptr<Link> child);
-  void addChildJoint(boost::shared_ptr<Joint> child);
-
-
-  */
 private:
-  boost::weak_ptr<Link> parent_link_;
+  LinkWeakPtr parent_link_;
 
 };
 

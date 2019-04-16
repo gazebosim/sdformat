@@ -2,14 +2,37 @@ include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 set (headers
   Assert.hh
+  Atmosphere.hh
+  Box.hh
+  Collision.hh
   Console.hh
-  Converter.hh
+  Cylinder.hh
+  Element.hh
+  Error.hh
   Exception.hh
+  Filesystem.hh
+  Geometry.hh
+  Gui.hh
+  Joint.hh
+  JointAxis.hh
+  Light.hh
+  Link.hh
+  Material.hh
+  Mesh.hh
+  Model.hh
   Param.hh
   parser.hh
+  Physics.hh
+  Plane.hh
+  Root.hh
+  Scene.hh
   SDFImpl.hh
+  Sensor.hh
+  Sphere.hh
   Types.hh
   system_util.hh
+  Visual.hh
+  World.hh
 )
 
 set (sdf_headers "" CACHE INTERNAL "SDF headers" FORCE)

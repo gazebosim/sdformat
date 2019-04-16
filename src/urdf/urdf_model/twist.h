@@ -36,7 +36,6 @@
 
 #ifndef URDF_TWIST_H
 #define URDF_TWIST_H
-#include "visible.h"
 
 #include <string>
 #include <sstream>
@@ -47,7 +46,7 @@
 namespace urdf{
 
 
-class SDFORMAT_HIDDEN Twist
+class Twist
 {
 public:
   Twist() { this->clear(); };

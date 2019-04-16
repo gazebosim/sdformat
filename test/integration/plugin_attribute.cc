@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <sstream>
+#include <string>
 
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
-#include <string>
-#include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "sdf/sdf.hh"
 
 std::string get_sdf_string()
 {
@@ -33,7 +33,8 @@ std::string get_sdf_string()
     << "    <user attribute='attribute' />"
     << "    <value attribute='attribute'>value</value>"
     << "  </plugin>"
-    << "</model>";
+    << "</model>"
+    << "</sdf>";
   return stream.str();
 }
 
@@ -41,25 +42,12 @@ std::string get_sdf_string()
 // make sure that plugin attributes get parsed
 TEST(PluginAttribute, ParseAttributes)
 {
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr model(new sdf::SDF());
   sdf::init(model);
   ASSERT_TRUE(sdf::readString(get_sdf_string(), model));
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 
   sdf::ElementPtr plugin =
-    model->root->GetElement("model")->GetElement("plugin");
+    model->Root()->GetElement("model")->GetElement("plugin");
   ASSERT_TRUE(plugin->HasElement("user"));
   {
     sdf::ElementPtr user = plugin->GetElement("user");

@@ -1,0 +1,126 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="test">
+    <link name="link1">
+    </link>
+    <link name="link2">
+    </link>
+    <link name="link3">
+    </link>
+    <link name="link4">
+    </link>
+    <link name="link5">
+    </link>
+    <link name="link6">
+    </link>
+    <link name="link7">
+    </link>
+    <link name="link8">
+    </link>
+    <link name="link9">
+    </link>
+    <link name="link10">
+    </link>
+
+    <joint name="revolute_joint" type="revolute">
+      <pose>1 0 0 0 0 0</pose>
+      <child>link1</child>
+      <parent>link2</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <use_parent_model_frame>true</use_parent_model_frame>
+        <limit>
+          <lower>-0.5</lower>
+          <upper>0.5</upper>
+          <effort>123.4</effort>
+          <velocity>12</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.1</damping>
+          <friction>0.2</friction>
+          <spring_reference>1.3</spring_reference>
+          <spring_stiffness>10.6</spring_stiffness>
+        </dynamics>
+      </axis>
+      <axis2>
+        <xyz>0 1 0</xyz>
+        <use_parent_model_frame>false</use_parent_model_frame>
+        <limit>
+          <lower>-1</lower>
+          <upper>1</upper>
+          <effort>0.5</effort>
+          <velocity>200</velocity>
+        </limit>
+      </axis2>
+      <physics>
+        <ode>
+          <cfm_damping>1</cfm_damping>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <joint name="ball_joint" type="ball">
+      <pose>0 1 0 0 0 0</pose>
+      <child>link2</child>
+      <parent>link3</parent>
+    </joint>
+    <joint name="continuous_joint" type="continuous">
+      <pose>0 0 1 0 0 0</pose>
+      <child>link3</child>
+      <parent>link4</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+    <joint name="fixed_joint" type="fixed">
+      <pose>0 0 0 1 0 0</pose>
+      <child>link4</child>
+      <parent>link5</parent>
+    </joint>
+    <joint name="gearbox_joint" type="gearbox">
+      <pose>0 0 0 0 1 0</pose>
+      <child>link5</child>
+      <parent>link6</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+    <joint name="prismatic_joint" type="prismatic">
+      <pose>0 0 0 0 0 1</pose>
+      <child>link6</child>
+      <parent>link7</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+    <joint name="revolute2_joint" type="revolute2">
+      <pose>2 0 0 0 0 0</pose>
+      <child>link7</child>
+      <parent>link8</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+    <joint name="screw_joint" type="screw">
+      <pose>0 2 0 0 0 0</pose>
+      <child>link8</child>
+      <parent>link9</parent>
+      <thread_pitch>20</thread_pitch>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+    <joint name="universal_joint" type="universal">
+      <pose>0 0 2 0 0 0</pose>
+      <child>link9</child>
+      <parent>link10</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+  </model>
+</sdf>

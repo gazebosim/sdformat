@@ -33,12 +33,11 @@
 *********************************************************************/
 
 /* Author: John Hsu */
-
+#pragma warning(push, 0)
 
 #include <urdf_model/twist.h>
 #include <fstream>
 #include <sstream>
-#include <boost/lexical_cast.hpp>
 #include <algorithm>
 #include <tinyxml.h>
 //#include <console_bridge/console.h>
@@ -58,7 +57,6 @@ bool parseTwist(Twist &twist, TiXmlElement* xml)
       }
       catch (ParseError &e) {
         twist.linear.clear();
-        //logError("Malformed linear string [%s]: %s", linear_char, e.what());
         return false;
       }
     }
@@ -71,7 +69,6 @@ bool parseTwist(Twist &twist, TiXmlElement* xml)
       }
       catch (ParseError &e) {
         twist.angular.clear();
-        //logError("Malformed angular [%s]: %s", angular_char, e.what());
         return false;
       }
     }
@@ -81,5 +78,4 @@ bool parseTwist(Twist &twist, TiXmlElement* xml)
 
 }
 
-
-
+#pragma warning(pop)

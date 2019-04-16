@@ -15,17 +15,31 @@
  *
 */
 
-#ifndef _SDF_EXCEPTION_HH_
-#define _SDF_EXCEPTION_HH_
+#ifndef SDF_EXCEPTION_HH_
+#define SDF_EXCEPTION_HH_
 
+#include <cstdint>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 
+#include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
+
+#ifdef _WIN32
+// Disable warning C4251 which is triggered by
+// std::unique_ptr
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \addtogroup sdf
   /// \{
 
@@ -34,6 +48,8 @@ namespace sdf
   #define sdfthrow(msg) {std::ostringstream throwStream;\
     throwStream << msg << std::endl << std::flush;\
     throw sdf::Exception(__FILE__, __LINE__, throwStream.str()); }
+
+  class ExceptionPrivate;
 
   /// \class Exception Exception.hh common/common.hh
   /// \brief Class for generating exceptions
@@ -47,8 +63,12 @@ namespace sdf
     /// \param[in] _line Line number where the error occurred
     /// \param[in] _msg Error message
     public: Exception(const char *_file,
-                        int _line,
-                        std::string _msg);
+                      std::int64_t _line,
+                      std::string _msg);
+
+    /// \brief Copy constructor
+    /// \param[in] _e Exception to copy.
+    public: Exception(const Exception &_e);
 
     /// \brief Destructor
     public: virtual ~Exception();
@@ -64,23 +84,18 @@ namespace sdf
     /// \brief Print the exception to std out.
     public: void Print() const;
 
-    /// \brief The error function
-    private: std::string file;
-
-    /// \brief Line the error occured on
-    private: int line;
-
-    /// \brief The error string
-    private: std::string str;
 
     /// \brief stream insertion operator for Gazebo Error
     /// \param[in] _out the output stream
     /// \param[in] _err the exception
     public: friend std::ostream &operator<<(std::ostream& _out,
-                const sdf::Exception &_err)
-            {
-              return _out << _err.GetErrorStr();
-            }
+                                            const sdf::Exception &_err)
+    {
+      return _out << _err.GetErrorStr();
+    }
+
+    /// \brief Private data pointer.
+    private: std::unique_ptr<ExceptionPrivate> dataPtr;
   };
 
   /// \class InternalError Exception.hh common/common.hh
@@ -96,7 +111,7 @@ namespace sdf
     /// \param[in] _file File name
     /// \param[in] _line Line number where the error occurred
     /// \param[in] _msg Error message
-    public: InternalError(const char *_file, int _line,
+    public: InternalError(const char *_file, std::int64_t _line,
                           const std::string _msg);
 
     /// \brief Destructor
@@ -118,7 +133,7 @@ namespace sdf
     /// \param[in] _function Function where assertion failed
     /// \param[in] _msg Function where assertion failed
     public: AssertionInternalError(const char *_file,
-                                   int _line,
+                                   std::int64_t _line,
                                    const std::string _expr,
                                    const std::string _function,
                                    const std::string _msg = "");
@@ -126,6 +141,11 @@ namespace sdf
     public: virtual ~AssertionInternalError();
   };
   /// \}
+  }
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

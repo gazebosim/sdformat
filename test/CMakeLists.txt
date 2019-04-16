@@ -1,25 +1,22 @@
 include_directories (
   ${PROJECT_SOURCE_DIR}/include
   ${PROJECT_BINARY_DIR}/include
-  ${Boost_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/test/gtest/include
   ${PROJECT_SOURCE_DIR}/test/gtest
   ${PROJECT_SOURCE_DIR}/test
+  ${IGNITION-MATH_INCLUDE_DIRS}
 )
 
 link_directories(
-  ${Boost_LIBRARY_DIRS}
+  ${IGNITION-MATH_LIBRARY_DIRS}
 )
 
-if (USE_EXTERNAL_URDF)
-  link_directories(${URDF_LIBRARY_DIRS})
-endif()
-
 if (USE_EXTERNAL_TINYXML)
+  include_directories(${tinyxml_INCLUDE_DIRS})
   link_directories(${tinyxml_LIBRARY_DIRS})
 endif()
 
-configure_file (test_config.h.in ${PROJECT_BINARY_DIR}/test_config.h)
+configure_file(test_config.h.in ${PROJECT_BINARY_DIR}/test_config.h)
 
 # Build gtest
 add_library(gtest STATIC gtest/src/gtest-all.cc)

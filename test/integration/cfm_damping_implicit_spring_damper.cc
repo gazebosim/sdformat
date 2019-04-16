@@ -13,53 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+
+#include <string>
 
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
-#include <map>
+
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
 
-const std::string URDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/cfm_damping_implicit_spring_damper.urdf";
+const std::string URDF_TEST_FILE =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                          "cfm_damping_implicit_spring_damper.urdf");
 
-const std::string SDF_TEST_FILE = std::string(PROJECT_SOURCE_PATH)
-  + "/test/integration/cfm_damping_implicit_spring_damper.sdf";
+const std::string SDF_TEST_FILE =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                          "cfm_damping_implicit_spring_damper.sdf");
 
 /////////////////////////////////////////////////
 TEST(SDFParser, CFMDampingSDFTest)
 {
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
   ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 
-  sdf::ElementPtr model = robot->root->GetElement("model");
+  sdf::ElementPtr model = robot->Root()->GetElement("model");
+  unsigned int jointBitMask = 0;
   for (sdf::ElementPtr joint = model->GetElement("joint"); joint;
        joint = joint->GetNextElement("joint"))
   {
     std::string jointName = joint->Get<std::string>("name");
     if (jointName == "jointw1")
     {
+      jointBitMask |= 0x1;
+
       // No cfm_damping tag was specified
       EXPECT_FALSE(joint->HasElement("physics"));
     }
     else if (jointName == "joint12a")
     {
+      jointBitMask |= 0x2;
+
       // cfm_damping = 0
       ASSERT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
@@ -69,6 +64,8 @@ TEST(SDFParser, CFMDampingSDFTest)
     }
     else if (jointName == "joint12b")
     {
+      jointBitMask |= 0x4;
+
       // cfm_damping = true
       ASSERT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
@@ -78,6 +75,8 @@ TEST(SDFParser, CFMDampingSDFTest)
     }
     else if (jointName == "joint12c")
     {
+      jointBitMask |= 0x8;
+
       // implicit_spring_damper = 0
       ASSERT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
@@ -89,6 +88,8 @@ TEST(SDFParser, CFMDampingSDFTest)
     }
     else if (jointName == "joint12d")
     {
+      jointBitMask |= 0x10;
+
       // implicit_spring_damper = true
       ASSERT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
@@ -98,61 +99,74 @@ TEST(SDFParser, CFMDampingSDFTest)
       EXPECT_TRUE(physics->GetElement("ode")->Get<bool>(
             "implicit_spring_damper"));
     }
+    else
+    {
+      FAIL() << "Unexpected joint name[" << jointName << "]";
+    }
   }
+
+  EXPECT_EQ(jointBitMask, 0x1fu);
 }
 
 /////////////////////////////////////////////////
 TEST(SDFParser, CFMDampingURDFTest)
 {
-  char *pathCStr = getenv("SDF_PATH");
-  boost::filesystem::path path = PROJECT_SOURCE_PATH;
-  path = path / "sdf" / SDF_VERSION;
-  setenv("SDF_PATH", path.string().c_str(), 1);
-
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
   ASSERT_TRUE(sdf::readFile(URDF_TEST_FILE, robot));
-  if (pathCStr)
-  {
-    setenv("SDF_PATH", pathCStr, 1);
-  }
-  else
-  {
-    unsetenv("SDF_PATH");
-  }
 
-  sdf::ElementPtr model = robot->root->GetElement("model");
+  sdf::ElementPtr root = robot->Root();
+  ASSERT_TRUE(root != nullptr);
+  sdf::ElementPtr model = root->GetElement("model");
+  ASSERT_TRUE(model != nullptr);
+  unsigned int jointBitMask = 0;
   for (sdf::ElementPtr joint = model->GetElement("joint"); joint;
        joint = joint->GetNextElement("joint"))
   {
     std::string jointName = joint->Get<std::string>("name");
     if (jointName == "jointw0")
     {
+      jointBitMask |= 0x1;
+
       // No cfm_damping tag was specified
       EXPECT_FALSE(joint->HasElement("physics"));
     }
     else if (jointName == "joint01")
     {
-      // cfmDamping = true
+      jointBitMask |= 0x2;
+
+      // cfmDamping = 1
       ASSERT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
-      ASSERT_TRUE(physics->HasElement("implicit_spring_damper"));
-      EXPECT_TRUE(physics->Get<bool>("implicit_spring_damper"));
+      ASSERT_TRUE(physics->HasElement("ode"));
+      sdf::ElementPtr ode = physics->GetElement("ode");
+      ASSERT_TRUE(ode->HasElement("cfm_damping"));
+      EXPECT_TRUE(ode->Get<bool>("cfm_damping"));
     }
     else if (jointName == "joint12")
     {
+      jointBitMask |= 0x4;
+
       // cfmDamping not provided
-      ASSERT_TRUE(joint->HasElement("physics"));
-      sdf::ElementPtr physics = joint->GetElement("physics");
-      EXPECT_FALSE(physics->HasElement("implicit_spring_damper"));
+      EXPECT_FALSE(joint->HasElement("physics"));
     }
     else if (jointName == "joint13")
     {
+      jointBitMask |= 0x8;
+
       // implicitSpringDamper = 1
       ASSERT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
-      ASSERT_TRUE(physics->HasElement("implicit_spring_damper"));
-      EXPECT_TRUE(physics->Get<bool>("implicit_spring_damper"));
+      ASSERT_TRUE(physics->HasElement("ode"));
+      sdf::ElementPtr ode = physics->GetElement("ode");
+      ASSERT_TRUE(ode->HasElement("implicit_spring_damper"));
+      EXPECT_TRUE(ode->Get<bool>("implicit_spring_damper"));
+    }
+    else
+    {
+      FAIL() << "Unexpected joint name[" << jointName << "]";
     }
   }
+
+  EXPECT_EQ(jointBitMask, 0xfu);
 }

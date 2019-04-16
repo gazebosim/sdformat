@@ -2,10 +2,26 @@
 <robot name="cfm_damping_implicit_spring_damper_conversion_test">
 
   <link name="world"/>
-  <link name="link0"/>
-  <link name="link1"/>
-  <link name="link2"/>
-  <link name="link3"/>
+  <link name="link0">
+    <inertial>
+      <mass value="0.5" />
+    </inertial>
+  </link>
+  <link name="link1">
+    <inertial>
+      <mass value="0.5" />
+    </inertial>
+  </link>
+  <link name="link2">
+    <inertial>
+      <mass value="0.5" />
+    </inertial>
+  </link>
+  <link name="link3">
+    <inertial>
+      <mass value="0.5" />
+    </inertial>
+  </link>
 
   <joint name="jointw0" type="continuous">
     <origin rpy="0 0 1.57079632679" xyz="0 0 1.0"/>

@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
-#include <vector>
+#include <algorithm>
 #include <set>
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/regex.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/filesystem.hpp>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "sdf/SDFImpl.hh"
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
+#include "sdf/SDFImpl.hh"
+#include "sdf/Types.hh"
+
+// This include file is generated at configure time.
+#include "sdf/EmbeddedSdf.hh"
 
 using namespace sdf;
 
@@ -33,15 +37,16 @@ using namespace sdf;
 bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
                         bool _quiet)
 {
-  TiXmlElement *elem = _doc->FirstChildElement("gazebo");
+  SDF_ASSERT(_doc != nullptr, "SDF XML doc is NULL");
 
-  // Replace <gazebo> with <sdf>
-  if (elem && boost::lexical_cast<double>(_toVersion) >= 1.3)
+  TiXmlElement *elem = _doc->FirstChildElement("sdf");
+
+  // Check that the <sdf> element exists
+  if (!elem)
   {
-    elem->SetValue("sdf");
+    sdferr << "<sdf> element does not exist.\n";
+    return false;
   }
-  else if (!elem)
-    elem = _doc->FirstChildElement("sdf");
 
   if (!elem || !elem->Attribute("version"))
   {
@@ -52,7 +57,9 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   std::string origVersion = elem->Attribute("version");
 
   if (origVersion == _toVersion)
+  {
     return true;
+  }
 
   if (!_quiet)
   {
@@ -64,72 +71,41 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 
   elem->SetAttribute("version", _toVersion);
 
-  std::string origVersionStr = origVersion;
-  boost::replace_all(origVersion, ".", "_");
+  // The conversionMap in EmbeddedSdf.hh has keys that represent a version
+  // of SDF to convert from. The values in conversionmap are pairs, where
+  // the first element is the SDF version that the second element will
+  // convert to. For example, the following will convert from 1.4 to 1.5
+  // according to "conversion_xml":
+  //
+  // {"1.4", {"1.5", "conversion_xml"}}
+  std::map<std::string, std::pair<std::string, std::string> >::const_iterator
+    fromIter = conversionMap.find(origVersion);
 
-  std::string filename = sdf::findFile(origVersion + ".convert");
-
-  // Use convert file in the current sdf version folder for conversion. If file
-  // does not exist, then find intermediate convert files and iteratively
-  // convert the sdf elem. Ideally, users should use gzsdf convert so that the
-  // latest sdf versioned file is written and no subsequent conversions are
-  // necessary.
   TiXmlDocument xmlDoc;
-  if (!xmlDoc.LoadFile(filename))
+  std::string toVer = "";
+
+  // Starting with the original SDF version, perform all the conversions
+  // necessary in order to reach the _toVersion.
+  while (fromIter->first != _toVersion && fromIter != conversionMap.end())
   {
-    std::string sdfPath = sdf::findFile("sdformat/");
+    // Get the SDF to version.
+    toVer = fromIter->second.first;
 
-    // find all sdf version dirs in resource path
-    boost::filesystem::directory_iterator endIter;
-    std::set<boost::filesystem::path> sdfDirs;
-    if (boost::filesystem::exists(sdfPath)
-        && boost::filesystem::is_directory(sdfPath))
-    {
-      for (boost::filesystem::directory_iterator dirIter(sdfPath);
-           dirIter != endIter ; ++dirIter)
-      {
-        if (boost::filesystem::is_directory(dirIter->status()))
-        {
-          if (boost::algorithm::ilexicographical_compare(
-              origVersionStr, (*dirIter).path().filename().string()))
-          {
-            sdfDirs.insert((*dirIter));
-          }
-        }
-      }
-    }
+    // Parse and apply the conversion XML.
+    xmlDoc.Parse(fromIter->second.second.c_str());
+    ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
 
-    // loop through sdf dirs and do the intermediate conversions
-    for (std::set<boost::filesystem::path>::iterator it = sdfDirs.begin();
-        it != sdfDirs.end(); ++it)
-    {
-      boost::filesystem::path convertFile
-         = boost::filesystem::operator/((*it).string(), origVersion+".convert");
-      if (boost::filesystem::exists(convertFile))
-      {
-        if (!xmlDoc.LoadFile(convertFile.string()))
-        {
-            sdferr << "Unable to load file[" << convertFile << "]\n";
-            return false;
-        }
-        ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
-        if ((*it).filename() == _toVersion)
-          return true;
-
-        origVersion = (*it).filename().string();
-        boost::replace_all(origVersion, ".", "_");
-      }
-      else
-      {
-        continue;
-      }
-    }
-    sdferr << "Unable to convert from SDF version " << origVersionStr
-        << " to " << _toVersion << "\n";
-    return false;
+    // Get the next conversion XML map element.
+    fromIter = conversionMap.find(toVer);
   }
 
-  ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
+  // Check that we actually converted to the desired final version.
+  if (toVer != _toVersion)
+  {
+    sdferr << "Unable to convert from SDF version " << origVersion
+           << " to " << _toVersion << "\n";
+    return false;
+  }
 
   return true;
 }
@@ -154,8 +130,8 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
   for (TiXmlElement *convertElem = _convert->FirstChildElement("convert");
        convertElem; convertElem = convertElem->NextSiblingElement("convert"))
   {
-    TiXmlElement *elem = NULL;
-    elem = _elem->FirstChildElement(convertElem->Attribute("name"));
+    TiXmlElement *elem = _elem->FirstChildElement(
+        convertElem->Attribute("name"));
     while (elem)
     {
       ConvertImpl(elem, convertElem);
@@ -163,22 +139,33 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
     }
   }
 
-  for (TiXmlElement *renameElem = _convert->FirstChildElement("rename");
-       renameElem; renameElem = renameElem->NextSiblingElement("rename"))
+  for (TiXmlElement *childElem = _convert->FirstChildElement();
+       childElem; childElem = childElem->NextSiblingElement())
   {
-    Rename(_elem, renameElem);
-  }
-
-  for (TiXmlElement *moveElem = _convert->FirstChildElement("move");
-     moveElem; moveElem = moveElem->NextSiblingElement("move"))
-  {
-    Move(_elem, moveElem);
-  }
-
-  for (TiXmlElement *addElem = _convert->FirstChildElement("add");
-     addElem; addElem = addElem->NextSiblingElement("add"))
-  {
-    Add(_elem, addElem);
+    if (childElem->ValueStr() == "rename")
+    {
+      Rename(_elem, childElem);
+    }
+    else if (childElem->ValueStr() == "copy")
+    {
+      Move(_elem, childElem, true);
+    }
+    else if (childElem->ValueStr() == "move")
+    {
+      Move(_elem, childElem, false);
+    }
+    else if (childElem->ValueStr() == "add")
+    {
+      Add(_elem, childElem);
+    }
+    else if (childElem->ValueStr() == "remove")
+    {
+      Remove(_elem, childElem);
+    }
+    else if (childElem->ValueStr() != "convert")
+    {
+      sdferr << "Unknown convert element[" << childElem->ValueStr() << "]\n";
+    }
   }
 }
 
@@ -199,7 +186,9 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
 
   const char *value = GetValue(fromElemName, fromAttrName, _elem);
   if (!value)
+  {
     return;
+  }
 
   if (!toElemName)
   {
@@ -209,21 +198,36 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
 
   TiXmlElement *replaceTo = new TiXmlElement(toElemName);
   if (toAttrName)
+  {
     replaceTo->SetAttribute(toAttrName, value);
+  }
   else
   {
     TiXmlText *text = new TiXmlText(value);
+    // The tinyxml function LinkEndChild takes the pointer and takes ownership
+    // of the memory, so it is responsible for freeing it later.
     replaceTo->LinkEndChild(text);
   }
 
   if (fromElemName)
   {
     TiXmlElement *replaceFrom = _elem->FirstChildElement(fromElemName);
-    _elem->ReplaceChild(replaceFrom, *replaceTo);
+    if (_elem->ReplaceChild(replaceFrom, *replaceTo) == nullptr)
+    {
+      sdferr << "Failed to rename element\n";
+      // fall through so we can reclaim memory
+    }
+
+    // In this case, the tinyxml function ReplaceChild does a deep copy of the
+    // node that is passed in, so we want to free it here.
+    delete replaceTo;
   }
   else if (fromAttrName)
   {
     _elem->RemoveAttribute(fromAttrName);
+    // In this case, the tinyxml function LinkEndChild just takes the pointer
+    // and takes ownership of the memory, so it is responsible for freeing it
+    // later.
     _elem->LinkEndChild(replaceTo);
   }
 }
@@ -238,12 +242,7 @@ void Converter::Add(TiXmlElement *_elem, TiXmlElement *_addElem)
   const char *elementName = _addElem->Attribute("element");
   const char *value = _addElem->Attribute("value");
 
-  if (!value)
-  {
-    sdferr << "No 'value' specified in <add>\n";
-    return;
-  }
-  if (!((attributeName == NULL) ^ (elementName == NULL)))
+  if (!((attributeName == nullptr) ^ (elementName == nullptr)))
   {
     sdferr << "Exactly one 'element' or 'attribute'"
            << " must be specified in <add>\n";
@@ -252,19 +251,57 @@ void Converter::Add(TiXmlElement *_elem, TiXmlElement *_addElem)
 
   if (attributeName)
   {
-    _elem->SetAttribute(attributeName, value);
+    if (value)
+    {
+      _elem->SetAttribute(attributeName, value);
+    }
+    else
+    {
+      sdferr << "No 'value' specified in <add>\n";
+      return;
+    }
   }
   else
   {
     TiXmlElement *addElem = new TiXmlElement(elementName);
-    TiXmlText *addText = new TiXmlText(value);
-    addElem->LinkEndChild(addText);
+    if (value)
+    {
+      TiXmlText *addText = new TiXmlText(value);
+      addElem->LinkEndChild(addText);
+    }
     _elem->LinkEndChild(addElem);
   }
 }
 
 /////////////////////////////////////////////////
-void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem)
+void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
+{
+  SDF_ASSERT(_elem != NULL, "SDF element is NULL");
+  SDF_ASSERT(_removeElem != NULL, "Move element is NULL");
+
+  const char *attributeName = _removeElem->Attribute("attribute");
+  const char *elementName = _removeElem->Attribute("element");
+
+  if (!((attributeName == nullptr) ^ (elementName == nullptr)))
+  {
+    sdferr << "Exactly one 'element' or 'attribute'"
+           << " must be specified in <remove>\n";
+    return;
+  }
+
+  if (attributeName)
+  {
+    _elem->RemoveAttribute(attributeName);
+  }
+  else
+  {
+    _elem->RemoveChild(_elem->FirstChildElement(elementName));
+  }
+}
+
+/////////////////////////////////////////////////
+void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
+                     const bool _copy)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_moveElem != NULL, "Move element is NULL");
@@ -281,29 +318,28 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem)
   // tokenize 'from' and 'to' strs
   std::string fromStr = "";
   if (fromElemStr)
+  {
     fromStr = fromElemStr;
+  }
   else if (fromAttrStr)
+  {
     fromStr = fromAttrStr;
+  }
   std::string toStr = "";
   if (toElemStr)
+  {
     toStr = toElemStr;
+  }
   else if (toAttrStr)
+  {
     toStr = toAttrStr;
-  std::vector<std::string> fromTokens;
-  std::vector<std::string> toTokens;
-  boost::algorithm::split_regex(fromTokens, fromStr, boost::regex("::"));
-  boost::algorithm::split_regex(toTokens, toStr, boost::regex("::"));
+  }
 
-  if (fromTokens.empty())
-  {
-    sdferr << "Incorrect 'from' string format\n";
-    return;
-  }
-  if (toTokens.empty())
-  {
-    sdferr << "Incorrect 'to' string format\n";
-    return;
-  }
+  std::vector<std::string> fromTokens = split(fromStr, "::");
+  std::vector<std::string> toTokens = split(toStr, "::");
+
+  // split() always returns at least one element, even with the
+  // empty string.  Thus we don't check if the fromTokens or toTokens are empty.
 
   // get value of the 'from' element/attribute
   TiXmlElement *fromElem = _elem;
@@ -311,33 +347,15 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem)
   {
     fromElem = fromElem->FirstChildElement(fromTokens[i]);
     if (!fromElem)
+    {
+      // Return when the tokens don't match. Don't output an error message
+      // because it spams the console.
       return;
+    }
   }
 
   const char *fromName = fromTokens[fromTokens.size()-1].c_str();
   const char *value = NULL;
-
-  // Get value, or return if no element/attribute found as they don't have to
-  // be specified in the sdf.
-  if (fromElemStr)
-    value = GetValue(fromName, NULL, fromElem);
-  else if (fromAttrStr)
-    value = GetValue(NULL, fromName, fromElem);
-  if (!value)
-    return;
-
-  std::string valueStr = value;
-  // move by creating a new element/attribute and deleting the old one
-  if (fromElemStr)
-  {
-    TiXmlElement *moveFrom =
-        fromElem->FirstChildElement(fromName);
-    fromElem->RemoveChild(moveFrom);
-  }
-  else if (fromAttrStr)
-  {
-    fromElem->RemoveAttribute(fromName);
-  }
 
   unsigned int newDirIndex = 0;
   // get the new element/attribute name
@@ -359,7 +377,8 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem)
   // elements
   if (!childElem)
   {
-    while (newDirIndex < (toTokens.size() - 1))
+    int offset = toElemStr != NULL && toAttrStr != NULL ? 0 : 1;
+    while (newDirIndex < (toTokens.size()-offset))
     {
       TiXmlElement *newElem = new TiXmlElement(toTokens[newDirIndex]);
       toElem->LinkEndChild(newElem);
@@ -368,16 +387,68 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem)
     }
   }
 
-  if (toElemStr)
+  // Get value, or return if no element/attribute found as they don't have to
+  // be specified in the sdf.
+  if (fromElemStr)
   {
-    TiXmlElement *moveTo = new TiXmlElement(toName);
-    TiXmlText *text = new TiXmlText(valueStr);
-    moveTo->LinkEndChild(text);
-    toElem->LinkEndChild(moveTo);
+    TiXmlElement *moveFrom = fromElem->FirstChildElement(fromName);
+
+    // No matching element, so return.
+    if (!moveFrom)
+    {
+      return;
+    }
+
+    if (toElemStr && !toAttrStr)
+    {
+      TiXmlElement *moveTo = static_cast<TiXmlElement*>(moveFrom->Clone());
+      moveTo->SetValue(toName);
+      toElem->LinkEndChild(moveTo);
+    }
+    else
+    {
+      value = GetValue(fromName, NULL, fromElem);
+      if (!value)
+      {
+        return;
+      }
+      std::string valueStr = value;
+
+      toElem->SetAttribute(toAttrStr, valueStr);
+    }
+
+    if (!_copy)
+    {
+      fromElem->RemoveChild(moveFrom);
+    }
   }
-  else if (toAttrStr)
+  else if (fromAttrStr)
   {
-    toElem->SetAttribute(toName, valueStr);
+    value = GetValue(NULL, fromName, fromElem);
+
+    if (!value)
+    {
+      return;
+    }
+
+    std::string valueStr = value;
+
+    if (toElemStr)
+    {
+      TiXmlElement *moveTo = new TiXmlElement(toName);
+      TiXmlText *text = new TiXmlText(valueStr);
+      moveTo->LinkEndChild(text);
+      toElem->LinkEndChild(moveTo);
+    }
+    else if (toAttrStr)
+    {
+      toElem->SetAttribute(toName, valueStr);
+    }
+
+    if (!_copy && fromAttrStr)
+    {
+      fromElem->RemoveAttribute(fromName);
+    }
   }
 }
 
@@ -389,12 +460,18 @@ const char *Converter::GetValue(const char *_valueElem, const char *_valueAttr,
   {
     // Check to see if the element that is being converted has the value
     if (!_elem->FirstChildElement(_valueElem))
+    {
       return NULL;
+    }
 
     if (_valueAttr)
+    {
       return _elem->FirstChildElement(_valueElem)->Attribute(_valueAttr);
+    }
     else
+    {
       return _elem->FirstChildElement(_valueElem)->GetText();
+    }
   }
   else if (_valueAttr)
   {
@@ -409,12 +486,11 @@ void Converter::CheckDeprecation(TiXmlElement *_elem, TiXmlElement *_convert)
 {
   // Process deprecated elements
   for (TiXmlElement *deprecatedElem = _convert->FirstChildElement("deprecated");
-      deprecatedElem;
-      deprecatedElem = deprecatedElem->NextSiblingElement("deprecated"))
+       deprecatedElem;
+       deprecatedElem = deprecatedElem->NextSiblingElement("deprecated"))
   {
     std::string value = deprecatedElem->GetText();
-    std::vector<std::string> valueSplit;
-    boost::split(valueSplit, value, boost::is_any_of("/"));
+    std::vector<std::string> valueSplit = split(value, "/");
 
     bool found = false;
     TiXmlElement *e = _elem;
@@ -443,6 +519,6 @@ void Converter::CheckDeprecation(TiXmlElement *_elem, TiXmlElement *_convert)
     }
 
     sdfwarn << "Deprecated SDF Values in original file:\n"
-           << stream.str() << "\n\n";
+            << stream.str() << "\n\n";
   }
 }

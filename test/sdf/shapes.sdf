@@ -1,0 +1,101 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="shapes">
+    <link name="link">
+      <collision name="box_col">
+        <geometry>
+          <box>
+            <size>3 4 5</size>
+          </box>
+        </geometry>
+      </collision>
+
+      <visual name="box_vis">
+        <geometry>
+          <box>
+            <size>1 2 3</size>
+          </box>
+        </geometry>
+      </visual>
+
+      <collision name="cylinder_col">
+        <geometry>
+          <cylinder>
+            <radius>0.2</radius>
+            <length>0.1</length>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name="cylinder_vis">
+        <geometry>
+          <cylinder>
+            <radius>2.1</radius>
+            <length>10.2</length>
+          </cylinder>
+        </geometry>
+      </visual>
+
+      <collision name="plane_col">
+        <geometry>
+          <plane>
+            <normal>1 0 0</normal>
+            <size>1.4 6.3</size>
+          </plane>
+        </geometry>
+      </collision>
+
+      <visual name="plane_vis">
+        <geometry>
+          <plane>
+            <normal>0 1 0</normal>
+            <size>2 4</size>
+          </plane>
+        </geometry>
+      </visual>
+
+      <collision name="sphere_col">
+        <geometry>
+          <sphere>
+            <radius>23.4</radius>
+          </sphere>
+        </geometry>
+      </collision>
+
+      <visual name="sphere_vis">
+        <geometry>
+          <sphere>
+            <radius>100.2</radius>
+          </sphere>
+        </geometry>
+      </visual>
+
+      <collision name="mesh_col">
+        <geometry>
+          <mesh>
+            <uri>https://ignitionfuel.org/an_org/models/a_model/mesh/mesh.dae</uri>
+            <submesh>
+              <name>my_submesh</name>
+              <center>true</center>
+            </submesh>
+            <scale>0.1 0.2 0.3</scale>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <visual name="mesh_vis">
+        <geometry>
+          <mesh>
+            <uri>https://ignitionfuel.org/an_org/models/a_model/mesh/mesh.dae</uri>
+            <submesh>
+              <name>another_submesh</name>
+              <center>false</center>
+            </submesh>
+            <scale>1.2 2.3 3.4</scale>
+          </mesh>
+        </geometry>
+      </visual>
+
+    </link>
+  </model>
+</sdf>
