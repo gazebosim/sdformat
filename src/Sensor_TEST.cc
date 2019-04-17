@@ -118,6 +118,6 @@ TEST(DOMSensor, Type)
   {
     sensor.SetType(types[i]);
     EXPECT_EQ(types[i], sensor.Type());
-    EXPECT_EQ(typeStrs [i], sensor.TypeStr());
+    EXPECT_EQ(typeStrs[i], sensor.TypeStr());
   }
 }

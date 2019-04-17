@@ -55,14 +55,14 @@ class sdf::SensorPrivate
   public: SensorPrivate() = default;
 
   /// \brief Copy constructor
-  public: SensorPrivate(const SensorPrivate &_sensor)
-  {
-    this->name = _sensor.name;
-    this->type = _sensor.type;
-    this->topic = _sensor.topic;
-    this->pose = _sensor.pose;
-    this->poseFrame = _sensor.poseFrame;
+  public: explicit SensorPrivate(const SensorPrivate &_sensor)
+          : type(_sensor.type),
+            name(_sensor.name),
+            topic(_sensor.topic),
+            pose(_sensor.pose),
+            poseFrame(_sensor.poseFrame)
 
+  {
     if (_sensor.magnetometer)
     {
       this->magnetometer = std::make_unique<sdf::Magnetometer>(
