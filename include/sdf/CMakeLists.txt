@@ -17,9 +17,11 @@ set (headers
   JointAxis.hh
   Light.hh
   Link.hh
+  Magnetometer.hh
   Material.hh
   Mesh.hh
   Model.hh
+  Noise.hh
   Param.hh
   parser.hh
   Physics.hh
