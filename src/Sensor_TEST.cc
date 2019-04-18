@@ -36,6 +36,10 @@ TEST(DOMSensor, Construction)
   EXPECT_TRUE(sensor.PoseFrame().empty());
   sensor.SetPoseFrame("a_frame");
   EXPECT_EQ("a_frame", sensor.PoseFrame());
+
+  EXPECT_DOUBLE_EQ(0.0, sensor.UpdateRate());
+
+  EXPECT_TRUE(sensor.Topic().empty());
 }
 
 /////////////////////////////////////////////////
@@ -57,4 +61,63 @@ TEST(DOMSensor, Load)
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
   EXPECT_NE(nullptr, sensor.Element());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSensor, Type)
+{
+  sdf::Sensor sensor;
+
+  EXPECT_EQ(sdf::SensorType::NONE, sensor.Type());
+  EXPECT_EQ("none", sensor.TypeStr());
+
+  std::vector<sdf::SensorType> types = {
+    sdf::SensorType::NONE,
+    sdf::SensorType::ALTIMETER,
+    sdf::SensorType::CAMERA,
+    sdf::SensorType::CONTACT,
+    sdf::SensorType::DEPTH_CAMERA,
+    sdf::SensorType::FORCE_TORQUE,
+    sdf::SensorType::GPS,
+    sdf::SensorType::GPU_LIDAR,
+    sdf::SensorType::IMU,
+    sdf::SensorType::LOGICAL_CAMERA,
+    sdf::SensorType::MAGNETOMETER,
+    sdf::SensorType::MULTICAMERA,
+    sdf::SensorType::LIDAR,
+    sdf::SensorType::RFID,
+    sdf::SensorType::RFIDTAG,
+    sdf::SensorType::SONAR,
+    sdf::SensorType::WIRELESS_RECEIVER,
+    sdf::SensorType::WIRELESS_TRANSMITTER
+  };
+  std::vector<std::string> typeStrs =
+  {
+    "none",
+    "altimeter",
+    "camera",
+    "contact",
+    "depth_camera",
+    "force_torque",
+    "gps",
+    "gpu_lidar",
+    "imu",
+    "logical_camera",
+    "magnetometer",
+    "multicamera",
+    "lidar",
+    "rfid",
+    "rfidtag",
+    "sonar",
+    "wireless_receiver",
+    "wireless_transmitter"
+  };
+
+
+  for (size_t i = 0; i < types.size(); ++i)
+  {
+    sensor.SetType(types[i]);
+    EXPECT_EQ(types[i], sensor.Type());
+    EXPECT_EQ(typeStrs[i], sensor.TypeStr());
+  }
 }
