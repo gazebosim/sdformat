@@ -29,7 +29,7 @@ namespace sdf
   //
   class MagnetometerPrivate;
 
-  /// \brief Magnetometer contains infromation about a magnetometer sensor.
+  /// \brief Magnetometer contains information about a magnetometer sensor.
   /// This sensor can be attached to a link.
   class SDFORMAT_VISIBLE Magnetometer
   {
@@ -57,7 +57,7 @@ namespace sdf
     /// \return *this
     public: Magnetometer &operator=(Magnetometer &&_magnetometer);
 
-    /// \brief Load the magnetometer based on a element pointer. This is *not*
+    /// \brief Load the magnetometer based on an element pointer. This is *not*
     /// the usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
     /// \param[in] _sdf The SDF Element pointer

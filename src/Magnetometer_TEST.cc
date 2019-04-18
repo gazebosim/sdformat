@@ -76,6 +76,10 @@ TEST(DOMMagnetometer, Set)
   sdf::Magnetometer mag5;
   mag5 = std::move(mag2);
   EXPECT_EQ(mag3, mag5);
+
+  // inequality
+  sdf::Magnetometer mag6;
+  EXPECT_NE(mag3, mag6);
 }
 
 /////////////////////////////////////////////////

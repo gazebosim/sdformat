@@ -74,7 +74,7 @@ namespace sdf
 
     /// \brief Return true if both Noise objects contain the same values.
     /// \param[_in] _noise Noise value to compare.
-    /// \returen True if 'this' == _noise.
+    /// \return True if 'this' == _noise.
     public: bool operator==(const Noise &_noise) const;
 
     /// \brief Return true the Noise objects do not contain the same values.
