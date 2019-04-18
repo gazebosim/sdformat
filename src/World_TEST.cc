@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <ignition/math/Color.hh>
 #include <ignition/math/Vector3.hh>
 #include "sdf/World.hh"
 
@@ -74,4 +75,26 @@ TEST(DOMWorld, SetGui)
   world.SetGui(gui);
   ASSERT_NE(nullptr, world.Gui());
   EXPECT_TRUE(world.Gui()->Fullscreen());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, SetScene)
+{
+  sdf::World world;
+  EXPECT_EQ(nullptr, world.Scene());
+
+  sdf::Scene scene;
+  scene.SetAmbient(ignition::math::Color::Blue);
+  scene.SetBackground(ignition::math::Color::Red);
+  scene.SetGrid(true);
+  scene.SetShadows(true);
+  scene.SetOriginVisual(true);
+  world.SetScene(scene);
+
+  ASSERT_NE(nullptr, world.Scene());
+  EXPECT_EQ(ignition::math::Color::Blue, world.Scene()->Ambient());
+  EXPECT_EQ(ignition::math::Color::Red, world.Scene()->Background());
+  EXPECT_TRUE(world.Scene()->Grid());
+  EXPECT_TRUE(world.Scene()->Shadows());
+  EXPECT_TRUE(world.Scene()->OriginVisual());
 }

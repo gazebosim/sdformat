@@ -31,15 +31,19 @@ set (sources
   JointAxis.cc
   Light.cc
   Link.cc
+  Magnetometer.cc
   Material.cc
   Mesh.cc
   Model.cc
+  Noise.cc
   parser.cc
   parser_urdf.cc
   Param.cc
+  Pbr.cc
   Physics.cc
   Plane.cc
   Root.cc
+  Scene.cc
   SDF.cc
   SDFExtension.cc
   Sensor.cc
@@ -96,15 +100,19 @@ set (gtest_sources
   JointAxis_TEST.cc
   Light_TEST.cc
   Link_TEST.cc
+  Magnetometer_TEST.cc
   Material_TEST.cc
   Mesh_TEST.cc
   Model_TEST.cc
+  Noise_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
+  Pbr_TEST.cc
   Physics_TEST.cc
   Plane_TEST.cc
   Root_TEST.cc
+  Scene_TEST.cc
   SDF_TEST.cc
   Sensor_TEST.cc
   Sphere_TEST.cc

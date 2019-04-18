@@ -107,6 +107,15 @@ TEST(DOMWorld, Load)
   ASSERT_NE(nullptr, gui->Element());
   EXPECT_TRUE(gui->Fullscreen());
 
+  const sdf::Scene *scene = world->Scene();
+  ASSERT_NE(nullptr, scene);
+  ASSERT_NE(nullptr, scene->Element());
+  EXPECT_TRUE(scene->Grid());
+  EXPECT_TRUE(scene->Shadows());
+  EXPECT_TRUE(scene->OriginVisual());
+  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f), scene->Ambient());
+  EXPECT_EQ(ignition::math::Color(0.6f, 0.7f, 0.8f), scene->Background());
+
   ASSERT_EQ(1u, world->PhysicsCount());
   const sdf::Physics *physics = world->PhysicsByIndex(1);
   ASSERT_EQ(nullptr, physics);
