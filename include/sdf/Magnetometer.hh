@@ -73,7 +73,7 @@ namespace sdf
 
     /// \brief Get the noise values related to the body-frame x axis.
     /// \return Noise values for the x axis.
-    public: Noise &XNoise() const;
+    public: const Noise &XNoise() const;
 
     /// \brief Set the noise values related to the body-frame x axis.
     /// \param[in] _noise Noise values for the x axis.
@@ -81,7 +81,7 @@ namespace sdf
 
     /// \brief Get the noise values related to the body-frame y axis.
     /// \return Noise values for the y axis.
-    public: Noise &YNoise() const;
+    public: const Noise &YNoise() const;
 
     /// \brief Set the noise values related to the body-frame y axis.
     /// \param[in] _noise Noise values for the y axis.
@@ -89,7 +89,7 @@ namespace sdf
 
     /// \brief Get the noise values related to the body-frame z axis.
     /// \return Noise values for the z axis.
-    public: Noise &ZNoise() const;
+    public: const Noise &ZNoise() const;
 
     /// \brief Set the noise values related to the body-frame z axis.
     /// \param[in] _noise Noise values for the z axis.

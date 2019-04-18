@@ -105,7 +105,7 @@ Errors Magnetometer::Load(ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-Noise &Magnetometer::XNoise() const
+const Noise &Magnetometer::XNoise() const
 {
   return this->dataPtr->noise[0];
 }
@@ -117,7 +117,7 @@ void Magnetometer::SetXNoise(const Noise &_noise)
 }
 
 //////////////////////////////////////////////////
-Noise &Magnetometer::YNoise() const
+const Noise &Magnetometer::YNoise() const
 {
   return this->dataPtr->noise[1];
 }
@@ -129,7 +129,7 @@ void Magnetometer::SetYNoise(const Noise &_noise)
 }
 
 //////////////////////////////////////////////////
-Noise &Magnetometer::ZNoise() const
+const Noise &Magnetometer::ZNoise() const
 {
   return this->dataPtr->noise[2];
 }
