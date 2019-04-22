@@ -24,6 +24,7 @@ set (headers
   Noise.hh
   Param.hh
   parser.hh
+  Pbr.hh
   Physics.hh
   Plane.hh
   Root.hh
