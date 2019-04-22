@@ -16,6 +16,7 @@
  */
 
 #include <algorithm>
+#include <locale>
 #include "sdf/Noise.hh"
 
 using namespace sdf;
@@ -111,11 +112,8 @@ Errors Noise::Load(ElementPtr _sdf)
   }
 
   std::string typeLower = type.first;
-  std::transform(typeLower.begin(), typeLower.end(), typeLower.begin(),
-                [](unsigned char _c)
-                {
-                  return static_cast<unsigned char>(std::tolower(_c));
-                });
+  for (size_t i = 0; i < typeLower.size(); ++i)
+    typeLower[i] = std::tolower(typeLower[i], std::locale());
 
   if (typeLower == "none")
     this->dataPtr->type = NoiseType::NONE;
