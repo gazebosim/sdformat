@@ -81,9 +81,23 @@ namespace sdf
     /// \brief Default constructor
     public: Joint();
 
+    /// \brief Copy constructor
+    /// \param[in] _joint Joint to copy.
+    public: Joint(const Joint &_joint);
+
     /// \brief Move constructor
     /// \param[in] _joint Joint to move.
-    public: Joint(Joint &&_joint);
+    public: Joint(Joint &&_joint) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _joint Joint component to move.
+    /// \return Reference to this.
+    public: Joint &operator=(Joint &&_joint);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _joint Joint component to copy.
+    /// \return Reference to this.
+    public: Joint &operator=(const Joint &_joint);
 
     /// \brief Destructor
     public: ~Joint();

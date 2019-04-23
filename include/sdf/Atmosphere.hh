@@ -54,7 +54,17 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _atmosphere Atmosphere to move.
-    public: Atmosphere(Atmosphere &&_atmosphere);
+    public: Atmosphere(Atmosphere &&_atmosphere) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _atmosphere Atmosphere component to move.
+    /// \return Reference to this.
+    public: Atmosphere &operator=(Atmosphere &&_atmosphere);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _atmosphere Atmosphere component to copy.
+    /// \return Reference to this.
+    public: Atmosphere &operator=(const Atmosphere &_atmosphere);
 
     /// \brief Destructor
     public: ~Atmosphere();

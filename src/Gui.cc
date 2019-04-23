@@ -42,11 +42,31 @@ Gui::Gui(const Gui &_gui)
 }
 
 /////////////////////////////////////////////////
-Gui::Gui(Gui &&_gui)
+Gui::Gui(Gui &&_gui) noexcept
 {
   this->dataPtr = _gui.dataPtr;
   _gui.dataPtr = nullptr;
 }
+
+/////////////////////////////////////////////////
+Gui &Gui::operator=(const Gui &_gui)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new GuiPrivate;
+  }
+  *this->dataPtr = (*_gui.dataPtr);
+  return *this;
+}
+
+/////////////////////////////////////////////////
+Gui &Gui::operator=(Gui &&_gui)
+{
+  this->dataPtr = _gui.dataPtr;
+  _gui.dataPtr = nullptr;
+  return *this;
+}
+
 /////////////////////////////////////////////////
 Gui::~Gui()
 {

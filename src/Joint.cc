@@ -38,6 +38,24 @@ class sdf::JointPrivate
     this->axis[1] = nullptr;
   }
 
+  /// \brief Copy constructor
+  /// \param[in] _jointPrivate JointPrivate to copy.
+  public: JointPrivate(const JointPrivate &_jointPrivate);
+
+  /// \brief Move constructor
+  /// \param[in] _jointPrivate JointPrivate to move.
+  public: JointPrivate(JointPrivate &&_jointPrivate) noexcept = default;
+
+  /// \brief Move assignment operator.
+  /// \param[in] _jointPrivate JointPrivate component to move.
+  /// \return Reference to this.
+  public: JointPrivate &operator=(JointPrivate &&_jointPrivate) = default;
+
+  /// \brief Copy assignment operator.
+  /// \param[in] _jointPrivate JointPrivate component to copy.
+  /// \return Reference to this.
+  public: JointPrivate &operator=(const JointPrivate &_jointPrivate);
+
   /// \brief Name of the joint.
   public: std::string name = "";
 
@@ -68,16 +86,70 @@ class sdf::JointPrivate
 };
 
 /////////////////////////////////////////////////
+JointPrivate::JointPrivate(const JointPrivate &_jointPrivate)
+{
+  *this = _jointPrivate;
+}
+
+/////////////////////////////////////////////////
+JointPrivate &JointPrivate::operator=(const JointPrivate &_jointPrivate)
+{
+  this->name = _jointPrivate.name;
+  this->parentLinkName = _jointPrivate.parentLinkName;
+  this->childLinkName = _jointPrivate.childLinkName;
+  this->type = _jointPrivate.type;
+  this->pose = _jointPrivate.pose;
+  this->poseFrame = _jointPrivate.poseFrame;
+  this->threadPitch = _jointPrivate.threadPitch;
+
+  for (std::size_t i = 0; i < _jointPrivate.axis.size(); ++i)
+  {
+    if (_jointPrivate.axis[i])
+    {
+      this->axis[i] = std::make_unique<JointAxis>(*_jointPrivate.axis[i]);
+    }
+  }
+
+  this->sdf = _jointPrivate.sdf;
+  return *this;
+}
+
+/////////////////////////////////////////////////
 Joint::Joint()
   : dataPtr(new JointPrivate)
 {
 }
 
 /////////////////////////////////////////////////
-Joint::Joint(Joint &&_joint)
+Joint::Joint(Joint &&_joint) noexcept
 {
   this->dataPtr = _joint.dataPtr;
   _joint.dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Joint::Joint(const Joint &_joint)
+  : dataPtr(new JointPrivate(*_joint.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Joint &Joint::operator=(const Joint &_joint)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new JointPrivate;
+  }
+  *this->dataPtr = (*_joint.dataPtr);
+  return *this;
+}
+
+/////////////////////////////////////////////////
+Joint &Joint::operator=(Joint &&_joint)
+{
+  this->dataPtr = _joint.dataPtr;
+  _joint.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////

@@ -43,7 +43,12 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _box Box to move.
-    public: Box(Box &&_box);
+    public: Box(Box &&_box) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _box Box component to move.
+    /// \return Reference to this.
+    public: Box &operator=(Box &&_box);
 
     /// \brief Destructor
     public: virtual ~Box();

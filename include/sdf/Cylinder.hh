@@ -43,10 +43,15 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _cylinder Cylinder to move.
-    public: Cylinder(Cylinder &&_cylinder);
+    public: Cylinder(Cylinder &&_cylinder) noexcept;
 
     /// \brief Destructor
     public: virtual ~Cylinder();
+
+    /// \brief Move assignment operator.
+    /// \param[in] _cylinder Cylinder component to move.
+    /// \return Reference to this.
+    public: Cylinder &operator=(Cylinder &&_cylinder);
 
     /// \brief Assignment operator.
     /// \param[in] _cylinder The cylinder to set values from.
