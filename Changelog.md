@@ -3,7 +3,7 @@
 ### SDFormat 8.X.X (201X-XX-XX)
 
 1. Added Altimeter SDF DOM
-   * [Pull request XXX](https://bitbucket.org/osrf/sdformat/pull-requests/XXX)
+   * [Pull request 527](https://bitbucket.org/osrf/sdformat/pull-requests/527)
 
 1. Add Scene SDF DOM
    * [Pull request 517](https://bitbucket.org/osrf/sdformat/pull-requests/517)
