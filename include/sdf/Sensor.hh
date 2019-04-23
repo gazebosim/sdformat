@@ -32,6 +32,7 @@ namespace sdf
   // Forward declarations.
   class SensorPrivate;
   class Magnetometer;
+  class Altimeter;
 
   /// \enum SensorType
   /// \brief The set of sensor types.
@@ -211,6 +212,17 @@ namespace sdf
     /// \brief Set the magnetometer sensor.
     /// \param[in] _mag The magnetometer sensor.
     public: void SetMagnetometerSensor(const Magnetometer &_mag);
+
+    /// \brief Get the altimeter sensor, or nullptr if this sensor type
+    /// is not an Altimeter.
+    /// \return Pointer to the Altimeter sensor, or nullptr if this
+    /// Sensor is not a Altimeter.
+    /// \sa SensorType Type() const
+    public: const Altimeter *AltimeterSensor() const;
+
+    /// \brief Set the altimeter sensor.
+    /// \param[in] _mag The altimeter sensor.
+    public: void SetAltimeterSensor(const Altimeter &_alt);
 
     /// \brief Private data pointer.
     private: SensorPrivate *dataPtr = nullptr;
