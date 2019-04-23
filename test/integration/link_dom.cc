@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 
 #include <ignition/math/Pose3.hh>
+#include "sdf/Altimeter.hh"
 #include "sdf/Collision.hh"
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
@@ -242,6 +243,12 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("altimeter_sensor", altimeterSensor->Name());
   EXPECT_EQ(sdf::SensorType::ALTIMETER, altimeterSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d::Zero, altimeterSensor->Pose());
+  const sdf::Altimeter *altSensor = altimeterSensor->AltimeterSensor();
+  ASSERT_NE(nullptr, altSensor);
+  EXPECT_DOUBLE_EQ(0.1, altSensor->VerticalPositionNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.2, altSensor->VerticalPositionNoise().StdDev());
+  EXPECT_DOUBLE_EQ(2.3, altSensor->VerticalVelocityNoise().Mean());
+  EXPECT_DOUBLE_EQ(4.5, altSensor->VerticalVelocityNoise().StdDev());
 
   // Get the camera sensor
   EXPECT_TRUE(link->SensorNameExists("camera_sensor"));
