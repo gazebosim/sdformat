@@ -175,6 +175,14 @@ namespace sdf
     /// \param[in] _type The sensor type.
     public: void SetType(const SensorType _type);
 
+    /// \brief Set the sensor type from a string.
+    /// \param[in] _typeStr The sensor type. A valid parameter should equal
+    /// one of the enum value name in the SensorType enum. For example,
+    /// "altimeter" or "camera".
+    /// \return True if the _typeStr parameter matched a known sensor type.
+    /// False if the sensor type could not be set.
+    public: bool SetType(const std::string &_typeStr);
+
     /// \brief Get the sensor type as a string.
     /// \return The sensor type as a string.
     public: std::string TypeStr() const;
