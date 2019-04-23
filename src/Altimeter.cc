@@ -109,7 +109,7 @@ Errors Altimeter::Load(ElementPtr _sdf)
   {
     sdf::ElementPtr elem = _sdf->GetElement("vertical_velocity");
     if (elem->HasElement("noise"))
-      this->dataPtr->verticalPositionNoise.Load(elem->GetElement("noise"));
+      this->dataPtr->verticalVelocityNoise.Load(elem->GetElement("noise"));
   }
 
   return errors;
