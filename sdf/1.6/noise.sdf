@@ -21,6 +21,13 @@
   <element name="bias_stddev" type="double" default="0.0" required="0">
     <description>For type "gaussian*", the standard deviation of the Gaussian distribution from which bias values are drawn.</description>
   </element>
+
+  <element name="dynamic_bias_stddev" type="double" default="0.0" required="0">
+  </element>
+
+  <element name="dynamic_bias_correlation_time" type="double" default="0.0" required="0">
+  </element>
+
   <element name="precision" type="double" default="0.0" required="0">
     <description>
       For type "gaussian_quantized", the precision of output signals. A value
