@@ -333,6 +333,20 @@ void Sensor::SetType(const SensorType _type)
 }
 
 /////////////////////////////////////////////////
+bool Sensor::SetType(const std::string &_typeStr)
+{
+  for (size_t i = 0; i < sensorTypeStrs.size(); ++i)
+  {
+    if (_typeStr == sensorTypeStrs[i])
+    {
+      this->dataPtr->type = static_cast<SensorType>(i);
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
 const Magnetometer *Sensor::MagnetometerSensor() const
 {
   return this->dataPtr->magnetometer.get();

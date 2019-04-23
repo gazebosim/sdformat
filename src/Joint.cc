@@ -40,11 +40,12 @@ class sdf::JointPrivate
 
   /// \brief Copy constructor
   /// \param[in] _jointPrivate JointPrivate to copy.
-  public: JointPrivate(const JointPrivate &_jointPrivate);
+  public: explicit JointPrivate(const JointPrivate &_jointPrivate);
 
   /// \brief Move constructor
   /// \param[in] _jointPrivate JointPrivate to move.
-  public: JointPrivate(JointPrivate &&_jointPrivate) noexcept = default;
+  public: explicit JointPrivate(JointPrivate &&_jointPrivate)
+          noexcept = default;
 
   /// \brief Move assignment operator.
   /// \param[in] _jointPrivate JointPrivate component to move.
@@ -227,12 +228,7 @@ Errors Joint::Load(ElementPtr _sdf)
   std::pair<std::string, bool> typePair = _sdf->Get<std::string>("type", "");
   if (typePair.second)
   {
-    std::transform(typePair.first.begin(), typePair.first.end(),
-        typePair.first.begin(),
-        [](unsigned char c)
-        {
-          return static_cast<unsigned char>(std::tolower(c));
-        });
+    typePair.first = lowercase(typePair.first);
     if (typePair.first == "ball")
       this->dataPtr->type = JointType::BALL;
     else if (typePair.first == "continuous")
