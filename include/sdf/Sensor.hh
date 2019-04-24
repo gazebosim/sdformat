@@ -221,7 +221,7 @@ namespace sdf
     public: const Altimeter *AltimeterSensor() const;
 
     /// \brief Set the altimeter sensor.
-    /// \param[in] _mag The altimeter sensor.
+    /// \param[in] _alt The altimeter sensor.
     public: void SetAltimeterSensor(const Altimeter &_alt);
 
     /// \brief Private data pointer.
