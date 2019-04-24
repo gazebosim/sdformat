@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 
 #include <ignition/math/Pose3.hh>
+#include "sdf/AirPressure.hh"
 #include "sdf/Altimeter.hh"
 #include "sdf/Collision.hh"
 #include "sdf/Element.hh"
@@ -382,4 +383,19 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ(sdf::SensorType::WIRELESS_TRANSMITTER, wirelessTransmitter->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0),
       wirelessTransmitter->Pose());
+
+  // Get the air_pressure sensor
+  const sdf::Sensor *airPressureSensor = link->SensorByName("air_pressure");
+  ASSERT_NE(nullptr, airPressureSensor);
+  EXPECT_EQ("air_pressure_sensor", airPressureSensor->Name());
+  EXPECT_EQ(sdf::SensorType::AIR_PRESSURE, airPressureSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(10, 20, 30, 0, 0, 0),
+      airPressureSensor->Pose());
+  const sdf::AirPressure *airSensor = airPressureSensor->AirPressureSensor();
+  ASSERT_NE(nullptr, airSensor);
+  EXPECT_DOUBLE_EQ(0.1, airSensor->PressureNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.2, airSensor->PressureNoise().StdDev());
+  EXPECT_DOUBLE_EQ(2.3, airSensor->PressureNoise().Mean());
+  EXPECT_DOUBLE_EQ(4.5, airSensor->PressureNoise().StdDev());
+  EXPECT_DOUBLE_EQ(123.4, airSensor->ReferenceAltitude());
 }

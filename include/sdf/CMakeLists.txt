@@ -1,6 +1,7 @@
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 set (headers
+  AirPressure.hh
   Altimeter.hh
   Assert.hh
   Atmosphere.hh

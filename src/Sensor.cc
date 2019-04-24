@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <ignition/math/Pose3.hh>
+#include "sdf/AirPressure.hh"
 #include "sdf/Altimeter.hh"
 #include "sdf/Error.hh"
 #include "sdf/Magnetometer.hh"
@@ -47,7 +48,8 @@ const std::vector<std::string> sensorTypeStrs =
   "rfidtag",
   "sonar",
   "wireless_receiver",
-  "wireless_transmitter"
+  "wireless_transmitter",
+  "air_pressure"
 };
 
 class sdf::SensorPrivate
@@ -73,6 +75,11 @@ class sdf::SensorPrivate
     {
       this->altimeter = std::make_unique<sdf::Altimeter>(*_sensor.altimeter);
     }
+    if (_sensor.airPressure)
+    {
+      this->airPressure = std::make_unique<sdf::AirPressure>(
+          *_sensor.airPressure);
+    }
   }
 
   // \brief The sensor type.
@@ -97,8 +104,11 @@ class sdf::SensorPrivate
   /// \brief Pointer to a magnetometer.
   public: std::unique_ptr<Magnetometer> magnetometer;
 
-  /// \brief Pointer to a altimeter.
+  /// \brief Pointer to an altimeter.
   public: std::unique_ptr<Altimeter> altimeter;
+
+  /// \brief Pointer to an air pressure sensor.
+  public: std::unique_ptr<AirPressure> airPressure;
 
   /// \brief The frequency at which the sensor data is generated.
   /// If left unspecified (0.0), the sensor will generate data every cycle.
@@ -365,6 +375,18 @@ const Altimeter *Sensor::AltimeterSensor() const
 void Sensor::SetAltimeterSensor(const Altimeter &_alt)
 {
   this->dataPtr->altimeter = std::make_unique<Altimeter>(_alt);
+}
+
+/////////////////////////////////////////////////
+const AirPressure *Sensor::AirPressureSensor() const
+{
+  return this->dataPtr->airPressure.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetAirPressureSensor(const AirPressure &_air)
+{
+  this->dataPtr->airPressure = std::make_unique<AirPressure>(_air);
 }
 
 /////////////////////////////////////////////////

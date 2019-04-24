@@ -30,9 +30,10 @@ namespace sdf
   //
 
   // Forward declarations.
-  class SensorPrivate;
-  class Magnetometer;
+  class AirPressure;
   class Altimeter;
+  class Magnetometer;
+  class SensorPrivate;
 
   /// \enum SensorType
   /// \brief The set of sensor types.
@@ -92,7 +93,10 @@ namespace sdf
     WIRELESS_RECEIVER = 16,
 
     /// \brief A wireless transmitter.
-    WIRELESS_TRANSMITTER = 17
+    WIRELESS_TRANSMITTER = 17,
+
+    /// \brief An air pressure sensor.
+    AIR_PRESSURE = 18
   };
 
   /// \brief Information about an SDF sensor.
@@ -221,8 +225,19 @@ namespace sdf
     public: const Altimeter *AltimeterSensor() const;
 
     /// \brief Set the altimeter sensor.
-    /// \param[in] _mag The altimeter sensor.
+    /// \param[in] _alt The altimeter sensor.
     public: void SetAltimeterSensor(const Altimeter &_alt);
+
+    /// \brief Get the air pressure sensor, or nullptr if this sensor type
+    /// is not an AirPressure sensor.
+    /// \return Pointer to the AirPressure sensor, or nullptr if this
+    /// Sensor is not a AirPressure sensor.
+    /// \sa SensorType Type() const
+    public: const AirPressure *AirPressureSensor() const;
+
+    /// \brief Set the air pressure sensor.
+    /// \param[in] _air The air pressure sensor.
+    public: void SetAirPressureSensor(const AirPressure &_air);
 
     /// \brief Private data pointer.
     private: SensorPrivate *dataPtr = nullptr;
