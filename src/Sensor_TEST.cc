@@ -113,10 +113,20 @@ TEST(DOMSensor, Type)
     "wireless_transmitter"
   };
 
-
   for (size_t i = 0; i < types.size(); ++i)
   {
     sensor.SetType(types[i]);
+    EXPECT_EQ(types[i], sensor.Type());
+    EXPECT_EQ(typeStrs[i], sensor.TypeStr());
+  }
+
+  for (size_t i = 0; i < typeStrs .size(); ++i)
+  {
+    EXPECT_TRUE(sensor.SetType(typeStrs[i]));
+    EXPECT_EQ(types[i], sensor.Type());
+    EXPECT_EQ(typeStrs[i], sensor.TypeStr());
+
+    EXPECT_FALSE(sensor.SetType("bad_sensor_type"));
     EXPECT_EQ(types[i], sensor.Type());
     EXPECT_EQ(typeStrs[i], sensor.TypeStr());
   }
