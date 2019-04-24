@@ -63,6 +63,9 @@ TEST(DOMAltimeter, Set)
   sdf::Altimeter alt4(std::move(alt));
   EXPECT_EQ(alt2, alt4);
 
+  alt = alt4;
+  EXPECT_EQ(alt2, alt);
+
   // Move operator
   sdf::Altimeter alt5;
   alt5 = std::move(alt2);
