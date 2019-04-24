@@ -95,8 +95,6 @@ Errors Altimeter::Load(ElementPtr _sdf)
     return errors;
   }
 
-  std::vector<std::string> names = {"vertical_position", "vertical_velocity"};
-
   // Load the noise values.
   if (_sdf->HasElement("vertical_position"))
   {
