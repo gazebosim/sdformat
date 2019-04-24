@@ -2,6 +2,9 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Apply rule of five for various DOM classes
+   * [Pull request 524](https://bitbucket.org/osrf/sdformat/pull-requests/524)
+
 1. Add Scene SDF DOM
    * [Pull request 517](https://bitbucket.org/osrf/sdformat/pull-requests/517)
 

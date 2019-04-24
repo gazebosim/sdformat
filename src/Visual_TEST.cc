@@ -59,7 +59,7 @@ TEST(DOMVisual, CopyConstructor)
   visual.SetPoseFrame("link");
 
   sdf::Material mat;
-  mat.SetAmbient({0.1, 0.1, 0.1});
+  mat.SetAmbient({0.1f, 0.1f, 0.1f});
   visual.SetMaterial(mat);
 
   sdf::Visual visual2(visual);
@@ -89,7 +89,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
   visual.SetPoseFrame("link");
 
   sdf::Material mat;
-  mat.SetAmbient({0.1, 0.1, 0.1});
+  mat.SetAmbient({0.1f, 0.1f, 0.1f});
   visual.SetMaterial(mat);
 
   sdf::Visual visual2;
@@ -120,7 +120,7 @@ TEST(DOMVisual, MoveConstructor)
   visual.SetPoseFrame("link");
 
   sdf::Material mat;
-  mat.SetAmbient({0.1, 0.1, 0.1});
+  mat.SetAmbient({0.1f, 0.1f, 0.1f});
   visual.SetMaterial(mat);
 
   sdf::Visual visual2(std::move(visual));
@@ -143,7 +143,7 @@ TEST(DOMVisual, MoveAssignmentOperator)
   visual.SetPoseFrame("link");
 
   sdf::Material mat;
-  mat.SetAmbient({0.1, 0.1, 0.1});
+  mat.SetAmbient({0.1f, 0.1f, 0.1f});
   visual.SetMaterial(mat);
 
   sdf::Visual visual2;
