@@ -214,6 +214,17 @@ namespace sdf
     /// \return *this
     public: Sensor &operator=(Sensor &&_sensor);
 
+    /// \brief Return true if both Sensor objects contain the same values.
+    /// \param[_in] _sensor Sensor object to compare.
+    /// \returen True if 'this' == _sensor.
+    public: bool operator==(const Sensor &_sensor) const;
+
+    /// \brief Return true this Sensor object does not contain the same
+    /// values as the passed in parameter.
+    /// \param[_in] _sensor Sensor object to compare.
+    /// \returen True if 'this' != _sensor.
+    public: bool operator!=(const Sensor &_sensor) const;
+
     /// \brief Get the magnetometer sensor, or nullptr if this sensor type
     /// is not a Magnetometer.
     /// \return Pointer to the Magnetometer sensor, or nullptr if this
