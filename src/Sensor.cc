@@ -198,7 +198,15 @@ Errors Sensor::Load(ElementPtr _sdf)
     this->dataPtr->topic = "";
 
   std::string type = _sdf->Get<std::string>("type");
-  if (type == "altimeter")
+  if (type == "air_pressure")
+  {
+    this->dataPtr->type = SensorType::AIR_PRESSURE;
+    this->dataPtr->airPressure.reset(new AirPressure());
+    Errors err = this->dataPtr->airPressure->Load(
+        _sdf->GetElement("air_pressure"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
+  else if (type == "altimeter")
   {
     this->dataPtr->type = SensorType::ALTIMETER;
     this->dataPtr->altimeter.reset(new Altimeter());
