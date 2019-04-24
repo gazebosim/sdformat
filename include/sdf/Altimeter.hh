@@ -88,14 +88,14 @@ namespace sdf
     public: void SetVerticalVelocityNoise(const Noise &_noise);
 
     /// \brief Return true if both Altimeter objects contain the same values.
-    /// \param[_in] _mag Altimeter value to compare.
-    /// \returen True if 'this' == _mag.
+    /// \param[_in] _alt Altimeter value to compare.
+    /// \returen True if 'this' == _alt.
     public: bool operator==(const Altimeter &_alt) const;
 
     /// \brief Return true this Altimeter object does not contain the same
     /// values as the passed in parameter.
-    /// \param[_in] _mag Altimeter value to compare.
-    /// \returen True if 'this' != _mag.
+    /// \param[_in] _alt Altimeter value to compare.
+    /// \returen True if 'this' != _alt.
     public: bool operator!=(const Altimeter &_alt) const;
 
     /// \brief Private data pointer.
