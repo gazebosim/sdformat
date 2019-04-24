@@ -73,7 +73,7 @@ namespace sdf
     public: ~Light();
 
     /// \brief Move assignment operator.
-    /// \param[in] _light Light component to move.
+    /// \param[in] _light Light to move.
     /// \return Reference to this.
     public: Light &operator=(Light &&_light);
 

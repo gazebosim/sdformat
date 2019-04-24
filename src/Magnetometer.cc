@@ -43,7 +43,7 @@ Magnetometer::Magnetometer(const Magnetometer &_magnetometer)
 }
 
 //////////////////////////////////////////////////
-Magnetometer::Magnetometer(Magnetometer &&_magnetometer)
+Magnetometer::Magnetometer(Magnetometer &&_magnetometer) noexcept
 {
   this->dataPtr = _magnetometer.dataPtr;
   _magnetometer.dataPtr = nullptr;

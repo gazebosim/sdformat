@@ -46,7 +46,7 @@ namespace sdf
     public: Box(Box &&_box) noexcept;
 
     /// \brief Move assignment operator.
-    /// \param[in] _box Box component to move.
+    /// \param[in] _box Box to move.
     /// \return Reference to this.
     public: Box &operator=(Box &&_box);
 

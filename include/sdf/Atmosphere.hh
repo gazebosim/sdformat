@@ -57,12 +57,12 @@ namespace sdf
     public: Atmosphere(Atmosphere &&_atmosphere) noexcept;
 
     /// \brief Move assignment operator.
-    /// \param[in] _atmosphere Atmosphere component to move.
+    /// \param[in] _atmosphere Atmosphere to move.
     /// \return Reference to this.
     public: Atmosphere &operator=(Atmosphere &&_atmosphere);
 
     /// \brief Copy assignment operator.
-    /// \param[in] _atmosphere Atmosphere component to copy.
+    /// \param[in] _atmosphere Atmosphere to copy.
     /// \return Reference to this.
     public: Atmosphere &operator=(const Atmosphere &_atmosphere);
 

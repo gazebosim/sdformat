@@ -45,10 +45,15 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _plane Plane to move.
-    public: Plane(Plane &&_plane);
+    public: Plane(Plane &&_plane) noexcept;
 
     /// \brief Destructor
     public: virtual ~Plane();
+
+    /// \brief Move assignment operator.
+    /// \param[in] _plane Plane to move.
+    /// \return Reference to this.
+    public: Plane &operator=(Plane &&_plane);
 
     /// \brief Assignment operator.
     /// \param[in] _plane The plane to set values from.

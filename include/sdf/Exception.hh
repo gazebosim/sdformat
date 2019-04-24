@@ -80,7 +80,7 @@ namespace sdf
     public: Exception &operator=(const Exception &_exception);
 
     /// \brief Move assignment operator.
-    /// \param[in] _exception Exception component to move.
+    /// \param[in] _exception Exception to move.
     /// \return Reference to this.
     public: Exception &operator=(Exception &&_exception);
 

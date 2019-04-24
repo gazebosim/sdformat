@@ -260,7 +260,8 @@ TEST(DOMPbr, AssignmentOperator)
     workflow.SetRoughness(0.8);
     workflow.SetMetalness(0.3);
 
-    sdf::PbrWorkflow workflow2 = workflow;
+    sdf::PbrWorkflow workflow2;
+    workflow2 = workflow;
     EXPECT_EQ(sdf::PbrWorkflowType::METAL, workflow2.Type());
     EXPECT_EQ("metal_albedo_map.png", workflow2.AlbedoMap());
     EXPECT_EQ("metal_normal_map.png", workflow2.NormalMap());
@@ -305,6 +306,25 @@ TEST(DOMPbr, AssignmentOperator)
     EXPECT_DOUBLE_EQ(0.5, workflow2.Roughness());
     EXPECT_DOUBLE_EQ(0.5, workflow2.Metalness());
   }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPbr, CopyAssignmentAfterMove)
+{
+  sdf::PbrWorkflow workflow1;
+  workflow1.SetType(sdf::PbrWorkflowType::METAL);
+
+  sdf::PbrWorkflow workflow2;
+  workflow2.SetType(sdf::PbrWorkflowType::SPECULAR);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::PbrWorkflow tmp = std::move(workflow1);
+  workflow1 = workflow2;
+  workflow2 = tmp;
+
+  EXPECT_EQ(sdf::PbrWorkflowType::SPECULAR, workflow1.Type());
+  EXPECT_EQ(sdf::PbrWorkflowType::METAL, workflow2.Type());
 }
 
 /////////////////////////////////////////////////

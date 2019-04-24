@@ -109,7 +109,8 @@ TEST(DOMMaterial, AssignmentOperator)
   material.SetShader(sdf::ShaderType::VERTEX);
   material.SetNormalMap("blueberry");
 
-  sdf::Material material2 = material;
+  sdf::Material material2;
+  material2 = material;
   EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), material2.Ambient());
   EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), material2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f),

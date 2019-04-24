@@ -69,6 +69,8 @@ class sdf::SensorPrivate
           *_sensor.magnetometer);
     }
   }
+  // Delete copy assignment so it is not accidentally used
+  public: SensorPrivate &operator=(const SensorPrivate &) = delete;
 
   // \brief The sensor type.
   //
@@ -110,7 +112,7 @@ Sensor::Sensor(const Sensor &_sensor)
 }
 
 /////////////////////////////////////////////////
-Sensor::Sensor(Sensor &&_sensor)
+Sensor::Sensor(Sensor &&_sensor) noexcept
 {
   this->dataPtr = _sensor.dataPtr;
   _sensor.dataPtr = nullptr;
@@ -126,8 +128,14 @@ Sensor::~Sensor()
 /////////////////////////////////////////////////
 Sensor &Sensor::operator=(const Sensor &_sensor)
 {
-  delete this->dataPtr;
-  this->dataPtr = new SensorPrivate(*_sensor.dataPtr);
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new SensorPrivate(*_sensor.dataPtr);
+  }
+  else
+  {
+    this->dataPtr = new(this->dataPtr) SensorPrivate(*_sensor.dataPtr);
+  }
   return *this;
 }
 

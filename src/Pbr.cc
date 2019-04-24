@@ -105,6 +105,10 @@ PbrWorkflow::PbrWorkflow(const PbrWorkflow &_pbr)
 /////////////////////////////////////////////////
 PbrWorkflow &PbrWorkflow::operator=(const PbrWorkflow &_pbr)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new PbrWorkflowPrivate;
+  }
   *this->dataPtr = *_pbr.dataPtr;
   return *this;
 }

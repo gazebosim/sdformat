@@ -59,7 +59,7 @@ Noise::Noise(const Noise &_noise)
 }
 
 //////////////////////////////////////////////////
-Noise::Noise(Noise &&_noise)
+Noise::Noise(Noise &&_noise) noexcept
 {
   this->dataPtr = _noise.dataPtr;
   _noise.dataPtr = nullptr;

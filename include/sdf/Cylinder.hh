@@ -49,7 +49,7 @@ namespace sdf
     public: virtual ~Cylinder();
 
     /// \brief Move assignment operator.
-    /// \param[in] _cylinder Cylinder component to move.
+    /// \param[in] _cylinder Cylinder to move.
     /// \return Reference to this.
     public: Cylinder &operator=(Cylinder &&_cylinder);
 

@@ -51,12 +51,12 @@ namespace sdf
     public: Collision(Collision &&_collision) noexcept;
 
     /// \brief Move assignment operator.
-    /// \param[in] _collision Collision component to move.
+    /// \param[in] _collision Collision to move.
     /// \return Reference to this.
     public: Collision &operator=(Collision &&_collision);
 
     /// \brief Copy assignment operator.
-    /// \param[in] _collision Collision component to copy.
+    /// \param[in] _collision Collision to copy.
     /// \return Reference to this.
     public: Collision &operator=(const Collision &_collision);
 

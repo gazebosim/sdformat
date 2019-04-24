@@ -64,15 +64,48 @@ TEST(DOMPlane, CopyConstructor)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMPlane, AssignemntOperator)
+TEST(DOMPlane, CopyAssignemntOperator)
 {
   sdf::Plane plane;
   plane.SetNormal({1, 0, 0});
   plane.SetSize({1.2, 3.4});
 
-  sdf::Plane plane2 = plane;
+  sdf::Plane plane2;
+  plane2 = plane;
   EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
   EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPlane, MoveAssignmentOperator)
+{
+  sdf::Plane plane;
+  plane.SetNormal({1, 0, 0});
+  plane.SetSize({1.2, 3.4});
+
+  sdf::Plane plane2;
+  plane2 = std::move(plane);
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
+  EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPlane, CopyAssignmentAfterMove)
+{
+  sdf::Plane plane1;
+  plane1.SetNormal(ignition::math::Vector3d::UnitX);
+
+  sdf::Plane plane2;
+  plane2.SetNormal(ignition::math::Vector3d::UnitY);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Plane tmp = std::move(plane1);
+  plane1 = plane2;
+  plane2 = tmp;
+
+  EXPECT_EQ(ignition::math::Vector3d::UnitY, plane1.Normal());
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
 }
 
 /////////////////////////////////////////////////

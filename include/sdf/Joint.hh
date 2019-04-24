@@ -90,12 +90,12 @@ namespace sdf
     public: Joint(Joint &&_joint) noexcept;
 
     /// \brief Move assignment operator.
-    /// \param[in] _joint Joint component to move.
+    /// \param[in] _joint Joint to move.
     /// \return Reference to this.
     public: Joint &operator=(Joint &&_joint);
 
     /// \brief Copy assignment operator.
-    /// \param[in] _joint Joint component to copy.
+    /// \param[in] _joint Joint to copy.
     /// \return Reference to this.
     public: Joint &operator=(const Joint &_joint);
 

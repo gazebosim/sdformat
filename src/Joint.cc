@@ -42,20 +42,8 @@ class sdf::JointPrivate
   /// \param[in] _jointPrivate JointPrivate to copy.
   public: explicit JointPrivate(const JointPrivate &_jointPrivate);
 
-  /// \brief Move constructor
-  /// \param[in] _jointPrivate JointPrivate to move.
-  public: explicit JointPrivate(JointPrivate &&_jointPrivate)
-          noexcept = default;
-
-  /// \brief Move assignment operator.
-  /// \param[in] _jointPrivate JointPrivate component to move.
-  /// \return Reference to this.
-  public: JointPrivate &operator=(JointPrivate &&_jointPrivate) = default;
-
-  /// \brief Copy assignment operator.
-  /// \param[in] _jointPrivate JointPrivate component to copy.
-  /// \return Reference to this.
-  public: JointPrivate &operator=(const JointPrivate &_jointPrivate);
+  // Delete copy assignment so it is not accidentally used
+  public: JointPrivate &operator=(const JointPrivate &_) = delete;
 
   /// \brief Name of the joint.
   public: std::string name = "";
@@ -88,21 +76,15 @@ class sdf::JointPrivate
 
 /////////////////////////////////////////////////
 JointPrivate::JointPrivate(const JointPrivate &_jointPrivate)
+    : name(_jointPrivate.name),
+      parentLinkName(_jointPrivate.parentLinkName),
+      childLinkName(_jointPrivate.childLinkName),
+      type(_jointPrivate.type),
+      pose(_jointPrivate.pose),
+      poseFrame(_jointPrivate.poseFrame),
+      threadPitch(_jointPrivate.threadPitch),
+      sdf(_jointPrivate.sdf)
 {
-  *this = _jointPrivate;
-}
-
-/////////////////////////////////////////////////
-JointPrivate &JointPrivate::operator=(const JointPrivate &_jointPrivate)
-{
-  this->name = _jointPrivate.name;
-  this->parentLinkName = _jointPrivate.parentLinkName;
-  this->childLinkName = _jointPrivate.childLinkName;
-  this->type = _jointPrivate.type;
-  this->pose = _jointPrivate.pose;
-  this->poseFrame = _jointPrivate.poseFrame;
-  this->threadPitch = _jointPrivate.threadPitch;
-
   for (std::size_t i = 0; i < _jointPrivate.axis.size(); ++i)
   {
     if (_jointPrivate.axis[i])
@@ -110,9 +92,6 @@ JointPrivate &JointPrivate::operator=(const JointPrivate &_jointPrivate)
       this->axis[i] = std::make_unique<JointAxis>(*_jointPrivate.axis[i]);
     }
   }
-
-  this->sdf = _jointPrivate.sdf;
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -139,9 +118,12 @@ Joint &Joint::operator=(const Joint &_joint)
 {
   if (!this->dataPtr)
   {
-    this->dataPtr = new JointPrivate;
+    this->dataPtr = new JointPrivate(*_joint.dataPtr);
   }
-  *this->dataPtr = (*_joint.dataPtr);
+  else
+  {
+    this->dataPtr = new(this->dataPtr) JointPrivate(*_joint.dataPtr);
+  }
   return *this;
 }
 
