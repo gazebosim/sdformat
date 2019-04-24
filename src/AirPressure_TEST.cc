@@ -61,6 +61,9 @@ TEST(DOMAirPressure, Set)
   sdf::AirPressure air4(std::move(air));
   EXPECT_EQ(air2, air4);
 
+  air = air4;
+  EXPECT_EQ(air2, air);
+
   // Move operator
   sdf::AirPressure air5;
   air5 = std::move(air2);
