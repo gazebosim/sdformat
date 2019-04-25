@@ -47,6 +47,17 @@ TEST(DOMPbr, Construction)
 TEST(DOMPbr, MoveConstructor)
 {
   {
+    // TODO(anyone) Fill PBR with meaningful data to be checked
+    sdf::Pbr pbr;
+    EXPECT_EQ(nullptr, pbr.Workflow(sdf::PbrWorkflowType::METAL));
+    EXPECT_EQ(nullptr, pbr.Workflow(sdf::PbrWorkflowType::SPECULAR));
+
+    sdf::Pbr pbr2(std::move(pbr));
+    EXPECT_EQ(nullptr, pbr2.Workflow(sdf::PbrWorkflowType::METAL));
+    EXPECT_EQ(nullptr, pbr2.Workflow(sdf::PbrWorkflowType::SPECULAR));
+  }
+
+  {
     // metal workflow
     sdf::PbrWorkflow workflow;
     workflow.SetType(sdf::PbrWorkflowType::METAL);
@@ -112,6 +123,18 @@ TEST(DOMPbr, MoveConstructor)
 /////////////////////////////////////////////////
 TEST(DOMPbr, MoveAssignmentOperator)
 {
+  {
+    // TODO(anyone) Fill PBR with meaningful data to be checked
+    sdf::Pbr pbr;
+    EXPECT_EQ(nullptr, pbr.Workflow(sdf::PbrWorkflowType::METAL));
+    EXPECT_EQ(nullptr, pbr.Workflow(sdf::PbrWorkflowType::SPECULAR));
+
+    sdf::Pbr pbr2;
+    pbr = std::move(pbr);
+    EXPECT_EQ(nullptr, pbr2.Workflow(sdf::PbrWorkflowType::METAL));
+    EXPECT_EQ(nullptr, pbr2.Workflow(sdf::PbrWorkflowType::SPECULAR));
+  }
+
   {
     // metal workflow
     sdf::PbrWorkflow workflow;
@@ -183,6 +206,17 @@ TEST(DOMPbr, MoveAssignmentOperator)
 TEST(DOMPbr, CopyConstructor)
 {
   {
+    // TODO(anyone) Fill PBR with meaningful data to be checked
+    sdf::Pbr pbr;
+    EXPECT_EQ(nullptr, pbr.Workflow(sdf::PbrWorkflowType::METAL));
+    EXPECT_EQ(nullptr, pbr.Workflow(sdf::PbrWorkflowType::SPECULAR));
+
+    sdf::Pbr pbr2(pbr);
+    EXPECT_EQ(nullptr, pbr2.Workflow(sdf::PbrWorkflowType::METAL));
+    EXPECT_EQ(nullptr, pbr2.Workflow(sdf::PbrWorkflowType::SPECULAR));
+  }
+
+  {
     // metal workflow
     sdf::PbrWorkflow workflow;
     workflow.SetType(sdf::PbrWorkflowType::METAL);
@@ -247,6 +281,18 @@ TEST(DOMPbr, CopyConstructor)
 /////////////////////////////////////////////////
 TEST(DOMPbr, AssignmentOperator)
 {
+  {
+    // TODO(anyone) Fill PBR with meaningful data to be checked
+    sdf::Pbr pbr;
+    EXPECT_EQ(nullptr, pbr.Workflow(sdf::PbrWorkflowType::METAL));
+    EXPECT_EQ(nullptr, pbr.Workflow(sdf::PbrWorkflowType::SPECULAR));
+
+    sdf::Pbr pbr2;
+    pbr2 = pbr;
+    EXPECT_EQ(nullptr, pbr2.Workflow(sdf::PbrWorkflowType::METAL));
+    EXPECT_EQ(nullptr, pbr2.Workflow(sdf::PbrWorkflowType::SPECULAR));
+  }
+
   {
     // metal workflow
     sdf::PbrWorkflow workflow;
