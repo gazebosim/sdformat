@@ -67,7 +67,7 @@ TEST(DOMGeometry, CopyConstructor)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMGeometry, AssignemntOperator)
+TEST(DOMGeometry, AssignmentOperator)
 {
   sdf::Geometry geometry;
   geometry.SetType(sdf::GeometryType::BOX);
@@ -81,7 +81,7 @@ TEST(DOMGeometry, AssignemntOperator)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMGeometry, MoveAssignemntOperator)
+TEST(DOMGeometry, MoveAssignmentOperator)
 {
   sdf::Geometry geometry;
   geometry.SetType(sdf::GeometryType::BOX);

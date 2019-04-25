@@ -64,7 +64,7 @@ TEST(DOMPlane, CopyConstructor)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMPlane, CopyAssignemntOperator)
+TEST(DOMPlane, CopyAssignmentOperator)
 {
   sdf::Plane plane;
   plane.SetNormal({1, 0, 0});

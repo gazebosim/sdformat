@@ -63,7 +63,7 @@ TEST(DOMMesh, CopyConstructor)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMMesh, CopyAssignemntOperator)
+TEST(DOMMesh, CopyAssignmentOperator)
 {
   sdf::Mesh mesh;
   mesh.SetUri("banana");
