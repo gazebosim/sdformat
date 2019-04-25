@@ -357,20 +357,38 @@ TEST(DOMPbr, AssignmentOperator)
 /////////////////////////////////////////////////
 TEST(DOMPbr, CopyAssignmentAfterMove)
 {
-  sdf::PbrWorkflow workflow1;
-  workflow1.SetType(sdf::PbrWorkflowType::METAL);
+  {
+    sdf::Pbr pbr1;
+    sdf::Pbr pbr2;
 
-  sdf::PbrWorkflow workflow2;
-  workflow2.SetType(sdf::PbrWorkflowType::SPECULAR);
+    // This is similar to what std::swap does except it uses std::move for each
+    // assignment
+    sdf::Pbr tmp = std::move(pbr1);
+    pbr1 = pbr2;
+    pbr2 = tmp;
 
-  // This is similar to what std::swap does except it uses std::move for each
-  // assignment
-  sdf::PbrWorkflow tmp = std::move(workflow1);
-  workflow1 = workflow2;
-  workflow2 = tmp;
+    EXPECT_EQ(pbr1.Workflow(sdf::PbrWorkflowType::METAL),
+        pbr2.Workflow(sdf::PbrWorkflowType::METAL));
+    EXPECT_EQ(pbr1.Workflow(sdf::PbrWorkflowType::SPECULAR),
+        pbr2.Workflow(sdf::PbrWorkflowType::SPECULAR));
+  }
 
-  EXPECT_EQ(sdf::PbrWorkflowType::SPECULAR, workflow1.Type());
-  EXPECT_EQ(sdf::PbrWorkflowType::METAL, workflow2.Type());
+  {
+    sdf::PbrWorkflow workflow1;
+    workflow1.SetType(sdf::PbrWorkflowType::METAL);
+
+    sdf::PbrWorkflow workflow2;
+    workflow2.SetType(sdf::PbrWorkflowType::SPECULAR);
+
+    // This is similar to what std::swap does except it uses std::move for each
+    // assignment
+    sdf::PbrWorkflow tmp = std::move(workflow1);
+    workflow1 = workflow2;
+    workflow2 = tmp;
+
+    EXPECT_EQ(sdf::PbrWorkflowType::SPECULAR, workflow1.Type());
+    EXPECT_EQ(sdf::PbrWorkflowType::METAL, workflow2.Type());
+  }
 }
 
 /////////////////////////////////////////////////
