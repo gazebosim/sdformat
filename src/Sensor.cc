@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <ignition/math/Pose3.hh>
+#include "sdf/Altimeter.hh"
 #include "sdf/Error.hh"
 #include "sdf/Magnetometer.hh"
 #include "sdf/Sensor.hh"
@@ -68,6 +69,10 @@ class sdf::SensorPrivate
       this->magnetometer = std::make_unique<sdf::Magnetometer>(
           *_sensor.magnetometer);
     }
+    if (_sensor.altimeter)
+    {
+      this->altimeter = std::make_unique<sdf::Altimeter>(*_sensor.altimeter);
+    }
   }
   // Delete copy assignment so it is not accidentally used
   public: SensorPrivate &operator=(const SensorPrivate &) = delete;
@@ -93,6 +98,9 @@ class sdf::SensorPrivate
 
   /// \brief Pointer to a magnetometer.
   public: std::unique_ptr<Magnetometer> magnetometer;
+
+  /// \brief Pointer to a altimeter.
+  public: std::unique_ptr<Altimeter> altimeter;
 
   /// \brief The frequency at which the sensor data is generated.
   /// If left unspecified (0.0), the sensor will generate data every cycle.
@@ -191,6 +199,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   if (type == "altimeter")
   {
     this->dataPtr->type = SensorType::ALTIMETER;
+    this->dataPtr->altimeter.reset(new Altimeter());
+    Errors err = this->dataPtr->altimeter->Load(_sdf->GetElement("altimeter"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "camera")
   {
@@ -364,6 +375,18 @@ const Magnetometer *Sensor::MagnetometerSensor() const
 void Sensor::SetMagnetometerSensor(const Magnetometer &_mag)
 {
   this->dataPtr->magnetometer = std::make_unique<Magnetometer>(_mag);
+}
+
+/////////////////////////////////////////////////
+const Altimeter *Sensor::AltimeterSensor() const
+{
+  return this->dataPtr->altimeter.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetAltimeterSensor(const Altimeter &_alt)
+{
+  this->dataPtr->altimeter = std::make_unique<Altimeter>(_alt);
 }
 
 /////////////////////////////////////////////////
