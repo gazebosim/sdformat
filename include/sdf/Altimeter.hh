@@ -55,7 +55,7 @@ namespace sdf
     /// \brief Move assignment operator.
     /// \param[in] _altimeter The altimeter to set values from.
     /// \return *this
-    public: Altimeter &operator=(Altimeter &&_altimeter);
+    public: Altimeter &operator=(Altimeter &&_altimeter) noexcept;
 
     /// \brief Load the altimeter based on an element pointer. This is *not*
     /// the usual entry point. Typical usage of the SDF DOM is through the Root
