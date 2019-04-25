@@ -75,9 +75,11 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Get the reference altitude of the sensor in meters. This value
-    /// can be used by a sensor implementation to augment the altitude of a
-    /// model. For example, a user may want to simulate a quadcopter on the
-    /// top of a mountain while using flat ground plane.
+    /// can be used by a sensor implementation to augment the altitude of the
+    /// sensor. For example, if you are using simulation instead of creating a
+    /// 1000 m mountain model on which to place your sensor, you could instead
+    /// set this value to 1000 and place your model on a ground plane with a Z
+    /// height of zero.
     /// \return Reference altitude in meters.
     public: double ReferenceAltitude() const;
 
