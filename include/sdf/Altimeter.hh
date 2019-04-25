@@ -42,7 +42,7 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _altimeter Altimeter to move.
-    public: Altimeter(Altimeter &&_altimeter);
+    public: Altimeter(Altimeter &&_altimeter) noexcept;
 
     /// \brief Destructor
     public: ~Altimeter();
