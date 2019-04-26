@@ -17,6 +17,9 @@
 #ifndef SDF_CAMERA_HH_
 #define SDF_CAMERA_HH_
 
+#include <string>
+#include <ignition/math/Pose3.hh>
+
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
@@ -234,6 +237,28 @@ namespace sdf
     /// \param[in] _center Distortion center or principal point.
     public: void SetDistortionCenter(
                 const ignition::math::Vector2d &_center) const;
+
+    /// \brief Get the pose of the camer. This is the pose of the camera
+    /// as specified in SDF (<camera> <pose> ... </pose></camera>).
+    /// \return The pose of the link.
+    public: const ignition::math::Pose3d &Pose() const;
+
+    /// \brief Set the pose of the camera.
+    /// \sa const ignition::math::Pose3d &Pose() const
+    /// \param[in] _pose The new camera pose.
+    public: void SetPose(const ignition::math::Pose3d &_pose);
+
+    /// \brief Get the name of the coordinate frame in which this camera's
+    /// pose is expressed. A empty value indicates that the frame is the
+    /// parent link.
+    /// \return The name of the pose frame.
+    public: const std::string &PoseFrame() const;
+
+    /// \brief Set the name of the coordinate frame in which this camera's
+    /// pose is expressed. A empty value indicates that the frame is the
+    /// parent link.
+    /// \param[in] _frame The name of the pose frame.
+    public: void SetPoseFrame(const std::string &_frame);
 
     /// \brief Private data pointer.
     private: CameraPrivate *dataPtr;

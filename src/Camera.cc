@@ -72,6 +72,29 @@ class sdf::CameraPrivate
 
   /// \brief The distortion center or principal point
   public: ignition::math::Vector2d distortionCenter{0.5, 0.5};
+
+  /// \brief Pose of the link
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+
+  /// \brief Frame of the pose.
+  public: std::string poseFrame = "";
+
+  public: std::string lensType{"stereographic"};
+  public: bool lensScaleToHfov{true};
+  public: double lensC1{1.0};
+  public: double lensC2{1.0};
+  public: double lensC3{0.0};
+  public: double lensF{1.0};
+  public: std::string lensFun{"tan"};
+
+  public: double lensCutoffAngle{IGN_PI};
+  public: int lensEnvTextureSize{256};
+
+  public: double lensIntrinsicsFx{277.0};
+  public: double lensIntrinsicsFy{277.0};
+  public: double lensIntrinsicsCx{160.0};
+  public: double lensIntrinsicsCy{120.0};
+  public: double lensIntrinsicsS{1.0};
 };
 
 /////////////////////////////////////////////////
@@ -125,11 +148,31 @@ Errors Camera::Load(ElementPtr _sdf)
     return errors;
   }
 
-  // Read the camera's's name
+  // Read the camera's name
   loadName(_sdf, this->dataPtr->name);
 
   this->dataPtr->hfov = _sdf->Get<double>("horizontal_fov",
       this->dataPtr->hfov).first;
+
+  // Read the distortion
+  if (_sdf->HasElement("distortion"))
+  {
+    sdf::ElementPtr elem = _sdf->GetElement("distortion");
+    this->dataPtr->distortionK1 = elem->Get<double>("k1",
+      this->dataPtr->distortionK1).first;
+    this->dataPtr->distortionK2 = elem->Get<double>("k2",
+      this->dataPtr->distortionK2).first;
+    this->dataPtr->distortionK3 = elem->Get<double>("k3",
+      this->dataPtr->distortionK3).first;
+
+    this->dataPtr->distortionP1 = elem->Get<double>("p1",
+      this->dataPtr->distortionP1).first;
+    this->dataPtr->distortionP2 = elem->Get<double>("p2",
+      this->dataPtr->distortionP2).first;
+
+    this->dataPtr->distortionCenter = elem->Get<ignition::math::Vector2d>(
+        "center", this->dataPtr->distortionCenter).first;
+  }
 
   if (_sdf->HasElement("image"))
   {
@@ -158,7 +201,6 @@ Errors Camera::Load(ElementPtr _sdf)
       errors.push_back({ErrorCode::ELEMENT_INVALID,
         "Camera sensor <image><format> has invalid value of " + format});
     }
-
   }
   else
   {
@@ -203,7 +245,53 @@ Errors Camera::Load(ElementPtr _sdf)
     errors.insert(errors.end(), noiseErr.begin(), noiseErr.end());
   }
 
+  // Load the pose. Ignore the return value since the pose is optional.
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
+  // Load the lens values.
+  if (_sdf->HasElement("lens"))
+  {
+    sdf::ElementPtr elem = _sdf->GetElement("lens");
+
+    this->dataPtr->lensType = elem->Get<std::string>("type",
+        this->dataPtr->lensType).first;
+    this->dataPtr->lensScaleToHfov = elem->Get<bool>("scale_to_hfov",
+        this->dataPtr->lensScaleToHfov).first;
+    this->dataPtr->lensCutoffAngle = elem->Get<double>("cutoff_angle",
+        this->dataPtr->lensCutoffAngle).first;
+    this->dataPtr->lensEnvTextureSize = elem->Get<int>("env_texture_size",
+        this->dataPtr->lensEnvTextureSize).first;
+
+    if (elem->HasElement("custom_function"))
+    {
+      sdf::ElementPtr func = elem->GetElement("custom_function");
+      this->dataPtr->lensC1 = func->Get<double>("c1",
+          this->dataPtr->lensC1).first;
+      this->dataPtr->lensC2 = func->Get<double>("c2",
+          this->dataPtr->lensC2).first;
+      this->dataPtr->lensC3 = func->Get<double>("c3",
+          this->dataPtr->lensC3).first;
+      this->dataPtr->lensF = func->Get<double>("f",
+          this->dataPtr->lensF).first;
+      this->dataPtr->lensFun = func->Get<string>("fun",
+          this->dataPtr->lensFun).first;
+    }
+
+    if (elem->HasElement("intrinsics"))
+    {
+      sdf::ElementPtr intrinsics = elem->GetElement("intrinsics");
+      this->dataPtr->lensIntrinsicsFx = intrinsics->Get<double>("fx",
+          this->dataPtr->lensIntrinsicsFx).first;
+      this->dataPtr->lensIntrinsicsFy = intrinsics->Get<double>("fy",
+          this->dataPtr->lensIntrinsicsFy).first;
+      this->dataPtr->lensIntrinsicsCx = intrinsics->Get<double>("cx",
+          this->dataPtr->lensIntrinsicsCx).first;
+      this->dataPtr->lensIntrinsicsCy = intrinsics->Get<double>("cy",
+          this->dataPtr->lensIntrinsicsCy).first;
+      this->dataPtr->lensIntrinsicsS = intrinsics->Get<double>("s",
+          this->dataPtr->lensIntrinsicsS).first;
+    }
+  }
   return errors;
 }
 
@@ -444,4 +532,28 @@ void Camera::SetDistortionCenter(
                 const ignition::math::Vector2d &_center) const
 {
   this->distortionCenter = _center;
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Camera::Pose() const
+{
+  return this->dataPtr->pose;
+}
+
+/////////////////////////////////////////////////
+const std::string &Camera::PoseFrame() const
+{
+  return this->dataPtr->poseFrame;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->dataPtr->pose = _pose;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetPoseFrame(const std::string &_frame)
+{
+  this->dataPtr->poseFrame = _frame;
 }
