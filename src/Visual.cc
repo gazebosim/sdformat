@@ -26,6 +26,16 @@ using namespace sdf;
 
 class sdf::VisualPrivate
 {
+  /// \brief Default constructor
+  public: VisualPrivate() = default;
+
+  /// \brief Copy constructor
+  /// \param[in] _visualPrivate Joint axis to move.
+  public: explicit VisualPrivate(const VisualPrivate &_visualPrivate);
+
+  // Delete copy assignment so it is not accidentally used
+  public: VisualPrivate &operator=(const VisualPrivate &) = delete;
+
   /// \brief Name of the visual.
   public: std::string name = "";
 
@@ -46,16 +56,58 @@ class sdf::VisualPrivate
 };
 
 /////////////////////////////////////////////////
+VisualPrivate::VisualPrivate(const VisualPrivate &_visualPrivate)
+    : name(_visualPrivate.name),
+      pose(_visualPrivate.pose),
+      poseFrame(_visualPrivate.poseFrame),
+      geom(_visualPrivate.geom),
+      sdf(_visualPrivate.sdf)
+{
+  if (_visualPrivate.material)
+  {
+    this->material = std::make_unique<Material>(*(_visualPrivate.material));
+  }
+}
+
+/////////////////////////////////////////////////
 Visual::Visual()
   : dataPtr(new VisualPrivate)
 {
 }
 
 /////////////////////////////////////////////////
-Visual::Visual(Visual &&_visual)
+Visual::Visual(const Visual &_visual)
+  : dataPtr(new VisualPrivate(*_visual.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Visual &Visual::operator=(const Visual &_visual)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new VisualPrivate(*_visual.dataPtr);
+  }
+  else
+  {
+    this->dataPtr = new(this->dataPtr) VisualPrivate(*_visual.dataPtr);
+  }
+  return *this;
+}
+
+/////////////////////////////////////////////////
+Visual::Visual(Visual &&_visual) noexcept
 {
   this->dataPtr = _visual.dataPtr;
   _visual.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Visual &Visual::operator=(Visual &&_visual)
+{
+  this->dataPtr = _visual.dataPtr;
+  _visual.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////

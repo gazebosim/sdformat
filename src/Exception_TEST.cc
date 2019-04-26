@@ -28,8 +28,33 @@ TEST(Exception, Throwing)
   EXPECT_ANY_THROW(throw sdf::Exception());
   EXPECT_THROW(throw sdf::Exception(), sdf::Exception);
 
-  sdf::Exception ex = sdf::Exception(__FILE__, __LINE__, "testmsg\n");
-  EXPECT_EQ(ex.GetErrorFile(), __FILE__);
+  sdf::Exception ex1 = sdf::Exception(__FILE__, __LINE__, "testmsg\n");
+  EXPECT_EQ(ex1.GetErrorFile(), __FILE__);
+
+  // Copy constructor
+  sdf::Exception ex2(ex1);
+  EXPECT_EQ(ex2.GetErrorFile(), __FILE__);
+
+  // Copy assignment
+  sdf::Exception ex3;
+  ex3 = ex2;
+  EXPECT_EQ(ex3.GetErrorFile(), __FILE__);
+
+  // Move constructor
+  sdf::Exception ex4(std::move(ex3));
+  EXPECT_EQ(ex4.GetErrorFile(), __FILE__);
+
+  // Move assignment
+  sdf::Exception ex5;
+  ex5 = std::move(ex4);
+  EXPECT_EQ(ex5.GetErrorFile(), __FILE__);
+
+  // Copy assignment after move
+  sdf::Exception tmp = std::move(ex1);
+  ex1 = ex2;
+  ex2 = tmp;
+  EXPECT_EQ(ex1.GetErrorFile(), __FILE__);
+  EXPECT_EQ(ex2.GetErrorFile(), __FILE__);
 
   EXPECT_ANY_THROW(throw sdf::InternalError());
   EXPECT_THROW(throw sdf::InternalError(), sdf::InternalError);

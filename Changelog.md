@@ -2,8 +2,20 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Apply rule of five for various DOM classes
+   * [Pull request 524](https://bitbucket.org/osrf/sdformat/pull-requests/524)
+
+1. Added Altimeter SDF DOM
+   * [Pull request 527](https://bitbucket.org/osrf/sdformat/pull-requests/527)
+
+1. Add Scene SDF DOM
+   * [Pull request 517](https://bitbucket.org/osrf/sdformat/pull-requests/517)
+
 1. Add PBR material SDF element
    * [Pull request 512](https://bitbucket.org/osrf/sdformat/pull-requests/512)
+
+1. Set geometry shapes
+   * [Pull request 515](https://bitbucket.org/osrf/sdformat/pull-requests/515)
 
 ### SDFormat 8.0.0 (2019-03-01)
 

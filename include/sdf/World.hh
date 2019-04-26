@@ -23,6 +23,7 @@
 #include "sdf/Atmosphere.hh"
 #include "sdf/Element.hh"
 #include "sdf/Gui.hh"
+#include "sdf/Scene.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -44,9 +45,23 @@ namespace sdf
     /// \brief Default constructor
     public: World();
 
+    /// \brief Copy constructor
+    /// \param[in] _world World to copy.
+    public: World(const World &_world);
+
     /// \brief Move constructor
     /// \param[in] _world World to move.
-    public: World(World &&_world);
+    public: World(World &&_world) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _world World to move.
+    /// \return Reference to this.
+    public: World &operator=(World &&_world);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _world World to copy.
+    /// \return Reference to this.
+    public: World &operator=(const World &_world);
 
     /// \brief Destructor
     public: ~World();
@@ -170,6 +185,16 @@ namespace sdf
     /// \brief Set the Gui parameters associated with this world.
     /// \param[in] _gui The new Gui parameter for this world
     public: void SetGui(const sdf::Gui &_gui);
+
+    /// \brief Get a pointer to the Scene associated with this
+    /// world. A nullptr indicates that a Scene element has not been specified.
+    /// \return Pointer to this world's Scene parameters. Nullptr inidicates
+    /// that there are no Scene parameters.
+    public: const sdf::Scene *Scene() const;
+
+    /// \brief Set the Scene parameters associated with this world.
+    /// \param[in] _gui The new Scene parameter for this world
+    public: void SetScene(const sdf::Scene &_scene);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

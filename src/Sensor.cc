@@ -17,21 +17,75 @@
 #include <string>
 #include <vector>
 #include <ignition/math/Pose3.hh>
+#include "sdf/Altimeter.hh"
 #include "sdf/Camera.hh"
 #include "sdf/Error.hh"
+#include "sdf/Magnetometer.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "Utils.hh"
 
 using namespace sdf;
 
+/// Sensor type strings. These should match the data in
+/// `enum class SensorType` located in Sensor.hh.
+const std::vector<std::string> sensorTypeStrs =
+{
+  "none",
+  "altimeter",
+  "camera",
+  "contact",
+  "depth_camera",
+  "force_torque",
+  "gps",
+  "gpu_lidar",
+  "imu",
+  "logical_camera",
+  "magnetometer",
+  "multicamera",
+  "lidar",
+  "rfid",
+  "rfidtag",
+  "sonar",
+  "wireless_receiver",
+  "wireless_transmitter"
+};
+
 class sdf::SensorPrivate
 {
+  /// \brief Default constructor
+  public: SensorPrivate() = default;
+
+  /// \brief Copy constructor
+  public: explicit SensorPrivate(const SensorPrivate &_sensor)
+          : type(_sensor.type),
+            name(_sensor.name),
+            topic(_sensor.topic),
+            pose(_sensor.pose),
+            poseFrame(_sensor.poseFrame)
+
+  {
+    if (_sensor.magnetometer)
+    {
+      this->magnetometer = std::make_unique<sdf::Magnetometer>(
+          *_sensor.magnetometer);
+    }
+    if (_sensor.altimeter)
+    {
+      this->altimeter = std::make_unique<sdf::Altimeter>(*_sensor.altimeter);
+    }
+  }
+  // Delete copy assignment so it is not accidentally used
+  public: SensorPrivate &operator=(const SensorPrivate &) = delete;
+
   // \brief The sensor type.
   public: SensorType type = SensorType::NONE;
 
   /// \brief Name of the sensor.
   public: std::string name = "";
+
+  /// \brief Sensor data topic.
+  public: std::string topic = "";
 
   /// \brief Pose of the sensor
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
@@ -42,8 +96,19 @@ class sdf::SensorPrivate
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
+  /// \brief The frequency at which the sensor data is generated.
+  /// If left unspecified (0.0), the sensor will generate data every cycle.
+  public: double updateRate = 0.0;
+
+  /// \brief Pointer to a magnetometer.
+  public: std::unique_ptr<Magnetometer> magnetometer;
+
+  /// \brief Pointer to a altimeter.
+  public: std::unique_ptr<Altimeter> altimeter;
+
   /// \brief Pointer to a camera.
   public: std::unique_ptr<Camera> camera;
+
 };
 
 /////////////////////////////////////////////////
@@ -53,7 +118,13 @@ Sensor::Sensor()
 }
 
 /////////////////////////////////////////////////
-Sensor::Sensor(Sensor &&_sensor)
+Sensor::Sensor(const Sensor &_sensor)
+  : dataPtr(new SensorPrivate(*_sensor.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Sensor::Sensor(Sensor &&_sensor) noexcept
 {
   this->dataPtr = _sensor.dataPtr;
   _sensor.dataPtr = nullptr;
@@ -64,6 +135,28 @@ Sensor::~Sensor()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Sensor &Sensor::operator=(const Sensor &_sensor)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new SensorPrivate(*_sensor.dataPtr);
+  }
+  else
+  {
+    this->dataPtr = new(this->dataPtr) SensorPrivate(*_sensor.dataPtr);
+  }
+  return *this;
+}
+
+/////////////////////////////////////////////////
+Sensor &Sensor::operator=(Sensor &&_sensor)
+{
+  this->dataPtr = _sensor.dataPtr;
+  _sensor.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -100,10 +193,19 @@ Errors Sensor::Load(ElementPtr _sdf)
     return errors;
   }
 
+  this->dataPtr->updateRate = _sdf->Get<double>("update_rate",
+      this->dataPtr->updateRate).first;
+  this->dataPtr->topic = _sdf->Get<std::string>("topic");
+  if (this->dataPtr->topic == "__default__")
+    this->dataPtr->topic = "";
+
   std::string type = _sdf->Get<std::string>("type");
   if (type == "altimeter")
   {
     this->dataPtr->type = SensorType::ALTIMETER;
+    this->dataPtr->altimeter.reset(new Altimeter());
+    Errors err = this->dataPtr->altimeter->Load(_sdf->GetElement("altimeter"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "camera")
   {
@@ -143,6 +245,10 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "magnetometer")
   {
     this->dataPtr->type = SensorType::MAGNETOMETER;
+    this->dataPtr->magnetometer.reset(new Magnetometer());
+    Errors err = this->dataPtr->magnetometer->Load(
+        _sdf->GetElement("magnetometer"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "multicamera")
   {
@@ -199,6 +305,18 @@ void Sensor::SetName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
+std::string Sensor::Topic() const
+{
+  return this->dataPtr->topic;
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetTopic(const std::string &_topic)
+{
+  this->dataPtr->topic = _topic;
+}
+
+/////////////////////////////////////////////////
 const ignition::math::Pose3d &Sensor::Pose() const
 {
   return this->dataPtr->pose;
@@ -238,6 +356,65 @@ SensorType Sensor::Type() const
 void Sensor::SetType(const SensorType _type)
 {
   this->dataPtr->type = _type;
+}
+
+/////////////////////////////////////////////////
+bool Sensor::SetType(const std::string &_typeStr)
+{
+  for (size_t i = 0; i < sensorTypeStrs.size(); ++i)
+  {
+    if (_typeStr == sensorTypeStrs[i])
+    {
+      this->dataPtr->type = static_cast<SensorType>(i);
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Magnetometer *Sensor::MagnetometerSensor() const
+{
+  return this->dataPtr->magnetometer.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetMagnetometerSensor(const Magnetometer &_mag)
+{
+  this->dataPtr->magnetometer = std::make_unique<Magnetometer>(_mag);
+}
+
+/////////////////////////////////////////////////
+const Altimeter *Sensor::AltimeterSensor() const
+{
+  return this->dataPtr->altimeter.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetAltimeterSensor(const Altimeter &_alt)
+{
+  this->dataPtr->altimeter = std::make_unique<Altimeter>(_alt);
+}
+
+/////////////////////////////////////////////////
+double Sensor::UpdateRate() const
+{
+  return this->dataPtr->updateRate;
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetUpdateRate(double _hz)
+{
+  this->dataPtr->updateRate = _hz;
+}
+
+/////////////////////////////////////////////////
+std::string Sensor::TypeStr() const
+{
+  size_t index = static_cast<int>(this->dataPtr->type);
+  if (index > 0 && index < sensorTypeStrs.size())
+    return sensorTypeStrs[index];
+  return "none";
 }
 
 /////////////////////////////////////////////////

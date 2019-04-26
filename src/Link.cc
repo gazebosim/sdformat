@@ -70,10 +70,35 @@ Link::Link()
 }
 
 /////////////////////////////////////////////////
-Link::Link(Link &&_link)
+Link::Link(const Link &_link)
+  : dataPtr(new LinkPrivate(*_link.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Link &Link::operator=(const Link &_link)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new LinkPrivate;
+  }
+  *this->dataPtr = (*_link.dataPtr);
+  return *this;
+}
+
+/////////////////////////////////////////////////
+Link::Link(Link &&_link) noexcept
 {
   this->dataPtr = _link.dataPtr;
   _link.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Link &Link::operator=(Link &&_link)
+{
+  this->dataPtr = _link.dataPtr;
+  _link.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////

@@ -45,12 +45,17 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _mesh Mesh to move.
-    public: Mesh(Mesh &&_mesh);
+    public: Mesh(Mesh &&_mesh) noexcept;
 
     /// \brief Destructor
     public: virtual ~Mesh();
 
-    /// \brief Assignment operator.
+    /// \brief Move assignment operator.
+    /// \param[in] _mesh Mesh to move.
+    /// \return Reference to this.
+    public: Mesh &operator=(Mesh &&_mesh);
+
+    /// \brief Copy Assignment operator.
     /// \param[in] _mesh The mesh to set values from.
     /// \return *this
     public: Mesh &operator=(const Mesh &_mesh);

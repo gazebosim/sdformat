@@ -50,6 +50,133 @@ TEST(DOMVisual, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMVisual, CopyConstructor)
+{
+  sdf::Visual visual;
+  visual.SetName("test_visual");
+  visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
+
+  visual.SetPoseFrame("link");
+
+  sdf::Material mat;
+  mat.SetAmbient({0.1f, 0.1f, 0.1f});
+  visual.SetMaterial(mat);
+
+  sdf::Visual visual2(visual);
+
+  EXPECT_EQ("test_visual", visual.Name());
+  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+            visual.Pose());
+  EXPECT_EQ("link", visual.PoseFrame());
+  ASSERT_TRUE(nullptr != visual.Material());
+  EXPECT_EQ(mat.Ambient(), visual.Material()->Ambient());
+
+  EXPECT_EQ("test_visual", visual2.Name());
+  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+            visual2.Pose());
+  EXPECT_EQ("link", visual2.PoseFrame());
+  ASSERT_TRUE(nullptr != visual2.Material());
+  EXPECT_EQ(mat.Ambient(), visual2.Material()->Ambient());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMVisual, CopyAssignmentOperator)
+{
+  sdf::Visual visual;
+  visual.SetName("test_visual");
+  visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
+
+  visual.SetPoseFrame("link");
+
+  sdf::Material mat;
+  mat.SetAmbient({0.1f, 0.1f, 0.1f});
+  visual.SetMaterial(mat);
+
+  sdf::Visual visual2;
+  visual2 = visual;
+
+  EXPECT_EQ("test_visual", visual.Name());
+  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+            visual.Pose());
+  EXPECT_EQ("link", visual.PoseFrame());
+  ASSERT_TRUE(nullptr != visual.Material());
+  EXPECT_EQ(mat.Ambient(), visual.Material()->Ambient());
+
+  EXPECT_EQ("test_visual", visual2.Name());
+  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+            visual2.Pose());
+  EXPECT_EQ("link", visual2.PoseFrame());
+  ASSERT_TRUE(nullptr != visual2.Material());
+  EXPECT_EQ(mat.Ambient(), visual2.Material()->Ambient());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMVisual, MoveConstructor)
+{
+  sdf::Visual visual;
+  visual.SetName("test_visual");
+  visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
+
+  visual.SetPoseFrame("link");
+
+  sdf::Material mat;
+  mat.SetAmbient({0.1f, 0.1f, 0.1f});
+  visual.SetMaterial(mat);
+
+  sdf::Visual visual2(std::move(visual));
+
+  EXPECT_EQ("test_visual", visual2.Name());
+  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+            visual2.Pose());
+  EXPECT_EQ("link", visual2.PoseFrame());
+  ASSERT_TRUE(nullptr != visual2.Material());
+  EXPECT_EQ(mat.Ambient(), visual2.Material()->Ambient());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMVisual, MoveAssignmentOperator)
+{
+  sdf::Visual visual;
+  visual.SetName("test_visual");
+  visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
+
+  visual.SetPoseFrame("link");
+
+  sdf::Material mat;
+  mat.SetAmbient({0.1f, 0.1f, 0.1f});
+  visual.SetMaterial(mat);
+
+  sdf::Visual visual2;
+  visual2 = std::move(visual);
+
+  EXPECT_EQ("test_visual", visual2.Name());
+  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+            visual2.Pose());
+  EXPECT_EQ("link", visual2.PoseFrame());
+  ASSERT_TRUE(nullptr != visual2.Material());
+  EXPECT_EQ(mat.Ambient(), visual2.Material()->Ambient());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMVisual, CopyAssignmentAfterMove)
+{
+  sdf::Visual visual1;
+  visual1.SetName("visual1");
+
+  sdf::Visual visual2;
+  visual2.SetName("visual2");
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Visual tmp = std::move(visual1);
+  visual1 = visual2;
+  visual2 = tmp;
+
+  EXPECT_EQ("visual2", visual1.Name());
+  EXPECT_EQ("visual1", visual2.Name());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMVisual, SetGeometry)
 {
   sdf::Visual visual;

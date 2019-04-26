@@ -40,7 +40,7 @@ namespace sdf
     public: JointAxis();
 
     /// \brief Copy constructor
-    /// \param[in] _jointAxis Joint axis to move.
+    /// \param[in] _jointAxis Joint axis to copy.
     public: JointAxis(const JointAxis &_jointAxis);
 
     /// \brief Move constructor

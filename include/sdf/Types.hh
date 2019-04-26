@@ -195,6 +195,11 @@ namespace sdf
   {
     public: double mass;
   };
+
+  /// \brief Transforms a string to its lowercase equivalent
+  /// \param[in] _in String to convert to lowercase
+  /// \return Lowercase equilvalent of _in.
+  std::string SDFORMAT_VISIBLE lowercase(const std::string &_in);
   }
 }
 #endif

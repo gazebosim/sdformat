@@ -29,6 +29,16 @@ using namespace sdf;
 
 class sdf::WorldPrivate
 {
+  /// \brief Default constructor
+  public: WorldPrivate() = default;
+
+  /// \brief Copy constructor
+  /// \param[in] _worldPrivate Joint axis to move.
+  public: explicit WorldPrivate(const WorldPrivate &_worldPrivate);
+
+  // Delete copy assignment so it is not accidentally used
+  public: WorldPrivate &operator=(const WorldPrivate &) = delete;
+
   /// \brief Pointer to an atmosphere model.
   public: std::unique_ptr<Atmosphere> atmosphere;
 
@@ -41,6 +51,9 @@ class sdf::WorldPrivate
 
   /// \brief Pointer to Gui parameters.
   public: std::unique_ptr<Gui> gui;
+
+  /// \brief Pointer to Sene parameters.
+  public: std::unique_ptr<Scene> scene;
 
   /// \brief The lights specified in this world.
   public: std::vector<Light> lights;
@@ -67,6 +80,33 @@ class sdf::WorldPrivate
 };
 
 /////////////////////////////////////////////////
+WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
+    : audioDevice(_worldPrivate.audioDevice),
+      gravity(_worldPrivate.gravity),
+      lights(_worldPrivate.lights),
+      magneticField(_worldPrivate.magneticField),
+      models(_worldPrivate.models),
+      name(_worldPrivate.name),
+      physics(_worldPrivate.physics),
+      sdf(_worldPrivate.sdf),
+      windLinearVelocity(_worldPrivate.windLinearVelocity)
+{
+  if (_worldPrivate.atmosphere)
+  {
+    this->atmosphere =
+        std::make_unique<Atmosphere>(*(_worldPrivate.atmosphere));
+  }
+  if (_worldPrivate.gui)
+  {
+    this->gui = std::make_unique<Gui>(*(_worldPrivate.gui));
+  }
+  if (_worldPrivate.scene)
+  {
+    this->scene = std::make_unique<Scene>(*(_worldPrivate.scene));
+  }
+}
+
+/////////////////////////////////////////////////
 World::World()
   : dataPtr(new WorldPrivate)
 {
@@ -81,10 +121,38 @@ World::~World()
 }
 
 /////////////////////////////////////////////////
-World::World(World &&_world)
+World::World(const World &_world)
+  : dataPtr(new WorldPrivate(*_world.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+World &World::operator=(const World &_world)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new WorldPrivate(*_world.dataPtr);
+  }
+  else
+  {
+    this->dataPtr = new(this->dataPtr) WorldPrivate(*_world.dataPtr);
+  }
+  return *this;
+}
+
+/////////////////////////////////////////////////
+World::World(World &&_world) noexcept
 {
   this->dataPtr = _world.dataPtr;
   _world.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+World &World::operator=(World &&_world)
+{
+  this->dataPtr = _world.dataPtr;
+  _world.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -173,6 +241,15 @@ Errors World::Load(sdf::ElementPtr _sdf)
     this->dataPtr->gui.reset(new sdf::Gui());
     Errors guiLoadErrors = this->dataPtr->gui->Load(_sdf->GetElement("gui"));
     errors.insert(errors.end(), guiLoadErrors.begin(), guiLoadErrors.end());
+  }
+
+  // Load the Scene
+  if (_sdf->HasElement("scene"))
+  {
+    this->dataPtr->scene.reset(new sdf::Scene());
+    Errors sceneLoadErrors =
+        this->dataPtr->scene->Load(_sdf->GetElement("scene"));
+    errors.insert(errors.end(), sceneLoadErrors.begin(), sceneLoadErrors.end());
   }
 
   return errors;
@@ -287,6 +364,18 @@ sdf::Gui *World::Gui() const
 void World::SetGui(const sdf::Gui &_gui)
 {
   return this->dataPtr->gui.reset(new sdf::Gui(_gui));
+}
+
+/////////////////////////////////////////////////
+const sdf::Scene *World::Scene() const
+{
+  return this->dataPtr->scene.get();
+}
+
+/////////////////////////////////////////////////
+void World::SetScene(const sdf::Scene &_scene)
+{
+  return this->dataPtr->scene.reset(new sdf::Scene(_scene));
 }
 
 /////////////////////////////////////////////////

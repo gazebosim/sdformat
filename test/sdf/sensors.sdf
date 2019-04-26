@@ -3,6 +3,20 @@
   <model name="model">
     <link name="link">
       <sensor name="altimeter_sensor" type="altimeter">
+        <altimeter>
+          <vertical_position>
+            <noise type="gaussian">
+              <mean>0.1</mean>
+              <stddev>0.2</stddev>
+            </noise>
+          </vertical_position>
+          <vertical_velocity>
+            <noise type="gaussian">
+              <mean>2.3</mean>
+              <stddev>4.5</stddev>
+            </noise>
+          </vertical_velocity>
+        </altimeter>
       </sensor>
 
       <sensor name="camera_sensor" type="camera">
@@ -39,6 +53,26 @@
 
       <sensor name="magnetometer_sensor" type="magnetometer">
         <pose>10 11 12 0 0 0</pose>
+        <magnetometer>
+          <x>
+            <noise type="gaussian">
+              <mean>0.1</mean>
+              <stddev>0.2</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>1.2</mean>
+              <stddev>2.3</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>3.4</mean>
+              <stddev>5.6</stddev>
+            </noise>
+          </z>
+        </magnetometer>
       </sensor>
 
       <sensor name="multicamera_sensor" type="multicamera">
