@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Open Source Robotics Foundation
+ * Copyright 2019 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,12 +51,46 @@ class sdf::CameraPrivate
 
   /// \brief Path in which to save frames.
   public: std::string savePath{""};
+
+  /// \brief The image noise value.
+  public: Noise imageNoise;
+
+  /// \brief The radial distortion coefficient k1.
+  public: double distortionK1{0.0};
+
+  /// \brief The radial distortion coefficient k2.
+  public: double distortionK2{0.0};
+
+  /// \brief The radial distortion coefficient k3.
+  public: double distortionK3{0.0};
+
+  /// \brief Thecw tangential distortion coefficient p1.
+  public: double distortionP1{0.0};
+
+  /// \brief Thecw tangential distortion coefficient p2.
+  public: double distortionP2{0.0};
+
+  /// \brief The distortion center or principal point
+  public: ignition::math::Vector2d distortionCenter{0.5, 0.5};
 };
 
 /////////////////////////////////////////////////
 Camera::Camera()
   : dataPtr(new CameraPrivate)
 {
+}
+
+/////////////////////////////////////////////////
+Camera::Camera(const Camera &_camera)
+  : dataPtr(new CameraPrivate(*_camera.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Camera::Camera(Camera &&_camera)
+{
+  this->dataPtr = _camera.dataPtr;
+  _camera.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -161,6 +195,14 @@ Errors Camera::Load(ElementPtr _sdf)
       }
     }
   }
+
+  // Load the noise values.
+  if (_sdf->HasElement("noise"))
+  {
+    Errors noiseErr = this->dataPtr->imageNoise.Load(_sdf->GetElement("noise"));
+    errors.insert(errors.end(), noiseErr.begin(), noiseErr.end());
+  }
+
 
   return errors;
 }
@@ -277,4 +319,129 @@ const std::string &Camera::SaveFramesPath() const
 void Camera::SetSaveFramesPath(const std::string &_path)
 {
   this->dataPtr->savePath = _path;
+}
+
+//////////////////////////////////////////////////
+Camera &Camera::operator=(const Camera &_camera)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new CameraPrivate;
+  }
+  *this->dataPtr = *_camera.dataPtr;
+  return *this;
+}
+
+//////////////////////////////////////////////////
+Camera &Camera::operator=(Camera &&_camera)
+{
+  this->dataPtr = _camera.dataPtr;
+  _camera.dataPtr = nullptr;
+  return *this;
+}
+
+//////////////////////////////////////////////////
+bool Camera::operator==(const Camera &_cam) const
+{
+  return this->Name() == _cam.Name() &&
+    this->HorizontalFov() == _cam.HorizontalFov() &&
+    this->ImageWidth() == _cam.ImageWidth() &&
+    this->ImageHeight() == _cam.ImageHeight() &&
+    this->PixelFormat() == _cam.PixelFormat() &&
+    this->NearClip() == _cam.NearClip() &&
+    this->FarClip() == _cam.FarClip() &&
+    this->SaveFames() == _cam.SaveFames() &&
+    this->SaveFramesPath() == _cam.SaveFramesPath() &&
+    this->ImageNoise() == _cam.ImageNoise();
+}
+
+//////////////////////////////////////////////////
+bool Camera::operator!=(const Camera &_alt) const
+{
+  return !(*this == _alt);
+}
+
+//////////////////////////////////////////////////
+const Noise &Camera::ImageNoise() const
+{
+  return this->dataPtr->imageNoise;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetImageNoise(const Noise &_noise)
+{
+  this->imageNoise = _noise;
+}
+
+//////////////////////////////////////////////////
+double Camera::DistortionK1() const
+{
+  return this->distortionK1;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetDistortionK1(double _k1)
+{
+  this->distortionK1 = _k1;
+}
+
+//////////////////////////////////////////////////
+double Camera::DistortionK2() const
+{
+  return this->distortionK2;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetDistortionK2(double _k2)
+{
+  this->distortionK2 = _k2;
+}
+
+//////////////////////////////////////////////////
+double Camera::DistortionK3() const
+{
+  return this->distortionK3;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetDistortionK3(double _k3)
+{
+  this->distortionK3 = _k3;
+}
+
+//////////////////////////////////////////////////
+double Camera::DistortionP1() const
+{
+  return this->distortionP1;
+}
+
+//////////////////////////////////////////////////
+void Camera::DistortionP1(double _p1)
+{
+  this->p1 = _p1;
+}
+
+//////////////////////////////////////////////////
+double Camera::DistortionP2() const
+{
+  return this->distortionP2;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetDistortionP2(double _p2)
+{
+  this->p2 = _p2;
+}
+
+//////////////////////////////////////////////////
+const ignition::math::Vector2d &Camera::DistortionCenter() const
+{
+  return this->distortionCenter;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetDistortionCenter(
+                const ignition::math::Vector2d &_center) const
+{
+  this->distortionCenter = _center;
 }
