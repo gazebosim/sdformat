@@ -19,9 +19,14 @@
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declare private data class.
   class SpherePrivate;
 
@@ -32,8 +37,21 @@ namespace sdf
     /// \brief Constructor
     public: Sphere();
 
+    /// \brief Copy constructor
+    /// \param[in] _sphere Sphere to copy.
+    public: Sphere(const Sphere &_sphere);
+
+    /// \brief Move constructor
+    /// \param[in] _sphere Sphere to move.
+    public: Sphere(Sphere &&_sphere);
+
     /// \brief Destructor
     public: virtual ~Sphere();
+
+    /// \brief Assignment operator.
+    /// \param[in] _sphere The sphere to set values from.
+    /// \return *this
+    public: Sphere &operator=(const Sphere &_sphere);
 
     /// \brief Load the sphere geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -60,5 +78,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: SpherePrivate *dataPtr;
   };
+  }
 }
 #endif

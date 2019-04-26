@@ -20,6 +20,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 #include "sdf/Collision.hh"
+#include "sdf/Light.hh"
 #include "sdf/Link.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Visual.hh"
@@ -40,6 +41,13 @@ TEST(DOMLink, Construction)
   EXPECT_FALSE(link.VisualNameExists(""));
   EXPECT_FALSE(link.VisualNameExists("default"));
 
+  EXPECT_EQ(0u, link.LightCount());
+  EXPECT_EQ(nullptr, link.LightByIndex(0));
+  EXPECT_EQ(nullptr, link.LightByIndex(1));
+  EXPECT_FALSE(link.LightNameExists(""));
+  EXPECT_FALSE(link.LightNameExists("default"));
+  EXPECT_EQ(nullptr, link.LightByName("no_such_light"));
+
   EXPECT_EQ(0u, link.SensorCount());
   EXPECT_EQ(nullptr, link.SensorByIndex(0));
   EXPECT_EQ(nullptr, link.SensorByIndex(1));
@@ -56,7 +64,7 @@ TEST(DOMLink, Construction)
   link.SetPoseFrame("model");
   EXPECT_EQ("model", link.PoseFrame());
 
-  // Get the default interial
+  // Get the default inertial
   const ignition::math::Inertiald inertial = link.Inertial();
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().Mass());
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().X());

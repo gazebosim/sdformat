@@ -22,6 +22,7 @@
 
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
+#include "sdf/Light.hh"
 #include "sdf/Link.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
@@ -43,6 +44,9 @@ class sdf::LinkPrivate
 
   /// \brief The visuals specified in this link.
   public: std::vector<Visual> visuals;
+
+  /// \brief The lights specified in this link.
+  public: std::vector<Light> lights;
 
   /// \brief The collisions specified in this link.
   public: std::vector<Collision> collisions;
@@ -115,6 +119,11 @@ Errors Link::Load(ElementPtr _sdf)
   Errors collLoadErrors = loadUniqueRepeated<Collision>(_sdf, "collision",
       this->dataPtr->collisions);
   errors.insert(errors.end(), collLoadErrors.begin(), collLoadErrors.end());
+
+  // Load all the lights.
+  Errors lightLoadErrors = loadUniqueRepeated<Light>(_sdf, "light",
+      this->dataPtr->lights);
+  errors.insert(errors.end(), lightLoadErrors.begin(), lightLoadErrors.end());
 
   // Load all the sensors.
   Errors sensorLoadErrors = loadUniqueRepeated<Sensor>(_sdf, "sensor",
@@ -205,6 +214,53 @@ bool Link::VisualNameExists(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+uint64_t Link::CollisionCount() const
+{
+  return this->dataPtr->collisions.size();
+}
+
+/////////////////////////////////////////////////
+const Collision *Link::CollisionByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->collisions.size())
+    return &this->dataPtr->collisions[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Link::CollisionNameExists(const std::string &_name) const
+{
+  for (auto const &c : this->dataPtr->collisions)
+  {
+    if (c.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+uint64_t Link::LightCount() const
+{
+  return this->dataPtr->lights.size();
+}
+
+/////////////////////////////////////////////////
+const Light *Link::LightByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->lights.size())
+    return &this->dataPtr->lights[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Link::LightNameExists(const std::string &_name) const
+{
+  return this->LightByName(_name) != nullptr;
+}
+
+/////////////////////////////////////////////////
 uint64_t Link::SensorCount() const
 {
   return this->dataPtr->sensors.size();
@@ -242,33 +298,6 @@ const Sensor *Link::SensorByName(const std::string &_name) const
     }
   }
   return nullptr;
-}
-
-/////////////////////////////////////////////////
-uint64_t Link::CollisionCount() const
-{
-  return this->dataPtr->collisions.size();
-}
-
-/////////////////////////////////////////////////
-const Collision *Link::CollisionByIndex(const uint64_t _index) const
-{
-  if (_index < this->dataPtr->collisions.size())
-    return &this->dataPtr->collisions[_index];
-  return nullptr;
-}
-
-/////////////////////////////////////////////////
-bool Link::CollisionNameExists(const std::string &_name) const
-{
-  for (auto const &c : this->dataPtr->collisions)
-  {
-    if (c.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
 }
 
 /////////////////////////////////////////////////
@@ -325,6 +354,19 @@ const Visual *Link::VisualByName(const std::string &_name) const
 const Collision *Link::CollisionByName(const std::string &_name) const
 {
   for (auto const &c : this->dataPtr->collisions)
+  {
+    if (c.Name() == _name)
+    {
+      return &c;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+const Light *Link::LightByName(const std::string &_name) const
+{
+  for (auto const &c : this->dataPtr->lights)
   {
     if (c.Name() == _name)
     {

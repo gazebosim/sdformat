@@ -19,10 +19,15 @@
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declarations.
   class GuiPrivate;
 
@@ -74,5 +79,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: GuiPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif

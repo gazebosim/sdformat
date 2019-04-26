@@ -18,9 +18,9 @@
 #include <vector>
 #include <ignition/math/Vector3.hh>
 
-#include "sdf/Model.hh"
 #include "sdf/Types.hh"
 #include "sdf/Material.hh"
+#include "sdf/Pbr.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -54,6 +54,9 @@ class sdf::MaterialPrivate
   /// \brief Emissive color
   public: ignition::math::Color emissive {0, 0, 0, 1};
 
+  /// \brief Physically Based Rendering (PBR) properties
+  public: std::unique_ptr<Pbr> pbr;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 };
@@ -69,6 +72,43 @@ Material::~Material()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Material::Material(const Material &_material)
+  : dataPtr(new MaterialPrivate)
+{
+  this->dataPtr->scriptUri = _material.dataPtr->scriptUri;
+  this->dataPtr->scriptName = _material.dataPtr->scriptName;
+  this->dataPtr->shader = _material.dataPtr->shader;
+  this->dataPtr->normalMap = _material.dataPtr->normalMap;
+  this->dataPtr->lighting = _material.dataPtr->lighting;
+  this->dataPtr->ambient = _material.dataPtr->ambient;
+  this->dataPtr->diffuse = _material.dataPtr->diffuse;
+  this->dataPtr->specular = _material.dataPtr->specular;
+  this->dataPtr->emissive = _material.dataPtr->emissive;
+  this->dataPtr->sdf = _material.dataPtr->sdf;
+  if (_material.dataPtr->pbr)
+    this->dataPtr->pbr = std::make_unique<Pbr>(*_material.dataPtr->pbr);
+}
+
+/////////////////////////////////////////////////
+Material &Material::operator=(const Material &_material)
+{
+  this->dataPtr->scriptUri = _material.dataPtr->scriptUri;
+  this->dataPtr->scriptName = _material.dataPtr->scriptName;
+  this->dataPtr->shader = _material.dataPtr->shader;
+  this->dataPtr->normalMap = _material.dataPtr->normalMap;
+  this->dataPtr->lighting = _material.dataPtr->lighting;
+  this->dataPtr->ambient = _material.dataPtr->ambient;
+  this->dataPtr->diffuse = _material.dataPtr->diffuse;
+  this->dataPtr->specular = _material.dataPtr->specular;
+  this->dataPtr->emissive = _material.dataPtr->emissive;
+  this->dataPtr->sdf = _material.dataPtr->sdf;
+  if (_material.dataPtr->pbr)
+    this->dataPtr->pbr = std::make_unique<Pbr>(*_material.dataPtr->pbr);
+
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -171,6 +211,14 @@ Errors Material::Load(sdf::ElementPtr _sdf)
 
   this->dataPtr->emissive = _sdf->Get<ignition::math::Color>("emissive",
       this->dataPtr->emissive).first;
+
+  // load pbr param
+  if (_sdf->HasElement("pbr"))
+  {
+    this->dataPtr->pbr.reset(new sdf::Pbr());
+    Errors pbrErrors = this->dataPtr->pbr->Load(_sdf->GetElement("pbr"));
+    errors.insert(errors.end(), pbrErrors.begin(), pbrErrors.end());
+  }
 
   return errors;
 }
@@ -287,4 +335,10 @@ std::string Material::NormalMap() const
 void Material::SetNormalMap(const std::string &_map)
 {
   this->dataPtr->normalMap = _map;
+}
+
+//////////////////////////////////////////////////
+Pbr *Material::PbrMaterial() const
+{
+  return this->dataPtr->pbr.get();
 }

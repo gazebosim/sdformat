@@ -4,9 +4,9 @@ include (${project_cmake_dir}/SDFUtils.cmake)
 # Note that the major version of the library is included in the name.
 # Ex: cmdsdformat0.rb
 if (APPLE)
-  set(IGN_LIBRARY_NAME lib${PROJECT_NAME_LOWER}${SDF_MAJOR_VERSION}.dylib)
+  set(IGN_LIBRARY_NAME lib${sdf_target}.dylib)
 else()
-  set(IGN_LIBRARY_NAME lib${PROJECT_NAME_LOWER}.so.${SDF_MAJOR_VERSION})
+  set(IGN_LIBRARY_NAME lib${sdf_target}.so)
 endif()
 
 configure_file(

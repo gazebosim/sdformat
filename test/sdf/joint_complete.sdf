@@ -23,6 +23,7 @@
     </link>
 
     <joint name="revolute_joint" type="revolute">
+      <pose>1 0 0 0 0 0</pose>
       <child>link1</child>
       <parent>link2</parent>
       <axis>
@@ -62,10 +63,12 @@
       </physics>
     </joint>
     <joint name="ball_joint" type="ball">
+      <pose>0 1 0 0 0 0</pose>
       <child>link2</child>
       <parent>link3</parent>
     </joint>
     <joint name="continuous_joint" type="continuous">
+      <pose>0 0 1 0 0 0</pose>
       <child>link3</child>
       <parent>link4</parent>
       <axis>
@@ -73,10 +76,12 @@
       </axis>
     </joint>
     <joint name="fixed_joint" type="fixed">
+      <pose>0 0 0 1 0 0</pose>
       <child>link4</child>
       <parent>link5</parent>
     </joint>
     <joint name="gearbox_joint" type="gearbox">
+      <pose>0 0 0 0 1 0</pose>
       <child>link5</child>
       <parent>link6</parent>
       <axis>
@@ -84,6 +89,7 @@
       </axis>
     </joint>
     <joint name="prismatic_joint" type="prismatic">
+      <pose>0 0 0 0 0 1</pose>
       <child>link6</child>
       <parent>link7</parent>
       <axis>
@@ -91,6 +97,7 @@
       </axis>
     </joint>
     <joint name="revolute2_joint" type="revolute2">
+      <pose>2 0 0 0 0 0</pose>
       <child>link7</child>
       <parent>link8</parent>
       <axis>
@@ -98,13 +105,16 @@
       </axis>
     </joint>
     <joint name="screw_joint" type="screw">
+      <pose>0 2 0 0 0 0</pose>
       <child>link8</child>
       <parent>link9</parent>
+      <thread_pitch>20</thread_pitch>
       <axis>
         <xyz>0 0 1</xyz>
       </axis>
     </joint>
     <joint name="universal_joint" type="universal">
+      <pose>0 0 2 0 0 0</pose>
       <child>link9</child>
       <parent>link10</parent>
       <axis>

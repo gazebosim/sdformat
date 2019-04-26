@@ -1,3 +1,82 @@
+## SDFormat 8.0
+
+### SDFormat 8.X.X (201X-XX-XX)
+
+1. Add PBR material SDF element
+   * [Pull request 512](https://bitbucket.org/osrf/sdformat/pull-requests/512)
+
+### SDFormat 8.0.0 (2019-03-01)
+
+1. Rename depth camera from 'depth' to 'depth_camera'
+   * [Pull request 507](https://bitbucket.org/osrf/sdformat/pull-requests/507)
+
+1. Rename enum Ray to Lidar
+   * [Pull request 502](https://bitbucket.org/osrf/sdformat/pull-requests/502)
+
+1. Add support for files that have light tags in the root
+   * [Pull request 499](https://bitbucket.org/osrf/sdformat/pull-requests/499)
+
+1. Fix locale problems of std::stringstream and of Param::ValueFromString
+   * [Pull request 492](https://bitbucket.org/osrf/sdformat/pull-requests/492)
+   * Contribution by Silvio Traversaro
+
+1. Add functions to set visual dom's geometry and material
+   * [Pull request 490](https://bitbucket.org/osrf/sdformat/pull-requests/490)
+
+1. Change cmake project name to sdformat8, export cmake targets
+   * [Pull request 475](https://bitbucket.org/osrf/sdformat/pull-requests/475)
+   * [Pull request 476](https://bitbucket.org/osrf/sdformat/pull-requests/476)
+
+1. SDF DOM: Add copy constructor and assignment operator to Light. Add lights to Link
+   * [Pull request 469](https://bitbucket.org/osrf/sdformat/pull-requests/469)
+
+1. Make `<limit>` a required element for `<axis2>`
+   * [Pull request #472](https://bitbucket.org/osrf/sdformat/pull-requests/472)
+
+1. SDF DOM: Add DOM methods for setting axis and thread pitch in `sdf::Joint`
+   * [Pull request #471](https://bitbucket.org/osrf/sdformat/pull-requests/471)
+   * [Pull request #474](https://bitbucket.org/osrf/sdformat/pull-requests/474)
+
+1. SDF DOM: Add copy constructors and assignment operator to JointAxis
+   * [Pull request #470](https://bitbucket.org/osrf/sdformat/pull-requests/470)
+
+1. Removed boost
+   * [Pull request #438](https://bitbucket.org/osrf/sdformat/pull-requests/438)
+
+1. Versioned namespace
+   * [Pull request 464](https://bitbucket.org/osrf/sdformat/pull-requests/464)
+
+1. Versioned library install
+   * [Pull request 463](https://bitbucket.org/osrf/sdformat/pull-requests/463)
+
+1. Add SetGeom to Collision
+   * [Pull request 465](https://bitbucket.org/osrf/sdformat/pull-requests/465)
+
+1. SDF DOM: Add copy/move constructors and assignment operator to Geometry
+   * [Pull request 460](https://bitbucket.org/osrf/sdformat/pull-requests/460)
+
+1. SDF DOM: Add copy/move constructors and assignment operator to Material
+   * [Pull request 461](https://bitbucket.org/osrf/sdformat/pull-requests/461)
+
+1. Add collision_detector to dart physics config
+    * [Pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
+
+1. Fix cpack now that project name has version number
+    * [Pull request 478](https://bitbucket.org/osrf/sdformat/pull-requests/478)
+
+1. Animation tension
+    * [Pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
+
+1. Add "geometry" for sonar collision shape
+    * [Pull request 479](https://bitbucket.org/osrf/sdformat/pull-requests/479)
+
+1. Fix Gui copy constructor
+    * [Pull request 486](https://bitbucket.org/osrf/sdformat/pull-requests/486)
+
+1. Sensor DOM
+    * [Pull request 488](https://bitbucket.org/osrf/sdformat/pull-requests/488)
+    * [Pull request 481](https://bitbucket.org/osrf/sdformat/pull-requests/481)
+
 ## SDFormat 7.0
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)

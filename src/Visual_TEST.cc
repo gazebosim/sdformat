@@ -45,4 +45,43 @@ TEST(DOMVisual, Construction)
   EXPECT_EQ(nullptr, visual.Geom()->CylinderShape());
   EXPECT_EQ(nullptr, visual.Geom()->PlaneShape());
   EXPECT_EQ(nullptr, visual.Geom()->SphereShape());
+
+  EXPECT_EQ(nullptr, visual.Material());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMVisual, SetGeometry)
+{
+  sdf::Visual visual;
+  EXPECT_EQ(nullptr, visual.Element());
+  EXPECT_TRUE(visual.Name().empty());
+
+  sdf::Geometry geometry;
+  geometry.SetType(sdf::GeometryType::BOX);
+
+  visual.SetGeom(geometry);
+
+  ASSERT_NE(nullptr, visual.Geom());
+  EXPECT_EQ(sdf::GeometryType::BOX, visual.Geom()->Type());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMVisual, SetMaterial)
+{
+  sdf::Visual visual;
+  EXPECT_EQ(nullptr, visual.Element());
+  EXPECT_TRUE(visual.Name().empty());
+
+  sdf::Material material;
+  material.SetAmbient(ignition::math::Color(0, 0.5, 0));
+  material.SetDiffuse(ignition::math::Color(1, 0, 0));
+  material.SetSpecular(ignition::math::Color(0.f, 0.1f, 0.9f));
+
+  visual.SetMaterial(material);
+
+  ASSERT_NE(nullptr, visual.Material());
+  EXPECT_EQ(ignition::math::Color(0, 0.5, 0), visual.Material()->Ambient());
+  EXPECT_EQ(ignition::math::Color(1, 0, 0), visual.Material()->Diffuse());
+  EXPECT_EQ(ignition::math::Color(0.f, 0.1f, 0.9f),
+            visual.Material()->Specular());
 }

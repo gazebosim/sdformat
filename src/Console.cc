@@ -49,7 +49,9 @@ Console::Console()
 #ifndef _WIN32
   const char *home = std::getenv("HOME");
 #else
-  const char *home = std::getenv("HOMEPATH");
+  char *home;
+  size_t sz = 0;
+  _dupenv_s(&home, &sz, "HOMEPATH");
 #endif
   if (!home)
   {

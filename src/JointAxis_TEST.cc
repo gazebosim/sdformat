@@ -76,3 +76,47 @@ TEST(DOMJointAxis, Construction)
   axis.SetDissipation(1.5);
   EXPECT_DOUBLE_EQ(1.5, axis.Dissipation());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, CopyConstructor)
+{
+  sdf::JointAxis jointAxis;
+  jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0));
+
+  sdf::JointAxis jointAxisCopy(jointAxis);
+  EXPECT_EQ(jointAxis.Xyz(), jointAxisCopy.Xyz());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, AssignmentOperator)
+{
+  sdf::JointAxis jointAxis;
+  jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0));
+
+  sdf::JointAxis jointAxisCopy;
+  jointAxisCopy = jointAxis;
+  EXPECT_EQ(jointAxis.Xyz(), jointAxisCopy.Xyz());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, MoveConstructor)
+{
+  ignition::math::Vector3d axis{0, 1, 0};
+  sdf::JointAxis jointAxis;
+  jointAxis.SetXyz(axis);
+
+  sdf::JointAxis jointAxisMoved(std::move(jointAxis));
+  EXPECT_EQ(axis, jointAxisMoved.Xyz());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, MoveAssignmentOperator)
+{
+  ignition::math::Vector3d axis{0, 1, 0};
+  sdf::JointAxis jointAxis;
+  jointAxis.SetXyz(axis);
+
+  sdf::JointAxis jointAxisMoved;
+  jointAxisMoved = std::move(jointAxis);
+  EXPECT_EQ(axis, jointAxisMoved.Xyz());
+}

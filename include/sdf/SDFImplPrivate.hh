@@ -23,6 +23,10 @@
 /// \brief namespace for Simulation Description Format parser
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \brief Private data for base SDF class
   class SDFPrivate
   {
@@ -36,5 +40,6 @@ namespace sdf
     public: ElementPtr root;
   };
   /// \}
+}
 }
 #endif

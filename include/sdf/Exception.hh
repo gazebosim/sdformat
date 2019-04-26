@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef _SDF_EXCEPTION_HH_
-#define _SDF_EXCEPTION_HH_
+#ifndef SDF_EXCEPTION_HH_
+#define SDF_EXCEPTION_HH_
 
 #include <cstdint>
 #include <iostream>
@@ -24,6 +24,7 @@
 #include <sstream>
 #include <string>
 
+#include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 
 #ifdef _WIN32
@@ -35,6 +36,10 @@
 
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \addtogroup sdf
   /// \{
 
@@ -136,6 +141,7 @@ namespace sdf
     public: virtual ~AssertionInternalError();
   };
   /// \}
+  }
 }
 
 #ifdef _WIN32

@@ -59,6 +59,7 @@ namespace sdf
 {
 namespace filesystem
 {
+inline namespace SDF_VERSION_NAMESPACE {
 /// \internal
 /// \brief Private data for the DirIter class.
 class DirIterPrivate
@@ -577,6 +578,7 @@ DirIter::~DirIter()
     close_handle();
     this->dataPtr->handle = nullptr;
   }
+}
 }
 }  // namespace filesystem
 }  // namespace sdf

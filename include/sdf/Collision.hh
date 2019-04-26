@@ -21,10 +21,14 @@
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
   // Forward declaration.
   class CollisionPrivate;
   class Geometry;
@@ -67,6 +71,10 @@ namespace sdf
     /// \return The collision's geometry.
     public: const Geometry *Geom() const;
 
+    /// \brief Set the collision's geometry
+    /// \param[in] _geom The geometry of the collision object
+    public: void SetGeom(const Geometry &_geom);
+
     /// \brief Get the pose of the collision object. This is the pose of the
     /// collison as specified in SDF
     /// (<collision><pose> ... </pose></collision>).
@@ -99,5 +107,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: CollisionPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif
