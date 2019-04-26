@@ -59,13 +59,51 @@ TEST(DOMCylinder, CopyConstructor)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMCylinder, AssignemntOperator)
+TEST(DOMCylinder, CopyAssignmentOperator)
 {
   sdf::Cylinder cylinder;
   cylinder.SetRadius(0.2);
   cylinder.SetLength(3.0);
 
-  sdf::Cylinder cylinder2 = cylinder;
+  sdf::Cylinder cylinder2;
+  cylinder2 = cylinder;
+  EXPECT_DOUBLE_EQ(0.2, cylinder2.Radius());
+  EXPECT_DOUBLE_EQ(3.0, cylinder2.Length());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCylinder, MoveAssignmentConstructor)
+{
+  sdf::Cylinder cylinder;
+  cylinder.SetRadius(0.2);
+  cylinder.SetLength(3.0);
+
+  sdf::Cylinder cylinder2;
+  cylinder2 = std::move(cylinder);
+  EXPECT_DOUBLE_EQ(0.2, cylinder2.Radius());
+  EXPECT_DOUBLE_EQ(3.0, cylinder2.Length());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCylinder, CopyAssignmentAfterMove)
+{
+  sdf::Cylinder cylinder1;
+  cylinder1.SetRadius(0.2);
+  cylinder1.SetLength(3.0);
+
+  sdf::Cylinder cylinder2;
+  cylinder2.SetRadius(2);
+  cylinder2.SetLength(30.0);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Cylinder tmp = std::move(cylinder1);
+  cylinder1 = cylinder2;
+  cylinder2 = tmp;
+
+  EXPECT_DOUBLE_EQ(2, cylinder1.Radius());
+  EXPECT_DOUBLE_EQ(30, cylinder1.Length());
+
   EXPECT_DOUBLE_EQ(0.2, cylinder2.Radius());
   EXPECT_DOUBLE_EQ(3.0, cylinder2.Length());
 }

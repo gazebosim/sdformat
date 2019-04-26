@@ -42,6 +42,221 @@ TEST(DOMWorld, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMWorld, CopyConstructor)
+{
+  sdf::World world;
+  sdf::Atmosphere atmosphere;
+  atmosphere.SetPressure(0.1);
+  world.SetAtmosphere(atmosphere);
+  world.SetAudioDevice("test_audio_device");
+  world.SetGravity({1, 0, 0});
+
+  sdf::Gui gui;
+  gui.SetFullscreen(true);
+  world.SetGui(gui);
+
+  sdf::Scene scene;
+  scene.SetGrid(true);
+  world.SetScene(scene);
+
+  world.SetMagneticField({0, 1, 0});
+  world.SetName("test_world");
+
+  world.SetWindLinearVelocity({0, 0, 1});
+
+  sdf::World world2(world);
+
+  ASSERT_TRUE(nullptr != world.Atmosphere());
+  EXPECT_DOUBLE_EQ(0.1, world.Atmosphere()->Pressure());
+  EXPECT_EQ("test_audio_device", world.AudioDevice());
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, world.Gravity());
+
+  ASSERT_TRUE(nullptr != world.Gui());
+  EXPECT_EQ(gui.Fullscreen(), world.Gui()->Fullscreen());
+
+  ASSERT_TRUE(nullptr != world.Scene());
+  EXPECT_EQ(scene.Grid(), world.Scene()->Grid());
+
+  EXPECT_EQ(ignition::math::Vector3d::UnitY, world.MagneticField());
+  EXPECT_EQ(ignition::math::Vector3d::UnitZ, world.WindLinearVelocity());
+  EXPECT_EQ("test_world", world.Name());
+
+  ASSERT_TRUE(nullptr != world2.Atmosphere());
+  EXPECT_DOUBLE_EQ(0.1, world2.Atmosphere()->Pressure());
+  EXPECT_EQ("test_audio_device", world2.AudioDevice());
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, world2.Gravity());
+
+  ASSERT_TRUE(nullptr != world2.Gui());
+  EXPECT_EQ(gui.Fullscreen(), world2.Gui()->Fullscreen());
+
+  ASSERT_TRUE(nullptr != world2.Scene());
+  EXPECT_EQ(scene.Grid(), world2.Scene()->Grid());
+
+  EXPECT_EQ(ignition::math::Vector3d::UnitY, world2.MagneticField());
+  EXPECT_EQ(ignition::math::Vector3d::UnitZ, world2.WindLinearVelocity());
+  EXPECT_EQ("test_world", world2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, CopyAssignmentOperator)
+{
+  sdf::World world;
+  sdf::Atmosphere atmosphere;
+  atmosphere.SetPressure(0.1);
+  world.SetAtmosphere(atmosphere);
+  world.SetAudioDevice("test_audio_device");
+  world.SetGravity({1, 0, 0});
+
+  sdf::Gui gui;
+  gui.SetFullscreen(true);
+  world.SetGui(gui);
+
+  sdf::Scene scene;
+  scene.SetGrid(true);
+  world.SetScene(scene);
+
+  world.SetMagneticField({0, 1, 0});
+  world.SetName("test_world");
+
+  world.SetWindLinearVelocity({0, 0, 1});
+
+  sdf::World world2;
+  world2 = world;
+
+  ASSERT_TRUE(nullptr != world.Atmosphere());
+  EXPECT_DOUBLE_EQ(0.1, world.Atmosphere()->Pressure());
+  EXPECT_EQ("test_audio_device", world.AudioDevice());
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, world.Gravity());
+
+  ASSERT_TRUE(nullptr != world.Gui());
+  EXPECT_EQ(gui.Fullscreen(), world.Gui()->Fullscreen());
+
+  ASSERT_TRUE(nullptr != world.Scene());
+  EXPECT_EQ(scene.Grid(), world.Scene()->Grid());
+
+  EXPECT_EQ(ignition::math::Vector3d::UnitY, world.MagneticField());
+  EXPECT_EQ(ignition::math::Vector3d::UnitZ, world.WindLinearVelocity());
+  EXPECT_EQ("test_world", world.Name());
+
+  ASSERT_TRUE(nullptr != world2.Atmosphere());
+  EXPECT_DOUBLE_EQ(0.1, world2.Atmosphere()->Pressure());
+  EXPECT_EQ("test_audio_device", world2.AudioDevice());
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, world2.Gravity());
+
+  ASSERT_TRUE(nullptr != world2.Gui());
+  EXPECT_EQ(gui.Fullscreen(), world2.Gui()->Fullscreen());
+
+  ASSERT_TRUE(nullptr != world2.Scene());
+  EXPECT_EQ(scene.Grid(), world2.Scene()->Grid());
+
+  EXPECT_EQ(ignition::math::Vector3d::UnitY, world2.MagneticField());
+  EXPECT_EQ(ignition::math::Vector3d::UnitZ, world2.WindLinearVelocity());
+  EXPECT_EQ("test_world", world2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, MoveConstructor)
+{
+  sdf::World world;
+  sdf::Atmosphere atmosphere;
+  atmosphere.SetPressure(0.1);
+  world.SetAtmosphere(atmosphere);
+  world.SetAudioDevice("test_audio_device");
+  world.SetGravity({1, 0, 0});
+
+  sdf::Gui gui;
+  gui.SetFullscreen(true);
+  world.SetGui(gui);
+
+  sdf::Scene scene;
+  scene.SetGrid(true);
+  world.SetScene(scene);
+
+  world.SetMagneticField({0, 1, 0});
+  world.SetName("test_world");
+
+  world.SetWindLinearVelocity({0, 0, 1});
+
+  sdf::World world2(std::move(world));
+
+  ASSERT_TRUE(nullptr != world2.Atmosphere());
+  EXPECT_DOUBLE_EQ(0.1, world2.Atmosphere()->Pressure());
+  EXPECT_EQ("test_audio_device", world2.AudioDevice());
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, world2.Gravity());
+
+  ASSERT_TRUE(nullptr != world2.Gui());
+  EXPECT_EQ(gui.Fullscreen(), world2.Gui()->Fullscreen());
+
+  ASSERT_TRUE(nullptr != world2.Scene());
+  EXPECT_EQ(scene.Grid(), world2.Scene()->Grid());
+
+  EXPECT_EQ(ignition::math::Vector3d::UnitY, world2.MagneticField());
+  EXPECT_EQ(ignition::math::Vector3d::UnitZ, world2.WindLinearVelocity());
+  EXPECT_EQ("test_world", world2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, MoveAssignmentOperator)
+{
+  sdf::World world;
+  sdf::Atmosphere atmosphere;
+  atmosphere.SetPressure(0.1);
+  world.SetAtmosphere(atmosphere);
+  world.SetAudioDevice("test_audio_device");
+  world.SetGravity({1, 0, 0});
+
+  sdf::Gui gui;
+  gui.SetFullscreen(true);
+  world.SetGui(gui);
+
+  sdf::Scene scene;
+  scene.SetGrid(true);
+  world.SetScene(scene);
+
+  world.SetMagneticField({0, 1, 0});
+  world.SetName("test_world");
+
+  world.SetWindLinearVelocity({0, 0, 1});
+
+  sdf::World world2;
+  world2 = std::move(world);
+
+  ASSERT_TRUE(nullptr != world2.Atmosphere());
+  EXPECT_DOUBLE_EQ(0.1, world2.Atmosphere()->Pressure());
+  EXPECT_EQ("test_audio_device", world2.AudioDevice());
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, world2.Gravity());
+
+  ASSERT_TRUE(nullptr != world2.Gui());
+  EXPECT_EQ(gui.Fullscreen(), world2.Gui()->Fullscreen());
+
+  ASSERT_TRUE(nullptr != world2.Scene());
+  EXPECT_EQ(scene.Grid(), world2.Scene()->Grid());
+
+  EXPECT_EQ(ignition::math::Vector3d::UnitY, world2.MagneticField());
+  EXPECT_EQ(ignition::math::Vector3d::UnitZ, world2.WindLinearVelocity());
+  EXPECT_EQ("test_world", world2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, CopyAssignmentAfterMove)
+{
+  sdf::World world1;
+  world1.SetName("world1");
+
+  sdf::World world2;
+  world2.SetName("world2");
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::World tmp = std::move(world1);
+  world1 = world2;
+  world2 = tmp;
+
+  EXPECT_EQ("world2", world1.Name());
+  EXPECT_EQ("world1", world2.Name());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMWorld, Set)
 {
   sdf::World world;

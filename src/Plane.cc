@@ -58,6 +58,10 @@ Plane::Plane(const Plane &_plane)
 /////////////////////////////////////////////////
 Plane &Plane::operator=(const Plane &_plane)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new PlanePrivate;
+  }
   this->dataPtr->normal = _plane.dataPtr->normal;
   this->dataPtr->size = _plane.dataPtr->size;
   this->dataPtr->sdf = _plane.dataPtr->sdf;
@@ -65,10 +69,18 @@ Plane &Plane::operator=(const Plane &_plane)
 }
 
 //////////////////////////////////////////////////
-Plane::Plane(Plane &&_plane)
+Plane::Plane(Plane &&_plane) noexcept
 {
   this->dataPtr = _plane.dataPtr;
   _plane.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Plane &Plane::operator=(Plane &&_plane)
+{
+  this->dataPtr = _plane.dataPtr;
+  _plane.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////

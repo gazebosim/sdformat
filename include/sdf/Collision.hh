@@ -42,9 +42,23 @@ namespace sdf
     /// \brief Default constructor
     public: Collision();
 
+    /// \brief Copy constructor
+    /// \param[in] _collision Collision to copy.
+    public: Collision(const Collision &_collision);
+
     /// \brief Move constructor
     /// \param[in] _collision Collision to move.
-    public: Collision(Collision &&_collision);
+    public: Collision(Collision &&_collision) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _collision Collision to move.
+    /// \return Reference to this.
+    public: Collision &operator=(Collision &&_collision);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _collision Collision to copy.
+    /// \return Reference to this.
+    public: Collision &operator=(const Collision &_collision);
 
     /// \brief Destructor
     public: ~Collision();

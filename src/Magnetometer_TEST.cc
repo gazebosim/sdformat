@@ -80,6 +80,17 @@ TEST(DOMMagnetometer, Set)
   // inequality
   sdf::Magnetometer mag6;
   EXPECT_NE(mag3, mag6);
+
+  // Copy assignment after move
+  sdf::Magnetometer mag7;
+  mag7.SetXNoise(defaultNoise);
+  sdf::Magnetometer mag8;
+  mag8.SetXNoise(noise);
+  sdf::Magnetometer tmp = std::move(mag7);
+  mag7 = mag8;
+  mag8 = tmp;
+  EXPECT_EQ(noise, mag7.XNoise());
+  EXPECT_EQ(defaultNoise, mag8.XNoise());
 }
 
 /////////////////////////////////////////////////

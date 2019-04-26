@@ -44,9 +44,23 @@ namespace sdf
     /// \brief Default constructor
     public: Visual();
 
+    /// \brief Copy constructor
+    /// \param[in] _visual Visual to copy.
+    public: Visual(const Visual &_visual);
+
     /// \brief Move constructor
     /// \param[in] _visual Visual to move.
-    public: Visual(Visual &&_visual);
+    public: Visual(Visual &&_visual) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _visual Visual to move.
+    /// \return Reference to this.
+    public: Visual &operator=(Visual &&_visual);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _visual Visual to copy.
+    /// \return Reference to this.
+    public: Visual &operator=(const Visual &_visual);
 
     /// \brief Destructor
     public: ~Visual();

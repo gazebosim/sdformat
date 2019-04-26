@@ -59,7 +59,7 @@ Noise::Noise(const Noise &_noise)
 }
 
 //////////////////////////////////////////////////
-Noise::Noise(Noise &&_noise)
+Noise::Noise(Noise &&_noise) noexcept
 {
   this->dataPtr = _noise.dataPtr;
   _noise.dataPtr = nullptr;
@@ -75,6 +75,8 @@ Noise::~Noise()
 //////////////////////////////////////////////////
 Noise &Noise::operator=(const Noise &_noise)
 {
+  if (!this->dataPtr)
+    this->dataPtr = new NoisePrivate;
   *this->dataPtr = *_noise.dataPtr;
   return *this;
 }

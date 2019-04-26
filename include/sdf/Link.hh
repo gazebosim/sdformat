@@ -43,9 +43,23 @@ namespace sdf
     /// \brief Default constructor
     public: Link();
 
+    /// \brief Copy constructor
+    /// \param[in] _link Link to copy.
+    public: Link(const Link &_link);
+
     /// \brief Move constructor
     /// \param[in] _link Link to move.
-    public: Link(Link &&_link);
+    public: Link(Link &&_link) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _link Link to move.
+    /// \return Reference to this.
+    public: Link &operator=(Link &&_link);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _link Link to copy.
+    /// \return Reference to this.
+    public: Link &operator=(const Link &_link);
 
     /// \brief Destructor
     public: ~Link();
