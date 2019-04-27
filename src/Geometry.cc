@@ -101,6 +101,10 @@ Geometry::Geometry(const Geometry &_geometry)
 /////////////////////////////////////////////////
 Geometry &Geometry::operator=(const Geometry &_geometry)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new GeometryPrivate;
+  }
   this->dataPtr->type = _geometry.dataPtr->type;
 
   if (_geometry.dataPtr->box)
@@ -137,10 +141,18 @@ Geometry &Geometry::operator=(const Geometry &_geometry)
 }
 
 //////////////////////////////////////////////////
-Geometry::Geometry(Geometry &&_geometry)
+Geometry::Geometry(Geometry &&_geometry) noexcept
 {
   this->dataPtr = _geometry.dataPtr;
   _geometry.dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Geometry &Geometry::operator=(Geometry &&_geometry)
+{
+  this->dataPtr = _geometry.dataPtr;
+  _geometry.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////

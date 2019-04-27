@@ -64,6 +64,10 @@ Mesh::Mesh(const Mesh &_mesh)
 /////////////////////////////////////////////////
 Mesh &Mesh::operator=(const Mesh &_mesh)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new MeshPrivate;
+  }
   this->dataPtr->uri = _mesh.dataPtr->uri;
   this->dataPtr->scale = _mesh.dataPtr->scale;
   this->dataPtr->submesh = _mesh.dataPtr->submesh;
@@ -73,10 +77,18 @@ Mesh &Mesh::operator=(const Mesh &_mesh)
 }
 
 //////////////////////////////////////////////////
-Mesh::Mesh(Mesh &&_mesh)
+Mesh::Mesh(Mesh &&_mesh) noexcept
 {
   this->dataPtr = _mesh.dataPtr;
   _mesh.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Mesh &Mesh::operator=(Mesh &&_mesh)
+{
+  this->dataPtr = _mesh.dataPtr;
+  _mesh.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////

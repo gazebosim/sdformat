@@ -40,9 +40,23 @@ namespace sdf
     /// \brief Default constructor
     public: Model();
 
+    /// \brief Copy constructor
+    /// \param[in] _model Model to copy.
+    public: Model(const Model &_model);
+
     /// \brief Move constructor
     /// \param[in] _model Model to move.
-    public: Model(Model &&_model);
+    public: Model(Model &&_model) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _model Model to move.
+    /// \return Reference to this.
+    public: Model &operator=(Model &&_model);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _model Model to copy.
+    /// \return Reference to this.
+    public: Model &operator=(const Model &_model);
 
     /// \brief Destructor
     public: ~Model();

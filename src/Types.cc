@@ -15,6 +15,7 @@
  *
  */
 
+#include <locale>
 #include <string>
 #include <vector>
 
@@ -63,6 +64,15 @@ std::string trim(const char *_in)
   const size_t strRange = str.find_last_not_of(" \t") - strBegin + 1;
 
   return str.substr(strBegin, strRange);
+}
+
+/////////////////////////////////////////////////
+std::string lowercase(const std::string &_in)
+{
+  std::string out = _in;
+  for (size_t i = 0; i < out.size(); ++i)
+    out[i] = std::tolower(out[i], std::locale());
+  return out;
 }
 }
 }

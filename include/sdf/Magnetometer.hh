@@ -42,7 +42,7 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _magnetometer Magnetometer to move.
-    public: Magnetometer(Magnetometer &&_magnetometer);
+    public: Magnetometer(Magnetometer &&_magnetometer) noexcept;
 
     /// \brief Destructor
     public: ~Magnetometer();

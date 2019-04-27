@@ -44,3 +44,64 @@ TEST(DOMPhysics, DefaultConstruction)
   physics.SetRealTimeFactor(2.45);
   EXPECT_DOUBLE_EQ(2.45, physics.RealTimeFactor());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMPhysics, CopyConstructor)
+{
+  sdf::Physics physics;
+  physics.SetName("test_physics");
+
+  sdf::Physics physics2(physics);
+  EXPECT_EQ("test_physics", physics2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPhysics, CopyAssignmentOperator)
+{
+  sdf::Physics physics;
+  physics.SetName("test_physics");
+
+  sdf::Physics physics2;
+  physics2 = physics;
+  EXPECT_EQ("test_physics", physics2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPhysics, MoveConstructor)
+{
+  sdf::Physics physics;
+  physics.SetName("test_physics");
+
+  sdf::Physics physics2(physics);
+  EXPECT_EQ("test_physics", physics2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPhysics, MoveAssignmentOperator)
+{
+  sdf::Physics physics;
+  physics.SetName("test_physics");
+
+  sdf::Physics physics2;
+  physics2 = std::move(physics);
+  EXPECT_EQ("test_physics", physics2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPhysics, CopyAssignmentAfterMove)
+{
+  sdf::Physics physics1;
+  physics1.SetName("physics1");
+
+  sdf::Physics physics2;
+  physics2.SetName("physics2");
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Physics tmp = std::move(physics1);
+  physics1 = physics2;
+  physics2 = tmp;
+
+  EXPECT_EQ("physics2", physics1.Name());
+  EXPECT_EQ("physics1", physics2.Name());
+}

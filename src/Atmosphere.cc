@@ -55,10 +55,29 @@ Atmosphere::Atmosphere(const Atmosphere &_atmosphere)
 }
 
 //////////////////////////////////////////////////
-Atmosphere::Atmosphere(Atmosphere &&_atmosphere)
+Atmosphere::Atmosphere(Atmosphere &&_atmosphere) noexcept
 {
   this->dataPtr = _atmosphere.dataPtr;
   _atmosphere.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Atmosphere &Atmosphere::operator=(const Atmosphere &_atmosphere)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new AtmospherePrivate;
+  }
+  *this->dataPtr = (*_atmosphere.dataPtr);
+  return *this;
+}
+
+/////////////////////////////////////////////////
+Atmosphere &Atmosphere::operator=(Atmosphere &&_atmosphere)
+{
+  this->dataPtr = _atmosphere.dataPtr;
+  _atmosphere.dataPtr = nullptr;
+  return *this;
 }
 
 //////////////////////////////////////////////////

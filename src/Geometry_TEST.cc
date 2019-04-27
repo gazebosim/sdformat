@@ -58,18 +58,58 @@ TEST(DOMGeometry, CopyConstructor)
 {
   sdf::Geometry geometry;
   geometry.SetType(sdf::GeometryType::BOX);
+  sdf::Box boxShape;
+  boxShape.SetSize(ignition::math::Vector3d(1, 2, 3));
+  geometry.SetBoxShape(boxShape);
 
   sdf::Geometry geometry2(geometry);
   EXPECT_EQ(sdf::GeometryType::BOX, geometry2.Type());
 }
 
 /////////////////////////////////////////////////
-TEST(DOMGeometry, AssignemntOperator)
+TEST(DOMGeometry, AssignmentOperator)
 {
   sdf::Geometry geometry;
   geometry.SetType(sdf::GeometryType::BOX);
+  sdf::Box boxShape;
+  boxShape.SetSize(ignition::math::Vector3d(1, 2, 3));
+  geometry.SetBoxShape(boxShape);
 
-  sdf::Geometry geometry2 = geometry;
+  sdf::Geometry geometry2;
+  geometry2 = geometry;
+  EXPECT_EQ(sdf::GeometryType::BOX, geometry2.Type());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGeometry, MoveAssignmentOperator)
+{
+  sdf::Geometry geometry;
+  geometry.SetType(sdf::GeometryType::BOX);
+  sdf::Box boxShape;
+  boxShape.SetSize(ignition::math::Vector3d(1, 2, 3));
+  geometry.SetBoxShape(boxShape);
+
+  sdf::Geometry geometry2;
+  geometry2 = std::move(geometry);
+  EXPECT_EQ(sdf::GeometryType::BOX, geometry2.Type());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGeometry, CopyAssignmentAfterMove)
+{
+  sdf::Geometry geometry1;
+  geometry1.SetType(sdf::GeometryType::BOX);
+
+  sdf::Geometry geometry2;
+  geometry2.SetType(sdf::GeometryType::SPHERE);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Geometry tmp = std::move(geometry1);
+  geometry1 = geometry2;
+  geometry2 = tmp;
+
+  EXPECT_EQ(sdf::GeometryType::SPHERE, geometry1.Type());
   EXPECT_EQ(sdf::GeometryType::BOX, geometry2.Type());
 }
 

@@ -110,6 +110,25 @@ TEST(DOMScene, AssignmentOperator)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMScene, CopyAssignmentAfterMove)
+{
+  sdf::Scene scene1;
+  scene1.SetAmbient(ignition::math::Color::Red);
+
+  sdf::Scene scene2;
+  scene2.SetAmbient(ignition::math::Color::Green);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Scene tmp = std::move(scene1);
+  scene1 = scene2;
+  scene2 = tmp;
+
+  EXPECT_EQ(ignition::math::Color::Green, scene1.Ambient());
+  EXPECT_EQ(ignition::math::Color::Red, scene2.Ambient());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMScene, Set)
 {
   sdf::Scene scene;

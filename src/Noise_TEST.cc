@@ -64,6 +64,19 @@ TEST(DOMNoise, ConstructionAndSet)
   sdf::Noise noise5;
   noise5 = std::move(noise2);
   EXPECT_EQ(noise3, noise5);
+
+
+  // Copy assignment after move
+  sdf::Noise noise6;
+  noise6.SetMean(0.6);
+  sdf::Noise noise7;
+  noise7.SetMean(0.7);
+
+  sdf::Noise tmp = std::move(noise6);
+  noise6 = noise7;
+  noise7 = tmp;
+  EXPECT_DOUBLE_EQ(0.7, noise6.Mean());
+  EXPECT_DOUBLE_EQ(0.6, noise7.Mean());
 }
 
 /////////////////////////////////////////////////

@@ -30,8 +30,10 @@ namespace sdf
   //
 
   // Forward declarations.
-  class SensorPrivate;
+  class AirPressure;
+  class Altimeter;
   class Magnetometer;
+  class SensorPrivate;
 
   /// \enum SensorType
   /// \brief The set of sensor types.
@@ -91,7 +93,10 @@ namespace sdf
     WIRELESS_RECEIVER = 16,
 
     /// \brief A wireless transmitter.
-    WIRELESS_TRANSMITTER = 17
+    WIRELESS_TRANSMITTER = 17,
+
+    /// \brief An air pressure sensor.
+    AIR_PRESSURE = 18
   };
 
   /// \brief Information about an SDF sensor.
@@ -106,7 +111,7 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _sensor Sensor to move.
-    public: Sensor(Sensor &&_sensor);
+    public: Sensor(Sensor &&_sensor) noexcept;
 
     /// \brief Destructor
     public: ~Sensor();
@@ -175,6 +180,14 @@ namespace sdf
     /// \param[in] _type The sensor type.
     public: void SetType(const SensorType _type);
 
+    /// \brief Set the sensor type from a string.
+    /// \param[in] _typeStr The sensor type. A valid parameter should equal
+    /// one of the enum value name in the SensorType enum. For example,
+    /// "altimeter" or "camera".
+    /// \return True if the _typeStr parameter matched a known sensor type.
+    /// False if the sensor type could not be set.
+    public: bool SetType(const std::string &_typeStr);
+
     /// \brief Get the sensor type as a string.
     /// \return The sensor type as a string.
     public: std::string TypeStr() const;
@@ -211,6 +224,28 @@ namespace sdf
     /// \brief Set the magnetometer sensor.
     /// \param[in] _mag The magnetometer sensor.
     public: void SetMagnetometerSensor(const Magnetometer &_mag);
+
+    /// \brief Get the altimeter sensor, or nullptr if this sensor type
+    /// is not an Altimeter.
+    /// \return Pointer to the Altimeter sensor, or nullptr if this
+    /// Sensor is not a Altimeter.
+    /// \sa SensorType Type() const
+    public: const Altimeter *AltimeterSensor() const;
+
+    /// \brief Set the altimeter sensor.
+    /// \param[in] _alt The altimeter sensor.
+    public: void SetAltimeterSensor(const Altimeter &_alt);
+
+    /// \brief Get the air pressure sensor, or nullptr if this sensor type
+    /// is not an AirPressure sensor.
+    /// \return Pointer to the AirPressure sensor, or nullptr if this
+    /// Sensor is not a AirPressure sensor.
+    /// \sa SensorType Type() const
+    public: const AirPressure *AirPressureSensor() const;
+
+    /// \brief Set the air pressure sensor.
+    /// \param[in] _air The air pressure sensor.
+    public: void SetAirPressureSensor(const AirPressure &_air);
 
     /// \brief Private data pointer.
     private: SensorPrivate *dataPtr = nullptr;

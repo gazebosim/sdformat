@@ -16,6 +16,8 @@
 */
 
 #include <gtest/gtest.h>
+#include "sdf/Noise.hh"
+#include "sdf/Magnetometer.hh"
 #include "sdf/Sensor.hh"
 
 /////////////////////////////////////////////////
@@ -40,6 +42,146 @@ TEST(DOMSensor, Construction)
   EXPECT_DOUBLE_EQ(0.0, sensor.UpdateRate());
 
   EXPECT_TRUE(sensor.Topic().empty());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSensor, MoveConstructor)
+{
+  sdf::Sensor sensor;
+  sensor.SetPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
+  sensor.SetType(sdf::SensorType::MAGNETOMETER);
+  sensor.SetPoseFrame("a_frame");
+
+  sdf::Noise noise;
+  noise.SetMean(0.1);
+  sdf::Magnetometer mag;
+  mag.SetXNoise(noise);
+  sensor.SetMagnetometerSensor(mag);
+
+  sdf::Sensor sensor2(std::move(sensor));
+
+  EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor2.Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), sensor2.Pose());
+  EXPECT_EQ("a_frame", sensor2.PoseFrame());
+  ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
+  EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
+                   sensor2.MagnetometerSensor()->XNoise().Mean());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSensor, CopyConstructor)
+{
+  sdf::Sensor sensor;
+  sensor.SetPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
+  sensor.SetType(sdf::SensorType::MAGNETOMETER);
+  sensor.SetPoseFrame("a_frame");
+
+  sdf::Noise noise;
+  noise.SetMean(0.1);
+  sdf::Magnetometer mag;
+  mag.SetXNoise(noise);
+  sensor.SetMagnetometerSensor(mag);
+
+  sdf::Sensor sensor2(sensor);
+
+  EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor.Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), sensor.Pose());
+  EXPECT_EQ("a_frame", sensor.PoseFrame());
+  ASSERT_TRUE(nullptr != sensor.MagnetometerSensor());
+  EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
+                   sensor.MagnetometerSensor()->XNoise().Mean());
+
+  EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor2.Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), sensor2.Pose());
+  EXPECT_EQ("a_frame", sensor2.PoseFrame());
+  ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
+  EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
+                   sensor2.MagnetometerSensor()->XNoise().Mean());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSensor, MoveAssignment)
+{
+  sdf::Sensor sensor;
+  sensor.SetPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
+  sensor.SetType(sdf::SensorType::MAGNETOMETER);
+  sensor.SetPoseFrame("a_frame");
+
+  sdf::Noise noise;
+  noise.SetMean(0.1);
+  sdf::Magnetometer mag;
+  mag.SetXNoise(noise);
+  sensor.SetMagnetometerSensor(mag);
+
+  sdf::Sensor sensor2;
+  sensor2 = std::move(sensor);
+
+  EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor2.Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), sensor2.Pose());
+  EXPECT_EQ("a_frame", sensor2.PoseFrame());
+  ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
+  EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
+                   sensor2.MagnetometerSensor()->XNoise().Mean());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSensor, CopyAssignment)
+{
+  sdf::Sensor sensor;
+  sensor.SetPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
+  sensor.SetType(sdf::SensorType::MAGNETOMETER);
+  sensor.SetPoseFrame("a_frame");
+
+  sdf::Noise noise;
+  noise.SetMean(0.1);
+  sdf::Magnetometer mag;
+  mag.SetXNoise(noise);
+  sensor.SetMagnetometerSensor(mag);
+
+  sdf::Sensor sensor2;
+  sensor2 = sensor;
+
+  EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor.Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), sensor.Pose());
+  EXPECT_EQ("a_frame", sensor.PoseFrame());
+  ASSERT_TRUE(nullptr != sensor.MagnetometerSensor());
+  EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
+                   sensor.MagnetometerSensor()->XNoise().Mean());
+
+  EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor2.Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), sensor2.Pose());
+  EXPECT_EQ("a_frame", sensor2.PoseFrame());
+  ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
+  EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
+                   sensor2.MagnetometerSensor()->XNoise().Mean());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSensor, CopyAssignmentAfterMove)
+{
+  sdf::Sensor sensor1;
+  sensor1.SetPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
+  sensor1.SetType(sdf::SensorType::MAGNETOMETER);
+  sensor1.SetPoseFrame("frame1");
+
+  sdf::Sensor sensor2;
+  sensor2.SetPose(ignition::math::Pose3d(4, 5, 6, 0, 0, 0));
+  sensor2.SetType(sdf::SensorType::CAMERA);
+  sensor2.SetPoseFrame("frame2");
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Sensor tmp = std::move(sensor1);
+  sensor1 = sensor2;
+  sensor2 = tmp;
+
+  EXPECT_EQ(sdf::SensorType::CAMERA, sensor1.Type());
+  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), sensor1.Pose());
+  EXPECT_EQ("frame2", sensor1.PoseFrame());
+
+  EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor2.Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), sensor2.Pose());
+  EXPECT_EQ("frame1", sensor2.PoseFrame());
 }
 
 /////////////////////////////////////////////////
@@ -113,10 +255,20 @@ TEST(DOMSensor, Type)
     "wireless_transmitter"
   };
 
-
   for (size_t i = 0; i < types.size(); ++i)
   {
     sensor.SetType(types[i]);
+    EXPECT_EQ(types[i], sensor.Type());
+    EXPECT_EQ(typeStrs[i], sensor.TypeStr());
+  }
+
+  for (size_t i = 0; i < typeStrs .size(); ++i)
+  {
+    EXPECT_TRUE(sensor.SetType(typeStrs[i]));
+    EXPECT_EQ(types[i], sensor.Type());
+    EXPECT_EQ(typeStrs[i], sensor.TypeStr());
+
+    EXPECT_FALSE(sensor.SetType("bad_sensor_type"));
     EXPECT_EQ(types[i], sensor.Type());
     EXPECT_EQ(typeStrs[i], sensor.TypeStr());
   }

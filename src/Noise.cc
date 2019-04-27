@@ -16,8 +16,8 @@
  */
 
 #include <algorithm>
-#include <locale>
 #include "sdf/Noise.hh"
+#include "sdf/Types.hh"
 
 using namespace sdf;
 
@@ -59,7 +59,7 @@ Noise::Noise(const Noise &_noise)
 }
 
 //////////////////////////////////////////////////
-Noise::Noise(Noise &&_noise)
+Noise::Noise(Noise &&_noise) noexcept
 {
   this->dataPtr = _noise.dataPtr;
   _noise.dataPtr = nullptr;
@@ -75,6 +75,8 @@ Noise::~Noise()
 //////////////////////////////////////////////////
 Noise &Noise::operator=(const Noise &_noise)
 {
+  if (!this->dataPtr)
+    this->dataPtr = new NoisePrivate;
   *this->dataPtr = *_noise.dataPtr;
   return *this;
 }
@@ -111,9 +113,7 @@ Errors Noise::Load(ElementPtr _sdf)
         "Noise is missing the type attribute. Defaulting to 'none'."});
   }
 
-  std::string typeLower = type.first;
-  for (size_t i = 0; i < typeLower.size(); ++i)
-    typeLower[i] = std::tolower(typeLower[i], std::locale());
+  std::string typeLower = lowercase(type.first);
 
   if (typeLower == "none")
     this->dataPtr->type = NoiseType::NONE;
