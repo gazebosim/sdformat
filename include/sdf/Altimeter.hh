@@ -24,12 +24,12 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   class AltimeterPrivate;
 
-  /// \brief Altimeter contains information about a altimeter sensor.
+  /// \brief Altimeter contains information about an altimeter sensor.
   /// This sensor can be attached to a link.
   class SDFORMAT_VISIBLE Altimeter
   {
@@ -42,7 +42,7 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _altimeter Altimeter to move.
-    public: Altimeter(Altimeter &&_altimeter);
+    public: Altimeter(Altimeter &&_altimeter) noexcept;
 
     /// \brief Destructor
     public: ~Altimeter();
@@ -55,7 +55,7 @@ namespace sdf
     /// \brief Move assignment operator.
     /// \param[in] _altimeter The altimeter to set values from.
     /// \return *this
-    public: Altimeter &operator=(Altimeter &&_altimeter);
+    public: Altimeter &operator=(Altimeter &&_altimeter) noexcept;
 
     /// \brief Load the altimeter based on an element pointer. This is *not*
     /// the usual entry point. Typical usage of the SDF DOM is through the Root

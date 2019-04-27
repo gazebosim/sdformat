@@ -100,6 +100,67 @@ TEST(DOMLink, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMLink, CopyConstructor)
+{
+  sdf::Link link;
+  link.SetName("test_link");
+
+  sdf::Link link2(link);
+  EXPECT_EQ("test_link", link2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, CopyAssignmentOperator)
+{
+  sdf::Link link;
+  link.SetName("test_link");
+
+  sdf::Link link2;
+  link2 = link;
+  EXPECT_EQ("test_link", link2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, MoveConstructor)
+{
+  sdf::Link link;
+  link.SetName("test_link");
+
+  sdf::Link link2(link);
+  EXPECT_EQ("test_link", link2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, MoveAssignmentOperator)
+{
+  sdf::Link link;
+  link.SetName("test_link");
+
+  sdf::Link link2;
+  link2 = std::move(link);
+  EXPECT_EQ("test_link", link2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, CopyAssignmentAfterMove)
+{
+  sdf::Link link1;
+  link1.SetName("link1");
+
+  sdf::Link link2;
+  link2.SetName("link2");
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Link tmp = std::move(link1);
+  link1 = link2;
+  link2 = tmp;
+
+  EXPECT_EQ("link2", link1.Name());
+  EXPECT_EQ("link1", link2.Name());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMLink, InvalidInertia)
 {
   sdf::Link link;

@@ -88,6 +88,10 @@ JointAxis::JointAxis(const JointAxis &_jointAxis)
 /////////////////////////////////////////////////
 JointAxis &JointAxis::operator=(const JointAxis &_jointAxis)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new JointAxisPrivate;
+  }
   *this->dataPtr = (*_jointAxis.dataPtr);
   return *this;
 }

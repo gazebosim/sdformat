@@ -111,7 +111,7 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _sensor Sensor to move.
-    public: Sensor(Sensor &&_sensor);
+    public: Sensor(Sensor &&_sensor) noexcept;
 
     /// \brief Destructor
     public: ~Sensor();

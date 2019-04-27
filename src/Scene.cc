@@ -72,6 +72,10 @@ Scene::~Scene()
 /////////////////////////////////////////////////
 Scene &Scene::operator=(const Scene &_scene)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new ScenePrivate;
+  }
   *this->dataPtr = *_scene.dataPtr;
   return *this;
 }

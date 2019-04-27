@@ -67,10 +67,35 @@ Model::Model()
 }
 
 /////////////////////////////////////////////////
-Model::Model(Model &&_model)
+Model::Model(const Model &_model)
+  : dataPtr(new ModelPrivate(*_model.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Model &Model::operator=(const Model &_model)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new ModelPrivate;
+  }
+  *this->dataPtr = (*_model.dataPtr);
+  return *this;
+}
+
+/////////////////////////////////////////////////
+Model::Model(Model &&_model) noexcept
 {
   this->dataPtr = _model.dataPtr;
   _model.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Model &Model::operator=(Model &&_model)
+{
+  this->dataPtr = _model.dataPtr;
+  _model.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////

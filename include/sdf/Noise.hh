@@ -57,7 +57,7 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _noise Noise to move.
-    public: Noise(Noise &&_noise);
+    public: Noise(Noise &&_noise) noexcept;
 
     /// \brief Destructor
     public: ~Noise();

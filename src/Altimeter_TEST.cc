@@ -71,8 +71,14 @@ TEST(DOMAltimeter, Set)
   alt5 = std::move(alt2);
   EXPECT_EQ(alt3, alt5);
 
+  alt2 = alt5;
+  EXPECT_EQ(alt3, alt2);
+
   // inequality
   sdf::Altimeter alt6;
+  EXPECT_NE(alt3, alt6);
+  // set position noise but velocity noise should still be different
+  alt6.SetVerticalPositionNoise(alt3.VerticalPositionNoise());
   EXPECT_NE(alt3, alt6);
 }
 

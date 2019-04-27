@@ -81,7 +81,7 @@ Light::Light()
 }
 
 /////////////////////////////////////////////////
-Light::Light(Light &&_light)
+Light::Light(Light &&_light) noexcept
 {
   this->dataPtr = _light.dataPtr;
   _light.dataPtr = nullptr;
@@ -104,7 +104,19 @@ Light::Light(const Light &_light)
 //////////////////////////////////////////////////
 Light &Light::operator=(const Light &_light)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new LightPrivate;
+  }
   this->CopyFrom(_light);
+  return *this;
+}
+
+//////////////////////////////////////////////////
+Light &Light::operator=(Light &&_light)
+{
+  this->dataPtr = _light.dataPtr;
+  _light.dataPtr = nullptr;
   return *this;
 }
 
