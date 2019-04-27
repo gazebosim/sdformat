@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <ignition/math/Pose3.hh>
+#include "sdf/AirPressure.hh"
 #include "sdf/Altimeter.hh"
 #include "sdf/Error.hh"
 #include "sdf/Magnetometer.hh"
@@ -47,7 +48,8 @@ const std::vector<std::string> sensorTypeStrs =
   "rfidtag",
   "sonar",
   "wireless_receiver",
-  "wireless_transmitter"
+  "wireless_transmitter",
+  "air_pressure"
 };
 
 class sdf::SensorPrivate
@@ -72,6 +74,11 @@ class sdf::SensorPrivate
     if (_sensor.altimeter)
     {
       this->altimeter = std::make_unique<sdf::Altimeter>(*_sensor.altimeter);
+    }
+    if (_sensor.airPressure)
+    {
+      this->airPressure = std::make_unique<sdf::AirPressure>(
+          *_sensor.airPressure);
     }
   }
   // Delete copy assignment so it is not accidentally used
@@ -99,8 +106,11 @@ class sdf::SensorPrivate
   /// \brief Pointer to a magnetometer.
   public: std::unique_ptr<Magnetometer> magnetometer;
 
-  /// \brief Pointer to a altimeter.
+  /// \brief Pointer to an altimeter.
   public: std::unique_ptr<Altimeter> altimeter;
+
+  /// \brief Pointer to an air pressure sensor.
+  public: std::unique_ptr<AirPressure> airPressure;
 
   /// \brief The frequency at which the sensor data is generated.
   /// If left unspecified (0.0), the sensor will generate data every cycle.
@@ -196,7 +206,15 @@ Errors Sensor::Load(ElementPtr _sdf)
     this->dataPtr->topic = "";
 
   std::string type = _sdf->Get<std::string>("type");
-  if (type == "altimeter")
+  if (type == "air_pressure")
+  {
+    this->dataPtr->type = SensorType::AIR_PRESSURE;
+    this->dataPtr->airPressure.reset(new AirPressure());
+    Errors err = this->dataPtr->airPressure->Load(
+        _sdf->GetElement("air_pressure"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
+  else if (type == "altimeter")
   {
     this->dataPtr->type = SensorType::ALTIMETER;
     this->dataPtr->altimeter.reset(new Altimeter());
@@ -387,6 +405,18 @@ const Altimeter *Sensor::AltimeterSensor() const
 void Sensor::SetAltimeterSensor(const Altimeter &_alt)
 {
   this->dataPtr->altimeter = std::make_unique<Altimeter>(_alt);
+}
+
+/////////////////////////////////////////////////
+const AirPressure *Sensor::AirPressureSensor() const
+{
+  return this->dataPtr->airPressure.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetAirPressureSensor(const AirPressure &_air)
+{
+  this->dataPtr->airPressure = std::make_unique<AirPressure>(_air);
 }
 
 /////////////////////////////////////////////////
