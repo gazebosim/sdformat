@@ -38,6 +38,13 @@ class sdf::JointPrivate
     this->axis[1] = nullptr;
   }
 
+  /// \brief Copy constructor
+  /// \param[in] _jointPrivate JointPrivate to copy.
+  public: explicit JointPrivate(const JointPrivate &_jointPrivate);
+
+  // Delete copy assignment so it is not accidentally used
+  public: JointPrivate &operator=(const JointPrivate &_) = delete;
+
   /// \brief Name of the joint.
   public: std::string name = "";
 
@@ -68,16 +75,64 @@ class sdf::JointPrivate
 };
 
 /////////////////////////////////////////////////
+JointPrivate::JointPrivate(const JointPrivate &_jointPrivate)
+    : name(_jointPrivate.name),
+      parentLinkName(_jointPrivate.parentLinkName),
+      childLinkName(_jointPrivate.childLinkName),
+      type(_jointPrivate.type),
+      pose(_jointPrivate.pose),
+      poseFrame(_jointPrivate.poseFrame),
+      threadPitch(_jointPrivate.threadPitch),
+      sdf(_jointPrivate.sdf)
+{
+  for (std::size_t i = 0; i < _jointPrivate.axis.size(); ++i)
+  {
+    if (_jointPrivate.axis[i])
+    {
+      this->axis[i] = std::make_unique<JointAxis>(*_jointPrivate.axis[i]);
+    }
+  }
+}
+
+/////////////////////////////////////////////////
 Joint::Joint()
   : dataPtr(new JointPrivate)
 {
 }
 
 /////////////////////////////////////////////////
-Joint::Joint(Joint &&_joint)
+Joint::Joint(Joint &&_joint) noexcept
 {
   this->dataPtr = _joint.dataPtr;
   _joint.dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Joint::Joint(const Joint &_joint)
+  : dataPtr(new JointPrivate(*_joint.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Joint &Joint::operator=(const Joint &_joint)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new JointPrivate(*_joint.dataPtr);
+  }
+  else
+  {
+    this->dataPtr = new(this->dataPtr) JointPrivate(*_joint.dataPtr);
+  }
+  return *this;
+}
+
+/////////////////////////////////////////////////
+Joint &Joint::operator=(Joint &&_joint)
+{
+  this->dataPtr = _joint.dataPtr;
+  _joint.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////

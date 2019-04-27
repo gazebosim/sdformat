@@ -5,6 +5,9 @@
 1. Added AirPressure SDF DOM
    * [Pull request 528](https://bitbucket.org/osrf/sdformat/pull-requests/528)
 
+1. Apply rule of five for various DOM classes
+   * [Pull request 524](https://bitbucket.org/osrf/sdformat/pull-requests/524)
+
 1. Added Altimeter SDF DOM
    * [Pull request 527](https://bitbucket.org/osrf/sdformat/pull-requests/527)
 

@@ -45,9 +45,23 @@ namespace sdf
     /// \brief Default constructor
     public: World();
 
+    /// \brief Copy constructor
+    /// \param[in] _world World to copy.
+    public: World(const World &_world);
+
     /// \brief Move constructor
     /// \param[in] _world World to move.
-    public: World(World &&_world);
+    public: World(World &&_world) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _world World to move.
+    /// \return Reference to this.
+    public: World &operator=(World &&_world);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _world World to copy.
+    /// \return Reference to this.
+    public: World &operator=(const World &_world);
 
     /// \brief Destructor
     public: ~World();
