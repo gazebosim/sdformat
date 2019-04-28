@@ -80,6 +80,9 @@ class sdf::SensorPrivate
       this->airPressure = std::make_unique<sdf::AirPressure>(
           *_sensor.airPressure);
     }
+    // Developer note: If you add a new sensor type, make sure to also
+    // update the Sensor::operator== function. Please bump this text down as
+    // new sensors are added so that the next developer see the message.
   }
   // Delete copy assignment so it is not accidentally used
   public: SensorPrivate &operator=(const SensorPrivate &) = delete;
@@ -111,6 +114,9 @@ class sdf::SensorPrivate
 
   /// \brief Pointer to an air pressure sensor.
   public: std::unique_ptr<AirPressure> airPressure;
+  // Developer note: If you add a new sensor type, make sure to also
+  // update the Sensor::operator== function. Please bump this text down as
+  // new sensors are added so that the next developer see the message.
 
   /// \brief The frequency at which the sensor data is generated.
   /// If left unspecified (0.0), the sensor will generate data every cycle.
@@ -163,6 +169,41 @@ Sensor &Sensor::operator=(Sensor &&_sensor)
   this->dataPtr = _sensor.dataPtr;
   _sensor.dataPtr = nullptr;
   return *this;
+}
+
+/////////////////////////////////////////////////
+bool Sensor::operator==(const Sensor &_sensor) const
+{
+  // Check a few of the easy parameters.
+  if (this->Name() != _sensor.Name() ||
+      this->Type() != _sensor.Type() ||
+      this->Topic() != _sensor.Topic() ||
+      this->Pose() != _sensor.Pose() ||
+      this->PoseFrame() != _sensor.PoseFrame() ||
+      !ignition::math::equal(this->UpdateRate(), _sensor.UpdateRate()))
+  {
+    return false;
+  }
+
+  // Check the sensors
+  switch (this->Type())
+  {
+    case SensorType::ALTIMETER:
+      return *(this->dataPtr->altimeter) == *(_sensor.dataPtr->altimeter);
+    case SensorType::MAGNETOMETER:
+      return *(this->dataPtr->magnetometer) == *(_sensor.dataPtr->magnetometer);
+    case SensorType::AIR_PRESSURE:
+      return *(this->dataPtr->airPressure) == *(_sensor.dataPtr->airPressure);
+    case SensorType::NONE:
+    default:
+      return true;
+  }
+}
+
+/////////////////////////////////////////////////
+bool Sensor::operator!=(const Sensor &_sensor) const
+{
+  return !(*this == _sensor);
 }
 
 /////////////////////////////////////////////////
