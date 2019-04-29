@@ -217,6 +217,18 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Check if this link should be subject to wind.
+    /// If true, this link should be affected by wind.
+    /// \return true if the model should be subject to wind, false otherwise.
+    /// \sa bool Model::EnableWind
+    public: bool EnableWind() const;
+
+    /// \brief Set whether this link should be subject to wind.
+    /// \param[in] _enableWind True or false depending on whether the link
+    /// should be subject to wind.
+    /// \sa Model::SetEnableWind(bool)
+    public: void SetEnableWind(bool _enableWind);
+
     /// \brief Private data pointer.
     private: LinkPrivate *dataPtr = nullptr;
   };

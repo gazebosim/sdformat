@@ -48,6 +48,10 @@ TEST(DOMLink, Construction)
   EXPECT_FALSE(link.LightNameExists("default"));
   EXPECT_EQ(nullptr, link.LightByName("no_such_light"));
 
+  EXPECT_FALSE(link.EnableWind());
+  link.SetEnableWind(true);
+  EXPECT_TRUE(link.EnableWind());
+
   EXPECT_EQ(0u, link.SensorCount());
   EXPECT_EQ(nullptr, link.SensorByIndex(0));
   EXPECT_EQ(nullptr, link.SensorByIndex(1));
