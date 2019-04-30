@@ -177,9 +177,9 @@ Errors Camera::Load(ElementPtr _sdf)
   if (_sdf->HasElement("image"))
   {
     sdf::ElementPtr elem = _sdf->GetElement("image");
-    this->dataPtr->imageWidth = elem->Get<double>("width",
+    this->dataPtr->imageWidth = elem->Get<uint32_t>("width",
         this->dataPtr->imageWidth).first;
-    this->dataPtr->imageHeight = elem->Get<double>("height",
+    this->dataPtr->imageHeight = elem->Get<uint32_t>("height",
         this->dataPtr->imageHeight).first;
     std::string format = elem->Get<std::string>("format", "R8G8B8").first;
     if (format == "R8G8B8")

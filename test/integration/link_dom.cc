@@ -142,6 +142,7 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 2.1, -1.5708, 0, 0),
       upperLink->Pose());
   EXPECT_EQ("", upperLink->PoseFrame());
+  EXPECT_TRUE(upperLink->EnableWind());
 
   const ignition::math::Inertiald inertialUpper = upperLink->Inertial();
   EXPECT_DOUBLE_EQ(1.0, inertialUpper.MassMatrix().Mass());

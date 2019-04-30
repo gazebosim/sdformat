@@ -263,10 +263,6 @@ namespace sdf
     /// \param[in] _frame The name of the pose frame.
     public: void SetPoseFrame(const std::string &_frame);
 
-
-
-
-
     /// \brief Get the lens type.
     /// \return The lens type.
     public: std::string LensType() const;
