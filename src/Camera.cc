@@ -14,10 +14,36 @@
  * limitations under the License.
  *
 */
+#include <array>
 #include "sdf/Camera.hh"
 #include "Utils.hh"
 
 using namespace sdf;
+
+/// \brief String names for the pixel formats.
+/// \sa Image::PixelFormat.
+static std::array<std::string, 19> kPixelFormatNames =
+{
+  "UNKNOWN_PIXEL_FORMAT",
+  "L_INT8",
+  "L_INT16",
+  "RGB_INT8",
+  "RGBA_INT8",
+  "BGRA_INT8",
+  "RGB_INT16",
+  "RGB_INT32",
+  "BGR_INT8",
+  "BGR_INT16",
+  "BGR_INT32",
+  "R_FLOAT16",
+  "RGB_FLOAT16",
+  "R_FLOAT32",
+  "RGB_FLOAT32",
+  "BAYER_RGGB8",
+  "BAYER_BGGR8",
+  "BAYER_GBRG8",
+  "BAYER_GRBG8"
+};
 
 // Private data class
 class sdf::CameraPrivate
@@ -181,22 +207,10 @@ Errors Camera::Load(ElementPtr _sdf)
         this->dataPtr->imageWidth).first;
     this->dataPtr->imageHeight = elem->Get<uint32_t>("height",
         this->dataPtr->imageHeight).first;
+
     std::string format = elem->Get<std::string>("format", "R8G8B8").first;
-    if (format == "R8G8B8")
-      this->dataPtr->pixelFormat = PixelFormatType::RGB_INT8;
-    else if (format == "L8")
-      this->dataPtr->pixelFormat = PixelFormatType::L_INT8;
-    else if (format == "B8G8R8")
-      this->dataPtr->pixelFormat = PixelFormatType::BGR_INT8;
-    else if (format == "BAYER_RGGB8")
-      this->dataPtr->pixelFormat = PixelFormatType::BAYER_RGGB8;
-    else if (format == "BAYER_BGGR8")
-      this->dataPtr->pixelFormat = PixelFormatType::BAYER_BGGR8;
-    else if (format == "BAYER_GBRG8")
-      this->dataPtr->pixelFormat = PixelFormatType::BAYER_GBRG8;
-    else if (format == "BAYER_GRBG8")
-      this->dataPtr->pixelFormat = PixelFormatType::BAYER_GRBG8;
-    else
+    this->dataPtr->pixelFormat = ConvertPixelFormat(format);
+    if (this->dataPtr->pixelFormat == PixelFormatType::UNKNOWN_PIXEL_FORMAT)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
         "Camera sensor <image><format> has invalid value of " + format});
@@ -359,6 +373,18 @@ PixelFormatType Camera::PixelFormat() const
 void Camera::SetPixelFormat(PixelFormatType _format)
 {
   this->dataPtr->pixelFormat = _format;
+}
+
+//////////////////////////////////////////////////
+std::string Camera::PixelFormatStr() const
+{
+  return ConvertPixelFormat(this->dataPtr->pixelFormat);
+}
+
+//////////////////////////////////////////////////
+void Camera::SetPixelFormatStr(const std::string &_fmt)
+{
+  this->dataPtr->pixelFormat = ConvertPixelFormat(_fmt);
 }
 
 //////////////////////////////////////////////////
@@ -724,4 +750,44 @@ double Camera::LensIntrinsicsSkew() const
 void Camera::SetLensIntrinsicsSkew(double _s)
 {
   this->dataPtr->lensIntrinsicsS = _s;
+}
+
+/////////////////////////////////////////////////
+std::string Camera::ConvertPixelFormat(PixelFormatType _type)
+{
+  unsigned int index = static_cast<int>(_type);
+  if (index < kPixelFormatNames.size())
+    return kPixelFormatNames[static_cast<int>(_type)];
+
+  return kPixelFormatNames[0];
+}
+
+/////////////////////////////////////////////////
+PixelFormatType Camera::ConvertPixelFormat(const std::string &_format)
+{
+  for (unsigned int i = 0; i < kPixelFormatNames.size(); ++i)
+  {
+    if (kPixelFormatNames[i] == _format)
+    {
+      return static_cast<PixelFormatType>(i);
+    }
+  }
+
+  // Handle older formats
+  if (_format == "R8G8B8")
+    return PixelFormatType::RGB_INT8;
+  else if (_format == "L8")
+    return PixelFormatType::L_INT8;
+  else if (_format == "B8G8R8")
+    return PixelFormatType::BGR_INT8;
+  else if (_format == "BAYER_RGGB8")
+    return PixelFormatType::BAYER_RGGB8;
+  else if (_format == "BAYER_BGGR8")
+    return PixelFormatType::BAYER_BGGR8;
+  else if (_format == "BAYER_GBRG8")
+    return PixelFormatType::BAYER_GBRG8;
+  else if (_format == "BAYER_GRBG8")
+    return PixelFormatType::BAYER_GRBG8;
+
+  return PixelFormatType::UNKNOWN_PIXEL_FORMAT;
 }

@@ -152,6 +152,14 @@ namespace sdf
     /// \param[in] _format The image format.
     public: void SetPixelFormat(PixelFormatType _format);
 
+    /// \brief Get the pixel format as a string.
+    /// \return The pixel format string.
+    public: std::string PixelFormatStr() const;
+
+    /// \brief Set the pixel format from a string.
+    /// \param[in] _fmt The pixel format string.
+    public: void SetPixelFormatStr(const std::string &_fmt);
+
     /// \brief Get the near clip distance.
     /// \return The near clip distance.
     public: double NearClip() const;
@@ -387,6 +395,18 @@ namespace sdf
     /// \brief Set the lens XY axis skew.
     /// \param[in] _s The lens XY axis skew.
     public: void SetLensIntrinsicsSkew(double _s);
+
+    /// \brief Convert a string to a PixelFormatType.
+    /// \param[in] _format String equivalent of a pixel format type to convert.
+    /// \return The matching PixelFormatType.
+    public: static PixelFormatType ConvertPixelFormat(
+                const std::string &_format);
+
+    /// \brief Convert a PixelFormatType to a string.
+    /// \param[in] _type Pixel format type to convert.
+    /// \return String equivalent of _type.
+    public: static std::string ConvertPixelFormat(PixelFormatType _type);
+
 
     /// \brief Private data pointer.
     private: CameraPrivate *dataPtr;
