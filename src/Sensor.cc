@@ -201,6 +201,9 @@ bool Sensor::operator==(const Sensor &_sensor) const
       return *(this->dataPtr->magnetometer) == *(_sensor.dataPtr->magnetometer);
     case SensorType::AIR_PRESSURE:
       return *(this->dataPtr->airPressure) == *(_sensor.dataPtr->airPressure);
+    case SensorType::CAMERA:
+    case SensorType::DEPTH_CAMERA:
+      return *(this->dataPtr->camera) == *(_sensor.dataPtr->camera);
     case SensorType::NONE:
     default:
       return true;
