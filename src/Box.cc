@@ -53,16 +53,28 @@ Box::Box(const Box &_box)
 /////////////////////////////////////////////////
 Box &Box::operator=(const Box &_box)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new BoxPrivate;
+  }
   this->dataPtr->size = _box.dataPtr->size;
   this->dataPtr->sdf = _box.dataPtr->sdf;
   return *this;
 }
 
 //////////////////////////////////////////////////
-Box::Box(Box &&_box)
+Box::Box(Box &&_box) noexcept
 {
   this->dataPtr = _box.dataPtr;
   _box.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Box &Box::operator=(Box &&_box)
+{
+  this->dataPtr = _box.dataPtr;
+  _box.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////

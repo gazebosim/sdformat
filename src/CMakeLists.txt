@@ -13,6 +13,8 @@ if (USE_EXTERNAL_TINYXML)
 endif()
 
 set (sources
+  AirPressure.cc
+  Altimeter.cc
   Atmosphere.cc
   Box.cc
   Collision.cc
@@ -30,9 +32,11 @@ set (sources
   JointAxis.cc
   Light.cc
   Link.cc
+  Magnetometer.cc
   Material.cc
   Mesh.cc
   Model.cc
+  Noise.cc
   parser.cc
   parser_urdf.cc
   Param.cc
@@ -40,6 +44,7 @@ set (sources
   Physics.cc
   Plane.cc
   Root.cc
+  Scene.cc
   SDF.cc
   SDFExtension.cc
   Sensor.cc
@@ -79,6 +84,8 @@ else()
 endif()
 
 set (gtest_sources
+  AirPressure_TEST.cc
+  Altimeter_TEST.cc
   Atmosphere_TEST.cc
   Box_TEST.cc
   Collision_TEST.cc
@@ -95,9 +102,11 @@ set (gtest_sources
   JointAxis_TEST.cc
   Light_TEST.cc
   Link_TEST.cc
+  Magnetometer_TEST.cc
   Material_TEST.cc
   Mesh_TEST.cc
   Model_TEST.cc
+  Noise_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
@@ -105,6 +114,7 @@ set (gtest_sources
   Physics_TEST.cc
   Plane_TEST.cc
   Root_TEST.cc
+  Scene_TEST.cc
   SDF_TEST.cc
   Sensor_TEST.cc
   Sphere_TEST.cc

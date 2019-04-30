@@ -1,6 +1,8 @@
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 set (headers
+  AirPressure.hh
+  Altimeter.hh
   Assert.hh
   Atmosphere.hh
   Box.hh
@@ -17,14 +19,18 @@ set (headers
   JointAxis.hh
   Light.hh
   Link.hh
+  Magnetometer.hh
   Material.hh
   Mesh.hh
   Model.hh
+  Noise.hh
   Param.hh
   parser.hh
+  Pbr.hh
   Physics.hh
   Plane.hh
   Root.hh
+  Scene.hh
   SDFImpl.hh
   Sensor.hh
   Sphere.hh

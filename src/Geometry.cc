@@ -101,6 +101,10 @@ Geometry::Geometry(const Geometry &_geometry)
 /////////////////////////////////////////////////
 Geometry &Geometry::operator=(const Geometry &_geometry)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new GeometryPrivate;
+  }
   this->dataPtr->type = _geometry.dataPtr->type;
 
   if (_geometry.dataPtr->box)
@@ -137,10 +141,18 @@ Geometry &Geometry::operator=(const Geometry &_geometry)
 }
 
 //////////////////////////////////////////////////
-Geometry::Geometry(Geometry &&_geometry)
+Geometry::Geometry(Geometry &&_geometry) noexcept
 {
   this->dataPtr = _geometry.dataPtr;
   _geometry.dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Geometry &Geometry::operator=(Geometry &&_geometry)
+{
+  this->dataPtr = _geometry.dataPtr;
+  _geometry.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -227,9 +239,21 @@ const Box *Geometry::BoxShape() const
 }
 
 /////////////////////////////////////////////////
+void Geometry::SetBoxShape(const Box &_box)
+{
+  this->dataPtr->box = std::make_unique<Box>(_box);
+}
+
+/////////////////////////////////////////////////
 const Sphere *Geometry::SphereShape() const
 {
   return this->dataPtr->sphere.get();
+}
+
+/////////////////////////////////////////////////
+void Geometry::SetSphereShape(const Sphere &_sphere)
+{
+  this->dataPtr->sphere = std::make_unique<Sphere>(_sphere);
 }
 
 /////////////////////////////////////////////////
@@ -239,15 +263,33 @@ const Cylinder *Geometry::CylinderShape() const
 }
 
 /////////////////////////////////////////////////
+void Geometry::SetCylinderShape(const Cylinder &_cylinder)
+{
+  this->dataPtr->cylinder = std::make_unique<Cylinder>(_cylinder);
+}
+
+/////////////////////////////////////////////////
 const Plane *Geometry::PlaneShape() const
 {
   return this->dataPtr->plane.get();
 }
 
 /////////////////////////////////////////////////
+void Geometry::SetPlaneShape(const Plane &_plane)
+{
+  this->dataPtr->plane = std::make_unique<Plane>(_plane);
+}
+
+/////////////////////////////////////////////////
 const Mesh *Geometry::MeshShape() const
 {
   return this->dataPtr->mesh.get();
+}
+
+/////////////////////////////////////////////////
+void Geometry::SetMeshShape(const Mesh &_mesh)
+{
+  this->dataPtr->mesh = std::make_unique<Mesh>(_mesh);
 }
 
 /////////////////////////////////////////////////

@@ -30,10 +30,15 @@ namespace sdf
   //
 
   // Forward declarations.
+  class AirPressure;
+  class Altimeter;
+  class Magnetometer;
   class SensorPrivate;
 
   /// \enum SensorType
   /// \brief The set of sensor types.
+  // Developer note: Make sure to update sensorTypeStrs in the source file
+  // when changing this enum.
   enum class SensorType
   {
     /// \brief An unspecified sensor type.
@@ -88,7 +93,10 @@ namespace sdf
     WIRELESS_RECEIVER = 16,
 
     /// \brief A wireless transmitter.
-    WIRELESS_TRANSMITTER = 17
+    WIRELESS_TRANSMITTER = 17,
+
+    /// \brief An air pressure sensor.
+    AIR_PRESSURE = 18
   };
 
   /// \brief Information about an SDF sensor.
@@ -97,9 +105,13 @@ namespace sdf
     /// \brief Default constructor
     public: Sensor();
 
+    /// \brief Copy constructor
+    /// \param[in] _sensor Sensor to copy.
+    public: Sensor(const Sensor &_sensor);
+
     /// \brief Move constructor
     /// \param[in] _sensor Sensor to move.
-    public: Sensor(Sensor &&_sensor);
+    public: Sensor(Sensor &&_sensor) noexcept;
 
     /// \brief Destructor
     public: ~Sensor();
@@ -121,6 +133,14 @@ namespace sdf
     /// The name of the sensor should be unique within the scope of a World.
     /// \param[in] _name Name of the sensor.
     public: void SetName(const std::string &_name);
+
+    /// \brief Get the topic on which sensor data should be published.
+    /// \return Topic for this sensor's data.
+    public: std::string Topic() const;
+
+    /// \brief Set the topic on which sensor data should be published.
+    /// \param[in] _topic Topic for this sensor's data.
+    public: void SetTopic(const std::string &_topic);
 
     /// \brief Get the pose of the sensor. This is the pose of the sensor
     /// as specified in SDF (<sensor> <pose> ... </pose></sensor>), and is
@@ -159,6 +179,84 @@ namespace sdf
     /// \brief Set the sensor type.
     /// \param[in] _type The sensor type.
     public: void SetType(const SensorType _type);
+
+    /// \brief Set the sensor type from a string.
+    /// \param[in] _typeStr The sensor type. A valid parameter should equal
+    /// one of the enum value name in the SensorType enum. For example,
+    /// "altimeter" or "camera".
+    /// \return True if the _typeStr parameter matched a known sensor type.
+    /// False if the sensor type could not be set.
+    public: bool SetType(const std::string &_typeStr);
+
+    /// \brief Get the sensor type as a string.
+    /// \return The sensor type as a string.
+    public: std::string TypeStr() const;
+
+    /// \brief Get the update rate in Hz.
+    /// This is The frequency at which the sensor data is generated.
+    /// If left unspecified (0.0), the sensor will generate data every cycle.
+    /// \return The update rate in Hz.
+    public: double UpdateRate() const;
+
+    /// \brief Set the update rate.
+    /// This is The frequency at which the sensor data is generated.
+    /// If left unspecified (0.0), the sensor will generate data every cycle.
+    /// \param[in] _rate The update rate in Hz.
+    public: void SetUpdateRate(double _hz);
+
+    /// \brief Assignment operator.
+    /// \param[in] _sensor The sensor to set values from.
+    /// \return *this
+    public: Sensor &operator=(const Sensor &_sensor);
+
+    /// \brief Move assignment operator.
+    /// \param[in] _sensor The sensor to set values from.
+    /// \return *this
+    public: Sensor &operator=(Sensor &&_sensor);
+
+    /// \brief Return true if both Sensor objects contain the same values.
+    /// \param[_in] _sensor Sensor object to compare.
+    /// \returen True if 'this' == _sensor.
+    public: bool operator==(const Sensor &_sensor) const;
+
+    /// \brief Return true this Sensor object does not contain the same
+    /// values as the passed in parameter.
+    /// \param[_in] _sensor Sensor object to compare.
+    /// \returen True if 'this' != _sensor.
+    public: bool operator!=(const Sensor &_sensor) const;
+
+    /// \brief Get the magnetometer sensor, or nullptr if this sensor type
+    /// is not a Magnetometer.
+    /// \return Pointer to the Magnetometer sensor, or nullptr if this
+    /// Sensor is not a Magnetometer.
+    /// \sa SensorType Type() const
+    public: const Magnetometer *MagnetometerSensor() const;
+
+    /// \brief Set the magnetometer sensor.
+    /// \param[in] _mag The magnetometer sensor.
+    public: void SetMagnetometerSensor(const Magnetometer &_mag);
+
+    /// \brief Get the altimeter sensor, or nullptr if this sensor type
+    /// is not an Altimeter.
+    /// \return Pointer to the Altimeter sensor, or nullptr if this
+    /// Sensor is not a Altimeter.
+    /// \sa SensorType Type() const
+    public: const Altimeter *AltimeterSensor() const;
+
+    /// \brief Set the altimeter sensor.
+    /// \param[in] _alt The altimeter sensor.
+    public: void SetAltimeterSensor(const Altimeter &_alt);
+
+    /// \brief Get the air pressure sensor, or nullptr if this sensor type
+    /// is not an AirPressure sensor.
+    /// \return Pointer to the AirPressure sensor, or nullptr if this
+    /// Sensor is not a AirPressure sensor.
+    /// \sa SensorType Type() const
+    public: const AirPressure *AirPressureSensor() const;
+
+    /// \brief Set the air pressure sensor.
+    /// \param[in] _air The air pressure sensor.
+    public: void SetAirPressureSensor(const AirPressure &_air);
 
     /// \brief Private data pointer.
     private: SensorPrivate *dataPtr = nullptr;

@@ -19,11 +19,14 @@
 #include <gtest/gtest.h>
 
 #include <ignition/math/Pose3.hh>
+#include "sdf/AirPressure.hh"
+#include "sdf/Altimeter.hh"
 #include "sdf/Collision.hh"
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Link.hh"
+#include "sdf/Magnetometer.hh"
 #include "sdf/Model.hh"
 #include "sdf/parser.hh"
 #include "sdf/Root.hh"
@@ -138,6 +141,7 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 2.1, -1.5708, 0, 0),
       upperLink->Pose());
   EXPECT_EQ("", upperLink->PoseFrame());
+  EXPECT_TRUE(upperLink->EnableWind());
 
   const ignition::math::Inertiald inertialUpper = upperLink->Inertial();
   EXPECT_DOUBLE_EQ(1.0, inertialUpper.MassMatrix().Mass());
@@ -220,6 +224,8 @@ TEST(DOMLink, Sensors)
   // Load the SDF file
   sdf::Root root;
   auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
   EXPECT_TRUE(errors.empty());
 
   // Get the first model
@@ -231,7 +237,7 @@ TEST(DOMLink, Sensors)
   const sdf::Link *link = model->LinkByIndex(0);
   ASSERT_NE(nullptr, link);
   EXPECT_EQ("link", link->Name());
-  EXPECT_EQ(17u, link->SensorCount());
+  EXPECT_EQ(18u, link->SensorCount());
 
   // Get the altimeter sensor
   const sdf::Sensor *altimeterSensor = link->SensorByIndex(0);
@@ -239,6 +245,12 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("altimeter_sensor", altimeterSensor->Name());
   EXPECT_EQ(sdf::SensorType::ALTIMETER, altimeterSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d::Zero, altimeterSensor->Pose());
+  const sdf::Altimeter *altSensor = altimeterSensor->AltimeterSensor();
+  ASSERT_NE(nullptr, altSensor);
+  EXPECT_DOUBLE_EQ(0.1, altSensor->VerticalPositionNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.2, altSensor->VerticalPositionNoise().StdDev());
+  EXPECT_DOUBLE_EQ(2.3, altSensor->VerticalVelocityNoise().Mean());
+  EXPECT_DOUBLE_EQ(4.5, altSensor->VerticalVelocityNoise().StdDev());
 
   // Get the camera sensor
   EXPECT_TRUE(link->SensorNameExists("camera_sensor"));
@@ -310,6 +322,14 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ(sdf::SensorType::MAGNETOMETER, magnetometerSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
       magnetometerSensor->Pose());
+  const sdf::Magnetometer *magSensor = magnetometerSensor->MagnetometerSensor();
+  ASSERT_NE(nullptr, magSensor);
+  EXPECT_DOUBLE_EQ(0.1, magSensor->XNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.2, magSensor->XNoise().StdDev());
+  EXPECT_DOUBLE_EQ(1.2, magSensor->YNoise().Mean());
+  EXPECT_DOUBLE_EQ(2.3, magSensor->YNoise().StdDev());
+  EXPECT_DOUBLE_EQ(3.4, magSensor->ZNoise().Mean());
+  EXPECT_DOUBLE_EQ(5.6, magSensor->ZNoise().StdDev());
 
   // Get the multicamera sensor
   const sdf::Sensor *multicameraSensor =
@@ -364,4 +384,18 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ(sdf::SensorType::WIRELESS_TRANSMITTER, wirelessTransmitter->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0),
       wirelessTransmitter->Pose());
+
+  // Get the air_pressure sensor
+  const sdf::Sensor *airPressureSensor = link->SensorByName(
+      "air_pressure_sensor");
+  ASSERT_NE(nullptr, airPressureSensor);
+  EXPECT_EQ("air_pressure_sensor", airPressureSensor->Name());
+  EXPECT_EQ(sdf::SensorType::AIR_PRESSURE, airPressureSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(10, 20, 30, 0, 0, 0),
+      airPressureSensor->Pose());
+  const sdf::AirPressure *airSensor = airPressureSensor->AirPressureSensor();
+  ASSERT_NE(nullptr, airSensor);
+  EXPECT_DOUBLE_EQ(3.4, airSensor->PressureNoise().Mean());
+  EXPECT_DOUBLE_EQ(5.6, airSensor->PressureNoise().StdDev());
+  EXPECT_DOUBLE_EQ(123.4, airSensor->ReferenceAltitude());
 }

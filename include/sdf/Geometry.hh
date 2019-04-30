@@ -73,7 +73,7 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _geometry Geometry to move.
-    public: Geometry(Geometry &&_geometry);
+    public: Geometry(Geometry &&_geometry) noexcept;
 
     /// \brief Destructor
     public: virtual ~Geometry();
@@ -82,6 +82,11 @@ namespace sdf
     /// \param[in] _geometry The geometry to set values from.
     /// \return *this
     public: Geometry &operator=(const Geometry &_geometry);
+
+    /// \brief Move assignment operator.
+    /// \param[in] _geometry The geometry to move from.
+    /// \return *this
+    public: Geometry &operator=(Geometry &&_geometry);
 
     /// \brief Load the geometry based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -106,12 +111,20 @@ namespace sdf
     /// \sa GeometryType Type() const
     public: const Box *BoxShape() const;
 
+    /// \brief Set the box shape.
+    /// \param[in] _box The box shape.
+    public: void SetBoxShape(const Box &_box);
+
     /// \brief Get the cylinder geometry, or nullptr if the contained
     /// geometry is not a cylinder.
     /// \return Pointer to the visual's cylinder geometry, or nullptr if the
     /// geometry is not a cylinder.
     /// \sa GeometryType Type() const
     public: const Cylinder *CylinderShape() const;
+
+    /// \brief Set the cylinder shape.
+    /// \param[in] _cylinder The cylinder shape.
+    public: void SetCylinderShape(const Cylinder &_cylinder);
 
     /// \brief Get the sphere geometry, or nullptr if the contained geometry is
     /// not a sphere.
@@ -120,6 +133,10 @@ namespace sdf
     /// \sa GeometryType Type() const
     public: const Sphere *SphereShape() const;
 
+    /// \brief Set the sphere shape.
+    /// \param[in] _sphere The sphere shape.
+    public: void SetSphereShape(const Sphere &_sphere);
+
     /// \brief Get the plane geometry, or nullptr if the contained geometry is
     /// not a plane.
     /// \return Pointer to the visual's plane geometry, or nullptr if the
@@ -127,12 +144,20 @@ namespace sdf
     /// \sa GeometryType Type() const
     public: const Plane *PlaneShape() const;
 
+    /// \brief Set the plane shape.
+    /// \param[in] _plane The plane shape.
+    public: void SetPlaneShape(const Plane &_plane);
+
     /// \brief Get the mesh geometry, or nullptr if the contained geometry is
     /// not a mesh.
     /// \return Pointer to the visual's mesh geometry, or nullptr if the
     /// geometry is not a mesh.
     /// \sa GeometryType Type() const
     public: const Mesh *MeshShape() const;
+
+    /// \brief Set the mesh shape.
+    /// \param[in] _mesh The mesh shape.
+    public: void SetMeshShape(const Mesh &_mesh);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

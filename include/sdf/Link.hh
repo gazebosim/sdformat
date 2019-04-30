@@ -43,9 +43,23 @@ namespace sdf
     /// \brief Default constructor
     public: Link();
 
+    /// \brief Copy constructor
+    /// \param[in] _link Link to copy.
+    public: Link(const Link &_link);
+
     /// \brief Move constructor
     /// \param[in] _link Link to move.
-    public: Link(Link &&_link);
+    public: Link(Link &&_link) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _link Link to move.
+    /// \return Reference to this.
+    public: Link &operator=(Link &&_link);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _link Link to copy.
+    /// \return Reference to this.
+    public: Link &operator=(const Link &_link);
 
     /// \brief Destructor
     public: ~Link();
@@ -202,6 +216,18 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Check if this link should be subject to wind.
+    /// If true, this link should be affected by wind.
+    /// \return true if the model should be subject to wind, false otherwise.
+    /// \sa bool Model::EnableWind
+    public: bool EnableWind() const;
+
+    /// \brief Set whether this link should be subject to wind.
+    /// \param[in] _enableWind True or false depending on whether the link
+    /// should be subject to wind.
+    /// \sa Model::SetEnableWind(bool)
+    public: void SetEnableWind(bool _enableWind);
 
     /// \brief Private data pointer.
     private: LinkPrivate *dataPtr = nullptr;

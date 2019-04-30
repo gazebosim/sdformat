@@ -52,13 +52,44 @@ TEST(DOMSphere, CopyConstructor)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMSphere, AssignemntOperator)
+TEST(DOMSphere, CopyAssignmentOperator)
 {
   sdf::Sphere sphere;
   sphere.SetRadius(0.2);
 
-  sdf::Sphere sphere2 = sphere;
+  sdf::Sphere sphere2;
+  sphere2 = sphere;
   EXPECT_DOUBLE_EQ(0.2, sphere2.Radius());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, MoveAssignmentOperator)
+{
+  sdf::Sphere sphere;
+  sphere.SetRadius(0.2);
+
+  sdf::Sphere sphere2;
+  sphere2 = std::move(sphere);
+  EXPECT_DOUBLE_EQ(0.2, sphere2.Radius());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, CopyAssignmentAfterMove)
+{
+  sdf::Sphere sphere1;
+  sphere1.SetRadius(0.1);
+
+  sdf::Sphere sphere2;
+  sphere2.SetRadius(0.2);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Sphere tmp = std::move(sphere1);
+  sphere1 = sphere2;
+  sphere2 = tmp;
+
+  EXPECT_DOUBLE_EQ(0.2, sphere1.Radius());
+  EXPECT_DOUBLE_EQ(0.1, sphere2.Radius());
 }
 
 /////////////////////////////////////////////////

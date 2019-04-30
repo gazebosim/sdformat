@@ -120,3 +120,24 @@ TEST(DOMJointAxis, MoveAssignmentOperator)
   jointAxisMoved = std::move(jointAxis);
   EXPECT_EQ(axis, jointAxisMoved.Xyz());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, CopyAssignmentAfterMove)
+{
+  ignition::math::Vector3d axis1{0, 1, 0};
+  sdf::JointAxis jointAxis1;
+  jointAxis1.SetXyz(axis1);
+
+  ignition::math::Vector3d axis2{1, 0, 0};
+  sdf::JointAxis jointAxis2;
+  jointAxis2.SetXyz(axis2);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::JointAxis tmp = std::move(jointAxis1);
+  jointAxis1 = jointAxis2;
+  jointAxis2 = tmp;
+
+  EXPECT_EQ(axis2, jointAxis1.Xyz());
+  EXPECT_EQ(axis1, jointAxis2.Xyz());
+}
