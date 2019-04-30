@@ -29,6 +29,7 @@ set (sources
   Geometry.cc
   Gui.cc
   ign.cc
+  Imu.cc
   Joint.cc
   JointAxis.cc
   Light.cc
