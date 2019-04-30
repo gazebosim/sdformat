@@ -81,7 +81,7 @@
   </element>
 
   <element name="topic" type="string" default="__default_topic__" required="0">
-    <description>Topic on which data is published.</description>
+    <description>Topic on which data is published. DEPRECATED. Use the <topic> element that is a child of <sensor>.</description>
   </element>
 
   <element name="angular_velocity" required="0">
