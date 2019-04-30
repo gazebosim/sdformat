@@ -24,6 +24,10 @@
 TEST(DOMSensor, Construction)
 {
   sdf::Sensor sensor;
+  sdf::Sensor sensor2;
+  EXPECT_TRUE(sensor == sensor2);
+  EXPECT_FALSE(sensor != sensor2);
+
   EXPECT_EQ(nullptr, sensor.Element());
   EXPECT_EQ(sdf::SensorType::NONE, sensor.Type());
 
@@ -42,6 +46,8 @@ TEST(DOMSensor, Construction)
   EXPECT_DOUBLE_EQ(0.0, sensor.UpdateRate());
 
   EXPECT_TRUE(sensor.Topic().empty());
+  EXPECT_FALSE(sensor == sensor2);
+  EXPECT_TRUE(sensor != sensor2);
 }
 
 /////////////////////////////////////////////////

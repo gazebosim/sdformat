@@ -30,10 +30,11 @@ namespace sdf
   //
 
   // Forward declarations.
-  class Camera;
-  class SensorPrivate;
-  class Magnetometer;
+  class AirPressure;
   class Altimeter;
+  class Camera;
+  class Magnetometer;
+  class SensorPrivate;
 
   /// \enum SensorType
   /// \brief The set of sensor types.
@@ -93,7 +94,10 @@ namespace sdf
     WIRELESS_RECEIVER = 16,
 
     /// \brief A wireless transmitter.
-    WIRELESS_TRANSMITTER = 17
+    WIRELESS_TRANSMITTER = 17,
+
+    /// \brief An air pressure sensor.
+    AIR_PRESSURE = 18
   };
 
   /// \brief Information about an SDF sensor.
@@ -211,6 +215,17 @@ namespace sdf
     /// \return *this
     public: Sensor &operator=(Sensor &&_sensor);
 
+    /// \brief Return true if both Sensor objects contain the same values.
+    /// \param[_in] _sensor Sensor object to compare.
+    /// \returen True if 'this' == _sensor.
+    public: bool operator==(const Sensor &_sensor) const;
+
+    /// \brief Return true this Sensor object does not contain the same
+    /// values as the passed in parameter.
+    /// \param[_in] _sensor Sensor object to compare.
+    /// \returen True if 'this' != _sensor.
+    public: bool operator!=(const Sensor &_sensor) const;
+
     /// \brief Get the magnetometer sensor, or nullptr if this sensor type
     /// is not a Magnetometer.
     /// \return Pointer to the Magnetometer sensor, or nullptr if this
@@ -232,6 +247,17 @@ namespace sdf
     /// \brief Set the altimeter sensor.
     /// \param[in] _alt The altimeter sensor.
     public: void SetAltimeterSensor(const Altimeter &_alt);
+
+    /// \brief Get the air pressure sensor, or nullptr if this sensor type
+    /// is not an AirPressure sensor.
+    /// \return Pointer to the AirPressure sensor, or nullptr if this
+    /// Sensor is not a AirPressure sensor.
+    /// \sa SensorType Type() const
+    public: const AirPressure *AirPressureSensor() const;
+
+    /// \brief Set the air pressure sensor.
+    /// \param[in] _air The air pressure sensor.
+    public: void SetAirPressureSensor(const AirPressure &_air);
 
     /// \brief Get a pointer to a camera sensor, or nullptr if the sensor
     /// does not contain a camera sensor.

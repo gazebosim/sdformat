@@ -13,6 +13,7 @@ if (USE_EXTERNAL_TINYXML)
 endif()
 
 set (sources
+  AirPressure.cc
   Altimeter.cc
   Atmosphere.cc
   Box.cc
@@ -84,6 +85,7 @@ else()
 endif()
 
 set (gtest_sources
+  AirPressure_TEST.cc
   Altimeter_TEST.cc
   Atmosphere_TEST.cc
   Box_TEST.cc
