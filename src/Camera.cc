@@ -38,7 +38,7 @@ class sdf::CameraPrivate
   public: uint32_t imageHeight{240};
 
   /// \brief Image format.
-  public: ImageFormatType imageFormat{ImageFormatType::R8G8B8};
+  public: PixelFormatType pixelFormat{PixelFormatType::RGB_INT8};
 
   /// \brief Near clip distance.
   public: double nearClip{0.1};
@@ -110,7 +110,7 @@ Camera::Camera(const Camera &_camera)
 }
 
 /////////////////////////////////////////////////
-Camera::Camera(Camera &&_camera)
+Camera::Camera(Camera &&_camera) noexcept
 {
   this->dataPtr = _camera.dataPtr;
   _camera.dataPtr = nullptr;
@@ -183,19 +183,19 @@ Errors Camera::Load(ElementPtr _sdf)
         this->dataPtr->imageHeight).first;
     std::string format = elem->Get<std::string>("format", "R8G8B8").first;
     if (format == "R8G8B8")
-      this->dataPtr->imageFormat = ImageFormatType::R8G8B8;
+      this->dataPtr->pixelFormat = PixelFormatType::RGB_INT8;
     else if (format == "L8")
-      this->dataPtr->imageFormat = ImageFormatType::L8;
+      this->dataPtr->pixelFormat = PixelFormatType::L_INT8;
     else if (format == "B8G8R8")
-      this->dataPtr->imageFormat = ImageFormatType::B8G8R8;
+      this->dataPtr->pixelFormat = PixelFormatType::BGR_INT8;
     else if (format == "BAYER_RGGB8")
-      this->dataPtr->imageFormat = ImageFormatType::BAYER_RGGB8;
+      this->dataPtr->pixelFormat = PixelFormatType::BAYER_RGGB8;
     else if (format == "BAYER_BGGR8")
-      this->dataPtr->imageFormat = ImageFormatType::BAYER_BGGR8;
+      this->dataPtr->pixelFormat = PixelFormatType::BAYER_BGGR8;
     else if (format == "BAYER_GBRG8")
-      this->dataPtr->imageFormat = ImageFormatType::BAYER_GBRG8;
+      this->dataPtr->pixelFormat = PixelFormatType::BAYER_GBRG8;
     else if (format == "BAYER_GRBG8")
-      this->dataPtr->imageFormat = ImageFormatType::BAYER_GRBG8;
+      this->dataPtr->pixelFormat = PixelFormatType::BAYER_GRBG8;
     else
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -273,7 +273,7 @@ Errors Camera::Load(ElementPtr _sdf)
           this->dataPtr->lensC3).first;
       this->dataPtr->lensF = func->Get<double>("f",
           this->dataPtr->lensF).first;
-      this->dataPtr->lensFun = func->Get<string>("fun",
+      this->dataPtr->lensFun = func->Get<std::string>("fun",
           this->dataPtr->lensFun).first;
     }
 
@@ -350,15 +350,15 @@ void Camera::SetImageHeight(uint32_t _height)
 }
 
 //////////////////////////////////////////////////
-ImageFormatType Camera::ImageFormat() const
+PixelFormatType Camera::PixelFormat() const
 {
-  return this->dataPtr->imageFormat;
+  return this->dataPtr->pixelFormat;
 }
 
 //////////////////////////////////////////////////
-void Camera::SetImageFormat(ImageFormatType _format)
+void Camera::SetPixelFormat(PixelFormatType _format)
 {
-  this->dataPtr->imageFormat = _format;
+  this->dataPtr->pixelFormat = _format;
 }
 
 //////////////////////////////////////////////////
@@ -421,7 +421,7 @@ Camera &Camera::operator=(const Camera &_camera)
 }
 
 //////////////////////////////////////////////////
-Camera &Camera::operator=(Camera &&_camera)
+Camera &Camera::operator=(Camera &&_camera) noexcept
 {
   this->dataPtr = _camera.dataPtr;
   _camera.dataPtr = nullptr;
@@ -432,13 +432,13 @@ Camera &Camera::operator=(Camera &&_camera)
 bool Camera::operator==(const Camera &_cam) const
 {
   return this->Name() == _cam.Name() &&
-    this->HorizontalFov() == _cam.HorizontalFov() &&
+    ignition::math::equal(this->HorizontalFov(), _cam.HorizontalFov()) &&
     this->ImageWidth() == _cam.ImageWidth() &&
     this->ImageHeight() == _cam.ImageHeight() &&
     this->PixelFormat() == _cam.PixelFormat() &&
-    this->NearClip() == _cam.NearClip() &&
-    this->FarClip() == _cam.FarClip() &&
-    this->SaveFames() == _cam.SaveFames() &&
+    ignition::math::equal(this->NearClip(), _cam.NearClip()) &&
+    ignition::math::equal(this->FarClip(), _cam.FarClip()) &&
+    this->SaveFrames() == _cam.SaveFrames() &&
     this->SaveFramesPath() == _cam.SaveFramesPath() &&
     this->ImageNoise() == _cam.ImageNoise();
 }
@@ -458,80 +458,80 @@ const Noise &Camera::ImageNoise() const
 //////////////////////////////////////////////////
 void Camera::SetImageNoise(const Noise &_noise)
 {
-  this->imageNoise = _noise;
+  this->dataPtr->imageNoise = _noise;
 }
 
 //////////////////////////////////////////////////
 double Camera::DistortionK1() const
 {
-  return this->distortionK1;
+  return this->dataPtr->distortionK1;
 }
 
 //////////////////////////////////////////////////
 void Camera::SetDistortionK1(double _k1)
 {
-  this->distortionK1 = _k1;
+  this->dataPtr->distortionK1 = _k1;
 }
 
 //////////////////////////////////////////////////
 double Camera::DistortionK2() const
 {
-  return this->distortionK2;
+  return this->dataPtr->distortionK2;
 }
 
 //////////////////////////////////////////////////
 void Camera::SetDistortionK2(double _k2)
 {
-  this->distortionK2 = _k2;
+  this->dataPtr->distortionK2 = _k2;
 }
 
 //////////////////////////////////////////////////
 double Camera::DistortionK3() const
 {
-  return this->distortionK3;
+  return this->dataPtr->distortionK3;
 }
 
 //////////////////////////////////////////////////
 void Camera::SetDistortionK3(double _k3)
 {
-  this->distortionK3 = _k3;
+  this->dataPtr->distortionK3 = _k3;
 }
 
 //////////////////////////////////////////////////
 double Camera::DistortionP1() const
 {
-  return this->distortionP1;
+  return this->dataPtr->distortionP1;
 }
 
 //////////////////////////////////////////////////
 void Camera::DistortionP1(double _p1)
 {
-  this->p1 = _p1;
+  this->dataPtr->distortionP1 = _p1;
 }
 
 //////////////////////////////////////////////////
 double Camera::DistortionP2() const
 {
-  return this->distortionP2;
+  return this->dataPtr->distortionP2;
 }
 
 //////////////////////////////////////////////////
 void Camera::SetDistortionP2(double _p2)
 {
-  this->p2 = _p2;
+  this->dataPtr->distortionP2 = _p2;
 }
 
 //////////////////////////////////////////////////
 const ignition::math::Vector2d &Camera::DistortionCenter() const
 {
-  return this->distortionCenter;
+  return this->dataPtr->distortionCenter;
 }
 
 //////////////////////////////////////////////////
 void Camera::SetDistortionCenter(
                 const ignition::math::Vector2d &_center) const
 {
-  this->distortionCenter = _center;
+  this->dataPtr->distortionCenter = _center;
 }
 
 /////////////////////////////////////////////////

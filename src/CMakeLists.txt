@@ -89,6 +89,7 @@ set (gtest_sources
   Altimeter_TEST.cc
   Atmosphere_TEST.cc
   Box_TEST.cc
+  Camera_TEST.cc
   Collision_TEST.cc
   Console_TEST.cc
   Converter_TEST.cc

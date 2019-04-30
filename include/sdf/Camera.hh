@@ -35,7 +35,7 @@ namespace sdf
   /// ignition::common::Image::PixelFormatType.
   enum class PixelFormatType
   {
-    UNKNOWN_PIXEL_FORMAT = 0;
+    UNKNOWN_PIXEL_FORMAT = 0,
     L_INT8,
     L_INT16,
     RGB_INT8,
@@ -51,7 +51,7 @@ namespace sdf
     R_FLOAT32,
     RGB_FLOAT32,
     BAYER_RGGB8,
-    BAYER_RGGR8,
+    BAYER_BGGR8,
     BAYER_GBRG8,
     BAYER_GRBG8,
   };
