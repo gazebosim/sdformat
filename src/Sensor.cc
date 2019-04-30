@@ -283,6 +283,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "depth" || type == "depth_camera")
   {
     this->dataPtr->type = SensorType::DEPTH_CAMERA;
+    this->dataPtr->camera.reset(new Camera());
+    Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "force_torque")
   {
