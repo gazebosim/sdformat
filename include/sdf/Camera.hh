@@ -27,6 +27,9 @@
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
   // Forward declare private data class.
   class CameraPrivate;
 
@@ -219,7 +222,7 @@ namespace sdf
 
     /// \brief Set the tangential distortion coefficient p1
     /// \param[in] _p1 The p1 tangential distortion.
-    public: void DistortionP1(double _p1);
+    public: void SetDistortionP1(double _p1);
 
     /// \brief Get the tangential distortion coefficient p2
     /// \return The p2 tangential distortion.
@@ -260,9 +263,139 @@ namespace sdf
     /// \param[in] _frame The name of the pose frame.
     public: void SetPoseFrame(const std::string &_frame);
 
+
+
+
+
+    /// \brief Get the lens type.
+    /// \return The lens type.
+    public: std::string LensType() const;
+
+    /// \brief Set the lens type. Supported values are gnomonical,
+    /// stereographic, equidistant, equisolid_angle, orthographic, custom.
+    /// \param[in] _type The lens type.
+    public: void SetLensType(const std::string &_type);
+
+    /// \brief Get lens scale to horizontal field of field.
+    /// \return True if the image should be scaled to fit horizontal FOV,
+    /// otherwise it will be shown according to projection type parameters.
+    public: bool LensScaleToHfov() const;
+
+    /// \brief Set lens scale to horizontal field of field.
+    /// \param[in] _scale True if the image should be scaled to fit horizontal
+    /// FOV, otherwise it will be shown according to projection type parameters.
+    public: void SetLensScaleToHfov(bool _scale);
+
+    /// \brief Get lens custom function linear scaling constant.
+    /// \return The lens custom function linear scaling constant.
+    public: double LensC1() const;
+
+    /// \brief Set lens custom function linear scaling constant.
+    /// \param[in] _c1 The lens custom function linear scaling constant.
+    public: void SetLensC1(double _c1);
+
+    /// \brief Get lens custom function angular scaling constant.
+    /// \return The lens custom function angular scaling constant.
+    public: double LensC2() const;
+
+    /// \brief Set lens custom function angular scaling constant.
+    /// \param[in] _c2 The lens custom function angular scaling constant.
+    public: void SetLensC2(double _c2);
+
+    /// \brief Get lens custom function angle offset constant.
+    /// \return The lens custom function angle offset constant.
+    public: double LensC3() const;
+
+    /// \brief Set lens custom function angle offset constant.
+    /// \param[in] _c3 The lens custom function angle offset constant.
+    public: void SetLensC3(double _c3);
+
+    /// \brief Get lens custom function focal length. Note: It's not a focal
+    /// length of the lens in a common sense! This value is ignored if
+    /// LensScaleToHfov() is set to true
+    /// \return The lens custom function focal length.
+    public: double LensFocalLength() const;
+
+    /// \brief Set lens custom function focal length. Note: It's not a focal
+    /// length of the lens in a common sense! This value is ignored if
+    /// LensScaleToHfov() is set to true
+    /// \param[in] _f The lens custom function focal length.
+    public: void SetLensFocalLength(double _f);
+
+    /// \brief Get lens custom function. Possible values are 'sin', 'tan',
+    /// and 'id'.
+    /// \return The lens custom function.
+    public: const std::string &LensFun() const;
+
+    /// \brief Set lens custom function.
+    /// \param[in] _fun The lens custom function. Possible values are 'sin',
+    /// 'tan', and 'id'.
+    public: void SetLensFun(const std::string &_fun);
+
+    /// \brief Get lens cutoff angle. Everything outside of the specified
+    /// angle will be hidden.
+    /// \return The lens cutoff angle.
+    public: double LensCutoffAngle() const;
+
+    /// \brief Set lens cutoff angle. Everything outside of the specified
+    /// angle will be hidden.
+    /// \param[in] _angle The lens cutoff angle.
+    public: void SetLensCutoffAngle(double _angle);
+
+    /// \brief Get environment texture size. This is the resolution of the
+    /// environment cube map used to draw the world.
+    /// \return The lens environment texture size.
+    public: int LensEnvironmentTextureSize() const;
+
+    /// \brief Set environment texture size. This is the resolution of the
+    /// environment cube map used to draw the world.
+    /// \param[in] _size The lens environment texture size.
+    public: void SetLensEnvironmentTextureSize(int _size);
+
+    /// \brief Get the lens X focal length in pixels.
+    /// \return The lens X focal length in pixels.
+    public: double LensIntrinsicsFx() const;
+
+    /// \brief Set the lens X focal length in pixels.
+    /// \param[in] _fx The lens X focal length in pixels.
+    public: void SetLensIntrinsicsFx(double _fx);
+
+    /// \brief Get the lens Y focal length in pixels.
+    /// \return The lens Y focal length in pixels.
+    public: double LensIntrinsicsFy() const;
+
+    /// \brief Set the lens Y focal length in pixels.
+    /// \param[in] _fy The lens Y focal length in pixels.
+    public: void SetLensIntrinsicsFy(double _fy);
+
+    /// \brief Get the lens X principal point in pixels.
+    /// \return The lens X principal point in pixels.
+    public: double LensIntrinsicsCx() const;
+
+    /// \brief Set the lens X principal point in pixels.
+    /// \param[in] _cx The lens X principal point in pixels.
+    public: void SetLensIntrinsicsCx(double _cx);
+
+    /// \brief Get the lens Y principal point in pixels.
+    /// \return The lens Y principal point in pixels.
+    public: double LensIntrinsicsCy() const;
+
+    /// \brief Set the lens Y principal point in pixels.
+    /// \param[in] _cy The lens Y principal point in pixels.
+    public: void SetLensIntrinsicsCy(double _cy);
+
+    /// \brief Get the lens XY axis skew.
+    /// \return The lens XY axis skew.
+    public: double LensIntrinsicsSkew() const;
+
+    /// \brief Set the lens XY axis skew.
+    /// \param[in] _s The lens XY axis skew.
+    public: void SetLensIntrinsicsSkew(double _s);
+
     /// \brief Private data pointer.
     private: CameraPrivate *dataPtr;
   };
+  }
 }
 
 #endif

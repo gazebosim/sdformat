@@ -504,7 +504,7 @@ double Camera::DistortionP1() const
 }
 
 //////////////////////////////////////////////////
-void Camera::DistortionP1(double _p1)
+void Camera::SetDistortionP1(double _p1)
 {
   this->dataPtr->distortionP1 = _p1;
 }
@@ -556,4 +556,172 @@ void Camera::SetPose(const ignition::math::Pose3d &_pose)
 void Camera::SetPoseFrame(const std::string &_frame)
 {
   this->dataPtr->poseFrame = _frame;
+}
+
+/////////////////////////////////////////////////
+std::string Camera::LensType() const
+{
+  return this->dataPtr->lensType;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensType(const std::string &_type)
+{
+  this->dataPtr->lensType = _type;
+}
+
+/////////////////////////////////////////////////
+bool Camera::LensScaleToHfov() const
+{
+  return this->dataPtr->lensScaleToHfov;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensScaleToHfov(bool _scale)
+{
+  this->dataPtr->lensScaleToHfov = _scale;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensC1() const
+{
+  return this->dataPtr->lensC1;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensC1(double _c1)
+{
+  this->dataPtr->lensC1 = _c1;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensC2() const
+{
+  return this->dataPtr->lensC2;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensC2(double _c2)
+{
+  this->dataPtr->lensC2 = _c2;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensC3() const
+{
+  return this->dataPtr->lensC3;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensC3(double _c3)
+{
+  this->dataPtr->lensC3 = _c3;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensFocalLength() const
+{
+  return this->dataPtr->lensF;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensFocalLength(double _f)
+{
+  this->dataPtr->lensF = _f;
+}
+
+/////////////////////////////////////////////////
+const std::string &Camera::LensFun() const
+{
+  return this->dataPtr->lensFun;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensFun(const std::string &_fun)
+{
+  this->dataPtr->lensFun = _fun;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensCutoffAngle() const
+{
+  return this->dataPtr->lensCutoffAngle;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensCutoffAngle(double _angle)
+{
+  this->dataPtr->lensCutoffAngle = _angle;
+}
+
+/////////////////////////////////////////////////
+int Camera::LensEnvironmentTextureSize() const
+{
+  return this->dataPtr->lensEnvTextureSize;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensEnvironmentTextureSize(int _size)
+{
+  this->dataPtr->lensEnvTextureSize = _size;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensIntrinsicsFx() const
+{
+  return this->dataPtr->lensIntrinsicsFx;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensIntrinsicsFx(double _fx)
+{
+  this->dataPtr->lensIntrinsicsFx = _fx;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensIntrinsicsFy() const
+{
+  return this->dataPtr->lensIntrinsicsFy;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensIntrinsicsFy(double _fy)
+{
+  this->dataPtr->lensIntrinsicsFy = _fy;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensIntrinsicsCx() const
+{
+  return this->dataPtr->lensIntrinsicsCx;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensIntrinsicsCx(double _cx)
+{
+  this->dataPtr->lensIntrinsicsCx = _cx;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensIntrinsicsCy() const
+{
+  return this->dataPtr->lensIntrinsicsCy;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensIntrinsicsCy(double _cy)
+{
+  this->dataPtr->lensIntrinsicsCy = _cy;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensIntrinsicsSkew() const
+{
+  return this->dataPtr->lensIntrinsicsS;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensIntrinsicsSkew(double _s)
+{
+  this->dataPtr->lensIntrinsicsS = _s;
 }

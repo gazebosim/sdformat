@@ -26,29 +26,29 @@ TEST(DOMCamera, Construction)
   cam.SetName("my_camera");
   EXPECT_EQ("my_camera", cam.Name());
 
-  EXPECT_DOUBLE_EQ(0.0, cam.HorizontalFov());
+  EXPECT_DOUBLE_EQ(1.047, cam.HorizontalFov());
   cam.SetHorizontalFov(1.45);
   EXPECT_DOUBLE_EQ(1.45, cam.HorizontalFov());
 
-  EXPECT_EQ(0, cam.ImageWidth());
+  EXPECT_EQ(320u, cam.ImageWidth());
   cam.SetImageWidth(123);
-  EXPECT_EQ(123, cam.ImageWidth());
+  EXPECT_EQ(123u, cam.ImageWidth());
 
-  EXPECT_EQ(0, cam.ImageHeight());
-  cam.SetImageHeight(123);
-  EXPECT_EQ(123, cam.ImageHeight());
+  EXPECT_EQ(240u, cam.ImageHeight());
+  cam.SetImageHeight(125);
+  EXPECT_EQ(125u, cam.ImageHeight());
 
-  EXPECT_EQ(sdf::PixelFormatType::UNKNOWN_PIXEL_FORMAT , cam.PixelFormat());
-  cam.SetPixelFormat(sdf::PixelFormat::L_INT8);
+  EXPECT_EQ(sdf::PixelFormatType::RGB_INT8, cam.PixelFormat());
+  cam.SetPixelFormat(sdf::PixelFormatType::L_INT8);
   EXPECT_EQ(sdf::PixelFormatType::L_INT8 , cam.PixelFormat());
 
-  EXPECT_DOUBLE_EQ(0.0, cam.NearClip());
-  cam.SetNearClip(0.1);
   EXPECT_DOUBLE_EQ(0.1, cam.NearClip());
+  cam.SetNearClip(0.2);
+  EXPECT_DOUBLE_EQ(0.2, cam.NearClip());
 
-  EXPECT_DOUBLE_EQ(0.0, cam.FarClip());
-  cam.SetFarClip(0.1);
-  EXPECT_DOUBLE_EQ(0.1, cam.FarClip());
+  EXPECT_DOUBLE_EQ(100, cam.FarClip());
+  cam.SetFarClip(200.2);
+  EXPECT_DOUBLE_EQ(200.2, cam.FarClip());
 
   EXPECT_FALSE(cam.SaveFrames());
   cam.SetSaveFrames(true);
@@ -78,7 +78,7 @@ TEST(DOMCamera, Construction)
   cam.SetDistortionP2(0.2);
   EXPECT_DOUBLE_EQ(0.2, cam.DistortionP2());
 
-  EXPECT_EQ(ignition::math::Vector2d(0, 0), cam.DistortionCenter());
+  EXPECT_EQ(ignition::math::Vector2d(0.5, 0.5), cam.DistortionCenter());
   cam.SetDistortionCenter(ignition::math::Vector2d(0.1, 0.2));
   EXPECT_EQ(ignition::math::Vector2d(0.1, 0.2), cam.DistortionCenter());
 
@@ -87,8 +87,64 @@ TEST(DOMCamera, Construction)
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), cam.Pose());
 
   EXPECT_TRUE(cam.PoseFrame().empty());
-  cam.setPoseFrame("/frame");
+  cam.SetPoseFrame("/frame");
   EXPECT_EQ("/frame", cam.PoseFrame());
+
+  EXPECT_EQ("stereographic", cam.LensType());
+  cam.SetLensType("custom");
+  EXPECT_EQ("custom", cam.LensType());
+
+  EXPECT_TRUE(cam.LensScaleToHfov());
+  cam.SetLensScaleToHfov(false);
+  EXPECT_FALSE(cam.LensScaleToHfov());
+
+  EXPECT_DOUBLE_EQ(1.0, cam.LensC1());
+  cam.SetLensC1(2.1);
+  EXPECT_DOUBLE_EQ(2.1, cam.LensC1());
+
+  EXPECT_DOUBLE_EQ(1.0, cam.LensC2());
+  cam.SetLensC2(1.2);
+  EXPECT_DOUBLE_EQ(1.2, cam.LensC2());
+
+  EXPECT_DOUBLE_EQ(0.0, cam.LensC3());
+  cam.SetLensC3(6.5);
+  EXPECT_DOUBLE_EQ(6.5, cam.LensC3());
+
+  EXPECT_DOUBLE_EQ(1.0, cam.LensFocalLength());
+  cam.SetLensFocalLength(10.3);
+  EXPECT_DOUBLE_EQ(10.3, cam.LensFocalLength());
+
+  EXPECT_EQ("tan", cam.LensFun());
+  cam.SetLensFun("sin");
+  EXPECT_EQ("sin", cam.LensFun());
+
+  EXPECT_DOUBLE_EQ(IGN_PI, cam.LensCutoffAngle());
+  cam.SetLensCutoffAngle(0.456);
+  EXPECT_DOUBLE_EQ(0.456, cam.LensCutoffAngle());
+
+  EXPECT_EQ(256, cam.LensEnvironmentTextureSize());
+  cam.SetLensEnvironmentTextureSize(512);
+  EXPECT_EQ(512, cam.LensEnvironmentTextureSize());
+
+  EXPECT_DOUBLE_EQ(277, cam.LensIntrinsicsFx());
+  cam.SetLensIntrinsicsFx(132);
+  EXPECT_DOUBLE_EQ(132, cam.LensIntrinsicsFx());
+
+  EXPECT_DOUBLE_EQ(277, cam.LensIntrinsicsFy());
+  cam.SetLensIntrinsicsFy(456);
+  EXPECT_DOUBLE_EQ(456, cam.LensIntrinsicsFy());
+
+  EXPECT_DOUBLE_EQ(160, cam.LensIntrinsicsCx());
+  cam.SetLensIntrinsicsCx(254);
+  EXPECT_DOUBLE_EQ(254, cam.LensIntrinsicsCx());
+
+  EXPECT_DOUBLE_EQ(120, cam.LensIntrinsicsCy());
+  cam.SetLensIntrinsicsCy(123);
+  EXPECT_DOUBLE_EQ(123, cam.LensIntrinsicsCy());
+
+  EXPECT_DOUBLE_EQ(1.0, cam.LensIntrinsicsSkew());
+  cam.SetLensIntrinsicsSkew(2.3);
+  EXPECT_DOUBLE_EQ(2.3, cam.LensIntrinsicsSkew());
 
   // Copy Constructor
   sdf::Camera cam2(cam);
@@ -117,8 +173,7 @@ TEST(DOMCamera, Construction)
   // inequality
   sdf::Camera cam6;
   EXPECT_NE(cam3, cam6);
-  // set position noise but velocity noise should still be different
-  cam6.SetVerticalPositionNoise(cam3.VerticalPositionNoise());
-  EXPECT_NE(cam3, cam6);
 
+  // The Camera::Load function is test more thouroughly in the
+  // link_dom.cc integration test.
 }

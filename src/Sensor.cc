@@ -81,6 +81,10 @@ class sdf::SensorPrivate
       this->airPressure = std::make_unique<sdf::AirPressure>(
           *_sensor.airPressure);
     }
+    if (_sensor.camera)
+    {
+      this->camera = std::make_unique<sdf::Camera>(*_sensor.camera);
+    }
     // Developer note: If you add a new sensor type, make sure to also
     // update the Sensor::operator== function. Please bump this text down as
     // new sensors are added so that the next developer see the message.
@@ -485,6 +489,12 @@ std::string Sensor::TypeStr() const
   if (index > 0 && index < sensorTypeStrs.size())
     return sensorTypeStrs[index];
   return "none";
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetCameraSensor(const Camera &_cam)
+{
+  this->dataPtr->camera = std::make_unique<Camera>(_cam);
 }
 
 /////////////////////////////////////////////////

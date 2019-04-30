@@ -2,6 +2,9 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Added Camera Sensor DOM .
+   * [Pull request xxx](https://bitbucket.org/osrf/sdformat/pull-requests/xxx)
+
 1. Added Sensor DOM `==` operator.
    * [Pull request 529](https://bitbucket.org/osrf/sdformat/pull-requests/529)
 

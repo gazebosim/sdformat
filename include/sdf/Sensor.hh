@@ -259,6 +259,10 @@ namespace sdf
     /// \param[in] _air The air pressure sensor.
     public: void SetAirPressureSensor(const AirPressure &_air);
 
+    /// \brief Set the camera sensor.
+    /// \param[in] _cam The camera sensor.
+    public: void SetCameraSensor(const Camera &_cam);
+
     /// \brief Get a pointer to a camera sensor, or nullptr if the sensor
     /// does not contain a camera sensor.
     /// \return Pointer to the sensor's camera, or nullptr if the sensor
