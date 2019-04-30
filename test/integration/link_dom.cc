@@ -271,7 +271,7 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(0.2, camSensor->NearClip());
   EXPECT_DOUBLE_EQ(12.3, camSensor->FarClip());
   EXPECT_TRUE(camSensor->SaveFrames());
-  EXPECT_EQ("/tmp/cam",camSensor->SaveFramesPath());
+  EXPECT_EQ("/tmp/cam", camSensor->SaveFramesPath());
   EXPECT_DOUBLE_EQ(0.5, camSensor->ImageNoise().Mean());
   EXPECT_DOUBLE_EQ(0.1, camSensor->ImageNoise().StdDev());
   EXPECT_DOUBLE_EQ(0.1, camSensor->DistortionK1());
