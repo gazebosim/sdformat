@@ -309,6 +309,9 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("depth_sensor", depthSensor->Name());
   EXPECT_EQ(sdf::SensorType::DEPTH_CAMERA, depthSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), depthSensor->Pose());
+  const sdf::Camera *depthCamSensor = depthSensor->CameraSensor();
+  ASSERT_NE(nullptr, depthCamSensor);
+  EXPECT_EQ("my_depth_camera", depthCamSensor->Name());
 
   // Get the force_torque sensor
   const sdf::Sensor *forceTorqueSensor =
