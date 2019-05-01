@@ -157,6 +157,28 @@ namespace sdf
     /// \param[in] _precision Precision of output signals.
     public: void SetPrecision(double _precision);
 
+    /// \brief For type "gaussian*", get the standard deviation of the noise
+    /// used to drive a process to model slow variations in a sensor bias.
+    /// \return The dynamic bias standard deviation.
+    public: double DynamicBiasStdDev() const;
+
+    /// \brief For type "gaussian*", set the standard deviation of the noise
+    /// used to drive a process to model slow variations in a sensor bias.
+    /// \param[in] _stddev The dynamic bias standard deviation.
+    public: void SetDynamicBiasStdDev(double _stddev);
+
+    /// \brief For type "gaussian*", get the correlation time of the noise
+    /// used to drive a process to model slow variations in a sensor bias.
+    /// \return The dynamic bias correlation time.
+    public: double DynamicBiasCorrelationTime() const;
+
+    /// \brief For type "gaussian*", set the correlation time in seconds of
+    /// the noise used to drive a process to model slow variations in a sensor
+    /// bias.A typical value, when used, would be on the order of
+    /// 3600 seconds (1 hour).
+    /// \param[in] _time The dynamic bias correlation time.
+    public: void SetDynamicBiasCorrelationTime(double _time);
+
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
