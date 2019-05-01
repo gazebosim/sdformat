@@ -23,6 +23,45 @@ using namespace sdf;
 /// \brief Private imu data.
 class sdf::ImuPrivate
 {
+  /// \brief Noise values related to the body-frame linear acceleration on the
+  /// X-axis.
+  public: Noise linearAccelNoiseX;
+
+  /// \brief Noise values related to the body-frame linear acceleration on the
+  /// Y-axis.
+  public: Noise linearAccelNoiseY;
+
+  /// \brief Noise values related to the body-frame linear acceleration on the
+  /// Z-axis.
+  public: Noise linearAccelNoiseZ;
+
+  /// \brief Noise values related to the body-frame angular velocity on the
+  /// X-axis.
+  public: Noise angularVelNoiseX;
+
+  /// \brief Noise values related to the body-frame angular velocity on the
+  /// Y-axis.
+  public: Noise angularVelNoiseY;
+
+  /// \brief Noise values related to the body-frame angular velocity on the
+  /// Z-axis.
+  public: Noise angularVelNoiseZ;
+
+  /// \brief The gravity dir
+  public: ignition::math::Vector3d gravityDirX;
+
+  /// \brief Name of the parent frame for the gravityDirX vector.
+  public: std::string gravityDirXParentFrame;
+
+  /// \brief Localization string
+  public: std::string localization;
+
+  /// \brief Custom RPY
+  public: ignition::math::Vector3d customRpy;
+
+  /// \brief Name of the parent frame for the customRpy vector.
+  public: std::string customRpyParentFrame;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 };
@@ -87,6 +126,95 @@ Errors Imu::Load(ElementPtr _sdf)
         "Attempting to load an IMU, but the provided SDF element is "
         "not an <imu>."});
     return errors;
+  }
+
+  // Load the linear acceleration noise values.
+  if (_sdf->HasElement("linear_acceleration"))
+  {
+    sdf::ElementPtr elem = _sdf->GetElement("linear_acceleration");
+    if (elem->HasElement("x"))
+    {
+      if (elem->GetElement("x")->HasElement("noise"))
+      {
+        this->dataPtr->linearAccelNoiseX.Load(
+            elem->GetElement("x")->GetElement("noise"));
+      }
+    }
+
+    if (elem->HasElement("y"))
+    {
+      if (elem->GetElement("y")->HasElement("noise"))
+      {
+        this->dataPtr->linearAccelNoiseY.Load(
+            elem->GetElement("y")->GetElement("noise"));
+      }
+    }
+
+    if (elem->HasElement("z"))
+    {
+      if (elem->GetElement("z")->HasElement("noise"))
+      {
+        this->dataPtr->linearAccelNoiseZ.Load(
+            elem->GetElement("z")->GetElement("noise"));
+      }
+    }
+  }
+
+  // Load the angular velocity noise values.
+  if (_sdf->HasElement("angular_velocity"))
+  {
+    sdf::ElementPtr elem = _sdf->GetElement("angular_velocity");
+    if (elem->HasElement("x"))
+    {
+      if (elem->GetElement("x")->HasElement("noise"))
+      {
+        this->dataPtr->angularVelNoiseX.Load(
+            elem->GetElement("x")->GetElement("noise"));
+      }
+    }
+
+    if (elem->HasElement("y"))
+    {
+      if (elem->GetElement("y")->HasElement("noise"))
+      {
+        this->dataPtr->angularVelNoiseY.Load(
+            elem->GetElement("y")->GetElement("noise"));
+      }
+    }
+
+    if (elem->HasElement("z"))
+    {
+      if (elem->GetElement("z")->HasElement("noise"))
+      {
+        this->dataPtr->angularVelNoiseZ.Load(
+            elem->GetElement("z")->GetElement("noise"));
+      }
+    }
+  }
+
+  if (_sdf->HasElement("orientation_reference_frame"))
+  {
+    sdf::ElementPtr elem = _sdf->GetElement("orientation_reference_frame");
+    this->dataPtr->localization = elem->Get<std::string>("localization",
+        this->dataPtr->localization).first;
+
+    if (elem->HasElement("grav_dir_x"))
+    {
+      this->dataPtr->gravityDirX = elem->Get<ignition::math::Vector3d>(
+          "grav_dir_x", this->dataPtr->gravityDirX).first;
+      this->dataPtr->gravityDirXParentFrame =
+        elem->GetElement("grav_dir_x")->Get<std::string>("parent_frame",
+            this->dataPtr->gravityDirXParentFrame).first;
+    }
+
+    if (elem->HasElement("custom_rpy"))
+    {
+      this->dataPtr->customRpy = elem->Get<ignition::math::Vector3d>(
+          "custom_rpy", this->dataPtr->customRpy).first;
+      this->dataPtr->customRpyParentFrame =
+        elem->GetElement("custom_rpy")->Get<std::string>("parent_frame",
+            this->dataPtr->customRpyParentFrame).first;
+    }
   }
 
   return errors;
@@ -190,44 +318,56 @@ ignition::math::Vector3d &Imu::GravityDirX() const
 }
 
 //////////////////////////////////////////////////
+const std::string &Imu::GravityDirXParentFrame() const
+{
+  return this->dataPtr->gravityDirXParentFrame;
+}
+
+//////////////////////////////////////////////////
+void Imu::SetGravityDirXParentFrame(const std::string &_frame) const
+{
+  this->dataPtr->gravityDirXParentFrame = _frame;
+}
+
+//////////////////////////////////////////////////
 void Imu::SetGravityDirX(const ignition::math::Vector3d &_grav) const
 {
   this->dataPtr->gravityDirX = _grav;
 }
 
 //////////////////////////////////////////////////
-const std::string &Imu::OrientationLocalization() const
+const std::string &Imu::Localization() const
 {
   return this->dataPtr->localization;
 }
 
 //////////////////////////////////////////////////
-void Imu::SetOrientationLocalization(const std::string &_localization)
+void Imu::SetLocalization(const std::string &_localization)
 {
   this->dataPtr->localization = _localization;
 }
 
 //////////////////////////////////////////////////
-const ignition::math::Vector3d &Imu::OrientationCustomRpy() const
+const ignition::math::Vector3d &Imu::CustomRpy() const
 {
   return this->dataPtr->customRpy;
 }
 
 //////////////////////////////////////////////////
-void Imu::SetOrientationCustomRpy(
+void Imu::SetCustomRpy(
     const ignition::math::Vector3d &_rpy) const
 {
   this->dataPtr->customRpy = _rpy;
 }
 
 //////////////////////////////////////////////////
-const std::string &Imu::OrientationParentFrame() const
+const std::string &Imu::CustomRpyParentFrame() const
 {
-  return this->dataPtr->parentFrame;
+  return this->dataPtr->customRpyParentFrame;
 }
 
 //////////////////////////////////////////////////
-void Imu::SetOrientationParentFrame(const std::string &_frame) const
+void Imu::SetCustomRpyParentFrame(const std::string &_frame) const
 {
-  this->dataPtr->parentFrame = _frame;
+  this->dataPtr->customRpyParentFrame = _frame;
 }

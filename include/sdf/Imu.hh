@@ -101,8 +101,8 @@ namespace sdf
     /// \param[in] _noise Noise values for the Z-axis linear acceleration.
     public: void SetLinearAccelerationNoiseZ(const Noise &_noise);
 
-    /// \brief Get the noise values related to the body-frame linear
-    /// acceleration on the X-axis.
+    /// \brief Get the noise values related to the body-frame angular
+    /// velocity on the X-axis.
     /// \return Noise values for the X-axis linear acceleration.
     public: const Noise &AngularVelocityNoiseX() const;
 
@@ -137,7 +137,7 @@ namespace sdf
     /// X-axis.  grav_dir_x is  defined in the coordinate frame as defined by
     /// the parent_frame element.
     ///return The gravity direction.
-    public: ignition::math::Vector3d GravityDirX() const;
+    public: ignition::math::Vector3d &GravityDirX() const;
 
     /// \brief Used when localization is set to GRAV_UP or GRAV_DOWN, a
     /// projection of this vector into a plane that is orthogonal to the
@@ -146,6 +146,20 @@ namespace sdf
     /// the parent_frame element.
     /// \param[in] _grav The gravity direction.
     public: void SetGravityDirX(const ignition::math::Vector3d  &_grav) const;
+
+    /// \brief Get the name of parent frame which the GravityDirX vector is
+    /// defined relative to. It can be any valid fully scoped link name or the
+    /// special reserved "world" frame. If left empty, use the sensor's own
+    /// local frame.
+    /// \return The name of the parent frame.
+    public: const std::string &GravityDirXParentFrame() const;
+
+    /// \brief Set the name of parent frame which the GravityDirX vector is
+    /// defined relative to. It can be any valid fully scoped link name or the
+    /// special reserved "world" frame. If left empty, use the sensor's own
+    /// local frame.
+    /// \return The name of the parent frame.
+    public: void SetGravityDirXParentFrame(const std::string &_frame) const;
 
     /// \brief This string represents special hardcoded use cases that are
     /// commonly seen with typical robot IMU's:
@@ -179,14 +193,14 @@ namespace sdf
     ///               IMU reference frame Y-axis is a vector orthogonal to both
     ///               X and Z axis following the right hand rule.
     /// \return Localization frame name
-    public: const std::string &OrientationLocalization() const;
+    public: const std::string &Localization() const;
 
-    /// \brief See OrientationLocalization(const std::string &).
+    /// \brief See Localization(const std::string &).
     /// \param[in] _localization Localization frame name
-    public: void SetOrientationLocalization(const std::string &_localization);
+    public: void SetLocalization(const std::string &_localization);
 
-    /// \brief This field and OrientationParentFrame are used when
-    /// OrientationLocalization is set to CUSTOM. Orientation
+    /// \brief This field and CustomRpyParentFrame are used when
+    /// Localization is set to CUSTOM. Orientation
     /// (fixed axis roll, pitch yaw) transform from ParentFrame to this IMU's
     /// reference frame.
     ///
@@ -220,26 +234,25 @@ namespace sdf
     ///    +z:up).
     ///    Example sdf: parent_frame="local", custom_rpy="-0.5*M_PI 0 -0.5*M_PI"
     /// \return Custom RPY vectory
-    public: const ignition::math::Vector3d OrientationCustomRpy() const;
+    public: const ignition::math::Vector3d &CustomRpy() const;
 
-    /// \brief See OrientationCustomRpy() const.
+    /// \brief See CustomRpy() const.
     /// \param[in] Custom RPY vectory
-    public: void SetOrientationCustomRpy(
-                const ignition::math::Vector3d &_rpy) const;
+    public: void SetCustomRpy(const ignition::math::Vector3d &_rpy) const;
 
     /// \brief Get the name of parent frame which the custom_rpy transform is
     /// defined relative to. It can be any valid fully scoped link name or the
     /// special reserved "world" frame. If left empty, use the sensor's own
     /// local frame.
     /// \return The name of the parent frame.
-    public: const std::string OrientationParentFrame() const;
+    public: const std::string &CustomRpyParentFrame() const;
 
     /// \brief Set the name of parent frame which the custom_rpy transform is
     /// defined relative to. It can be any valid fully scoped link name or the
     /// special reserved "world" frame. If left empty, use the sensor's own
     /// local frame.
     /// \param[in] _frame The name of the parent frame.
-    public: void SetOrientationParentFrame(const std::string &_frame) const;
+    public: void SetCustomRpyParentFrame(const std::string &_frame) const;
 
     /// \brief Return true if both Imu objects contain the same values.
     /// \param[_in] _imu Imu value to compare.
