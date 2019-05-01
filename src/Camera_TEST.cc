@@ -114,13 +114,13 @@ TEST(DOMCamera, Construction)
   cam.SetLensFocalLength(10.3);
   EXPECT_DOUBLE_EQ(10.3, cam.LensFocalLength());
 
-  EXPECT_EQ("tan", cam.LensFun());
-  cam.SetLensFun("sin");
-  EXPECT_EQ("sin", cam.LensFun());
+  EXPECT_EQ("tan", cam.LensFunction());
+  cam.SetLensFunction("sin");
+  EXPECT_EQ("sin", cam.LensFunction());
 
-  EXPECT_DOUBLE_EQ(IGN_PI, cam.LensCutoffAngle());
+  EXPECT_DOUBLE_EQ(IGN_PI_2, cam.LensCutoffAngle().Radian());
   cam.SetLensCutoffAngle(0.456);
-  EXPECT_DOUBLE_EQ(0.456, cam.LensCutoffAngle());
+  EXPECT_DOUBLE_EQ(0.456, cam.LensCutoffAngle().Radian());
 
   EXPECT_EQ(256, cam.LensEnvironmentTextureSize());
   cam.SetLensEnvironmentTextureSize(512);

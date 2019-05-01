@@ -271,7 +271,11 @@ namespace sdf
     /// \param[in] _frame The name of the pose frame.
     public: void SetPoseFrame(const std::string &_frame);
 
-    /// \brief Get the lens type.
+    /// \brief Get the lens type. This is the type of the lens mapping.
+    /// Supported values are gnomonical, stereographic, equidistant,
+    /// equisolid_angle, orthographic, custom. For gnomonical (perspective)
+    /// projection, it is recommended to specify a horizontal_fov of less than
+    /// or equal to 90 degrees
     /// \return The lens type.
     public: std::string LensType() const;
 
@@ -329,22 +333,22 @@ namespace sdf
     /// \brief Get lens custom function. Possible values are 'sin', 'tan',
     /// and 'id'.
     /// \return The lens custom function.
-    public: const std::string &LensFun() const;
+    public: const std::string &LensFunction() const;
 
     /// \brief Set lens custom function.
     /// \param[in] _fun The lens custom function. Possible values are 'sin',
     /// 'tan', and 'id'.
-    public: void SetLensFun(const std::string &_fun);
+    public: void SetLensFunction(const std::string &_fun);
 
     /// \brief Get lens cutoff angle. Everything outside of the specified
     /// angle will be hidden.
     /// \return The lens cutoff angle.
-    public: double LensCutoffAngle() const;
+    public: ignition::math::Angle LensCutoffAngle() const;
 
     /// \brief Set lens cutoff angle. Everything outside of the specified
     /// angle will be hidden.
     /// \param[in] _angle The lens cutoff angle.
-    public: void SetLensCutoffAngle(double _angle);
+    public: void SetLensCutoffAngle(const ignition::math::Angle &_angle);
 
     /// \brief Get environment texture size. This is the resolution of the
     /// environment cube map used to draw the world.

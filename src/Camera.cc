@@ -105,21 +105,46 @@ class sdf::CameraPrivate
   /// \brief Frame of the pose.
   public: std::string poseFrame = "";
 
+  /// \brief Lens type.
   public: std::string lensType{"stereographic"};
+
+  /// \brief Lens scale to hfov.
   public: bool lensScaleToHfov{true};
+
+  /// \brief Lens c1.
   public: double lensC1{1.0};
+
+  /// \brief Lens c2.
   public: double lensC2{1.0};
+
+  /// \brief Lens c3.
   public: double lensC3{0.0};
+
+  /// \brief Lens F.
   public: double lensF{1.0};
+
+  /// \brief Lens fun.
   public: std::string lensFun{"tan"};
 
-  public: double lensCutoffAngle{IGN_PI};
+  /// \brief Lens cutoff angle.
+  public: ignition::math::Angle lensCutoffAngle{IGN_PI_2};
+
+  /// \brief lens environment texture size.
   public: int lensEnvTextureSize{256};
 
+  /// \brief lens instrinsics fx.
   public: double lensIntrinsicsFx{277.0};
+
+  /// \brief lens instrinsics fy.
   public: double lensIntrinsicsFy{277.0};
+
+  /// \brief lens instrinsics cx.
   public: double lensIntrinsicsCx{160.0};
+
+  /// \brief lens instrinsics cy.
   public: double lensIntrinsicsCy{120.0};
+
+  /// \brief lens instrinsics s.
   public: double lensIntrinsicsS{1.0};
 };
 
@@ -271,8 +296,8 @@ Errors Camera::Load(ElementPtr _sdf)
         this->dataPtr->lensType).first;
     this->dataPtr->lensScaleToHfov = elem->Get<bool>("scale_to_hfov",
         this->dataPtr->lensScaleToHfov).first;
-    this->dataPtr->lensCutoffAngle = elem->Get<double>("cutoff_angle",
-        this->dataPtr->lensCutoffAngle).first;
+    this->dataPtr->lensCutoffAngle = elem->Get<ignition::math::Angle>(
+        "cutoff_angle", this->dataPtr->lensCutoffAngle).first;
     this->dataPtr->lensEnvTextureSize = elem->Get<int>("env_texture_size",
         this->dataPtr->lensEnvTextureSize).first;
 
@@ -657,25 +682,25 @@ void Camera::SetLensFocalLength(double _f)
 }
 
 /////////////////////////////////////////////////
-const std::string &Camera::LensFun() const
+const std::string &Camera::LensFunction() const
 {
   return this->dataPtr->lensFun;
 }
 
 /////////////////////////////////////////////////
-void Camera::SetLensFun(const std::string &_fun)
+void Camera::SetLensFunction(const std::string &_fun)
 {
   this->dataPtr->lensFun = _fun;
 }
 
 /////////////////////////////////////////////////
-double Camera::LensCutoffAngle() const
+ignition::math::Angle Camera::LensCutoffAngle() const
 {
   return this->dataPtr->lensCutoffAngle;
 }
 
 /////////////////////////////////////////////////
-void Camera::SetLensCutoffAngle(double _angle)
+void Camera::SetLensCutoffAngle(const ignition::math::Angle &_angle)
 {
   this->dataPtr->lensCutoffAngle = _angle;
 }

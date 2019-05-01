@@ -287,8 +287,8 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(2.2, camSensor->LensC2());
   EXPECT_DOUBLE_EQ(3.3, camSensor->LensC3());
   EXPECT_DOUBLE_EQ(1.2, camSensor->LensFocalLength());
-  EXPECT_EQ("sin", camSensor->LensFun());
-  EXPECT_DOUBLE_EQ(0.7505, camSensor->LensCutoffAngle());
+  EXPECT_EQ("sin", camSensor->LensFunction());
+  EXPECT_DOUBLE_EQ(0.7505, camSensor->LensCutoffAngle().Radian());
   EXPECT_EQ(128, camSensor->LensEnvironmentTextureSize());
   EXPECT_DOUBLE_EQ(280, camSensor->LensIntrinsicsFx());
   EXPECT_DOUBLE_EQ(281, camSensor->LensIntrinsicsFy());
