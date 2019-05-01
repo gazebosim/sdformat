@@ -65,7 +65,9 @@ class sdf::SensorPrivate
             name(_sensor.name),
             topic(_sensor.topic),
             pose(_sensor.pose),
-            poseFrame(_sensor.poseFrame)
+            poseFrame(_sensor.poseFrame),
+            sdf(_sensor.sdf),
+            updateRate(_sensor.updateRate)
 
   {
     if (_sensor.magnetometer)
@@ -92,7 +94,7 @@ class sdf::SensorPrivate
     }
     // Developer note: If you add a new sensor type, make sure to also
     // update the Sensor::operator== function. Please bump this text down as
-    // new sensors are added so that the next developer see the message.
+    // new sensors are added so that the next developer sees the message.
   }
   // Delete copy assignment so it is not accidentally used
   public: SensorPrivate &operator=(const SensorPrivate &) = delete;
@@ -131,7 +133,7 @@ class sdf::SensorPrivate
   public: std::unique_ptr<Imu> imu;
   // Developer note: If you add a new sensor type, make sure to also
   // update the Sensor::operator== function. Please bump this text down as
-  // new sensors are added so that the next developer see the message.
+  // new sensors are added so that the next developer sees the message.
 
   /// \brief The frequency at which the sensor data is generated.
   /// If left unspecified (0.0), the sensor will generate data every cycle.
