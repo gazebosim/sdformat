@@ -19,6 +19,7 @@
 
 1. Add PBR material SDF element
    * [Pull request 512](https://bitbucket.org/osrf/sdformat/pull-requests/512)
+   * [Pull request 535](https://bitbucket.org/osrf/sdformat/pull-requests/535)
 
 1. Set geometry shapes
    * [Pull request 515](https://bitbucket.org/osrf/sdformat/pull-requests/515)

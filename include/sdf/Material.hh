@@ -178,6 +178,10 @@ namespace sdf
     /// \param[in] _map Filename of the normal map.
     public: void SetNormalMap(const std::string &_map);
 
+    /// \brief Set the Physically Based Rendering (PBR) material
+    /// \return The PBR material to set to.
+    public: void SetPbrMaterial(const Pbr &_pbr);
+
     /// \brief Get the Physically Based Rendering (PBR) material
     /// \return Pointer to the PBR material. Null if it does not exist.
     public: Pbr *PbrMaterial() const;

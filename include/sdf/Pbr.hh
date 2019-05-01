@@ -91,6 +91,17 @@ namespace sdf
     /// \return *this
     public: PbrWorkflow &operator=(PbrWorkflow &&_workflow);
 
+    /// \brief Return true if both PbrWorkflow objects contain the same values.
+    /// \param[_in] _workflow PbrWorkflow value to compare.
+    /// \returen True if 'this' == _workflow.
+    public: bool operator==(const PbrWorkflow &_workflow) const;
+
+    /// \brief Return true this PbrWorkflow object does not contain the same
+    /// values as the passed in parameter.
+    /// \param[_in] _workflow PbrWorkflow value to compare.
+    /// \returen True if 'this' != _workflow.
+    public: bool operator!=(const PbrWorkflow &_workflow) const;
+
     /// \brief Get the albedo map filename. This will be an empty string if
     /// an albedo map has not been set.
     /// \return Filename of the albedo map, or empty string if an albedo map
@@ -255,6 +266,13 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Set a PBR workflow by type
+    /// \param[in] _type Type of PBR workflow
+    /// \param[in] _workflow Workflow of the specified type.
+    /// \sa PbrWorkflowType
+    public: void SetWorkflow(PbrWorkflowType _type,
+        const PbrWorkflow &_workflow);
 
     /// \brief Get a PBR workflow by type
     /// \param[in] _type Type of PBR workflow
