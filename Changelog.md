@@ -3,7 +3,7 @@
 ### SDFormat 8.X.X (201X-XX-XX)
 
 1. Added IMU Sensor DOM.
-   * [Pull request 533](https://bitbucket.org/osrf/sdformat/pull-requests/533)
+   * [Pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)
 
 1. Added Camera Sensor DOM.
    * [Pull request 531](https://bitbucket.org/osrf/sdformat/pull-requests/531)
