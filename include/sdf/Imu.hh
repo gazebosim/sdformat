@@ -17,6 +17,7 @@
 #ifndef SDF_IMU_HH_
 #define SDF_IMU_HH_
 
+#include <string>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
@@ -136,7 +137,7 @@ namespace sdf
     /// gravity vector defines the direction of the IMU reference frame's
     /// X-axis.  grav_dir_x is  defined in the coordinate frame as defined by
     /// the parent_frame element.
-    ///return The gravity direction.
+    /// \return The gravity direction.
     public: ignition::math::Vector3d &GravityDirX() const;
 
     /// \brief Used when localization is set to GRAV_UP or GRAV_DOWN, a

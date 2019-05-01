@@ -21,6 +21,7 @@
 #include "sdf/Altimeter.hh"
 #include "sdf/Camera.hh"
 #include "sdf/Error.hh"
+#include "sdf/Imu.hh"
 #include "sdf/Magnetometer.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
@@ -85,6 +86,10 @@ class sdf::SensorPrivate
     {
       this->camera = std::make_unique<sdf::Camera>(*_sensor.camera);
     }
+    if (_sensor.imu)
+    {
+      this->imu = std::make_unique<sdf::Imu>(*_sensor.imu);
+    }
     // Developer note: If you add a new sensor type, make sure to also
     // update the Sensor::operator== function. Please bump this text down as
     // new sensors are added so that the next developer see the message.
@@ -121,6 +126,9 @@ class sdf::SensorPrivate
 
   /// \brief Pointer to a camera.
   public: std::unique_ptr<Camera> camera;
+
+  /// \brief Pointer to an IMU.
+  public: std::unique_ptr<Imu> imu;
   // Developer note: If you add a new sensor type, make sure to also
   // update the Sensor::operator== function. Please bump this text down as
   // new sensors are added so that the next developer see the message.
@@ -201,6 +209,8 @@ bool Sensor::operator==(const Sensor &_sensor) const
       return *(this->dataPtr->magnetometer) == *(_sensor.dataPtr->magnetometer);
     case SensorType::AIR_PRESSURE:
       return *(this->dataPtr->airPressure) == *(_sensor.dataPtr->airPressure);
+    case SensorType::IMU:
+      return *(this->dataPtr->imu) == *(_sensor.dataPtr->imu);
     case SensorType::CAMERA:
     case SensorType::DEPTH_CAMERA:
       return *(this->dataPtr->camera) == *(_sensor.dataPtr->camera);
@@ -305,6 +315,10 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "imu")
   {
     this->dataPtr->type = SensorType::IMU;
+    this->dataPtr->type = SensorType::IMU;
+    this->dataPtr->imu.reset(new Imu());
+    Errors err = this->dataPtr->imu->Load(_sdf->GetElement("imu"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "logical_camera")
   {
@@ -507,4 +521,16 @@ void Sensor::SetCameraSensor(const Camera &_cam)
 const Camera *Sensor::CameraSensor() const
 {
   return this->dataPtr->camera.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetImuSensor(const Imu &_imu)
+{
+  this->dataPtr->imu = std::make_unique<Imu>(_imu);
+}
+
+/////////////////////////////////////////////////
+const Imu *Sensor::ImuSensor() const
+{
+  return this->dataPtr->imu.get();
 }

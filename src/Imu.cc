@@ -48,13 +48,13 @@ class sdf::ImuPrivate
   public: Noise angularVelNoiseZ;
 
   /// \brief The gravity dir
-  public: ignition::math::Vector3d gravityDirX;
+  public: ignition::math::Vector3d gravityDirX{ignition::math::Vector3d::UnitX};
 
   /// \brief Name of the parent frame for the gravityDirX vector.
   public: std::string gravityDirXParentFrame;
 
   /// \brief Localization string
-  public: std::string localization;
+  public: std::string localization = "CUSTOM";
 
   /// \brief Custom RPY
   public: ignition::math::Vector3d customRpy;
@@ -235,8 +235,21 @@ bool Imu::operator!=(const Imu &_imu) const
 //////////////////////////////////////////////////
 bool Imu::operator==(const Imu &_imu) const
 {
+  return this->dataPtr->linearAccelNoiseX == _imu.dataPtr->linearAccelNoiseX &&
+         this->dataPtr->linearAccelNoiseY == _imu.dataPtr->linearAccelNoiseY &&
+         this->dataPtr->linearAccelNoiseZ == _imu.dataPtr->linearAccelNoiseZ &&
+         this->dataPtr->angularVelNoiseX == _imu.dataPtr->angularVelNoiseX &&
+         this->dataPtr->angularVelNoiseY == _imu.dataPtr->angularVelNoiseY &&
+         this->dataPtr->angularVelNoiseZ == _imu.dataPtr->angularVelNoiseZ &&
+         this->dataPtr->localization == _imu.dataPtr->localization &&
 
-  return true;
+         this->dataPtr->gravityDirX == _imu.dataPtr->gravityDirX &&
+         this->dataPtr->gravityDirXParentFrame ==
+         _imu.dataPtr->gravityDirXParentFrame &&
+
+         this->dataPtr->customRpy == _imu.dataPtr->customRpy &&
+         this->dataPtr->customRpyParentFrame ==
+         _imu.dataPtr->customRpyParentFrame;
 }
 
 //////////////////////////////////////////////////

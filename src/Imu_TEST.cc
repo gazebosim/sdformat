@@ -55,9 +55,9 @@ TEST(DOMImu, Construction)
   imu.SetAngularVelocityNoiseZ(noise);
   EXPECT_EQ(noise, imu.AngularVelocityNoiseZ());
 
-  EXPECT_EQ(ignition::math::Vector3d::Zero, imu.GravityDirX());
-  imu.SetGravityDirX(ignition::math::Vector3d::UnitX);
   EXPECT_EQ(ignition::math::Vector3d::UnitX, imu.GravityDirX());
+  imu.SetGravityDirX(ignition::math::Vector3d::Zero);
+  EXPECT_EQ(ignition::math::Vector3d::Zero, imu.GravityDirX());
 
   EXPECT_TRUE(imu.GravityDirXParentFrame().empty());
   imu.SetGravityDirXParentFrame("my_frame");
@@ -71,7 +71,7 @@ TEST(DOMImu, Construction)
   imu.SetCustomRpyParentFrame("other_frame");
   EXPECT_EQ("other_frame", imu.CustomRpyParentFrame());
 
-  EXPECT_TRUE(imu.Localization().empty());
+  EXPECT_EQ("CUSTOM", imu.Localization());
   imu.SetLocalization("NED");
   EXPECT_EQ("NED", imu.Localization());
 
@@ -113,7 +113,7 @@ TEST(DOMImu, Load)
   sdf::Imu imu;
   sdf::Errors errors = imu.Load(sdf);
   EXPECT_FALSE(errors.empty());
-  EXPECT_TRUE(errors[0].Message().find("is not a <imu>")
+  EXPECT_TRUE(errors[0].Message().find("is not an <imu>")
       != std::string::npos) << errors[0].Message();
 
   EXPECT_NE(nullptr, imu.Element());

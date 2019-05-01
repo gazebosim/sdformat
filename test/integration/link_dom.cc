@@ -26,6 +26,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Imu.hh"
 #include "sdf/Link.hh"
 #include "sdf/Magnetometer.hh"
 #include "sdf/Model.hh"
@@ -342,6 +343,25 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("imu_sensor", imuSensor->Name());
   EXPECT_EQ(sdf::SensorType::IMU, imuSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), imuSensor->Pose());
+  const sdf::Imu *imuSensorObj = imuSensor->ImuSensor();
+  ASSERT_NE(nullptr, imuSensorObj);
+  EXPECT_DOUBLE_EQ(0.0, imuSensorObj->LinearAccelerationNoiseX().Mean());
+  EXPECT_DOUBLE_EQ(0.1, imuSensorObj->LinearAccelerationNoiseX().StdDev());
+  EXPECT_DOUBLE_EQ(1.0, imuSensorObj->LinearAccelerationNoiseY().Mean());
+  EXPECT_DOUBLE_EQ(1.1, imuSensorObj->LinearAccelerationNoiseY().StdDev());
+  EXPECT_DOUBLE_EQ(2.0, imuSensorObj->LinearAccelerationNoiseZ().Mean());
+  EXPECT_DOUBLE_EQ(2.1, imuSensorObj->LinearAccelerationNoiseZ().StdDev());
+  EXPECT_DOUBLE_EQ(3.0, imuSensorObj->AngularVelocityNoiseX().Mean());
+  EXPECT_DOUBLE_EQ(3.1, imuSensorObj->AngularVelocityNoiseX().StdDev());
+  EXPECT_DOUBLE_EQ(4.0, imuSensorObj->AngularVelocityNoiseY().Mean());
+  EXPECT_DOUBLE_EQ(4.1, imuSensorObj->AngularVelocityNoiseY().StdDev());
+  EXPECT_DOUBLE_EQ(5.0, imuSensorObj->AngularVelocityNoiseZ().Mean());
+  EXPECT_DOUBLE_EQ(5.1, imuSensorObj->AngularVelocityNoiseZ().StdDev());
+  EXPECT_EQ("ENU", imuSensorObj->Localization());
+  EXPECT_EQ("linka", imuSensorObj->CustomRpyParentFrame());
+  EXPECT_EQ(ignition::math::Vector3d::UnitY, imuSensorObj->CustomRpy());
+  EXPECT_EQ("linkb", imuSensorObj->GravityDirXParentFrame());
+  EXPECT_EQ(ignition::math::Vector3d::UnitZ, imuSensorObj->GravityDirX());
 
   // Get the logical camera sensor
   const sdf::Sensor *logicalCameraSensor =

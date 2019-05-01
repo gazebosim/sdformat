@@ -33,6 +33,7 @@ namespace sdf
   class AirPressure;
   class Altimeter;
   class Camera;
+  class Imu;
   class Magnetometer;
   class SensorPrivate;
 
@@ -269,6 +270,17 @@ namespace sdf
     /// is not a camera.
     /// \sa SensorType Type() const
     public: const Camera *CameraSensor() const;
+
+    /// \brief Set the IMU sensor.
+    /// \param[in] _imu The IMU sensor.
+    public: void SetImuSensor(const Imu &_imu);
+
+    /// \brief Get a pointer to an IMU sensor, or nullptr if the sensor
+    /// does not contain an IMU sensor.
+    /// \return Pointer to the sensor's IMU, or nullptr if the sensor
+    /// is not an IMU.
+    /// \sa SensorType Type() const
+    public: const Imu *ImuSensor() const;
 
     /// \brief Private data pointer.
     private: SensorPrivate *dataPtr = nullptr;
