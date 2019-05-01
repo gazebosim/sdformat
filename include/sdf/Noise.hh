@@ -172,8 +172,10 @@ namespace sdf
     /// \return The dynamic bias correlation time.
     public: double DynamicBiasCorrelationTime() const;
 
-    /// \brief For type "gaussian*", set the correlation time of the noise
-    /// used to drive a process to model slow variations in a sensor bias.
+    /// \brief For type "gaussian*", set the correlation time in seconds of
+    /// the noise used to drive a process to model slow variations in a sensor
+    /// bias.A typical value, when used, would be on the order of
+    /// 3600 seconds (1 hour).
     /// \param[in] _time The dynamic bias correlation time.
     public: void SetDynamicBiasCorrelationTime(double _time);
 
