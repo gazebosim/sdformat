@@ -351,6 +351,12 @@ void Material::SetNormalMap(const std::string &_map)
 }
 
 //////////////////////////////////////////////////
+void Material::SetPbrMaterial(const Pbr &_pbr)
+{
+ this->dataPtr->pbr.reset(new Pbr(_pbr));
+}
+
+//////////////////////////////////////////////////
 Pbr *Material::PbrMaterial() const
 {
   return this->dataPtr->pbr.get();

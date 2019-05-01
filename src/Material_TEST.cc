@@ -19,6 +19,7 @@
 
 #include <ignition/math/Color.hh>
 #include "sdf/Material.hh"
+#include "sdf/Pbr.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMMaterial, Construction)
@@ -214,6 +215,16 @@ TEST(DOMMaterial, Set)
   material.SetNormalMap("map");
   EXPECT_EQ("map", material.NormalMap());
 
+  // set pbr material
+  sdf::Pbr pbr;
+  sdf::PbrWorkflow workflow;
+  workflow.SetType(sdf::PbrWorkflowType::METAL);
+  pbr.SetWorkflow(workflow.Type(), workflow);
+  material.SetPbrMaterial(pbr);
+  EXPECT_NE(material.PbrMaterial(), nullptr);
+  EXPECT_EQ(workflow,
+      *material.PbrMaterial()->Workflow(sdf::PbrWorkflowType::METAL));
+
   // Move the material
   sdf::Material moved(std::move(material));
   EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), moved.Ambient());
@@ -225,6 +236,8 @@ TEST(DOMMaterial, Set)
   EXPECT_EQ("name", moved.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, moved.Shader());
   EXPECT_EQ("map", moved.NormalMap());
+  EXPECT_EQ(workflow,
+      *moved.PbrMaterial()->Workflow(sdf::PbrWorkflowType::METAL));
 }
 
 /////////////////////////////////////////////////
