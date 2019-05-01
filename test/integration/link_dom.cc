@@ -351,35 +351,35 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(0.2,
       imuSensorObj->LinearAccelerationXNoise().DynamicBiasStdDev());
   EXPECT_DOUBLE_EQ(1.0,
-      imuSensorObj->LinearAccelerationXNoise().DynamicBiasTimeCorrelation());
+      imuSensorObj->LinearAccelerationXNoise().DynamicBiasCorrelationTime());
 
   EXPECT_DOUBLE_EQ(1.0, imuSensorObj->LinearAccelerationYNoise().Mean());
   EXPECT_DOUBLE_EQ(1.1, imuSensorObj->LinearAccelerationYNoise().StdDev());
   EXPECT_DOUBLE_EQ(1.2,
       imuSensorObj->LinearAccelerationYNoise().DynamicBiasStdDev());
   EXPECT_DOUBLE_EQ(2.0,
-      imuSensorObj->LinearAccelerationYNoise().DynamicBiasTimeCorrelation());
+      imuSensorObj->LinearAccelerationYNoise().DynamicBiasCorrelationTime());
 
   EXPECT_DOUBLE_EQ(2.0, imuSensorObj->LinearAccelerationZNoise().Mean());
   EXPECT_DOUBLE_EQ(2.1, imuSensorObj->LinearAccelerationZNoise().StdDev());
   EXPECT_DOUBLE_EQ(2.2,
       imuSensorObj->LinearAccelerationZNoise().DynamicBiasStdDev());
   EXPECT_DOUBLE_EQ(3.0,
-      imuSensorObj->LinearAccelerationZNoise().DynamicBiasTimeCorrelation());
+      imuSensorObj->LinearAccelerationZNoise().DynamicBiasCorrelationTime());
 
   EXPECT_DOUBLE_EQ(3.0, imuSensorObj->AngularVelocityXNoise().Mean());
   EXPECT_DOUBLE_EQ(3.1, imuSensorObj->AngularVelocityXNoise().StdDev());
   EXPECT_DOUBLE_EQ(4.2,
       imuSensorObj->AngularVelocityXNoise().DynamicBiasStdDev());
   EXPECT_DOUBLE_EQ(4.0,
-      imuSensorObj->AngularVelocityXNoise().DynamicBiasTimeCorrelation());
+      imuSensorObj->AngularVelocityXNoise().DynamicBiasCorrelationTime());
 
   EXPECT_DOUBLE_EQ(4.0, imuSensorObj->AngularVelocityYNoise().Mean());
   EXPECT_DOUBLE_EQ(4.1, imuSensorObj->AngularVelocityYNoise().StdDev());
   EXPECT_DOUBLE_EQ(5.2,
       imuSensorObj->AngularVelocityYNoise().DynamicBiasStdDev());
   EXPECT_DOUBLE_EQ(5.0,
-      imuSensorObj->AngularVelocityYNoise().DynamicBiasTimeCorrelation());
+      imuSensorObj->AngularVelocityYNoise().DynamicBiasCorrelationTime());
 
 
   EXPECT_DOUBLE_EQ(5.0, imuSensorObj->AngularVelocityZNoise().Mean());
@@ -387,7 +387,7 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(6.2,
       imuSensorObj->AngularVelocityZNoise().DynamicBiasStdDev());
   EXPECT_DOUBLE_EQ(6.0,
-      imuSensorObj->AngularVelocityZNoise().DynamicBiasTimeCorrelation());
+      imuSensorObj->AngularVelocityZNoise().DynamicBiasCorrelationTime());
 
 
   EXPECT_EQ("ENU", imuSensorObj->Localization());

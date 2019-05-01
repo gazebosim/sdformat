@@ -157,7 +157,7 @@
                 <mean>0</mean>
                 <stddev>0.1</stddev>
                 <dynamic_bias_stddev>0.2</dynamic_bias_stddev>
-                <dynamic_bias_time_correlation>1</dynamic_bias_time_correlation>
+                <dynamic_bias_correlation_time>1</dynamic_bias_correlation_time>
               </noise>
             </x>
             <y>
@@ -165,7 +165,7 @@
                 <mean>1</mean>
                 <stddev>1.1</stddev>
                 <dynamic_bias_stddev>1.2</dynamic_bias_stddev>
-                <dynamic_bias_time_correlation>2</dynamic_bias_time_correlation>
+                <dynamic_bias_correlation_time>2</dynamic_bias_correlation_time>
               </noise>
             </y>
             <z>
@@ -173,7 +173,7 @@
                 <mean>2</mean>
                 <stddev>2.1</stddev>
                 <dynamic_bias_stddev>2.2</dynamic_bias_stddev>
-                <dynamic_bias_time_correlation>3</dynamic_bias_time_correlation>
+                <dynamic_bias_correlation_time>3</dynamic_bias_correlation_time>
               </noise>
             </z>
           </linear_acceleration>
@@ -183,7 +183,7 @@
                 <mean>3</mean>
                 <stddev>3.1</stddev>
                 <dynamic_bias_stddev>4.2</dynamic_bias_stddev>
-                <dynamic_bias_time_correlation>4</dynamic_bias_time_correlation>
+                <dynamic_bias_correlation_time>4</dynamic_bias_correlation_time>
               </noise>
             </x>
             <y>
@@ -191,7 +191,7 @@
                 <mean>4</mean>
                 <stddev>4.1</stddev>
                 <dynamic_bias_stddev>5.2</dynamic_bias_stddev>
-                <dynamic_bias_time_correlation>5</dynamic_bias_time_correlation>
+                <dynamic_bias_correlation_time>5</dynamic_bias_correlation_time>
               </noise>
             </y>
             <z>
@@ -199,7 +199,7 @@
                 <mean>5</mean>
                 <stddev>5.1</stddev>
                 <dynamic_bias_stddev>6.2</dynamic_bias_stddev>
-                <dynamic_bias_time_correlation>6</dynamic_bias_time_correlation>
+                <dynamic_bias_correlation_time>6</dynamic_bias_correlation_time>
               </noise>
             </z>
           </angular_velocity>
