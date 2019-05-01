@@ -318,15 +318,11 @@ namespace sdf
     /// \param[in] _c3 The lens custom function angle offset constant.
     public: void SetLensC3(double _c3);
 
-    /// \brief Get lens custom function focal length. Note: It's not a focal
-    /// length of the lens in a common sense! This value is ignored if
-    /// LensScaleToHfov() is set to true
+    /// \brief Get lens custom function focal length.
     /// \return The lens custom function focal length.
     public: double LensFocalLength() const;
 
-    /// \brief Set lens custom function focal length. Note: It's not a focal
-    /// length of the lens in a common sense! This value is ignored if
-    /// LensScaleToHfov() is set to true
+    /// \brief Set lens custom function focal length.
     /// \param[in] _f The lens custom function focal length.
     public: void SetLensFocalLength(double _f);
 
