@@ -121,11 +121,11 @@ namespace sdf
 
     /// \brief Get the horizontal field of view in radians.
     /// \return The horizontal field of view in radians.
-    public: double HorizontalFov() const;
+    public: ignition::math::Angle HorizontalFov() const;
 
     /// \brief Set the horizontal field of view in radians.
     /// \param[in] _hfov The horizontal field of view in radians.
-    public: void SetHorizontalFov(double _hfov);
+    public: void SetHorizontalFov(const ignition::math::Angle &_hfov);
 
     /// \brief Get the image width in pixels.
     /// \return The image width in pixels.

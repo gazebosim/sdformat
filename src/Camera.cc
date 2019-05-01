@@ -55,7 +55,7 @@ class sdf::CameraPrivate
   public: std::string name = "";
 
   /// \brief Horizontal fied of view.
-  public: double hfov{1.047};
+  public: ignition::math::Angle hfov{1.047};
 
   /// \brief Image width.
   public: uint32_t imageWidth{320};
@@ -177,7 +177,7 @@ Errors Camera::Load(ElementPtr _sdf)
   // Read the camera's name
   loadName(_sdf, this->dataPtr->name);
 
-  this->dataPtr->hfov = _sdf->Get<double>("horizontal_fov",
+  this->dataPtr->hfov = _sdf->Get<ignition::math::Angle>("horizontal_fov",
       this->dataPtr->hfov).first;
 
   // Read the distortion
@@ -328,13 +328,13 @@ void Camera::SetName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
-double Camera::HorizontalFov() const
+ignition::math::Angle Camera::HorizontalFov() const
 {
   return this->dataPtr->hfov;
 }
 
 /////////////////////////////////////////////////
-void Camera::SetHorizontalFov(double _hfov)
+void Camera::SetHorizontalFov(const ignition::math::Angle &_hfov)
 {
   this->dataPtr->hfov = _hfov;
 }
@@ -458,7 +458,7 @@ Camera &Camera::operator=(Camera &&_camera) noexcept
 bool Camera::operator==(const Camera &_cam) const
 {
   return this->Name() == _cam.Name() &&
-    ignition::math::equal(this->HorizontalFov(), _cam.HorizontalFov()) &&
+    this->HorizontalFov() == _cam.HorizontalFov() &&
     this->ImageWidth() == _cam.ImageWidth() &&
     this->ImageHeight() == _cam.ImageHeight() &&
     this->PixelFormat() == _cam.PixelFormat() &&

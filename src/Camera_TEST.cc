@@ -26,9 +26,9 @@ TEST(DOMCamera, Construction)
   cam.SetName("my_camera");
   EXPECT_EQ("my_camera", cam.Name());
 
-  EXPECT_DOUBLE_EQ(1.047, cam.HorizontalFov());
+  EXPECT_DOUBLE_EQ(1.047, cam.HorizontalFov().Radian());
   cam.SetHorizontalFov(1.45);
-  EXPECT_DOUBLE_EQ(1.45, cam.HorizontalFov());
+  EXPECT_DOUBLE_EQ(1.45, cam.HorizontalFov().Radian());
 
   EXPECT_EQ(320u, cam.ImageWidth());
   cam.SetImageWidth(123);
