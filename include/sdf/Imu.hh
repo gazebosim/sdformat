@@ -75,62 +75,62 @@ namespace sdf
     /// \brief Get the noise values related to the body-frame linear
     /// acceleration on the X-axis.
     /// \return Noise values for the X-axis linear acceleration.
-    public: const Noise &LinearAccelerationNoiseX() const;
+    public: const Noise &LinearAccelerationXNoise() const;
 
     /// \brief Set the noise values related to the body-frame linear
     /// acceleration on the X-axis.
     /// \param[in] _noise Noise values for the X-axis linear acceleration.
-    public: void SetLinearAccelerationNoiseX(const Noise &_noise);
+    public: void SetLinearAccelerationXNoise(const Noise &_noise);
 
     /// \brief Get the noise values related to the body-frame linear
     /// acceleration on the Y-axis.
     /// \return Noise values for the Y-axis linear acceleration.
-    public: const Noise &LinearAccelerationNoiseY() const;
+    public: const Noise &LinearAccelerationYNoise() const;
 
     /// \brief Set the noise values related to the body-frame linear
     /// acceleration on the Y-axis.
     /// \param[in] _noise Noise values for the Y-axis linear acceleration.
-    public: void SetLinearAccelerationNoiseY(const Noise &_noise);
+    public: void SetLinearAccelerationYNoise(const Noise &_noise);
 
     /// \brief Get the noise values related to the body-frame linear
     /// acceleration on the Z-axis.
     /// \return Noise values for the Z-axis linear acceleration.
-    public: const Noise &LinearAccelerationNoiseZ() const;
+    public: const Noise &LinearAccelerationZNoise() const;
 
     /// \brief Set the noise values related to the body-frame linear
     /// acceleration on the Z-axis.
     /// \param[in] _noise Noise values for the Z-axis linear acceleration.
-    public: void SetLinearAccelerationNoiseZ(const Noise &_noise);
+    public: void SetLinearAccelerationZNoise(const Noise &_noise);
 
     /// \brief Get the noise values related to the body-frame angular
     /// velocity on the X-axis.
     /// \return Noise values for the X-axis linear acceleration.
-    public: const Noise &AngularVelocityNoiseX() const;
+    public: const Noise &AngularVelocityXNoise() const;
 
     /// \brief Set the noise values related to the body-frame angular
     /// velocity around the X-axis.
     /// \param[in] _noise Noise values for the X-axis angular velocity.
-    public: void SetAngularVelocityNoiseX(const Noise &_noise);
+    public: void SetAngularVelocityXNoise(const Noise &_noise);
 
     /// \brief Get the noise values related to the body-frame angular
     /// velocity around the Y-axis.
     /// \return Noise values for the Y-axis angular velocity.
-    public: const Noise &AngularVelocityNoiseY() const;
+    public: const Noise &AngularVelocityYNoise() const;
 
     /// \brief Set the noise values related to the body-frame angular
     /// velocity around the Y-axis.
     /// \param[in] _noise Noise values for the Y-axis angular velocity.
-    public: void SetAngularVelocityNoiseY(const Noise &_noise);
+    public: void SetAngularVelocityYNoise(const Noise &_noise);
 
     /// \brief Get the noise values related to the body-frame angular
     /// velocity around the Z-axis.
     /// \return Noise values for the Z-axis angular velocity.
-    public: const Noise &AngularVelocityNoiseZ() const;
+    public: const Noise &AngularVelocityZNoise() const;
 
     /// \brief Set the noise values related to the body-frame angular
     /// velocity around the Z-axis.
     /// \param[in] _noise Noise values for the Z-axis angular velocity.
-    public: void SetAngularVelocityNoiseZ(const Noise &_noise);
+    public: void SetAngularVelocityZNoise(const Noise &_noise);
 
     /// \brief Used when localization is set to GRAV_UP or GRAV_DOWN, a
     /// projection of this vector into a plane that is orthogonal to the

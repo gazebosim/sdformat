@@ -25,27 +25,27 @@ class sdf::ImuPrivate
 {
   /// \brief Noise values related to the body-frame linear acceleration on the
   /// X-axis.
-  public: Noise linearAccelNoiseX;
+  public: Noise linearAccelXNoise;
 
   /// \brief Noise values related to the body-frame linear acceleration on the
   /// Y-axis.
-  public: Noise linearAccelNoiseY;
+  public: Noise linearAccelYNoise;
 
   /// \brief Noise values related to the body-frame linear acceleration on the
   /// Z-axis.
-  public: Noise linearAccelNoiseZ;
+  public: Noise linearAccelZNoise;
 
   /// \brief Noise values related to the body-frame angular velocity on the
   /// X-axis.
-  public: Noise angularVelNoiseX;
+  public: Noise angularVelXNoise;
 
   /// \brief Noise values related to the body-frame angular velocity on the
   /// Y-axis.
-  public: Noise angularVelNoiseY;
+  public: Noise angularVelYNoise;
 
   /// \brief Noise values related to the body-frame angular velocity on the
   /// Z-axis.
-  public: Noise angularVelNoiseZ;
+  public: Noise angularVelZNoise;
 
   /// \brief The gravity dir
   public: ignition::math::Vector3d gravityDirX{ignition::math::Vector3d::UnitX};
@@ -136,7 +136,7 @@ Errors Imu::Load(ElementPtr _sdf)
     {
       if (elem->GetElement("x")->HasElement("noise"))
       {
-        this->dataPtr->linearAccelNoiseX.Load(
+        this->dataPtr->linearAccelXNoise.Load(
             elem->GetElement("x")->GetElement("noise"));
       }
     }
@@ -145,7 +145,7 @@ Errors Imu::Load(ElementPtr _sdf)
     {
       if (elem->GetElement("y")->HasElement("noise"))
       {
-        this->dataPtr->linearAccelNoiseY.Load(
+        this->dataPtr->linearAccelYNoise.Load(
             elem->GetElement("y")->GetElement("noise"));
       }
     }
@@ -154,7 +154,7 @@ Errors Imu::Load(ElementPtr _sdf)
     {
       if (elem->GetElement("z")->HasElement("noise"))
       {
-        this->dataPtr->linearAccelNoiseZ.Load(
+        this->dataPtr->linearAccelZNoise.Load(
             elem->GetElement("z")->GetElement("noise"));
       }
     }
@@ -168,7 +168,7 @@ Errors Imu::Load(ElementPtr _sdf)
     {
       if (elem->GetElement("x")->HasElement("noise"))
       {
-        this->dataPtr->angularVelNoiseX.Load(
+        this->dataPtr->angularVelXNoise.Load(
             elem->GetElement("x")->GetElement("noise"));
       }
     }
@@ -177,7 +177,7 @@ Errors Imu::Load(ElementPtr _sdf)
     {
       if (elem->GetElement("y")->HasElement("noise"))
       {
-        this->dataPtr->angularVelNoiseY.Load(
+        this->dataPtr->angularVelYNoise.Load(
             elem->GetElement("y")->GetElement("noise"));
       }
     }
@@ -186,7 +186,7 @@ Errors Imu::Load(ElementPtr _sdf)
     {
       if (elem->GetElement("z")->HasElement("noise"))
       {
-        this->dataPtr->angularVelNoiseZ.Load(
+        this->dataPtr->angularVelZNoise.Load(
             elem->GetElement("z")->GetElement("noise"));
       }
     }
@@ -235,12 +235,12 @@ bool Imu::operator!=(const Imu &_imu) const
 //////////////////////////////////////////////////
 bool Imu::operator==(const Imu &_imu) const
 {
-  return this->dataPtr->linearAccelNoiseX == _imu.dataPtr->linearAccelNoiseX &&
-         this->dataPtr->linearAccelNoiseY == _imu.dataPtr->linearAccelNoiseY &&
-         this->dataPtr->linearAccelNoiseZ == _imu.dataPtr->linearAccelNoiseZ &&
-         this->dataPtr->angularVelNoiseX == _imu.dataPtr->angularVelNoiseX &&
-         this->dataPtr->angularVelNoiseY == _imu.dataPtr->angularVelNoiseY &&
-         this->dataPtr->angularVelNoiseZ == _imu.dataPtr->angularVelNoiseZ &&
+  return this->dataPtr->linearAccelXNoise == _imu.dataPtr->linearAccelXNoise &&
+         this->dataPtr->linearAccelYNoise == _imu.dataPtr->linearAccelYNoise &&
+         this->dataPtr->linearAccelZNoise == _imu.dataPtr->linearAccelZNoise &&
+         this->dataPtr->angularVelXNoise == _imu.dataPtr->angularVelXNoise &&
+         this->dataPtr->angularVelYNoise == _imu.dataPtr->angularVelYNoise &&
+         this->dataPtr->angularVelZNoise == _imu.dataPtr->angularVelZNoise &&
          this->dataPtr->localization == _imu.dataPtr->localization &&
 
          this->dataPtr->gravityDirX == _imu.dataPtr->gravityDirX &&
@@ -253,75 +253,75 @@ bool Imu::operator==(const Imu &_imu) const
 }
 
 //////////////////////////////////////////////////
-const Noise &Imu::LinearAccelerationNoiseX() const
+const Noise &Imu::LinearAccelerationXNoise() const
 {
-  return this->dataPtr->linearAccelNoiseX;
+  return this->dataPtr->linearAccelXNoise;
 }
 
 //////////////////////////////////////////////////
-void Imu::SetLinearAccelerationNoiseX(const Noise &_noise)
+void Imu::SetLinearAccelerationXNoise(const Noise &_noise)
 {
-  this->dataPtr->linearAccelNoiseX = _noise;
+  this->dataPtr->linearAccelXNoise = _noise;
 }
 
 //////////////////////////////////////////////////
-const Noise &Imu::LinearAccelerationNoiseY() const
+const Noise &Imu::LinearAccelerationYNoise() const
 {
-  return this->dataPtr->linearAccelNoiseY;
+  return this->dataPtr->linearAccelYNoise;
 }
 
 //////////////////////////////////////////////////
-void Imu::SetLinearAccelerationNoiseY(const Noise &_noise)
+void Imu::SetLinearAccelerationYNoise(const Noise &_noise)
 {
-  this->dataPtr->linearAccelNoiseY = _noise;
+  this->dataPtr->linearAccelYNoise = _noise;
 }
 
 //////////////////////////////////////////////////
-const Noise &Imu::LinearAccelerationNoiseZ() const
+const Noise &Imu::LinearAccelerationZNoise() const
 {
-  return this->dataPtr->linearAccelNoiseZ;
+  return this->dataPtr->linearAccelZNoise;
 }
 
 //////////////////////////////////////////////////
-void Imu::SetLinearAccelerationNoiseZ(const Noise &_noise)
+void Imu::SetLinearAccelerationZNoise(const Noise &_noise)
 {
-  this->dataPtr->linearAccelNoiseZ = _noise;
+  this->dataPtr->linearAccelZNoise = _noise;
 }
 
 //////////////////////////////////////////////////
-const Noise &Imu::AngularVelocityNoiseX() const
+const Noise &Imu::AngularVelocityXNoise() const
 {
-  return this->dataPtr->angularVelNoiseX;
+  return this->dataPtr->angularVelXNoise;
 }
 
 //////////////////////////////////////////////////
-void Imu::SetAngularVelocityNoiseX(const Noise &_noise)
+void Imu::SetAngularVelocityXNoise(const Noise &_noise)
 {
-  this->dataPtr->angularVelNoiseX = _noise;
+  this->dataPtr->angularVelXNoise = _noise;
 }
 
 //////////////////////////////////////////////////
-const Noise &Imu::AngularVelocityNoiseY() const
+const Noise &Imu::AngularVelocityYNoise() const
 {
-  return this->dataPtr->angularVelNoiseY;
+  return this->dataPtr->angularVelYNoise;
 }
 
 //////////////////////////////////////////////////
-void Imu::SetAngularVelocityNoiseY(const Noise &_noise)
+void Imu::SetAngularVelocityYNoise(const Noise &_noise)
 {
-  this->dataPtr->angularVelNoiseY = _noise;
+  this->dataPtr->angularVelYNoise = _noise;
 }
 
 //////////////////////////////////////////////////
-const Noise &Imu::AngularVelocityNoiseZ() const
+const Noise &Imu::AngularVelocityZNoise() const
 {
-  return this->dataPtr->angularVelNoiseZ;
+  return this->dataPtr->angularVelZNoise;
 }
 
 //////////////////////////////////////////////////
-void Imu::SetAngularVelocityNoiseZ(const Noise &_noise)
+void Imu::SetAngularVelocityZNoise(const Noise &_noise)
 {
-  this->dataPtr->angularVelNoiseZ = _noise;
+  this->dataPtr->angularVelZNoise = _noise;
 }
 
 //////////////////////////////////////////////////

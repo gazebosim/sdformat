@@ -31,29 +31,29 @@ TEST(DOMImu, Construction)
   noise.SetBiasStdDev(6.7);
   noise.SetPrecision(8.9);
 
-  EXPECT_EQ(defaultNoise, imu.LinearAccelerationNoiseX());
-  imu.SetLinearAccelerationNoiseX(noise);
-  EXPECT_EQ(noise, imu.LinearAccelerationNoiseX());
+  EXPECT_EQ(defaultNoise, imu.LinearAccelerationXNoise());
+  imu.SetLinearAccelerationXNoise(noise);
+  EXPECT_EQ(noise, imu.LinearAccelerationXNoise());
 
-  EXPECT_EQ(defaultNoise, imu.LinearAccelerationNoiseY());
-  imu.SetLinearAccelerationNoiseY(noise);
-  EXPECT_EQ(noise, imu.LinearAccelerationNoiseY());
+  EXPECT_EQ(defaultNoise, imu.LinearAccelerationYNoise());
+  imu.SetLinearAccelerationYNoise(noise);
+  EXPECT_EQ(noise, imu.LinearAccelerationYNoise());
 
-  EXPECT_EQ(defaultNoise, imu.LinearAccelerationNoiseZ());
-  imu.SetLinearAccelerationNoiseZ(noise);
-  EXPECT_EQ(noise, imu.LinearAccelerationNoiseZ());
+  EXPECT_EQ(defaultNoise, imu.LinearAccelerationZNoise());
+  imu.SetLinearAccelerationZNoise(noise);
+  EXPECT_EQ(noise, imu.LinearAccelerationZNoise());
 
-  EXPECT_EQ(defaultNoise, imu.AngularVelocityNoiseX());
-  imu.SetAngularVelocityNoiseX(noise);
-  EXPECT_EQ(noise, imu.AngularVelocityNoiseX());
+  EXPECT_EQ(defaultNoise, imu.AngularVelocityXNoise());
+  imu.SetAngularVelocityXNoise(noise);
+  EXPECT_EQ(noise, imu.AngularVelocityXNoise());
 
-  EXPECT_EQ(defaultNoise, imu.AngularVelocityNoiseY());
-  imu.SetAngularVelocityNoiseY(noise);
-  EXPECT_EQ(noise, imu.AngularVelocityNoiseY());
+  EXPECT_EQ(defaultNoise, imu.AngularVelocityYNoise());
+  imu.SetAngularVelocityYNoise(noise);
+  EXPECT_EQ(noise, imu.AngularVelocityYNoise());
 
-  EXPECT_EQ(defaultNoise, imu.AngularVelocityNoiseZ());
-  imu.SetAngularVelocityNoiseZ(noise);
-  EXPECT_EQ(noise, imu.AngularVelocityNoiseZ());
+  EXPECT_EQ(defaultNoise, imu.AngularVelocityZNoise());
+  imu.SetAngularVelocityZNoise(noise);
+  EXPECT_EQ(noise, imu.AngularVelocityZNoise());
 
   EXPECT_EQ(ignition::math::Vector3d::UnitX, imu.GravityDirX());
   imu.SetGravityDirX(ignition::math::Vector3d::Zero);
