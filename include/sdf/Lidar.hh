@@ -167,7 +167,7 @@ namespace sdf
 
     /// \brief Set the minimum angle for horizontal scan.
     /// \param[in] Minimum angle for horizontal scan.
-    public: void SetHorizontalScanMinAngle(math::Angle _min);
+    public: void SetHorizontalScanMinAngle(const math::Angle &_min);
 
     /// \brief Get the maximum angle for horizontal scan.
     /// \return Maximum angle for horizontal scan.
@@ -175,7 +175,7 @@ namespace sdf
 
     /// \brief Set the maximum angle for horizontal scan.
     /// \param[in] Maximum angle for horizontal scan.
-    public: void SetHorizontalScanMaxAngle(math::Angle _max);
+    public: void SetHorizontalScanMaxAngle(const math::Angle &_max);
 
     /// \brief Get the number of lidar rays vertically to generate per laser
     /// sweep.
@@ -201,7 +201,7 @@ namespace sdf
 
     /// \brief Set the minimum angle for vertical scan.
     /// \param[in] Minimum angle for vertical scan.
-    public: void SetVerticalScanMinAngle(math::Angle _min);
+    public: void SetVerticalScanMinAngle(const math::Angle &_min);
 
     /// \brief Get the maximum angle for vertical scan.
     /// \return Maximum angle for vertical scan.
@@ -209,7 +209,7 @@ namespace sdf
 
     /// \brief Set the maximum angle for vertical scan.
     /// \param[in] Maximum angle for vertical scan.
-    public: void SetVerticalScanMaxAngle(math::Angle _max);
+    public: void SetVerticalScanMaxAngle(const math::Angle &_max);
 
     /// \brief Get minimum distance for each lidar ray.
     /// \return Minimum distance for each lidar ray.

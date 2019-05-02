@@ -70,4 +70,4 @@
       <description>For type "gaussian," the standard deviation of the Gaussian distribution from which noise values are drawn.</description>
     </element>
   </element> <!-- End Noise -->
-</element> <!-- End Ray -->
+</element> <!-- End Lidar -->
