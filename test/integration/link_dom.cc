@@ -444,8 +444,15 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(0.9, ray->HorizontalScanResolution());
   EXPECT_DOUBLE_EQ(1.75, *(ray->HorizontalScanMinAngle()));
   EXPECT_DOUBLE_EQ(2.94, *(ray->HorizontalScanMaxAngle()));
+  EXPECT_EQ(240u, ray->VerticalScanSamples());
+  EXPECT_DOUBLE_EQ(0.8, ray->VerticalScanResolution());
+  EXPECT_DOUBLE_EQ(2.75, *(ray->VerticalScanMinAngle()));
+  EXPECT_DOUBLE_EQ(3.94, *(ray->VerticalScanMaxAngle()));
   EXPECT_DOUBLE_EQ(1.23, ray->MinRange());
   EXPECT_DOUBLE_EQ(4.56, ray->MaxRange());
+  EXPECT_DOUBLE_EQ(7.89, ray->RangeResolution());
+  EXPECT_DOUBLE_EQ(0.98, ray->RayNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.76, ray->RayNoise().StdDev());
 
   // Get the rfid sensor
   const sdf::Sensor *rfidSensor = link->SensorByName("rfid_sensor");
