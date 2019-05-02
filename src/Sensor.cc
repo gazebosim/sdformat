@@ -17,8 +17,11 @@
 #include <string>
 #include <vector>
 #include <ignition/math/Pose3.hh>
+#include "sdf/AirPressure.hh"
 #include "sdf/Altimeter.hh"
+#include "sdf/Camera.hh"
 #include "sdf/Error.hh"
+#include "sdf/Imu.hh"
 #include "sdf/Magnetometer.hh"
 #include "sdf/Ray.hh"
 #include "sdf/Sensor.hh"
@@ -48,7 +51,8 @@ const std::vector<std::string> sensorTypeStrs =
   "rfidtag",
   "sonar",
   "wireless_receiver",
-  "wireless_transmitter"
+  "wireless_transmitter",
+  "air_pressure"
 };
 
 class sdf::SensorPrivate
@@ -62,7 +66,9 @@ class sdf::SensorPrivate
             name(_sensor.name),
             topic(_sensor.topic),
             pose(_sensor.pose),
-            poseFrame(_sensor.poseFrame)
+            poseFrame(_sensor.poseFrame),
+            sdf(_sensor.sdf),
+            updateRate(_sensor.updateRate)
 
   {
     if (_sensor.magnetometer)
@@ -74,14 +80,31 @@ class sdf::SensorPrivate
     {
       this->altimeter = std::make_unique<sdf::Altimeter>(*_sensor.altimeter);
     }
+    if (_sensor.airPressure)
+    {
+      this->airPressure = std::make_unique<sdf::AirPressure>(
+          *_sensor.airPressure);
+    }
+    if (_sensor.camera)
+    {
+      this->camera = std::make_unique<sdf::Camera>(*_sensor.camera);
+    }
+    if (_sensor.imu)
+    {
+      this->imu = std::make_unique<sdf::Imu>(*_sensor.imu);
+    }
     if (_sensor.ray)
     {
       this->ray = std::make_unique<sdf::Ray>(*_sensor.ray);
     }
+    // Developer note: If you add a new sensor type, make sure to also
+    // update the Sensor::operator== function. Please bump this text down as
+    // new sensors are added so that the next developer sees the message.
   }
+  // Delete copy assignment so it is not accidentally used
+  public: SensorPrivate &operator=(const SensorPrivate &) = delete;
 
   // \brief The sensor type.
-  //
   public: SensorType type = SensorType::NONE;
 
   /// \brief Name of the sensor.
@@ -105,8 +128,21 @@ class sdf::SensorPrivate
   /// \brief Pointer to an altimeter.
   public: std::unique_ptr<Altimeter> altimeter;
 
+  /// \brief Pointer to an air pressure sensor.
+  public: std::unique_ptr<AirPressure> airPressure;
+
+  /// \brief Pointer to a camera.
+  public: std::unique_ptr<Camera> camera;
+
+  /// \brief Pointer to an IMU.
+  public: std::unique_ptr<Imu> imu;
+
   /// \brief Pointer to a ray.
   public: std::unique_ptr<Ray> ray;
+
+  // Developer note: If you add a new sensor type, make sure to also
+  // update the Sensor::operator== function. Please bump this text down as
+  // new sensors are added so that the next developer sees the message.
 
   /// \brief The frequency at which the sensor data is generated.
   /// If left unspecified (0.0), the sensor will generate data every cycle.
@@ -126,7 +162,7 @@ Sensor::Sensor(const Sensor &_sensor)
 }
 
 /////////////////////////////////////////////////
-Sensor::Sensor(Sensor &&_sensor)
+Sensor::Sensor(Sensor &&_sensor) noexcept
 {
   this->dataPtr = _sensor.dataPtr;
   _sensor.dataPtr = nullptr;
@@ -142,8 +178,14 @@ Sensor::~Sensor()
 /////////////////////////////////////////////////
 Sensor &Sensor::operator=(const Sensor &_sensor)
 {
-  delete this->dataPtr;
-  this->dataPtr = new SensorPrivate(*_sensor.dataPtr);
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new SensorPrivate(*_sensor.dataPtr);
+  }
+  else
+  {
+    this->dataPtr = new(this->dataPtr) SensorPrivate(*_sensor.dataPtr);
+  }
   return *this;
 }
 
@@ -153,6 +195,48 @@ Sensor &Sensor::operator=(Sensor &&_sensor)
   this->dataPtr = _sensor.dataPtr;
   _sensor.dataPtr = nullptr;
   return *this;
+}
+
+/////////////////////////////////////////////////
+bool Sensor::operator==(const Sensor &_sensor) const
+{
+  // Check a few of the easy parameters.
+  if (this->Name() != _sensor.Name() ||
+      this->Type() != _sensor.Type() ||
+      this->Topic() != _sensor.Topic() ||
+      this->Pose() != _sensor.Pose() ||
+      this->PoseFrame() != _sensor.PoseFrame() ||
+      !ignition::math::equal(this->UpdateRate(), _sensor.UpdateRate()))
+  {
+    return false;
+  }
+
+  // Check the sensors
+  switch (this->Type())
+  {
+    case SensorType::ALTIMETER:
+      return *(this->dataPtr->altimeter) == *(_sensor.dataPtr->altimeter);
+    case SensorType::MAGNETOMETER:
+      return *(this->dataPtr->magnetometer) == *(_sensor.dataPtr->magnetometer);
+    case SensorType::AIR_PRESSURE:
+      return *(this->dataPtr->airPressure) == *(_sensor.dataPtr->airPressure);
+    case SensorType::IMU:
+      return *(this->dataPtr->imu) == *(_sensor.dataPtr->imu);
+    case SensorType::CAMERA:
+    case SensorType::DEPTH_CAMERA:
+      return *(this->dataPtr->camera) == *(_sensor.dataPtr->camera);
+    case SensorType::LIDAR:
+      return *(this->dataPtr->ray) == *(_sensor.dataPtr->ray);
+    case SensorType::NONE:
+    default:
+      return true;
+  }
+}
+
+/////////////////////////////////////////////////
+bool Sensor::operator!=(const Sensor &_sensor) const
+{
+  return !(*this == _sensor);
 }
 
 /////////////////////////////////////////////////
@@ -196,7 +280,15 @@ Errors Sensor::Load(ElementPtr _sdf)
     this->dataPtr->topic = "";
 
   std::string type = _sdf->Get<std::string>("type");
-  if (type == "altimeter")
+  if (type == "air_pressure")
+  {
+    this->dataPtr->type = SensorType::AIR_PRESSURE;
+    this->dataPtr->airPressure.reset(new AirPressure());
+    Errors err = this->dataPtr->airPressure->Load(
+        _sdf->GetElement("air_pressure"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
+  else if (type == "altimeter")
   {
     this->dataPtr->type = SensorType::ALTIMETER;
     this->dataPtr->altimeter.reset(new Altimeter());
@@ -206,6 +298,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "camera")
   {
     this->dataPtr->type = SensorType::CAMERA;
+    this->dataPtr->camera.reset(new Camera());
+    Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "contact")
   {
@@ -214,6 +309,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "depth" || type == "depth_camera")
   {
     this->dataPtr->type = SensorType::DEPTH_CAMERA;
+    this->dataPtr->camera.reset(new Camera());
+    Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "force_torque")
   {
@@ -230,6 +328,10 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "imu")
   {
     this->dataPtr->type = SensorType::IMU;
+    this->dataPtr->type = SensorType::IMU;
+    this->dataPtr->imu.reset(new Imu());
+    Errors err = this->dataPtr->imu->Load(_sdf->GetElement("imu"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "logical_camera")
   {
@@ -393,6 +495,18 @@ void Sensor::SetAltimeterSensor(const Altimeter &_alt)
 }
 
 /////////////////////////////////////////////////
+const AirPressure *Sensor::AirPressureSensor() const
+{
+  return this->dataPtr->airPressure.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetAirPressureSensor(const AirPressure &_air)
+{
+  this->dataPtr->airPressure = std::make_unique<AirPressure>(_air);
+}
+
+/////////////////////////////////////////////////
 const Ray *Sensor::RaySensor() const
 {
   return this->dataPtr->ray.get();
@@ -423,4 +537,28 @@ std::string Sensor::TypeStr() const
   if (index > 0 && index < sensorTypeStrs.size())
     return sensorTypeStrs[index];
   return "none";
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetCameraSensor(const Camera &_cam)
+{
+  this->dataPtr->camera = std::make_unique<Camera>(_cam);
+}
+
+/////////////////////////////////////////////////
+const Camera *Sensor::CameraSensor() const
+{
+  return this->dataPtr->camera.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetImuSensor(const Imu &_imu)
+{
+  this->dataPtr->imu = std::make_unique<Imu>(_imu);
+}
+
+/////////////////////////////////////////////////
+const Imu *Sensor::ImuSensor() const
+{
+  return this->dataPtr->imu.get();
 }

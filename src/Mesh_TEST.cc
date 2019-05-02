@@ -63,7 +63,7 @@ TEST(DOMMesh, CopyConstructor)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMMesh, AssignemntOperator)
+TEST(DOMMesh, CopyAssignmentOperator)
 {
   sdf::Mesh mesh;
   mesh.SetUri("banana");
@@ -71,11 +71,48 @@ TEST(DOMMesh, AssignemntOperator)
   mesh.SetCenterSubmesh(true);
   mesh.SetScale({0.5, 0.6, 0.7});
 
-  sdf::Mesh mesh2 = mesh;
+  sdf::Mesh mesh2;
+  mesh2 = mesh;
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
   EXPECT_TRUE(mesh2.CenterSubmesh());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, MoveAssignmentOperator)
+{
+  sdf::Mesh mesh;
+  mesh.SetUri("banana");
+  mesh.SetSubmesh("watermelon");
+  mesh.SetCenterSubmesh(true);
+  mesh.SetScale({0.5, 0.6, 0.7});
+
+  sdf::Mesh mesh2;
+  mesh2 = std::move(mesh);
+  EXPECT_EQ("banana", mesh2.Uri());
+  EXPECT_EQ("watermelon", mesh2.Submesh());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
+  EXPECT_TRUE(mesh2.CenterSubmesh());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, CopyAssignmentAfterMove)
+{
+  sdf::Mesh mesh1;
+  mesh1.SetUri("banana");
+
+  sdf::Mesh mesh2;
+  mesh2.SetUri("watermelon");
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Mesh tmp = std::move(mesh1);
+  mesh1 = mesh2;
+  mesh2 = tmp;
+
+  EXPECT_EQ("watermelon", mesh1.Uri());
+  EXPECT_EQ("banana", mesh2.Uri());
 }
 
 /////////////////////////////////////////////////

@@ -53,7 +53,7 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _material Material to move.
-    public: Material(Material &&_material);
+    public: Material(Material &&_material) noexcept;
 
     /// \brief Destructor
     public: ~Material();
@@ -62,6 +62,11 @@ namespace sdf
     /// \param[in] _material The material to set values from.
     /// \return *this
     public: Material &operator=(const Material &_material);
+
+    /// \brief Move assignment operator.
+    /// \param[in] _material The material to move from.
+    /// \return *this
+    public: Material &operator=(Material &&_material);
 
     /// \brief Load the material based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -172,6 +177,10 @@ namespace sdf
     /// \brief Set the normal map filename.
     /// \param[in] _map Filename of the normal map.
     public: void SetNormalMap(const std::string &_map);
+
+    /// \brief Set the Physically Based Rendering (PBR) material
+    /// \return The PBR material to set to.
+    public: void SetPbrMaterial(const Pbr &_pbr);
 
     /// \brief Get the Physically Based Rendering (PBR) material
     /// \return Pointer to the PBR material. Null if it does not exist.

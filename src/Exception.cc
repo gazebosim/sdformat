@@ -50,6 +50,22 @@ Exception::Exception(const Exception &_e)
 }
 
 //////////////////////////////////////////////////
+Exception &Exception::operator=(const Exception &_exception)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = std::make_unique<ExceptionPrivate>();
+  }
+  *this->dataPtr = (*_exception.dataPtr);
+  return *this;
+}
+//////////////////////////////////////////////////
+Exception::Exception(Exception &&_exception) noexcept = default;
+
+/////////////////////////////////////////////////
+Exception &Exception::operator=(Exception &&_exception) = default;
+
+//////////////////////////////////////////////////
 Exception::~Exception()
 {
 }

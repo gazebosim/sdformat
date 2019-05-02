@@ -95,6 +95,11 @@ Material::Material(const Material &_material)
 /////////////////////////////////////////////////
 Material &Material::operator=(const Material &_material)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new MaterialPrivate;
+  }
+
   this->dataPtr->scriptUri = _material.dataPtr->scriptUri;
   this->dataPtr->scriptName = _material.dataPtr->scriptName;
   this->dataPtr->shader = _material.dataPtr->shader;
@@ -112,10 +117,18 @@ Material &Material::operator=(const Material &_material)
 }
 
 /////////////////////////////////////////////////
-Material::Material(Material &&_material)
+Material::Material(Material &&_material) noexcept
 {
   this->dataPtr = _material.dataPtr;
   _material.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Material &Material::operator=(Material &&_material)
+{
+  this->dataPtr = _material.dataPtr;
+  _material.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -335,6 +348,12 @@ std::string Material::NormalMap() const
 void Material::SetNormalMap(const std::string &_map)
 {
   this->dataPtr->normalMap = _map;
+}
+
+//////////////////////////////////////////////////
+void Material::SetPbrMaterial(const Pbr &_pbr)
+{
+  this->dataPtr->pbr.reset(new Pbr(_pbr));
 }
 
 //////////////////////////////////////////////////

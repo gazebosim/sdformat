@@ -48,6 +48,10 @@ TEST(DOMLink, Construction)
   EXPECT_FALSE(link.LightNameExists("default"));
   EXPECT_EQ(nullptr, link.LightByName("no_such_light"));
 
+  EXPECT_FALSE(link.EnableWind());
+  link.SetEnableWind(true);
+  EXPECT_TRUE(link.EnableWind());
+
   EXPECT_EQ(0u, link.SensorCount());
   EXPECT_EQ(nullptr, link.SensorByIndex(0));
   EXPECT_EQ(nullptr, link.SensorByIndex(1));
@@ -97,6 +101,67 @@ TEST(DOMLink, Construction)
   EXPECT_DOUBLE_EQ(0.2, link.Inertial().MassMatrix().OffDiagonalMoments().Y());
   EXPECT_DOUBLE_EQ(0.3, link.Inertial().MassMatrix().OffDiagonalMoments().Z());
   EXPECT_TRUE(link.Inertial().MassMatrix().IsValid());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, CopyConstructor)
+{
+  sdf::Link link;
+  link.SetName("test_link");
+
+  sdf::Link link2(link);
+  EXPECT_EQ("test_link", link2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, CopyAssignmentOperator)
+{
+  sdf::Link link;
+  link.SetName("test_link");
+
+  sdf::Link link2;
+  link2 = link;
+  EXPECT_EQ("test_link", link2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, MoveConstructor)
+{
+  sdf::Link link;
+  link.SetName("test_link");
+
+  sdf::Link link2(link);
+  EXPECT_EQ("test_link", link2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, MoveAssignmentOperator)
+{
+  sdf::Link link;
+  link.SetName("test_link");
+
+  sdf::Link link2;
+  link2 = std::move(link);
+  EXPECT_EQ("test_link", link2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, CopyAssignmentAfterMove)
+{
+  sdf::Link link1;
+  link1.SetName("link1");
+
+  sdf::Link link2;
+  link2.SetName("link2");
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Link tmp = std::move(link1);
+  link1 = link2;
+  link2 = tmp;
+
+  EXPECT_EQ("link2", link1.Name());
+  EXPECT_EQ("link1", link2.Name());
 }
 
 /////////////////////////////////////////////////

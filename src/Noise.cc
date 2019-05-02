@@ -42,6 +42,14 @@ class sdf::NoisePrivate
   /// \brief Precision value for gaussian quantized.
   public: double precision = 0.0;
 
+  /// \brief For type "gaussian*", the standard deviation of the noise used to
+  /// drive a process to model slow variations in a sensor bias.
+  public: double dynamicBiasStdDev = 0.0;
+
+  /// \brief For type "gaussian*", the correlation time of the noise used to
+  /// drive a process to model slow variations in a sensor bias.
+  public: double dynamicBiasCorrelationTime = 0.0;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 };
@@ -59,7 +67,7 @@ Noise::Noise(const Noise &_noise)
 }
 
 //////////////////////////////////////////////////
-Noise::Noise(Noise &&_noise)
+Noise::Noise(Noise &&_noise) noexcept
 {
   this->dataPtr = _noise.dataPtr;
   _noise.dataPtr = nullptr;
@@ -75,6 +83,8 @@ Noise::~Noise()
 //////////////////////////////////////////////////
 Noise &Noise::operator=(const Noise &_noise)
 {
+  if (!this->dataPtr)
+    this->dataPtr = new NoisePrivate;
   *this->dataPtr = *_noise.dataPtr;
   return *this;
 }
@@ -142,6 +152,13 @@ Errors Noise::Load(ElementPtr _sdf)
 
   this->dataPtr->precision = _sdf->Get<double>("precision",
       this->dataPtr->precision).first;
+
+  this->dataPtr->dynamicBiasStdDev = _sdf->Get<double>("dynamic_bias_stddev",
+      this->dataPtr->dynamicBiasStdDev).first;
+
+  this->dataPtr->dynamicBiasCorrelationTime = _sdf->Get<double>(
+      "dynamic_bias_correlation_time",
+      this->dataPtr->dynamicBiasCorrelationTime).first;
 
   return errors;
 }
@@ -219,6 +236,30 @@ void Noise::SetPrecision(double _precision)
 }
 
 //////////////////////////////////////////////////
+double Noise::DynamicBiasStdDev() const
+{
+  return this->dataPtr->dynamicBiasStdDev;
+}
+
+//////////////////////////////////////////////////
+void Noise::SetDynamicBiasStdDev(double _stddev)
+{
+  this->dataPtr->dynamicBiasStdDev = _stddev;
+}
+
+//////////////////////////////////////////////////
+double Noise::DynamicBiasCorrelationTime() const
+{
+  return this->dataPtr->dynamicBiasCorrelationTime;
+}
+
+//////////////////////////////////////////////////
+void Noise::SetDynamicBiasCorrelationTime(double _time)
+{
+  this->dataPtr->dynamicBiasCorrelationTime = _time;
+}
+
+//////////////////////////////////////////////////
 sdf::ElementPtr Noise::Element() const
 {
   return this->dataPtr->sdf;
@@ -238,5 +279,9 @@ bool Noise::operator==(const Noise &_noise) const
     ignition::math::equal(this->dataPtr->stdDev, _noise.StdDev()) &&
     ignition::math::equal(this->dataPtr->biasMean, _noise.BiasMean()) &&
     ignition::math::equal(this->dataPtr->biasStdDev, _noise.BiasStdDev()) &&
-    ignition::math::equal(this->dataPtr->precision, _noise.Precision());
+    ignition::math::equal(this->dataPtr->precision, _noise.Precision()) &&
+    ignition::math::equal(this->dataPtr->dynamicBiasStdDev,
+                          _noise.DynamicBiasStdDev()) &&
+    ignition::math::equal(this->dataPtr->dynamicBiasCorrelationTime,
+                          _noise.DynamicBiasCorrelationTime());
 }

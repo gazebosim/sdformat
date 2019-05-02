@@ -43,7 +43,7 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _sphere Sphere to move.
-    public: Sphere(Sphere &&_sphere);
+    public: Sphere(Sphere &&_sphere) noexcept;
 
     /// \brief Destructor
     public: virtual ~Sphere();
@@ -52,6 +52,11 @@ namespace sdf
     /// \param[in] _sphere The sphere to set values from.
     /// \return *this
     public: Sphere &operator=(const Sphere &_sphere);
+
+    /// \brief Move assignment operator.
+    /// \param[in] _sphere Sphere to move.
+    /// \return Reference to this.
+    public: Sphere &operator=(Sphere &&_sphere);
 
     /// \brief Load the sphere geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is

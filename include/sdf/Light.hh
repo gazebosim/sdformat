@@ -67,10 +67,15 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _light Light to move.
-    public: Light(Light &&_light);
+    public: Light(Light &&_light) noexcept;
 
     /// \brief Destructor
     public: ~Light();
+
+    /// \brief Move assignment operator.
+    /// \param[in] _light Light to move.
+    /// \return Reference to this.
+    public: Light &operator=(Light &&_light);
 
     /// \brief Assignment operator.
     /// \param[in] _light The light to set values from.

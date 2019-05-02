@@ -1,10 +1,12 @@
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 set (headers
+  AirPressure.hh
   Altimeter.hh
   Assert.hh
   Atmosphere.hh
   Box.hh
+  Camera.hh
   Collision.hh
   Console.hh
   Cylinder.hh
@@ -14,6 +16,7 @@ set (headers
   Filesystem.hh
   Geometry.hh
   Gui.hh
+  Imu.hh
   Joint.hh
   JointAxis.hh
   Light.hh

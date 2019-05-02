@@ -76,7 +76,7 @@ class sdf::PbrWorkflowPrivate
 class sdf::PbrPrivate
 {
   /// \brief PBR workflows
-  public: std::vector<PbrWorkflow> workflows;
+  public: std::map<PbrWorkflowType, PbrWorkflow> workflows;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -105,6 +105,10 @@ PbrWorkflow::PbrWorkflow(const PbrWorkflow &_pbr)
 /////////////////////////////////////////////////
 PbrWorkflow &PbrWorkflow::operator=(const PbrWorkflow &_pbr)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new PbrWorkflowPrivate;
+  }
   *this->dataPtr = *_pbr.dataPtr;
   return *this;
 }
@@ -115,6 +119,31 @@ PbrWorkflow &PbrWorkflow::operator=(PbrWorkflow &&_pbr)
   this->dataPtr = _pbr.dataPtr;
   _pbr.dataPtr = nullptr;
   return *this;
+}
+
+//////////////////////////////////////////////////
+bool PbrWorkflow::operator!=(const PbrWorkflow &_pbr) const
+{
+  return !(*this == _pbr);
+}
+
+/////////////////////////////////////////////////
+bool PbrWorkflow::operator==(const PbrWorkflow &_workflow) const
+{
+  return (this->dataPtr->albedoMap == _workflow.dataPtr->albedoMap)
+    && (this->dataPtr->normalMap == _workflow.dataPtr->normalMap)
+    && (this->dataPtr->metalnessMap == _workflow.dataPtr->metalnessMap)
+    && (this->dataPtr->roughnessMap == _workflow.dataPtr->roughnessMap)
+    && (this->dataPtr->glossinessMap == _workflow.dataPtr->glossinessMap)
+    && (this->dataPtr->environmentMap == _workflow.dataPtr->environmentMap)
+    && (this->dataPtr->ambientOcclusionMap ==
+        _workflow.dataPtr->ambientOcclusionMap)
+    && (ignition::math::equal(
+        this->dataPtr->metalness, _workflow.dataPtr->metalness))
+    && (ignition::math::equal(
+        this->dataPtr->roughness, _workflow.dataPtr->roughness))
+    && (ignition::math::equal(
+        this->dataPtr->glossiness, _workflow.dataPtr->glossiness));
 }
 
 /////////////////////////////////////////////////
@@ -366,6 +395,10 @@ Pbr::Pbr(const Pbr &_pbr)
 /////////////////////////////////////////////////
 Pbr &Pbr::operator=(const Pbr &_pbr)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new PbrPrivate;
+  }
   *this->dataPtr = *_pbr.dataPtr;
   return *this;
 }
@@ -409,7 +442,7 @@ Errors Pbr::Load(sdf::ElementPtr _sdf)
     PbrWorkflow workflow;
     Errors workflowErrors = workflow.Load(workflowElem);
     if (workflowErrors.empty())
-      this->dataPtr->workflows.push_back(workflow);
+      this->dataPtr->workflows[workflow.Type()] = workflow;
     else
       errors.insert(errors.end(), workflowErrors.begin(), workflowErrors.end());
     workflowElem = workflowElem->GetNextElement();
@@ -421,11 +454,15 @@ Errors Pbr::Load(sdf::ElementPtr _sdf)
 /////////////////////////////////////////////////
 PbrWorkflow *Pbr::Workflow(PbrWorkflowType _type) const
 {
-  for (auto &wf : this->dataPtr->workflows)
-  {
-    if (wf.Type() == _type)
-      return &wf;
-  }
+  auto it = this->dataPtr->workflows.find(_type);
+  if (it != this->dataPtr->workflows.end())
+    return &it->second;
   return nullptr;
 }
 
+/////////////////////////////////////////////////
+void Pbr::SetWorkflow(PbrWorkflowType _type,
+    const PbrWorkflow &_workflow)
+{
+  this->dataPtr->workflows[_type] = _workflow;
+}

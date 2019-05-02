@@ -13,9 +13,11 @@ if (USE_EXTERNAL_TINYXML)
 endif()
 
 set (sources
+  AirPressure.cc
   Altimeter.cc
   Atmosphere.cc
   Box.cc
+  Camera.cc
   Collision.cc
   Console.cc
   Converter.cc
@@ -27,6 +29,7 @@ set (sources
   Geometry.cc
   Gui.cc
   ign.cc
+  Imu.cc
   Joint.cc
   JointAxis.cc
   Light.cc
@@ -84,9 +87,11 @@ else()
 endif()
 
 set (gtest_sources
+  AirPressure_TEST.cc
   Altimeter_TEST.cc
   Atmosphere_TEST.cc
   Box_TEST.cc
+  Camera_TEST.cc
   Collision_TEST.cc
   Console_TEST.cc
   Converter_TEST.cc
@@ -97,6 +102,7 @@ set (gtest_sources
   Filesystem_TEST.cc
   Geometry_TEST.cc
   Gui_TEST.cc
+  Imu_TEST.cc
   Joint_TEST.cc
   JointAxis_TEST.cc
   Light_TEST.cc

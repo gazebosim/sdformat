@@ -61,6 +61,9 @@ class sdf::LinkPrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief True if this link should be subject to wind, false otherwise.
+  public: bool enableWind = false;
 };
 
 /////////////////////////////////////////////////
@@ -70,10 +73,35 @@ Link::Link()
 }
 
 /////////////////////////////////////////////////
-Link::Link(Link &&_link)
+Link::Link(const Link &_link)
+  : dataPtr(new LinkPrivate(*_link.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Link &Link::operator=(const Link &_link)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new LinkPrivate;
+  }
+  *this->dataPtr = (*_link.dataPtr);
+  return *this;
+}
+
+/////////////////////////////////////////////////
+Link::Link(Link &&_link) noexcept
 {
   this->dataPtr = _link.dataPtr;
   _link.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Link &Link::operator=(Link &&_link)
+{
+  this->dataPtr = _link.dataPtr;
+  _link.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -170,6 +198,9 @@ Errors Link::Load(ElementPtr _sdf)
 
   /// \todo: Handle inertia frame properly
   this->dataPtr->inertial.SetPose(inertiaPose);
+
+  this->dataPtr->enableWind = _sdf->Get<bool>("enable_wind",
+      this->dataPtr->enableWind).first;
 
   return errors;
 }
@@ -380,4 +411,16 @@ const Light *Link::LightByName(const std::string &_name) const
 sdf::ElementPtr Link::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+bool Link::EnableWind() const
+{
+  return this->dataPtr->enableWind;
+}
+
+/////////////////////////////////////////////////
+void Link::SetEnableWind(const bool _enableWind)
+{
+  this->dataPtr->enableWind =_enableWind;
 }
