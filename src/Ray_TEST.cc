@@ -71,28 +71,28 @@ TEST(DOMRay, Set)
   EXPECT_NE(ray2, ray);
 
   // Copy constructor
-  auto rayCopied = sdf::Ray(ray);
-  EXPECT_EQ(rayCopied.HorizontalScanSamples(), 111u);
-  EXPECT_DOUBLE_EQ(rayCopied.HorizontalScanResolution(), 2.2);
-  // Equality operator
-  EXPECT_EQ(ray, rayCopied);
+  sdf::Ray rayCopied(ray);
+  EXPECT_EQ(rayCopied, ray);
 
   // Assignment operator
   sdf::Ray rayAssigned;
   rayAssigned = ray;
-  EXPECT_EQ(rayAssigned.HorizontalScanSamples(), 111u);
-  EXPECT_DOUBLE_EQ(rayAssigned.HorizontalScanResolution(), 2.2);
+  EXPECT_EQ(rayAssigned, ray);
 
   // Move constructor
   sdf::Ray rayMoved = std::move(ray);
-  EXPECT_EQ(rayMoved.HorizontalScanSamples(), 111u);
-  EXPECT_DOUBLE_EQ(rayMoved.HorizontalScanResolution(), 2.2);
+  EXPECT_EQ(rayCopied, rayMoved);
+  // Test nullptr private class
+  ray = rayMoved;
+  EXPECT_EQ(rayCopied, ray);
 
   // Move assignment operator
   sdf::Ray rayMoveAssigned;
-  rayMoveAssigned = std::move(rayMoved);
-  EXPECT_EQ(rayMoveAssigned.HorizontalScanSamples(), 111u);
-  EXPECT_DOUBLE_EQ(rayMoveAssigned.HorizontalScanResolution(), 2.2);
+  rayMoveAssigned = std::move(rayCopied);
+  EXPECT_EQ(rayAssigned, rayMoveAssigned);
+  // Test nullptr private class
+  rayCopied = rayMoveAssigned;
+  EXPECT_EQ(rayAssigned, rayCopied);
 }
 
 /////////////////////////////////////////////////
