@@ -6,6 +6,7 @@ set (headers
   Assert.hh
   Atmosphere.hh
   Box.hh
+  Camera.hh
   Collision.hh
   Console.hh
   Cylinder.hh

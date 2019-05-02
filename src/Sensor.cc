@@ -19,6 +19,7 @@
 #include <ignition/math/Pose3.hh>
 #include "sdf/AirPressure.hh"
 #include "sdf/Altimeter.hh"
+#include "sdf/Camera.hh"
 #include "sdf/Error.hh"
 #include "sdf/Magnetometer.hh"
 #include "sdf/Sensor.hh"
@@ -82,6 +83,10 @@ class sdf::SensorPrivate
       this->airPressure = std::make_unique<sdf::AirPressure>(
           *_sensor.airPressure);
     }
+    if (_sensor.camera)
+    {
+      this->camera = std::make_unique<sdf::Camera>(*_sensor.camera);
+    }
     // Developer note: If you add a new sensor type, make sure to also
     // update the Sensor::operator== function. Please bump this text down as
     // new sensors are added so that the next developer sees the message.
@@ -90,7 +95,6 @@ class sdf::SensorPrivate
   public: SensorPrivate &operator=(const SensorPrivate &) = delete;
 
   // \brief The sensor type.
-  //
   public: SensorType type = SensorType::NONE;
 
   /// \brief Name of the sensor.
@@ -116,6 +120,9 @@ class sdf::SensorPrivate
 
   /// \brief Pointer to an air pressure sensor.
   public: std::unique_ptr<AirPressure> airPressure;
+
+  /// \brief Pointer to a camera.
+  public: std::unique_ptr<Camera> camera;
   // Developer note: If you add a new sensor type, make sure to also
   // update the Sensor::operator== function. Please bump this text down as
   // new sensors are added so that the next developer sees the message.
@@ -196,6 +203,9 @@ bool Sensor::operator==(const Sensor &_sensor) const
       return *(this->dataPtr->magnetometer) == *(_sensor.dataPtr->magnetometer);
     case SensorType::AIR_PRESSURE:
       return *(this->dataPtr->airPressure) == *(_sensor.dataPtr->airPressure);
+    case SensorType::CAMERA:
+    case SensorType::DEPTH_CAMERA:
+      return *(this->dataPtr->camera) == *(_sensor.dataPtr->camera);
     case SensorType::NONE:
     default:
       return true;
@@ -267,6 +277,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "camera")
   {
     this->dataPtr->type = SensorType::CAMERA;
+    this->dataPtr->camera.reset(new Camera());
+    Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "contact")
   {
@@ -275,6 +288,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "depth" || type == "depth_camera")
   {
     this->dataPtr->type = SensorType::DEPTH_CAMERA;
+    this->dataPtr->camera.reset(new Camera());
+    Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "force_torque")
   {
@@ -481,4 +497,16 @@ std::string Sensor::TypeStr() const
   if (index > 0 && index < sensorTypeStrs.size())
     return sensorTypeStrs[index];
   return "none";
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetCameraSensor(const Camera &_cam)
+{
+  this->dataPtr->camera = std::make_unique<Camera>(_cam);
+}
+
+/////////////////////////////////////////////////
+const Camera *Sensor::CameraSensor() const
+{
+  return this->dataPtr->camera.get();
 }

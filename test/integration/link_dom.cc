@@ -21,6 +21,7 @@
 #include <ignition/math/Pose3.hh>
 #include "sdf/AirPressure.hh"
 #include "sdf/Altimeter.hh"
+#include "sdf/Camera.hh"
 #include "sdf/Collision.hh"
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
@@ -260,6 +261,40 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("camera_sensor", cameraSensor->Name());
   EXPECT_EQ(sdf::SensorType::CAMERA, cameraSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), cameraSensor->Pose());
+  const sdf::Camera *camSensor = cameraSensor->CameraSensor();
+  ASSERT_NE(nullptr, camSensor);
+  EXPECT_EQ("my_camera", camSensor->Name());
+  EXPECT_EQ(ignition::math::Pose3d(0.1, 0.2, 0.3, 0, 0, 0), camSensor->Pose());
+  EXPECT_DOUBLE_EQ(0.75, camSensor->HorizontalFov().Radian());
+  EXPECT_EQ(640u, camSensor->ImageWidth());
+  EXPECT_EQ(480u, camSensor->ImageHeight());
+  EXPECT_EQ(sdf::PixelFormatType::RGB_INT8, camSensor->PixelFormat());
+  EXPECT_DOUBLE_EQ(0.2, camSensor->NearClip());
+  EXPECT_DOUBLE_EQ(12.3, camSensor->FarClip());
+  EXPECT_TRUE(camSensor->SaveFrames());
+  EXPECT_EQ("/tmp/cam", camSensor->SaveFramesPath());
+  EXPECT_DOUBLE_EQ(0.5, camSensor->ImageNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.1, camSensor->ImageNoise().StdDev());
+  EXPECT_DOUBLE_EQ(0.1, camSensor->DistortionK1());
+  EXPECT_DOUBLE_EQ(0.2, camSensor->DistortionK2());
+  EXPECT_DOUBLE_EQ(0.3, camSensor->DistortionK3());
+  EXPECT_DOUBLE_EQ(0.4, camSensor->DistortionP1());
+  EXPECT_DOUBLE_EQ(0.5, camSensor->DistortionP2());
+  EXPECT_EQ(ignition::math::Vector2d(0.2, 0.4), camSensor->DistortionCenter());
+  EXPECT_EQ("custom", camSensor->LensType());
+  EXPECT_FALSE(camSensor->LensScaleToHfov());
+  EXPECT_DOUBLE_EQ(1.1, camSensor->LensC1());
+  EXPECT_DOUBLE_EQ(2.2, camSensor->LensC2());
+  EXPECT_DOUBLE_EQ(3.3, camSensor->LensC3());
+  EXPECT_DOUBLE_EQ(1.2, camSensor->LensFocalLength());
+  EXPECT_EQ("sin", camSensor->LensFunction());
+  EXPECT_DOUBLE_EQ(0.7505, camSensor->LensCutoffAngle().Radian());
+  EXPECT_EQ(128, camSensor->LensEnvironmentTextureSize());
+  EXPECT_DOUBLE_EQ(280, camSensor->LensIntrinsicsFx());
+  EXPECT_DOUBLE_EQ(281, camSensor->LensIntrinsicsFy());
+  EXPECT_DOUBLE_EQ(162, camSensor->LensIntrinsicsCx());
+  EXPECT_DOUBLE_EQ(124, camSensor->LensIntrinsicsCy());
+  EXPECT_DOUBLE_EQ(1.2, camSensor->LensIntrinsicsSkew());
 
   // Get the contact sensor
   const sdf::Sensor *contactSensor = link->SensorByName("contact_sensor");
@@ -274,6 +309,9 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("depth_sensor", depthSensor->Name());
   EXPECT_EQ(sdf::SensorType::DEPTH_CAMERA, depthSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), depthSensor->Pose());
+  const sdf::Camera *depthCamSensor = depthSensor->CameraSensor();
+  ASSERT_NE(nullptr, depthCamSensor);
+  EXPECT_EQ("my_depth_camera", depthCamSensor->Name());
 
   // Get the force_torque sensor
   const sdf::Sensor *forceTorqueSensor =
