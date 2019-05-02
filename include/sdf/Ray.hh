@@ -168,14 +168,14 @@ namespace sdf
     public: void SetRayNoise(const Noise &_noise);
 
     /// \brief Return true if both Ray objects contain the same values.
-    /// \param[_in] _alt Ray value to compare.
-    /// \return True if 'this' == _alt.
+    /// \param[_in] _ray Ray value to compare.
+    /// \return True if 'this' == _ray.
     public: bool operator==(const Ray &_ray) const;
 
     /// \brief Return true this Ray object does not contain the same
     /// values as the passed in parameter.
-    /// \param[_in] _alt Ray value to compare.
-    /// \return True if 'this' != _alt.
+    /// \param[_in] _ray Ray value to compare.
+    /// \return True if 'this' != _ray.
     public: bool operator!=(const Ray &_ray) const;
 
     /// \brief Private data pointer.
