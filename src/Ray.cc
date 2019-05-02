@@ -17,6 +17,7 @@
 #include "sdf/Ray.hh"
 
 using namespace sdf;
+using namespace ignition;
 
 /// \brief Private ray data.
 class sdf::RayPrivate
@@ -28,10 +29,10 @@ class sdf::RayPrivate
   public: double horizontalScanResolution{1.0};
 
   /// \brief Minimum angle for horizontal scan
-  public: double horizontalScanMinAngle{0.0};
+  public: math::Angle horizontalScanMinAngle{0.0};
 
   /// \brief Maximum angle for horizontal scan
-  public: double horizontalScanMaxAngle{0.0};
+  public: math::Angle horizontalScanMaxAngle{0.0};
 
   /// \brief Number of rays vertically per laser sweep
   public: unsigned int verticalScanSamples{1};
@@ -40,10 +41,10 @@ class sdf::RayPrivate
   public: double verticalScanResolution{1.0};
 
   /// \brief Minimum angle for vertical scan
-  public: double verticalScanMinAngle{0.0};
+  public: math::Angle verticalScanMinAngle{0.0};
 
   /// \brief Maximum angle for vertical scan
-  public: double verticalScanMaxAngle{0.0};
+  public: math::Angle verticalScanMaxAngle{0.0};
 
   /// \brief Minimum distance for each ray
   public: double minRange{0.0};
@@ -152,11 +153,11 @@ Errors Ray::Load(ElementPtr _sdf)
         this->dataPtr->horizontalScanResolution = subElem->Get<double>(
           "resolution");
       if (subElem->HasElement("min_angle"))
-        this->dataPtr->horizontalScanMinAngle = subElem->Get<double>(
-          "min_angle");
+        this->dataPtr->horizontalScanMinAngle = math::Angle(
+          subElem->Get<double>("min_angle"));
       if (subElem->HasElement("max_angle"))
-        this->dataPtr->horizontalScanMaxAngle = subElem->Get<double>(
-          "max_angle");
+        this->dataPtr->horizontalScanMaxAngle = math::Angle(
+          subElem->Get<double>("max_angle"));
     }
     else
     {
@@ -175,11 +176,11 @@ Errors Ray::Load(ElementPtr _sdf)
         this->dataPtr->verticalScanResolution = subElem->Get<double>(
           "resolution");
       if (subElem->HasElement("min_angle"))
-        this->dataPtr->verticalScanMinAngle = subElem->Get<double>(
-          "min_angle");
+        this->dataPtr->verticalScanMinAngle = math::Angle(subElem->Get<double>(
+          "min_angle"));
       if (subElem->HasElement("max_angle"))
-        this->dataPtr->verticalScanMaxAngle = subElem->Get<double>(
-          "max_angle");
+        this->dataPtr->verticalScanMaxAngle = math::Angle(subElem->Get<double>(
+          "max_angle"));
     }
   }
   else
@@ -243,25 +244,25 @@ void Ray::SetHorizontalScanResolution(double _res)
 }
 
 //////////////////////////////////////////////////
-double Ray::HorizontalScanMinAngle() const
+math::Angle Ray::HorizontalScanMinAngle() const
 {
   return this->dataPtr->horizontalScanMinAngle;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetHorizontalScanMinAngle(double _min)
+void Ray::SetHorizontalScanMinAngle(math::Angle _min)
 {
   this->dataPtr->horizontalScanMinAngle = _min;
 }
 
 //////////////////////////////////////////////////
-double Ray::HorizontalScanMaxAngle() const
+math::Angle Ray::HorizontalScanMaxAngle() const
 {
   return this->dataPtr->horizontalScanMaxAngle;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetHorizontalScanMaxAngle(double _max)
+void Ray::SetHorizontalScanMaxAngle(math::Angle _max)
 {
   this->dataPtr->horizontalScanMaxAngle = _max;
 }
@@ -291,25 +292,25 @@ void Ray::SetVerticalScanResolution(double _res)
 }
 
 //////////////////////////////////////////////////
-double Ray::VerticalScanMinAngle() const
+math::Angle Ray::VerticalScanMinAngle() const
 {
   return this->dataPtr->verticalScanMinAngle;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetVerticalScanMinAngle(double _min)
+void Ray::SetVerticalScanMinAngle(math::Angle _min)
 {
   this->dataPtr->verticalScanMinAngle = _min;
 }
 
 //////////////////////////////////////////////////
-double Ray::VerticalScanMaxAngle() const
+math::Angle Ray::VerticalScanMaxAngle() const
 {
   return this->dataPtr->verticalScanMaxAngle;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetVerticalScanMaxAngle(double _max)
+void Ray::SetVerticalScanMaxAngle(math::Angle _max)
 {
   this->dataPtr->verticalScanMaxAngle = _max;
 }
@@ -370,22 +371,18 @@ bool Ray::operator==(const Ray &_ray) const
   if (std::abs(this->dataPtr->horizontalScanResolution -
     _ray.HorizontalScanResolution()) > 1e-6)
     return false;
-  if (std::abs(this->dataPtr->horizontalScanMinAngle -
-    _ray.HorizontalScanMinAngle()) > 1e-6)
+  if (this->dataPtr->horizontalScanMinAngle != _ray.HorizontalScanMinAngle())
     return false;
-  if (std::abs(this->dataPtr->horizontalScanMaxAngle -
-     _ray.HorizontalScanMaxAngle()) > 1e-6)
+  if (this->dataPtr->horizontalScanMaxAngle != _ray.HorizontalScanMaxAngle())
     return false;
   if (this->dataPtr->verticalScanSamples != _ray.VerticalScanSamples())
     return false;
   if (std::abs(this->dataPtr->verticalScanResolution -
     _ray.VerticalScanResolution()) > 1e-6)
     return false;
-  if (std::abs(this->dataPtr->verticalScanMinAngle -
-    _ray.VerticalScanMinAngle()) > 1e-6)
+  if (this->dataPtr->verticalScanMinAngle != _ray.VerticalScanMinAngle())
     return false;
-  if (std::abs(this->dataPtr->verticalScanMaxAngle -
-    _ray.VerticalScanMaxAngle()) > 1e-6)
+  if (this->dataPtr->verticalScanMaxAngle != _ray.VerticalScanMaxAngle())
     return false;
   if (std::abs(this->dataPtr->minRange - _ray.MinRange()) > 1e-6)
     return false;

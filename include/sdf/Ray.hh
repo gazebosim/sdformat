@@ -22,6 +22,10 @@
 #include <sdf/Noise.hh>
 #include <sdf/sdf_config.h>
 
+#include <ignition/math/Angle.hh>
+
+using namespace ignition;
+
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
@@ -89,19 +93,19 @@ namespace sdf
 
     /// \brief Get the minimum angle for horizontal scan.
     /// \return Minimum angle for horizontal scan.
-    public: double HorizontalScanMinAngle() const;
+    public: math::Angle HorizontalScanMinAngle() const;
 
     /// \brief Set the minimum angle for horizontal scan.
     /// \param[in] Minimum angle for horizontal scan.
-    public: void SetHorizontalScanMinAngle(double _min);
+    public: void SetHorizontalScanMinAngle(math::Angle _min);
 
     /// \brief Get the maximum angle for horizontal scan.
     /// \return Maximum angle for horizontal scan.
-    public: double HorizontalScanMaxAngle() const;
+    public: math::Angle HorizontalScanMaxAngle() const;
 
     /// \brief Set the maximum angle for horizontal scan.
     /// \param[in] Maximum angle for horizontal scan.
-    public: void SetHorizontalScanMaxAngle(double _max);
+    public: void SetHorizontalScanMaxAngle(math::Angle _max);
 
     /// \brief Get the number of rays horizontally to generate per laser sweep.
     /// \return Number of rays horizontally per laser sweep.
@@ -121,19 +125,19 @@ namespace sdf
 
     /// \brief Get the minimum angle for vertical scan.
     /// \return Minimum angle for vertical scan.
-    public: double VerticalScanMinAngle() const;
+    public: math::Angle VerticalScanMinAngle() const;
 
     /// \brief Set the minimum angle for vertical scan.
     /// \param[in] Minimum angle for vertical scan.
-    public: void SetVerticalScanMinAngle(double _min);
+    public: void SetVerticalScanMinAngle(math::Angle _min);
 
     /// \brief Get the maximum angle for vertical scan.
     /// \return Maximum angle for vertical scan.
-    public: double VerticalScanMaxAngle() const;
+    public: math::Angle VerticalScanMaxAngle() const;
 
     /// \brief Set the maximum angle for vertical scan.
     /// \param[in] Maximum angle for vertical scan.
-    public: void SetVerticalScanMaxAngle(double _max);
+    public: void SetVerticalScanMaxAngle(math::Angle _max);
 
     /// \brief Get minimum distance for each ray.
     /// \return Minimum distance for each ray.

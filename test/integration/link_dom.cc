@@ -442,8 +442,8 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, ray);
   EXPECT_EQ(320u, ray->HorizontalScanSamples());
   EXPECT_DOUBLE_EQ(0.9, ray->HorizontalScanResolution());
-  EXPECT_DOUBLE_EQ(1.75, ray->HorizontalScanMinAngle());
-  EXPECT_DOUBLE_EQ(2.94, ray->HorizontalScanMaxAngle());
+  EXPECT_DOUBLE_EQ(1.75, *(ray->HorizontalScanMinAngle()));
+  EXPECT_DOUBLE_EQ(2.94, *(ray->HorizontalScanMaxAngle()));
   EXPECT_DOUBLE_EQ(1.23, ray->MinRange());
   EXPECT_DOUBLE_EQ(4.56, ray->MaxRange());
 

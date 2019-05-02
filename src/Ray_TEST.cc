@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <ignition/math/Angle.hh>
 #include "sdf/Ray.hh"
 
 /////////////////////////////////////////////////
@@ -35,19 +36,19 @@ TEST(DOMRay, Set)
   EXPECT_EQ(ray.HorizontalScanSamples(), 123u);
   ray.SetHorizontalScanResolution(0.45);
   EXPECT_DOUBLE_EQ(ray.HorizontalScanResolution(), 0.45);
-  ray.SetHorizontalScanMinAngle(0.67);
-  EXPECT_DOUBLE_EQ(ray.HorizontalScanMinAngle(), 0.67);
-  ray.SetHorizontalScanMaxAngle(0.89);
-  EXPECT_DOUBLE_EQ(ray.HorizontalScanMaxAngle(), 0.89);
+  ray.SetHorizontalScanMinAngle(math::Angle(0.67));
+  EXPECT_DOUBLE_EQ(*(ray.HorizontalScanMinAngle()), 0.67);
+  ray.SetHorizontalScanMaxAngle(math::Angle(0.89));
+  EXPECT_DOUBLE_EQ(*(ray.HorizontalScanMaxAngle()), 0.89);
 
   ray.SetVerticalScanSamples(98);
   EXPECT_EQ(ray.VerticalScanSamples(), 98u);
   ray.SetVerticalScanResolution(0.76);
   EXPECT_DOUBLE_EQ(ray.VerticalScanResolution(), 0.76);
-  ray.SetVerticalScanMinAngle(0.54);
-  EXPECT_DOUBLE_EQ(ray.VerticalScanMinAngle(), 0.54);
-  ray.SetVerticalScanMaxAngle(0.321);
-  EXPECT_DOUBLE_EQ(ray.VerticalScanMaxAngle(), 0.321);
+  ray.SetVerticalScanMinAngle(math::Angle(0.54));
+  EXPECT_DOUBLE_EQ(*(ray.VerticalScanMinAngle()), 0.54);
+  ray.SetVerticalScanMaxAngle(math::Angle(0.321));
+  EXPECT_DOUBLE_EQ(*(ray.VerticalScanMaxAngle()), 0.321);
 
   ray.SetMinRange(1.2);
   EXPECT_DOUBLE_EQ(ray.MinRange(), 1.2);
