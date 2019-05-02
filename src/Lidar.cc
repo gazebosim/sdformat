@@ -317,25 +317,25 @@ void Lidar::SetVerticalScanMaxAngle(math::Angle _max)
 }
 
 //////////////////////////////////////////////////
-double Lidar::MinRange() const
+double Lidar::RangeMin() const
 {
   return this->dataPtr->minRange;
 }
 
 //////////////////////////////////////////////////
-void Lidar::SetMinRange(double _min)
+void Lidar::SetRangeMin(double _min)
 {
   this->dataPtr->minRange = _min;
 }
 
 //////////////////////////////////////////////////
-double Lidar::MaxRange() const
+double Lidar::RangeMax() const
 {
   return this->dataPtr->maxRange;
 }
 
 //////////////////////////////////////////////////
-void Lidar::SetMaxRange(double _max)
+void Lidar::SetRangeMax(double _max)
 {
   this->dataPtr->maxRange = _max;
 }

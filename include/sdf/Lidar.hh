@@ -213,19 +213,19 @@ namespace sdf
 
     /// \brief Get minimum distance for each lidar ray.
     /// \return Minimum distance for each lidar ray.
-    public: double MinRange() const;
+    public: double RangeMin() const;
 
     /// \brief Set minimum distance for each lidar ray.
     /// \param[in] Minimum distance for each lidar ray.
-    public: void SetMinRange(double _min);
+    public: void SetRangeMin(double _min);
 
     /// \brief Get maximum distance for each lidar ray.
     /// \return Maximum distance for each lidar ray.
-    public: double MaxRange() const;
+    public: double RangeMax() const;
 
     /// \brief Set maximum distance for each lidar ray.
     /// \param[in] Maximum distance for each lidar ray.
-    public: void SetMaxRange(double _max);
+    public: void SetRangeMax(double _max);
 
     /// \brief Get linear resolution of each lidar ray.
     /// \return Linear resolution for each lidar ray.
