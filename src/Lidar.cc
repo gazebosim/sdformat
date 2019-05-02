@@ -59,7 +59,7 @@ class sdf::LidarPrivate
   public: Noise lidarNoise;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: sdf::ElementPtr sdf{nullptr};
 };
 
 //////////////////////////////////////////////////
@@ -251,7 +251,7 @@ math::Angle Lidar::HorizontalScanMinAngle() const
 }
 
 //////////////////////////////////////////////////
-void Lidar::SetHorizontalScanMinAngle(math::Angle _min)
+void Lidar::SetHorizontalScanMinAngle(const math::Angle &_min)
 {
   this->dataPtr->horizontalScanMinAngle = _min;
 }
@@ -263,7 +263,7 @@ math::Angle Lidar::HorizontalScanMaxAngle() const
 }
 
 //////////////////////////////////////////////////
-void Lidar::SetHorizontalScanMaxAngle(math::Angle _max)
+void Lidar::SetHorizontalScanMaxAngle(const math::Angle &_max)
 {
   this->dataPtr->horizontalScanMaxAngle = _max;
 }
@@ -299,7 +299,7 @@ math::Angle Lidar::VerticalScanMinAngle() const
 }
 
 //////////////////////////////////////////////////
-void Lidar::SetVerticalScanMinAngle(math::Angle _min)
+void Lidar::SetVerticalScanMinAngle(const math::Angle &_min)
 {
   this->dataPtr->verticalScanMinAngle = _min;
 }
@@ -311,7 +311,7 @@ math::Angle Lidar::VerticalScanMaxAngle() const
 }
 
 //////////////////////////////////////////////////
-void Lidar::SetVerticalScanMaxAngle(math::Angle _max)
+void Lidar::SetVerticalScanMaxAngle(const math::Angle &_max)
 {
   this->dataPtr->verticalScanMaxAngle = _max;
 }
