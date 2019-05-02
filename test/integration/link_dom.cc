@@ -26,6 +26,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Imu.hh"
 #include "sdf/Link.hh"
 #include "sdf/Magnetometer.hh"
 #include "sdf/Model.hh"
@@ -342,6 +343,58 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("imu_sensor", imuSensor->Name());
   EXPECT_EQ(sdf::SensorType::IMU, imuSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), imuSensor->Pose());
+  const sdf::Imu *imuSensorObj = imuSensor->ImuSensor();
+  ASSERT_NE(nullptr, imuSensorObj);
+
+  EXPECT_DOUBLE_EQ(0.0, imuSensorObj->LinearAccelerationXNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.1, imuSensorObj->LinearAccelerationXNoise().StdDev());
+  EXPECT_DOUBLE_EQ(0.2,
+      imuSensorObj->LinearAccelerationXNoise().DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(1.0,
+      imuSensorObj->LinearAccelerationXNoise().DynamicBiasCorrelationTime());
+
+  EXPECT_DOUBLE_EQ(1.0, imuSensorObj->LinearAccelerationYNoise().Mean());
+  EXPECT_DOUBLE_EQ(1.1, imuSensorObj->LinearAccelerationYNoise().StdDev());
+  EXPECT_DOUBLE_EQ(1.2,
+      imuSensorObj->LinearAccelerationYNoise().DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(2.0,
+      imuSensorObj->LinearAccelerationYNoise().DynamicBiasCorrelationTime());
+
+  EXPECT_DOUBLE_EQ(2.0, imuSensorObj->LinearAccelerationZNoise().Mean());
+  EXPECT_DOUBLE_EQ(2.1, imuSensorObj->LinearAccelerationZNoise().StdDev());
+  EXPECT_DOUBLE_EQ(2.2,
+      imuSensorObj->LinearAccelerationZNoise().DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(3.0,
+      imuSensorObj->LinearAccelerationZNoise().DynamicBiasCorrelationTime());
+
+  EXPECT_DOUBLE_EQ(3.0, imuSensorObj->AngularVelocityXNoise().Mean());
+  EXPECT_DOUBLE_EQ(3.1, imuSensorObj->AngularVelocityXNoise().StdDev());
+  EXPECT_DOUBLE_EQ(4.2,
+      imuSensorObj->AngularVelocityXNoise().DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(4.0,
+      imuSensorObj->AngularVelocityXNoise().DynamicBiasCorrelationTime());
+
+  EXPECT_DOUBLE_EQ(4.0, imuSensorObj->AngularVelocityYNoise().Mean());
+  EXPECT_DOUBLE_EQ(4.1, imuSensorObj->AngularVelocityYNoise().StdDev());
+  EXPECT_DOUBLE_EQ(5.2,
+      imuSensorObj->AngularVelocityYNoise().DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(5.0,
+      imuSensorObj->AngularVelocityYNoise().DynamicBiasCorrelationTime());
+
+
+  EXPECT_DOUBLE_EQ(5.0, imuSensorObj->AngularVelocityZNoise().Mean());
+  EXPECT_DOUBLE_EQ(5.1, imuSensorObj->AngularVelocityZNoise().StdDev());
+  EXPECT_DOUBLE_EQ(6.2,
+      imuSensorObj->AngularVelocityZNoise().DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(6.0,
+      imuSensorObj->AngularVelocityZNoise().DynamicBiasCorrelationTime());
+
+
+  EXPECT_EQ("ENU", imuSensorObj->Localization());
+  EXPECT_EQ("linka", imuSensorObj->CustomRpyParentFrame());
+  EXPECT_EQ(ignition::math::Vector3d::UnitY, imuSensorObj->CustomRpy());
+  EXPECT_EQ("linkb", imuSensorObj->GravityDirXParentFrame());
+  EXPECT_EQ(ignition::math::Vector3d::UnitZ, imuSensorObj->GravityDirX());
 
   // Get the logical camera sensor
   const sdf::Sensor *logicalCameraSensor =

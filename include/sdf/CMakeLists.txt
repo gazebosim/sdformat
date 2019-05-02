@@ -16,6 +16,7 @@ set (headers
   Filesystem.hh
   Geometry.hh
   Gui.hh
+  Imu.hh
   Joint.hh
   JointAxis.hh
   Light.hh
