@@ -33,6 +33,7 @@ namespace sdf
   class SensorPrivate;
   class Magnetometer;
   class Altimeter;
+  class Ray;
 
   /// \enum SensorType
   /// \brief The set of sensor types.
@@ -231,6 +232,16 @@ namespace sdf
     /// \brief Set the altimeter sensor.
     /// \param[in] _alt The altimeter sensor.
     public: void SetAltimeterSensor(const Altimeter &_alt);
+
+    /// \brief Get the ray sensor, or nullptr if this sensor type is not a Ray.
+    /// \return Pointer to the Ray sensor, or nullptr if this Sensor is not a
+    /// Ray.
+    /// \sa SensorType Type() const
+    public: const Ray *RaySensor() const;
+
+    /// \brief Set the ray sensor.
+    /// \param[in] _ray The ray sensor.
+    public: void SetRaySensor(const Ray &_ray);
 
     /// \brief Private data pointer.
     private: SensorPrivate *dataPtr = nullptr;

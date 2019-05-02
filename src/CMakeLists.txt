@@ -42,6 +42,7 @@ set (sources
   Pbr.cc
   Physics.cc
   Plane.cc
+  Ray.cc
   Root.cc
   Scene.cc
   SDF.cc
@@ -111,6 +112,7 @@ set (gtest_sources
   Pbr_TEST.cc
   Physics_TEST.cc
   Plane_TEST.cc
+  Ray_TEST.cc
   Root_TEST.cc
   Scene_TEST.cc
   SDF_TEST.cc

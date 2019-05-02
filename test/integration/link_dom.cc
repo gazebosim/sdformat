@@ -28,6 +28,7 @@
 #include "sdf/Magnetometer.hh"
 #include "sdf/Model.hh"
 #include "sdf/parser.hh"
+#include "sdf/Ray.hh"
 #include "sdf/Root.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
@@ -344,6 +345,14 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("ray_sensor", raySensor->Name());
   EXPECT_EQ(sdf::SensorType::LIDAR, raySensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), raySensor->Pose());
+  const sdf::Ray *ray = raySensor->RaySensor();
+  ASSERT_NE(nullptr, ray);
+  EXPECT_EQ(320u, ray->HorizontalScanSamples());
+  EXPECT_DOUBLE_EQ(0.9, ray->HorizontalScanResolution());
+  EXPECT_DOUBLE_EQ(1.75, ray->HorizontalScanMinAngle());
+  EXPECT_DOUBLE_EQ(2.94, ray->HorizontalScanMaxAngle());
+  EXPECT_DOUBLE_EQ(1.23, ray->MinRange());
+  EXPECT_DOUBLE_EQ(4.56, ray->MaxRange());
 
   // Get the rfid sensor
   const sdf::Sensor *rfidSensor = link->SensorByName("rfid_sensor");

@@ -20,6 +20,7 @@
 #include "sdf/Altimeter.hh"
 #include "sdf/Error.hh"
 #include "sdf/Magnetometer.hh"
+#include "sdf/Ray.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "Utils.hh"
@@ -73,6 +74,10 @@ class sdf::SensorPrivate
     {
       this->altimeter = std::make_unique<sdf::Altimeter>(*_sensor.altimeter);
     }
+    if (_sensor.ray)
+    {
+      this->ray = std::make_unique<sdf::Ray>(*_sensor.ray);
+    }
   }
 
   // \brief The sensor type.
@@ -97,8 +102,11 @@ class sdf::SensorPrivate
   /// \brief Pointer to a magnetometer.
   public: std::unique_ptr<Magnetometer> magnetometer;
 
-  /// \brief Pointer to a altimeter.
+  /// \brief Pointer to an altimeter.
   public: std::unique_ptr<Altimeter> altimeter;
+
+  /// \brief Pointer to a ray.
+  public: std::unique_ptr<Ray> ray;
 
   /// \brief The frequency at which the sensor data is generated.
   /// If left unspecified (0.0), the sensor will generate data every cycle.
@@ -242,6 +250,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "ray" || type == "lidar")
   {
     this->dataPtr->type = SensorType::LIDAR;
+    this->dataPtr->ray.reset(new Ray());
+    Errors err = this->dataPtr->ray->Load(_sdf->GetElement("ray"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "rfid")
   {
@@ -379,6 +390,18 @@ const Altimeter *Sensor::AltimeterSensor() const
 void Sensor::SetAltimeterSensor(const Altimeter &_alt)
 {
   this->dataPtr->altimeter = std::make_unique<Altimeter>(_alt);
+}
+
+/////////////////////////////////////////////////
+const Ray *Sensor::RaySensor() const
+{
+  return this->dataPtr->ray.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetRaySensor(const Ray &_ray)
+{
+  this->dataPtr->ray = std::make_unique<Ray>(_ray);
 }
 
 /////////////////////////////////////////////////

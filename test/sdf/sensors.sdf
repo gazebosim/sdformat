@@ -81,6 +81,20 @@
 
       <sensor name="ray_sensor" type="ray">
         <pose>1 2 3 0 0 0</pose>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>320</samples>
+              <resolution>0.9</resolution>
+              <min_angle>1.75</min_angle>
+              <max_angle>2.94</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>1.23</min>
+            <max>4.56</max>
+          </range>
+        </ray>
       </sensor>
 
       <sensor name="rfid_sensor" type="rfid">
