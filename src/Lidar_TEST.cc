@@ -50,10 +50,10 @@ TEST(DOMLidar, Set)
   lidar.SetVerticalScanMaxAngle(math::Angle(0.321));
   EXPECT_DOUBLE_EQ(*(lidar.VerticalScanMaxAngle()), 0.321);
 
-  lidar.SetMinRange(1.2);
-  EXPECT_DOUBLE_EQ(lidar.MinRange(), 1.2);
-  lidar.SetMaxRange(3.4);
-  EXPECT_DOUBLE_EQ(lidar.MaxRange(), 3.4);
+  lidar.SetRangeMin(1.2);
+  EXPECT_DOUBLE_EQ(lidar.RangeMin(), 1.2);
+  lidar.SetRangeMax(3.4);
+  EXPECT_DOUBLE_EQ(lidar.RangeMax(), 3.4);
   lidar.SetRangeResolution(5.6);
   EXPECT_DOUBLE_EQ(lidar.RangeResolution(), 5.6);
 

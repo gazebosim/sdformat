@@ -385,9 +385,9 @@ bool Lidar::operator==(const Lidar &_lidar) const
     return false;
   if (this->dataPtr->verticalScanMaxAngle != _lidar.VerticalScanMaxAngle())
     return false;
-  if (std::abs(this->dataPtr->minRange - _lidar.MinRange()) > 1e-6)
+  if (std::abs(this->dataPtr->minRange - _lidar.RangeMin()) > 1e-6)
     return false;
-  if (std::abs(this->dataPtr->maxRange - _lidar.MaxRange()) > 1e-6)
+  if (std::abs(this->dataPtr->maxRange - _lidar.RangeMax()) > 1e-6)
     return false;
   if (std::abs(this->dataPtr->rangeResolution -
         _lidar.RangeResolution()) > 1e-6)

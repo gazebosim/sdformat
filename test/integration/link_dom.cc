@@ -459,8 +459,8 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(0.8, ray->VerticalScanResolution());
   EXPECT_DOUBLE_EQ(2.75, *(ray->VerticalScanMinAngle()));
   EXPECT_DOUBLE_EQ(3.94, *(ray->VerticalScanMaxAngle()));
-  EXPECT_DOUBLE_EQ(1.23, ray->MinRange());
-  EXPECT_DOUBLE_EQ(4.56, ray->MaxRange());
+  EXPECT_DOUBLE_EQ(1.23, ray->RangeMin());
+  EXPECT_DOUBLE_EQ(4.56, ray->RangeMax());
   EXPECT_DOUBLE_EQ(7.89, ray->RangeResolution());
   EXPECT_DOUBLE_EQ(0.98, ray->LidarNoise().Mean());
   EXPECT_DOUBLE_EQ(0.76, ray->LidarNoise().StdDev());
@@ -481,8 +481,8 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(0.8, lidar->VerticalScanResolution());
   EXPECT_DOUBLE_EQ(2.75, *(lidar->VerticalScanMinAngle()));
   EXPECT_DOUBLE_EQ(3.94, *(lidar->VerticalScanMaxAngle()));
-  EXPECT_DOUBLE_EQ(1.23, lidar->MinRange());
-  EXPECT_DOUBLE_EQ(4.56, lidar->MaxRange());
+  EXPECT_DOUBLE_EQ(1.23, lidar->RangeMin());
+  EXPECT_DOUBLE_EQ(4.56, lidar->RangeMax());
   EXPECT_DOUBLE_EQ(7.89, lidar->RangeResolution());
   EXPECT_DOUBLE_EQ(0.98, lidar->LidarNoise().Mean());
   EXPECT_DOUBLE_EQ(0.76, lidar->LidarNoise().StdDev());
