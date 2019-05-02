@@ -23,6 +23,7 @@
 #include "sdf/Error.hh"
 #include "sdf/Imu.hh"
 #include "sdf/Magnetometer.hh"
+#include "sdf/Lidar.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "Utils.hh"
@@ -92,6 +93,10 @@ class sdf::SensorPrivate
     {
       this->imu = std::make_unique<sdf::Imu>(*_sensor.imu);
     }
+    if (_sensor.lidar)
+    {
+      this->lidar = std::make_unique<sdf::Lidar>(*_sensor.lidar);
+    }
     // Developer note: If you add a new sensor type, make sure to also
     // update the Sensor::operator== function. Please bump this text down as
     // new sensors are added so that the next developer sees the message.
@@ -131,6 +136,10 @@ class sdf::SensorPrivate
 
   /// \brief Pointer to an IMU.
   public: std::unique_ptr<Imu> imu;
+
+  /// \brief Pointer to a lidar.
+  public: std::unique_ptr<Lidar> lidar;
+
   // Developer note: If you add a new sensor type, make sure to also
   // update the Sensor::operator== function. Please bump this text down as
   // new sensors are added so that the next developer sees the message.
@@ -216,6 +225,8 @@ bool Sensor::operator==(const Sensor &_sensor) const
     case SensorType::CAMERA:
     case SensorType::DEPTH_CAMERA:
       return *(this->dataPtr->camera) == *(_sensor.dataPtr->camera);
+    case SensorType::LIDAR:
+      return *(this->dataPtr->lidar) == *(_sensor.dataPtr->lidar);
     case SensorType::NONE:
     default:
       return true;
@@ -313,6 +324,10 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "gpu_ray" || type == "gpu_lidar")
   {
     this->dataPtr->type = SensorType::GPU_LIDAR;
+    this->dataPtr->lidar.reset(new Lidar());
+    Errors err = this->dataPtr->lidar->Load(
+        _sdf->GetElement(_sdf->HasElement("lidar") ? "lidar" : "ray"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "imu")
   {
@@ -341,6 +356,10 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "ray" || type == "lidar")
   {
     this->dataPtr->type = SensorType::LIDAR;
+    this->dataPtr->lidar.reset(new Lidar());
+    Errors err = this->dataPtr->lidar->Load(
+        _sdf->GetElement(_sdf->HasElement("lidar") ? "lidar" : "ray"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "rfid")
   {
@@ -490,6 +509,18 @@ const AirPressure *Sensor::AirPressureSensor() const
 void Sensor::SetAirPressureSensor(const AirPressure &_air)
 {
   this->dataPtr->airPressure = std::make_unique<AirPressure>(_air);
+}
+
+/////////////////////////////////////////////////
+const Lidar *Sensor::LidarSensor() const
+{
+  return this->dataPtr->lidar.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetLidarSensor(const Lidar &_lidar)
+{
+  this->dataPtr->lidar = std::make_unique<Lidar>(_lidar);
 }
 
 /////////////////////////////////////////////////

@@ -19,6 +19,7 @@ set (headers
   Imu.hh
   Joint.hh
   JointAxis.hh
+  Lidar.hh
   Light.hh
   Link.hh
   Magnetometer.hh

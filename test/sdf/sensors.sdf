@@ -148,6 +148,10 @@
         <pose>1 2 3 0 0 0</pose>
       </sensor>
 
+      <sensor name="gpu_lidar_sensor" type="gpu_lidar">
+        <pose>1 2 3 0 0 0</pose>
+      </sensor>
+
       <sensor name="imu_sensor" type="imu">
         <pose>4 5 6 0 0 0</pose>
         <imu>
@@ -245,8 +249,65 @@
 
       <sensor name="ray_sensor" type="ray">
         <pose>1 2 3 0 0 0</pose>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>320</samples>
+              <resolution>0.9</resolution>
+              <min_angle>1.75</min_angle>
+              <max_angle>2.94</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>240</samples>
+              <resolution>0.8</resolution>
+              <min_angle>2.75</min_angle>
+              <max_angle>3.94</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>1.23</min>
+            <max>4.56</max>
+            <resolution>7.89</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.98</mean>
+            <stddev>0.76</stddev>
+          </noise>
+        </ray>
       </sensor>
 
+      <sensor name="lidar_sensor" type="lidar">
+        <pose>1 2 3 0 0 0</pose>
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>320</samples>
+              <resolution>0.9</resolution>
+              <min_angle>1.75</min_angle>
+              <max_angle>2.94</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>240</samples>
+              <resolution>0.8</resolution>
+              <min_angle>2.75</min_angle>
+              <max_angle>3.94</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>1.23</min>
+            <max>4.56</max>
+            <resolution>7.89</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.98</mean>
+            <stddev>0.76</stddev>
+          </noise>
+        </lidar>
+      </sensor>
+
+ 
       <sensor name="rfid_sensor" type="rfid">
         <pose>4 5 6 0 0 0</pose>
       </sensor>

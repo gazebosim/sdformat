@@ -32,6 +32,7 @@ set (sources
   Imu.cc
   Joint.cc
   JointAxis.cc
+  Lidar.cc
   Light.cc
   Link.cc
   Magnetometer.cc
@@ -104,6 +105,7 @@ set (gtest_sources
   Imu_TEST.cc
   Joint_TEST.cc
   JointAxis_TEST.cc
+  Lidar_TEST.cc
   Light_TEST.cc
   Link_TEST.cc
   Magnetometer_TEST.cc
