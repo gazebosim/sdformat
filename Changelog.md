@@ -2,6 +2,10 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Added Lidar Sensor DOM. Also added "lidar" and "gpu_lidar" as sensor
+   types. These two types are equivalent to "ray" and "gpu_ray".
+   * [Pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)
+
 1. Added IMU Sensor DOM.
    * [Pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)
 

@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#include "sdf/Ray.hh"
+#include "sdf/Lidar.hh"
 
 using namespace sdf;
 using namespace ignition;
 
-/// \brief Private ray data.
-class sdf::RayPrivate
+/// \brief Private lidar data.
+class sdf::LidarPrivate
 {
   /// \brief Number of rays horizontally per laser sweep
   public: unsigned int horizontalScanSamples{640};
@@ -55,66 +55,66 @@ class sdf::RayPrivate
   /// \brief Linear resolution for each ray
   public: double rangeResolution{0.0};
 
-  /// \brief Noise values for the ray sensor
-  public: Noise rayNoise;
+  /// \brief Noise values for the lidar sensor
+  public: Noise lidarNoise;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 };
 
 //////////////////////////////////////////////////
-Ray::Ray()
-  : dataPtr(new RayPrivate)
+Lidar::Lidar()
+  : dataPtr(new LidarPrivate)
 {
 }
 
 //////////////////////////////////////////////////
-Ray::Ray(const Ray &_ray)
-  : dataPtr(new RayPrivate(*_ray.dataPtr))
+Lidar::Lidar(const Lidar &_lidar)
+  : dataPtr(new LidarPrivate(*_lidar.dataPtr))
 {
 }
 
 //////////////////////////////////////////////////
-Ray::Ray(Ray &&_ray) noexcept
+Lidar::Lidar(Lidar &&_lidar) noexcept
 {
-  this->dataPtr = _ray.dataPtr;
-  _ray.dataPtr = nullptr;
+  this->dataPtr = _lidar.dataPtr;
+  _lidar.dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////
-Ray::~Ray()
+Lidar::~Lidar()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////
-Ray &Ray::operator=(const Ray &_ray)
+Lidar &Lidar::operator=(const Lidar &_lidar)
 {
   if (!this->dataPtr)
   {
-    this->dataPtr = new RayPrivate;
+    this->dataPtr = new LidarPrivate;
   }
-  *this->dataPtr = *_ray.dataPtr;
+  *this->dataPtr = *_lidar.dataPtr;
   return *this;
 }
 
 //////////////////////////////////////////////////
-Ray &Ray::operator=(Ray &&_ray) noexcept
+Lidar &Lidar::operator=(Lidar &&_lidar) noexcept
 {
-  this->dataPtr = _ray.dataPtr;
-  _ray.dataPtr = nullptr;
+  this->dataPtr = _lidar.dataPtr;
+  _lidar.dataPtr = nullptr;
   return * this;
 }
 
 //////////////////////////////////////////////////
-/// \brief Load the ray based on an element pointer. This is *not*
+/// \brief Load the lidar based on an element pointer. This is *not*
 /// the usual entry point. Typical usage of the SDF DOM is through the Root
 /// object.
 /// \param[in] _sdf The SDF Element pointer
 /// \return Errors, which is a vector of Error objects. Each Error includes
 /// an error code and message. An empty vector indicates no error.
-Errors Ray::Load(ElementPtr _sdf)
+Errors Lidar::Load(ElementPtr _sdf)
 {
   Errors errors;
 
@@ -124,22 +124,23 @@ Errors Ray::Load(ElementPtr _sdf)
   if (!_sdf)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Attempting to load a Ray, but the provided SDF "
+        "Attempting to load a Lidar, but the provided SDF "
         "element is null."});
     return errors;
   }
 
-  // Check that the provided SDF element is a <ray> element.
+  // Check that the provided SDF element is a <lidar> element.
   // This is an error that cannot be recovered, so return an error.
-  if (_sdf->GetName() != "ray")
+  if (_sdf->GetName() != "ray" && _sdf->GetName() != "lidar" &&
+      _sdf->GetName() != "gpu_ray" && _sdf->GetName() != "gpu_lidar")
   {
     errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a Ray, but the provided SDF element is "
-        "not a <ray>."});
+        "Attempting to load a Lidar, but the provided SDF element is "
+        "not a <lidar>."});
     return errors;
   }
 
-  // Load ray sensor properties
+  // Load lidar sensor properties
   if (_sdf->HasElement("scan"))
   {
     sdf::ElementPtr elem = _sdf->GetElement("scan");
@@ -162,7 +163,7 @@ Errors Ray::Load(ElementPtr _sdf)
     else
     {
       errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "A ray scan horizontal element is required, but it is not set."});
+        "A lidar scan horizontal element is required, but it is not set."});
       return errors;
     }
 
@@ -186,7 +187,7 @@ Errors Ray::Load(ElementPtr _sdf)
   else
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
-      "A ray scan element is required, but the scan is not set."});
+      "A lidar scan element is required, but the scan is not set."});
     return errors;
   }
 
@@ -203,201 +204,204 @@ Errors Ray::Load(ElementPtr _sdf)
   else
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
-      "A ray range element is required, but the range is not set."});
+      "A lidar range element is required, but the range is not set."});
     return errors;
   }
 
   if (_sdf->HasElement("noise"))
-    this->dataPtr->rayNoise.Load(_sdf->GetElement("noise"));
+    this->dataPtr->lidarNoise.Load(_sdf->GetElement("noise"));
 
   return errors;
 }
 
 //////////////////////////////////////////////////
-sdf::ElementPtr Ray::Element() const
+sdf::ElementPtr Lidar::Element() const
 {
   return this->dataPtr->sdf;
 }
 
 //////////////////////////////////////////////////
-unsigned int Ray::HorizontalScanSamples() const
+unsigned int Lidar::HorizontalScanSamples() const
 {
   return this->dataPtr->horizontalScanSamples;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetHorizontalScanSamples(unsigned int _samples)
+void Lidar::SetHorizontalScanSamples(unsigned int _samples)
 {
   this->dataPtr->horizontalScanSamples = _samples;
 }
 
 //////////////////////////////////////////////////
-double Ray::HorizontalScanResolution() const
+double Lidar::HorizontalScanResolution() const
 {
   return this->dataPtr->horizontalScanResolution;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetHorizontalScanResolution(double _res)
+void Lidar::SetHorizontalScanResolution(double _res)
 {
   this->dataPtr->horizontalScanResolution = _res;
 }
 
 //////////////////////////////////////////////////
-math::Angle Ray::HorizontalScanMinAngle() const
+math::Angle Lidar::HorizontalScanMinAngle() const
 {
   return this->dataPtr->horizontalScanMinAngle;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetHorizontalScanMinAngle(math::Angle _min)
+void Lidar::SetHorizontalScanMinAngle(math::Angle _min)
 {
   this->dataPtr->horizontalScanMinAngle = _min;
 }
 
 //////////////////////////////////////////////////
-math::Angle Ray::HorizontalScanMaxAngle() const
+math::Angle Lidar::HorizontalScanMaxAngle() const
 {
   return this->dataPtr->horizontalScanMaxAngle;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetHorizontalScanMaxAngle(math::Angle _max)
+void Lidar::SetHorizontalScanMaxAngle(math::Angle _max)
 {
   this->dataPtr->horizontalScanMaxAngle = _max;
 }
 
 //////////////////////////////////////////////////
-unsigned int Ray::VerticalScanSamples() const
+unsigned int Lidar::VerticalScanSamples() const
 {
   return this->dataPtr->verticalScanSamples;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetVerticalScanSamples(unsigned int _samples)
+void Lidar::SetVerticalScanSamples(unsigned int _samples)
 {
   this->dataPtr->verticalScanSamples = _samples;
 }
 
 //////////////////////////////////////////////////
-double Ray::VerticalScanResolution() const
+double Lidar::VerticalScanResolution() const
 {
   return this->dataPtr->verticalScanResolution;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetVerticalScanResolution(double _res)
+void Lidar::SetVerticalScanResolution(double _res)
 {
   this->dataPtr->verticalScanResolution = _res;
 }
 
 //////////////////////////////////////////////////
-math::Angle Ray::VerticalScanMinAngle() const
+math::Angle Lidar::VerticalScanMinAngle() const
 {
   return this->dataPtr->verticalScanMinAngle;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetVerticalScanMinAngle(math::Angle _min)
+void Lidar::SetVerticalScanMinAngle(math::Angle _min)
 {
   this->dataPtr->verticalScanMinAngle = _min;
 }
 
 //////////////////////////////////////////////////
-math::Angle Ray::VerticalScanMaxAngle() const
+math::Angle Lidar::VerticalScanMaxAngle() const
 {
   return this->dataPtr->verticalScanMaxAngle;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetVerticalScanMaxAngle(math::Angle _max)
+void Lidar::SetVerticalScanMaxAngle(math::Angle _max)
 {
   this->dataPtr->verticalScanMaxAngle = _max;
 }
 
 //////////////////////////////////////////////////
-double Ray::MinRange() const
+double Lidar::MinRange() const
 {
   return this->dataPtr->minRange;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetMinRange(double _min)
+void Lidar::SetMinRange(double _min)
 {
   this->dataPtr->minRange = _min;
 }
 
 //////////////////////////////////////////////////
-double Ray::MaxRange() const
+double Lidar::MaxRange() const
 {
   return this->dataPtr->maxRange;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetMaxRange(double _max)
+void Lidar::SetMaxRange(double _max)
 {
   this->dataPtr->maxRange = _max;
 }
 
 //////////////////////////////////////////////////
-double Ray::RangeResolution() const
+double Lidar::RangeResolution() const
 {
   return this->dataPtr->rangeResolution;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetRangeResolution(double _range)
+void Lidar::SetRangeResolution(double _range)
 {
   this->dataPtr->rangeResolution = _range;
 }
 
 //////////////////////////////////////////////////
-const Noise &Ray::RayNoise() const
+const Noise &Lidar::LidarNoise() const
 {
-  return this->dataPtr->rayNoise;
+  return this->dataPtr->lidarNoise;
 }
 
 //////////////////////////////////////////////////
-void Ray::SetRayNoise(const Noise &_noise)
+void Lidar::SetLidarNoise(const Noise &_noise)
 {
-  this->dataPtr->rayNoise = _noise;
+  this->dataPtr->lidarNoise = _noise;
 }
 
 //////////////////////////////////////////////////
-bool Ray::operator==(const Ray &_ray) const
+bool Lidar::operator==(const Lidar &_lidar) const
 {
-  if (this->dataPtr->horizontalScanSamples != _ray.HorizontalScanSamples())
+  if (this->dataPtr->horizontalScanSamples != _lidar.HorizontalScanSamples())
     return false;
   if (std::abs(this->dataPtr->horizontalScanResolution -
-    _ray.HorizontalScanResolution()) > 1e-6)
+    _lidar.HorizontalScanResolution()) > 1e-6)
     return false;
-  if (this->dataPtr->horizontalScanMinAngle != _ray.HorizontalScanMinAngle())
+  if (this->dataPtr->horizontalScanMinAngle != _lidar.HorizontalScanMinAngle())
     return false;
-  if (this->dataPtr->horizontalScanMaxAngle != _ray.HorizontalScanMaxAngle())
+  if (this->dataPtr->horizontalScanMaxAngle != _lidar.HorizontalScanMaxAngle())
     return false;
-  if (this->dataPtr->verticalScanSamples != _ray.VerticalScanSamples())
+  if (this->dataPtr->verticalScanSamples != _lidar.VerticalScanSamples())
     return false;
   if (std::abs(this->dataPtr->verticalScanResolution -
-    _ray.VerticalScanResolution()) > 1e-6)
+    _lidar.VerticalScanResolution()) > 1e-6)
     return false;
-  if (this->dataPtr->verticalScanMinAngle != _ray.VerticalScanMinAngle())
+  if (this->dataPtr->verticalScanMinAngle != _lidar.VerticalScanMinAngle())
     return false;
-  if (this->dataPtr->verticalScanMaxAngle != _ray.VerticalScanMaxAngle())
+  if (this->dataPtr->verticalScanMaxAngle != _lidar.VerticalScanMaxAngle())
     return false;
-  if (std::abs(this->dataPtr->minRange - _ray.MinRange()) > 1e-6)
+  if (std::abs(this->dataPtr->minRange - _lidar.MinRange()) > 1e-6)
     return false;
-  if (std::abs(this->dataPtr->maxRange - _ray.MaxRange()) > 1e-6)
+  if (std::abs(this->dataPtr->maxRange - _lidar.MaxRange()) > 1e-6)
     return false;
-  if (std::abs(this->dataPtr->rangeResolution - _ray.RangeResolution()) > 1e-6)
+  if (std::abs(this->dataPtr->rangeResolution -
+        _lidar.RangeResolution()) > 1e-6)
+  {
     return false;
-  if (this->dataPtr->rayNoise != _ray.RayNoise())
+  }
+  if (this->dataPtr->lidarNoise != _lidar.LidarNoise())
     return false;
 
   return true;
 }
 
 //////////////////////////////////////////////////
-bool Ray::operator!=(const Ray &_ray) const
+bool Lidar::operator!=(const Lidar &_lidar) const
 {
-  return !(*this == _ray);
+  return !(*this == _lidar);
 }

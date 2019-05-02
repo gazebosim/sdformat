@@ -19,6 +19,7 @@ set (headers
   Imu.hh
   Joint.hh
   JointAxis.hh
+  Lidar.hh
   Light.hh
   Link.hh
   Magnetometer.hh
@@ -31,7 +32,6 @@ set (headers
   Pbr.hh
   Physics.hh
   Plane.hh
-  Ray.hh
   Root.hh
   Scene.hh
   SDFImpl.hh

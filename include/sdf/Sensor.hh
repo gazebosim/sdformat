@@ -34,8 +34,8 @@ namespace sdf
   class Altimeter;
   class Camera;
   class Imu;
+  class Lidar;
   class Magnetometer;
-  class Ray;
   class SensorPrivate;
 
   /// \enum SensorType
@@ -283,15 +283,16 @@ namespace sdf
     /// \sa SensorType Type() const
     public: const Imu *ImuSensor() const;
 
-    /// \brief Get the ray sensor, or nullptr if this sensor type is not a Ray.
-    /// \return Pointer to the Ray sensor, or nullptr if this Sensor is not a
-    /// Ray.
+    /// \brief Get the lidar sensor, or nullptr if this sensor type is not a
+    /// Lidar.
+    /// \return Pointer to the Lidar sensor, or nullptr if this Sensor is not a
+    /// Lidar.
     /// \sa SensorType Type() const
-    public: const Ray *RaySensor() const;
+    public: const Lidar *LidarSensor() const;
 
-    /// \brief Set the ray sensor.
-    /// \param[in] _ray The ray sensor.
-    public: void SetRaySensor(const Ray &_ray);
+    /// \brief Set the lidar sensor.
+    /// \param[in] _lidar The lidar sensor.
+    public: void SetLidarSensor(const Lidar &_lidar);
 
     /// \brief Private data pointer.
     private: SensorPrivate *dataPtr = nullptr;

@@ -15,7 +15,9 @@
                   force_torque,
                   gps,
                   gpu_ray,
+                  gpu_lidar,
                   imu,
+                  lidar,
                   logical_camera,
                   magnetometer,
                   multicamera,
@@ -24,7 +26,9 @@
                   rfidtag,
                   sonar,
                   wireless_receiver, and
-                  wireless_transmitter.</description>
+                  wireless_transmitter.
+      The "ray" and "gpu_ray" types are equivalent to "lidar" and "gpu_lidar", respectively. It is preferred to use "lidar" and "gpu_lidar" since "ray" and "gpu_ray" will be deprecated. The "ray" and "gpu_ray" types are maintained for legacy support.
+    </description>
   </attribute>
 
   <element name="always_on" type="bool" default="false" required="0">
@@ -52,6 +56,7 @@
   <include filename="contact.sdf" required="0"/>
   <include filename="gps.sdf" required="0"/>
   <include filename="imu.sdf" required="0"/>
+  <include filename="lidar.sdf" required="0"/>
   <include filename="logical_camera.sdf" required="0"/>
   <include filename="magnetometer.sdf" required="0"/>
   <include filename="ray.sdf" required="0"/>

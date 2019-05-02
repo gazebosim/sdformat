@@ -31,7 +31,7 @@
 #include "sdf/Magnetometer.hh"
 #include "sdf/Model.hh"
 #include "sdf/parser.hh"
-#include "sdf/Ray.hh"
+#include "sdf/Lidar.hh"
 #include "sdf/Root.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
@@ -240,7 +240,7 @@ TEST(DOMLink, Sensors)
   const sdf::Link *link = model->LinkByIndex(0);
   ASSERT_NE(nullptr, link);
   EXPECT_EQ("link", link->Name());
-  EXPECT_EQ(18u, link->SensorCount());
+  EXPECT_EQ(20u, link->SensorCount());
 
   // Get the altimeter sensor
   const sdf::Sensor *altimeterSensor = link->SensorByIndex(0);
@@ -331,12 +331,23 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ(sdf::SensorType::GPS, gpsSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(13, 14, 15, 0, 0, 0), gpsSensor->Pose());
 
-  // Get the gpuRay sensor
+  // Get the gpu_ray sensor
   const sdf::Sensor *gpuRaySensor = link->SensorByName("gpu_ray_sensor");
   ASSERT_NE(nullptr, gpuRaySensor);
   EXPECT_EQ("gpu_ray_sensor", gpuRaySensor->Name());
   EXPECT_EQ(sdf::SensorType::GPU_LIDAR, gpuRaySensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), gpuRaySensor->Pose());
+  const sdf::Lidar *gpuRay = gpuRaySensor->LidarSensor();
+  ASSERT_NE(nullptr, gpuRay);
+
+  // Get the gpu_lidar sensor
+  const sdf::Sensor *gpuLidarSensor = link->SensorByName("gpu_lidar_sensor");
+  ASSERT_NE(nullptr, gpuLidarSensor);
+  EXPECT_EQ("gpu_lidar_sensor", gpuLidarSensor->Name());
+  EXPECT_EQ(sdf::SensorType::GPU_LIDAR, gpuLidarSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), gpuLidarSensor->Pose());
+  const sdf::Lidar *gpuLidar = gpuLidarSensor->LidarSensor();
+  ASSERT_NE(nullptr, gpuLidar);
 
   // Get the imu sensor
   const sdf::Sensor *imuSensor = link->SensorByName("imu_sensor");
@@ -438,7 +449,7 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("ray_sensor", raySensor->Name());
   EXPECT_EQ(sdf::SensorType::LIDAR, raySensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), raySensor->Pose());
-  const sdf::Ray *ray = raySensor->RaySensor();
+  const sdf::Lidar *ray = raySensor->LidarSensor();
   ASSERT_NE(nullptr, ray);
   EXPECT_EQ(320u, ray->HorizontalScanSamples());
   EXPECT_DOUBLE_EQ(0.9, ray->HorizontalScanResolution());
@@ -451,8 +462,30 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(1.23, ray->MinRange());
   EXPECT_DOUBLE_EQ(4.56, ray->MaxRange());
   EXPECT_DOUBLE_EQ(7.89, ray->RangeResolution());
-  EXPECT_DOUBLE_EQ(0.98, ray->RayNoise().Mean());
-  EXPECT_DOUBLE_EQ(0.76, ray->RayNoise().StdDev());
+  EXPECT_DOUBLE_EQ(0.98, ray->LidarNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.76, ray->LidarNoise().StdDev());
+
+  // Get the lidar sensor
+  const sdf::Sensor *lidarSensor = link->SensorByName("lidar_sensor");
+  ASSERT_NE(nullptr, lidarSensor);
+  EXPECT_EQ("lidar_sensor", lidarSensor->Name());
+  EXPECT_EQ(sdf::SensorType::LIDAR, lidarSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), lidarSensor->Pose());
+  const sdf::Lidar *lidar = lidarSensor->LidarSensor();
+  ASSERT_NE(nullptr, lidar);
+  EXPECT_EQ(320u, lidar->HorizontalScanSamples());
+  EXPECT_DOUBLE_EQ(0.9, lidar->HorizontalScanResolution());
+  EXPECT_DOUBLE_EQ(1.75, *(lidar->HorizontalScanMinAngle()));
+  EXPECT_DOUBLE_EQ(2.94, *(lidar->HorizontalScanMaxAngle()));
+  EXPECT_EQ(240u, lidar->VerticalScanSamples());
+  EXPECT_DOUBLE_EQ(0.8, lidar->VerticalScanResolution());
+  EXPECT_DOUBLE_EQ(2.75, *(lidar->VerticalScanMinAngle()));
+  EXPECT_DOUBLE_EQ(3.94, *(lidar->VerticalScanMaxAngle()));
+  EXPECT_DOUBLE_EQ(1.23, lidar->MinRange());
+  EXPECT_DOUBLE_EQ(4.56, lidar->MaxRange());
+  EXPECT_DOUBLE_EQ(7.89, lidar->RangeResolution());
+  EXPECT_DOUBLE_EQ(0.98, lidar->LidarNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.76, lidar->LidarNoise().StdDev());
 
   // Get the rfid sensor
   const sdf::Sensor *rfidSensor = link->SensorByName("rfid_sensor");
