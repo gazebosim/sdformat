@@ -174,6 +174,6 @@ TEST(DOMCamera, Construction)
   sdf::Camera cam6;
   EXPECT_NE(cam3, cam6);
 
-  // The Camera::Load function is test more thouroughly in the
+  // The Camera::Load function is tested more thoroughly in the
   // link_dom.cc integration test.
 }

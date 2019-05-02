@@ -97,7 +97,7 @@ namespace sdf
     /// \returen True if 'this' != _alt.
     public: bool operator!=(const Camera &_alt) const;
 
-    /// \brief Load the camera sensor geometry based on a element pointer.
+    /// \brief Load the camera sensor based on an element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
     /// through the Root object.
     /// \param[in] _sdf The SDF Element pointer
