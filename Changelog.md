@@ -4,7 +4,7 @@
 
 1. Added Lidar Sensor DOM. Also added "lidar" and "gpu_lidar" as sensor
    types. These two types are equivalent to "ray" and "gpu_ray".
-   * [Pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)
+   * [Pull request 536](https://bitbucket.org/osrf/sdformat/pull-requests/536)
 
 1. Added IMU Sensor DOM.
    * [Pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)

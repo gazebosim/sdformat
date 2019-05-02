@@ -177,9 +177,9 @@ namespace sdf
     /// \param[in] Maximum angle for horizontal scan.
     public: void SetHorizontalScanMaxAngle(math::Angle _max);
 
-    /// \brief Get the number of lidar rays horizontally to generate per laser
+    /// \brief Get the number of lidar rays vertically to generate per laser
     /// sweep.
-    /// \return Number of lidar rays horizontally per laser sweep.
+    /// \return Number of lidar rays vertically per laser sweep.
     public: unsigned int VerticalScanSamples() const;
 
     /// \brief Set the number of lidar rays vertically to generate per laser
