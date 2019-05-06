@@ -2,9 +2,14 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
-1. Added Lidar Sensor DOM. Also added "lidar" and "gpu_lidar" as sensor
-   types. These two types are equivalent to "ray" and "gpu_ray".
+### SDFormat 8.1.0 (201X-XX-XX)
+
+1. Added Lidar Sensor DOM. Also added `lidar` and `gpu_lidar` as sensor
+   types. These two types are equivalent to `ray` and `gpu_ray`.
    * [Pull request 536](https://bitbucket.org/osrf/sdformat/pull-requests/536)
+
+1. SDF Sensor DOM: copy update rate in copy constructor.
+   * [Pull request 534](https://bitbucket.org/osrf/sdformat/pull-requests/534)
 
 1. Added IMU Sensor DOM.
    * [Pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)
@@ -12,27 +17,48 @@
 1. Added Camera Sensor DOM.
    * [Pull request 531](https://bitbucket.org/osrf/sdformat/pull-requests/531)
 
+1. Added wind to link dom.
+   * [Pull request 530](https://bitbucket.org/osrf/sdformat/pull-requests/530)
+
 1. Added Sensor DOM `==` operator.
    * [Pull request 529](https://bitbucket.org/osrf/sdformat/pull-requests/529)
 
 1. Added AirPressure SDF DOM
    * [Pull request 528](https://bitbucket.org/osrf/sdformat/pull-requests/528)
 
+1. Update sdf noise elements
+   * [Pull request 525](https://bitbucket.org/osrf/sdformat/pull-requests/525)
+
 1. Apply rule of five for various DOM classes
    * [Pull request 524](https://bitbucket.org/osrf/sdformat/pull-requests/524)
 
+1. Support setting sensor types from a string.
+   * [Pull request 523](https://bitbucket.org/osrf/sdformat/pull-requests/523)
+
 1. Added Altimeter SDF DOM
    * [Pull request 527](https://bitbucket.org/osrf/sdformat/pull-requests/527)
+
+1. Added Magnetometer SDF DOM
+   * [Pull request 518](https://bitbucket.org/osrf/sdformat/pull-requests/518)
+   * [Pull request 519](https://bitbucket.org/osrf/sdformat/pull-requests/519)
 
 1. Add Scene SDF DOM
    * [Pull request 517](https://bitbucket.org/osrf/sdformat/pull-requests/517)
 
 1. Add PBR material SDF element
    * [Pull request 512](https://bitbucket.org/osrf/sdformat/pull-requests/512)
+   * [Pull request 520](https://bitbucket.org/osrf/sdformat/pull-requests/520)
    * [Pull request 535](https://bitbucket.org/osrf/sdformat/pull-requests/535)
 
 1. Set geometry shapes
    * [Pull request 515](https://bitbucket.org/osrf/sdformat/pull-requests/515)
+
+1. Clarify names of libsdformat parser and SDF specification in Readme.
+   * [Pull request 514](https://bitbucket.org/osrf/sdformat/pull-requests/514)
+
+1. Disable macOS tests failing due to issue 202.
+   * [Pull request 511](https://bitbucket.org/osrf/sdformat/pull-requests/511)
+   * [Issue 202](https://bitbucket.org/osrf/sdformat/issues/202)
 
 ### SDFormat 8.0.0 (2019-03-01)
 
