@@ -57,6 +57,7 @@ TEST(DOMSensor, MoveConstructor)
   sensor.SetPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
   sensor.SetType(sdf::SensorType::MAGNETOMETER);
   sensor.SetPoseFrame("a_frame");
+  sensor.SetUpdateRate(0.123);
 
   sdf::Noise noise;
   noise.SetMean(0.1);
@@ -72,6 +73,7 @@ TEST(DOMSensor, MoveConstructor)
   ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
   EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
                    sensor2.MagnetometerSensor()->XNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.123, sensor2.UpdateRate());
 }
 
 /////////////////////////////////////////////////
@@ -81,6 +83,7 @@ TEST(DOMSensor, CopyConstructor)
   sensor.SetPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
   sensor.SetType(sdf::SensorType::MAGNETOMETER);
   sensor.SetPoseFrame("a_frame");
+  sensor.SetUpdateRate(0.123);
 
   sdf::Noise noise;
   noise.SetMean(0.1);
@@ -103,6 +106,7 @@ TEST(DOMSensor, CopyConstructor)
   ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
   EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
                    sensor2.MagnetometerSensor()->XNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.123, sensor2.UpdateRate());
 }
 
 /////////////////////////////////////////////////

@@ -47,6 +47,14 @@ TEST(DOMNoise, ConstructionAndSet)
   noise.SetPrecision(8.9);
   EXPECT_DOUBLE_EQ(8.9, noise.Precision());
 
+  EXPECT_DOUBLE_EQ(0.0, noise.DynamicBiasStdDev());
+  noise.SetDynamicBiasStdDev(9.1);
+  EXPECT_DOUBLE_EQ(9.1, noise.DynamicBiasStdDev());
+
+  EXPECT_DOUBLE_EQ(0.0, noise.DynamicBiasCorrelationTime());
+  noise.SetDynamicBiasCorrelationTime(19.12);
+  EXPECT_DOUBLE_EQ(19.12, noise.DynamicBiasCorrelationTime());
+
   // Copy Constructor
   sdf::Noise noise2(noise);
   EXPECT_EQ(noise, noise2);
@@ -185,4 +193,29 @@ TEST(DOMNoise, Load)
 
   EXPECT_NE(nullptr, noise.Element());
   EXPECT_EQ(sdf.get(), noise.Element().get());
+
+  // Add the <dynamic_bias_stddev> child element.
+  sdf::ElementPtr dynamicBiasStdDevSdf(std::make_shared<sdf::Element>());
+  dynamicBiasStdDevSdf->SetName("dynamic_bias_stddev");
+  dynamicBiasStdDevSdf->AddValue("double", "0.0", 0, "dynamic_bias_stddev");
+  dynamicBiasStdDevSdf->GetValue()->Set(8.9);
+  sdf->InsertElement(dynamicBiasStdDevSdf);
+
+  EXPECT_DOUBLE_EQ(0.0, noise.DynamicBiasStdDev());
+  errors = noise.Load(sdf);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(8.9, noise.DynamicBiasStdDev());
+
+  // Add the <dynamic_bias_correlation_time> child element.
+  sdf::ElementPtr dynamicBiasCTimeSdf(std::make_shared<sdf::Element>());
+  dynamicBiasCTimeSdf->SetName("dynamic_bias_correlation_time");
+  dynamicBiasCTimeSdf->AddValue("double", "0.0", 0,
+      "dynamic_bias_correlation_time");
+  dynamicBiasCTimeSdf->GetValue()->Set(10.2);
+  sdf->InsertElement(dynamicBiasCTimeSdf);
+
+  EXPECT_DOUBLE_EQ(0.0, noise.DynamicBiasCorrelationTime());
+  errors = noise.Load(sdf);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(10.2, noise.DynamicBiasCorrelationTime());
 }

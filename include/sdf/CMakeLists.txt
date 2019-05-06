@@ -6,6 +6,7 @@ set (headers
   Assert.hh
   Atmosphere.hh
   Box.hh
+  Camera.hh
   Collision.hh
   Console.hh
   Cylinder.hh
@@ -15,8 +16,10 @@ set (headers
   Filesystem.hh
   Geometry.hh
   Gui.hh
+  Imu.hh
   Joint.hh
   JointAxis.hh
+  Lidar.hh
   Light.hh
   Link.hh
   Magnetometer.hh

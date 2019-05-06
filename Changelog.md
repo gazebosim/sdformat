@@ -2,6 +2,16 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Added Lidar Sensor DOM. Also added "lidar" and "gpu_lidar" as sensor
+   types. These two types are equivalent to "ray" and "gpu_ray".
+   * [Pull request 536](https://bitbucket.org/osrf/sdformat/pull-requests/536)
+
+1. Added IMU Sensor DOM.
+   * [Pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)
+
+1. Added Camera Sensor DOM.
+   * [Pull request 531](https://bitbucket.org/osrf/sdformat/pull-requests/531)
+
 1. Added Sensor DOM `==` operator.
    * [Pull request 529](https://bitbucket.org/osrf/sdformat/pull-requests/529)
 
@@ -19,6 +29,7 @@
 
 1. Add PBR material SDF element
    * [Pull request 512](https://bitbucket.org/osrf/sdformat/pull-requests/512)
+   * [Pull request 535](https://bitbucket.org/osrf/sdformat/pull-requests/535)
 
 1. Set geometry shapes
    * [Pull request 515](https://bitbucket.org/osrf/sdformat/pull-requests/515)

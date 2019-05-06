@@ -21,14 +21,17 @@
 #include <ignition/math/Pose3.hh>
 #include "sdf/AirPressure.hh"
 #include "sdf/Altimeter.hh"
+#include "sdf/Camera.hh"
 #include "sdf/Collision.hh"
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Imu.hh"
 #include "sdf/Link.hh"
 #include "sdf/Magnetometer.hh"
 #include "sdf/Model.hh"
 #include "sdf/parser.hh"
+#include "sdf/Lidar.hh"
 #include "sdf/Root.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
@@ -237,7 +240,7 @@ TEST(DOMLink, Sensors)
   const sdf::Link *link = model->LinkByIndex(0);
   ASSERT_NE(nullptr, link);
   EXPECT_EQ("link", link->Name());
-  EXPECT_EQ(18u, link->SensorCount());
+  EXPECT_EQ(20u, link->SensorCount());
 
   // Get the altimeter sensor
   const sdf::Sensor *altimeterSensor = link->SensorByIndex(0);
@@ -260,6 +263,40 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("camera_sensor", cameraSensor->Name());
   EXPECT_EQ(sdf::SensorType::CAMERA, cameraSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), cameraSensor->Pose());
+  const sdf::Camera *camSensor = cameraSensor->CameraSensor();
+  ASSERT_NE(nullptr, camSensor);
+  EXPECT_EQ("my_camera", camSensor->Name());
+  EXPECT_EQ(ignition::math::Pose3d(0.1, 0.2, 0.3, 0, 0, 0), camSensor->Pose());
+  EXPECT_DOUBLE_EQ(0.75, camSensor->HorizontalFov().Radian());
+  EXPECT_EQ(640u, camSensor->ImageWidth());
+  EXPECT_EQ(480u, camSensor->ImageHeight());
+  EXPECT_EQ(sdf::PixelFormatType::RGB_INT8, camSensor->PixelFormat());
+  EXPECT_DOUBLE_EQ(0.2, camSensor->NearClip());
+  EXPECT_DOUBLE_EQ(12.3, camSensor->FarClip());
+  EXPECT_TRUE(camSensor->SaveFrames());
+  EXPECT_EQ("/tmp/cam", camSensor->SaveFramesPath());
+  EXPECT_DOUBLE_EQ(0.5, camSensor->ImageNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.1, camSensor->ImageNoise().StdDev());
+  EXPECT_DOUBLE_EQ(0.1, camSensor->DistortionK1());
+  EXPECT_DOUBLE_EQ(0.2, camSensor->DistortionK2());
+  EXPECT_DOUBLE_EQ(0.3, camSensor->DistortionK3());
+  EXPECT_DOUBLE_EQ(0.4, camSensor->DistortionP1());
+  EXPECT_DOUBLE_EQ(0.5, camSensor->DistortionP2());
+  EXPECT_EQ(ignition::math::Vector2d(0.2, 0.4), camSensor->DistortionCenter());
+  EXPECT_EQ("custom", camSensor->LensType());
+  EXPECT_FALSE(camSensor->LensScaleToHfov());
+  EXPECT_DOUBLE_EQ(1.1, camSensor->LensC1());
+  EXPECT_DOUBLE_EQ(2.2, camSensor->LensC2());
+  EXPECT_DOUBLE_EQ(3.3, camSensor->LensC3());
+  EXPECT_DOUBLE_EQ(1.2, camSensor->LensFocalLength());
+  EXPECT_EQ("sin", camSensor->LensFunction());
+  EXPECT_DOUBLE_EQ(0.7505, camSensor->LensCutoffAngle().Radian());
+  EXPECT_EQ(128, camSensor->LensEnvironmentTextureSize());
+  EXPECT_DOUBLE_EQ(280, camSensor->LensIntrinsicsFx());
+  EXPECT_DOUBLE_EQ(281, camSensor->LensIntrinsicsFy());
+  EXPECT_DOUBLE_EQ(162, camSensor->LensIntrinsicsCx());
+  EXPECT_DOUBLE_EQ(124, camSensor->LensIntrinsicsCy());
+  EXPECT_DOUBLE_EQ(1.2, camSensor->LensIntrinsicsSkew());
 
   // Get the contact sensor
   const sdf::Sensor *contactSensor = link->SensorByName("contact_sensor");
@@ -274,6 +311,9 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("depth_sensor", depthSensor->Name());
   EXPECT_EQ(sdf::SensorType::DEPTH_CAMERA, depthSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), depthSensor->Pose());
+  const sdf::Camera *depthCamSensor = depthSensor->CameraSensor();
+  ASSERT_NE(nullptr, depthCamSensor);
+  EXPECT_EQ("my_depth_camera", depthCamSensor->Name());
 
   // Get the force_torque sensor
   const sdf::Sensor *forceTorqueSensor =
@@ -291,12 +331,23 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ(sdf::SensorType::GPS, gpsSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(13, 14, 15, 0, 0, 0), gpsSensor->Pose());
 
-  // Get the gpuRay sensor
+  // Get the gpu_ray sensor
   const sdf::Sensor *gpuRaySensor = link->SensorByName("gpu_ray_sensor");
   ASSERT_NE(nullptr, gpuRaySensor);
   EXPECT_EQ("gpu_ray_sensor", gpuRaySensor->Name());
   EXPECT_EQ(sdf::SensorType::GPU_LIDAR, gpuRaySensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), gpuRaySensor->Pose());
+  const sdf::Lidar *gpuRay = gpuRaySensor->LidarSensor();
+  ASSERT_NE(nullptr, gpuRay);
+
+  // Get the gpu_lidar sensor
+  const sdf::Sensor *gpuLidarSensor = link->SensorByName("gpu_lidar_sensor");
+  ASSERT_NE(nullptr, gpuLidarSensor);
+  EXPECT_EQ("gpu_lidar_sensor", gpuLidarSensor->Name());
+  EXPECT_EQ(sdf::SensorType::GPU_LIDAR, gpuLidarSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), gpuLidarSensor->Pose());
+  const sdf::Lidar *gpuLidar = gpuLidarSensor->LidarSensor();
+  ASSERT_NE(nullptr, gpuLidar);
 
   // Get the imu sensor
   const sdf::Sensor *imuSensor = link->SensorByName("imu_sensor");
@@ -304,6 +355,58 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("imu_sensor", imuSensor->Name());
   EXPECT_EQ(sdf::SensorType::IMU, imuSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), imuSensor->Pose());
+  const sdf::Imu *imuSensorObj = imuSensor->ImuSensor();
+  ASSERT_NE(nullptr, imuSensorObj);
+
+  EXPECT_DOUBLE_EQ(0.0, imuSensorObj->LinearAccelerationXNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.1, imuSensorObj->LinearAccelerationXNoise().StdDev());
+  EXPECT_DOUBLE_EQ(0.2,
+      imuSensorObj->LinearAccelerationXNoise().DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(1.0,
+      imuSensorObj->LinearAccelerationXNoise().DynamicBiasCorrelationTime());
+
+  EXPECT_DOUBLE_EQ(1.0, imuSensorObj->LinearAccelerationYNoise().Mean());
+  EXPECT_DOUBLE_EQ(1.1, imuSensorObj->LinearAccelerationYNoise().StdDev());
+  EXPECT_DOUBLE_EQ(1.2,
+      imuSensorObj->LinearAccelerationYNoise().DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(2.0,
+      imuSensorObj->LinearAccelerationYNoise().DynamicBiasCorrelationTime());
+
+  EXPECT_DOUBLE_EQ(2.0, imuSensorObj->LinearAccelerationZNoise().Mean());
+  EXPECT_DOUBLE_EQ(2.1, imuSensorObj->LinearAccelerationZNoise().StdDev());
+  EXPECT_DOUBLE_EQ(2.2,
+      imuSensorObj->LinearAccelerationZNoise().DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(3.0,
+      imuSensorObj->LinearAccelerationZNoise().DynamicBiasCorrelationTime());
+
+  EXPECT_DOUBLE_EQ(3.0, imuSensorObj->AngularVelocityXNoise().Mean());
+  EXPECT_DOUBLE_EQ(3.1, imuSensorObj->AngularVelocityXNoise().StdDev());
+  EXPECT_DOUBLE_EQ(4.2,
+      imuSensorObj->AngularVelocityXNoise().DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(4.0,
+      imuSensorObj->AngularVelocityXNoise().DynamicBiasCorrelationTime());
+
+  EXPECT_DOUBLE_EQ(4.0, imuSensorObj->AngularVelocityYNoise().Mean());
+  EXPECT_DOUBLE_EQ(4.1, imuSensorObj->AngularVelocityYNoise().StdDev());
+  EXPECT_DOUBLE_EQ(5.2,
+      imuSensorObj->AngularVelocityYNoise().DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(5.0,
+      imuSensorObj->AngularVelocityYNoise().DynamicBiasCorrelationTime());
+
+
+  EXPECT_DOUBLE_EQ(5.0, imuSensorObj->AngularVelocityZNoise().Mean());
+  EXPECT_DOUBLE_EQ(5.1, imuSensorObj->AngularVelocityZNoise().StdDev());
+  EXPECT_DOUBLE_EQ(6.2,
+      imuSensorObj->AngularVelocityZNoise().DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(6.0,
+      imuSensorObj->AngularVelocityZNoise().DynamicBiasCorrelationTime());
+
+
+  EXPECT_EQ("ENU", imuSensorObj->Localization());
+  EXPECT_EQ("linka", imuSensorObj->CustomRpyParentFrame());
+  EXPECT_EQ(ignition::math::Vector3d::UnitY, imuSensorObj->CustomRpy());
+  EXPECT_EQ("linkb", imuSensorObj->GravityDirXParentFrame());
+  EXPECT_EQ(ignition::math::Vector3d::UnitZ, imuSensorObj->GravityDirX());
 
   // Get the logical camera sensor
   const sdf::Sensor *logicalCameraSensor =
@@ -346,6 +449,43 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("ray_sensor", raySensor->Name());
   EXPECT_EQ(sdf::SensorType::LIDAR, raySensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), raySensor->Pose());
+  const sdf::Lidar *ray = raySensor->LidarSensor();
+  ASSERT_NE(nullptr, ray);
+  EXPECT_EQ(320u, ray->HorizontalScanSamples());
+  EXPECT_DOUBLE_EQ(0.9, ray->HorizontalScanResolution());
+  EXPECT_DOUBLE_EQ(1.75, *(ray->HorizontalScanMinAngle()));
+  EXPECT_DOUBLE_EQ(2.94, *(ray->HorizontalScanMaxAngle()));
+  EXPECT_EQ(240u, ray->VerticalScanSamples());
+  EXPECT_DOUBLE_EQ(0.8, ray->VerticalScanResolution());
+  EXPECT_DOUBLE_EQ(2.75, *(ray->VerticalScanMinAngle()));
+  EXPECT_DOUBLE_EQ(3.94, *(ray->VerticalScanMaxAngle()));
+  EXPECT_DOUBLE_EQ(1.23, ray->RangeMin());
+  EXPECT_DOUBLE_EQ(4.56, ray->RangeMax());
+  EXPECT_DOUBLE_EQ(7.89, ray->RangeResolution());
+  EXPECT_DOUBLE_EQ(0.98, ray->LidarNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.76, ray->LidarNoise().StdDev());
+
+  // Get the lidar sensor
+  const sdf::Sensor *lidarSensor = link->SensorByName("lidar_sensor");
+  ASSERT_NE(nullptr, lidarSensor);
+  EXPECT_EQ("lidar_sensor", lidarSensor->Name());
+  EXPECT_EQ(sdf::SensorType::LIDAR, lidarSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), lidarSensor->Pose());
+  const sdf::Lidar *lidar = lidarSensor->LidarSensor();
+  ASSERT_NE(nullptr, lidar);
+  EXPECT_EQ(320u, lidar->HorizontalScanSamples());
+  EXPECT_DOUBLE_EQ(0.9, lidar->HorizontalScanResolution());
+  EXPECT_DOUBLE_EQ(1.75, *(lidar->HorizontalScanMinAngle()));
+  EXPECT_DOUBLE_EQ(2.94, *(lidar->HorizontalScanMaxAngle()));
+  EXPECT_EQ(240u, lidar->VerticalScanSamples());
+  EXPECT_DOUBLE_EQ(0.8, lidar->VerticalScanResolution());
+  EXPECT_DOUBLE_EQ(2.75, *(lidar->VerticalScanMinAngle()));
+  EXPECT_DOUBLE_EQ(3.94, *(lidar->VerticalScanMaxAngle()));
+  EXPECT_DOUBLE_EQ(1.23, lidar->RangeMin());
+  EXPECT_DOUBLE_EQ(4.56, lidar->RangeMax());
+  EXPECT_DOUBLE_EQ(7.89, lidar->RangeResolution());
+  EXPECT_DOUBLE_EQ(0.98, lidar->LidarNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.76, lidar->LidarNoise().StdDev());
 
   // Get the rfid sensor
   const sdf::Sensor *rfidSensor = link->SensorByName("rfid_sensor");

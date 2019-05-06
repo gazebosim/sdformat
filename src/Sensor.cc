@@ -19,8 +19,11 @@
 #include <ignition/math/Pose3.hh>
 #include "sdf/AirPressure.hh"
 #include "sdf/Altimeter.hh"
+#include "sdf/Camera.hh"
 #include "sdf/Error.hh"
+#include "sdf/Imu.hh"
 #include "sdf/Magnetometer.hh"
+#include "sdf/Lidar.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "Utils.hh"
@@ -63,7 +66,9 @@ class sdf::SensorPrivate
             name(_sensor.name),
             topic(_sensor.topic),
             pose(_sensor.pose),
-            poseFrame(_sensor.poseFrame)
+            poseFrame(_sensor.poseFrame),
+            sdf(_sensor.sdf),
+            updateRate(_sensor.updateRate)
 
   {
     if (_sensor.magnetometer)
@@ -80,15 +85,26 @@ class sdf::SensorPrivate
       this->airPressure = std::make_unique<sdf::AirPressure>(
           *_sensor.airPressure);
     }
+    if (_sensor.camera)
+    {
+      this->camera = std::make_unique<sdf::Camera>(*_sensor.camera);
+    }
+    if (_sensor.imu)
+    {
+      this->imu = std::make_unique<sdf::Imu>(*_sensor.imu);
+    }
+    if (_sensor.lidar)
+    {
+      this->lidar = std::make_unique<sdf::Lidar>(*_sensor.lidar);
+    }
     // Developer note: If you add a new sensor type, make sure to also
     // update the Sensor::operator== function. Please bump this text down as
-    // new sensors are added so that the next developer see the message.
+    // new sensors are added so that the next developer sees the message.
   }
   // Delete copy assignment so it is not accidentally used
   public: SensorPrivate &operator=(const SensorPrivate &) = delete;
 
   // \brief The sensor type.
-  //
   public: SensorType type = SensorType::NONE;
 
   /// \brief Name of the sensor.
@@ -114,9 +130,19 @@ class sdf::SensorPrivate
 
   /// \brief Pointer to an air pressure sensor.
   public: std::unique_ptr<AirPressure> airPressure;
+
+  /// \brief Pointer to a camera.
+  public: std::unique_ptr<Camera> camera;
+
+  /// \brief Pointer to an IMU.
+  public: std::unique_ptr<Imu> imu;
+
+  /// \brief Pointer to a lidar.
+  public: std::unique_ptr<Lidar> lidar;
+
   // Developer note: If you add a new sensor type, make sure to also
   // update the Sensor::operator== function. Please bump this text down as
-  // new sensors are added so that the next developer see the message.
+  // new sensors are added so that the next developer sees the message.
 
   /// \brief The frequency at which the sensor data is generated.
   /// If left unspecified (0.0), the sensor will generate data every cycle.
@@ -194,6 +220,13 @@ bool Sensor::operator==(const Sensor &_sensor) const
       return *(this->dataPtr->magnetometer) == *(_sensor.dataPtr->magnetometer);
     case SensorType::AIR_PRESSURE:
       return *(this->dataPtr->airPressure) == *(_sensor.dataPtr->airPressure);
+    case SensorType::IMU:
+      return *(this->dataPtr->imu) == *(_sensor.dataPtr->imu);
+    case SensorType::CAMERA:
+    case SensorType::DEPTH_CAMERA:
+      return *(this->dataPtr->camera) == *(_sensor.dataPtr->camera);
+    case SensorType::LIDAR:
+      return *(this->dataPtr->lidar) == *(_sensor.dataPtr->lidar);
     case SensorType::NONE:
     default:
       return true;
@@ -265,6 +298,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "camera")
   {
     this->dataPtr->type = SensorType::CAMERA;
+    this->dataPtr->camera.reset(new Camera());
+    Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "contact")
   {
@@ -273,6 +309,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "depth" || type == "depth_camera")
   {
     this->dataPtr->type = SensorType::DEPTH_CAMERA;
+    this->dataPtr->camera.reset(new Camera());
+    Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "force_torque")
   {
@@ -285,10 +324,18 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "gpu_ray" || type == "gpu_lidar")
   {
     this->dataPtr->type = SensorType::GPU_LIDAR;
+    this->dataPtr->lidar.reset(new Lidar());
+    Errors err = this->dataPtr->lidar->Load(
+        _sdf->GetElement(_sdf->HasElement("lidar") ? "lidar" : "ray"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "imu")
   {
     this->dataPtr->type = SensorType::IMU;
+    this->dataPtr->type = SensorType::IMU;
+    this->dataPtr->imu.reset(new Imu());
+    Errors err = this->dataPtr->imu->Load(_sdf->GetElement("imu"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "logical_camera")
   {
@@ -309,6 +356,10 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "ray" || type == "lidar")
   {
     this->dataPtr->type = SensorType::LIDAR;
+    this->dataPtr->lidar.reset(new Lidar());
+    Errors err = this->dataPtr->lidar->Load(
+        _sdf->GetElement(_sdf->HasElement("lidar") ? "lidar" : "ray"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "rfid")
   {
@@ -461,6 +512,18 @@ void Sensor::SetAirPressureSensor(const AirPressure &_air)
 }
 
 /////////////////////////////////////////////////
+const Lidar *Sensor::LidarSensor() const
+{
+  return this->dataPtr->lidar.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetLidarSensor(const Lidar &_lidar)
+{
+  this->dataPtr->lidar = std::make_unique<Lidar>(_lidar);
+}
+
+/////////////////////////////////////////////////
 double Sensor::UpdateRate() const
 {
   return this->dataPtr->updateRate;
@@ -479,4 +542,28 @@ std::string Sensor::TypeStr() const
   if (index > 0 && index < sensorTypeStrs.size())
     return sensorTypeStrs[index];
   return "none";
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetCameraSensor(const Camera &_cam)
+{
+  this->dataPtr->camera = std::make_unique<Camera>(_cam);
+}
+
+/////////////////////////////////////////////////
+const Camera *Sensor::CameraSensor() const
+{
+  return this->dataPtr->camera.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetImuSensor(const Imu &_imu)
+{
+  this->dataPtr->imu = std::make_unique<Imu>(_imu);
+}
+
+/////////////////////////////////////////////////
+const Imu *Sensor::ImuSensor() const
+{
+  return this->dataPtr->imu.get();
 }
