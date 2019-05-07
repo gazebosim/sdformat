@@ -28,6 +28,7 @@
 
 1. Update sdf noise elements
     * [Pull request 525](https://bitbucket.org/osrf/sdformat/pull-requests/525)
+    * [Pull request 522](https://bitbucket.org/osrf/sdformat/pull-requests/522)
 
 1. Apply rule of five for various DOM classes
     * [Pull request 524](https://bitbucket.org/osrf/sdformat/pull-requests/524)
