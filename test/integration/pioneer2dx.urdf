@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name='pioneer2dx'>
+  <link name='chassis'>
+    <inertial>
+      <origin xyz='0 0 0.16' rpy='0 -0 0'/>
+      <mass value='5.67'/>
+      <inertia ixx='0.07' ixy='0' ixz='0' iyy='0.08' iyz='0' izz='0.1'/>
+    </inertial>
+    <collision name='collision'>
+      <origin xyz='0 0 0.16' rpy='0 -0 0'/>
+      <geometry>
+        <box size='0.445 0.277 0.17'/>
+      </geometry>
+    </collision>
+    <collision name='castor_collision'>
+      <origin xyz='-0.2 0 0.04' rpy='0 -0 0'/>
+      <geometry>
+        <sphere radius='0.04'/>
+      </geometry>
+    </collision>
+    <visual name='visual'>
+      <origin xyz='0 0 0.2' rpy='0 -0 0'/>
+      <geometry>
+        <mesh filename='model://pioneer2dx/meshes/chassis.dae' scale='1 1 1'/>
+      </geometry>
+    </visual>
+    <visual name='castor_visual'>
+      <origin xyz='-0.2 0 0.04' rpy='0 -0 0'/>
+      <geometry>
+        <sphere radius='0.04'/>
+      </geometry>
+    </visual>
+  </link>
+  <link name='right_wheel'>
+    <inertial>
+      <origin xyz='-0.03 8.67362e-19 2.8898e-06' rpy='0 -0 0'/>
+      <mass value='1.5'/>
+      <inertia ixx='0.0051' ixy='0' ixz='0' iyy='0.0051' iyz='0' izz='0.009'/>
+    </inertial>
+    <collision name='collision'>
+      <origin xyz='-0.03 8.67362e-19 2.8898e-06' rpy='0 -0 0'/>
+      <geometry>
+        <cylinder radius='0.11' length='0.05'/>
+      </geometry>
+    </collision>
+    <visual name='visual'>
+      <origin xyz='-0.03 8.67362e-19 2.8898e-06' rpy='0 -0 0'/>
+      <geometry>
+        <cylinder radius='0.11' length='0.05'/>
+      </geometry>
+    </visual>
+  </link>
+  <link name='left_wheel'>
+    <inertial>
+      <origin xyz='0.03 -8.67362e-19 -2.8898e-06' rpy='0 -0 0'/>
+      <mass value='1.5'/>
+      <inertia ixx='0.0051' ixy='0' ixz='0' iyy='0.0051' iyz='0' izz='0.009'/>
+    </inertial>
+    <collision name='collision'>
+      <origin xyz='0.03 -8.67362e-19 -2.8898e-06' rpy='0 -0 0'/>
+      <geometry>
+        <cylinder radius='0.11' length='0.05'/>
+      </geometry>
+    </collision>
+    <visual name='visual'>
+      <origin xyz='0.03 -8.67362e-19 -2.8898e-06' rpy='0 -0 0'/>
+      <geometry>
+        <cylinder radius='0.11' length='0.05'/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name='left_wheel_hinge' type='revolute'>
+    <origin xyz='0.1 0.17 0.08' rpy='0 1.5707 1.5707'/>
+    <parent link='chassis'/>
+    <child link='left_wheel'/>
+    <axis xyz='9.63268e-05 9.63268e-05 1'/>
+    <limit lower='-1e+16' upper='1e+16' effort='-1' velocity='-1'/>
+  </joint>
+  <joint name='right_wheel_hinge' type='revolute'>
+    <origin xyz='0.1 -0.17 0.14' rpy='0 1.5707 1.5707'/>
+    <parent link='chassis'/>
+    <child link='right_wheel'/>
+    <axis xyz='9.63268e-05 9.63268e-05 1'/>
+    <limit lower='-1e+16' upper='1e+16' effort='-1' velocity='-1'/>
+  </joint>
+</robot>

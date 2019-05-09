@@ -23,6 +23,7 @@ set (sources
   Console.cc
   Converter.cc
   Cylinder.cc
+  ConvertToURDF.cc
   Element.cc
   Error.cc
   Exception.cc

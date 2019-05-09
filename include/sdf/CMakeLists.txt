@@ -11,6 +11,7 @@ set (headers
   Collision.hh
   Console.hh
   Cylinder.hh
+  ConvertToURDF.hh
   Element.hh
   Error.hh
   Exception.hh

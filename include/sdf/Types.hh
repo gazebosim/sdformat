@@ -133,6 +133,108 @@ namespace sdf
     public: float a;
   };
 
+    /// \brief Subtraction operator
+    /// \param[in] _v vector to subtract
+    /// \return the subracted vector
+    public: Vector3 operator-(const Vector3 &_v) const
+    {
+      return Vector3(this->x - _v.x, this->y - _v.y, this->z - _v.z);
+    }
+
+    /// \brief Do the reverse rotation of a vector by this quaternion
+    /// \param[in] _vec the vector
+    /// \return the
+    public: Vector3 RotateVectorReverse(Vector3 _vec) const
+            {
+              Quaternion tmp;
+              Vector3 result;
+
+              tmp.w = 0.0;
+              tmp.x = _vec.x;
+              tmp.y = _vec.y;
+              tmp.z = _vec.z;
+
+              tmp =  this->GetInverse() * (tmp * (*this));
+
+              result.x = tmp.x;
+              result.y = tmp.y;
+              result.z = tmp.z;
+
+              return result;
+            }
+
+    /// \brief Addition operator
+    /// A is the transform from O to P specified in frame O
+    /// B is the transform from P to Q specified in frame P
+    /// then, B + A is the transform from O to Q specified in frame O
+    /// \param[in] _pose Pose to add to this pose
+    /// \return The resulting pose
+    public: Pose operator+(const Pose &_pose) const
+    {
+      Pose result;
+
+      result.pos = this->CoordPositionAdd(_pose);
+      result.rot = this->CoordRotationAdd(_pose.rot);
+
+      return result;
+    }
+
+      /// \brief Subtraction operator
+      /// A is the transform from O to P in frame O
+      /// B is the transform from O to Q in frame O
+      /// B - A is the transform from P to Q in frame P
+      /// \param[in] _pose Pose to subtract from this one
+      /// \return The resulting pose
+      public: inline Pose operator-(const Pose &_pose) const
+      {
+        return Pose(this->CoordPositionSub(_pose),
+          this->CoordRotationSub(_pose.rot));
+      }
+
+      /// \brief Subtract one position from another: result = this - pose
+      /// \param[in] _pose Pose to subtract
+      /// \return The resulting position
+      public: inline Vector3 CoordPositionSub(const Pose &_pose) const
+      {
+        Quaternion tmp(0,
+            this->pos.x - _pose.pos.x,
+            this->pos.y - _pose.pos.y,
+            this->pos.z - _pose.pos.z);
+
+        tmp = _pose.rot.GetInverse() * (tmp * _pose.rot);
+        return Vector3(tmp.x, tmp.y, tmp.z);
+      }
+
+      /// \brief Subtract one rotation from another: result = this->rot - rot
+      /// \param[in] _rot The rotation to subtract
+      /// \return The resulting rotation
+      public: inline Quaternion CoordRotationSub(
+                  const Quaternion &_rot) const
+      {
+        Quaternion result(_rot.GetInverse() * this->rot);
+        result.Normalize();
+        return result;
+      }
+
+    /// \brief Add-Equals operator
+    /// \param[in] _pose Pose to add to this pose
+    /// \return The resulting pose
+    public: const Pose &operator+=(const Pose &_pose)
+    {
+      this->pos = this->CoordPositionAdd(_pose);
+      this->rot = this->CoordRotationAdd(_pose.rot);
+
+      return *this;
+    }
+
+
+    /// \brief Add one rotation to another: result =  this->q + rot
+    /// \param[in] _rot Rotation to add
+    /// \return The resulting rotation
+    public: Quaternion CoordRotationAdd(const Quaternion &_rot) const
+    {
+      return Quaternion(_rot * this->rot);
+    }
   /// \brief A Time class, can be used to hold wall- or sim-time.
   /// stored as sec and nano-sec.
   class SDFORMAT_VISIBLE Time
