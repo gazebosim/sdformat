@@ -4,6 +4,9 @@
 
 ### SDFormat 8.1.0 (201X-XX-XX)
 
+1.  Change installation path of SDF description files to allow side-by-side installation.
+    * [pull request 538](https://bitbucket.org/osrf/sdformat/pull-requests/538)
+
 1. Added Lidar Sensor DOM. Also added `lidar` and `gpu_lidar` as sensor
    types. These two types are equivalent to `ray` and `gpu_ray`.
     * [Pull request 536](https://bitbucket.org/osrf/sdformat/pull-requests/536)
