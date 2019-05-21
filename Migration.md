@@ -12,6 +12,14 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDFormat 8.0 to 8.1
+
+### Modifications
+
+1.  + Change installation path of SDF description files to allow side-by-side installation.
+    + `{prefix}/share/sdformat/1.*/*.sdf` -> `{prefix}/share/sdformat8/1.*/*.sdf`
+    + [pull request 538](https://bitbucket.org/osrf/sdformat/pull-requests/538)
+
 ## SDFormat 5.x to 6.x
 
 ### Deprecations
