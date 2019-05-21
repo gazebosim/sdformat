@@ -103,7 +103,7 @@ namespace sdf
 
     /// \brief An RGBD sensor, which produces both a color image and
     /// a depth image.
-    RGBD = 19
+    RGBD_CAMERA = 19
   };
 
   /// \brief Information about an SDF sensor.
