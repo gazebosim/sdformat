@@ -225,6 +225,7 @@ bool Sensor::operator==(const Sensor &_sensor) const
       return *(this->dataPtr->imu) == *(_sensor.dataPtr->imu);
     case SensorType::CAMERA:
     case SensorType::DEPTH_CAMERA:
+    case SensorType::RGBD_CAMERA:
       return *(this->dataPtr->camera) == *(_sensor.dataPtr->camera);
     case SensorType::LIDAR:
       return *(this->dataPtr->lidar) == *(_sensor.dataPtr->lidar);
