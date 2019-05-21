@@ -52,7 +52,8 @@ const std::vector<std::string> sensorTypeStrs =
   "sonar",
   "wireless_receiver",
   "wireless_transmitter",
-  "air_pressure"
+  "air_pressure",
+  "rgbd"
 };
 
 class sdf::SensorPrivate

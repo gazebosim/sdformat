@@ -99,7 +99,11 @@ namespace sdf
     WIRELESS_TRANSMITTER = 17,
 
     /// \brief An air pressure sensor.
-    AIR_PRESSURE = 18
+    AIR_PRESSURE = 18,
+
+    /// \brief An RGBD sensor, which produces both a color image and
+    /// a depth image.
+    RGBD = 19
   };
 
   /// \brief Information about an SDF sensor.
