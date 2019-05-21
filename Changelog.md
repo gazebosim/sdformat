@@ -2,7 +2,12 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
-### SDFormat 8.1.0 (201X-XX-XX)
+### SDFormat 8.2.0 (201X-XX-XX)
+
+1. Added RGBD Camera Sensor type.
+    * [Pull request 540](https://bitbucket.org/osrf/sdformat/pull-requests/540)
+
+### SDFormat 8.1.0 (2019-05-20)
 
 1. Added Lidar Sensor DOM. Also added `lidar` and `gpu_lidar` as sensor
    types. These two types are equivalent to `ray` and `gpu_ray`.
