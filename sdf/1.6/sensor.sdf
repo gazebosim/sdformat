@@ -8,10 +8,11 @@
 
   <attribute name="type" type="string" default="__default__" required="1">
     <description>The type name of the sensor. By default, SDF supports types
+                  air_pressure,
                   altimeter,
                   camera,
                   contact,
-                  depth,
+                  depth_camera,
                   force_torque,
                   gps,
                   gpu_lidar,
@@ -24,6 +25,7 @@
                   ray,
                   rfid,
                   rfidtag,
+                  rgbd_camera,
                   sonar,
                   wireless_receiver, and
                   wireless_transmitter.
