@@ -2,7 +2,12 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
-### SDFormat 8.1.0 (201X-XX-XX)
+### SDFormat 8.2.0 (201X-XX-XX)
+
+1. Added RGBD Camera Sensor type.
+    * [Pull request 540](https://bitbucket.org/osrf/sdformat/pull-requests/540)
+
+### SDFormat 8.1.0 (2019-05-20)
 
 1.  Change installation path of SDF description files to allow side-by-side installation.
     * [pull request 538](https://bitbucket.org/osrf/sdformat/pull-requests/538)
