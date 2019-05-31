@@ -28,7 +28,7 @@ end
 require 'optparse'
 
 # Constants.
-LIBRARY_NAME = '@IGN_LIBRARY_NAME@'
+LIBRARY_NAME = '@library_location@'
 LIBRARY_VERSION = '@SDF_VERSION_FULL@'
 COMMON_OPTIONS =
                "  -h [ --help ]              Print this help message.\n"\
@@ -109,13 +109,21 @@ class Cmd
     # puts options
 
     # Read the plugin that handles the command.
-    plugin = LIBRARY_NAME
+    if LIBRARY_NAME[0] == '/'
+      # If the first character is a slash, we'll assume that we've been given an
+      # absolute path to the library. This is only used during test mode.
+      plugin = LIBRARY_NAME
+    else
+      # We're assuming that the library path is relative to the current
+      # location of this script.
+      plugin = File.expand_path(File.join(File.dirname(__FILE__), LIBRARY_NAME))
+    end
     conf_version = LIBRARY_VERSION
 
     begin
       Importer.dlload plugin
-    rescue => exception
-      puts "Library error: #{exception.message}"
+    rescue DLError
+      puts "Library error: [#{plugin}] not found."
       exit(-1)
     end
 
