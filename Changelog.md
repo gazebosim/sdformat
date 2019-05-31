@@ -2,46 +2,49 @@
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
 
+1. Fix ign library path on macOS.
+    * [Pull request 542](https://bitbucket.org/osrf/sdformat/pull-requests/542)
+
 1. Preserve XML elements that are not part of the SDF specification.
-   * [Pull request 449](https://bitbucket.org/osrf/sdformat/pull-requests/449)
+    * [Pull request 449](https://bitbucket.org/osrf/sdformat/pull-requests/449)
 
 1. Embed SDF specification files directly in libsdformat.so.
-   * [Pull request 434](https://bitbucket.org/osrf/sdformat/pull-requests/434)
+    * [Pull request 434](https://bitbucket.org/osrf/sdformat/pull-requests/434)
 
 1. Removed support for SDF spec versions 1.0 and 1.2
-   * [Pull request #432](https://bitbucket.org/osrf/sdformat/pull-requests/432)
+    * [Pull request #432](https://bitbucket.org/osrf/sdformat/pull-requests/432)
 
 1. SDF DOM: Additions to the document object model.
-   * [Pull request 433](https://bitbucket.org/osrf/sdformat/pull-requests/433)
-   * [Pull request 441](https://bitbucket.org/osrf/sdformat/pull-requests/441)
-   * [Pull request 442](https://bitbucket.org/osrf/sdformat/pull-requests/442)
-   * [Pull request 445](https://bitbucket.org/osrf/sdformat/pull-requests/445)
-   * [Pull request 451](https://bitbucket.org/osrf/sdformat/pull-requests/451)
-   * [Pull request 455](https://bitbucket.org/osrf/sdformat/pull-requests/455)
-   * [Pull request 481](https://bitbucket.org/osrf/sdformat/pull-requests/481)
+    * [Pull request 433](https://bitbucket.org/osrf/sdformat/pull-requests/433)
+    * [Pull request 441](https://bitbucket.org/osrf/sdformat/pull-requests/441)
+    * [Pull request 442](https://bitbucket.org/osrf/sdformat/pull-requests/442)
+    * [Pull request 445](https://bitbucket.org/osrf/sdformat/pull-requests/445)
+    * [Pull request 451](https://bitbucket.org/osrf/sdformat/pull-requests/451)
+    * [Pull request 455](https://bitbucket.org/osrf/sdformat/pull-requests/455)
+    * [Pull request 481](https://bitbucket.org/osrf/sdformat/pull-requests/481)
 
 1. SDF DOM: Add Element() accessor to Gui, JointAxis and World classes.
-   * [Pull request 450](https://bitbucket.org/osrf/sdformat/pull-requests/450)
+    * [Pull request 450](https://bitbucket.org/osrf/sdformat/pull-requests/450)
 
 1. Adds the equalivent of gz sdf -d to sdformat. The command line option
    will print the full description of the SDF spec.
-   * [Pull request 424](https://bitbucket.org/osrf/sdformat/pull-requests/424)
+    * [Pull request 424](https://bitbucket.org/osrf/sdformat/pull-requests/424)
 
 1. Adds the equalivent of gz sdf -p to sdformat. The command line option
    will convert and print the specified sdf file.
-   * [Pull request 494](https://bitbucket.org/osrf/sdformat/pull-requests/494)
+    * [Pull request 494](https://bitbucket.org/osrf/sdformat/pull-requests/494)
 
 1. SDF DOM: Additions to the document object model.
-   * [Pull request 393](https://bitbucket.org/osrf/sdformat/pull-requests/393)
-   * [Pull request 394](https://bitbucket.org/osrf/sdformat/pull-requests/394)
-   * [Pull request 395](https://bitbucket.org/osrf/sdformat/pull-requests/395)
-   * [Pull request 396](https://bitbucket.org/osrf/sdformat/pull-requests/396)
-   * [Pull request 397](https://bitbucket.org/osrf/sdformat/pull-requests/397)
-   * [Pull request 406](https://bitbucket.org/osrf/sdformat/pull-requests/406)
-   * [Pull request 407](https://bitbucket.org/osrf/sdformat/pull-requests/407)
-   * [Pull request 410](https://bitbucket.org/osrf/sdformat/pull-requests/410)
-   * [Pull request 415](https://bitbucket.org/osrf/sdformat/pull-requests/415)
-   * [Pull request 420](https://bitbucket.org/osrf/sdformat/pull-requests/420)
+    * [Pull request 393](https://bitbucket.org/osrf/sdformat/pull-requests/393)
+    * [Pull request 394](https://bitbucket.org/osrf/sdformat/pull-requests/394)
+    * [Pull request 395](https://bitbucket.org/osrf/sdformat/pull-requests/395)
+    * [Pull request 396](https://bitbucket.org/osrf/sdformat/pull-requests/396)
+    * [Pull request 397](https://bitbucket.org/osrf/sdformat/pull-requests/397)
+    * [Pull request 406](https://bitbucket.org/osrf/sdformat/pull-requests/406)
+    * [Pull request 407](https://bitbucket.org/osrf/sdformat/pull-requests/407)
+    * [Pull request 410](https://bitbucket.org/osrf/sdformat/pull-requests/410)
+    * [Pull request 415](https://bitbucket.org/osrf/sdformat/pull-requests/415)
+    * [Pull request 420](https://bitbucket.org/osrf/sdformat/pull-requests/420)
 
 
 ## SDFormat 6.0
