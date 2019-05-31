@@ -6,6 +6,6 @@
     <description>Name of the frame. This name must not match another frame defined inside the parent that this frame is attached to.</description>
   </attribute>
 
-  <include filename="pose.sdf" required="0"/>
+  <include filename="pose_relative_to.sdf" required="0"/>
 
 </element> <!-- End Frame -->
