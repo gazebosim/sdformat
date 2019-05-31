@@ -38,6 +38,7 @@ set (sdfs
   polyline_shape.sdf
   population.sdf
   pose.sdf
+  pose_relative_to.sdf
   projector.sdf
   ray.sdf
   rfidtag.sdf
