@@ -10,7 +10,6 @@
     <description>(DEPRECATION WARNING: This is deprecated in 1.6 and removed in 1.7. Actors should be static, so this is always true.</description>
   </element>
 
-  <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
 
   <element name="skin" required="0">

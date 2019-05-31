@@ -22,7 +22,6 @@
     <description>far clip distance</description>
   </element>
 
-  <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
 
   <include filename="plugin.sdf" required="*"/>

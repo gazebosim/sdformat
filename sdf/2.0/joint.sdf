@@ -237,7 +237,6 @@
     </element>
   </element> <!-- End Physics -->
 
-  <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
   <include filename="sensor.sdf" required="*"/>
 </element> <!-- End Joint -->
