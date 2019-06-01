@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<sdf version="1.5">
+  <model name="two_links_orthogonal_1">
+    <link name="linkA">
+      <pose>0 0 0 0 0 0</pose>
+    </link>
+
+    <joint name="jointAB" type="revolute">
+      <pose relative_to="linkA">0.1 0 0 0 0 0</pose>
+      <parent>linkA</parent>
+      <child>linkB</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name="linkB">
+      <pose relative_to="jointAB"/>
+      <inertial>
+        <pose>0 0 0.1 0 0 0</pose>
+      </inertial>
+    </link>
+
+    <joint name="joint_world" type="fixed">
+      <parent>world</parent>
+      <child>linkA</child>
+    </joint>
+  </model>
+</sdf>
