@@ -1,3 +1,29 @@
 <convert name="sdf">
 
+  <convert name="world">
+    <!-- Add use_parent_model_frame=true for 1.4 joints -->
+    <convert name="model">
+      <convert name="joint">
+        <convert name="axis">
+          <remove element="use_parent_model_frame"/>
+        </convert>
+        <convert name="axis2">
+          <remove element="use_parent_model_frame"/>
+        </convert>
+      </convert>
+    </convert>
+  </convert>
+
+  <!-- for model sdfs -->
+  <convert name="model">
+    <convert name="joint">
+      <convert name="axis">
+        <remove element="use_parent_model_frame"/>
+      </convert>
+      <convert name="axis2">
+        <remove element="use_parent_model_frame"/>
+      </convert>
+    </convert>
+  </convert>
+
 </convert> <!-- End SDF -->
