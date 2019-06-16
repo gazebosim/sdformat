@@ -111,5 +111,55 @@ namespace sdf
 
     return errors;
   }
+
+  /// \brief Load all objects of a specific sdf element type. No error
+  /// is returned if an element is not present. 
+  /// \param[in] _sdf The SDF element that contains zero or more elements.
+  /// \param[in] _sdfName Name of the sdf element, such as "model".
+  /// \param[out] _objs Elements that match _sdfName in _sdf are added to this
+  /// vector, unless an error is encountered during load.
+  /// \return The vector of errors. An empty vector indicates no errors were
+  /// experienced.
+  template<typename Class>
+  sdf::Errors loadRepeated(sdf::ElementPtr _sdf,
+      const std::string &_sdfName, std::vector<Class> &_objs)
+  {
+    Errors errors;
+
+    std::vector<std::string> names;
+
+    // Check that an element exists.
+    if (_sdf->HasElement(_sdfName))
+    {
+      // Read all the elements.
+      sdf::ElementPtr elem = _sdf->GetElement(_sdfName);
+      while (elem)
+      {
+        Class obj;
+
+        // Load the model and capture the errors.
+        Errors loadErrors = obj.Load(elem);
+
+        // If there are errors...
+        if (!loadErrors.empty())
+        {
+          // Add the load errors to the master error list.
+          errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
+        }
+        else
+        {
+          // If there are no errors...
+          _objs.push_back(std::move(obj));
+        }
+
+        elem = elem->GetNextElement(_sdfName);
+      }
+    }
+    // Do not add an error if the model tag is missing. This is an internal
+    // function that is called by class without checking if an element actually
+    // exists. This is a bit of safe code reduction.
+
+    return errors;
+  }
 }
 #endif
