@@ -2,7 +2,7 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
-### SDFormat 8.2.0 (201X-XX-XX)
+### SDFormat 8.2.0 (2019-06-18)
 
 1. Added RGBD Camera Sensor type.
     * [Pull request 540](https://bitbucket.org/osrf/sdformat/pull-requests/540)
