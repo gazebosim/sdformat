@@ -119,7 +119,7 @@ namespace sdf
     /// \brief Private data pointer.
     private: AnimationPrivate *dataPtr = nullptr;
   };
-  
+
   /// \brief Waypoint for Trajectory.
   class SDFORMAT_VISIBLE Waypoint
   {
@@ -178,7 +178,7 @@ namespace sdf
     /// \brief Private data pointer.
     private: WaypointPrivate *dataPtr = nullptr;
   };
-  
+
   /// \brief Trajectory for Animation.
   class SDFORMAT_VISIBLE Trajectory
   {
@@ -222,7 +222,8 @@ namespace sdf
     /// \return Type of the trajectory.
     public: const std::string &Type() const;
 
-    /// \brief Set the animation type of the trajectory (should match the animation name).
+    /// \brief Set the animation type of the trajectory 
+    /// (should match the animation name).
     /// \param[in] _type Animation type to be played.
     public: void SetType(std::string &_type);
 

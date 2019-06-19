@@ -297,7 +297,8 @@ Errors Waypoint::Load(ElementPtr _sdf)
   }
   this->dataPtr->time = timeValue.first;
 
-  std::pair posePair = _sdf->Get<ignition::math::Pose3d>("pose", this->dataPtr->pose);
+  std::pair posePair = _sdf->Get<ignition::math::Pose3d>
+                        ("pose", this->dataPtr->pose);
   if (!posePair.second)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -409,7 +410,8 @@ Errors Trajectory::Load(ElementPtr _sdf)
   }
   this->dataPtr->type = typePair.first;
 
-  this->dataPtr->tension = _sdf->Get<double>("tension", this->dataPtr->tension).first;
+  this->dataPtr->tension = _sdf->Get<double>
+          ("tension", this->dataPtr->tension).first;
 
   Errors waypointLoadErrors = loadRepeated<Waypoint>(_sdf, "waypoint",
     this->dataPtr->waypoints);
@@ -548,8 +550,8 @@ Errors Actor::Load(ElementPtr _sdf)
 
   if (skinElem)
   {
-    std::pair<std::string, bool> filenamePair = skinElem->Get<std::string>("filename", 
-        this->dataPtr->skin_filename);
+    std::pair<std::string, bool> filenamePair = skinElem->Get<std::string>
+                ("filename", this->dataPtr->skin_filename);
     
     if (!filenamePair.second)
     {
@@ -566,7 +568,8 @@ Errors Actor::Load(ElementPtr _sdf)
   Errors animationLoadErrors = loadUniqueRepeated<Animation>(_sdf, "animation",
      this->dataPtr->animations);
 
-  errors.insert(errors.end(), animationLoadErrors.begin(), animationLoadErrors.end());
+  errors.insert(errors.end(), animationLoadErrors.begin(), 
+                    animationLoadErrors.end());
 
   sdf::ElementPtr scriptElem = _sdf->GetElement("script");
 
@@ -586,10 +589,11 @@ Errors Actor::Load(ElementPtr _sdf)
     this->dataPtr->script_auto_start = scriptElem->Get<bool>("auto_start", 
         this->dataPtr->script_auto_start).first;
 
-    Errors trajectoryLoadErrors = loadUniqueRepeated<Trajectory>(scriptElem, "trajectory",
-      this->dataPtr->trajectories);
+    Errors trajectoryLoadErrors = loadUniqueRepeated<Trajectory>(scriptElem, 
+        "trajectory", this->dataPtr->trajectories);
 
-    errors.insert(errors.end(), trajectoryLoadErrors.begin(), trajectoryLoadErrors.end());
+    errors.insert(errors.end(), trajectoryLoadErrors.begin(), 
+                      trajectoryLoadErrors.end());
   }
 
   return errors;

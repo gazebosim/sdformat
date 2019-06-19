@@ -126,8 +126,6 @@ namespace sdf
   {
     Errors errors;
 
-    std::vector<std::string> names;
-
     // Check that an element exists.
     if (_sdf->HasElement(_sdfName))
     {
