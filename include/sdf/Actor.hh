@@ -34,6 +34,15 @@ namespace sdf
   //
 
   // Forward declare private data class.
+  class AnimationPrivate;
+
+  // Forward declare private data class.
+  class WaypointPrivate;
+
+  // Forward declare private data class.
+  class TrajectoryPrivate;
+
+  // Forward declare private data class.
   class ActorPrivate;
 
   /// \brief Animation in Actor.
@@ -107,17 +116,8 @@ namespace sdf
     /// \param[in] _animation The animation to set values from.
     public: void CopyFrom(const Animation &_animation);
 
-    /// \brief Unique name for animation.
-    public: std::string name = "__default__";
-  
-    /// \brief Path to animation file.
-    public: std::string filename = "__default__";
-  
-    /// \brief Scale for animation skeleton.
-    public: double scale = 1.0;
-  
-    /// \brief True if the animation is interpolated on X.
-    public: bool interpolate_x = false;
+    /// \brief Private data pointer.
+    private: AnimationPrivate *dataPtr = nullptr;
   };
   
   /// \brief Waypoint for Trajectory.
@@ -175,12 +175,8 @@ namespace sdf
     /// \param[in] _waypoint The waypoint to set values from.
     public: void CopyFrom(const Waypoint &_waypoint);
 
-    /// \brief Time to indicate when the pose should be reached.
-    public: double time = 0.0;
-  
-    /// \brief Pose to be reached.
-    public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
-  
+    /// \brief Private data pointer.
+    private: WaypointPrivate *dataPtr = nullptr;
   };
   
   /// \brief Trajectory for Animation.
@@ -253,17 +249,8 @@ namespace sdf
     /// \param[in] _trajectory The trajectory to set values from.
     public: void CopyFrom(const Trajectory &_trajectory);
 
-    /// \brief Unique id for a trajectory.
-    public: uint64_t id = 0;
-  
-    /// \brief String to indicate the animation type.
-    public: std::string type = "__default__";
-  
-    /// \brief Tension of the trajectory spline.
-    public: double tension = 0.0;
-  
-    /// \brief Each points in the trajectory.
-    public: std::vector<Waypoint> waypoints;
+    /// \brief Private data pointer.
+    private: TrajectoryPrivate *dataPtr = nullptr;
   };
 
 

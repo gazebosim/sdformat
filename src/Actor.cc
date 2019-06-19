@@ -23,6 +23,48 @@
 
 using namespace sdf;
 
+/// \brief Animation private data.
+class sdf::AnimationPrivate
+{
+  /// \brief Unique name for animation.
+  public: std::string name = "__default__";
+
+  /// \brief Path to animation file.
+  public: std::string filename = "__default__";
+
+  /// \brief Scale for animation skeleton.
+  public: double scale = 1.0;
+
+  /// \brief True if the animation is interpolated on X.
+  public: bool interpolate_x = false;
+};
+
+/// \brief Waypoint private data.
+class sdf::WaypointPrivate
+{
+  /// \brief Time to indicate when the pose should be reached.
+  public: double time = 0.0;
+
+  /// \brief Pose to be reached.
+  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+};
+
+/// \brief Trajectory private data.
+class sdf::TrajectoryPrivate
+{
+    /// \brief Unique id for a trajectory.
+    public: uint64_t id = 0;
+  
+    /// \brief String to indicate the animation type.
+    public: std::string type = "__default__";
+  
+    /// \brief Tension of the trajectory spline.
+    public: double tension = 0.0;
+  
+    /// \brief Each points in the trajectory.
+    public: std::vector<Waypoint> waypoints;
+};
+
 /// \brief Actor private data.
 class sdf::ActorPrivate
 {
@@ -65,30 +107,35 @@ class sdf::ActorPrivate
 
 /////////////////////////////////////////////////
 Animation::Animation()
+  : dataPtr(new AnimationPrivate)
 {
 }
 
 void Animation::CopyFrom(const Animation &_animation)
 {
-  this->name = _animation.name;
-  this->filename = _animation.filename;
-  this->scale = _animation.scale;
-  this->interpolate_x = _animation.interpolate_x;
+  this->dataPtr->name = _animation.dataPtr->name;
+  this->dataPtr->filename = _animation.dataPtr->filename;
+  this->dataPtr->scale = _animation.dataPtr->scale;
+  this->dataPtr->interpolate_x = _animation.dataPtr->interpolate_x;
 }
 
 /////////////////////////////////////////////////
 Animation::Animation(Animation &&_animation) noexcept
 {
-  this->CopyFrom(_animation);
+  this->dataPtr = _animation.dataPtr;
+  _animation.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
 Animation::~Animation()
 {
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////
 Animation::Animation(const Animation &_animation)
+  : dataPtr(new AnimationPrivate)
 {
   this->CopyFrom(_animation);
 }
@@ -96,6 +143,10 @@ Animation::Animation(const Animation &_animation)
 //////////////////////////////////////////////////
 Animation &Animation::operator=(const Animation &_animation)
 {
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new AnimationPrivate;
+  }
   this->CopyFrom(_animation);
   return *this;
 }
@@ -103,7 +154,8 @@ Animation &Animation::operator=(const Animation &_animation)
 //////////////////////////////////////////////////
 Animation &Animation::operator=(Animation &&_animation)
 {
-  this->CopyFrom(_animation);
+  this->dataPtr = _animation.dataPtr;
+  _animation.dataPtr = nullptr;
   return *this;
 }
 
@@ -112,26 +164,26 @@ Errors Animation::Load(ElementPtr _sdf)
 {
   Errors errors;
 
-  if (!loadName(_sdf, this->name))
+  if (!loadName(_sdf, this->dataPtr->name))
   {
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
           "An <animation> requires a name attribute."});
   }
 
   std::pair filenameValue = _sdf->Get<std::string>("filename", 
-        this->filename);
+        this->dataPtr->filename);
 
   if (!filenameValue.second)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
           "An <animation> requires a <filename>."});
   }
-  this->filename = filenameValue.first;
+  this->dataPtr->filename = filenameValue.first;
 
-  this->scale = _sdf->Get<double>("scale", this->scale).first;
+  this->dataPtr->scale = _sdf->Get<double>("scale", this->dataPtr->scale).first;
 
-  this->interpolate_x = _sdf->Get<bool>("interpolate_x", 
-        this->interpolate_x).first;
+  this->dataPtr->interpolate_x = _sdf->Get<bool>("interpolate_x", 
+        this->dataPtr->interpolate_x).first;
 
   return errors;
 }
@@ -139,75 +191,80 @@ Errors Animation::Load(ElementPtr _sdf)
 /////////////////////////////////////////////////
 const std::string &Animation::Name() const
 {
-  return this->name;
+  return this->dataPtr->name;
 }
 
 /////////////////////////////////////////////////
 void Animation::SetName(const std::string &_name) 
 {
-  this->name = _name;
+  this->dataPtr->name = _name;
 }
 
 /////////////////////////////////////////////////
 const std::string &Animation::Filename() const
 {
-  return this->filename;
+  return this->dataPtr->filename;
 }
 
 /////////////////////////////////////////////////
 void Animation::SetFilename(const std::string &_filename)
 {
-  this->filename = _filename;
+  this->dataPtr->filename = _filename;
 }
 
 /////////////////////////////////////////////////
 double Animation::Scale() const
 {
-  return this->scale;
+  return this->dataPtr->scale;
 }
 
 /////////////////////////////////////////////////
 void Animation::SetScale(const double _scale)
 {
-  this->scale = _scale;
+  this->dataPtr->scale = _scale;
 }
 
 /////////////////////////////////////////////////
 bool Animation::InterpolateX() const
 {
-  return this->interpolate_x;
+  return this->dataPtr->interpolate_x;
 }
 
 /////////////////////////////////////////////////
 void Animation::SetInterpolateX(const bool _interpolateX)
 {
-  this->interpolate_x = _interpolateX;
+  this->dataPtr->interpolate_x = _interpolateX;
 }
 
 /////////////////////////////////////////////////
 Waypoint::Waypoint()
+  : dataPtr(new WaypointPrivate)
 {
 }
 
 void Waypoint::CopyFrom(const Waypoint &_waypoint)
 {
-  this->time = _waypoint.time;
-  this->pose = _waypoint.pose;
+  this->dataPtr->time = _waypoint.dataPtr->time;
+  this->dataPtr->pose = _waypoint.dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
 Waypoint::Waypoint(Waypoint &&_waypoint) noexcept
 {
-  this->CopyFrom(_waypoint);
+  this->dataPtr = _waypoint.dataPtr;
+  _waypoint.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
 Waypoint::~Waypoint()
 {
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////
 Waypoint::Waypoint(const Waypoint &_waypoint)
+  : dataPtr(new WaypointPrivate)
 {
   this->CopyFrom(_waypoint);
 }
@@ -222,7 +279,8 @@ Waypoint &Waypoint::operator=(const Waypoint &_waypoint)
 //////////////////////////////////////////////////
 Waypoint &Waypoint::operator=(Waypoint &&_waypoint)
 {
-  this->CopyFrom(_waypoint);
+  this->dataPtr = _waypoint.dataPtr;
+  _waypoint.dataPtr = nullptr;
   return *this;
 }
 
@@ -231,21 +289,21 @@ Errors Waypoint::Load(ElementPtr _sdf)
 {
   Errors errors;
 
-  std::pair timeValue = _sdf->Get<uint64_t>("time", this->time);
+  std::pair timeValue = _sdf->Get<uint64_t>("time", this->dataPtr->time);
   if (!timeValue.second)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
           "A <waypoint> requires a <time>."});
   }
-  this->time = timeValue.first;
+  this->dataPtr->time = timeValue.first;
 
-  std::pair posePair = _sdf->Get<ignition::math::Pose3d>("pose", this->pose);
+  std::pair posePair = _sdf->Get<ignition::math::Pose3d>("pose", this->dataPtr->pose);
   if (!posePair.second)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
           "A <waypoint> requires a <pose>."});
   }
-  this->pose = posePair.first;
+  this->dataPtr->pose = posePair.first;
 
   return errors;
 }
@@ -253,53 +311,58 @@ Errors Waypoint::Load(ElementPtr _sdf)
 /////////////////////////////////////////////////
 double Waypoint::Time() const
 {
-  return this->time;
+  return this->dataPtr->time;
 }
 
 /////////////////////////////////////////////////
 void Waypoint::SetTime(const double _time)
 {
-  this->time = _time;
+  this->dataPtr->time = _time;
 }
 
 /////////////////////////////////////////////////
 ignition::math::Pose3d Waypoint::Pose() const
 {
-  return this->pose;
+  return this->dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
 void Waypoint::SetPose(ignition::math::Pose3d _pose)
 {
-  this->pose = _pose;
+  this->dataPtr->pose = _pose;
 }
 
 /////////////////////////////////////////////////
 Trajectory::Trajectory()
+  : dataPtr(new TrajectoryPrivate)
 {
 }
 
 void Trajectory::CopyFrom(const Trajectory &_trajectory)
 {
-  this->id = _trajectory.id;
-  this->type = _trajectory.type;
-  this->tension = _trajectory.tension;
-  this->waypoints = _trajectory.waypoints;
+  this->dataPtr->id = _trajectory.dataPtr->id;
+  this->dataPtr->type = _trajectory.dataPtr->type;
+  this->dataPtr->tension = _trajectory.dataPtr->tension;
+  this->dataPtr->waypoints = _trajectory.dataPtr->waypoints;
 }
 
 /////////////////////////////////////////////////
 Trajectory::Trajectory(Trajectory &&_trajectory) noexcept
 {
-  this->CopyFrom(_trajectory);
+  this->dataPtr = _trajectory.dataPtr;
+  _trajectory.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
 Trajectory::~Trajectory()
 {
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////
 Trajectory::Trajectory(const Trajectory &_trajectory)
+  : dataPtr(new TrajectoryPrivate)
 {
   this->CopyFrom(_trajectory);
 }
@@ -314,14 +377,15 @@ Trajectory &Trajectory::operator=(const Trajectory &_trajectory)
 //////////////////////////////////////////////////
 Trajectory &Trajectory::operator=(Trajectory &&_trajectory)
 {
-  this->CopyFrom(_trajectory);
+  this->dataPtr = _trajectory.dataPtr;
+  _trajectory.dataPtr = nullptr;
   return *this;
 }
 
 /////////////////////////////////////////////////
 uint64_t Trajectory::Id() const
 {
-  return this->id;
+  return this->dataPtr->id;
 }
 
 /////////////////////////////////////////////////
@@ -329,26 +393,26 @@ Errors Trajectory::Load(ElementPtr _sdf)
 {
   Errors errors;
 
-  std::pair idValue = _sdf->Get<uint64_t>("id", this->id);
+  std::pair idValue = _sdf->Get<uint64_t>("id", this->dataPtr->id);
   if (!idValue.second)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
           "A <trajectory> requires a <id>."});
   }
-  this->id = idValue.first;
+  this->dataPtr->id = idValue.first;
 
-  std::pair typePair = _sdf->Get<std::string>("type", this->type);
+  std::pair typePair = _sdf->Get<std::string>("type", this->dataPtr->type);
   if (!typePair.second)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
           "A <trajectory> requires a <type>."});
   }
-  this->type = typePair.first;
+  this->dataPtr->type = typePair.first;
 
-  this->tension = _sdf->Get<double>("tension", this->tension).first;
+  this->dataPtr->tension = _sdf->Get<double>("tension", this->dataPtr->tension).first;
 
   Errors waypointLoadErrors = loadRepeated<Waypoint>(_sdf, "waypoint",
-    this->waypoints);
+    this->dataPtr->waypoints);
   
   return waypointLoadErrors;
 }
@@ -356,38 +420,38 @@ Errors Trajectory::Load(ElementPtr _sdf)
 /////////////////////////////////////////////////
 const std::string &Trajectory::Type() const
 {
-  return this->type;
+  return this->dataPtr->type;
 }
 
 /////////////////////////////////////////////////
 void Trajectory::SetType(std::string &_type)
 {
-  this->type = _type;
+  this->dataPtr->type = _type;
 }
 
 /////////////////////////////////////////////////
 double Trajectory::Tension() const
 {
-  return this->tension;
+  return this->dataPtr->tension;
 }
 
 /////////////////////////////////////////////////
 void Trajectory::SetTension(double _tension)
 {
-  this->tension = _tension;
+  this->dataPtr->tension = _tension;
 }
 
 /////////////////////////////////////////////////
 uint64_t Trajectory::WaypointCount() const
 {
-  return this->waypoints.size();
+  return this->dataPtr->waypoints.size();
 }
 
 /////////////////////////////////////////////////
 const Waypoint *Trajectory::WaypointByIndex(const uint64_t _index) const
 {
-  if (_index < this->waypoints.size())
-    return &this->waypoints[_index];
+  if (_index < this->dataPtr->waypoints.size())
+    return &this->dataPtr->waypoints[_index];
   return nullptr;
 }
 
