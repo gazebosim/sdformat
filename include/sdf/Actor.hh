@@ -222,7 +222,7 @@ namespace sdf
     /// \return Type of the trajectory.
     public: const std::string &Type() const;
 
-    /// \brief Set the animation type of the trajectory 
+    /// \brief Set the animation type of the trajectory.
     /// (should match the animation name).
     /// \param[in] _type Animation type to be played.
     public: void SetType(std::string &_type);
@@ -342,8 +342,7 @@ namespace sdf
     /// \param[in] _skin_filename Skin filename.
     public: void SetSkinFilename(std::string _skin_filename);
 
-    /// \brief Get the skin scale. This value is between 0 and 1, 
-    /// where 1.0 means full scale.
+    /// \brief Get the skin scale.
     /// \return Constant skin filename.
     public: double SkinScale() const;
 

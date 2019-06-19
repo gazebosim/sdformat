@@ -54,13 +54,13 @@ class sdf::TrajectoryPrivate
 {
     /// \brief Unique id for a trajectory.
     public: uint64_t id = 0;
-  
+
     /// \brief String to indicate the animation type.
     public: std::string type = "__default__";
-  
+
     /// \brief Tension of the trajectory spline.
     public: double tension = 0.0;
-  
+
     /// \brief Each points in the trajectory.
     public: std::vector<Waypoint> waypoints;
 };
@@ -170,7 +170,7 @@ Errors Animation::Load(ElementPtr _sdf)
           "An <animation> requires a name attribute."});
   }
 
-  std::pair filenameValue = _sdf->Get<std::string>("filename", 
+  std::pair filenameValue = _sdf->Get<std::string>("filename",
         this->dataPtr->filename);
 
   if (!filenameValue.second)
@@ -182,7 +182,7 @@ Errors Animation::Load(ElementPtr _sdf)
 
   this->dataPtr->scale = _sdf->Get<double>("scale", this->dataPtr->scale).first;
 
-  this->dataPtr->interpolate_x = _sdf->Get<bool>("interpolate_x", 
+  this->dataPtr->interpolate_x = _sdf->Get<bool>("interpolate_x",
         this->dataPtr->interpolate_x).first;
 
   return errors;
@@ -195,7 +195,7 @@ const std::string &Animation::Name() const
 }
 
 /////////////////////////////////////////////////
-void Animation::SetName(const std::string &_name) 
+void Animation::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
 }
@@ -289,7 +289,7 @@ Errors Waypoint::Load(ElementPtr _sdf)
 {
   Errors errors;
 
-  std::pair timeValue = _sdf->Get<uint64_t>("time", this->dataPtr->time);
+  std::pair timeValue = _sdf->Get<double>("time", this->dataPtr->time);
   if (!timeValue.second)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -415,7 +415,7 @@ Errors Trajectory::Load(ElementPtr _sdf)
 
   Errors waypointLoadErrors = loadRepeated<Waypoint>(_sdf, "waypoint",
     this->dataPtr->waypoints);
-  
+
   return waypointLoadErrors;
 }
 
@@ -529,7 +529,7 @@ Errors Actor::Load(ElementPtr _sdf)
 
   if (_sdf->GetName() != "actor")
   {
-    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE, 
+    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
         "Attempting to load an actor, but the provided SDF element is not an"
         "<actor>."});
     return errors;
@@ -537,22 +537,22 @@ Errors Actor::Load(ElementPtr _sdf)
 
   if (!loadName(_sdf, this->dataPtr->name))
   {
-    errors.push_back({ErrorCode::ATTRIBUTE_MISSING, 
+    errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                       "An actor name is required, but the name is not set."});
   }
 
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
-  this->dataPtr->actor_static = _sdf->Get<bool>("static", 
+  this->dataPtr->actor_static = _sdf->Get<bool>("static",
       this->dataPtr->actor_static).first;
-    
+
   sdf::ElementPtr skinElem = _sdf->GetElement("skin");
 
   if (skinElem)
   {
     std::pair<std::string, bool> filenamePair = skinElem->Get<std::string>
                 ("filename", this->dataPtr->skin_filename);
-    
+
     if (!filenamePair.second)
     {
       errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -561,14 +561,14 @@ Errors Actor::Load(ElementPtr _sdf)
 
     this->dataPtr->skin_filename = filenamePair.first;
 
-    this->dataPtr->skin_scale = skinElem->Get<double>("scale", 
+    this->dataPtr->skin_scale = skinElem->Get<double>("scale",
         this->dataPtr->skin_scale).first;
   }
 
   Errors animationLoadErrors = loadUniqueRepeated<Animation>(_sdf, "animation",
      this->dataPtr->animations);
 
-  errors.insert(errors.end(), animationLoadErrors.begin(), 
+  errors.insert(errors.end(), animationLoadErrors.begin(),
                     animationLoadErrors.end());
 
   sdf::ElementPtr scriptElem = _sdf->GetElement("script");
@@ -580,19 +580,19 @@ Errors Actor::Load(ElementPtr _sdf)
   }
   else
   {
-    this->dataPtr->script_loop = scriptElem->Get<bool>("loop", 
+    this->dataPtr->script_loop = scriptElem->Get<bool>("loop",
         this->dataPtr->script_loop).first;
 
-    this->dataPtr->script_delay_start = scriptElem->Get<double>("delay_start", 
+    this->dataPtr->script_delay_start = scriptElem->Get<double>("delay_start",
         this->dataPtr->script_delay_start).first;
 
-    this->dataPtr->script_auto_start = scriptElem->Get<bool>("auto_start", 
+    this->dataPtr->script_auto_start = scriptElem->Get<bool>("auto_start",
         this->dataPtr->script_auto_start).first;
 
-    Errors trajectoryLoadErrors = loadUniqueRepeated<Trajectory>(scriptElem, 
+    Errors trajectoryLoadErrors = loadUniqueRepeated<Trajectory>(scriptElem,
         "trajectory", this->dataPtr->trajectories);
 
-    errors.insert(errors.end(), trajectoryLoadErrors.begin(), 
+    errors.insert(errors.end(), trajectoryLoadErrors.begin(),
                       trajectoryLoadErrors.end());
   }
 

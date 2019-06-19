@@ -113,7 +113,7 @@ namespace sdf
   }
 
   /// \brief Load all objects of a specific sdf element type. No error
-  /// is returned if an element is not present. 
+  /// is returned if an element is not present.
   /// \param[in] _sdf The SDF element that contains zero or more elements.
   /// \param[in] _sdfName Name of the sdf element, such as "model".
   /// \param[out] _objs Elements that match _sdfName in _sdf are added to this
