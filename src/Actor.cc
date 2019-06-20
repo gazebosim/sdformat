@@ -36,7 +36,7 @@ class sdf::AnimationPrivate
   public: double scale = 1.0;
 
   /// \brief True if the animation is interpolated on X.
-  public: bool interpolate_x = false;
+  public: bool interpolateX = false;
 };
 
 /// \brief Waypoint private data.
@@ -78,25 +78,25 @@ class sdf::ActorPrivate
   public: std::string poseFrame = "";
 
   /// \brief True if the actor is static.
-  public: bool actor_static = true;
+  public: bool isStatic = true;
 
   /// \brief Filename of the actor skin.
-  public: std::string skin_filename = "__default__";
+  public: std::string skinFilename = "__default__";
 
   /// \brief Scale of the actor skin.
-  public: double skin_scale = 1.0;
+  public: double skinScale = 1.0;
 
   /// \brief Animations loaded for the actor.
   public: std::vector<Animation> animations;
 
   /// \brief True if the animation plays in loop.
-  public: bool script_loop = true;
+  public: bool scriptLoop = true;
 
   /// \brief Time to wait before starting the script.
-  public: double script_delay_start = 0.0;
+  public: double scriptDelayStart = 0.0;
 
   /// \brief True if the animation strat with the simulation.
-  public: bool script_auto_start = true;
+  public: bool scriptAutoStart = true;
 
   /// \brief Trajectories for the actor.
   public: std::vector<Trajectory> trajectories;
@@ -116,7 +116,7 @@ void Animation::CopyFrom(const Animation &_animation)
   this->dataPtr->name = _animation.dataPtr->name;
   this->dataPtr->filename = _animation.dataPtr->filename;
   this->dataPtr->scale = _animation.dataPtr->scale;
-  this->dataPtr->interpolate_x = _animation.dataPtr->interpolate_x;
+  this->dataPtr->interpolateX = _animation.dataPtr->interpolateX;
 }
 
 /////////////////////////////////////////////////
@@ -182,8 +182,8 @@ Errors Animation::Load(ElementPtr _sdf)
 
   this->dataPtr->scale = _sdf->Get<double>("scale", this->dataPtr->scale).first;
 
-  this->dataPtr->interpolate_x = _sdf->Get<bool>("interpolate_x",
-        this->dataPtr->interpolate_x).first;
+  this->dataPtr->interpolateX = _sdf->Get<bool>("interpolate_x",
+        this->dataPtr->interpolateX).first;
 
   return errors;
 }
@@ -227,13 +227,13 @@ void Animation::SetScale(const double _scale)
 /////////////////////////////////////////////////
 bool Animation::InterpolateX() const
 {
-  return this->dataPtr->interpolate_x;
+  return this->dataPtr->interpolateX;
 }
 
 /////////////////////////////////////////////////
 void Animation::SetInterpolateX(const bool _interpolateX)
 {
-  this->dataPtr->interpolate_x = _interpolateX;
+  this->dataPtr->interpolateX = _interpolateX;
 }
 
 /////////////////////////////////////////////////
@@ -384,12 +384,6 @@ Trajectory &Trajectory::operator=(Trajectory &&_trajectory)
 }
 
 /////////////////////////////////////////////////
-uint64_t Trajectory::Id() const
-{
-  return this->dataPtr->id;
-}
-
-/////////////////////////////////////////////////
 Errors Trajectory::Load(ElementPtr _sdf)
 {
   Errors errors;
@@ -417,6 +411,18 @@ Errors Trajectory::Load(ElementPtr _sdf)
     this->dataPtr->waypoints);
 
   return waypointLoadErrors;
+}
+
+/////////////////////////////////////////////////
+uint64_t Trajectory::Id() const
+{
+  return this->dataPtr->id;
+}
+
+/////////////////////////////////////////////////
+void Trajectory::SetId(uint64_t _id)
+{
+  this->dataPtr->id = _id;
 }
 
 /////////////////////////////////////////////////
@@ -510,13 +516,13 @@ void Actor::CopyFrom(const Actor &_actor)
   this->dataPtr->name = _actor.dataPtr->name;
   this->dataPtr->pose = _actor.dataPtr->pose;
   this->dataPtr->poseFrame = _actor.dataPtr->poseFrame;
-  this->dataPtr->actor_static = _actor.dataPtr->actor_static;
-  this->dataPtr->skin_filename = _actor.dataPtr->skin_filename;
-  this->dataPtr->skin_scale = _actor.dataPtr->skin_scale;
+  this->dataPtr->isStatic = _actor.dataPtr->isStatic;
+  this->dataPtr->skinFilename = _actor.dataPtr->skinFilename;
+  this->dataPtr->skinScale = _actor.dataPtr->skinScale;
   this->dataPtr->animations = _actor.dataPtr->animations;
-  this->dataPtr->script_loop = _actor.dataPtr->script_loop;
-  this->dataPtr->script_delay_start = _actor.dataPtr->script_delay_start;
-  this->dataPtr->script_auto_start = _actor.dataPtr->script_auto_start;
+  this->dataPtr->scriptLoop = _actor.dataPtr->scriptLoop;
+  this->dataPtr->scriptDelayStart = _actor.dataPtr->scriptDelayStart;
+  this->dataPtr->scriptAutoStart = _actor.dataPtr->scriptAutoStart;
   this->dataPtr->trajectories = _actor.dataPtr->trajectories;
 }
 
@@ -543,15 +549,15 @@ Errors Actor::Load(ElementPtr _sdf)
 
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
 
-  this->dataPtr->actor_static = _sdf->Get<bool>("static",
-      this->dataPtr->actor_static).first;
+  this->dataPtr->isStatic = _sdf->Get<bool>("static",
+      this->dataPtr->isStatic).first;
 
   sdf::ElementPtr skinElem = _sdf->GetElement("skin");
 
   if (skinElem)
   {
     std::pair<std::string, bool> filenamePair = skinElem->Get<std::string>
-                ("filename", this->dataPtr->skin_filename);
+                ("filename", this->dataPtr->skinFilename);
 
     if (!filenamePair.second)
     {
@@ -559,10 +565,10 @@ Errors Actor::Load(ElementPtr _sdf)
             "A <skin> requires a <filename>."});
     }
 
-    this->dataPtr->skin_filename = filenamePair.first;
+    this->dataPtr->skinFilename = filenamePair.first;
 
-    this->dataPtr->skin_scale = skinElem->Get<double>("scale",
-        this->dataPtr->skin_scale).first;
+    this->dataPtr->skinScale = skinElem->Get<double>("scale",
+        this->dataPtr->skinScale).first;
   }
 
   Errors animationLoadErrors = loadUniqueRepeated<Animation>(_sdf, "animation",
@@ -580,14 +586,14 @@ Errors Actor::Load(ElementPtr _sdf)
   }
   else
   {
-    this->dataPtr->script_loop = scriptElem->Get<bool>("loop",
-        this->dataPtr->script_loop).first;
+    this->dataPtr->scriptLoop = scriptElem->Get<bool>("loop",
+        this->dataPtr->scriptLoop).first;
 
-    this->dataPtr->script_delay_start = scriptElem->Get<double>("delay_start",
-        this->dataPtr->script_delay_start).first;
+    this->dataPtr->scriptDelayStart = scriptElem->Get<double>("delay_start",
+        this->dataPtr->scriptDelayStart).first;
 
-    this->dataPtr->script_auto_start = scriptElem->Get<bool>("auto_start",
-        this->dataPtr->script_auto_start).first;
+    this->dataPtr->scriptAutoStart = scriptElem->Get<bool>("auto_start",
+        this->dataPtr->scriptAutoStart).first;
 
     Errors trajectoryLoadErrors = loadUniqueRepeated<Trajectory>(scriptElem,
         "trajectory", this->dataPtr->trajectories);
@@ -612,15 +618,15 @@ void Actor::SetName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
-bool Actor::ActorStatic() const
+bool Actor::Static() const
 {
-  return this->dataPtr->actor_static;
+  return this->dataPtr->isStatic;
 }
 
 /////////////////////////////////////////////////
-void Actor::SetActorStatic(const bool _actorStatic)
+void Actor::SetStatic(const bool _static)
 {
-  this->dataPtr->actor_static = _actorStatic;
+  this->dataPtr->isStatic = _static;
 }
 
 /////////////////////////////////////////////////
@@ -656,25 +662,25 @@ sdf::ElementPtr Actor::Element() const
 /////////////////////////////////////////////////
 const std::string &Actor::SkinFilename() const
 {
-  return this->dataPtr->skin_filename;
+  return this->dataPtr->skinFilename;
 }
 
 /////////////////////////////////////////////////
-void Actor::SetSkinFilename(std::string _skin_filename)
+void Actor::SetSkinFilename(std::string _skinFilename)
 {
-  this->dataPtr->skin_filename = _skin_filename;
+  this->dataPtr->skinFilename = _skinFilename;
 }
 
 /////////////////////////////////////////////////
 double Actor::SkinScale() const
 {
-  return this->dataPtr->skin_scale;
+  return this->dataPtr->skinScale;
 }
 
 /////////////////////////////////////////////////
-void Actor::SetSkinScale(double _skin_scale)
+void Actor::SetSkinScale(double _skinScale)
 {
-  this->dataPtr->skin_scale = _skin_scale;
+  this->dataPtr->skinScale = _skinScale;
 }
 
 /////////////////////////////////////////////////
@@ -705,37 +711,37 @@ bool Actor::AnimationNameExists(const std::string &_name) const
 /////////////////////////////////////////////////
 bool Actor::ScriptLoop() const
 {
-  return this->dataPtr->script_loop;
+  return this->dataPtr->scriptLoop;
 }
 
 /////////////////////////////////////////////////
 void Actor::SetScriptLoop(bool _scriptLoop)
 {
-  this->dataPtr->script_loop = _scriptLoop;
+  this->dataPtr->scriptLoop = _scriptLoop;
 }
 
 /////////////////////////////////////////////////
 double Actor::ScriptDelayStart() const
 {
-  return this->dataPtr->script_delay_start;
+  return this->dataPtr->scriptDelayStart;
 }
 
 /////////////////////////////////////////////////
-void Actor::SetScriptDelayStart(double _script_delay_start)
+void Actor::SetScriptDelayStart(double _scriptDelayStart)
 {
-  this->dataPtr->script_delay_start = _script_delay_start;
+  this->dataPtr->scriptDelayStart = _scriptDelayStart;
 }
 
 /////////////////////////////////////////////////
 bool Actor::ScriptAutoStart() const
 {
-  return this->dataPtr->script_auto_start;
+  return this->dataPtr->scriptAutoStart;
 }
 
 /////////////////////////////////////////////////
-void Actor::SetScriptAutoStart(bool _script_auto_start)
+void Actor::SetScriptAutoStart(bool _scriptAutoStart)
 {
-  this->dataPtr->script_auto_start = _script_auto_start;
+  this->dataPtr->scriptAutoStart = _scriptAutoStart;
 }
 
 /////////////////////////////////////////////////

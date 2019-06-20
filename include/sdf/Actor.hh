@@ -218,6 +218,10 @@ namespace sdf
     /// \return Trajectory id.
     public: uint64_t Id() const;
 
+    /// \brief Set the ID of the trajectory.
+    /// \param[in] _id Trajectory Id.
+    public: void SetId(uint64_t _id);
+
     /// \brief Get the type of the trajectory.
     /// \return Type of the trajectory.
     public: const std::string &Type() const;
@@ -304,11 +308,11 @@ namespace sdf
 
     /// \brief Get whether the actor is static.
     /// \return True if the actor is static.
-    public: bool ActorStatic() const;
+    public: bool Static() const;
 
     /// \brief Set whether the actor is static.
     /// \param[in] _static True to indicate that the actor is static.
-    public: void SetActorStatic(const bool _static);
+    public: void SetStatic(const bool _static);
 
     /// \brief Get the pose of the actor. This is the pose of the actor
     /// as specified in SDF (<actor> <pose> ... </pose></actor>), and is
@@ -339,16 +343,16 @@ namespace sdf
     public: const std::string &SkinFilename() const;
 
     /// \brief Set the skin filename.
-    /// \param[in] _skin_filename Skin filename.
-    public: void SetSkinFilename(std::string _skin_filename);
+    /// \param[in] _skinFilename Skin filename.
+    public: void SetSkinFilename(std::string _skinFilename);
 
     /// \brief Get the skin scale.
     /// \return Constant skin filename.
     public: double SkinScale() const;
 
     /// \brief Set the skin scale.
-    /// \param[in] _skin_scale Skin scale.
-    public: void SetSkinScale(double _skin_scale);
+    /// \param[in] _skinScale Skin scale.
+    public: void SetSkinScale(double _skinScale);
 
     /// \brief Get the number of animations.
     /// \return Number of animations.
@@ -380,17 +384,17 @@ namespace sdf
     public: double ScriptDelayStart() const;
 
     /// \brief Set the delay time to start.
-    /// \param[in] _script_delay_start Time of delay to start.
-    public: void SetScriptDelayStart(double _script_delay_start);
+    /// \param[in] _scriptDelayStart Time of delay to start.
+    public: void SetScriptDelayStart(double _scriptDelayStart);
 
     /// \brief Get whether the animation plays when simulation starts.
     /// \return True if the animation plays when simulation starts.
     public: bool ScriptAutoStart() const;
 
     /// \brief Set whether the animation plays when simulation starts.
-    /// \param[in] _static_auto_start True to indicate that the animation
+    /// \param[in] _staticAutoStart True to indicate that the animation
     /// plays when simulation starts.
-    public: void SetScriptAutoStart(bool _script_auto_start);
+    public: void SetScriptAutoStart(bool _scriptAutoStart);
 
     /// \brief Get the number of trajectories.
     /// \return Number of trajectories.

@@ -26,7 +26,7 @@ TEST(DOMActor, DefaultConstruction)
   EXPECT_EQ("__default__", actor.Name());
   EXPECT_EQ(ignition::math::Pose3d::Zero, actor.Pose());
   EXPECT_EQ("", actor.PoseFrame());
-  EXPECT_TRUE(actor.ActorStatic());
+  EXPECT_TRUE(actor.Static());
   EXPECT_EQ(nullptr, actor.Element());
   EXPECT_EQ("__default__", actor.SkinFilename());
   EXPECT_DOUBLE_EQ(1.0, actor.SkinScale());
@@ -57,7 +57,7 @@ TEST(DOMActor, CopyConstructor)
   actor.SetName("test_copy_actor");
   actor.SetPose({3, 2, 1, 0, IGN_PI, 0});
   actor.SetPoseFrame("ground_plane");
-  actor.SetActorStatic(true);
+  actor.SetStatic(true);
   actor.SetSkinFilename("walk.dae");
   actor.SetSkinScale(2.0);
   actor.SetScriptLoop(true);
@@ -68,7 +68,7 @@ TEST(DOMActor, CopyConstructor)
   EXPECT_EQ("test_copy_actor", actor2.Name());
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
   EXPECT_EQ("ground_plane", actor2.PoseFrame());
-  EXPECT_TRUE(actor2.ActorStatic());
+  EXPECT_TRUE(actor2.Static());
 
   EXPECT_EQ(0u, actor2.AnimationCount());
   EXPECT_EQ(nullptr, actor2.AnimationByIndex(0));
@@ -97,7 +97,7 @@ TEST(DOMActor, CopyAssignmentOperator)
   actor.SetName("test_actor_assignment");
   actor.SetPose({3, 2, 1, 0, IGN_PI, 0});
   actor.SetPoseFrame("ground_plane");
-  actor.SetActorStatic(true);
+  actor.SetStatic(true);
   actor.SetSkinFilename("walk.dae");
   actor.SetSkinScale(2.0);
   actor.SetScriptLoop(true);
@@ -109,7 +109,7 @@ TEST(DOMActor, CopyAssignmentOperator)
   EXPECT_EQ("test_actor_assignment", actor2.Name());
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
   EXPECT_EQ("ground_plane", actor2.PoseFrame());
-  EXPECT_TRUE(actor2.ActorStatic());
+  EXPECT_TRUE(actor2.Static());
 
   EXPECT_EQ(0u, actor2.AnimationCount());
   EXPECT_EQ(nullptr, actor2.AnimationByIndex(0));
@@ -138,7 +138,7 @@ TEST(DOMActor, MoveConstructor)
   actor.SetName("test_actor_assignment");
   actor.SetPose({3, 2, 1, 0, IGN_PI, 0});
   actor.SetPoseFrame("ground_plane");
-  actor.SetActorStatic(true);
+  actor.SetStatic(true);
   actor.SetSkinFilename("walk.dae");
   actor.SetSkinScale(2.0);
   actor.SetScriptLoop(true);
@@ -149,7 +149,7 @@ TEST(DOMActor, MoveConstructor)
   EXPECT_EQ("test_actor_assignment", actor2.Name());
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
   EXPECT_EQ("ground_plane", actor2.PoseFrame());
-  EXPECT_TRUE(actor2.ActorStatic());
+  EXPECT_TRUE(actor2.Static());
 
   EXPECT_EQ(0u, actor2.AnimationCount());
   EXPECT_EQ(nullptr, actor2.AnimationByIndex(0));
@@ -178,7 +178,7 @@ TEST(DOMActor, MoveAssignment)
   actor.SetName("test_actor_assignment");
   actor.SetPose({3, 2, 1, 0, IGN_PI, 0});
   actor.SetPoseFrame("ground_plane");
-  actor.SetActorStatic(true);
+  actor.SetStatic(true);
   actor.SetSkinFilename("walk.dae");
   actor.SetSkinScale(2.0);
   actor.SetScriptLoop(true);
@@ -190,7 +190,7 @@ TEST(DOMActor, MoveAssignment)
   EXPECT_EQ("test_actor_assignment", actor2.Name());
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
   EXPECT_EQ("ground_plane", actor2.PoseFrame());
-  EXPECT_TRUE(actor2.ActorStatic());
+  EXPECT_TRUE(actor2.Static());
 
   EXPECT_EQ(0u, actor2.AnimationCount());
   EXPECT_EQ(nullptr, actor2.AnimationByIndex(0));
@@ -219,7 +219,7 @@ TEST(DOMActor, CopyAssignmentAfterMove)
   actor1.SetName("actor1");
   actor1.SetPose({3, 2, 1, 0, IGN_PI, 0});
   actor1.SetPoseFrame("ground_plane_1");
-  actor1.SetActorStatic(true);
+  actor1.SetStatic(true);
   actor1.SetSkinFilename("walk.dae");
   actor1.SetSkinScale(2.0);
   actor1.SetScriptLoop(true);
@@ -230,7 +230,7 @@ TEST(DOMActor, CopyAssignmentAfterMove)
   actor2.SetName("actor2");
   actor2.SetPose({1, 2, 3, 0, IGN_PI, 0});
   actor2.SetPoseFrame("ground_plane_2");
-  actor2.SetActorStatic(false);
+  actor2.SetStatic(false);
   actor2.SetSkinFilename("run.dae");
   actor2.SetSkinScale(0.5);
   actor2.SetScriptLoop(false);
@@ -252,8 +252,8 @@ TEST(DOMActor, CopyAssignmentAfterMove)
   EXPECT_EQ("ground_plane_2", actor1.PoseFrame());
   EXPECT_EQ("ground_plane_1", actor2.PoseFrame());
 
-  EXPECT_FALSE(actor1.ActorStatic());
-  EXPECT_TRUE(actor2.ActorStatic());
+  EXPECT_FALSE(actor1.Static());
+  EXPECT_TRUE(actor2.Static());
 
   EXPECT_EQ("run.dae", actor1.SkinFilename());
   EXPECT_EQ("walk.dae", actor2.SkinFilename());

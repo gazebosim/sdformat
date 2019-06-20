@@ -53,7 +53,7 @@ TEST(DOMWorld, LoadActors)
   EXPECT_EQ("actor_1", actor_1->Name());
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), actor_1->Pose());
   EXPECT_EQ("", actor_1->PoseFrame());
-  EXPECT_TRUE(actor_1->ActorStatic());
+  EXPECT_TRUE(actor_1->Static());
   EXPECT_EQ(1u, actor_1->AnimationCount());
   EXPECT_NE(nullptr, actor_1->AnimationByIndex(0));
   EXPECT_EQ(nullptr, actor_1->AnimationByIndex(1));
@@ -80,7 +80,7 @@ TEST(DOMWorld, LoadActors)
   EXPECT_EQ("actor_2", actor_2->Name());
   EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), actor_2->Pose());
   EXPECT_EQ("", actor_2->PoseFrame());
-  EXPECT_TRUE(actor_2->ActorStatic());
+  EXPECT_TRUE(actor_2->Static());
   EXPECT_EQ(1u, actor_2->AnimationCount());
   EXPECT_NE(nullptr, actor_2->AnimationByIndex(0));
   EXPECT_EQ(nullptr, actor_2->AnimationByIndex(1));
