@@ -47,6 +47,16 @@ TEST(DOMActor, DefaultConstruction)
   EXPECT_FALSE(actor.TrajectoryIdExists(0));
   EXPECT_FALSE(actor.TrajectoryIdExists(1));
 
+  EXPECT_EQ(0u, actor.LinkCount());
+  EXPECT_EQ(nullptr, actor.LinkByIndex(0));
+  EXPECT_EQ(nullptr, actor.LinkByIndex(1));
+  EXPECT_FALSE(actor.LinkNameExists(""));
+
+  EXPECT_EQ(0u, actor.JointCount());
+  EXPECT_EQ(nullptr, actor.JointByIndex(0));
+  EXPECT_EQ(nullptr, actor.JointByIndex(1));
+  EXPECT_FALSE(actor.JointNameExists(""));
+
   EXPECT_EQ(nullptr, actor.Element());
 }
 
@@ -88,6 +98,16 @@ TEST(DOMActor, CopyConstructor)
   EXPECT_TRUE(actor2.ScriptLoop());
   EXPECT_DOUBLE_EQ(2.8, actor2.ScriptDelayStart());
   EXPECT_FALSE(actor2.ScriptAutoStart());
+
+  EXPECT_EQ(0u, actor2.LinkCount());
+  EXPECT_EQ(nullptr, actor2.LinkByIndex(0));
+  EXPECT_EQ(nullptr, actor2.LinkByIndex(1));
+  EXPECT_FALSE(actor2.LinkNameExists(""));
+
+  EXPECT_EQ(0u, actor2.JointCount());
+  EXPECT_EQ(nullptr, actor2.JointByIndex(0));
+  EXPECT_EQ(nullptr, actor2.JointByIndex(1));
+  EXPECT_FALSE(actor2.JointNameExists(""));
 }
 
 /////////////////////////////////////////////////
@@ -129,6 +149,16 @@ TEST(DOMActor, CopyAssignmentOperator)
   EXPECT_TRUE(actor2.ScriptLoop());
   EXPECT_DOUBLE_EQ(2.8, actor2.ScriptDelayStart());
   EXPECT_FALSE(actor2.ScriptAutoStart());
+
+  EXPECT_EQ(0u, actor2.LinkCount());
+  EXPECT_EQ(nullptr, actor2.LinkByIndex(0));
+  EXPECT_EQ(nullptr, actor2.LinkByIndex(1));
+  EXPECT_FALSE(actor2.LinkNameExists(""));
+
+  EXPECT_EQ(0u, actor2.JointCount());
+  EXPECT_EQ(nullptr, actor2.JointByIndex(0));
+  EXPECT_EQ(nullptr, actor2.JointByIndex(1));
+  EXPECT_FALSE(actor2.JointNameExists(""));
 }
 
 /////////////////////////////////////////////////
@@ -169,6 +199,16 @@ TEST(DOMActor, MoveConstructor)
   EXPECT_TRUE(actor2.ScriptLoop());
   EXPECT_DOUBLE_EQ(2.8, actor2.ScriptDelayStart());
   EXPECT_FALSE(actor2.ScriptAutoStart());
+
+  EXPECT_EQ(0u, actor2.LinkCount());
+  EXPECT_EQ(nullptr, actor2.LinkByIndex(0));
+  EXPECT_EQ(nullptr, actor2.LinkByIndex(1));
+  EXPECT_FALSE(actor2.LinkNameExists(""));
+
+  EXPECT_EQ(0u, actor2.JointCount());
+  EXPECT_EQ(nullptr, actor2.JointByIndex(0));
+  EXPECT_EQ(nullptr, actor2.JointByIndex(1));
+  EXPECT_FALSE(actor2.JointNameExists(""));
 }
 
 /////////////////////////////////////////////////
@@ -210,6 +250,16 @@ TEST(DOMActor, MoveAssignment)
   EXPECT_TRUE(actor2.ScriptLoop());
   EXPECT_DOUBLE_EQ(2.8, actor2.ScriptDelayStart());
   EXPECT_FALSE(actor2.ScriptAutoStart());
+
+  EXPECT_EQ(0u, actor2.LinkCount());
+  EXPECT_EQ(nullptr, actor2.LinkByIndex(0));
+  EXPECT_EQ(nullptr, actor2.LinkByIndex(1));
+  EXPECT_FALSE(actor2.LinkNameExists(""));
+
+  EXPECT_EQ(0u, actor2.JointCount());
+  EXPECT_EQ(nullptr, actor2.JointByIndex(0));
+  EXPECT_EQ(nullptr, actor2.JointByIndex(1));
+  EXPECT_FALSE(actor2.JointNameExists(""));
 }
 
 /////////////////////////////////////////////////

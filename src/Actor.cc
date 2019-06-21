@@ -101,6 +101,12 @@ class sdf::ActorPrivate
   /// \brief Trajectories for the actor.
   public: std::vector<Trajectory> trajectories;
 
+  /// \brief Links for the actor.
+  public: std::vector<Link> links;
+
+  /// \brief Joints for the actor.
+  public: std::vector<Joint> joints;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 };
@@ -410,7 +416,10 @@ Errors Trajectory::Load(ElementPtr _sdf)
   Errors waypointLoadErrors = loadRepeated<Waypoint>(_sdf, "waypoint",
     this->dataPtr->waypoints);
 
-  return waypointLoadErrors;
+  errors.insert(errors.end(), waypointLoadErrors.begin(),
+                    waypointLoadErrors.end());
+
+  return errors;
 }
 
 /////////////////////////////////////////////////
@@ -602,6 +611,18 @@ Errors Actor::Load(ElementPtr _sdf)
                       trajectoryLoadErrors.end());
   }
 
+  Errors linkLoadErrors = loadRepeated<Link>(_sdf, "link",
+    this->dataPtr->links);
+
+  errors.insert(errors.end(), linkLoadErrors.begin(),
+                    linkLoadErrors.end());
+
+  Errors jointLoadErrors = loadRepeated<Joint>(_sdf, "joint",
+    this->dataPtr->joints);
+
+  errors.insert(errors.end(), jointLoadErrors.begin(),
+                    jointLoadErrors.end());
+
   return errors;
 }
 
@@ -764,6 +785,56 @@ bool Actor::TrajectoryIdExists(const uint64_t _id) const
   for (const auto &t : this->dataPtr->trajectories)
   {
     if (t.Id() == _id)
+      return true;
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+uint64_t Actor::LinkCount() const
+{
+  return this->dataPtr->links.size();
+}
+
+/////////////////////////////////////////////////
+const Link *Actor::LinkByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->links.size())
+    return &this->dataPtr->links[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Actor::LinkNameExists(const std::string &_name) const
+{
+  for (const auto &l : this->dataPtr->links)
+  {
+    if (l.Name() == _name)
+      return true;
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+uint64_t Actor::JointCount() const
+{
+  return this->dataPtr->joints.size();
+}
+
+/////////////////////////////////////////////////
+const Joint *Actor::JointByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->joints.size())
+    return &this->dataPtr->joints[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Actor::JointNameExists(const std::string &_name) const
+{
+  for (const auto &j : this->dataPtr->joints)
+  {
+    if (j.Name() == _name)
       return true;
   }
   return false;
