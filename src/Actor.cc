@@ -522,17 +522,17 @@ Actor &Actor::operator=(Actor &&_actor)
 //////////////////////////////////////////////////
 void Actor::CopyFrom(const Actor &_actor)
 {
-  this->dataPtr->name = _actor.dataPtr->name;
-  this->dataPtr->pose = _actor.dataPtr->pose;
-  this->dataPtr->poseFrame = _actor.dataPtr->poseFrame;
-  this->dataPtr->isStatic = _actor.dataPtr->isStatic;
-  this->dataPtr->skinFilename = _actor.dataPtr->skinFilename;
-  this->dataPtr->skinScale = _actor.dataPtr->skinScale;
-  this->dataPtr->animations = _actor.dataPtr->animations;
-  this->dataPtr->scriptLoop = _actor.dataPtr->scriptLoop;
+  this->dataPtr->name             = _actor.dataPtr->name;
+  this->dataPtr->pose             = _actor.dataPtr->pose;
+  this->dataPtr->poseFrame        = _actor.dataPtr->poseFrame;
+  this->dataPtr->isStatic         = _actor.dataPtr->isStatic;
+  this->dataPtr->skinFilename     = _actor.dataPtr->skinFilename;
+  this->dataPtr->skinScale        = _actor.dataPtr->skinScale;
+  this->dataPtr->animations       = _actor.dataPtr->animations;
+  this->dataPtr->scriptLoop       = _actor.dataPtr->scriptLoop;
   this->dataPtr->scriptDelayStart = _actor.dataPtr->scriptDelayStart;
-  this->dataPtr->scriptAutoStart = _actor.dataPtr->scriptAutoStart;
-  this->dataPtr->trajectories = _actor.dataPtr->trajectories;
+  this->dataPtr->scriptAutoStart  = _actor.dataPtr->scriptAutoStart;
+  this->dataPtr->trajectories     = _actor.dataPtr->trajectories;
 }
 
 /////////////////////////////////////////////////
