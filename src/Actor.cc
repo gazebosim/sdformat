@@ -441,7 +441,7 @@ const std::string &Trajectory::Type() const
 }
 
 /////////////////////////////////////////////////
-void Trajectory::SetType(std::string &_type)
+void Trajectory::SetType(const std::string &_type)
 {
   this->dataPtr->type = _type;
 }
@@ -472,6 +472,11 @@ const Waypoint *Trajectory::WaypointByIndex(const uint64_t _index) const
   return nullptr;
 }
 
+/////////////////////////////////////////////////
+void Trajectory::AddWaypoint(const Waypoint &_waypoint)
+{
+  this->dataPtr->waypoints.push_back(_waypoint);
+}
 
 /////////////////////////////////////////////////
 Actor::Actor()
@@ -604,7 +609,7 @@ Errors Actor::Load(ElementPtr _sdf)
     this->dataPtr->scriptAutoStart = scriptElem->Get<bool>("auto_start",
         this->dataPtr->scriptAutoStart).first;
 
-    Errors trajectoryLoadErrors = loadUniqueRepeated<Trajectory>(scriptElem,
+    Errors trajectoryLoadErrors = loadRepeated<Trajectory>(scriptElem,
         "trajectory", this->dataPtr->trajectories);
 
     errors.insert(errors.end(), trajectoryLoadErrors.begin(),
@@ -730,6 +735,12 @@ bool Actor::AnimationNameExists(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+void Actor::AddAnimation(const Animation &_anim)
+{
+  this->dataPtr->animations.push_back(_anim);
+}
+
+/////////////////////////////////////////////////
 bool Actor::ScriptLoop() const
 {
   return this->dataPtr->scriptLoop;
@@ -788,6 +799,12 @@ bool Actor::TrajectoryIdExists(const uint64_t _id) const
       return true;
   }
   return false;
+}
+
+/////////////////////////////////////////////////
+void Actor::AddTrajectory(const Trajectory &_traj)
+{
+  this->dataPtr->trajectories.push_back(_traj);
 }
 
 /////////////////////////////////////////////////

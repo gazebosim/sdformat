@@ -97,40 +97,66 @@
     </actor>
 
     <actor name="actor_2">
+      <pose>0 0 1.1 0 0 0</pose>
       <skin>
-        <filename>run.dae</filename>
-        <scale>0.5</scale>
+        <filename>walk.dae</filename>
+        <scale>1.0</scale>
       </skin>
-      <pose>1 0 0 0 0 0</pose>
-      <animation name="run">
-        <filename>run.dae</filename>
-        <scale>2.0</scale>
-        <interpolate_x>false</interpolate_x>
+      <animation name="walk">
+        <filename>walk.dae</filename>
+        <scale>1.0</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <animation name="sit">
+        <filename>sit.dae</filename>
+        <scale>1.0</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <animation name="gesture">
+        <filename>gesture.bvh</filename>
+        <scale>0.055</scale>
+        <interpolate_x>true</interpolate_x>
       </animation>
       <script>
-        <loop>false</loop>
-        <delay_start>2.7</delay_start>
-        <auto_start>false</auto_start>
-        <trajectory id="1" type="run">
+        <loop>true</loop>
+        <delay_start>1.0</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="gesture">
           <waypoint>
             <time>0</time>
-            <pose>1 1 0 0 0 0</pose>
-          </waypoint>
-          <waypoint>
-            <time>0.5</time>
-            <pose>1.1950 0.9807 0 0 0 -0.1963</pose>
-          </waypoint>
-          <waypoint>
-            <time>1</time>
-            <pose>1.3826 0.9238 0 0 0 -0.3926</pose>
+            <pose>0 1 0 0 0 0</pose>
           </waypoint>
           <waypoint>
             <time>1.5</time>
-            <pose>1.5555 0.831 0 0 0 -0.589</pose>
+            <pose>0 1 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+        <trajectory id="1" type="walk">
+          <waypoint>
+            <time>0</time>
+            <pose>0 1 0 0 0 0</pose>
           </waypoint>
           <waypoint>
-            <time>2</time>
-            <pose>1.8555 0.831 0 0 0 -0.589</pose>
+            <time>0.5</time>
+            <pose>0.1950 0.9807 0 0 0 -0.1963</pose>
+          </waypoint>
+          <waypoint>
+            <time>1</time>
+            <pose>0.3826 0.9238 0 0 0 -0.3926</pose>
+          </waypoint>
+          <waypoint>
+            <time>1.5</time>
+            <pose>0.5555 0.831 0 0 0 -0.589</pose>
+          </waypoint>
+        </trajectory>
+        <trajectory id="2" type="sit">
+          <waypoint>
+            <time>0</time>
+            <pose>0.5555 0.831 0 0 0 -0.589</pose>
+          </waypoint>
+          <waypoint>
+            <time>1.5</time>
+            <pose>0.5555 0.831 0 0 0 -0.589</pose>
           </waypoint>
         </trajectory>
       </script>

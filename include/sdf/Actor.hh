@@ -231,7 +231,7 @@ namespace sdf
     /// \brief Set the animation type of the trajectory.
     /// (should match the animation name).
     /// \param[in] _type Animation type to be played.
-    public: void SetType(std::string &_type);
+    public: void SetType(const std::string &_type);
 
     /// \brief Get the tension of the trajectory spline.
     /// \return Tension of the trajectory spline.
@@ -251,6 +251,10 @@ namespace sdf
     /// \return Pointer to the waypoint. Nullptr if the index does not exist.
     /// \sa uint64_t WaypointCount() const
     public: const Waypoint *WaypointByIndex(const uint64_t _index) const;
+
+    /// \brief Add a new waypoint.
+    /// \param[in] _waypoint Waypoint to be added.
+    public: void AddWaypoint(const Waypoint &_waypoint);
 
     /// \brief Copy trajectory from a trajectory instance.
     /// \param[in] _trajectory The trajectory to set values from.
@@ -372,6 +376,10 @@ namespace sdf
     /// \return True if there exists an animation with the given name.
     public: bool AnimationNameExists(const std::string &_name) const;
 
+    /// \brief Add a new animation.
+    /// \param[in] _anim Animation to be added.
+    public: void AddAnimation(const Animation &_anim);
+
     /// \brief Get whether the animation plays in loop.
     /// \return True if the animation plays in loop.
     public: bool ScriptLoop() const;
@@ -413,6 +421,10 @@ namespace sdf
     /// \param[in] _id Id of the trajectory to check.
     /// \return True if there exists a trajectory with the given name.
     public: bool TrajectoryIdExists(const uint64_t _id) const;
+
+    /// \brief Add a new trajectory.
+    /// \param[in] _traj Trajectory to be added.
+    public: void AddTrajectory(const Trajectory &_traj);
 
     /// \brief Get the number of links.
     /// \return Number of links.

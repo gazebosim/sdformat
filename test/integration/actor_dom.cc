@@ -78,29 +78,51 @@ TEST(DOMWorld, LoadActors)
 
   const sdf::Actor *actor_2 = world->ActorByIndex(1);
   EXPECT_EQ("actor_2", actor_2->Name());
-  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), actor_2->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 1.1, 0, 0, 0), actor_2->Pose());
   EXPECT_EQ("", actor_2->PoseFrame());
   EXPECT_TRUE(actor_2->Static());
-  EXPECT_EQ(1u, actor_2->AnimationCount());
+  EXPECT_EQ(3u, actor_2->AnimationCount());
   EXPECT_NE(nullptr, actor_2->AnimationByIndex(0));
-  EXPECT_EQ(nullptr, actor_2->AnimationByIndex(1));
-  EXPECT_EQ("run.dae", actor_2->AnimationByIndex(0)->Filename());
-  EXPECT_DOUBLE_EQ(2.0, actor_2->AnimationByIndex(0)->Scale());
-  EXPECT_FALSE(actor_2->AnimationByIndex(0)->InterpolateX());
+  EXPECT_NE(nullptr, actor_2->AnimationByIndex(1));
+  EXPECT_NE(nullptr, actor_2->AnimationByIndex(2));
+  EXPECT_EQ(nullptr, actor_2->AnimationByIndex(3));
+
+  EXPECT_EQ("walk.dae", actor_2->AnimationByIndex(0)->Filename());
+  EXPECT_EQ("sit.dae", actor_2->AnimationByIndex(1)->Filename());
+  EXPECT_EQ("gesture.bvh", actor_2->AnimationByIndex(2)->Filename());
+  EXPECT_DOUBLE_EQ(1.0, actor_2->AnimationByIndex(0)->Scale());
+  EXPECT_DOUBLE_EQ(1.0, actor_2->AnimationByIndex(1)->Scale());
+  EXPECT_DOUBLE_EQ(0.055, actor_2->AnimationByIndex(2)->Scale());
+  EXPECT_TRUE(actor_2->AnimationByIndex(0)->InterpolateX());
+  EXPECT_TRUE(actor_2->AnimationByIndex(1)->InterpolateX());
+  EXPECT_TRUE(actor_2->AnimationByIndex(2)->InterpolateX());
   EXPECT_FALSE(actor_2->AnimationNameExists(""));
-  EXPECT_FALSE(actor_2->AnimationNameExists("walking"));
-  EXPECT_TRUE(actor_2->AnimationNameExists("run"));
-  EXPECT_EQ("run.dae", actor_2->SkinFilename());
-  EXPECT_DOUBLE_EQ(0.5, actor_2->SkinScale());
-  EXPECT_EQ(1u, actor_2->TrajectoryCount());
+  EXPECT_TRUE(actor_2->AnimationNameExists("walk"));
+  EXPECT_TRUE(actor_2->AnimationNameExists("sit"));
+  EXPECT_TRUE(actor_2->AnimationNameExists("gesture"));
+
+  EXPECT_EQ("walk.dae", actor_2->SkinFilename());
+  EXPECT_DOUBLE_EQ(1.0, actor_2->SkinScale());
+
+  EXPECT_EQ(3u, actor_2->TrajectoryCount());
   EXPECT_NE(nullptr, actor_2->TrajectoryByIndex(0));
-  EXPECT_EQ(nullptr, actor_2->TrajectoryByIndex(1));
-  EXPECT_EQ(1u, actor_2->TrajectoryByIndex(0)->Id());
-  EXPECT_EQ("run", actor_2->TrajectoryByIndex(0)->Type());
-  EXPECT_EQ(5u, actor_2->TrajectoryByIndex(0)->WaypointCount());
-  EXPECT_FALSE(actor_2->TrajectoryIdExists(0));
+  EXPECT_NE(nullptr, actor_2->TrajectoryByIndex(1));
+  EXPECT_NE(nullptr, actor_2->TrajectoryByIndex(2));
+  EXPECT_EQ(nullptr, actor_2->TrajectoryByIndex(3));
+  EXPECT_EQ(0u, actor_2->TrajectoryByIndex(0)->Id());
+  EXPECT_EQ(1u, actor_2->TrajectoryByIndex(1)->Id());
+  EXPECT_EQ(2u, actor_2->TrajectoryByIndex(2)->Id());
+  EXPECT_EQ("gesture", actor_2->TrajectoryByIndex(0)->Type());
+  EXPECT_EQ("walk", actor_2->TrajectoryByIndex(1)->Type());
+  EXPECT_EQ("sit", actor_2->TrajectoryByIndex(2)->Type());
+  EXPECT_EQ(2u, actor_2->TrajectoryByIndex(0)->WaypointCount());
+  EXPECT_EQ(4u, actor_2->TrajectoryByIndex(1)->WaypointCount());
+  EXPECT_EQ(2u, actor_2->TrajectoryByIndex(2)->WaypointCount());
+  EXPECT_TRUE(actor_2->TrajectoryIdExists(0));
   EXPECT_TRUE(actor_2->TrajectoryIdExists(1));
-  EXPECT_FALSE(actor_2->ScriptLoop());
-  EXPECT_DOUBLE_EQ(2.7, actor_2->ScriptDelayStart());
-  EXPECT_FALSE(actor_2->ScriptAutoStart());
+  EXPECT_TRUE(actor_2->TrajectoryIdExists(2));
+
+  EXPECT_TRUE(actor_2->ScriptLoop());
+  EXPECT_DOUBLE_EQ(1.0, actor_2->ScriptDelayStart());
+  EXPECT_TRUE(actor_2->ScriptAutoStart());
 }
