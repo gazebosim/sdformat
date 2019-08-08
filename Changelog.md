@@ -2,6 +2,9 @@
 
 ### SDFormat 6.X.X (20XX-XX-XX)
 
+1. Converter: remove all matching elements specified by `<remove>` tag.
+    * [Pull request 551](https://bitbucket.org/osrf/sdformat/pull-requests/551)
+
 ### SDFormat 6.2.0 (2019-01-17)
 
 1. Add geometry for sonar collision shape
