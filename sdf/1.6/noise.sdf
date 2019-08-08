@@ -10,17 +10,29 @@
     </description>
   </attribute>
   <element name="mean" type="double" default="0.0" required="0">
-    <description>For type "gaussian*", the mean of the Gaussian distribution from which noise values are drawn.</description>
+    <description>
+      For type "gaussian*", the mean of the Gaussian distribution from which
+      noise values are drawn.
+    </description>
   </element>
-  <element name="stddev" type="double" default="0.0" required="0">
+  <element name="stddev" type="double" default="0.0" min="0.0" required="0">
     <description>For type "gaussian*", the standard deviation of the Gaussian distribution from which noise values are drawn.</description>
   </element>
   <element name="bias_mean" type="double" default="0.0" required="0">
     <description>For type "gaussian*", the mean of the Gaussian distribution from which bias values are drawn.</description>
   </element>
-  <element name="bias_stddev" type="double" default="0.0" required="0">
+  <element name="bias_stddev" type="double" default="0.0" min="0.0" required="0">
     <description>For type "gaussian*", the standard deviation of the Gaussian distribution from which bias values are drawn.</description>
   </element>
+
+  <element name="dynamic_bias_stddev" type="double" default="0.0" min="0.0" required="0">
+    <description>For type "gaussian*", the standard deviation of the noise used to drive a process to model slow variations in a sensor bias.</description>
+  </element>
+
+  <element name="dynamic_bias_correlation_time" type="double" default="0.0" required="0">
+    <description>For type "gaussian*", the correlation time in seconds of the noise used to drive a process to model slow variations in a sensor bias. A typical value, when used, would be on the order of 3600 seconds (1 hour).</description>
+  </element>
+
   <element name="precision" type="double" default="0.0" required="0">
     <description>
       For type "gaussian_quantized", the precision of output signals. A value
