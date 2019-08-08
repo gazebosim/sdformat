@@ -82,7 +82,7 @@ TEST(DOMJointAxis, Complete)
   EXPECT_EQ(ignition::math::Vector3d::UnitZ, axis->Xyz());
   EXPECT_EQ(ignition::math::Vector3d::UnitY, axis2->Xyz());
 
-  EXPECT_TRUE(axis->UseParentModelFrame());
+  EXPECT_FALSE(axis->UseParentModelFrame());
   EXPECT_FALSE(axis2->UseParentModelFrame());
 
   EXPECT_DOUBLE_EQ(-0.5, axis->Lower());

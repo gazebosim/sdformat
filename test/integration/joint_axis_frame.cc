@@ -43,8 +43,8 @@ std::string get_sdf_string(const std::string &_version)
 }
 
 ////////////////////////////////////////
-// sdf model, version 1.4, use_parent_model_frame tag missing
-// expect tag to be inserted with value true
+// sdf model, version 1.4, use_parent_model_frame tag should
+// be removed when converted to 1.7.
 TEST(JointAxisFrame, Version_1_4_missing)
 {
   sdf::SDFPtr model(new sdf::SDF());
@@ -56,13 +56,12 @@ TEST(JointAxisFrame, Version_1_4_missing)
   sdf::ElementPtr axis = joint->GetElement("axis");
 
   axis->PrintValues("");
-  EXPECT_TRUE(axis->HasElement("use_parent_model_frame"));
-  EXPECT_TRUE(axis->Get<bool>("use_parent_model_frame"));
+  EXPECT_FALSE(axis->HasElement("use_parent_model_frame"));
 }
 
 ////////////////////////////////////////
-// sdf model, version 1.5, use_parent_model_frame tag missing
-// expect tag to be inserted with value false
+// sdf model, version 1.5, use_parent_model_frame tag should
+// be removed when converted to 1.7.
 TEST(JointAxisFrame, Version_1_5_missing)
 {
   sdf::SDFPtr model(new sdf::SDF());
@@ -72,6 +71,5 @@ TEST(JointAxisFrame, Version_1_5_missing)
   sdf::ElementPtr joint = model->Root()->GetElement(
     "model")->GetElement("joint");
   sdf::ElementPtr axis = joint->GetElement("axis");
-  EXPECT_TRUE(axis->HasElement("use_parent_model_frame"));
-  EXPECT_FALSE(axis->Get<bool>("use_parent_model_frame"));
+  EXPECT_FALSE(axis->HasElement("use_parent_model_frame"));
 }
