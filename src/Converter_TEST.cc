@@ -864,7 +864,15 @@ TEST(Converter, SameVersion)
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
+  std::ostringstream xmlDocBefore;
+  xmlDocBefore << xmlDoc;
+
   ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.3"));
+  std::ostringstream xmlDocAfter;
+  xmlDocAfter << xmlDoc;
+
+  // Expect xmlDoc to be unchanged after conversion
+  EXPECT_EQ(xmlDocBefore.str(), xmlDocAfter.str());
 }
 
 ////////////////////////////////////////////////////
