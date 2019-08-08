@@ -221,11 +221,11 @@ endif ()
 #################################################
 # Print warnings and errors
 if ( build_warnings )
-  message(STATUS "BUILD WARNINGS")
+  message(WARNING "-- BUILD WARNINGS")
   foreach (msg ${build_warnings})
-    message(STATUS ${msg})
+    message(WARNING "-- ${msg}")
   endforeach ()
-  message(STATUS "END BUILD WARNINGS\n")
+  message(WARNING "-- END BUILD WARNINGS\n")
 endif (build_warnings)
 
 ########### Add uninstall target ###############
@@ -238,11 +238,11 @@ add_custom_target(uninstall
   "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake")
 
 if (build_errors)
-  message(STATUS "BUILD ERRORS: These must be resolved before compiling.")
+  message(SEND_ERROR "-- BUILD ERRORS: These must be resolved before compiling.")
   foreach (msg ${build_errors})
-    message(STATUS ${msg})
+    message(SEND_ERROR "-- ${msg}")
   endforeach ()
-  message(STATUS "END BUILD ERRORS\n")
+  message(SEND_ERROR "-- END BUILD ERRORS\n")
   message (FATAL_ERROR "Errors encountered in build. Please see the BUILD ERRORS above.")
 
 else (build_errors)
