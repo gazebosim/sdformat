@@ -52,6 +52,7 @@
   <include filename="scene.sdf" required="1"/>
   <include filename="light.sdf" required="*"/>
 
+  <include filename="frame.sdf" required="*"/>
   <include filename="model.sdf" required="*"/>
   <include filename="actor.sdf" required="*"/>
   <include filename="plugin.sdf" required="*"/>

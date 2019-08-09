@@ -19,7 +19,7 @@
   </element>
 
   <include filename="frame.sdf" required="*"/>
-  <include filename="pose.sdf" required="0"/>
+  <include filename="pose_relative_to.sdf" required="0"/>
   <include filename="link.sdf" required="*"/>
   <include filename="joint.sdf" required="*"/>
   <include filename="plugin.sdf" required="*"/>
