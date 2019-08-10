@@ -634,6 +634,49 @@ ElementPtr Element::GetNextElement(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+std::map<std::string, std::size_t>
+Element::CountNamedElements(const std::string &_type) const
+{
+  std::map<std::string, std::size_t> result;
+
+  if (!_type.empty() && !this->HasElement(_type))
+  {
+    // return empty map
+    return result;
+  }
+
+  sdf::ElementPtr elem = this->GetFirstElement();
+
+  if (!_type.empty() && elem->GetName() != _type)
+  {
+    elem = elem->GetNextElement(_type);
+  }
+
+  while (elem)
+  {
+    if (elem->HasAttribute("name"))
+    {
+      // Get("name") returns attribute value if it exists before checking
+      // for the value of a child element <name>, so it's safe to use
+      // here since we've checked HasAttribute("name").
+      std::string childNameAttributeValue = elem->Get<std::string>("name");
+      if (result.find(childNameAttributeValue) == result.end())
+      {
+        result[childNameAttributeValue] = 1;
+      }
+      else
+      {
+        ++result[childNameAttributeValue];
+      }
+    }
+
+    elem = elem->GetNextElement(_type);
+  }
+
+  return result;
+}
+
+/////////////////////////////////////////////////
 ElementPtr Element::GetElement(const std::string &_name)
 {
   ElementPtr result = this->GetElementImpl(_name);

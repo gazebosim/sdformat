@@ -287,6 +287,16 @@ namespace sdf
     /// child = child->GetNextElement() to iterate through the children.
     public: ElementPtr GetNextElement(const std::string &_name = "") const;
 
+    /// \brief Count the number of child elements of the specified element type
+    /// that have the same name attribute value.
+    /// \param[in] _type The type of Element to check. If empty, count names
+    /// of all child elements.
+    /// \return Map from Element names to a count of how many times the name
+    /// occurs. The count should never be 0. If all 2nd values are 1, then
+    /// there are exclusively unique names.
+    public: std::map<std::string, std::size_t>
+            CountNamedElements(const std::string &_type = "") const;
+
     /// \brief Return a pointer to the child element with the provided name.
     ///
     /// A new child element, with the provided name, is added to this element
