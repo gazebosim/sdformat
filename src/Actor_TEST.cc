@@ -320,3 +320,68 @@ TEST(DOMActor, CopyAssignmentAfterMove)
   EXPECT_TRUE(actor1.ScriptAutoStart());
   EXPECT_FALSE(actor2.ScriptAutoStart());
 }
+
+//////////////////////////////////////////////////
+TEST(DOMActor, Add)
+{
+  sdf::Actor actor;
+
+  // Animation
+  EXPECT_EQ(0u, actor.AnimationCount());
+
+  sdf::Animation anim1;
+  anim1.SetName("animation1");
+  anim1.SetFilename("animation_filename1");
+
+  actor.AddAnimation(anim1);
+  EXPECT_EQ(1u, actor.AnimationCount());
+  EXPECT_EQ("animation1", actor.AnimationByIndex(0)->Name());
+  EXPECT_EQ("animation_filename1", actor.AnimationByIndex(0)->Filename());
+
+  sdf::Animation anim2;
+  anim2.SetName("animation2");
+  anim2.SetFilename("animation_filename2");
+
+  actor.AddAnimation(anim2);
+  EXPECT_EQ(2u, actor.AnimationCount());
+  EXPECT_EQ("animation2", actor.AnimationByIndex(1)->Name());
+  EXPECT_EQ("animation_filename2", actor.AnimationByIndex(1)->Filename());
+
+  // Waypoint
+  sdf::Trajectory traj1;
+  EXPECT_EQ(0u, traj1.WaypointCount());
+
+  sdf::Waypoint way1;
+  way1.SetTime(0.123);
+
+  traj1.AddWaypoint(way1);
+  EXPECT_EQ(1u, traj1.WaypointCount());
+  EXPECT_DOUBLE_EQ(0.123, traj1.WaypointByIndex(0)->Time());
+
+  sdf::Waypoint way2;
+  way2.SetTime(0.456);
+
+  traj1.AddWaypoint(way2);
+  EXPECT_EQ(2u, traj1.WaypointCount());
+  EXPECT_DOUBLE_EQ(0.456, traj1.WaypointByIndex(1)->Time());
+
+  // Trajectory
+  EXPECT_EQ(0u, actor.TrajectoryCount());
+
+  traj1.SetId(123u);
+  traj1.SetType("trajectory1");
+
+  actor.AddTrajectory(traj1);
+  EXPECT_EQ(1u, actor.TrajectoryCount());
+  EXPECT_EQ(123u, actor.TrajectoryByIndex(0)->Id());
+  EXPECT_EQ("trajectory1", actor.TrajectoryByIndex(0)->Type());
+
+  sdf::Trajectory traj2;
+  traj2.SetId(456u);
+  traj2.SetType("trajectory2");
+
+  actor.AddTrajectory(traj2);
+  EXPECT_EQ(2u, actor.TrajectoryCount());
+  EXPECT_EQ(456u, actor.TrajectoryByIndex(1)->Id());
+  EXPECT_EQ("trajectory2", actor.TrajectoryByIndex(1)->Type());
+}
