@@ -23,23 +23,30 @@
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
 
-bool recursiveSameTypeUniqueNames(sdf::ElementPtr elem)
+//////////////////////////////////////////////////
+/// \brief Check that all sibling elements of the same type have unique names.
+/// This checks recursively and should check the files exhaustively
+/// rather than terminating early when the first duplicate name is found.
+/// \param[in] _elem sdf Element to check recursively.
+/// \return True if all contained elements have do not share a name with
+/// sibling elements of the same type.
+bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
 {
   bool result = true;
-  auto typeNames = elem->GetElementTypeNames();
+  auto typeNames = _elem->GetElementTypeNames();
   for (const std::string &typeName : typeNames)
   {
-    if (!elem->HasUniqueChildNames(typeName))
+    if (!_elem->HasUniqueChildNames(typeName))
     {
       std::cerr << "Non-unique names detected in type "
                 << typeName << " in\n"
-                << elem->ToString("")
+                << _elem->ToString("")
                 << std::endl;
       result = false;
     }
   }
 
-  sdf::ElementPtr child = elem->GetFirstElement();
+  sdf::ElementPtr child = _elem->GetFirstElement();
   while (child)
   {
     result = recursiveSameTypeUniqueNames(child) && result;
