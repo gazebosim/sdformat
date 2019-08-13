@@ -23,6 +23,32 @@
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
 
+bool recursiveSameTypeUniqueNames(sdf::ElementPtr elem)
+{
+  bool result = true;
+  auto typeNames = elem->GetElementTypeNames();
+  for (const std::string &typeName : typeNames)
+  {
+    if (!elem->HasUniqueChildNames(typeName))
+    {
+      std::cerr << "Non-unique names detected in type "
+                << typeName << " in\n"
+                << elem->ToString("")
+                << std::endl;
+      result = false;
+    }
+  }
+
+  sdf::ElementPtr child = elem->GetFirstElement();
+  while (child)
+  {
+    result = recursiveSameTypeUniqueNames(child) && result;
+    child = child->GetNextElement();
+  }
+
+  return result;
+}
+
 //////////////////////////////////////////////////
 // cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
@@ -44,6 +70,12 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!sdf::readFile(_path, sdf))
   {
     std::cerr << "Error: SDF parsing the xml failed.\n";
+    return -1;
+  }
+
+  if (!recursiveSameTypeUniqueNames(sdf->Root()))
+  {
+    std::cerr << "Error: non-unique names detected.\n";
     return -1;
   }
 
