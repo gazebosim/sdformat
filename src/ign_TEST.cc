@@ -74,6 +74,17 @@ TEST(check, SDF)
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_TRUE(output.find("Required attribute") != std::string::npos);
   }
+
+  // Check an SDF file with sibling elements of the same type
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/world_duplicate.sdf";
+
+    // Check world_duplicate.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_TRUE(output.find("Error: non-unique names") != std::string::npos);
+  }
 }
 
 /////////////////////////////////////////////////
