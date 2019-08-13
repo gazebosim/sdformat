@@ -634,6 +634,23 @@ ElementPtr Element::GetNextElement(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+std::set<std::string> Element::GetElementTypeNames() const
+{
+  std::set<std::string> result;
+  auto elem = this->GetFirstElement();
+  while (elem)
+  {
+    std::string typeName = elem->GetName();
+    if (result.count(typeName) == 0)
+    {
+      result.insert(typeName);
+    }
+    elem = elem->GetNextElement();
+  }
+  return result;
+}
+
+/////////////////////////////////////////////////
 bool Element::HasUniqueChildNames(const std::string &_type) const
 {
   auto namedElementsCount = this->CountNamedElements(_type);

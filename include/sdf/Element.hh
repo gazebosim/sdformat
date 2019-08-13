@@ -17,7 +17,9 @@
 #ifndef _SDF_ELEMENT_HH_
 #define _SDF_ELEMENT_HH_
 
+#include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -286,6 +288,10 @@ namespace sdf
     /// tree. First call parent->GetFirstElement() to get the first child. Call
     /// child = child->GetNextElement() to iterate through the children.
     public: ElementPtr GetNextElement(const std::string &_name = "") const;
+
+    /// \brief Get set of child element type names.
+    /// \return A set of the names of the child elements.
+    public: std::set<std::string> GetElementTypeNames() const;
 
     /// \brief Checks whether any child elements of the specified element type
     /// have identical name attribute values and returns false if so.

@@ -518,6 +518,8 @@ TEST(Element, CountNamedElements)
   // expect empty map element with no children
   EXPECT_TRUE(parent->CountNamedElements().empty());
   EXPECT_TRUE(parent->CountNamedElements("child").empty());
+  // expect empty set of element type names
+  EXPECT_TRUE(parent->GetElementTypeNames().empty());
   // since there are no child names, they must be unique
   EXPECT_TRUE(parent->HasUniqueChildNames());
   EXPECT_TRUE(parent->HasUniqueChildNames("child"));
@@ -544,6 +546,12 @@ TEST(Element, CountNamedElements)
   addChildElement(parent, "element", true, "child2");
   addChildElement(parent, "element", true, "child3");
   addChildElement(parent, "element", false, "unset");
+
+  // test GetElementTypeNames
+  auto typeNames = parent->GetElementTypeNames();
+  EXPECT_EQ(typeNames.size(), 2u);
+  EXPECT_EQ(typeNames.count("child"), 1u);
+  EXPECT_EQ(typeNames.count("element"), 1u);
 
   // test HasUniqueChildNames
   EXPECT_TRUE(parent->HasUniqueChildNames("empty"));
