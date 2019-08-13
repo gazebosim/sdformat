@@ -518,6 +518,9 @@ TEST(Element, CountNamedElements)
   // expect empty map element with no children
   EXPECT_TRUE(parent->CountNamedElements().empty());
   EXPECT_TRUE(parent->CountNamedElements("child").empty());
+  // since there are no child names, they must be unique
+  EXPECT_TRUE(parent->HasUniqueChildNames());
+  EXPECT_TRUE(parent->HasUniqueChildNames("child"));
 
   auto addChildElement = [](
       sdf::ElementPtr _parent,
@@ -542,10 +545,19 @@ TEST(Element, CountNamedElements)
   addChildElement(parent, "element", true, "child3");
   addChildElement(parent, "element", false, "unset");
 
+  // test HasUniqueChildNames
   EXPECT_TRUE(parent->HasUniqueChildNames("empty"));
+  EXPECT_TRUE(parent->HasUniqueChildNames("child"));
+  EXPECT_TRUE(parent->HasUniqueChildNames("element"));
+  // The following have matching names that are detected when passing
+  // default "" to HasUniqueChildNames().
+  // <child name="child2"/>
+  // <element name="child2"/>
+  EXPECT_FALSE(parent->HasUniqueChildNames());
+  EXPECT_FALSE(parent->HasUniqueChildNames(""));
+
   EXPECT_TRUE(parent->CountNamedElements("empty").empty());
 
-  EXPECT_TRUE(parent->HasUniqueChildNames("child"));
   auto childMap = parent->CountNamedElements("child");
   EXPECT_FALSE(childMap.empty());
   EXPECT_EQ(childMap.size(), 2u);
@@ -554,7 +566,6 @@ TEST(Element, CountNamedElements)
   EXPECT_EQ(childMap.at("child1"), 1u);
   EXPECT_EQ(childMap.at("child2"), 1u);
 
-  EXPECT_TRUE(parent->HasUniqueChildNames("element"));
   auto elementMap = parent->CountNamedElements("element");
   EXPECT_FALSE(elementMap.empty());
   EXPECT_EQ(elementMap.size(), 2u);
@@ -563,7 +574,6 @@ TEST(Element, CountNamedElements)
   EXPECT_EQ(elementMap.at("child2"), 1u);
   EXPECT_EQ(elementMap.at("child3"), 1u);
 
-  EXPECT_FALSE(parent->HasUniqueChildNames(""));
   auto allMap = parent->CountNamedElements("");
   EXPECT_FALSE(allMap.empty());
   EXPECT_EQ(allMap.size(), 3u);
