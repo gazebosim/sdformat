@@ -634,6 +634,20 @@ ElementPtr Element::GetNextElement(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+bool Element::HasUniqueChildNames(const std::string &_type) const
+{
+  auto namedElementsCount = this->CountNamedElements(_type);
+  for (auto iter : namedElementsCount)
+  {
+    if (iter.second > 1)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+/////////////////////////////////////////////////
 std::map<std::string, std::size_t>
 Element::CountNamedElements(const std::string &_type) const
 {

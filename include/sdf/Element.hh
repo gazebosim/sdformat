@@ -287,6 +287,14 @@ namespace sdf
     /// child = child->GetNextElement() to iterate through the children.
     public: ElementPtr GetNextElement(const std::string &_name = "") const;
 
+    /// \brief Checks whether any child elements of the specified element type
+    /// have identical name attribute values and returns false if so.
+    /// \param[in] _type The type of Element to check. If empty, check names
+    /// of all child elements.
+    /// \return True if all child elements with name attributes have unique
+    /// names, return false if there are duplicated names.
+    public: bool HasUniqueChildNames(const std::string &_type = "") const;
+
     /// \brief Count the number of child elements of the specified element type
     /// that have the same name attribute value.
     /// \param[in] _type The type of Element to check. If empty, count names
