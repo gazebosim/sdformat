@@ -6,7 +6,6 @@
     * [Pull request 550](https://bitbucket.org/osrf/sdformat/pull-requests/550)
     * [pull request 538](https://bitbucket.org/osrf/sdformat/pull-requests/538)
     * [Pull request 525](https://bitbucket.org/osrf/sdformat/pull-requests/525)
-    * [Pull request 522](https://bitbucket.org/osrf/sdformat/pull-requests/522)
     * [Pull request 475](https://bitbucket.org/osrf/sdformat/pull-requests/475)
     * [Pull request 476](https://bitbucket.org/osrf/sdformat/pull-requests/476)
     * [Pull request 463](https://bitbucket.org/osrf/sdformat/pull-requests/463)
