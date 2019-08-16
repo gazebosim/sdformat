@@ -171,7 +171,7 @@ namespace sdf
 
     /// \brief Set the pose to be reached.
     /// \param[in] _pose Pose to be reached.
-    public: void SetPose(ignition::math::Pose3d _pose);
+    public: void SetPose(ignition::math::Pose3d &_pose);
 
     /// \brief Copy waypoint from an Waypoint instance.
     /// \param[in] _waypoint The waypoint to set values from.

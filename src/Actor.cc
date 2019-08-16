@@ -334,7 +334,7 @@ ignition::math::Pose3d Waypoint::Pose() const
 }
 
 /////////////////////////////////////////////////
-void Waypoint::SetPose(ignition::math::Pose3d _pose)
+void Waypoint::SetPose(ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
