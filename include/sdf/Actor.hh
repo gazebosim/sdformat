@@ -104,7 +104,7 @@ namespace sdf
 
     /// \brief Set the scale of the animation skeleton.
     /// \param[in] _scale Scale for animation skeleton.
-    public: void SetScale(const double _scale);
+    public: void SetScale(double _scale);
 
     /// \brief Get whether the animation is interpolated on X.
     /// \return True if interpolated on X.
@@ -112,7 +112,7 @@ namespace sdf
 
     /// \brief Set whether the animation is interpolated on X.
     /// \param[in] _interpolateX True to indicate interpolation on X.
-    public: void SetInterpolateX(const bool _interpolateX);
+    public: void SetInterpolateX(bool _interpolateX);
 
     /// \brief Copy animation from an Animation instance.
     /// \param[in] _animation The animation to set values from.
@@ -163,7 +163,7 @@ namespace sdf
 
     /// \brief Set the time in seconds when the pose should be reached.
     /// \param[in] _time Time in seconds for the pose to be reached.
-    public: void SetTime(const double _time);
+    public: void SetTime(double _time);
 
     /// \brief Get the pose to be reached.
     /// \return Pose to be reached.
@@ -171,7 +171,7 @@ namespace sdf
 
     /// \brief Set the pose to be reached.
     /// \param[in] _pose Pose to be reached.
-    public: void SetPose(ignition::math::Pose3d _pose);
+    public: void SetPose(const ignition::math::Pose3d _pose);
 
     /// \brief Copy waypoint from an Waypoint instance.
     /// \param[in] _waypoint The waypoint to set values from.
@@ -250,7 +250,7 @@ namespace sdf
     /// range [0..WaypointCount()).
     /// \return Pointer to the waypoint. Nullptr if the index does not exist.
     /// \sa uint64_t WaypointCount() const
-    public: const Waypoint *WaypointByIndex(const uint64_t _index) const;
+    public: const Waypoint *WaypointByIndex(uint64_t _index) const;
 
     /// \brief Add a new waypoint.
     /// \param[in] _waypoint Waypoint to be added.
@@ -312,14 +312,6 @@ namespace sdf
     /// \param[in] _name Name of the actor.
     public: void SetName(const std::string &_name);
 
-    /// \brief Get whether the actor is static.
-    /// \return True if the actor is static.
-    public: bool Static() const;
-
-    /// \brief Set whether the actor is static.
-    /// \param[in] _static True to indicate that the actor is static.
-    public: void SetStatic(const bool _static);
-
     /// \brief Get the pose of the actor. This is the pose of the actor
     /// as specified in SDF (<actor> <pose> ... </pose></actor>), and is
     /// typically used to express the position and rotation of an actor in a
@@ -369,7 +361,7 @@ namespace sdf
     /// range [0..AnimationCount()).
     /// \return Pointer to the animation. Nullptr if the index does not exist.
     /// \sa uint64_t AnimationCount() const
-    public: const Animation *AnimationByIndex(const uint64_t _index) const;
+    public: const Animation *AnimationByIndex(uint64_t _index) const;
 
     /// \brief Get whether an animation name exists.
     /// \param[in] _name Name of the animation to check.
@@ -415,12 +407,12 @@ namespace sdf
     /// range [0..TrajectoryCount()).
     /// \return Pointer to the trajectory. Nullptr if the index does not exist.
     /// \sa uint64_t TrajectoryCount() const
-    public: const Trajectory *TrajectoryByIndex(const uint64_t _index) const;
+    public: const Trajectory *TrajectoryByIndex(uint64_t _index) const;
 
     /// \brief Get whether a trajectory id exists.
     /// \param[in] _id Id of the trajectory to check.
     /// \return True if there exists a trajectory with the given name.
-    public: bool TrajectoryIdExists(const uint64_t _id) const;
+    public: bool TrajectoryIdExists(uint64_t _id) const;
 
     /// \brief Add a new trajectory.
     /// \param[in] _traj Trajectory to be added.
@@ -435,7 +427,7 @@ namespace sdf
     /// range [0..LinkCount()).
     /// \return Pointer to the link. Nullptr if the index does not exist.
     /// \sa uint64_t LinkCount() const
-    public: const Link *LinkByIndex(const uint64_t _index) const;
+    public: const Link *LinkByIndex(uint64_t _index) const;
 
     /// \brief Get whether a link name exists.
     /// \param[in] _name Name of the link to check.
@@ -451,7 +443,7 @@ namespace sdf
     /// range [0..JointCount()).
     /// \return Pointer to the joint. Nullptr if the index does not exist.
     /// \sa uint64_t JointCount() const
-    public: const Joint *JointByIndex(const uint64_t _index) const;
+    public: const Joint *JointByIndex(uint64_t _index) const;
 
     /// \brief Get whether a joint name exists.
     /// \param[in] _name Name of the joint to check.

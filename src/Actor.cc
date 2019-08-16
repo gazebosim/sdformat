@@ -77,9 +77,6 @@ class sdf::ActorPrivate
   /// \brief Frame of the actor.
   public: std::string poseFrame = "";
 
-  /// \brief True if the actor is static.
-  public: bool isStatic = true;
-
   /// \brief Filename of the actor skin.
   public: std::string skinFilename = "__default__";
 
@@ -530,7 +527,6 @@ void Actor::CopyFrom(const Actor &_actor)
   this->dataPtr->name             = _actor.dataPtr->name;
   this->dataPtr->pose             = _actor.dataPtr->pose;
   this->dataPtr->poseFrame        = _actor.dataPtr->poseFrame;
-  this->dataPtr->isStatic         = _actor.dataPtr->isStatic;
   this->dataPtr->skinFilename     = _actor.dataPtr->skinFilename;
   this->dataPtr->skinScale        = _actor.dataPtr->skinScale;
   this->dataPtr->animations       = _actor.dataPtr->animations;
@@ -562,9 +558,6 @@ Errors Actor::Load(ElementPtr _sdf)
   }
 
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
-
-  this->dataPtr->isStatic = _sdf->Get<bool>("static",
-      this->dataPtr->isStatic).first;
 
   sdf::ElementPtr skinElem = _sdf->GetElement("skin");
 
@@ -641,18 +634,6 @@ std::string &Actor::Name() const
 void Actor::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
-}
-
-/////////////////////////////////////////////////
-bool Actor::Static() const
-{
-  return this->dataPtr->isStatic;
-}
-
-/////////////////////////////////////////////////
-void Actor::SetStatic(const bool _static)
-{
-  this->dataPtr->isStatic = _static;
 }
 
 /////////////////////////////////////////////////
