@@ -77,9 +77,6 @@ class sdf::ActorPrivate
   /// \brief Frame of the actor.
   public: std::string poseFrame = "";
 
-  /// \brief True if the actor is static.
-  public: bool isStatic = true;
-
   /// \brief Filename of the actor skin.
   public: std::string skinFilename = "__default__";
 
@@ -225,7 +222,7 @@ double Animation::Scale() const
 }
 
 /////////////////////////////////////////////////
-void Animation::SetScale(const double _scale)
+void Animation::SetScale(double _scale)
 {
   this->dataPtr->scale = _scale;
 }
@@ -237,7 +234,7 @@ bool Animation::InterpolateX() const
 }
 
 /////////////////////////////////////////////////
-void Animation::SetInterpolateX(const bool _interpolateX)
+void Animation::SetInterpolateX(bool _interpolateX)
 {
   this->dataPtr->interpolateX = _interpolateX;
 }
@@ -322,7 +319,7 @@ double Waypoint::Time() const
 }
 
 /////////////////////////////////////////////////
-void Waypoint::SetTime(const double _time)
+void Waypoint::SetTime(double _time)
 {
   this->dataPtr->time = _time;
 }
@@ -465,7 +462,7 @@ uint64_t Trajectory::WaypointCount() const
 }
 
 /////////////////////////////////////////////////
-const Waypoint *Trajectory::WaypointByIndex(const uint64_t _index) const
+const Waypoint *Trajectory::WaypointByIndex(uint64_t _index) const
 {
   if (_index < this->dataPtr->waypoints.size())
     return &this->dataPtr->waypoints[_index];
@@ -530,7 +527,6 @@ void Actor::CopyFrom(const Actor &_actor)
   this->dataPtr->name             = _actor.dataPtr->name;
   this->dataPtr->pose             = _actor.dataPtr->pose;
   this->dataPtr->poseFrame        = _actor.dataPtr->poseFrame;
-  this->dataPtr->isStatic         = _actor.dataPtr->isStatic;
   this->dataPtr->skinFilename     = _actor.dataPtr->skinFilename;
   this->dataPtr->skinScale        = _actor.dataPtr->skinScale;
   this->dataPtr->animations       = _actor.dataPtr->animations;
@@ -562,9 +558,6 @@ Errors Actor::Load(ElementPtr _sdf)
   }
 
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
-
-  this->dataPtr->isStatic = _sdf->Get<bool>("static",
-      this->dataPtr->isStatic).first;
 
   sdf::ElementPtr skinElem = _sdf->GetElement("skin");
 
@@ -644,18 +637,6 @@ void Actor::SetName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
-bool Actor::Static() const
-{
-  return this->dataPtr->isStatic;
-}
-
-/////////////////////////////////////////////////
-void Actor::SetStatic(const bool _static)
-{
-  this->dataPtr->isStatic = _static;
-}
-
-/////////////////////////////////////////////////
 const ignition::math::Pose3d &Actor::Pose() const
 {
   return this->dataPtr->pose;
@@ -716,7 +697,7 @@ uint64_t Actor::AnimationCount() const
 }
 
 /////////////////////////////////////////////////
-const Animation *Actor::AnimationByIndex(const uint64_t _index) const
+const Animation *Actor::AnimationByIndex(uint64_t _index) const
 {
   if (_index < this->dataPtr->animations.size())
     return &this->dataPtr->animations[_index];
@@ -783,7 +764,7 @@ uint64_t Actor::TrajectoryCount() const
 }
 
 /////////////////////////////////////////////////
-const Trajectory *Actor::TrajectoryByIndex(const uint64_t _index) const
+const Trajectory *Actor::TrajectoryByIndex(uint64_t _index) const
 {
   if (_index < this->dataPtr->trajectories.size())
     return &this->dataPtr->trajectories[_index];
@@ -791,7 +772,7 @@ const Trajectory *Actor::TrajectoryByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
-bool Actor::TrajectoryIdExists(const uint64_t _id) const
+bool Actor::TrajectoryIdExists(uint64_t _id) const
 {
   for (const auto &t : this->dataPtr->trajectories)
   {
@@ -814,7 +795,7 @@ uint64_t Actor::LinkCount() const
 }
 
 /////////////////////////////////////////////////
-const Link *Actor::LinkByIndex(const uint64_t _index) const
+const Link *Actor::LinkByIndex(uint64_t _index) const
 {
   if (_index < this->dataPtr->links.size())
     return &this->dataPtr->links[_index];
@@ -839,7 +820,7 @@ uint64_t Actor::JointCount() const
 }
 
 /////////////////////////////////////////////////
-const Joint *Actor::JointByIndex(const uint64_t _index) const
+const Joint *Actor::JointByIndex(uint64_t _index) const
 {
   if (_index < this->dataPtr->joints.size())
     return &this->dataPtr->joints[_index];
