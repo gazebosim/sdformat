@@ -541,6 +541,12 @@ TEST(Element, CountNamedElements)
     }
   };
 
+  // The following calls should make the following child elements:
+  // <child name="child1"/>
+  // <child name="child2"/>
+  // <element name="child2"/>
+  // <element name="child3"/>
+  // <element />
   addChildElement(parent, "child", true, "child1");
   addChildElement(parent, "child", true, "child2");
   addChildElement(parent, "element", true, "child2");

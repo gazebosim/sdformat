@@ -670,17 +670,14 @@ Element::CountNamedElements(const std::string &_type) const
 {
   std::map<std::string, std::size_t> result;
 
-  if (!_type.empty() && !this->HasElement(_type))
+  sdf::ElementPtr elem;
+  if (_type.empty())
   {
-    // return empty map
-    return result;
+    elem = this->GetFirstElement();
   }
-
-  sdf::ElementPtr elem = this->GetFirstElement();
-
-  if (!_type.empty() && elem->GetName() != _type)
+  else
   {
-    elem = elem->GetNextElement(_type);
+    elem = this->GetElementImpl(_type);
   }
 
   while (elem)
