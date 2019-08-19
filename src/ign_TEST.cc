@@ -130,6 +130,31 @@ TEST(check, SDF)
     EXPECT_NE(output.find("Error: joint with name[joint] already exists."),
               std::string::npos) << output;
   }
+
+  // Check an SDF file with sibling elements of the same type (collision)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/link_duplicate_sibling_collisions.sdf";
+
+    // Check world_sibling_same_names.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: collision with name[collision] "
+                          "already exists."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with sibling elements of the same type (visual)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/link_duplicate_sibling_visuals.sdf";
+
+    // Check world_sibling_same_names.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: visual with name[visual] already exists."),
+              std::string::npos) << output;
+  }
 }
 
 /////////////////////////////////////////////////
