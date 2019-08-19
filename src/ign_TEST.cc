@@ -155,6 +155,28 @@ TEST(check, SDF)
     EXPECT_NE(output.find("Error: visual with name[visual] already exists."),
               std::string::npos) << output;
   }
+
+  // Check an SDF file with cousin elements of the same type (collision)
+  // that have duplicate names. This is a valid file.
+  {
+    std::string path = pathBase +"/link_duplicate_cousin_collisions.sdf";
+
+    // Check world_sibling_same_names.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with cousin elements of the same type (visual)
+  // that have duplicate names. This is a valid file.
+  {
+    std::string path = pathBase +"/link_duplicate_cousin_visuals.sdf";
+
+    // Check world_sibling_same_names.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
 }
 
 /////////////////////////////////////////////////
