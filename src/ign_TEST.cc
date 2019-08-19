@@ -69,7 +69,7 @@ TEST(check, SDF)
     // Check box_plane_low_friction_test.world
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_EQ("Valid.\n", output);
+    EXPECT_EQ("Valid.\n", output) << output;
   }
 
   // Check a bad SDF file
@@ -79,7 +79,8 @@ TEST(check, SDF)
     // Check box_bad_test.world
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_TRUE(output.find("Required attribute") != std::string::npos);
+    EXPECT_NE(output.find("Required attribute"), std::string::npos)
+      << output;
   }
 
   // Check an SDF file with sibling elements of the same type
@@ -102,7 +103,8 @@ TEST(check, SDF)
     // Check world_sibling_same_names.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_TRUE(output.find("Error: non-unique names") != std::string::npos);
+    EXPECT_NE(output.find("Error: non-unique names"), std::string::npos)
+      << output;
   }
 }
 
