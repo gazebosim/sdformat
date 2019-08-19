@@ -20,10 +20,77 @@
 
 #include "sdf/sdf_config.h"
 #include "sdf/Filesystem.hh"
+#include "sdf/Joint.hh"
+#include "sdf/Model.hh"
 #include "sdf/Root.hh"
+#include "sdf/World.hh"
 #include "sdf/ign.hh"
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
+
+//////////////////////////////////////////////////
+/// \brief Check that all joints in contained models have specify parent
+/// and child link names that match the names of sibling links.
+/// This checks recursively and should check the files exhaustively
+/// rather than terminating early when the first error is found.
+/// \param[in] _root sdf Root object to check recursively.
+/// \return True if all models have joints with valid parent and child
+/// link names.
+bool checkJointParentChildLinksExist(const sdf::Root &_root)
+{
+  bool result = true;
+
+  auto checkModelJointParentChildNames = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    for (uint64_t j=0; j < _model->JointCount(); ++j)
+    {
+      auto joint = _model->JointByIndex(j);
+
+      const std::string &parentName = joint->ParentLinkName();
+      if (parentName != "world" && !_model->LinkNameExists(parentName))
+      {
+        std::cerr << "Error: parent link with name[" << parentName
+                  << "] specified by joint with name[" << joint->Name()
+                  << "] not found in model with name[" << _model->Name()
+                  << "]."
+                  << std::endl;
+        modelResult = false;
+      }
+
+      const std::string &childName = joint->ChildLinkName();
+      if (childName != "world" && !_model->LinkNameExists(childName))
+      {
+        std::cerr << "Error: child link with name[" << childName
+                  << "] specified by joint with name[" << joint->Name()
+                  << "] not found in model with name[" << _model->Name()
+                  << "]."
+                  << std::endl;
+        modelResult = false;
+      }
+    }
+    return modelResult;
+  };
+
+  for (uint64_t m=0; m < _root.ModelCount(); ++m)
+  {
+    auto model = _root.ModelByIndex(m);
+    result = checkModelJointParentChildNames(model) && result;
+  }
+
+  for (uint64_t w=0; w < _root.WorldCount(); ++w)
+  {
+    auto world = _root.WorldByIndex(w);
+    for (uint64_t m=0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelJointParentChildNames(model) && result;
+    }
+  }
+
+  return result;
+}
 
 //////////////////////////////////////////////////
 /// \brief Check that all sibling elements of the any type have unique names.
@@ -98,6 +165,12 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     {
       std::cerr << "Error: " << error.Message() << std::endl;
     }
+    return -1;
+  }
+
+  if (!checkJointParentChildLinksExist(root))
+  {
+    std::cerr << "Error: invalid parent or child link name.\n";
     return -1;
   }
 
