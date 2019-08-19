@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.6">
-  <model name="link_visual_siblings_same_name">
+  <model name="duplicate_sibling_visuals">
     <link name="link">
       <visual name="visual" />
       <visual name="visual" />
