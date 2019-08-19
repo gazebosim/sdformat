@@ -94,7 +94,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   sdf::Errors errors = root.Load(_path);
   if (!errors.empty())
   {
-    for (const auto &error : errors)
+    for (auto &error : errors)
     {
       std::cerr << "Error: " << error.Message() << std::endl;
     }
