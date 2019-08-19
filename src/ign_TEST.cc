@@ -90,7 +90,8 @@ TEST(check, SDF)
     // Check world_duplicate.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_TRUE(output.find("Error: non-unique names") != std::string::npos);
+    EXPECT_NE(output.find("Error: World with name[default] already exists."),
+              std::string::npos) << output;
   }
 
   // Check an SDF file with sibling elements of the same type
