@@ -83,7 +83,7 @@ TEST(check, SDF)
       << output;
   }
 
-  // Check an SDF file with sibling elements of the same type
+  // Check an SDF file with sibling elements of the same type (world)
   // that have duplicate names.
   {
     std::string path = pathBase +"/world_duplicate.sdf";
@@ -95,7 +95,7 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
-  // Check an SDF file with sibling elements of the same type
+  // Check an SDF file with sibling elements of different types (model, light)
   // that have duplicate names.
   {
     std::string path = pathBase +"/world_sibling_same_names.sdf";
@@ -105,6 +105,30 @@ TEST(check, SDF)
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: non-unique names"), std::string::npos)
       << output;
+  }
+
+  // Check an SDF file with sibling elements of the same type (link)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/model_duplicate_links.sdf";
+
+    // Check world_sibling_same_names.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: link with name[link] already exists."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with sibling elements of the same type (joint)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/model_duplicate_joints.sdf";
+
+    // Check world_sibling_same_names.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: joint with name[joint] already exists."),
+              std::string::npos) << output;
   }
 }
 
