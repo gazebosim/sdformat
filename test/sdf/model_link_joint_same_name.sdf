@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="link_joint_same_name">
+    <link name="base">
+      <pose>1 0 0 0 0 0</pose>
+    </link>
+    <link name="attachment">
+      <pose>0 2 0 0 0 0</pose>
+    </link>
+    <joint name="attachment" type="fixed">
+      <pose>0 0 3 0 0 0</pose>
+      <parent>base</parent>
+      <child>attachment</child>
+    </joint>
+  </model>
+</sdf>

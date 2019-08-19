@@ -131,6 +131,18 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
+  // Check an SDF file with sibling elements of different types (link, joint)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/model_link_joint_same_name.sdf";
+
+    // Check world_sibling_same_names.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: non-unique names"), std::string::npos)
+      << output;
+  }
+
   // Check an SDF file with sibling elements of the same type (collision)
   // that have duplicate names.
   {
