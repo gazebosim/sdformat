@@ -35,7 +35,7 @@
       <description>Override the static value of the included model.</description>
     </element>
 
-    <include filename="pose.sdf" required="0"/>
+    <include filename="pose_relative_to.sdf" required="0"/>
   </element>
 
   <element name="gravity" type="vector3" default="0 0 -9.8" required="1">

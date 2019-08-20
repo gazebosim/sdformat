@@ -11,6 +11,7 @@ set (headers
   Error.hh
   Exception.hh
   Filesystem.hh
+  Frame.hh
   Geometry.hh
   Gui.hh
   Joint.hh

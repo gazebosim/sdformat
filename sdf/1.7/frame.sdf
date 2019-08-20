@@ -6,10 +6,10 @@
     <description>Name of the frame. This name must not match another frame defined inside the parent that this frame is attached to.</description>
   </attribute>
 
-  <attribute name="affixed_to" type="string" default="" required="*">
+  <attribute name="attached_to" type="string" default="" required="*">
     <description>
-      Name of the link or frame to which this frame is affixed.
-      If a frame is specified, recursively following the affixed_to attributes
+      Name of the link or frame to which this frame is attached.
+      If a frame is specified, recursively following the attached_to attributes
       of the specified frames must lead to the name of a link.
     </description>
   </attribute>
