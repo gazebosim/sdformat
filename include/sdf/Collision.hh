@@ -29,7 +29,7 @@ namespace sdf
   class CollisionPrivate;
   class Geometry;
 
-  /// \brief A collision element descibes the collison properties associated
+  /// \brief A collision element descibes the collision properties associated
   /// with a link. This can be different from the visual properties of a link.
   /// For example, simple collision models are often used to reduce
   /// computation time.
@@ -68,7 +68,7 @@ namespace sdf
     public: const Geometry *Geom() const;
 
     /// \brief Get the pose of the collision object. This is the pose of the
-    /// collison as specified in SDF
+    /// collision as specified in SDF
     /// (<collision><pose> ... </pose></collision>).
     /// \return The pose of the collision object.
     public: const ignition::math::Pose3d &Pose() const;
