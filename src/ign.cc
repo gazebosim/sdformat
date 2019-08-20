@@ -44,7 +44,7 @@ bool checkJointParentChildLinksExist(const sdf::Root &_root)
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
-    for (uint64_t j=0; j < _model->JointCount(); ++j)
+    for (uint64_t j = 0; j < _model->JointCount(); ++j)
     {
       auto joint = _model->JointByIndex(j);
 
@@ -73,16 +73,16 @@ bool checkJointParentChildLinksExist(const sdf::Root &_root)
     return modelResult;
   };
 
-  for (uint64_t m=0; m < _root.ModelCount(); ++m)
+  for (uint64_t m = 0; m < _root.ModelCount(); ++m)
   {
     auto model = _root.ModelByIndex(m);
     result = checkModelJointParentChildNames(model) && result;
   }
 
-  for (uint64_t w=0; w < _root.WorldCount(); ++w)
+  for (uint64_t w = 0; w < _root.WorldCount(); ++w)
   {
     auto world = _root.WorldByIndex(w);
-    for (uint64_t m=0; m < world->ModelCount(); ++m)
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
     {
       auto model = world->ModelByIndex(m);
       result = checkModelJointParentChildNames(model) && result;
