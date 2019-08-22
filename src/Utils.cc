@@ -42,7 +42,8 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
   }
 
   // Read the frame. An empty frame implies the parent frame.
-  std::pair<std::string, bool> framePair = sdf->Get<std::string>("frame", "");
+  std::pair<std::string, bool> framePair =
+      sdf->Get<std::string>("relative_to", "");
 
   // Read the pose value.
   std::pair<ignition::math::Pose3d, bool> posePair =
