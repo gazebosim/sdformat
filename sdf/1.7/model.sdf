@@ -10,7 +10,7 @@
     <description>
       The name of the model's canonical link, to which the model's implicit
       coordinate frame is attached. If unset or set to an empty string,
-      the first `<link>` element listed as a child of this model is chosen
+      the first link element listed as a child of this model is chosen
       as the canonical link.
     </description>
   </attribute>
@@ -28,7 +28,7 @@
   </element>
 
   <include filename="frame.sdf" required="*"/>
-  <include filename="pose_relative_to.sdf" required="0"/>
+  <include filename="pose.sdf" required="0"/>
   <include filename="link.sdf" required="*"/>
   <include filename="joint.sdf" required="*"/>
   <include filename="plugin.sdf" required="*"/>

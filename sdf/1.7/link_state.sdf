@@ -35,6 +35,6 @@
     </attribute>
   </element>
 
-  <include filename="pose_relative_to.sdf" required="0"/>
+  <include filename="pose.sdf" required="0"/>
 
 </element> <!-- End Link -->
