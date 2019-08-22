@@ -279,8 +279,8 @@ TEST(Frame, StateFrame)
     // light pose
     EXPECT_TRUE(lightStateElem->HasElement("pose"));
     sdf::ElementPtr lightPoseElem = lightStateElem->GetElement("pose");
-    // EXPECT_TRUE(lightPoseElem->HasAttribute("relative_to"));
-    // EXPECT_EQ(lightPoseElem->Get<std::string>("relative_to"), "lframe");
+    EXPECT_TRUE(lightPoseElem->HasAttribute("relative_to"));
+    EXPECT_EQ(lightPoseElem->Get<std::string>("relative_to"), "lframe");
     EXPECT_EQ(lightPoseElem->Get<ignition::math::Pose3d>(),
               ignition::math::Pose3d(99, 0, 22, 0, 0, 0));
   }
