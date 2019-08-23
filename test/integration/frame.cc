@@ -20,7 +20,15 @@
 
 #include <gtest/gtest.h>
 
-#include "sdf/sdf.hh"
+#include "sdf/Element.hh"
+#include "sdf/Frame.hh"
+#include "sdf/Filesystem.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
+#include "sdf/Root.hh"
+#include "sdf/SDFImpl.hh"
+#include "sdf/parser.hh"
+#include "sdf/sdf_config.h"
 
 #include "test_config.h"
 
@@ -330,4 +338,155 @@ TEST(Frame, IncludeRelativeTo)
   EXPECT_EQ(modelPoseElem->Get<std::string>("relative_to"), "/world");
   EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(5, -2, 1, 0, 0, 0));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMFrame, LoadFramesAttachedTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_frame_attached_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_frame_attached_to", model->Name());
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_EQ(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ("", model->PoseFrame());
+
+  EXPECT_TRUE(model->LinkNameExists("L"));
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(4u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_NE(nullptr, model->FrameByIndex(1));
+  EXPECT_NE(nullptr, model->FrameByIndex(2));
+  EXPECT_NE(nullptr, model->FrameByIndex(3));
+  EXPECT_EQ(nullptr, model->FrameByIndex(4));
+  ASSERT_TRUE(model->FrameNameExists("F00"));
+  ASSERT_TRUE(model->FrameNameExists("F0"));
+  ASSERT_TRUE(model->FrameNameExists("F1"));
+  ASSERT_TRUE(model->FrameNameExists("F2"));
+
+  EXPECT_TRUE(model->FrameByName("F00")->AttachedTo().empty());
+  EXPECT_TRUE(model->FrameByName("F0")->AttachedTo().empty());
+  EXPECT_EQ("L", model->FrameByName("F1")->AttachedTo());
+  EXPECT_EQ("F1", model->FrameByName("F2")->AttachedTo());
+
+  EXPECT_TRUE(model->FrameByName("F00")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->FrameByName("F0")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->FrameByName("F1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->FrameByName("F2")->PoseRelativeTo().empty());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMFrame, LoadFramesInvalidAttachedTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_frame_invalid_attached_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_frame_invalid_attached_to", model->Name());
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_EQ(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ("", model->PoseFrame());
+
+  EXPECT_TRUE(model->LinkNameExists("L"));
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(3u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_NE(nullptr, model->FrameByIndex(1));
+  EXPECT_NE(nullptr, model->FrameByIndex(2));
+  EXPECT_EQ(nullptr, model->FrameByIndex(3));
+  ASSERT_TRUE(model->FrameNameExists("F1"));
+  ASSERT_TRUE(model->FrameNameExists("F2"));
+  ASSERT_TRUE(model->FrameNameExists("F3"));
+
+  EXPECT_EQ("L", model->FrameByName("F1")->AttachedTo());
+  EXPECT_EQ("F1", model->FrameByName("F2")->AttachedTo());
+  EXPECT_EQ("A", model->FrameByName("F3")->AttachedTo());
+
+  EXPECT_TRUE(model->FrameByName("F1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->FrameByName("F2")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->FrameByName("F3")->PoseRelativeTo().empty());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMFrame, LoadFramesAttachedToJoint)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_frame_attached_to_joint.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_frame_attached_to_joint", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ("", model->PoseFrame());
+
+  EXPECT_TRUE(model->LinkNameExists("P"));
+  EXPECT_TRUE(model->LinkNameExists("C"));
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(1u, model->JointCount());
+  EXPECT_NE(nullptr, model->JointByIndex(0));
+  EXPECT_EQ(nullptr, model->JointByIndex(1));
+
+  EXPECT_TRUE(model->JointNameExists("J"));
+
+  EXPECT_EQ(4u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_NE(nullptr, model->FrameByIndex(1));
+  EXPECT_NE(nullptr, model->FrameByIndex(2));
+  EXPECT_NE(nullptr, model->FrameByIndex(3));
+  EXPECT_EQ(nullptr, model->FrameByIndex(4));
+  ASSERT_TRUE(model->FrameNameExists("F1"));
+  ASSERT_TRUE(model->FrameNameExists("F2"));
+  ASSERT_TRUE(model->FrameNameExists("F3"));
+  ASSERT_TRUE(model->FrameNameExists("F4"));
+
+  EXPECT_EQ("P", model->FrameByName("F1")->AttachedTo());
+  EXPECT_EQ("C", model->FrameByName("F2")->AttachedTo());
+  EXPECT_EQ("J", model->FrameByName("F3")->AttachedTo());
+  EXPECT_EQ("F3", model->FrameByName("F4")->AttachedTo());
+
+  EXPECT_TRUE(model->FrameByName("F1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->FrameByName("F2")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->FrameByName("F3")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->FrameByName("F4")->PoseRelativeTo().empty());
 }
