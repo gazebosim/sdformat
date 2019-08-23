@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.6">
+<sdf version="1.7">
   <model name="model_invalid_canonical_link" canonical_link="link3">
     <link name="link1">
       <pose>1 0 0 0 0 0</pose>
