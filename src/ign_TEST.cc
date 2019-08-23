@@ -112,7 +112,7 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/model_duplicate_links.sdf";
 
-    // Check world_sibling_same_names.sdf
+    // Check model_duplicate_links.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: link with name[link] already exists."),
@@ -124,7 +124,7 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/model_duplicate_joints.sdf";
 
-    // Check world_sibling_same_names.sdf
+    // Check model_duplicate_joints.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: joint with name[joint] already exists."),
@@ -136,7 +136,7 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/model_link_joint_same_name.sdf";
 
-    // Check world_sibling_same_names.sdf
+    // Check model_link_joint_same_name.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: non-unique names"), std::string::npos)
@@ -148,7 +148,7 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/link_duplicate_sibling_collisions.sdf";
 
-    // Check world_sibling_same_names.sdf
+    // Check link_duplicate_sibling_collisions.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: collision with name[collision] "
@@ -161,7 +161,7 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/link_duplicate_sibling_visuals.sdf";
 
-    // Check world_sibling_same_names.sdf
+    // Check link_duplicate_sibling_visuals.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: visual with name[visual] already exists."),
@@ -173,7 +173,7 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/link_duplicate_cousin_collisions.sdf";
 
-    // Check world_sibling_same_names.sdf
+    // Check link_duplicate_cousin_collisions.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;
@@ -184,7 +184,7 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/link_duplicate_cousin_visuals.sdf";
 
-    // Check world_sibling_same_names.sdf
+    // Check link_duplicate_cousin_visuals.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;
@@ -194,7 +194,7 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/joint_invalid_child.sdf";
 
-    // Check world_sibling_same_names.sdf
+    // Check joint_invalid_child.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: child link with name[invalid] specified by "
@@ -207,7 +207,7 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/joint_invalid_parent.sdf";
 
-    // Check world_sibling_same_names.sdf
+    // Check joint_invalid_parent.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: parent link with name[invalid] specified by "
@@ -221,7 +221,7 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/joint_parent_world.sdf";
 
-    // Check world_sibling_same_names.sdf
+    // Check joint_parent_world.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;
