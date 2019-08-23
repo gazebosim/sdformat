@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.6">
+<sdf version="1.7">
   <world name="default">
     <physics name="my_physics" type="bullet">
       <max_step_size>0.1</max_step_size>
