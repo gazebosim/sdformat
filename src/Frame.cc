@@ -88,7 +88,11 @@ Errors Frame::Load(ElementPtr _sdf)
   // Read the frame's attached_to attribute
   if (_sdf->HasAttribute("attached_to"))
   {
-    _sdf->Get<std::string>("attached_to", "");
+    auto pair = _sdf->Get<std::string>("attached_to", "");
+    if (pair.second)
+    {
+      this->dataPtr->attachedTo = pair.first;
+    }
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
