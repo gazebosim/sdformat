@@ -27,7 +27,6 @@ namespace sdf
 {
   // Forward declaration.
   class FramePrivate;
-  class Geometry;
 
   /// \brief A Frame element descibes the properties associated with an
   /// explicit frame defined in a Model or World.
