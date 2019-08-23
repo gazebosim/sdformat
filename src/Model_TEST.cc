@@ -59,6 +59,10 @@ TEST(DOMModel, Construction)
   EXPECT_FALSE(model.JointNameExists(""));
   EXPECT_FALSE(model.JointNameExists("default"));
 
+  EXPECT_TRUE(model.CanonicalLinkName().empty());
+  model.SetCanonicalLinkName("link");
+  EXPECT_EQ("link", model.CanonicalLinkName());
+
   EXPECT_EQ(ignition::math::Pose3d::Zero, model.Pose());
   EXPECT_TRUE(model.PoseFrame().empty());
 

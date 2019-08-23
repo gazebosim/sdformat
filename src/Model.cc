@@ -44,6 +44,9 @@ class sdf::ModelPrivate
   /// \brief True if this model should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
+  /// \brief Name of the canonical link.
+  public: std::string canonicalLink = "";
+
   /// \brief Pose of the model
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
@@ -102,6 +105,16 @@ Errors Model::Load(ElementPtr _sdf)
   {
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A model name is required, but the name is not set."});
+  }
+
+  // Read the model's canonical_link attribute
+  if (_sdf->HasAttribute("canonical_link"))
+  {
+    auto pair = _sdf->Get<std::string>("canonical_link", "");
+    if (pair.second)
+    {
+      this->dataPtr->canonicalLink = pair.first;
+    }
   }
 
   this->dataPtr->isStatic = _sdf->Get<bool>("static", false).first;
@@ -254,6 +267,18 @@ const Joint *Model::JointByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+const std::string &Model::CanonicalLinkName() const
+{
+  return this->dataPtr->canonicalLink;
+}
+
+/////////////////////////////////////////////////
+void Model::SetCanonicalLinkName(const std::string &_canonicalLink)
+{
+  this->dataPtr->canonicalLink = _canonicalLink;
 }
 
 /////////////////////////////////////////////////

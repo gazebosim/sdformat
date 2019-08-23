@@ -226,6 +226,29 @@ TEST(check, SDF)
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;
   }
+
+  // Check an SDF file with the second link specified as the canonical link.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_canonical_link.sdf";
+
+    // Check model_canonical_link.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with an invalid link specified as the canonical link.
+  {
+    std::string path = pathBase +"/model_invalid_canonical_link.sdf";
+
+    // Check model_invalid_canonical_link.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: canonical_link with name[link3] not found in "
+                          "model with name[model_invalid_canonical_link]."),
+              std::string::npos) << output;
+  }
 }
 
 /////////////////////////////////////////////////

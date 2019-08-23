@@ -29,6 +29,53 @@
 #include "sdf/system_util.hh"
 
 //////////////////////////////////////////////////
+/// \brief Check that for each model, the canonical_link attribute value
+/// matches the name of a link in the model if the attribute is set and
+/// not empty.
+/// This checks recursively and should check the files exhaustively
+/// rather than terminating early when the first error is found.
+/// \param[in] _root sdf Root object to check recursively.
+/// \return True if all models have valid canonical_link attributes.
+bool checkCanonicalLinkNames(const sdf::Root &_root)
+{
+  bool result = true;
+
+  auto checkModelCanonicalLinkName = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    std::string canonicalLink = _model->CanonicalLinkName();
+    if (!canonicalLink.empty() && !_model->LinkNameExists(canonicalLink))
+    {
+      std::cerr << "Error: canonical_link with name[" << canonicalLink
+                << "] not found in model with name[" << _model->Name()
+                << "]."
+                << std::endl;
+      modelResult = false;
+    }
+    return modelResult;
+  };
+
+  for (uint64_t m = 0; m < _root.ModelCount(); ++m)
+  {
+    auto model = _root.ModelByIndex(m);
+    result = checkModelCanonicalLinkName(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root.WorldCount(); ++w)
+  {
+    auto world = _root.WorldByIndex(w);
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelCanonicalLinkName(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
 /// \brief Check that all joints in contained models have specify parent
 /// and child link names that match the names of sibling links.
 /// This checks recursively and should check the files exhaustively
@@ -165,6 +212,12 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     {
       std::cerr << "Error: " << error.Message() << std::endl;
     }
+    return -1;
+  }
+
+  if (!checkCanonicalLinkNames(root))
+  {
+    std::cerr << "Error: invalid canonical link name.\n";
     return -1;
   }
 
