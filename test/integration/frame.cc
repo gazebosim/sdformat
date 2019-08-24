@@ -418,22 +418,26 @@ TEST(DOMFrame, LoadFramesInvalidAttachedTo)
   EXPECT_EQ(0u, model->JointCount());
   EXPECT_EQ(nullptr, model->JointByIndex(0));
 
-  EXPECT_EQ(3u, model->FrameCount());
+  EXPECT_EQ(4u, model->FrameCount());
   EXPECT_NE(nullptr, model->FrameByIndex(0));
   EXPECT_NE(nullptr, model->FrameByIndex(1));
   EXPECT_NE(nullptr, model->FrameByIndex(2));
-  EXPECT_EQ(nullptr, model->FrameByIndex(3));
+  EXPECT_NE(nullptr, model->FrameByIndex(3));
+  EXPECT_EQ(nullptr, model->FrameByIndex(4));
   ASSERT_TRUE(model->FrameNameExists("F1"));
   ASSERT_TRUE(model->FrameNameExists("F2"));
   ASSERT_TRUE(model->FrameNameExists("F3"));
+  ASSERT_TRUE(model->FrameNameExists("F4"));
 
   EXPECT_EQ("L", model->FrameByName("F1")->AttachedTo());
   EXPECT_EQ("F1", model->FrameByName("F2")->AttachedTo());
   EXPECT_EQ("A", model->FrameByName("F3")->AttachedTo());
+  EXPECT_EQ("F4", model->FrameByName("F4")->AttachedTo());
 
   EXPECT_TRUE(model->FrameByName("F1")->PoseRelativeTo().empty());
   EXPECT_TRUE(model->FrameByName("F2")->PoseRelativeTo().empty());
   EXPECT_TRUE(model->FrameByName("F3")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->FrameByName("F4")->PoseRelativeTo().empty());
 }
 
 /////////////////////////////////////////////////

@@ -5,5 +5,6 @@
     <frame name="F1" attached_to="L"/>   <!-- VALID: Directly attached_to link L. -->
     <frame name="F2" attached_to="F1"/>  <!-- VALID: Indirectly attached_to link L via frame F1. -->
     <frame name="F3" attached_to="A"/>   <!-- INVALID: no sibling frame named A. -->
+    <frame name="F4" attached_to="F4"/>  <!-- INVALID: graph cycle when frame attached_to itself. -->
   </model>
 </sdf>

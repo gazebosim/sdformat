@@ -249,6 +249,46 @@ TEST(check, SDF)
                           "model with name[model_invalid_canonical_link]."),
               std::string::npos) << output;
   }
+
+  // Check an SDF file with the second link specified as the canonical link.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_frame_attached_to.sdf";
+
+    // Check model_frame_attached_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with the second link specified as the canonical link.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_frame_attached_to_joint.sdf";
+
+    // Check model_frame_attached_to_joint.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with an invalid link specified as the canonical link.
+  {
+    std::string path = pathBase +"/model_frame_invalid_attached_to.sdf";
+
+    // Check model_frame_invalid_attached_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: attached_to name[A] specified by frame with "
+                          "name[F3] does not match a link, joint, or frame "
+                          "name in model with "
+                          "name[model_frame_invalid_attached_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: attached_to name[F4] is identical to frame "
+                          "name[F4], causing a graph cycle in model with "
+                          "name[model_frame_invalid_attached_to]."),
+              std::string::npos) << output;
+  }
 }
 
 /////////////////////////////////////////////////
