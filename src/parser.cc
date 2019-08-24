@@ -34,6 +34,7 @@
 
 namespace sdf
 {
+inline namespace SDF_VERSION_NAMESPACE {
 //////////////////////////////////////////////////
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
@@ -1208,5 +1209,6 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
   }
 
   return false;
+}
 }
 }

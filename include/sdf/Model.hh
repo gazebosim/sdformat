@@ -21,10 +21,15 @@
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declarations.
   class Frame;
   class Joint;
@@ -219,5 +224,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: ModelPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif
