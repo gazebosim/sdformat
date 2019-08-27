@@ -200,7 +200,7 @@ bool checkFrameAttachedToNames(const sdf::Root &_root)
 /// \param[in] _root sdf Root object to check recursively.
 /// \return True if all models have joints with valid parent and child
 /// link names.
-bool checkJointParentChildLinksExist(const sdf::Root &_root)
+bool checkJointParentChildLinkNames(const sdf::Root &_root)
 {
   bool result = true;
 
@@ -230,6 +230,17 @@ bool checkJointParentChildLinksExist(const sdf::Root &_root)
                   << "] specified by joint with name[" << joint->Name()
                   << "] not found in model with name[" << _model->Name()
                   << "]."
+                  << std::endl;
+        modelResult = false;
+      }
+
+      if (childName == parentName)
+      {
+        std::cerr << "Error: joint with name[" << joint->Name()
+                  << "] in model with name[" << _model->Name()
+                  << "] must specify different link names for "
+                  << "parent and child, while [" << childName
+                  << "] was specified for both."
                   << std::endl;
         modelResult = false;
       }
@@ -338,7 +349,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     return -1;
   }
 
-  if (!checkJointParentChildLinksExist(root))
+  if (!checkJointParentChildLinkNames(root))
   {
     std::cerr << "Error: invalid parent or child link name.\n";
     return -1;

@@ -216,6 +216,20 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
+  // Check an SDF file with a joint with identical parent and child.
+  {
+    std::string path = pathBase +"/joint_invalid_parent_same_as_child.sdf";
+
+    // Check joint_invalid_parent_same_as_child.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: joint with name[joint] in model with "
+                          "name[joint_invalid_parent_same_as_child] must "
+                          "specify different link names for parent and child, "
+                          "while [link] was specified for both."),
+              std::string::npos) << output;
+  }
+
   // Check an SDF file with the world specified as a parent link.
   // This is a valid file.
   {
