@@ -748,7 +748,7 @@ TEST(Converter, CopyElemElem)
 TEST(Converter, RenameElemElem)
 {
   // Set up an xml string for testing
-  std::string xmlString = getXmlString();
+  std::string xmlString = getRepeatedXmlString();
 
   // Verify the xml
   TiXmlDocument xmlDoc;
