@@ -131,6 +131,47 @@ bool checkFrameAttachedToNames(const sdf::Root &_root)
     return modelResult;
   };
 
+  auto checkWorldFrameAttachedToNames = [](
+      const sdf::World *_world) -> bool
+  {
+    bool worldResult = true;
+    for (uint64_t f = 0; f < _world->FrameCount(); ++f)
+    {
+      auto frame = _world->FrameByIndex(f);
+
+      const std::string &attachedTo = frame->AttachedTo();
+
+      // the attached_to attribute is always permitted to be empty
+      if (attachedTo.empty())
+      {
+        continue;
+      }
+
+      if (attachedTo == frame->Name())
+      {
+        std::cerr << "Error: attached_to name[" << attachedTo
+                  << "] is identical to frame name[" << frame->Name()
+                  << "], causing a graph cycle "
+                  << "in world with name[" << _world->Name()
+                  << "]."
+                  << std::endl;
+        worldResult = false;
+      }
+      else if (!_world->ModelNameExists(attachedTo) &&
+               !_world->FrameNameExists(attachedTo))
+      {
+        std::cerr << "Error: attached_to name[" << attachedTo
+                  << "] specified by frame with name[" << frame->Name()
+                  << "] does not match a link, joint, or frame name "
+                  << "in world with name[" << _world->Name()
+                  << "]."
+                  << std::endl;
+        worldResult = false;
+      }
+    }
+    return worldResult;
+  };
+
   for (uint64_t m = 0; m < _root.ModelCount(); ++m)
   {
     auto model = _root.ModelByIndex(m);
@@ -140,6 +181,7 @@ bool checkFrameAttachedToNames(const sdf::Root &_root)
   for (uint64_t w = 0; w < _root.WorldCount(); ++w)
   {
     auto world = _root.WorldByIndex(w);
+    result = checkWorldFrameAttachedToNames(world) && result;
     for (uint64_t m = 0; m < world->ModelCount(); ++m)
     {
       auto model = world->ModelByIndex(m);
