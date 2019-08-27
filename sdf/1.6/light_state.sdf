@@ -1,5 +1,5 @@
 <!-- State information for a light -->
-<element name="light" required="*">
+<element name="light_state" required="*">
   <description>Light state</description>
 
   <attribute name="name" type="string" default="__default__" required="1">
