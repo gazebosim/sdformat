@@ -5,6 +5,14 @@
 1. Move private headers from include/sdf to src folder.
     * [Pull request 553](https://bitbucket.org/osrf/sdformat/pull-requests/553)
 
+### SDFormat 8.3.0 (2019-08-17)
+
+1. Added Actor DOM
+    * [Pull request 547](https://bitbucket.org/osrf/sdformat/pull-requests/547)
+
+1. Print cmake build warnings and errors to std_err
+    * [Pull request 549](https://bitbucket.org/osrf/sdformat/pull-requests/549)
+
 ### SDFormat 8.2.0 (2019-06-18)
 
 1. Added RGBD Camera Sensor type.

@@ -13,6 +13,7 @@ if (USE_EXTERNAL_TINYXML)
 endif()
 
 set (sources
+  Actor.cc
   AirPressure.cc
   Altimeter.cc
   Atmosphere.cc
@@ -87,6 +88,7 @@ else()
 endif()
 
 set (gtest_sources
+  Actor_TEST.cc
   AirPressure_TEST.cc
   Altimeter_TEST.cc
   Atmosphere_TEST.cc
