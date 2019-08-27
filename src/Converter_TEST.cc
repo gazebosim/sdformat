@@ -796,6 +796,8 @@ TEST(Converter, RenameElemElem)
   EXPECT_EQ(elemE->ValueStr(), "elemE");
   std::string elemValue = elemE->GetText();
   EXPECT_EQ(elemValue, "D");
+
+  EXPECT_EQ(nullptr, elemC->FirstChildElement("elemD"));
 }
 
 ////////////////////////////////////////////////////
