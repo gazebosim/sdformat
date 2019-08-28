@@ -152,16 +152,16 @@ namespace sdf
     /// \param[in] _pose The pose of the joint.
     public: void SetPose(const ignition::math::Pose3d &_pose);
 
-    /// \brief Get the name of the coordinate frame in which this joint's
-    /// pose is expressed. A empty value indicates that the frame is the
-    /// child link frame.
-    /// \return The name of the pose frame.
+    /// \brief Get the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the child link frame.
+    /// \return The name of the pose relative-to frame.
     public: const std::string &PoseRelativeTo() const;
 
-    /// \brief Set the name of the coordinate frame in which this joint's
-    /// pose is expressed. A empty value indicates that the frame is the
-    /// child link frame.
-    /// \param[in] _frame The name of the pose frame.
+    /// \brief Set the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the child link frame.
+    /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
 
     /// \brief Get a pointer to the SDF element that was used during

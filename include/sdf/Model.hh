@@ -203,16 +203,16 @@ namespace sdf
     /// \param[in] _canonicalLink The name of the canonical link.
     public: void SetCanonicalLinkName(const std::string &_canonicalLink);
 
-    /// \brief Get the name of the coordinate frame in which this model's
-    /// pose is expressed. A empty value indicates that the frame is the
-    /// global/world coordinate frame.
-    /// \return The name of the pose frame.
+    /// \brief Get the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the parent model/world coordinate frame.
+    /// \return The name of the pose relative-to frame.
     public: const std::string &PoseRelativeTo() const;
 
-    /// \brief Set the name of the coordinate frame in which this model's
-    /// pose is expressed. A empty value indicates that the frame is the
-    /// global/world coordinate frame.
-    /// \param[in] _frame The name of the pose frame.
+    /// \brief Set the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the parent model/world coordinate frame.
+    /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
 
     /// \brief Get a pointer to the SDF element that was used during
