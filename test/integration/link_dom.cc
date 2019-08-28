@@ -366,3 +366,78 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0),
       wirelessTransmitter->Pose());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMLink, LoadLinkPoseRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_link_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_link_relative_to", model->Name());
+  EXPECT_EQ(3u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_NE(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(nullptr, model->LinkByIndex(3));
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  ASSERT_TRUE(model->LinkNameExists("L1"));
+  ASSERT_TRUE(model->LinkNameExists("L2"));
+  ASSERT_TRUE(model->LinkNameExists("L3"));
+  EXPECT_TRUE(model->LinkByName("L1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->LinkByName("L2")->PoseRelativeTo().empty());
+  EXPECT_EQ("L1", model->LinkByName("L3")->PoseRelativeTo());
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(0u, model->FrameCount());
+  EXPECT_EQ(nullptr, model->FrameByIndex(0));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, LoadInvalidLinkPoseRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_invalid_link_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_invalid_link_relative_to", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  ASSERT_TRUE(model->LinkNameExists("L"));
+  ASSERT_TRUE(model->LinkNameExists("self_cycle"));
+  EXPECT_EQ("A", model->LinkByName("L")->PoseRelativeTo());
+  EXPECT_EQ("self_cycle", model->LinkByName("self_cycle")->PoseRelativeTo());
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(0u, model->FrameCount());
+  EXPECT_EQ(nullptr, model->FrameByIndex(0));
+}
