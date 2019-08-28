@@ -323,7 +323,7 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: attached_to name[A] specified by frame with "
-                          "name[F] does not match a link, joint, or frame "
+                          "name[F] does not match a model or frame "
                           "name in world with "
                           "name[world_frame_invalid_attached_to]."),
               std::string::npos) << output;
