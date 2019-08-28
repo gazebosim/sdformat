@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_invalid_frame_relative_to">
+    <link name="L">
+      <pose>1 0 0 0 0 0</pose>                      <!-- Link pose relative_to the model frame (M) by default. -->
+    </link>
+
+    <frame name="F">
+      <pose relative_to="A">0 1 0 0 0 0</pose>      <!-- INVALID: no frame in model scope named A. -->
+    </frame>
+
+    <frame name="cycle">
+      <pose relative_to="cycle">0 2 0 0 0 0</pose>  <!-- INVALID: cycle in relative_to graph does not lead to model frame. -->
+    </frame>
+  </model>
+</sdf>
