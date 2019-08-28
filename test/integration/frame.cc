@@ -528,7 +528,7 @@ TEST(DOMFrame, LoadWorldFramesAttachedTo)
   EXPECT_EQ(nullptr, model->FrameByIndex(1));
   ASSERT_TRUE(model->LinkNameExists("L"));
   ASSERT_TRUE(model->FrameNameExists("F0"));
-  EXPECT_EQ("L", world->FrameByName("F0")->AttachedTo());
+  EXPECT_EQ("L", model->FrameByName("F0")->AttachedTo());
 
   EXPECT_EQ(4u, world->FrameCount());
   EXPECT_NE(nullptr, world->FrameByIndex(0));
