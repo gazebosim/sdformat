@@ -84,7 +84,7 @@ bool checkCanonicalLinkNames(const sdf::Root &_root)
 /// This checks recursively and should check the files exhaustively
 /// rather than terminating early when the first error is found.
 /// \param[in] _root sdf Root object to check recursively.
-/// \return True if all models have valid canonical_link attributes.
+/// \return True if all frames have valid attached_to attributes.
 bool checkFrameAttachedToNames(const sdf::Root &_root)
 {
   bool result = true;
@@ -162,7 +162,7 @@ bool checkFrameAttachedToNames(const sdf::Root &_root)
       {
         std::cerr << "Error: attached_to name[" << attachedTo
                   << "] specified by frame with name[" << frame->Name()
-                  << "] does not match a link, joint, or frame name "
+                  << "] does not match a model or frame name "
                   << "in world with name[" << _world->Name()
                   << "]."
                   << std::endl;
