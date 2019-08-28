@@ -22,6 +22,7 @@
 #include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
+#include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
@@ -193,6 +194,181 @@ bool checkFrameAttachedToNames(const sdf::Root &_root)
 }
 
 //////////////////////////////////////////////////
+/// \brief Helper function for checking validity of pose relative_to attribute
+/// values in the model scope.
+/// \param[in] _model Model object that contains object _t in its scope.
+/// \param[in] _t Object whose pose relative_to attribute is to be checked
+/// (may be Link, Joint, Frame, Collision, etc.).
+/// \param[in] _typeName Name of type T for use in console messages.
+/// \return True if relative_to attribute values a valid.
+template <typename T>
+bool checkModelPoseRelativeTo(
+    const sdf::Model *_model,
+    const T *_t,
+    const std::string &_typeName)
+{
+  const std::string &relativeTo = _t->PoseRelativeTo();
+
+  // the relative_to attribute is always permitted to be empty
+  if (relativeTo.empty())
+  {
+    return true;
+  }
+
+  if (relativeTo == _t->Name())
+  {
+    std::cerr << "Error: relative_to name[" << relativeTo
+              << "] is identical to " << _typeName << " name[" << _t->Name()
+              << "], causing a graph cycle "
+              << "in model with name[" << _model->Name()
+              << "]."
+              << std::endl;
+    return false;
+  }
+  else if (!_model->LinkNameExists(relativeTo) &&
+           !_model->JointNameExists(relativeTo) &&
+           !_model->FrameNameExists(relativeTo))
+  {
+    std::cerr << "Error: relative_to name[" << relativeTo
+              << "] specified by " << _typeName << " with name[" << _t->Name()
+              << "] does not match a link, joint, or frame name "
+              << "in model with name[" << _model->Name()
+              << "]."
+              << std::endl;
+    return false;
+  }
+  return true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Helper function for checking validity of pose relative_to attribute
+/// values in the model scope.
+/// \param[in] _world World object that contains object _t in its scope.
+/// \param[in] _t Object whose pose relative_to attribute is to be checked
+/// (may be Model, Frame, Light, etc.).
+/// \param[in] _typeName Name of type T for use in console messages.
+/// \return True if relative_to attribute values a valid.
+template <typename T>
+bool checkWorldPoseRelativeTo(
+    const sdf::World *_world,
+    const T *_t,
+    const std::string &_typeName)
+{
+  const std::string &relativeTo = _t->PoseRelativeTo();
+
+  // the relative_to attribute is always permitted to be empty
+  if (relativeTo.empty())
+  {
+    return true;
+  }
+
+  if (relativeTo == _t->Name())
+  {
+    std::cerr << "Error: relative_to name[" << relativeTo
+              << "] is identical to " << _typeName << " name[" << _t->Name()
+              << "], causing a graph cycle "
+              << "in world with name[" << _world->Name()
+              << "]."
+              << std::endl;
+    return false;
+  }
+  else if (!_world->ModelNameExists(relativeTo) &&
+           !_world->FrameNameExists(relativeTo))
+  {
+    std::cerr << "Error: relative_to name[" << relativeTo
+              << "] specified by " << _typeName << " with name[" << _t->Name()
+              << "] does not match a model or frame name "
+              << "in world with name[" << _world->Name()
+              << "]."
+              << std::endl;
+    return false;
+  }
+  return true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Check that for each pose, the relative_to attribute value
+/// does not match its own frame name (for the poses of explicit and
+/// implicit frames) but does match the name of a frame in the current
+/// scope if the attribute is set and not empty.
+/// This checks recursively and should check the files exhaustively
+/// rather than terminating early when the first error is found.
+/// \param[in] _root sdf Root object to check recursively.
+/// \return True if all poses have valid relative_to attributes.
+bool checkPoseRelativeToNames(const sdf::Root &_root)
+{
+  bool result = true;
+
+  auto checkModelPoseRelativeToNames = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    for (uint64_t l = 0; l < _model->LinkCount(); ++l)
+    {
+      auto link = _model->LinkByIndex(l);
+
+      modelResult = checkModelPoseRelativeTo<sdf::Link>(_model, link, "link")
+                    && modelResult;
+    }
+    for (uint64_t j = 0; j < _model->JointCount(); ++j)
+    {
+      auto joint = _model->JointByIndex(j);
+
+      modelResult = checkModelPoseRelativeTo<sdf::Joint>(_model, joint, "joint")
+                    && modelResult;
+    }
+    for (uint64_t f = 0; f < _model->FrameCount(); ++f)
+    {
+      auto frame = _model->FrameByIndex(f);
+
+      modelResult = checkModelPoseRelativeTo<sdf::Frame>(_model, frame, "frame")
+                    && modelResult;
+    }
+    return modelResult;
+  };
+
+  auto checkWorldPoseRelativeToNames = [](
+      const sdf::World *_world) -> bool
+  {
+    bool worldResult = true;
+    for (uint64_t m = 0; m < _world->ModelCount(); ++m)
+    {
+      auto model = _world->ModelByIndex(m);
+
+      worldResult = checkWorldPoseRelativeTo<sdf::Model>(_world, model, "model")
+                    && worldResult;
+    }
+    for (uint64_t f = 0; f < _world->FrameCount(); ++f)
+    {
+      auto frame = _world->FrameByIndex(f);
+
+      worldResult = checkWorldPoseRelativeTo<sdf::Frame>(_world, frame, "frame")
+                    && worldResult;
+    }
+    return worldResult;
+  };
+
+  for (uint64_t m = 0; m < _root.ModelCount(); ++m)
+  {
+    auto model = _root.ModelByIndex(m);
+    result = checkModelPoseRelativeToNames(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root.WorldCount(); ++w)
+  {
+    auto world = _root.WorldByIndex(w);
+    result = checkWorldPoseRelativeToNames(world) && result;
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelPoseRelativeToNames(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
 /// \brief Check that all joints in contained models have specify parent
 /// and child link names that match the names of sibling links.
 /// This checks recursively and should check the files exhaustively
@@ -357,6 +533,11 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!checkFrameAttachedToNames(root))
   {
     std::cerr << "Error: invalid frame attached_to name.\n";
+    return -1;
+  }
+  if (!checkPoseRelativeToNames(root))
+  {
+    std::cerr << "Error: invalid pose relative_to name.\n";
     return -1;
   }
 

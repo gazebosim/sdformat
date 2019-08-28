@@ -333,6 +333,104 @@ TEST(check, SDF)
                           "name[world_frame_invalid_attached_to]."),
               std::string::npos) << output;
   }
+
+  // Check an SDF file with links using the relative_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_link_relative_to.sdf";
+
+    // Check model_link_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model links with invalid relative_to attributes.
+  {
+    std::string path = pathBase +"/model_invalid_link_relative_to.sdf";
+
+    // Check model_invalid_link_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: relative_to name[A] specified by link with "
+                          "name[L] does not match a link, joint, or frame "
+                          "name in model with "
+                          "name[model_invalid_link_relative_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: relative_to name[self_cycle] is identical to "
+                          "link name[self_cycle], causing a graph cycle in "
+                          "model with name[model_invalid_link_relative_to]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with joints using the relative_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_joint_relative_to.sdf";
+
+    // Check model_joint_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model joints with invalid relative_to attributes.
+  {
+    std::string path = pathBase +"/model_invalid_joint_relative_to.sdf";
+
+    // Check model_invalid_joint_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: relative_to name[A] specified by joint with "
+                          "name[J] does not match a link, joint, or frame "
+                          "name in model with "
+                          "name[model_invalid_joint_relative_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: relative_to name[Jcycle] is identical to "
+                          "joint name[Jcycle], causing a graph cycle in "
+                          "model with name[model_invalid_joint_relative_to]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with model frames using the relative_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_frame_relative_to.sdf";
+
+    // Check model_frame_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model frames relative_to joints.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_frame_relative_to_joint.sdf";
+
+    // Check model_frame_relative_to_joint.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model frames with invalid relative_to attributes.
+  {
+    std::string path = pathBase +"/model_invalid_frame_relative_to.sdf";
+
+    // Check model_invalid_frame_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: relative_to name[A] specified by frame with "
+                          "name[F] does not match a link, joint, or frame "
+                          "name in model with "
+                          "name[model_invalid_frame_relative_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: relative_to name[cycle] is identical to "
+                          "frame name[cycle], causing a graph cycle in model "
+                          "with name[model_invalid_frame_relative_to]."),
+              std::string::npos) << output;
+  }
 }
 
 /////////////////////////////////////////////////
