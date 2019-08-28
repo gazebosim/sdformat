@@ -238,7 +238,7 @@ const ignition::math::Pose3d &Light::Pose() const
 }
 
 /////////////////////////////////////////////////
-const std::string &Light::PoseFrame() const
+const std::string &Light::PoseRelativeTo() const
 {
   return this->dataPtr->poseFrame;
 }
@@ -250,7 +250,7 @@ void Light::SetPose(const ignition::math::Pose3d &_pose)
 }
 
 /////////////////////////////////////////////////
-void Light::SetPoseFrame(const std::string &_frame)
+void Light::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseFrame = _frame;
 }

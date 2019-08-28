@@ -121,7 +121,7 @@ const ignition::math::Pose3d &Collision::Pose() const
 }
 
 /////////////////////////////////////////////////
-const std::string &Collision::PoseFrame() const
+const std::string &Collision::PoseRelativeTo() const
 {
   return this->dataPtr->poseFrame;
 }
@@ -133,7 +133,7 @@ void Collision::SetPose(const ignition::math::Pose3d &_pose)
 }
 
 /////////////////////////////////////////////////
-void Collision::SetPoseFrame(const std::string &_frame)
+void Collision::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseFrame = _frame;
 }

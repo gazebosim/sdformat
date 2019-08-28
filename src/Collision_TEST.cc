@@ -30,14 +30,14 @@ TEST(DOMcollision, Construction)
   EXPECT_EQ(collision.Name(), "test_collison");
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, collision.Pose());
-  EXPECT_TRUE(collision.PoseFrame().empty());
+  EXPECT_TRUE(collision.PoseRelativeTo().empty());
 
   collision.SetPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
   EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
             collision.Pose());
 
-  collision.SetPoseFrame("link");
-  EXPECT_EQ("link", collision.PoseFrame());
+  collision.SetPoseRelativeTo("link");
+  EXPECT_EQ("link", collision.PoseRelativeTo());
 
   ASSERT_NE(nullptr, collision.Geom());
   EXPECT_EQ(sdf::GeometryType::EMPTY, collision.Geom()->Type());

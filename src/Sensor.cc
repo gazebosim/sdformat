@@ -198,7 +198,7 @@ const ignition::math::Pose3d &Sensor::Pose() const
 }
 
 /////////////////////////////////////////////////
-const std::string &Sensor::PoseFrame() const
+const std::string &Sensor::PoseRelativeTo() const
 {
   return this->dataPtr->poseFrame;
 }
@@ -210,7 +210,7 @@ void Sensor::SetPose(const ignition::math::Pose3d &_pose)
 }
 
 /////////////////////////////////////////////////
-void Sensor::SetPoseFrame(const std::string &_frame)
+void Sensor::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseFrame = _frame;
 }

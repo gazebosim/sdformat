@@ -79,13 +79,13 @@ TEST(DOMVisual, DoublePendulum)
   ASSERT_TRUE(plateVis != nullptr);
 
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateVis->Pose());
-  EXPECT_EQ("", plateVis->PoseFrame());
+  EXPECT_EQ("", plateVis->PoseRelativeTo());
 
   const sdf::Visual *poleVis = baseLink->VisualByIndex(1);
   ASSERT_TRUE(poleVis != nullptr);
 
   EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0), poleVis->Pose());
-  EXPECT_EQ("", poleVis->PoseFrame());
+  EXPECT_EQ("", poleVis->PoseRelativeTo());
 }
 
 //////////////////////////////////////////////////

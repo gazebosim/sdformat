@@ -33,9 +33,9 @@ TEST(DOMSensor, Construction)
   sensor.SetPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), sensor.Pose());
 
-  EXPECT_TRUE(sensor.PoseFrame().empty());
-  sensor.SetPoseFrame("a_frame");
-  EXPECT_EQ("a_frame", sensor.PoseFrame());
+  EXPECT_TRUE(sensor.PoseRelativeTo().empty());
+  sensor.SetPoseRelativeTo("a_frame");
+  EXPECT_EQ("a_frame", sensor.PoseRelativeTo());
 }
 
 /////////////////////////////////////////////////

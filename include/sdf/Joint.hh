@@ -156,13 +156,13 @@ namespace sdf
     /// pose is expressed. A empty value indicates that the frame is the
     /// child link frame.
     /// \return The name of the pose frame.
-    public: const std::string &PoseFrame() const;
+    public: const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame in which this joint's
     /// pose is expressed. A empty value indicates that the frame is the
     /// child link frame.
     /// \param[in] _frame The name of the pose frame.
-    public: void SetPoseFrame(const std::string &_frame);
+    public: void SetPoseRelativeTo(const std::string &_frame);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

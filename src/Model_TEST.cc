@@ -70,11 +70,11 @@ TEST(DOMModel, Construction)
   EXPECT_EQ("link", model.CanonicalLinkName());
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, model.Pose());
-  EXPECT_TRUE(model.PoseFrame().empty());
+  EXPECT_TRUE(model.PoseRelativeTo().empty());
 
   model.SetPose({1, 2, 3, 0, 0, IGN_PI});
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), model.Pose());
 
-  model.SetPoseFrame("world");
-  EXPECT_EQ("world", model.PoseFrame());
+  model.SetPoseRelativeTo("world");
+  EXPECT_EQ("world", model.PoseRelativeTo());
 }

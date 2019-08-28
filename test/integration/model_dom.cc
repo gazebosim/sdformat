@@ -108,7 +108,7 @@ TEST(DOMRoot, LoadDoublePendulum)
   EXPECT_FALSE(nullptr == model->LinkByIndex(2));
   EXPECT_TRUE(nullptr == model->LinkByIndex(3));
   EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), model->Pose());
-  EXPECT_EQ("", model->PoseFrame());
+  EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("base"));
   EXPECT_TRUE(model->LinkNameExists("upper_link"));
@@ -143,7 +143,7 @@ TEST(DOMRoot, LoadCanonicalLink)
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_EQ(nullptr, model->LinkByIndex(2));
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
-  EXPECT_EQ("", model->PoseFrame());
+  EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("link1"));
   EXPECT_TRUE(model->LinkNameExists("link2"));

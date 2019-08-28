@@ -31,13 +31,13 @@ TEST(DOMLight, DefaultConstruction)
   EXPECT_EQ("test_light", light.Name());
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, light.Pose());
-  EXPECT_TRUE(light.PoseFrame().empty());
+  EXPECT_TRUE(light.PoseRelativeTo().empty());
 
   light.SetPose({1, 2, 3, 0, 0, IGN_PI});
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), light.Pose());
 
-  light.SetPoseFrame("world");
-  EXPECT_EQ("world", light.PoseFrame());
+  light.SetPoseRelativeTo("world");
+  EXPECT_EQ("world", light.PoseRelativeTo());
 
   EXPECT_FALSE(light.CastShadows());
   light.SetCastShadows(true);
