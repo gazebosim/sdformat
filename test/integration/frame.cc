@@ -727,3 +727,105 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_EQ("J", model->FrameByName("F3")->PoseRelativeTo());
   EXPECT_EQ("F3", model->FrameByName("F4")->PoseRelativeTo());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMFrame, LoadWorldFramesRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_frame_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first world
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  EXPECT_EQ("world_frame_relative_to", world->Name());
+  EXPECT_EQ(4u, world->ModelCount());
+  EXPECT_NE(nullptr, world->ModelByIndex(0));
+  EXPECT_NE(nullptr, world->ModelByIndex(1));
+  EXPECT_NE(nullptr, world->ModelByIndex(2));
+  EXPECT_NE(nullptr, world->ModelByIndex(3));
+  EXPECT_EQ(nullptr, world->ModelByIndex(4));
+
+  ASSERT_TRUE(world->ModelNameExists("M1"));
+  ASSERT_TRUE(world->ModelNameExists("M2"));
+  ASSERT_TRUE(world->ModelNameExists("M3"));
+  ASSERT_TRUE(world->ModelNameExists("M4"));
+
+  const sdf::Model *model = world->ModelByName("M1");
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_EQ(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(1u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_EQ(nullptr, model->FrameByIndex(1));
+  ASSERT_TRUE(model->LinkNameExists("L"));
+  ASSERT_TRUE(model->FrameNameExists("F0"));
+  EXPECT_EQ("L", model->FrameByName("F0")->PoseRelativeTo());
+
+  EXPECT_TRUE(world->ModelByName("M1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(world->ModelByName("M2")->PoseRelativeTo().empty());
+  EXPECT_EQ("M2", world->ModelByName("M3")->PoseRelativeTo());
+  EXPECT_EQ("F1", world->ModelByName("M4")->PoseRelativeTo());
+
+  EXPECT_EQ(4u, world->FrameCount());
+  EXPECT_NE(nullptr, world->FrameByIndex(0));
+  EXPECT_NE(nullptr, world->FrameByIndex(1));
+  EXPECT_NE(nullptr, world->FrameByIndex(2));
+  EXPECT_NE(nullptr, world->FrameByIndex(3));
+  EXPECT_EQ(nullptr, world->FrameByIndex(4));
+  ASSERT_TRUE(world->FrameNameExists("world"));
+  ASSERT_TRUE(world->FrameNameExists("F0"));
+  ASSERT_TRUE(world->FrameNameExists("F1"));
+  ASSERT_TRUE(world->FrameNameExists("F2"));
+
+  EXPECT_TRUE(world->FrameByName("world")->PoseRelativeTo().empty());
+  EXPECT_TRUE(world->FrameByName("F0")->PoseRelativeTo().empty());
+  EXPECT_EQ("F0", world->FrameByName("F1")->PoseRelativeTo());
+  EXPECT_EQ("M1", world->FrameByName("F2")->PoseRelativeTo());
+
+  EXPECT_TRUE(world->FrameByName("world")->AttachedTo().empty());
+  EXPECT_TRUE(world->FrameByName("F0")->AttachedTo().empty());
+  EXPECT_TRUE(world->FrameByName("F1")->AttachedTo().empty());
+  EXPECT_TRUE(world->FrameByName("F2")->AttachedTo().empty());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMFrame, LoadWorldFramesInvalidRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_frame_invalid_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first world
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  EXPECT_EQ("world_frame_invalid_relative_to", world->Name());
+  EXPECT_EQ(2u, world->ModelCount());
+  EXPECT_NE(nullptr, world->ModelByIndex(0));
+  EXPECT_NE(nullptr, world->ModelByIndex(1));
+  EXPECT_EQ(nullptr, world->ModelByIndex(2));
+  ASSERT_TRUE(world->ModelNameExists("cycle"));
+  ASSERT_TRUE(world->ModelNameExists("M"));
+
+  EXPECT_EQ("A", world->ModelByName("M")->PoseRelativeTo());
+  EXPECT_EQ("cycle", world->ModelByName("cycle")->PoseRelativeTo());
+
+  EXPECT_EQ(2u, world->FrameCount());
+  EXPECT_NE(nullptr, world->FrameByIndex(0));
+  EXPECT_NE(nullptr, world->FrameByIndex(1));
+  EXPECT_EQ(nullptr, world->FrameByIndex(2));
+  ASSERT_TRUE(world->FrameNameExists("self_cycle"));
+  ASSERT_TRUE(world->FrameNameExists("F"));
+
+  EXPECT_EQ("A", world->FrameByName("F")->PoseRelativeTo());
+  EXPECT_EQ("self_cycle", world->FrameByName("self_cycle")->PoseRelativeTo());
+}

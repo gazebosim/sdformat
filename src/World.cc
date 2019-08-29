@@ -275,6 +275,19 @@ bool World::ModelNameExists(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+const Model *World::ModelByName(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
+    {
+      return &m;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
 const sdf::Atmosphere *World::Atmosphere() const
 {
   return this->dataPtr->atmosphere.get();

@@ -131,6 +131,11 @@ namespace sdf
     /// \sa uint64_t ModelCount() const
     public: const Model *ModelByIndex(const uint64_t _index) const;
 
+    /// \brief Get a model based on a name.
+    /// \param[in] _name Name of the model.
+    /// \return Pointer to the model. Nullptr if the name does not exist.
+    public: const Model *ModelByName(const std::string &_name) const;
+
     /// \brief Get whether a model name exists.
     /// \param[in] _name Name of the model to check.
     /// \return True if there exists a model with the given name.
