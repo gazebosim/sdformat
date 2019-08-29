@@ -431,6 +431,46 @@ TEST(check, SDF)
                           "with name[model_invalid_frame_relative_to]."),
               std::string::npos) << output;
   }
+
+  // Check an SDF file with model frames using the attached_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/world_frame_relative_to.sdf";
+
+    // Check world_frame_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with world frames with invalid relative_to attributes.
+  {
+    std::string path = pathBase +"/world_frame_invalid_relative_to.sdf";
+
+    // Check world_frame_invalid_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: relative_to name[A] specified by model with "
+                          "name[M] does not match a model or frame "
+                          "name in world with "
+                          "name[world_frame_invalid_relative_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: relative_to name[cycle] is identical "
+                          "to model name[cycle], causing a graph cycle "
+                          "in world with "
+                          "name[world_frame_invalid_relative_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: relative_to name[A] specified by frame with "
+                          "name[F] does not match a model or frame "
+                          "name in world with "
+                          "name[world_frame_invalid_relative_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: relative_to name[self_cycle] is identical "
+                          "to frame name[self_cycle], causing a graph cycle "
+                          "in world with "
+                          "name[world_frame_invalid_relative_to]."),
+              std::string::npos) << output;
+  }
 }
 
 /////////////////////////////////////////////////

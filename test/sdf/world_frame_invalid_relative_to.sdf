@@ -9,5 +9,13 @@
       <pose relative_to="self_cycle">2 0 0 0 0 0</pose>   <!-- INVALID: graph cycle when frame relative_to itself. -->
     </frame>
 
+    <model name="M">
+      <pose relative_to="A">0 3 0 0 0 0</pose>            <!-- INVALID: no sibling frame named A. -->
+      <link name="L"/>
+    </model>
+    <model name="cycle">
+      <pose relative_to="cycle">0 4 0 0 0 0</pose>        <!-- INVALID: graph cycle when model relative_to itself. -->
+    </model>
+
   </world>
 </sdf>
