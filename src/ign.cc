@@ -663,7 +663,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 
   if (!checkKinematicGraph(root))
   {
-    std::cerr << "Error: invalid frame attached_to graph.\n";
+    std::cerr << "Error: invalid kinematic graph.\n";
     result = -1;
   }
 
