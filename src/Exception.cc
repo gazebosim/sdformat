@@ -18,7 +18,7 @@
 #include <cstdint>
 #include <string>
 
-#include "sdf/ExceptionPrivate.hh"
+#include "ExceptionPrivate.hh"
 #include "sdf/Console.hh"
 #include "sdf/Exception.hh"
 
