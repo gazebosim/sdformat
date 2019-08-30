@@ -5,6 +5,9 @@
 1. Fix ign library path on macOS.
     * [Pull request 552](https://bitbucket.org/osrf/sdformat/pull-requests/552)
 
+1. Use `ign sdf --check` to check sibling elements of the same type for non-unique names.
+    * [Pull request 554](https://bitbucket.org/osrf/sdformat/pull-requests/554)
+
 ### SDFormat 6.2.0 (2019-01-17)
 
 1. Add geometry for sonar collision shape
