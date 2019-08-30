@@ -307,6 +307,73 @@ bool checkFrameAttachedToGraph(const sdf::Root &_root)
 }
 
 //////////////////////////////////////////////////
+/// \brief For the world and each model, check that the attached_to graphs
+/// build without errors and have no cycles.
+/// Confirm that following directed edges from each vertex in the graph
+/// leads to a model, link, or world frame.
+/// This checks recursively and should check the files exhaustively
+/// rather than terminating early when the first error is found.
+/// \param[in] _root sdf Root object to check recursively.
+/// \return True if all attached_to graphs are valid.
+bool checkPoseRelativeToGraph(const sdf::Root &_root)
+{
+  bool result = true;
+
+  auto checkModelPoseRelativeToGraph = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    sdf::PoseRelativeToGraph graph;
+    auto errors = sdf::buildPoseRelativeToGraph(graph, _model);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      modelResult = false;
+    }
+    return modelResult;
+  };
+
+  auto checkWorldPoseRelativeToGraph = [](
+      const sdf::World *_world) -> bool
+  {
+    bool worldResult = true;
+    sdf::PoseRelativeToGraph graph;
+    auto errors = sdf::buildPoseRelativeToGraph(graph, _world);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      worldResult = false;
+    }
+    return worldResult;
+  };
+
+  for (uint64_t m = 0; m < _root.ModelCount(); ++m)
+  {
+    auto model = _root.ModelByIndex(m);
+    result = checkModelPoseRelativeToGraph(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root.WorldCount(); ++w)
+  {
+    auto world = _root.WorldByIndex(w);
+    result = checkWorldPoseRelativeToGraph(world) && result;
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelPoseRelativeToGraph(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
 /// \brief Helper function for checking validity of pose relative_to attribute
 /// values in the model scope.
 /// \param[in] _model Model object that contains object _t in its scope.
@@ -670,6 +737,12 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!checkFrameAttachedToGraph(root))
   {
     std::cerr << "Error: invalid frame attached_to graph.\n";
+    result = -1;
+  }
+
+  if (!checkPoseRelativeToGraph(root))
+  {
+    std::cerr << "Error: invalid pose relative_to graph.\n";
     result = -1;
   }
 

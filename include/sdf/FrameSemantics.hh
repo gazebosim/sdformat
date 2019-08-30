@@ -90,6 +90,22 @@ namespace sdf
     MapType map;
   };
 
+  /// \brief Data structure for pose relative_to graphs for Model or World.
+  struct SDFORMAT_VISIBLE PoseRelativeToGraph
+  {
+    /// \brief A DirectedGraph with a vertex for each explicit or implicit
+    /// frame and edges pointing to the frame relative to which its pose
+    /// is defined. Each vertex stores its FrameType and each edge
+    /// stores the Pose3 between those frames.
+    using Pose3d = ignition::math::Pose3d;
+    using GraphType = ignition::math::graph::DirectedGraph<FrameType, Pose3d>;
+    GraphType graph;
+
+    /// \brief A Map from Vertex names to Vertex Ids.
+    using MapType = std::map<std::string, ignition::math::graph::VertexId>;
+    MapType map;
+  };
+
   /// \brief Build a KinematicGraph for a model.
   /// \param[out] _out Graph object to write.
   /// \param[in] _model Model from which to build attached_to graph.
@@ -112,6 +128,22 @@ namespace sdf
   SDFORMAT_VISIBLE
   Errors buildFrameAttachedToGraph(
               FrameAttachedToGraph &_out, const World *_world);
+
+  /// \brief Build a PoseRelativeToGraph for a model.
+  /// \param[out] _out Graph object to write.
+  /// \param[in] _model Model from which to build attached_to graph.
+  /// \return Errors.
+  SDFORMAT_VISIBLE
+  Errors buildPoseRelativeToGraph(
+              PoseRelativeToGraph &_out, const Model *_model);
+
+  /// \brief Build a PoseRelativeToGraph for a world.
+  /// \param[out] _out Graph object to write.
+  /// \param[in] _world World from which to build attached_to graph.
+  /// \return Errors.
+  SDFORMAT_VISIBLE
+  Errors buildPoseRelativeToGraph(
+              PoseRelativeToGraph &_out, const World *_world);
   }
 }
 #endif
