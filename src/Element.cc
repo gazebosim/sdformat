@@ -651,7 +651,7 @@ std::set<std::string> Element::GetElementTypeNames() const
 bool Element::HasUniqueChildNames(const std::string &_type) const
 {
   auto namedElementsCount = this->CountNamedElements(_type);
-  for (const auto &iter : namedElementsCount)
+  for (auto &iter : namedElementsCount)
   {
     if (iter.second > 1)
     {
