@@ -508,6 +508,8 @@ bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
 // cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 {
+  int result = 0;
+
   sdf::Root root;
   sdf::Errors errors = root.Load(_path);
   if (!errors.empty())
@@ -516,35 +518,40 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     {
       std::cerr << "Error: " << error.Message() << std::endl;
     }
-    return -1;
+    result = -1;
   }
 
   if (!checkCanonicalLinkNames(root))
   {
     std::cerr << "Error: invalid canonical link name.\n";
-    return -1;
+    result = -1;
   }
 
   if (!checkJointParentChildLinkNames(root))
   {
     std::cerr << "Error: invalid parent or child link name.\n";
-    return -1;
+    result = -1;
   }
   if (!checkFrameAttachedToNames(root))
   {
     std::cerr << "Error: invalid frame attached_to name.\n";
-    return -1;
+    result = -1;
   }
   if (!checkPoseRelativeToNames(root))
   {
     std::cerr << "Error: invalid pose relative_to name.\n";
-    return -1;
+    result = -1;
+  }
+  if (!recursiveSiblingUniqueNames(root.Element()))
+  {
+    std::cerr << "Error: non-unique names detected.\n";
+    result = -1;
   }
 
   if (!sdf::filesystem::exists(_path))
   {
     std::cerr << "Error: File [" << _path << "] does not exist.\n";
-    return -1;
+    result = -1;
   }
 
   sdf::SDFPtr sdf(new sdf::SDF());
@@ -552,23 +559,20 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!sdf::init(sdf))
   {
     std::cerr << "Error: SDF schema initialization failed.\n";
-    return -1;
+    result = -1;
   }
 
   if (!sdf::readFile(_path, sdf))
   {
     std::cerr << "Error: SDF parsing the xml failed.\n";
-    return -1;
+    result = -1;
   }
 
-  if (!recursiveSiblingUniqueNames(sdf->Root()))
+  if (result == 0)
   {
-    std::cerr << "Error: non-unique names detected.\n";
-    return -1;
+    std::cout << "Valid.\n";
   }
-
-  std::cout << "Valid.\n";
-  return 0;
+  return result;
 }
 
 //////////////////////////////////////////////////
