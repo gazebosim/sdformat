@@ -32,6 +32,78 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 
 /////////////////////////////////////////////////
+Errors buildKinematicGraph(
+            KinematicGraph &_out, const Model *_model)
+{
+  Errors errors;
+
+  if (!_model)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Invalid sdf::Model pointer."});
+    return errors;
+  }
+  else if (!_model->Element())
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Invalid model element in sdf::Model."});
+    return errors;
+  }
+
+  // add link vertices
+  for (uint64_t l = 0; l < _model->LinkCount(); ++l)
+  {
+    auto link = _model->LinkByIndex(l);
+    auto linkId = _out.graph.AddVertex(link->Name(), link).Id();
+    _out.map[link->Name()] = linkId;
+  }
+
+  // add edge for each joint from parent link to child link
+  for (uint64_t j = 0; j < _model->JointCount(); ++j)
+  {
+    auto joint = _model->JointByIndex(j);
+
+    const std::string& parentLinkName = joint->ParentLinkName();
+    auto parentLink = _model->LinkByName(parentLinkName);
+    ignition::math::graph::VertexId parentLinkId;
+    if (nullptr == parentLink)
+    {
+      if (parentLinkName == "world")
+      {
+        auto vertices = _out.graph.Vertices("world");
+        if (vertices.empty())
+        {
+          parentLinkId = _out.graph.AddVertex("world", nullptr).Id();
+        }
+        else
+        {
+          parentLinkId = vertices.begin()->first;
+        }
+      }
+      else
+      {
+        errors.push_back({ErrorCode::ELEMENT_INVALID,
+                         "Joint's parent link is invalid."});
+        continue;
+      }
+    }
+
+    auto childLink = _model->LinkByName(joint->ChildLinkName());
+    if (nullptr == childLink)
+    {
+      errors.push_back({ErrorCode::ELEMENT_INVALID,
+                       "Joint's child link is invalid."});
+      continue;
+    }
+    auto childLinkId = _out.map.at(childLink->Name());
+
+    _out.graph.AddEdge({parentLinkId, childLinkId}, joint);
+  }
+
+  return errors;
+}
+
+/////////////////////////////////////////////////
 Errors buildFrameAttachedToGraph(
             FrameAttachedToGraph &_out, const Model *_model)
 {

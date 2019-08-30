@@ -34,6 +34,8 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
   // Forward declaration.
+  class Joint;
+  class Link;
   class Model;
   class World;
 
@@ -58,6 +60,22 @@ namespace sdf
     FRAME = 4,
   };
 
+  /// \brief Data structure for kinematic graph for a Model.
+  struct SDFORMAT_VISIBLE KinematicGraph
+  {
+    /// \brief A DirectedGraph with a vertex for each Link and an edge
+    /// for each Joint.
+    /// to the frame to which another frame is attached. Each vertex stores
+    /// its FrameType and each edge can store a boolean value.
+    using GraphType =
+        ignition::math::graph::DirectedGraph<const Link*, const Joint*>;
+    GraphType graph;
+
+    /// \brief A Map from Vertex names to Vertex Ids.
+    using MapType = std::map<std::string, ignition::math::graph::VertexId>;
+    MapType map;
+  };
+
   /// \brief Data structure for frame attached_to graphs for Model or World.
   struct SDFORMAT_VISIBLE FrameAttachedToGraph
   {
@@ -71,6 +89,13 @@ namespace sdf
     using MapType = std::map<std::string, ignition::math::graph::VertexId>;
     MapType map;
   };
+
+  /// \brief Build a KinematicGraph for a model.
+  /// \param[out] _out Graph object to write.
+  /// \param[in] _model Model from which to build attached_to graph.
+  /// \return Errors.
+  SDFORMAT_VISIBLE
+  Errors buildKinematicGraph(KinematicGraph &_out, const Model *_model);
 
   /// \brief Build a FrameAttachedToGraph for a model.
   /// \param[out] _out Graph object to write.

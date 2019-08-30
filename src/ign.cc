@@ -195,6 +195,51 @@ bool checkFrameAttachedToNames(const sdf::Root &_root)
 }
 
 //////////////////////////////////////////////////
+/// \brief For each model, check that the kinematic graphs build without
+/// errors.
+/// \param[in] _root sdf Root object to check recursively.
+/// \return True if all kinematic graphs are valid.
+bool checkKinematicGraph(const sdf::Root &_root)
+{
+  bool result = true;
+
+  auto checkModelKinematicGraph = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    sdf::KinematicGraph graph;
+    auto errors = sdf::buildKinematicGraph(graph, _model);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      modelResult = false;
+    }
+    return modelResult;
+  };
+
+  for (uint64_t m = 0; m < _root.ModelCount(); ++m)
+  {
+    auto model = _root.ModelByIndex(m);
+    result = checkModelKinematicGraph(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root.WorldCount(); ++w)
+  {
+    auto world = _root.WorldByIndex(w);
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelKinematicGraph(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
 /// \brief For the world and each model, check that the attached_to graphs
 /// build without errors and have no cycles.
 /// Confirm that following directed edges from each vertex in the graph
@@ -613,6 +658,12 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!recursiveSiblingUniqueNames(root.Element()))
   {
     std::cerr << "Error: non-unique names detected.\n";
+    result = -1;
+  }
+
+  if (!checkKinematicGraph(root))
+  {
+    std::cerr << "Error: invalid frame attached_to graph.\n";
     result = -1;
   }
 
