@@ -16,6 +16,7 @@
     </light>
 
     <model name="spot">
+      <link name="L"/>
     </model>
 
   </world>

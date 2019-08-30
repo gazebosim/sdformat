@@ -23,6 +23,7 @@ set (sources
   Error.cc
   Exception.cc
   Frame.cc
+  FrameSemantics.cc
   Filesystem.cc
   Geometry.cc
   Gui.cc
