@@ -698,7 +698,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     {
       std::cerr << "Error: " << error.Message() << std::endl;
     }
-    result = -1;
+    return -1;
   }
 
   if (!checkCanonicalLinkNames(root))
@@ -749,7 +749,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!sdf::filesystem::exists(_path))
   {
     std::cerr << "Error: File [" << _path << "] does not exist.\n";
-    result = -1;
+    return -1;
   }
 
   sdf::SDFPtr sdf(new sdf::SDF());
@@ -757,13 +757,13 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!sdf::init(sdf))
   {
     std::cerr << "Error: SDF schema initialization failed.\n";
-    result = -1;
+    return -1;
   }
 
   if (!sdf::readFile(_path, sdf))
   {
     std::cerr << "Error: SDF parsing the xml failed.\n";
-    result = -1;
+    return -1;
   }
 
   if (result == 0)
