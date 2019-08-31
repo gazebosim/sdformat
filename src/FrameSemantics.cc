@@ -64,28 +64,21 @@ Errors buildKinematicGraph(
     auto joint = _model->JointByIndex(j);
 
     const std::string& parentLinkName = joint->ParentLinkName();
-    auto parentLink = _model->LinkByName(parentLinkName);
     ignition::math::graph::VertexId parentLinkId;
-    if (nullptr == parentLink)
+    auto vertices = _out.graph.Vertices(parentLinkName);
+    if (!vertices.empty())
     {
-      if (parentLinkName == "world")
-      {
-        auto vertices = _out.graph.Vertices("world");
-        if (vertices.empty())
-        {
-          parentLinkId = _out.graph.AddVertex("world", nullptr).Id();
-        }
-        else
-        {
-          parentLinkId = vertices.begin()->first;
-        }
-      }
-      else
-      {
-        errors.push_back({ErrorCode::ELEMENT_INVALID,
-                         "Joint's parent link is invalid."});
-        continue;
-      }
+      parentLinkId = vertices.begin()->first;
+    }
+    else if (parentLinkName == "world")
+    {
+      parentLinkId = _out.graph.AddVertex("world", nullptr).Id();
+    }
+    else
+    {
+      errors.push_back({ErrorCode::ELEMENT_INVALID,
+                       "Joint's parent link is invalid."});
+      continue;
     }
 
     auto childLink = _model->LinkByName(joint->ChildLinkName());
