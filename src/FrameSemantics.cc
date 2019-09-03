@@ -720,5 +720,111 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
 
   return errors;
 }
+
+/////////////////////////////////////////////////
+Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
+{
+  Errors errors;
+
+  // Expect one vertex with name "" of FrameType MODEL or WORLD
+  auto rootVertices = _in.graph.Vertices("");
+  if (rootVertices.empty())
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Missing root vertex with empty name."});
+    return errors;
+  }
+  else if (rootVertices.size() > 1)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "More than one vertex with empty name."});
+    return errors;
+  }
+
+  auto rootVertex = rootVertices.begin()->second.get();
+  sdf::FrameType rootFrameType = rootVertex.Data();
+  if (rootFrameType != sdf::FrameType::MODEL &&
+      rootFrameType != sdf::FrameType::WORLD)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Root vertex with empty name should be MODEL or WORLD."});
+    return errors;
+  }
+
+  // Check number of outgoing edges for each vertex
+  auto vertices = _in.graph.Vertices();
+  for (auto vertexPair : vertices)
+  {
+    auto outDegree = _in.graph.OutDegree(vertexPair.first);
+    if (outDegree > 1)
+    {
+      errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Too many outgoing edges at a vertex with name [" +
+          vertexPair.second.get().Name() + "]."});
+    }
+    else if (sdf::FrameType::MODEL == rootFrameType)
+    {
+      switch (vertexPair.second.get().Data())
+      {
+        case sdf::FrameType::WORLD:
+          errors.push_back({ErrorCode::ELEMENT_INVALID,
+              "Vertex with name [" + vertexPair.second.get().Name() + "]" +
+              "should not have type WORLD in MODEL relative_to graph."});
+          break;
+        case sdf::FrameType::MODEL:
+          if (outDegree != 0)
+          {
+            errors.push_back({ErrorCode::ELEMENT_INVALID,
+                "MODEL vertex with name [" +
+                vertexPair.second.get().Name() +
+                "] should have no outgoing edges "
+                "in MODEL relative_to graph."});
+          }
+          break;
+        default:
+          if (outDegree != 1)
+          {
+            errors.push_back({ErrorCode::ELEMENT_INVALID,
+                "Non-MODEL vertex with name [" +
+                vertexPair.second.get().Name() +
+                "] should have 1 outgoing edge " +
+                "in MODEL relative_to graph."});
+          }
+          break;
+      }
+    }
+    else
+    {
+      // rootFrameType must be sdf::FrameType::WORLD
+      switch (vertexPair.second.get().Data())
+      {
+        case sdf::FrameType::JOINT:
+        case sdf::FrameType::LINK:
+          errors.push_back({ErrorCode::ELEMENT_INVALID,
+              "No JOINT or LINK vertex should be in WORLD relative_to graph."});
+          break;
+        case sdf::FrameType::WORLD:
+          if (outDegree != 0)
+          {
+            errors.push_back({ErrorCode::ELEMENT_INVALID,
+                "WORLD vertices should have no outgoing edges "
+                "in WORLD relative_to graph."});
+          }
+          break;
+        default:
+          if (outDegree != 1)
+          {
+            errors.push_back({ErrorCode::ELEMENT_INVALID,
+                "MODEL and FRAME vertices in WORLD relative_to graph "
+                "should have 1 outgoing edge."});
+          }
+          break;
+      }
+    }
+  }
+
+  // TODO: check graph for cycles
+  return errors;
+}
 }
 }

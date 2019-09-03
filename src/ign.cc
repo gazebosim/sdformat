@@ -344,6 +344,17 @@ bool checkPoseRelativeToGraph(const sdf::Root &_root)
       }
       modelResult = false;
     }
+    errors = sdf::validatePoseRelativeToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validatePoseRelativeToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      modelResult = false;
+    }
     return modelResult;
   };
 
