@@ -38,6 +38,9 @@ namespace sdf
     /// \sa ElementPtr Root()
     /// \sa void Root(const ElementPtr _root)
     public: ElementPtr root;
+
+    /// \brief Path to SDF document on disk.
+    public: std::string path;
   };
   /// \}
 }

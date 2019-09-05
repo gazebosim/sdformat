@@ -459,6 +459,15 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
     return false;
   }
 
+  if (nullptr == _sdf || nullptr == _sdf->Root())
+  {
+    sdferr << "SDF pointer or its Root is null.\n";
+    return false;
+  }
+
+  _sdf->SetFilePath(_source);
+  _sdf->Root()->SetFilePath(_source);
+
   if (sdfNode && sdfNode->Attribute("version"))
   {
     if (_convert

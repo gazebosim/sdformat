@@ -18,6 +18,7 @@
 #include <vector>
 #include <ignition/math/Vector3.hh>
 
+#include "sdf/Filesystem.hh"
 #include "sdf/Types.hh"
 #include "sdf/Material.hh"
 #include "sdf/Pbr.hh"
@@ -162,7 +163,19 @@ Errors Material::Load(sdf::ElementPtr _sdf)
           "A <script> element is missing a child <uri> element, or the "
           "<uri> element is empty."});
     }
-    this->dataPtr->scriptUri = uriPair.first;
+    auto uri = uriPair.first;
+
+    // If it's relative path, prepend file path
+    if (!_sdf->FilePath().empty() &&
+        uri.find("://") == std::string::npos && uri.find("/") != 0)
+    {
+      auto filePath = _sdf->FilePath();
+      auto path = filePath.substr(0,
+          filePath.find(filesystem::basename(filePath)));
+      uri = filesystem::append(path, uri);
+    }
+
+    this->dataPtr->scriptUri = uri;
 
     std::pair<std::string, bool> namePair = elem->Get<std::string>("name", "");
     if (namePair.first == "__default__")

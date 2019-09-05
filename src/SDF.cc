@@ -381,6 +381,18 @@ void SDF::Root(const ElementPtr _root)
 }
 
 /////////////////////////////////////////////////
+std::string SDF::FilePath() const
+{
+  return this->dataPtr->path;
+}
+
+/////////////////////////////////////////////////
+void SDF::SetFilePath(const std::string &_path)
+{
+  this->dataPtr->path = _path;
+}
+
+/////////////////////////////////////////////////
 std::string SDF::Version()
 {
   return version;

@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include "sdf/Filesystem.hh"
 #include "sdf/Mesh.hh"
 
 using namespace sdf;
@@ -117,8 +118,20 @@ Errors Mesh::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("uri"))
   {
-    this->dataPtr->uri = _sdf->Get<std::string>("uri",
+    auto uri = _sdf->Get<std::string>("uri",
         this->dataPtr->uri).first;
+
+    // If it's relative path, prepend file path
+    if (!_sdf->FilePath().empty() &&
+        uri.find("://") == std::string::npos && uri.find("/") != 0)
+    {
+      auto filePath = _sdf->FilePath();
+      auto path = filePath.substr(0,
+          filePath.find(filesystem::basename(filePath)));
+      uri = filesystem::append(path, uri);
+    }
+
+    this->dataPtr->uri = uri;
   }
   else
   {

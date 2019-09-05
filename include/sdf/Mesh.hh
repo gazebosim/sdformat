@@ -69,6 +69,8 @@ namespace sdf
     public: Errors Load(ElementPtr _sdf);
 
     /// \brief Get the mesh's URI.
+    /// If the URI in `<mesh><uri>` is a relative path and the loaded SDF has a
+    /// `FilePath`, this will return the <mesh><uri> prepended by the file path.
     /// \return The URI of the mesh data.
     public: std::string Uri() const;
 
