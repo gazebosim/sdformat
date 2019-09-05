@@ -826,5 +826,49 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
   // TODO: check graph for cycles
   return errors;
 }
+
+/////////////////////////////////////////////////
+Errors computePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
+      const std::string &_vertexName, ignition::math::Pose3d &_pose)
+{
+  Errors errors;
+
+  if (_graph.map.count(_vertexName) != 1)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Unique vertex with name [" + _vertexName + "] not found in graph."});
+    return errors;
+  }
+  auto vertexId = _graph.map.at(_vertexName);
+
+  auto outgoingVertexEdges =
+      ignition::math::graph::FindSinkVertex(_graph.graph, vertexId);
+
+  if (!outgoingVertexEdges.first.Valid())
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Sink vertex not found in graph when starting from vertex with name [" +
+        _vertexName + "]."});
+    return errors;
+  }
+  else if (!outgoingVertexEdges.first.Name().empty())
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Sink vertex found with name [" +
+        outgoingVertexEdges.first.Name() +
+        "], but its name should be empty."});
+    return errors;
+  }
+
+  ignition::math::Pose3d pose;
+  for (auto const &edge : outgoingVertexEdges.second)
+  {
+    pose = edge.Data() * pose;
+  }
+
+  _pose = pose;
+
+  return errors;
+}
 }
 }

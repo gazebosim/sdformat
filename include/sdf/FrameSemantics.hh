@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 
+#include <ignition/math/Pose3.hh>
 #include <ignition/math/graph/Graph.hh>
 
 /// \ingroup sdf_frame_semantics
@@ -159,6 +160,16 @@ namespace sdf
   /// \return Errors.
   SDFORMAT_VISIBLE
   Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in);
+
+  /// \brief Compute pose of a vertex relative to its outgoing ancestor
+  /// (analog of the root of a tree).
+  /// \param[in] _graph PoseRelativeToGraph to read from.
+  /// \param[in] _vertexName Name of vertex whose pose is to be computed.
+  /// \param[out] _pose Pose object to write.
+  /// \return Errors.
+  SDFORMAT_VISIBLE
+  Errors computePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
+      const std::string &_vertexName, ignition::math::Pose3d &_pose);
   }
 }
 #endif

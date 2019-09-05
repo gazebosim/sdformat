@@ -366,6 +366,24 @@ bool checkPoseRelativeToGraph(const sdf::Root &_root)
       }
       modelResult = false;
     }
+    // compute pose of each vertex relative to root
+    for (auto const &namePair : graph.map)
+    {
+      ignition::math::Pose3d pose;
+      errors = sdf::computePoseRelativeToRoot(
+          graph, namePair.first, pose);
+      if (!errors.empty())
+      {
+        for (auto &error : errors)
+        {
+          std::cerr << "Error in computePoseRelativeToRoot for vertex named ["
+                    << namePair.first << "]: "
+                    << error.Message()
+                    << std::endl;
+        }
+        modelResult = false;
+      }
+    }
     return modelResult;
   };
 
@@ -393,6 +411,24 @@ bool checkPoseRelativeToGraph(const sdf::Root &_root)
                   << std::endl;
       }
       worldResult = false;
+    }
+    // compute pose of each vertex relative to root
+    for (auto const &namePair : graph.map)
+    {
+      ignition::math::Pose3d pose;
+      errors = sdf::computePoseRelativeToRoot(
+          graph, namePair.first, pose);
+      if (!errors.empty())
+      {
+        for (auto &error : errors)
+        {
+          std::cerr << "Error in computePoseRelativeToRoot for vertex named ["
+                    << namePair.first << "]: "
+                    << error.Message()
+                    << std::endl;
+        }
+        worldResult = false;
+      }
     }
     return worldResult;
   };
