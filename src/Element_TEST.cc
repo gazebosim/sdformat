@@ -166,12 +166,67 @@ TEST(Element, Include)
 TEST(Element, FilePath)
 {
   sdf::Element elem;
+  EXPECT_TRUE(elem.FilePath().empty());
 
-  EXPECT_EQ(elem.FilePath(), "");
+  elem.AddAttribute("relative", "string", "meshes/collision.dae", false, "");
+  elem.AddAttribute("absolute", "string", "/collision.dae", false, "");
+  elem.AddAttribute("https", "string", "https://website.com/collision.dae",
+      false, "");
+  elem.AddAttribute("model", "string", "model://a_model/meshes/collision.dae",
+      false, "");
 
-  elem.SetFilePath("test");
+  {
+    auto[uri, success] = elem.StringAsFullPath("inexistent");
+    EXPECT_FALSE(success);
+    EXPECT_TRUE(uri.empty());
+  }
 
-  EXPECT_EQ(elem.FilePath(), "test");
+  // Without file path
+  {
+    auto[uri, success] = elem.StringAsFullPath("relative");
+    EXPECT_TRUE(success);
+    EXPECT_EQ("meshes/collision.dae", uri);
+  }
+  {
+    auto[uri, success] = elem.StringAsFullPath("absolute");
+    EXPECT_TRUE(success);
+    EXPECT_EQ("/collision.dae", uri);
+  }
+  {
+    auto[uri, success] = elem.StringAsFullPath("https");
+    EXPECT_TRUE(success);
+    EXPECT_EQ("https://website.com/collision.dae", uri);
+  }
+  {
+    auto[uri, success] = elem.StringAsFullPath("model");
+    EXPECT_TRUE(success);
+    EXPECT_EQ("model://a_model/meshes/collision.dae", uri);
+  }
+
+  // With file path
+  elem.SetFilePath("/full/path/to/model.sdf");
+  EXPECT_EQ(elem.FilePath(), "/full/path/to/model.sdf");
+
+  {
+    auto[uri, success] = elem.StringAsFullPath("relative");
+    EXPECT_TRUE(success);
+    EXPECT_EQ("/full/path/to/meshes/collision.dae", uri);
+  }
+  {
+    auto[uri, success] = elem.StringAsFullPath("absolute");
+    EXPECT_TRUE(success);
+    EXPECT_EQ("/collision.dae", uri);
+  }
+  {
+    auto[uri, success] = elem.StringAsFullPath("https");
+    EXPECT_TRUE(success);
+    EXPECT_EQ("https://website.com/collision.dae", uri);
+  }
+  {
+    auto[uri, success] = elem.StringAsFullPath("model");
+    EXPECT_TRUE(success);
+    EXPECT_EQ("model://a_model/meshes/collision.dae", uri);
+  }
 }
 
 /////////////////////////////////////////////////

@@ -107,6 +107,13 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     return path;
   }
 
+  // Next check to see if the given file exists.
+  path = _filename;
+  if (sdf::filesystem::exists(path))
+  {
+    return path;
+  }
+
   // Next check SDF_PATH environment variable
 #ifndef _WIN32
   const char *pathCStr = std::getenv("SDF_PATH");
@@ -128,13 +135,6 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
         return path;
       }
     }
-  }
-
-  // Next check to see if the given file exists.
-  path = _filename;
-  if (sdf::filesystem::exists(path))
-  {
-    return path;
   }
 
   // Finally check the local path, if the flag is set.

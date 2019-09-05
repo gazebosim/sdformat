@@ -465,8 +465,11 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
     return false;
   }
 
-  _sdf->SetFilePath(_source);
-  _sdf->Root()->SetFilePath(_source);
+  if (_source != "data-string")
+  {
+    _sdf->SetFilePath(_source);
+    _sdf->Root()->SetFilePath(_source);
+  }
 
   if (sdfNode && sdfNode->Attribute("version"))
   {

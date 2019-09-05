@@ -19,25 +19,33 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include "sdf/SDFImpl.hh"
-#include "sdf/parser.hh"
-#include "sdf/Root.hh"
-#include "sdf/World.hh"
 #include "sdf/Actor.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/parser.hh"
+#include "sdf/Root.hh"
+#include "sdf/SDFImpl.hh"
+#include "sdf/World.hh"
 #include "test_config.h"
+
+using namespace sdf;
 
 //////////////////////////////////////////////////
 TEST(DOMActor, LoadActors)
 {
+  const std::string testPath =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf");
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "world_complete.sdf");
+    sdf::filesystem::append(testPath, "world_complete.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
   for (auto e : errors)
     std::cout << e.Message() << std::endl;
+  EXPECT_TRUE(errors.empty());
+
+  ASSERT_NE(nullptr, root.Element());
+  EXPECT_EQ(testFile, root.Element()->FilePath());
+
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
 
@@ -56,12 +64,14 @@ TEST(DOMActor, LoadActors)
   EXPECT_EQ(1u, actor1->AnimationCount());
   EXPECT_NE(nullptr, actor1->AnimationByIndex(0));
   EXPECT_EQ(nullptr, actor1->AnimationByIndex(1));
-  EXPECT_EQ("walk.dae", actor1->AnimationByIndex(0)->Filename());
+  EXPECT_EQ(filesystem::append(testPath, "walk.dae"),
+      actor1->AnimationByIndex(0)->Filename());
   EXPECT_DOUBLE_EQ(1.0, actor1->AnimationByIndex(0)->Scale());
   EXPECT_TRUE(actor1->AnimationByIndex(0)->InterpolateX());
   EXPECT_FALSE(actor1->AnimationNameExists(""));
   EXPECT_TRUE(actor1->AnimationNameExists("walking"));
-  EXPECT_EQ("walk.dae", actor1->SkinFilename());
+  EXPECT_EQ(filesystem::append(testPath, "walk.dae"),
+      actor1->SkinFilename());
   EXPECT_DOUBLE_EQ(1.0, actor1->SkinScale());
   EXPECT_EQ(1u, actor1->TrajectoryCount());
   EXPECT_NE(nullptr, actor1->TrajectoryByIndex(0));
@@ -85,9 +95,12 @@ TEST(DOMActor, LoadActors)
   EXPECT_NE(nullptr, actor2->AnimationByIndex(2));
   EXPECT_EQ(nullptr, actor2->AnimationByIndex(3));
 
-  EXPECT_EQ("walk.dae", actor2->AnimationByIndex(0)->Filename());
-  EXPECT_EQ("sit.dae", actor2->AnimationByIndex(1)->Filename());
-  EXPECT_EQ("gesture.bvh", actor2->AnimationByIndex(2)->Filename());
+  EXPECT_EQ(filesystem::append(testPath, "walk.dae"),
+      actor2->AnimationByIndex(0)->Filename());
+  EXPECT_EQ(filesystem::append(testPath, "sit.dae"),
+      actor2->AnimationByIndex(1)->Filename());
+  EXPECT_EQ(filesystem::append(testPath, "gesture.bvh"),
+      actor2->AnimationByIndex(2)->Filename());
   EXPECT_DOUBLE_EQ(1.0, actor2->AnimationByIndex(0)->Scale());
   EXPECT_DOUBLE_EQ(1.0, actor2->AnimationByIndex(1)->Scale());
   EXPECT_DOUBLE_EQ(0.055, actor2->AnimationByIndex(2)->Scale());
@@ -99,7 +112,8 @@ TEST(DOMActor, LoadActors)
   EXPECT_TRUE(actor2->AnimationNameExists("sit"));
   EXPECT_TRUE(actor2->AnimationNameExists("gesture"));
 
-  EXPECT_EQ("walk.dae", actor2->SkinFilename());
+  EXPECT_EQ(filesystem::append(testPath, "walk.dae"),
+      actor2->SkinFilename());
   EXPECT_DOUBLE_EQ(1.0, actor2->SkinScale());
 
   EXPECT_EQ(3u, actor2->TrajectoryCount());

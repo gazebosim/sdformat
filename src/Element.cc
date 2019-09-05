@@ -21,6 +21,7 @@
 
 #include "sdf/Assert.hh"
 #include "sdf/Element.hh"
+#include "sdf/Filesystem.hh"
 
 using namespace sdf;
 
@@ -799,6 +800,30 @@ void Element::SetFilePath(const std::string &_path)
 std::string Element::FilePath() const
 {
   return this->dataPtr->path;
+}
+
+/////////////////////////////////////////////////
+std::pair<std::string, bool> Element::StringAsFullPath(
+    const std::string &_key) const
+{
+  auto[result, success] = this->Get<std::string>(_key, "");
+
+  if (success)
+  {
+    // If it's a relative path, prepend file path
+    if (!this->dataPtr->path.empty() &&
+        result.find("://") == std::string::npos &&
+        result.find("/") != 0)
+    {
+      auto path = this->dataPtr->path.substr(0,
+          this->dataPtr->path.find(filesystem::basename(
+          this->dataPtr->path))-1);
+
+      result = filesystem::append(path, result);
+    }
+  }
+
+  return {result, success};
 }
 
 /////////////////////////////////////////////////

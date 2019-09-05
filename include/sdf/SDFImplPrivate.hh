@@ -17,6 +17,8 @@
 #ifndef _SDFIMPLPRIVATE_HH_
 #define _SDFIMPLPRIVATE_HH_
 
+#include <string>
+
 #include "sdf/Types.hh"
 
 /// \ingroup sdf_parser

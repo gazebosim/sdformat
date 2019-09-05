@@ -17,8 +17,8 @@
 #include <string>
 #include <vector>
 #include <ignition/math/Pose3.hh>
-#include "sdf/Error.hh"
 #include "sdf/Actor.hh"
+#include "sdf/Error.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -114,6 +114,7 @@ Animation::Animation()
 {
 }
 
+/////////////////////////////////////////////////
 void Animation::CopyFrom(const Animation &_animation)
 {
   this->dataPtr->name = _animation.dataPtr->name;
@@ -173,15 +174,13 @@ Errors Animation::Load(ElementPtr _sdf)
           "An <animation> requires a name attribute."});
   }
 
-  std::pair filenameValue = _sdf->Get<std::string>("filename",
-        this->dataPtr->filename);
-
-  if (!filenameValue.second)
+  auto[uri, success] = _sdf->StringAsFullPath("filename");
+  if (!success)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
           "An <animation> requires a <filename>."});
   }
-  this->dataPtr->filename = filenameValue.first;
+  this->dataPtr->filename = uri;
 
   this->dataPtr->scale = _sdf->Get<double>("scale", this->dataPtr->scale).first;
 
@@ -563,16 +562,13 @@ Errors Actor::Load(ElementPtr _sdf)
 
   if (skinElem)
   {
-    std::pair<std::string, bool> filenamePair = skinElem->Get<std::string>
-                ("filename", this->dataPtr->skinFilename);
-
-    if (!filenamePair.second)
+    auto[uri, success] = skinElem->StringAsFullPath("filename");
+    if (!success)
     {
       errors.push_back({ErrorCode::ELEMENT_MISSING,
             "A <skin> requires a <filename>."});
     }
-
-    this->dataPtr->skinFilename = filenamePair.first;
+    this->dataPtr->skinFilename = uri;
 
     this->dataPtr->skinScale = skinElem->Get<double>("scale",
         this->dataPtr->skinScale).first;
