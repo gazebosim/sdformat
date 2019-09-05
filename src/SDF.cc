@@ -29,7 +29,7 @@
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/SDFImpl.hh"
-#include "sdf/SDFImplPrivate.hh"
+#include "SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
 
 // This include file is generated at configure time.

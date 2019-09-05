@@ -2,6 +2,9 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Move private headers from include/sdf to src folder.
+    * [Pull request 553](https://bitbucket.org/osrf/sdformat/pull-requests/553)
+
 ### SDFormat 8.3.0 (2019-08-17)
 
 1. Added Actor DOM
