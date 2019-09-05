@@ -294,6 +294,17 @@ bool checkFrameAttachedToGraph(const sdf::Root &_root)
       }
       worldResult = false;
     }
+    errors = sdf::validateFrameAttachedToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validateFrameAttachedToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      worldResult = false;
+    }
     return worldResult;
   };
 
@@ -369,6 +380,17 @@ bool checkPoseRelativeToGraph(const sdf::Root &_root)
       for (auto &error : errors)
       {
         std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      worldResult = false;
+    }
+    errors = sdf::validatePoseRelativeToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validatePoseRelativeToGraph: "
+                  << error.Message()
+                  << std::endl;
       }
       worldResult = false;
     }
