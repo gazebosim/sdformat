@@ -38,6 +38,7 @@
 using namespace sdf;
 
 namespace sdf {
+inline namespace SDF_VERSION_NAMESPACE {
 typedef std::shared_ptr<TiXmlElement> TiXmlElementPtr;
 typedef std::shared_ptr<SDFExtension> SDFExtensionPtr;
 typedef std::map<std::string, std::vector<SDFExtensionPtr> >
@@ -3662,5 +3663,6 @@ void ReduceSDFExtensionJointFrameReplace(
     }
     /// @todo add anchor offsets if parent link changes location!
   }
+}
 }
 }

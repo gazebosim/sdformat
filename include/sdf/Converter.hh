@@ -21,10 +21,15 @@
 
 #include <string>
 
+#include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \brief Convert from one version of SDF to another
   class SDFORMAT_VISIBLE Converter
   {
@@ -86,5 +91,6 @@ namespace sdf
     private: static void CheckDeprecation(TiXmlElement *_elem,
                                           TiXmlElement *_convert);
   };
+  }
 }
 #endif
