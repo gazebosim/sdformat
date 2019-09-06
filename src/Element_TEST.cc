@@ -187,7 +187,7 @@ TEST(Element, FilePath)
   {
     auto[uri, success] = elem.StringAsFullPath("relative");
     EXPECT_TRUE(success);
-    EXPECT_EQ("meshes/collision.dae", uri);
+    EXPECT_EQ(sdf::filesystem::append("meshes", "collision.dae"), uri);
   }
   {
     auto[uri, success] = elem.StringAsFullPath("absolute");
