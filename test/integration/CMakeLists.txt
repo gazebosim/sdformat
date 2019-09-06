@@ -11,6 +11,7 @@ set(tests
   fixed_joint_reduction.cc
   force_torque_sensor.cc
   frame.cc
+  frame_semantics.cc
   geometry_dom.cc
   include.cc
   joint_axis_frame.cc

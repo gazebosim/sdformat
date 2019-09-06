@@ -5,10 +5,10 @@
       <pose>1 0 0 0 0 0</pose>
     </link>
     <link name="C">
-      <pose>2 0 0 0 0 0</pose>
+      <pose>2 0 0 0 1.5707963267948966 0</pose>
     </link>
     <joint name="J" type="fixed">
-      <pose>0 3 0 0 0 0</pose>
+      <pose>0 3 0 0 -1.5707963267948966 0</pose>
       <parent>P</parent>
       <child>C</child>
     </joint>
@@ -19,10 +19,10 @@
       <pose relative_to="C">0 0 2 0 0 0</pose>  <!-- VALID: Directly relative_to link C. -->
     </frame>
     <frame name="F3">
-      <pose relative_to="J">0 0 3 0 0 0</pose>  <!-- VALID: Indirectly relative_to link C via joint J. -->
+      <pose relative_to="J">0 0 3 0 1.5707963267948966 0</pose>   <!-- VALID: Indirectly relative_to link C via joint J. -->
     </frame>
     <frame name="F4">
-      <pose relative_to="F3">0 0 4 0 0 0</pose> <!-- VALID: Indirectly relative_to link C via frame F3. -->
+      <pose relative_to="F3">0 0 4 0 -1.5707963267948966 0</pose> <!-- VALID: Indirectly relative_to link C via frame F3. -->
     </frame>
   </model>
 </sdf>
