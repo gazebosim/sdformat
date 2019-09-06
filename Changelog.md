@@ -8,6 +8,9 @@
 1. Use `ign sdf --check` to check sibling elements of the same type for non-unique names.
     * [Pull request 554](https://bitbucket.org/osrf/sdformat/pull-requests/554)
 
+1. Converter: remove all matching elements specified by `<remove>` tag.
+    * [Pull request 551](https://bitbucket.org/osrf/sdformat/pull-requests/551)
+
 ### SDFormat 6.2.0 (2019-01-17)
 
 1. Add geometry for sonar collision shape
