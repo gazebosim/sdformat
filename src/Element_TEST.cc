@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 
 #include "sdf/Element.hh"
+#include "sdf/Filesystem.hh"
 #include "sdf/Param.hh"
 
 /////////////////////////////////////////////////
@@ -168,7 +169,8 @@ TEST(Element, FilePath)
   sdf::Element elem;
   EXPECT_TRUE(elem.FilePath().empty());
 
-  elem.AddAttribute("relative", "string", "meshes/collision.dae", false, "");
+  elem.AddAttribute("relative", "string",
+      sdf::filesystem::append("meshes", "collision.dae"), false, "");
   elem.AddAttribute("absolute", "string", "/collision.dae", false, "");
   elem.AddAttribute("https", "string", "https://website.com/collision.dae",
       false, "");
@@ -204,13 +206,22 @@ TEST(Element, FilePath)
   }
 
   // With file path
-  elem.SetFilePath("/full/path/to/model.sdf");
-  EXPECT_EQ(elem.FilePath(), "/full/path/to/model.sdf");
+  std::string sdfPath = sdf::filesystem::append("full", "path");
+#ifdef _WIN32
+  sdfPath = "C:\\" + sdfPath;
+#else
+  sdfPath = "/" + sdfPath;
+#endif
+  std::string sdfFile = sdf::filesystem::append(sdfPath, "model.sdf");
+
+  elem.SetFilePath(sdfFile);
+  EXPECT_EQ(elem.FilePath(), sdfFile);
 
   {
     auto[uri, success] = elem.StringAsFullPath("relative");
     EXPECT_TRUE(success);
-    EXPECT_EQ("/full/path/to/meshes/collision.dae", uri);
+    EXPECT_EQ(sdf::filesystem::append(sdfPath, "meshes", "collision.dae"),
+        uri);
   }
   {
     auto[uri, success] = elem.StringAsFullPath("absolute");
