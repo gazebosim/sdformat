@@ -508,6 +508,96 @@ TEST(Element, GetNextElementMultiple)
   parent->InsertElement(child2);
 
   ASSERT_NE(child1->GetNextElement(""), nullptr);
+  ASSERT_EQ(child2->GetNextElement(""), nullptr);
+}
+
+/////////////////////////////////////////////////
+TEST(Element, CountNamedElements)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  // expect empty map element with no children
+  EXPECT_TRUE(parent->CountNamedElements().empty());
+  EXPECT_TRUE(parent->CountNamedElements("child").empty());
+  // expect empty set of element type names
+  EXPECT_TRUE(parent->GetElementTypeNames().empty());
+  // since there are no child names, they must be unique
+  EXPECT_TRUE(parent->HasUniqueChildNames());
+  EXPECT_TRUE(parent->HasUniqueChildNames("child"));
+
+  auto addChildElement = [](
+      sdf::ElementPtr _parent,
+      const std::string &_elementName,
+      const bool _addNameAttribute,
+      const std::string &_childName)
+  {
+    sdf::ElementPtr child = std::make_shared<sdf::Element>();
+    child->SetParent(_parent);
+    child->SetName(_elementName);
+    _parent->InsertElement(child);
+
+    if (_addNameAttribute)
+    {
+      child->AddAttribute("name", "string", _childName, false, "description");
+    }
+  };
+
+  // The following calls should make the following child elements:
+  // <child name="child1"/>
+  // <child name="child2"/>
+  // <element name="child2"/>
+  // <element name="child3"/>
+  // <element />
+  addChildElement(parent, "child", true, "child1");
+  addChildElement(parent, "child", true, "child2");
+  addChildElement(parent, "element", true, "child2");
+  addChildElement(parent, "element", true, "child3");
+  addChildElement(parent, "element", false, "unset");
+
+  // test GetElementTypeNames
+  auto typeNames = parent->GetElementTypeNames();
+  EXPECT_EQ(typeNames.size(), 2u);
+  EXPECT_EQ(typeNames.count("child"), 1u);
+  EXPECT_EQ(typeNames.count("element"), 1u);
+
+  // test HasUniqueChildNames
+  EXPECT_TRUE(parent->HasUniqueChildNames("empty"));
+  EXPECT_TRUE(parent->HasUniqueChildNames("child"));
+  EXPECT_TRUE(parent->HasUniqueChildNames("element"));
+  // The following have matching names that are detected when passing
+  // default "" to HasUniqueChildNames().
+  // <child name="child2"/>
+  // <element name="child2"/>
+  EXPECT_FALSE(parent->HasUniqueChildNames());
+  EXPECT_FALSE(parent->HasUniqueChildNames(""));
+
+  EXPECT_TRUE(parent->CountNamedElements("empty").empty());
+
+  auto childMap = parent->CountNamedElements("child");
+  EXPECT_FALSE(childMap.empty());
+  EXPECT_EQ(childMap.size(), 2u);
+  EXPECT_EQ(childMap.count("child1"), 1u);
+  EXPECT_EQ(childMap.count("child2"), 1u);
+  EXPECT_EQ(childMap.at("child1"), 1u);
+  EXPECT_EQ(childMap.at("child2"), 1u);
+
+  auto elementMap = parent->CountNamedElements("element");
+  EXPECT_FALSE(elementMap.empty());
+  EXPECT_EQ(elementMap.size(), 2u);
+  EXPECT_EQ(elementMap.count("child2"), 1u);
+  EXPECT_EQ(elementMap.count("child3"), 1u);
+  EXPECT_EQ(elementMap.at("child2"), 1u);
+  EXPECT_EQ(elementMap.at("child3"), 1u);
+
+  auto allMap = parent->CountNamedElements("");
+  EXPECT_FALSE(allMap.empty());
+  EXPECT_EQ(allMap.size(), 3u);
+  EXPECT_EQ(allMap.count("child1"), 1u);
+  EXPECT_EQ(allMap.count("child2"), 1u);
+  EXPECT_EQ(allMap.count("child3"), 1u);
+  EXPECT_EQ(allMap.count("unset"), 0u);
+  EXPECT_EQ(allMap.at("child1"), 1u);
+  EXPECT_EQ(allMap.at("child2"), 2u);
+  EXPECT_EQ(allMap.at("child3"), 1u);
 }
 
 /////////////////////////////////////////////////
