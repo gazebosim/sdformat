@@ -10,7 +10,7 @@ set(cmd_script_configured_test "${cmd_script_generated_test}.configured")
 set(library_location "$<TARGET_FILE:${PROJECT_NAME_LOWER}>")
 
 configure_file(
-  "cmd${PROJECT_NAME_LOWER}.rb.in"
+  "cmd${PROJECT_NAME_NO_VERSION_LOWER}.rb.in"
   "${cmd_script_configured_test}"
   @ONLY)
 
@@ -32,7 +32,7 @@ set(cmd_script_configured "${cmd_script_generated}.configured")
 set(library_location "../../../${CMAKE_INSTALL_LIBDIR}/$<TARGET_FILE_NAME:${PROJECT_NAME_LOWER}>")
 
 configure_file(
-  "cmd${PROJECT_NAME_LOWER}.rb.in"
+  "cmd${PROJECT_NAME_NO_VERSION_LOWER}.rb.in"
   "${cmd_script_configured}"
   @ONLY)
 
