@@ -16,6 +16,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <sstream>
 #include "sdf/Exception.hh"
 #include "sdf/Converter.hh"
 
@@ -27,6 +28,24 @@ std::string getXmlString()
   stream << "<elemA attrA='A'>"
          << "  <elemB attrB='B'>"
          << "    <elemC attrC='C'>"
+         << "      <elemD>D</elemD>"
+         << "    </elemC>"
+         << "  </elemB>"
+         << "</elemA>";
+  return stream.str();
+}
+
+////////////////////////////////////////////////////
+/// Set up an xml string with a repeated element for testing
+std::string getRepeatedXmlString()
+{
+  std::stringstream stream;
+  stream << "<elemA attrA='A'>"
+         << "  <elemB attrB='B'>"
+         << "    <elemC attrC='C'>"
+         << "      <elemD>D</elemD>"
+         << "      <elemD>D</elemD>"
+         << "      <elemD>D</elemD>"
          << "      <elemD>D</elemD>"
          << "    </elemC>"
          << "  </elemB>"
@@ -500,7 +519,7 @@ TEST(Converter, AddNoValue)
 TEST(Converter, RemoveElement)
 {
   // Set up an xml string for testing
-  std::string xmlString = getXmlString();
+  std::string xmlString = getRepeatedXmlString();
 
   // Verify the xml
   TiXmlDocument xmlDoc;
@@ -518,7 +537,7 @@ TEST(Converter, RemoveElement)
   ASSERT_NE(nullptr, childElem);
   EXPECT_EQ(childElem->ValueStr(), "elemD");
 
-  // Test adding element
+  // Test removing element
   // Set up a convert file
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
@@ -1055,7 +1074,15 @@ TEST(Converter, SameVersion)
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
+  std::ostringstream xmlDocBefore;
+  xmlDocBefore << xmlDoc;
+
   ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.3"));
+  std::ostringstream xmlDocAfter;
+  xmlDocAfter << xmlDoc;
+
+  // Expect xmlDoc to be unchanged after conversion
+  EXPECT_EQ(xmlDocBefore.str(), xmlDocAfter.str());
 }
 
 ////////////////////////////////////////////////////
