@@ -240,7 +240,7 @@ TEST(DOMLink, Sensors)
   const sdf::Link *link = model->LinkByIndex(0);
   ASSERT_NE(nullptr, link);
   EXPECT_EQ("link", link->Name());
-  EXPECT_EQ(20u, link->SensorCount());
+  EXPECT_EQ(21u, link->SensorCount());
 
   // Get the altimeter sensor
   const sdf::Sensor *altimeterSensor = link->SensorByIndex(0);
@@ -314,6 +314,16 @@ TEST(DOMLink, Sensors)
   const sdf::Camera *depthCamSensor = depthSensor->CameraSensor();
   ASSERT_NE(nullptr, depthCamSensor);
   EXPECT_EQ("my_depth_camera", depthCamSensor->Name());
+
+  // Get the rgbd sensor
+  const sdf::Sensor *rgbdSensor = link->SensorByName("rgbd_sensor");
+  ASSERT_NE(nullptr, rgbdSensor);
+  EXPECT_EQ("rgbd_sensor", rgbdSensor->Name());
+  EXPECT_EQ(sdf::SensorType::RGBD_CAMERA, rgbdSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(37, 38, 39, 0, 0, 0), rgbdSensor->Pose());
+  const sdf::Camera *rgbdCamSensor = rgbdSensor->CameraSensor();
+  ASSERT_NE(nullptr, rgbdCamSensor);
+  EXPECT_EQ("my_rgbd_camera", rgbdCamSensor->Name());
 
   // Get the force_torque sensor
   const sdf::Sensor *forceTorqueSensor =

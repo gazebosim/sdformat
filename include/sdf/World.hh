@@ -35,6 +35,7 @@ namespace sdf
   //
 
   // Forward declare private data class.
+  class Actor;
   class Light;
   class Model;
   class Physics;
@@ -149,6 +150,22 @@ namespace sdf
     /// \param[in] _name Name of the model to check.
     /// \return True if there exists a model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
+
+    /// \brief Get the number of actors.
+    /// \return Number of actors contained in this World object.
+    public: uint64_t ActorCount() const;
+
+    /// \brief Get an actor based on an index.
+    /// \param[in] _index Index of the actor. The index should be in the
+    /// range [0..ActorCount()).
+    /// \return Pointer to the actor. Nullptr if the index does not exist.
+    /// \sa uint64_t ActorCount() const
+    public: const Actor *ActorByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether an actor name exists.
+    /// \param[in] _name Name of the actor to check.
+    /// \return True if there exists an actor with the given name.
+    public: bool ActorNameExists(const std::string &_name) const;
 
     /// \brief Get the number of lights.
     /// \return Number of lights contained in this World object.

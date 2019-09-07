@@ -60,5 +60,107 @@
       </attenuation>
     </light>
 
+    <actor name="actor_1">
+      <skin>
+        <filename>walk.dae</filename>
+        <scale>1.0</scale>
+      </skin>
+      <pose>0 0 0 0 0 0</pose>
+      <animation name="walking">
+        <filename>walk.dae</filename>
+        <scale>1.0</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <loop>true</loop>
+        <delay_start>1.0</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="walking">
+          <waypoint>
+            <time>0</time>
+            <pose>0 1 0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>0.5</time>
+            <pose>0.1950 0.9807 0 0 0 -0.1963</pose>
+          </waypoint>
+          <waypoint>
+            <time>1</time>
+            <pose>0.3826 0.9238 0 0 0 -0.3926</pose>
+          </waypoint>
+          <waypoint>
+            <time>1.5</time>
+            <pose>0.5555 0.831 0 0 0 -0.589</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+
+    <actor name="actor_2">
+      <pose>0 0 1.1 0 0 0</pose>
+      <skin>
+        <filename>walk.dae</filename>
+        <scale>1.0</scale>
+      </skin>
+      <animation name="walk">
+        <filename>walk.dae</filename>
+        <scale>1.0</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <animation name="sit">
+        <filename>sit.dae</filename>
+        <scale>1.0</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <animation name="gesture">
+        <filename>gesture.bvh</filename>
+        <scale>0.055</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <loop>true</loop>
+        <delay_start>1.0</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="gesture">
+          <waypoint>
+            <time>0</time>
+            <pose>0 1 0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>1.5</time>
+            <pose>0 1 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+        <trajectory id="1" type="walk">
+          <waypoint>
+            <time>0</time>
+            <pose>0 1 0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>0.5</time>
+            <pose>0.1950 0.9807 0 0 0 -0.1963</pose>
+          </waypoint>
+          <waypoint>
+            <time>1</time>
+            <pose>0.3826 0.9238 0 0 0 -0.3926</pose>
+          </waypoint>
+          <waypoint>
+            <time>1.5</time>
+            <pose>0.5555 0.831 0 0 0 -0.589</pose>
+          </waypoint>
+        </trajectory>
+        <trajectory id="2" type="sit">
+          <waypoint>
+            <time>0</time>
+            <pose>0.5555 0.831 0 0 0 -0.589</pose>
+          </waypoint>
+          <waypoint>
+            <time>1.5</time>
+            <pose>0.5555 0.831 0 0 0 -0.589</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+
   </world>
 </sdf>

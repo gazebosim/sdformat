@@ -1,6 +1,7 @@
 set(TEST_TYPE "INTEGRATION")
 
 set(tests
+  actor_dom.cc
   audio.cc
   category_bitmask.cc
   cfm_damping_implicit_spring_damper.cc

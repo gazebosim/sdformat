@@ -18,6 +18,7 @@
 #include <vector>
 #include <ignition/math/Vector3.hh>
 
+#include "sdf/Actor.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Physics.hh"
@@ -57,6 +58,9 @@ class sdf::WorldPrivate
 
   /// \brief The lights specified in this world.
   public: std::vector<Light> lights;
+
+  /// \brief The actors specified in this world.
+  public: std::vector<Actor> actors;
 
   /// \brief Magnetic field.
   public: ignition::math::Vector3d magneticField =
@@ -229,6 +233,11 @@ Errors World::Load(sdf::ElementPtr _sdf)
     errors.insert(errors.end(), physicsLoadErrors.begin(),
         physicsLoadErrors.end());
   }
+
+  // Load all the actors.
+  Errors actorLoadErrors = loadUniqueRepeated<Actor>(_sdf, "actor",
+      this->dataPtr->actors);
+  errors.insert(errors.end(), actorLoadErrors.begin(), actorLoadErrors.end());
 
   // Load all the lights.
   Errors lightLoadErrors = loadUniqueRepeated<Light>(_sdf, "light",
@@ -404,6 +413,33 @@ bool World::LightNameExists(const std::string &_name) const
   for (auto const &l : this->dataPtr->lights)
   {
     if (l.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+uint64_t World::ActorCount() const
+{
+  return this->dataPtr->actors.size();
+}
+
+/////////////////////////////////////////////////
+const Actor *World::ActorByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->actors.size())
+    return &this->dataPtr->actors[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool World::ActorNameExists(const std::string &_name) const
+{
+  for (auto const &a : this->dataPtr->actors)
+  {
+    if (a.Name() == _name)
     {
       return true;
     }

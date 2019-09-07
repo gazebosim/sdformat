@@ -29,7 +29,7 @@
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/SDFImpl.hh"
-#include "sdf/SDFImplPrivate.hh"
+#include "SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
 
 // This include file is generated at configure time.
@@ -99,7 +99,8 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   }
 
   // Next check the versioned install path.
-  path = sdf::filesystem::append(SDF_SHARE_PATH, "sdformat",
+  path = sdf::filesystem::append(SDF_SHARE_PATH,
+                                 "sdformat" SDF_MAJOR_VERSION_STR,
                                  sdf::SDF::Version(), _filename);
   if (sdf::filesystem::exists(path))
   {

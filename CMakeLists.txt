@@ -27,11 +27,11 @@ project (sdformat8)
 set (SDF_PROTOCOL_VERSION 1.6)
 
 set (SDF_MAJOR_VERSION 8)
-set (SDF_MINOR_VERSION 1)
+set (SDF_MINOR_VERSION 3)
 set (SDF_PATCH_VERSION 0)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
-set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION}~pre1)
+set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION})
 
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 string(REGEX REPLACE "[0-9]+" "" PROJECT_NAME_NO_VERSION ${PROJECT_NAME})
@@ -221,11 +221,11 @@ endif ()
 #################################################
 # Print warnings and errors
 if ( build_warnings )
-  message(STATUS "BUILD WARNINGS")
+  message(WARNING "-- BUILD WARNINGS")
   foreach (msg ${build_warnings})
-    message(STATUS ${msg})
+    message(WARNING "-- ${msg}")
   endforeach ()
-  message(STATUS "END BUILD WARNINGS\n")
+  message(WARNING "-- END BUILD WARNINGS\n")
 endif (build_warnings)
 
 ########### Add uninstall target ###############
@@ -238,11 +238,11 @@ add_custom_target(uninstall
   "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake")
 
 if (build_errors)
-  message(STATUS "BUILD ERRORS: These must be resolved before compiling.")
+  message(SEND_ERROR "-- BUILD ERRORS: These must be resolved before compiling.")
   foreach (msg ${build_errors})
-    message(STATUS ${msg})
+    message(SEND_ERROR "-- ${msg}")
   endforeach ()
-  message(STATUS "END BUILD ERRORS\n")
+  message(SEND_ERROR "-- END BUILD ERRORS\n")
   message (FATAL_ERROR "Errors encountered in build. Please see the BUILD ERRORS above.")
 
 else (build_errors)
