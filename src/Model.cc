@@ -19,6 +19,7 @@
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
+#include "sdf/FrameSemantics.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -65,6 +66,15 @@ class sdf::ModelPrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Kinematic Graph constructed during Load.
+  public: sdf::KinematicGraph kinematicGraph;
+
+  /// \brief Frame Attached-To Graph constructed during Load.
+  public: sdf::FrameAttachedToGraph frameAttachedToGraph;
+
+  /// \brief Pose Relative-To Graph constructed during Load.
+  public: sdf::PoseRelativeToGraph poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -147,6 +157,20 @@ Errors Model::Load(ElementPtr _sdf)
   Errors frameLoadErrors = loadUniqueRepeated<Frame>(_sdf, "frame",
     this->dataPtr->frames);
   errors.insert(errors.end(), frameLoadErrors.begin(), frameLoadErrors.end());
+
+  // Build the graphs.
+  // Errors kinematicGraphErrors =
+  buildKinematicGraph(this->dataPtr->kinematicGraph, this);
+  // errors.insert(errors.end(), kinematicGraphErrors.begin(),
+  //                             kinematicGraphErrors.end());
+  // Errors frameAttachedToGraphErrors =
+  buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
+  // errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+  //                             frameAttachedToGraphErrors.end());
+  // Errors poseRelativeToGraphErrors =
+  buildPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph, this);
+  // errors.insert(errors.end(), poseRelativeToGraphErrors.begin(),
+  //                             poseRelativeToGraphErrors.end());
 
   return errors;
 }
