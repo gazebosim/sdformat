@@ -36,7 +36,7 @@ class sdf::SensorPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -174,7 +174,7 @@ Errors Sensor::Load(ElementPtr _sdf)
   }
 
   // Load the pose. Ignore the return value since the sensor pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   return errors;
 }
@@ -200,7 +200,7 @@ const ignition::math::Pose3d &Sensor::Pose() const
 /////////////////////////////////////////////////
 const std::string &Sensor::PoseRelativeTo() const
 {
-  return this->dataPtr->poseFrame;
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -212,7 +212,7 @@ void Sensor::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Sensor::SetPoseRelativeTo(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////

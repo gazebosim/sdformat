@@ -33,7 +33,7 @@ class sdf::VisualPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief The visual's a geometry.
   public: Geometry geom;
@@ -97,7 +97,7 @@ Errors Visual::Load(ElementPtr _sdf)
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   // Load the geometry
   Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
@@ -127,7 +127,7 @@ const ignition::math::Pose3d &Visual::Pose() const
 /////////////////////////////////////////////////
 const std::string &Visual::PoseRelativeTo() const
 {
-  return this->dataPtr->poseFrame;
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -139,7 +139,7 @@ void Visual::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Visual::SetPoseRelativeTo(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////

@@ -54,7 +54,7 @@ class sdf::JointPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief Joint axis
   // cppcheck-suppress
@@ -109,7 +109,7 @@ Errors Joint::Load(ElementPtr _sdf)
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   // Read the parent link name
   std::pair<std::string, bool> parentPair =
@@ -255,7 +255,7 @@ const ignition::math::Pose3d &Joint::Pose() const
 /////////////////////////////////////////////////
 const std::string &Joint::PoseRelativeTo() const
 {
-  return this->dataPtr->poseFrame;
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -267,7 +267,7 @@ void Joint::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Joint::SetPoseRelativeTo(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////

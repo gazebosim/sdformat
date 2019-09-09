@@ -32,7 +32,7 @@ class sdf::LightPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief The light type.
   public: LightType type = LightType::POINT;
@@ -134,7 +134,7 @@ Errors Light::Load(ElementPtr _sdf)
   }
 
   // Load the pose. Ignore the return value since the light pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   this->dataPtr->castShadows = _sdf->Get<bool>("cast_shadows",
       this->dataPtr->castShadows).first;
@@ -240,7 +240,7 @@ const ignition::math::Pose3d &Light::Pose() const
 /////////////////////////////////////////////////
 const std::string &Light::PoseRelativeTo() const
 {
-  return this->dataPtr->poseFrame;
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -252,7 +252,7 @@ void Light::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Light::SetPoseRelativeTo(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////

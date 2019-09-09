@@ -53,7 +53,7 @@ class sdf::ModelPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief The links specified in this model.
   public: std::vector<Link> links;
@@ -141,7 +141,7 @@ Errors Model::Load(ElementPtr _sdf)
   this->dataPtr->enableWind = _sdf->Get<bool>("enable_wind", false).first;
 
   // Load the pose. Ignore the return value since the model pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
@@ -363,7 +363,7 @@ const ignition::math::Pose3d &Model::Pose() const
 /////////////////////////////////////////////////
 const std::string &Model::PoseRelativeTo() const
 {
-  return this->dataPtr->poseFrame;
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -375,7 +375,7 @@ void Model::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Model::SetPoseRelativeTo(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////

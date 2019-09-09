@@ -39,7 +39,7 @@ class sdf::LinkPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief The visuals specified in this link.
   public: std::vector<Visual> visuals;
@@ -104,7 +104,7 @@ Errors Link::Load(ElementPtr _sdf)
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   // Load all the visuals.
   Errors visLoadErrors = loadUniqueRepeated<Visual>(_sdf, "visual",
@@ -293,7 +293,7 @@ const ignition::math::Pose3d &Link::Pose() const
 /////////////////////////////////////////////////
 const std::string &Link::PoseRelativeTo() const
 {
-  return this->dataPtr->poseFrame;
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -305,7 +305,7 @@ void Link::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Link::SetPoseRelativeTo(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////
