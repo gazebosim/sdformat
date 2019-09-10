@@ -31,6 +31,137 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
 
+// The following two functions were originally submitted to ign-math,
+// but were not accepted as they were not generic enough.
+// For now, they will be kept here.
+// https://bitbucket.org/ignitionrobotics/ign-math/pull-requests/333
+
+/// \brief Starting from a given vertex in a directed graph, traverse edges
+/// in reverse direction to find a source vertex (has only outgoing edges).
+/// This function returns a NullVertex if a graph cycle is detected or
+/// if a vertex with multiple incoming edges is found.
+/// Otherwise, this function returns the first source Vertex that is found.
+/// It also returns the sequence of edges leading to the source vertex.
+/// \param[in] _graph A directed graph.
+/// \param[in] _id VertexId of the starting vertex.
+/// \return A source vertex paired with a vector of the edges leading the
+/// source to the starting vertex, or a NullVertex paired with an empty
+/// vector if a cycle or vertex with multiple incoming edges are detected.
+template<typename V, typename E>
+std::pair<const ignition::math::graph::Vertex<V> &,
+          std::vector< ignition::math::graph::DirectedEdge<E> > >
+FindSourceVertex(
+    const ignition::math::graph::DirectedGraph<V, E> &_graph,
+    const ignition::math::graph::VertexId _id,
+    Errors &_errors)
+{
+  using DirectedEdge = ignition::math::graph::DirectedEdge<E>;
+  using Vertex = ignition::math::graph::Vertex<V>;
+  using VertexId = ignition::math::graph::VertexId;
+  using EdgesType = std::vector<DirectedEdge>;
+  using PairType = std::pair<const Vertex &, EdgesType>;
+  EdgesType edges;
+  std::reference_wrapper<const Vertex> vertex(_graph.VertexFromId(_id));
+  if (!vertex.get().Valid())
+  {
+    _errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Input vertex [" + std::to_string(_id) + "] is not valid."});
+    return PairType(Vertex::NullVertex, EdgesType());
+  }
+
+  std::set<VertexId> visited;
+  visited.insert(vertex.get().Id());
+
+  auto incidentsTo = _graph.IncidentsTo(vertex);
+  while (!incidentsTo.empty())
+  {
+    if (incidentsTo.size() != 1)
+    {
+      _errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Multiple vertices incident to current vertex [" +
+          std::to_string(vertex.get().Id()) + "]."});
+      return PairType(Vertex::NullVertex, EdgesType());
+    }
+    auto const &edge = incidentsTo.begin()->second;
+    vertex = _graph.VertexFromId(edge.get().Vertices().first);
+    edges.push_back(edge);
+    if (visited.count(vertex.get().Id()))
+    {
+      _errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Graph cycle detected, already visited vertex [" +
+          std::to_string(vertex.get().Id()) + "]."});
+      return PairType(Vertex::NullVertex, EdgesType());
+    }
+    visited.insert(vertex.get().Id());
+    incidentsTo = _graph.IncidentsTo(vertex);
+  }
+
+  return PairType(vertex, edges);
+}
+
+/// \brief Starting from a given vertex in a directed graph, follow edges
+/// to find a sink vertex (has only incoming edges).
+/// This function returns a NullVertex if a graph cycle is detected or
+/// if a vertex with multiple outgoing edges is found.
+/// Otherwise, this function returns the first sink Vertex that is found.
+/// It also returns the sequence of edges leading to the sink vertex.
+/// \param[in] _graph A directed graph.
+/// \param[in] _id VertexId of the starting vertex.
+/// \return A sink vertex paired with a vector of the edges leading the
+/// sink to the starting vertex, or a NullVertex paired with an empty
+/// vector if a cycle or vertex with multiple incoming edges are detected.
+template<typename V, typename E>
+std::pair<const ignition::math::graph::Vertex<V> &,
+          std::vector< ignition::math::graph::DirectedEdge<E> > >
+FindSinkVertex(
+    const ignition::math::graph::DirectedGraph<V, E> &_graph,
+    const ignition::math::graph::VertexId _id,
+    Errors &_errors)
+{
+  using DirectedEdge = ignition::math::graph::DirectedEdge<E>;
+  using Vertex = ignition::math::graph::Vertex<V>;
+  using VertexId = ignition::math::graph::VertexId;
+  using EdgesType = std::vector<DirectedEdge>;
+  using PairType = std::pair<const Vertex &, EdgesType>;
+  EdgesType edges;
+  std::reference_wrapper<const Vertex> vertex(_graph.VertexFromId(_id));
+  if (!vertex.get().Valid())
+  {
+    _errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Input vertex [" + std::to_string(_id) + "] is not valid."});
+    return PairType(Vertex::NullVertex, EdgesType());
+  }
+
+  std::set<VertexId> visited;
+  visited.insert(vertex.get().Id());
+
+  auto incidentsFrom = _graph.IncidentsFrom(vertex);
+  while (!incidentsFrom.empty())
+  {
+    if (incidentsFrom.size() != 1)
+    {
+      _errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Multiple vertices incident from current vertex [" +
+          std::to_string(vertex.get().Id()) + "]."});
+      return PairType(Vertex::NullVertex, EdgesType());
+    }
+    auto const &edge = incidentsFrom.begin()->second;
+    vertex = _graph.VertexFromId(edge.get().Vertices().second);
+    edges.push_back(edge);
+    if (visited.count(vertex.get().Id()))
+    {
+      _errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Graph cycle detected, already visited vertex [" +
+          std::to_string(vertex.get().Id()) + "]."});
+      return PairType(Vertex::NullVertex, EdgesType());
+    }
+    visited.insert(vertex.get().Id());
+    incidentsFrom = _graph.IncidentsFrom(vertex);
+  }
+
+  return PairType(vertex, edges);
+}
+
 /////////////////////////////////////////////////
 Errors buildKinematicGraph(
             KinematicGraph &_out, const Model *_model)
@@ -841,10 +972,13 @@ Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
   }
   auto vertexId = _graph.map.at(_vertexName);
 
-  auto outgoingVertexEdges =
-      ignition::math::graph::FindSinkVertex(_graph.graph, vertexId);
+  auto outgoingVertexEdges = FindSinkVertex(_graph.graph, vertexId, errors);
 
-  if (!outgoingVertexEdges.first.Valid())
+  if (!errors.empty())
+  {
+    return errors;
+  }
+  else if (!outgoingVertexEdges.first.Valid())
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
         "Sink vertex not found in graph when starting from vertex with name [" +
