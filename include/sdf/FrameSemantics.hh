@@ -168,7 +168,7 @@ namespace sdf
   /// \param[out] _pose Pose object to write.
   /// \return Errors.
   SDFORMAT_VISIBLE
-  Errors computePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
+  Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
       const std::string &_vertexName, ignition::math::Pose3d &_pose);
   }
 }

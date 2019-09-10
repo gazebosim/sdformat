@@ -828,7 +828,7 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
 }
 
 /////////////////////////////////////////////////
-Errors computePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
+Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
       const std::string &_vertexName, ignition::math::Pose3d &_pose)
 {
   Errors errors;

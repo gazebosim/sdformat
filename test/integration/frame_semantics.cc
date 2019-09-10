@@ -160,22 +160,22 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   }
 
   ignition::math::Pose3d pose;
-  EXPECT_TRUE(sdf::computePoseRelativeToRoot(graph, "", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
-  EXPECT_TRUE(sdf::computePoseRelativeToRoot(graph, "P", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "P", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), pose);
-  EXPECT_TRUE(sdf::computePoseRelativeToRoot(graph, "F1", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "F1", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 0, 1, 0, 0, 0), pose);
 
-  EXPECT_TRUE(sdf::computePoseRelativeToRoot(graph, "C", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "C", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(2, 0, 0, 0, IGN_PI/2, 0), pose);
-  EXPECT_TRUE(sdf::computePoseRelativeToRoot(graph, "F2", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "F2", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(4, 0, 0, 0, IGN_PI/2, 0), pose);
 
-  EXPECT_TRUE(sdf::computePoseRelativeToRoot(graph, "J", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "J", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(2, 3, 0, 0, 0, 0), pose);
-  EXPECT_TRUE(sdf::computePoseRelativeToRoot(graph, "F3", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "F3", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(2, 3, 3, 0, IGN_PI/2, 0), pose);
-  EXPECT_TRUE(sdf::computePoseRelativeToRoot(graph, "F4", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "F4", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(6, 3, 3, 0, 0, 0), pose);
 }
