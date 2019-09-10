@@ -378,6 +378,8 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
+  using Pose = ignition::math::Pose3d;
+
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_NE(nullptr, model);
@@ -387,7 +389,7 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_NE(nullptr, model->LinkByIndex(2));
   EXPECT_EQ(nullptr, model->LinkByIndex(3));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->Pose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   ASSERT_TRUE(model->LinkNameExists("L1"));
@@ -396,6 +398,24 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   EXPECT_TRUE(model->LinkByName("L1")->PoseRelativeTo().empty());
   EXPECT_TRUE(model->LinkByName("L2")->PoseRelativeTo().empty());
   EXPECT_EQ("L1", model->LinkByName("L3")->PoseRelativeTo());
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("L1")->Pose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), model->LinkByName("L2")->Pose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0), model->LinkByName("L3")->Pose());
+
+  // Test ResolveFrame to get each link pose in the model frame
+  Pose pose;
+  EXPECT_TRUE(model->LinkByName("L1")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->LinkByName("L2")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(model->LinkByName("L3")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+
+  // resolve pose of L1 relative to L3
+  // should be inverse of L3's Pose()
+  EXPECT_TRUE(model->LinkByName("L1")->ResolvePose("L3", pose).empty());
+  EXPECT_EQ(Pose(-3, 0, 0, 0, 0, 0), pose);
 
   EXPECT_TRUE(model->CanonicalLinkName().empty());
 

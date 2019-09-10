@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <memory>
 #include <string>
 #include <vector>
 #include <ignition/math/Pose3.hh>
@@ -74,7 +75,7 @@ class sdf::ModelPrivate
   public: sdf::FrameAttachedToGraph frameAttachedToGraph;
 
   /// \brief Pose Relative-To Graph constructed during Load.
-  public: sdf::PoseRelativeToGraph poseRelativeToGraph;
+  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -167,10 +168,16 @@ Errors Model::Load(ElementPtr _sdf)
   buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
   // errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
   //                             frameAttachedToGraphErrors.end());
+  //
+  this->dataPtr->poseRelativeToGraph = std::make_shared<PoseRelativeToGraph>();
   // Errors poseRelativeToGraphErrors =
-  buildPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph, this);
+  buildPoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph, this);
   // errors.insert(errors.end(), poseRelativeToGraphErrors.begin(),
   //                             poseRelativeToGraphErrors.end());
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
 
   return errors;
 }
