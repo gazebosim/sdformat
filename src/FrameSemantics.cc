@@ -870,5 +870,22 @@ Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
 
   return errors;
 }
+
+/////////////////////////////////////////////////
+Errors resolvePose(
+    const PoseRelativeToGraph &_graph,
+    const std::string &_frameName,
+    const std::string &_relativeTo,
+    ignition::math::Pose3d &_pose)
+{
+  Errors errors = resolvePoseRelativeToRoot(_graph, _frameName, _pose);
+
+  ignition::math::Pose3d poseR;
+  Errors errorsR = resolvePoseRelativeToRoot(_graph, _relativeTo, poseR);
+  errors.insert(errors.end(), errorsR.begin(), errorsR.end());
+
+  _pose = poseR.Inverse() * _pose;
+  return errors;
+}
 }
 }

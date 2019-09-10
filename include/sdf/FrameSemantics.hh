@@ -161,7 +161,7 @@ namespace sdf
   SDFORMAT_VISIBLE
   Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in);
 
-  /// \brief Compute pose of a vertex relative to its outgoing ancestor
+  /// \brief Resolve pose of a vertex relative to its outgoing ancestor
   /// (analog of the root of a tree).
   /// \param[in] _graph PoseRelativeToGraph to read from.
   /// \param[in] _vertexName Name of vertex whose pose is to be computed.
@@ -170,6 +170,20 @@ namespace sdf
   SDFORMAT_VISIBLE
   Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
       const std::string &_vertexName, ignition::math::Pose3d &_pose);
+
+  /// \brief Resolve pose of a frame relative to named frame.
+  /// \param[in] _graph PoseRelativeToGraph to read from.
+  /// \param[in] _frameName Name of frame whose pose is to be resolved.
+  /// \param[in] _relativeTo Name of frame relative to which the pose is
+  /// to be resolved.
+  /// \param[out] _pose Pose object to write.
+  /// \return Errors.
+  SDFORMAT_VISIBLE
+  Errors resolvePose(
+      const PoseRelativeToGraph &_graph,
+      const std::string &_frameName,
+      const std::string &_relativeTo,
+      ignition::math::Pose3d &_pose);
   }
 }
 #endif

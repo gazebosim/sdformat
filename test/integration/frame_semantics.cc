@@ -159,6 +159,7 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
     EXPECT_EQ(sinkId, sinkVertexPair.first.Id());
   }
 
+  // Test resolvePoseRelativeToRoot for each frame.
   ignition::math::Pose3d pose;
   EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
@@ -178,4 +179,22 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   EXPECT_EQ(ignition::math::Pose3d(2, 3, 3, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "F4", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(6, 3, 3, 0, 0, 0), pose);
+
+  // Test resolvePose for each frame with its relative_to value.
+  // Numbers should match the raw pose value in the model file.
+  EXPECT_TRUE(sdf::resolvePose(graph, "P", "", pose).empty());
+  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(sdf::resolvePose(graph, "C", "", pose).empty());
+  EXPECT_EQ(ignition::math::Pose3d(2, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(sdf::resolvePose(graph, "J", "C", pose).empty());
+  EXPECT_EQ(ignition::math::Pose3d(0, 3, 0, 0, -IGN_PI/2, 0), pose);
+
+  EXPECT_TRUE(sdf::resolvePose(graph, "F1", "P", pose).empty());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(sdf::resolvePose(graph, "F2", "C", pose).empty());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 2, 0, 0, 0), pose);
+  EXPECT_TRUE(sdf::resolvePose(graph, "F3", "J", pose).empty());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(sdf::resolvePose(graph, "F4", "F3", pose).empty());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 4, 0, -IGN_PI/2, 0), pose);
 }
