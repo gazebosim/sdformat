@@ -122,6 +122,8 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
+  using Pose = ignition::math::Pose3d;
+
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_NE(nullptr, model);
@@ -132,7 +134,7 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   EXPECT_NE(nullptr, model->LinkByIndex(2));
   EXPECT_NE(nullptr, model->LinkByIndex(3));
   EXPECT_EQ(nullptr, model->LinkByIndex(4));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->Pose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   ASSERT_TRUE(model->LinkNameExists("P1"));
@@ -144,6 +146,11 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   EXPECT_TRUE(model->LinkByName("C1")->PoseRelativeTo().empty());
   EXPECT_EQ("J2", model->LinkByName("C2")->PoseRelativeTo());
 
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P1")->Pose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), model->LinkByName("C1")->Pose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P2")->Pose());
+  EXPECT_EQ(Pose(4, 0, 0, 0, 0, 0), model->LinkByName("C2")->Pose());
+
   EXPECT_TRUE(model->CanonicalLinkName().empty());
 
   EXPECT_EQ(2u, model->JointCount());
@@ -154,6 +161,32 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   ASSERT_TRUE(model->JointNameExists("J2"));
   EXPECT_TRUE(model->JointByName("J1")->PoseRelativeTo().empty());
   EXPECT_EQ("P2", model->JointByName("J2")->PoseRelativeTo());
+
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->JointByName("J1")->Pose());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->JointByName("J2")->Pose());
+
+  // Test ResolveFrame to get each link and joint pose in the model frame.
+  Pose pose;
+  EXPECT_TRUE(model->LinkByName("P1")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->LinkByName("C1")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->JointByName("J1")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, -IGN_PI/2, 0), pose);
+
+  EXPECT_TRUE(model->LinkByName("P2")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->JointByName("J2")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(5, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->LinkByName("C2")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(5, 0, -4, 0, IGN_PI/2, 0), pose);
+
+  // resolve pose of J1 relative to C1, J2 relative to P2
+  // these should match the numbers in the model file
+  EXPECT_TRUE(model->JointByName("J1")->ResolvePose("C1", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(model->JointByName("J2")->ResolvePose("P2", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), pose);
 
   EXPECT_EQ(0u, model->FrameCount());
   EXPECT_EQ(nullptr, model->FrameByIndex(0));

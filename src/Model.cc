@@ -178,6 +178,10 @@ Errors Model::Load(ElementPtr _sdf)
   {
     link.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
 
   return errors;
 }
