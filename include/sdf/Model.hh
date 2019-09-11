@@ -35,6 +35,7 @@ namespace sdf
   class Joint;
   class Link;
   class ModelPrivate;
+  class PoseRelativeToGraph;
 
   class SDFORMAT_VISIBLE Model
   {
@@ -214,6 +215,11 @@ namespace sdf
     /// relative to the parent model/world coordinate frame.
     /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
+
+    /// \brief Get a const pointer to the model's PoseRelativeToGraph
+    /// to use for computing relative poses.
+    /// \return Const pointer to the model's PoseRelativeToGraph.
+    public: const PoseRelativeToGraph *GetPoseRelativeToGraph() const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

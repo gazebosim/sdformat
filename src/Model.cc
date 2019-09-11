@@ -394,6 +394,12 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
+const PoseRelativeToGraph *Model::GetPoseRelativeToGraph() const
+{
+  return this->dataPtr->poseRelativeToGraph.get();
+}
+
+/////////////////////////////////////////////////
 const Link *Model::LinkByName(const std::string &_name) const
 {
   for (auto const &l : this->dataPtr->links)

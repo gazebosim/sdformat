@@ -98,6 +98,8 @@ TEST(DOMRoot, LoadDoublePendulum)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
+  using Pose = ignition::math::Pose3d;
+
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_NE(nullptr, model);
@@ -107,7 +109,7 @@ TEST(DOMRoot, LoadDoublePendulum)
   EXPECT_FALSE(nullptr == model->LinkByIndex(1));
   EXPECT_FALSE(nullptr == model->LinkByIndex(2));
   EXPECT_TRUE(nullptr == model->LinkByIndex(3));
-  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), model->Pose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("base"));
@@ -121,6 +123,61 @@ TEST(DOMRoot, LoadDoublePendulum)
 
   EXPECT_TRUE(model->JointNameExists("upper_joint"));
   EXPECT_TRUE(model->JointNameExists("lower_joint"));
+
+  // test GetPoseRelativeToGraph
+  auto graph = model->GetPoseRelativeToGraph();
+  ASSERT_NE(nullptr, graph);
+  EXPECT_TRUE(sdf::validatePoseRelativeToGraph(*graph).empty());
+
+  EXPECT_EQ(6u, graph->map.size());
+  EXPECT_EQ(6u, graph->graph.Vertices().size());
+  EXPECT_EQ(5u, graph->graph.Edges().size());
+
+  EXPECT_EQ(1u, graph->map.count(""));
+  EXPECT_EQ(1u, graph->map.count("base"));
+  EXPECT_EQ(1u, graph->map.count("lower_link"));
+  EXPECT_EQ(1u, graph->map.count("upper_link"));
+  EXPECT_EQ(1u, graph->map.count("lower_joint"));
+  EXPECT_EQ(1u, graph->map.count("upper_joint"));
+
+  // Test resolvePoseRelativeToRoot for each frame.
+  Pose pose;
+  EXPECT_TRUE(
+      sdf::resolvePoseRelativeToRoot(*graph, "", pose).empty());
+  EXPECT_EQ(Pose::Zero, pose);
+  EXPECT_TRUE(
+      sdf::resolvePoseRelativeToRoot(*graph, "base", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+      sdf::resolvePoseRelativeToRoot(*graph, "lower_link", pose).empty());
+  EXPECT_EQ(Pose(0.25, 1.0, 2.1, -2, 0, 0), pose);
+  EXPECT_TRUE(
+      sdf::resolvePoseRelativeToRoot(*graph, "lower_joint", pose).empty());
+  EXPECT_EQ(Pose(0.25, 1.0, 2.1, -2, 0, 0), pose);
+  EXPECT_TRUE(
+      sdf::resolvePoseRelativeToRoot(*graph, "upper_link", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 2.1, -1.5708, 0, 0), pose);
+  EXPECT_TRUE(
+      sdf::resolvePoseRelativeToRoot(*graph, "upper_joint", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 2.1, -1.5708, 0, 0), pose);
+
+  // Test resolvePose for each frame with its relative_to value.
+  // Numbers should match the raw pose value in the model file.
+  EXPECT_TRUE(sdf::resolvePose(*graph, "", "", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(sdf::resolvePose(*graph, "base", "", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(sdf::resolvePose(*graph, "lower_link", "", pose).empty());
+  EXPECT_EQ(Pose(0.25, 1.0, 2.1, -2, 0, 0), pose);
+  EXPECT_TRUE(sdf::resolvePose(*graph, "upper_link", "", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 2.1, -1.5708, 0, 0), pose);
+  EXPECT_TRUE(
+      sdf::resolvePose(*graph, "lower_joint", "lower_link", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+      sdf::resolvePose(*graph, "upper_joint", "upper_link", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), pose);
+
 }
 
 /////////////////////////////////////////////////
