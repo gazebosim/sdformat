@@ -17,9 +17,12 @@
 #ifndef SDF_FRAME_HH_
 #define SDF_FRAME_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
+#include "sdf/FrameSemantics.hh"
+#include "sdf/Model.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -105,6 +108,24 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Resolve pose of this object relative to another named frame.
+    /// \param[in] _relativeTo Name of frame relative to which the pose of
+    /// this object should be resolved.
+    /// \param[out] _pose Resolved pose.
+    public: Errors ResolvePose(
+        const std::string &_relativeTo,
+        ignition::math::Pose3d &_pose) const;
+
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Model::Load.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    private: void SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    /// \brief Allow Model::Load to call SetPoseRelativeToGraph.
+    friend Errors Model::Load(ElementPtr);
 
     /// \brief Private data pointer.
     private: FramePrivate *dataPtr = nullptr;

@@ -182,6 +182,10 @@ Errors Model::Load(ElementPtr _sdf)
   {
     joint.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
 
   return errors;
 }

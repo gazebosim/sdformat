@@ -39,6 +39,9 @@ class sdf::FramePrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -147,6 +150,29 @@ void Frame::SetPose(const ignition::math::Pose3d &_pose)
 void Frame::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseRelativeTo = _frame;
+}
+
+/////////////////////////////////////////////////
+void Frame::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+Errors Frame::ResolvePose(
+    const std::string &_relativeTo, ignition::math::Pose3d &_pose) const
+{
+  Errors errors;
+  auto graph = this->dataPtr->poseRelativeToGraph.lock();
+  if (!graph)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Frame with name [" + this->dataPtr->name + "] has invalid pointer " +
+        "to PoseRelativeToGraph."});
+    return errors;
+  }
+  return resolvePose(*graph, this->dataPtr->name, _relativeTo, _pose);
 }
 
 /////////////////////////////////////////////////

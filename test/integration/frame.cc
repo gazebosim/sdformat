@@ -23,6 +23,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
@@ -684,6 +685,8 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
+  using Pose = ignition::math::Pose3d;
+
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_NE(nullptr, model);
@@ -692,11 +695,14 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_EQ(nullptr, model->LinkByIndex(2));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->Pose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
-  EXPECT_TRUE(model->LinkNameExists("P"));
-  EXPECT_TRUE(model->LinkNameExists("C"));
+  ASSERT_TRUE(model->LinkNameExists("P"));
+  ASSERT_TRUE(model->LinkNameExists("C"));
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), model->LinkByName("P")->Pose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("C")->Pose());
 
   EXPECT_TRUE(model->CanonicalLinkName().empty());
 
@@ -704,7 +710,8 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_NE(nullptr, model->JointByIndex(0));
   EXPECT_EQ(nullptr, model->JointByIndex(1));
 
-  EXPECT_TRUE(model->JointNameExists("J"));
+  ASSERT_TRUE(model->JointNameExists("J"));
+  EXPECT_EQ(Pose(0, 3, 0, 0, -IGN_PI/2, 0), model->JointByName("J")->Pose());
 
   EXPECT_EQ(4u, model->FrameCount());
   EXPECT_NE(nullptr, model->FrameByIndex(0));
@@ -726,6 +733,48 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_EQ("C", model->FrameByName("F2")->PoseRelativeTo());
   EXPECT_EQ("J", model->FrameByName("F3")->PoseRelativeTo());
   EXPECT_EQ("F3", model->FrameByName("F4")->PoseRelativeTo());
+
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->FrameByName("F1")->Pose());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->FrameByName("F2")->Pose());
+  EXPECT_EQ(Pose(0, 0, 3, 0, IGN_PI/2, 0), model->FrameByName("F3")->Pose());
+  EXPECT_EQ(Pose(0, 0, 4, 0, -IGN_PI/2, 0), model->FrameByName("F4")->Pose());
+
+  // Test ResolvePose for each Frame.
+  Pose pose;
+  EXPECT_TRUE(model->LinkByName("P")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F1")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(1, 0, 1, 0, 0, 0), pose);
+
+  EXPECT_TRUE(model->LinkByName("C")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F2")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(4, 0, 0, 0, IGN_PI/2, 0), pose);
+
+  EXPECT_TRUE(model->JointByName("J")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(2, 3, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F3")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F4")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(6, 3, 3, 0, 0, 0), pose);
+
+  // Test resolvePose for each frame with its relative_to value.
+  // Numbers should match the raw pose value in the model file.
+  EXPECT_TRUE(model->LinkByName("P")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(model->LinkByName("C")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->JointByName("J")->ResolvePose("C", pose).empty());
+  EXPECT_EQ(Pose(0, 3, 0, 0, -IGN_PI/2, 0), pose);
+
+  EXPECT_TRUE(model->FrameByName("F1")->ResolvePose("P", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F2")->ResolvePose("C", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F3")->ResolvePose("J", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F4")->ResolvePose("F3", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 4, 0, -IGN_PI/2, 0), pose);
 }
 
 /////////////////////////////////////////////////
