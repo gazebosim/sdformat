@@ -177,7 +177,6 @@ TEST(DOMRoot, LoadDoublePendulum)
   EXPECT_TRUE(
       sdf::resolvePose(*graph, "upper_joint", "upper_link", pose).empty());
   EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), pose);
-
 }
 
 /////////////////////////////////////////////////
