@@ -17,9 +17,12 @@
 #ifndef SDF_COLLISION_HH_
 #define SDF_COLLISION_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
+#include "sdf/FrameSemantics.hh"
+#include "sdf/Link.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -93,6 +96,37 @@ namespace sdf
     /// relative to the parent link.
     /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
+
+    /// \brief Resolve pose of this object relative to another named frame.
+    /// \param[in] _relativeTo Name of frame relative to which the pose of
+    /// this object should be resolved.
+    /// \param[out] _pose Resolved pose.
+    public: Errors ResolvePose(
+        const std::string &_relativeTo,
+        ignition::math::Pose3d &_pose) const;
+
+    /// \brief Resolve pose of this object relative to the implicit frame
+    /// of its xml parent object, which is always a link frame.
+    /// \param[out] _pose Resolved pose.
+    public: Errors ResolvePose(ignition::math::Pose3d &_pose) const;
+
+    /// \brief Give the name of the xml parent of this object, to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Link::SetPoseRelativeToGraph.
+    /// \param[in] _xmlParentName Name of xml parent object.
+    private: void SetXmlParentName(const std::string &_xmlParentName);
+
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Link::SetPoseRelativeToGraph.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    private: void SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
+    /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is
+    /// a private function, so we need to befriend the entire class.
+    friend Link;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

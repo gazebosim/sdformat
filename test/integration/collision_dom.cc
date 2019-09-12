@@ -21,7 +21,9 @@
 #include "sdf/Collision.hh"
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
+#include "sdf/Frame.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
@@ -87,3 +89,163 @@ TEST(DOMCollision, DoublePendulum)
   EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0), poleCol->Pose());
   EXPECT_EQ("", poleCol->PoseRelativeTo());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, LoadModelFramesRelativeToJoint)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_frame_relative_to_joint.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  using Pose = ignition::math::Pose3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_frame_relative_to_joint", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  ASSERT_TRUE(model->LinkNameExists("P"));
+  ASSERT_TRUE(model->LinkNameExists("C"));
+
+  EXPECT_EQ(1u, model->JointCount());
+  EXPECT_NE(nullptr, model->JointByIndex(0));
+  EXPECT_EQ(nullptr, model->JointByIndex(1));
+
+  ASSERT_TRUE(model->JointNameExists("J"));
+
+  EXPECT_EQ(4u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_NE(nullptr, model->FrameByIndex(1));
+  EXPECT_NE(nullptr, model->FrameByIndex(2));
+  EXPECT_NE(nullptr, model->FrameByIndex(3));
+  EXPECT_EQ(nullptr, model->FrameByIndex(4));
+  ASSERT_TRUE(model->FrameNameExists("F1"));
+  ASSERT_TRUE(model->FrameNameExists("F2"));
+  ASSERT_TRUE(model->FrameNameExists("F3"));
+  ASSERT_TRUE(model->FrameNameExists("F4"));
+
+  EXPECT_EQ("P", model->FrameByName("F1")->PoseRelativeTo());
+  EXPECT_EQ("C", model->FrameByName("F2")->PoseRelativeTo());
+  EXPECT_EQ("J", model->FrameByName("F3")->PoseRelativeTo());
+  EXPECT_EQ("F3", model->FrameByName("F4")->PoseRelativeTo());
+
+  // test Collision ResolvePose functions
+  auto linkP = model->LinkByName("P");
+  auto linkC = model->LinkByName("C");
+  ASSERT_NE(nullptr, linkP);
+  ASSERT_NE(nullptr, linkC);
+
+  EXPECT_EQ(2u, linkP->CollisionCount());
+  EXPECT_NE(nullptr, linkP->CollisionByIndex(0));
+  EXPECT_NE(nullptr, linkP->CollisionByIndex(1));
+  EXPECT_EQ(nullptr, linkP->CollisionByIndex(2));
+  EXPECT_TRUE(linkP->CollisionNameExists("P1"));
+  EXPECT_TRUE(linkP->CollisionNameExists("P2"));
+  EXPECT_EQ(4u, linkC->CollisionCount());
+  EXPECT_NE(nullptr, linkC->CollisionByIndex(0));
+  EXPECT_NE(nullptr, linkC->CollisionByIndex(1));
+  EXPECT_NE(nullptr, linkC->CollisionByIndex(2));
+  EXPECT_NE(nullptr, linkC->CollisionByIndex(3));
+  EXPECT_EQ(nullptr, linkC->CollisionByIndex(4));
+  EXPECT_TRUE(linkC->CollisionNameExists("P"));
+  EXPECT_TRUE(linkC->CollisionNameExists("J"));
+  EXPECT_TRUE(linkC->CollisionNameExists("F3"));
+  EXPECT_TRUE(linkC->CollisionNameExists("F4"));
+
+  EXPECT_TRUE(linkP->CollisionByName("P1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(linkP->CollisionByName("P2")->PoseRelativeTo().empty());
+  EXPECT_EQ("P", linkC->CollisionByName("P")->PoseRelativeTo());
+  EXPECT_EQ("J", linkC->CollisionByName("J")->PoseRelativeTo());
+  EXPECT_EQ("F3", linkC->CollisionByName("F3")->PoseRelativeTo());
+  EXPECT_EQ("F4", linkC->CollisionByName("F4")->PoseRelativeTo());
+
+  EXPECT_EQ(Pose(0, 0, 10, 0, 0, 0), linkP->CollisionByName("P1")->Pose());
+  EXPECT_EQ(Pose(0, 0, 11, 0, 0, 0), linkP->CollisionByName("P2")->Pose());
+  EXPECT_EQ(Pose(0, 0, 12, 0, 0, 0), linkC->CollisionByName("P")->Pose());
+  EXPECT_EQ(Pose(0, 0, 13, 0, 0, 0), linkC->CollisionByName("J")->Pose());
+  EXPECT_EQ(Pose(0, 0, 14, 0, 0, 0), linkC->CollisionByName("F3")->Pose());
+  EXPECT_EQ(Pose(0, 0, 15, 0, 0, 0), linkC->CollisionByName("F4")->Pose());
+
+  // Test resolvePose for each frame with its relative_to value.
+  // Numbers should match the raw pose value in the model file.
+  Pose pose;
+  EXPECT_TRUE(linkP->CollisionByName("P1")->ResolvePose("P", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 10, 0, 0, 0), pose);
+  EXPECT_TRUE(linkP->CollisionByName("P2")->ResolvePose("P", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 11, 0, 0, 0), pose);
+  EXPECT_TRUE(linkC->CollisionByName("P")->ResolvePose("P", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 12, 0, 0, 0), pose);
+  EXPECT_TRUE(linkC->CollisionByName("J")->ResolvePose("J", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 13, 0, 0, 0), pose);
+  EXPECT_TRUE(linkC->CollisionByName("F3")->ResolvePose("F3", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 14, 0, 0, 0), pose);
+  EXPECT_TRUE(linkC->CollisionByName("F4")->ResolvePose("F4", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 15, 0, 0, 0), pose);
+
+  // Resolve Collision poses to model frame.
+  EXPECT_TRUE(model->LinkByName("P")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(linkP->CollisionByName("P1")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(1, 0, 10, 0, 0, 0), pose);
+  EXPECT_TRUE(linkP->CollisionByName("P2")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(1, 0, 11, 0, 0, 0), pose);
+  EXPECT_TRUE(linkC->CollisionByName("P")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(1, 0, 12, 0, 0, 0), pose);
+
+  EXPECT_TRUE(model->JointByName("J")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(2, 3, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(linkC->CollisionByName("J")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(2, 3, 13, 0, 0, 0), pose);
+
+  EXPECT_TRUE(model->FrameByName("F3")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(linkC->CollisionByName("F3")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(16, 3, 3, 0, IGN_PI/2, 0), pose);
+
+  EXPECT_TRUE(model->FrameByName("F4")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(6, 3, 3, 0, 0, 0), pose);
+  EXPECT_TRUE(linkC->CollisionByName("F4")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(6, 3, 18, 0, 0, 0), pose);
+
+  // Resolve Collision poses relative to the parent link with both API's.
+  EXPECT_TRUE(linkP->CollisionByName("P1")->ResolvePose("P", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 10, 0, 0, 0), pose);
+  EXPECT_TRUE(linkP->CollisionByName("P1")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(0, 0, 10, 0, 0, 0), pose);
+
+  EXPECT_TRUE(linkP->CollisionByName("P2")->ResolvePose("P", pose).empty());
+  EXPECT_EQ(Pose(0, 0, 11, 0, 0, 0), pose);
+  EXPECT_TRUE(linkP->CollisionByName("P2")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(0, 0, 11, 0, 0, 0), pose);
+
+  EXPECT_TRUE(linkC->CollisionByName("P")->ResolvePose("C", pose).empty());
+  EXPECT_EQ(Pose(-12, 0, -1, 0, -IGN_PI/2, 0), pose);
+  EXPECT_TRUE(linkC->CollisionByName("P")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(-12, 0, -1, 0, -IGN_PI/2, 0), pose);
+
+  EXPECT_TRUE(linkC->CollisionByName("J")->ResolvePose("C", pose).empty());
+  EXPECT_EQ(Pose(-13, 3, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_TRUE(linkC->CollisionByName("J")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(-13, 3, 0, 0, -IGN_PI/2, 0), pose);
+
+  EXPECT_TRUE(linkC->CollisionByName("F3")->ResolvePose("C", pose).empty());
+  EXPECT_EQ(Pose(-3, 3, 14, 0, 0, 0), pose);
+  EXPECT_TRUE(linkC->CollisionByName("F3")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(-3, 3, 14, 0, 0, 0), pose);
+
+  EXPECT_TRUE(linkC->CollisionByName("F4")->ResolvePose("C", pose).empty());
+  EXPECT_EQ(Pose(-18, 3, 4, 0, -IGN_PI/2, 0), pose);
+  EXPECT_TRUE(linkC->CollisionByName("F4")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(-18, 3, 4, 0, -IGN_PI/2, 0), pose);
+}
+

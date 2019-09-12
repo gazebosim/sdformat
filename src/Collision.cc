@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Collision.hh"
@@ -40,6 +41,12 @@ class sdf::CollisionPrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Name of xml parent object.
+  public: std::string xmlParentName;
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -136,6 +143,58 @@ void Collision::SetPose(const ignition::math::Pose3d &_pose)
 void Collision::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseRelativeTo = _frame;
+}
+
+/////////////////////////////////////////////////
+void Collision::SetXmlParentName(const std::string &_xmlParentName)
+{
+  this->dataPtr->xmlParentName = _xmlParentName;
+}
+
+/////////////////////////////////////////////////
+void Collision::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+Errors Collision::ResolvePose(
+    const std::string &_relativeTo, ignition::math::Pose3d &_pose) const
+{
+  Errors errors;
+  auto graph = this->dataPtr->poseRelativeToGraph.lock();
+  if (!graph)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Collision with name [" + this->dataPtr->name + "] has invalid " +
+        "pointer to PoseRelativeToGraph."});
+    return errors;
+  }
+  if (this->dataPtr->xmlParentName.empty())
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Collision with name [" + this->dataPtr->name + "] has invalid " +
+        "name of xml parent object."});
+    return errors;
+  }
+
+  // Collision is not in the graph, but its PoseRelativeTo() name should be.
+  // If PoseRelativeTo() is empty, use the name of the xml parent object.
+  std::string collisionRelativeTo = this->PoseRelativeTo();
+  if (collisionRelativeTo.empty())
+  {
+    collisionRelativeTo = this->dataPtr->xmlParentName;
+  }
+  errors = resolvePose(*graph, collisionRelativeTo, _relativeTo, _pose);
+  _pose *= this->Pose();
+  return errors;
+}
+
+/////////////////////////////////////////////////
+Errors Collision::ResolvePose(ignition::math::Pose3d &_pose) const
+{
+  return this->ResolvePose(this->dataPtr->xmlParentName, _pose);
 }
 
 /////////////////////////////////////////////////
