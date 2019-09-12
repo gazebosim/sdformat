@@ -176,6 +176,12 @@ Errors Frame::ResolvePose(
 }
 
 /////////////////////////////////////////////////
+Errors Frame::ResolvePose(ignition::math::Pose3d &_pose) const
+{
+  return this->ResolvePose("", _pose);
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Frame::Element() const
 {
   return this->dataPtr->sdf;

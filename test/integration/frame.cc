@@ -757,6 +757,15 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(model->FrameByName("F4")->ResolvePose("", pose).empty());
   EXPECT_EQ(Pose(6, 3, 3, 0, 0, 0), pose);
+  // test other API
+  EXPECT_TRUE(model->FrameByName("F1")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(1, 0, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F2")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(4, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F3")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F4")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(6, 3, 3, 0, 0, 0), pose);
 
   // Test resolvePose for each frame with its relative_to value.
   // Numbers should match the raw pose value in the model file.

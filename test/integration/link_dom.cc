@@ -403,13 +403,20 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), model->LinkByName("L2")->Pose());
   EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0), model->LinkByName("L3")->Pose());
 
-  // Test ResolveFrame to get each link pose in the model frame
+  // Test ResolvePose to get each link pose in the model frame
   Pose pose;
   EXPECT_TRUE(model->LinkByName("L1")->ResolvePose("", pose).empty());
   EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(model->LinkByName("L2")->ResolvePose("", pose).empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(model->LinkByName("L3")->ResolvePose("", pose).empty());
+  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+  // test other API too
+  EXPECT_TRUE(model->LinkByName("L1")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->LinkByName("L2")->ResolvePose(pose).empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(model->LinkByName("L3")->ResolvePose(pose).empty());
   EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
 
   // resolve pose of L1 relative to L3

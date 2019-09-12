@@ -336,6 +336,12 @@ Errors Link::ResolvePose(
 }
 
 /////////////////////////////////////////////////
+Errors Link::ResolvePose(ignition::math::Pose3d &_pose) const
+{
+  return this->ResolvePose("", _pose);
+}
+
+/////////////////////////////////////////////////
 const Visual *Link::VisualByName(const std::string &_name) const
 {
   for (auto const &v : this->dataPtr->visuals)
