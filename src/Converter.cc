@@ -295,7 +295,12 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
   }
   else
   {
-    _elem->RemoveChild(_elem->FirstChildElement(elementName));
+    TiXmlElement *childElem = _elem->FirstChildElement(elementName);
+    while (childElem)
+    {
+      _elem->RemoveChild(childElem);
+      childElem = _elem->FirstChildElement(elementName);
+    }
   }
 }
 
