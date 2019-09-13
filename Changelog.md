@@ -7,6 +7,7 @@
 
 1. Fix ign library path on macOS.
     * [Pull request 542](https://bitbucket.org/osrf/sdformat/pull-requests/542)
+    * [Pull request 564](https://bitbucket.org/osrf/sdformat/pull-requests/564)
 
 1. Use `ign sdf --check` to check sibling elements of the same type for non-unique names.
     * [Pull request 554](https://bitbucket.org/osrf/sdformat/pull-requests/554)
