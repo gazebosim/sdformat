@@ -302,8 +302,9 @@ namespace sdf
     /// have identical name attribute values and returns false if so.
     /// \param[in] _type The type of Element to check. If empty, check names
     /// of all child elements.
-    /// \return True if all child elements with name attributes have unique
-    /// names, return false if there are duplicated names.
+    /// \return True if all child elements with name attributes of the
+    /// specified type have unique names, return false if there are duplicated
+    /// names. Also return true if no elements of the specified type are found.
     public: bool HasUniqueChildNames(const std::string &_type = "") const;
 
     /// \brief Count the number of child elements of the specified element type

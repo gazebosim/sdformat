@@ -59,6 +59,12 @@
 
 ### SDFormat 6.X.X (20XX-XX-XX)
 
+1. Fix ign library path on macOS.
+    * [Pull request 552](https://bitbucket.org/osrf/sdformat/pull-requests/552)
+
+1. Use `ign sdf --check` to check sibling elements of the same type for non-unique names.
+    * [Pull request 554](https://bitbucket.org/osrf/sdformat/pull-requests/554)
+
 1. Converter: remove all matching elements specified by `<remove>` tag.
     * [Pull request 551](https://bitbucket.org/osrf/sdformat/pull-requests/551)
 
