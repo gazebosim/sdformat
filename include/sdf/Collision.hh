@@ -110,6 +110,12 @@ namespace sdf
     /// \param[out] _pose Resolved pose.
     public: Errors ResolvePose(ignition::math::Pose3d &_pose) const;
 
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
     /// \brief Give the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.
@@ -127,12 +133,6 @@ namespace sdf
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is
     /// a private function, so we need to befriend the entire class.
     friend Link;
-
-    /// \brief Get a pointer to the SDF element that was used during
-    /// load.
-    /// \return SDF element pointer. The value will be nullptr if Load has
-    /// not been called.
-    public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
     private: CollisionPrivate *dataPtr = nullptr;
