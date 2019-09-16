@@ -324,6 +324,11 @@ void Link::SetPoseRelativeToGraph(
     collision.SetXmlParentName(this->dataPtr->name);
     collision.SetPoseRelativeToGraph(_graph);
   }
+  for (auto &visual : this->dataPtr->visuals)
+  {
+    visual.SetXmlParentName(this->dataPtr->name);
+    visual.SetPoseRelativeToGraph(_graph);
+  }
 }
 
 /////////////////////////////////////////////////

@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
@@ -29,7 +30,7 @@ class sdf::VisualPrivate
   /// \brief Name of the visual.
   public: std::string name = "";
 
-  /// \brief Pose of the collision object
+  /// \brief Pose of the visual object
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
@@ -43,6 +44,12 @@ class sdf::VisualPrivate
 
   /// \brief Pointer to the visual's material properties.
   public: std::unique_ptr<Material> material;
+
+  /// \brief Name of xml parent object.
+  public: std::string xmlParentName;
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -146,6 +153,58 @@ void Visual::SetPoseRelativeTo(const std::string &_frame)
 const Geometry *Visual::Geom() const
 {
   return &this->dataPtr->geom;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetXmlParentName(const std::string &_xmlParentName)
+{
+  this->dataPtr->xmlParentName = _xmlParentName;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+Errors Visual::ResolvePose(
+    const std::string &_relativeTo, ignition::math::Pose3d &_pose) const
+{
+  Errors errors;
+  auto graph = this->dataPtr->poseRelativeToGraph.lock();
+  if (!graph)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Visual with name [" + this->dataPtr->name + "] has invalid " +
+        "pointer to PoseRelativeToGraph."});
+    return errors;
+  }
+  if (this->dataPtr->xmlParentName.empty())
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Visual with name [" + this->dataPtr->name + "] has invalid " +
+        "name of xml parent object."});
+    return errors;
+  }
+
+  // Visual is not in the graph, but its PoseRelativeTo() name should be.
+  // If PoseRelativeTo() is empty, use the name of the xml parent object.
+  std::string visualRelativeTo = this->PoseRelativeTo();
+  if (visualRelativeTo.empty())
+  {
+    visualRelativeTo = this->dataPtr->xmlParentName;
+  }
+  errors = resolvePose(*graph, visualRelativeTo, _relativeTo, _pose);
+  _pose *= this->Pose();
+  return errors;
+}
+
+/////////////////////////////////////////////////
+Errors Visual::ResolvePose(ignition::math::Pose3d &_pose) const
+{
+  return this->ResolvePose(this->dataPtr->xmlParentName, _pose);
 }
 
 /////////////////////////////////////////////////

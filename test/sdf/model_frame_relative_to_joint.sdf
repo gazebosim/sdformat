@@ -19,6 +19,22 @@
           </sphere>
         </geometry>
       </collision>
+      <visual name="vP1">
+        <pose>0 0 10 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name="vP2">
+        <pose relative_to="">0 0 11 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
     </link>
     <link name="C">
       <pose>2 0 0 0 1.5707963267948966 0</pose>
@@ -54,6 +70,38 @@
           </sphere>
         </geometry>
       </collision>
+      <visual name="vP">
+        <pose relative_to="P">0 0 12 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name="vJ">
+        <pose relative_to="J">0 0 13 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name="vF3">
+        <pose relative_to="F3">0 0 14 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name="vF4">
+        <pose relative_to="F4">0 0 15 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
     </link>
     <joint name="J" type="fixed">
       <pose>0 3 0 0 -1.5707963267948966 0</pose>
