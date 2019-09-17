@@ -95,7 +95,7 @@ namespace sdf
   struct SDFORMAT_VISIBLE PoseRelativeToGraph
   {
     /// \brief A DirectedGraph with a vertex for each explicit or implicit
-    /// frame and edges pointing to the frame relative to which its pose
+    /// frame and edges pointing from the frame relative to which its pose
     /// is defined. Each vertex stores its FrameType and each edge
     /// stores the Pose3 between those frames.
     using Pose3d = ignition::math::Pose3d;

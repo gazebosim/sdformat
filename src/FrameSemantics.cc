@@ -462,7 +462,7 @@ Errors buildPoseRelativeToGraph(
     if (link->PoseRelativeTo().empty())
     {
       // relative_to is empty, so add edge from link to implicit model frame
-      _out.graph.AddEdge({linkId, modelFrameId}, link->Pose());
+      _out.graph.AddEdge({modelFrameId, linkId}, link->Pose());
     }
   }
 
@@ -485,7 +485,7 @@ Errors buildPoseRelativeToGraph(
         continue;
       }
       auto childLinkId = _out.map.at(childLink->Name());
-      _out.graph.AddEdge({jointId, childLinkId}, joint->Pose());
+      _out.graph.AddEdge({childLinkId, jointId}, joint->Pose());
     }
   }
 
@@ -501,7 +501,7 @@ Errors buildPoseRelativeToGraph(
     if (frame->PoseRelativeTo().empty() && frame->AttachedTo().empty())
     {
       // add edge from frame to implicit model frame
-      _out.graph.AddEdge({frameId, modelFrameId}, frame->Pose());
+      _out.graph.AddEdge({modelFrameId, frameId}, frame->Pose());
     }
   }
 
@@ -534,7 +534,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                        "Link relative_to itself causes a cycle."});
     }
-    _out.graph.AddEdge({linkId, relativeToId}, link->Pose());
+    _out.graph.AddEdge({relativeToId, linkId}, link->Pose());
   }
 
   for (uint64_t j = 0; j < _model->JointCount(); ++j)
@@ -563,7 +563,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                        "Joint relative_to itself causes a cycle."});
     }
-    _out.graph.AddEdge({jointId, relativeToId}, joint->Pose());
+    _out.graph.AddEdge({relativeToId, jointId}, joint->Pose());
   }
 
   for (uint64_t f = 0; f < _model->FrameCount(); ++f)
@@ -603,7 +603,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                        "Frame relative_to itself causes a cycle."});
     }
-    _out.graph.AddEdge({frameId, relativeToId}, frame->Pose());
+    _out.graph.AddEdge({relativeToId, frameId}, frame->Pose());
   }
 
   return errors;
@@ -649,7 +649,7 @@ Errors buildPoseRelativeToGraph(
     if (model->PoseRelativeTo().empty())
     {
       // relative_to is empty, so add edge from model to implicit world frame
-      _out.graph.AddEdge({modelId, worldFrameId}, model->Pose());
+      _out.graph.AddEdge({worldFrameId, modelId}, model->Pose());
     }
   }
 
@@ -665,7 +665,7 @@ Errors buildPoseRelativeToGraph(
     if (frame->PoseRelativeTo().empty() && frame->AttachedTo().empty())
     {
       // add edge from frame to implicit world frame
-      _out.graph.AddEdge({frameId, worldFrameId}, frame->Pose());
+      _out.graph.AddEdge({worldFrameId, frameId}, frame->Pose());
     }
   }
 
@@ -698,7 +698,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                        "Model relative_to itself causes a cycle."});
     }
-    _out.graph.AddEdge({modelId, relativeToId}, model->Pose());
+    _out.graph.AddEdge({relativeToId, modelId}, model->Pose());
   }
 
   for (uint64_t f = 0; f < _world->FrameCount(); ++f)
@@ -738,7 +738,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                        "Frame relative_to itself causes a cycle."});
     }
-    _out.graph.AddEdge({frameId, relativeToId}, frame->Pose());
+    _out.graph.AddEdge({relativeToId, frameId}, frame->Pose());
   }
 
   return errors;
@@ -882,15 +882,15 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
     return errors;
   }
 
-  // Check number of outgoing edges for each vertex
+  // Check number of incoming edges for each vertex
   auto vertices = _in.graph.Vertices();
   for (auto vertexPair : vertices)
   {
-    auto outDegree = _in.graph.OutDegree(vertexPair.first);
-    if (outDegree > 1)
+    auto inDegree = _in.graph.InDegree(vertexPair.first);
+    if (inDegree > 1)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Too many outgoing edges at a vertex with name [" +
+          "Too many incoming edges at a vertex with name [" +
           vertexPair.second.get().Name() + "]."});
     }
     else if (sdf::FrameType::MODEL == rootFrameType)
@@ -903,22 +903,22 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
               "should not have type WORLD in MODEL relative_to graph."});
           break;
         case sdf::FrameType::MODEL:
-          if (outDegree != 0)
+          if (inDegree != 0)
           {
             errors.push_back({ErrorCode::ELEMENT_INVALID,
                 "MODEL vertex with name [" +
                 vertexPair.second.get().Name() +
-                "] should have no outgoing edges "
+                "] should have no incoming edges "
                 "in MODEL relative_to graph."});
           }
           break;
         default:
-          if (outDegree != 1)
+          if (inDegree != 1)
           {
             errors.push_back({ErrorCode::ELEMENT_INVALID,
                 "Non-MODEL vertex with name [" +
                 vertexPair.second.get().Name() +
-                "] should have 1 outgoing edge " +
+                "] should have 1 incoming edge " +
                 "in MODEL relative_to graph."});
           }
           break;
@@ -935,19 +935,19 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
               "No JOINT or LINK vertex should be in WORLD relative_to graph."});
           break;
         case sdf::FrameType::WORLD:
-          if (outDegree != 0)
+          if (inDegree != 0)
           {
             errors.push_back({ErrorCode::ELEMENT_INVALID,
-                "WORLD vertices should have no outgoing edges "
+                "WORLD vertices should have no incoming edges "
                 "in WORLD relative_to graph."});
           }
           break;
         default:
-          if (outDegree != 1)
+          if (inDegree != 1)
           {
             errors.push_back({ErrorCode::ELEMENT_INVALID,
                 "MODEL and FRAME vertices in WORLD relative_to graph "
-                "should have 1 outgoing edge."});
+                "should have 1 incoming edge."});
           }
           break;
       }
@@ -972,30 +972,30 @@ Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
   }
   auto vertexId = _graph.map.at(_vertexName);
 
-  auto outgoingVertexEdges = FindSinkVertex(_graph.graph, vertexId, errors);
+  auto incomingVertexEdges = FindSourceVertex(_graph.graph, vertexId, errors);
 
   if (!errors.empty())
   {
     return errors;
   }
-  else if (!outgoingVertexEdges.first.Valid())
+  else if (!incomingVertexEdges.first.Valid())
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Sink vertex not found in graph when starting from vertex with name [" +
-        _vertexName + "]."});
+        "Source vertex not found in graph when starting from vertex with "
+        "name [" + _vertexName + "]."});
     return errors;
   }
-  else if (!outgoingVertexEdges.first.Name().empty())
+  else if (!incomingVertexEdges.first.Name().empty())
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Sink vertex found with name [" +
-        outgoingVertexEdges.first.Name() +
+        "Source vertex found with name [" +
+        incomingVertexEdges.first.Name() +
         "], but its name should be empty."});
     return errors;
   }
 
   ignition::math::Pose3d pose;
-  for (auto const &edge : outgoingVertexEdges.second)
+  for (auto const &edge : incomingVertexEdges.second)
   {
     pose = edge.Data() * pose;
   }
