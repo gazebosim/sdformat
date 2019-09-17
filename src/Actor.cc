@@ -342,6 +342,7 @@ Trajectory::Trajectory()
 {
 }
 
+/////////////////////////////////////////////////
 void Trajectory::CopyFrom(const Trajectory &_trajectory)
 {
   this->dataPtr->id = _trajectory.dataPtr->id;

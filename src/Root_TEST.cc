@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include "sdf/Actor.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
@@ -47,6 +48,12 @@ TEST(DOMRoot, Construction)
   EXPECT_EQ(0u, root.LightCount());
   EXPECT_TRUE(root.LightByIndex(0) == nullptr);
   EXPECT_TRUE(root.LightByIndex(1) == nullptr);
+
+  EXPECT_FALSE(root.ActorNameExists("default"));
+  EXPECT_FALSE(root.ActorNameExists(""));
+  EXPECT_EQ(0u, root.ActorCount());
+  EXPECT_TRUE(root.ActorByIndex(0) == nullptr);
+  EXPECT_TRUE(root.ActorByIndex(1) == nullptr);
 }
 
 /////////////////////////////////////////////////
@@ -68,6 +75,23 @@ TEST(DOMRoot, StringParse)
     "   <light type='directional' name='sun'>"
     "     <direction>-0.5 0.1 -0.9</direction>"
     "   </light>"
+    "   <actor name='actor_test'>"
+    "     <pose>0 0 1.0 0 0 0</pose>"
+    "     <skin>"
+    "       <filename>/home/mingfei/Downloads/run.dae</filename>"
+    "       <scale>1.0</scale>"
+    "     </skin>"
+    "     <animation name='run'>"
+    "       <filename>/home/mingfei/Downloads/run.dae</filename>"
+    "       <scale>0.055</scale>"
+    "       <interpolate_x>true</interpolate_x>"
+    "     </animation>"
+    "     <script>"
+    "       <loop>true</loop>"
+    "       <delay_start>5.0</delay_start>"
+    "       <auto_start>true</auto_start>"
+    "     </script>"
+    "   </actor>"
     " </sdf>";
 
   sdf::Root root;
@@ -100,6 +124,12 @@ TEST(DOMRoot, StringParse)
   const sdf::Light *light = root.LightByIndex(0);
   ASSERT_NE(nullptr, light);
   EXPECT_NE(nullptr, light->Element());
+
+  EXPECT_TRUE(root.ActorNameExists("actor_test"));
+  EXPECT_EQ(1u, root.ActorCount());
+  const sdf::Actor *actor = root.ActorByIndex(0);
+  ASSERT_NE(nullptr, actor);
+  EXPECT_NE(nullptr, actor->Element());
 }
 
 /////////////////////////////////////////////////
