@@ -1,3 +1,9 @@
+## SDFormat 9.X
+
+### SDFormat 9.X.X (201X-XX-XX)
+
+### SDFormat 9.0.0 (201X-XX-XX)
+
 ## SDFormat 8.0
 
 ### SDFormat 8.X.X (201X-XX-XX)
