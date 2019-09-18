@@ -25,6 +25,10 @@
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declarations.
   class SensorPrivate;
 
@@ -159,5 +163,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: SensorPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif

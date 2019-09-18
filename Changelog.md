@@ -2,6 +2,10 @@
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
 
+1. Backport inline versioned namespace from version 8.
+    * [Pull request 557](https://bitbucket.org/osrf/sdformat/pull-requests/557)
+    * [pull request 464](https://bitbucket.org/osrf/sdformat/pull-requests/464)
+
 1. Backport cmake and sdf spec changes from version 8.
     * [Pull request 550](https://bitbucket.org/osrf/sdformat/pull-requests/550)
     * [pull request 538](https://bitbucket.org/osrf/sdformat/pull-requests/538)

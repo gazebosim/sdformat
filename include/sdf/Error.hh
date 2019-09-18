@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <string>
+#include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 
 #ifdef _WIN32
@@ -30,6 +31,10 @@
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \enum ErrorCode
   /// \brief Set of error codes. Usually one or more errors are returned in
   /// an Errors vector. The collection of Errors should be take as a whole,
@@ -149,6 +154,7 @@ namespace sdf
   #pragma warning(pop)
 #endif
   };
+  }
 }
 #ifdef _WIN32
 #pragma warning(pop)

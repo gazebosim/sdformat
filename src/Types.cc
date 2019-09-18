@@ -22,6 +22,8 @@
 
 namespace sdf
 {
+inline namespace SDF_VERSION_NAMESPACE {
+
 /////////////////////////////////////////////////
 std::vector<std::string> split(const std::string &_str,
                                const std::string &_splitter)
@@ -61,5 +63,6 @@ std::string trim(const char *_in)
   const size_t strRange = str.find_last_not_of(" \t") - strBegin + 1;
 
   return str.substr(strBegin, strRange);
+}
 }
 }

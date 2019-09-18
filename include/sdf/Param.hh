@@ -41,6 +41,7 @@
 #include <ignition/math.hh>
 
 #include "sdf/Console.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 #include "sdf/Types.hh"
 
@@ -53,6 +54,10 @@
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   class SDFORMAT_VISIBLE Param;
 
   /// \def ParamPtr
@@ -350,6 +355,7 @@ namespace sdf
   bool Param::IsType() const
   {
     return this->dataPtr->value.type() == typeid(Type);
+  }
   }
 }
 
