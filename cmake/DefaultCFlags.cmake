@@ -6,7 +6,7 @@ set (CMAKE_LINK_FLAGS_PROFILE " -pg" CACHE INTERNAL "Link flags for profile" FOR
 set (CMAKE_LINK_FLAGS_COVERAGE " --coverage" CACHE INTERNAL "Link flags for static code coverage" FORCE)
 
 set (CMAKE_C_FLAGS_RELEASE "")
-if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND NOT MSVC)
+if (NOT "${CMAKE_CXX_COMPILER_ID} " STREQUAL "Clang " AND NOT MSVC)
   # -s doesn't work with clang or Visual Studio, see alternative in link below:
   # http://stackoverflow.com/questions/6085491/gcc-vs-clang-symbol-strippingu
   set (CMAKE_C_FLAGS_RELEASE "-s")
@@ -42,6 +42,7 @@ endif()
 # Set all the global build flags
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}}")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}}")
+set (CMAKE_CXX_EXTENSIONS off)
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}}")
 set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}}")
 set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_LINK_FLAGS_${CMAKE_BUILD_TYPE_UPPERCASE}}")
