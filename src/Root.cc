@@ -18,6 +18,7 @@
 #include <vector>
 #include <utility>
 
+#include "sdf/Actor.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
@@ -43,6 +44,9 @@ class sdf::RootPrivate
 
   /// \brief The lights specified under the root SDF element
   public: std::vector<Light> lights;
+
+  /// \brief The actors specified under the root SDF element
+  public: std::vector<Actor> actors;
 
   /// \brief The SDF element pointer generated during load.
   public: sdf::ElementPtr sdf;
@@ -172,6 +176,11 @@ Errors Root::Load(SDFPtr _sdf)
       "light", this->dataPtr->lights);
   errors.insert(errors.end(), lightLoadErrors.begin(), lightLoadErrors.end());
 
+  // Load all the actors.
+  Errors actorLoadErrors = loadUniqueRepeated<Actor>(this->dataPtr->sdf,
+      "actor", this->dataPtr->actors);
+  errors.insert(errors.end(), actorLoadErrors.begin(), actorLoadErrors.end());
+
   return errors;
 }
 
@@ -259,6 +268,33 @@ const Light *Root::LightByIndex(const uint64_t _index) const
 bool Root::LightNameExists(const std::string &_name) const
 {
   for (auto const &m : this->dataPtr->lights)
+  {
+    if (m.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+uint64_t Root::ActorCount() const
+{
+  return this->dataPtr->actors.size();
+}
+
+/////////////////////////////////////////////////
+const Actor *Root::ActorByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->actors.size())
+    return &this->dataPtr->actors[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Root::ActorNameExists(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->actors)
   {
     if (m.Name() == _name)
     {
