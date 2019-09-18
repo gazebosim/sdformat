@@ -167,4 +167,6 @@ endif()
 
 sdf_install_library(${sdf_target})
 
-add_subdirectory(cmd)
+if(NOT WIN32)
+  add_subdirectory(cmd)
+endif()

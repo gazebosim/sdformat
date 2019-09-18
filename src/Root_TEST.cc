@@ -16,8 +16,8 @@
 */
 
 #include <gtest/gtest.h>
-#include "sdf/sdf_config.h"
 #include "sdf/Actor.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Link.hh"
@@ -75,20 +75,21 @@ TEST(DOMRoot, StringParse)
     "   <light type='directional' name='sun'>"
     "     <direction>-0.5 0.1 -0.9</direction>"
     "   </light>"
-    "   <actor name='actor_name'>"
+    "   <actor name='actor_test'>"
+    "     <pose>0 0 1.0 0 0 0</pose>"
     "     <skin>"
-    "       <filename>walk.dae</filename>"
+    "       <filename>/fake/path/to/mesh.dae</filename>"
+    "       <scale>1.0</scale>"
     "     </skin>"
-    "     <animation name='walking'>"
-    "       <filename>walk.dae</filename>"
+    "     <animation name='run'>"
+    "       <filename>/fake/path/to/mesh.dae</filename>"
+    "       <scale>0.055</scale>"
+    "       <interpolate_x>true</interpolate_x>"
     "     </animation>"
     "     <script>"
-    "       <trajectory id='0' type='walking'>"
-    "         <waypoint>"
-    "           <time>0</time>"
-    "           <pose>0 1 0 0 0 0</pose>"
-    "         </waypoint>"
-    "       </trajectory>"
+    "       <loop>true</loop>"
+    "       <delay_start>5.0</delay_start>"
+    "       <auto_start>true</auto_start>"
     "     </script>"
     "   </actor>"
     " </sdf>";
@@ -98,10 +99,8 @@ TEST(DOMRoot, StringParse)
   EXPECT_TRUE(errors.empty());
   EXPECT_EQ(1u, root.ModelCount());
   EXPECT_EQ(1u, root.LightCount());
-  EXPECT_EQ(1u, root.ActorCount());
   EXPECT_NE(nullptr, root.Element());
 
-  EXPECT_TRUE(root.ModelNameExists("shapes"));
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_NE(nullptr, model);
   EXPECT_NE(nullptr, model->Element());
@@ -126,12 +125,11 @@ TEST(DOMRoot, StringParse)
   ASSERT_NE(nullptr, light);
   EXPECT_NE(nullptr, light->Element());
 
-  EXPECT_TRUE(root.ActorNameExists("actor_name"));
+  EXPECT_TRUE(root.ActorNameExists("actor_test"));
+  EXPECT_EQ(1u, root.ActorCount());
   const sdf::Actor *actor = root.ActorByIndex(0);
   ASSERT_NE(nullptr, actor);
   EXPECT_NE(nullptr, actor->Element());
-
-  EXPECT_EQ("actor_name", actor->Name());
 }
 
 /////////////////////////////////////////////////

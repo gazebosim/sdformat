@@ -640,6 +640,74 @@ ElementPtr Element::GetNextElement(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+std::set<std::string> Element::GetElementTypeNames() const
+{
+  std::set<std::string> result;
+  auto elem = this->GetFirstElement();
+  while (elem)
+  {
+    std::string typeName = elem->GetName();
+    result.insert(typeName);
+    elem = elem->GetNextElement();
+  }
+  return result;
+}
+
+/////////////////////////////////////////////////
+bool Element::HasUniqueChildNames(const std::string &_type) const
+{
+  auto namedElementsCount = this->CountNamedElements(_type);
+  for (auto &iter : namedElementsCount)
+  {
+    if (iter.second > 1)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+/////////////////////////////////////////////////
+std::map<std::string, std::size_t>
+Element::CountNamedElements(const std::string &_type) const
+{
+  std::map<std::string, std::size_t> result;
+
+  sdf::ElementPtr elem;
+  if (_type.empty())
+  {
+    elem = this->GetFirstElement();
+  }
+  else
+  {
+    elem = this->GetElementImpl(_type);
+  }
+
+  while (elem)
+  {
+    if (elem->HasAttribute("name"))
+    {
+      // Get("name") returns attribute value if it exists before checking
+      // for the value of a child element <name>, so it's safe to use
+      // here since we've checked HasAttribute("name").
+      std::string childNameAttributeValue = elem->Get<std::string>("name");
+      if (result.find(childNameAttributeValue) == result.end())
+      {
+        result[childNameAttributeValue] = 1;
+      }
+      else
+      {
+        ++result[childNameAttributeValue];
+      }
+    }
+
+    elem = elem->GetNextElement(_type);
+  }
+
+  return result;
+}
+
+/////////////////////////////////////////////////
 ElementPtr Element::GetElement(const std::string &_name)
 {
   ElementPtr result = this->GetElementImpl(_name);
