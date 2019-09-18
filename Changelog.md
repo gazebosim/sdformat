@@ -2,6 +2,9 @@
 
 ### SDFormat 6.X.X (20XX-XX-XX)
 
+1. Avoid hardcoding /machine:x64 flag on 64-bit on MSVC with CMake >= 3.5.
+    * [Pull request 565](https://bitbucket.org/osrf/sdformat/pull-requests/565)
+
 1. Fix ign library path on macOS.
     * [Pull request 552](https://bitbucket.org/osrf/sdformat/pull-requests/552)
 
