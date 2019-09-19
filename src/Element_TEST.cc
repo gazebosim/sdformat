@@ -169,13 +169,15 @@ TEST(Element, FilePath)
   sdf::Element elem;
   EXPECT_TRUE(elem.FilePath().empty());
 
-  elem.AddAttribute("relative", "string",
-      sdf::filesystem::append("meshes", "collision.dae"), false, "");
-  elem.AddAttribute("absolute", "string", "/collision.dae", false, "");
-  elem.AddAttribute("https", "string", "https://website.com/collision.dae",
-      false, "");
-  elem.AddAttribute("model", "string", "model://a_model/meshes/collision.dae",
-      false, "");
+  const std::string relativeUri =
+      sdf::filesystem::append("meshes", "collision.dae");
+  const std::string absoluteUri = "/collision.dae";
+  const std::string httpsUri = "https://website.com/collision.dae";
+  const std::string modelUri = "model://a_model/meshes/collision.dae";
+  elem.AddAttribute("relative", "string", relativeUri, false, "");
+  elem.AddAttribute("absolute", "string", absoluteUri, false, "");
+  elem.AddAttribute("https", "string", httpsUri, false, "");
+  elem.AddAttribute("model", "string", modelUri, false, "");
 
   {
     auto[uri, success] = elem.StringAsFullPath("inexistent");
@@ -187,22 +189,22 @@ TEST(Element, FilePath)
   {
     auto[uri, success] = elem.StringAsFullPath("relative");
     EXPECT_TRUE(success);
-    EXPECT_EQ(sdf::filesystem::append("meshes", "collision.dae"), uri);
+    EXPECT_EQ(relativeUri, uri);
   }
   {
     auto[uri, success] = elem.StringAsFullPath("absolute");
     EXPECT_TRUE(success);
-    EXPECT_EQ("/collision.dae", uri);
+    EXPECT_EQ(absoluteUri, uri);
   }
   {
     auto[uri, success] = elem.StringAsFullPath("https");
     EXPECT_TRUE(success);
-    EXPECT_EQ("https://website.com/collision.dae", uri);
+    EXPECT_EQ(httpsUri, uri);
   }
   {
     auto[uri, success] = elem.StringAsFullPath("model");
     EXPECT_TRUE(success);
-    EXPECT_EQ("model://a_model/meshes/collision.dae", uri);
+    EXPECT_EQ(modelUri, uri);
   }
 
   // With file path
@@ -220,23 +222,22 @@ TEST(Element, FilePath)
   {
     auto[uri, success] = elem.StringAsFullPath("relative");
     EXPECT_TRUE(success);
-    EXPECT_EQ(sdf::filesystem::append(sdfPath, "meshes", "collision.dae"),
-        uri);
+    EXPECT_EQ(sdf::filesystem::append(sdfPath, relativeUri), uri);
   }
   {
     auto[uri, success] = elem.StringAsFullPath("absolute");
     EXPECT_TRUE(success);
-    EXPECT_EQ("/collision.dae", uri);
+    EXPECT_EQ(absoluteUri, uri);
   }
   {
     auto[uri, success] = elem.StringAsFullPath("https");
     EXPECT_TRUE(success);
-    EXPECT_EQ("https://website.com/collision.dae", uri);
+    EXPECT_EQ(httpsUri, uri);
   }
   {
     auto[uri, success] = elem.StringAsFullPath("model");
     EXPECT_TRUE(success);
-    EXPECT_EQ("model://a_model/meshes/collision.dae", uri);
+    EXPECT_EQ(modelUri, uri);
   }
 
   // With data-string
@@ -247,23 +248,22 @@ TEST(Element, FilePath)
   {
     auto[uri, success] = elem.StringAsFullPath("relative");
     EXPECT_TRUE(success);
-    EXPECT_EQ(sdf::filesystem::append(kDataString, "meshes", "collision.dae"),
-        uri);
+    EXPECT_EQ(sdf::filesystem::append(kDataString, relativeUri), uri);
   }
   {
     auto[uri, success] = elem.StringAsFullPath("absolute");
     EXPECT_TRUE(success);
-    EXPECT_EQ("/collision.dae", uri);
+    EXPECT_EQ(absoluteUri, uri);
   }
   {
     auto[uri, success] = elem.StringAsFullPath("https");
     EXPECT_TRUE(success);
-    EXPECT_EQ("https://website.com/collision.dae", uri);
+    EXPECT_EQ(httpsUri, uri);
   }
   {
     auto[uri, success] = elem.StringAsFullPath("model");
     EXPECT_TRUE(success);
-    EXPECT_EQ("model://a_model/meshes/collision.dae", uri);
+    EXPECT_EQ(modelUri, uri);
   }
 }
 
