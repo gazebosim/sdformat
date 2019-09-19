@@ -241,7 +241,7 @@ TEST(Element, FilePath)
 
   // With data-string
   const std::string kDataString = "data-string";
-  elem.SetFilePath(kDataString );
+  elem.SetFilePath(kDataString);
   EXPECT_EQ(kDataString, elem.FilePath());
 
   {
