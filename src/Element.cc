@@ -888,6 +888,13 @@ std::pair<std::string, bool> Element::StringAsFullPath(
           this->dataPtr->path))-1);
 
       result = filesystem::append(path, result);
+
+      if ("data-string" == this->dataPtr->path)
+      {
+        sdfwarn << "Relative paths detected in Element of type ["
+                << this->GetName()
+                << "] that was loaded from a data-string.\n";
+      }
     }
   }
 
