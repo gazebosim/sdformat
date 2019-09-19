@@ -2,6 +2,9 @@
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
 
+1. Set camera intrinsics axis skew (s) default value to 0
+    * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
+
 1. Avoid hardcoding /machine:x64 flag on 64-bit on MSVC with CMake >= 3.5.
     * [Pull request 565](https://bitbucket.org/osrf/sdformat/pull-requests/565)
 
@@ -65,6 +68,9 @@
 ## SDFormat 6.0
 
 ### SDFormat 6.X.X (20XX-XX-XX)
+
+1. Set camera intrinsics axis skew (s) default value to 0
+    * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
 
 1. Avoid hardcoding /machine:x64 flag on 64-bit on MSVC with CMake >= 3.5.
     * [Pull request 565](https://bitbucket.org/osrf/sdformat/pull-requests/565)
