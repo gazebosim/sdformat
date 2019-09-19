@@ -238,6 +238,33 @@ TEST(Element, FilePath)
     EXPECT_TRUE(success);
     EXPECT_EQ("model://a_model/meshes/collision.dae", uri);
   }
+
+  // With data-string
+  const std::string kDataString = "data-string";
+  elem.SetFilePath(kDataString);
+  EXPECT_EQ(kDataString, elem.FilePath());
+
+  {
+    auto[uri, success] = elem.StringAsFullPath("relative");
+    EXPECT_TRUE(success);
+    EXPECT_EQ(sdf::filesystem::append(kDataString, "meshes", "collision.dae"),
+        uri);
+  }
+  {
+    auto[uri, success] = elem.StringAsFullPath("absolute");
+    EXPECT_TRUE(success);
+    EXPECT_EQ("/collision.dae", uri);
+  }
+  {
+    auto[uri, success] = elem.StringAsFullPath("https");
+    EXPECT_TRUE(success);
+    EXPECT_EQ("https://website.com/collision.dae", uri);
+  }
+  {
+    auto[uri, success] = elem.StringAsFullPath("model");
+    EXPECT_TRUE(success);
+    EXPECT_EQ("model://a_model/meshes/collision.dae", uri);
+  }
 }
 
 /////////////////////////////////////////////////
