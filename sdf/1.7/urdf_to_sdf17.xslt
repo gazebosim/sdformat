@@ -127,16 +127,61 @@
   </xsl:template>
 
   <!-- joint properties -->
-  <xsl:template match="joint/axis/@xyz">
+  <xsl:template match="robot/joint/axis/@xyz">
     <!-- convert attributes to elements -->
     <xsl:element name="{name()}">
       <xsl:value-of select="."/>
     </xsl:element>
   </xsl:template>
-  <xsl:template match="joint/child|joint/parent">
+  <!-- move dynamics and limit to axis element -->
+  <xsl:template match="robot/joint/axis">
+    <xsl:copy>
+      <xsl:apply-templates select="@*"/>
+      <xsl:element name="dynamics">
+        <xsl:for-each select="../dynamics/@*">
+          <xsl:element name="{name()}">
+            <xsl:value-of select="."/>
+          </xsl:element>
+        </xsl:for-each>
+      </xsl:element>
+      <xsl:element name="limit">
+        <xsl:for-each select="../limit/@*">
+          <xsl:element name="{name()}">
+            <xsl:value-of select="."/>
+          </xsl:element>
+        </xsl:for-each>
+      </xsl:element>
+      <xsl:apply-templates select="node()"/>
+    </xsl:copy>
+  </xsl:template>
+  <xsl:template match="robot/joint/dynamics" />
+  <xsl:template match="robot/joint/limit" />
+  <!-- convert parent and child -->
+  <xsl:template match="robot/joint/child|joint/parent">
     <xsl:element name="{name()}">
       <xsl:value-of select="./@link"/>
     </xsl:element>
+  </xsl:template>
+
+  <!-- comment out joint/safety_controller and transmission -->
+  <xsl:template match="robot/joint/safety_controller|transmission|transmission/*">
+    <xsl:comment>
+      <xsl:text> </xsl:text>
+      <xsl:value-of select="local-name()" />
+      <xsl:text> </xsl:text>
+      <xsl:for-each select="@*">
+        <xsl:value-of select="local-name()"/>
+        <xsl:text>="</xsl:text>
+        <xsl:value-of select="."/>
+        <xsl:text>" </xsl:text>
+      </xsl:for-each>
+    </xsl:comment>
+    <xsl:apply-templates select="./*" />
+    <xsl:comment>
+      <xsl:text> /</xsl:text>
+      <xsl:value-of select="local-name()" />
+      <xsl:text> </xsl:text>
+    </xsl:comment>
   </xsl:template>
 
 </xsl:stylesheet>
