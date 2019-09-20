@@ -11,16 +11,29 @@
   </xsl:template>
 
   <!-- robot to sdf 1.7 model -->
-  <xsl:template match="robot">
+  <xsl:template match="/robot">
     <xsl:element name="sdf">
       <xsl:attribute name="version">
         <xsl:value-of select="1.7"/>
       </xsl:attribute>
       <xsl:element name="model">
+        <!-- process all child elements -->
         <xsl:apply-templates select="@*|node()"/>
+        <!-- move all tags in <gazebo> to model and tinker with whitespace -->
+        <xsl:for-each select="./gazebo[not(@reference)]/*">
+            <xsl:text>
+  </xsl:text>
+            <xsl:copy>
+              <xsl:apply-templates select="@*|node()"/>
+            </xsl:copy>
+        </xsl:for-each>
+            <xsl:text>
+  </xsl:text>
       </xsl:element>
     </xsl:element>
   </xsl:template>
+  <!-- remove <gazebo> tags with no reference attribute -->
+  <xsl:template match="robot/gazebo[not(@reference)]" />
 
   <!-- add collision names -->
   <xsl:template match="link/collision">
