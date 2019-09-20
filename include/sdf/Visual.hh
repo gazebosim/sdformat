@@ -109,6 +109,8 @@ namespace sdf
 
     /// \brief Resolve pose of this object relative to the implicit frame
     /// of its xml parent object, which is always a link frame.
+    /// TODO(eacousineau, scpeters): This doc seems stale... It could be the
+    /// specified frame???
     /// \param[out] _pose Resolved pose.
     public: Errors ResolvePose(ignition::math::Pose3d &_pose) const;
 
