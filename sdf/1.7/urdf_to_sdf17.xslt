@@ -22,6 +22,61 @@
     </xsl:element>
   </xsl:template>
 
+  <!-- add collision names -->
+  <xsl:template match="link/collision">
+    <xsl:variable name="count">
+      <xsl:number count="collision" format="1"/>
+    </xsl:variable>
+    <xsl:variable name="count-1" select="$count - 1"/>
+    <xsl:choose>
+      <xsl:when test="$count-1=0">
+        <xsl:element name="{name()}">
+          <xsl:attribute name="name">
+            <xsl:value-of select="concat(../@name, '_', name())"/>
+          </xsl:attribute>
+          <xsl:apply-templates select="@*|node()"/>
+        </xsl:element>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:element name="{name()}">
+          <xsl:attribute name="name">
+            <xsl:value-of select="concat(../@name, '_', name(), '_', $count-1)"/>
+          </xsl:attribute>
+          <xsl:apply-templates select="@*|node()"/>
+        </xsl:element>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <!-- add visual names -->
+  <xsl:template match="link/visual">
+    <xsl:variable name="count">
+      <xsl:number count="visual" format="1"/>
+    </xsl:variable>
+    <xsl:variable name="count-1" select="$count - 1"/>
+    <xsl:choose>
+      <xsl:when test="$count-1=0">
+        <xsl:element name="{name()}">
+          <xsl:attribute name="name">
+            <xsl:value-of select="concat(../@name, '_', name())"/>
+          </xsl:attribute>
+          <xsl:apply-templates select="@*|node()"/>
+        </xsl:element>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:element name="{name()}">
+          <xsl:attribute name="name">
+            <xsl:value-of select="concat(../@name, '_', name(), '_', $count-1)"/>
+          </xsl:attribute>
+          <xsl:apply-templates select="@*|node()"/>
+        </xsl:element>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <!-- remove collision, visual group attributes -->
+  <xsl:template match="link/collision/@group|link/visual/@group"/>
+
   <!-- origin to pose -->
   <xsl:template match="origin">
     <xsl:element name="pose">
