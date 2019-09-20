@@ -371,38 +371,7 @@ namespace sdf
 
     /// \brief Get the path to the SDF document where this element came from.
     /// \return Full path to SDF document.
-    public: std::string FilePath() const;
-
-    /// \brief Get the value of a child element as a full path.
-    /// If the string value within _key is already a full path or a URI
-    /// containing `://`, it won't be modified.
-    /// If the value within _key is a relative path, the path will be prepended
-    /// with `FilePath` if that's available.
-    ///
-    /// If the boolean return is false, it wasn't possible to find _key in this
-    /// element.
-    ///
-    /// For example, if a file at `/home/user/model/model.sdf` has the following
-    /// element:
-    ///
-    /// ```
-    /// <top_level>
-    ///   <nested_string>meshes/file.dae</nested_dir>
-    /// </top_level>
-    /// ```
-    ///
-    /// And `topLevelElem` holds the `<top_level>` element, then we get:
-    ///
-    /// ```
-    /// topLevelElem->StringAsFillPath("nested_string").first ==
-    ///     "/home/user/model/meshes/file.dae";
-    /// ```
-    ///
-    /// \param[in] _key Key to be checked.
-    /// \return A pair with the full path and a boolean indicating whether the
-    /// function succeeded.
-    public: std::pair<std::string, bool> StringAsFullPath(
-        const std::string &_key) const;
+    public: const std::string &FilePath() const;
 
     /// \brief Get a text description of the element.
     /// \return The text description of the element.

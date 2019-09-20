@@ -140,9 +140,6 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Get the URI of the material script, if one has been set.
-    /// If the URI in `<script><uri>` is a relative path and the loaded SDF has
-    /// a `FilePath`, this will return the <mesh><uri> prepended by the file
-    /// path.
     /// \return The URI of the material script, or empty string if one has
     /// not been set.
     public: std::string ScriptUri() const;

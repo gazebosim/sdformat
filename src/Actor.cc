@@ -32,6 +32,9 @@ class sdf::AnimationPrivate
   /// \brief Path to animation file.
   public: std::string filename = "__default__";
 
+  /// \brief The path to the file where this animation was defined.
+  public: std::string filePath = "";
+
   /// \brief Scale for animation skeleton.
   public: double scale = 1.0;
 
@@ -80,6 +83,9 @@ class sdf::ActorPrivate
   /// \brief Filename of the actor skin.
   public: std::string skinFilename = "__default__";
 
+  /// \brief The path to the file where this actor was defined.
+  public: std::string filePath = "";
+
   /// \brief Scale of the actor skin.
   public: double skinScale = 1.0;
 
@@ -121,6 +127,7 @@ void Animation::CopyFrom(const Animation &_animation)
   this->dataPtr->filename = _animation.dataPtr->filename;
   this->dataPtr->scale = _animation.dataPtr->scale;
   this->dataPtr->interpolateX = _animation.dataPtr->interpolateX;
+  this->dataPtr->filePath = _animation.dataPtr->filePath;
 }
 
 /////////////////////////////////////////////////
@@ -174,13 +181,17 @@ Errors Animation::Load(ElementPtr _sdf)
           "An <animation> requires a name attribute."});
   }
 
-  auto[uri, success] = _sdf->StringAsFullPath("filename");
-  if (!success)
+  this->dataPtr->filePath = _sdf->FilePath();
+
+  std::pair filenameValue = _sdf->Get<std::string>("filename",
+        this->dataPtr->filename);
+
+  if (!filenameValue.second)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
           "An <animation> requires a <filename>."});
   }
-  this->dataPtr->filename = uri;
+  this->dataPtr->filename = filenameValue.first;
 
   this->dataPtr->scale = _sdf->Get<double>("scale", this->dataPtr->scale).first;
 
@@ -236,6 +247,18 @@ bool Animation::InterpolateX() const
 void Animation::SetInterpolateX(bool _interpolateX)
 {
   this->dataPtr->interpolateX = _interpolateX;
+}
+
+//////////////////////////////////////////////////
+const std::string &Animation::FilePath() const
+{
+  return this->dataPtr->filePath;
+}
+
+//////////////////////////////////////////////////
+void Animation::SetFilePath(const std::string &_filePath)
+{
+  this->dataPtr->filePath = _filePath;
 }
 
 /////////////////////////////////////////////////
@@ -534,6 +557,7 @@ void Actor::CopyFrom(const Actor &_actor)
   this->dataPtr->scriptDelayStart = _actor.dataPtr->scriptDelayStart;
   this->dataPtr->scriptAutoStart  = _actor.dataPtr->scriptAutoStart;
   this->dataPtr->trajectories     = _actor.dataPtr->trajectories;
+  this->dataPtr->filePath         = _actor.dataPtr->filePath;
 }
 
 /////////////////////////////////////////////////
@@ -542,6 +566,7 @@ Errors Actor::Load(ElementPtr _sdf)
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
+  this->dataPtr->filePath = _sdf->FilePath();
 
   if (_sdf->GetName() != "actor")
   {
@@ -563,13 +588,16 @@ Errors Actor::Load(ElementPtr _sdf)
 
   if (skinElem)
   {
-    auto[uri, success] = skinElem->StringAsFullPath("filename");
-    if (!success)
+    std::pair<std::string, bool> filenamePair = skinElem->Get<std::string>
+                ("filename", this->dataPtr->skinFilename);
+
+    if (!filenamePair.second)
     {
       errors.push_back({ErrorCode::ELEMENT_MISSING,
             "A <skin> requires a <filename>."});
     }
-    this->dataPtr->skinFilename = uri;
+
+    this->dataPtr->skinFilename = filenamePair.first;
 
     this->dataPtr->skinScale = skinElem->Get<double>("scale",
         this->dataPtr->skinScale).first;
@@ -833,4 +861,16 @@ bool Actor::JointNameExists(const std::string &_name) const
       return true;
   }
   return false;
+}
+
+//////////////////////////////////////////////////
+const std::string &Actor::FilePath() const
+{
+  return this->dataPtr->filePath;
+}
+
+//////////////////////////////////////////////////
+void Actor::SetFilePath(const std::string &_filePath)
+{
+  this->dataPtr->filePath = _filePath;
 }

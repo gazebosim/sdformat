@@ -98,6 +98,14 @@ namespace sdf
     /// \param[in] _filename Path to animation file.
     public: void SetFilename(const std::string &_filename);
 
+    /// \brief The path to the file where this element was loaded from.
+    /// \return Full path to the file on disk.
+    public: const std::string &FilePath() const;
+
+    /// \brief Set the path to the file where this element was loaded from.
+    /// \paramp[in] _filePath Full path to the file on disk.
+    public: void SetFilePath(const std::string &_filePath);
+
     /// \brief Get the scale for the animation skeleton.
     /// \return Scale of the animation skeleton.
     public: double Scale() const;
@@ -335,6 +343,14 @@ namespace sdf
     /// global/world coordinate frame.
     /// \param[in] _frame The name of the pose frame.
     public: void SetPoseFrame(const std::string &_frame);
+
+    /// \brief The path to the file where this element was loaded from.
+    /// \return Full path to the file on disk.
+    public: const std::string &FilePath() const;
+
+    /// \brief Set the path to the file where this element was loaded from.
+    /// \paramp[in] _filePath Full path to the file on disk.
+    public: void SetFilePath(const std::string &_filePath);
 
     /// \brief Get the skin filename.
     /// \return Constant skin filename.
