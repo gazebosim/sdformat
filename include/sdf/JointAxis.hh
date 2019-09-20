@@ -17,8 +17,11 @@
 #ifndef SDF_JOINTAXIS_HH_
 #define SDF_JOINTAXIS_HH_
 
+#include <memory>
 #include <string>
+#include <ignition/math/Vector3.hh>
 #include "sdf/Element.hh"
+#include "sdf/FrameSemantics.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -212,11 +215,44 @@ namespace sdf
     /// \sa double Dissipation() const
     public: void SetDissipation(const double _dissipation) const;
 
+    /// Get the name of the coordinate frame in which this joint axis's
+    /// unit vector is expressed. An empty value implies the parent (joint)
+    /// frame.
+    /// \return The name of the xyz expressed-in frame.
+    public: const std::string& XyzExpressedIn() const;
+
+    /// Set the name of the coordinate frame in which this joint axis's
+    /// unit vector is expressed. An empty value implies the parent (joint)
+    /// frame.
+    /// \param[in] The name of the xyz expressed-in frame.
+    public: void SetXyzExpressedIn(const std::string &_frame);
+
+    /// \brief Express xyz unit vector of this axis in the coordinates of
+    /// another named frame.
+    /// \param[in] _expressedIn Name of frame in whose coordinates this object
+    /// should be resolved.
+    /// \param[out] _xyz Resolved unit vector.
+    /// \return Errors.
+    public: Errors ResolveXyz(
+        const std::string &_expressedIn, ignition::math::Vector3d &_xyz) const;
+
+    /// \brief Express xyz unit vector of this axis in the coordinates of
+    /// its xml parent object, which is always a joint frame.
+    /// \param[out] _xyz Resolved xyz.
+    /// \return Errors.
+    public: Errors ResolveXyz(ignition::math::Vector3d &_xyz) const;
+
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Give the name of the xml parent of this object, to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Link::SetPoseRelativeToGraph.
+    /// \param[in] _xmlParentName Name of xml parent object.
+    private: void SetXmlParentName(const std::string &_xmlParentName);
 
     /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
     /// for resolving poses. This is private and is intended to be called
@@ -224,17 +260,6 @@ namespace sdf
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: void SetPoseRelativeToGraph(
         std::weak_ptr<const PoseRelativeToGraph> _graph);
-
-    private: void SetXmlParentName(const std::string &_xmlParentName);
-
-
-    /// If empty, implies parent (joint) frame.
-    public: const std::string& XyzExpressedIn() const;
-
-    public: void SetXyzExpressedIn(const std::string &_frame);
-
-    /// Resolve XYZ value.
-    public: Errors ResolveXyz(ignition::math::Pose3d &_pose) const;
 
     /// \brief Allow Joint::SetPoseRelativeToGraph to propagate.
     friend Joint;

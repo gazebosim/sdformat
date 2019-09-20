@@ -279,8 +279,10 @@ void Joint::SetPoseRelativeToGraph(
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 
-  for (auto& axis : this->dataPtr->axis) {
-    if (axis) {
+  for (auto& axis : this->dataPtr->axis)
+  {
+    if (axis)
+    {
       axis->SetXmlParentName(this->dataPtr->name);
       axis->SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
     }

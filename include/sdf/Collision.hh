@@ -101,6 +101,7 @@ namespace sdf
     /// \param[in] _relativeTo Name of frame relative to which the pose of
     /// this object should be resolved.
     /// \param[out] _pose Resolved pose.
+    /// \return Errors.
     public: Errors ResolvePose(
         const std::string &_relativeTo,
         ignition::math::Pose3d &_pose) const;
@@ -108,6 +109,7 @@ namespace sdf
     /// \brief Resolve pose of this object relative to the implicit frame
     /// of its xml parent object, which is always a link frame.
     /// \param[out] _pose Resolved pose.
+    /// \return Errors.
     public: Errors ResolvePose(ignition::math::Pose3d &_pose) const;
 
     /// \brief Get a pointer to the SDF element that was used during
