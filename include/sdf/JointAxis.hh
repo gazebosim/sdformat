@@ -218,6 +218,27 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called
+    /// by Joint::SetPoseRelativeToGraph.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    private: void SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    private: void SetXmlParentName(const std::string &_xmlParentName);
+
+
+    /// If empty, implies parent (joint) frame.
+    public: const std::string& XyzExpressedIn() const;
+
+    public: void SetXyzExpressedIn(const std::string &_frame);
+
+    /// Resolve XYZ value.
+    public: Errors ResolveXyz(ignition::math::Pose3d &_pose) const;
+
+    /// \brief Allow Joint::SetPoseRelativeToGraph to propagate.
+    friend Joint;
+
     /// \brief Private data pointer
     private: JointAxisPrivate *dataPtr;
   };

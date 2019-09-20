@@ -31,6 +31,9 @@ class sdf::JointAxisPrivate
   /// normalized.
   public: ignition::math::Vector3d xyz = ignition::math::Vector3d::UnitZ;
 
+  /// \brief Frame in which xyz is expressed in.
+  public: std::string xyzExpressedIn = "";
+
   /// \brief Flag to interpret the axis xyz element in the parent model
   /// frame instead of joint frame.
   public: bool useParentModelFrame = false;
@@ -71,6 +74,12 @@ class sdf::JointAxisPrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Name of xml parent object.
+  public: std::string xmlParentName;
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -109,6 +118,11 @@ Errors JointAxis::Load(ElementPtr _sdf)
   {
     this->dataPtr->xyz = _sdf->Get<ignition::math::Vector3d>("xyz",
         ignition::math::Vector3d::UnitZ).first;
+    auto e = _sdf->GetElement("xyz");
+    if (e->HasAttribute("expressed_in")) {
+      this->dataPtr->xyzExpressedIn = e->GetAttribute<std::string>(
+          "expressed_in");
+    }
   }
   else
   {
@@ -314,4 +328,11 @@ void JointAxis::SetDissipation(const double _dissipation) const
 sdf::ElementPtr JointAxis::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
 }

@@ -278,6 +278,13 @@ void Joint::SetPoseRelativeToGraph(
     std::weak_ptr<const PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
+
+  for (auto& axis : this->dataPtr->axis) {
+    if (axis) {
+      axis->SetXmlParentName(this->dataPtr->name);
+      axis->SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    }
+  }
 }
 
 /////////////////////////////////////////////////
