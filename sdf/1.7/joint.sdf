@@ -55,6 +55,11 @@
         Represents the x,y,z components of the axis unit vector. The axis is
         expressed in the joint frame. The vector should be normalized.
       </description>
+      <attribute name="expressed_in" type="string" default="" required="0">
+        <description>
+          Name of frame in whose coordinates the xyz unit vector is expressed.
+        </description>
+      </attribute>
     </element>
     <element name="dynamics" required="0">
       <description>An element specifying physical properties of the joint. These values are used to specify modeling properties of the joint, particularly useful for simulation.</description>
@@ -111,6 +116,11 @@
         Represents the x,y,z components of the axis unit vector. The axis is
         expressed in the joint frame. The vector should be normalized.
       </description>
+      <attribute name="expressed_in" type="string" default="" required="0">
+        <description>
+          Name of frame in whose coordinates the xyz unit vector is expressed.
+        </description>
+      </attribute>
     </element>
     <element name="dynamics" required="0">
       <description>An element specifying physical properties of the joint. These values are used to specify modeling properties of the joint, particularly useful for simulation.</description>
