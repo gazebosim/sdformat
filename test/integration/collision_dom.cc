@@ -193,28 +193,38 @@ TEST(DOMCollision, LoadModelFramesRelativeToJoint)
   EXPECT_EQ(Pose(0, 0, 15, 0, 0, 0), pose);
 
   // Resolve Collision poses to model frame.
-  EXPECT_TRUE(model->LinkByName("P")->ResolvePose(pose).empty());
+  EXPECT_TRUE(
+      model->LinkByName("P")->ResolvePose(pose).empty());
   EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
-  EXPECT_TRUE(linkP->CollisionByName("P1")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(
+      linkP->CollisionByName("P1")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(1, 0, 10, 0, 0, 0), pose);
-  EXPECT_TRUE(linkP->CollisionByName("P2")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(
+      linkP->CollisionByName("P2")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(1, 0, 11, 0, 0, 0), pose);
-  EXPECT_TRUE(linkC->CollisionByName("P")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(
+      linkC->CollisionByName("P")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(1, 0, 12, 0, 0, 0), pose);
 
-  EXPECT_TRUE(model->JointByName("J")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(
+      model->JointByName("J")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(2, 3, 0, 0, 0, 0), pose);
-  EXPECT_TRUE(linkC->CollisionByName("J")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(
+      linkC->CollisionByName("J")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(2, 3, 13, 0, 0, 0), pose);
 
-  EXPECT_TRUE(model->FrameByName("F3")->ResolvePose(pose).empty());
+  EXPECT_TRUE(
+      model->FrameByName("F3")->ResolvePose(pose).empty());
   EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
-  EXPECT_TRUE(linkC->CollisionByName("F3")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(
+      linkC->CollisionByName("F3")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(16, 3, 3, 0, IGN_PI/2, 0), pose);
 
-  EXPECT_TRUE(model->FrameByName("F4")->ResolvePose(pose).empty());
+  EXPECT_TRUE(
+      model->FrameByName("F4")->ResolvePose(pose).empty());
   EXPECT_EQ(Pose(6, 3, 3, 0, 0, 0), pose);
-  EXPECT_TRUE(linkC->CollisionByName("F4")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(
+      linkC->CollisionByName("F4")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(6, 3, 18, 0, 0, 0), pose);
 
   // Resolve Collision poses relative to the parent link with both API's.

@@ -178,7 +178,16 @@ Errors Frame::ResolvePose(
 /////////////////////////////////////////////////
 Errors Frame::ResolvePose(ignition::math::Pose3d &_pose) const
 {
-  return this->ResolvePose("", _pose);
+  Errors errors;
+  auto graph = this->dataPtr->poseRelativeToGraph.lock();
+  if (!graph)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Frame with name [" + this->dataPtr->name + "] has invalid pointer " +
+        "to PoseRelativeToGraph."});
+    return errors;
+  }
+  return this->ResolvePose(graph->sourceName, _pose);
 }
 
 /////////////////////////////////////////////////

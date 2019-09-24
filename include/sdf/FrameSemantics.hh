@@ -89,6 +89,9 @@ namespace sdf
     /// \brief A Map from Vertex names to Vertex Ids.
     using MapType = std::map<std::string, ignition::math::graph::VertexId>;
     MapType map;
+
+    /// \brief Name of sink vertex, either __model__ or __world__.
+    std::string sinkName;
   };
 
   /// \brief Data structure for pose relative_to graphs for Model or World.
@@ -105,6 +108,9 @@ namespace sdf
     /// \brief A Map from Vertex names to Vertex Ids.
     using MapType = std::map<std::string, ignition::math::graph::VertexId>;
     MapType map;
+
+    /// \brief Name of source vertex, either __model__ or __world__.
+    std::string sourceName;
   };
 
   /// \brief Build a KinematicGraph for a model.

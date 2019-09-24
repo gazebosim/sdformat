@@ -100,7 +100,7 @@ TEST(FrameSemantics, buildFrameAttachedToGraph)
   EXPECT_EQ(6u, graph.graph.Vertices().size());
   EXPECT_EQ(5u, graph.graph.Edges().size());
 
-  EXPECT_EQ(1u, graph.map.count(""));
+  EXPECT_EQ(1u, graph.map.count("__model__"));
   EXPECT_EQ(1u, graph.map.count("L"));
   EXPECT_EQ(1u, graph.map.count("F00"));
   EXPECT_EQ(1u, graph.map.count("F0"));
@@ -142,7 +142,7 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   EXPECT_EQ(8u, graph.graph.Vertices().size());
   EXPECT_EQ(7u, graph.graph.Edges().size());
 
-  EXPECT_EQ(1u, graph.map.count(""));
+  EXPECT_EQ(1u, graph.map.count("__model__"));
   EXPECT_EQ(1u, graph.map.count("P"));
   EXPECT_EQ(1u, graph.map.count("C"));
   EXPECT_EQ(1u, graph.map.count("J"));
@@ -152,7 +152,7 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   EXPECT_EQ(1u, graph.map.count("F4"));
 
   // Disable this part of test since FindSinkVertex isn't part of public API.
-  // auto sinkId = graph.map[""];
+  // auto sinkId = graph.map["__model__"];
 
   // for (auto const &nameId : graph.map)
   // {
@@ -164,7 +164,7 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
 
   // Test resolvePoseRelativeToRoot for each frame.
   ignition::math::Pose3d pose;
-  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "__model__", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
   EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "P", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), pose);
@@ -185,9 +185,9 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
 
   // Test resolvePose for each frame with its relative_to value.
   // Numbers should match the raw pose value in the model file.
-  EXPECT_TRUE(sdf::resolvePose(graph, "P", "", pose).empty());
+  EXPECT_TRUE(sdf::resolvePose(graph, "P", "__model__", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), pose);
-  EXPECT_TRUE(sdf::resolvePose(graph, "C", "", pose).empty());
+  EXPECT_TRUE(sdf::resolvePose(graph, "C", "__model__", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(2, 0, 0, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(sdf::resolvePose(graph, "J", "C", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(0, 3, 0, 0, -IGN_PI/2, 0), pose);

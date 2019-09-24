@@ -271,8 +271,11 @@ Errors buildFrameAttachedToGraph(
   }
 
   // add implicit model frame vertex first
-  auto modelFrameId = _out.graph.AddVertex("", sdf::FrameType::MODEL).Id();
-  _out.map[""] = modelFrameId;
+  const std::string sinkName = "__model__";
+  _out.sinkName = sinkName;
+  auto modelFrameId =
+      _out.graph.AddVertex(sinkName, sdf::FrameType::MODEL).Id();
+  _out.map[sinkName] = modelFrameId;
 
   // add link vertices
   for (uint64_t l = 0; l < _model->LinkCount(); ++l)
@@ -323,15 +326,25 @@ Errors buildFrameAttachedToGraph(
     auto frame = _model->FrameByIndex(f);
     auto frameId = _out.map.at(frame->Name());
     // look for vertex in graph that matches attached_to value
-    // note that the default attached_to value of "" is the vertex name
-    // for the implicit model frame
-    if (_out.map.count(frame->AttachedTo()) != 1)
+    std::string attachedTo = frame->AttachedTo();
+    if (attachedTo.empty())
+    {
+      // if the attached-to name is empty, use the sink name
+      attachedTo = sinkName;
+      if (_out.map.count(sinkName) != 1)
+      {
+        errors.push_back({ErrorCode::ELEMENT_INVALID,
+                         sinkName + "not found in map."});
+        continue;
+      }
+    }
+    if (_out.map.count(attachedTo) != 1)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                        "Invalid attached_to value in Frame."});
       continue;
     }
-    auto attachedToId = _out.map[frame->AttachedTo()];
+    auto attachedToId = _out.map[attachedTo];
     bool edgeData = true;
     if (frame->Name() == frame->AttachedTo())
     {
@@ -372,8 +385,11 @@ Errors buildFrameAttachedToGraph(
   }
 
   // add implicit world frame vertex first
-  auto worldFrameId = _out.graph.AddVertex("", sdf::FrameType::WORLD).Id();
-  _out.map[""] = worldFrameId;
+  const std::string sinkName = "__world__";
+  _out.sinkName = sinkName;
+  auto worldFrameId =
+      _out.graph.AddVertex(sinkName, sdf::FrameType::WORLD).Id();
+  _out.map[sinkName] = worldFrameId;
 
   // add model vertices
   for (uint64_t l = 0; l < _world->ModelCount(); ++l)
@@ -399,15 +415,25 @@ Errors buildFrameAttachedToGraph(
     auto frame = _world->FrameByIndex(f);
     auto frameId = _out.map.at(frame->Name());
     // look for vertex in graph that matches attached_to value
-    // note that the default attached_to value of "" is the vertex name
-    // for the implicit world frame
-    if (_out.map.count(frame->AttachedTo()) != 1)
+    std::string attachedTo = frame->AttachedTo();
+    if (attachedTo.empty())
+    {
+      // if the attached-to name is empty, use the sink name
+      attachedTo = sinkName;
+      if (_out.map.count(sinkName) != 1)
+      {
+        errors.push_back({ErrorCode::ELEMENT_INVALID,
+                         sinkName + "not found in map."});
+        continue;
+      }
+    }
+    if (_out.map.count(attachedTo) != 1)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                        "Invalid attached_to value in Frame."});
       continue;
     }
-    auto attachedToId = _out.map[frame->AttachedTo()];
+    auto attachedToId = _out.map[attachedTo];
     bool edgeData = true;
     if (frame->Name() == frame->AttachedTo())
     {
@@ -448,8 +474,11 @@ Errors buildPoseRelativeToGraph(
   }
 
   // add implicit model frame vertex first
-  auto modelFrameId = _out.graph.AddVertex("", sdf::FrameType::MODEL).Id();
-  _out.map[""] = modelFrameId;
+  const std::string sourceName = "__model__";
+  _out.sourceName = sourceName;
+  auto modelFrameId =
+      _out.graph.AddVertex(sourceName, sdf::FrameType::MODEL).Id();
+  _out.map[sourceName] = modelFrameId;
 
   // add link vertices and default edge if relative_to is empty
   for (uint64_t l = 0; l < _model->LinkCount(); ++l)
@@ -635,8 +664,11 @@ Errors buildPoseRelativeToGraph(
   }
 
   // add implicit world frame vertex first
-  auto worldFrameId = _out.graph.AddVertex("", sdf::FrameType::WORLD).Id();
-  _out.map[""] = worldFrameId;
+  const std::string sourceName = "__world__";
+  _out.sourceName = sourceName;
+  auto worldFrameId =
+      _out.graph.AddVertex(sourceName, sdf::FrameType::WORLD).Id();
+  _out.map[sourceName] = worldFrameId;
 
   // add model vertices and default edge if relative_to is empty
   for (uint64_t m = 0; m < _world->ModelCount(); ++m)
@@ -749,28 +781,44 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
 {
   Errors errors;
 
-  // Expect one vertex with name "" of FrameType MODEL or WORLD
-  auto rootVertices = _in.graph.Vertices("");
-  if (rootVertices.empty())
+  // Expect sinkName to be either "__model__" or "__world__"
+  if (_in.sinkName != "__model__" && _in.sinkName != "__world__")
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Missing root vertex with empty name."});
-    return errors;
-  }
-  else if (rootVertices.size() > 1)
-  {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "More than one vertex with empty name."});
+        "Sink vertex name " + _in.sinkName +
+        " does not match __model__ or __world__."});
     return errors;
   }
 
-  auto rootVertex = rootVertices.begin()->second.get();
-  sdf::FrameType rootFrameType = rootVertex.Data();
-  if (rootFrameType != sdf::FrameType::MODEL &&
-      rootFrameType != sdf::FrameType::WORLD)
+  // Expect one vertex with name "__model__" and FrameType MODEL
+  // or with name "__world__ and FrameType WORLD
+  auto sinkVertices = _in.graph.Vertices(_in.sinkName);
+  if (sinkVertices.empty())
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Root vertex with empty name should be MODEL or WORLD."});
+        "Missing sink vertex with name " + _in.sinkName});
+    return errors;
+  }
+  else if (sinkVertices.size() > 1)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "More than one vertex with sink name " + _in.sinkName});
+    return errors;
+  }
+
+  auto sinkVertex = sinkVertices.begin()->second.get();
+  sdf::FrameType sinkFrameType = sinkVertex.Data();
+  if (_in.sinkName == "__model__" && sinkFrameType != sdf::FrameType::MODEL)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Sink vertex with name __model__ should have FrameType MODEL."});
+    return errors;
+  }
+  else if (_in.sinkName == "__world__" &&
+           sinkFrameType != sdf::FrameType::WORLD)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Sink vertex with name __world__ should have FrameType WORLD."});
     return errors;
   }
 
@@ -778,6 +826,13 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
   auto vertices = _in.graph.Vertices();
   for (auto vertexPair : vertices)
   {
+    // Vertex names should not be empty
+    if (vertexPair.second.get().Name().empty())
+    {
+      errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Vertex with empty name detected."});
+    }
+
     auto outDegree = _in.graph.OutDegree(vertexPair.first);
     if (outDegree > 1)
     {
@@ -785,7 +840,7 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
           "Too many outgoing edges at a vertex with name [" +
           vertexPair.second.get().Name() + "]."});
     }
-    else if (sdf::FrameType::MODEL == rootFrameType)
+    else if (sdf::FrameType::MODEL == sinkFrameType)
     {
       switch (vertexPair.second.get().Data())
       {
@@ -818,7 +873,7 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
     }
     else
     {
-      // rootFrameType must be sdf::FrameType::WORLD
+      // sinkFrameType must be sdf::FrameType::WORLD
       switch (vertexPair.second.get().Data())
       {
         case sdf::FrameType::JOINT:
@@ -857,28 +912,44 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
 {
   Errors errors;
 
-  // Expect one vertex with name "" of FrameType MODEL or WORLD
-  auto rootVertices = _in.graph.Vertices("");
-  if (rootVertices.empty())
+  // Expect sourceName to be either "__model__" or "__world__"
+  if (_in.sourceName != "__model__" && _in.sourceName != "__world__")
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Missing root vertex with empty name."});
-    return errors;
-  }
-  else if (rootVertices.size() > 1)
-  {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "More than one vertex with empty name."});
+        "Source vertex name " + _in.sourceName +
+        " does not match __model__ or __world__."});
     return errors;
   }
 
-  auto rootVertex = rootVertices.begin()->second.get();
-  sdf::FrameType rootFrameType = rootVertex.Data();
-  if (rootFrameType != sdf::FrameType::MODEL &&
-      rootFrameType != sdf::FrameType::WORLD)
+  // Expect one vertex with name "__model__" and FrameType MODEL
+  // or with name "__world__ and FrameType WORLD
+  auto sourceVertices = _in.graph.Vertices(_in.sourceName);
+  if (sourceVertices.empty())
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Root vertex with empty name should be MODEL or WORLD."});
+        "Missing source vertex with name " + _in.sourceName});
+    return errors;
+  }
+  else if (sourceVertices.size() > 1)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "More than one vertex with name " + _in.sourceName});
+    return errors;
+  }
+
+  auto sourceVertex = sourceVertices.begin()->second.get();
+  sdf::FrameType sourceFrameType = sourceVertex.Data();
+  if (_in.sourceName == "__model__" && sourceFrameType != sdf::FrameType::MODEL)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Source vertex with name __model__ should have FrameType MODEL."});
+    return errors;
+  }
+  else if (_in.sourceName == "__world__" &&
+           sourceFrameType != sdf::FrameType::WORLD)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Source vertex with name __world__ should have FrameType WORLD."});
     return errors;
   }
 
@@ -886,6 +957,13 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
   auto vertices = _in.graph.Vertices();
   for (auto vertexPair : vertices)
   {
+    // Vertex names should not be empty
+    if (vertexPair.second.get().Name().empty())
+    {
+      errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Vertex with empty name detected."});
+    }
+
     auto inDegree = _in.graph.InDegree(vertexPair.first);
     if (inDegree > 1)
     {
@@ -893,7 +971,7 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
           "Too many incoming edges at a vertex with name [" +
           vertexPair.second.get().Name() + "]."});
     }
-    else if (sdf::FrameType::MODEL == rootFrameType)
+    else if (sdf::FrameType::MODEL == sourceFrameType)
     {
       switch (vertexPair.second.get().Data())
       {
@@ -926,7 +1004,7 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
     }
     else
     {
-      // rootFrameType must be sdf::FrameType::WORLD
+      // sourceFrameType must be sdf::FrameType::WORLD
       switch (vertexPair.second.get().Data())
       {
         case sdf::FrameType::JOINT:
@@ -985,12 +1063,12 @@ Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
         "name [" + _vertexName + "]."});
     return errors;
   }
-  else if (!incomingVertexEdges.first.Name().empty())
+  else if (incomingVertexEdges.first.Name() != _graph.sourceName)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
         "Source vertex found with name [" +
         incomingVertexEdges.first.Name() +
-        "], but its name should be empty."});
+        "], but its name should be " + _graph.sourceName + "."});
     return errors;
   }
 

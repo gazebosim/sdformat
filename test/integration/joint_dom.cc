@@ -167,18 +167,18 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
 
   // Test ResolveFrame to get each link and joint pose in the model frame.
   Pose pose;
-  EXPECT_TRUE(model->LinkByName("P1")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(model->LinkByName("P1")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
-  EXPECT_TRUE(model->LinkByName("C1")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(model->LinkByName("C1")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), pose);
-  EXPECT_TRUE(model->JointByName("J1")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(model->JointByName("J1")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(1, 0, 0, 0, -IGN_PI/2, 0), pose);
 
-  EXPECT_TRUE(model->LinkByName("P2")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(model->LinkByName("P2")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), pose);
-  EXPECT_TRUE(model->JointByName("J2")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(model->JointByName("J2")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(5, 0, 0, 0, IGN_PI/2, 0), pose);
-  EXPECT_TRUE(model->LinkByName("C2")->ResolvePose("", pose).empty());
+  EXPECT_TRUE(model->LinkByName("C2")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(5, 0, -4, 0, IGN_PI/2, 0), pose);
 
   // resolve pose of J1 relative to C1, J2 relative to P2

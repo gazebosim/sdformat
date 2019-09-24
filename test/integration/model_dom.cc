@@ -133,7 +133,7 @@ TEST(DOMRoot, LoadDoublePendulum)
   EXPECT_EQ(6u, graph->graph.Vertices().size());
   EXPECT_EQ(5u, graph->graph.Edges().size());
 
-  EXPECT_EQ(1u, graph->map.count(""));
+  EXPECT_EQ(1u, graph->map.count("__model__"));
   EXPECT_EQ(1u, graph->map.count("base"));
   EXPECT_EQ(1u, graph->map.count("lower_link"));
   EXPECT_EQ(1u, graph->map.count("upper_link"));
@@ -143,7 +143,7 @@ TEST(DOMRoot, LoadDoublePendulum)
   // Test resolvePoseRelativeToRoot for each frame.
   Pose pose;
   EXPECT_TRUE(
-      sdf::resolvePoseRelativeToRoot(*graph, "", pose).empty());
+      sdf::resolvePoseRelativeToRoot(*graph, "__model__", pose).empty());
   EXPECT_EQ(Pose::Zero, pose);
   EXPECT_TRUE(
       sdf::resolvePoseRelativeToRoot(*graph, "base", pose).empty());
@@ -163,13 +163,17 @@ TEST(DOMRoot, LoadDoublePendulum)
 
   // Test resolvePose for each frame with its relative_to value.
   // Numbers should match the raw pose value in the model file.
-  EXPECT_TRUE(sdf::resolvePose(*graph, "", "", pose).empty());
+  EXPECT_TRUE(
+      sdf::resolvePose(*graph, "__model__", "__model__", pose).empty());
   EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), pose);
-  EXPECT_TRUE(sdf::resolvePose(*graph, "base", "", pose).empty());
+  EXPECT_TRUE(
+      sdf::resolvePose(*graph, "base", "__model__", pose).empty());
   EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), pose);
-  EXPECT_TRUE(sdf::resolvePose(*graph, "lower_link", "", pose).empty());
+  EXPECT_TRUE(
+      sdf::resolvePose(*graph, "lower_link", "__model__", pose).empty());
   EXPECT_EQ(Pose(0.25, 1.0, 2.1, -2, 0, 0), pose);
-  EXPECT_TRUE(sdf::resolvePose(*graph, "upper_link", "", pose).empty());
+  EXPECT_TRUE(
+      sdf::resolvePose(*graph, "upper_link", "__model__", pose).empty());
   EXPECT_EQ(Pose(0, 0, 2.1, -1.5708, 0, 0), pose);
   EXPECT_TRUE(
       sdf::resolvePose(*graph, "lower_joint", "lower_link", pose).empty());

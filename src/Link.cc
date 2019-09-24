@@ -350,7 +350,7 @@ Errors Link::ResolvePose(
 /////////////////////////////////////////////////
 Errors Link::ResolvePose(ignition::math::Pose3d &_pose) const
 {
-  return this->ResolvePose("", _pose);
+  return this->ResolvePose("__model__", _pose);
 }
 
 /////////////////////////////////////////////////
