@@ -35,7 +35,7 @@ namespace sdf
   class Joint;
   class Link;
   class ModelPrivate;
-  class PoseRelativeToGraph;
+  struct PoseRelativeToGraph;
 
   class SDFORMAT_VISIBLE Model
   {
