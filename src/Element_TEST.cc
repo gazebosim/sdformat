@@ -302,8 +302,20 @@ TEST(Element, ToStringElements)
   parent->AddAttribute("test", "string", "foo", false, "foo description");
   ASSERT_EQ(parent->GetAttributeCount(), 1UL);
 
-  std::string stringval = parent->ToString("myprefix");
-  ASSERT_EQ(stringval, "myprefix< test='foo'>\nmyprefix  </>\nmyprefix</>\n");
+  // attribute won't print unless it has been set
+  EXPECT_FALSE(parent->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("myprefix"),
+            "myprefix<>\nmyprefix  </>\nmyprefix</>\n");
+
+  sdf::ParamPtr test = parent->GetAttribute("test");
+  ASSERT_NE(nullptr, test);
+  EXPECT_FALSE(test->GetSet());
+  EXPECT_TRUE(test->SetFromString("foo"));
+  EXPECT_TRUE(test->GetSet());
+  EXPECT_TRUE(parent->GetAttributeSet("test"));
+
+  EXPECT_EQ(parent->ToString("myprefix"),
+            "myprefix< test='foo'>\nmyprefix  </>\nmyprefix</>\n");
 }
 
 /////////////////////////////////////////////////
@@ -316,8 +328,18 @@ TEST(Element, ToStringValue)
 
   parent->AddValue("string", "val", false, "val description");
 
-  std::string stringval = parent->ToString("myprefix");
-  ASSERT_EQ(stringval, "myprefix< test='foo'>val</>\n");
+  EXPECT_FALSE(parent->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("myprefix"),
+            "myprefix<>val</>\n");
+
+  sdf::ParamPtr test = parent->GetAttribute("test");
+  ASSERT_NE(nullptr, test);
+  EXPECT_FALSE(test->GetSet());
+  EXPECT_TRUE(test->SetFromString("foo"));
+  EXPECT_TRUE(test->GetSet());
+  EXPECT_TRUE(parent->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("myprefix"),
+            "myprefix< test='foo'>val</>\n");
 }
 
 /////////////////////////////////////////////////
