@@ -2,6 +2,9 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Element: don't print unset attributes.
+    * [Pull request 571](https://bitbucket.org/osrf/sdformat/pull-requests/571)
+
 1. Move private headers from include/sdf to src folder.
     * [Pull request 553](https://bitbucket.org/osrf/sdformat/pull-requests/553)
 
