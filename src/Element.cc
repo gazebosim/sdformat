@@ -408,8 +408,12 @@ void Element::PrintValuesImpl(const std::string &_prefix,
   for (aiter = this->dataPtr->attributes.begin();
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
-    _out << " " << (*aiter)->GetKey() << "='"
-         << (*aiter)->GetAsString() << "'";
+    // Only print attribute values if they were set
+    if ((*aiter)->GetSet())
+    {
+      _out << " " << (*aiter)->GetKey() << "='"
+           << (*aiter)->GetAsString() << "'";
+    }
   }
 
   if (this->dataPtr->elements.size() > 0)
