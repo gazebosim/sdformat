@@ -2,6 +2,9 @@
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
 
+1. Build Utils_TEST with Utils.cc explicitly passed since its symbols are not visible.
+    * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
+
 1. Set camera intrinsics axis skew (s) default value to 0
     * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
 
