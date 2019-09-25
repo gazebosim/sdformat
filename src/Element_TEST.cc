@@ -296,6 +296,9 @@ TEST(Element, ToStringElements)
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
 
+  parent->SetName("parent");
+  child->SetName("child");
+
   parent->InsertElement(child);
   ASSERT_NE(parent->GetFirstElement(), nullptr);
 
@@ -304,8 +307,10 @@ TEST(Element, ToStringElements)
 
   // attribute won't print unless it has been set
   EXPECT_FALSE(parent->GetAttributeSet("test"));
-  EXPECT_EQ(parent->ToString("myprefix"),
-            "myprefix<>\nmyprefix  </>\nmyprefix</>\n");
+  EXPECT_EQ(parent->ToString("<!-- prefix -->"),
+    "<!-- prefix --><parent>\n"
+    "<!-- prefix -->  <child/>\n"
+    "<!-- prefix --></parent>\n");
 
   sdf::ParamPtr test = parent->GetAttribute("test");
   ASSERT_NE(nullptr, test);
@@ -314,8 +319,10 @@ TEST(Element, ToStringElements)
   EXPECT_TRUE(test->GetSet());
   EXPECT_TRUE(parent->GetAttributeSet("test"));
 
-  EXPECT_EQ(parent->ToString("myprefix"),
-            "myprefix< test='foo'>\nmyprefix  </>\nmyprefix</>\n");
+  EXPECT_EQ(parent->ToString("<!-- prefix -->"),
+    "<!-- prefix --><parent test='foo'>\n"
+    "<!-- prefix -->  <child/>\n"
+    "<!-- prefix --></parent>\n");
 }
 
 /////////////////////////////////////////////////
