@@ -118,6 +118,9 @@ if (IGNITION-TOOLS_BINARY_DIRS)
   )
 endif()
 
+set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
+sdf_build_tests(Utils_TEST.cc)
+
 sdf_build_tests(${gtest_sources})
 
 sdf_add_library(${sdf_target} ${sources})

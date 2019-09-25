@@ -125,6 +125,11 @@ macro (sdf_setup_apple)
 endmacro()
 
 #################################################
+# VAR: SDF_BUILD_TESTS_EXTRA_EXE_SRCS
+# Hack: extra sources to build binaries can be supplied to gz_build_tests in
+# the variable SDF_BUILD_TESTS_EXTRA_EXE_SRCS. This variable will be clean up
+# at the end of the function
+#
 include_directories(${PROJECT_SOURCE_DIR}/test/gtest/include)
 macro (sdf_build_tests)
   # Build all the tests
@@ -133,10 +138,13 @@ macro (sdf_build_tests)
     set(BINARY_NAME ${TEST_TYPE}_${BINARY_NAME})
 
     if (UNIX)
-      add_executable(${BINARY_NAME} ${GTEST_SOURCE_file})
+      add_executable(${BINARY_NAME}
+        ${GTEST_SOURCE_file}
+        ${SDF_BUILD_TESTS_EXTRA_EXE_SRCS})
     elseif(WIN32)
       add_executable(${BINARY_NAME}
         ${GTEST_SOURCE_file}
+        ${SDF_BUILD_TESTS_EXTRA_EXE_SRCS}
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinystr.cpp
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlerror.cpp
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxml.cpp
@@ -214,6 +222,8 @@ macro (sdf_build_tests)
                --error-exitcode=1 --show-leak-kinds=all ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME})
     endif()
   endforeach()
+
+  set(GZ_BUILD_TESTS_EXTRA_EXE_SRCS "")
 endmacro()
 
 #################################################
