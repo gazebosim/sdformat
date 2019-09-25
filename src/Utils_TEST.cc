@@ -27,7 +27,7 @@ TEST(DOMUtils, PoseDefaultValues)
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("pose");
   element->AddValue("pose", "0 0 0 0 0 0", true);
-  element->AddAttribute("frame", "string", "", false);
+  element->AddAttribute("relative_to", "string", "", false);
 
   ignition::math::Pose3d pose;
   std::string frame;
@@ -58,8 +58,8 @@ TEST(DOMUtils, PoseWithFrame)
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("pose");
   element->AddValue("pose", "0 0 0 0 0 0", true);
-  element->AddAttribute("frame", "string", "", false);
-  element->GetAttribute("frame")->SetFromString("frame_name");
+  element->AddAttribute("relative_to", "string", "", false);
+  element->GetAttribute("relative_to")->SetFromString("frame_name");
 
   ignition::math::Pose3d pose;
   std::string frame;
@@ -75,8 +75,8 @@ TEST(DOMUtils, PoseWithValue)
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("pose");
   element->AddValue("pose", "0 0 0 0 0 0", true);
-  element->AddAttribute("frame", "string", "", false);
-  element->GetAttribute("frame")->SetFromString("another frame");
+  element->AddAttribute("relative_to", "string", "", false);
+  element->GetAttribute("relative_to")->SetFromString("another frame");
   element->GetValue()->SetFromString("1 2 3 0.1 0.2 0.3");
 
   ignition::math::Pose3d pose;
