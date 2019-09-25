@@ -19,6 +19,16 @@
 #include "Utils.hh"
 
 /////////////////////////////////////////////////
+bool sdf::isReservedName(const std::string &_name)
+{
+  const std::size_t size = _name.size();
+  return _name == "world" ||
+      (size >= 4 &&
+       _name.compare(0, 2, "__") == 0 &&
+       _name.compare(size-2, 2, "__") == 0);
+}
+
+/////////////////////////////////////////////////
 bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
 {
   // Read the name
