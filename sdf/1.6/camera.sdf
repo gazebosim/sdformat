@@ -137,7 +137,7 @@
       <element name="cy" type="double" default="120" required="1">
         <description>Y principal point (in pixels)</description>
       </element>
-      <element name="s" type="double" default="1.0" required="1">
+      <element name="s" type="double" default="0.0" required="1">
         <description>XY axis skew</description>
       </element>
     </element> <!-- End Intrinsics -->

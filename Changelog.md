@@ -2,6 +2,16 @@
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
 
+1. Set camera intrinsics axis skew (s) default value to 0
+    * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
+
+1. Avoid hardcoding /machine:x64 flag on 64-bit on MSVC with CMake >= 3.5.
+    * [Pull request 565](https://bitbucket.org/osrf/sdformat/pull-requests/565)
+
+1. Backport inline versioned namespace from version 8.
+    * [Pull request 557](https://bitbucket.org/osrf/sdformat/pull-requests/557)
+    * [pull request 464](https://bitbucket.org/osrf/sdformat/pull-requests/464)
+
 1. Backport cmake and sdf spec changes from version 8.
     * [Pull request 550](https://bitbucket.org/osrf/sdformat/pull-requests/550)
     * [pull request 538](https://bitbucket.org/osrf/sdformat/pull-requests/538)
@@ -58,6 +68,12 @@
 ## SDFormat 6.0
 
 ### SDFormat 6.X.X (20XX-XX-XX)
+
+1. Set camera intrinsics axis skew (s) default value to 0
+    * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
+
+1. Avoid hardcoding /machine:x64 flag on 64-bit on MSVC with CMake >= 3.5.
+    * [Pull request 565](https://bitbucket.org/osrf/sdformat/pull-requests/565)
 
 1. Fix ign library path on macOS.
     * [Pull request 552](https://bitbucket.org/osrf/sdformat/pull-requests/552)
