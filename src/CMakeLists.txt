@@ -118,7 +118,9 @@ if (IGNITION-TOOLS_BINARY_DIRS)
   )
 endif()
 
-set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
+if (NOT WIN32)
+  set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
+endif()
 sdf_build_tests(Utils_TEST.cc)
 
 sdf_build_tests(${gtest_sources})
