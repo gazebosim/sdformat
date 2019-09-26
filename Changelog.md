@@ -4,6 +4,9 @@
 
 ### SDFormat 9.0.0 (201X-XX-XX)
 
+1. Use consistent namespaces in Filesystem.
+    * [Pull request 567](https://bitbucket.org/osrf/sdformat/pull-requests/567)
+
 ## SDFormat 8.0
 
 ### SDFormat 8.X.X (201X-XX-XX)
