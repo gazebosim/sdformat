@@ -5,6 +5,12 @@
 1. Element: don't print unset attributes.
     * [Pull request 571](https://bitbucket.org/osrf/sdformat/pull-requests/571)
 
+1. Set camera intrinsics axis skew (s) default value to 0
+    * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
+
+1. Avoid hardcoding /machine:x64 flag on 64-bit on MSVC with CMake >= 3.5.
+    * [Pull request 565](https://bitbucket.org/osrf/sdformat/pull-requests/565)
+
 1. Move private headers from include/sdf to src folder.
     * [Pull request 553](https://bitbucket.org/osrf/sdformat/pull-requests/553)
 
