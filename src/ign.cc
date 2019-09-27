@@ -24,6 +24,8 @@
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
 
+inline namespace SDF_VERSION_NAMESPACE {
+
 //////////////////////////////////////////////////
 /// \brief Check that all sibling elements of the same type have unique names.
 /// This checks recursively and should check the files exhaustively
@@ -148,4 +150,5 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path)
   sdf->PrintValues();
 
   return 0;
+}
 }
