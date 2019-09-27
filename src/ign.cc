@@ -31,6 +31,8 @@
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
 
+inline namespace SDF_VERSION_NAMESPACE {
+
 //////////////////////////////////////////////////
 /// \brief Check that for each model, the canonical_link attribute value
 /// matches the name of a link in the model if the attribute is set and
@@ -910,4 +912,5 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path)
   sdf->PrintValues();
 
   return 0;
+}
 }
