@@ -18,8 +18,12 @@
 #include <utility>
 #include "Utils.hh"
 
+namespace sdf
+{
+inline namespace SDF_VERSION_NAMESPACE {
+
 /////////////////////////////////////////////////
-bool sdf::isReservedName(const std::string &_name)
+bool isReservedName(const std::string &_name)
 {
   const std::size_t size = _name.size();
   return _name == "world" ||
@@ -29,7 +33,7 @@ bool sdf::isReservedName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
-bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
+bool loadName(sdf::ElementPtr _sdf, std::string &_name)
 {
   // Read the name
   std::pair<std::string, bool> namePair = _sdf->Get<std::string>("name", "");
@@ -39,7 +43,7 @@ bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
 }
 
 /////////////////////////////////////////////////
-bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
+bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
               std::string &_frame)
 {
   sdf::ElementPtr sdf = _sdf;
@@ -69,4 +73,6 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
   // The frame attribute is optional, so only return true or false based
   // on the pose element value.
   return posePair.second;
+}
+}
 }

@@ -26,6 +26,10 @@
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \brief Check if the passed string is a reserved name.
   /// This currently includes "world" and all strings that start
   /// and end with "__".
@@ -117,6 +121,7 @@ namespace sdf
     // exists. This is a bit of safe code reduction.
 
     return errors;
+  }
   }
 }
 #endif
