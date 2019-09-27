@@ -2,7 +2,7 @@
 <sdf version='1.7'>
   <world name="world_frame_relative_to">
 
-    <frame name="world"/>                       <!-- VALID: Directly relative_to implicit world frame. -->
+    <frame name="world_frame"/>                 <!-- VALID: Directly relative_to implicit world frame. -->
     <frame name="F0">
       <pose relative_to="">1 0 0 0 0 0</pose>   <!-- VALID: Directly relative_to implicit world frame by default. -->
     </frame>

@@ -118,16 +118,12 @@ TEST(DOMWorld, Load)
   EXPECT_TRUE(world->PhysicsNameExists("my_physics"));
   EXPECT_FALSE(world->PhysicsNameExists("invalid_physics"));
 
-  EXPECT_EQ(2u, world->FrameCount());
+  EXPECT_EQ(1u, world->FrameCount());
   EXPECT_NE(nullptr, world->FrameByIndex(0));
-  EXPECT_NE(nullptr, world->FrameByIndex(1));
-  EXPECT_EQ(nullptr, world->FrameByIndex(2));
-  ASSERT_TRUE(world->FrameNameExists("world"));
+  EXPECT_EQ(nullptr, world->FrameByIndex(1));
   ASSERT_TRUE(world->FrameNameExists("frame1"));
 
-  EXPECT_TRUE(world->FrameByName("world")->AttachedTo().empty());
   EXPECT_EQ("world", world->FrameByName("frame1")->AttachedTo());
 
-  EXPECT_TRUE(world->FrameByName("world")->PoseRelativeTo().empty());
   EXPECT_TRUE(world->FrameByName("frame1")->PoseRelativeTo().empty());
 }

@@ -90,7 +90,7 @@ namespace sdf
     using MapType = std::map<std::string, ignition::math::graph::VertexId>;
     MapType map;
 
-    /// \brief Name of sink vertex, either __model__ or __world__.
+    /// \brief Name of sink vertex, either __model__ or world.
     std::string sinkName;
   };
 
@@ -109,7 +109,7 @@ namespace sdf
     using MapType = std::map<std::string, ignition::math::graph::VertexId>;
     MapType map;
 
-    /// \brief Name of source vertex, either __model__ or __world__.
+    /// \brief Name of source vertex, either __model__ or world.
     std::string sourceName;
   };
 

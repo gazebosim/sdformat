@@ -385,7 +385,7 @@ Errors buildFrameAttachedToGraph(
   }
 
   // add implicit world frame vertex first
-  const std::string sinkName = "__world__";
+  const std::string sinkName = "world";
   _out.sinkName = sinkName;
   auto worldFrameId =
       _out.graph.AddVertex(sinkName, sdf::FrameType::WORLD).Id();
@@ -664,7 +664,7 @@ Errors buildPoseRelativeToGraph(
   }
 
   // add implicit world frame vertex first
-  const std::string sourceName = "__world__";
+  const std::string sourceName = "world";
   _out.sourceName = sourceName;
   auto worldFrameId =
       _out.graph.AddVertex(sourceName, sdf::FrameType::WORLD).Id();
@@ -781,17 +781,17 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
 {
   Errors errors;
 
-  // Expect sinkName to be either "__model__" or "__world__"
-  if (_in.sinkName != "__model__" && _in.sinkName != "__world__")
+  // Expect sinkName to be either "__model__" or "world"
+  if (_in.sinkName != "__model__" && _in.sinkName != "world")
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
         "Sink vertex name " + _in.sinkName +
-        " does not match __model__ or __world__."});
+        " does not match __model__ or world."});
     return errors;
   }
 
   // Expect one vertex with name "__model__" and FrameType MODEL
-  // or with name "__world__ and FrameType WORLD
+  // or with name "world" and FrameType WORLD
   auto sinkVertices = _in.graph.Vertices(_in.sinkName);
   if (sinkVertices.empty())
   {
@@ -814,11 +814,11 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
         "Sink vertex with name __model__ should have FrameType MODEL."});
     return errors;
   }
-  else if (_in.sinkName == "__world__" &&
+  else if (_in.sinkName == "world" &&
            sinkFrameType != sdf::FrameType::WORLD)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Sink vertex with name __world__ should have FrameType WORLD."});
+        "Sink vertex with name world should have FrameType WORLD."});
     return errors;
   }
 
@@ -912,17 +912,17 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
 {
   Errors errors;
 
-  // Expect sourceName to be either "__model__" or "__world__"
-  if (_in.sourceName != "__model__" && _in.sourceName != "__world__")
+  // Expect sourceName to be either "__model__" or "world"
+  if (_in.sourceName != "__model__" && _in.sourceName != "world")
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
         "Source vertex name " + _in.sourceName +
-        " does not match __model__ or __world__."});
+        " does not match __model__ or world."});
     return errors;
   }
 
   // Expect one vertex with name "__model__" and FrameType MODEL
-  // or with name "__world__ and FrameType WORLD
+  // or with name "world" and FrameType WORLD
   auto sourceVertices = _in.graph.Vertices(_in.sourceName);
   if (sourceVertices.empty())
   {
@@ -945,11 +945,11 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
         "Source vertex with name __model__ should have FrameType MODEL."});
     return errors;
   }
-  else if (_in.sourceName == "__world__" &&
+  else if (_in.sourceName == "world" &&
            sourceFrameType != sdf::FrameType::WORLD)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Source vertex with name __world__ should have FrameType WORLD."});
+        "Source vertex with name world should have FrameType WORLD."});
     return errors;
   }
 

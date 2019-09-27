@@ -537,17 +537,17 @@ TEST(DOMFrame, LoadWorldFramesAttachedTo)
   EXPECT_NE(nullptr, world->FrameByIndex(2));
   EXPECT_NE(nullptr, world->FrameByIndex(3));
   EXPECT_EQ(nullptr, world->FrameByIndex(4));
-  ASSERT_TRUE(world->FrameNameExists("world"));
+  ASSERT_TRUE(world->FrameNameExists("world_frame"));
   ASSERT_TRUE(world->FrameNameExists("F0"));
   ASSERT_TRUE(world->FrameNameExists("F1"));
   ASSERT_TRUE(world->FrameNameExists("F2"));
 
-  EXPECT_TRUE(world->FrameByName("world")->AttachedTo().empty());
+  EXPECT_TRUE(world->FrameByName("world_frame")->AttachedTo().empty());
   EXPECT_TRUE(world->FrameByName("F0")->AttachedTo().empty());
   EXPECT_EQ("F0", world->FrameByName("F1")->AttachedTo());
   EXPECT_EQ("M1", world->FrameByName("F2")->AttachedTo());
 
-  EXPECT_TRUE(world->FrameByName("world")->PoseRelativeTo().empty());
+  EXPECT_TRUE(world->FrameByName("world_frame")->PoseRelativeTo().empty());
   EXPECT_TRUE(world->FrameByName("F0")->PoseRelativeTo().empty());
   EXPECT_TRUE(world->FrameByName("F1")->PoseRelativeTo().empty());
   EXPECT_TRUE(world->FrameByName("F2")->PoseRelativeTo().empty());
@@ -836,17 +836,17 @@ TEST(DOMFrame, LoadWorldFramesRelativeTo)
   EXPECT_NE(nullptr, world->FrameByIndex(2));
   EXPECT_NE(nullptr, world->FrameByIndex(3));
   EXPECT_EQ(nullptr, world->FrameByIndex(4));
-  ASSERT_TRUE(world->FrameNameExists("world"));
+  ASSERT_TRUE(world->FrameNameExists("world_frame"));
   ASSERT_TRUE(world->FrameNameExists("F0"));
   ASSERT_TRUE(world->FrameNameExists("F1"));
   ASSERT_TRUE(world->FrameNameExists("F2"));
 
-  EXPECT_TRUE(world->FrameByName("world")->PoseRelativeTo().empty());
+  EXPECT_TRUE(world->FrameByName("world_frame")->PoseRelativeTo().empty());
   EXPECT_TRUE(world->FrameByName("F0")->PoseRelativeTo().empty());
   EXPECT_EQ("F0", world->FrameByName("F1")->PoseRelativeTo());
   EXPECT_EQ("M1", world->FrameByName("F2")->PoseRelativeTo());
 
-  EXPECT_TRUE(world->FrameByName("world")->AttachedTo().empty());
+  EXPECT_TRUE(world->FrameByName("world_frame")->AttachedTo().empty());
   EXPECT_TRUE(world->FrameByName("F0")->AttachedTo().empty());
   EXPECT_TRUE(world->FrameByName("F1")->AttachedTo().empty());
   EXPECT_TRUE(world->FrameByName("F2")->AttachedTo().empty());
