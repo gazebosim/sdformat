@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_invalid_reserved_names">
+    <frame name="__frame__"/>               <!-- INVALID: names may not start and end with __. -->
+    <link name="world"/>                    <!-- INVALID: world is a reserved name. -->
+    <link name="__link__">                  <!-- INVALID: names may not start and end with __. -->
+      <pose>0 0 0 0 0 0</pose>
+      <collision name="__collision__">      <!-- INVALID: names may not start and end with __. -->
+        <geometry/>
+      </collision>
+      <visual name="__visual__">            <!-- INVALID: names may not start and end with __. -->
+        <geometry/>
+      </visual>
+    </link>
+    <joint name="__joint__" type="fixed">   <!-- INVALID: names may not start and end with __. -->
+      <parent>world</parent>
+      <child>__link__</child>
+    </joint>
+  </model>
+</sdf>

@@ -264,6 +264,32 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
+  // Check an invalid SDF file that uses reserved names.
+  {
+    std::string path = pathBase +"/model_invalid_reserved_names.sdf";
+
+    // Check model_invalid_reserved_names.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: The supplied link name [world] is reserved."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: The supplied link name [__link__] "
+                          "is reserved."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: The supplied visual name [__visual__] "
+                          "is reserved."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: The supplied collision name [__collision__] "
+                          "is reserved."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: The supplied joint name [__joint__] "
+                          "is reserved."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: The supplied frame name [__frame__] "
+                          "is reserved."),
+              std::string::npos) << output;
+  }
+
   // Check an SDF file with model frames using the attached_to attribute.
   // This is a valid file.
   {

@@ -96,6 +96,14 @@ Errors Visual::Load(ElementPtr _sdf)
                      "A visual name is required, but the name is not set."});
   }
 
+  // Check that the visual's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+                     "The supplied visual name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   if (_sdf->HasElement("material"))
   {
     this->dataPtr->material.reset(new sdf::Material());

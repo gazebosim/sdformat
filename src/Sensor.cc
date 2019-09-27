@@ -96,6 +96,14 @@ Errors Sensor::Load(ElementPtr _sdf)
     return errors;
   }
 
+  // Check that the sensor's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+                     "The supplied sensor name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   std::string type = _sdf->Get<std::string>("type");
   if (type == "altimeter")
   {

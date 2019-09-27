@@ -87,6 +87,14 @@ Errors Physics::Load(sdf::ElementPtr _sdf)
                      "A physics name is required, but the name is not set."});
   }
 
+  // Check that the physics's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+                     "The supplied physics name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   this->dataPtr->isDefault =
     _sdf->Get<bool>("default", this->dataPtr->isDefault).first;
 
