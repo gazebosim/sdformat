@@ -26,6 +26,10 @@
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \brief Read the "name" attribute from an element.
   /// \param[in] _sdf SDF element pointer which contains the name.
   /// \param[out] _name String to hold the name value.
@@ -158,6 +162,7 @@ namespace sdf
     // exists. This is a bit of safe code reduction.
 
     return errors;
+  }
   }
 }
 #endif
