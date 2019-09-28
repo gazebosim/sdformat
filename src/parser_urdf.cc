@@ -2894,7 +2894,7 @@ void CreateInertial(TiXmlElement *_elem,
 ////////////////////////////////////////////////////////////////////////////////
 void CreateJoint(TiXmlElement *_root,
                  urdf::LinkConstSharedPtr _link,
-                 ignition::math::Pose3d &_currentTransform)
+                 ignition::math::Pose3d &/*_currentTransform*/)
 {
   // compute the joint tag
   std::string jtype;
