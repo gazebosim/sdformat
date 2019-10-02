@@ -5,6 +5,9 @@
 1. Element: don't print unset attributes.
     * [Pull request 571](https://bitbucket.org/osrf/sdformat/pull-requests/571)
 
+1. Use inline namespaces in Utils.cc
+    * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
+
 1. Set camera intrinsics axis skew (s) default value to 0
     * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
 
