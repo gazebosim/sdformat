@@ -581,6 +581,34 @@ TEST(SDF, PrintValues)
   std::cout.rdbuf(old);
 }
 
+/////////////////////////////////////////////////
+TEST(SDF, ToStringAndParse)
+{
+  std::string testWorld = R"sdf(
+    <?xml version="1.0" ?>
+    <sdf version="1.5">
+      <world name="default">
+      </world>
+    </sdf>
+  )sdf";
+
+  sdf::SDF sdfParsed;
+
+  // This is the same as SDF::SetFromString but allows us to retreive the result
+  // of parsing  by calling sdf::readString directly
+  sdf::initFile("root.sdf", sdfParsed.Root());
+
+  // Make a clone of the root to be used for testing later
+  auto rootOriginal = sdfParsed.Root();
+  auto rootClone = rootOriginal->Clone();
+
+  EXPECT_TRUE(sdf::readString(testWorld, rootOriginal));
+
+  std::string sdfToString = sdfParsed.ToString();
+
+  EXPECT_TRUE(sdf::readString(sdfToString, rootClone));
+}
+
 #ifndef _WIN32
 bool create_new_temp_dir(std::string &_new_temp_path)
 {
