@@ -471,9 +471,11 @@ void Param::Reset()
 //////////////////////////////////////////////////
 ParamPtr Param::Clone() const
 {
-  return ParamPtr(new Param(this->dataPtr->key, this->dataPtr->typeName,
+  ParamPtr clone(new Param(this->dataPtr->key, this->dataPtr->typeName,
                             this->GetAsString(), this->dataPtr->required,
                             this->dataPtr->description));
+  clone->dataPtr->set = this->dataPtr->set;
+  return clone;
 }
 
 //////////////////////////////////////////////////
@@ -511,6 +513,7 @@ Param &Param::operator=(const Param &_param)
 {
   this->dataPtr->value = _param.dataPtr->value;
   this->dataPtr->defaultValue  = _param.dataPtr->defaultValue;
+  this->dataPtr->set  = _param.dataPtr->set;
   return *this;
 }
 
