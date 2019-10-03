@@ -370,6 +370,26 @@ TEST(Element, ToStringValue)
             "myprefix< test='foo'>val</>\n");
 }
 
+
+/////////////////////////////////////////////////
+TEST(Element, ToStringClonedElement)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+
+  parent->AddAttribute("test", "string", "foo", false, "foo description");
+  ASSERT_EQ(parent->GetAttributeCount(), 1UL);
+
+  sdf::ParamPtr test = parent->GetAttribute("test");
+  ASSERT_NE(nullptr, test);
+  EXPECT_FALSE(test->GetSet());
+  EXPECT_TRUE(test->SetFromString("foo"));
+  EXPECT_TRUE(test->GetSet());
+
+  sdf::ElementPtr parentClone = parent->Clone();
+  EXPECT_TRUE(parentClone->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("myprefix"), parentClone->ToString("myprefix"));
+}
+
 /////////////////////////////////////////////////
 TEST(Element, ToStringInclude)
 {
