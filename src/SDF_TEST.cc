@@ -593,7 +593,7 @@ TEST(SDF, ToStringAndParse)
 
   sdf::SDF sdfParsed;
 
-  // This is the same as SDF::SetFromString but allows us to retreive the result
+  // This is the same as SDF::SetFromString but allows us to retrieve the result
   // of parsing  by calling sdf::readString directly
   sdf::initFile("root.sdf", sdfParsed.Root());
 
