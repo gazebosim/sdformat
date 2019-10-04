@@ -18,5 +18,8 @@
     <frame name="F3">                           <!-- Frame indirectly attached_to canonical link L via model frame. -->
       <pose relative_to="L">0 0 3 0 0 0</pose>  <!-- Pose relative_to link frame L -> M. -->
     </frame>
+    <frame name="F4">                           <!-- Frame indirectly attached_to canonical link L via model frame. -->
+      <pose relative_to="F3"/>                  <!-- Pose identical to that of F3. -->
+    </frame>
   </model>
 </sdf>
