@@ -530,6 +530,11 @@ TEST(SDF, Version)
 
   sdf::SDF::Version("0.2.3");
   EXPECT_STREQ("0.2.3", sdf::SDF::Version().c_str());
+
+  // Restore the default sdf version, since it persists
+  // for the other tests in this file.
+  sdf::SDF::Version(SDF_VERSION);
+  EXPECT_STREQ(SDF_VERSION, sdf::SDF::Version().c_str());
 }
 
 /////////////////////////////////////////////////
