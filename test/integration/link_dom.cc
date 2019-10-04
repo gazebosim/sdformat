@@ -202,9 +202,11 @@ TEST(DOMLink, InertialInvalid)
   sdf::Root root;
   auto errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(1u, errors.size());
+  ASSERT_EQ(2u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::LINK_INERTIA_INVALID);
   EXPECT_EQ(errors[0].Message(), "A link named link has invalid inertia.");
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  EXPECT_EQ(errors[1].Message(), "A model must have at least one link.");
 
   // TODO: make this failure less severe?
   const sdf::Model *model = root.ModelByIndex(0);
