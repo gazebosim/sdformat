@@ -589,8 +589,7 @@ TEST(SDF, ToStringAndParse)
     <sdf version="1.5">
       <world name="default">
       </world>
-    </sdf>
-  )sdf";
+    </sdf>)sdf";
 
   sdf::SDF sdfParsed;
 
