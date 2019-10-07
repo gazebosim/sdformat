@@ -41,6 +41,8 @@ COMMANDS = {  'sdf' =>
                        "  -k [ --check ] arg     Validate arg.\n" +
                        "  -d [ --describe ]      Print the SDF description.\n" +
                        "  -p [ --print ] arg     Print converted arg.\n" +
+                       "  -u [ --urdf ] arg      Convert a SDF file to URDF and print it.\n" +
+                       "                         If arg is -, the file will be read from stdin.\n" +
                        COMMON_OPTIONS
             }
 
@@ -76,6 +78,10 @@ class Cmd
       opts.on('-p arg', '--print arg', String,
               'Print converted arg') do |arg|
         options['print'] = arg
+      end
+      opts.on('-u arg', '--urdf arg', String,
+              'Converted arg file to URDF') do |arg|
+        options['urdf'] = arg
       end
     end
     begin
@@ -156,6 +162,9 @@ class Cmd
         elsif options.key?('print')
           Importer.extern 'int cmdPrint(const char *)'
           exit(Importer.cmdPrint(options['print']))
+        elsif options.key?('urdf')
+          Importer.extern 'int cmdURDF(const char *)'
+          exit(Importer.cmdURDF(options['urdf']))
         else
           puts 'Command error: I do not have an implementation '\
                'for this command.'

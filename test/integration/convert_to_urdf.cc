@@ -61,7 +61,8 @@ TEST(ConvertToURDF, ConvertSimple)
 {
   std::string result;
   std::cout << SDF_SIMPLE_TEST_FILE << "\n";
-  EXPECT_TRUE(sdf::ConvertToURDF::ConvertFile(SDF_SIMPLE_TEST_FILE, result));
+  EXPECT_TRUE(
+      sdf::ConvertToURDF::ConvertFile(SDF_SIMPLE_TEST_FILE.c_str(), result));
 
   std::string sha1 = get_sha1(result);
   EXPECT_EQ(sha1, "653a3ac33583db12d27f36dd53027e827e808941");

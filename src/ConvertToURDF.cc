@@ -15,9 +15,8 @@
  *
 */
 #include <iostream>
-#include <boost/program_options.hpp>
-#include <boost/filesystem.hpp>
 #include "sdf/ConvertToURDF.hh"
+#include "sdf/sdf.hh"
 
 using namespace sdf;
 
@@ -303,14 +302,7 @@ bool ConvertToURDF::ConvertJoint(sdf::ElementPtr _elem,
   ignition::math::Pose3d jointPose = _elem->Get<ignition::math::Pose3d>("pose");
 
 
-  std::cout << "------------------------------\n";
-  std::cout << "joint Pos[" << jointPose << "]\n";
-  std::cout << "child Pos[" << childPose << "]\n";
-  std::cout << "parent Pos[" << parentPose << "]\n";
   jointPose = jointPose + childPose;
-
-  std::cout << "final Pos[" << jointPose << "]\n";
-  std::cout << "******************************\n";
 
   // Output pose
   _result << _prefix << "  <origin xyz='" << jointPose.Pos() << "' rpy='"
@@ -446,15 +438,15 @@ bool ConvertToURDF::ConvertString(const std::string &_sdfString,
 }
 
 /////////////////////////////////////////////////
-bool ConvertToURDF::ConvertFile(const std::string &_file, std::string &_result)
+bool ConvertToURDF::ConvertFile(const char *_path, std::string &_result)
 {
   // Make sure the file exists
-  boost::filesystem::path path = _file;
-  if (!boost::filesystem::exists(path))
+  if (!sdf::filesystem::exists(_path))
   {
-    std::cerr << "Error: File doesn't exist[" << path.string() << "]\n";
-    return false;
+    std::cerr << "Error: File [" << _path << "] does not exist.\n";
+    return -1;
   }
+
 
   // Create and initialize SDF
   sdf::SDFPtr sdf(new sdf::SDF());
@@ -465,7 +457,7 @@ bool ConvertToURDF::ConvertFile(const std::string &_file, std::string &_result)
   }
 
   // Read the SDF file
-  if (!sdf::readFile(path.string(), sdf))
+  if (!sdf::readFile(_path, sdf))
   {
     std::cerr << "Error: SDF parsing the xml failed\n";
     return false;

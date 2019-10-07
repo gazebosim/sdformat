@@ -19,6 +19,7 @@
 #include <string.h>
 
 #include "sdf/sdf_config.h"
+#include "sdf/ConvertToURDF.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/ign.hh"
 #include "sdf/parser.hh"
@@ -147,5 +148,32 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path)
 
   sdf->PrintValues();
 
+  return 0;
+}
+
+
+/////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
+extern "C" SDFORMAT_VISIBLE int cmdURDF(const char *_path)
+{
+  std::string result;
+  if (strlen(_path) > 0 && _path[0] == '-')
+  {
+    // Read from stdin
+    std::istreambuf_iterator<char> begin(std::cin), end;
+    std::string sdfString(begin, end);
+    if (!sdf::ConvertToURDF::ConvertString(sdfString, result))
+    {
+      std::cerr << "Unable to convert input from stdin"<< std::endl;
+      return -1;
+    }
+  }
+  else if (!sdf::ConvertToURDF::ConvertFile(_path, result))
+  {
+    std::cerr << "Unable to convert file[" << _path << "]"<< std::endl;
+    return -1;
+  }
+
+  std::cout << result;
   return 0;
 }

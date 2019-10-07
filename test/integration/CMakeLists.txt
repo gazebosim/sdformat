@@ -6,8 +6,8 @@ set(tests
   category_bitmask.cc
   cfm_damping_implicit_spring_damper.cc
   collision_dom.cc
-  converter.cc
   convert_to_urdf.cc
+  converter.cc
   deprecated_specs.cc
   disable_fixed_joint_reduction.cc
   fixed_joint_reduction.cc

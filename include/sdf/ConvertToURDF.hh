@@ -14,14 +14,16 @@
  * limitations under the License.
  *
 */
-#ifndef _SDF_CONVERT_TO_URDF_
-#define _SDF_CONVERT_TO_URDF_
+#ifndef SDF_CONVERT_TO_URDF_
+#define SDF_CONVERT_TO_URDF_
 
 #include <sstream>
 #include <string>
 #include <map>
-#include <sdf/sdf.hh>
 #include <ignition/math/Pose3.hh>
+
+#include "sdf/Element.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
@@ -33,11 +35,10 @@ namespace sdf
   class SDFORMAT_VISIBLE ConvertToURDF
   {
     /// \brief Convert an SDF file to URDF.
-    /// \param[in] _file File name of the SDF file.
+    /// \param[in] _path Path to the SDF file.
     /// \param[out] _result Converted URDF string.
     /// \return True on success.
-    public: static bool ConvertFile(const std::string &_file,
-                std::string &_result);
+    public: static bool ConvertFile(const char *_path, std::string &_result);
 
     /// \brief Convert an SDF string to URDF.
     /// \param[in] _sdfString String containing an SDF model.

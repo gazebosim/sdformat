@@ -266,7 +266,6 @@ else (build_errors)
     link_directories(${PROJECT_BINARY_DIR}/src)
 
     add_subdirectory(test)
-    add_subdirectory(tools)
     add_subdirectory(src)
     add_subdirectory(include/sdf)
     add_subdirectory(sdf)

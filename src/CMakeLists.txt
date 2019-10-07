@@ -22,8 +22,8 @@ set (sources
   Collision.cc
   Console.cc
   Converter.cc
-  Cylinder.cc
   ConvertToURDF.cc
+  Cylinder.cc
   Element.cc
   Error.cc
   Exception.cc
