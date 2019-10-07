@@ -8,6 +8,9 @@
 1. Lidar.hh: remove 'using namespace ignition'.
     * [Pull request 577](https://bitbucket.org/osrf/sdformat/pull-requests/577)
 
+1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
+    * [Pull request 575](https://bitbucket.org/osrf/sdformat/pull-requests/575)
+
 1. Set camera intrinsics axis skew (s) default value to 0
     * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
 
@@ -181,6 +184,9 @@
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
 
+1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
+    * [Pull request 575](https://bitbucket.org/osrf/sdformat/pull-requests/575)
+
 1. Set camera intrinsics axis skew (s) default value to 0
     * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
 
@@ -247,6 +253,9 @@
 ## SDFormat 6.0
 
 ### SDFormat 6.X.X (20XX-XX-XX)
+
+1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
+    * [Pull request 575](https://bitbucket.org/osrf/sdformat/pull-requests/575)
 
 1. Set camera intrinsics axis skew (s) default value to 0
     * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
