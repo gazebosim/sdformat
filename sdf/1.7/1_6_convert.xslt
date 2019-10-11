@@ -29,11 +29,14 @@
   <xsl:template match="/sdf[@version='1.6']//joint/axis|/sdf[@version='1.6']//joint/axis2">
     <xsl:copy>
       <xsl:apply-templates select="@*"/>
+      <!-- the text element puts the xyz element on the next line with fixed indentation -->
       <xsl:text>
         </xsl:text>
       <xsl:element name="xyz">
         <xsl:apply-templates select="xyz/@*"/>
+        <!-- case-insensitive test for use_parent_model_frame = "true" or "1" -->
         <xsl:if test="translate(use_parent_model_frame, 'TRUE', 'true')='true' or use_parent_model_frame='1'">
+          <!-- if so, add expressed_in="__model__" attribute -->
           <xsl:attribute name="expressed_in">
             <xsl:text>__model__</xsl:text>
           </xsl:attribute>
