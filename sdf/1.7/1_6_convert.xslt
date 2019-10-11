@@ -33,7 +33,7 @@
         </xsl:text>
       <xsl:element name="xyz">
         <xsl:apply-templates select="xyz/@*"/>
-        <xsl:if test="use_parent_model_frame='true' or use_parent_model_frame='1'">
+        <xsl:if test="translate(use_parent_model_frame, 'TRUE', 'true')='true' or use_parent_model_frame='1'">
           <xsl:attribute name="expressed_in">
             <xsl:text>__model__</xsl:text>
           </xsl:attribute>
