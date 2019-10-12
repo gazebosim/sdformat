@@ -62,6 +62,14 @@ namespace sdf
     private: static void Rename(TiXmlElement *_elem,
                                 TiXmlElement *_renameElem);
 
+    /// \brief Map values from one element or attribute to another.
+    /// \param[in] _elem Ancestor element of the element or attribute to
+    /// be mapped.
+    /// \param[in] _mapElem A 'convert' element that describes the map
+    /// operation.
+    private: static void Map(TiXmlElement *_elem,
+                             TiXmlElement *_mapElem);
+
     /// \brief Move an element or attribute within a common ancestor element.
     /// \param[in] _elem Ancestor element of the element or attribute to
     /// be moved.
