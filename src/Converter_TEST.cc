@@ -790,7 +790,7 @@ TEST(Converter, MoveInvalidPrefix)
   convertXmlDoc.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  // In this case, we had an invalid elemC:: in the conversion, which
+  // In this case, we had an invalid ::elemC in the conversion, which
   // means that the conversion quietly failed.  Make sure the new
   // document is the same as the original.
   // Verify the xml
@@ -809,7 +809,7 @@ TEST(Converter, MoveInvalidPrefix)
 }
 
 ////////////////////////////////////////////////////
-/// Ensure that Converter::Move function is working
+/// Ensure that Converter::Copy function is working
 /// Test moving from elem to elem
 TEST(Converter, CopyElemElem)
 {
