@@ -865,6 +865,144 @@ TEST(Converter, CopyElemElem)
 }
 
 ////////////////////////////////////////////////////
+/// Ensure that Converter::Map function is working
+/// Test an invalid map
+TEST(Converter, MapInvalid)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem =  childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem =  childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem =  childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Set up an invalid convert file that should do nothing
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                // missing from and to
+                << "  <map/>"
+                << "  <map>"
+                << "    <from/>"
+                << "  </map>"
+                // missing/empty name attributes
+                << "  <map>"
+                << "    <from/>"
+                << "    <to/>"
+                << "  </map>"
+                << "  <map>"
+                << "    <from name=""/>"
+                << "    <to/>"
+                << "  </map>"
+                << "  <map>"
+                << "    <from name='attrA'/>"
+                << "    <to name=''/>"
+                << "  </map>"
+                // missing value elements
+                << "  <map>"
+                << "    <from name='attrA'/>"
+                << "    <to name='attrB'/>"
+                << "  </map>"
+                << "  <map>"
+                << "    <from name='attrA'>"
+                << "      <value/>"
+                << "    </from>"
+                << "    <to name='attrB'/>"
+                << "  </map>"
+                // empty first value elements
+                << "  <map>"
+                << "    <from name='attrA'>"
+                << "      <value/>"
+                << "    </from>"
+                << "    <to name='attrB'>"
+                << "      <value/>"
+                << "    </to>"
+                << "  </map>"
+                << "  <map>"
+                << "    <from name='attrA'>"
+                << "      <value>A</value>"
+                << "    </from>"
+                << "    <to name='attrB'>"
+                << "      <value/>"
+                << "    </to>"
+                << "  </map>"
+                // empty subsequent value elements
+                << "  <map>"
+                << "    <from name='attrA'>"
+                << "      <value>A</value>"
+                << "      <value/>"
+                << "    </from>"
+                << "    <to name='attrB'>"
+                << "      <value>A1</value>"
+                << "    </to>"
+                << "  </map>"
+                << "  <map>"
+                << "    <from name='attrA'>"
+                << "      <value>A</value>"
+                << "      <value>B</value>"
+                << "    </from>"
+                << "    <to name='attrB'>"
+                << "      <value>A1</value>"
+                << "      <value/>"
+                << "    </to>"
+                << "  </map>"
+                << "  <convert name='elemB'>"
+                // invalid elemC/, errors without message
+                << "    <map>"
+                << "      <from name='elemC/'>"
+                << "        <value></value>"
+                << "      </from/>"
+                << "      <to name='elemE'/>"
+                << "    </map>"
+                // invalid elemC/, errors without message
+                << "    <map>"
+                << "      <from name='/elemC'>"
+                << "        <value></value>"
+                << "      </from/>"
+                << "      <to name='elemE'/>"
+                << "    </map>"
+                << "  </convert>"
+                << "</convert>";
+  std::cerr << convertStream.str() << '\n';
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  std::ostringstream xmlDocBefore;
+  xmlDocBefore << xmlDoc;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // In this case, we had an invalid elemC/ in the conversion, which
+  // means that the conversion quietly failed.  Make sure the new
+  // document is the same as the original.
+  std::ostringstream xmlDocAfter;
+  xmlDocAfter << xmlDoc;
+  EXPECT_EQ(xmlDocBefore.str(), xmlDocAfter.str());
+  // Verify the xml
+  TiXmlElement *convertElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, convertElem);
+  EXPECT_EQ(convertElem->ValueStr(), "elemA");
+  convertElem = convertElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertElem);
+  EXPECT_EQ(convertElem->ValueStr(), "elemB");
+  convertElem = convertElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertElem);
+  EXPECT_EQ(convertElem->ValueStr(), "elemC");
+  convertElem = convertElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertElem);
+  EXPECT_EQ(convertElem->ValueStr(), "elemD");
+}
+
+////////////////////////////////////////////////////
 TEST(Converter, RenameElemElem)
 {
   // Set up an xml string for testing

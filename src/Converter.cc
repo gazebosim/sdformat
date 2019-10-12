@@ -16,6 +16,7 @@
  */
 
 #include <algorithm>
+#include <map>
 #include <set>
 #include <sstream>
 #include <string>
@@ -149,6 +150,10 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
     else if (childElem->ValueStr() == "copy")
     {
       Move(_elem, childElem, true);
+    }
+    else if (childElem->ValueStr() == "map")
+    {
+      Map(_elem, childElem);
     }
     else if (childElem->ValueStr() == "move")
     {
@@ -301,6 +306,182 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
       _elem->RemoveChild(childElem);
       childElem = _elem->FirstChildElement(elementName);
     }
+  }
+}
+
+/////////////////////////////////////////////////
+void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
+{
+  SDF_ASSERT(_elem != nullptr, "SDF element is nullptr");
+  SDF_ASSERT(_mapElem != nullptr, "Map element is nullptr");
+
+  TiXmlElement *fromConvertElem = _mapElem->FirstChildElement("from");
+  TiXmlElement *toConvertElem = _mapElem->FirstChildElement("to");
+
+  if (!fromConvertElem)
+  {
+    sdferr << "<map> element requires a <from> child element.\n";
+    return;
+  }
+  if (!toConvertElem)
+  {
+    sdferr << "<map> element requires a <to> child element.\n";
+    return;
+  }
+
+  const char *fromNameStr = fromConvertElem->Attribute("name");
+  const char *toNameStr = toConvertElem->Attribute("name");
+
+  if (!fromNameStr || fromNameStr[0] == '\0')
+  {
+    sdferr << "Map: <from> element requires a non-empty name attribute.\n";
+    return;
+  }
+  if (!toNameStr || toNameStr[0] == '\0')
+  {
+    sdferr << "Map: <to> element requires a non-empty name attribute.\n";
+    return;
+  }
+
+  // create map of input and output values
+  std::map<std::string, std::string> valueMap;
+  TiXmlElement *fromValueElem = fromConvertElem->FirstChildElement("value");
+  TiXmlElement *toValueElem = toConvertElem->FirstChildElement("value");
+  if (!fromValueElem)
+  {
+    sdferr << "Map: <from> element requires at least one <value> element.\n";
+    return;
+  }
+  if (!toValueElem)
+  {
+    sdferr << "Map: <to> element requires at least one <value> element.\n";
+    return;
+  }
+  if (!fromValueElem->GetText())
+  {
+    sdferr << "Map: from value must not be empty.\n";
+    return;
+  }
+  if (!toValueElem->GetText())
+  {
+    sdferr << "Map: to value must not be empty.\n";
+    return;
+  }
+  valueMap[fromValueElem->GetText()] = toValueElem->GetText();
+  while (fromValueElem->NextSiblingElement("value"))
+  {
+    fromValueElem = fromValueElem->NextSiblingElement("value");
+    if (toValueElem->NextSiblingElement("value"))
+    {
+      toValueElem = toValueElem->NextSiblingElement("value");
+    }
+    if (!fromValueElem->GetText())
+    {
+      sdferr << "Map: from value must not be empty.\n";
+      return;
+    }
+    if (!toValueElem->GetText())
+    {
+      sdferr << "Map: to value must not be empty.\n";
+      return;
+    }
+    valueMap[fromValueElem->GetText()] = toValueElem->GetText();
+  }
+
+  // tokenize 'from' and 'to' name attributes
+  std::string fromStr = fromNameStr;
+  std::string toStr = toNameStr;
+
+  std::vector<std::string> fromTokens = split(fromStr, "/");
+  std::vector<std::string> toTokens = split(toStr, "/");
+
+  // split() always returns at least one element, even with the
+  // empty string.  Thus we don't check if the fromTokens or toTokens are empty.
+
+  // get value of the 'from' element/attribute
+  TiXmlElement *fromElem = _elem;
+  for (unsigned int i = 0; i < fromTokens.size()-1; ++i)
+  {
+    fromElem = fromElem->FirstChildElement(fromTokens[i]);
+    if (!fromElem)
+    {
+      // Return when the tokens don't match. Don't output an error message
+      // because it spams the console.
+      return;
+    }
+  }
+
+  const char *fromLeaf = fromTokens.back().c_str();
+  if (fromLeaf[0] == '\0')
+  {
+    sdferr << "Map: <from> has invalid name attribute\n";
+    return;
+  }
+  const char *fromValue = nullptr;
+  if (fromLeaf[0] == '@')
+  {
+    // from an attribute
+    fromValue = GetValue(nullptr, fromLeaf+1, fromElem);
+  }
+  else
+  {
+    // from an element
+    fromValue = GetValue(fromLeaf, nullptr, fromElem);
+  }
+
+  if (!fromValue || valueMap.end() == valueMap.find(std::string(fromValue)))
+  {
+    // No match, no message to avoid spam.
+    return;
+  }
+  const char *toValue = valueMap[std::string(fromValue)].c_str();
+  // sdferr << "Map from [" << fromValue << "] to [" << toValue << "]\n";
+
+  // check if destination elements before leaf exist and create if necessary
+  unsigned int newDirIndex = 0;
+  TiXmlElement *toElem = _elem;
+  TiXmlElement *childElem = NULL;
+  for (unsigned int i = 0; i < toTokens.size()-1; ++i)
+  {
+    childElem = toElem->FirstChildElement(toTokens[i]);
+    if (!childElem)
+    {
+      newDirIndex = i;
+      break;
+    }
+    toElem = childElem;
+  }
+
+  // get the destination leaf name
+  const char *toLeaf = toTokens.back().c_str();
+  if (toLeaf[0] == '\0')
+  {
+    sdferr << "Map: <to> has invalid name attribute\n";
+    return;
+  }
+  bool toAttribute = toLeaf[0] == '@';
+
+  // found elements in 'to' string that are not present, so create new
+  // elements
+  if (!childElem)
+  {
+    int offset = toAttribute ? 1 : 0;
+    while (newDirIndex < (toTokens.size()-offset))
+    {
+      TiXmlElement *newElem = new TiXmlElement(toTokens[newDirIndex]);
+      toElem->LinkEndChild(newElem);
+      toElem = newElem;
+      newDirIndex++;
+    }
+  }
+
+  if (toAttribute)
+  {
+    toElem->SetAttribute(toLeaf+1, toValue);
+  }
+  else
+  {
+    toElem->SetValue(toValue);
   }
 }
 
