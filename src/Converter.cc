@@ -359,12 +359,12 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     }
   }
 
-  const char *fromName = fromTokens[fromTokens.size()-1].c_str();
+  const char *fromName = fromTokens.back().c_str();
   const char *value = NULL;
 
   unsigned int newDirIndex = 0;
   // get the new element/attribute name
-  const char *toName = toTokens[toTokens.size()-1].c_str();
+  const char *toName = toTokens.back().c_str();
   TiXmlElement *toElem = _elem;
   TiXmlElement *childElem = NULL;
   for (unsigned int i = 0; i < toTokens.size()-1; ++i)
@@ -378,7 +378,7 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     toElem = childElem;
   }
 
-  // found elements in 'to' string that is not present, so create new
+  // found elements in 'to' string that are not present, so create new
   // elements
   if (!childElem)
   {
