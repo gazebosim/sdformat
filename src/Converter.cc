@@ -435,7 +435,7 @@ void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
     return;
   }
   const char *toValue = valueMap[std::string(fromValue)].c_str();
-  // sdferr << "Map from [" << fromValue << "] to [" << toValue << "]\n";
+  // sdfdbg << "Map from [" << fromValue << "] to [" << toValue << "]\n";
 
   // check if destination elements before leaf exist and create if necessary
   unsigned int newDirIndex = 0;

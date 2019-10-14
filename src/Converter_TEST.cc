@@ -902,7 +902,7 @@ TEST(Converter, MapInvalid)
                 << "    <to/>"
                 << "  </map>"
                 << "  <map>"
-                << "    <from name=""/>"
+                << "    <from name=''/>"
                 << "    <to/>"
                 << "  </map>"
                 << "  <map>"
@@ -958,23 +958,44 @@ TEST(Converter, MapInvalid)
                 << "    </to>"
                 << "  </map>"
                 << "  <convert name='elemB'>"
-                // invalid elemC/, errors without message
+                // invalid elemC/, errors with message
                 << "    <map>"
                 << "      <from name='elemC/'>"
-                << "        <value></value>"
-                << "      </from/>"
-                << "      <to name='elemE'/>"
+                << "        <value>C</value>"
+                << "      </from>"
+                << "      <to name='elemE'>"
+                << "        <value>E</value>"
+                << "      </to>"
                 << "    </map>"
-                // invalid elemC/, errors without message
+                // invalid /elemC, errors without message
                 << "    <map>"
                 << "      <from name='/elemC'>"
-                << "        <value></value>"
-                << "      </from/>"
-                << "      <to name='elemE'/>"
+                << "        <value>C</value>"
+                << "      </from>"
+                << "      <to name='elemE'>"
+                << "        <value>E</value>"
+                << "      </to>"
+                << "    </map>"
+                // invalid elemE/, errors without message
+                << "    <map>"
+                << "      <from name='elemC'>"
+                << "        <value>C</value>"
+                << "      </from>"
+                << "      <to name='elemE/'>"
+                << "        <value>E</value>"
+                << "      </to>"
+                << "    </map>"
+                // invalid /elemE, errors without message
+                << "    <map>"
+                << "      <from name='elemC'>"
+                << "        <value>C</value>"
+                << "      </from>"
+                << "      <to name='/elemE'>"
+                << "        <value>E</value>"
+                << "      </to>"
                 << "    </map>"
                 << "  </convert>"
                 << "</convert>";
-  std::cerr << convertStream.str() << '\n';
   TiXmlDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
   std::ostringstream xmlDocBefore;
