@@ -481,7 +481,8 @@ void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
   }
   else
   {
-    toElem->SetValue(toValue);
+    TiXmlText *text = new TiXmlText(toValue);
+    toElem->LinkEndChild(text);
   }
 }
 
