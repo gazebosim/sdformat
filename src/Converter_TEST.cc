@@ -1024,6 +1024,67 @@ TEST(Converter, MapInvalid)
 }
 
 ////////////////////////////////////////////////////
+/// Ensure that Converter::Map function is working
+/// Test moving from elem to elem
+TEST(Converter, MapElemElem)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem =  childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem =  childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Test moving from elem to elem
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <convert name='elemC'>"
+                << "      <map>"
+                << "        <from name='elemD'>"
+                << "          <value>D</value>"
+                << "        </from>"
+                << "        <to name='elemE'>"
+                << "          <value>E</value>"
+                << "        </to>"
+                << "      </map>"
+                << "    </convert>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  ASSERT_NE(nullptr, convertedElem->FirstChildElement("elemD"));
+  std::string elemValue = convertedElem->FirstChildElement("elemD")->GetText();
+  EXPECT_EQ(elemValue, "D");
+  ASSERT_NE(nullptr, convertedElem->FirstChildElement("elemE"));
+  elemValue = convertedElem->FirstChildElement("elemE")->GetText();
+  EXPECT_EQ(elemValue, "E");
+}
+
+////////////////////////////////////////////////////
 TEST(Converter, RenameElemElem)
 {
   // Set up an xml string for testing
