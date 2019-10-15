@@ -326,6 +326,27 @@ TEST(Element, ToStringElements)
 }
 
 /////////////////////////////////////////////////
+TEST(Element, ToStringRequiredAttributes)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  parent->AddAttribute("test", "string", "foo", true, "foo description");
+  ASSERT_EQ(parent->GetAttributeCount(), 1UL);
+
+  // A required attribute should print even if it has not been set
+  EXPECT_FALSE(parent->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("myprefix"), "myprefix< test='foo'/>\n");
+
+  sdf::ParamPtr test = parent->GetAttribute("test");
+  ASSERT_NE(nullptr, test);
+  EXPECT_FALSE(test->GetSet());
+  EXPECT_TRUE(test->SetFromString("bar"));
+  EXPECT_TRUE(test->GetSet());
+  EXPECT_TRUE(parent->GetAttributeSet("test"));
+
+  EXPECT_EQ(parent->ToString("myprefix"), "myprefix< test='bar'/>\n");
+}
+
+/////////////////////////////////////////////////
 TEST(Element, ToStringValue)
 {
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
@@ -347,6 +368,26 @@ TEST(Element, ToStringValue)
   EXPECT_TRUE(parent->GetAttributeSet("test"));
   EXPECT_EQ(parent->ToString("myprefix"),
             "myprefix< test='foo'>val</>\n");
+}
+
+
+/////////////////////////////////////////////////
+TEST(Element, ToStringClonedElement)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+
+  parent->AddAttribute("test", "string", "foo", false, "foo description");
+  ASSERT_EQ(parent->GetAttributeCount(), 1UL);
+
+  sdf::ParamPtr test = parent->GetAttribute("test");
+  ASSERT_NE(nullptr, test);
+  EXPECT_FALSE(test->GetSet());
+  EXPECT_TRUE(test->SetFromString("foo"));
+  EXPECT_TRUE(test->GetSet());
+
+  sdf::ElementPtr parentClone = parent->Clone();
+  EXPECT_TRUE(parentClone->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("myprefix"), parentClone->ToString("myprefix"));
 }
 
 /////////////////////////////////////////////////

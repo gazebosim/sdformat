@@ -4,6 +4,7 @@
 
 1. Element: don't print unset attributes.
     * [Pull request 571](https://bitbucket.org/osrf/sdformat/pull-requests/571)
+    * [Pull request 576](https://bitbucket.org/osrf/sdformat/pull-requests/576)
 
 1. Lidar.hh: remove 'using namespace ignition'.
     * [Pull request 577](https://bitbucket.org/osrf/sdformat/pull-requests/577)

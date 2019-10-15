@@ -409,7 +409,11 @@ void Element::PrintValuesImpl(const std::string &_prefix,
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
     // Only print attribute values if they were set
-    if ((*aiter)->GetSet())
+    // TODO(anyone): GetRequired is added here to support up-conversions where a
+    // new required attribute with a default value is added. We would have
+    // better separation of concerns if the conversion process set the required
+    // attributes with their default values.
+    if ((*aiter)->GetSet() || (*aiter)->GetRequired())
     {
       _out << " " << (*aiter)->GetKey() << "='"
            << (*aiter)->GetAsString() << "'";
