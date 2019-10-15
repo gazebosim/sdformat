@@ -530,6 +530,11 @@ TEST(SDF, Version)
 
   sdf::SDF::Version("0.2.3");
   EXPECT_STREQ("0.2.3", sdf::SDF::Version().c_str());
+
+  // Restore the default sdf version, since it persists
+  // for the other tests in this file.
+  sdf::SDF::Version(SDF_VERSION);
+  EXPECT_STREQ(SDF_VERSION, sdf::SDF::Version().c_str());
 }
 
 /////////////////////////////////////////////////
@@ -589,6 +594,33 @@ TEST(SDF, PrintValues)
   EXPECT_NE(buffer.str().find("</>"), std::string::npos);
 
   std::cout.rdbuf(old);
+}
+
+/////////////////////////////////////////////////
+TEST(SDF, ToStringAndParse)
+{
+  std::string testWorld = R"sdf(
+    <?xml version="1.0" ?>
+    <sdf version="1.5">
+      <world name="default">
+      </world>
+    </sdf>)sdf";
+
+  sdf::SDF sdfParsed;
+
+  // This is the same as SDF::SetFromString but allows us to retrieve the result
+  // of parsing  by calling sdf::readString directly
+  sdf::initFile("root.sdf", sdfParsed.Root());
+
+  // Make a clone of the root to be used for testing later
+  auto rootOriginal = sdfParsed.Root();
+  auto rootClone = rootOriginal->Clone();
+
+  EXPECT_TRUE(sdf::readString(testWorld, rootOriginal));
+
+  std::string sdfToString = sdfParsed.ToString();
+
+  EXPECT_TRUE(sdf::readString(sdfToString, rootClone));
 }
 
 #ifndef _WIN32

@@ -2895,7 +2895,7 @@ void CreateInertial(TiXmlElement *_elem,
 ////////////////////////////////////////////////////////////////////////////////
 void CreateJoint(TiXmlElement *_root,
                  urdf::LinkConstSharedPtr _link,
-                 ignition::math::Pose3d &_currentTransform)
+                 ignition::math::Pose3d &/*_currentTransform*/)
 {
   // compute the joint tag
   std::string jtype;
@@ -2975,15 +2975,12 @@ void CreateJoint(TiXmlElement *_root,
     }
     else if (jtype != "fixed")
     {
-      ignition::math::Vector3d rotatedJointAxis =
-        _currentTransform.Rot().RotateVector(
-            ignition::math::Vector3d(_link->parent_joint->axis.x,
-              _link->parent_joint->axis.y,
-              _link->parent_joint->axis.z));
-      double rotatedJointAxisArray[3] =
-      { rotatedJointAxis.X(), rotatedJointAxis.Y(), rotatedJointAxis.Z() };
+      double jointAxisXyzArray[3] =
+      { _link->parent_joint->axis.x,
+        _link->parent_joint->axis.y,
+        _link->parent_joint->axis.z};
       AddKeyValue(jointAxis, "xyz",
-                  Values2str(3, rotatedJointAxisArray));
+                  Values2str(3, jointAxisXyzArray));
       if (_link->parent_joint->dynamics)
       {
         AddKeyValue(jointAxisDynamics, "damping",
@@ -3237,9 +3234,9 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
 
     try
     {
-      // URDF is compatible with version 1.4. The automatic conversion script
+      // URDF is compatible with version 1.5. The automatic conversion script
       // will up-convert URDF to SDF.
-      sdf->SetAttribute("version", "1.4");
+      sdf->SetAttribute("version", "1.5");
       // add robot to sdf
       sdf->LinkEndChild(robot);
     }

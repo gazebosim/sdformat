@@ -68,4 +68,22 @@ TEST(SDFParser, JointAxisParameters)
     EXPECT_DOUBLE_EQ(value, dynamics->Get<double>("friction"));
   }
   EXPECT_EQ(bitmask, 0x3u);
+
+  // check joint axis values
+  for (sdf::ElementPtr joint = model->GetElement("joint"); joint;
+       joint = joint->GetNextElement("joint"))
+  {
+    std::string jointName = joint->Get<std::string>("name");
+
+    ignition::math::Vector3d xyz(1, 0, 0);
+    if (jointName == "joint12" || jointName == "joint23")
+    {
+      xyz.Set(0, 1, 0);
+    }
+
+    ASSERT_TRUE(joint->HasElement("axis"));
+    sdf::ElementPtr axis = joint->GetElement("axis");
+    EXPECT_EQ(xyz, axis->Get<ignition::math::Vector3d>("xyz"));
+    EXPECT_FALSE(axis->Get<bool>("use_parent_model_frame"));
+  }
 }
