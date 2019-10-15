@@ -54,9 +54,15 @@ TEST(JointAxisFrame, Version_1_4_missing)
   sdf::ElementPtr joint = model->Root()->GetElement(
     "model")->GetElement("joint");
   sdf::ElementPtr axis = joint->GetElement("axis");
+  ASSERT_NE(nullptr, axis);
 
   axis->PrintValues("");
   EXPECT_FALSE(axis->HasElement("use_parent_model_frame"));
+
+  sdf::ElementPtr xyz = axis->GetElement("xyz");
+  ASSERT_NE(nullptr, xyz);
+  ASSERT_TRUE(xyz->HasAttribute("expressed_in"));
+  EXPECT_EQ("__model__", xyz->Get<std::string>("expressed_in"));
 }
 
 ////////////////////////////////////////
