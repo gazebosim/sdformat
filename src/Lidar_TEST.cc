@@ -36,18 +36,18 @@ TEST(DOMLidar, Set)
   EXPECT_EQ(lidar.HorizontalScanSamples(), 123u);
   lidar.SetHorizontalScanResolution(0.45);
   EXPECT_DOUBLE_EQ(lidar.HorizontalScanResolution(), 0.45);
-  lidar.SetHorizontalScanMinAngle(math::Angle(0.67));
+  lidar.SetHorizontalScanMinAngle(ignition::math::Angle(0.67));
   EXPECT_DOUBLE_EQ(*(lidar.HorizontalScanMinAngle()), 0.67);
-  lidar.SetHorizontalScanMaxAngle(math::Angle(0.89));
+  lidar.SetHorizontalScanMaxAngle(ignition::math::Angle(0.89));
   EXPECT_DOUBLE_EQ(*(lidar.HorizontalScanMaxAngle()), 0.89);
 
   lidar.SetVerticalScanSamples(98);
   EXPECT_EQ(lidar.VerticalScanSamples(), 98u);
   lidar.SetVerticalScanResolution(0.76);
   EXPECT_DOUBLE_EQ(lidar.VerticalScanResolution(), 0.76);
-  lidar.SetVerticalScanMinAngle(math::Angle(0.54));
+  lidar.SetVerticalScanMinAngle(ignition::math::Angle(0.54));
   EXPECT_DOUBLE_EQ(*(lidar.VerticalScanMinAngle()), 0.54);
-  lidar.SetVerticalScanMaxAngle(math::Angle(0.321));
+  lidar.SetVerticalScanMaxAngle(ignition::math::Angle(0.321));
   EXPECT_DOUBLE_EQ(*(lidar.VerticalScanMaxAngle()), 0.321);
 
   lidar.SetRangeMin(1.2);
