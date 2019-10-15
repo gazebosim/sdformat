@@ -412,7 +412,8 @@ void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
   }
 
   const char *fromLeaf = fromTokens.back().c_str();
-  if (fromLeaf[0] == '\0')
+  if (fromLeaf[0] == '\0' ||
+      (fromLeaf[0] == '@' && fromLeaf[1] == '\0'))
   {
     sdferr << "Map: <from> has invalid name attribute\n";
     return;
@@ -454,7 +455,8 @@ void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
 
   // get the destination leaf name
   const char *toLeaf = toTokens.back().c_str();
-  if (toLeaf[0] == '\0')
+  if (toLeaf[0] == '\0' ||
+      (toLeaf[0] == '@' && toLeaf[1] == '\0'))
   {
     sdferr << "Map: <to> has invalid name attribute\n";
     return;
@@ -462,12 +464,18 @@ void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
   bool toAttribute = toLeaf[0] == '@';
 
   // found elements in 'to' string that are not present, so create new
-  // elements
+  // elements if they aren't empty
   if (!childElem)
   {
     int offset = toAttribute ? 1 : 0;
     while (newDirIndex < (toTokens.size()-offset))
     {
+      if (toTokens[newDirIndex].empty())
+      {
+        sdferr << "Map: <to> has invalid name attribute\n";
+        return;
+      }
+
       TiXmlElement *newElem = new TiXmlElement(toTokens[newDirIndex]);
       toElem->LinkEndChild(newElem);
       toElem = newElem;
