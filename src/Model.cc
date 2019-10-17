@@ -157,7 +157,8 @@ Errors Model::Load(ElementPtr _sdf)
   if (_sdf->HasElement("model"))
   {
     errors.push_back({ErrorCode::NESTED_MODELS_UNSUPPORTED,
-                     "Nested models are not yet supported by DOM objects."});
+                     "Nested models are not yet supported by DOM objects, "
+                     "skipping model [" + this->dataPtr->name + "]."});
   }
 
   // Load all the links.

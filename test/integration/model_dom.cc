@@ -230,3 +230,21 @@ TEST(DOMRoot, LoadCanonicalLink)
   EXPECT_EQ(0u, model->JointCount());
   EXPECT_EQ(nullptr, model->JointByIndex(0));
 }
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, NestedModel)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "nested_model.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+
+  // it should fail to load because nested models aren't yet supported
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::NESTED_MODELS_UNSUPPORTED);
+
+  EXPECT_EQ(0u, root.ModelCount());
+}
