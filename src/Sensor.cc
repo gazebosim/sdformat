@@ -99,7 +99,7 @@ Errors Sensor::Load(ElementPtr _sdf)
   // Check that the sensor's name is valid
   if (isReservedName(this->dataPtr->name))
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
+    errors.push_back({ErrorCode::RESERVED_NAME,
                      "The supplied sensor name [" + this->dataPtr->name +
                      "] is reserved."});
   }

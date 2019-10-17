@@ -90,7 +90,7 @@ Errors Physics::Load(sdf::ElementPtr _sdf)
   // Check that the physics's name is valid
   if (isReservedName(this->dataPtr->name))
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
+    errors.push_back({ErrorCode::RESERVED_NAME,
                      "The supplied physics name [" + this->dataPtr->name +
                      "] is reserved."});
   }

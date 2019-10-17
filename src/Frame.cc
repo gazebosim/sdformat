@@ -91,7 +91,7 @@ Errors Frame::Load(ElementPtr _sdf)
   // Check that the frame's name is valid
   if (isReservedName(this->dataPtr->name))
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
+    errors.push_back({ErrorCode::RESERVED_NAME,
                      "The supplied frame name [" + this->dataPtr->name +
                      "] is reserved."});
   }

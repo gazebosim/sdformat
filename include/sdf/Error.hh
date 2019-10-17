@@ -90,6 +90,12 @@ namespace sdf
 
     /// \brief Indicates that reading an SDF string failed.
     STRING_READ,
+
+    /// \brief A reserved name was used in an entity name attribute.
+    RESERVED_NAME,
+
+    /// \brief Indicates that a DOM object tried to read a nested model.
+    NESTED_MODELS_UNSUPPORTED,
   };
 
   class SDFORMAT_VISIBLE Error
