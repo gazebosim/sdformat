@@ -1020,9 +1020,8 @@ TEST(Converter, MapInvalid)
   xmlDocBefore << xmlDoc;
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  // In this case, we had an invalid elemC/ in the conversion, which
-  // means that the conversion quietly failed.  Make sure the new
-  // document is the same as the original.
+  // Only invalid conversion statements.
+  // Make sure the new document is the same as the original.
   std::ostringstream xmlDocAfter;
   xmlDocAfter << xmlDoc;
   EXPECT_EQ(xmlDocBefore.str(), xmlDocAfter.str());
