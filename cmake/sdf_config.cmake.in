@@ -30,8 +30,8 @@ set(@PKG_NAME@_LIBRARIES @sdf_import_target_name@)
 
 # These variables are used by ignition-cmake to automatically configure the
 # pkgconfig files for ignition projects.
-set(@PROJECT_NAME_LOWER@_PKGCONFIG_ENTRY "@PROJECT_NAME_LOWER@")
-set(@PROJECT_NAME_LOWER@_PKGCONFIG_TYPE PKGCONFIG_REQUIRES)
+set(@PKG_NAME@_PKGCONFIG_ENTRY "@PKG_NAME@")
+set(@PKG_NAME@_PKGCONFIG_TYPE PKGCONFIG_REQUIRES)
 
 find_package(ignition-math@IGN_MATH_VER@)
 list(APPEND @PKG_NAME@_INCLUDE_DIRS ${IGNITION-MATH_INCLUDE_DIRS})
