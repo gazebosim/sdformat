@@ -63,6 +63,11 @@ namespace sdf
     /// \return True if _filename is a URDF model.
     public: static bool IsURDF(const std::string &_filename);
 
+    /// \brief Return true if the string is a URDF model.
+    /// \param[in] _str A string possibly containing URDF
+    /// \return True if _str is a URDF model.
+    public: static bool IsURDFString(const std::string &_str);
+
     /// things that do not belong in urdf but should be mapped into sdf
     /// @todo: do this using sdf definitions, not hard coded stuff
     private: void ParseSDFExtension(TiXmlDocument &_urdfXml);

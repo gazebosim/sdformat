@@ -254,12 +254,17 @@ bool URDF2SDF::IsURDF(const std::string &_filename)
   {
     std::ostringstream stream;
     stream << xmlDoc;
-    std::string urdfStr = stream.str();
-    urdf::ModelInterfaceSharedPtr robotModel = urdf::parseURDF(urdfStr);
-    return robotModel != nullptr;
+    return IsURDFString(stream.str());
   }
 
   return false;
+}
+
+/////////////////////////////////////////////////
+bool URDF2SDF::IsURDFString(const std::string &_str)
+{
+  urdf::ModelInterfaceSharedPtr robotModel = urdf::parseURDF(_str);
+  return robotModel != nullptr;
 }
 
 /////////////////////////////////////////////////

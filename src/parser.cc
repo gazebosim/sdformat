@@ -455,7 +455,16 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
-    sdferr << "Missing <sdf> element.\n";
+    bool isURDF = false;
+    if (_source == "data-string")
+      isURDF = sdf::URDF2SDF::IsURDFString(_source);
+    else
+      isURDF = sdf::URDF2SDF::IsURDF(_source);
+
+    if (!isURDF)
+    {
+      sdferr << "Missing <sdf> element.\n";
+    }
     return false;
   }
 
@@ -528,7 +537,16 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
-    sdferr << "Missing <sdf> element.\n";
+    bool isURDF = false;
+    if (_source == "data-string")
+      isURDF = sdf::URDF2SDF::IsURDFString(_source);
+    else
+      isURDF = sdf::URDF2SDF::IsURDF(_source);
+
+    if (!isURDF)
+    {
+      sdferr << "Missing <sdf> element.\n";
+    }
     return false;
   }
 
