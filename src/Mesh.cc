@@ -24,6 +24,9 @@ class sdf::MeshPrivate
   /// \brief The mesh's URI.
   public: std::string uri = "";
 
+  /// \brief The path to the file where this mesh was defined.
+  public: std::string filePath = "";
+
   /// \brief The mesh's scale.
   public: ignition::math::Vector3d scale {1, 1, 1};
 
@@ -59,6 +62,7 @@ Mesh::Mesh(const Mesh &_mesh)
   this->dataPtr->submesh = _mesh.dataPtr->submesh;
   this->dataPtr->centerSubmesh = _mesh.dataPtr->centerSubmesh;
   this->dataPtr->sdf = _mesh.dataPtr->sdf;
+  this->dataPtr->filePath = _mesh.dataPtr->filePath;
 }
 
 /////////////////////////////////////////////////
@@ -73,6 +77,7 @@ Mesh &Mesh::operator=(const Mesh &_mesh)
   this->dataPtr->submesh = _mesh.dataPtr->submesh;
   this->dataPtr->centerSubmesh = _mesh.dataPtr->centerSubmesh;
   this->dataPtr->sdf = _mesh.dataPtr->sdf;
+  this->dataPtr->filePath = _mesh.dataPtr->filePath;
   return *this;
 }
 
@@ -106,6 +111,8 @@ Errors Mesh::Load(ElementPtr _sdf)
     return errors;
   }
 
+  this->dataPtr->filePath = _sdf->FilePath();
+
   // We need a mesh element
   if (_sdf->GetName() != "mesh")
   {
@@ -117,8 +124,7 @@ Errors Mesh::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("uri"))
   {
-    this->dataPtr->uri = _sdf->Get<std::string>("uri",
-        this->dataPtr->uri).first;
+    this->dataPtr->uri = _sdf->Get<std::string>("uri", "").first;
   }
   else
   {
@@ -171,6 +177,18 @@ std::string Mesh::Uri() const
 void Mesh::SetUri(const std::string &_uri)
 {
   this->dataPtr->uri = _uri;
+}
+
+//////////////////////////////////////////////////
+const std::string &Mesh::FilePath() const
+{
+  return this->dataPtr->filePath;
+}
+
+//////////////////////////////////////////////////
+void Mesh::SetFilePath(const std::string &_filePath)
+{
+  this->dataPtr->filePath = _filePath;
 }
 
 //////////////////////////////////////////////////
