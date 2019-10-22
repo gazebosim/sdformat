@@ -17,8 +17,8 @@
 #include <string>
 #include <vector>
 #include <ignition/math/Pose3.hh>
-#include "sdf/Error.hh"
 #include "sdf/Actor.hh"
+#include "sdf/Error.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -31,6 +31,9 @@ class sdf::AnimationPrivate
 
   /// \brief Path to animation file.
   public: std::string filename = "__default__";
+
+  /// \brief The path to the file where this animation was defined.
+  public: std::string filePath = "";
 
   /// \brief Scale for animation skeleton.
   public: double scale = 1.0;
@@ -80,6 +83,9 @@ class sdf::ActorPrivate
   /// \brief Filename of the actor skin.
   public: std::string skinFilename = "__default__";
 
+  /// \brief The path to the file where this actor was defined.
+  public: std::string filePath = "";
+
   /// \brief Scale of the actor skin.
   public: double skinScale = 1.0;
 
@@ -114,12 +120,14 @@ Animation::Animation()
 {
 }
 
+/////////////////////////////////////////////////
 void Animation::CopyFrom(const Animation &_animation)
 {
   this->dataPtr->name = _animation.dataPtr->name;
   this->dataPtr->filename = _animation.dataPtr->filename;
   this->dataPtr->scale = _animation.dataPtr->scale;
   this->dataPtr->interpolateX = _animation.dataPtr->interpolateX;
+  this->dataPtr->filePath = _animation.dataPtr->filePath;
 }
 
 /////////////////////////////////////////////////
@@ -172,6 +180,8 @@ Errors Animation::Load(ElementPtr _sdf)
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
           "An <animation> requires a name attribute."});
   }
+
+  this->dataPtr->filePath = _sdf->FilePath();
 
   std::pair filenameValue = _sdf->Get<std::string>("filename",
         this->dataPtr->filename);
@@ -237,6 +247,18 @@ bool Animation::InterpolateX() const
 void Animation::SetInterpolateX(bool _interpolateX)
 {
   this->dataPtr->interpolateX = _interpolateX;
+}
+
+//////////////////////////////////////////////////
+const std::string &Animation::FilePath() const
+{
+  return this->dataPtr->filePath;
+}
+
+//////////////////////////////////////////////////
+void Animation::SetFilePath(const std::string &_filePath)
+{
+  this->dataPtr->filePath = _filePath;
 }
 
 /////////////////////////////////////////////////
@@ -535,6 +557,7 @@ void Actor::CopyFrom(const Actor &_actor)
   this->dataPtr->scriptDelayStart = _actor.dataPtr->scriptDelayStart;
   this->dataPtr->scriptAutoStart  = _actor.dataPtr->scriptAutoStart;
   this->dataPtr->trajectories     = _actor.dataPtr->trajectories;
+  this->dataPtr->filePath         = _actor.dataPtr->filePath;
 }
 
 /////////////////////////////////////////////////
@@ -543,6 +566,7 @@ Errors Actor::Load(ElementPtr _sdf)
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
+  this->dataPtr->filePath = _sdf->FilePath();
 
   if (_sdf->GetName() != "actor")
   {
@@ -837,4 +861,16 @@ bool Actor::JointNameExists(const std::string &_name) const
       return true;
   }
   return false;
+}
+
+//////////////////////////////////////////////////
+const std::string &Actor::FilePath() const
+{
+  return this->dataPtr->filePath;
+}
+
+//////////////////////////////////////////////////
+void Actor::SetFilePath(const std::string &_filePath)
+{
+  this->dataPtr->filePath = _filePath;
 }

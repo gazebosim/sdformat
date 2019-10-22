@@ -29,6 +29,7 @@ TEST(DOMActor, DefaultConstruction)
   EXPECT_EQ(nullptr, actor.Element());
   EXPECT_EQ("__default__", actor.SkinFilename());
   EXPECT_DOUBLE_EQ(1.0, actor.SkinScale());
+  EXPECT_TRUE(actor.FilePath().empty());
 
   EXPECT_EQ(0u, actor.AnimationCount());
   EXPECT_EQ(nullptr, actor.AnimationByIndex(0));
@@ -71,11 +72,13 @@ TEST(DOMActor, CopyConstructor)
   actor.SetScriptLoop(true);
   actor.SetScriptDelayStart(2.8);
   actor.SetScriptAutoStart(false);
+  actor.SetFilePath("/home/path/to/model.sdf");
 
   sdf::Actor actor2(actor);
   EXPECT_EQ("test_copy_actor", actor2.Name());
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
   EXPECT_EQ("ground_plane", actor2.PoseFrame());
+  EXPECT_EQ("/home/path/to/model.sdf", actor2.FilePath());
 
   EXPECT_EQ(0u, actor2.AnimationCount());
   EXPECT_EQ(nullptr, actor2.AnimationByIndex(0));
@@ -119,12 +122,14 @@ TEST(DOMActor, CopyAssignmentOperator)
   actor.SetScriptLoop(true);
   actor.SetScriptDelayStart(2.8);
   actor.SetScriptAutoStart(false);
+  actor.SetFilePath("/home/path/to/model.sdf");
 
   sdf::Actor actor2;
   actor2 = actor;
   EXPECT_EQ("test_actor_assignment", actor2.Name());
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
   EXPECT_EQ("ground_plane", actor2.PoseFrame());
+  EXPECT_EQ("/home/path/to/model.sdf", actor2.FilePath());
 
   EXPECT_EQ(0u, actor2.AnimationCount());
   EXPECT_EQ(nullptr, actor2.AnimationByIndex(0));
@@ -168,11 +173,13 @@ TEST(DOMActor, MoveConstructor)
   actor.SetScriptLoop(true);
   actor.SetScriptDelayStart(2.8);
   actor.SetScriptAutoStart(false);
+  actor.SetFilePath("/home/path/to/model.sdf");
 
   sdf::Actor actor2(std::move(actor));
   EXPECT_EQ("test_actor_assignment", actor2.Name());
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
   EXPECT_EQ("ground_plane", actor2.PoseFrame());
+  EXPECT_EQ("/home/path/to/model.sdf", actor2.FilePath());
 
   EXPECT_EQ(0u, actor2.AnimationCount());
   EXPECT_EQ(nullptr, actor2.AnimationByIndex(0));
@@ -216,12 +223,14 @@ TEST(DOMActor, MoveAssignment)
   actor.SetScriptLoop(true);
   actor.SetScriptDelayStart(2.8);
   actor.SetScriptAutoStart(false);
+  actor.SetFilePath("/home/path/to/model.sdf");
 
   sdf::Actor actor2;
   actor2 = std::move(actor);
   EXPECT_EQ("test_actor_assignment", actor2.Name());
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
   EXPECT_EQ("ground_plane", actor2.PoseFrame());
+  EXPECT_EQ("/home/path/to/model.sdf", actor2.FilePath());
 
   EXPECT_EQ(0u, actor2.AnimationCount());
   EXPECT_EQ(nullptr, actor2.AnimationByIndex(0));

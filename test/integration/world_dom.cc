@@ -64,6 +64,8 @@ TEST(DOMWorld, LoadIncorrectElement)
   // Read an SDF file, and store the result in sdfParsed.
   sdf::SDFPtr sdfParsed = sdf::readFile(testFile, errors);
   ASSERT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, sdfParsed);
+  EXPECT_EQ(testFile, sdfParsed->FilePath());
 
   sdf::World world;
   errors = world.Load(sdfParsed->Root());
@@ -71,6 +73,7 @@ TEST(DOMWorld, LoadIncorrectElement)
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_INCORRECT_TYPE);
   EXPECT_TRUE(errors[0].Message().find("Attempting to load a World") !=
       std::string::npos);
+  EXPECT_EQ(testFile, world.Element()->FilePath());
 }
 
 //////////////////////////////////////////////////
@@ -85,6 +88,8 @@ TEST(DOMWorld, Load)
   EXPECT_EQ(root.Version(), "1.6");
   EXPECT_EQ(root.WorldCount(), 1u);
   EXPECT_TRUE(root.WorldNameExists("default"));
+  ASSERT_NE(nullptr, root.Element());
+  EXPECT_EQ(testFile, root.Element()->FilePath());
 
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
@@ -94,6 +99,7 @@ TEST(DOMWorld, Load)
   EXPECT_EQ(world->WindLinearVelocity(), ignition::math::Vector3d(4, 5, 6));
   EXPECT_EQ(world->Gravity(), ignition::math::Vector3d(1, 2, 3));
   EXPECT_EQ(world->MagneticField(), ignition::math::Vector3d(-1, 0.5, 10));
+  EXPECT_EQ(testFile, world->Element()->FilePath());
 
   const sdf::Atmosphere *atmosphere = world->Atmosphere();
   ASSERT_NE(nullptr, atmosphere);
@@ -106,6 +112,7 @@ TEST(DOMWorld, Load)
   ASSERT_NE(nullptr, gui);
   ASSERT_NE(nullptr, gui->Element());
   EXPECT_TRUE(gui->Fullscreen());
+  EXPECT_EQ(testFile, gui->Element()->FilePath());
 
   const sdf::Scene *scene = world->Scene();
   ASSERT_NE(nullptr, scene);
@@ -115,6 +122,7 @@ TEST(DOMWorld, Load)
   EXPECT_TRUE(scene->OriginVisual());
   EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f), scene->Ambient());
   EXPECT_EQ(ignition::math::Color(0.6f, 0.7f, 0.8f), scene->Background());
+  EXPECT_EQ(testFile, scene->Element()->FilePath());
 
   ASSERT_EQ(1u, world->PhysicsCount());
   const sdf::Physics *physics = world->PhysicsByIndex(1);
