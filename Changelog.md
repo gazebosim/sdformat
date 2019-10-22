@@ -2,8 +2,12 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Avoid printing error message about missing `<sdf>` element if the source is a URDF
+    * [Pull request 582](https://bitbucket.org/osrf/sdformat/pull-requests/582)
+
 1. Use inline namespaces in Utils.cc
     * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
+
 
 ### SDFormat 8.4.0 (2019-10-XX)
 
