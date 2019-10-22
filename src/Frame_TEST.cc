@@ -30,15 +30,15 @@ TEST(DOMframe, Construction)
   EXPECT_EQ(frame.Name(), "test_frame");
 
   EXPECT_TRUE(frame.AttachedTo().empty());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, frame.Pose());
+  EXPECT_EQ(ignition::math::Pose3d::Zero, frame.RawPose());
   EXPECT_TRUE(frame.PoseRelativeTo().empty());
 
   frame.SetAttachedTo("attachment");
   EXPECT_EQ("attachment", frame.AttachedTo());
 
-  frame.SetPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  frame.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
   EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
-            frame.Pose());
+            frame.RawPose());
 
   frame.SetPoseRelativeTo("link");
   EXPECT_EQ("link", frame.PoseRelativeTo());

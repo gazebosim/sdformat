@@ -131,7 +131,7 @@ const std::string &Frame::AttachedTo() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Frame::Pose() const
+const ignition::math::Pose3d &Frame::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -149,7 +149,7 @@ void Frame::SetAttachedTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
-void Frame::SetPose(const ignition::math::Pose3d &_pose)
+void Frame::SetRawPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

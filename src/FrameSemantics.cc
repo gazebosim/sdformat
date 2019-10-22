@@ -530,7 +530,7 @@ Errors buildPoseRelativeToGraph(
     if (frame->PoseRelativeTo().empty() && frame->AttachedTo().empty())
     {
       // add edge from frame to implicit model frame
-      _out.graph.AddEdge({modelFrameId, frameId}, frame->Pose());
+      _out.graph.AddEdge({modelFrameId, frameId}, frame->RawPose());
     }
   }
 
@@ -632,7 +632,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                        "Frame relative_to itself causes a cycle."});
     }
-    _out.graph.AddEdge({relativeToId, frameId}, frame->Pose());
+    _out.graph.AddEdge({relativeToId, frameId}, frame->RawPose());
   }
 
   return errors;
@@ -697,7 +697,7 @@ Errors buildPoseRelativeToGraph(
     if (frame->PoseRelativeTo().empty() && frame->AttachedTo().empty())
     {
       // add edge from frame to implicit world frame
-      _out.graph.AddEdge({worldFrameId, frameId}, frame->Pose());
+      _out.graph.AddEdge({worldFrameId, frameId}, frame->RawPose());
     }
   }
 
@@ -770,7 +770,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                        "Frame relative_to itself causes a cycle."});
     }
-    _out.graph.AddEdge({relativeToId, frameId}, frame->Pose());
+    _out.graph.AddEdge({relativeToId, frameId}, frame->RawPose());
   }
 
   return errors;

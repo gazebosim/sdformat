@@ -83,13 +83,15 @@ namespace sdf
     /// \brief Get the pose of the frame object. This is the pose of the
     /// frame as specified in SDF
     /// (<frame><pose> ... </pose></frame>).
+    /// Use ResolvePose to compute the pose relative to a specific frame.
     /// \return The pose of the frame object.
-    public: const ignition::math::Pose3d &Pose() const;
+    public: const ignition::math::Pose3d &RawPose() const;
 
-    /// \brief Set the pose of the frame object.
-    /// \sa const ignition::math::Pose3d &Pose() const
+    /// \brief Set the raw pose of the frame object. This is interpreted
+    /// relative to the frame named in the //pose/@relative_to attribute.
+    /// \sa const ignition::math::Pose3d &RawPose() const
     /// \param[in] _pose The pose of the frame object.
-    public: void SetPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const ignition::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// frame's pose is expressed. An empty value indicates that the frame is

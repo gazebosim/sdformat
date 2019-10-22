@@ -637,11 +637,11 @@ TEST(DOMFrame, LoadModelFramesRelativeTo)
   EXPECT_EQ("L", model->FrameByName("F3")->PoseRelativeTo());
   EXPECT_EQ("F3", model->FrameByName("F4")->PoseRelativeTo());
 
-  EXPECT_EQ(Pose(0, 1, 0, 0, 0, 0), model->FrameByName("F0")->Pose());
-  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->FrameByName("F1")->Pose());
-  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->FrameByName("F2")->Pose());
-  EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0), model->FrameByName("F3")->Pose());
-  EXPECT_EQ(Pose::Zero, model->FrameByName("F4")->Pose());
+  EXPECT_EQ(Pose(0, 1, 0, 0, 0, 0), model->FrameByName("F0")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->FrameByName("F1")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->FrameByName("F2")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0), model->FrameByName("F3")->RawPose());
+  EXPECT_EQ(Pose::Zero, model->FrameByName("F4")->RawPose());
 
   Pose pose;
 
@@ -785,10 +785,11 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_EQ("J", model->FrameByName("F3")->PoseRelativeTo());
   EXPECT_EQ("F3", model->FrameByName("F4")->PoseRelativeTo());
 
-  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->FrameByName("F1")->Pose());
-  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->FrameByName("F2")->Pose());
-  EXPECT_EQ(Pose(0, 0, 3, 0, IGN_PI/2, 0), model->FrameByName("F3")->Pose());
-  EXPECT_EQ(Pose(0, 0, 4, 0, -IGN_PI/2, 0), model->FrameByName("F4")->Pose());
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->FrameByName("F1")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->FrameByName("F2")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 3, 0, IGN_PI/2, 0), model->FrameByName("F3")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 4, 0, -IGN_PI/2, 0),
+            model->FrameByName("F4")->RawPose());
 
   // Test ResolvePose for each Frame.
   Pose pose;
