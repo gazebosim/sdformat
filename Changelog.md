@@ -5,6 +5,9 @@
 1. Converter: add `<map>` element for converting fixed values.
     * [Pull request 580](https://bitbucket.org/osrf/sdformat/pull-requests/580)
 
+1. Use inline namespaces in Utils.cc
+    * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
+
 ### SDFormat 8.4.0 (2019-10-XX)
 
 1. Accept relative path in `<uri>`.
