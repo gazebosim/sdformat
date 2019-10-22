@@ -240,18 +240,23 @@ TEST(Material, MaterialPBR)
   sdf::Errors errors;
   sdf::SDFPtr sdfParsed = sdf::readFile(testFile, errors);
   ASSERT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, sdfParsed);
+  ASSERT_NE(nullptr, sdfParsed->Root());
+  EXPECT_EQ(testFile, sdfParsed->FilePath());
 
   // model
   EXPECT_TRUE(sdfParsed->Root()->HasElement("model"));
   sdf::ElementPtr modelElem = sdfParsed->Root()->GetElement("model");
   EXPECT_TRUE(modelElem->HasAttribute("name"));
   EXPECT_EQ(modelElem->Get<std::string>("name"), "model");
+  EXPECT_EQ(testFile, modelElem->FilePath());
 
   // link
   EXPECT_TRUE(modelElem->HasElement("link"));
   sdf::ElementPtr linkElem = modelElem->GetElement("link");
   EXPECT_TRUE(linkElem->HasAttribute("name"));
   EXPECT_EQ(linkElem->Get<std::string>("name"), "link");
+  EXPECT_EQ(testFile, linkElem->FilePath());
 
   EXPECT_TRUE(linkElem->HasElement("visual"));
   sdf::ElementPtr visualElem = linkElem->GetElement("visual");
@@ -260,6 +265,7 @@ TEST(Material, MaterialPBR)
   {
     EXPECT_TRUE(visualElem->HasAttribute("name"));
     EXPECT_EQ("visual_metal_workflow", visualElem->Get<std::string>("name"));
+    EXPECT_EQ(testFile, visualElem->FilePath());
 
     // material
     EXPECT_TRUE(visualElem->HasElement("material"));

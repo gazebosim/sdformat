@@ -21,6 +21,7 @@
 
 #include "sdf/Assert.hh"
 #include "sdf/Element.hh"
+#include "sdf/Filesystem.hh"
 
 using namespace sdf;
 
@@ -47,6 +48,9 @@ ElementPtr Element::GetParent() const
 void Element::SetParent(const ElementPtr _parent)
 {
   this->dataPtr->parent = _parent;
+
+  if (nullptr != _parent)
+    this->SetFilePath(_parent->FilePath());
 }
 
 /////////////////////////////////////////////////
@@ -139,6 +143,7 @@ ElementPtr Element::Clone() const
   clone->dataPtr->copyChildren = this->dataPtr->copyChildren;
   clone->dataPtr->includeFilename = this->dataPtr->includeFilename;
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
+  clone->dataPtr->path = this->dataPtr->path;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
@@ -158,7 +163,7 @@ ElementPtr Element::Clone() const
        eiter != this->dataPtr->elements.end(); ++eiter)
   {
     clone->dataPtr->elements.push_back((*eiter)->Clone());
-    clone->dataPtr->elements.back()->dataPtr->parent = clone;
+    clone->dataPtr->elements.back()->SetParent(clone);
   }
 
   if (this->dataPtr->value)
@@ -178,6 +183,7 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->copyChildren = _elem->GetCopyChildren();
   this->dataPtr->includeFilename = _elem->dataPtr->includeFilename;
   this->dataPtr->referenceSDF = _elem->ReferenceSDF();
+  this->dataPtr->path = _elem->FilePath();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
        iter != _elem->dataPtr->attributes.end(); ++iter)
@@ -216,7 +222,7 @@ void Element::Copy(const ElementPtr _elem)
   {
     ElementPtr elem = (*iter)->Clone();
     elem->Copy(*iter);
-    elem->dataPtr->parent = shared_from_this();
+    elem->SetParent(shared_from_this());
     this->dataPtr->elements.push_back(elem);
   }
 }
@@ -858,6 +864,18 @@ void Element::SetInclude(const std::string &_filename)
 std::string Element::GetInclude() const
 {
   return this->dataPtr->includeFilename;
+}
+
+/////////////////////////////////////////////////
+void Element::SetFilePath(const std::string &_path)
+{
+  this->dataPtr->path = _path;
+}
+
+/////////////////////////////////////////////////
+const std::string &Element::FilePath() const
+{
+  return this->dataPtr->path;
 }
 
 /////////////////////////////////////////////////

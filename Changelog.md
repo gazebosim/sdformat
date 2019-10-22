@@ -5,6 +5,11 @@
 1. Converter: add `<map>` element for converting fixed values.
     * [Pull request 580](https://bitbucket.org/osrf/sdformat/pull-requests/580)
 
+### SDFormat 8.4.0 (2019-10-XX)
+
+1. Accept relative path in `<uri>`.
+    * [Pull request 558](https://bitbucket.org/osrf/sdformat/pull-requests/558)
+
 1. Element: don't print unset attributes.
     * [Pull request 571](https://bitbucket.org/osrf/sdformat/pull-requests/571)
     * [Pull request 576](https://bitbucket.org/osrf/sdformat/pull-requests/576)

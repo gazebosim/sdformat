@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 
 #include "sdf/Element.hh"
+#include "sdf/Filesystem.hh"
 #include "sdf/Param.hh"
 
 /////////////////////////////////////////////////
@@ -35,12 +36,14 @@ TEST(Element, Child)
 {
   sdf::Element child;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  parent->SetFilePath("/parent/path/model.sdf");
 
   ASSERT_EQ(child.GetParent(), nullptr);
 
   child.SetParent(parent);
 
   ASSERT_NE(child.GetParent(), nullptr);
+  EXPECT_EQ("/parent/path/model.sdf", child.FilePath());
 }
 
 /////////////////////////////////////////////////
@@ -498,11 +501,14 @@ TEST(Element, Copy)
   sdf::ElementPtr dest = std::make_shared<sdf::Element>();
 
   src->SetName("test");
+  src->SetFilePath("/path/to/file.sdf");
   src->AddValue("string", "val", false, "val description");
   src->AddAttribute("test", "string", "foo", false, "foo description");
   src->InsertElement(std::make_shared<sdf::Element>());
 
   dest->Copy(src);
+
+  EXPECT_EQ("/path/to/file.sdf", dest->FilePath());
 
   sdf::ParamPtr param = dest->GetValue();
   ASSERT_TRUE(param->IsType<std::string>());
