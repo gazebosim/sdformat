@@ -164,7 +164,7 @@ class Cmd
           exit(Importer.cmdPrint(File.expand_path(options['print'])))
         elsif options.key?('urdf')
           Importer.extern 'int cmdURDF(const char *)'
-          exit(Importer.cmdURDF(options['urdf']))
+          exit(Importer.cmdURDF(File.expand_path(options['urdf'])))
         else
           puts 'Command error: I do not have an implementation '\
                'for this command.'
