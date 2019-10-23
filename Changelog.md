@@ -2,11 +2,29 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Use inline namespaces in Utils.cc
+    * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
+
+### SDFormat 8.4.0 (2019-10-XX)
+
+1. Accept relative path in `<uri>`.
+    * [Pull request 558](https://bitbucket.org/osrf/sdformat/pull-requests/558)
+
 1. Element: don't print unset attributes.
     * [Pull request 571](https://bitbucket.org/osrf/sdformat/pull-requests/571)
+    * [Pull request 576](https://bitbucket.org/osrf/sdformat/pull-requests/576)
+
+1. Lidar.hh: remove 'using namespace ignition'.
+    * [Pull request 577](https://bitbucket.org/osrf/sdformat/pull-requests/577)
+
+1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
+    * [Pull request 575](https://bitbucket.org/osrf/sdformat/pull-requests/575)
 
 1. Set camera intrinsics axis skew (s) default value to 0
     * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
+
+1. SDF Root DOM: add ActorCount, ActorByIndex, and ActorNameExists.
+    * [Pull request 566](https://bitbucket.org/osrf/sdformat/pull-requests/566)
 
 1. Avoid hardcoding /machine:x64 flag on 64-bit on MSVC with CMake >= 3.5.
     * [Pull request 565](https://bitbucket.org/osrf/sdformat/pull-requests/565)
@@ -175,6 +193,9 @@
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
 
+1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
+    * [Pull request 575](https://bitbucket.org/osrf/sdformat/pull-requests/575)
+
 1. Set camera intrinsics axis skew (s) default value to 0
     * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
 
@@ -241,6 +262,9 @@
 ## SDFormat 6.0
 
 ### SDFormat 6.X.X (20XX-XX-XX)
+
+1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
+    * [Pull request 575](https://bitbucket.org/osrf/sdformat/pull-requests/575)
 
 1. Set camera intrinsics axis skew (s) default value to 0
     * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
