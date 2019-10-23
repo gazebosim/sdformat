@@ -35,7 +35,8 @@
 #include "test_config.h"
 
 const auto g_testPath = sdf::filesystem::append(PROJECT_SOURCE_PATH, "test");
-const auto g_modelsPath = sdf::filesystem::append(g_testPath, "integration", "model");
+const auto g_modelsPath =
+    sdf::filesystem::append(g_testPath, "integration", "model");
 
 /////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
