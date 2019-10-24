@@ -203,7 +203,7 @@ TEST(ConverterIntegration, ParserStringConverter)
 <sdf version="1.5">
   <world name="default">
     <physics type="ode">
-      <gravity>0 0 -9.8</gravity>
+      <gravity>1 0 -9.8</gravity>
       <magnetic_field>1 2 3</magnetic_field>
     </physics>
   </world>
@@ -226,10 +226,14 @@ TEST(ConverterIntegration, ParserStringConverter)
   EXPECT_EQ(physicsElem->Get<std::string>("name"), "default_physics");
   EXPECT_EQ(physicsElem->Get<std::string>("type"), "ode");
 
+  // gravity and magnetic_field should have been moved from physics to world
+  EXPECT_FALSE(physicsElem->HasElement("gravity"));
+  EXPECT_FALSE(physicsElem->HasElement("magnetic_field"));
+
   sdf::ElementPtr gravityElem = worldElem->GetElement("gravity");
   ASSERT_NE(nullptr, gravityElem);
   EXPECT_EQ(gravityElem->Get<ignition::math::Vector3d>(),
-            ignition::math::Vector3d(0, 0, -9.8));
+            ignition::math::Vector3d(1, 0, -9.8));
 
   sdf::ElementPtr magElem = worldElem->GetElement("magnetic_field");
   ASSERT_NE(nullptr, magElem);
@@ -247,7 +251,7 @@ TEST(ConverterIntegration, World_15_to_16)
 <sdf version="1.5">
   <world name="default">
     <physics type="ode">
-      <gravity>0 0 -9.8</gravity>
+      <gravity>1 0 -9.8</gravity>
       <magnetic_field>1 2 3</magnetic_field>
     </physics>
   </world>
@@ -269,10 +273,14 @@ TEST(ConverterIntegration, World_15_to_16)
   convertedElem = convertedElem->FirstChildElement();
   EXPECT_EQ(convertedElem->ValueStr(), "physics");
 
+  // gravity and magnetic_field should have been moved from physics to world
+  EXPECT_EQ(nullptr, convertedElem->FirstChildElement("gravity"));
+  EXPECT_EQ(nullptr, convertedElem->FirstChildElement("magnetic_field"));
+
   // Get the gravity
   TiXmlElement *gravityElem = convertedElem->NextSiblingElement("gravity");
   ASSERT_NE(nullptr, gravityElem);
-  EXPECT_STREQ(gravityElem->GetText(), "0 0 -9.8");
+  EXPECT_STREQ(gravityElem->GetText(), "1 0 -9.8");
 
   // Get the magnetic_field
   TiXmlElement *magneticFieldElem =
