@@ -16,45 +16,16 @@
 */
 
 #include <gtest/gtest.h>
-#include <boost/uuid/sha1.hpp>
-
+#include <fstream>
+#include <sstream>
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
 
 const std::string SDF_SIMPLE_TEST_FILE =
   std::string(PROJECT_SOURCE_PATH) + "/test/integration/simple.sdf";
-
-///////////////////////////////////////////////
-// Implementation of get_sha1
-template<typename T>
-std::string get_sha1(const T &_buffer)
-{
-  boost::uuids::detail::sha1 sha1;
-  unsigned int hash[5];
-  std::stringstream stream;
-
-  if (_buffer.size() == 0)
-  {
-    sha1.process_bytes(NULL, 0);
-  }
-  else
-  {
-    sha1.process_bytes(&(_buffer[0]), _buffer.size() * sizeof(_buffer[0]));
-  }
-
-  sha1.get_digest(hash);
-
-  for (std::size_t i = 0; i < sizeof(hash) / sizeof(hash[0]); ++i)
-  {
-    stream << std::setfill('0')
-           << std::setw(sizeof(hash[0]) * 2)
-           << std::hex
-           << hash[i];
-  }
-
-  return stream.str();
-}
+const std::string URDF_SIMPLE_RESULT_FILE =
+  std::string(PROJECT_SOURCE_PATH) + "/test/integration/simple.urdf";
 
 /////////////////////////////////////////////////
 TEST(ConvertToURDF, ConvertSimple)
@@ -64,6 +35,10 @@ TEST(ConvertToURDF, ConvertSimple)
   EXPECT_TRUE(
       sdf::ConvertToURDF::ConvertFile(SDF_SIMPLE_TEST_FILE.c_str(), result));
 
-  std::string sha1 = get_sha1(result);
-  EXPECT_EQ(sha1, "653a3ac33583db12d27f36dd53027e827e808941");
+  std::ifstream fileStrm(URDF_SIMPLE_RESULT_FILE, std::ios::in);
+  std::ostringstream expected;
+  expected << fileStrm.rdbuf();
+  fileStrm.close();
+
+  EXPECT_EQ(expected.str(), result);
 }
