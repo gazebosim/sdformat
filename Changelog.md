@@ -5,6 +5,9 @@
 1. Use inline namespaces in Utils.cc
     * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
 
+1. Converter: fix bug when converting across multiple versions.
+    * [Pull request 584](https://bitbucket.org/osrf/sdformat/pull-requests/584)
+
 ### SDFormat 8.4.0 (2019-10-XX)
 
 1. Accept relative path in `<uri>`.
