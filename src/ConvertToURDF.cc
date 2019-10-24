@@ -163,7 +163,8 @@ bool ConvertToURDF::ConvertLink(sdf::ElementPtr _elem,
   if (_jointPoses.find(linkName) != _jointPoses.end())
   {
     jointPose = _jointPoses[linkName];
-    linkPose = jointPose - linkPose;
+    // linkPose relative to joint
+    linkPose = linkPose - jointPose;
   }
 
   // Output inertia information
@@ -326,8 +327,12 @@ bool ConvertToURDF::ConvertJoint(sdf::ElementPtr _elem,
       << dynamicsElem->Get<double>("friction") << "' />\n";
   }
 
+  bool useParentModelFrame =
+      axisElem->Get<bool>("use_parent_model_frame", false).first;
   ignition::math::Vector3d xyz = axisElem->Get<ignition::math::Vector3d>("xyz");
-  xyz = jointPose.Rot().RotateVectorReverse(xyz);
+
+  if (useParentModelFrame)
+    xyz = jointPose.Rot().RotateVector(xyz);
 
   // Output axis
   _result << _prefix << "  <axis xyz='" << xyz << "'/>\n";
