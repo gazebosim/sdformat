@@ -194,7 +194,55 @@ TEST(ConverterIntegration, convertFileToNotLatestVersion)
 }
 
 /////////////////////////////////////////////////
-/// Test conversion using the parser sdf string converter interface.
+/// Test conversion using the parser sdf string converter interface from 1.4.
+TEST(ConverterIntegration, ParserStringConverterFrom14)
+{
+  // The gravity and magnetic_field in 1.4 format
+  std::string xmlString = R"(
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="default">
+    <physics type="ode">
+      <gravity>1 0 -9.8</gravity>
+      <magnetic_field>1 2 3</magnetic_field>
+    </physics>
+  </world>
+</sdf>)";
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+  sdf::init(sdf);
+
+  EXPECT_TRUE(sdf::convertString(xmlString, "1.6", sdf));
+  ASSERT_NE(nullptr, sdf->Root());
+  EXPECT_EQ(sdf->Root()->GetName(), "sdf");
+  EXPECT_EQ("1.6", sdf->Root()->Get<std::string>("version"));
+
+  sdf::ElementPtr worldElem = sdf->Root()->GetElement("world");
+  ASSERT_NE(nullptr, worldElem);
+  EXPECT_EQ(worldElem->Get<std::string>("name"), "default");
+
+  sdf::ElementPtr physicsElem = worldElem->GetElement("physics");
+  ASSERT_NE(nullptr, physicsElem);
+  EXPECT_EQ(physicsElem->Get<std::string>("name"), "default_physics");
+  EXPECT_EQ(physicsElem->Get<std::string>("type"), "ode");
+
+  // gravity and magnetic_field should have been moved from physics to world
+  EXPECT_FALSE(physicsElem->HasElement("gravity"));
+  EXPECT_FALSE(physicsElem->HasElement("magnetic_field"));
+
+  sdf::ElementPtr gravityElem = worldElem->GetElement("gravity");
+  ASSERT_NE(nullptr, gravityElem);
+  EXPECT_EQ(gravityElem->Get<ignition::math::Vector3d>(),
+            ignition::math::Vector3d(1, 0, -9.8));
+
+  sdf::ElementPtr magElem = worldElem->GetElement("magnetic_field");
+  ASSERT_NE(nullptr, magElem);
+  EXPECT_EQ(magElem->Get<ignition::math::Vector3d>(),
+            ignition::math::Vector3d(1, 2, 3));
+}
+
+/////////////////////////////////////////////////
+/// Test conversion using the parser sdf string converter interface from 1.5.
 TEST(ConverterIntegration, ParserStringConverter)
 {
   // The gravity and magnetic_field in 1.5 format
