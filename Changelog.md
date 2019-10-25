@@ -7,6 +7,7 @@
 
 1. Converter: fix bug when converting across multiple versions.
     * [Pull request 584](https://bitbucket.org/osrf/sdformat/pull-requests/584)
+    * [Pull request 573](https://bitbucket.org/osrf/sdformat/pull-requests/573)
 
 ### SDFormat 8.4.0 (2019-10-XX)
 
