@@ -26,6 +26,7 @@
                   rfid,
                   rfidtag,
                   rgbd_camera,
+                  thermal_camera,
                   sonar,
                   wireless_receiver, and
                   wireless_transmitter.
