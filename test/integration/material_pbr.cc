@@ -481,7 +481,8 @@ TEST(Material, MaterialPBR)
 
       // emissive map
       EXPECT_TRUE(specularElem->HasElement("emissive_map"));
-      sdf::ElementPtr emissiveMapElem = specularElem->GetElement("emissive_map");
+      sdf::ElementPtr emissiveMapElem =
+          specularElem->GetElement("emissive_map");
       EXPECT_EQ("emissive_map.png", emissiveMapElem->Get<std::string>());
     }
 
