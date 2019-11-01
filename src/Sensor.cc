@@ -53,7 +53,7 @@ const std::vector<std::string> sensorTypeStrs =
   "wireless_receiver",
   "wireless_transmitter",
   "air_pressure",
-  "rgbd_camera"
+  "rgbd_camera",
   "thermal_camera"
 };
 
