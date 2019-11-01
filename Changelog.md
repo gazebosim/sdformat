@@ -2,6 +2,9 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Add thermal_camera sensor type
+    * [Pull request 586](https://bitbucket.org/osrf/sdformat/pull-requests/586)
+
 1. Use inline namespaces in Utils.cc
     * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
 
