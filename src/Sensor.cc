@@ -54,6 +54,7 @@ const std::vector<std::string> sensorTypeStrs =
   "wireless_transmitter",
   "air_pressure",
   "rgbd_camera"
+  "thermal_camera"
 };
 
 class sdf::SensorPrivate
@@ -226,6 +227,7 @@ bool Sensor::operator==(const Sensor &_sensor) const
     case SensorType::CAMERA:
     case SensorType::DEPTH_CAMERA:
     case SensorType::RGBD_CAMERA:
+    case SensorType::THERMAL_CAMERA:
       return *(this->dataPtr->camera) == *(_sensor.dataPtr->camera);
     case SensorType::LIDAR:
       return *(this->dataPtr->lidar) == *(_sensor.dataPtr->lidar);
@@ -318,6 +320,13 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "rgbd" || type == "rgbd_camera")
   {
     this->dataPtr->type = SensorType::RGBD_CAMERA;
+    this->dataPtr->camera.reset(new Camera());
+    Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
+  else if (type == "thermal" || type == "thermal_camera")
+  {
+    this->dataPtr->type = SensorType::THERMAL_CAMERA;
     this->dataPtr->camera.reset(new Camera());
     Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
     errors.insert(errors.end(), err.begin(), err.end());
