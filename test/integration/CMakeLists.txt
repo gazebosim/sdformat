@@ -14,6 +14,7 @@ set(tests
   frame.cc
   geometry_dom.cc
   include.cc
+  includes.cc
   joint_axis_frame.cc
   joint_axis_dom.cc
   joint_dom.cc
