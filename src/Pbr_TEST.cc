@@ -34,6 +34,7 @@ TEST(DOMPbr, Construction)
   EXPECT_EQ(sdf::NormalMapSpace::TANGENT, workflow.NormalMapType());
   EXPECT_EQ(std::string(), workflow.RoughnessMap());
   EXPECT_EQ(std::string(), workflow.MetalnessMap());
+  EXPECT_EQ(std::string(), workflow.EmissiveMap());
   EXPECT_DOUBLE_EQ(0.5, workflow.Roughness());
   EXPECT_DOUBLE_EQ(0.5, workflow.Metalness());
   EXPECT_EQ(std::string(), workflow.SpecularMap());
@@ -68,6 +69,7 @@ TEST(DOMPbr, MoveConstructor)
     workflow.SetNormalMap("metal_normal_map.png", sdf::NormalMapSpace::TANGENT);
     workflow.SetEnvironmentMap("metal_env_map.png");
     workflow.SetAmbientOcclusionMap("metal_ambient_occlusion_map.png");
+    workflow.SetEmissiveMap("metal_emissive_map.png");
     workflow.SetRoughnessMap("roughness_map.png");
     workflow.SetMetalnessMap("metalness_map.png");
     workflow.SetRoughness(0.8);
@@ -81,6 +83,7 @@ TEST(DOMPbr, MoveConstructor)
     EXPECT_EQ("metal_env_map.png", workflow2.EnvironmentMap());
     EXPECT_EQ("metal_ambient_occlusion_map.png",
         workflow2.AmbientOcclusionMap());
+    EXPECT_EQ("metal_emissive_map.png", workflow2.EmissiveMap());
     EXPECT_EQ("roughness_map.png", workflow2.RoughnessMap());
     EXPECT_EQ("metalness_map.png", workflow2.MetalnessMap());
     EXPECT_DOUBLE_EQ(0.8, workflow2.Roughness());
@@ -100,6 +103,7 @@ TEST(DOMPbr, MoveConstructor)
         sdf::NormalMapSpace::TANGENT);
     workflow.SetEnvironmentMap("specular_env_map.png");
     workflow.SetAmbientOcclusionMap("specular_ambient_occlusion_map.png");
+    workflow.SetEmissiveMap("specular_emissive_map.png");
     workflow.SetGlossinessMap("glossiness_map.png");
     workflow.SetSpecularMap("specular_map.png");
     workflow.SetGlossiness(0.1);
@@ -112,6 +116,7 @@ TEST(DOMPbr, MoveConstructor)
     EXPECT_EQ("specular_env_map.png", workflow2.EnvironmentMap());
     EXPECT_EQ("specular_ambient_occlusion_map.png",
         workflow2.AmbientOcclusionMap());
+    EXPECT_EQ("specular_emissive_map.png", workflow2.EmissiveMap());
     EXPECT_EQ("specular_map.png", workflow2.SpecularMap());
     EXPECT_EQ("glossiness_map.png", workflow2.GlossinessMap());
     EXPECT_DOUBLE_EQ(0.1, workflow2.Glossiness());
@@ -149,6 +154,7 @@ TEST(DOMPbr, MoveAssignmentOperator)
     workflow.SetNormalMap("metal_normal_map.png", sdf::NormalMapSpace::TANGENT);
     workflow.SetEnvironmentMap("metal_env_map.png");
     workflow.SetAmbientOcclusionMap("metal_ambient_occlusion_map.png");
+    workflow.SetEmissiveMap("metal_emissive_map.png");
     workflow.SetRoughnessMap("roughness_map.png");
     workflow.SetMetalnessMap("metalness_map.png");
     workflow.SetRoughness(0.8);
@@ -163,6 +169,7 @@ TEST(DOMPbr, MoveAssignmentOperator)
     EXPECT_EQ("metal_env_map.png", workflow2.EnvironmentMap());
     EXPECT_EQ("metal_ambient_occlusion_map.png",
         workflow2.AmbientOcclusionMap());
+    EXPECT_EQ("metal_emissive_map.png", workflow2.EmissiveMap());
     EXPECT_EQ("roughness_map.png", workflow2.RoughnessMap());
     EXPECT_EQ("metalness_map.png", workflow2.MetalnessMap());
     EXPECT_DOUBLE_EQ(0.8, workflow2.Roughness());
@@ -182,6 +189,7 @@ TEST(DOMPbr, MoveAssignmentOperator)
         sdf::NormalMapSpace::TANGENT);
     workflow.SetEnvironmentMap("specular_env_map.png");
     workflow.SetAmbientOcclusionMap("specular_ambient_occlusion_map.png");
+    workflow.SetEmissiveMap("specular_emissive_map.png");
     workflow.SetGlossinessMap("glossiness_map.png");
     workflow.SetSpecularMap("specular_map.png");
     workflow.SetGlossiness(0.1);
@@ -195,6 +203,7 @@ TEST(DOMPbr, MoveAssignmentOperator)
     EXPECT_EQ("specular_env_map.png", workflow2.EnvironmentMap());
     EXPECT_EQ("specular_ambient_occlusion_map.png",
         workflow2.AmbientOcclusionMap());
+    EXPECT_EQ("specular_emissive_map.png", workflow2.EmissiveMap());
     EXPECT_EQ("specular_map.png", workflow2.SpecularMap());
     EXPECT_EQ("glossiness_map.png", workflow2.GlossinessMap());
     EXPECT_DOUBLE_EQ(0.1, workflow2.Glossiness());
@@ -205,8 +214,6 @@ TEST(DOMPbr, MoveAssignmentOperator)
     EXPECT_DOUBLE_EQ(0.5, workflow2.Metalness());
   }
 }
-
-
 
 /////////////////////////////////////////////////
 TEST(DOMPbr, CopyConstructor)
@@ -233,6 +240,7 @@ TEST(DOMPbr, CopyConstructor)
     workflow.SetNormalMap("metal_normal_map.png");
     workflow.SetEnvironmentMap("metal_env_map.png");
     workflow.SetAmbientOcclusionMap("metal_ambient_occlusion_map.png");
+    workflow.SetEmissiveMap("metal_emissive_map.png");
     workflow.SetRoughnessMap("roughness_map.png");
     workflow.SetMetalnessMap("metalness_map.png");
     workflow.SetRoughness(0.8);
@@ -246,6 +254,7 @@ TEST(DOMPbr, CopyConstructor)
     EXPECT_EQ("metal_env_map.png", workflow2.EnvironmentMap());
     EXPECT_EQ("metal_ambient_occlusion_map.png",
         workflow2.AmbientOcclusionMap());
+    EXPECT_EQ("metal_emissive_map.png", workflow2.EmissiveMap());
     EXPECT_EQ("roughness_map.png", workflow2.RoughnessMap());
     EXPECT_EQ("metalness_map.png", workflow2.MetalnessMap());
     EXPECT_DOUBLE_EQ(0.8, workflow2.Roughness());
@@ -264,6 +273,7 @@ TEST(DOMPbr, CopyConstructor)
     workflow.SetNormalMap("specular_normal_map.png");
     workflow.SetEnvironmentMap("specular_env_map.png");
     workflow.SetAmbientOcclusionMap("specular_ambient_occlusion_map.png");
+    workflow.SetEmissiveMap("specular_emissive_map.png");
     workflow.SetGlossinessMap("glossiness_map.png");
     workflow.SetSpecularMap("specular_map.png");
     workflow.SetGlossiness(0.1);
@@ -276,6 +286,7 @@ TEST(DOMPbr, CopyConstructor)
     EXPECT_EQ("specular_env_map.png", workflow2.EnvironmentMap());
     EXPECT_EQ("specular_ambient_occlusion_map.png",
         workflow2.AmbientOcclusionMap());
+    EXPECT_EQ("specular_emissive_map.png", workflow2.EmissiveMap());
     EXPECT_EQ("specular_map.png", workflow2.SpecularMap());
     EXPECT_EQ("glossiness_map.png", workflow2.GlossinessMap());
     EXPECT_DOUBLE_EQ(0.1, workflow2.Glossiness());
@@ -313,6 +324,7 @@ TEST(DOMPbr, AssignmentOperator)
     workflow.SetNormalMap("metal_normal_map.png");
     workflow.SetEnvironmentMap("metal_env_map.png");
     workflow.SetAmbientOcclusionMap("metal_ambient_occlusion_map.png");
+    workflow.SetEmissiveMap("metal_emissive_map.png");
     workflow.SetRoughnessMap("roughness_map.png");
     workflow.SetMetalnessMap("metalness_map.png");
     workflow.SetRoughness(0.8);
@@ -326,6 +338,7 @@ TEST(DOMPbr, AssignmentOperator)
     EXPECT_EQ("metal_env_map.png", workflow2.EnvironmentMap());
     EXPECT_EQ("metal_ambient_occlusion_map.png",
         workflow2.AmbientOcclusionMap());
+    EXPECT_EQ("metal_emissive_map.png", workflow2.EmissiveMap());
     EXPECT_EQ("roughness_map.png", workflow2.RoughnessMap());
     EXPECT_EQ("metalness_map.png", workflow2.MetalnessMap());
     EXPECT_DOUBLE_EQ(0.8, workflow2.Roughness());
@@ -344,6 +357,7 @@ TEST(DOMPbr, AssignmentOperator)
     workflow.SetNormalMap("specular_normal_map.png");
     workflow.SetEnvironmentMap("specular_env_map.png");
     workflow.SetAmbientOcclusionMap("specular_ambient_occlusion_map.png");
+    workflow.SetEmissiveMap("specular_emissive_map.png");
     workflow.SetGlossinessMap("glossiness_map.png");
     workflow.SetSpecularMap("specular_map.png");
     workflow.SetGlossiness(0.1);
@@ -355,6 +369,7 @@ TEST(DOMPbr, AssignmentOperator)
     EXPECT_EQ("specular_env_map.png", workflow2.EnvironmentMap());
     EXPECT_EQ("specular_ambient_occlusion_map.png",
         workflow2.AmbientOcclusionMap());
+    EXPECT_EQ("specular_emissive_map.png", workflow2.EmissiveMap());
     EXPECT_EQ("specular_map.png", workflow2.SpecularMap());
     EXPECT_EQ("glossiness_map.png", workflow2.GlossinessMap());
     EXPECT_DOUBLE_EQ(0.1, workflow2.Glossiness());
@@ -425,6 +440,9 @@ TEST(DOMPbr, Set)
     EXPECT_EQ("metal_ambient_occlusion_map.png",
         workflow.AmbientOcclusionMap());
 
+    workflow.SetEmissiveMap("metal_emissive_map.png");
+    EXPECT_EQ("metal_emissive_map.png", workflow.EmissiveMap());
+
     workflow.SetRoughnessMap("roughness_map.png");
     EXPECT_EQ("roughness_map.png", workflow.RoughnessMap());
 
@@ -469,6 +487,9 @@ TEST(DOMPbr, Set)
     workflow.SetAmbientOcclusionMap("specular_ambient_occlusion_map.png");
     EXPECT_EQ("specular_ambient_occlusion_map.png",
         workflow.AmbientOcclusionMap());
+
+    workflow.SetEmissiveMap("specular_emissive_map.png");
+    EXPECT_EQ("specular_emissive_map.png", workflow.EmissiveMap());
 
     workflow.SetGlossinessMap("glossiness_map.png");
     EXPECT_EQ("glossiness_map.png", workflow.GlossinessMap());
