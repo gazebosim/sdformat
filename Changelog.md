@@ -10,6 +10,9 @@
 1. Use inline namespaces in Utils.cc
     * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
 
+1. Convert `ign sdf` file inputs to absolute paths before processing them
+    * [Pull request 583](https://bitbucket.org/osrf/sdformat/pull-requests/583)
+
 1. Add `emissive_map` to material sdf
     * [Pull request 585](https://bitbucket.org/osrf/sdformat/pull-requests/585)
 
