@@ -2,13 +2,15 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
-1. Add thermal_camera sensor type
+### SDFormat 8.5.0 (2019-11-XX)
+
+1. Add `thermal_camera` sensor type
     * [Pull request 586](https://bitbucket.org/osrf/sdformat/pull-requests/586)
 
 1. Use inline namespaces in Utils.cc
     * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
 
-1. Add emissive_map to material sdf
+1. Add `emissive_map` to material sdf
     * [Pull request 585](https://bitbucket.org/osrf/sdformat/pull-requests/585)
 
 1. Converter: fix bug when converting across multiple versions.
