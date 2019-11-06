@@ -52,6 +52,9 @@ class sdf::PbrWorkflowPrivate
   /// \brief Metalness map (metal workflow only)
   public: std::string metalnessMap = "";
 
+  /// \brief Emissive map
+  public: std::string emissiveMap = "";
+
   /// \brief Roughness value (metal workflow only)
   public: double roughness = 0.5;
 
@@ -136,6 +139,7 @@ bool PbrWorkflow::operator==(const PbrWorkflow &_workflow) const
     && (this->dataPtr->roughnessMap == _workflow.dataPtr->roughnessMap)
     && (this->dataPtr->glossinessMap == _workflow.dataPtr->glossinessMap)
     && (this->dataPtr->environmentMap == _workflow.dataPtr->environmentMap)
+    && (this->dataPtr->emissiveMap == _workflow.dataPtr->emissiveMap)
     && (this->dataPtr->ambientOcclusionMap ==
         _workflow.dataPtr->ambientOcclusionMap)
     && (ignition::math::equal(
@@ -211,6 +215,9 @@ Errors PbrWorkflow::Load(sdf::ElementPtr _sdf)
   this->dataPtr->ambientOcclusionMap =
       _sdf->Get<std::string>("ambient_occlusion_map",
       this->dataPtr->ambientOcclusionMap).first;
+
+  this->dataPtr->emissiveMap = _sdf->Get<std::string>("emissive_map",
+      this->dataPtr->emissiveMap).first;
 
   return errors;
 }
@@ -352,6 +359,18 @@ void PbrWorkflow::SetGlossiness(const double _glossiness)
 double PbrWorkflow::Glossiness() const
 {
   return this->dataPtr->glossiness;
+}
+
+//////////////////////////////////////////////////
+std::string PbrWorkflow::EmissiveMap() const
+{
+  return this->dataPtr->emissiveMap;
+}
+
+//////////////////////////////////////////////////
+void PbrWorkflow::SetEmissiveMap(const std::string &_map)
+{
+  this->dataPtr->emissiveMap = _map;
 }
 
 //////////////////////////////////////////////////

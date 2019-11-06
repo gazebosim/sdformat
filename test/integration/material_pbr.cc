@@ -94,6 +94,9 @@ TEST(Material, PbrDOM)
 
     // ambient occlusion map
     EXPECT_EQ("ambient_occlusion_map.png", workflow->AmbientOcclusionMap());
+
+    // emissive map
+    EXPECT_EQ("emissive_map.png", workflow->EmissiveMap());
   }
 
   // visual specular workflow
@@ -142,6 +145,9 @@ TEST(Material, PbrDOM)
 
     // ambient occlusion map
     EXPECT_EQ("ambient_occlusion_map.png", workflow->AmbientOcclusionMap());
+
+    // emissive map
+    EXPECT_EQ("emissive_map.png", workflow->EmissiveMap());
   }
 
   // visual all
@@ -194,6 +200,9 @@ TEST(Material, PbrDOM)
 
       // ambient occlusion map
       EXPECT_EQ("ambient_occlusion_map.png", workflow->AmbientOcclusionMap());
+
+      // emissive map
+      EXPECT_EQ("emissive_map.png", workflow->EmissiveMap());
     }
     // metal
     {
@@ -225,6 +234,9 @@ TEST(Material, PbrDOM)
 
       // ambient occlusion map
       EXPECT_EQ("ambient_occlusion_map.png", workflow->AmbientOcclusionMap());
+
+      // emissive map
+      EXPECT_EQ("emissive_map.png", workflow->EmissiveMap());
     }
   }
 }
@@ -326,6 +338,11 @@ TEST(Material, MaterialPBR)
     EXPECT_TRUE(metalElem->HasElement("ambient_occlusion_map"));
     sdf::ElementPtr aoMapElem = metalElem->GetElement("ambient_occlusion_map");
     EXPECT_EQ("ambient_occlusion_map.png", aoMapElem->Get<std::string>());
+
+    // emissive map
+    EXPECT_TRUE(metalElem->HasElement("emissive_map"));
+    sdf::ElementPtr emissiveMapElem = metalElem->GetElement("emissive_map");
+    EXPECT_EQ("emissive_map.png", emissiveMapElem->Get<std::string>());
   }
 
   // visual specular workflow
@@ -390,6 +407,11 @@ TEST(Material, MaterialPBR)
     sdf::ElementPtr aoMapElem =
         specularElem->GetElement("ambient_occlusion_map");
     EXPECT_EQ("ambient_occlusion_map.png", aoMapElem->Get<std::string>());
+
+    // emissive map
+    EXPECT_TRUE(specularElem->HasElement("emissive_map"));
+    sdf::ElementPtr emissiveMapElem = specularElem->GetElement("emissive_map");
+    EXPECT_EQ("emissive_map.png", emissiveMapElem->Get<std::string>());
   }
 
   // visual all
@@ -456,6 +478,12 @@ TEST(Material, MaterialPBR)
       sdf::ElementPtr aoMapElem =
           specularElem->GetElement("ambient_occlusion_map");
       EXPECT_EQ("ambient_occlusion_map.png", aoMapElem->Get<std::string>());
+
+      // emissive map
+      EXPECT_TRUE(specularElem->HasElement("emissive_map"));
+      sdf::ElementPtr emissiveMapElem =
+          specularElem->GetElement("emissive_map");
+      EXPECT_EQ("emissive_map.png", emissiveMapElem->Get<std::string>());
     }
 
     {
@@ -505,6 +533,11 @@ TEST(Material, MaterialPBR)
       sdf::ElementPtr aoMapElem =
           metalElem->GetElement("ambient_occlusion_map");
       EXPECT_EQ("ambient_occlusion_map.png", aoMapElem->Get<std::string>());
+
+      // emissive map
+      EXPECT_TRUE(metalElem->HasElement("emissive_map"));
+      sdf::ElementPtr emissiveMapElem = metalElem->GetElement("emissive_map");
+      EXPECT_EQ("emissive_map.png", emissiveMapElem->Get<std::string>());
     }
   }
 }

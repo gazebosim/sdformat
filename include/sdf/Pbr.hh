@@ -169,6 +169,16 @@ namespace sdf
     /// \param[in] _map Filename of the metalness map.
     public: void SetMetalnessMap(const std::string &_map);
 
+    /// \brief Get the emissive map filename. This will be an empty string
+    /// if an emissive map has not been set.
+    /// \return Filename of the emissive map, or empty string if an emissive
+    /// map has not been specified.
+    public: std::string EmissiveMap() const;
+
+    /// \brief Set the emissive map filename.
+    /// \param[in] _map Filename of the emissive map.
+    public: void SetEmissiveMap(const std::string &_map);
+
     /// \brief Get the metalness value of the material for metal workflow
     /// \return metalness value of the material
     public: double Metalness() const;
