@@ -81,7 +81,6 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   std::map<std::string, std::pair<std::string, std::string> >::const_iterator
     fromIter = conversionMap.find(origVersion);
 
-  TiXmlDocument xmlDoc;
   std::string toVer = "";
 
   // Starting with the original SDF version, perform all the conversions
@@ -92,6 +91,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
     toVer = fromIter->second.first;
 
     // Parse and apply the conversion XML.
+    TiXmlDocument xmlDoc;
     xmlDoc.Parse(fromIter->second.second.c_str());
     ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
 

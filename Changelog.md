@@ -11,6 +11,9 @@
 1. Avoid hardcoding /machine:x64 flag on 64-bit on MSVC with CMake >= 3.5.
     * [Pull request 565](https://bitbucket.org/osrf/sdformat/pull-requests/565)
 
+1. Prevent duplicate `use_parent_model_frame` tags during file conversion.
+    * [Pull request 573](https://bitbucket.org/osrf/sdformat/pull-requests/573)
+
 1. Backport inline versioned namespace from version 8.
     * [Pull request 557](https://bitbucket.org/osrf/sdformat/pull-requests/557)
     * [pull request 464](https://bitbucket.org/osrf/sdformat/pull-requests/464)
