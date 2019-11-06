@@ -325,7 +325,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, rgbdCamSensor);
   EXPECT_EQ("my_rgbd_camera", rgbdCamSensor->Name());
 
-  // Get the rgbd sensor
+  // Get the thermal sensor
   const sdf::Sensor *thermalSensor = link->SensorByName("thermal_sensor");
   ASSERT_NE(nullptr, thermalSensor);
   EXPECT_EQ("thermal_sensor", thermalSensor->Name());
