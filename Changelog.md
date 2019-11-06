@@ -2,6 +2,9 @@
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
 
+1. Build Utils_TEST with Utils.cc explicitly passed since its symbols are not visible.
+    * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
+
 1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
     * [Pull request 575](https://bitbucket.org/osrf/sdformat/pull-requests/575)
 
