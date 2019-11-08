@@ -365,6 +365,14 @@ namespace sdf
     /// \return The include filename.
     public: std::string GetInclude() const;
 
+    /// \brief Set the path to the SDF document where this element came from.
+    /// \param[in] _path Full path to SDF document.
+    public: void SetFilePath(const std::string &_path);
+
+    /// \brief Get the path to the SDF document where this element came from.
+    /// \return Full path to SDF document.
+    public: const std::string &FilePath() const;
+
     /// \brief Get a text description of the element.
     /// \return The text description of the element.
     public: std::string GetDescription() const;
@@ -449,6 +457,9 @@ namespace sdf
 
     /// \brief Name of reference sdf.
     public: std::string referenceSDF;
+
+    /// \brief Path to file where this element came from
+    public: std::string path;
   };
 
   ///////////////////////////////////////////////

@@ -11,6 +11,29 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+### SDFormat 8.5.0 (2019-11-XX)
+
+1. Add `thermal_camera` sensor type
+    * [Pull request 586](https://bitbucket.org/osrf/sdformat/pull-requests/586)
+
+1. Use inline namespaces in Utils.cc
+    * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
+
+1. Convert `ign sdf` file inputs to absolute paths before processing them
+    * [Pull request 583](https://bitbucket.org/osrf/sdformat/pull-requests/583)
+
+1. Add `emissive_map` to material sdf
+    * [Pull request 585](https://bitbucket.org/osrf/sdformat/pull-requests/585)
+
+1. Converter: fix bug when converting across multiple versions.
+    * [Pull request 584](https://bitbucket.org/osrf/sdformat/pull-requests/584)
+    * [Pull request 573](https://bitbucket.org/osrf/sdformat/pull-requests/573)
+
+### SDFormat 8.4.0 (2019-10-XX)
+
+1. Accept relative path in `<uri>`.
+    * [Pull request 558](https://bitbucket.org/osrf/sdformat/pull-requests/558)
+
 1. Element: don't print unset attributes.
     * [Pull request 571](https://bitbucket.org/osrf/sdformat/pull-requests/571)
     * [Pull request 576](https://bitbucket.org/osrf/sdformat/pull-requests/576)

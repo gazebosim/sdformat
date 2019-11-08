@@ -102,6 +102,14 @@ namespace sdf
     /// \param[in] _root Root element
     public: void Root(const ElementPtr _root);
 
+    /// \brief Get the path to the SDF document on disk.
+    /// \return The full path to the SDF document.
+    public: std::string FilePath() const;
+
+    /// \brief Set the path on disk.
+    /// \param[in] _path Path on disk.
+    public: void SetFilePath(const std::string &_path);
+
     /// \brief Get the version
     /// \return The version as a string
     public: static std::string Version();

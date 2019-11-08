@@ -58,6 +58,16 @@ TEST(JointAxisFrame, Version_1_4_missing)
   axis->PrintValues("");
   EXPECT_TRUE(axis->HasElement("use_parent_model_frame"));
   EXPECT_TRUE(axis->Get<bool>("use_parent_model_frame"));
+
+  // count number of use_parent_model_frame elements
+  int elementCount = 0;
+  sdf::ElementPtr elem = axis->GetElement("use_parent_model_frame");
+  while (elem)
+  {
+    elem = elem->GetNextElement("use_parent_model_frame");
+    ++elementCount;
+  }
+  EXPECT_EQ(1, elementCount);
 }
 
 ////////////////////////////////////////
