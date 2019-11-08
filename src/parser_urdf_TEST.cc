@@ -78,11 +78,8 @@ TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
 
   // SDF -> SDF
   std::ostringstream stream;
-  // Use hard-coded "1.4" for version string
-  // until parser_urdf.cc exports version "1.5"
-  // see `sdf->SetAttribute("version", "1.4");`
-  // in URDF2SDF::InitModelString()
-  stream << "<sdf version='" << "1.4" << "'>"
+  // parser_urdf.cc exports version "1.5"
+  stream << "<sdf version='" << "1.5" << "'>"
          << "  <model name='test_robot' />"
          << "</sdf>";
   TiXmlDocument sdf_doc;
