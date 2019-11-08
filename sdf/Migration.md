@@ -12,6 +12,8 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability.
 
+## SDF protocol 1.6 to 1.7
+
 ## SDF protocol 1.5 to 1.6
 
 ### Additions
