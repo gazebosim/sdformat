@@ -25,7 +25,7 @@ TEST(DOMJointAxis, Construction)
   EXPECT_EQ(nullptr, axis.Element());
   EXPECT_DOUBLE_EQ(0.0, axis.InitialPosition());
   EXPECT_EQ(ignition::math::Vector3d::UnitZ, axis.Xyz());
-  EXPECT_FALSE(axis.UseParentModelFrame());
+  EXPECT_TRUE(axis.XyzExpressedIn().empty());
   EXPECT_DOUBLE_EQ(0.0, axis.Damping());
   EXPECT_DOUBLE_EQ(0.0, axis.Friction());
   EXPECT_DOUBLE_EQ(0.0, axis.SpringReference());
@@ -36,7 +36,6 @@ TEST(DOMJointAxis, Construction)
   EXPECT_DOUBLE_EQ(-1, axis.MaxVelocity());
   EXPECT_DOUBLE_EQ(1e8, axis.Stiffness());
   EXPECT_DOUBLE_EQ(1.0, axis.Dissipation());
-  EXPECT_TRUE(axis.XyzExpressedIn().empty());
 
   axis.SetInitialPosition(1.2);
   EXPECT_DOUBLE_EQ(1.2, axis.InitialPosition());
@@ -46,9 +45,6 @@ TEST(DOMJointAxis, Construction)
 
   axis.SetXyzExpressedIn("__model__");
   EXPECT_EQ("__model__", axis.XyzExpressedIn());
-
-  axis.SetUseParentModelFrame(true);
-  EXPECT_TRUE(axis.UseParentModelFrame());
 
   axis.SetDamping(0.2);
   EXPECT_DOUBLE_EQ(0.2, axis.Damping());
