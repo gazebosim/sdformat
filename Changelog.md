@@ -11,6 +11,9 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Build Utils_TEST with Utils.cc explicitly passed since its symbols are not visible.
+    * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
+
 ### SDFormat 8.5.0 (2019-11-XX)
 
 1. Add `thermal_camera` sensor type
