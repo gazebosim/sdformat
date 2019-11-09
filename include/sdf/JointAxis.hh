@@ -18,6 +18,7 @@
 #define SDF_JOINTAXIS_HH_
 
 #include <string>
+#include <ignition/math/Vector3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -225,6 +226,18 @@ namespace sdf
     /// \param[in] _dissipation The joint stop dissipation.
     /// \sa double Dissipation() const
     public: void SetDissipation(const double _dissipation) const;
+
+    /// Get the name of the coordinate frame in which this joint axis's
+    /// unit vector is expressed. An empty value implies the parent (joint)
+    /// frame.
+    /// \return The name of the xyz expressed-in frame.
+    public: const std::string& XyzExpressedIn() const;
+
+    /// Set the name of the coordinate frame in which this joint axis's
+    /// unit vector is expressed. An empty value implies the parent (joint)
+    /// frame.
+    /// \param[in] The name of the xyz expressed-in frame.
+    public: void SetXyzExpressedIn(const std::string &_frame);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

@@ -36,12 +36,16 @@ TEST(DOMJointAxis, Construction)
   EXPECT_DOUBLE_EQ(-1, axis.MaxVelocity());
   EXPECT_DOUBLE_EQ(1e8, axis.Stiffness());
   EXPECT_DOUBLE_EQ(1.0, axis.Dissipation());
+  EXPECT_TRUE(axis.XyzExpressedIn().empty());
 
   axis.SetInitialPosition(1.2);
   EXPECT_DOUBLE_EQ(1.2, axis.InitialPosition());
 
   axis.SetXyz(ignition::math::Vector3d(0, 1, 0));
   EXPECT_EQ(ignition::math::Vector3d::UnitY, axis.Xyz());
+
+  axis.SetXyzExpressedIn("__model__");
+  EXPECT_EQ("__model__", axis.XyzExpressedIn());
 
   axis.SetUseParentModelFrame(true);
   EXPECT_TRUE(axis.UseParentModelFrame());
