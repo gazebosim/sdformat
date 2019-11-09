@@ -43,8 +43,8 @@ std::string get_sdf_string(const std::string &_version)
 }
 
 ////////////////////////////////////////
-// sdf model, version 1.4, use_parent_model_frame tag missing
-// expect tag to be inserted with value true
+// sdf model, version 1.4, use_parent_model_frame tag should
+// be removed when converted to 1.7.
 TEST(JointAxisFrame, Version_1_4_missing)
 {
   sdf::SDFPtr model(new sdf::SDF());
@@ -54,25 +54,20 @@ TEST(JointAxisFrame, Version_1_4_missing)
   sdf::ElementPtr joint = model->Root()->GetElement(
     "model")->GetElement("joint");
   sdf::ElementPtr axis = joint->GetElement("axis");
+  ASSERT_NE(nullptr, axis);
 
   axis->PrintValues("");
-  EXPECT_TRUE(axis->HasElement("use_parent_model_frame"));
-  EXPECT_TRUE(axis->Get<bool>("use_parent_model_frame"));
+  EXPECT_FALSE(axis->HasElement("use_parent_model_frame"));
 
-  // count number of use_parent_model_frame elements
-  int elementCount = 0;
-  sdf::ElementPtr elem = axis->GetElement("use_parent_model_frame");
-  while (elem)
-  {
-    elem = elem->GetNextElement("use_parent_model_frame");
-    ++elementCount;
-  }
-  EXPECT_EQ(1, elementCount);
+  sdf::ElementPtr xyz = axis->GetElement("xyz");
+  ASSERT_NE(nullptr, xyz);
+  ASSERT_TRUE(xyz->HasAttribute("expressed_in"));
+  EXPECT_EQ("__model__", xyz->Get<std::string>("expressed_in"));
 }
 
 ////////////////////////////////////////
-// sdf model, version 1.5, use_parent_model_frame tag missing
-// expect tag to be inserted with value false
+// sdf model, version 1.5, use_parent_model_frame tag should
+// be removed when converted to 1.7.
 TEST(JointAxisFrame, Version_1_5_missing)
 {
   sdf::SDFPtr model(new sdf::SDF());
@@ -82,6 +77,5 @@ TEST(JointAxisFrame, Version_1_5_missing)
   sdf::ElementPtr joint = model->Root()->GetElement(
     "model")->GetElement("joint");
   sdf::ElementPtr axis = joint->GetElement("axis");
-  EXPECT_TRUE(axis->HasElement("use_parent_model_frame"));
-  EXPECT_FALSE(axis->Get<bool>("use_parent_model_frame"));
+  EXPECT_FALSE(axis->HasElement("use_parent_model_frame"));
 }
