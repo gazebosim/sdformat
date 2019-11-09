@@ -1,12 +1,39 @@
-## SDFormat 8.0
+## SDFormat 9.X
 
-### SDFormat 8.X.X (201X-XX-XX)
+### SDFormat 9.X.X (201X-XX-XX)
+
+### SDFormat 9.0.0 (201X-XX-XX)
+
+1. Use consistent namespaces in Filesystem.
+    * [Pull request 567](https://bitbucket.org/osrf/sdformat/pull-requests/567)
 
 1. Converter: add `<map>` element for converting fixed values.
     * [Pull request 580](https://bitbucket.org/osrf/sdformat/pull-requests/580)
 
+## SDFormat 8.0
+
+### SDFormat 8.X.X (201X-XX-XX)
+
+1. Build Utils_TEST with Utils.cc explicitly passed since its symbols are not visible.
+    * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
+
+### SDFormat 8.5.0 (2019-11-XX)
+
+1. Add `thermal_camera` sensor type
+    * [Pull request 586](https://bitbucket.org/osrf/sdformat/pull-requests/586)
+
 1. Use inline namespaces in Utils.cc
     * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
+
+1. Convert `ign sdf` file inputs to absolute paths before processing them
+    * [Pull request 583](https://bitbucket.org/osrf/sdformat/pull-requests/583)
+
+1. Add `emissive_map` to material sdf
+    * [Pull request 585](https://bitbucket.org/osrf/sdformat/pull-requests/585)
+
+1. Converter: fix bug when converting across multiple versions.
+    * [Pull request 584](https://bitbucket.org/osrf/sdformat/pull-requests/584)
+    * [Pull request 573](https://bitbucket.org/osrf/sdformat/pull-requests/573)
 
 ### SDFormat 8.4.0 (2019-10-XX)
 
