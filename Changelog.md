@@ -7,6 +7,9 @@
 1. Use consistent namespaces in Filesystem.
     * [Pull request 567](https://bitbucket.org/osrf/sdformat/pull-requests/567)
 
+1. Converter: add `<map>` element for converting fixed values.
+    * [Pull request 580](https://bitbucket.org/osrf/sdformat/pull-requests/580)
+
 ## SDFormat 8.0
 
 ### SDFormat 8.X.X (201X-XX-XX)
