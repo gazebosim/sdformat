@@ -12,6 +12,16 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDFormat 8.x to 9.0
+
+### Deprecations
+
+1. **sdf/JointAxis.hh**
+   + ***Deprecation:*** bool UseParentModelFrame()
+   + ***Replacement:*** std::string XyzExpressedIn()
+   + ***Deprecation:*** void SetUseParentModelFrame(bool)
+   + ***Replacement:*** void SetXyzExpressedIn(const std::string &)
+
 ## SDFormat 8.0 to 8.1
 
 ### Modifications
@@ -99,6 +109,30 @@ but with improved human-readability..
 1. **Lump:: prefix in link names**
     + Changed to `_fixed_joint_lump__` to avoid confusion with scoped names
     + [Pull request 245](https://bitbucket.org/osrf/sdformat/pull-request/245)
+
+## SDF protocol 1.6 to 1.7
+
+### Additions
+
+1. **joint.sdf** `//axis/xyz/@expressed_in` and `//axis2/xyz/@expressed_in` attributes
+    + description: The name of the frame in which the `//axis/xyz` value is
+      expressed. When migrating from sdf 1.6, a `use_parent_model_frame` value
+      of `true` will be mapped to a value of `__model__` for the `expressed_in`
+      attribute.
+    + type: string
+    + default: ""
+    + required: 0
+    + [pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
+
+### Removals
+
+1. **joint.sdf** `//axis/use_parent_model_frame` and `//axis2/use_parent_model_frame` elements
+    are removed in favor of the `//axis/xyz/@expressed_in` and
+    `//axis2/xyz/@expressed_in` attributes.
+    When migrating from sdf 1.6, a `use_parent_model_frame` value
+    of `true` will be mapped to a value of `__model__` for the `expressed_in`
+    attribute.
+    + [pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
 
 ## SDF protocol 1.5 to 1.6
 
