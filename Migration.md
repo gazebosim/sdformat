@@ -100,6 +100,25 @@ but with improved human-readability..
     + Changed to `_fixed_joint_lump__` to avoid confusion with scoped names
     + [Pull request 245](https://bitbucket.org/osrf/sdformat/pull-request/245)
 
+## SDF protocol 1.6 to 1.7
+
+### Removals
+
+1. **actor.sdf** `static` element was deprecated in
+    [pull request 280](https://bitbucket.org/osrf/sdformat/pull-requests/280)
+    and is now removed.
+    + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
+1. **imu.sdf** `topic` element was deprecated in
+    [pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)
+    and is now removed.
+    + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
+1. **joint.sdf** `//physics/ode/provide_feedback` was deprecated in
+    [pull request 38](https://bitbucket.org/osrf/sdformat/pull-requests/38)
+    and is now removed.
+    + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
 ## SDF protocol 1.5 to 1.6
 
 ### Additions
