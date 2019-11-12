@@ -90,10 +90,35 @@ JointAxis::JointAxis()
 }
 
 /////////////////////////////////////////////////
-JointAxis::JointAxis(JointAxis &&_jointAxis)
+JointAxis::JointAxis(const JointAxis &_jointAxis)
+  : dataPtr(new JointAxisPrivate(*_jointAxis.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+JointAxis &JointAxis::operator=(const JointAxis &_jointAxis)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new JointAxisPrivate;
+  }
+  *this->dataPtr = (*_jointAxis.dataPtr);
+  return *this;
+}
+
+/////////////////////////////////////////////////
+JointAxis::JointAxis(JointAxis &&_jointAxis) noexcept
 {
   this->dataPtr = _jointAxis.dataPtr;
   _jointAxis.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+JointAxis &JointAxis::operator=(JointAxis &&_jointAxis)
+{
+  this->dataPtr = _jointAxis.dataPtr;
+  _jointAxis.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////

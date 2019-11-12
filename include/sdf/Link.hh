@@ -35,6 +35,8 @@ namespace sdf
 
   // Forward declarations.
   class Collision;
+  class Light;
+  class LinkPrivate;
   class Sensor;
   class Visual;
   class LinkPrivate;
@@ -44,9 +46,23 @@ namespace sdf
     /// \brief Default constructor
     public: Link();
 
+    /// \brief Copy constructor
+    /// \param[in] _link Link to copy.
+    public: Link(const Link &_link);
+
     /// \brief Move constructor
     /// \param[in] _link Link to move.
-    public: Link(Link &&_link);
+    public: Link(Link &&_link) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _link Link to move.
+    /// \return Reference to this.
+    public: Link &operator=(Link &&_link);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _link Link to copy.
+    /// \return Reference to this.
+    public: Link &operator=(const Link &_link);
 
     /// \brief Destructor
     public: ~Link();
@@ -110,6 +126,27 @@ namespace sdf
     /// \param[in] _name Name of the collision.
     /// \return Pointer to the collision. Nullptr if the name does not exist.
     public: const Collision *CollisionByName(const std::string &_name) const;
+
+    /// \brief Get the number of lights.
+    /// \return Number of lights contained in this Link object.
+    public: uint64_t LightCount() const;
+
+    /// \brief Get a light based on an index.
+    /// \param[in] _index Index of the light. The index should be in the
+    /// range [0..LightCount()).
+    /// \return Pointer to the light. Nullptr if the index does not exist.
+    /// \sa uint64_t LightCount() const
+    public: const Light *LightByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a light name exists.
+    /// \param[in] _name Name of the light to check.
+    /// \return True if there exists a light with the given name.
+    public: bool LightNameExists(const std::string &_name) const;
+
+    /// \brief Get a light based on a name.
+    /// \param[in] _name Name of the light.
+    /// \return Pointer to the light. Nullptr if the name does not exist.
+    public: const Light *LightByName(const std::string &_name) const;
 
     /// \brief Get the number of sensors.
     /// \return Number of sensors contained in this Link object.
@@ -205,6 +242,18 @@ namespace sdf
 
     /// \brief Allow Model::Load to call SetPoseRelativeToGraph.
     friend Errors Model::Load(ElementPtr);
+
+    /// \brief Check if this link should be subject to wind.
+    /// If true, this link should be affected by wind.
+    /// \return true if the model should be subject to wind, false otherwise.
+    /// \sa bool Model::EnableWind
+    public: bool EnableWind() const;
+
+    /// \brief Set whether this link should be subject to wind.
+    /// \param[in] _enableWind True or false depending on whether the link
+    /// should be subject to wind.
+    /// \sa Model::SetEnableWind(bool)
+    public: void SetEnableWind(bool _enableWind);
 
     /// \brief Private data pointer.
     private: LinkPrivate *dataPtr = nullptr;

@@ -37,17 +37,36 @@ Gui::Gui()
 
 /////////////////////////////////////////////////
 Gui::Gui(const Gui &_gui)
-  : dataPtr(new GuiPrivate)
+  : dataPtr(new GuiPrivate(*_gui.dataPtr))
 {
-  this->dataPtr->fullscreen = _gui.dataPtr->fullscreen;
 }
 
 /////////////////////////////////////////////////
-Gui::Gui(Gui &&_gui)
+Gui::Gui(Gui &&_gui) noexcept
 {
   this->dataPtr = _gui.dataPtr;
   _gui.dataPtr = nullptr;
 }
+
+/////////////////////////////////////////////////
+Gui &Gui::operator=(const Gui &_gui)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new GuiPrivate;
+  }
+  *this->dataPtr = (*_gui.dataPtr);
+  return *this;
+}
+
+/////////////////////////////////////////////////
+Gui &Gui::operator=(Gui &&_gui)
+{
+  this->dataPtr = _gui.dataPtr;
+  _gui.dataPtr = nullptr;
+  return *this;
+}
+
 /////////////////////////////////////////////////
 Gui::~Gui()
 {

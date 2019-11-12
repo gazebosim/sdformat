@@ -512,6 +512,32 @@ TEST(check, SDF)
 }
 
 /////////////////////////////////////////////////
+TEST(check_model_sdf, SDF)
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/integration/model/box";
+
+  // Check a good SDF file by passing the absolute path
+  {
+    std::string path = pathBase +"/model.sdf";
+
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output);
+  }
+
+  // Check a good SDF file from the same folder by passing a relative path
+  {
+    std::string path = "model.sdf";
+
+    std::string output =
+      custom_exec_str("cd " + pathBase + " && " +
+                      g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output);
+  }
+}
+
+/////////////////////////////////////////////////
 TEST(describe, SDF)
 {
   // Get the description

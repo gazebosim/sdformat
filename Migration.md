@@ -12,6 +12,24 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDFormat 8.x to 9.0
+
+### Deprecations
+
+1. **sdf/JointAxis.hh**
+   + ***Deprecation:*** bool UseParentModelFrame()
+   + ***Replacement:*** std::string XyzExpressedIn()
+   + ***Deprecation:*** void SetUseParentModelFrame(bool)
+   + ***Replacement:*** void SetXyzExpressedIn(const std::string &)
+
+## SDFormat 8.0 to 8.1
+
+### Modifications
+
+1.  + Change installation path of SDF description files to allow side-by-side installation.
+    + `{prefix}/share/sdformat/1.*/*.sdf` -> `{prefix}/share/sdformat8/1.*/*.sdf`
+    + [pull request 538](https://bitbucket.org/osrf/sdformat/pull-requests/538)
+
 ## SDFormat 5.x to 6.x
 
 ### Deprecations
@@ -42,7 +60,7 @@ but with improved human-readability..
 
 1. **sdf/SDFImpl.hh**
     + ***Deprecation:*** ElementPtr root
-    + ***Replacement:*** ElementPtr Root() const / void Root(const ElementPtr _root)
+    + ***Replacement:*** ElementPtr Root() const / void Root(const ElementPtr \_root)
     + ***Deprecation:*** static std::string version
     + ***Replacement:*** static std::string Version()
 
@@ -73,7 +91,7 @@ but with improved human-readability..
       by their std:: equivalents (C++11 standard)
 
 1. **`gravity` and `magnetic_field` elements are moved  from `physics` to `world`**
-    + In physics element: gravity and magnetic_field tags have been moved
+    + In physics element: gravity and `magnetic_field` tags have been moved
       from Physics to World element.
     + [pull request 247](https://bitbucket.org/osrf/sdformat/pull-requests/247)
     + [gazebo pull request 2090](https://bitbucket.org/osrf/gazebo/pull-requests/2090)
@@ -89,8 +107,32 @@ but with improved human-readability..
     + [pull request 244](https://bitbucket.org/osrf/sdformat/pull-requests/244)
 
 1. **Lump:: prefix in link names**
-    + Changed to \_fixed_joint_lump__ to avoid confusion with scoped names
+    + Changed to `_fixed_joint_lump__` to avoid confusion with scoped names
     + [Pull request 245](https://bitbucket.org/osrf/sdformat/pull-request/245)
+
+## SDF protocol 1.6 to 1.7
+
+### Additions
+
+1. **joint.sdf** `//axis/xyz/@expressed_in` and `//axis2/xyz/@expressed_in` attributes
+    + description: The name of the frame in which the `//axis/xyz` value is
+      expressed. When migrating from sdf 1.6, a `use_parent_model_frame` value
+      of `true` will be mapped to a value of `__model__` for the `expressed_in`
+      attribute.
+    + type: string
+    + default: ""
+    + required: 0
+    + [pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
+
+### Removals
+
+1. **joint.sdf** `//axis/use_parent_model_frame` and `//axis2/use_parent_model_frame` elements
+    are removed in favor of the `//axis/xyz/@expressed_in` and
+    `//axis2/xyz/@expressed_in` attributes.
+    When migrating from sdf 1.6, a `use_parent_model_frame` value
+    of `true` will be mapped to a value of `__model__` for the `expressed_in`
+    attribute.
+    + [pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
 
 ## SDF protocol 1.5 to 1.6
 
@@ -120,7 +162,7 @@ but with improved human-readability..
     + [pull request 240](https://bitbucket.org/osrf/sdformat/pull-requests/240)
 
 1. **link.sdf** `light` element
-    + included from `light.sdf` with required="*",
+    + included from `light.sdf` with `required="*"`,
       so a link can have any number of attached lights.
     + [pull request 373](https://bitbucket.org/osrf/sdformat/pull-requests/373)
 

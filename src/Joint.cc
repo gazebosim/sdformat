@@ -38,6 +38,13 @@ class sdf::JointPrivate
     this->axis[1] = nullptr;
   }
 
+  /// \brief Copy constructor
+  /// \param[in] _jointPrivate JointPrivate to copy.
+  public: explicit JointPrivate(const JointPrivate &_jointPrivate);
+
+  // Delete copy assignment so it is not accidentally used
+  public: JointPrivate &operator=(const JointPrivate &_) = delete;
+
   /// \brief Name of the joint.
   public: std::string name = "";
 
@@ -56,6 +63,9 @@ class sdf::JointPrivate
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
 
+  /// \brief Thread pitch for screw joints.
+  public: double threadPitch = 1.0;
+
   /// \brief Joint axis
   // cppcheck-suppress
   public: std::array<std::unique_ptr<JointAxis>, 2> axis;
@@ -68,16 +78,65 @@ class sdf::JointPrivate
 };
 
 /////////////////////////////////////////////////
+JointPrivate::JointPrivate(const JointPrivate &_jointPrivate)
+    : name(_jointPrivate.name),
+      parentLinkName(_jointPrivate.parentLinkName),
+      childLinkName(_jointPrivate.childLinkName),
+      type(_jointPrivate.type),
+      pose(_jointPrivate.pose),
+      poseRelativeTo(_jointPrivate.poseRelativeTo),
+      threadPitch(_jointPrivate.threadPitch),
+      sdf(_jointPrivate.sdf),
+      poseRelativeToGraph(_jointPrivate.poseRelativeToGraph)
+{
+  for (std::size_t i = 0; i < _jointPrivate.axis.size(); ++i)
+  {
+    if (_jointPrivate.axis[i])
+    {
+      this->axis[i] = std::make_unique<JointAxis>(*_jointPrivate.axis[i]);
+    }
+  }
+}
+
+/////////////////////////////////////////////////
 Joint::Joint()
   : dataPtr(new JointPrivate)
 {
 }
 
 /////////////////////////////////////////////////
-Joint::Joint(Joint &&_joint)
+Joint::Joint(Joint &&_joint) noexcept
 {
   this->dataPtr = _joint.dataPtr;
   _joint.dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Joint::Joint(const Joint &_joint)
+  : dataPtr(new JointPrivate(*_joint.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Joint &Joint::operator=(const Joint &_joint)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new JointPrivate(*_joint.dataPtr);
+  }
+  else
+  {
+    this->dataPtr = new(this->dataPtr) JointPrivate(*_joint.dataPtr);
+  }
+  return *this;
+}
+
+/////////////////////////////////////////////////
+Joint &Joint::operator=(Joint &&_joint)
+{
+  this->dataPtr = _joint.dataPtr;
+  _joint.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -157,16 +216,13 @@ Errors Joint::Load(ElementPtr _sdf)
     errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
   }
 
+  this->dataPtr->threadPitch = _sdf->Get<double>("thread_pitch", 1.0).first;
+
   // Read the type
   std::pair<std::string, bool> typePair = _sdf->Get<std::string>("type", "");
   if (typePair.second)
   {
-    std::transform(typePair.first.begin(), typePair.first.end(),
-        typePair.first.begin(),
-        [](unsigned char c)
-        {
-          return static_cast<unsigned char>(std::tolower(c));
-        });
+    typePair.first = lowercase(typePair.first);
     if (typePair.first == "ball")
       this->dataPtr->type = JointType::BALL;
     else if (typePair.first == "continuous")
@@ -210,7 +266,7 @@ const std::string &Joint::Name() const
 }
 
 /////////////////////////////////////////////////
-void Joint::SetName(const std::string &_name) const
+void Joint::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
 }
@@ -234,7 +290,7 @@ const std::string &Joint::ParentLinkName() const
 }
 
 /////////////////////////////////////////////////
-void Joint::SetParentLinkName(const std::string &_name) const
+void Joint::SetParentLinkName(const std::string &_name)
 {
   this->dataPtr->parentLinkName = _name;
 }
@@ -246,7 +302,7 @@ const std::string &Joint::ChildLinkName() const
 }
 
 /////////////////////////////////////////////////
-void Joint::SetChildLinkName(const std::string &_name) const
+void Joint::SetChildLinkName(const std::string &_name)
 {
   this->dataPtr->childLinkName = _name;
 }
@@ -255,6 +311,13 @@ void Joint::SetChildLinkName(const std::string &_name) const
 const JointAxis *Joint::Axis(const unsigned int _index) const
 {
   return this->dataPtr->axis[std::min(_index, 1u)].get();
+}
+
+/////////////////////////////////////////////////
+void Joint::SetAxis(const unsigned int _index, const JointAxis &_axis)
+{
+  this->dataPtr->axis[std::min(_index, 1u)] =
+      std::make_unique<JointAxis>(_axis);
 }
 
 /////////////////////////////////////////////////
@@ -311,6 +374,18 @@ Errors Joint::ResolvePose(
     return errors;
   }
   return resolvePose(*graph, this->dataPtr->name, _relativeTo, _pose);
+}
+
+/////////////////////////////////////////////////
+double Joint::ThreadPitch() const
+{
+  return this->dataPtr->threadPitch;
+}
+
+/////////////////////////////////////////////////
+void Joint::SetThreadPitch(double _threadPitch)
+{
+  this->dataPtr->threadPitch = _threadPitch;
 }
 
 /////////////////////////////////////////////////

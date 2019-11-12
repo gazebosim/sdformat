@@ -57,9 +57,9 @@
 
 namespace sdf
 {
+inline namespace SDF_VERSION_NAMESPACE {
 namespace filesystem
 {
-inline namespace SDF_VERSION_NAMESPACE {
 /// \internal
 /// \brief Private data for the DirIter class.
 class DirIterPrivate

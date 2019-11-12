@@ -32,6 +32,79 @@ TEST(DOMBox, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMBox, MoveConstructor)
+{
+  const ignition::math::Vector3d size(1, 2, 3);
+
+  sdf::Box box;
+  box.SetSize(size);
+
+  sdf::Box box2(std::move(box));
+  EXPECT_EQ(size, box2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, CopyConstructor)
+{
+  const ignition::math::Vector3d size(0.1, 0.2, 0.3);
+
+  sdf::Box box;
+  box.SetSize(size);
+
+  sdf::Box box2(box);
+  EXPECT_EQ(size, box2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, CopyAssigmentOperator)
+{
+  const ignition::math::Vector3d size(0.2, 0.3, 0.4);
+
+  sdf::Box box;
+  box.SetSize(size);
+
+  sdf::Box box2;
+  box2 = box;
+  EXPECT_EQ(size, box2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, MoveAssignmentConstructor)
+{
+  const ignition::math::Vector3d size(1, 2, 3);
+
+  sdf::Box box;
+  box.SetSize(size);
+
+  sdf::Box box2;
+  box2 = std::move(box);
+  EXPECT_EQ(size, box2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, CopyAssignmentAfterMove)
+{
+  const ignition::math::Vector3d size1(1, 2, 3);
+  const ignition::math::Vector3d size2(4, 5, 6);
+
+  sdf::Box box1;
+  box1.SetSize(size1);
+
+  sdf::Box box2;
+  box2.SetSize(size2);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Box tmp = std::move(box1);
+  box1 = box2;
+  box2 = tmp;
+
+  EXPECT_EQ(size2, box1.Size());
+  EXPECT_EQ(size1, box2.Size());
+}
+
+
+/////////////////////////////////////////////////
 TEST(DOMBox, Load)
 {
   sdf::Box box;

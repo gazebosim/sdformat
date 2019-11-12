@@ -64,6 +64,32 @@ Frame::~Frame()
   this->dataPtr = nullptr;
 }
 
+//////////////////////////////////////////////////
+Frame::Frame(const Frame &_frame)
+  : dataPtr(new FramePrivate)
+{
+  *this->dataPtr = *_frame.dataPtr;
+}
+
+//////////////////////////////////////////////////
+Frame &Frame::operator=(const Frame &_frame)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new FramePrivate;
+  }
+  *this->dataPtr = *_frame.dataPtr;
+  return *this;
+}
+
+//////////////////////////////////////////////////
+Frame &Frame::operator=(Frame &&_frame)
+{
+  this->dataPtr = _frame.dataPtr;
+  _frame.dataPtr = nullptr;
+  return *this;
+}
+
 /////////////////////////////////////////////////
 Errors Frame::Load(ElementPtr _sdf)
 {

@@ -1,6 +1,7 @@
 set(TEST_TYPE "INTEGRATION")
 
 set(tests
+  actor_dom.cc
   audio.cc
   category_bitmask.cc
   cfm_damping_implicit_spring_damper.cc
@@ -14,6 +15,7 @@ set(tests
   frame_semantics.cc
   geometry_dom.cc
   include.cc
+  includes.cc
   joint_axis_frame.cc
   joint_axis_dom.cc
   joint_dom.cc
@@ -21,6 +23,8 @@ set(tests
   link_dom.cc
   link_light.cc
   locale_fix.cc
+  locale_fix_cxx.cc
+  material_pbr.cc
   model_dom.cc
   model_versions.cc
   nested_model.cc

@@ -149,13 +149,13 @@ class Cmd
       when 'sdf'
         if options.key?('check')
           Importer.extern 'int cmdCheck(const char *)'
-          exit(Importer.cmdCheck(options['check']))
+          exit(Importer.cmdCheck(File.expand_path(options['check'])))
         elsif options.key?('describe')
           Importer.extern 'int cmdDescribe()'
           exit(Importer.cmdDescribe())
         elsif options.key?('print')
           Importer.extern 'int cmdPrint(const char *)'
-          exit(Importer.cmdPrint(options['print']))
+          exit(Importer.cmdPrint(File.expand_path(options['print'])))
         else
           puts 'Command error: I do not have an implementation '\
                'for this command.'

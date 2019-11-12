@@ -42,9 +42,23 @@ namespace sdf
     /// \brief Default constructor
     public: JointAxis();
 
+    /// \brief Copy constructor
+    /// \param[in] _jointAxis Joint axis to copy.
+    public: JointAxis(const JointAxis &_jointAxis);
+
     /// \brief Move constructor
     /// \param[in] _jointAxis Joint axis to move.
-    public: JointAxis(JointAxis &&_jointAxis);
+    public: JointAxis(JointAxis &&_jointAxis) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _jointAxis JointAxis component to move.
+    /// \return Reference to this.
+    public: JointAxis &operator=(JointAxis &&_jointAxis);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _jointAxis JointAxis component to copy.
+    /// \return Reference to this.
+    public: JointAxis &operator=(const JointAxis &_jointAxis);
 
     /// \brief Destructor
     public: ~JointAxis();
@@ -87,14 +101,16 @@ namespace sdf
     /// \return True to interpret the axis xyz value in the parent model
     /// frame, false to use the joint frame.
     /// \sa void SetUseParentModelFrame(const bool _parentModelFrame)
-    public: bool UseParentModelFrame() const;
+    public: bool UseParentModelFrame() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set whether to interpret the axis xyz value in the parent model
     /// instead of the joint frame.
     /// \param[in] _parentModelFrame True to interpret the axis xyz value in
     /// the parent model frame, false to use the joint frame.
     /// \sa bool UseParentModelFrame() const
-    public: void SetUseParentModelFrame(const bool _parentModelFrame);
+    public: void SetUseParentModelFrame(const bool _parentModelFrame)
+        SDF_DEPRECATED(9.0);
 
     /// \brief Get the physical velocity dependent viscous damping coefficient
     /// of the joint axis. The default value is zero (0.0).

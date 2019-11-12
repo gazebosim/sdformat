@@ -94,6 +94,12 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
     // Parse and apply the conversion XML.
     TiXmlDocument xmlDoc;
     xmlDoc.Parse(fromIter->second.second.c_str());
+    if (xmlDoc.Error())
+    {
+      sdferr << "Error parsing XML from string: "
+             << xmlDoc.ErrorDesc() << '\n';
+      return false;
+    }
     ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
 
     // Get the next conversion XML map element.

@@ -18,7 +18,7 @@
 #include <cstdint>
 #include <string>
 
-#include "sdf/ExceptionPrivate.hh"
+#include "ExceptionPrivate.hh"
 #include "sdf/Console.hh"
 #include "sdf/Exception.hh"
 
@@ -48,6 +48,22 @@ Exception::Exception(const Exception &_e)
   this->dataPtr->line = _e.dataPtr->line;
   this->dataPtr->str = _e.dataPtr->str;
 }
+
+//////////////////////////////////////////////////
+Exception &Exception::operator=(const Exception &_exception)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = std::make_unique<ExceptionPrivate>();
+  }
+  *this->dataPtr = (*_exception.dataPtr);
+  return *this;
+}
+//////////////////////////////////////////////////
+Exception::Exception(Exception &&_exception) noexcept = default;
+
+/////////////////////////////////////////////////
+Exception &Exception::operator=(Exception &&_exception) = default;
 
 //////////////////////////////////////////////////
 Exception::~Exception()

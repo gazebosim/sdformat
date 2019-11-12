@@ -1,3 +1,230 @@
+## SDFormat 9.X
+
+### SDFormat 9.X.X (201X-XX-XX)
+
+### SDFormat 9.0.0 (201X-XX-XX)
+
+1. Use consistent namespaces in Filesystem.
+    * [Pull request 567](https://bitbucket.org/osrf/sdformat/pull-requests/567)
+
+1. Initial version of sdformat 1.7 specification.
+    * [Pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
+1. Converter: add `<map>` element for converting fixed values.
+    * [Pull request 580](https://bitbucket.org/osrf/sdformat/pull-requests/580)
+
+1. Replace `use_parent_model_frame` element with `//axis/xyz/@expressed_in` attribute in sdf 1.7.
+    * [Pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
+
+## SDFormat 8.0
+
+### SDFormat 8.X.X (201X-XX-XX)
+
+1. Build `Utils_TEST` with Utils.cc explicitly passed since its symbols are not visible.
+    * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
+
+### SDFormat 8.5.0 (2019-11-XX)
+
+1. Add `thermal_camera` sensor type
+    * [Pull request 586](https://bitbucket.org/osrf/sdformat/pull-requests/586)
+
+1. Use inline namespaces in Utils.cc
+    * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
+
+1. Convert `ign sdf` file inputs to absolute paths before processing them
+    * [Pull request 583](https://bitbucket.org/osrf/sdformat/pull-requests/583)
+
+1. Add `emissive_map` to material sdf
+    * [Pull request 585](https://bitbucket.org/osrf/sdformat/pull-requests/585)
+
+1. Converter: fix bug when converting across multiple versions.
+    * [Pull request 584](https://bitbucket.org/osrf/sdformat/pull-requests/584)
+    * [Pull request 573](https://bitbucket.org/osrf/sdformat/pull-requests/573)
+
+### SDFormat 8.4.0 (2019-10-XX)
+
+1. Accept relative path in `<uri>`.
+    * [Pull request 558](https://bitbucket.org/osrf/sdformat/pull-requests/558)
+
+1. Element: don't print unset attributes.
+    * [Pull request 571](https://bitbucket.org/osrf/sdformat/pull-requests/571)
+    * [Pull request 576](https://bitbucket.org/osrf/sdformat/pull-requests/576)
+
+1. Lidar.hh: remove 'using namespace ignition'.
+    * [Pull request 577](https://bitbucket.org/osrf/sdformat/pull-requests/577)
+
+1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
+    * [Pull request 575](https://bitbucket.org/osrf/sdformat/pull-requests/575)
+
+1. Set camera intrinsics axis skew (s) default value to 0
+    * [Pull request 504](https://bitbucket.org/osrf/sdformat/pull-requests/504)
+
+1. SDF Root DOM: add ActorCount, ActorByIndex, and ActorNameExists.
+    * [Pull request 566](https://bitbucket.org/osrf/sdformat/pull-requests/566)
+
+1. Avoid hardcoding /machine:x64 flag on 64-bit on MSVC with CMake >= 3.5.
+    * [Pull request 565](https://bitbucket.org/osrf/sdformat/pull-requests/565)
+
+1. Move private headers from include/sdf to src folder.
+    * [Pull request 553](https://bitbucket.org/osrf/sdformat/pull-requests/553)
+
+1. Fix ign library path on macOS.
+    * [Pull request 542](https://bitbucket.org/osrf/sdformat/pull-requests/542)
+    * [Pull request 564](https://bitbucket.org/osrf/sdformat/pull-requests/564)
+
+1. Use `ign sdf --check` to check sibling elements of the same type for non-unique names.
+    * [Pull request 554](https://bitbucket.org/osrf/sdformat/pull-requests/554)
+
+1. Converter: remove all matching elements specified by `<remove>` tag.
+    * [Pull request 551](https://bitbucket.org/osrf/sdformat/pull-requests/551)
+
+### SDFormat 8.3.0 (2019-08-17)
+
+1. Added Actor DOM
+    * [Pull request 547](https://bitbucket.org/osrf/sdformat/pull-requests/547)
+
+1. Print cmake build warnings and errors to std_err
+    * [Pull request 549](https://bitbucket.org/osrf/sdformat/pull-requests/549)
+
+### SDFormat 8.2.0 (2019-06-18)
+
+1. Added RGBD Camera Sensor type.
+    * [Pull request 540](https://bitbucket.org/osrf/sdformat/pull-requests/540)
+
+### SDFormat 8.1.0 (2019-05-20)
+
+1.  Change installation path of SDF description files to allow side-by-side installation.
+    * [pull request 538](https://bitbucket.org/osrf/sdformat/pull-requests/538)
+
+1. Added Lidar Sensor DOM. Also added `lidar` and `gpu_lidar` as sensor
+   types. These two types are equivalent to `ray` and `gpu_ray`.
+    * [Pull request 536](https://bitbucket.org/osrf/sdformat/pull-requests/536)
+
+1. SDF Sensor DOM: copy update rate in copy constructor.
+    * [Pull request 534](https://bitbucket.org/osrf/sdformat/pull-requests/534)
+
+1. Added IMU Sensor DOM.
+    * [Pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)
+
+1. Added Camera Sensor DOM.
+    * [Pull request 531](https://bitbucket.org/osrf/sdformat/pull-requests/531)
+
+1. Added wind to link dom.
+    * [Pull request 530](https://bitbucket.org/osrf/sdformat/pull-requests/530)
+
+1. Added Sensor DOM `==` operator.
+    * [Pull request 529](https://bitbucket.org/osrf/sdformat/pull-requests/529)
+
+1. Added AirPressure SDF DOM
+    * [Pull request 528](https://bitbucket.org/osrf/sdformat/pull-requests/528)
+
+1. Update sdf noise elements
+    * [Pull request 525](https://bitbucket.org/osrf/sdformat/pull-requests/525)
+    * [Pull request 522](https://bitbucket.org/osrf/sdformat/pull-requests/522)
+
+1. Apply rule of five for various DOM classes
+    * [Pull request 524](https://bitbucket.org/osrf/sdformat/pull-requests/524)
+
+1. Support setting sensor types from a string.
+    * [Pull request 523](https://bitbucket.org/osrf/sdformat/pull-requests/523)
+
+1. Added Altimeter SDF DOM
+    * [Pull request 527](https://bitbucket.org/osrf/sdformat/pull-requests/527)
+
+1. Added Magnetometer SDF DOM
+    * [Pull request 518](https://bitbucket.org/osrf/sdformat/pull-requests/518)
+    * [Pull request 519](https://bitbucket.org/osrf/sdformat/pull-requests/519)
+
+1. Add Scene SDF DOM
+    * [Pull request 517](https://bitbucket.org/osrf/sdformat/pull-requests/517)
+
+1. Add PBR material SDF element
+    * [Pull request 512](https://bitbucket.org/osrf/sdformat/pull-requests/512)
+    * [Pull request 520](https://bitbucket.org/osrf/sdformat/pull-requests/520)
+    * [Pull request 535](https://bitbucket.org/osrf/sdformat/pull-requests/535)
+
+1. Set geometry shapes
+    * [Pull request 515](https://bitbucket.org/osrf/sdformat/pull-requests/515)
+
+1. Clarify names of libsdformat parser and SDF specification in Readme.
+    * [Pull request 514](https://bitbucket.org/osrf/sdformat/pull-requests/514)
+
+1. Disable macOS tests failing due to issue 202.
+    * [Pull request 511](https://bitbucket.org/osrf/sdformat/pull-requests/511)
+    * [Issue 202](https://bitbucket.org/osrf/sdformat/issues/202)
+
+### SDFormat 8.0.0 (2019-03-01)
+
+1. Rename depth camera from 'depth' to 'depth_camera'
+    * [Pull request 507](https://bitbucket.org/osrf/sdformat/pull-requests/507)
+
+1. Rename enum Ray to Lidar
+    * [Pull request 502](https://bitbucket.org/osrf/sdformat/pull-requests/502)
+
+1. Add support for files that have light tags in the root
+    * [Pull request 499](https://bitbucket.org/osrf/sdformat/pull-requests/499)
+
+1. Fix locale problems of std::stringstream and of Param::ValueFromString
+    * [Pull request 492](https://bitbucket.org/osrf/sdformat/pull-requests/492)
+    * Contribution by Silvio Traversaro
+
+1. Add functions to set visual dom's geometry and material
+    * [Pull request 490](https://bitbucket.org/osrf/sdformat/pull-requests/490)
+
+1. Change cmake project name to sdformat8, export cmake targets
+    * [Pull request 475](https://bitbucket.org/osrf/sdformat/pull-requests/475)
+    * [Pull request 476](https://bitbucket.org/osrf/sdformat/pull-requests/476)
+
+1. SDF DOM: Add copy constructor and assignment operator to Light. Add lights to Link
+    * [Pull request 469](https://bitbucket.org/osrf/sdformat/pull-requests/469)
+
+1. Make `<limit>` a required element for `<axis2>`
+    * [Pull request #472](https://bitbucket.org/osrf/sdformat/pull-requests/472)
+
+1. SDF DOM: Add DOM methods for setting axis and thread pitch in `sdf::Joint`
+    * [Pull request #471](https://bitbucket.org/osrf/sdformat/pull-requests/471)
+    * [Pull request #474](https://bitbucket.org/osrf/sdformat/pull-requests/474)
+
+1. SDF DOM: Add copy constructors and assignment operator to JointAxis
+    * [Pull request #470](https://bitbucket.org/osrf/sdformat/pull-requests/470)
+
+1. Removed boost
+    * [Pull request #438](https://bitbucket.org/osrf/sdformat/pull-requests/438)
+
+1. Versioned namespace
+    * [Pull request 464](https://bitbucket.org/osrf/sdformat/pull-requests/464)
+
+1. Versioned library install
+    * [Pull request 463](https://bitbucket.org/osrf/sdformat/pull-requests/463)
+
+1. Add SetGeom to Collision
+    * [Pull request 465](https://bitbucket.org/osrf/sdformat/pull-requests/465)
+
+1. SDF DOM: Add copy/move constructors and assignment operator to Geometry
+    * [Pull request 460](https://bitbucket.org/osrf/sdformat/pull-requests/460)
+
+1. SDF DOM: Add copy/move constructors and assignment operator to Material
+    * [Pull request 461](https://bitbucket.org/osrf/sdformat/pull-requests/461)
+
+1. Add collision_detector to dart physics config
+    * [Pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
+
+1. Fix cpack now that project name has version number
+    * [Pull request 478](https://bitbucket.org/osrf/sdformat/pull-requests/478)
+
+1. Animation tension
+    * [Pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
+
+1. Add "geometry" for sonar collision shape
+    * [Pull request 479](https://bitbucket.org/osrf/sdformat/pull-requests/479)
+
+1. Fix Gui copy constructor
+    * [Pull request 486](https://bitbucket.org/osrf/sdformat/pull-requests/486)
+
+1. Sensor DOM
+    * [Pull request 488](https://bitbucket.org/osrf/sdformat/pull-requests/488)
+    * [Pull request 481](https://bitbucket.org/osrf/sdformat/pull-requests/481)
+
 ## SDFormat 7.0
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)

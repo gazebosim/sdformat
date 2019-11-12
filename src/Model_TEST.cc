@@ -78,3 +78,64 @@ TEST(DOMModel, Construction)
   model.SetPoseRelativeTo("world");
   EXPECT_EQ("world", model.PoseRelativeTo());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMModel, CopyConstructor)
+{
+  sdf::Model model;
+  model.SetName("test_model");
+
+  sdf::Model model2(model);
+  EXPECT_EQ("test_model", model2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, CopyAssignmentOperator)
+{
+  sdf::Model model;
+  model.SetName("test_model");
+
+  sdf::Model model2;
+  model2 = model;
+  EXPECT_EQ("test_model", model2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, MoveConstructor)
+{
+  sdf::Model model;
+  model.SetName("test_model");
+
+  sdf::Model model2(model);
+  EXPECT_EQ("test_model", model2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, MoveAssignmentOperator)
+{
+  sdf::Model model;
+  model.SetName("test_model");
+
+  sdf::Model model2;
+  model2 = std::move(model);
+  EXPECT_EQ("test_model", model2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, CopyAssignmentAfterMove)
+{
+  sdf::Model model1;
+  model1.SetName("model1");
+
+  sdf::Model model2;
+  model2.SetName("model2");
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Model tmp = std::move(model1);
+  model1 = model2;
+  model2 = tmp;
+
+  EXPECT_EQ("model2", model1.Name());
+  EXPECT_EQ("model1", model2.Name());
+}

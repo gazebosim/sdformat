@@ -29,12 +29,17 @@ TEST(DOMGui, Construction)
 /////////////////////////////////////////////////
 TEST(DOMGui, CopyConstruction)
 {
+  sdf::ElementPtr sdf(std::make_shared<sdf::Element>());
+
   sdf::Gui gui;
+  gui.Load(sdf);
   gui.SetFullscreen(true);
   EXPECT_TRUE(gui.Fullscreen());
 
   sdf::Gui gui2(gui);
   EXPECT_TRUE(gui2.Fullscreen());
+  EXPECT_NE(nullptr, gui2.Element());
+  EXPECT_EQ(gui.Element(), gui2.Element());
 }
 
 /////////////////////////////////////////////////
@@ -45,6 +50,57 @@ TEST(DOMGui, MoveConstruction)
   EXPECT_TRUE(gui.Fullscreen());
 
   sdf::Gui gui2(std::move(gui));
+  EXPECT_TRUE(gui2.Fullscreen());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGui, MoveAssignment)
+{
+  sdf::Gui gui;
+  gui.SetFullscreen(true);
+  EXPECT_TRUE(gui.Fullscreen());
+
+  sdf::Gui gui2;
+  gui2 = std::move(gui);
+  EXPECT_TRUE(gui2.Fullscreen());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGui, CopyAssignment)
+{
+  sdf::ElementPtr sdf(std::make_shared<sdf::Element>());
+
+  sdf::Gui gui;
+  gui.Load(sdf);
+  gui.SetFullscreen(true);
+  EXPECT_TRUE(gui.Fullscreen());
+
+  sdf::Gui gui2;
+  gui2 = gui;
+  EXPECT_TRUE(gui2.Fullscreen());
+  EXPECT_NE(nullptr, gui2.Element());
+  EXPECT_EQ(gui.Element(), gui2.Element());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGui, CopyAssignmentAfterMove)
+{
+  sdf::ElementPtr sdf(std::make_shared<sdf::Element>());
+
+  sdf::Gui gui1;
+  gui1.Load(sdf);
+  gui1.SetFullscreen(true);
+
+  sdf::Gui gui2;
+  gui2.SetFullscreen(false);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Gui tmp = std::move(gui1);
+  gui1 = gui2;
+  gui2 = tmp;
+
+  EXPECT_FALSE(gui1.Fullscreen());
   EXPECT_TRUE(gui2.Fullscreen());
 }
 

@@ -17,6 +17,7 @@
 #ifndef SDF_ELEMENT_HH_
 #define SDF_ELEMENT_HH_
 
+#include <any>
 #include <map>
 #include <memory>
 #include <set>
@@ -229,11 +230,11 @@ namespace sdf
     /// return A Param pointer to the value of this element.
     public: ParamPtr GetValue() const;
 
-    /// \brief Get the element value/attribute as a boost::any.
+    /// \brief Get the element value/attribute as a std::any.
     /// \param[in] _key The key of the attribute. If empty, get the value of
     /// the element. Defaults to empty.
-    /// \return The element as a boost::any.
-    public: boost::any GetAny(const std::string &_key = "") const;
+    /// \return The element as a std::any.
+    public: std::any GetAny(const std::string &_key = "") const;
 
     /// \brief Get the value of a key. This function assumes the _key
     /// exists.
@@ -364,6 +365,14 @@ namespace sdf
     /// \return The include filename.
     public: std::string GetInclude() const;
 
+    /// \brief Set the path to the SDF document where this element came from.
+    /// \param[in] _path Full path to SDF document.
+    public: void SetFilePath(const std::string &_path);
+
+    /// \brief Get the path to the SDF document where this element came from.
+    /// \return Full path to SDF document.
+    public: const std::string &FilePath() const;
+
     /// \brief Get a text description of the element.
     /// \return The text description of the element.
     public: std::string GetDescription() const;
@@ -448,6 +457,9 @@ namespace sdf
 
     /// \brief Name of reference sdf.
     public: std::string referenceSDF;
+
+    /// \brief Path to file where this element came from
+    public: std::string path;
   };
 
   ///////////////////////////////////////////////

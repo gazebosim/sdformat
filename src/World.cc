@@ -18,6 +18,7 @@
 #include <vector>
 #include <ignition/math/Vector3.hh>
 
+#include "sdf/Actor.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
@@ -30,6 +31,16 @@ using namespace sdf;
 
 class sdf::WorldPrivate
 {
+  /// \brief Default constructor
+  public: WorldPrivate() = default;
+
+  /// \brief Copy constructor
+  /// \param[in] _worldPrivate Joint axis to move.
+  public: explicit WorldPrivate(const WorldPrivate &_worldPrivate);
+
+  // Delete copy assignment so it is not accidentally used
+  public: WorldPrivate &operator=(const WorldPrivate &) = delete;
+
   /// \brief Pointer to an atmosphere model.
   public: std::unique_ptr<Atmosphere> atmosphere;
 
@@ -43,11 +54,17 @@ class sdf::WorldPrivate
   /// \brief Pointer to Gui parameters.
   public: std::unique_ptr<Gui> gui;
 
+  /// \brief Pointer to Sene parameters.
+  public: std::unique_ptr<Scene> scene;
+
   /// \brief The frames specified in this world.
   public: std::vector<Frame> frames;
 
   /// \brief The lights specified in this world.
   public: std::vector<Light> lights;
+
+  /// \brief The actors specified in this world.
+  public: std::vector<Actor> actors;
 
   /// \brief Magnetic field.
   public: ignition::math::Vector3d magneticField =
@@ -71,6 +88,35 @@ class sdf::WorldPrivate
 };
 
 /////////////////////////////////////////////////
+WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
+    : audioDevice(_worldPrivate.audioDevice),
+      gravity(_worldPrivate.gravity),
+      frames(_worldPrivate.frames),
+      lights(_worldPrivate.lights),
+      actors(_worldPrivate.actors),
+      magneticField(_worldPrivate.magneticField),
+      models(_worldPrivate.models),
+      name(_worldPrivate.name),
+      physics(_worldPrivate.physics),
+      sdf(_worldPrivate.sdf),
+      windLinearVelocity(_worldPrivate.windLinearVelocity)
+{
+  if (_worldPrivate.atmosphere)
+  {
+    this->atmosphere =
+        std::make_unique<Atmosphere>(*(_worldPrivate.atmosphere));
+  }
+  if (_worldPrivate.gui)
+  {
+    this->gui = std::make_unique<Gui>(*(_worldPrivate.gui));
+  }
+  if (_worldPrivate.scene)
+  {
+    this->scene = std::make_unique<Scene>(*(_worldPrivate.scene));
+  }
+}
+
+/////////////////////////////////////////////////
 World::World()
   : dataPtr(new WorldPrivate)
 {
@@ -85,10 +131,38 @@ World::~World()
 }
 
 /////////////////////////////////////////////////
-World::World(World &&_world)
+World::World(const World &_world)
+  : dataPtr(new WorldPrivate(*_world.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+World &World::operator=(const World &_world)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new WorldPrivate(*_world.dataPtr);
+  }
+  else
+  {
+    this->dataPtr = new(this->dataPtr) WorldPrivate(*_world.dataPtr);
+  }
+  return *this;
+}
+
+/////////////////////////////////////////////////
+World::World(World &&_world) noexcept
 {
   this->dataPtr = _world.dataPtr;
   _world.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+World &World::operator=(World &&_world)
+{
+  this->dataPtr = _world.dataPtr;
+  _world.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -174,6 +248,11 @@ Errors World::Load(sdf::ElementPtr _sdf)
         physicsLoadErrors.end());
   }
 
+  // Load all the actors.
+  Errors actorLoadErrors = loadUniqueRepeated<Actor>(_sdf, "actor",
+      this->dataPtr->actors);
+  errors.insert(errors.end(), actorLoadErrors.begin(), actorLoadErrors.end());
+
   // Load all the lights.
   Errors lightLoadErrors = loadUniqueRepeated<Light>(_sdf, "light",
       this->dataPtr->lights);
@@ -190,6 +269,15 @@ Errors World::Load(sdf::ElementPtr _sdf)
     this->dataPtr->gui.reset(new sdf::Gui());
     Errors guiLoadErrors = this->dataPtr->gui->Load(_sdf->GetElement("gui"));
     errors.insert(errors.end(), guiLoadErrors.begin(), guiLoadErrors.end());
+  }
+
+  // Load the Scene
+  if (_sdf->HasElement("scene"))
+  {
+    this->dataPtr->scene.reset(new sdf::Scene());
+    Errors sceneLoadErrors =
+        this->dataPtr->scene->Load(_sdf->GetElement("scene"));
+    errors.insert(errors.end(), sceneLoadErrors.begin(), sceneLoadErrors.end());
   }
 
   return errors;
@@ -320,6 +408,18 @@ void World::SetGui(const sdf::Gui &_gui)
 }
 
 /////////////////////////////////////////////////
+const sdf::Scene *World::Scene() const
+{
+  return this->dataPtr->scene.get();
+}
+
+/////////////////////////////////////////////////
+void World::SetScene(const sdf::Scene &_scene)
+{
+  return this->dataPtr->scene.reset(new sdf::Scene(_scene));
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr World::Element() const
 {
   return this->dataPtr->sdf;
@@ -385,6 +485,33 @@ bool World::LightNameExists(const std::string &_name) const
   for (auto const &l : this->dataPtr->lights)
   {
     if (l.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+uint64_t World::ActorCount() const
+{
+  return this->dataPtr->actors.size();
+}
+
+/////////////////////////////////////////////////
+const Actor *World::ActorByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->actors.size())
+    return &this->dataPtr->actors[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool World::ActorNameExists(const std::string &_name) const
+{
+  for (auto const &a : this->dataPtr->actors)
+  {
+    if (a.Name() == _name)
     {
       return true;
     }

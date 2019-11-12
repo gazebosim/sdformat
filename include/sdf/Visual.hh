@@ -47,9 +47,23 @@ namespace sdf
     /// \brief Default constructor
     public: Visual();
 
+    /// \brief Copy constructor
+    /// \param[in] _visual Visual to copy.
+    public: Visual(const Visual &_visual);
+
     /// \brief Move constructor
     /// \param[in] _visual Visual to move.
-    public: Visual(Visual &&_visual);
+    public: Visual(Visual &&_visual) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _visual Visual to move.
+    /// \return Reference to this.
+    public: Visual &operator=(Visual &&_visual);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _visual Visual to copy.
+    /// \return Reference to this.
+    public: Visual &operator=(const Visual &_visual);
 
     /// \brief Destructor
     public: ~Visual();
@@ -75,6 +89,10 @@ namespace sdf
     /// \brief Get a pointer to the visual's geometry.
     /// \return The visual's geometry.
     public: const Geometry *Geom() const;
+
+    /// \brief Set the visual's geometry
+    /// \param[in] _geom The geometry of the visual object
+    public: void SetGeom(const Geometry &_geom);
 
     /// \brief Get the pose of the visual object. This is the pose of the
     /// visual as specified in SDF
@@ -125,6 +143,10 @@ namespace sdf
     /// \return Pointer to the visual's material properties. Nullptr
     /// indicates that material properties have not been set.
     public: sdf::Material *Material() const;
+
+    /// \brief Set the visual's material
+    /// \param[in] _material The material of the visual object
+    public: void SetMaterial(const sdf::Material &_material);
 
     /// \brief Give the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by

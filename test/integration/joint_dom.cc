@@ -111,6 +111,49 @@ TEST(DOMJoint, DoublePendulum)
   EXPECT_EQ(ignition::math::Vector3d::UnitX, lowerAxis->Xyz());
 }
 
+//////////////////////////////////////////////////
+TEST(DOMJoint, Complete)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "joint_complete.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  std::vector<ignition::math::Pose3d> jointPoses =
+  {
+    {1, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0},
+    {0, 0, 1, 0, 0, 0},
+    {0, 0, 0, 1, 0, 0},
+    {0, 0, 0, 0, 1, 0},
+    {0, 0, 0, 0, 0, 1},
+    {2, 0, 0, 0, 0, 0},
+    {0, 2, 0, 0, 0, 0},
+    {0, 0, 2, 0, 0, 0},
+  };
+
+  for (size_t i = 0; i < jointPoses.size(); ++i)
+  {
+    EXPECT_EQ(jointPoses[i], model->JointByIndex(i)->Pose()) << i;
+  }
+
+  // Check thread_pitch for screw joint
+  {
+    const sdf::Joint *joint = model->JointByName("screw_joint");
+    ASSERT_NE(nullptr, joint);
+    ASSERT_NE(nullptr, joint->Element());
+    EXPECT_DOUBLE_EQ(20, joint->ThreadPitch());
+  }
+}
+
 /////////////////////////////////////////////////
 TEST(DOMJoint, LoadJointPoseRelativeTo)
 {

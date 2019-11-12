@@ -70,6 +70,20 @@ namespace sdf
     /// \param[in] _e Exception to copy.
     public: Exception(const Exception &_e);
 
+    /// \brief Move constructor
+    /// \param[in] _e Exception to move.
+    public: Exception(Exception &&_e) noexcept;
+
+    /// \brief Assignment operator.
+    /// \param[in] _exception The exception to set values from.
+    /// \return *this
+    public: Exception &operator=(const Exception &_exception);
+
+    /// \brief Move assignment operator.
+    /// \param[in] _exception Exception to move.
+    /// \return Reference to this.
+    public: Exception &operator=(Exception &&_exception);
+
     /// \brief Destructor
     public: virtual ~Exception();
 

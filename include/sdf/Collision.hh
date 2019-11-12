@@ -45,9 +45,23 @@ namespace sdf
     /// \brief Default constructor
     public: Collision();
 
+    /// \brief Copy constructor
+    /// \param[in] _collision Collision to copy.
+    public: Collision(const Collision &_collision);
+
     /// \brief Move constructor
     /// \param[in] _collision Collision to move.
-    public: Collision(Collision &&_collision);
+    public: Collision(Collision &&_collision) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _collision Collision to move.
+    /// \return Reference to this.
+    public: Collision &operator=(Collision &&_collision);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _collision Collision to copy.
+    /// \return Reference to this.
+    public: Collision &operator=(const Collision &_collision);
 
     /// \brief Destructor
     public: ~Collision();
@@ -73,6 +87,10 @@ namespace sdf
     /// \brief Get a pointer to the collisions's geometry.
     /// \return The collision's geometry.
     public: const Geometry *Geom() const;
+
+    /// \brief Set the collision's geometry
+    /// \param[in] _geom The geometry of the collision object
+    public: void SetGeom(const Geometry &_geom);
 
     /// \brief Get the pose of the collision object. This is the pose of the
     /// collision as specified in SDF

@@ -61,12 +61,26 @@ namespace sdf
     /// \brief Default constructor
     public: Light();
 
+    /// \brief Copy constructor
+    /// \param[in] _light Light to copy.
+    public: Light(const Light &_light);
+
     /// \brief Move constructor
     /// \param[in] _light Light to move.
-    public: Light(Light &&_light);
+    public: Light(Light &&_light) noexcept;
 
     /// \brief Destructor
     public: ~Light();
+
+    /// \brief Move assignment operator.
+    /// \param[in] _light Light to move.
+    /// \return Reference to this.
+    public: Light &operator=(Light &&_light);
+
+    /// \brief Assignment operator.
+    /// \param[in] _light The light to set values from.
+    /// \return *this
+    public: Light &operator=(const Light &_light);
 
     /// \brief Load the light based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -240,6 +254,10 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Helper function to copy from another light
+    /// \param[in] _light Light to copy.
+    private: void CopyFrom(const Light &_light);
 
     /// \brief Private data pointer.
     private: LightPrivate *dataPtr = nullptr;

@@ -42,12 +42,26 @@ namespace sdf
     /// \brief Default constructor
     public: Frame();
 
+    /// \brief Copy constructor
+    /// \param[in] _frame Frame to copy.
+    public: Frame(const Frame &_frame);
+
     /// \brief Move constructor
     /// \param[in] _frame Frame to move.
     public: Frame(Frame &&_frame);
 
     /// \brief Destructor
     public: ~Frame();
+
+    /// \brief Move assignment operator.
+    /// \param[in] _frame Frame to move.
+    /// \return Reference to this.
+    public: Frame &operator=(Frame &&_frame);
+
+    /// \brief Assignment operator.
+    /// \param[in] _frame The frame to set values from.
+    /// \return *this
+    public: Frame &operator=(const Frame &_frame);
 
     /// \brief Load the frame based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root

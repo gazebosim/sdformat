@@ -2,7 +2,7 @@
 
   <xsl:output method="xml" indent="yes" />
   <xsl:decimal-format decimal-separator="." grouping-separator="," />
-  
+
   <!-- Identity template, provides default behavior that copies all content. -->
   <xsl:template match="@*|node()">
     <xsl:copy>

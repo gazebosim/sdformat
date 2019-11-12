@@ -56,10 +56,35 @@ Collision::Collision()
 }
 
 /////////////////////////////////////////////////
-Collision::Collision(Collision &&_collision)
+Collision::Collision(const Collision &_collision)
+  : dataPtr(new CollisionPrivate(*_collision.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Collision::Collision(Collision &&_collision) noexcept
 {
   this->dataPtr = _collision.dataPtr;
   _collision.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Collision &Collision::operator=(const Collision &_collision)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new CollisionPrivate;
+  }
+  *this->dataPtr = (*_collision.dataPtr);
+  return *this;
+}
+
+/////////////////////////////////////////////////
+Collision &Collision::operator=(Collision &&_collision)
+{
+  this->dataPtr = _collision.dataPtr;
+  _collision.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -127,6 +152,12 @@ void Collision::SetName(const std::string &_name) const
 const Geometry *Collision::Geom() const
 {
   return &this->dataPtr->geom;
+}
+
+/////////////////////////////////////////////////
+void Collision::SetGeom(const Geometry &_geom)
+{
+  this->dataPtr->geom = _geom;
 }
 
 /////////////////////////////////////////////////

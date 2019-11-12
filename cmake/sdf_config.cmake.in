@@ -4,7 +4,7 @@
 # taking on these version settings, and then that stack will POP after the
 # find_package(~) has exited, so this will not affect the cmake policy settings
 # of a caller.
-cmake_minimum_required(VERSION 3.5.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 
 if(@PKG_NAME@_CONFIG_INCLUDED)
   return()
@@ -21,7 +21,7 @@ list(APPEND @PKG_NAME@_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include/sdformat-@SD
 
 list(APPEND @PKG_NAME@_CFLAGS "-I@CMAKE_INSTALL_PREFIX@/include/sdformat-@SDF_VERSION@")
 if (NOT WIN32)
-  list(APPEND @PKG_NAME@_CXX_FLAGS "${@PKG_NAME@_CFLAGS} -std=c++11")
+  list(APPEND @PKG_NAME@_CXX_FLAGS "${@PKG_NAME@_CFLAGS} -std=c++17")
 endif()
 
 list(APPEND @PKG_NAME@_LIBRARY_DIRS "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@")
@@ -36,8 +36,5 @@ set(@PKG_NAME@_PKGCONFIG_TYPE PKGCONFIG_REQUIRES)
 find_package(ignition-math@IGN_MATH_VER@)
 list(APPEND @PKG_NAME@_INCLUDE_DIRS ${IGNITION-MATH_INCLUDE_DIRS})
 list(APPEND @PKG_NAME@_LIBRARY_DIRS ${IGNITION-MATH_LIBRARY_DIRS})
-
-find_package(Boost)
-list(APPEND @PKG_NAME@_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 
 list(APPEND @PKG_NAME@_LDFLAGS "-L@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@")

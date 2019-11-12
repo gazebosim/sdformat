@@ -53,7 +53,8 @@
     <element name="xyz" type="vector3" default="0 0 1" required="1">
       <description>
         Represents the x,y,z components of the axis unit vector. The axis is
-        expressed in the joint frame. The vector should be normalized.
+        expressed in the joint frame unless a different frame is expressed in
+        the expressed_in attribute. The vector should be normalized.
       </description>
       <attribute name="expressed_in" type="string" default="" required="0">
         <description>
@@ -114,7 +115,8 @@
     <element name="xyz" type="vector3" default="0 0 1" required="1">
       <description>
         Represents the x,y,z components of the axis unit vector. The axis is
-        expressed in the joint frame. The vector should be normalized.
+        expressed in the joint frame unless a different frame is expressed in
+        the expressed_in attribute. The vector should be normalized.
       </description>
       <attribute name="expressed_in" type="string" default="" required="0">
         <description>

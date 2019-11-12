@@ -17,6 +17,8 @@
 #ifndef _SDFIMPLPRIVATE_HH_
 #define _SDFIMPLPRIVATE_HH_
 
+#include <string>
+
 #include "sdf/Types.hh"
 
 /// \ingroup sdf_parser
@@ -38,6 +40,9 @@ namespace sdf
     /// \sa ElementPtr Root()
     /// \sa void Root(const ElementPtr _root)
     public: ElementPtr root;
+
+    /// \brief Path to SDF document on disk.
+    public: std::string path;
   };
   /// \}
 }

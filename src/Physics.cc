@@ -50,10 +50,35 @@ Physics::Physics()
 }
 
 /////////////////////////////////////////////////
+Physics::Physics(const Physics &_physics)
+  : dataPtr(new PhysicsPrivate(*_physics.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Physics &Physics::operator=(const Physics &_physics)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new PhysicsPrivate;
+  }
+  *this->dataPtr = (*_physics.dataPtr);
+  return *this;
+}
+
+/////////////////////////////////////////////////
 Physics::Physics(Physics &&_physics) noexcept
 {
   this->dataPtr = _physics.dataPtr;
   _physics.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Physics &Physics::operator=(Physics &&_physics)
+{
+  this->dataPtr = _physics.dataPtr;
+  _physics.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////

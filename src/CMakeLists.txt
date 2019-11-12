@@ -13,8 +13,12 @@ if (USE_EXTERNAL_TINYXML)
 endif()
 
 set (sources
+  Actor.cc
+  AirPressure.cc
+  Altimeter.cc
   Atmosphere.cc
   Box.cc
+  Camera.cc
   Collision.cc
   Console.cc
   Converter.cc
@@ -28,19 +32,25 @@ set (sources
   Geometry.cc
   Gui.cc
   ign.cc
+  Imu.cc
   Joint.cc
   JointAxis.cc
+  Lidar.cc
   Light.cc
   Link.cc
+  Magnetometer.cc
   Material.cc
   Mesh.cc
   Model.cc
+  Noise.cc
   parser.cc
   parser_urdf.cc
   Param.cc
+  Pbr.cc
   Physics.cc
   Plane.cc
   Root.cc
+  Scene.cc
   SDF.cc
   SDFExtension.cc
   Sensor.cc
@@ -80,8 +90,12 @@ else()
 endif()
 
 set (gtest_sources
+  Actor_TEST.cc
+  AirPressure_TEST.cc
+  Altimeter_TEST.cc
   Atmosphere_TEST.cc
   Box_TEST.cc
+  Camera_TEST.cc
   Collision_TEST.cc
   Console_TEST.cc
   Converter_TEST.cc
@@ -93,19 +107,25 @@ set (gtest_sources
   Filesystem_TEST.cc
   Geometry_TEST.cc
   Gui_TEST.cc
+  Imu_TEST.cc
   Joint_TEST.cc
   JointAxis_TEST.cc
+  Lidar_TEST.cc
   Light_TEST.cc
   Link_TEST.cc
+  Magnetometer_TEST.cc
   Material_TEST.cc
   Mesh_TEST.cc
   Model_TEST.cc
+  Noise_TEST.cc
   parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
+  Pbr_TEST.cc
   Physics_TEST.cc
   Plane_TEST.cc
   Root_TEST.cc
+  Scene_TEST.cc
   SDF_TEST.cc
   Sensor_TEST.cc
   Sphere_TEST.cc
@@ -133,7 +153,6 @@ target_link_libraries(${sdf_target} PUBLIC ${IGNITION-MATH_LIBRARIES})
 
 target_include_directories(${sdf_target}
   PUBLIC
-    ${Boost_INCLUDE_DIRS}
     ${IGNITION-MATH_INCLUDE_DIRS}
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/..>
@@ -156,4 +175,6 @@ endif()
 
 sdf_install_library(${sdf_target})
 
-add_subdirectory(cmd)
+if(NOT WIN32)
+  add_subdirectory(cmd)
+endif()

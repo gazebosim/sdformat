@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 
 #include "sdf/Element.hh"
+#include "sdf/Filesystem.hh"
 #include "sdf/Param.hh"
 
 /////////////////////////////////////////////////
@@ -35,12 +36,14 @@ TEST(Element, Child)
 {
   sdf::Element child;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  parent->SetFilePath("/parent/path/model.sdf");
 
   ASSERT_EQ(child.GetParent(), nullptr);
 
   child.SetParent(parent);
 
   ASSERT_NE(child.GetParent(), nullptr);
+  EXPECT_EQ("/parent/path/model.sdf", child.FilePath());
 }
 
 /////////////////////////////////////////////////
@@ -296,6 +299,9 @@ TEST(Element, ToStringElements)
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
 
+  parent->SetName("parent");
+  child->SetName("child");
+
   parent->InsertElement(child);
   ASSERT_NE(parent->GetFirstElement(), nullptr);
 
@@ -304,8 +310,10 @@ TEST(Element, ToStringElements)
 
   // attribute won't print unless it has been set
   EXPECT_FALSE(parent->GetAttributeSet("test"));
-  EXPECT_EQ(parent->ToString("myprefix"),
-            "myprefix<>\nmyprefix  </>\nmyprefix</>\n");
+  EXPECT_EQ(parent->ToString("<!-- prefix -->"),
+    "<!-- prefix --><parent>\n"
+    "<!-- prefix -->  <child/>\n"
+    "<!-- prefix --></parent>\n");
 
   sdf::ParamPtr test = parent->GetAttribute("test");
   ASSERT_NE(nullptr, test);
@@ -314,8 +322,31 @@ TEST(Element, ToStringElements)
   EXPECT_TRUE(test->GetSet());
   EXPECT_TRUE(parent->GetAttributeSet("test"));
 
-  EXPECT_EQ(parent->ToString("myprefix"),
-            "myprefix< test='foo'>\nmyprefix  </>\nmyprefix</>\n");
+  EXPECT_EQ(parent->ToString("<!-- prefix -->"),
+    "<!-- prefix --><parent test='foo'>\n"
+    "<!-- prefix -->  <child/>\n"
+    "<!-- prefix --></parent>\n");
+}
+
+/////////////////////////////////////////////////
+TEST(Element, ToStringRequiredAttributes)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  parent->AddAttribute("test", "string", "foo", true, "foo description");
+  ASSERT_EQ(parent->GetAttributeCount(), 1UL);
+
+  // A required attribute should print even if it has not been set
+  EXPECT_FALSE(parent->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("myprefix"), "myprefix< test='foo'/>\n");
+
+  sdf::ParamPtr test = parent->GetAttribute("test");
+  ASSERT_NE(nullptr, test);
+  EXPECT_FALSE(test->GetSet());
+  EXPECT_TRUE(test->SetFromString("bar"));
+  EXPECT_TRUE(test->GetSet());
+  EXPECT_TRUE(parent->GetAttributeSet("test"));
+
+  EXPECT_EQ(parent->ToString("myprefix"), "myprefix< test='bar'/>\n");
 }
 
 /////////////////////////////////////////////////
@@ -340,6 +371,26 @@ TEST(Element, ToStringValue)
   EXPECT_TRUE(parent->GetAttributeSet("test"));
   EXPECT_EQ(parent->ToString("myprefix"),
             "myprefix< test='foo'>val</>\n");
+}
+
+
+/////////////////////////////////////////////////
+TEST(Element, ToStringClonedElement)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+
+  parent->AddAttribute("test", "string", "foo", false, "foo description");
+  ASSERT_EQ(parent->GetAttributeCount(), 1UL);
+
+  sdf::ParamPtr test = parent->GetAttribute("test");
+  ASSERT_NE(nullptr, test);
+  EXPECT_FALSE(test->GetSet());
+  EXPECT_TRUE(test->SetFromString("foo"));
+  EXPECT_TRUE(test->GetSet());
+
+  sdf::ElementPtr parentClone = parent->Clone();
+  EXPECT_TRUE(parentClone->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("myprefix"), parentClone->ToString("myprefix"));
 }
 
 /////////////////////////////////////////////////
@@ -450,11 +501,14 @@ TEST(Element, Copy)
   sdf::ElementPtr dest = std::make_shared<sdf::Element>();
 
   src->SetName("test");
+  src->SetFilePath("/path/to/file.sdf");
   src->AddValue("string", "val", false, "val description");
   src->AddAttribute("test", "string", "foo", false, "foo description");
   src->InsertElement(std::make_shared<sdf::Element>());
 
   dest->Copy(src);
+
+  EXPECT_EQ("/path/to/file.sdf", dest->FilePath());
 
   sdf::ParamPtr param = dest->GetValue();
   ASSERT_TRUE(param->IsType<std::string>());

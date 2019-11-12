@@ -14,7 +14,6 @@
  * limitations under the License.
  *
 */
-#include "sdf/Geometry.hh"
 #include "sdf/Sphere.hh"
 
 using namespace sdf;
@@ -40,6 +39,41 @@ Sphere::~Sphere()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Sphere::Sphere(const Sphere &_sphere)
+  : dataPtr(new SpherePrivate)
+{
+  this->dataPtr->radius = _sphere.dataPtr->radius;
+  this->dataPtr->sdf = _sphere.dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+Sphere &Sphere::operator=(const Sphere &_sphere)
+{
+  if (!this->dataPtr)
+  {
+    this->dataPtr = new SpherePrivate;
+  }
+  this->dataPtr->radius = _sphere.dataPtr->radius;
+  this->dataPtr->sdf = _sphere.dataPtr->sdf;
+  return *this;
+}
+
+//////////////////////////////////////////////////
+Sphere::Sphere(Sphere &&_sphere) noexcept
+{
+  this->dataPtr = _sphere.dataPtr;
+  _sphere.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Sphere &Sphere::operator=(Sphere &&_sphere)
+{
+  this->dataPtr = _sphere.dataPtr;
+  _sphere.dataPtr = nullptr;
+  return *this;
 }
 
 /////////////////////////////////////////////////

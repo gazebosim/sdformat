@@ -46,3 +46,86 @@ TEST(DOMcollision, Construction)
   EXPECT_EQ(nullptr, collision.Geom()->PlaneShape());
   EXPECT_EQ(nullptr, collision.Geom()->SphereShape());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, MoveConstructor)
+{
+  sdf::Collision collision;
+  collision.SetPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+
+  sdf::Collision collision2(std::move(collision));
+  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+            collision2.Pose());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, CopyConstructor)
+{
+  sdf::Collision collision;
+  collision.SetPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+
+  sdf::Collision collision2(collision);
+  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+            collision2.Pose());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, MoveAssignment)
+{
+  sdf::Collision collision;
+  collision.SetPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+
+  sdf::Collision collision2;
+  collision2 = std::move(collision);
+  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+            collision2.Pose());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, CopyAssignment)
+{
+  sdf::Collision collision;
+  collision.SetPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+
+  sdf::Collision collision2;
+  collision2 = collision;
+  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+            collision2.Pose());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, CopyAssignmentAfterMove)
+{
+  sdf::Collision collision1;
+  collision1.SetPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+
+  sdf::Collision collision2;
+  collision2.SetPose({-20, -30, -40, IGN_PI, IGN_PI, IGN_PI});
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Collision tmp = std::move(collision1);
+  collision1 = collision2;
+  collision2 = tmp;
+
+  EXPECT_EQ(ignition::math::Pose3d(-20, -30, -40, IGN_PI, IGN_PI, IGN_PI),
+            collision1.Pose());
+  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+            collision2.Pose());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMcollision, SetGeometry)
+{
+  sdf::Collision collision;
+  EXPECT_EQ(nullptr, collision.Element());
+  EXPECT_TRUE(collision.Name().empty());
+
+  sdf::Geometry geometry;
+  geometry.SetType(sdf::GeometryType::BOX);
+
+  collision.SetGeom(geometry);
+
+  ASSERT_NE(nullptr, collision.Geom());
+  EXPECT_EQ(sdf::GeometryType::BOX, collision.Geom()->Type());
+}
