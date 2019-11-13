@@ -14,10 +14,6 @@
     <description>will be implemented in the future release.</description>
   </element>
 
-  <element name="temperature" type="double" default="0.0" required="0">
-    <description>Temperature of the visual. Affects thermal sensors</description>
-  </element>
-
   <element name="transparency" type="double" default="0.0" required="0">
     <description>The amount of transparency( 0=opaque, 1 = fully transparent)</description>
   </element>
