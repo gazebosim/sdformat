@@ -27,6 +27,7 @@
                   rfidtag,
                   rgbd_camera,
                   sonar,
+                  thermal_camera,
                   wireless_receiver, and
                   wireless_transmitter.
       The "ray" and "gpu_ray" types are equivalent to "lidar" and "gpu_lidar", respectively. It is preferred to use "lidar" and "gpu_lidar" since "ray" and "gpu_ray" will be deprecated. The "ray" and "gpu_ray" types are maintained for legacy support.
@@ -67,5 +68,6 @@
   <include filename="sonar.sdf" required="0"/>
   <include filename="transceiver.sdf" required="0"/>
   <include filename="forcetorque.sdf" required="0"/>
+  <include filename="thermal_camera.sdf" required="0"/>
 
 </element> <!-- End Sensor -->
