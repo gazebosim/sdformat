@@ -2,8 +2,26 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Build Utils_TEST with Utils.cc explicitly passed since its symbols are not visible.
+    * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
+
+### SDFormat 8.5.0 (2019-11-XX)
+
+1. Add `thermal_camera` sensor type
+    * [Pull request 586](https://bitbucket.org/osrf/sdformat/pull-requests/586)
+
 1. Use inline namespaces in Utils.cc
     * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
+
+1. Convert `ign sdf` file inputs to absolute paths before processing them
+    * [Pull request 583](https://bitbucket.org/osrf/sdformat/pull-requests/583)
+
+1. Add `emissive_map` to material sdf
+    * [Pull request 585](https://bitbucket.org/osrf/sdformat/pull-requests/585)
+
+1. Converter: fix bug when converting across multiple versions.
+    * [Pull request 584](https://bitbucket.org/osrf/sdformat/pull-requests/584)
+    * [Pull request 573](https://bitbucket.org/osrf/sdformat/pull-requests/573)
 
 ### SDFormat 8.4.0 (2019-10-XX)
 
@@ -193,6 +211,9 @@
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
 
+1. Build Utils_TEST with Utils.cc explicitly passed since its symbols are not visible.
+    * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
+
 1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
     * [Pull request 575](https://bitbucket.org/osrf/sdformat/pull-requests/575)
 
@@ -201,6 +222,9 @@
 
 1. Avoid hardcoding /machine:x64 flag on 64-bit on MSVC with CMake >= 3.5.
     * [Pull request 565](https://bitbucket.org/osrf/sdformat/pull-requests/565)
+
+1. Prevent duplicate `use_parent_model_frame` tags during file conversion.
+    * [Pull request 573](https://bitbucket.org/osrf/sdformat/pull-requests/573)
 
 1. Backport inline versioned namespace from version 8.
     * [Pull request 557](https://bitbucket.org/osrf/sdformat/pull-requests/557)
