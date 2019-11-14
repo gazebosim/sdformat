@@ -241,7 +241,8 @@ TEST(DOMSensor, Type)
     sdf::SensorType::RFIDTAG,
     sdf::SensorType::SONAR,
     sdf::SensorType::WIRELESS_RECEIVER,
-    sdf::SensorType::WIRELESS_TRANSMITTER
+    sdf::SensorType::WIRELESS_TRANSMITTER,
+    sdf::SensorType::THERMAL_CAMERA
   };
   std::vector<std::string> typeStrs =
   {
@@ -262,7 +263,8 @@ TEST(DOMSensor, Type)
     "rfidtag",
     "sonar",
     "wireless_receiver",
-    "wireless_transmitter"
+    "wireless_transmitter",
+    "thermal_camera"
   };
 
   for (size_t i = 0; i < types.size(); ++i)
