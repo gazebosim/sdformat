@@ -45,8 +45,8 @@ std::string getRepeatedXmlString()
          << "    <elemC attrC='C'>"
          << "      <elemD>D</elemD>"
          << "      <elemD>D</elemD>"
-         << "      <elemD>D</elemD>"
-         << "      <elemD>D</elemD>"
+         << "      <elemD>d</elemD>"
+         << "      <elemD>d</elemD>"
          << "    </elemC>"
          << "  </elemB>"
          << "</elemA>";
@@ -1058,7 +1058,7 @@ TEST(Converter, MapInvalid)
 TEST(Converter, MapElemElem)
 {
   // Set up an xml string for testing
-  std::string xmlString = getXmlString();
+  std::string xmlString = getRepeatedXmlString();
 
   // Verify the xml
   TiXmlDocument xmlDoc;
@@ -1090,7 +1090,7 @@ TEST(Converter, MapElemElem)
                 << "          <value>E</value>"
                 << "        </to>"
                 << "      </map>"
-                // test with multiple from/to values
+                // test with multiple from/to values, including an unused 'to'
                 << "      <map>"
                 << "        <from name='elemD'>"
                 << "          <value>d</value>"
@@ -1099,6 +1099,7 @@ TEST(Converter, MapElemElem)
                 << "        <to name='elemF'>"
                 << "          <value>f</value>"
                 << "          <value>F</value>"
+                << "          <value>FF</value>"
                 << "        </to>"
                 << "      </map>"
                 // test with multiple 'from' values, and 1 'to'
@@ -1138,17 +1139,73 @@ TEST(Converter, MapElemElem)
   ASSERT_NE(nullptr, convertedElem);
   EXPECT_EQ(convertedElem->ValueStr(), "elemC");
   ASSERT_NE(nullptr, convertedElem->FirstChildElement("elemD"));
-  std::string elemValue = convertedElem->FirstChildElement("elemD")->GetText();
-  EXPECT_EQ(elemValue, "D");
-  ASSERT_NE(nullptr, convertedElem->FirstChildElement("elemE"));
-  elemValue = convertedElem->FirstChildElement("elemE")->GetText();
-  EXPECT_EQ(elemValue, "E");
-  ASSERT_NE(nullptr, convertedElem->FirstChildElement("elemF"));
-  elemValue = convertedElem->FirstChildElement("elemF")->GetText();
-  EXPECT_EQ(elemValue, "F");
-  ASSERT_NE(nullptr, convertedElem->FirstChildElement("elemG"));
-  elemValue = convertedElem->FirstChildElement("elemG")->GetText();
-  EXPECT_EQ(elemValue, "g");
+  std::string elemValue;
+
+  // check count and value of elemD elements in converted xml
+  {
+    const std::vector<std::string> elemTexts({"D", "D", "d", "d"});
+    TiXmlElement *elemD = convertedElem->FirstChildElement("elemD");
+    unsigned int i;
+    for (i = 0; elemD && i < elemTexts.size(); ++i)
+    {
+      ASSERT_NE(nullptr, elemD->GetText());
+      elemValue = elemD->GetText();
+      EXPECT_EQ(elemTexts[i], elemValue);
+      elemD = elemD->NextSiblingElement("elemD");
+    }
+    EXPECT_EQ(nullptr, elemD);
+    EXPECT_EQ(4u, i);
+  }
+
+  // check count and value of elemE elements in converted xml
+  {
+    const std::vector<std::string> elemTexts({"E", "E"});
+    TiXmlElement *elemE = convertedElem->FirstChildElement("elemE");
+    unsigned int i;
+    for (i = 0; elemE && i < elemTexts.size(); ++i)
+    {
+      ASSERT_NE(nullptr, elemE->GetText());
+      elemValue = elemE->GetText();
+      EXPECT_EQ(elemTexts[i], elemValue);
+      elemE = elemE->NextSiblingElement("elemE");
+    }
+    EXPECT_EQ(nullptr, elemE);
+    EXPECT_EQ(2u, i);
+  }
+
+  // check count and value of elemF elements in converted xml
+  {
+    const std::vector<std::string> elemTexts({"F", "F", "f", "f"});
+    TiXmlElement *elemF = convertedElem->FirstChildElement("elemF");
+    unsigned int i;
+    for (i = 0; elemF && i < elemTexts.size(); ++i)
+    {
+      ASSERT_NE(nullptr, elemF->GetText());
+      elemValue = elemF->GetText();
+      EXPECT_EQ(elemTexts[i], elemValue);
+      elemF = elemF->NextSiblingElement("elemF");
+    }
+    EXPECT_EQ(nullptr, elemF);
+    EXPECT_EQ(4u, i);
+  }
+
+  // check count and value of elemG elements in converted xml
+  {
+    const std::vector<std::string> elemTexts({"g", "g", "g", "g"});
+    TiXmlElement *elemG = convertedElem->FirstChildElement("elemG");
+    unsigned int i;
+    for (i = 0; elemG && i < elemTexts.size(); ++i)
+    {
+      ASSERT_NE(nullptr, elemG->GetText());
+      elemValue = elemG->GetText();
+      EXPECT_EQ(elemTexts[i], elemValue);
+      elemG = elemG->NextSiblingElement("elemG");
+    }
+    EXPECT_EQ(nullptr, elemG);
+    EXPECT_EQ(4u, i);
+  }
+
+  // check that there are no elemH elements in converted xml
   EXPECT_EQ(nullptr, convertedElem->FirstChildElement("elemH"));
 }
 
