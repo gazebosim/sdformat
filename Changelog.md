@@ -10,6 +10,9 @@
 1. Initial version of sdformat 1.7 specification.
     * [Pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
 
+1. Converter: add `<map>` element for converting fixed values.
+    * [Pull request 580](https://bitbucket.org/osrf/sdformat/pull-requests/580)
+
 ## SDFormat 8.0
 
 ### SDFormat 8.X.X (201X-XX-XX)
