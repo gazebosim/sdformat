@@ -7,6 +7,9 @@
 1. Use consistent namespaces in Filesystem.
     * [Pull request 567](https://bitbucket.org/osrf/sdformat/pull-requests/567)
 
+1. Initial version of sdformat 1.7 specification.
+    * [Pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
 1. Converter: add `<map>` element for converting fixed values.
     * [Pull request 580](https://bitbucket.org/osrf/sdformat/pull-requests/580)
 
@@ -14,7 +17,7 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
-1. Build Utils_TEST with Utils.cc explicitly passed since its symbols are not visible.
+1. Build `Utils_TEST` with Utils.cc explicitly passed since its symbols are not visible.
     * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
 
 ### SDFormat 8.5.0 (2019-11-XX)
