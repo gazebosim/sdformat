@@ -1029,15 +1029,27 @@ TEST(Converter, MapInvalid)
   TiXmlElement *convertElem =  xmlDoc.FirstChildElement();
   ASSERT_NE(nullptr, convertElem);
   EXPECT_EQ(convertElem->ValueStr(), "elemA");
+  ASSERT_NE(nullptr, convertElem->Attribute("attrA"));
+  std::string attrValue = convertElem->Attribute("attrA");
+  EXPECT_EQ("A", attrValue);
   convertElem = convertElem->FirstChildElement();
   ASSERT_NE(nullptr, convertElem);
   EXPECT_EQ(convertElem->ValueStr(), "elemB");
+  ASSERT_NE(nullptr, convertElem->Attribute("attrB"));
+  attrValue = convertElem->Attribute("attrB");
+  EXPECT_EQ("B", attrValue);
   convertElem = convertElem->FirstChildElement();
   ASSERT_NE(nullptr, convertElem);
   EXPECT_EQ(convertElem->ValueStr(), "elemC");
+  ASSERT_NE(nullptr, convertElem->Attribute("attrC"));
+  attrValue = convertElem->Attribute("attrC");
+  EXPECT_EQ("C", attrValue);
   convertElem = convertElem->FirstChildElement();
   ASSERT_NE(nullptr, convertElem);
   EXPECT_EQ(convertElem->ValueStr(), "elemD");
+  ASSERT_NE(nullptr, convertElem->GetText());
+  std::string textValue = convertElem->GetText();
+  EXPECT_EQ("D", textValue);
 }
 
 ////////////////////////////////////////////////////
