@@ -20,6 +20,12 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Relax cmake check to allow compiling with gcc-7.
+    * [Pull request 592](https://bitbucket.org/osrf/sdformat/pull-requests/592)
+
+1. Update visual DOM to parse `cast_shadows` property of a visual.
+    * [Pull request 590](https://bitbucket.org/osrf/sdformat/pull-requests/590)
+
 1. Build `Utils_TEST` with Utils.cc explicitly passed since its symbols are not visible.
     * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
 
