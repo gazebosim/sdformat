@@ -50,7 +50,7 @@ but with improved human-readability..
 
 1. **sdf/SDFImpl.hh**
     + ***Deprecation:*** ElementPtr root
-    + ***Replacement:*** ElementPtr Root() const / void Root(const ElementPtr _root)
+    + ***Replacement:*** ElementPtr Root() const / void Root(const ElementPtr \_root)
     + ***Deprecation:*** static std::string version
     + ***Replacement:*** static std::string Version()
 
@@ -81,7 +81,7 @@ but with improved human-readability..
       by their std:: equivalents (C++11 standard)
 
 1. **`gravity` and `magnetic_field` elements are moved  from `physics` to `world`**
-    + In physics element: gravity and magnetic_field tags have been moved
+    + In physics element: gravity and `magnetic_field` tags have been moved
       from Physics to World element.
     + [pull request 247](https://bitbucket.org/osrf/sdformat/pull-requests/247)
     + [gazebo pull request 2090](https://bitbucket.org/osrf/gazebo/pull-requests/2090)
@@ -97,8 +97,27 @@ but with improved human-readability..
     + [pull request 244](https://bitbucket.org/osrf/sdformat/pull-requests/244)
 
 1. **Lump:: prefix in link names**
-    + Changed to \_fixed_joint_lump__ to avoid confusion with scoped names
+    + Changed to `_fixed_joint_lump__` to avoid confusion with scoped names
     + [Pull request 245](https://bitbucket.org/osrf/sdformat/pull-request/245)
+
+## SDF protocol 1.6 to 1.7
+
+### Removals
+
+1. **actor.sdf** `static` element was deprecated in
+    [pull request 280](https://bitbucket.org/osrf/sdformat/pull-requests/280)
+    and is now removed.
+    + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
+1. **imu.sdf** `topic` element was deprecated in
+    [pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)
+    and is now removed.
+    + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
+1. **joint.sdf** `//physics/ode/provide_feedback` was deprecated in
+    [pull request 38](https://bitbucket.org/osrf/sdformat/pull-requests/38)
+    and is now removed.
+    + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
 
 ## SDF protocol 1.5 to 1.6
 
@@ -128,7 +147,7 @@ but with improved human-readability..
     + [pull request 240](https://bitbucket.org/osrf/sdformat/pull-requests/240)
 
 1. **link.sdf** `light` element
-    + included from `light.sdf` with required="*",
+    + included from `light.sdf` with `required="*"`,
       so a link can have any number of attached lights.
     + [pull request 373](https://bitbucket.org/osrf/sdformat/pull-requests/373)
 
