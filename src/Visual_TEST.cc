@@ -29,6 +29,9 @@ TEST(DOMVisual, Construction)
   visual.SetName("test_visual");
   EXPECT_EQ(visual.Name(), "test_visual");
 
+  visual.SetCastShadows(false);
+  EXPECT_FALSE(visual.CastShadows());
+
   EXPECT_EQ(ignition::math::Pose3d::Zero, visual.Pose());
   EXPECT_TRUE(visual.PoseRelativeTo().empty());
 
@@ -54,6 +57,7 @@ TEST(DOMVisual, CopyConstructor)
 {
   sdf::Visual visual;
   visual.SetName("test_visual");
+  visual.SetCastShadows(false);
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
   visual.SetPoseRelativeTo("link");
@@ -65,6 +69,7 @@ TEST(DOMVisual, CopyConstructor)
   sdf::Visual visual2(visual);
 
   EXPECT_EQ("test_visual", visual.Name());
+  EXPECT_FALSE(visual.CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual.Pose());
   EXPECT_EQ("link", visual.PoseRelativeTo());
@@ -72,6 +77,7 @@ TEST(DOMVisual, CopyConstructor)
   EXPECT_EQ(mat.Ambient(), visual.Material()->Ambient());
 
   EXPECT_EQ("test_visual", visual2.Name());
+  EXPECT_FALSE(visual2.CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.Pose());
   EXPECT_EQ("link", visual2.PoseRelativeTo());
@@ -84,6 +90,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
 {
   sdf::Visual visual;
   visual.SetName("test_visual");
+  visual.SetCastShadows(false);
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
   visual.SetPoseRelativeTo("link");
@@ -96,6 +103,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
   visual2 = visual;
 
   EXPECT_EQ("test_visual", visual.Name());
+  EXPECT_FALSE(visual.CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual.Pose());
   EXPECT_EQ("link", visual.PoseRelativeTo());
@@ -103,6 +111,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
   EXPECT_EQ(mat.Ambient(), visual.Material()->Ambient());
 
   EXPECT_EQ("test_visual", visual2.Name());
+  EXPECT_FALSE(visual2.CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.Pose());
   EXPECT_EQ("link", visual2.PoseRelativeTo());
@@ -115,6 +124,7 @@ TEST(DOMVisual, MoveConstructor)
 {
   sdf::Visual visual;
   visual.SetName("test_visual");
+  visual.SetCastShadows(false);
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
   visual.SetPoseRelativeTo("link");
@@ -126,6 +136,7 @@ TEST(DOMVisual, MoveConstructor)
   sdf::Visual visual2(std::move(visual));
 
   EXPECT_EQ("test_visual", visual2.Name());
+  EXPECT_FALSE(visual2.CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.Pose());
   EXPECT_EQ("link", visual2.PoseRelativeTo());
@@ -138,6 +149,7 @@ TEST(DOMVisual, MoveAssignmentOperator)
 {
   sdf::Visual visual;
   visual.SetName("test_visual");
+  visual.SetCastShadows(false);
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
   visual.SetPoseRelativeTo("link");
@@ -150,6 +162,7 @@ TEST(DOMVisual, MoveAssignmentOperator)
   visual2 = std::move(visual);
 
   EXPECT_EQ("test_visual", visual2.Name());
+  EXPECT_FALSE(visual2.CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.Pose());
   EXPECT_EQ("link", visual2.PoseRelativeTo());

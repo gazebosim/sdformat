@@ -40,6 +40,9 @@ class sdf::VisualPrivate
   /// \brief Name of the visual.
   public: std::string name = "";
 
+  /// \brief Whether the visual casts shadows
+  public: bool castShadows = true;
+
   /// \brief Pose of the visual object
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
@@ -65,6 +68,7 @@ class sdf::VisualPrivate
 /////////////////////////////////////////////////
 VisualPrivate::VisualPrivate(const VisualPrivate &_visualPrivate)
     : name(_visualPrivate.name),
+      castShadows(_visualPrivate.castShadows),
       pose(_visualPrivate.pose),
       poseRelativeTo(_visualPrivate.poseRelativeTo),
       geom(_visualPrivate.geom),
@@ -156,6 +160,13 @@ Errors Visual::Load(ElementPtr _sdf)
                      "] is reserved."});
   }
 
+  // load cast shadows
+  if (_sdf->HasElement("cast_shadows"))
+  {
+    this->dataPtr->castShadows = _sdf->Get<bool>("cast_shadows",
+        this->dataPtr->castShadows).first;
+  }
+
   if (_sdf->HasElement("material"))
   {
     this->dataPtr->material.reset(new sdf::Material());
@@ -183,6 +194,18 @@ std::string Visual::Name() const
 void Visual::SetName(const std::string &_name) const
 {
   this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
+bool Visual::CastShadows() const
+{
+  return this->dataPtr->castShadows;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetCastShadows(bool _castShadows)
+{
+  this->dataPtr->castShadows = _castShadows;
 }
 
 /////////////////////////////////////////////////

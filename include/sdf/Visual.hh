@@ -86,6 +86,14 @@ namespace sdf
     /// \param[in] _name Name of the visual.
     public: void SetName(const std::string &_name) const;
 
+    /// \brief Get whether the visual casts shadows
+    /// \return True if the visual casts shadows, false otherwise
+    public: bool CastShadows() const;
+
+    /// \brief Set whether the visual casts shadows
+    /// \param[in] _castShadows True to cast shadows, false to not cast shadows
+    public: void SetCastShadows(bool _castShadows);
+
     /// \brief Get a pointer to the visual's geometry.
     /// \return The visual's geometry.
     public: const Geometry *Geom() const;

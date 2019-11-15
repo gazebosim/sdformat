@@ -126,6 +126,16 @@ but with improved human-readability..
 
 ### Removals
 
+1. **actor.sdf** `static` element was deprecated in
+    [pull request 280](https://bitbucket.org/osrf/sdformat/pull-requests/280)
+    and is now removed.
+    + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
+1. **imu.sdf** `topic` element was deprecated in
+    [pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)
+    and is now removed.
+    + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
 1. **joint.sdf** `//axis/use_parent_model_frame` and `//axis2/use_parent_model_frame` elements
     are removed in favor of the `//axis/xyz/@expressed_in` and
     `//axis2/xyz/@expressed_in` attributes.
@@ -133,6 +143,11 @@ but with improved human-readability..
     of `true` will be mapped to a value of `__model__` for the `expressed_in`
     attribute.
     + [pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
+
+1. **joint.sdf** `//physics/ode/provide_feedback` was deprecated in
+    [pull request 38](https://bitbucket.org/osrf/sdformat/pull-requests/38)
+    and is now removed.
+    + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
 
 ## SDF protocol 1.5 to 1.6
 
