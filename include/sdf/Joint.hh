@@ -211,6 +211,11 @@ namespace sdf
         const std::string &_relativeTo,
         ignition::math::Pose3d &_pose) const;
 
+    /// \brief Resolve pose of this object relative to the default relative_to
+    /// frame, which is the implicit frame of its child link.
+    /// \param[out] _pose Resolved pose.
+    public: Errors ResolvePose(ignition::math::Pose3d &_pose) const;
+
     /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Model::Load.

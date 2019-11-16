@@ -377,6 +377,12 @@ Errors Joint::ResolvePose(
 }
 
 /////////////////////////////////////////////////
+Errors Joint::ResolvePose(ignition::math::Pose3d &_pose) const
+{
+  return this->ResolvePose(this->ChildLinkName(), _pose);
+}
+
+/////////////////////////////////////////////////
 double Joint::ThreadPitch() const
 {
   return this->dataPtr->threadPitch;
