@@ -21,6 +21,12 @@
     </xsl:element>
   </xsl:template>
 
+  <xsl:template match="/sdf[@version='1.6']//pose/@frame">
+    <xsl:attribute name="relative_to">
+      <xsl:value-of select="."/>
+    </xsl:attribute>
+  </xsl:template>
+
   <xsl:template match="/sdf[@version='1.6']//joint/axis|/sdf[@version='1.6']//joint/axis2">
     <xsl:copy>
       <xsl:apply-templates select="@*"/>
