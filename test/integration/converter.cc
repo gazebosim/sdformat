@@ -28,8 +28,10 @@
 /// \brief Use different sdf versions for ParserStringConverter Test.
 void ParserStringConverter(const std::string &_version);
 
-const std::string CONVERT_DOC =
+const std::string CONVERT_DOC_15_16 =
   sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.6", "1_5.convert");
+const std::string CONVERT_DOC_16_17 =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.7", "1_6.convert");
 
 /////////////////////////////////////////////////
 /// Test conversion of imu in 1.5 to 1.6
@@ -71,7 +73,7 @@ TEST(ConverterIntegration, IMU_15_to_16)
 
   // Convert
   TiXmlDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(CONVERT_DOC);
+  convertXmlDoc.LoadFile(CONVERT_DOC_15_16);
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements
@@ -275,7 +277,7 @@ TEST(ConverterIntegration, World_15_to_16)
 
   // Convert
   TiXmlDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(CONVERT_DOC);
+  convertXmlDoc.LoadFile(CONVERT_DOC_15_16);
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements
@@ -300,4 +302,80 @@ TEST(ConverterIntegration, World_15_to_16)
     convertedElem->NextSiblingElement("magnetic_field");
   ASSERT_NE(nullptr, magneticFieldElem);
   EXPECT_STREQ(magneticFieldElem->GetText(), "1 2 3");
+}
+
+/////////////////////////////////////////////////
+/// Test conversion of pose attributes in 1.6 to 1.7
+TEST(ConverterIntegration, Pose_16_to_17)
+{
+  // A world file with pose elements in 1.5 format
+  std::string xmlString = R"(
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+    <model name="model">
+      <pose frame="world">0 0 0 0 0 0</pose>
+      <link name="parent"/>
+      <link name="child">
+        <pose frame="joint">0 0 0 0 0 0</pose>
+      </link>
+      <joint name="joint" type="fixed">
+        <parent>parent</parent>
+        <child>child</child>
+        <pose frame="parent">0 0 0 0 0 0</pose>
+      </joint>
+    </model>
+  </world>
+</sdf>)";
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  // Convert
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.LoadFile(CONVERT_DOC_16_17);
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // Check some basic elements
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "sdf");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "world");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "model");
+
+  TiXmlElement *modelPoseElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, modelPoseElem);
+  EXPECT_EQ("pose", modelPoseElem->ValueStr());
+  // frame attribute should have been moved to relative_to
+  EXPECT_EQ(nullptr, modelPoseElem->Attribute("frame"));
+  EXPECT_NE(nullptr, modelPoseElem->Attribute("relative_to"));
+  EXPECT_STREQ("world", modelPoseElem->Attribute("relative_to"));
+
+  TiXmlElement *parentLinkElem = modelPoseElem->NextSiblingElement();
+  ASSERT_NE(nullptr, parentLinkElem);
+  EXPECT_EQ("link", parentLinkElem->ValueStr());
+  EXPECT_EQ(nullptr, parentLinkElem->FirstChildElement());
+
+  TiXmlElement *childLinkElem = parentLinkElem->NextSiblingElement();
+  ASSERT_NE(nullptr, childLinkElem);
+  EXPECT_EQ("link", childLinkElem->ValueStr());
+  TiXmlElement *childLinkPoseElem = childLinkElem->FirstChildElement();
+  ASSERT_NE(nullptr, childLinkPoseElem);
+  EXPECT_EQ("pose", childLinkPoseElem->ValueStr());
+  // frame attribute should have been moved to relative_to
+  EXPECT_EQ(nullptr, childLinkPoseElem->Attribute("frame"));
+  EXPECT_NE(nullptr, childLinkPoseElem->Attribute("relative_to"));
+  EXPECT_STREQ("joint", childLinkPoseElem->Attribute("relative_to"));
+
+  TiXmlElement *jointLinkElem = childLinkElem->NextSiblingElement();
+  ASSERT_NE(nullptr, jointLinkElem);
+  EXPECT_EQ("joint", jointLinkElem->ValueStr());
+  TiXmlElement *jointLinkPoseElem = jointLinkElem->FirstChildElement("pose");
+  ASSERT_NE(nullptr, jointLinkPoseElem);
+  EXPECT_EQ("pose", jointLinkPoseElem->ValueStr());
+  // frame attribute should have been moved to relative_to
+  EXPECT_EQ(nullptr, jointLinkPoseElem->Attribute("frame"));
+  EXPECT_NE(nullptr, jointLinkPoseElem->Attribute("relative_to"));
+  EXPECT_STREQ("parent", jointLinkPoseElem->Attribute("relative_to"));
 }
