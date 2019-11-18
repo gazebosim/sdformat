@@ -51,8 +51,18 @@ namespace sdf
                                 TiXmlDocument *_convertDoc);
     /// \endcond
 
+    /// \brief Implementation of Convert functionality.
+    /// \param[in] _elem SDF xml element tree to convert.
+    /// \param[in] _convert Convert xml element tree.
     private: static void ConvertImpl(TiXmlElement *_elem,
                                      TiXmlElement *_convert);
+
+    /// \brief Recursive helper function for ConvertImpl that converts
+    /// elements named by the descendant_name attribute.
+    /// \param[in] _e SDF xml element tree to convert.
+    /// \param[in] _c Convert xml element tree.
+    private: static void ConvertDescendantsImpl(TiXmlElement *_e,
+                                                TiXmlElement *_c);
 
     /// \brief Rename an element or attribute.
     /// \param[in] _elem The element to be renamed, or the element which
