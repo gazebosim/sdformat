@@ -142,7 +142,7 @@ TEST(DOMJoint, Complete)
 
   for (size_t i = 0; i < jointPoses.size(); ++i)
   {
-    EXPECT_EQ(jointPoses[i], model->JointByIndex(i)->Pose()) << i;
+    EXPECT_EQ(jointPoses[i], model->JointByIndex(i)->RawPose()) << i;
   }
 
   // Check thread_pitch for screw joint
@@ -177,7 +177,7 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   EXPECT_NE(nullptr, model->LinkByIndex(2));
   EXPECT_NE(nullptr, model->LinkByIndex(3));
   EXPECT_EQ(nullptr, model->LinkByIndex(4));
-  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   ASSERT_TRUE(model->LinkNameExists("P1"));
@@ -189,10 +189,10 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   EXPECT_TRUE(model->LinkByName("C1")->PoseRelativeTo().empty());
   EXPECT_EQ("J2", model->LinkByName("C2")->PoseRelativeTo());
 
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P1")->Pose());
-  EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), model->LinkByName("C1")->Pose());
-  EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P2")->Pose());
-  EXPECT_EQ(Pose(4, 0, 0, 0, 0, 0), model->LinkByName("C2")->Pose());
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P1")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), model->LinkByName("C1")->RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P2")->RawPose());
+  EXPECT_EQ(Pose(4, 0, 0, 0, 0, 0), model->LinkByName("C2")->RawPose());
 
   EXPECT_TRUE(model->CanonicalLinkName().empty());
 
@@ -205,8 +205,8 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   EXPECT_TRUE(model->JointByName("J1")->PoseRelativeTo().empty());
   EXPECT_EQ("P2", model->JointByName("J2")->PoseRelativeTo());
 
-  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->JointByName("J1")->Pose());
-  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->JointByName("J2")->Pose());
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->JointByName("J1")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->JointByName("J2")->RawPose());
 
   // Test ResolveFrame to get each link and joint pose in the model frame.
   Pose pose;
@@ -254,7 +254,7 @@ TEST(DOMJoint, LoadInvalidJointPoseRelativeTo)
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_EQ(nullptr, model->LinkByIndex(2));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   ASSERT_TRUE(model->LinkNameExists("P"));

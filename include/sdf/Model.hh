@@ -201,12 +201,28 @@ namespace sdf
     /// typically used to express the position and rotation of a model in a
     /// global coordinate frame.
     /// \return The pose of the model.
-    public: const ignition::math::Pose3d &Pose() const;
+    /// \deprecated See RawPose.
+    public: const ignition::math::Pose3d &Pose() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the pose of the model.
     /// \sa const ignition::math::Pose3d &Pose() const
     /// \param[in] _pose The new model pose.
-    public: void SetPose(const ignition::math::Pose3d &_pose);
+    /// \deprecated See SetRawPose.
+    public: void SetPose(const ignition::math::Pose3d &_pose)
+        SDF_DEPRECATED(9.0);
+
+    /// \brief Get the pose of the model. This is the pose of the model
+    /// as specified in SDF (<model> <pose> ... </pose></model>), and is
+    /// typically used to express the position and rotation of a model in a
+    /// global coordinate frame.
+    /// \return The pose of the model.
+    public: const ignition::math::Pose3d &RawPose() const;
+
+    /// \brief Set the pose of the model.
+    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \param[in] _pose The new model pose.
+    public: void SetRawPose(const ignition::math::Pose3d &_pose);
 
     /// \brief Get the name of the model's canonical link. An empty value
     /// indicates that the first link in the model is the canonical link.
@@ -229,6 +245,22 @@ namespace sdf
     /// relative to the parent model/world coordinate frame.
     /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
+
+    /// \brief Get the name of the coordinate frame in which this model's
+    /// pose is expressed. A empty value indicates that the frame is the
+    /// global/world coordinate frame.
+    /// \return The name of the pose frame.
+    /// \deprecated See PoseRelativeTo.
+    public: const std::string &PoseFrame() const
+        SDF_DEPRECATED(9.0);
+
+    /// \brief Set the name of the coordinate frame in which this model's
+    /// pose is expressed. A empty value indicates that the frame is the
+    /// global/world coordinate frame.
+    /// \param[in] _frame The name of the pose frame.
+    /// \deprecated See SetPoseRelativeTo.
+    public: void SetPoseFrame(const std::string &_frame)
+        SDF_DEPRECATED(9.0);
 
     /// \brief Get a const pointer to the model's PoseRelativeToGraph
     /// to use for computing relative poses.

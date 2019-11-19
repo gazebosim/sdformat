@@ -491,7 +491,7 @@ Errors buildPoseRelativeToGraph(
     if (link->PoseRelativeTo().empty())
     {
       // relative_to is empty, so add edge from link to implicit model frame
-      _out.graph.AddEdge({modelFrameId, linkId}, link->Pose());
+      _out.graph.AddEdge({modelFrameId, linkId}, link->RawPose());
     }
   }
 
@@ -514,7 +514,7 @@ Errors buildPoseRelativeToGraph(
         continue;
       }
       auto childLinkId = _out.map.at(childLink->Name());
-      _out.graph.AddEdge({childLinkId, jointId}, joint->Pose());
+      _out.graph.AddEdge({childLinkId, jointId}, joint->RawPose());
     }
   }
 
@@ -563,7 +563,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                        "Link relative_to itself causes a cycle."});
     }
-    _out.graph.AddEdge({relativeToId, linkId}, link->Pose());
+    _out.graph.AddEdge({relativeToId, linkId}, link->RawPose());
   }
 
   for (uint64_t j = 0; j < _model->JointCount(); ++j)
@@ -592,7 +592,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                        "Joint relative_to itself causes a cycle."});
     }
-    _out.graph.AddEdge({relativeToId, jointId}, joint->Pose());
+    _out.graph.AddEdge({relativeToId, jointId}, joint->RawPose());
   }
 
   for (uint64_t f = 0; f < _model->FrameCount(); ++f)
@@ -681,7 +681,7 @@ Errors buildPoseRelativeToGraph(
     if (model->PoseRelativeTo().empty())
     {
       // relative_to is empty, so add edge from model to implicit world frame
-      _out.graph.AddEdge({worldFrameId, modelId}, model->Pose());
+      _out.graph.AddEdge({worldFrameId, modelId}, model->RawPose());
     }
   }
 
@@ -730,7 +730,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                        "Model relative_to itself causes a cycle."});
     }
-    _out.graph.AddEdge({relativeToId, modelId}, model->Pose());
+    _out.graph.AddEdge({relativeToId, modelId}, model->RawPose());
   }
 
   for (uint64_t f = 0; f < _world->FrameCount(); ++f)

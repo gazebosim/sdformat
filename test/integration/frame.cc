@@ -360,7 +360,7 @@ TEST(DOMFrame, LoadModelFramesAttachedTo)
   EXPECT_EQ(1u, model->LinkCount());
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_EQ(nullptr, model->LinkByIndex(1));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("L"));
@@ -410,7 +410,7 @@ TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
   EXPECT_EQ(1u, model->LinkCount());
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_EQ(nullptr, model->LinkByIndex(1));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("L"));
@@ -461,7 +461,7 @@ TEST(DOMFrame, LoadModelFramesAttachedToJoint)
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_EQ(nullptr, model->LinkByIndex(2));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("P"));
@@ -602,7 +602,7 @@ TEST(DOMFrame, LoadModelFramesRelativeTo)
   EXPECT_EQ(1u, model->LinkCount());
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_EQ(nullptr, model->LinkByIndex(1));
-  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("L"));
@@ -701,7 +701,7 @@ TEST(DOMFrame, LoadModelFramesInvalidRelativeTo)
   EXPECT_EQ(1u, model->LinkCount());
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_EQ(nullptr, model->LinkByIndex(1));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("L"));
@@ -746,14 +746,14 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_EQ(nullptr, model->LinkByIndex(2));
-  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   ASSERT_TRUE(model->LinkNameExists("P"));
   ASSERT_TRUE(model->LinkNameExists("C"));
 
-  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), model->LinkByName("P")->Pose());
-  EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("C")->Pose());
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), model->LinkByName("P")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("C")->RawPose());
 
   EXPECT_TRUE(model->CanonicalLinkName().empty());
 
@@ -762,7 +762,7 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_EQ(nullptr, model->JointByIndex(1));
 
   ASSERT_TRUE(model->JointNameExists("J"));
-  EXPECT_EQ(Pose(0, 3, 0, 0, -IGN_PI/2, 0), model->JointByName("J")->Pose());
+  EXPECT_EQ(Pose(0, 3, 0, 0, -IGN_PI/2, 0), model->JointByName("J")->RawPose());
 
   EXPECT_EQ(4u, model->FrameCount());
   EXPECT_NE(nullptr, model->FrameByIndex(0));

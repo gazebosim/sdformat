@@ -22,6 +22,12 @@
 1. sdf 1.7: replace `//pose/@frame` attribute with `//pose/@relative_to` attribute.
     * [Pull request 597](https://bitbucket.org/osrf/sdformat/pull-requests/597)
 
+1. DOM API: deprecate `(Set)?PoseFrame` API and replace with `(Set)?PoseRelativeTo`
+    * [Pull request 598](https://bitbucket.org/osrf/sdformat/pull-requests/598)
+
+1. DOM API: deprecate `(Set)?Pose` API and replace with `(Set)?RawPose`
+    * [Pull request 599](https://bitbucket.org/osrf/sdformat/pull-requests/599)
+
 ## SDFormat 8.0
 
 ### SDFormat 8.X.X (201X-XX-XX)

@@ -252,24 +252,54 @@ namespace sdf
     /// \brief Get the pose of the camer. This is the pose of the camera
     /// as specified in SDF (<camera> <pose> ... </pose></camera>).
     /// \return The pose of the link.
-    public: const ignition::math::Pose3d &Pose() const;
+    /// \deprecated See RawPose.
+    public: const ignition::math::Pose3d &Pose() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the pose of the camera.
     /// \sa const ignition::math::Pose3d &Pose() const
     /// \param[in] _pose The new camera pose.
-    public: void SetPose(const ignition::math::Pose3d &_pose);
+    /// \deprecated See SetRawPose.
+    public: void SetPose(const ignition::math::Pose3d &_pose)
+        SDF_DEPRECATED(9.0);
+
+    /// \brief Get the pose of the camer. This is the pose of the camera
+    /// as specified in SDF (<camera> <pose> ... </pose></camera>).
+    /// \return The pose of the link.
+    public: const ignition::math::Pose3d &RawPose() const;
+
+    /// \brief Set the pose of the camera.
+    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \param[in] _pose The new camera pose.
+    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+
+    /// \brief Get the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the parent link.
+    /// \return The name of the pose relative-to frame.
+    public: const std::string &PoseRelativeTo() const;
+
+    /// \brief Set the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the parent link.
+    /// \param[in] _frame The name of the pose relative-to frame.
+    public: void SetPoseRelativeTo(const std::string &_frame);
 
     /// \brief Get the name of the coordinate frame in which this camera's
     /// pose is expressed. A empty value indicates that the frame is the
     /// parent link.
     /// \return The name of the pose frame.
-    public: const std::string &PoseFrame() const;
+    /// \deprecated See PoseRelativeTo.
+    public: const std::string &PoseFrame() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the name of the coordinate frame in which this camera's
     /// pose is expressed. A empty value indicates that the frame is the
     /// parent link.
     /// \param[in] _frame The name of the pose frame.
-    public: void SetPoseFrame(const std::string &_frame);
+    /// \deprecated See SetPoseRelativeTo.
+    public: void SetPoseFrame(const std::string &_frame)
+        SDF_DEPRECATED(9.0);
 
     /// \brief Get the lens type. This is the type of the lens mapping.
     /// Supported values are gnomonical, stereographic, equidistant,

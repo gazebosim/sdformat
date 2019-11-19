@@ -24,8 +24,8 @@ TEST(DOMActor, DefaultConstruction)
 {
   sdf::Actor actor;
   EXPECT_EQ("__default__", actor.Name());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, actor.Pose());
-  EXPECT_EQ("", actor.PoseFrame());
+  EXPECT_EQ(ignition::math::Pose3d::Zero, actor.RawPose());
+  EXPECT_EQ("", actor.PoseRelativeTo());
   EXPECT_EQ(nullptr, actor.Element());
   EXPECT_EQ("__default__", actor.SkinFilename());
   EXPECT_DOUBLE_EQ(1.0, actor.SkinScale());
@@ -65,8 +65,8 @@ TEST(DOMActor, CopyConstructor)
 {
   sdf::Actor actor;
   actor.SetName("test_copy_actor");
-  actor.SetPose({3, 2, 1, 0, IGN_PI, 0});
-  actor.SetPoseFrame("ground_plane");
+  actor.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  actor.SetPoseRelativeTo("ground_plane");
   actor.SetSkinFilename("walk.dae");
   actor.SetSkinScale(2.0);
   actor.SetScriptLoop(true);
@@ -76,8 +76,8 @@ TEST(DOMActor, CopyConstructor)
 
   sdf::Actor actor2(actor);
   EXPECT_EQ("test_copy_actor", actor2.Name());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
-  EXPECT_EQ("ground_plane", actor2.PoseFrame());
+  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.RawPose());
+  EXPECT_EQ("ground_plane", actor2.PoseRelativeTo());
   EXPECT_EQ("/home/path/to/model.sdf", actor2.FilePath());
 
   EXPECT_EQ(0u, actor2.AnimationCount());
@@ -115,8 +115,8 @@ TEST(DOMActor, CopyAssignmentOperator)
 {
   sdf::Actor actor;
   actor.SetName("test_actor_assignment");
-  actor.SetPose({3, 2, 1, 0, IGN_PI, 0});
-  actor.SetPoseFrame("ground_plane");
+  actor.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  actor.SetPoseRelativeTo("ground_plane");
   actor.SetSkinFilename("walk.dae");
   actor.SetSkinScale(2.0);
   actor.SetScriptLoop(true);
@@ -127,8 +127,8 @@ TEST(DOMActor, CopyAssignmentOperator)
   sdf::Actor actor2;
   actor2 = actor;
   EXPECT_EQ("test_actor_assignment", actor2.Name());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
-  EXPECT_EQ("ground_plane", actor2.PoseFrame());
+  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.RawPose());
+  EXPECT_EQ("ground_plane", actor2.PoseRelativeTo());
   EXPECT_EQ("/home/path/to/model.sdf", actor2.FilePath());
 
   EXPECT_EQ(0u, actor2.AnimationCount());
@@ -166,8 +166,8 @@ TEST(DOMActor, MoveConstructor)
 {
   sdf::Actor actor;
   actor.SetName("test_actor_assignment");
-  actor.SetPose({3, 2, 1, 0, IGN_PI, 0});
-  actor.SetPoseFrame("ground_plane");
+  actor.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  actor.SetPoseRelativeTo("ground_plane");
   actor.SetSkinFilename("walk.dae");
   actor.SetSkinScale(2.0);
   actor.SetScriptLoop(true);
@@ -177,8 +177,8 @@ TEST(DOMActor, MoveConstructor)
 
   sdf::Actor actor2(std::move(actor));
   EXPECT_EQ("test_actor_assignment", actor2.Name());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
-  EXPECT_EQ("ground_plane", actor2.PoseFrame());
+  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.RawPose());
+  EXPECT_EQ("ground_plane", actor2.PoseRelativeTo());
   EXPECT_EQ("/home/path/to/model.sdf", actor2.FilePath());
 
   EXPECT_EQ(0u, actor2.AnimationCount());
@@ -216,8 +216,8 @@ TEST(DOMActor, MoveAssignment)
 {
   sdf::Actor actor;
   actor.SetName("test_actor_assignment");
-  actor.SetPose({3, 2, 1, 0, IGN_PI, 0});
-  actor.SetPoseFrame("ground_plane");
+  actor.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  actor.SetPoseRelativeTo("ground_plane");
   actor.SetSkinFilename("walk.dae");
   actor.SetSkinScale(2.0);
   actor.SetScriptLoop(true);
@@ -228,8 +228,8 @@ TEST(DOMActor, MoveAssignment)
   sdf::Actor actor2;
   actor2 = std::move(actor);
   EXPECT_EQ("test_actor_assignment", actor2.Name());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
-  EXPECT_EQ("ground_plane", actor2.PoseFrame());
+  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.RawPose());
+  EXPECT_EQ("ground_plane", actor2.PoseRelativeTo());
   EXPECT_EQ("/home/path/to/model.sdf", actor2.FilePath());
 
   EXPECT_EQ(0u, actor2.AnimationCount());
@@ -267,8 +267,8 @@ TEST(DOMActor, CopyAssignmentAfterMove)
 {
   sdf::Actor actor1;
   actor1.SetName("actor1");
-  actor1.SetPose({3, 2, 1, 0, IGN_PI, 0});
-  actor1.SetPoseFrame("ground_plane_1");
+  actor1.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  actor1.SetPoseRelativeTo("ground_plane_1");
   actor1.SetSkinFilename("walk.dae");
   actor1.SetSkinScale(2.0);
   actor1.SetScriptLoop(true);
@@ -277,8 +277,8 @@ TEST(DOMActor, CopyAssignmentAfterMove)
 
   sdf::Actor actor2;
   actor2.SetName("actor2");
-  actor2.SetPose({1, 2, 3, 0, IGN_PI, 0});
-  actor2.SetPoseFrame("ground_plane_2");
+  actor2.SetRawPose({1, 2, 3, 0, IGN_PI, 0});
+  actor2.SetPoseRelativeTo("ground_plane_2");
   actor2.SetSkinFilename("run.dae");
   actor2.SetSkinScale(0.5);
   actor2.SetScriptLoop(false);
@@ -294,11 +294,11 @@ TEST(DOMActor, CopyAssignmentAfterMove)
   EXPECT_EQ("actor2", actor1.Name());
   EXPECT_EQ("actor1", actor2.Name());
 
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, IGN_PI, 0), actor1.Pose());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.Pose());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, IGN_PI, 0), actor1.RawPose());
+  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.RawPose());
 
-  EXPECT_EQ("ground_plane_2", actor1.PoseFrame());
-  EXPECT_EQ("ground_plane_1", actor2.PoseFrame());
+  EXPECT_EQ("ground_plane_2", actor1.PoseRelativeTo());
+  EXPECT_EQ("ground_plane_1", actor2.PoseRelativeTo());
 
   EXPECT_EQ("run.dae", actor1.SkinFilename());
   EXPECT_EQ("walk.dae", actor2.SkinFilename());

@@ -80,13 +80,14 @@ TEST(DOMCollision, DoublePendulum)
   const sdf::Collision *plateCol = baseLink->CollisionByIndex(0);
   ASSERT_TRUE(plateCol != nullptr);
 
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateCol->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateCol->RawPose());
   EXPECT_EQ("", plateCol->PoseRelativeTo());
 
   const sdf::Collision *poleCol = baseLink->CollisionByIndex(1);
   ASSERT_TRUE(poleCol != nullptr);
 
-  EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0), poleCol->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0),
+            poleCol->RawPose());
   EXPECT_EQ("", poleCol->PoseRelativeTo());
 }
 
@@ -111,7 +112,7 @@ TEST(DOMCollision, LoadModelFramesRelativeToJoint)
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_EQ(nullptr, model->LinkByIndex(2));
-  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   ASSERT_TRUE(model->LinkNameExists("P"));
@@ -169,12 +170,12 @@ TEST(DOMCollision, LoadModelFramesRelativeToJoint)
   EXPECT_EQ("F3", linkC->CollisionByName("F3")->PoseRelativeTo());
   EXPECT_EQ("F4", linkC->CollisionByName("F4")->PoseRelativeTo());
 
-  EXPECT_EQ(Pose(0, 0, 10, 0, 0, 0), linkP->CollisionByName("P1")->Pose());
-  EXPECT_EQ(Pose(0, 0, 11, 0, 0, 0), linkP->CollisionByName("P2")->Pose());
-  EXPECT_EQ(Pose(0, 0, 12, 0, 0, 0), linkC->CollisionByName("P")->Pose());
-  EXPECT_EQ(Pose(0, 0, 13, 0, 0, 0), linkC->CollisionByName("J")->Pose());
-  EXPECT_EQ(Pose(0, 0, 14, 0, 0, 0), linkC->CollisionByName("F3")->Pose());
-  EXPECT_EQ(Pose(0, 0, 15, 0, 0, 0), linkC->CollisionByName("F4")->Pose());
+  EXPECT_EQ(Pose(0, 0, 10, 0, 0, 0), linkP->CollisionByName("P1")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 11, 0, 0, 0), linkP->CollisionByName("P2")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 12, 0, 0, 0), linkC->CollisionByName("P")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 13, 0, 0, 0), linkC->CollisionByName("J")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 14, 0, 0, 0), linkC->CollisionByName("F3")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 15, 0, 0, 0), linkC->CollisionByName("F4")->RawPose());
 
   // Test resolvePose for each frame with its relative_to value.
   // Numbers should match the raw pose value in the model file.

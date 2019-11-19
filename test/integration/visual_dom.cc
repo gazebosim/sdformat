@@ -80,7 +80,7 @@ TEST(DOMVisual, DoublePendulum)
   const sdf::Visual *plateVis = baseLink->VisualByIndex(0);
   ASSERT_TRUE(plateVis != nullptr);
 
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateVis->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateVis->RawPose());
   EXPECT_EQ("", plateVis->PoseRelativeTo());
   EXPECT_FALSE(plateVis->CastShadows());
 
@@ -88,7 +88,8 @@ TEST(DOMVisual, DoublePendulum)
   ASSERT_TRUE(poleVis != nullptr);
   EXPECT_TRUE(poleVis->CastShadows());
 
-  EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0), poleVis->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0),
+            poleVis->RawPose());
   EXPECT_EQ("", poleVis->PoseRelativeTo());
 }
 
@@ -202,7 +203,7 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_EQ(nullptr, model->LinkByIndex(2));
-  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->Pose());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   ASSERT_TRUE(model->LinkNameExists("P"));
@@ -260,12 +261,12 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
   EXPECT_EQ("F3", linkC->VisualByName("vF3")->PoseRelativeTo());
   EXPECT_EQ("F4", linkC->VisualByName("vF4")->PoseRelativeTo());
 
-  EXPECT_EQ(Pose(0, 0, 10, 0, 0, 0), linkP->VisualByName("vP1")->Pose());
-  EXPECT_EQ(Pose(0, 0, 11, 0, 0, 0), linkP->VisualByName("vP2")->Pose());
-  EXPECT_EQ(Pose(0, 0, 12, 0, 0, 0), linkC->VisualByName("vP")->Pose());
-  EXPECT_EQ(Pose(0, 0, 13, 0, 0, 0), linkC->VisualByName("vJ")->Pose());
-  EXPECT_EQ(Pose(0, 0, 14, 0, 0, 0), linkC->VisualByName("vF3")->Pose());
-  EXPECT_EQ(Pose(0, 0, 15, 0, 0, 0), linkC->VisualByName("vF4")->Pose());
+  EXPECT_EQ(Pose(0, 0, 10, 0, 0, 0), linkP->VisualByName("vP1")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 11, 0, 0, 0), linkP->VisualByName("vP2")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 12, 0, 0, 0), linkC->VisualByName("vP")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 13, 0, 0, 0), linkC->VisualByName("vJ")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 14, 0, 0, 0), linkC->VisualByName("vF3")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 15, 0, 0, 0), linkC->VisualByName("vF4")->RawPose());
 
   // Test resolvePose for each frame with its relative_to value.
   // Numbers should match the raw pose value in the model file.
