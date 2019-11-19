@@ -78,12 +78,13 @@ TEST(DOMCollision, DoublePendulum)
   const sdf::Collision *plateCol = baseLink->CollisionByIndex(0);
   ASSERT_TRUE(plateCol != nullptr);
 
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateCol->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateCol->PoseRaw());
   EXPECT_EQ("", plateCol->PoseRelativeTo());
 
   const sdf::Collision *poleCol = baseLink->CollisionByIndex(1);
   ASSERT_TRUE(poleCol != nullptr);
 
-  EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0), poleCol->Pose());
+  EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0),
+            poleCol->PoseRaw());
   EXPECT_EQ("", poleCol->PoseRelativeTo());
 }
