@@ -79,7 +79,7 @@ TEST(IncludesTest, Includes)
 
   EXPECT_EQ("actor", actor->Name());
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), actor->Pose());
-  EXPECT_EQ("", actor->PoseFrame());
+  EXPECT_EQ("", actor->PoseRelativeTo());
   EXPECT_EQ("meshes/skin.dae", actor->SkinFilename());
   EXPECT_DOUBLE_EQ(1.0, actor->SkinScale());
   EXPECT_EQ(1u, actor->AnimationCount());
@@ -112,7 +112,7 @@ TEST(IncludesTest, Includes)
   EXPECT_EQ(sdf::LightType::POINT, pointLight->Type());
   EXPECT_FALSE(pointLight->CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 10, 0, 0, 0), pointLight->Pose());
-  EXPECT_EQ("world", pointLight->PoseFrame());
+  EXPECT_EQ("world", pointLight->PoseRelativeTo());
   EXPECT_DOUBLE_EQ(123.5, pointLight->AttenuationRange());
   EXPECT_DOUBLE_EQ(1.0, pointLight->LinearAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.0, pointLight->ConstantAttenuationFactor());

@@ -29,15 +29,15 @@ TEST(DOMJoint, Construction)
   EXPECT_TRUE(joint.ParentLinkName().empty());
   EXPECT_TRUE(joint.ChildLinkName().empty());
   EXPECT_EQ(ignition::math::Pose3d::Zero, joint.Pose());
-  EXPECT_TRUE(joint.PoseFrame().empty());
+  EXPECT_TRUE(joint.PoseRelativeTo().empty());
   EXPECT_EQ(nullptr, joint.Element());
 
   joint.SetPose({-1, -2, -3, IGN_PI, IGN_PI, 0});
   EXPECT_EQ(ignition::math::Pose3d(-1, -2, -3, IGN_PI, IGN_PI, 0),
             joint.Pose());
 
-  joint.SetPoseFrame("link");
-  EXPECT_EQ("link", joint.PoseFrame());
+  joint.SetPoseRelativeTo("link");
+  EXPECT_EQ("link", joint.PoseRelativeTo());
 
   joint.SetName("test_joint");
   EXPECT_EQ("test_joint", joint.Name());

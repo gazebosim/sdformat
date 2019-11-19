@@ -86,9 +86,9 @@ TEST(DOMCamera, Construction)
   cam.SetPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), cam.Pose());
 
-  EXPECT_TRUE(cam.PoseFrame().empty());
-  cam.SetPoseFrame("/frame");
-  EXPECT_EQ("/frame", cam.PoseFrame());
+  EXPECT_TRUE(cam.PoseRelativeTo().empty());
+  cam.SetPoseRelativeTo("/frame");
+  EXPECT_EQ("/frame", cam.PoseRelativeTo());
 
   EXPECT_EQ("stereographic", cam.LensType());
   cam.SetLensType("custom");
