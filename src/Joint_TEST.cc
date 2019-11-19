@@ -28,13 +28,13 @@ TEST(DOMJoint, Construction)
   EXPECT_EQ(sdf::JointType::INVALID, joint.Type());
   EXPECT_TRUE(joint.ParentLinkName().empty());
   EXPECT_TRUE(joint.ChildLinkName().empty());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, joint.Pose());
+  EXPECT_EQ(ignition::math::Pose3d::Zero, joint.PoseRaw());
   EXPECT_TRUE(joint.PoseRelativeTo().empty());
   EXPECT_EQ(nullptr, joint.Element());
 
-  joint.SetPose({-1, -2, -3, IGN_PI, IGN_PI, 0});
+  joint.SetPoseRaw({-1, -2, -3, IGN_PI, IGN_PI, 0});
   EXPECT_EQ(ignition::math::Pose3d(-1, -2, -3, IGN_PI, IGN_PI, 0),
-            joint.Pose());
+            joint.PoseRaw());
 
   joint.SetPoseRelativeTo("link");
   EXPECT_EQ("link", joint.PoseRelativeTo());

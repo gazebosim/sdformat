@@ -59,11 +59,11 @@ TEST(DOMLink, Construction)
   EXPECT_FALSE(link.SensorNameExists(""));
   EXPECT_FALSE(link.SensorNameExists("default"));
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, link.Pose());
+  EXPECT_EQ(ignition::math::Pose3d::Zero, link.PoseRaw());
   EXPECT_TRUE(link.PoseRelativeTo().empty());
 
-  link.SetPose({10, 20, 30, 0, IGN_PI, 0});
-  EXPECT_EQ(ignition::math::Pose3d(10, 20, 30, 0, IGN_PI, 0), link.Pose());
+  link.SetPoseRaw({10, 20, 30, 0, IGN_PI, 0});
+  EXPECT_EQ(ignition::math::Pose3d(10, 20, 30, 0, IGN_PI, 0), link.PoseRaw());
 
   link.SetPoseRelativeTo("model");
   EXPECT_EQ("model", link.PoseRelativeTo());

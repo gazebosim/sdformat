@@ -59,11 +59,11 @@ TEST(DOMModel, Construction)
   EXPECT_FALSE(model.JointNameExists(""));
   EXPECT_FALSE(model.JointNameExists("default"));
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, model.Pose());
+  EXPECT_EQ(ignition::math::Pose3d::Zero, model.PoseRaw());
   EXPECT_TRUE(model.PoseRelativeTo().empty());
 
-  model.SetPose({1, 2, 3, 0, 0, IGN_PI});
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), model.Pose());
+  model.SetPoseRaw({1, 2, 3, 0, 0, IGN_PI});
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), model.PoseRaw());
 
   model.SetPoseRelativeTo("world");
   EXPECT_EQ("world", model.PoseRelativeTo());
