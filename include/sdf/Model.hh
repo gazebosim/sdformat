@@ -176,12 +176,28 @@ namespace sdf
     /// typically used to express the position and rotation of a model in a
     /// global coordinate frame.
     /// \return The pose of the model.
-    public: const ignition::math::Pose3d &Pose() const;
+    /// \deprecated See PoseRaw.
+    public: const ignition::math::Pose3d &Pose() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the pose of the model.
     /// \sa const ignition::math::Pose3d &Pose() const
     /// \param[in] _pose The new model pose.
-    public: void SetPose(const ignition::math::Pose3d &_pose);
+    /// \deprecated See SetPoseRaw.
+    public: void SetPose(const ignition::math::Pose3d &_pose)
+        SDF_DEPRECATED(9.0);
+
+    /// \brief Get the pose of the model. This is the pose of the model
+    /// as specified in SDF (<model> <pose> ... </pose></model>), and is
+    /// typically used to express the position and rotation of a model in a
+    /// global coordinate frame.
+    /// \return The pose of the model.
+    public: const ignition::math::Pose3d &PoseRaw() const;
+
+    /// \brief Set the pose of the model.
+    /// \sa const ignition::math::Pose3d &PoseRaw() const
+    /// \param[in] _pose The new model pose.
+    public: void SetPoseRaw(const ignition::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is

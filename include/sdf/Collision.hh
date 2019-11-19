@@ -93,12 +93,27 @@ namespace sdf
     /// collison as specified in SDF
     /// (<collision><pose> ... </pose></collision>).
     /// \return The pose of the collision object.
-    public: const ignition::math::Pose3d &Pose() const;
+    /// \deprecated See PoseRaw.
+    public: const ignition::math::Pose3d &Pose() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the pose of the collision object.
     /// \sa const ignition::math::Pose3d &Pose() const
     /// \param[in] _pose The pose of the collision object.
-    public: void SetPose(const ignition::math::Pose3d &_pose);
+    /// \deprecated See SetPoseRaw.
+    public: void SetPose(const ignition::math::Pose3d &_pose)
+        SDF_DEPRECATED(9.0);
+
+    /// \brief Get the pose of the collision object. This is the pose of the
+    /// collison as specified in SDF
+    /// (<collision><pose> ... </pose></collision>).
+    /// \return The pose of the collision object.
+    public: const ignition::math::Pose3d &PoseRaw() const;
+
+    /// \brief Set the pose of the collision object.
+    /// \sa const ignition::math::Pose3d &PoseRaw() const
+    /// \param[in] _pose The pose of the collision object.
+    public: void SetPoseRaw(const ignition::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is

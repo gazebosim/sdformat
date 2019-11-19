@@ -148,6 +148,12 @@ void Collision::SetGeom(const Geometry &_geom)
 /////////////////////////////////////////////////
 const ignition::math::Pose3d &Collision::Pose() const
 {
+  return this->PoseRaw();
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Collision::PoseRaw() const
+{
   return this->dataPtr->pose;
 }
 
@@ -165,6 +171,12 @@ const std::string &Collision::PoseRelativeTo() const
 
 /////////////////////////////////////////////////
 void Collision::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->SetPoseRaw(_pose);
+}
+
+/////////////////////////////////////////////////
+void Collision::SetPoseRaw(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

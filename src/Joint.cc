@@ -311,6 +311,12 @@ void Joint::SetAxis(const unsigned int _index, const JointAxis &_axis)
 /////////////////////////////////////////////////
 const ignition::math::Pose3d &Joint::Pose() const
 {
+  return this->PoseRaw();
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Joint::PoseRaw() const
+{
   return this->dataPtr->pose;
 }
 
@@ -328,6 +334,12 @@ const std::string &Joint::PoseRelativeTo() const
 
 /////////////////////////////////////////////////
 void Joint::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->SetPoseRaw(_pose);
+}
+
+/////////////////////////////////////////////////
+void Joint::SetPoseRaw(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

@@ -281,6 +281,12 @@ void Light::SetName(const std::string &_name) const
 /////////////////////////////////////////////////
 const ignition::math::Pose3d &Light::Pose() const
 {
+  return this->PoseRaw();
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Light::PoseRaw() const
+{
   return this->dataPtr->pose;
 }
 
@@ -298,6 +304,12 @@ const std::string &Light::PoseRelativeTo() const
 
 /////////////////////////////////////////////////
 void Light::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->SetPoseRaw(_pose);
+}
+
+/////////////////////////////////////////////////
+void Light::SetPoseRaw(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
