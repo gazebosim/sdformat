@@ -664,11 +664,11 @@ void Actor::SetName(const std::string &_name)
 /////////////////////////////////////////////////
 const ignition::math::Pose3d &Actor::Pose() const
 {
-  return this->PoseRaw();
+  return this->RawPose();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Actor::PoseRaw() const
+const ignition::math::Pose3d &Actor::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -688,11 +688,11 @@ const std::string &Actor::PoseRelativeTo() const
 /////////////////////////////////////////////////
 void Actor::SetPose(const ignition::math::Pose3d &_pose)
 {
-  this->SetPoseRaw(_pose);
+  this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////
-void Actor::SetPoseRaw(const ignition::math::Pose3d &_pose)
+void Actor::SetRawPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

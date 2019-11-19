@@ -46,7 +46,7 @@ TEST(DOMWorld, LoadLights)
   EXPECT_EQ("point_light", pointLight->Name());
   EXPECT_EQ(sdf::LightType::POINT, pointLight->Type());
   EXPECT_FALSE(pointLight->CastShadows());
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 10, 0, 0, 0), pointLight->PoseRaw());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 10, 0, 0, 0), pointLight->RawPose());
   EXPECT_EQ("world", pointLight->PoseRelativeTo());
   EXPECT_DOUBLE_EQ(123.5, pointLight->AttenuationRange());
   EXPECT_DOUBLE_EQ(1.0, pointLight->LinearAttenuationFactor());

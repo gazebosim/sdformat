@@ -137,7 +137,7 @@ TEST(DOMJoint, Complete)
 
   for (size_t i = 0; i < jointPoses.size(); ++i)
   {
-    EXPECT_EQ(jointPoses[i], model->JointByIndex(i)->PoseRaw()) << i;
+    EXPECT_EQ(jointPoses[i], model->JointByIndex(i)->RawPose()) << i;
   }
 
   // Check thread_pitch for screw joint

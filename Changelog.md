@@ -25,7 +25,7 @@
 1. DOM API: deprecate `(Set)?PoseFrame` API and replace with `(Set)?PoseRelativeTo`
     * [Pull request 598](https://bitbucket.org/osrf/sdformat/pull-requests/598)
 
-1. DOM API: deprecate `(Set)?Pose` API and replace with `(Set)?PoseRaw`
+1. DOM API: deprecate `(Set)?Pose` API and replace with `(Set)?RawPose`
     * [Pull request 599](https://bitbucket.org/osrf/sdformat/pull-requests/599)
 
 ## SDFormat 8.0

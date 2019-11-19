@@ -29,12 +29,12 @@ TEST(DOMcollision, Construction)
   collision.SetName("test_collison");
   EXPECT_EQ(collision.Name(), "test_collison");
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, collision.PoseRaw());
+  EXPECT_EQ(ignition::math::Pose3d::Zero, collision.RawPose());
   EXPECT_TRUE(collision.PoseRelativeTo().empty());
 
-  collision.SetPoseRaw({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
   EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
-            collision.PoseRaw());
+            collision.RawPose());
 
   collision.SetPoseRelativeTo("link");
   EXPECT_EQ("link", collision.PoseRelativeTo());
@@ -51,56 +51,56 @@ TEST(DOMcollision, Construction)
 TEST(DOMCollision, MoveConstructor)
 {
   sdf::Collision collision;
-  collision.SetPoseRaw({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
 
   sdf::Collision collision2(std::move(collision));
   EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
-            collision2.PoseRaw());
+            collision2.RawPose());
 }
 
 /////////////////////////////////////////////////
 TEST(DOMCollision, CopyConstructor)
 {
   sdf::Collision collision;
-  collision.SetPoseRaw({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
 
   sdf::Collision collision2(collision);
   EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
-            collision2.PoseRaw());
+            collision2.RawPose());
 }
 
 /////////////////////////////////////////////////
 TEST(DOMCollision, MoveAssignment)
 {
   sdf::Collision collision;
-  collision.SetPoseRaw({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
 
   sdf::Collision collision2;
   collision2 = std::move(collision);
   EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
-            collision2.PoseRaw());
+            collision2.RawPose());
 }
 
 /////////////////////////////////////////////////
 TEST(DOMCollision, CopyAssignment)
 {
   sdf::Collision collision;
-  collision.SetPoseRaw({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
 
   sdf::Collision collision2;
   collision2 = collision;
   EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
-            collision2.PoseRaw());
+            collision2.RawPose());
 }
 
 /////////////////////////////////////////////////
 TEST(DOMCollision, CopyAssignmentAfterMove)
 {
   sdf::Collision collision1;
-  collision1.SetPoseRaw({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  collision1.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
 
   sdf::Collision collision2;
-  collision2.SetPoseRaw({-20, -30, -40, IGN_PI, IGN_PI, IGN_PI});
+  collision2.SetRawPose({-20, -30, -40, IGN_PI, IGN_PI, IGN_PI});
 
   // This is similar to what std::swap does except it uses std::move for each
   // assignment
@@ -109,9 +109,9 @@ TEST(DOMCollision, CopyAssignmentAfterMove)
   collision2 = tmp;
 
   EXPECT_EQ(ignition::math::Pose3d(-20, -30, -40, IGN_PI, IGN_PI, IGN_PI),
-            collision1.PoseRaw());
+            collision1.RawPose());
   EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
-            collision2.PoseRaw());
+            collision2.RawPose());
 }
 
 /////////////////////////////////////////////////

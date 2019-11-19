@@ -284,11 +284,11 @@ const Joint *Model::JointByName(const std::string &_name) const
 /////////////////////////////////////////////////
 const ignition::math::Pose3d &Model::Pose() const
 {
-  return this->PoseRaw();
+  return this->RawPose();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Model::PoseRaw() const
+const ignition::math::Pose3d &Model::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -308,11 +308,11 @@ const std::string &Model::PoseRelativeTo() const
 /////////////////////////////////////////////////
 void Model::SetPose(const ignition::math::Pose3d &_pose)
 {
-  this->SetPoseRaw(_pose);
+  this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////
-void Model::SetPoseRaw(const ignition::math::Pose3d &_pose)
+void Model::SetRawPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

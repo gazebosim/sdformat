@@ -103,14 +103,14 @@ namespace sdf
     /// visual as specified in SDF
     /// (<visual><pose> ... </pose></visual>).
     /// \return The pose of the visual object.
-    /// \deprecated See SetPoseRaw.
+    /// \deprecated See SetRawPose.
     public: const ignition::math::Pose3d &Pose() const
         SDF_DEPRECATED(9.0);
 
     /// \brief Set the pose of the visual object.
     /// \sa const ignition::math::Pose3d &Pose() const
     /// \param[in] _pose The pose of the visual object.
-    /// \deprecated See SetPoseRaw.
+    /// \deprecated See SetRawPose.
     public: void SetPose(const ignition::math::Pose3d &_pose)
         SDF_DEPRECATED(9.0);
 
@@ -118,12 +118,12 @@ namespace sdf
     /// visual as specified in SDF
     /// (<visual><pose> ... </pose></visual>).
     /// \return The pose of the visual object.
-    public: const ignition::math::Pose3d &PoseRaw() const;
+    public: const ignition::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the visual object.
-    /// \sa const ignition::math::Pose3d &PoseRaw() const
+    /// \sa const ignition::math::Pose3d &RawPose() const
     /// \param[in] _pose The pose of the visual object.
-    public: void SetPoseRaw(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const ignition::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is

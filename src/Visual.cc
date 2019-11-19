@@ -196,11 +196,11 @@ void Visual::SetCastShadows(bool _castShadows)
 /////////////////////////////////////////////////
 const ignition::math::Pose3d &Visual::Pose() const
 {
-  return this->PoseRaw();
+  return this->RawPose();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Visual::PoseRaw() const
+const ignition::math::Pose3d &Visual::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -220,11 +220,11 @@ const std::string &Visual::PoseRelativeTo() const
 /////////////////////////////////////////////////
 void Visual::SetPose(const ignition::math::Pose3d &_pose)
 {
-  this->SetPoseRaw(_pose);
+  this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////
-void Visual::SetPoseRaw(const ignition::math::Pose3d &_pose)
+void Visual::SetRawPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

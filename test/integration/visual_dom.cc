@@ -78,7 +78,7 @@ TEST(DOMVisual, DoublePendulum)
   const sdf::Visual *plateVis = baseLink->VisualByIndex(0);
   ASSERT_TRUE(plateVis != nullptr);
 
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateVis->PoseRaw());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateVis->RawPose());
   EXPECT_EQ("", plateVis->PoseRelativeTo());
   EXPECT_FALSE(plateVis->CastShadows());
 
@@ -87,7 +87,7 @@ TEST(DOMVisual, DoublePendulum)
   EXPECT_TRUE(poleVis->CastShadows());
 
   EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0),
-            poleVis->PoseRaw());
+            poleVis->RawPose());
   EXPECT_EQ("", poleVis->PoseRelativeTo());
 }
 
