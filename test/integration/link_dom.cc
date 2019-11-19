@@ -154,9 +154,9 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_DOUBLE_EQ(0.0, inertialUpper.MassMatrix().OffDiagonalMoments().X());
   EXPECT_DOUBLE_EQ(0.0, inertialUpper.MassMatrix().OffDiagonalMoments().Y());
   EXPECT_DOUBLE_EQ(0.0, inertialUpper.MassMatrix().OffDiagonalMoments().Z());
-  EXPECT_DOUBLE_EQ(0.0, inertialUpper.PoseRaw().Pos().X());
-  EXPECT_DOUBLE_EQ(0.0, inertialUpper.PoseRaw().Pos().Y());
-  EXPECT_DOUBLE_EQ(0.5, inertialUpper.PoseRaw().Pos().Z());
+  EXPECT_DOUBLE_EQ(0.0, inertialUpper.Pose().Pos().X());
+  EXPECT_DOUBLE_EQ(0.0, inertialUpper.Pose().Pos().Y());
+  EXPECT_DOUBLE_EQ(0.5, inertialUpper.Pose().Pos().Z());
   EXPECT_TRUE(inertial.MassMatrix().IsValid());
 
   const sdf::Link *lowerLink = model->LinkByIndex(2);
@@ -192,9 +192,9 @@ TEST(DOMLink, InertialComplete)
   EXPECT_DOUBLE_EQ(-0.000499757,
       inertial.MassMatrix().OffDiagonalMoments().Y());
   EXPECT_DOUBLE_EQ(-0.0005, inertial.MassMatrix().OffDiagonalMoments().Z());
-  EXPECT_DOUBLE_EQ(0.01, inertial.PoseRaw().Pos().X());
-  EXPECT_DOUBLE_EQ(0.0, inertial.PoseRaw().Pos().Y());
-  EXPECT_DOUBLE_EQ(0.02, inertial.PoseRaw().Pos().Z());
+  EXPECT_DOUBLE_EQ(0.01, inertial.Pose().Pos().X());
+  EXPECT_DOUBLE_EQ(0.0, inertial.Pose().Pos().Y());
+  EXPECT_DOUBLE_EQ(0.02, inertial.Pose().Pos().Z());
   EXPECT_TRUE(inertial.MassMatrix().IsValid());
 }
 
