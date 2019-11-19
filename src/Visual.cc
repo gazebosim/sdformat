@@ -42,11 +42,11 @@ class sdf::VisualPrivate
   /// \brief Whether the visual casts shadows
   public: bool castShadows = true;
 
-  /// \brief Pose of the collision object
+  /// \brief Pose of the visual object
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief The visual's a geometry.
   public: Geometry geom;
@@ -63,7 +63,7 @@ VisualPrivate::VisualPrivate(const VisualPrivate &_visualPrivate)
     : name(_visualPrivate.name),
       castShadows(_visualPrivate.castShadows),
       pose(_visualPrivate.pose),
-      poseFrame(_visualPrivate.poseFrame),
+      poseRelativeTo(_visualPrivate.poseRelativeTo),
       geom(_visualPrivate.geom),
       sdf(_visualPrivate.sdf)
 {
@@ -160,7 +160,7 @@ Errors Visual::Load(ElementPtr _sdf)
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   // Load the geometry
   Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
@@ -202,7 +202,13 @@ const ignition::math::Pose3d &Visual::Pose() const
 /////////////////////////////////////////////////
 const std::string &Visual::PoseFrame() const
 {
-  return this->dataPtr->poseFrame;
+  return this->PoseRelativeTo();
+}
+
+/////////////////////////////////////////////////
+const std::string &Visual::PoseRelativeTo() const
+{
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -214,7 +220,13 @@ void Visual::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Visual::SetPoseFrame(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->SetPoseRelativeTo(_frame);
+}
+
+/////////////////////////////////////////////////
+void Visual::SetPoseRelativeTo(const std::string &_frame)
+{
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////
