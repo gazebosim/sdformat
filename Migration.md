@@ -16,9 +16,13 @@ but with improved human-readability..
 
 ### Deprecations
 
-1. All DOM classes with `PoseFrame()` and `PoseRelativeTo()` API's:
+1. All DOM classes with `Pose()` and `PoseFrame()` API's:
+   + ***Deprecation:*** std::string Pose()
+   + ***Replacement:*** std::string PoseRaw()
    + ***Deprecation:*** std::string PoseFrame()
    + ***Replacement:*** std::string PoseRelativeTo()
+   + ***Deprecation:*** void SetPose(const std::string &)
+   + ***Replacement:*** void SetPoseRaw(const std::string &)
    + ***Deprecation:*** void SetPoseFrame(const std::string &)
    + ***Replacement:*** void SetPoseRelativeTo(const std::string &)
 
