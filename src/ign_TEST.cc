@@ -95,6 +95,101 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
+  // Check an SDF file with sibling elements of different types (model, light)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/world_sibling_same_names.sdf";
+
+    // Check world_sibling_same_names.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: non-unique names"), std::string::npos)
+      << output;
+  }
+
+  // Check an SDF file with sibling elements of the same type (link)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/model_duplicate_links.sdf";
+
+    // Check model_duplicate_links.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: link with name[link] already exists."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with sibling elements of the same type (joint)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/model_duplicate_joints.sdf";
+
+    // Check model_duplicate_joints.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: joint with name[joint] already exists."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with sibling elements of different types (link, joint)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/model_link_joint_same_name.sdf";
+
+    // Check model_link_joint_same_name.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: non-unique names"), std::string::npos)
+      << output;
+  }
+
+  // Check an SDF file with sibling elements of the same type (collision)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/link_duplicate_sibling_collisions.sdf";
+
+    // Check link_duplicate_sibling_collisions.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: collision with name[collision] "
+                          "already exists."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with sibling elements of the same type (visual)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/link_duplicate_sibling_visuals.sdf";
+
+    // Check link_duplicate_sibling_visuals.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: visual with name[visual] already exists."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with cousin elements of the same type (collision)
+  // that have duplicate names. This is a valid file.
+  {
+    std::string path = pathBase +"/link_duplicate_cousin_collisions.sdf";
+
+    // Check link_duplicate_cousin_collisions.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with cousin elements of the same type (visual)
+  // that have duplicate names. This is a valid file.
+  {
+    std::string path = pathBase +"/link_duplicate_cousin_visuals.sdf";
+
+    // Check link_duplicate_cousin_visuals.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
   // Check an invalid SDF file that uses reserved names.
   {
     std::string path = pathBase +"/model_invalid_reserved_names.sdf";

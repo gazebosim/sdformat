@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+    <physics name="my_physics" type="bullet">
+      <max_step_size>0.1</max_step_size>
+      <real_time_factor>0.5</real_time_factor>
+    </physics>
+
+    <light name="spot" type="spot">
+      <cast_shadows>true</cast_shadows>
+      <spot>
+        <inner_angle>0.1</inner_angle>
+        <outer_angle>0.5</outer_angle>
+        <falloff>2.2</falloff>
+      </spot>
+    </light>
+
+    <model name="spot">
+      <link name="L"/>
+    </model>
+
+  </world>
+</sdf>
