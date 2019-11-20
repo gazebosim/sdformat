@@ -160,7 +160,7 @@ TEST(DOMVisual, MaterialScriptNoUri)
   EXPECT_NE(std::string::npos,
       errors[2].Message().find("<shader><type> element is not supported"));
   EXPECT_NE(std::string::npos,
-      errors[3].Message().find("model must have at least one link"));
+      errors[3].Message().find("A model must have at least one link"));
 }
 
 //////////////////////////////////////////////////
@@ -179,7 +179,7 @@ TEST(DOMVisual, MaterialScriptNormalMapMissing)
   EXPECT_NE(std::string::npos,
       errors[0].Message().find("but a normal_map has not."));
   EXPECT_NE(std::string::npos,
-      errors[1].Message().find("model must have at least one link"));
+      errors[1].Message().find("A model must have at least one link"));
 }
 
 /////////////////////////////////////////////////

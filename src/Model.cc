@@ -195,7 +195,7 @@ Errors Model::Load(ElementPtr _sdf)
   // something.
   if (this->dataPtr->links.empty())
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
+    errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
                      "A model must have at least one link."});
   }
 
