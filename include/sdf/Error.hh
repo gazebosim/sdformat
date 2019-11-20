@@ -53,6 +53,9 @@ namespace sdf
     /// are required.
     DUPLICATE_NAME,
 
+    /// \brief A reserved name was used in an entity name attribute.
+    RESERVED_NAME,
+
     /// \brief Indicates that a required SDF attribute is missing.
     ATTRIBUTE_MISSING,
 
@@ -93,9 +96,6 @@ namespace sdf
 
     /// \brief Indicates that reading an SDF string failed.
     STRING_READ,
-
-    /// \brief A reserved name was used in an entity name attribute.
-    RESERVED_NAME,
 
     /// \brief Indicates that a DOM object tried to read a nested model.
     NESTED_MODELS_UNSUPPORTED,
