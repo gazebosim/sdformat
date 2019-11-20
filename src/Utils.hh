@@ -30,6 +30,13 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
+  /// \brief Check if the passed string is a reserved name.
+  /// This currently includes "world" and all strings that start
+  /// and end with "__".
+  /// \param[in] _name Name to check.
+  /// \returns True if the name is a reserved name and thus invalid.
+  bool isReservedName(const std::string &_name);
+
   /// \brief Read the "name" attribute from an element.
   /// \param[in] _sdf SDF element pointer which contains the name.
   /// \param[out] _name String to hold the name value.
