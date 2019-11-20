@@ -26,6 +26,7 @@ set (sources
   Element.cc
   Error.cc
   Exception.cc
+  Frame.cc
   Filesystem.cc
   Geometry.cc
   Gui.cc
@@ -101,6 +102,7 @@ set (gtest_sources
   Element_TEST.cc
   Error_TEST.cc
   Exception_TEST.cc
+  Frame_TEST.cc
   Filesystem_TEST.cc
   Geometry_TEST.cc
   Gui_TEST.cc
