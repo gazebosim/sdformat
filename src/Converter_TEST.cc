@@ -628,16 +628,14 @@ TEST(Converter, RemoveDescendantNestedElement)
       </model>
       <link name="L3"/>
     </model>
-  </sdf>
-  )";
+  </sdf>)";
 
   std::string convertString = R"(
     <convert name="sdf">
       <convert descendant_name="model">
         <remove element="frame"/>
       </convert>
-    </convert>
-  )";
+    </convert>)";
 
   // Verify the xml
   TiXmlDocument xmlDoc;
@@ -656,8 +654,7 @@ TEST(Converter, RemoveDescendantNestedElement)
       <model name="NM2"/>
       <link name="L3"/>
     </model>
-  </sdf>
-  )";
+  </sdf>)";
   TiXmlDocument expectedXmlDoc;
   expectedXmlDoc.Parse(expectedString.c_str());
 
