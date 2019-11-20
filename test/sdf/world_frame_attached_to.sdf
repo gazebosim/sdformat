@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <world name="world_frame_attached_to">
+
+    <frame name="world_frame"/>          <!-- VALID: Directly attached_to implicit world frame. -->
+    <frame name="F0" attached_to=""/>    <!-- VALID: Directly attached_to implicit world frame by default. -->
+    <frame name="F1" attached_to="F0"/>  <!-- VALID: Indirectly attached_to implicit world frame via frame F0. -->
+
+    <model name="M1">
+      <link name="L"/>
+      <frame name="F0" attached_to="L"/> <!-- VALID: Directly attached_to link L. -->
+    </model>
+
+    <frame name="F2" attached_to="M1"/>  <!-- VALID: Indirectly attached to canonical link L of model M1. -->
+  </world>
+</sdf>
