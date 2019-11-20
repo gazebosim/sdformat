@@ -85,6 +85,9 @@ namespace sdf
     /// \brief A filesystem directory does not exist.
     DIRECTORY_NONEXISTANT,
 
+    /// \brief A model without a link.
+    MODEL_WITHOUT_LINK,
+
     /// \brief A link has invalid inertia.
     LINK_INERTIA_INVALID,
 

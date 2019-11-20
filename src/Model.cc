@@ -159,6 +159,14 @@ Errors Model::Load(ElementPtr _sdf)
     this->dataPtr->links);
   errors.insert(errors.end(), linkLoadErrors.begin(), linkLoadErrors.end());
 
+  // Require at least one link so the implicit model frame can be attached to
+  // something.
+  if (this->dataPtr->links.empty())
+  {
+    errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
+                     "A model must have at least one link."});
+  }
+
   // Load all the joints.
   Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
     this->dataPtr->joints);

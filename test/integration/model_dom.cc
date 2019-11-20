@@ -58,6 +58,23 @@ TEST(DOMModel, NoName)
                std::string::npos);
 }
 
+//////////////////////////////////////////////////
+TEST(DOMModel, NoLinks)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_without_links.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_FALSE(errors.empty());
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::MODEL_WITHOUT_LINK, errors[0].Code());
+  EXPECT_TRUE(errors[0].Message().find("model must have at least one link") !=
+               std::string::npos);
+}
+
 /////////////////////////////////////////////////
 TEST(DOMRoot, LoadLinkCheck)
 {
