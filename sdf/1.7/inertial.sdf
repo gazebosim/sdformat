@@ -6,8 +6,6 @@
     <description>The mass of the link.</description>
   </element>
 
-  <include filename="frame.sdf" required="*"/>
-
   <include filename="pose.sdf" required="0">
     <description>This is the pose of the inertial reference frame, relative to the specified reference frame. The origin of the inertial reference frame needs to be at the center of gravity. The axes of the inertial reference frame do not need to be aligned with the principal axes of the inertia.</description>
   </include>

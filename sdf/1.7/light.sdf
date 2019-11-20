@@ -14,7 +14,6 @@
     <description>When true, the light will cast shadows.</description>
   </element>
 
-  <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
 
   <element name="diffuse" type="color" default="1 1 1 1" required="0">
