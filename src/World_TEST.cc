@@ -37,6 +37,14 @@ TEST(DOMWorld, Construction)
   EXPECT_EQ(nullptr, world.ModelByIndex(1));
   EXPECT_FALSE(world.ModelNameExists(""));
   EXPECT_FALSE(world.ModelNameExists("default"));
+  EXPECT_EQ(nullptr, world.ModelByName(""));
+  EXPECT_EQ(nullptr, world.ModelByName("default"));
+
+  EXPECT_EQ(0u, world.FrameCount());
+  EXPECT_EQ(nullptr, world.FrameByIndex(0));
+  EXPECT_EQ(nullptr, world.FrameByIndex(1));
+  EXPECT_FALSE(world.FrameNameExists(""));
+  EXPECT_FALSE(world.FrameNameExists("default"));
 
   EXPECT_EQ(0u, world.FrameCount());
   EXPECT_EQ(nullptr, world.FrameByIndex(0));

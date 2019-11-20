@@ -28,6 +28,9 @@
 1. sdf 1.7: add `//model/@canonical_link` attribute and require models to have at least one link.
     * [Pull request 601](https://bitbucket.org/osrf/sdformat/pull-requests/601)
 
+1. sdf 1.7: add `//frame/attached_to`, only allow frames in model and world, add Frame DOM.
+    * [pull request 603](https://bitbucket.org/osrf/sdformat/pull-requests/603)
+
 1. DOM API: deprecate `(Set)?PoseFrame` API and replace with `(Set)?PoseRelativeTo`
     * [Pull request 598](https://bitbucket.org/osrf/sdformat/pull-requests/598)
 
