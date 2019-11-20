@@ -611,6 +611,63 @@ TEST(Converter, RemoveDescendantElement)
   ASSERT_TRUE(convertedElem == nullptr);
 }
 
+TEST(Converter, RemoveDescendantNestedElement)
+{
+  // Set up an xml string for testing
+  std::string xmlString = R"(
+  <sdf>
+    <model name="M">
+      <frame name="F1"/>
+      <link name="L1"/>
+      <link name="L2"/>
+      <model name="NM1">
+        <frame name="L1"/>
+      </model>
+      <model name="NM2">
+        <frame name="L2"/>
+      </model>
+      <link name="L3"/>
+    </model>
+  </sdf>
+  )";
+
+  std::string convertString = R"(
+    <convert name="sdf">
+      <convert descendant_name="model">
+        <remove element="frame"/>
+      </convert>
+    </convert>
+  )";
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertString.c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::string expectedString = R"(
+  <sdf>
+    <model name="M">
+      <link name="L1"/>
+      <link name="L2"/>
+      <model name="NM1"/>
+      <model name="NM2"/>
+      <link name="L3"/>
+    </model>
+  </sdf>
+  )";
+  TiXmlDocument expectedXmlDoc;
+  expectedXmlDoc.Parse(expectedString.c_str());
+
+  std::stringstream xmlDocOut;
+  xmlDocOut << xmlDoc;
+
+  std::stringstream expectedXmlDocOut;
+  expectedXmlDocOut << expectedXmlDoc;
+  EXPECT_EQ(xmlDocOut.str(), expectedXmlDocOut.str());
+}
 ////////////////////////////////////////////////////
 /// Ensure that Converter::Remove function is working
 /// Test removing element and sub-elements

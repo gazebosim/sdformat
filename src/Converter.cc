@@ -142,10 +142,7 @@ void Converter::ConvertDescendantsImpl(TiXmlElement *_e, TiXmlElement *_c)
     {
       ConvertImpl(e, _c);
     }
-    else
-    {
-      ConvertDescendantsImpl(e, _c);
-    }
+    ConvertDescendantsImpl(e, _c);
     e = e->NextSiblingElement();
   }
 }
@@ -171,7 +168,7 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
         elem = elem->NextSiblingElement(convertElem->Attribute("name"));
       }
     }
-    else if (convertElem->Attribute("descendant_name"))
+    if (convertElem->Attribute("descendant_name"))
     {
       ConvertDescendantsImpl(_elem, convertElem);
     }
