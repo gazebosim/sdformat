@@ -878,10 +878,10 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 
           poseElem->GetValue()->SetFromString(poseElemXml->GetText());
 
-          const char *relative_to = poseElemXml->Attribute("relative_to");
-          if (relative_to)
+          const char *relativeTo = poseElemXml->Attribute("relative_to");
+          if (relativeTo)
           {
-            poseElem->GetAttribute("relative_to")->SetFromString(relative_to);
+            poseElem->GetAttribute("relative_to")->SetFromString(relativeTo);
           }
         }
 
