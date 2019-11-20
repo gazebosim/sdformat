@@ -199,6 +199,16 @@ namespace sdf
     /// \param[in] _pose The new model pose.
     public: void SetRawPose(const ignition::math::Pose3d &_pose);
 
+    /// \brief Get the name of the model's canonical link. An empty value
+    /// indicates that the first link in the model is the canonical link.
+    /// \return The name of the canonical link.
+    public: const std::string &CanonicalLinkName() const;
+
+    /// \brief Set the name of the model's canonical link. An empty value
+    /// indicates that the first link in the model is the canonical link.
+    /// \param[in] _canonicalLink The name of the canonical link.
+    public: void SetCanonicalLinkName(const std::string &_canonicalLink);
+
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
     /// relative to the parent model/world coordinate frame.
