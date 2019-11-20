@@ -124,6 +124,30 @@ but with improved human-readability..
     + required: 0
     + [pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
 
+### Modifications
+
+1. Unique names for all sibling elements:
+    + As described in the [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#3-2-unique-names-for-all-sibling-elements),
+      all named sibling elements must have unique names.
+      Uniqueness is forced so that referencing implicit frames is not ambiguous,
+      e.g. you cannot have a link and joint share an implicit frame name.
+      Some existing SDFormat models may not comply with this requirement.
+      The `ign sdf --check` command can be used to identify models that violate
+      this requirement.
+    + [pull request 600](https://bitbucket.org/osrf/sdformat/pull-requests/600)
+
+1. Reserved names:
+    + As described in the [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#3-3-reserved-names),
+      entities in a simulation must not use world as a name.
+      It has a special interpretation when specified as a parent or child link
+      of a joint.
+      Names starting and ending with double underscores (eg. `__wheel__`) must
+      be reserved for use by library implementors and the specification.
+      For example, such names might be useful during parsing for setting
+      sentinel or default names for elements with missing names.
+      If explicitly stated, they can be referred to (e.g. `__model__` / `world`
+      for implicit model / world frames, respectively).
+
 ### Removals
 
 1. **actor.sdf** `static` element was deprecated in
