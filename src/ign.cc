@@ -20,6 +20,7 @@
 
 #include "sdf/sdf_config.h"
 #include "sdf/Filesystem.hh"
+#include "sdf/Root.hh"
 #include "sdf/ign.hh"
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
@@ -61,6 +62,19 @@ bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
 // cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 {
+  int result = 0;
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(_path);
+  if (!errors.empty())
+  {
+    for (auto &error : errors)
+    {
+      std::cerr << "Error: " << error.Message() << std::endl;
+    }
+    return -1;
+  }
+
   if (!sdf::filesystem::exists(_path))
   {
     std::cerr << "Error: File [" << _path << "] does not exist.\n";
@@ -81,14 +95,11 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     return -1;
   }
 
-  if (!recursiveSameTypeUniqueNames(sdf->Root()))
+  if (result == 0)
   {
-    std::cerr << "Error: non-unique names detected.\n";
-    return -1;
+    std::cout << "Valid.\n";
   }
-
-  std::cout << "Valid.\n";
-  return 0;
+  return result;
 }
 
 //////////////////////////////////////////////////

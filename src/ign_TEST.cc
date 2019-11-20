@@ -69,7 +69,7 @@ TEST(check, SDF)
     // Check box_plane_low_friction_test.world
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_EQ("Valid.\n", output);
+    EXPECT_EQ("Valid.\n", output) << output;
   }
 
   // Check a bad SDF file
@@ -79,10 +79,11 @@ TEST(check, SDF)
     // Check box_bad_test.world
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_TRUE(output.find("Required attribute") != std::string::npos);
+    EXPECT_NE(output.find("Required attribute"), std::string::npos)
+      << output;
   }
 
-  // Check an SDF file with sibling elements of the same type
+  // Check an SDF file with sibling elements of the same type (world)
   // that have duplicate names.
   {
     std::string path = pathBase +"/world_duplicate.sdf";
@@ -90,7 +91,31 @@ TEST(check, SDF)
     // Check world_duplicate.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_TRUE(output.find("Error: non-unique names") != std::string::npos);
+    EXPECT_NE(output.find("Error: World with name[default] already exists."),
+              std::string::npos) << output;
+  }
+
+  // Check an invalid SDF file that uses reserved names.
+  {
+    std::string path = pathBase +"/model_invalid_reserved_names.sdf";
+
+    // Check model_invalid_reserved_names.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: The supplied link name [world] is reserved."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: The supplied link name [__link__] "
+                          "is reserved."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: The supplied visual name [__visual__] "
+                          "is reserved."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: The supplied collision name [__collision__] "
+                          "is reserved."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: The supplied joint name [__joint__] "
+                          "is reserved."),
+              std::string::npos) << output;
   }
 }
 
