@@ -2,7 +2,10 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
-### SDFormat 8.6.0 (2019-11-XX)
+### SDFormat 8.6.0 (2019-11-20)
+
+1. configure.bat: use ign-math6, not gz11
+    * [Pull request 595](https://bitbucket.org/osrf/sdformat/pull-requests/595)
 
 1. Set `sdformat8_PKGCONFIG_*` variables in cmake config instead of `SDFormat_PKGCONFIG*`.
     * [Pull request 594](https://bitbucket.org/osrf/sdformat/pull-requests/594)
