@@ -12,6 +12,16 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDFormat 8.x to 9.0
+
+### Deprecations
+
+1. **sdf/JointAxis.hh**
+   + ***Deprecation:*** bool UseParentModelFrame()
+   + ***Replacement:*** std::string XyzExpressedIn()
+   + ***Deprecation:*** void SetUseParentModelFrame(bool)
+   + ***Replacement:*** void SetXyzExpressedIn(const std::string &)
+
 ## SDFormat 8.0 to 8.1
 
 ### Modifications
@@ -102,6 +112,18 @@ but with improved human-readability..
 
 ## SDF protocol 1.6 to 1.7
 
+### Additions
+
+1. **joint.sdf** `//axis/xyz/@expressed_in` and `//axis2/xyz/@expressed_in` attributes
+    + description: The name of the frame in which the `//axis/xyz` value is
+      expressed. When migrating from sdf 1.6, a `use_parent_model_frame` value
+      of `true` will be mapped to a value of `__model__` for the `expressed_in`
+      attribute.
+    + type: string
+    + default: ""
+    + required: 0
+    + [pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
+
 ### Removals
 
 1. **actor.sdf** `static` element was deprecated in
@@ -113,6 +135,14 @@ but with improved human-readability..
     [pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)
     and is now removed.
     + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
+1. **joint.sdf** `//axis/use_parent_model_frame` and `//axis2/use_parent_model_frame` elements
+    are removed in favor of the `//axis/xyz/@expressed_in` and
+    `//axis2/xyz/@expressed_in` attributes.
+    When migrating from sdf 1.6, a `use_parent_model_frame` value
+    of `true` will be mapped to a value of `__model__` for the `expressed_in`
+    attribute.
+    + [pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
 
 1. **joint.sdf** `//physics/ode/provide_feedback` was deprecated in
     [pull request 38](https://bitbucket.org/osrf/sdformat/pull-requests/38)

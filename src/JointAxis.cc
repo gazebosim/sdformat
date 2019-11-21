@@ -31,6 +31,9 @@ class sdf::JointAxisPrivate
   /// normalized.
   public: ignition::math::Vector3d xyz = ignition::math::Vector3d::UnitZ;
 
+  /// \brief Frame in which xyz is expressed in.
+  public: std::string xyzExpressedIn = "";
+
   /// \brief Flag to interpret the axis xyz element in the parent model
   /// frame instead of joint frame.
   public: bool useParentModelFrame = false;
@@ -134,6 +137,11 @@ Errors JointAxis::Load(ElementPtr _sdf)
   {
     this->dataPtr->xyz = _sdf->Get<ignition::math::Vector3d>("xyz",
         ignition::math::Vector3d::UnitZ).first;
+    auto e = _sdf->GetElement("xyz");
+    if (e->HasAttribute("expressed_in"))
+    {
+      this->dataPtr->xyzExpressedIn = e->Get<std::string>("expressed_in");
+    }
   }
   else
   {
@@ -333,6 +341,18 @@ double JointAxis::Dissipation() const
 void JointAxis::SetDissipation(const double _dissipation) const
 {
   this->dataPtr->dissipation = _dissipation;
+}
+
+/////////////////////////////////////////////////
+const std::string &JointAxis::XyzExpressedIn() const
+{
+  return this->dataPtr->xyzExpressedIn;
+}
+
+/////////////////////////////////////////////////
+void JointAxis::SetXyzExpressedIn(const std::string &_frame)
+{
+  this->dataPtr->xyzExpressedIn = _frame;
 }
 
 /////////////////////////////////////////////////

@@ -53,16 +53,14 @@
     <element name="xyz" type="vector3" default="0 0 1" required="1">
       <description>
         Represents the x,y,z components of the axis unit vector. The axis is
-        expressed in the joint frame unless the use_parent_model_frame
-        flag is set to true. The vector should be normalized.
+        expressed in the joint frame unless a different frame is expressed in
+        the expressed_in attribute. The vector should be normalized.
       </description>
-    </element>
-    <element name="use_parent_model_frame" type="bool" default="false" required="1">
-      <description>
-        Flag to interpret the axis xyz element in the parent model frame instead
-        of joint frame. Provided for Gazebo compatibility
-        (see https://bitbucket.org/osrf/gazebo/issue/494 ).
-      </description>
+      <attribute name="expressed_in" type="string" default="" required="0">
+        <description>
+          Name of frame in whose coordinates the xyz unit vector is expressed.
+        </description>
+      </attribute>
     </element>
     <element name="dynamics" required="0">
       <description>An element specifying physical properties of the joint. These values are used to specify modeling properties of the joint, particularly useful for simulation.</description>
@@ -117,16 +115,14 @@
     <element name="xyz" type="vector3" default="0 0 1" required="1">
       <description>
         Represents the x,y,z components of the axis unit vector. The axis is
-        expressed in the joint frame unless the use_parent_model_frame
-        flag is set to true. The vector should be normalized.
+        expressed in the joint frame unless a different frame is expressed in
+        the expressed_in attribute. The vector should be normalized.
       </description>
-    </element>
-    <element name="use_parent_model_frame" type="bool" default="false" required="1">
-      <description>
-        Flag to interpret the axis xyz element in the parent model frame instead
-        of joint frame. Provided for Gazebo compatibility
-        (see https://bitbucket.org/osrf/gazebo/issue/494 ).
-      </description>
+      <attribute name="expressed_in" type="string" default="" required="0">
+        <description>
+          Name of frame in whose coordinates the xyz unit vector is expressed.
+        </description>
+      </attribute>
     </element>
     <element name="dynamics" required="0">
       <description>An element specifying physical properties of the joint. These values are used to specify modeling properties of the joint, particularly useful for simulation.</description>

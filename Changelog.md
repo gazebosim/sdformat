@@ -13,6 +13,9 @@
 1. Converter: add `<map>` element for converting fixed values.
     * [Pull request 580](https://bitbucket.org/osrf/sdformat/pull-requests/580)
 
+1. Replace `use_parent_model_frame` element with `//axis/xyz/@expressed_in` attribute in sdf 1.7.
+    * [Pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
+
 ## SDFormat 8.0
 
 ### SDFormat 8.X.X (201X-XX-XX)

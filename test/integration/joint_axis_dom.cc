@@ -82,8 +82,8 @@ TEST(DOMJointAxis, Complete)
   EXPECT_EQ(ignition::math::Vector3d::UnitZ, axis->Xyz());
   EXPECT_EQ(ignition::math::Vector3d::UnitY, axis2->Xyz());
 
-  EXPECT_TRUE(axis->UseParentModelFrame());
-  EXPECT_FALSE(axis2->UseParentModelFrame());
+  EXPECT_EQ("__model__", axis->XyzExpressedIn());
+  EXPECT_TRUE(axis2->XyzExpressedIn().empty());
 
   EXPECT_DOUBLE_EQ(-0.5, axis->Lower());
   EXPECT_DOUBLE_EQ(0.5, axis->Upper());
