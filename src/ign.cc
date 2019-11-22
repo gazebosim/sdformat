@@ -21,6 +21,7 @@
 #include "sdf/sdf_config.h"
 #include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
+#include "sdf/FrameSemantics.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
@@ -192,6 +193,95 @@ bool checkFrameAttachedToNames(const sdf::Root &_root)
 }
 
 //////////////////////////////////////////////////
+/// \brief For the world and each model, check that the attached_to graphs
+/// build without errors and have no cycles.
+/// Confirm that following directed edges from each vertex in the graph
+/// leads to a model, link, or world frame.
+/// This checks recursively and should check the files exhaustively
+/// rather than terminating early when the first error is found.
+/// \param[in] _root sdf Root object to check recursively.
+/// \return True if all attached_to graphs are valid.
+bool checkFrameAttachedToGraph(const sdf::Root &_root)
+{
+  bool result = true;
+
+  auto checkModelFrameAttachedToGraph = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    sdf::FrameAttachedToGraph graph;
+    auto errors = sdf::buildFrameAttachedToGraph(graph, _model);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      modelResult = false;
+    }
+    errors = sdf::validateFrameAttachedToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validateFrameAttachedToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      modelResult = false;
+    }
+    return modelResult;
+  };
+
+  auto checkWorldFrameAttachedToGraph = [](
+      const sdf::World *_world) -> bool
+  {
+    bool worldResult = true;
+    sdf::FrameAttachedToGraph graph;
+    auto errors = sdf::buildFrameAttachedToGraph(graph, _world);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      worldResult = false;
+    }
+    errors = sdf::validateFrameAttachedToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validateFrameAttachedToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      worldResult = false;
+    }
+    return worldResult;
+  };
+
+  for (uint64_t m = 0; m < _root.ModelCount(); ++m)
+  {
+    auto model = _root.ModelByIndex(m);
+    result = checkModelFrameAttachedToGraph(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root.WorldCount(); ++w)
+  {
+    auto world = _root.WorldByIndex(w);
+    result = checkWorldFrameAttachedToGraph(world) && result;
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelFrameAttachedToGraph(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
 /// \brief Check that all sibling elements of the same type have unique names.
 /// This checks recursively and should check the files exhaustively
 /// rather than terminating early when the first duplicate name is found.
@@ -252,6 +342,12 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     std::cerr << "Error: invalid frame attached_to name.\n";
     result = -1;
   }
+  if (!checkFrameAttachedToGraph(root))
+  {
+    std::cerr << "Error: invalid frame attached_to graph.\n";
+    result = -1;
+  }
+
 
   if (!sdf::filesystem::exists(_path))
   {
