@@ -50,7 +50,7 @@ TEST(Parser, initStringTrim)
 }
 
 /////////////////////////////////////////////////
-/// Tests whether the input sdf string satisfies the unique name criteria among 
+/// Tests whether the input sdf string satisfies the unique name criteria among
 /// same types
 sdf::SDFPtr InitSDF()
 {
