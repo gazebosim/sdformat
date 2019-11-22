@@ -87,6 +87,9 @@
         <description>Filename of the normal map. The normals can be in the object space or tangent space as specified in the 'type' attribute</description>
       </element>
 
+      <element name="emissive_map" type="string" default="" required="0">
+        <description>Filename of the emissive map.</description>
+      </element>
     </element>
 
     <element name="specular" required="0">
@@ -120,6 +123,9 @@
         <description>Filename of the normal map. The normals can be in the object space or tangent space as specified in the 'type' attribute</description>
       </element>
 
+      <element name="emissive_map" type="string" default="" required="0">
+        <description>Filename of the emissive map.</description>
+      </element>
     </element>
 
   </element>

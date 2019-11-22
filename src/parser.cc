@@ -322,11 +322,22 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
 bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
   TiXmlDocument xmlDoc;
-  std::string filename = sdf::findFile(_filename);
+  std::string filename = sdf::findFile(_filename, true, true);
 
   if (filename.empty())
   {
     sdferr << "Error finding file [" << _filename << "].\n";
+    return false;
+  }
+
+  if (filesystem::is_directory(filename))
+  {
+    filename = getModelFilePath(filename);
+  }
+
+  if (!filesystem::exists(filename))
+  {
+    sdferr << "File [" << filename << "] doesn't exist.\n";
     return false;
   }
 

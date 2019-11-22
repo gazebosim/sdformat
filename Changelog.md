@@ -5,11 +5,42 @@
 1. Avoid printing error message about missing `<sdf>` element if the source is a URDF
     * [Pull request 582](https://bitbucket.org/osrf/sdformat/pull-requests/582)
 
+### SDFormat 8.6.0 (2019-11-20)
+
+1. configure.bat: use ign-math6, not gz11
+    * [Pull request 595](https://bitbucket.org/osrf/sdformat/pull-requests/595)
+
+1. Set `sdformat8_PKGCONFIG_*` variables in cmake config instead of `SDFormat_PKGCONFIG*`.
+    * [Pull request 594](https://bitbucket.org/osrf/sdformat/pull-requests/594)
+
+1. Relax cmake check to allow compiling with gcc-7.
+    * [Pull request 592](https://bitbucket.org/osrf/sdformat/pull-requests/592)
+
+1. Update visual DOM to parse `cast_shadows` property of a visual.
+    * [Pull request 590](https://bitbucket.org/osrf/sdformat/pull-requests/590)
+
+1. Build `Utils_TEST` with Utils.cc explicitly passed since its symbols are not visible.
+    * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
+
+### SDFormat 8.5.0 (2019-11-06)
+
+1. Add `thermal_camera` sensor type
+    * [Pull request 586](https://bitbucket.org/osrf/sdformat/pull-requests/586)
+
 1. Use inline namespaces in Utils.cc
     * [Pull request 574](https://bitbucket.org/osrf/sdformat/pull-requests/574)
 
+1. Convert `ign sdf` file inputs to absolute paths before processing them
+    * [Pull request 583](https://bitbucket.org/osrf/sdformat/pull-requests/583)
 
-### SDFormat 8.4.0 (2019-10-XX)
+1. Add `emissive_map` to material sdf
+    * [Pull request 585](https://bitbucket.org/osrf/sdformat/pull-requests/585)
+
+1. Converter: fix bug when converting across multiple versions.
+    * [Pull request 584](https://bitbucket.org/osrf/sdformat/pull-requests/584)
+    * [Pull request 573](https://bitbucket.org/osrf/sdformat/pull-requests/573)
+
+### SDFormat 8.4.0 (2019-10-22)
 
 1. Accept relative path in `<uri>`.
     * [Pull request 558](https://bitbucket.org/osrf/sdformat/pull-requests/558)
@@ -197,6 +228,9 @@
 
 ### SDFormat 7.0.0 (xxxx-xx-xx)
 
+1. Build Utils_TEST with Utils.cc explicitly passed since its symbols are not visible.
+    * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
+
 1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
     * [Pull request 575](https://bitbucket.org/osrf/sdformat/pull-requests/575)
 
@@ -205,6 +239,9 @@
 
 1. Avoid hardcoding /machine:x64 flag on 64-bit on MSVC with CMake >= 3.5.
     * [Pull request 565](https://bitbucket.org/osrf/sdformat/pull-requests/565)
+
+1. Prevent duplicate `use_parent_model_frame` tags during file conversion.
+    * [Pull request 573](https://bitbucket.org/osrf/sdformat/pull-requests/573)
 
 1. Backport inline versioned namespace from version 8.
     * [Pull request 557](https://bitbucket.org/osrf/sdformat/pull-requests/557)
