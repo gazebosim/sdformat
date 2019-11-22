@@ -271,11 +271,11 @@ Errors buildFrameAttachedToGraph(
   }
 
   // add implicit model frame vertex first
-  const std::string sinkName = "__model__";
-  _out.sinkName = sinkName;
+  const std::string scopeName = "__model__";
+  _out.scopeName = scopeName;
   auto modelFrameId =
-      _out.graph.AddVertex(sinkName, sdf::FrameType::MODEL).Id();
-  _out.map[sinkName] = modelFrameId;
+      _out.graph.AddVertex(scopeName, sdf::FrameType::MODEL).Id();
+  _out.map[scopeName] = modelFrameId;
 
   // add link vertices
   for (uint64_t l = 0; l < _model->LinkCount(); ++l)
@@ -329,12 +329,12 @@ Errors buildFrameAttachedToGraph(
     std::string attachedTo = frame->AttachedTo();
     if (attachedTo.empty())
     {
-      // if the attached-to name is empty, use the sink name
-      attachedTo = sinkName;
-      if (_out.map.count(sinkName) != 1)
+      // if the attached-to name is empty, use the scope name
+      attachedTo = scopeName;
+      if (_out.map.count(scopeName) != 1)
       {
         errors.push_back({ErrorCode::ELEMENT_INVALID,
-                         sinkName + "not found in map."});
+                         scopeName + "not found in map."});
         continue;
       }
     }
@@ -385,11 +385,11 @@ Errors buildFrameAttachedToGraph(
   }
 
   // add implicit world frame vertex first
-  const std::string sinkName = "world";
-  _out.sinkName = sinkName;
+  const std::string scopeName = "world";
+  _out.scopeName = scopeName;
   auto worldFrameId =
-      _out.graph.AddVertex(sinkName, sdf::FrameType::WORLD).Id();
-  _out.map[sinkName] = worldFrameId;
+      _out.graph.AddVertex(scopeName, sdf::FrameType::WORLD).Id();
+  _out.map[scopeName] = worldFrameId;
 
   // add model vertices
   for (uint64_t l = 0; l < _world->ModelCount(); ++l)
@@ -418,12 +418,12 @@ Errors buildFrameAttachedToGraph(
     std::string attachedTo = frame->AttachedTo();
     if (attachedTo.empty())
     {
-      // if the attached-to name is empty, use the sink name
-      attachedTo = sinkName;
-      if (_out.map.count(sinkName) != 1)
+      // if the attached-to name is empty, use the scope name
+      attachedTo = scopeName;
+      if (_out.map.count(scopeName) != 1)
       {
         errors.push_back({ErrorCode::ELEMENT_INVALID,
-                         sinkName + "not found in map."});
+                         scopeName + "not found in map."});
         continue;
       }
     }
@@ -781,44 +781,44 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
 {
   Errors errors;
 
-  // Expect sinkName to be either "__model__" or "world"
-  if (_in.sinkName != "__model__" && _in.sinkName != "world")
+  // Expect scopeName to be either "__model__" or "world"
+  if (_in.scopeName != "__model__" && _in.scopeName != "world")
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Sink vertex name " + _in.sinkName +
+        "Scope vertex name " + _in.scopeName +
         " does not match __model__ or world."});
     return errors;
   }
 
   // Expect one vertex with name "__model__" and FrameType MODEL
   // or with name "world" and FrameType WORLD
-  auto sinkVertices = _in.graph.Vertices(_in.sinkName);
-  if (sinkVertices.empty())
+  auto scopeVertices = _in.graph.Vertices(_in.scopeName);
+  if (scopeVertices.empty())
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Missing sink vertex with name " + _in.sinkName});
+        "Missing scope vertex with name " + _in.scopeName});
     return errors;
   }
-  else if (sinkVertices.size() > 1)
+  else if (scopeVertices.size() > 1)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "More than one vertex with sink name " + _in.sinkName});
+        "More than one vertex with scope name " + _in.scopeName});
     return errors;
   }
 
-  auto sinkVertex = sinkVertices.begin()->second.get();
-  sdf::FrameType sinkFrameType = sinkVertex.Data();
-  if (_in.sinkName == "__model__" && sinkFrameType != sdf::FrameType::MODEL)
+  auto scopeVertex = scopeVertices.begin()->second.get();
+  sdf::FrameType scopeFrameType = scopeVertex.Data();
+  if (_in.scopeName == "__model__" && scopeFrameType != sdf::FrameType::MODEL)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Sink vertex with name __model__ should have FrameType MODEL."});
+        "Scope vertex with name __model__ should have FrameType MODEL."});
     return errors;
   }
-  else if (_in.sinkName == "world" &&
-           sinkFrameType != sdf::FrameType::WORLD)
+  else if (_in.scopeName == "world" &&
+           scopeFrameType != sdf::FrameType::WORLD)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Sink vertex with name world should have FrameType WORLD."});
+        "Scope vertex with name world should have FrameType WORLD."});
     return errors;
   }
 
@@ -840,7 +840,7 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
           "Too many outgoing edges at a vertex with name [" +
           vertexPair.second.get().Name() + "]."});
     }
-    else if (sdf::FrameType::MODEL == sinkFrameType)
+    else if (sdf::FrameType::MODEL == scopeFrameType)
     {
       switch (vertexPair.second.get().Data())
       {
@@ -873,7 +873,7 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
     }
     else
     {
-      // sinkFrameType must be sdf::FrameType::WORLD
+      // scopeFrameType must be sdf::FrameType::WORLD
       switch (vertexPair.second.get().Data())
       {
         case sdf::FrameType::JOINT:
@@ -1033,6 +1033,71 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
   }
 
   // TODO: check graph for cycles
+  return errors;
+}
+
+/////////////////////////////////////////////////
+Errors resolveFrameAttachedToBody(const FrameAttachedToGraph &_in,
+    const std::string &_vertexName, std::string &_attachedToBody)
+{
+  Errors errors;
+
+  if (_in.scopeName != "__model__" && _in.scopeName != "world")
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Graph has invalid scope name [" + _in.scopeName + "],"
+        " which should be [__model__] or [world]."});
+    return errors;
+  }
+
+  if (_in.map.count(_vertexName) != 1)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Unique vertex with name [" + _vertexName + "] not found in graph."});
+    return errors;
+  }
+  auto vertexId = _in.map.at(_vertexName);
+
+  auto sinkVertexEdges = FindSinkVertex(_in.graph, vertexId, errors);
+  auto sinkVertex = sinkVertexEdges.first;
+
+  if (!errors.empty())
+  {
+    return errors;
+  }
+
+  if (!sinkVertex.Valid())
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Sink vertex not found in graph when starting from vertex with "
+        "name [" + _vertexName + "]."});
+    return errors;
+  }
+
+  if (_in.scopeName == "world" &&
+      !(sinkVertex.Data() == FrameType::WORLD ||
+        sinkVertex.Data() == FrameType::MODEL))
+  {
+    // errors.push_back({ErrorCode::ELEMENT_INVALID,
+    //     "Graph has world scope but sink vertex has FrameType [" +
+    //     std::to_string(sinkVertex.Data()) + "], when it should be either "
+    //     "WORLD [" + FrameType::WORLD + "] or MODEL [" FrameType::MODEL + "] "
+    //     "when starting from vertex with name [" + _vertexName + "]."});
+    return errors;
+  }
+
+  if (_in.scopeName == "__model__" && sinkVertex.Data() != FrameType::LINK)
+  {
+    // errors.push_back({ErrorCode::ELEMENT_INVALID,
+    //     "Graph has __model__ scope but sink vertex has FrameType ["
+    //     sinkVertex.Data() + "], when it should be LINK "
+    //     "[" + FrameType::LINK + "] "
+    //     "when starting from vertex with name [" + _vertexName + "]."});
+    return errors;
+  }
+
+  _attachedToBody = sinkVertex.Name();
+
   return errors;
 }
 

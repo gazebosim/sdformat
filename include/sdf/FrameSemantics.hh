@@ -90,8 +90,8 @@ namespace sdf
     using MapType = std::map<std::string, ignition::math::graph::VertexId>;
     MapType map;
 
-    /// \brief Name of sink vertex, either __model__ or world.
-    std::string sinkName;
+    /// \brief Name of scope vertex, either __model__ or world.
+    std::string scopeName;
   };
 
   /// \brief Data structure for pose relative_to graphs for Model or World.
@@ -166,6 +166,22 @@ namespace sdf
   /// \return Errors.
   SDFORMAT_VISIBLE
   Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in);
+
+  /// \brief Resolve the attached-to body for a given frame. Following the
+  /// edges of the frame attached-to graph from a given frame must lead
+  /// to a link or world frame.
+  /// \param[in] _in Graph to use for resolving the body.
+  /// \param[in] _vertexName This resolves the attached-to body of the
+  /// vertex with this name.
+  /// \param[out] _attachedToBody Name of link to which this frame is
+  /// attached or "world" if frame is attached to the world.
+  /// \return Errors if the graph is invalid or the frame does not lead to
+  /// a link or world frame.
+  SDFORMAT_VISIBLE
+  Errors resolveFrameAttachedToBody(
+      const FrameAttachedToGraph &_in,
+      const std::string &_vertexName,
+      std::string &_attachedToBody);
 
   /// \brief Resolve pose of a vertex relative to its outgoing ancestor
   /// (analog of the root of a tree).
