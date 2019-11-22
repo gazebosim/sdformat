@@ -134,6 +134,16 @@ void Converter::ConvertDescendantsImpl(TiXmlElement *_e, TiXmlElement *_c)
     return;
   }
 
+  if (_e->ValueStr() == "plugin")
+  {
+    return;
+  }
+
+  if (_e->ValueStr().find(":") != std::string::npos)
+  {
+    return;
+  }
+
   std::string name = _c->Attribute("descendant_name");
   TiXmlElement *e = _e->FirstChildElement();
   while (e)

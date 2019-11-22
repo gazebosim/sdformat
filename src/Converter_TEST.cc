@@ -666,6 +666,69 @@ TEST(Converter, RemoveDescendantNestedElement)
   EXPECT_EQ(xmlDocOut.str(), expectedXmlDocOut.str());
 }
 ////////////////////////////////////////////////////
+/// Ensure that Converter ignores descendants of <plugin> or namespaced elements
+TEST(Converter, DescendantIgnorePluginOrNamespacedElements)
+{
+  // Set up an xml string for testing
+  std::string xmlString = R"(
+  <sdf>
+      <elemA>
+        <elemB />
+      </elemA>
+      <plugin name="P">
+        <elemA>
+          <elemB />
+        </elemA>
+      </plugin>
+      <nsA:elemC>
+        <elemA>
+          <elemB />
+        </elemA>
+      </nsA:elemC>
+  </sdf>)";
+
+  std::string convertString = R"(
+    <convert name="sdf">
+      <convert descendant_name="elemA">
+        <remove element="elemB"/>
+      </convert>
+    </convert>)";
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertString.c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // Only the elemB directly under the first elemA should be removed
+  std::string expectedString = R"(
+  <sdf>
+      <elemA/>
+      <plugin name="P">
+        <elemA>
+          <elemB />
+        </elemA>
+      </plugin>
+      <nsA:elemC>
+        <elemA>
+          <elemB />
+        </elemA>
+      </nsA:elemC>
+  </sdf>)";
+  TiXmlDocument expectedXmlDoc;
+  expectedXmlDoc.Parse(expectedString.c_str());
+
+  std::stringstream xmlDocOut;
+  xmlDocOut << xmlDoc;
+
+  std::stringstream expectedXmlDocOut;
+  expectedXmlDocOut << expectedXmlDoc;
+  EXPECT_EQ(xmlDocOut.str(), expectedXmlDocOut.str());
+}
+
+////////////////////////////////////////////////////
 /// Ensure that Converter::Remove function is working
 /// Test removing element and sub-elements
 TEST(Converter, RemoveElementSubElement)
