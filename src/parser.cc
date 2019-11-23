@@ -746,6 +746,16 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
   // Iterate over all the attributes defined in the give XML element
   while (attribute)
   {
+    // Avoid printing a warning message for missing attributes if a namespaced
+    // attribute is found
+    if (std::strchr(attribute->Name(), ':') != NULL)
+    {
+      _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
+      _sdf->GetAttribute(attribute->Name())->SetFromString(
+          attribute->ValueStr());
+      attribute = attribute->Next();
+      continue;
+    }
     // Find the matching attribute in SDF
     for (i = 0; i < _sdf->GetAttributeCount(); ++i)
     {
