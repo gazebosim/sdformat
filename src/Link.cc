@@ -424,6 +424,16 @@ void Link::SetPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
+sdf::SemanticPose Link::SemanticPose() const
+{
+  return sdf::SemanticPose(
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
+      "__model__",
+      this->dataPtr->poseRelativeToGraph);
+}
+
+/////////////////////////////////////////////////
 Errors Link::ResolvePose(
     const std::string &_relativeTo, ignition::math::Pose3d &_pose) const
 {

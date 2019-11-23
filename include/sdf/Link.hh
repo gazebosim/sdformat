@@ -23,6 +23,7 @@
 #include "sdf/Element.hh"
 #include "sdf/FrameSemantics.hh"
 #include "sdf/Model.hh"
+#include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -249,6 +250,11 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Get SemanticPose object of this object to aid in resolving
+    /// poses.
+    /// \return SemanticPose object for this link.
+    public: sdf::SemanticPose SemanticPose() const;
 
     /// \brief Resolve pose of this object relative to another named frame.
     /// \param[in] _relativeTo Name of frame relative to which the pose of

@@ -46,6 +46,7 @@ namespace sdf
   /// DOM objects to resolve poses on a PoseRelativeToGraph. This object holds
   /// a Pose3 object, the name of the frame relative to which it is defined,
   /// a pointer to a PoseRelativeToGraph, and a default frame to resolve to.
+  /// The name of the default frame to resolve to must not be empty.
   /// This class only has a private constructor, and is may be accessed from
   /// its friend DOM classes.
   class SDFORMAT_VISIBLE SemanticPose
@@ -89,7 +90,7 @@ namespace sdf
     // friend SemanticPose Frame::SemanticPose();
     // friend SemanticPose Joint::SemanticPose();
     // friend SemanticPose Light::SemanticPose();
-    // friend SemanticPose Link::SemanticPose();
+    friend Link;
     // friend SemanticPose Model::SemanticPose();
     // friend SemanticPose Sensor::SemanticPose();
     // friend SemanticPose Visual::SemanticPose();

@@ -16,6 +16,7 @@
 */
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include "sdf/Assert.hh"
 #include "sdf/FrameSemantics.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Error.hh"
@@ -51,6 +52,9 @@ SemanticPose::SemanticPose(
   this->dataPtr->relativeTo = _relativeTo;
   this->dataPtr->defaultResolveTo = _defaultResolveTo;
   this->dataPtr->poseRelativeToGraph = _graph;
+
+  SDF_ASSERT(!_defaultResolveTo.empty(),
+             "SemanticPose defaultResolveTo is empty");
 }
 
 /////////////////////////////////////////////////
@@ -79,11 +83,10 @@ Errors SemanticPose::Resolve(
     return errors;
   }
 
-  if (this->dataPtr->relativeTo.empty())
+  std::string relativeTo = this->dataPtr->relativeTo;
+  if (relativeTo.empty())
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "SemanticPose with invalid empty relativeTo value."});
-    return errors;
+    relativeTo = this->dataPtr->defaultResolveTo;
   }
 
   if (_resolveTo.empty())
@@ -94,7 +97,7 @@ Errors SemanticPose::Resolve(
   }
 
   ignition::math::Pose3d pose;
-  errors = resolvePose(*graph, this->dataPtr->relativeTo, _resolveTo, pose);
+  errors = resolvePose(*graph, relativeTo, _resolveTo, pose);
   pose *= this->RawPose();
 
   if (errors.empty())
