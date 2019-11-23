@@ -14,6 +14,11 @@ but with improved human-readability..
 
 ## SDFormat 8.x to 9.0
 
+### Additions
+
+1. **sdf/parser.hh**
+   + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)
+
 ### Deprecations
 
 1. **sdf/JointAxis.hh**
