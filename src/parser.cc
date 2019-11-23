@@ -1226,6 +1226,9 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
 //////////////////////////////////////////////////
 bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
 {
+  if (!shouldValidateElement(_elem))
+    return true;
+
   bool result = true;
   auto typeNames = _elem->GetElementTypeNames();
   for (const std::string &typeName : typeNames)
@@ -1253,6 +1256,9 @@ bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
 //////////////////////////////////////////////////
 bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
 {
+  if (!shouldValidateElement(_elem))
+    return true;
+
   bool result = _elem->HasUniqueChildNames();
   if (!result)
   {
@@ -1270,6 +1276,25 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
   }
 
   return result;
+}
+
+//////////////////////////////////////////////////
+bool shouldValidateElement(sdf::ElementPtr _elem)
+{
+  if (_elem->GetName() == "plugin")
+  {
+    // Ignore <plugin> elements
+    return false;
+  }
+
+  // Check if the element name has a colon. This is treated as a namespaced
+  // element and should be ignored
+  if (_elem->GetName().find(":") != std::string::npos)
+  {
+    return false;
+  }
+
+  return true;
 }
 }
 }

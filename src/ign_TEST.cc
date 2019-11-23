@@ -212,6 +212,16 @@ TEST(check, SDF)
                           "is reserved."),
               std::string::npos) << output;
   }
+
+  // Check that validity checks are disabled inside <plugin> elements
+  {
+    std::string path = pathBase +"/invalid_sdf_in_plugin.sdf";
+
+    // Check model_invalid_reserved_names.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    std::cout << output << std::endl;
+  }
 }
 
 /////////////////////////////////////////////////
