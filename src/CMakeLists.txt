@@ -53,6 +53,7 @@ set (sources
   Scene.cc
   SDF.cc
   SDFExtension.cc
+  SemanticPose.cc
   Sensor.cc
   Sphere.cc
   Types.cc
