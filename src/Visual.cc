@@ -282,42 +282,13 @@ void Visual::SetPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
-Errors Visual::ResolvePose(
-    const std::string &_relativeTo, ignition::math::Pose3d &_pose) const
+sdf::SemanticPose Visual::SemanticPose() const
 {
-  Errors errors;
-  auto graph = this->dataPtr->poseRelativeToGraph.lock();
-  if (!graph)
-  {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Visual with name [" + this->dataPtr->name + "] has invalid " +
-        "pointer to PoseRelativeToGraph."});
-    return errors;
-  }
-  if (this->dataPtr->xmlParentName.empty())
-  {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Visual with name [" + this->dataPtr->name + "] has invalid " +
-        "name of xml parent object."});
-    return errors;
-  }
-
-  // Visual is not in the graph, but its PoseRelativeTo() name should be.
-  // If PoseRelativeTo() is empty, use the name of the xml parent object.
-  std::string visualRelativeTo = this->PoseRelativeTo();
-  if (visualRelativeTo.empty())
-  {
-    visualRelativeTo = this->dataPtr->xmlParentName;
-  }
-  errors = resolvePose(*graph, visualRelativeTo, _relativeTo, _pose);
-  _pose *= this->RawPose();
-  return errors;
-}
-
-/////////////////////////////////////////////////
-Errors Visual::ResolvePose(ignition::math::Pose3d &_pose) const
-{
-  return this->ResolvePose(this->dataPtr->xmlParentName, _pose);
+  return sdf::SemanticPose(
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
+      this->dataPtr->xmlParentName,
+      this->dataPtr->poseRelativeToGraph);
 }
 
 /////////////////////////////////////////////////

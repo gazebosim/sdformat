@@ -78,14 +78,14 @@ namespace sdf
         const std::string &_defaultResolveTo,
         std::weak_ptr<const sdf::PoseRelativeToGraph> _graph);
 
-    // friend SemanticPose Collision::SemanticPose();
+    friend class Collision;
     // friend SemanticPose Frame::SemanticPose();
-    // friend SemanticPose Joint::SemanticPose();
+    friend class Joint;
     // friend SemanticPose Light::SemanticPose();
     friend class Link;
     // friend SemanticPose Model::SemanticPose();
     // friend SemanticPose Sensor::SemanticPose();
-    // friend SemanticPose Visual::SemanticPose();
+    friend class Visual;
 
     /// \brief Private data pointer.
     private: SemanticPosePrivate *dataPtr;

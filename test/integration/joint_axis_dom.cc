@@ -192,9 +192,9 @@ TEST(DOMJointAxis, XyzExpressedIn)
   Pose pose;
 
   // Test ResolveFrame to get each joint pose rotation in the model frame.
-  EXPECT_TRUE(model->JointByName("J1")->ResolvePose("__model__", pose).empty());
+  EXPECT_TRUE(model->JointByName("J1")->SemanticPose().Resolve("__model__", pose).empty());
   EXPECT_EQ(Quaternion(0, -IGN_PI/2, 0), pose.Rot());
-  EXPECT_TRUE(model->JointByName("J2")->ResolvePose("__model__", pose).empty());
+  EXPECT_TRUE(model->JointByName("J2")->SemanticPose().Resolve("__model__", pose).empty());
   EXPECT_EQ(Quaternion(0, IGN_PI/2, 0), pose.Rot());
 
   // Resolve joint axis xyz values in __model__ and child link frames

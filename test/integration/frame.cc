@@ -805,7 +805,7 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_TRUE(model->FrameByName("F2")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(4, 0, 0, 0, IGN_PI/2, 0), pose);
 
-  EXPECT_TRUE(model->JointByName("J")->ResolvePose("__model__", pose).empty());
+  EXPECT_TRUE(model->JointByName("J")->SemanticPose().Resolve("__model__", pose).empty());
   EXPECT_EQ(Pose(2, 3, 0, 0, 0, 0), pose);
   EXPECT_TRUE(model->FrameByName("F3")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
@@ -829,7 +829,7 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_TRUE(
     model->LinkByName("C")->SemanticPose().Resolve("__model__", pose).empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), pose);
-  EXPECT_TRUE(model->JointByName("J")->ResolvePose("C", pose).empty());
+  EXPECT_TRUE(model->JointByName("J")->SemanticPose().Resolve("C", pose).empty());
   EXPECT_EQ(Pose(0, 3, 0, 0, -IGN_PI/2, 0), pose);
 
   EXPECT_TRUE(model->FrameByName("F1")->ResolvePose("P", pose).empty());

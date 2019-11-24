@@ -22,6 +22,7 @@
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/FrameSemantics.hh"
+#include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -145,20 +146,10 @@ namespace sdf
     public: void SetPoseFrame(const std::string &_frame)
         SDF_DEPRECATED(9.0);
 
-    /// \brief Resolve pose of this object relative to another named frame.
-    /// \param[in] _relativeTo Name of frame relative to which the pose of
-    /// this object should be resolved.
-    /// \param[out] _pose Resolved pose.
-    /// \return Errors.
-    public: Errors ResolvePose(
-        const std::string &_relativeTo,
-        ignition::math::Pose3d &_pose) const;
-
-    /// \brief Resolve pose of this object relative to the implicit frame
-    /// of its xml parent object, which is always a link frame.
-    /// \param[out] _pose Resolved pose.
-    /// \return Errors.
-    public: Errors ResolvePose(ignition::math::Pose3d &_pose) const;
+    /// \brief Get SemanticPose object of this object to aid in resolving
+    /// poses.
+    /// \return SemanticPose object for this link.
+    public: sdf::SemanticPose SemanticPose() const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
