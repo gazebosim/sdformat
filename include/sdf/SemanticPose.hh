@@ -79,7 +79,7 @@ namespace sdf
         std::weak_ptr<const sdf::PoseRelativeToGraph> _graph);
 
     friend class Collision;
-    // friend SemanticPose Frame::SemanticPose();
+    friend class Frame;
     friend class Joint;
     // friend SemanticPose Light::SemanticPose();
     friend class Link;

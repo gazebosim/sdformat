@@ -23,6 +23,7 @@
 #include "sdf/Element.hh"
 #include "sdf/FrameSemantics.hh"
 #include "sdf/Model.hh"
+#include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -125,18 +126,10 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Resolve pose of this object relative to another named frame.
-    /// \param[in] _relativeTo Name of frame relative to which the pose of
-    /// this object should be resolved.
-    /// \param[out] _pose Resolved pose.
-    public: Errors ResolvePose(
-        const std::string &_relativeTo,
-        ignition::math::Pose3d &_pose) const;
-
-    /// \brief Resolve pose of this object relative to the implicit frame
-    /// of its xml parent object, which is always a model or world frame.
-    /// \param[out] _pose Resolved pose.
-    public: Errors ResolvePose(ignition::math::Pose3d &_pose) const;
+    /// \brief Get SemanticPose object of this object to aid in resolving
+    /// poses.
+    /// \return SemanticPose object for this link.
+    public: sdf::SemanticPose SemanticPose() const;
 
     /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
     /// for resolving poses. This is private and is intended to be called by

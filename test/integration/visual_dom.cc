@@ -306,14 +306,14 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
   EXPECT_EQ(Pose(2, 3, 13, 0, 0, 0), pose);
 
   EXPECT_TRUE(
-      model->FrameByName("F3")->ResolvePose(pose).empty());
+      model->FrameByName("F3")->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(
       linkC->VisualByName("vF3")->SemanticPose().Resolve("__model__", pose).empty());
   EXPECT_EQ(Pose(16, 3, 3, 0, IGN_PI/2, 0), pose);
 
   EXPECT_TRUE(
-      model->FrameByName("F4")->ResolvePose(pose).empty());
+      model->FrameByName("F4")->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(Pose(6, 3, 3, 0, 0, 0), pose);
   EXPECT_TRUE(
       linkC->VisualByName("vF4")->SemanticPose().Resolve("__model__", pose).empty());
