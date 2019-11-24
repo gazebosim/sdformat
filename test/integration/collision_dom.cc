@@ -195,7 +195,7 @@ TEST(DOMCollision, LoadModelFramesRelativeToJoint)
 
   // Resolve Collision poses to model frame.
   EXPECT_TRUE(
-      model->LinkByName("P")->ResolvePose(pose).empty());
+      model->LinkByName("P")->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(
       linkP->CollisionByName("P1")->ResolvePose("__model__", pose).empty());

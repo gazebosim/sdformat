@@ -434,28 +434,6 @@ sdf::SemanticPose Link::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
-Errors Link::ResolvePose(
-    const std::string &_relativeTo, ignition::math::Pose3d &_pose) const
-{
-  Errors errors;
-  auto graph = this->dataPtr->poseRelativeToGraph.lock();
-  if (!graph)
-  {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Link with name [" + this->dataPtr->name + "] has invalid pointer " +
-        "to PoseRelativeToGraph."});
-    return errors;
-  }
-  return resolvePose(*graph, this->dataPtr->name, _relativeTo, _pose);
-}
-
-/////////////////////////////////////////////////
-Errors Link::ResolvePose(ignition::math::Pose3d &_pose) const
-{
-  return this->ResolvePose("__model__", _pose);
-}
-
-/////////////////////////////////////////////////
 const Visual *Link::VisualByName(const std::string &_name) const
 {
   for (auto const &v : this->dataPtr->visuals)

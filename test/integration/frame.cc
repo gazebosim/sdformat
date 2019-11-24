@@ -793,12 +793,14 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
 
   // Test ResolvePose for each Frame.
   Pose pose;
-  EXPECT_TRUE(model->LinkByName("P")->ResolvePose("__model__", pose).empty());
+  EXPECT_TRUE(
+    model->LinkByName("P")->SemanticPose().Resolve("__model__", pose).empty());
   EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(model->FrameByName("F1")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(1, 0, 1, 0, 0, 0), pose);
 
-  EXPECT_TRUE(model->LinkByName("C")->ResolvePose("__model__", pose).empty());
+  EXPECT_TRUE(
+    model->LinkByName("C")->SemanticPose().Resolve("__model__", pose).empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(model->FrameByName("F2")->ResolvePose("__model__", pose).empty());
   EXPECT_EQ(Pose(4, 0, 0, 0, IGN_PI/2, 0), pose);
@@ -821,9 +823,11 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
 
   // Test resolvePose for each frame with its relative_to value.
   // Numbers should match the raw pose value in the model file.
-  EXPECT_TRUE(model->LinkByName("P")->ResolvePose("__model__", pose).empty());
+  EXPECT_TRUE(
+    model->LinkByName("P")->SemanticPose().Resolve("__model__", pose).empty());
   EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
-  EXPECT_TRUE(model->LinkByName("C")->ResolvePose("__model__", pose).empty());
+  EXPECT_TRUE(
+    model->LinkByName("C")->SemanticPose().Resolve("__model__", pose).empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(model->JointByName("J")->ResolvePose("C", pose).empty());
   EXPECT_EQ(Pose(0, 3, 0, 0, -IGN_PI/2, 0), pose);
