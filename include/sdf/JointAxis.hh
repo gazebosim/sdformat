@@ -278,7 +278,7 @@ namespace sdf
         std::weak_ptr<const PoseRelativeToGraph> _graph);
 
     /// \brief Allow Joint::SetPoseRelativeToGraph to propagate.
-    friend Joint;
+    friend class Joint;
 
     /// \brief Private data pointer
     private: JointAxisPrivate *dataPtr;

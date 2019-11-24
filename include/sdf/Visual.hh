@@ -24,7 +24,6 @@
 #include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
 #include "sdf/FrameSemantics.hh"
-#include "sdf/Link.hh"
 #include "sdf/Material.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
@@ -203,7 +202,7 @@ namespace sdf
     /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is
     /// a private function, so we need to befriend the entire class.
-    friend Link;
+    friend class Link;
 
     /// \brief Private data pointer.
     private: VisualPrivate *dataPtr = nullptr;

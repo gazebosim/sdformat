@@ -20,16 +20,8 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 
-#include <sdf/Collision.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
-#include <sdf/Frame.hh>
-#include <sdf/Joint.hh>
-#include <sdf/Light.hh>
-#include <sdf/Link.hh>
-#include <sdf/Model.hh>
-#include <sdf/Sensor.hh>
-#include <sdf/Visual.hh>
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 
@@ -90,7 +82,7 @@ namespace sdf
     // friend SemanticPose Frame::SemanticPose();
     // friend SemanticPose Joint::SemanticPose();
     // friend SemanticPose Light::SemanticPose();
-    friend Link;
+    friend class Link;
     // friend SemanticPose Model::SemanticPose();
     // friend SemanticPose Sensor::SemanticPose();
     // friend SemanticPose Visual::SemanticPose();
