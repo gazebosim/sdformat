@@ -204,14 +204,9 @@ void Frame::SetPoseRelativeToGraph(
 /////////////////////////////////////////////////
 sdf::SemanticPose Frame::SemanticPose() const
 {
-  std::string relativeTo = this->dataPtr->poseRelativeTo;
-  if (relativeTo.empty())
-  {
-    relativeTo = this->dataPtr->attachedTo;
-  }
   return sdf::SemanticPose(
-      this->dataPtr->pose,
-      relativeTo,
+      ignition::math::Pose3d::Zero,
+      this->dataPtr->name,
       this->dataPtr->graphSourceName,
       this->dataPtr->poseRelativeToGraph);
 }
