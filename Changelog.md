@@ -4,6 +4,9 @@
 
 ### SDFormat 9.0.0 (201X-XX-XX)
 
+1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
+    * [Pull request 606](https://bitbucket.org/osrf/sdformat/pull-requests/606)
+
 1. Use consistent namespaces in Filesystem.
     * [Pull request 567](https://bitbucket.org/osrf/sdformat/pull-requests/567)
 
