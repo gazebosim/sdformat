@@ -325,7 +325,7 @@ namespace sdf
     /// typically used to express the position and rotation of an actor in a
     /// global coordinate frame.
     /// \return The pose of the actor.
-    /// \deprecated See SetRawPose.
+    /// \deprecated See RawPose.
     public: const ignition::math::Pose3d &Pose() const
         SDF_DEPRECATED(9.0);
 
