@@ -127,6 +127,37 @@ void Converter::Convert(TiXmlDocument *_doc, TiXmlDocument *_convertDoc)
 }
 
 /////////////////////////////////////////////////
+void Converter::ConvertDescendantsImpl(TiXmlElement *_e, TiXmlElement *_c)
+{
+  if (!_c->Attribute("descendant_name"))
+  {
+    return;
+  }
+
+  if (_e->ValueStr() == "plugin")
+  {
+    return;
+  }
+
+  if (_e->ValueStr().find(":") != std::string::npos)
+  {
+    return;
+  }
+
+  std::string name = _c->Attribute("descendant_name");
+  TiXmlElement *e = _e->FirstChildElement();
+  while (e)
+  {
+    if (name == e->ValueStr())
+    {
+      ConvertImpl(e, _c);
+    }
+    ConvertDescendantsImpl(e, _c);
+    e = e->NextSiblingElement();
+  }
+}
+
+/////////////////////////////////////////////////
 void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
@@ -137,12 +168,19 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
   for (TiXmlElement *convertElem = _convert->FirstChildElement("convert");
        convertElem; convertElem = convertElem->NextSiblingElement("convert"))
   {
-    TiXmlElement *elem = _elem->FirstChildElement(
-        convertElem->Attribute("name"));
-    while (elem)
+    if (convertElem->Attribute("name"))
     {
-      ConvertImpl(elem, convertElem);
-      elem = elem->NextSiblingElement(convertElem->Attribute("name"));
+      TiXmlElement *elem = _elem->FirstChildElement(
+          convertElem->Attribute("name"));
+      while (elem)
+      {
+        ConvertImpl(elem, convertElem);
+        elem = elem->NextSiblingElement(convertElem->Attribute("name"));
+      }
+    }
+    if (convertElem->Attribute("descendant_name"))
+    {
+      ConvertDescendantsImpl(_elem, convertElem);
     }
   }
 
