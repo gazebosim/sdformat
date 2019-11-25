@@ -1,5 +1,13 @@
 <convert name="sdf">
 
+  <!-- Rename //pose/@frame to //pose/@relative_to -->
+  <convert descendant_name="pose">
+    <move>
+      <from attribute="frame"/>
+      <to attribute="relative_to"/>
+    </move>
+  </convert>
+
   <!-- Convert use_parent_model_frame==TRUE to axis/xyz/@expressed_in='__model__' -->
   <!-- and remove use_parent_model_frame from joints -->
   <convert descendant_name="joint">

@@ -129,6 +129,11 @@ but with improved human-readability..
     + required: 0
     + [pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
 
+### Modifications
+
+1. **pose.sdf** `//pose/@frame` attribute is renamed to `//pose/@relative_to`.
+    + [pull request 597](https://bitbucket.org/osrf/sdformat/pull-requests/597)
+
 ### Removals
 
 1. **actor.sdf** `static` element was deprecated in
