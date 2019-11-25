@@ -136,7 +136,7 @@ namespace sdf
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
-    /// relative to the parent model/world coordinate frame.
+    /// relative to the parent link/world coordinate frame.
     /// \return The name of the pose relative-to frame.
     public: const std::string &PoseRelativeTo() const;
 
