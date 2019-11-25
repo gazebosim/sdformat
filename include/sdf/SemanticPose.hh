@@ -84,7 +84,7 @@ namespace sdf
     // friend SemanticPose Light::SemanticPose();
     friend class Link;
     // friend SemanticPose Model::SemanticPose();
-    // friend SemanticPose Sensor::SemanticPose();
+    friend class Sensor;
     friend class Visual;
 
     /// \brief Private data pointer.
