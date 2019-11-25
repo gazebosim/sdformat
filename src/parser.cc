@@ -878,10 +878,10 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 
           poseElem->GetValue()->SetFromString(poseElemXml->GetText());
 
-          const char *relative_to = poseElemXml->Attribute("relative_to");
-          if (relative_to)
+          const char *relativeTo = poseElemXml->Attribute("relative_to");
+          if (relativeTo)
           {
-            poseElem->GetAttribute("relative_to")->SetFromString(relative_to);
+            poseElem->GetAttribute("relative_to")->SetFromString(relativeTo);
           }
         }
 
@@ -1221,6 +1221,33 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
   }
 
   return false;
+}
+
+//////////////////////////////////////////////////
+bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
+{
+  bool result = true;
+  auto typeNames = _elem->GetElementTypeNames();
+  for (const std::string &typeName : typeNames)
+  {
+    if (!_elem->HasUniqueChildNames(typeName))
+    {
+      std::cerr << "Non-unique names detected in type "
+                << typeName << " in\n"
+                << _elem->ToString("")
+                << std::endl;
+      result = false;
+    }
+  }
+
+  sdf::ElementPtr child = _elem->GetFirstElement();
+  while (child)
+  {
+    result = recursiveSameTypeUniqueNames(child) && result;
+    child = child->GetNextElement();
+  }
+
+  return result;
 }
 }
 }
