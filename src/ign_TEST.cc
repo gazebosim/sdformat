@@ -217,10 +217,18 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/invalid_sdf_in_plugin.sdf";
 
-    // Check model_invalid_reserved_names.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    std::cout << output << std::endl;
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check that validity checks are disabled inside namespaced elements
+  {
+    std::string path = pathBase +"/invalid_sdf_in_namespaced_elements.sdf";
+
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
   }
 }
 
