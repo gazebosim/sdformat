@@ -136,6 +136,14 @@ Errors Model::Load(ElementPtr _sdf)
                      "A model name is required, but the name is not set."});
   }
 
+  // Check that the model's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::RESERVED_NAME,
+                     "The supplied model name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   // Read the model's canonical_link attribute
   if (_sdf->HasAttribute("canonical_link"))
   {
@@ -349,6 +357,19 @@ const Frame *Model::FrameByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+const Link *Model::CanonicalLink() const
+{
+  if (this->CanonicalLinkName().empty())
+  {
+    return this->LinkByIndex(0);
+  }
+  else
+  {
+    return this->LinkByName(this->CanonicalLinkName());
+  }
 }
 
 /////////////////////////////////////////////////

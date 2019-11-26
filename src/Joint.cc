@@ -166,6 +166,14 @@ Errors Joint::Load(ElementPtr _sdf)
                      "A joint name is required, but the name is not set."});
   }
 
+  // Check that the joint's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::RESERVED_NAME,
+                     "The supplied joint name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 

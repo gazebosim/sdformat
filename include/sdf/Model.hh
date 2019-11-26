@@ -223,6 +223,10 @@ namespace sdf
     /// \param[in] _pose The new model pose.
     public: void SetRawPose(const ignition::math::Pose3d &_pose);
 
+    /// \brief Get the model's canonical link
+    /// \return An immutable pointer to the canonical link
+    public: const Link *CanonicalLink() const;
+
     /// \brief Get the name of the model's canonical link. An empty value
     /// indicates that the first link in the model is the canonical link.
     /// \return The name of the canonical link.

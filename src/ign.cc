@@ -21,59 +21,10 @@
 #include "sdf/sdf_config.h"
 #include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
-#include "sdf/Model.hh"
 #include "sdf/Root.hh"
-#include "sdf/World.hh"
 #include "sdf/ign.hh"
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
-
-//////////////////////////////////////////////////
-/// \brief Check that for each model, the canonical_link attribute value
-/// matches the name of a link in the model if the attribute is set and
-/// not empty.
-/// This checks recursively and should check the files exhaustively
-/// rather than terminating early when the first error is found.
-/// \param[in] _root sdf Root object to check recursively.
-/// \return True if all models have valid canonical_link attributes.
-bool checkCanonicalLinkNames(const sdf::Root &_root)
-{
-  bool result = true;
-
-  auto checkModelCanonicalLinkName = [](
-      const sdf::Model *_model) -> bool
-  {
-    bool modelResult = true;
-    std::string canonicalLink = _model->CanonicalLinkName();
-    if (!canonicalLink.empty() && !_model->LinkNameExists(canonicalLink))
-    {
-      std::cerr << "Error: canonical_link with name[" << canonicalLink
-                << "] not found in model with name[" << _model->Name()
-                << "]."
-                << std::endl;
-      modelResult = false;
-    }
-    return modelResult;
-  };
-
-  for (uint64_t m = 0; m < _root.ModelCount(); ++m)
-  {
-    auto model = _root.ModelByIndex(m);
-    result = checkModelCanonicalLinkName(model) && result;
-  }
-
-  for (uint64_t w = 0; w < _root.WorldCount(); ++w)
-  {
-    auto world = _root.WorldByIndex(w);
-    for (uint64_t m = 0; m < world->ModelCount(); ++m)
-    {
-      auto model = world->ModelByIndex(m);
-      result = checkModelCanonicalLinkName(model) && result;
-    }
-  }
-
-  return result;
-}
 
 //////////////////////////////////////////////////
 /// \brief Check that for each frame, the attached_to attribute value
@@ -192,39 +143,6 @@ bool checkFrameAttachedToNames(const sdf::Root &_root)
 }
 
 //////////////////////////////////////////////////
-/// \brief Check that all sibling elements of the same type have unique names.
-/// This checks recursively and should check the files exhaustively
-/// rather than terminating early when the first duplicate name is found.
-/// \param[in] _elem sdf Element to check recursively.
-/// \return True if all contained elements have do not share a name with
-/// sibling elements of the same type.
-bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
-{
-  bool result = true;
-  auto typeNames = _elem->GetElementTypeNames();
-  for (const std::string &typeName : typeNames)
-  {
-    if (!_elem->HasUniqueChildNames(typeName))
-    {
-      std::cerr << "Non-unique names detected in type "
-                << typeName << " in\n"
-                << _elem->ToString("")
-                << std::endl;
-      result = false;
-    }
-  }
-
-  sdf::ElementPtr child = _elem->GetFirstElement();
-  while (child)
-  {
-    result = recursiveSameTypeUniqueNames(child) && result;
-    child = child->GetNextElement();
-  }
-
-  return result;
-}
-
-//////////////////////////////////////////////////
 // cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 {
@@ -241,7 +159,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     return -1;
   }
 
-  if (!checkCanonicalLinkNames(root))
+  if (!sdf::checkCanonicalLinkNames(&root))
   {
     std::cerr << "Error: invalid canonical link name.\n";
     result = -1;
@@ -250,6 +168,12 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!checkFrameAttachedToNames(root))
   {
     std::cerr << "Error: invalid frame attached_to name.\n";
+    result = -1;
+  }
+
+  if (!sdf::recursiveSiblingUniqueNames(root.Element()))
+  {
+    std::cerr << "Error: non-unique names detected.\n";
     result = -1;
   }
 
@@ -270,12 +194,6 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!sdf::readFile(_path, sdf))
   {
     std::cerr << "Error: SDF parsing the xml failed.\n";
-    return -1;
-  }
-
-  if (!recursiveSameTypeUniqueNames(sdf->Root()))
-  {
-    std::cerr << "Error: non-unique names detected.\n";
     return -1;
   }
 

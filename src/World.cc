@@ -188,6 +188,14 @@ Errors World::Load(sdf::ElementPtr _sdf)
                      "A world name is required, but the name is not set."});
   }
 
+  // Check that the world's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::RESERVED_NAME,
+                     "The supplied world name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   // Read the audio element
   if (_sdf->HasElement("audio"))
   {

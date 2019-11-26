@@ -31,21 +31,24 @@ but with improved human-readability..
     + bool FrameNameExists(const std::string &) const
     + const Model \*ModelByName(const std::string &) const
 
+1. **sdf/parser.hh**
+   + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)
+
 ### Deprecations
 
 1. All DOM classes with `Pose()` and `PoseFrame()` API's:
-   + ***Deprecation:*** std::string Pose()
-   + ***Replacement:*** std::string RawPose()
-   + ***Deprecation:*** std::string PoseFrame()
-   + ***Replacement:*** std::string PoseRelativeTo()
-   + ***Deprecation:*** void SetPose(const std::string &)
-   + ***Replacement:*** void SetRawPose(const std::string &)
+   + ***Deprecation:*** const ignition::math::Pose3d &Pose()
+   + ***Replacement:*** const ignition::math::Pose3d &RawPose()
+   + ***Deprecation:*** const std::string &PoseFrame()
+   + ***Replacement:*** const std::string &PoseRelativeTo()
+   + ***Deprecation:*** void SetPose(const ignition::math::Pose3d &)
+   + ***Replacement:*** void SetRawPose(const ignition::math::Pose3d &)
    + ***Deprecation:*** void SetPoseFrame(const std::string &)
    + ***Replacement:*** void SetPoseRelativeTo(const std::string &)
 
 1. **sdf/JointAxis.hh**
    + ***Deprecation:*** bool UseParentModelFrame()
-   + ***Replacement:*** std::string XyzExpressedIn()
+   + ***Replacement:*** const std::string &XyzExpressedIn()
    + ***Deprecation:*** void SetUseParentModelFrame(bool)
    + ***Replacement:*** void SetXyzExpressedIn(const std::string &)
 
@@ -177,6 +180,28 @@ but with improved human-readability..
 1.  A model must have at least one link, as specified in the
     [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#2-model-frame-and-canonical-link).
     + [pull request 601](https://bitbucket.org/osrf/sdformat/pull-requests/601)
+
+1. Unique names for all sibling elements:
+    + As described in the [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#3-2-unique-names-for-all-sibling-elements),
+      all named sibling elements must have unique names.
+      Uniqueness is forced so that referencing implicit frames is not ambiguous,
+      e.g. you cannot have a link and joint share an implicit frame name.
+      Some existing SDFormat models may not comply with this requirement.
+      The `ign sdf --check` command can be used to identify models that violate
+      this requirement.
+    + [pull request 600](https://bitbucket.org/osrf/sdformat/pull-requests/600)
+
+1. Reserved names:
+    + As described in the [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#3-3-reserved-names),
+      entities in a simulation must not use world as a name.
+      It has a special interpretation when specified as a parent or child link
+      of a joint.
+      Names starting and ending with double underscores (eg. `__wheel__`) must
+      be reserved for use by library implementors and the specification.
+      For example, such names might be useful during parsing for setting
+      sentinel or default names for elements with missing names.
+      If explicitly stated, they can be referred to (e.g. `__model__` / `world`
+      for implicit model / world frames, respectively).
 
 1. **pose.sdf** `//pose/@frame` attribute is renamed to `//pose/@relative_to`.
     + [pull request 597](https://bitbucket.org/osrf/sdformat/pull-requests/597)

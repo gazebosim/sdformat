@@ -53,6 +53,9 @@ namespace sdf
     /// are required.
     DUPLICATE_NAME,
 
+    /// \brief A reserved name was used in an entity name attribute.
+    RESERVED_NAME,
+
     /// \brief Indicates that a required SDF attribute is missing.
     ATTRIBUTE_MISSING,
 

@@ -167,6 +167,9 @@ TEST(DOMRoot, LoadCanonicalLink)
 
   EXPECT_EQ("link2", model->CanonicalLinkName());
 
+  ASSERT_NE(nullptr, model->CanonicalLink());
+  EXPECT_EQ("link2", model->CanonicalLink()->Name());
+
   EXPECT_EQ(0u, model->JointCount());
   EXPECT_EQ(nullptr, model->JointByIndex(0));
 }

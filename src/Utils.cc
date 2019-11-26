@@ -23,6 +23,16 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 
 /////////////////////////////////////////////////
+bool isReservedName(const std::string &_name)
+{
+  const std::size_t size = _name.size();
+  return _name == "world" ||
+      (size >= 4 &&
+       _name.compare(0, 2, "__") == 0 &&
+       _name.compare(size-2, 2, "__") == 0);
+}
+
+/////////////////////////////////////////////////
 bool loadName(sdf::ElementPtr _sdf, std::string &_name)
 {
   // Read the name
