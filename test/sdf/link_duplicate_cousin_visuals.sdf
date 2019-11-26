@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="duplicate_cousin_visuals">
+    <link name="link1">
+      <pose>1 0 0 0 0 0</pose>
+      <visual name="visual">
+        <pose>0 1 0 0 0 0</pose>
+      </visual>
+    </link>
+    <link name="link2">
+      <pose>2 0 0 0 0 0</pose>
+      <visual name="visual">
+        <pose>0 2 0 0 0 0</pose>
+      </visual>
+    </link>
+  </model>
+</sdf>

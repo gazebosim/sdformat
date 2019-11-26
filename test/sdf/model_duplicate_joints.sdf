@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="duplicate_joints">
+    <link name="link1" />
+    <link name="link2" />
+    <link name="link3" />
+
+    <joint name="joint" type="fixed">
+      <parent>link1</parent>
+      <child>link2</child>
+    </joint>
+    <joint name="joint" type="fixed">
+      <parent>link2</parent>
+      <child>link3</child>
+    </joint>
+  </model>
+</sdf>

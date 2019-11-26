@@ -75,39 +75,6 @@ bool checkCanonicalLinkNames(const sdf::Root &_root)
 }
 
 //////////////////////////////////////////////////
-/// \brief Check that all sibling elements of the same type have unique names.
-/// This checks recursively and should check the files exhaustively
-/// rather than terminating early when the first duplicate name is found.
-/// \param[in] _elem sdf Element to check recursively.
-/// \return True if all contained elements have do not share a name with
-/// sibling elements of the same type.
-bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
-{
-  bool result = true;
-  auto typeNames = _elem->GetElementTypeNames();
-  for (const std::string &typeName : typeNames)
-  {
-    if (!_elem->HasUniqueChildNames(typeName))
-    {
-      std::cerr << "Non-unique names detected in type "
-                << typeName << " in\n"
-                << _elem->ToString("")
-                << std::endl;
-      result = false;
-    }
-  }
-
-  sdf::ElementPtr child = _elem->GetFirstElement();
-  while (child)
-  {
-    result = recursiveSameTypeUniqueNames(child) && result;
-    child = child->GetNextElement();
-  }
-
-  return result;
-}
-
-//////////////////////////////////////////////////
 // cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 {
@@ -130,6 +97,12 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     result = -1;
   }
 
+  if (!sdf::recursiveSiblingUniqueNames(root.Element()))
+  {
+    std::cerr << "Error: non-unique names detected.\n";
+    result = -1;
+  }
+
   if (!sdf::filesystem::exists(_path))
   {
     std::cerr << "Error: File [" << _path << "] does not exist.\n";
@@ -147,12 +120,6 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!sdf::readFile(_path, sdf))
   {
     std::cerr << "Error: SDF parsing the xml failed.\n";
-    return -1;
-  }
-
-  if (!recursiveSameTypeUniqueNames(sdf->Root()))
-  {
-    std::cerr << "Error: non-unique names detected.\n";
     return -1;
   }
 

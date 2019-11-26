@@ -132,6 +132,14 @@ Errors Model::Load(ElementPtr _sdf)
                      "A model name is required, but the name is not set."});
   }
 
+  // Check that the model's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::RESERVED_NAME,
+                     "The supplied model name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   // Read the model's canonical_link attribute
   if (_sdf->HasAttribute("canonical_link"))
   {

@@ -180,6 +180,14 @@ Errors Light::Load(ElementPtr _sdf)
                      "A light name is required, but the name is not set."});
   }
 
+  // Check that the light's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::RESERVED_NAME,
+                     "The supplied light name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   // Load the pose. Ignore the return value since the light pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
