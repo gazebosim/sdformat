@@ -302,6 +302,10 @@ Errors World::Load(sdf::ElementPtr _sdf)
   {
     frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
   for (auto &light : this->dataPtr->lights)
   {
     light.SetXmlParentName("world");
