@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="duplicate_cousin_collisions">
+    <link name="link1">
+      <pose>1 0 0 0 0 0</pose>
+      <collision name="collision">
+        <pose>0 1 0 0 0 0</pose>
+      </collision>
+    </link>
+    <link name="link2">
+      <pose>2 0 0 0 0 0</pose>
+      <collision name="collision">
+        <pose>0 2 0 0 0 0</pose>
+      </collision>
+    </link>
+  </model>
+</sdf>
