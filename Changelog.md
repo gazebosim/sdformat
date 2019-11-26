@@ -13,6 +13,9 @@
 1. Relax cmake check to allow compiling with gcc-7.
     * [Pull request 592](https://bitbucket.org/osrf/sdformat/pull-requests/592)
 
+1. Use custom callbacks when reading file (support Fuel URIs).
+    * [Pull request 591](https://bitbucket.org/osrf/sdformat/pull-requests/591)
+
 1. Update visual DOM to parse `cast_shadows` property of a visual.
     * [Pull request 590](https://bitbucket.org/osrf/sdformat/pull-requests/590)
 
