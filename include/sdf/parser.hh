@@ -155,6 +155,16 @@ namespace sdf
   bool convertString(const std::string &_sdfString,
                      const std::string &_version, SDFPtr _sdf);
 
+  /// \brief Check that for each model, the canonical_link attribute value
+  /// matches the name of a link in the model if the attribute is set and
+  /// not empty.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root sdf Root object to check recursively.
+  /// \return True if all models have valid canonical_link attributes.
+  SDFORMAT_VISIBLE
+  bool checkCanonicalLinkNames(const sdf::Root &_root);
+
   /// \brief Check that all sibling elements of the same type have unique names.
   /// This checks recursively and should check the files exhaustively
   /// rather than terminating early when the first duplicate name is found.

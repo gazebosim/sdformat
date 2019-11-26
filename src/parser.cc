@@ -1234,6 +1234,46 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
 }
 
 //////////////////////////////////////////////////
+bool checkCanonicalLinkNames(const sdf::Root &_root)
+{
+  bool result = true;
+
+  auto checkModelCanonicalLinkName = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    std::string canonicalLink = _model->CanonicalLinkName();
+    if (!canonicalLink.empty() && !_model->LinkNameExists(canonicalLink))
+    {
+      std::cerr << "Error: canonical_link with name[" << canonicalLink
+                << "] not found in model with name[" << _model->Name()
+                << "]."
+                << std::endl;
+      modelResult = false;
+    }
+    return modelResult;
+  };
+
+  for (uint64_t m = 0; m < _root.ModelCount(); ++m)
+  {
+    auto model = _root.ModelByIndex(m);
+    result = checkModelCanonicalLinkName(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root.WorldCount(); ++w)
+  {
+    auto world = _root.WorldByIndex(w);
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelCanonicalLinkName(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
 bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
 {
   if (!shouldValidateElement(_elem))
