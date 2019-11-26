@@ -21,9 +21,15 @@ but with improved human-readability..
 
 ### Deprecations
 
+1. All DOM classes with `PoseFrame()` and `PoseRelativeTo()` API's:
+   + ***Deprecation:*** const std::string &PoseFrame()
+   + ***Replacement:*** const std::string &PoseRelativeTo()
+   + ***Deprecation:*** void SetPoseFrame(const std::string &)
+   + ***Replacement:*** void SetPoseRelativeTo(const std::string &)
+
 1. **sdf/JointAxis.hh**
    + ***Deprecation:*** bool UseParentModelFrame()
-   + ***Replacement:*** std::string XyzExpressedIn()
+   + ***Replacement:*** const std::string &XyzExpressedIn()
    + ***Deprecation:*** void SetUseParentModelFrame(bool)
    + ***Replacement:*** void SetXyzExpressedIn(const std::string &)
 

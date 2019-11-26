@@ -78,7 +78,7 @@ class sdf::ActorPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the actor.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief Filename of the actor skin.
   public: std::string skinFilename = "__default__";
@@ -549,7 +549,7 @@ void Actor::CopyFrom(const Actor &_actor)
 {
   this->dataPtr->name             = _actor.dataPtr->name;
   this->dataPtr->pose             = _actor.dataPtr->pose;
-  this->dataPtr->poseFrame        = _actor.dataPtr->poseFrame;
+  this->dataPtr->poseRelativeTo   = _actor.dataPtr->poseRelativeTo;
   this->dataPtr->skinFilename     = _actor.dataPtr->skinFilename;
   this->dataPtr->skinScale        = _actor.dataPtr->skinScale;
   this->dataPtr->animations       = _actor.dataPtr->animations;
@@ -582,7 +582,7 @@ Errors Actor::Load(ElementPtr _sdf)
                       "An actor name is required, but the name is not set."});
   }
 
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   sdf::ElementPtr skinElem = _sdf->GetElement("skin");
 
@@ -670,7 +670,13 @@ const ignition::math::Pose3d &Actor::Pose() const
 /////////////////////////////////////////////////
 const std::string &Actor::PoseFrame() const
 {
-  return this->dataPtr->poseFrame;
+  return this->PoseRelativeTo();
+}
+
+/////////////////////////////////////////////////
+const std::string &Actor::PoseRelativeTo() const
+{
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -682,7 +688,13 @@ void Actor::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Actor::SetPoseFrame(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->SetPoseRelativeTo(_frame);
+}
+
+/////////////////////////////////////////////////
+void Actor::SetPoseRelativeTo(const std::string &_frame)
+{
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////

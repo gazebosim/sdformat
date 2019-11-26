@@ -33,7 +33,7 @@ class sdf::CollisionPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief The collisions's a geometry.
   public: Geometry geom;
@@ -120,7 +120,7 @@ Errors Collision::Load(ElementPtr _sdf)
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   // Load the geometry
   Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
@@ -162,7 +162,13 @@ const ignition::math::Pose3d &Collision::Pose() const
 /////////////////////////////////////////////////
 const std::string &Collision::PoseFrame() const
 {
-  return this->dataPtr->poseFrame;
+  return this->PoseRelativeTo();
+}
+
+/////////////////////////////////////////////////
+const std::string &Collision::PoseRelativeTo() const
+{
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -174,7 +180,13 @@ void Collision::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Collision::SetPoseFrame(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->SetPoseRelativeTo(_frame);
+}
+
+/////////////////////////////////////////////////
+void Collision::SetPoseRelativeTo(const std::string &_frame)
+{
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////

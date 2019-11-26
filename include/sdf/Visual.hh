@@ -110,17 +110,33 @@ namespace sdf
     /// \param[in] _pose The pose of the visual object.
     public: void SetPose(const ignition::math::Pose3d &_pose);
 
+    /// \brief Get the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the parent link.
+    /// \return The name of the pose relative-to frame.
+    public: const std::string &PoseRelativeTo() const;
+
+    /// \brief Set the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the parent link.
+    /// \param[in] _frame The name of the pose relative-to frame.
+    public: void SetPoseRelativeTo(const std::string &_frame);
+
     /// \brief Get the name of the coordinate frame in which this visual
     /// object's pose is expressed. A empty value indicates that the frame is
     /// the parent link.
     /// \return The name of the pose frame.
-    public: const std::string &PoseFrame() const;
+    /// \deprecated See PoseRelativeTo.
+    public: const std::string &PoseFrame() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the name of the coordinate frame in which this visual
     /// object's pose is expressed. A empty value indicates that the frame is
     /// the parent link.
     /// \return The name of the pose frame.
-    public: void SetPoseFrame(const std::string &_pose);
+    /// \deprecated See SetPoseRelativeTo.
+    public: void SetPoseFrame(const std::string &_frame)
+        SDF_DEPRECATED(9.0);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

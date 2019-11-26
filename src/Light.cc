@@ -32,7 +32,7 @@ class sdf::LightPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief The light type.
   public: LightType type = LightType::POINT;
@@ -125,7 +125,7 @@ void Light::CopyFrom(const Light &_light)
 {
   this->dataPtr->name= _light.dataPtr->name;
   this->dataPtr->pose = _light.dataPtr->pose;
-  this->dataPtr->poseFrame = _light.dataPtr->poseFrame;
+  this->dataPtr->poseRelativeTo = _light.dataPtr->poseRelativeTo;
   this->dataPtr->type = _light.dataPtr->type;
   this->dataPtr->sdf = _light.dataPtr->sdf;
   this->dataPtr->castShadows = _light.dataPtr->castShadows;
@@ -189,7 +189,7 @@ Errors Light::Load(ElementPtr _sdf)
   }
 
   // Load the pose. Ignore the return value since the light pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   this->dataPtr->castShadows = _sdf->Get<bool>("cast_shadows",
       this->dataPtr->castShadows).first;
@@ -295,7 +295,13 @@ const ignition::math::Pose3d &Light::Pose() const
 /////////////////////////////////////////////////
 const std::string &Light::PoseFrame() const
 {
-  return this->dataPtr->poseFrame;
+  return this->PoseRelativeTo();
+}
+
+/////////////////////////////////////////////////
+const std::string &Light::PoseRelativeTo() const
+{
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -307,7 +313,13 @@ void Light::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Light::SetPoseFrame(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->SetPoseRelativeTo(_frame);
+}
+
+/////////////////////////////////////////////////
+void Light::SetPoseRelativeTo(const std::string &_frame)
+{
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////

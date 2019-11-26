@@ -61,7 +61,7 @@ class sdf::JointPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief Thread pitch for screw joints.
   public: double threadPitch = 1.0;
@@ -81,7 +81,7 @@ JointPrivate::JointPrivate(const JointPrivate &_jointPrivate)
       childLinkName(_jointPrivate.childLinkName),
       type(_jointPrivate.type),
       pose(_jointPrivate.pose),
-      poseFrame(_jointPrivate.poseFrame),
+      poseRelativeTo(_jointPrivate.poseRelativeTo),
       threadPitch(_jointPrivate.threadPitch),
       sdf(_jointPrivate.sdf)
 {
@@ -175,7 +175,7 @@ Errors Joint::Load(ElementPtr _sdf)
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   // Read the parent link name
   std::pair<std::string, bool> parentPair =
@@ -325,7 +325,13 @@ const ignition::math::Pose3d &Joint::Pose() const
 /////////////////////////////////////////////////
 const std::string &Joint::PoseFrame() const
 {
-  return this->dataPtr->poseFrame;
+  return this->PoseRelativeTo();
+}
+
+/////////////////////////////////////////////////
+const std::string &Joint::PoseRelativeTo() const
+{
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -337,7 +343,13 @@ void Joint::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Joint::SetPoseFrame(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->SetPoseRelativeTo(_frame);
+}
+
+/////////////////////////////////////////////////
+void Joint::SetPoseRelativeTo(const std::string &_frame)
+{
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////

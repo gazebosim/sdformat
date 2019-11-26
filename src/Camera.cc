@@ -103,7 +103,7 @@ class sdf::CameraPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief Lens type.
   public: std::string lensType{"stereographic"};
@@ -285,7 +285,7 @@ Errors Camera::Load(ElementPtr _sdf)
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   // Load the lens values.
   if (_sdf->HasElement("lens"))
@@ -594,7 +594,13 @@ const ignition::math::Pose3d &Camera::Pose() const
 /////////////////////////////////////////////////
 const std::string &Camera::PoseFrame() const
 {
-  return this->dataPtr->poseFrame;
+  return this->PoseRelativeTo();
+}
+
+/////////////////////////////////////////////////
+const std::string &Camera::PoseRelativeTo() const
+{
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -606,7 +612,13 @@ void Camera::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Camera::SetPoseFrame(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->SetPoseRelativeTo(_frame);
+}
+
+/////////////////////////////////////////////////
+void Camera::SetPoseRelativeTo(const std::string &_frame)
+{
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////

@@ -33,14 +33,14 @@ TEST(DOMVisual, Construction)
   EXPECT_FALSE(visual.CastShadows());
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, visual.Pose());
-  EXPECT_TRUE(visual.PoseFrame().empty());
+  EXPECT_TRUE(visual.PoseRelativeTo().empty());
 
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual.Pose());
 
-  visual.SetPoseFrame("link");
-  EXPECT_EQ("link", visual.PoseFrame());
+  visual.SetPoseRelativeTo("link");
+  EXPECT_EQ("link", visual.PoseRelativeTo());
 
   ASSERT_NE(nullptr, visual.Geom());
   EXPECT_EQ(sdf::GeometryType::EMPTY, visual.Geom()->Type());
@@ -60,7 +60,7 @@ TEST(DOMVisual, CopyConstructor)
   visual.SetCastShadows(false);
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
-  visual.SetPoseFrame("link");
+  visual.SetPoseRelativeTo("link");
 
   sdf::Material mat;
   mat.SetAmbient({0.1f, 0.1f, 0.1f});
@@ -72,7 +72,7 @@ TEST(DOMVisual, CopyConstructor)
   EXPECT_FALSE(visual.CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual.Pose());
-  EXPECT_EQ("link", visual.PoseFrame());
+  EXPECT_EQ("link", visual.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual.Material());
   EXPECT_EQ(mat.Ambient(), visual.Material()->Ambient());
 
@@ -80,7 +80,7 @@ TEST(DOMVisual, CopyConstructor)
   EXPECT_FALSE(visual2.CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.Pose());
-  EXPECT_EQ("link", visual2.PoseFrame());
+  EXPECT_EQ("link", visual2.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual2.Material());
   EXPECT_EQ(mat.Ambient(), visual2.Material()->Ambient());
 }
@@ -93,7 +93,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
   visual.SetCastShadows(false);
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
-  visual.SetPoseFrame("link");
+  visual.SetPoseRelativeTo("link");
 
   sdf::Material mat;
   mat.SetAmbient({0.1f, 0.1f, 0.1f});
@@ -106,7 +106,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
   EXPECT_FALSE(visual.CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual.Pose());
-  EXPECT_EQ("link", visual.PoseFrame());
+  EXPECT_EQ("link", visual.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual.Material());
   EXPECT_EQ(mat.Ambient(), visual.Material()->Ambient());
 
@@ -114,7 +114,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
   EXPECT_FALSE(visual2.CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.Pose());
-  EXPECT_EQ("link", visual2.PoseFrame());
+  EXPECT_EQ("link", visual2.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual2.Material());
   EXPECT_EQ(mat.Ambient(), visual2.Material()->Ambient());
 }
@@ -127,7 +127,7 @@ TEST(DOMVisual, MoveConstructor)
   visual.SetCastShadows(false);
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
-  visual.SetPoseFrame("link");
+  visual.SetPoseRelativeTo("link");
 
   sdf::Material mat;
   mat.SetAmbient({0.1f, 0.1f, 0.1f});
@@ -139,7 +139,7 @@ TEST(DOMVisual, MoveConstructor)
   EXPECT_FALSE(visual2.CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.Pose());
-  EXPECT_EQ("link", visual2.PoseFrame());
+  EXPECT_EQ("link", visual2.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual2.Material());
   EXPECT_EQ(mat.Ambient(), visual2.Material()->Ambient());
 }
@@ -152,7 +152,7 @@ TEST(DOMVisual, MoveAssignmentOperator)
   visual.SetCastShadows(false);
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
-  visual.SetPoseFrame("link");
+  visual.SetPoseRelativeTo("link");
 
   sdf::Material mat;
   mat.SetAmbient({0.1f, 0.1f, 0.1f});
@@ -165,7 +165,7 @@ TEST(DOMVisual, MoveAssignmentOperator)
   EXPECT_FALSE(visual2.CastShadows());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.Pose());
-  EXPECT_EQ("link", visual2.PoseFrame());
+  EXPECT_EQ("link", visual2.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual2.Material());
   EXPECT_EQ(mat.Ambient(), visual2.Material()->Ambient());
 }

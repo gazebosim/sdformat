@@ -31,13 +31,13 @@ TEST(DOMLight, DefaultConstruction)
   EXPECT_EQ("test_light", light.Name());
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, light.Pose());
-  EXPECT_TRUE(light.PoseFrame().empty());
+  EXPECT_TRUE(light.PoseRelativeTo().empty());
 
   light.SetPose({1, 2, 3, 0, 0, IGN_PI});
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), light.Pose());
 
-  light.SetPoseFrame("world");
-  EXPECT_EQ("world", light.PoseFrame());
+  light.SetPoseRelativeTo("world");
+  EXPECT_EQ("world", light.PoseRelativeTo());
 
   EXPECT_FALSE(light.CastShadows());
   light.SetCastShadows(true);
@@ -91,7 +91,7 @@ TEST(DOMLight, CopyConstructor)
   light.SetName("test_copy_light");
   light.SetType(sdf::LightType::DIRECTIONAL);
   light.SetPose({3, 2, 1, 0, IGN_PI, 0});
-  light.SetPoseFrame("ground_plane");
+  light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
   light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
   light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
@@ -108,7 +108,7 @@ TEST(DOMLight, CopyConstructor)
   EXPECT_EQ("test_copy_light", light2.Name());
   EXPECT_EQ(sdf::LightType::DIRECTIONAL, light2.Type());
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.Pose());
-  EXPECT_EQ("ground_plane", light2.PoseFrame());
+  EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
@@ -129,7 +129,7 @@ TEST(DOMLight, CopyAssignmentOperator)
   light.SetName("test_light_assignment");
   light.SetType(sdf::LightType::DIRECTIONAL);
   light.SetPose({3, 2, 1, 0, IGN_PI, 0});
-  light.SetPoseFrame("ground_plane");
+  light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
   light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
   light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
@@ -147,7 +147,7 @@ TEST(DOMLight, CopyAssignmentOperator)
   EXPECT_EQ("test_light_assignment", light2.Name());
   EXPECT_EQ(sdf::LightType::DIRECTIONAL, light2.Type());
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.Pose());
-  EXPECT_EQ("ground_plane", light2.PoseFrame());
+  EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
@@ -168,7 +168,7 @@ TEST(DOMLight, MoveConstructor)
   light.SetName("test_light_assignment");
   light.SetType(sdf::LightType::DIRECTIONAL);
   light.SetPose({3, 2, 1, 0, IGN_PI, 0});
-  light.SetPoseFrame("ground_plane");
+  light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
   light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
   light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
@@ -185,7 +185,7 @@ TEST(DOMLight, MoveConstructor)
   EXPECT_EQ("test_light_assignment", light2.Name());
   EXPECT_EQ(sdf::LightType::DIRECTIONAL, light2.Type());
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.Pose());
-  EXPECT_EQ("ground_plane", light2.PoseFrame());
+  EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
@@ -206,7 +206,7 @@ TEST(DOMLight, MoveAssignment)
   light.SetName("test_light_assignment");
   light.SetType(sdf::LightType::DIRECTIONAL);
   light.SetPose({3, 2, 1, 0, IGN_PI, 0});
-  light.SetPoseFrame("ground_plane");
+  light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
   light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
   light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
@@ -224,7 +224,7 @@ TEST(DOMLight, MoveAssignment)
   EXPECT_EQ("test_light_assignment", light2.Name());
   EXPECT_EQ(sdf::LightType::DIRECTIONAL, light2.Type());
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.Pose());
-  EXPECT_EQ("ground_plane", light2.PoseFrame());
+  EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
