@@ -145,6 +145,14 @@ Errors Visual::Load(ElementPtr _sdf)
                      "A visual name is required, but the name is not set."});
   }
 
+  // Check that the visual's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::RESERVED_NAME,
+                     "The supplied visual name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   // load cast shadows
   if (_sdf->HasElement("cast_shadows"))
   {

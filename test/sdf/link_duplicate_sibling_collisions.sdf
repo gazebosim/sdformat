@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="duplicate_sibling_collisions">
+    <link name="link">
+      <collision name="collision" />
+      <collision name="collision" />
+    </link>
+  </model>
+</sdf>

@@ -86,3 +86,24 @@ TEST(DOMUtils, PoseWithValue)
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3), pose);
   EXPECT_EQ("another frame", frame);
 }
+
+/////////////////////////////////////////////////
+TEST(DOMUtils, ReservedNames)
+{
+  EXPECT_FALSE(sdf::isReservedName("model"));
+  EXPECT_FALSE(sdf::isReservedName("link"));
+  EXPECT_FALSE(sdf::isReservedName("joint"));
+  EXPECT_FALSE(sdf::isReservedName("frame"));
+  EXPECT_FALSE(sdf::isReservedName("collision"));
+  EXPECT_FALSE(sdf::isReservedName("visual"));
+  EXPECT_FALSE(sdf::isReservedName("not_reserved"));
+  EXPECT_FALSE(sdf::isReservedName("_"));
+  EXPECT_FALSE(sdf::isReservedName("__"));
+  EXPECT_FALSE(sdf::isReservedName("___"));
+
+  EXPECT_TRUE(sdf::isReservedName("____"));
+  EXPECT_TRUE(sdf::isReservedName("world"));
+  EXPECT_TRUE(sdf::isReservedName("__model__"));
+  EXPECT_TRUE(sdf::isReservedName("__world__"));
+  EXPECT_TRUE(sdf::isReservedName("__anything__"));
+}

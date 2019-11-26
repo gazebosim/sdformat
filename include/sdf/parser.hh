@@ -163,6 +163,23 @@ namespace sdf
   /// sibling elements of the same type.
   SDFORMAT_VISIBLE
   bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem);
+
+  /// \brief Check that all sibling elements of the any type have unique names.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first duplicate name is found.
+  /// \param[in] _elem sdf Element to check recursively.
+  /// \return True if all contained elements have do not share a name with
+  /// sibling elements of any type.
+  SDFORMAT_VISIBLE
+  bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem);
+
+  /// \brief Check whether the element should be validated. If this returns
+  /// false, validators such as the unique name and reserve name checkers should
+  /// skip this element and its descendants.
+  /// \param[in] _elem sdf Element to check.
+  /// \return True if the element should be validated
+  SDFORMAT_VISIBLE
+  bool shouldValidateElement(sdf::ElementPtr _elem);
   }
 }
 #endif

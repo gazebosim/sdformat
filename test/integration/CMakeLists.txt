@@ -34,6 +34,7 @@ set(tests
   provide_feedback.cc
   root_dom.cc
   sdf_basic.cc
+  sdf_custom.cc
   unknown.cc
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
