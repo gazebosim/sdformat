@@ -20,47 +20,34 @@
 
 #include "sdf/sdf_config.h"
 #include "sdf/Filesystem.hh"
+#include "sdf/Root.hh"
 #include "sdf/ign.hh"
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
 
 //////////////////////////////////////////////////
-/// \brief Check that all sibling elements of the same type have unique names.
-/// This checks recursively and should check the files exhaustively
-/// rather than terminating early when the first duplicate name is found.
-/// \param[in] _elem sdf Element to check recursively.
-/// \return True if all contained elements have do not share a name with
-/// sibling elements of the same type.
-bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
-{
-  bool result = true;
-  auto typeNames = _elem->GetElementTypeNames();
-  for (const std::string &typeName : typeNames)
-  {
-    if (!_elem->HasUniqueChildNames(typeName))
-    {
-      std::cerr << "Non-unique names detected in type "
-                << typeName << " in\n"
-                << _elem->ToString("")
-                << std::endl;
-      result = false;
-    }
-  }
-
-  sdf::ElementPtr child = _elem->GetFirstElement();
-  while (child)
-  {
-    result = recursiveSameTypeUniqueNames(child) && result;
-    child = child->GetNextElement();
-  }
-
-  return result;
-}
-
-//////////////////////////////////////////////////
 // cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 {
+  int result = 0;
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(_path);
+  if (!errors.empty())
+  {
+    for (auto &error : errors)
+    {
+      std::cerr << "Error: " << error.Message() << std::endl;
+    }
+    return -1;
+  }
+
+  if (!sdf::recursiveSiblingUniqueNames(root.Element()))
+  {
+    std::cerr << "Error: non-unique names detected.\n";
+    result = -1;
+  }
+
   if (!sdf::filesystem::exists(_path))
   {
     std::cerr << "Error: File [" << _path << "] does not exist.\n";
@@ -81,14 +68,11 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     return -1;
   }
 
-  if (!recursiveSameTypeUniqueNames(sdf->Root()))
+  if (result == 0)
   {
-    std::cerr << "Error: non-unique names detected.\n";
-    return -1;
+    std::cout << "Valid.\n";
   }
-
-  std::cout << "Valid.\n";
-  return 0;
+  return result;
 }
 
 //////////////////////////////////////////////////

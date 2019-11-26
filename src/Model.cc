@@ -129,6 +129,14 @@ Errors Model::Load(ElementPtr _sdf)
                      "A model name is required, but the name is not set."});
   }
 
+  // Check that the model's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::RESERVED_NAME,
+                     "The supplied model name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   this->dataPtr->isStatic = _sdf->Get<bool>("static", false).first;
 
   this->dataPtr->selfCollide = _sdf->Get<bool>("self_collide", false).first;
