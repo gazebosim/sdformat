@@ -49,7 +49,7 @@ namespace sdf
   /// \param[out] _pose Value of the pose element. The default value is
   /// ignition::math::Pose3d::Zero.
   /// \param[out] _frame Value of the frame attribute. The default value is
-  /// and empty string.
+  /// an empty string.
   /// \return True if the pose element contained an ignition::math::Pose3d
   /// value.
   bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,

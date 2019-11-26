@@ -34,9 +34,9 @@ TEST(Frame, ModelFrame)
     << "<sdf version='" << version << "'>"
     << "<model name='my_model'>"
     << "  <frame name='mframe'>"
-    << "    <pose frame='/world'>1 1 0 0 0 0</pose>"
+    << "    <pose relative_to='/world'>1 1 0 0 0 0</pose>"
     << "  </frame>"
-    << "  <pose frame='mframe'>1 0 0 0 0 0</pose>"
+    << "  <pose relative_to='mframe'>1 0 0 0 0 0</pose>"
     << "  <link name='link'/>"
     << "</model>"
     << "</sdf>";
@@ -62,16 +62,16 @@ TEST(Frame, ModelFrame)
   // model frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "/world");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(1, 1, 0, 0, 0, 0));
 
   // model pose
   EXPECT_TRUE(modelElem->HasElement("pose"));
   sdf::ElementPtr modelPoseElem = modelElem->GetElement("pose");
-  EXPECT_TRUE(modelPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(modelPoseElem->Get<std::string>("frame"), "mframe");
+  EXPECT_TRUE(modelPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(modelPoseElem->Get<std::string>("relative_to"), "mframe");
   EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(1, 0, 0, 0, 0, 0));
 
@@ -117,8 +117,8 @@ TEST(Frame, FrameDefaultPose)
   // model frame pose
   EXPECT_TRUE(!frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
 
@@ -164,8 +164,8 @@ TEST(Frame, NoFrame)
     // model frame pose
     EXPECT_TRUE(!frameElem->HasElement("pose"));
     sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-    EXPECT_TRUE(poseElem->HasAttribute("frame"));
-    EXPECT_EQ(poseElem->Get<std::string>("frame"), "");
+    EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+    EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "");
     EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
               ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
   }
@@ -186,8 +186,8 @@ TEST(Frame, NoFrame)
     // link frame pose
     EXPECT_TRUE(!frameElem->HasElement("pose"));
     sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-    EXPECT_TRUE(poseElem->HasAttribute("frame"));
-    EXPECT_EQ(poseElem->Get<std::string>("frame"), "");
+    EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+    EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "");
     EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
               ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
   }
@@ -204,9 +204,9 @@ TEST(Frame, LinkFrame)
     << "<model name='my_model'>"
     << "  <link name='link'>"
     << "    <frame name='lframe'>"
-    << "      <pose frame='model'>1 0 2 0 0 0</pose>"
+    << "      <pose relative_to='model'>1 0 2 0 0 0</pose>"
     << "    </frame>"
-    << "    <pose frame='lframe'>0 5 0 0 0 0</pose>"
+    << "    <pose relative_to='lframe'>0 5 0 0 0 0</pose>"
     << "  </link>"
     << "</model>"
     << "</sdf>";
@@ -238,16 +238,16 @@ TEST(Frame, LinkFrame)
   // link frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "model");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "model");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(1, 0, 2, 0, 0, 0));
 
   // link pose
   EXPECT_TRUE(linkElem->HasElement("pose"));
   sdf::ElementPtr linkPoseElem = linkElem->GetElement("pose");
-  EXPECT_TRUE(linkPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(linkPoseElem->Get<std::string>("frame"), "lframe");
+  EXPECT_TRUE(linkPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(linkPoseElem->Get<std::string>("relative_to"), "lframe");
   EXPECT_EQ(linkPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(0, 5, 0, 0, 0, 0));
 }
@@ -270,9 +270,9 @@ TEST(Frame, JointFrame)
     << "      <xyz>1 0 0</xyz>"
     << "    </axis>"
     << "    <frame name='jframe'>"
-    << "      <pose frame='child'>0 0 1 0 0 0</pose>"
+    << "      <pose relative_to='child'>0 0 1 0 0 0</pose>"
     << "    </frame>"
-    << "    <pose frame='jframe'>0 2 1 0 0 0</pose>"
+    << "    <pose relative_to='jframe'>0 2 1 0 0 0</pose>"
     << "  </joint>"
     << "</model>"
     << "</sdf>";
@@ -330,16 +330,16 @@ TEST(Frame, JointFrame)
   // joint frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "child");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "child");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(0, 0, 1, 0, 0, 0));
 
   // joint pose
   EXPECT_TRUE(jointElem->HasElement("pose"));
   sdf::ElementPtr jointPoseElem = jointElem->GetElement("pose");
-  EXPECT_TRUE(jointPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(jointPoseElem->Get<std::string>("frame"), "jframe");
+  EXPECT_TRUE(jointPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(jointPoseElem->Get<std::string>("relative_to"), "jframe");
   EXPECT_EQ(jointPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(0, 2, 1, 0, 0, 0));
 }
@@ -356,9 +356,9 @@ TEST(Frame, CollisionFrame)
     << "  <link name='link'>"
     << "    <collision name='collision'>"
     << "      <frame name='cframe'>"
-    << "        <pose frame='link'>1 3 1 0 0 0</pose>"
+    << "        <pose relative_to='link'>1 3 1 0 0 0</pose>"
     << "      </frame>"
-    << "      <pose frame='cframe'>0 2 0 0 0 0</pose>"
+    << "      <pose relative_to='cframe'>0 2 0 0 0 0</pose>"
     << "    </collision>"
     << "  </link>"
     << "</model>"
@@ -397,16 +397,16 @@ TEST(Frame, CollisionFrame)
   // collision frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(1, 3, 1, 0, 0, 0));
 
   // collision pose
   EXPECT_TRUE(collisionElem->HasElement("pose"));
   sdf::ElementPtr collisionPoseElem = collisionElem->GetElement("pose");
-  EXPECT_TRUE(collisionPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(collisionPoseElem->Get<std::string>("frame"), "cframe");
+  EXPECT_TRUE(collisionPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(collisionPoseElem->Get<std::string>("relative_to"), "cframe");
   EXPECT_EQ(collisionPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(0, 2, 0, 0, 0, 0));
 }
@@ -423,9 +423,9 @@ TEST(Frame, VisualFrame)
     << "  <link name='link'>"
     << "    <visual name='visual'>"
     << "      <frame name='vframe'>"
-    << "        <pose frame='link'>1 1 1 0 0 0</pose>"
+    << "        <pose relative_to='link'>1 1 1 0 0 0</pose>"
     << "      </frame>"
-    << "      <pose frame='vframe'>2 2 2 0 0 0</pose>"
+    << "      <pose relative_to='vframe'>2 2 2 0 0 0</pose>"
     << "    </visual>"
     << "  </link>"
     << "</model>"
@@ -464,16 +464,16 @@ TEST(Frame, VisualFrame)
   // visual frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(1, 1, 1, 0, 0, 0));
 
   // visual pose
   EXPECT_TRUE(visualElem->HasElement("pose"));
   sdf::ElementPtr visualPoseElem = visualElem->GetElement("pose");
-  EXPECT_TRUE(visualPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(visualPoseElem->Get<std::string>("frame"), "vframe");
+  EXPECT_TRUE(visualPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(visualPoseElem->Get<std::string>("relative_to"), "vframe");
   EXPECT_EQ(visualPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(2, 2, 2, 0, 0, 0));
 }
@@ -490,9 +490,9 @@ TEST(Frame, InertialFrame)
     << "  <link name='link'>"
     << "    <inertial>"
     << "      <frame name='iframe'>"
-    << "        <pose frame='link'>1 2 3 0 0 0</pose>"
+    << "        <pose relative_to='link'>1 2 3 0 0 0</pose>"
     << "      </frame>"
-    << "      <pose frame='iframe'>3 2 1 0 0 0</pose>"
+    << "      <pose relative_to='iframe'>3 2 1 0 0 0</pose>"
     << "    </inertial>"
     << "  </link>"
     << "</model>"
@@ -529,16 +529,16 @@ TEST(Frame, InertialFrame)
   // inertial frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
 
   // inertial pose
   EXPECT_TRUE(inertialElem->HasElement("pose"));
   sdf::ElementPtr inertialPoseElem = inertialElem->GetElement("pose");
-  EXPECT_TRUE(inertialPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(inertialPoseElem->Get<std::string>("frame"), "iframe");
+  EXPECT_TRUE(inertialPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(inertialPoseElem->Get<std::string>("relative_to"), "iframe");
   EXPECT_EQ(inertialPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(3, 2, 1, 0, 0, 0));
 }
@@ -553,9 +553,9 @@ TEST(Frame, LightFrame)
     << "<sdf version='" << version << "'>"
     << "<light type= 'directional' name='my_light'>"
     << "  <frame name='lframe'>"
-    << "    <pose frame='/world'>0.1 10 0 0 0 0</pose>"
+    << "    <pose relative_to='/world'>0.1 10 0 0 0 0</pose>"
     << "  </frame>"
-    << "  <pose frame='lframe'>0.1 0 0 0 0 0</pose>"
+    << "  <pose relative_to='lframe'>0.1 0 0 0 0 0</pose>"
     << "  <diffuse>0.2 0.3 0.4 1</diffuse>"
     << "  <specular>0.3 0.4 0.5 1</specular>"
     << "</light>"
@@ -584,16 +584,16 @@ TEST(Frame, LightFrame)
   // light frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "/world");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(0.1, 10, 0, 0, 0, 0));
 
   // light pose
   EXPECT_TRUE(lightElem->HasElement("pose"));
   sdf::ElementPtr lightPoseElem = lightElem->GetElement("pose");
-  EXPECT_TRUE(lightPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(lightPoseElem->Get<std::string>("frame"), "lframe");
+  EXPECT_TRUE(lightPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(lightPoseElem->Get<std::string>("relative_to"), "lframe");
   EXPECT_EQ(lightPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(0.1, 0, 0, 0, 0, 0));
 
@@ -620,9 +620,9 @@ TEST(Frame, ActorFrame)
     << "<sdf version='" << version << "'>"
     << "<actor name='my_actor'>"
     << "  <frame name='aframe'>"
-    << "    <pose frame='/world'>1 5 0 0 0 0</pose>"
+    << "    <pose relative_to='/world'>1 5 0 0 0 0</pose>"
     << "  </frame>"
-    << "  <pose frame='aframe'>0.1 3 0 0 0 0</pose>"
+    << "  <pose relative_to='aframe'>0.1 3 0 0 0 0</pose>"
     << "  <skin>"
     << "    <filename>moonwalk.dae</filename>"
     << "  </skin>"
@@ -654,16 +654,16 @@ TEST(Frame, ActorFrame)
   // actor frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "/world");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(1, 5, 0, 0, 0, 0));
 
   // actor pose
   EXPECT_TRUE(actorElem->HasElement("pose"));
   sdf::ElementPtr actorPoseElem = actorElem->GetElement("pose");
-  EXPECT_TRUE(actorPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(actorPoseElem->Get<std::string>("frame"), "aframe");
+  EXPECT_TRUE(actorPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(actorPoseElem->Get<std::string>("relative_to"), "aframe");
   EXPECT_EQ(actorPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(0.1, 3, 0, 0, 0, 0));
 
@@ -687,7 +687,7 @@ TEST(Frame, ActorFrame)
 
 ////////////////////////////////////////
 // Test parsing nested model states
-TEST(NestedModel, StateFrame)
+TEST(Frame, StateFrame)
 {
   std::ostringstream sdfStr;
   sdfStr << "<sdf version ='" << SDF_VERSION << "'>"
@@ -695,21 +695,21 @@ TEST(NestedModel, StateFrame)
     << "<state world_name='default'>"
     << "<model name='my_model'>"
     << "  <frame name='mframe'>"
-    << "    <pose frame='/world'>1 0 2 0 0 0</pose>"
+    << "    <pose relative_to='/world'>1 0 2 0 0 0</pose>"
     << "  </frame>"
-    << "  <pose frame='mframe'>3 3 9 0 0 0</pose>"
+    << "  <pose relative_to='mframe'>3 3 9 0 0 0</pose>"
     << "  <link name='my_link'>"
     << "    <frame name='lframe'>"
-    << "      <pose frame='mframe'>8 5 2 0 0 0</pose>"
+    << "      <pose relative_to='mframe'>8 5 2 0 0 0</pose>"
     << "    </frame>"
-    << "    <pose frame='lframe'>111 3 0 0 0 0</pose>"
+    << "    <pose relative_to='lframe'>111 3 0 0 0 0</pose>"
     << "  </link>"
     << "</model>"
     << "<light name='my_light'>"
     << "  <frame name='lframe'>"
-    << "    <pose frame='/world'>1 0 1 0 0 0</pose>"
+    << "    <pose relative_to='/world'>1 0 1 0 0 0</pose>"
     << "  </frame>"
-    << "    <pose frame='lframe'>99 0 22 0 0 0</pose>"
+    << "    <pose relative_to='lframe'>99 0 22 0 0 0</pose>"
     << "</light>"
     << "</state>"
     << "</world>"
@@ -742,16 +742,16 @@ TEST(NestedModel, StateFrame)
     // model frame pose
     EXPECT_TRUE(frameElem->HasElement("pose"));
     sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-    EXPECT_TRUE(poseElem->HasAttribute("frame"));
-    EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
+    EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+    EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "/world");
     EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
               ignition::math::Pose3d(1, 0, 2, 0, 0, 0));
 
     // model pose
     EXPECT_TRUE(modelStateElem->HasElement("pose"));
     sdf::ElementPtr modelPoseElem = modelStateElem->GetElement("pose");
-    EXPECT_TRUE(modelPoseElem->HasAttribute("frame"));
-    EXPECT_EQ(modelPoseElem->Get<std::string>("frame"), "mframe");
+    EXPECT_TRUE(modelPoseElem->HasAttribute("relative_to"));
+    EXPECT_EQ(modelPoseElem->Get<std::string>("relative_to"), "mframe");
     EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
               ignition::math::Pose3d(3, 3, 9, 0, 0, 0));
   }
@@ -772,16 +772,16 @@ TEST(NestedModel, StateFrame)
     // link frame pose
     EXPECT_TRUE(frameElem->HasElement("pose"));
     sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-    EXPECT_TRUE(poseElem->HasAttribute("frame"));
-    EXPECT_EQ(poseElem->Get<std::string>("frame"), "mframe");
+    EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+    EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "mframe");
     EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
               ignition::math::Pose3d(8, 5, 2, 0, 0, 0));
 
     // link pose
     EXPECT_TRUE(linkStateElem->HasElement("pose"));
     sdf::ElementPtr linkPoseElem = linkStateElem->GetElement("pose");
-    EXPECT_TRUE(linkPoseElem->HasAttribute("frame"));
-    EXPECT_EQ(linkPoseElem->Get<std::string>("frame"), "lframe");
+    EXPECT_TRUE(linkPoseElem->HasAttribute("relative_to"));
+    EXPECT_EQ(linkPoseElem->Get<std::string>("relative_to"), "lframe");
     EXPECT_EQ(linkPoseElem->Get<ignition::math::Pose3d>(),
               ignition::math::Pose3d(111, 3, 0, 0, 0, 0));
   }
@@ -803,16 +803,16 @@ TEST(NestedModel, StateFrame)
     // light frame pose
     EXPECT_TRUE(frameElem->HasElement("pose"));
     sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-    EXPECT_TRUE(poseElem->HasAttribute("frame"));
-    EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
+    EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+    EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "/world");
     EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
               ignition::math::Pose3d(1, 0, 1, 0, 0, 0));
 
     // light pose
     EXPECT_TRUE(lightStateElem->HasElement("pose"));
     sdf::ElementPtr lightPoseElem = lightStateElem->GetElement("pose");
-    EXPECT_TRUE(lightPoseElem->HasAttribute("frame"));
-    EXPECT_EQ(lightPoseElem->Get<std::string>("frame"), "lframe");
+    EXPECT_TRUE(lightPoseElem->HasAttribute("relative_to"));
+    EXPECT_EQ(lightPoseElem->Get<std::string>("relative_to"), "lframe");
     EXPECT_EQ(lightPoseElem->Get<ignition::math::Pose3d>(),
               ignition::math::Pose3d(99, 0, 22, 0, 0, 0));
   }
@@ -830,9 +830,9 @@ TEST(Frame, ProjectorFrame)
     << "  <link name='my_link'>"
     << "    <projector name='my_projector'>"
     << "      <frame name='pframe'>"
-    << "        <pose frame='link'>1 -1 0 0 0 0</pose>"
+    << "        <pose relative_to='link'>1 -1 0 0 0 0</pose>"
     << "      </frame>"
-    << "      <pose frame='pframe'>-1 0 0 0 0 0</pose>"
+    << "      <pose relative_to='pframe'>-1 0 0 0 0 0</pose>"
     << "    </projector>"
     << "  </link>"
     << "</model>"
@@ -871,16 +871,16 @@ TEST(Frame, ProjectorFrame)
   // projector frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(1, -1, 0, 0, 0, 0));
 
   // projector pose
   EXPECT_TRUE(projectorElem->HasElement("pose"));
   sdf::ElementPtr projectorPoseElem = projectorElem->GetElement("pose");
-  EXPECT_TRUE(projectorPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(projectorPoseElem->Get<std::string>("frame"), "pframe");
+  EXPECT_TRUE(projectorPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(projectorPoseElem->Get<std::string>("relative_to"), "pframe");
   EXPECT_EQ(projectorPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(-1, 0, 0, 0, 0, 0));
 }
@@ -897,9 +897,9 @@ TEST(Frame, SensorFrame)
     << "  <link name='my_link'>"
     << "    <sensor name='my_sensor' type='ray'>"
     << "      <frame name='sframe'>"
-    << "        <pose frame='link'>1 -1 1 0 0 0</pose>"
+    << "        <pose relative_to='link'>1 -1 1 0 0 0</pose>"
     << "      </frame>"
-    << "      <pose frame='sframe'>1 2 2 0 0 0</pose>"
+    << "      <pose relative_to='sframe'>1 2 2 0 0 0</pose>"
     << "    </sensor>"
     << "  </link>"
     << "</model>"
@@ -940,16 +940,16 @@ TEST(Frame, SensorFrame)
   // sensor frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(1, -1, 1, 0, 0, 0));
 
   // sensor pose
   EXPECT_TRUE(sensorElem->HasElement("pose"));
   sdf::ElementPtr sensorPoseElem = sensorElem->GetElement("pose");
-  EXPECT_TRUE(sensorPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(sensorPoseElem->Get<std::string>("frame"), "sframe");
+  EXPECT_TRUE(sensorPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(sensorPoseElem->Get<std::string>("relative_to"), "sframe");
   EXPECT_EQ(sensorPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(1, 2, 2, 0, 0, 0));
 }
@@ -967,9 +967,9 @@ TEST(Frame, CameraFrame)
     << "    <sensor name='my_sensor' type='camera'>"
     << "      <camera>"
     << "        <frame name='cframe'>"
-    << "          <pose frame='link'>-1.3 0 1 0 0 0</pose>"
+    << "          <pose relative_to='link'>-1.3 0 1 0 0 0</pose>"
     << "        </frame>"
-    << "        <pose frame='cframe'>4 2 2 0 0 0</pose>"
+    << "        <pose relative_to='cframe'>4 2 2 0 0 0</pose>"
     << "      </camera>"
     << "    </sensor>"
     << "  </link>"
@@ -1015,16 +1015,16 @@ TEST(Frame, CameraFrame)
   // camera frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(-1.3, 0, 1, 0, 0, 0));
 
   // camera pose
   EXPECT_TRUE(cameraElem->HasElement("pose"));
   sdf::ElementPtr cameraPoseElem = cameraElem->GetElement("pose");
-  EXPECT_TRUE(cameraPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(cameraPoseElem->Get<std::string>("frame"), "cframe");
+  EXPECT_TRUE(cameraPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(cameraPoseElem->Get<std::string>("relative_to"), "cframe");
   EXPECT_EQ(cameraPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(4, 2, 2, 0, 0, 0));
 }
@@ -1041,9 +1041,9 @@ TEST(Frame, AudioSourceFrame)
     << "  <link name='my_link'>"
     << "    <audio_source>"
     << "      <frame name='asframe'>"
-    << "        <pose frame='link'>0 -1 0 0 0 0</pose>"
+    << "        <pose relative_to='link'>0 -1 0 0 0 0</pose>"
     << "      </frame>"
-    << "      <pose frame='asframe'>0 0 2 0 0 0</pose>"
+    << "      <pose relative_to='asframe'>0 0 2 0 0 0</pose>"
     << "    </audio_source>"
     << "  </link>"
     << "</model>"
@@ -1080,16 +1080,16 @@ TEST(Frame, AudioSourceFrame)
   // audio source frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "link");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "link");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(0, -1, 0, 0, 0, 0));
 
   // audio source pose
   EXPECT_TRUE(audioSourceElem->HasElement("pose"));
   sdf::ElementPtr audioSourcePoseElem = audioSourceElem->GetElement("pose");
-  EXPECT_TRUE(audioSourcePoseElem->HasAttribute("frame"));
-  EXPECT_EQ(audioSourcePoseElem->Get<std::string>("frame"), "asframe");
+  EXPECT_TRUE(audioSourcePoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(audioSourcePoseElem->Get<std::string>("relative_to"), "asframe");
   EXPECT_EQ(audioSourcePoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(0, 0, 2, 0, 0, 0));
 }
@@ -1105,9 +1105,9 @@ TEST(Frame, PopulationFrame)
     << "<world name='default'>"
     << "<population name='my_population'>"
     << "  <frame name='pframe'>"
-    << "    <pose frame='/world'>0 1 0 0 0 0</pose>"
+    << "    <pose relative_to='/world'>0 1 0 0 0 0</pose>"
     << "  </frame>"
-    << "  <pose frame='pframe'>0 0 0.2 0 0 0</pose>"
+    << "  <pose relative_to='pframe'>0 0 0.2 0 0 0</pose>"
     << "</population>"
     << "</world>"
     << "</sdf>";
@@ -1135,16 +1135,16 @@ TEST(Frame, PopulationFrame)
   // population frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "/world");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(0, 1, 0, 0, 0, 0));
 
   // population pose
   EXPECT_TRUE(populationElem->HasElement("pose"));
   sdf::ElementPtr populationPoseElem = populationElem->GetElement("pose");
-  EXPECT_TRUE(populationPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(populationPoseElem->Get<std::string>("frame"), "pframe");
+  EXPECT_TRUE(populationPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(populationPoseElem->Get<std::string>("relative_to"), "pframe");
   EXPECT_EQ(populationPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(0, 0, 0.2, 0, 0, 0));
 }
@@ -1161,9 +1161,9 @@ TEST(Frame, GuiCameraFrame)
     << "<gui>"
     << "  <camera name='my_camera'>"
     << "    <frame name='cframe'>"
-    << "      <pose frame='/world'>1.2 1 0 0 0 0</pose>"
+    << "      <pose relative_to='/world'>1.2 1 0 0 0 0</pose>"
     << "    </frame>"
-    << "    <pose frame='cframe'>3.1 22 0 0 0 0</pose>"
+    << "    <pose relative_to='cframe'>3.1 22 0 0 0 0</pose>"
     << "  </camera>"
     << "</gui>"
     << "</world>"
@@ -1196,16 +1196,16 @@ TEST(Frame, GuiCameraFrame)
   // camera frame pose
   EXPECT_TRUE(frameElem->HasElement("pose"));
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
-  EXPECT_TRUE(poseElem->HasAttribute("frame"));
-  EXPECT_EQ(poseElem->Get<std::string>("frame"), "/world");
+  EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "/world");
   EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(1.2, 1, 0, 0, 0, 0));
 
   // camera pose
   EXPECT_TRUE(cameraElem->HasElement("pose"));
   sdf::ElementPtr cameraPoseElem = cameraElem->GetElement("pose");
-  EXPECT_TRUE(cameraPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(cameraPoseElem->Get<std::string>("frame"), "cframe");
+  EXPECT_TRUE(cameraPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(cameraPoseElem->Get<std::string>("relative_to"), "cframe");
   EXPECT_EQ(cameraPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(3.1, 22, 0, 0, 0, 0));
 }
@@ -1225,7 +1225,7 @@ TEST(Frame, IncludeFrame)
     << "<world name='default'>"
     << "<include>"
     << "  <name>my_model</name>"
-    << "  <pose frame='/world'>5 -2 1 0 0 0</pose>"
+    << "  <pose relative_to='/world'>5 -2 1 0 0 0</pose>"
     << "  <uri>" + MODEL_PATH +"</uri>"
     << "</include>"
     << "</world>"
@@ -1250,8 +1250,8 @@ TEST(Frame, IncludeFrame)
   // model pose
   EXPECT_TRUE(modelElem->HasElement("pose"));
   sdf::ElementPtr modelPoseElem = modelElem->GetElement("pose");
-  EXPECT_TRUE(modelPoseElem->HasAttribute("frame"));
-  EXPECT_EQ(modelPoseElem->Get<std::string>("frame"), "/world");
+  EXPECT_TRUE(modelPoseElem->HasAttribute("relative_to"));
+  EXPECT_EQ(modelPoseElem->Get<std::string>("relative_to"), "/world");
   EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(5, -2, 1, 0, 0, 0));
 }
