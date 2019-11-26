@@ -26,7 +26,10 @@
 #include "sdf/Converter.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Param.hh"
+#include "sdf/Model.hh"
+#include "sdf/Root.hh"
 #include "sdf/SDFImpl.hh"
+#include "sdf/World.hh"
 #include "sdf/parser.hh"
 #include "sdf/parser_private.hh"
 #include "sdf/parser_urdf.hh"
@@ -1234,8 +1237,16 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
 }
 
 //////////////////////////////////////////////////
-bool checkCanonicalLinkNames(const sdf::Root &_root)
+bool checkCanonicalLinkNames(const sdf::Root *_root)
 {
+  if (!_root)
+  {
+    std::cerr << "Error: invalid sdf::Root pointer, unable to "
+              << "check canonical link names."
+              << std::endl;
+    return false;
+  }
+
   bool result = true;
 
   auto checkModelCanonicalLinkName = [](
@@ -1254,15 +1265,15 @@ bool checkCanonicalLinkNames(const sdf::Root &_root)
     return modelResult;
   };
 
-  for (uint64_t m = 0; m < _root.ModelCount(); ++m)
+  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
   {
-    auto model = _root.ModelByIndex(m);
+    auto model = _root->ModelByIndex(m);
     result = checkModelCanonicalLinkName(model) && result;
   }
 
-  for (uint64_t w = 0; w < _root.WorldCount(); ++w)
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
   {
-    auto world = _root.WorldByIndex(w);
+    auto world = _root->WorldByIndex(w);
     for (uint64_t m = 0; m < world->ModelCount(); ++m)
     {
       auto model = world->ModelByIndex(m);

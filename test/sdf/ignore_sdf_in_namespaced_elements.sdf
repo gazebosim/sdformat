@@ -2,6 +2,7 @@
 <sdf version='1.7' xmlns:test="http://example.org/schema">
   <world name="default">
     <model name="M">
+      <link name="link"/>
       <test:custom_elem>
         <link name="L"/>
         <link name="L"/>

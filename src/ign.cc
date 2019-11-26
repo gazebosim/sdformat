@@ -42,7 +42,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     return -1;
   }
 
-  if (!sdf::checkCanonicalLinkNames(root))
+  if (!sdf::checkCanonicalLinkNames(&root))
   {
     std::cerr << "Error: invalid canonical link name.\n";
     result = -1;

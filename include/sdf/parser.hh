@@ -38,6 +38,7 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
+  class Root;
 
   /// \brief Init based on the installed sdf_format.xml file
   SDFORMAT_VISIBLE
@@ -163,7 +164,7 @@ namespace sdf
   /// \param[in] _root sdf Root object to check recursively.
   /// \return True if all models have valid canonical_link attributes.
   SDFORMAT_VISIBLE
-  bool checkCanonicalLinkNames(const sdf::Root &_root);
+  bool checkCanonicalLinkNames(const sdf::Root *_root);
 
   /// \brief Check that all sibling elements of the same type have unique names.
   /// This checks recursively and should check the files exhaustively
