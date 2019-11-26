@@ -81,9 +81,9 @@ namespace sdf
     friend class Collision;
     friend class Frame;
     friend class Joint;
-    // friend SemanticPose Light::SemanticPose();
+    friend class Light;
     friend class Link;
-    // friend SemanticPose Model::SemanticPose();
+    friend class Model;
     friend class Sensor;
     friend class Visual;
 

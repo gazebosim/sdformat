@@ -20,6 +20,7 @@
 
 #include "sdf/Actor.hh"
 #include "sdf/Frame.hh"
+#include "sdf/FrameSemantics.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Physics.hh"
@@ -85,6 +86,12 @@ class sdf::WorldPrivate
   /// \brief Linear velocity of wind.
   public: ignition::math::Vector3d windLinearVelocity =
            ignition::math::Vector3d::Zero;
+
+  /// \brief Frame Attached-To Graph constructed during Load.
+  public: sdf::FrameAttachedToGraph frameAttachedToGraph;
+
+  /// \brief Pose Relative-To Graph constructed during Load.
+  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -280,6 +287,27 @@ Errors World::Load(sdf::ElementPtr _sdf)
     errors.insert(errors.end(), sceneLoadErrors.begin(), sceneLoadErrors.end());
   }
 
+  // Build the graphs.
+  // Errors frameAttachedToGraphErrors =
+  buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
+  // errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+  //                             frameAttachedToGraphErrors.end());
+  //
+  this->dataPtr->poseRelativeToGraph = std::make_shared<PoseRelativeToGraph>();
+  // Errors poseRelativeToGraphErrors =
+  buildPoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph, this);
+  // errors.insert(errors.end(), poseRelativeToGraphErrors.begin(),
+  //                             poseRelativeToGraphErrors.end());
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &light : this->dataPtr->lights)
+  {
+    light.SetXmlParentName("world");
+    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+
   return errors;
 }
 
@@ -417,6 +445,12 @@ const sdf::Scene *World::Scene() const
 void World::SetScene(const sdf::Scene &_scene)
 {
   return this->dataPtr->scene.reset(new sdf::Scene(_scene));
+}
+
+/////////////////////////////////////////////////
+const PoseRelativeToGraph *World::GetPoseRelativeToGraph() const
+{
+  return this->dataPtr->poseRelativeToGraph.get();
 }
 
 /////////////////////////////////////////////////

@@ -75,7 +75,10 @@ class sdf::ModelPrivate
   public: sdf::FrameAttachedToGraph frameAttachedToGraph;
 
   /// \brief Pose Relative-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseGraph;
+
+  /// \brief Pose Relative-To Graph in parent (world) scope.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> parentPoseGraph;
 };
 
 /////////////////////////////////////////////////
@@ -219,22 +222,22 @@ Errors Model::Load(ElementPtr _sdf)
   // errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
   //                             frameAttachedToGraphErrors.end());
   //
-  this->dataPtr->poseRelativeToGraph = std::make_shared<PoseRelativeToGraph>();
-  // Errors poseRelativeToGraphErrors =
-  buildPoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph, this);
-  // errors.insert(errors.end(), poseRelativeToGraphErrors.begin(),
-  //                             poseRelativeToGraphErrors.end());
+  this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>();
+  // Errors poseGraphErrors =
+  buildPoseRelativeToGraph(*this->dataPtr->poseGraph, this);
+  // errors.insert(errors.end(), poseGraphErrors.begin(),
+  //                             poseGraphErrors.end());
   for (auto &link : this->dataPtr->links)
   {
-    link.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
   for (auto &joint : this->dataPtr->joints)
   {
-    joint.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
   for (auto &frame : this->dataPtr->frames)
   {
-    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
 
   return errors;
@@ -470,7 +473,24 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 /////////////////////////////////////////////////
 const PoseRelativeToGraph *Model::GetPoseRelativeToGraph() const
 {
-  return this->dataPtr->poseRelativeToGraph.get();
+  return this->dataPtr->poseGraph.get();
+}
+
+/////////////////////////////////////////////////
+void Model::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->parentPoseGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+sdf::SemanticPose Model::SemanticPose() const
+{
+  return sdf::SemanticPose(
+      ignition::math::Pose3d::Zero,
+      this->dataPtr->name,
+      "world",
+      this->dataPtr->parentPoseGraph);
 }
 
 /////////////////////////////////////////////////

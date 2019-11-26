@@ -22,7 +22,6 @@
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/FrameSemantics.hh"
-#include "sdf/Model.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -264,7 +263,7 @@ namespace sdf
         std::weak_ptr<const PoseRelativeToGraph> _graph);
 
     /// \brief Allow Model::Load to call SetPoseRelativeToGraph.
-    friend Errors Model::Load(ElementPtr);
+    friend class Model;
 
     /// \brief Check if this link should be subject to wind.
     /// If true, this link should be affected by wind.

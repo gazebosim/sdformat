@@ -41,6 +41,7 @@ namespace sdf
   class Model;
   class Physics;
   class WorldPrivate;
+  struct PoseRelativeToGraph;
 
   class SDFORMAT_VISIBLE World
   {
@@ -241,6 +242,11 @@ namespace sdf
     /// \brief Set the Scene parameters associated with this world.
     /// \param[in] _gui The new Scene parameter for this world
     public: void SetScene(const sdf::Scene &_scene);
+
+    /// \brief Get a const pointer to the model's PoseRelativeToGraph
+    /// to use for computing relative poses.
+    /// \return Const pointer to the model's PoseRelativeToGraph.
+    public: const PoseRelativeToGraph *GetPoseRelativeToGraph() const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

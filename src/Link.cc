@@ -416,6 +416,11 @@ void Link::SetPoseRelativeToGraph(
     collision.SetXmlParentName(this->dataPtr->name);
     collision.SetPoseRelativeToGraph(_graph);
   }
+  for (auto &light : this->dataPtr->lights)
+  {
+    light.SetXmlParentName(this->dataPtr->name);
+    light.SetPoseRelativeToGraph(_graph);
+  }
   for (auto &sensor : this->dataPtr->sensors)
   {
     sensor.SetXmlParentName(this->dataPtr->name);

@@ -23,8 +23,9 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/graph/Graph.hh>
 
-#include "sdf/Joint.hh"
-#include "sdf/Link.hh"
+#include "sdf/Error.hh"
+#include "sdf/Types.hh"
+#include "sdf/system_util.hh"
 
 /// \ingroup sdf_frame_semantics
 /// \brief namespace for Simulation Description Format Frame Semantics Utilities
