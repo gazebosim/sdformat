@@ -21,9 +21,13 @@ but with improved human-readability..
 
 ### Deprecations
 
-1. All DOM classes with `PoseFrame()` and `PoseRelativeTo()` API's:
+1. All DOM classes with `Pose()` and `PoseFrame()` API's:
+   + ***Deprecation:*** const ignition::math::Pose3d &Pose()
+   + ***Replacement:*** const ignition::math::Pose3d &RawPose()
    + ***Deprecation:*** const std::string &PoseFrame()
    + ***Replacement:*** const std::string &PoseRelativeTo()
+   + ***Deprecation:*** void SetPose(const ignition::math::Pose3d &)
+   + ***Replacement:*** void SetRawPose(const ignition::math::Pose3d &)
    + ***Deprecation:*** void SetPoseFrame(const std::string &)
    + ***Replacement:*** void SetPoseRelativeTo(const std::string &)
 

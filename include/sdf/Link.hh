@@ -192,12 +192,26 @@ namespace sdf
     /// \brief Get the pose of the link. This is the pose of the link
     /// as specified in SDF (<link> <pose> ... </pose></link>).
     /// \return The pose of the link.
-    public: const ignition::math::Pose3d &Pose() const;
+    /// \deprecated See RawPose.
+    public: const ignition::math::Pose3d &Pose() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the pose of the link.
     /// \sa const ignition::math::Pose3d &Pose() const
     /// \param[in] _pose The new link pose.
-    public: void SetPose(const ignition::math::Pose3d &_pose);
+    /// \deprecated See SetRawPose.
+    public: void SetPose(const ignition::math::Pose3d &_pose)
+        SDF_DEPRECATED(9.0);
+
+    /// \brief Get the pose of the link. This is the pose of the link
+    /// as specified in SDF (<link> <pose> ... </pose></link>).
+    /// \return The pose of the link.
+    public: const ignition::math::Pose3d &RawPose() const;
+
+    /// \brief Set the pose of the link.
+    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \param[in] _pose The new link pose.
+    public: void SetRawPose(const ignition::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
