@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Open Source Robotics Foundation
+ * Copyright 2019 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,7 +128,7 @@ Errors Frame::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-std::string Frame::Name() const
+const std::string &Frame::Name() const
 {
   return this->dataPtr->name;
 }
