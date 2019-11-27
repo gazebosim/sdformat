@@ -44,6 +44,9 @@ class sdf::ModelPrivate
   /// \brief True if this model should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
+  /// \brief Name of the canonical link.
+  public: std::string canonicalLink = "";
+
   /// \brief Pose of the model
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
@@ -137,6 +140,16 @@ Errors Model::Load(ElementPtr _sdf)
                      "] is reserved."});
   }
 
+  // Read the model's canonical_link attribute
+  if (_sdf->HasAttribute("canonical_link"))
+  {
+    auto pair = _sdf->Get<std::string>("canonical_link", "");
+    if (pair.second)
+    {
+      this->dataPtr->canonicalLink = pair.first;
+    }
+  }
+
   this->dataPtr->isStatic = _sdf->Get<bool>("static", false).first;
 
   this->dataPtr->selfCollide = _sdf->Get<bool>("self_collide", false).first;
@@ -153,6 +166,14 @@ Errors Model::Load(ElementPtr _sdf)
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
     this->dataPtr->links);
   errors.insert(errors.end(), linkLoadErrors.begin(), linkLoadErrors.end());
+
+  // Require at least one link so the implicit model frame can be attached to
+  // something.
+  if (this->dataPtr->links.empty())
+  {
+    errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
+                     "A model must have at least one link."});
+  }
 
   // Load all the joints.
   Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
@@ -287,6 +308,31 @@ const Joint *Model::JointByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+const Link *Model::CanonicalLink() const
+{
+  if (this->CanonicalLinkName().empty())
+  {
+    return this->LinkByIndex(0);
+  }
+  else
+  {
+    return this->LinkByName(this->CanonicalLinkName());
+  }
+}
+
+/////////////////////////////////////////////////
+const std::string &Model::CanonicalLinkName() const
+{
+  return this->dataPtr->canonicalLink;
+}
+
+/////////////////////////////////////////////////
+void Model::SetCanonicalLinkName(const std::string &_canonicalLink)
+{
+  this->dataPtr->canonicalLink = _canonicalLink;
 }
 
 /////////////////////////////////////////////////
