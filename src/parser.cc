@@ -1460,6 +1460,481 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
 }
 
 //////////////////////////////////////////////////
+bool checkKinematicGraph(const sdf::Root *_root)
+{
+  bool result = true;
+
+  auto checkModelKinematicGraph = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    sdf::KinematicGraph graph;
+    auto errors = sdf::buildKinematicGraph(graph, _model);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      modelResult = false;
+    }
+    return modelResult;
+  };
+
+  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  {
+    auto model = _root->ModelByIndex(m);
+    result = checkModelKinematicGraph(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelKinematicGraph(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkFrameAttachedToGraph(const sdf::Root *_root)
+{
+  bool result = true;
+
+  auto checkModelFrameAttachedToGraph = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    sdf::FrameAttachedToGraph graph;
+    auto errors = sdf::buildFrameAttachedToGraph(graph, _model);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      modelResult = false;
+    }
+    errors = sdf::validateFrameAttachedToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validateFrameAttachedToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      modelResult = false;
+    }
+    return modelResult;
+  };
+
+  auto checkWorldFrameAttachedToGraph = [](
+      const sdf::World *_world) -> bool
+  {
+    bool worldResult = true;
+    sdf::FrameAttachedToGraph graph;
+    auto errors = sdf::buildFrameAttachedToGraph(graph, _world);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      worldResult = false;
+    }
+    errors = sdf::validateFrameAttachedToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validateFrameAttachedToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      worldResult = false;
+    }
+    return worldResult;
+  };
+
+  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  {
+    auto model = _root->ModelByIndex(m);
+    result = checkModelFrameAttachedToGraph(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    result = checkWorldFrameAttachedToGraph(world) && result;
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelFrameAttachedToGraph(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkPoseRelativeToGraph(const sdf::Root *_root)
+{
+  bool result = true;
+
+  auto checkModelPoseRelativeToGraph = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    sdf::PoseRelativeToGraph graph;
+    auto errors = sdf::buildPoseRelativeToGraph(graph, _model);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      modelResult = false;
+    }
+    errors = sdf::validatePoseRelativeToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validatePoseRelativeToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      modelResult = false;
+    }
+    // compute pose of each vertex relative to root
+    for (auto const &namePair : graph.map)
+    {
+      ignition::math::Pose3d pose;
+      errors = sdf::resolvePoseRelativeToRoot(
+          graph, namePair.first, pose);
+      if (!errors.empty())
+      {
+        for (auto &error : errors)
+        {
+          std::cerr << "Error in resolvePoseRelativeToRoot for vertex named ["
+                    << namePair.first << "]: "
+                    << error.Message()
+                    << std::endl;
+        }
+        modelResult = false;
+      }
+    }
+    return modelResult;
+  };
+
+  auto checkWorldPoseRelativeToGraph = [](
+      const sdf::World *_world) -> bool
+  {
+    bool worldResult = true;
+    sdf::PoseRelativeToGraph graph;
+    auto errors = sdf::buildPoseRelativeToGraph(graph, _world);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      worldResult = false;
+    }
+    errors = sdf::validatePoseRelativeToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validatePoseRelativeToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      worldResult = false;
+    }
+    // compute pose of each vertex relative to root
+    for (auto const &namePair : graph.map)
+    {
+      ignition::math::Pose3d pose;
+      errors = sdf::resolvePoseRelativeToRoot(
+          graph, namePair.first, pose);
+      if (!errors.empty())
+      {
+        for (auto &error : errors)
+        {
+          std::cerr << "Error in resolvePoseRelativeToRoot for vertex named ["
+                    << namePair.first << "]: "
+                    << error.Message()
+                    << std::endl;
+        }
+        worldResult = false;
+      }
+    }
+    return worldResult;
+  };
+
+  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  {
+    auto model = _root->ModelByIndex(m);
+    result = checkModelPoseRelativeToGraph(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    result = checkWorldPoseRelativeToGraph(world) && result;
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelPoseRelativeToGraph(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+/// \brief Helper function for checking validity of pose relative_to attribute
+/// values in the model scope.
+/// \param[in] _model Model object that contains object _t in its scope.
+/// \param[in] _t Object whose pose relative_to attribute is to be checked
+/// (may be Link, Joint, Frame, Collision, etc.).
+/// \param[in] _typeName Name of type T for use in console messages.
+/// \return True if relative_to attribute values a valid.
+template <typename T>
+bool checkModelPoseRelativeTo(
+    const sdf::Model *_model,
+    const T *_t,
+    const std::string &_typeName)
+{
+  const std::string &relativeTo = _t->PoseRelativeTo();
+
+  // the relative_to attribute is always permitted to be empty
+  if (relativeTo.empty())
+  {
+    return true;
+  }
+
+  if (relativeTo == _t->Name())
+  {
+    std::cerr << "Error: relative_to name[" << relativeTo
+              << "] is identical to " << _typeName << " name[" << _t->Name()
+              << "], causing a graph cycle "
+              << "in model with name[" << _model->Name()
+              << "]."
+              << std::endl;
+    return false;
+  }
+  else if (!_model->LinkNameExists(relativeTo) &&
+           !_model->JointNameExists(relativeTo) &&
+           !_model->FrameNameExists(relativeTo))
+  {
+    std::cerr << "Error: relative_to name[" << relativeTo
+              << "] specified by " << _typeName << " with name[" << _t->Name()
+              << "] does not match a link, joint, or frame name "
+              << "in model with name[" << _model->Name()
+              << "]."
+              << std::endl;
+    return false;
+  }
+  return true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Helper function for checking validity of pose relative_to attribute
+/// values in the model scope.
+/// \param[in] _world World object that contains object _t in its scope.
+/// \param[in] _t Object whose pose relative_to attribute is to be checked
+/// (may be Model, Frame, Light, etc.).
+/// \param[in] _typeName Name of type T for use in console messages.
+/// \return True if relative_to attribute values a valid.
+template <typename T>
+bool checkWorldPoseRelativeTo(
+    const sdf::World *_world,
+    const T *_t,
+    const std::string &_typeName)
+{
+  const std::string &relativeTo = _t->PoseRelativeTo();
+
+  // the relative_to attribute is always permitted to be empty
+  if (relativeTo.empty())
+  {
+    return true;
+  }
+
+  if (relativeTo == _t->Name())
+  {
+    std::cerr << "Error: relative_to name[" << relativeTo
+              << "] is identical to " << _typeName << " name[" << _t->Name()
+              << "], causing a graph cycle "
+              << "in world with name[" << _world->Name()
+              << "]."
+              << std::endl;
+    return false;
+  }
+  else if (!_world->ModelNameExists(relativeTo) &&
+           !_world->FrameNameExists(relativeTo))
+  {
+    std::cerr << "Error: relative_to name[" << relativeTo
+              << "] specified by " << _typeName << " with name[" << _t->Name()
+              << "] does not match a model or frame name "
+              << "in world with name[" << _world->Name()
+              << "]."
+              << std::endl;
+    return false;
+  }
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool checkPoseRelativeToNames(const sdf::Root *_root)
+{
+  bool result = true;
+
+  auto checkModelPoseRelativeToNames = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    for (uint64_t l = 0; l < _model->LinkCount(); ++l)
+    {
+      auto link = _model->LinkByIndex(l);
+
+      modelResult = checkModelPoseRelativeTo<sdf::Link>(_model, link, "link")
+                    && modelResult;
+    }
+    for (uint64_t j = 0; j < _model->JointCount(); ++j)
+    {
+      auto joint = _model->JointByIndex(j);
+
+      modelResult = checkModelPoseRelativeTo<sdf::Joint>(_model, joint, "joint")
+                    && modelResult;
+    }
+    for (uint64_t f = 0; f < _model->FrameCount(); ++f)
+    {
+      auto frame = _model->FrameByIndex(f);
+
+      modelResult = checkModelPoseRelativeTo<sdf::Frame>(_model, frame, "frame")
+                    && modelResult;
+    }
+    return modelResult;
+  };
+
+  auto checkWorldPoseRelativeToNames = [](
+      const sdf::World *_world) -> bool
+  {
+    bool worldResult = true;
+    for (uint64_t m = 0; m < _world->ModelCount(); ++m)
+    {
+      auto model = _world->ModelByIndex(m);
+
+      worldResult = checkWorldPoseRelativeTo<sdf::Model>(_world, model, "model")
+                    && worldResult;
+    }
+    for (uint64_t f = 0; f < _world->FrameCount(); ++f)
+    {
+      auto frame = _world->FrameByIndex(f);
+
+      worldResult = checkWorldPoseRelativeTo<sdf::Frame>(_world, frame, "frame")
+                    && worldResult;
+    }
+    return worldResult;
+  };
+
+  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  {
+    auto model = _root->ModelByIndex(m);
+    result = checkModelPoseRelativeToNames(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    result = checkWorldPoseRelativeToNames(world) && result;
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelPoseRelativeToNames(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkJointParentChildLinkNames(const sdf::Root *_root)
+{
+  bool result = true;
+
+  auto checkModelJointParentChildNames = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    for (uint64_t j = 0; j < _model->JointCount(); ++j)
+    {
+      auto joint = _model->JointByIndex(j);
+
+      const std::string &parentName = joint->ParentLinkName();
+      if (parentName != "world" && !_model->LinkNameExists(parentName))
+      {
+        std::cerr << "Error: parent link with name[" << parentName
+                  << "] specified by joint with name[" << joint->Name()
+                  << "] not found in model with name[" << _model->Name()
+                  << "]."
+                  << std::endl;
+        modelResult = false;
+      }
+
+      const std::string &childName = joint->ChildLinkName();
+      if (childName != "world" && !_model->LinkNameExists(childName))
+      {
+        std::cerr << "Error: child link with name[" << childName
+                  << "] specified by joint with name[" << joint->Name()
+                  << "] not found in model with name[" << _model->Name()
+                  << "]."
+                  << std::endl;
+        modelResult = false;
+      }
+
+      if (childName == parentName)
+      {
+        std::cerr << "Error: joint with name[" << joint->Name()
+                  << "] in model with name[" << _model->Name()
+                  << "] must specify different link names for "
+                  << "parent and child, while [" << childName
+                  << "] was specified for both."
+                  << std::endl;
+        modelResult = false;
+      }
+    }
+    return modelResult;
+  };
+
+  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  {
+    auto model = _root->ModelByIndex(m);
+    result = checkModelJointParentChildNames(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelJointParentChildNames(model) && result;
+    }
+  }
+
+  return result;
+}
+
+
+//////////////////////////////////////////////////
 bool shouldValidateElement(sdf::ElementPtr _elem)
 {
   if (_elem->GetName() == "plugin")

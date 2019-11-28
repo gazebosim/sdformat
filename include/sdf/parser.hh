@@ -166,6 +166,17 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool checkCanonicalLinkNames(const sdf::Root *_root);
 
+  /// \brief For the world and each model, check that the attached_to graphs
+  /// build without errors and have no cycles.
+  /// Confirm that following directed edges from each vertex in the graph
+  /// leads to a model, link, or world frame.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root sdf Root object to check recursively.
+  /// \return True if all attached_to graphs are valid.
+  SDFORMAT_VISIBLE
+  bool checkFrameAttachedToGraph(const sdf::Root *_root);
+
   /// \brief Check that for each frame, the attached_to attribute value
   /// does not match its own frame name but does match the name of a
   /// link, joint, or other frame in the model if the attribute is set and
@@ -175,6 +186,45 @@ namespace sdf
   /// \param[in] _root sdf Root object to check recursively.
   /// \return True if all frames have valid attached_to attributes.
   bool checkFrameAttachedToNames(const sdf::Root *_root);
+
+  /// \brief Check that all joints in contained models have specify parent
+  /// and child link names that match the names of sibling links.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root sdf Root object to check recursively.
+  /// \return True if all models have joints with valid parent and child
+  /// link names.
+  SDFORMAT_VISIBLE
+  bool checkJointParentChildLinkNames(const sdf::Root *_root);
+
+  /// \brief For each model, check that the kinematic graphs build without
+  /// errors.
+  /// \param[in] _root sdf Root object to check recursively.
+  /// \return True if all kinematic graphs are valid.
+  SDFORMAT_VISIBLE
+  bool checkKinematicGraph(const sdf::Root *_root);
+
+  /// \brief For the world and each model, check that the attached_to graphs
+  /// build without errors and have no cycles.
+  /// Confirm that following directed edges from each vertex in the graph
+  /// leads to a model, link, or world frame.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root sdf Root object to check recursively.
+  /// \return True if all attached_to graphs are valid.
+  SDFORMAT_VISIBLE
+  bool checkPoseRelativeToGraph(const sdf::Root *_root);
+
+  /// \brief Check that for each pose, the relative_to attribute value
+  /// does not match its own frame name (for the poses of explicit and
+  /// implicit frames) but does match the name of a frame in the current
+  /// scope if the attribute is set and not empty.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root sdf Root object to check recursively.
+  /// \return True if all poses have valid relative_to attributes.
+  SDFORMAT_VISIBLE
+  bool checkPoseRelativeToNames(const sdf::Root *_root);
 
   /// \brief Check that all sibling elements of the same type have unique names.
   /// This checks recursively and should check the files exhaustively
