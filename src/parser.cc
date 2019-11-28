@@ -25,6 +25,7 @@
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Frame.hh"
 #include "sdf/Param.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
