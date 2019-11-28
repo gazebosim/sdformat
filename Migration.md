@@ -32,7 +32,11 @@ but with improved human-readability..
     + const Model \*ModelByName(const std::string &) const
 
 1. **sdf/parser.hh**
+   + bool checkCanonicalLinkNames(sdf::Root\*)
+   + bool checkFrameAttachedToNames(sdf::Root\*)
    + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)
+   + bool recursiveSiblingUniqueNames(sdf::ElementPtr)
+   + bool shouldValidateElement(sdf::ElementPtr)
 
 ### Deprecations
 
