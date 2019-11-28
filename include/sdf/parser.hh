@@ -166,6 +166,16 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool checkCanonicalLinkNames(const sdf::Root *_root);
 
+  /// \brief Check that for each frame, the attached_to attribute value
+  /// does not match its own frame name but does match the name of a
+  /// link, joint, or other frame in the model if the attribute is set and
+  /// not empty.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root sdf Root object to check recursively.
+  /// \return True if all frames have valid attached_to attributes.
+  bool checkFrameAttachedToNames(const sdf::Root *_root);
+
   /// \brief Check that all sibling elements of the same type have unique names.
   /// This checks recursively and should check the files exhaustively
   /// rather than terminating early when the first duplicate name is found.
