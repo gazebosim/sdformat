@@ -20,13 +20,7 @@
 
 #include "sdf/sdf_config.h"
 #include "sdf/Filesystem.hh"
-#include "sdf/Frame.hh"
-#include "sdf/FrameSemantics.hh"
-#include "sdf/Joint.hh"
-#include "sdf/Link.hh"
-#include "sdf/Model.hh"
 #include "sdf/Root.hh"
-#include "sdf/World.hh"
 #include "sdf/ign.hh"
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
