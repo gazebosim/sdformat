@@ -4,6 +4,9 @@
 
 ### SDFormat 9.0.0 (201X-XX-XX)
 
+1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
+    * [Pull request 606](https://bitbucket.org/osrf/sdformat/pull-requests/606)
+
 1. Use consistent namespaces in Filesystem.
     * [Pull request 567](https://bitbucket.org/osrf/sdformat/pull-requests/567)
 
@@ -41,8 +44,19 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+### SDFormat 8.6.0 (2019-11-20)
+
+1. configure.bat: use ign-math6, not gz11
+    * [Pull request 595](https://bitbucket.org/osrf/sdformat/pull-requests/595)
+
+1. Set `sdformat8_PKGCONFIG_*` variables in cmake config instead of `SDFormat_PKGCONFIG*`.
+    * [Pull request 594](https://bitbucket.org/osrf/sdformat/pull-requests/594)
+
 1. Relax cmake check to allow compiling with gcc-7.
     * [Pull request 592](https://bitbucket.org/osrf/sdformat/pull-requests/592)
+
+1. Use custom callbacks when reading file (support Fuel URIs).
+    * [Pull request 591](https://bitbucket.org/osrf/sdformat/pull-requests/591)
 
 1. Update visual DOM to parse `cast_shadows` property of a visual.
     * [Pull request 590](https://bitbucket.org/osrf/sdformat/pull-requests/590)
@@ -50,7 +64,7 @@
 1. Build `Utils_TEST` with Utils.cc explicitly passed since its symbols are not visible.
     * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
 
-### SDFormat 8.5.0 (2019-11-XX)
+### SDFormat 8.5.0 (2019-11-06)
 
 1. Add `thermal_camera` sensor type
     * [Pull request 586](https://bitbucket.org/osrf/sdformat/pull-requests/586)
@@ -68,7 +82,7 @@
     * [Pull request 584](https://bitbucket.org/osrf/sdformat/pull-requests/584)
     * [Pull request 573](https://bitbucket.org/osrf/sdformat/pull-requests/573)
 
-### SDFormat 8.4.0 (2019-10-XX)
+### SDFormat 8.4.0 (2019-10-22)
 
 1. Accept relative path in `<uri>`.
     * [Pull request 558](https://bitbucket.org/osrf/sdformat/pull-requests/558)

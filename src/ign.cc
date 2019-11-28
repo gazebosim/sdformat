@@ -34,169 +34,6 @@
 inline namespace SDF_VERSION_NAMESPACE {
 
 //////////////////////////////////////////////////
-/// \brief Check that for each model, the canonical_link attribute value
-/// matches the name of a link in the model if the attribute is set and
-/// not empty.
-/// This checks recursively and should check the files exhaustively
-/// rather than terminating early when the first error is found.
-/// \param[in] _root sdf Root object to check recursively.
-/// \return True if all models have valid canonical_link attributes.
-bool checkCanonicalLinkNames(const sdf::Root &_root)
-{
-  bool result = true;
-
-  auto checkModelCanonicalLinkName = [](
-      const sdf::Model *_model) -> bool
-  {
-    bool modelResult = true;
-    std::string canonicalLink = _model->CanonicalLinkName();
-    if (!canonicalLink.empty() && !_model->LinkNameExists(canonicalLink))
-    {
-      std::cerr << "Error: canonical_link with name[" << canonicalLink
-                << "] not found in model with name[" << _model->Name()
-                << "]."
-                << std::endl;
-      modelResult = false;
-    }
-    return modelResult;
-  };
-
-  for (uint64_t m = 0; m < _root.ModelCount(); ++m)
-  {
-    auto model = _root.ModelByIndex(m);
-    result = checkModelCanonicalLinkName(model) && result;
-  }
-
-  for (uint64_t w = 0; w < _root.WorldCount(); ++w)
-  {
-    auto world = _root.WorldByIndex(w);
-    for (uint64_t m = 0; m < world->ModelCount(); ++m)
-    {
-      auto model = world->ModelByIndex(m);
-      result = checkModelCanonicalLinkName(model) && result;
-    }
-  }
-
-  return result;
-}
-
-//////////////////////////////////////////////////
-/// \brief Check that for each frame, the attached_to attribute value
-/// does not match its own frame name but does match the name of a
-/// link, joint, or other frame in the model if the attribute is set and
-/// not empty.
-/// This checks recursively and should check the files exhaustively
-/// rather than terminating early when the first error is found.
-/// \param[in] _root sdf Root object to check recursively.
-/// \return True if all frames have valid attached_to attributes.
-bool checkFrameAttachedToNames(const sdf::Root &_root)
-{
-  bool result = true;
-
-  auto checkModelFrameAttachedToNames = [](
-      const sdf::Model *_model) -> bool
-  {
-    bool modelResult = true;
-    for (uint64_t f = 0; f < _model->FrameCount(); ++f)
-    {
-      auto frame = _model->FrameByIndex(f);
-
-      const std::string &attachedTo = frame->AttachedTo();
-
-      // the attached_to attribute is always permitted to be empty
-      if (attachedTo.empty())
-      {
-        continue;
-      }
-
-      if (attachedTo == frame->Name())
-      {
-        std::cerr << "Error: attached_to name[" << attachedTo
-                  << "] is identical to frame name[" << frame->Name()
-                  << "], causing a graph cycle "
-                  << "in model with name[" << _model->Name()
-                  << "]."
-                  << std::endl;
-        modelResult = false;
-      }
-      else if (!_model->LinkNameExists(attachedTo) &&
-               !_model->JointNameExists(attachedTo) &&
-               !_model->FrameNameExists(attachedTo))
-      {
-        std::cerr << "Error: attached_to name[" << attachedTo
-                  << "] specified by frame with name[" << frame->Name()
-                  << "] does not match a link, joint, or frame name "
-                  << "in model with name[" << _model->Name()
-                  << "]."
-                  << std::endl;
-        modelResult = false;
-      }
-    }
-    return modelResult;
-  };
-
-  auto checkWorldFrameAttachedToNames = [](
-      const sdf::World *_world) -> bool
-  {
-    bool worldResult = true;
-    for (uint64_t f = 0; f < _world->FrameCount(); ++f)
-    {
-      auto frame = _world->FrameByIndex(f);
-
-      const std::string &attachedTo = frame->AttachedTo();
-
-      // the attached_to attribute is always permitted to be empty
-      if (attachedTo.empty())
-      {
-        continue;
-      }
-
-      if (attachedTo == frame->Name())
-      {
-        std::cerr << "Error: attached_to name[" << attachedTo
-                  << "] is identical to frame name[" << frame->Name()
-                  << "], causing a graph cycle "
-                  << "in world with name[" << _world->Name()
-                  << "]."
-                  << std::endl;
-        worldResult = false;
-      }
-      else if (!_world->ModelNameExists(attachedTo) &&
-               !_world->FrameNameExists(attachedTo))
-      {
-        std::cerr << "Error: attached_to name[" << attachedTo
-                  << "] specified by frame with name[" << frame->Name()
-                  << "] does not match a model or frame name "
-                  << "in world with name[" << _world->Name()
-                  << "]."
-                  << std::endl;
-        worldResult = false;
-      }
-    }
-    return worldResult;
-  };
-
-  for (uint64_t m = 0; m < _root.ModelCount(); ++m)
-  {
-    auto model = _root.ModelByIndex(m);
-    result = checkModelFrameAttachedToNames(model) && result;
-  }
-
-  for (uint64_t w = 0; w < _root.WorldCount(); ++w)
-  {
-    auto world = _root.WorldByIndex(w);
-    result = checkWorldFrameAttachedToNames(world) && result;
-    for (uint64_t m = 0; m < world->ModelCount(); ++m)
-    {
-      auto model = world->ModelByIndex(m);
-      result = checkModelFrameAttachedToNames(model) && result;
-    }
-  }
-
-  return result;
-}
-
-//////////////////////////////////////////////////
 /// \brief For each model, check that the kinematic graphs build without
 /// errors.
 /// \param[in] _root sdf Root object to check recursively.
@@ -706,67 +543,6 @@ bool checkJointParentChildLinkNames(const sdf::Root &_root)
 }
 
 //////////////////////////////////////////////////
-/// \brief Check that all sibling elements of the any type have unique names.
-/// This checks recursively and should check the files exhaustively
-/// rather than terminating early when the first duplicate name is found.
-/// \param[in] _elem sdf Element to check recursively.
-/// \return True if all contained elements have do not share a name with
-/// sibling elements of any type.
-bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
-{
-  bool result = _elem->HasUniqueChildNames();
-  if (!result)
-  {
-    std::cerr << "Non-unique names detected in "
-              << _elem->ToString("")
-              << std::endl;
-    result = false;
-  }
-
-  sdf::ElementPtr child = _elem->GetFirstElement();
-  while (child)
-  {
-    result = recursiveSiblingUniqueNames(child) && result;
-    child = child->GetNextElement();
-  }
-
-  return result;
-}
-
-//////////////////////////////////////////////////
-/// \brief Check that all sibling elements of the same type have unique names.
-/// This checks recursively and should check the files exhaustively
-/// rather than terminating early when the first duplicate name is found.
-/// \param[in] _elem sdf Element to check recursively.
-/// \return True if all contained elements have do not share a name with
-/// sibling elements of the same type.
-bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
-{
-  bool result = true;
-  auto typeNames = _elem->GetElementTypeNames();
-  for (const std::string &typeName : typeNames)
-  {
-    if (!_elem->HasUniqueChildNames(typeName))
-    {
-      std::cerr << "Non-unique names detected in type "
-                << typeName << " in\n"
-                << _elem->ToString("")
-                << std::endl;
-      result = false;
-    }
-  }
-
-  sdf::ElementPtr child = _elem->GetFirstElement();
-  while (child)
-  {
-    result = recursiveSameTypeUniqueNames(child) && result;
-    child = child->GetNextElement();
-  }
-
-  return result;
-}
-
-//////////////////////////////////////////////////
 // cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 {
@@ -783,7 +559,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     return -1;
   }
 
-  if (!checkCanonicalLinkNames(root))
+  if (!sdf::checkCanonicalLinkNames(&root))
   {
     std::cerr << "Error: invalid canonical link name.\n";
     result = -1;
@@ -794,17 +570,20 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     std::cerr << "Error: invalid parent or child link name.\n";
     result = -1;
   }
-  if (!checkFrameAttachedToNames(root))
+
+  if (!sdf::checkFrameAttachedToNames(&root))
   {
     std::cerr << "Error: invalid frame attached_to name.\n";
     result = -1;
   }
+
   if (!checkPoseRelativeToNames(root))
   {
     std::cerr << "Error: invalid pose relative_to name.\n";
     result = -1;
   }
-  if (!recursiveSiblingUniqueNames(root.Element()))
+
+  if (!sdf::recursiveSiblingUniqueNames(root.Element()))
   {
     std::cerr << "Error: non-unique names detected.\n";
     result = -1;

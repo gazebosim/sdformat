@@ -18,9 +18,10 @@
 #include <gtest/gtest.h>
 #include "sdf/parser.hh"
 #include "sdf/Element.hh"
+#include "test_config.h"
 
 /////////////////////////////////////////////////
-TEST(parser, initStringTrim)
+TEST(Parser, initStringTrim)
 {
   sdf::SDFPtr sdf(new sdf::SDF());
   std::ostringstream stream;
@@ -46,6 +47,109 @@ TEST(parser, initStringTrim)
   sdf::ParamPtr attr = root->GetAttribute("name");
   EXPECT_TRUE(attr != nullptr);
   EXPECT_TRUE(attr->GetRequired());
+}
+
+/////////////////////////////////////////////////
+/// Tests whether the input sdf string satisfies the unique name criteria among
+/// same types
+sdf::SDFPtr InitSDF()
+{
+  sdf::SDFPtr sdf(new sdf::SDF());
+  sdf::init(sdf);
+  return sdf;
+}
+
+/////////////////////////////////////////////////
+TEST(Parser, NameUniqueness)
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+
+  // These tests are copies of the ones in ign_TEST.cc but use direct calls to
+  // name uniqueness validator functions instead of going through ign.
+
+  // Check an SDF file with sibling elements of the same type (world)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/world_duplicate.sdf";
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+    EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+  }
+
+  // Check an SDF file with sibling elements of different types (model, light)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/world_sibling_same_names.sdf";
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+    EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+  }
+
+  // Check an SDF file with sibling elements of the same type (link)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/model_duplicate_links.sdf";
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+    EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+  }
+
+  // Check an SDF file with sibling elements of the same type (joint)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/model_duplicate_joints.sdf";
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+    EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+  }
+
+  // Check an SDF file with sibling elements of different types (link, joint)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/model_link_joint_same_name.sdf";
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+    EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+  }
+
+  // Check an SDF file with sibling elements of the same type (collision)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/link_duplicate_sibling_collisions.sdf";
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+    EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+  }
+
+  // Check an SDF file with sibling elements of the same type (visual)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/link_duplicate_sibling_visuals.sdf";
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+    EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+  }
+
+  // Check an SDF file with cousin elements of the same type (collision)
+  // that have duplicate names. This is a valid file.
+  {
+    std::string path = pathBase +"/link_duplicate_cousin_collisions.sdf";
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+    EXPECT_TRUE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+    EXPECT_TRUE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+  }
+
+  // Check an SDF file with cousin elements of the same type (visual)
+  // that have duplicate names. This is a valid file.
+  {
+    std::string path = pathBase +"/link_duplicate_cousin_visuals.sdf";
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+    EXPECT_TRUE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+    EXPECT_TRUE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+  }
 }
 
 /////////////////////////////////////////////////

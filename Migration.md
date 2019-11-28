@@ -31,21 +31,24 @@ but with improved human-readability..
     + bool FrameNameExists(const std::string &) const
     + const Model \*ModelByName(const std::string &) const
 
+1. **sdf/parser.hh**
+   + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)
+
 ### Deprecations
 
 1. All DOM classes with `Pose()` and `PoseFrame()` API's:
-   + ***Deprecation:*** std::string Pose()
-   + ***Replacement:*** std::string RawPose()
-   + ***Deprecation:*** std::string PoseFrame()
-   + ***Replacement:*** std::string PoseRelativeTo()
-   + ***Deprecation:*** void SetPose(const std::string &)
-   + ***Replacement:*** void SetRawPose(const std::string &)
+   + ***Deprecation:*** const ignition::math::Pose3d &Pose()
+   + ***Replacement:*** const ignition::math::Pose3d &RawPose()
+   + ***Deprecation:*** const std::string &PoseFrame()
+   + ***Replacement:*** const std::string &PoseRelativeTo()
+   + ***Deprecation:*** void SetPose(const ignition::math::Pose3d &)
+   + ***Replacement:*** void SetRawPose(const ignition::math::Pose3d &)
    + ***Deprecation:*** void SetPoseFrame(const std::string &)
    + ***Replacement:*** void SetPoseRelativeTo(const std::string &)
 
 1. **sdf/JointAxis.hh**
    + ***Deprecation:*** bool UseParentModelFrame()
-   + ***Replacement:*** std::string XyzExpressedIn()
+   + ***Replacement:*** const std::string &XyzExpressedIn()
    + ***Deprecation:*** void SetUseParentModelFrame(bool)
    + ***Replacement:*** void SetXyzExpressedIn(const std::string &)
 
@@ -178,9 +181,6 @@ but with improved human-readability..
     [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#2-model-frame-and-canonical-link).
     + [pull request 601](https://bitbucket.org/osrf/sdformat/pull-requests/601)
 
-1. **pose.sdf** `//pose/@frame` attribute is renamed to `//pose/@relative_to`.
-    + [pull request 597](https://bitbucket.org/osrf/sdformat/pull-requests/597)
-
 1. Unique names for all sibling elements:
     + As described in the [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#3-2-unique-names-for-all-sibling-elements),
       all named sibling elements must have unique names.
@@ -202,6 +202,9 @@ but with improved human-readability..
       sentinel or default names for elements with missing names.
       If explicitly stated, they can be referred to (e.g. `__model__` / `world`
       for implicit model / world frames, respectively).
+
+1. **pose.sdf** `//pose/@frame` attribute is renamed to `//pose/@relative_to`.
+    + [pull request 597](https://bitbucket.org/osrf/sdformat/pull-requests/597)
 
 ### Removals
 

@@ -302,6 +302,24 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
+  // Check that validity checks are disabled inside <plugin> elements
+  {
+    std::string path = pathBase +"/ignore_sdf_in_plugin.sdf";
+
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check that validity checks are disabled inside namespaced elements
+  {
+    std::string path = pathBase +"/ignore_sdf_in_namespaced_elements.sdf";
+
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
   // Check an SDF file with model frames using the attached_to attribute.
   // This is a valid file.
   {

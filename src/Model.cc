@@ -411,6 +411,19 @@ const Frame *Model::FrameByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+const Link *Model::CanonicalLink() const
+{
+  if (this->CanonicalLinkName().empty())
+  {
+    return this->LinkByIndex(0);
+  }
+  else
+  {
+    return this->LinkByName(this->CanonicalLinkName());
+  }
+}
+
+/////////////////////////////////////////////////
 const std::string &Model::CanonicalLinkName() const
 {
   return this->dataPtr->canonicalLink;

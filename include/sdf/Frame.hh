@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Open Source Robotics Foundation
+ * Copyright 2019 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ namespace sdf
     /// \brief Get the name of the frame.
     /// The name of the frame must be unique within the scope of its siblings.
     /// \return Name of the frame.
-    public: std::string Name() const;
+    public: const std::string &Name() const;
 
     /// \brief Set the name of the frame.
     /// The name of the frame must be unique within the scope of its siblings.
@@ -82,22 +82,29 @@ namespace sdf
     public: void SetName(const std::string &_name) const;
 
     /// \brief Get the name of the coordinate frame to which this
-    /// frame is attached. For an exThe interpretation of an empty value depends
-    /// on the indicates that the frame is
-    /// expressed relative to the attached-to link.
+    /// frame is attached. The interpretation of an empty value depends
+    /// on whether the frame is contained in a model or world element. For a
+    /// frame that is a child of <model>, an empty value indicates that the
+    /// frame is attached to the canonical link of the model. For a frame that
+    /// is a child of <world> an empty value indicates that the frame is
+    /// attached to the world frame.
     /// \return The name of the attached-to frame.
     public: const std::string &AttachedTo() const;
 
     /// \brief Set the name of the coordinate frame to which this
-    /// frame is attached. An empty value indicates that the frame is
-    /// expressed relative to the attached-to link.
+    /// frame is attached. The interpretation of an empty value depends
+    /// on whether the frame is contained in a model or world element. For a
+    /// frame that is a child of <model>, an empty value indicates that the
+    /// frame is attached to the canonical link of the model. For a frame that
+    /// is a child of <world> an empty value indicates that the frame is
+    /// attached to the world frame.
     /// \param[in] _frame The name of the attached-to frame.
     public: void SetAttachedTo(const std::string &_frame);
 
     /// \brief Get the pose of the frame object. This is the pose of the
     /// frame as specified in SDF
     /// (<frame><pose> ... </pose></frame>).
-    /// Use ResolvePose to compute the pose relative to a specific frame.
+    /// Use SemanticPose to compute the pose relative to a specific frame.
     /// \return The pose of the frame object.
     public: const ignition::math::Pose3d &RawPose() const;
 
@@ -119,8 +126,7 @@ namespace sdf
     /// \param[in] _frame The name of the relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
 
-    /// \brief Get a pointer to the SDF element that was used during
-    /// load.
+    /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;

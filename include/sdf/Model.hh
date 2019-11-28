@@ -38,7 +38,6 @@ namespace sdf
   class Joint;
   class Link;
   class ModelPrivate;
-  struct PoseRelativeToGraph;
 
   class SDFORMAT_VISIBLE Model
   {
@@ -226,6 +225,10 @@ namespace sdf
     /// \sa const ignition::math::Pose3d &RawPose() const
     /// \param[in] _pose The new model pose.
     public: void SetRawPose(const ignition::math::Pose3d &_pose);
+
+    /// \brief Get the model's canonical link
+    /// \return An immutable pointer to the canonical link
+    public: const Link *CanonicalLink() const;
 
     /// \brief Get the name of the model's canonical link. An empty value
     /// indicates that the first link in the model is the canonical link.
