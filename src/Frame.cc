@@ -111,6 +111,14 @@ Errors Frame::Load(ElementPtr _sdf)
                      "A frame name is required, but the name is not set."});
   }
 
+  // Check that the frame's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::RESERVED_NAME,
+                     "The supplied frame name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   // Read the frame's attached_to attribute
   if (_sdf->HasAttribute("attached_to"))
   {

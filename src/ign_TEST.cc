@@ -234,6 +234,9 @@ TEST(check, SDF)
     EXPECT_NE(output.find("Error: The supplied joint name [__joint__] "
                           "is reserved."),
               std::string::npos) << output;
+    EXPECT_NE(output.find("Error: The supplied frame name [__frame__] "
+                          "is reserved."),
+              std::string::npos) << output;
   }
 
   // Check that validity checks are disabled inside <plugin> elements
