@@ -131,6 +131,91 @@ TEST(URDFParser, ParseRobotOriginRPYBlank)
 }
 
 /////////////////////////////////////////////////
+TEST(URDFParser, ParseRobotMaterialBlank)
+{
+  std::ostringstream stream;
+  stream << "<robot name=\"test\">"
+         << "  <link name=\"link\">"
+         << "    <inertial>"
+         << "      <mass value=\"1\"/>"
+         << "      <inertia ixx=\"1\" ixy=\"0.0\" ixz=\"0.0\""
+         << "               iyy=\"1\" iyz=\"0.0\" izz=\"1\"/>"
+         << "    </inertial>"
+         << "    <visual>"
+         << "      <geometry>"
+         << "        <sphere radius=\"1.0\"/>"
+         << "      </geometry>"
+         << "    </visual>"
+         << "  </link>"
+         << "  <gazebo reference=\"link\">"
+         << "    <mu1>0.2</mu1>"
+         << "  </gazebo>"
+         << "</robot>";
+  TiXmlDocument doc;
+  doc.Parse(stream.str().c_str());
+  sdf::URDF2SDF parser;
+  auto sdfXml = parser.InitModelDoc(&doc);
+  auto sdfElem = sdfXml.FirstChildElement("sdf");
+  ASSERT_NE(nullptr, sdfElem);
+  auto modelElem = sdfElem->FirstChildElement("model");
+  ASSERT_NE(nullptr, modelElem);
+  auto linkElem = modelElem->FirstChildElement("link");
+  ASSERT_NE(nullptr, linkElem);
+  auto visualElem = linkElem->FirstChildElement("visual");
+  ASSERT_NE(nullptr, visualElem);
+
+  auto materialElem = visualElem->FirstChildElement("material");
+  ASSERT_EQ(nullptr, materialElem);
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, ParseRobotMaterialName)
+{
+  std::ostringstream stream;
+  stream << "<robot name=\"test\">"
+         << "  <link name=\"link\">"
+         << "    <inertial>"
+         << "      <mass value=\"1\"/>"
+         << "      <inertia ixx=\"1\" ixy=\"0.0\" ixz=\"0.0\""
+         << "               iyy=\"1\" iyz=\"0.0\" izz=\"1\"/>"
+         << "    </inertial>"
+         << "    <visual>"
+         << "      <geometry>"
+         << "        <sphere radius=\"1.0\"/>"
+         << "      </geometry>"
+         << "    </visual>"
+         << "  </link>"
+         << "  <gazebo reference=\"link\">"
+         << "    <material>Gazebo/Orange</material>"
+         << "  </gazebo>"
+         << "</robot>";
+  TiXmlDocument doc;
+  doc.Parse(stream.str().c_str());
+  sdf::URDF2SDF parser;
+  auto sdfXml = parser.InitModelDoc(&doc);
+  auto sdfElem = sdfXml.FirstChildElement("sdf");
+  ASSERT_NE(nullptr, sdfElem);
+  auto modelElem = sdfElem->FirstChildElement("model");
+  ASSERT_NE(nullptr, modelElem);
+  auto linkElem = modelElem->FirstChildElement("link");
+  ASSERT_NE(nullptr, linkElem);
+  auto visualElem = linkElem->FirstChildElement("visual");
+  ASSERT_NE(nullptr, visualElem);
+
+  auto materialElem = visualElem->FirstChildElement("material");
+  ASSERT_NE(nullptr, materialElem);
+  auto scriptElem = materialElem->FirstChildElement("script");
+  ASSERT_NE(nullptr, scriptElem);
+  auto nameElem = scriptElem->FirstChildElement("name");
+  ASSERT_NE(nullptr, nameElem);
+  EXPECT_EQ("Gazebo/Orange", std::string(nameElem->GetText()));
+  auto uriElem = scriptElem->FirstChildElement("uri");
+  ASSERT_NE(nullptr, uriElem);
+  EXPECT_EQ("file://media/materials/scripts/gazebo.material",
+      std::string(uriElem->GetText()));
+}
+
+/////////////////////////////////////////////////
 TEST(URDFParser, ParseRobotOriginInvalidXYZ)
 {
   std::ostringstream stream;
