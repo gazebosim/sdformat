@@ -91,6 +91,9 @@ namespace sdf
     /// \brief A model without a link.
     MODEL_WITHOUT_LINK,
 
+    /// \brief Indicates that a DOM object tried to read a nested model.
+    NESTED_MODELS_UNSUPPORTED,
+
     /// \brief A link has invalid inertia.
     LINK_INERTIA_INVALID,
 

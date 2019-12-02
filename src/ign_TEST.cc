@@ -264,6 +264,18 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
+  // Check an SDF file with a nested model.
+  {
+    std::string path = pathBase +"/nested_model.sdf";
+
+    // Check nested_model.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: Nested models are not yet supported by DOM "
+              "objects, skipping model [top_level_model]."),
+              std::string::npos) << output;
+  }
+
   // Check an invalid SDF file that uses reserved names.
   {
     std::string path = pathBase +"/model_invalid_reserved_names.sdf";
