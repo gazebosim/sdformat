@@ -116,12 +116,18 @@ namespace sdf
     /// \brief The frame attached-to graph contains a cycle.
     FRAME_ATTACHED_TO_CYCLE,
 
+    /// \brief The frame attached-to graph has an internal error.
+    FRAME_ATTACHED_TO_GRAPH_ERROR,
+
     /// \brief The pose relative-to value does not match the name of an
     /// existing frame in the current scope.
     POSE_RELATIVE_TO_INVALID,
 
     /// \brief The pose relative-to graph contains a cycle.
     POSE_RELATIVE_TO_CYCLE,
+
+    /// \brief The pose relative-to graph has an internal error.
+    POSE_RELATIVE_TO_GRAPH_ERROR,
 
     /// \brief Indicates that reading an SDF string failed.
     STRING_READ,

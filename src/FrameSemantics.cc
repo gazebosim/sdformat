@@ -64,8 +64,9 @@ FindSourceVertex(
   std::reference_wrapper<const Vertex> vertex(_graph.VertexFromId(_id));
   if (!vertex.get().Valid())
   {
-    _errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Input vertex [" + std::to_string(_id) + "] is not valid."});
+    _errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+        "Unable to resolve pose, invalid vertex[" + std::to_string(_id) + "] "
+        "in PoseRelativeToGraph."});
     return PairType(Vertex::NullVertex, EdgesType());
   }
 
@@ -77,9 +78,9 @@ FindSourceVertex(
   {
     if (incidentsTo.size() != 1)
     {
-      _errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Multiple vertices incident to current vertex [" +
-          std::to_string(vertex.get().Id()) + "]."});
+      _errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+          "PoseRelativeToGraph error: multiple vertices incident to "
+          "current vertex [" + std::to_string(vertex.get().Id()) + "]."});
       return PairType(Vertex::NullVertex, EdgesType());
     }
     auto const &edge = incidentsTo.begin()->second;
@@ -87,8 +88,8 @@ FindSourceVertex(
     edges.push_back(edge);
     if (visited.count(vertex.get().Id()))
     {
-      _errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Graph cycle detected, already visited vertex [" +
+      _errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
+          "PoseRelativeToGraph cycle detected, already visited vertex [" +
           std::to_string(vertex.get().Id()) + "]."});
       return PairType(Vertex::NullVertex, EdgesType());
     }
@@ -127,8 +128,9 @@ FindSinkVertex(
   std::reference_wrapper<const Vertex> vertex(_graph.VertexFromId(_id));
   if (!vertex.get().Valid())
   {
-    _errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Input vertex [" + std::to_string(_id) + "] is not valid."});
+    _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
+        "Invalid vertex[" + std::to_string(_id) + "] "
+        "in FrameAttachedToGraph."});
     return PairType(Vertex::NullVertex, EdgesType());
   }
 
@@ -140,9 +142,9 @@ FindSinkVertex(
   {
     if (incidentsFrom.size() != 1)
     {
-      _errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Multiple vertices incident from current vertex [" +
-          std::to_string(vertex.get().Id()) + "]."});
+      _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+          "FrameAttachedToGraph error: multiple vertices incident from "
+          "current vertex [" + std::to_string(vertex.get().Id()) + "]."});
       return PairType(Vertex::NullVertex, EdgesType());
     }
     auto const &edge = incidentsFrom.begin()->second;
@@ -150,8 +152,8 @@ FindSinkVertex(
     edges.push_back(edge);
     if (visited.count(vertex.get().Id()))
     {
-      _errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Graph cycle detected, already visited vertex [" +
+      _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
+          "FrameAttachedToGraph cycle detected, already visited vertex [" +
           std::to_string(vertex.get().Id()) + "]."});
       return PairType(Vertex::NullVertex, EdgesType());
     }
@@ -346,8 +348,9 @@ Errors buildFrameAttachedToGraph(
       attachedTo = scopeName;
       if (_out.map.count(scopeName) != 1)
       {
-        errors.push_back({ErrorCode::ELEMENT_INVALID,
-                         scopeName + "not found in map."});
+        errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+                         "FrameAttachedToGraph error: scope frame[" +
+                         scopeName + "] not found in map."});
         continue;
       }
     }
@@ -441,8 +444,9 @@ Errors buildFrameAttachedToGraph(
       attachedTo = scopeName;
       if (_out.map.count(scopeName) != 1)
       {
-        errors.push_back({ErrorCode::ELEMENT_INVALID,
-                         scopeName + "not found in map."});
+        errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+                         "FrameAttachedToGraph error: scope frame[" +
+                         scopeName + "] not found in map."});
         continue;
       }
     }
@@ -847,8 +851,8 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
   // Expect scopeName to be either "__model__" or "world"
   if (_in.scopeName != "__model__" && _in.scopeName != "world")
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Scope vertex name " + _in.scopeName +
+    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+        "FrameAttachedToGraph error: scope frame[" + _in.scopeName + "] "
         " does not match __model__ or world."});
     return errors;
   }
@@ -858,14 +862,16 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
   auto scopeVertices = _in.graph.Vertices(_in.scopeName);
   if (scopeVertices.empty())
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Missing scope vertex with name " + _in.scopeName});
+    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+                     "FrameAttachedToGraph error: scope frame[" +
+                     _in.scopeName + "] not found in graph."});
     return errors;
   }
   else if (scopeVertices.size() > 1)
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "More than one vertex with scope name " + _in.scopeName});
+    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+        "FrameAttachedToGraph error, "
+        "more than one vertex with scope name " + _in.scopeName});
     return errors;
   }
 
@@ -873,15 +879,17 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
   sdf::FrameType scopeFrameType = scopeVertex.Data();
   if (_in.scopeName == "__model__" && scopeFrameType != sdf::FrameType::MODEL)
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Scope vertex with name __model__ should have FrameType MODEL."});
+    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+        "FrameAttachedToGraph error, "
+        "scope vertex with name __model__ should have FrameType MODEL."});
     return errors;
   }
   else if (_in.scopeName == "world" &&
            scopeFrameType != sdf::FrameType::WORLD)
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Scope vertex with name world should have FrameType WORLD."});
+    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+        "FrameAttachedToGraph error, "
+        "scope vertex with name world should have FrameType WORLD."});
     return errors;
   }
 
@@ -892,15 +900,17 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
     // Vertex names should not be empty
     if (vertexPair.second.get().Name().empty())
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Vertex with empty name detected."});
+      errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+          "FrameAttachedToGraph error, "
+          "vertex with empty name detected."});
     }
 
     auto outDegree = _in.graph.OutDegree(vertexPair.first);
     if (outDegree > 1)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Too many outgoing edges at a vertex with name [" +
+      errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+          "FrameAttachedToGraph error, "
+          "too many outgoing edges at a vertex with name [" +
           vertexPair.second.get().Name() + "]."});
     }
     else if (sdf::FrameType::MODEL == scopeFrameType)
@@ -908,14 +918,16 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
       switch (vertexPair.second.get().Data())
       {
         case sdf::FrameType::WORLD:
-          errors.push_back({ErrorCode::ELEMENT_INVALID,
-              "Vertex with name [" + vertexPair.second.get().Name() + "]" +
+          errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+              "FrameAttachedToGraph error, "
+              "vertex with name [" + vertexPair.second.get().Name() + "]" +
               "should not have type WORLD in MODEL attached_to graph."});
           break;
         case sdf::FrameType::LINK:
           if (outDegree != 0)
           {
-            errors.push_back({ErrorCode::ELEMENT_INVALID,
+            errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+                "FrameAttachedToGraph error, "
                 "LINK vertex with name [" +
                 vertexPair.second.get().Name() +
                 "] should have no outgoing edges "
@@ -925,7 +937,8 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
         default:
           if (outDegree != 1)
           {
-            errors.push_back({ErrorCode::ELEMENT_INVALID,
+            errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+                "FrameAttachedToGraph error, "
                 "Non-LINK vertex with name [" +
                 vertexPair.second.get().Name() +
                 "] should have 1 outgoing edge " +
@@ -941,14 +954,16 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
       {
         case sdf::FrameType::JOINT:
         case sdf::FrameType::LINK:
-          errors.push_back({ErrorCode::ELEMENT_INVALID,
+          errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+              "FrameAttachedToGraph error, "
               "No JOINT or LINK vertex should be in WORLD attached_to graph."});
           break;
         case sdf::FrameType::MODEL:
         case sdf::FrameType::WORLD:
           if (outDegree != 0)
           {
-            errors.push_back({ErrorCode::ELEMENT_INVALID,
+            errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+                "FrameAttachedToGraph error, "
                 "MODEL and WORLD vertices should have no outgoing edges "
                 "in WORLD attached_to graph."});
           }
@@ -956,7 +971,8 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
         default:
           if (outDegree != 1)
           {
-            errors.push_back({ErrorCode::ELEMENT_INVALID,
+            errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+                "FrameAttachedToGraph error, "
                 "FRAME vertices in WORLD attached_to graph should have "
                 "1 outgoing edge."});
           }
@@ -978,8 +994,8 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
   // Expect sourceName to be either "__model__" or "world"
   if (_in.sourceName != "__model__" && _in.sourceName != "world")
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Source vertex name " + _in.sourceName +
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "PoseRelativeToGraph error: source vertex name " + _in.sourceName +
         " does not match __model__ or world."});
     return errors;
   }
@@ -989,14 +1005,16 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
   auto sourceVertices = _in.graph.Vertices(_in.sourceName);
   if (sourceVertices.empty())
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Missing source vertex with name " + _in.sourceName});
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+                     "PoseRelativeToGraph error: source frame[" +
+                     _in.sourceName + "] not found in graph."});
     return errors;
   }
   else if (sourceVertices.size() > 1)
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "More than one vertex with name " + _in.sourceName});
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "PoseRelativeToGraph error, "
+        "more than one vertex with source name " + _in.sourceName});
     return errors;
   }
 
@@ -1004,15 +1022,17 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
   sdf::FrameType sourceFrameType = sourceVertex.Data();
   if (_in.sourceName == "__model__" && sourceFrameType != sdf::FrameType::MODEL)
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Source vertex with name __model__ should have FrameType MODEL."});
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "PoseRelativeToGraph error, "
+        "source vertex with name __model__ should have FrameType MODEL."});
     return errors;
   }
   else if (_in.sourceName == "world" &&
            sourceFrameType != sdf::FrameType::WORLD)
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Source vertex with name world should have FrameType WORLD."});
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "PoseRelativeToGraph error, "
+        "source vertex with name world should have FrameType WORLD."});
     return errors;
   }
 
@@ -1023,15 +1043,17 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
     // Vertex names should not be empty
     if (vertexPair.second.get().Name().empty())
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Vertex with empty name detected."});
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+          "PoseRelativeToGraph error, "
+          "vertex with empty name detected."});
     }
 
     auto inDegree = _in.graph.InDegree(vertexPair.first);
     if (inDegree > 1)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Too many incoming edges at a vertex with name [" +
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+          "PoseRelativeToGraph error, "
+          "too many incoming edges at a vertex with name [" +
           vertexPair.second.get().Name() + "]."});
     }
     else if (sdf::FrameType::MODEL == sourceFrameType)
@@ -1039,14 +1061,16 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
       switch (vertexPair.second.get().Data())
       {
         case sdf::FrameType::WORLD:
-          errors.push_back({ErrorCode::ELEMENT_INVALID,
-              "Vertex with name [" + vertexPair.second.get().Name() + "]" +
+          errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+              "PoseRelativeToGraph error, "
+              "vertex with name [" + vertexPair.second.get().Name() + "]" +
               "should not have type WORLD in MODEL relative_to graph."});
           break;
         case sdf::FrameType::MODEL:
           if (inDegree != 0)
           {
-            errors.push_back({ErrorCode::ELEMENT_INVALID,
+            errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+                "PoseRelativeToGraph error, "
                 "MODEL vertex with name [" +
                 vertexPair.second.get().Name() +
                 "] should have no incoming edges "
@@ -1056,7 +1080,8 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
         default:
           if (inDegree != 1)
           {
-            errors.push_back({ErrorCode::ELEMENT_INVALID,
+            errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+                "PoseRelativeToGraph error, "
                 "Non-MODEL vertex with name [" +
                 vertexPair.second.get().Name() +
                 "] should have 1 incoming edge " +
@@ -1072,13 +1097,15 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
       {
         case sdf::FrameType::JOINT:
         case sdf::FrameType::LINK:
-          errors.push_back({ErrorCode::ELEMENT_INVALID,
+          errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+              "PoseRelativeToGraph error, "
               "No JOINT or LINK vertex should be in WORLD relative_to graph."});
           break;
         case sdf::FrameType::WORLD:
           if (inDegree != 0)
           {
-            errors.push_back({ErrorCode::ELEMENT_INVALID,
+            errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+                "PoseRelativeToGraph error, "
                 "WORLD vertices should have no incoming edges "
                 "in WORLD relative_to graph."});
           }
@@ -1086,7 +1113,8 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
         default:
           if (inDegree != 1)
           {
-            errors.push_back({ErrorCode::ELEMENT_INVALID,
+            errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+                "PoseRelativeToGraph error, "
                 "MODEL and FRAME vertices in WORLD relative_to graph "
                 "should have 1 incoming edge."});
           }
