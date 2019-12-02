@@ -10,6 +10,9 @@
 1. Check that joints have valid parent and child names in `ign sdf --check`.
     * [Pull request 609](https://bitbucket.org/osrf/sdformat/pull-requests/609)
 
+1. Model DOM: error when trying to load nested models, which aren't yet supported.
+    * [Pull request 610](https://bitbucket.org/osrf/sdformat/pull-requests/610)
+
 1. Use consistent namespaces in Filesystem.
     * [Pull request 567](https://bitbucket.org/osrf/sdformat/pull-requests/567)
 
