@@ -34,6 +34,7 @@ but with improved human-readability..
 1. **sdf/parser.hh**
    + bool checkCanonicalLinkNames(sdf::Root\*)
    + bool checkFrameAttachedToNames(sdf::Root\*)
+   + bool checkJointParentChildLinkNames(sdf::Root\*)
    + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)
    + bool recursiveSiblingUniqueNames(sdf::ElementPtr)
    + bool shouldValidateElement(sdf::ElementPtr)

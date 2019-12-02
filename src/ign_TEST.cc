@@ -190,6 +190,57 @@ TEST(check, SDF)
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
+  // Check an SDF file with a joint with an invalid child link.
+  {
+    std::string path = pathBase +"/joint_invalid_child.sdf";
+
+    // Check joint_invalid_child.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: child link with name[invalid] specified by "
+                          "joint with name[joint] not found in model with "
+                          "name[joint_invalid_child]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with a joint with an invalid parent link.
+  {
+    std::string path = pathBase +"/joint_invalid_parent.sdf";
+
+    // Check joint_invalid_parent.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: parent link with name[invalid] specified by "
+                          "joint with name[joint] not found in model with "
+                          "name[joint_invalid_parent]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with a joint with identical parent and child.
+  {
+    std::string path = pathBase +"/joint_invalid_parent_same_as_child.sdf";
+
+    // Check joint_invalid_parent_same_as_child.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: joint with name[joint] in model with "
+                          "name[joint_invalid_parent_same_as_child] must "
+                          "specify different link names for parent and child, "
+                          "while [link] was specified for both."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with the world specified as a parent link.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/joint_parent_world.sdf";
+
+    // Check joint_parent_world.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
   // Check an SDF file with the second link specified as the canonical link.
   // This is a valid file.
   {
