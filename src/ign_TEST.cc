@@ -197,7 +197,7 @@ TEST(check, SDF)
     // Check joint_invalid_child.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: child link with name[invalid] specified by "
+    EXPECT_NE(output.find("Error: Child link with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_child]."),
               std::string::npos) << output;
@@ -223,7 +223,7 @@ TEST(check, SDF)
     // Check joint_invalid_parent_same_as_child.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: joint with name[joint] must "
+    EXPECT_NE(output.find("Error: Joint with name[joint] must "
                           "specify different link names for parent and child, "
                           "while [link] was specified for both."),
               std::string::npos) << output;

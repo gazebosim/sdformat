@@ -209,7 +209,7 @@ Errors Joint::Load(ElementPtr _sdf)
   if (this->dataPtr->childLinkName == this->dataPtr->parentLinkName)
   {
     errors.push_back({ErrorCode::JOINT_PARENT_SAME_AS_CHILD,
-        "Error: joint with name[" + this->dataPtr->name +
+        "Joint with name[" + this->dataPtr->name +
         "] must specify different link names for "
         "parent and child, while [" + this->dataPtr->childLinkName +
         "] was specified for both."});

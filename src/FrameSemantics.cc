@@ -208,7 +208,7 @@ Errors buildKinematicGraph(
     else
     {
       errors.push_back({ErrorCode::JOINT_PARENT_LINK_INVALID,
-        "Error: parent link with name[" + joint->ParentLinkName() +
+        "Parent link with name[" + joint->ParentLinkName() +
         "] specified by joint with name[" + joint->Name() +
         "] not found in model with name[" + _model->Name() + "]."});
       continue;
@@ -218,7 +218,7 @@ Errors buildKinematicGraph(
     if (nullptr == childLink)
     {
       errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
-        "Error: child link with name[" + joint->ChildLinkName() +
+        "Child link with name[" + joint->ChildLinkName() +
         "] specified by joint with name[" + joint->Name() +
         "] not found in model with name[" + _model->Name() + "]."});
       continue;
@@ -276,7 +276,7 @@ Errors buildFrameAttachedToGraph(
   {
     // return early
     errors.push_back({ErrorCode::MODEL_CANONICAL_LINK_INVALID,
-      "Error: canonical_link with name[" + _model->CanonicalLinkName() +
+      "canonical_link with name[" + _model->CanonicalLinkName() +
       "] not found in model with name[" + _model->Name() + "]."});
     return errors;
   }
@@ -315,7 +315,7 @@ Errors buildFrameAttachedToGraph(
     if (nullptr == childLink)
     {
       errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
-        "Error: child link with name[" + joint->ChildLinkName() +
+        "Child link with name[" + joint->ChildLinkName() +
         "] specified by joint with name[" + joint->Name() +
         "] not found in model with name[" + _model->Name() + "]."});
       continue;
@@ -354,7 +354,7 @@ Errors buildFrameAttachedToGraph(
     if (_out.map.count(attachedTo) != 1)
     {
       errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
-          "Error: attached_to name[" + attachedTo +
+          "attached_to name[" + attachedTo +
           "] specified by frame with name[" + frame->Name() +
           "] does not match a link, joint, or frame name "
           "in model with name[" + _model->Name() + "]."});
@@ -367,7 +367,7 @@ Errors buildFrameAttachedToGraph(
       // set edgeData to false if attaches to itself, since this is invalid
       edgeData = false;
       errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
-          "Error: attached_to name[" + attachedTo +
+          "attached_to name[" + attachedTo +
           "] is identical to frame name[" + frame->Name() +
           "], causing a graph cycle "
           "in model with name[" + _model->Name() + "]."});
@@ -449,7 +449,7 @@ Errors buildFrameAttachedToGraph(
     if (_out.map.count(attachedTo) != 1)
     {
       errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
-          "Error: attached_to name[" + attachedTo +
+          "attached_to name[" + attachedTo +
           "] specified by frame with name[" + frame->Name() +
           "] does not match a model or frame name "
           "in world with name[" + _world->Name() + "]."});
@@ -462,7 +462,7 @@ Errors buildFrameAttachedToGraph(
       // set edgeData to false if attaches to itself, since this is invalid
       edgeData = false;
       errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
-          "Error: attached_to name[" + attachedTo +
+          "attached_to name[" + attachedTo +
           "] is identical to frame name[" + frame->Name() +
           "], causing a graph cycle "
           "in world with name[" + _world->Name() + "]."});
@@ -535,7 +535,7 @@ Errors buildPoseRelativeToGraph(
       if (nullptr == childLink)
       {
         errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
-          "Error: child link with name[" + joint->ChildLinkName() +
+          "Child link with name[" + joint->ChildLinkName() +
           "] specified by joint with name[" + joint->Name() +
           "] not found in model with name[" + _model->Name() + "]."});
         continue;
@@ -581,7 +581,7 @@ Errors buildPoseRelativeToGraph(
     if (_out.map.count(relativeTo) != 1)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
-          "Error: relative_to name[" + relativeTo +
+          "relative_to name[" + relativeTo +
           "] specified by link with name[" + link->Name() +
           "] does not match a link, joint, or frame name "
           "in model with name[" + _model->Name() + "]."});
@@ -591,7 +591,7 @@ Errors buildPoseRelativeToGraph(
     if (link->Name() == relativeTo)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
-          "Error: relative_to name[" + relativeTo +
+          "relative_to name[" + relativeTo +
           "] is identical to link name[" + link->Name() +
           "], causing a graph cycle "
           "in model with name[" + _model->Name() + "]."});
@@ -616,7 +616,7 @@ Errors buildPoseRelativeToGraph(
     if (_out.map.count(relativeTo) != 1)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
-          "Error: relative_to name[" + relativeTo +
+          "relative_to name[" + relativeTo +
           "] specified by joint with name[" + joint->Name() +
           "] does not match a link, joint, or frame name "
           "in model with name[" + _model->Name() + "]."});
@@ -626,7 +626,7 @@ Errors buildPoseRelativeToGraph(
     if (joint->Name() == relativeTo)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
-          "Error: relative_to name[" + relativeTo +
+          "relative_to name[" + relativeTo +
           "] is identical to joint name[" + joint->Name() +
           "], causing a graph cycle "
           "in model with name[" + _model->Name() + "]."});
@@ -665,7 +665,7 @@ Errors buildPoseRelativeToGraph(
     if (_out.map.count(relativeTo) != 1)
     {
       errors.push_back({errorCode,
-          "Error: " + typeForErrorMsg + " name[" + relativeTo +
+          typeForErrorMsg + " name[" + relativeTo +
           "] specified by frame with name[" + frame->Name() +
           "] does not match a link, joint, or frame name "
           "in model with name[" + _model->Name() + "]."});
@@ -675,7 +675,7 @@ Errors buildPoseRelativeToGraph(
     if (frame->Name() == relativeTo)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
-          "Error: relative_to name[" + relativeTo +
+          "relative_to name[" + relativeTo +
           "] is identical to frame name[" + frame->Name() +
           "], causing a graph cycle "
           "in model with name[" + _model->Name() + "]."});
@@ -769,7 +769,7 @@ Errors buildPoseRelativeToGraph(
     if (_out.map.count(relativeTo) != 1)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
-          "Error: relative_to name[" + relativeTo +
+          "relative_to name[" + relativeTo +
           "] specified by model with name[" + model->Name() +
           "] does not match a model or frame name "
           "in world with name[" + _world->Name() + "]."});
@@ -779,7 +779,7 @@ Errors buildPoseRelativeToGraph(
     if (model->Name() == relativeTo)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
-          "Error: relative_to name[" + relativeTo +
+          "relative_to name[" + relativeTo +
           "] is identical to model name[" + model->Name() +
           "], causing a graph cycle "
           "in world with name[" + _world->Name() + "]."});
@@ -818,7 +818,7 @@ Errors buildPoseRelativeToGraph(
     if (_out.map.count(relativeTo) != 1)
     {
       errors.push_back({errorCode,
-          "Error: " + typeForErrorMsg + " name[" + relativeTo +
+          typeForErrorMsg + " name[" + relativeTo +
           "] specified by frame with name[" + frame->Name() +
           "] does not match a model or frame name "
           "in world with name[" + _world->Name() + "]."});
@@ -828,7 +828,7 @@ Errors buildPoseRelativeToGraph(
     if (frame->Name() == relativeTo)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
-          "Error: relative_to name[" + relativeTo +
+          "relative_to name[" + relativeTo +
           "] is identical to frame name[" + frame->Name() +
           "], causing a graph cycle "
           "in world with name[" + _world->Name() + "]."});
