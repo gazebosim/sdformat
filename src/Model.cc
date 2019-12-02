@@ -18,6 +18,7 @@
 #include <vector>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
+#include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -58,6 +59,9 @@ class sdf::ModelPrivate
 
   /// \brief The joints specified in this model.
   public: std::vector<Joint> joints;
+
+  /// \brief The frames specified in this model.
+  public: std::vector<Frame> frames;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -179,6 +183,11 @@ Errors Model::Load(ElementPtr _sdf)
   Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
     this->dataPtr->joints);
   errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
+
+  // Load all the frames.
+  Errors frameLoadErrors = loadUniqueRepeated<Frame>(_sdf, "frame",
+    this->dataPtr->frames);
+  errors.insert(errors.end(), frameLoadErrors.begin(), frameLoadErrors.end());
 
   return errors;
 }
@@ -305,6 +314,46 @@ const Joint *Model::JointByName(const std::string &_name) const
     if (j.Name() == _name)
     {
       return &j;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+uint64_t Model::FrameCount() const
+{
+  return this->dataPtr->frames.size();
+}
+
+/////////////////////////////////////////////////
+const Frame *Model::FrameByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->frames.size())
+    return &this->dataPtr->frames[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Model::FrameNameExists(const std::string &_name) const
+{
+  for (auto const &f : this->dataPtr->frames)
+  {
+    if (f.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Frame *Model::FrameByName(const std::string &_name) const
+{
+  for (auto const &f : this->dataPtr->frames)
+  {
+    if (f.Name() == _name)
+    {
+      return &f;
     }
   }
   return nullptr;

@@ -19,6 +19,7 @@
 #include <ignition/math/Vector3.hh>
 
 #include "sdf/Actor.hh"
+#include "sdf/Frame.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Physics.hh"
@@ -56,6 +57,9 @@ class sdf::WorldPrivate
   /// \brief Pointer to Sene parameters.
   public: std::unique_ptr<Scene> scene;
 
+  /// \brief The frames specified in this world.
+  public: std::vector<Frame> frames;
+
   /// \brief The lights specified in this world.
   public: std::vector<Light> lights;
 
@@ -87,6 +91,7 @@ class sdf::WorldPrivate
 WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
     : audioDevice(_worldPrivate.audioDevice),
       gravity(_worldPrivate.gravity),
+      frames(_worldPrivate.frames),
       lights(_worldPrivate.lights),
       magneticField(_worldPrivate.magneticField),
       models(_worldPrivate.models),
@@ -252,6 +257,11 @@ Errors World::Load(sdf::ElementPtr _sdf)
       this->dataPtr->lights);
   errors.insert(errors.end(), lightLoadErrors.begin(), lightLoadErrors.end());
 
+  // Load all the frames.
+  Errors frameLoadErrors = loadUniqueRepeated<Frame>(_sdf, "frame",
+      this->dataPtr->frames);
+  errors.insert(errors.end(), frameLoadErrors.begin(), frameLoadErrors.end());
+
   // Load the Gui
   if (_sdf->HasElement("gui"))
   {
@@ -360,6 +370,19 @@ bool World::ModelNameExists(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+const Model *World::ModelByName(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
+    {
+      return &m;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
 const sdf::Atmosphere *World::Atmosphere() const
 {
   return this->dataPtr->atmosphere.get();
@@ -399,6 +422,46 @@ void World::SetScene(const sdf::Scene &_scene)
 sdf::ElementPtr World::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+uint64_t World::FrameCount() const
+{
+  return this->dataPtr->frames.size();
+}
+
+/////////////////////////////////////////////////
+const Frame *World::FrameByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->frames.size())
+    return &this->dataPtr->frames[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool World::FrameNameExists(const std::string &_name) const
+{
+  for (auto const &f : this->dataPtr->frames)
+  {
+    if (f.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Frame *World::FrameByName(const std::string &_name) const
+{
+  for (auto const &f : this->dataPtr->frames)
+  {
+    if (f.Name() == _name)
+    {
+      return &f;
+    }
+  }
+  return nullptr;
 }
 
 /////////////////////////////////////////////////

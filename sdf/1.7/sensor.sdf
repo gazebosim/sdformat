@@ -50,7 +50,6 @@
     <description>Name of the topic on which data is published. This is necessary for visualization</description>
   </element>
 
-  <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
   <include filename="plugin.sdf" required="*"/>
   <include filename="air_pressure.sdf" required="0"/>

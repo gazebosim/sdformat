@@ -234,6 +234,9 @@ TEST(check, SDF)
     EXPECT_NE(output.find("Error: The supplied joint name [__joint__] "
                           "is reserved."),
               std::string::npos) << output;
+    EXPECT_NE(output.find("Error: The supplied frame name [__frame__] "
+                          "is reserved."),
+              std::string::npos) << output;
   }
 
   // Check that validity checks are disabled inside <plugin> elements
@@ -252,6 +255,76 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model frames using the attached_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_frame_attached_to.sdf";
+
+    // Check model_frame_attached_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model frames attached_to joints.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_frame_attached_to_joint.sdf";
+
+    // Check model_frame_attached_to_joint.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model frames with invalid attached_to attributes.
+  {
+    std::string path = pathBase +"/model_frame_invalid_attached_to.sdf";
+
+    // Check model_frame_invalid_attached_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: attached_to name[A] specified by frame with "
+                          "name[F3] does not match a link, joint, or frame "
+                          "name in model with "
+                          "name[model_frame_invalid_attached_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: attached_to name[F4] is identical to frame "
+                          "name[F4], causing a graph cycle in model with "
+                          "name[model_frame_invalid_attached_to]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with model frames using the attached_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/world_frame_attached_to.sdf";
+
+    // Check world_frame_attached_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with world frames with invalid attached_to attributes.
+  {
+    std::string path = pathBase +"/world_frame_invalid_attached_to.sdf";
+
+    // Check world_frame_invalid_attached_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: attached_to name[A] specified by frame with "
+                          "name[F] does not match a model or frame "
+                          "name in world with "
+                          "name[world_frame_invalid_attached_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: attached_to name[self_cycle] is identical "
+                          "to frame name[self_cycle], causing a graph cycle "
+                          "in world with "
+                          "name[world_frame_invalid_attached_to]."),
+              std::string::npos) << output;
   }
 }
 

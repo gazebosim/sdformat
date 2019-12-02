@@ -36,7 +36,6 @@
     </element>
   </element> <!-- End velocity decay -->
 
-  <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
   <include filename="inertial.sdf" required="0"/>
   <include filename="collision.sdf" required="*"/>

@@ -59,6 +59,12 @@ TEST(DOMModel, Construction)
   EXPECT_FALSE(model.JointNameExists(""));
   EXPECT_FALSE(model.JointNameExists("default"));
 
+  EXPECT_EQ(0u, model.FrameCount());
+  EXPECT_EQ(nullptr, model.FrameByIndex(0));
+  EXPECT_EQ(nullptr, model.FrameByIndex(1));
+  EXPECT_FALSE(model.FrameNameExists(""));
+  EXPECT_FALSE(model.FrameNameExists("default"));
+
   EXPECT_TRUE(model.CanonicalLinkName().empty());
   EXPECT_EQ(nullptr, model.CanonicalLink());
   model.SetCanonicalLinkName("link");

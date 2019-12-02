@@ -14,7 +14,6 @@
     <description>Maximum number of contacts allowed between two entities. This value overrides the max_contacts element defined in physics.</description>
   </element>
 
-  <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
 
   <include filename="geometry.sdf" required="1"/>

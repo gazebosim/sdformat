@@ -31,6 +31,7 @@ namespace sdf
   //
 
   // Forward declarations.
+  class Frame;
   class Joint;
   class Link;
   class ModelPrivate;
@@ -170,6 +171,29 @@ namespace sdf
     ///  does not exist.
     /// \sa bool JointNameExists(const std::string &_name) const
     public: const Joint *JointByName(const std::string &_name) const;
+
+    /// \brief Get the number of explicit frames.
+    /// \return Number of explicit frames contained in this Model object.
+    public: uint64_t FrameCount() const;
+
+    /// \brief Get an explicit frame based on an index.
+    /// \param[in] _index Index of the explicit frame. The index should be in
+    /// the range [0..FrameCount()).
+    /// \return Pointer to the explicit frame. Nullptr if the index does not
+    /// exist.
+    /// \sa uint64_t FrameCount() const
+    public: const Frame *FrameByIndex(const uint64_t _index) const;
+
+    /// \brief Get an explicit frame based on a name.
+    /// \param[in] _name Name of the explicit frame.
+    /// \return Pointer to the explicit frame. Nullptr if the name does not
+    /// exist.
+    public: const Frame *FrameByName(const std::string &_name) const;
+
+    /// \brief Get whether an explicit frame name exists.
+    /// \param[in] _name Name of the explicit frame to check.
+    /// \return True if there exists an explicit frame with the given name.
+    public: bool FrameNameExists(const std::string &_name) const;
 
     /// \brief Get the pose of the model. This is the pose of the model
     /// as specified in SDF (<model> <pose> ... </pose></model>), and is
