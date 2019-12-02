@@ -176,6 +176,16 @@ namespace sdf
   /// \return True if all frames have valid attached_to attributes.
   bool checkFrameAttachedToNames(const sdf::Root *_root);
 
+  /// \brief Check that all joints in contained models have specify parent
+  /// and child link names that match the names of sibling links.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root sdf Root object to check recursively.
+  /// \return True if all models have joints with valid parent and child
+  /// link names.
+  SDFORMAT_VISIBLE
+  bool checkJointParentChildLinkNames(const sdf::Root *_root);
+
   /// \brief Check that all sibling elements of the same type have unique names.
   /// This checks recursively and should check the files exhaustively
   /// rather than terminating early when the first duplicate name is found.

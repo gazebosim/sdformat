@@ -48,6 +48,12 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     result = -1;
   }
 
+  if (!sdf::checkJointParentChildLinkNames(&root))
+  {
+    std::cerr << "Error: invalid parent or child link name.\n";
+    result = -1;
+  }
+
   if (!sdf::checkFrameAttachedToNames(&root))
   {
     std::cerr << "Error: invalid frame attached_to name.\n";
