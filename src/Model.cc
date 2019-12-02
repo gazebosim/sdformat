@@ -180,8 +180,7 @@ Errors Model::Load(ElementPtr _sdf)
   // Load the pose. Ignore the return value since the model pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
-  // Require at least one link so the implicit model frame can be attached to
-  // something.
+  // Nested models are not yet supported.
   if (_sdf->HasElement("model"))
   {
     errors.push_back({ErrorCode::NESTED_MODELS_UNSUPPORTED,
