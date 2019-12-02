@@ -103,7 +103,7 @@ TEST(check, SDF)
     // Check world_sibling_same_names.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: non-unique names"), std::string::npos)
+    EXPECT_NE(output.find("Error: Non-unique names"), std::string::npos)
       << output;
   }
 
@@ -139,7 +139,7 @@ TEST(check, SDF)
     // Check model_link_joint_same_name.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: non-unique names"), std::string::npos)
+    EXPECT_NE(output.find("Error: Non-unique names"), std::string::npos)
       << output;
   }
 
@@ -223,8 +223,7 @@ TEST(check, SDF)
     // Check joint_invalid_parent_same_as_child.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: joint with name[joint] in model with "
-                          "name[joint_invalid_parent_same_as_child] must "
+    EXPECT_NE(output.find("Error: joint with name[joint] must "
                           "specify different link names for parent and child, "
                           "while [link] was specified for both."),
               std::string::npos) << output;

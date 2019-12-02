@@ -217,16 +217,16 @@ Errors Model::Load(ElementPtr _sdf)
   buildKinematicGraph(this->dataPtr->kinematicGraph, this);
   // errors.insert(errors.end(), kinematicGraphErrors.begin(),
   //                             kinematicGraphErrors.end());
-  // Errors frameAttachedToGraphErrors =
+  Errors frameAttachedToGraphErrors =
   buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
-  // errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
-  //                             frameAttachedToGraphErrors.end());
-  //
+  errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+                              frameAttachedToGraphErrors.end());
+
   this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>();
-  // Errors poseGraphErrors =
+  Errors poseGraphErrors =
   buildPoseRelativeToGraph(*this->dataPtr->poseGraph, this);
-  // errors.insert(errors.end(), poseGraphErrors.begin(),
-  //                             poseGraphErrors.end());
+  errors.insert(errors.end(), poseGraphErrors.begin(),
+                              poseGraphErrors.end());
   for (auto &link : this->dataPtr->links)
   {
     link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);

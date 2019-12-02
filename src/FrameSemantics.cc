@@ -207,16 +207,20 @@ Errors buildKinematicGraph(
     }
     else
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Joint's parent link is invalid."});
+      errors.push_back({ErrorCode::JOINT_PARENT_LINK_INVALID,
+        "Error: parent link with name[" + joint->ParentLinkName() +
+        "] specified by joint with name[" + joint->Name() +
+        "] not found in model with name[" + _model->Name() + "]."});
       continue;
     }
 
     auto childLink = _model->LinkByName(joint->ChildLinkName());
     if (nullptr == childLink)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Joint's child link is invalid."});
+      errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+        "Error: child link with name[" + joint->ChildLinkName() +
+        "] specified by joint with name[" + joint->Name() +
+        "] not found in model with name[" + _model->Name() + "]."});
       continue;
     }
     auto childLinkId = _out.map.at(childLink->Name());
@@ -247,8 +251,14 @@ Errors buildFrameAttachedToGraph(
   }
   else if (!_model->Element()->HasUniqueChildNames())
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
+    errors.push_back({ErrorCode::DUPLICATE_NAME,
         "Non-unique names detected in XML children of model."});
+    return errors;
+  }
+  else if (_model->LinkCount() < 1)
+  {
+    errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
+                     "A model must have at least one link."});
     return errors;
   }
 
@@ -265,8 +275,9 @@ Errors buildFrameAttachedToGraph(
   if (nullptr == canonicalLink)
   {
     // return early
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-                     "Model's canonical link is invalid."});
+    errors.push_back({ErrorCode::MODEL_CANONICAL_LINK_INVALID,
+      "Error: canonical_link with name[" + _model->CanonicalLinkName() +
+      "] not found in model with name[" + _model->Name() + "]."});
     return errors;
   }
 
@@ -303,8 +314,10 @@ Errors buildFrameAttachedToGraph(
     auto childLink = _model->LinkByName(joint->ChildLinkName());
     if (nullptr == childLink)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Joint's child link is invalid."});
+      errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+        "Error: child link with name[" + joint->ChildLinkName() +
+        "] specified by joint with name[" + joint->Name() +
+        "] not found in model with name[" + _model->Name() + "]."});
       continue;
     }
     auto childLinkId = _out.map.at(childLink->Name());
@@ -340,8 +353,11 @@ Errors buildFrameAttachedToGraph(
     }
     if (_out.map.count(attachedTo) != 1)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Invalid attached_to value in Frame."});
+      errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
+          "Error: attached_to name[" + attachedTo +
+          "] specified by frame with name[" + frame->Name() +
+          "] does not match a link, joint, or frame name "
+          "in model with name[" + _model->Name() + "]."});
       continue;
     }
     auto attachedToId = _out.map[attachedTo];
@@ -350,8 +366,11 @@ Errors buildFrameAttachedToGraph(
     {
       // set edgeData to false if attaches to itself, since this is invalid
       edgeData = false;
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Frame attached_to itself causes a cycle."});
+      errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
+          "Error: attached_to name[" + attachedTo +
+          "] is identical to frame name[" + frame->Name() +
+          "], causing a graph cycle "
+          "in model with name[" + _model->Name() + "]."});
     }
     _out.graph.AddEdge({frameId, attachedToId}, edgeData);
   }
@@ -379,7 +398,7 @@ Errors buildFrameAttachedToGraph(
   }
   else if (!_world->Element()->HasUniqueChildNames())
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
+    errors.push_back({ErrorCode::DUPLICATE_NAME,
         "Non-unique names detected in XML children of world."});
     return errors;
   }
@@ -429,8 +448,11 @@ Errors buildFrameAttachedToGraph(
     }
     if (_out.map.count(attachedTo) != 1)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Invalid attached_to value in Frame."});
+      errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
+          "Error: attached_to name[" + attachedTo +
+          "] specified by frame with name[" + frame->Name() +
+          "] does not match a model or frame name "
+          "in world with name[" + _world->Name() + "]."});
       continue;
     }
     auto attachedToId = _out.map[attachedTo];
@@ -439,8 +461,11 @@ Errors buildFrameAttachedToGraph(
     {
       // set edgeData to false if attaches to itself, since this is invalid
       edgeData = false;
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Frame attached_to itself causes a cycle."});
+      errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
+          "Error: attached_to name[" + attachedTo +
+          "] is identical to frame name[" + frame->Name() +
+          "], causing a graph cycle "
+          "in world with name[" + _world->Name() + "]."});
     }
     _out.graph.AddEdge({frameId, attachedToId}, edgeData);
   }
@@ -468,7 +493,7 @@ Errors buildPoseRelativeToGraph(
   }
   else if (!_model->Element()->HasUniqueChildNames())
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
+    errors.push_back({ErrorCode::DUPLICATE_NAME,
         "Non-unique names detected in XML children of model."});
     return errors;
   }
@@ -509,8 +534,10 @@ Errors buildPoseRelativeToGraph(
       auto childLink = _model->LinkByName(joint->ChildLinkName());
       if (nullptr == childLink)
       {
-        errors.push_back({ErrorCode::ELEMENT_INVALID,
-                         "Joint's child link is invalid."});
+        errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+          "Error: child link with name[" + joint->ChildLinkName() +
+          "] specified by joint with name[" + joint->Name() +
+          "] not found in model with name[" + _model->Name() + "]."});
         continue;
       }
       auto childLinkId = _out.map.at(childLink->Name());
@@ -553,15 +580,21 @@ Errors buildPoseRelativeToGraph(
     // look for vertex in graph that matches relative_to value
     if (_out.map.count(relativeTo) != 1)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Invalid relative_to value in Link."});
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+          "Error: relative_to name[" + relativeTo +
+          "] specified by link with name[" + link->Name() +
+          "] does not match a link, joint, or frame name "
+          "in model with name[" + _model->Name() + "]."});
       continue;
     }
     auto relativeToId = _out.map[relativeTo];
     if (link->Name() == relativeTo)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Link relative_to itself causes a cycle."});
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
+          "Error: relative_to name[" + relativeTo +
+          "] is identical to link name[" + link->Name() +
+          "], causing a graph cycle "
+          "in model with name[" + _model->Name() + "]."});
     }
     _out.graph.AddEdge({relativeToId, linkId}, link->RawPose());
   }
@@ -582,15 +615,21 @@ Errors buildPoseRelativeToGraph(
     // look for vertex in graph that matches relative_to value
     if (_out.map.count(relativeTo) != 1)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Invalid relative_to value in Joint."});
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+          "Error: relative_to name[" + relativeTo +
+          "] specified by joint with name[" + joint->Name() +
+          "] does not match a link, joint, or frame name "
+          "in model with name[" + _model->Name() + "]."});
       continue;
     }
     auto relativeToId = _out.map[relativeTo];
     if (joint->Name() == relativeTo)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Joint relative_to itself causes a cycle."});
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
+          "Error: relative_to name[" + relativeTo +
+          "] is identical to joint name[" + joint->Name() +
+          "], causing a graph cycle "
+          "in model with name[" + _model->Name() + "]."});
     }
     _out.graph.AddEdge({relativeToId, jointId}, joint->RawPose());
   }
@@ -608,29 +647,38 @@ Errors buildPoseRelativeToGraph(
     auto frameId = _out.map.at(frame->Name());
     std::string relativeTo;
     std::string typeForErrorMsg;
+    ErrorCode errorCode;
     if (!frame->PoseRelativeTo().empty())
     {
       relativeTo = frame->PoseRelativeTo();
       typeForErrorMsg = "relative_to";
+      errorCode = ErrorCode::POSE_RELATIVE_TO_INVALID;
     }
     else
     {
       relativeTo = frame->AttachedTo();
       typeForErrorMsg = "attached_to";
+      errorCode = ErrorCode::FRAME_ATTACHED_TO_INVALID;
     }
 
     // look for vertex in graph that matches relative_to value
     if (_out.map.count(relativeTo) != 1)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Invalid " + typeForErrorMsg + " value in Frame."});
+      errors.push_back({errorCode,
+          "Error: " + typeForErrorMsg + " name[" + relativeTo +
+          "] specified by frame with name[" + frame->Name() +
+          "] does not match a link, joint, or frame name "
+          "in model with name[" + _model->Name() + "]."});
       continue;
     }
     auto relativeToId = _out.map[relativeTo];
     if (frame->Name() == relativeTo)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Frame relative_to itself causes a cycle."});
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
+          "Error: relative_to name[" + relativeTo +
+          "] is identical to frame name[" + frame->Name() +
+          "], causing a graph cycle "
+          "in model with name[" + _model->Name() + "]."});
     }
     _out.graph.AddEdge({relativeToId, frameId}, frame->RawPose());
   }
@@ -658,7 +706,7 @@ Errors buildPoseRelativeToGraph(
   }
   else if (!_world->Element()->HasUniqueChildNames())
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
+    errors.push_back({ErrorCode::DUPLICATE_NAME,
         "Non-unique names detected in XML children of world."});
     return errors;
   }
@@ -720,15 +768,21 @@ Errors buildPoseRelativeToGraph(
     // look for vertex in graph that matches relative_to value
     if (_out.map.count(relativeTo) != 1)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Invalid relative_to value in Model."});
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+          "Error: relative_to name[" + relativeTo +
+          "] specified by model with name[" + model->Name() +
+          "] does not match a model or frame name "
+          "in world with name[" + _world->Name() + "]."});
       continue;
     }
     auto relativeToId = _out.map[relativeTo];
     if (model->Name() == relativeTo)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Model relative_to itself causes a cycle."});
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
+          "Error: relative_to name[" + relativeTo +
+          "] is identical to model name[" + model->Name() +
+          "], causing a graph cycle "
+          "in world with name[" + _world->Name() + "]."});
     }
     _out.graph.AddEdge({relativeToId, modelId}, model->RawPose());
   }
@@ -746,29 +800,38 @@ Errors buildPoseRelativeToGraph(
     auto frameId = _out.map.at(frame->Name());
     std::string relativeTo;
     std::string typeForErrorMsg;
+    ErrorCode errorCode;
     if (!frame->PoseRelativeTo().empty())
     {
       relativeTo = frame->PoseRelativeTo();
       typeForErrorMsg = "relative_to";
+      errorCode = ErrorCode::POSE_RELATIVE_TO_INVALID;
     }
     else
     {
       relativeTo = frame->AttachedTo();
       typeForErrorMsg = "attached_to";
+      errorCode = ErrorCode::FRAME_ATTACHED_TO_INVALID;
     }
 
     // look for vertex in graph that matches relative_to value
     if (_out.map.count(relativeTo) != 1)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Invalid " + typeForErrorMsg + " value in Frame."});
+      errors.push_back({errorCode,
+          "Error: " + typeForErrorMsg + " name[" + relativeTo +
+          "] specified by frame with name[" + frame->Name() +
+          "] does not match a model or frame name "
+          "in world with name[" + _world->Name() + "]."});
       continue;
     }
     auto relativeToId = _out.map[relativeTo];
     if (frame->Name() == relativeTo)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-                       "Frame relative_to itself causes a cycle."});
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
+          "Error: relative_to name[" + relativeTo +
+          "] is identical to frame name[" + frame->Name() +
+          "], causing a graph cycle "
+          "in world with name[" + _world->Name() + "]."});
     }
     _out.graph.AddEdge({relativeToId, frameId}, frame->RawPose());
   }

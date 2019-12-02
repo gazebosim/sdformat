@@ -70,7 +70,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 
   if (!sdf::recursiveSiblingUniqueNames(root.Element()))
   {
-    std::cerr << "Error: non-unique names detected.\n";
+    std::cerr << "Error: Non-unique names detected.\n";
     result = -1;
   }
 

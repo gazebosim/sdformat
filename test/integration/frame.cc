@@ -401,45 +401,31 @@ TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
 
   // Load the SDF file
   sdf::Root root;
-  EXPECT_TRUE(root.Load(testFile).empty());
-
-  // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
-  ASSERT_NE(nullptr, model);
-  EXPECT_EQ("model_frame_invalid_attached_to", model->Name());
-  EXPECT_EQ(1u, model->LinkCount());
-  EXPECT_NE(nullptr, model->LinkByIndex(0));
-  EXPECT_EQ(nullptr, model->LinkByIndex(1));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
-  EXPECT_EQ("", model->PoseRelativeTo());
-
-  EXPECT_TRUE(model->LinkNameExists("L"));
-
-  EXPECT_TRUE(model->CanonicalLinkName().empty());
-
-  EXPECT_EQ(0u, model->JointCount());
-  EXPECT_EQ(nullptr, model->JointByIndex(0));
-
-  EXPECT_EQ(4u, model->FrameCount());
-  EXPECT_NE(nullptr, model->FrameByIndex(0));
-  EXPECT_NE(nullptr, model->FrameByIndex(1));
-  EXPECT_NE(nullptr, model->FrameByIndex(2));
-  EXPECT_NE(nullptr, model->FrameByIndex(3));
-  EXPECT_EQ(nullptr, model->FrameByIndex(4));
-  ASSERT_TRUE(model->FrameNameExists("F1"));
-  ASSERT_TRUE(model->FrameNameExists("F2"));
-  ASSERT_TRUE(model->FrameNameExists("F3"));
-  ASSERT_TRUE(model->FrameNameExists("F4"));
-
-  EXPECT_EQ("L", model->FrameByName("F1")->AttachedTo());
-  EXPECT_EQ("F1", model->FrameByName("F2")->AttachedTo());
-  EXPECT_EQ("A", model->FrameByName("F3")->AttachedTo());
-  EXPECT_EQ("F4", model->FrameByName("F4")->AttachedTo());
-
-  EXPECT_TRUE(model->FrameByName("F1")->PoseRelativeTo().empty());
-  EXPECT_TRUE(model->FrameByName("F2")->PoseRelativeTo().empty());
-  EXPECT_TRUE(model->FrameByName("F3")->PoseRelativeTo().empty());
-  EXPECT_TRUE(model->FrameByName("F4")->PoseRelativeTo().empty());
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(4u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "attached_to name[A] specified by frame with name[F3] does not match a "
+      "link, joint, or frame name in model"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "attached_to name[F4] is identical to frame name[F4], "
+      "causing a graph cycle"));
+  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[2].Message().find(
+      "attached_to name[A] specified by frame with name[F3] does not match a "
+      "link, joint, or frame name in model"));
+  EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[3].Message().find(
+      "relative_to name[F4] is identical to frame name[F4], "
+      "causing a graph cycle"));
 }
 
 /////////////////////////////////////////////////
@@ -724,37 +710,21 @@ TEST(DOMFrame, LoadModelFramesInvalidRelativeTo)
 
   // Load the SDF file
   sdf::Root root;
-  EXPECT_TRUE(root.Load(testFile).empty());
-
-  // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
-  ASSERT_NE(nullptr, model);
-  EXPECT_EQ("model_invalid_frame_relative_to", model->Name());
-  EXPECT_EQ(1u, model->LinkCount());
-  EXPECT_NE(nullptr, model->LinkByIndex(0));
-  EXPECT_EQ(nullptr, model->LinkByIndex(1));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
-  EXPECT_EQ("", model->PoseRelativeTo());
-
-  EXPECT_TRUE(model->LinkNameExists("L"));
-
-  EXPECT_TRUE(model->CanonicalLinkName().empty());
-
-  EXPECT_EQ(0u, model->JointCount());
-  EXPECT_EQ(nullptr, model->JointByIndex(0));
-
-  EXPECT_EQ(2u, model->FrameCount());
-  EXPECT_NE(nullptr, model->FrameByIndex(0));
-  EXPECT_NE(nullptr, model->FrameByIndex(1));
-  EXPECT_EQ(nullptr, model->FrameByIndex(2));
-  ASSERT_TRUE(model->FrameNameExists("F"));
-  ASSERT_TRUE(model->FrameNameExists("cycle"));
-
-  EXPECT_TRUE(model->FrameByName("F")->AttachedTo().empty());
-  EXPECT_TRUE(model->FrameByName("cycle")->AttachedTo().empty());
-
-  EXPECT_EQ("A", model->FrameByName("F")->PoseRelativeTo());
-  EXPECT_EQ("cycle", model->FrameByName("cycle")->PoseRelativeTo());
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(2u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "relative_to name[A] specified by frame with name[F] does not match a "
+      "link, joint, or frame name in model"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "relative_to name[cycle] is identical to frame name[cycle], "
+      "causing a graph cycle"));
 }
 
 /////////////////////////////////////////////////
