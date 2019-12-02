@@ -268,7 +268,7 @@ TEST(check, SDF)
   {
     std::string path = pathBase +"/nested_model.sdf";
 
-    // Check model_invalid_canonical_link.sdf
+    // Check nested_model.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: Nested models are not yet supported by DOM "
