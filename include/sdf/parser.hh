@@ -174,6 +174,7 @@ namespace sdf
   /// rather than terminating early when the first error is found.
   /// \param[in] _root sdf Root object to check recursively.
   /// \return True if all frames have valid attached_to attributes.
+  SDFORMAT_VISIBLE
   bool checkFrameAttachedToNames(const sdf::Root *_root);
 
   /// \brief Check that all joints in contained models have specify parent
