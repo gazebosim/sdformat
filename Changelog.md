@@ -7,6 +7,9 @@
 1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
     * [Pull request 606](https://bitbucket.org/osrf/sdformat/pull-requests/606)
 
+1. Check that joints have valid parent and child names in `ign sdf --check`.
+    * [Pull request 609](https://bitbucket.org/osrf/sdformat/pull-requests/609)
+
 1. Use consistent namespaces in Filesystem.
     * [Pull request 567](https://bitbucket.org/osrf/sdformat/pull-requests/567)
 
