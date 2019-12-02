@@ -46,6 +46,12 @@ TEST(DOMWorld, Construction)
   EXPECT_FALSE(world.FrameNameExists(""));
   EXPECT_FALSE(world.FrameNameExists("default"));
 
+  EXPECT_EQ(0u, world.FrameCount());
+  EXPECT_EQ(nullptr, world.FrameByIndex(0));
+  EXPECT_EQ(nullptr, world.FrameByIndex(1));
+  EXPECT_FALSE(world.FrameNameExists(""));
+  EXPECT_FALSE(world.FrameNameExists("default"));
+
   EXPECT_EQ(1u, world.PhysicsCount());
 }
 
