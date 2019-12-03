@@ -246,13 +246,13 @@ namespace sdf
     /// \brief Express xyz unit vector of this axis in the coordinates of
     /// another named frame.
     /// \param[out] _xyz Resolved unit vector.
-    /// \param[in] _expressedIn Name of frame in whose coordinates this object
+    /// \param[in] _resolveTo Name of frame in whose coordinates this object
     /// should be resolved. If unset, it is resolved in the coordinates of its
     /// xml parent object, which is always a joint frame.
     /// \return Errors.
     public: Errors ResolveXyz(
         ignition::math::Vector3d &_xyz,
-        const std::string &_expressedIn = "") const;
+        const std::string &_resolveTo = "") const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
