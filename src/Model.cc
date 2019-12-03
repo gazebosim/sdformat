@@ -166,6 +166,14 @@ Errors Model::Load(ElementPtr _sdf)
   // Load the pose. Ignore the return value since the model pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
+  // Nested models are not yet supported.
+  if (_sdf->HasElement("model"))
+  {
+    errors.push_back({ErrorCode::NESTED_MODELS_UNSUPPORTED,
+                     "Nested models are not yet supported by DOM objects, "
+                     "skipping model [" + this->dataPtr->name + "]."});
+  }
+
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
     this->dataPtr->links);
