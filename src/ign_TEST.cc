@@ -359,6 +359,21 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
+  // Check an SDF file with a cycle in its FrameAttachedTo graph
+  {
+    std::string path = pathBase +"/model_frame_invalid_attached_to_cycle.sdf";
+
+    // Check model_frame_invalid_attached_to_cycle.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(std::string::npos, output.find(
+      "FrameAttachedToGraph cycle detected, already visited vertex [F1]."))
+        << output;
+    EXPECT_NE(std::string::npos, output.find(
+      "FrameAttachedToGraph cycle detected, already visited vertex [F2]."))
+        << output;
+  }
+
   // Check an SDF file with model frames using the attached_to attribute.
   // This is a valid file.
   {
@@ -495,11 +510,11 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(std::string::npos, output.find(
-      "Error in validatePoseRelativeToGraph: PoseRelativeToGraph cycle "
-      "detected, already visited vertex [F1]."));
+      "PoseRelativeToGraph cycle detected, already visited vertex [F1]."))
+        << output;
     EXPECT_NE(std::string::npos, output.find(
-      "Error in validatePoseRelativeToGraph: PoseRelativeToGraph cycle "
-      "detected, already visited vertex [F2]."));
+      "PoseRelativeToGraph cycle detected, already visited vertex [F2]."))
+        << output;
   }
 
   // Check an SDF file with model frames using the attached_to attribute.

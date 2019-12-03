@@ -288,16 +288,24 @@ Errors World::Load(sdf::ElementPtr _sdf)
   }
 
   // Build the graphs.
-  // Errors frameAttachedToGraphErrors =
+  Errors frameAttachedToGraphErrors =
   buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
-  // errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
-  //                             frameAttachedToGraphErrors.end());
-  //
+  errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+                              frameAttachedToGraphErrors.end());
+  Errors validateFrameAttachedGraphErrors =
+    validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
+                              validateFrameAttachedGraphErrors.end());
+
   this->dataPtr->poseRelativeToGraph = std::make_shared<PoseRelativeToGraph>();
-  // Errors poseRelativeToGraphErrors =
+  Errors poseRelativeToGraphErrors =
   buildPoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph, this);
-  // errors.insert(errors.end(), poseRelativeToGraphErrors.begin(),
-  //                             poseRelativeToGraphErrors.end());
+  errors.insert(errors.end(), poseRelativeToGraphErrors.begin(),
+                              poseRelativeToGraphErrors.end());
+  Errors validatePoseGraphErrors =
+    validatePoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph);
+  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
+                              validatePoseGraphErrors.end());
   for (auto &frame : this->dataPtr->frames)
   {
     frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);

@@ -262,7 +262,7 @@ TEST(DOMJoint, LoadInvalidJointPoseRelativeTo)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(2u, errors.size());
+  EXPECT_EQ(4u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -273,4 +273,6 @@ TEST(DOMJoint, LoadInvalidJointPoseRelativeTo)
     errors[1].Message().find(
       "relative_to name[A] specified by joint with name[J] does not match a "
       "link, joint, or frame name in model"));
+  // errors[2]
+  // errors[3]
 }

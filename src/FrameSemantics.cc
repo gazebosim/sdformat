@@ -239,6 +239,14 @@ Errors buildFrameAttachedToGraph(
 {
   Errors errors;
 
+  // add implicit model frame vertex first
+  const std::string scopeName = "__model__";
+  _out.scopeName = scopeName;
+  auto modelFrameId =
+      _out.graph.AddVertex(scopeName, sdf::FrameType::MODEL).Id();
+  _out.map[scopeName] = modelFrameId;
+
+
   if (!_model)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -282,13 +290,6 @@ Errors buildFrameAttachedToGraph(
       "] not found in model with name[" + _model->Name() + "]."});
     return errors;
   }
-
-  // add implicit model frame vertex first
-  const std::string scopeName = "__model__";
-  _out.scopeName = scopeName;
-  auto modelFrameId =
-      _out.graph.AddVertex(scopeName, sdf::FrameType::MODEL).Id();
-  _out.map[scopeName] = modelFrameId;
 
   // add link vertices
   for (uint64_t l = 0; l < _model->LinkCount(); ++l)
@@ -387,6 +388,14 @@ Errors buildFrameAttachedToGraph(
 {
   Errors errors;
 
+  // add implicit world frame vertex first
+  const std::string scopeName = "world";
+  _out.scopeName = scopeName;
+  auto worldFrameId =
+      _out.graph.AddVertex(scopeName, sdf::FrameType::WORLD).Id();
+  _out.map[scopeName] = worldFrameId;
+
+
   if (!_world)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -405,13 +414,6 @@ Errors buildFrameAttachedToGraph(
         "Non-unique names detected in XML children of world."});
     return errors;
   }
-
-  // add implicit world frame vertex first
-  const std::string scopeName = "world";
-  _out.scopeName = scopeName;
-  auto worldFrameId =
-      _out.graph.AddVertex(scopeName, sdf::FrameType::WORLD).Id();
-  _out.map[scopeName] = worldFrameId;
 
   // add model vertices
   for (uint64_t l = 0; l < _world->ModelCount(); ++l)
@@ -935,14 +937,24 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
           }
           break;
         default:
-          if (outDegree != 1)
+          if (outDegree == 0)
           {
             errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
                 "FrameAttachedToGraph error, "
                 "Non-LINK vertex with name [" +
                 vertexPair.second.get().Name() +
-                "] should have 1 outgoing edge " +
+                "] is disconnected; it should have 1 outgoing edge " +
                 "in MODEL attached_to graph."});
+          }
+          else if (outDegree >= 2)
+          {
+            errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+                "FrameAttachedToGraph error, "
+                "Non-LINK vertex with name [" +
+                vertexPair.second.get().Name() +
+                "] has " + std::to_string(outDegree) +
+                " outcoming edges; it should only have 1 "
+                "outgoing edge in MODEL attached_to graph."});
           }
           break;
       }
@@ -981,7 +993,13 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
     }
   }
 
-  // TODO: check graph for cycles
+  // check graph for cycles by finding sink from each vertex
+  for (auto const &namePair : _in.map)
+  {
+    Errors e;
+    FindSinkVertex(_in.graph, namePair.second, e);
+    errors.insert(errors.end(), e.begin(), e.end());
+  }
 
   return errors;
 }
@@ -1078,14 +1096,24 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
           }
           break;
         default:
-          if (inDegree != 1)
+          if (inDegree == 0)
           {
             errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
                 "PoseRelativeToGraph error, "
                 "Non-MODEL vertex with name [" +
                 vertexPair.second.get().Name() +
-                "] should have 1 incoming edge " +
+                "] is disconnected; it should have 1 incoming edge " +
                 "in MODEL relative_to graph."});
+          }
+          else if (inDegree >= 2)
+          {
+            errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+                "PoseRelativeToGraph error, "
+                "Non-MODEL vertex with name [" +
+                vertexPair.second.get().Name() +
+                "] has " + std::to_string(inDegree) +
+                " incoming edges; it should only have 1 "
+                "incoming edge in MODEL relative_to graph."});
           }
           break;
       }
@@ -1111,12 +1139,24 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
           }
           break;
         default:
-          if (inDegree != 1)
+          if (inDegree == 0)
           {
             errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
                 "PoseRelativeToGraph error, "
-                "MODEL and FRAME vertices in WORLD relative_to graph "
-                "should have 1 incoming edge."});
+                "MODEL / FRAME vertex with name [" +
+                vertexPair.second.get().Name() +
+                "] is disconnected; it should have 1 incoming edge " +
+                "in WORLD relative_to graph."});
+          }
+          else if (inDegree >= 2)
+          {
+            errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+                "PoseRelativeToGraph error, "
+                "MODEL / FRAME vertex with name [" +
+                vertexPair.second.get().Name() +
+                "] has " + std::to_string(inDegree) +
+                " incoming edges; it should only have 1 "
+                "incoming edge in WORLD relative_to graph."});
           }
           break;
       }

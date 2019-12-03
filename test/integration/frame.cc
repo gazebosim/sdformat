@@ -405,7 +405,7 @@ TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(4u, errors.size());
+  EXPECT_EQ(8u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -416,16 +416,20 @@ TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
     errors[1].Message().find(
       "attached_to name[F4] is identical to frame name[F4], "
       "causing a graph cycle"));
-  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
+  // errors[2]
+  // errors[3]
+  EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
   EXPECT_NE(std::string::npos,
-    errors[2].Message().find(
+    errors[4].Message().find(
       "attached_to name[A] specified by frame with name[F3] does not match a "
       "link, joint, or frame name in model"));
-  EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
   EXPECT_NE(std::string::npos,
-    errors[3].Message().find(
+    errors[5].Message().find(
       "relative_to name[F4] is identical to frame name[F4], "
       "causing a graph cycle"));
+  // errors[6]
+  // errors[7]
 }
 
 /////////////////////////////////////////////////
@@ -548,24 +552,36 @@ TEST(DOMFrame, LoadWorldFramesInvalidAttachedTo)
 
   // Load the SDF file
   sdf::Root root;
-  EXPECT_TRUE(root.Load(testFile).empty());
-
-  // Get the first world
-  const sdf::World *world = root.WorldByIndex(0);
-  ASSERT_NE(nullptr, world);
-  EXPECT_EQ("world_frame_invalid_attached_to", world->Name());
-  EXPECT_EQ(0u, world->ModelCount());
-  EXPECT_EQ(nullptr, world->ModelByIndex(0));
-
-  EXPECT_EQ(2u, world->FrameCount());
-  EXPECT_NE(nullptr, world->FrameByIndex(0));
-  EXPECT_NE(nullptr, world->FrameByIndex(1));
-  EXPECT_EQ(nullptr, world->FrameByIndex(2));
-  ASSERT_TRUE(world->FrameNameExists("self_cycle"));
-  ASSERT_TRUE(world->FrameNameExists("F"));
-
-  EXPECT_EQ("A", world->FrameByName("F")->AttachedTo());
-  EXPECT_EQ("self_cycle", world->FrameByName("self_cycle")->AttachedTo());
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(9u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "attached_to name[A] specified by frame with name[F] does not match a "
+      "model or frame name in world"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "attached_to name[self_cycle] is identical to frame name[self_cycle], "
+      "causing a graph cycle"));
+  // errors[2]
+  // errors[3]
+  EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[4].Message().find(
+      "attached_to name[A] specified by frame with name[F] does not match a "
+      "model or frame name in world"));
+  EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[5].Message().find(
+      "relative_to name[self_cycle] is identical to frame name[self_cycle], "
+      "causing a graph cycle"));
+  // errors[6]
+  // errors[7]
+  // errors[8]
 }
 
 /////////////////////////////////////////////////
@@ -714,7 +730,7 @@ TEST(DOMFrame, LoadModelFramesInvalidRelativeTo)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(2u, errors.size());
+  EXPECT_EQ(4u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -725,6 +741,8 @@ TEST(DOMFrame, LoadModelFramesInvalidRelativeTo)
     errors[1].Message().find(
       "relative_to name[cycle] is identical to frame name[cycle], "
       "causing a graph cycle"));
+  // errors[2]
+  // errors[3]
 }
 
 /////////////////////////////////////////////////
@@ -936,29 +954,19 @@ TEST(DOMFrame, LoadWorldFramesInvalidRelativeTo)
 
   // Load the SDF file
   sdf::Root root;
-  EXPECT_TRUE(root.Load(testFile).empty());
-
-  // Get the first world
-  const sdf::World *world = root.WorldByIndex(0);
-  ASSERT_NE(nullptr, world);
-  EXPECT_EQ("world_frame_invalid_relative_to", world->Name());
-  EXPECT_EQ(2u, world->ModelCount());
-  EXPECT_NE(nullptr, world->ModelByIndex(0));
-  EXPECT_NE(nullptr, world->ModelByIndex(1));
-  EXPECT_EQ(nullptr, world->ModelByIndex(2));
-  ASSERT_TRUE(world->ModelNameExists("cycle"));
-  ASSERT_TRUE(world->ModelNameExists("M"));
-
-  EXPECT_EQ("A", world->ModelByName("M")->PoseRelativeTo());
-  EXPECT_EQ("cycle", world->ModelByName("cycle")->PoseRelativeTo());
-
-  EXPECT_EQ(2u, world->FrameCount());
-  EXPECT_NE(nullptr, world->FrameByIndex(0));
-  EXPECT_NE(nullptr, world->FrameByIndex(1));
-  EXPECT_EQ(nullptr, world->FrameByIndex(2));
-  ASSERT_TRUE(world->FrameNameExists("self_cycle"));
-  ASSERT_TRUE(world->FrameNameExists("F"));
-
-  EXPECT_EQ("A", world->FrameByName("F")->PoseRelativeTo());
-  EXPECT_EQ("self_cycle", world->FrameByName("self_cycle")->PoseRelativeTo());
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(9u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "relative_to name[A] specified by model with name[M] does not match a "
+      "model or frame name in world"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "relative_to name[cycle] is identical to model name[cycle], "
+      "causing a graph cycle"));
 }

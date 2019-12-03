@@ -221,5 +221,4 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
       errors[0].Message().find(
         "PoseRelativeToGraph unable to find unique frame with name ["
         "invalid] in graph."));
-
 }

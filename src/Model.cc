@@ -220,12 +220,20 @@ Errors Model::Load(ElementPtr _sdf)
   buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
   errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
                               frameAttachedToGraphErrors.end());
+  Errors validateFrameAttachedGraphErrors =
+    validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
+                              validateFrameAttachedGraphErrors.end());
 
   this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>();
   Errors poseGraphErrors =
   buildPoseRelativeToGraph(*this->dataPtr->poseGraph, this);
   errors.insert(errors.end(), poseGraphErrors.begin(),
                               poseGraphErrors.end());
+  Errors validatePoseGraphErrors =
+    validatePoseRelativeToGraph(*this->dataPtr->poseGraph);
+  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
+                              validatePoseGraphErrors.end());
   for (auto &link : this->dataPtr->links)
   {
     link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
