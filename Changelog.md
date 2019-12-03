@@ -52,6 +52,9 @@
 1. Add SemanticPose class with implementation for Link.
     * [Pull request 616](https://bitbucket.org/osrf/sdformat/pull-requests/616)
 
+1. Add JointAxis::ResolveXyz and Joint::SemanticPose.
+    * [Pull request 617](https://bitbucket.org/osrf/sdformat/pull-requests/617)
+
 1. DOM API: deprecate `(Set)?PoseFrame` API and replace with `(Set)?PoseRelativeTo`
     * [Pull request 598](https://bitbucket.org/osrf/sdformat/pull-requests/598)
 
