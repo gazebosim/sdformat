@@ -214,13 +214,6 @@ Errors buildFrameAttachedToGraph(
     {
       // if the attached-to name is empty, use the scope name
       attachedTo = scopeName;
-      if (_out.map.count(scopeName) != 1)
-      {
-        errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
-                         "FrameAttachedToGraph error: scope frame[" +
-                         scopeName + "] not found in map."});
-        continue;
-      }
     }
     if (_out.map.count(attachedTo) != 1)
     {
