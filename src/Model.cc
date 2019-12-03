@@ -224,6 +224,10 @@ Errors Model::Load(ElementPtr _sdf)
     validatePoseRelativeToGraph(*this->dataPtr->poseGraph);
   errors.insert(errors.end(), validatePoseGraphErrors.begin(),
                               validatePoseGraphErrors.end());
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
 
   return errors;
 }

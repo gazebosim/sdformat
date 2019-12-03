@@ -38,6 +38,7 @@ set (headers
   Root.hh
   Scene.hh
   SDFImpl.hh
+  SemanticPose.hh
   Sensor.hh
   Sphere.hh
   Types.hh

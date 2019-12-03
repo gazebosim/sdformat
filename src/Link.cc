@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <memory>
 #include <string>
 #include <vector>
 #include <ignition/math/Inertial.hh>
@@ -64,6 +65,9 @@ class sdf::LinkPrivate
 
   /// \brief True if this link should be subject to wind, false otherwise.
   public: bool enableWind = false;
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -398,6 +402,23 @@ void Link::SetPoseFrame(const std::string &_frame)
 void Link::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseRelativeTo = _frame;
+}
+
+/////////////////////////////////////////////////
+void Link::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+sdf::SemanticPose Link::SemanticPose() const
+{
+  return sdf::SemanticPose(
+      ignition::math::Pose3d::Zero,
+      this->dataPtr->name,
+      "__model__",
+      this->dataPtr->poseRelativeToGraph);
 }
 
 /////////////////////////////////////////////////
