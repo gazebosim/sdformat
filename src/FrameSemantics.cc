@@ -46,7 +46,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 /// \param[in] _id VertexId of the starting vertex.
 /// \return A sink vertex paired with a vector of the edges leading the
 /// sink to the starting vertex, or a NullVertex paired with an empty
-/// vector if a cycle or vertex with multiple incoming edges are detected.
+/// vector if a cycle or vertex with multiple outgoing edges are detected.
 template<typename V, typename E>
 std::pair<const ignition::math::graph::Vertex<V> &,
           std::vector< ignition::math::graph::DirectedEdge<E> > >
@@ -79,7 +79,7 @@ FindSinkVertex(
     if (incidentsFrom.size() != 1)
     {
       _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
-          "FrameAttachedToGraph error: multiple vertices incident from "
+          "FrameAttachedToGraph error: multiple outgoing edges from "
           "current vertex [" + vertex.get().Name() + "]."});
       return PairType(Vertex::NullVertex, EdgesType());
     }
@@ -454,7 +454,7 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
                 "Non-LINK vertex with name [" +
                 vertexPair.second.get().Name() +
                 "] has " + std::to_string(outDegree) +
-                " outcoming edges; it should only have 1 "
+                " outgoing edges; it should only have 1 "
                 "outgoing edge in MODEL attached_to graph."});
           }
           break;
