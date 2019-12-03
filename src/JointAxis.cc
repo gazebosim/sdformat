@@ -377,7 +377,8 @@ void JointAxis::SetPoseRelativeToGraph(
 
 /////////////////////////////////////////////////
 Errors JointAxis::ResolveXyz(
-    const std::string &_expressedIn, ignition::math::Vector3d &_xyz) const
+    ignition::math::Vector3d &_xyz,
+    const std::string &_expressedIn) const
 {
   Errors errors;
   auto graph = this->dataPtr->poseRelativeToGraph.lock();
@@ -405,12 +406,6 @@ Errors JointAxis::ResolveXyz(
   errors = resolvePose(pose, *graph, axisExpressedIn, _expressedIn);
   _xyz = pose.Rot() * this->Xyz();
   return errors;
-}
-
-/////////////////////////////////////////////////
-Errors JointAxis::ResolveXyz(ignition::math::Vector3d &_xyz) const
-{
-  return this->ResolveXyz(this->dataPtr->xmlParentName, _xyz);
 }
 
 /////////////////////////////////////////////////

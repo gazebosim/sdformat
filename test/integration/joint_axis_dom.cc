@@ -182,11 +182,11 @@ TEST(DOMJointAxis, XyzExpressedIn)
   // resolve axis xyz relative to expressed-in frame and confirm it matches
   // numbers in the model file
   Vector3 vec3;
-  EXPECT_TRUE(joint1axis->ResolveXyz("C1", vec3).empty());
+  EXPECT_TRUE(joint1axis->ResolveXyz(vec3, "C1").empty());
   EXPECT_EQ(Vector3(0, 0, 1), vec3);
   EXPECT_TRUE(joint1axis->ResolveXyz(vec3).empty());
   EXPECT_EQ(Vector3(0, 0, 1), vec3);
-  EXPECT_TRUE(joint2axis->ResolveXyz("__model__", vec3).empty());
+  EXPECT_TRUE(joint2axis->ResolveXyz(vec3, "__model__").empty());
   EXPECT_EQ(Vector3(0, 0, 1), vec3);
 
   Pose pose;
@@ -202,16 +202,16 @@ TEST(DOMJointAxis, XyzExpressedIn)
   EXPECT_EQ(Quaternion(0, IGN_PI/2, 0), pose.Rot());
 
   // Resolve joint axis xyz values in __model__ and child link frames
-  EXPECT_TRUE(joint1axis->ResolveXyz("__model__", vec3).empty());
+  EXPECT_TRUE(joint1axis->ResolveXyz(vec3, "__model__").empty());
   EXPECT_EQ(Vector3(-1, 0, 0), vec3);
-  EXPECT_TRUE(joint2axis->ResolveXyz("__model__", vec3).empty());
+  EXPECT_TRUE(joint2axis->ResolveXyz(vec3, "__model__").empty());
   EXPECT_EQ(Vector3(0, 0, 1), vec3);
 
-  EXPECT_TRUE(joint1axis->ResolveXyz("C1", vec3).empty());
+  EXPECT_TRUE(joint1axis->ResolveXyz(vec3, "C1").empty());
   EXPECT_EQ(Vector3(0, 0, 1), vec3);
   EXPECT_TRUE(joint1axis->ResolveXyz(vec3).empty());
   EXPECT_EQ(Vector3(0, 0, 1), vec3);
-  EXPECT_TRUE(joint2axis->ResolveXyz("C2", vec3).empty());
+  EXPECT_TRUE(joint2axis->ResolveXyz(vec3, "C2").empty());
   EXPECT_EQ(Vector3(-1, 0, 0), vec3);
   EXPECT_TRUE(joint2axis->ResolveXyz(vec3).empty());
   EXPECT_EQ(Vector3(-1, 0, 0), vec3);
