@@ -996,8 +996,8 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
   // check graph for cycles by finding sink from each vertex
   for (auto const &namePair : _in.map)
   {
-    Errors e;
-    FindSinkVertex(_in.graph, namePair.second, e);
+    std::string resolvedBody;
+    Errors e = resolveFrameAttachedToBody(_in, namePair.first, resolvedBody);
     errors.insert(errors.end(), e.begin(), e.end());
   }
 
@@ -1163,11 +1163,11 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
     }
   }
 
-  // check graph for cycles by finding source from each vertex
+  // check graph for cycles by resolving pose of each vertex relative to root
   for (auto const &namePair : _in.map)
   {
-    Errors e;
-    FindSourceVertex(_in.graph, namePair.second, e);
+    ignition::math::Pose3d pose;
+    Errors e = resolvePoseRelativeToRoot(_in, namePair.first, pose);
     errors.insert(errors.end(), e.begin(), e.end());
   }
 
@@ -1226,11 +1226,6 @@ Errors resolveFrameAttachedToBody(const FrameAttachedToGraph &_in,
 
   if (_in.scopeName == "__model__" && sinkVertex.Data() != FrameType::LINK)
   {
-    // errors.push_back({ErrorCode::ELEMENT_INVALID,
-    //     "Graph has __model__ scope but sink vertex has FrameType ["
-    //     sinkVertex.Data() + "], when it should be LINK "
-    //     "[" + FrameType::LINK + "] "
-    //     "when starting from vertex with name [" + _vertexName + "]."});
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
         "Graph has __model__ scope but sink vertex named [" +
         sinkVertex.Name() + "] does not have FrameType LINK "
@@ -1274,9 +1269,10 @@ Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
   else if (incomingVertexEdges.first.Name() != _graph.sourceName)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-        "PoseRelativeToGraph source vertex found with name [" +
+        "PoseRelativeToGraph frame with name [" + _vertexName + "] "
+        "is disconnected; its source vertex has name [" +
         incomingVertexEdges.first.Name() +
-        "], but its name should be " + _graph.sourceName + "."});
+        "], but its source name should be " + _graph.sourceName + "."});
     return errors;
   }
 

@@ -209,7 +209,7 @@ TEST(DOMLink, InertialInvalid)
   sdf::Root root;
   auto errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(4u, errors.size());
+  ASSERT_EQ(5u, errors.size());
   for (auto err : errors)
      std::cout << err.Message() << std::endl;
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::LINK_INERTIA_INVALID);
@@ -219,6 +219,7 @@ TEST(DOMLink, InertialInvalid)
   EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::MODEL_WITHOUT_LINK);
   EXPECT_EQ(errors[2].Message(), "A model must have at least one link.");
   // errors[3]
+  // errors[4]
 
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_EQ(nullptr, model);
@@ -660,7 +661,7 @@ TEST(DOMLink, LoadInvalidLinkPoseRelativeTo)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(4u, errors.size());
+  EXPECT_EQ(5u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -673,4 +674,5 @@ TEST(DOMLink, LoadInvalidLinkPoseRelativeTo)
       "causing a graph cycle"));
   // errors[2]
   // errors[3]
+  // errors[4]
 }
