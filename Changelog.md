@@ -58,6 +58,9 @@
 1. Implement SemanticPose() for Collision, Frame, Light, Model, Sensor, Visual.
     * [Pull request 618](https://bitbucket.org/osrf/sdformat/pull-requests/618)
 
+1. Add Frame::ResolveAttachedToBody API for resolving the attached-to body of a frame.
+    * [Pull request 619](https://bitbucket.org/osrf/sdformat/pull-requests/619)
+
 1. DOM API: deprecate `(Set)?PoseFrame` API and replace with `(Set)?PoseRelativeTo`
     * [Pull request 598](https://bitbucket.org/osrf/sdformat/pull-requests/598)
 
