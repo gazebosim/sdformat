@@ -52,6 +52,8 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_Model)
   auto errors = sdf::buildFrameAttachedToGraph(graph, model);
   EXPECT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::validateFrameAttachedToGraph(graph).empty());
+  EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
+  EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
   EXPECT_EQ(6u, graph.map.size());
   EXPECT_EQ(6u, graph.graph.Vertices().size());
@@ -115,6 +117,8 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_World)
   auto errors = sdf::buildFrameAttachedToGraph(graph, world);
   EXPECT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::validateFrameAttachedToGraph(graph).empty());
+  EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
+  EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
   EXPECT_EQ(6u, graph.map.size());
   EXPECT_EQ(6u, graph.graph.Vertices().size());
