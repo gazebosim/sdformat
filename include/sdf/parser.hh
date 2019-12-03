@@ -188,7 +188,7 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool checkFrameAttachedToNames(const sdf::Root *_root);
 
-  /// \brief Check that all joints in contained models have specify parent
+  /// \brief Check that all joints in contained models specify parent
   /// and child link names that match the names of sibling links.
   /// This checks recursively and should check the files exhaustively
   /// rather than terminating early when the first error is found.
