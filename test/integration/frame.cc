@@ -390,6 +390,16 @@ TEST(DOMFrame, LoadModelFramesAttachedTo)
   EXPECT_TRUE(model->FrameByName("F0")->PoseRelativeTo().empty());
   EXPECT_TRUE(model->FrameByName("F1")->PoseRelativeTo().empty());
   EXPECT_TRUE(model->FrameByName("F2")->PoseRelativeTo().empty());
+
+  std::string body;
+  EXPECT_TRUE(model->FrameByName("F00")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("L", body);
+  EXPECT_TRUE(model->FrameByName("F0")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("L", body);
+  EXPECT_TRUE(model->FrameByName("F1")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("L", body);
+  EXPECT_TRUE(model->FrameByName("F2")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("L", body);
 }
 
 /////////////////////////////////////////////////
@@ -487,6 +497,16 @@ TEST(DOMFrame, LoadModelFramesAttachedToJoint)
   EXPECT_TRUE(model->FrameByName("F2")->PoseRelativeTo().empty());
   EXPECT_TRUE(model->FrameByName("F3")->PoseRelativeTo().empty());
   EXPECT_TRUE(model->FrameByName("F4")->PoseRelativeTo().empty());
+
+  std::string body;
+  EXPECT_TRUE(model->FrameByName("F1")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("P", body);
+  EXPECT_TRUE(model->FrameByName("F2")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("C", body);
+  EXPECT_TRUE(model->FrameByName("F3")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("C", body);
+  EXPECT_TRUE(model->FrameByName("F4")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("C", body);
 }
 
 /////////////////////////////////////////////////
@@ -543,6 +563,17 @@ TEST(DOMFrame, LoadWorldFramesAttachedTo)
   EXPECT_TRUE(world->FrameByName("F0")->PoseRelativeTo().empty());
   EXPECT_TRUE(world->FrameByName("F1")->PoseRelativeTo().empty());
   EXPECT_TRUE(world->FrameByName("F2")->PoseRelativeTo().empty());
+
+  std::string body;
+  EXPECT_TRUE(
+    world->FrameByName("world_frame")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("world", body);
+  EXPECT_TRUE(world->FrameByName("F0")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("world", body);
+  EXPECT_TRUE(world->FrameByName("F1")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("world", body);
+  EXPECT_TRUE(world->FrameByName("F2")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("M1", body);
 }
 
 /////////////////////////////////////////////////

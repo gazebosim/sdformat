@@ -131,14 +131,29 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Resolve the attached-to body of this frame from the
+    /// FrameAttachedToGraph. If this is in a __model__ scope, it returns
+    /// the name of a link. In the world scope, it returns the name of a
+    /// model or the world.
+    /// \param[out] _body Name of body to which this frame is attached.
+    /// \return Errors.
+    public: Errors ResolveAttachedToBody(std::string &_body) const;
+
     /// \brief Get SemanticPose object of this object to aid in resolving
     /// poses.
     /// \return SemanticPose object for this link.
     public: sdf::SemanticPose SemanticPose() const;
 
+    /// \brief Give a weak pointer to the FrameAttachedToGraph to be used
+    /// for resolving attached bodies. This is private and is intended to
+    /// be called by Model::Load or World::Load.
+    /// \param[in] _graph Weak pointer to FrameAttachedToGraph.
+    private: void SetFrameAttachedToGraph(
+        std::weak_ptr<const FrameAttachedToGraph> _graph);
+
     /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
     /// for resolving poses. This is private and is intended to be called by
-    /// Model::Load.
+    /// Model::Load or World::Load.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: void SetPoseRelativeToGraph(
         std::weak_ptr<const PoseRelativeToGraph> _graph);
