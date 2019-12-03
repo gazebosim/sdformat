@@ -23,7 +23,7 @@ but with improved human-readability..
     + Errors buildFrameAttachedToGraph(FrameAttachedToGraph&, const Model\*)
     + Errors buildFrameAttachedToGraph(FrameAttachedToGraph&, const World\*)
     + Errors validateFrameAttachedToGraph(const FrameAttachedToGraph\*)
-    + Errors resolveFrameAttachedToBody(const FrameAttachedToGraph\*, const std::string&, std::string&)
+    + Errors resolveFrameAttachedToBody(std::string&, const FrameAttachedToGraph\*, const std::string&)
 
 1. **sdf/Model.hh**
     + uint64\_t FrameCount() const
