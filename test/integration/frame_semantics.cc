@@ -117,6 +117,37 @@ TEST(FrameSemantics, buildFrameAttachedToGraph)
   //     ignition::math::graph::FindSinkVertex(graph.graph, nameId.second);
   //   EXPECT_EQ(linkId, sinkVertexPair.first.Id());
   // }
+
+  std::string resolvedBody;
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(graph, "L", resolvedBody).empty());
+  EXPECT_EQ("L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(graph, "__model__", resolvedBody).empty());
+  EXPECT_EQ("L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(graph, "F00", resolvedBody).empty());
+  EXPECT_EQ("L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(graph, "F0", resolvedBody).empty());
+  EXPECT_EQ("L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(graph, "F1", resolvedBody).empty());
+  EXPECT_EQ("L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(graph, "F2", resolvedBody).empty());
+  EXPECT_EQ("L", resolvedBody);
+
+  // Try to resolve invalid frame name
+  errors = sdf::resolveFrameAttachedToBody(graph, "invalid", resolvedBody);
+  for (auto &e : errors)
+    std::cerr << e.Message() << std::endl;
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+      errors[0].Message().find(
+        "FrameAttachedToGraph unable to find unique frame with name ["
+        "invalid] in graph."));
 }
 
 /////////////////////////////////////////////////

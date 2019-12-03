@@ -1182,16 +1182,17 @@ Errors resolveFrameAttachedToBody(const FrameAttachedToGraph &_in,
 
   if (_in.scopeName != "__model__" && _in.scopeName != "world")
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Graph has invalid scope name [" + _in.scopeName + "],"
-        " which should be [__model__] or [world]."});
+    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+        "FrameAttachedToGraph error: scope frame[" + _in.scopeName + "] "
+        " does not match __model__ or world."});
     return errors;
   }
 
   if (_in.map.count(_vertexName) != 1)
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Unique vertex with name [" + _vertexName + "] not found in graph."});
+    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
+        "FrameAttachedToGraph unable to find unique frame with name [" +
+        _vertexName + "] in graph."});
     return errors;
   }
   auto vertexId = _in.map.at(_vertexName);
@@ -1206,9 +1207,9 @@ Errors resolveFrameAttachedToBody(const FrameAttachedToGraph &_in,
 
   if (!sinkVertex.Valid())
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Sink vertex not found in graph when starting from vertex with "
-        "name [" + _vertexName + "]."});
+    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+        "FrameAttachedToGraph unable to find sink vertex when starting "
+        "from vertex with name [" + _vertexName + "]."});
     return errors;
   }
 
@@ -1216,11 +1217,10 @@ Errors resolveFrameAttachedToBody(const FrameAttachedToGraph &_in,
       !(sinkVertex.Data() == FrameType::WORLD ||
         sinkVertex.Data() == FrameType::MODEL))
   {
-    // errors.push_back({ErrorCode::ELEMENT_INVALID,
-    //     "Graph has world scope but sink vertex has FrameType [" +
-    //     std::to_string(sinkVertex.Data()) + "], when it should be either "
-    //     "WORLD [" + FrameType::WORLD + "] or MODEL [" FrameType::MODEL + "] "
-    //     "when starting from vertex with name [" + _vertexName + "]."});
+    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+        "Graph has world scope but sink vertex named [" +
+        sinkVertex.Name() + "] does not have FrameType WORLD or MODEL "
+        "when starting from vertex with name [" + _vertexName + "]."});
     return errors;
   }
 
@@ -1231,6 +1231,10 @@ Errors resolveFrameAttachedToBody(const FrameAttachedToGraph &_in,
     //     sinkVertex.Data() + "], when it should be LINK "
     //     "[" + FrameType::LINK + "] "
     //     "when starting from vertex with name [" + _vertexName + "]."});
+    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+        "Graph has __model__ scope but sink vertex named [" +
+        sinkVertex.Name() + "] does not have FrameType LINK "
+        "when starting from vertex with name [" + _vertexName + "]."});
     return errors;
   }
 
