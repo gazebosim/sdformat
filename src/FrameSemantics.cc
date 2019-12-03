@@ -79,7 +79,7 @@ FindSourceVertex(
     if (incidentsTo.size() != 1)
     {
       _errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-          "PoseRelativeToGraph error: multiple vertices incident to "
+          "PoseRelativeToGraph error: multiple incoming edges to "
           "current vertex [" + vertex.get().Name() + "]."});
       return PairType(Vertex::NullVertex, EdgesType());
     }
@@ -452,7 +452,7 @@ Errors buildPoseRelativeToGraph(
 
     if (link->PoseRelativeTo().empty())
     {
-      // relative_to is empty, so add edge from link to implicit model frame
+      // relative_to is empty, so add edge from implicit model frame to link
       _out.graph.AddEdge({modelFrameId, linkId}, link->RawPose());
     }
   }
@@ -493,7 +493,7 @@ Errors buildPoseRelativeToGraph(
 
     if (frame->PoseRelativeTo().empty() && frame->AttachedTo().empty())
     {
-      // add edge from frame to implicit model frame
+      // add edge from implicit model frame to frame
       _out.graph.AddEdge({modelFrameId, frameId}, frame->RawPose());
     }
   }
@@ -665,7 +665,7 @@ Errors buildPoseRelativeToGraph(
 
     if (model->PoseRelativeTo().empty())
     {
-      // relative_to is empty, so add edge from model to implicit world frame
+      // relative_to is empty, so add edge from implicit world frame to model
       _out.graph.AddEdge({worldFrameId, modelId}, model->RawPose());
     }
   }
@@ -681,7 +681,7 @@ Errors buildPoseRelativeToGraph(
 
     if (frame->PoseRelativeTo().empty() && frame->AttachedTo().empty())
     {
-      // add edge from frame to implicit world frame
+      // add edge from implicit world frame to frame
       _out.graph.AddEdge({worldFrameId, frameId}, frame->RawPose());
     }
   }
