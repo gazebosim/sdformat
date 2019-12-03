@@ -307,12 +307,18 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(124, camSensor->LensIntrinsicsCy());
   EXPECT_DOUBLE_EQ(1.2, camSensor->LensIntrinsicsSkew());
 
+  ignition::math::Pose3d pose;
+
   // Get the contact sensor
   const sdf::Sensor *contactSensor = link->SensorByName("contact_sensor");
   ASSERT_NE(nullptr, contactSensor);
   EXPECT_EQ("contact_sensor", contactSensor->Name());
   EXPECT_EQ(sdf::SensorType::CONTACT, contactSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), contactSensor->RawPose());
+  EXPECT_TRUE(contactSensor->SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), pose);
+  EXPECT_TRUE(contactSensor->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(ignition::math::Pose3d(4, 5, 3, 0, 0, 0), pose);
 
   // Get the depth sensor
   const sdf::Sensor *depthSensor = link->SensorByName("depth_sensor");

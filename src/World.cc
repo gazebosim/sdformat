@@ -306,6 +306,20 @@ Errors World::Load(sdf::ElementPtr _sdf)
     validatePoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph);
   errors.insert(errors.end(), validatePoseGraphErrors.begin(),
                               validatePoseGraphErrors.end());
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &light : this->dataPtr->lights)
+  {
+    light.SetXmlParentName("world");
+    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+
   return errors;
 }
 

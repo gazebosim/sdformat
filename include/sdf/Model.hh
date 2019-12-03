@@ -17,9 +17,12 @@
 #ifndef SDF_MODEL_HH_
 #define SDF_MODEL_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
+#include "sdf/FrameSemantics.hh"
+#include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -270,6 +273,21 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Get SemanticPose object of this object to aid in resolving
+    /// poses.
+    /// \return SemanticPose object for this link.
+    public: sdf::SemanticPose SemanticPose() const;
+
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Model::Load.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    private: void SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    /// \brief Allow World::Load to call SetPoseRelativeToGraph.
+    friend class World;
 
     /// \brief Private data pointer.
     private: ModelPrivate *dataPtr = nullptr;

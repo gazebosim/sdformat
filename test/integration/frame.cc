@@ -20,7 +20,17 @@
 
 #include <gtest/gtest.h>
 
-#include "sdf/sdf.hh"
+#include "sdf/Element.hh"
+#include "sdf/Frame.hh"
+#include "sdf/Filesystem.hh"
+#include "sdf/Joint.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
+#include "sdf/Root.hh"
+#include "sdf/SDFImpl.hh"
+#include "sdf/World.hh"
+#include "sdf/parser.hh"
+#include "sdf/sdf_config.h"
 
 #include "test_config.h"
 
@@ -574,4 +584,391 @@ TEST(DOMFrame, LoadWorldFramesInvalidAttachedTo)
   // errors[6]
   // errors[7]
   // errors[8]
+}
+
+/////////////////////////////////////////////////
+TEST(DOMFrame, LoadModelFramesRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_frame_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  using Pose = ignition::math::Pose3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_frame_relative_to", model->Name());
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_EQ(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  EXPECT_TRUE(model->LinkNameExists("L"));
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(5u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_NE(nullptr, model->FrameByIndex(1));
+  EXPECT_NE(nullptr, model->FrameByIndex(2));
+  EXPECT_NE(nullptr, model->FrameByIndex(3));
+  EXPECT_NE(nullptr, model->FrameByIndex(4));
+  EXPECT_EQ(nullptr, model->FrameByIndex(5));
+  ASSERT_TRUE(model->FrameNameExists("F0"));
+  ASSERT_TRUE(model->FrameNameExists("F1"));
+  ASSERT_TRUE(model->FrameNameExists("F2"));
+  ASSERT_TRUE(model->FrameNameExists("F3"));
+  ASSERT_TRUE(model->FrameNameExists("F4"));
+
+  EXPECT_TRUE(model->FrameByName("F0")->AttachedTo().empty());
+  EXPECT_EQ("L", model->FrameByName("F1")->AttachedTo());
+  EXPECT_EQ("L", model->FrameByName("F2")->AttachedTo());
+  EXPECT_TRUE(model->FrameByName("F3")->AttachedTo().empty());
+  EXPECT_TRUE(model->FrameByName("F4")->AttachedTo().empty());
+
+  EXPECT_TRUE(model->FrameByName("F0")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->FrameByName("F1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->FrameByName("F2")->PoseRelativeTo().empty());
+  EXPECT_EQ("L", model->FrameByName("F3")->PoseRelativeTo());
+  EXPECT_EQ("F3", model->FrameByName("F4")->PoseRelativeTo());
+
+  EXPECT_EQ(Pose(0, 1, 0, 0, 0, 0), model->FrameByName("F0")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->FrameByName("F1")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->FrameByName("F2")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0), model->FrameByName("F3")->RawPose());
+  EXPECT_EQ(Pose::Zero, model->FrameByName("F4")->RawPose());
+
+  Pose pose;
+
+  // Test resolvePose for each frame with its relative_to value.
+  // Numbers should match the raw pose value in the model file.
+  EXPECT_TRUE(
+    model->FrameByName("F0")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(0, 1, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F0")->
+      SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(0, 1, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F1")->
+      SemanticPose().Resolve(pose, "L").empty());
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F2")->
+      SemanticPose().Resolve(pose, "L").empty());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F3")->
+      SemanticPose().Resolve(pose, "L").empty());
+  EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F4")->
+      SemanticPose().Resolve(pose, "F3").empty());
+  EXPECT_EQ(Pose::Zero, pose);
+
+  //// Test ResolvePose for each Frame relative to the model frame.
+  EXPECT_TRUE(
+    model->FrameByName("F0")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(0, 1, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F0")->
+      SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(0, 1, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F1")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F1")->
+      SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(1, 0, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F2")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 2, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F2")->
+      SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(1, 0, 2, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F3")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 3, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F3")->
+      SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(1, 0, 3, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F4")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 3, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F4")->
+      SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(1, 0, 3, 0, 0, 0), pose);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMFrame, LoadModelFramesInvalidRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_invalid_frame_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(5u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "relative_to name[A] specified by frame with name[F] does not match a "
+      "link, joint, or frame name in model"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "relative_to name[cycle] is identical to frame name[cycle], "
+      "causing a graph cycle"));
+  // errors[2]
+  // errors[3]
+}
+
+/////////////////////////////////////////////////
+TEST(DOMFrame, LoadModelFramesRelativeToJoint)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_frame_relative_to_joint.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  using Pose = ignition::math::Pose3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_frame_relative_to_joint", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  ASSERT_TRUE(model->LinkNameExists("P"));
+  ASSERT_TRUE(model->LinkNameExists("C"));
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), model->LinkByName("P")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("C")->RawPose());
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(1u, model->JointCount());
+  EXPECT_NE(nullptr, model->JointByIndex(0));
+  EXPECT_EQ(nullptr, model->JointByIndex(1));
+
+  ASSERT_TRUE(model->JointNameExists("J"));
+  EXPECT_EQ(Pose(0, 3, 0, 0, -IGN_PI/2, 0), model->JointByName("J")->RawPose());
+
+  EXPECT_EQ(4u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_NE(nullptr, model->FrameByIndex(1));
+  EXPECT_NE(nullptr, model->FrameByIndex(2));
+  EXPECT_NE(nullptr, model->FrameByIndex(3));
+  EXPECT_EQ(nullptr, model->FrameByIndex(4));
+  ASSERT_TRUE(model->FrameNameExists("F1"));
+  ASSERT_TRUE(model->FrameNameExists("F2"));
+  ASSERT_TRUE(model->FrameNameExists("F3"));
+  ASSERT_TRUE(model->FrameNameExists("F4"));
+
+  EXPECT_TRUE(model->FrameByName("F1")->AttachedTo().empty());
+  EXPECT_TRUE(model->FrameByName("F2")->AttachedTo().empty());
+  EXPECT_TRUE(model->FrameByName("F3")->AttachedTo().empty());
+  EXPECT_TRUE(model->FrameByName("F4")->AttachedTo().empty());
+
+  EXPECT_EQ("P", model->FrameByName("F1")->PoseRelativeTo());
+  EXPECT_EQ("C", model->FrameByName("F2")->PoseRelativeTo());
+  EXPECT_EQ("J", model->FrameByName("F3")->PoseRelativeTo());
+  EXPECT_EQ("F3", model->FrameByName("F4")->PoseRelativeTo());
+
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->FrameByName("F1")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->FrameByName("F2")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 3, 0, IGN_PI/2, 0), model->FrameByName("F3")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 4, 0, -IGN_PI/2, 0),
+            model->FrameByName("F4")->RawPose());
+
+  // Test ResolvePose for each Frame.
+  Pose pose;
+  EXPECT_TRUE(
+    model->LinkByName("P")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F1")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 1, 0, 0, 0), pose);
+
+  EXPECT_TRUE(
+    model->LinkByName("C")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F2")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(4, 0, 0, 0, IGN_PI/2, 0), pose);
+
+  EXPECT_TRUE(
+    model->JointByName("J")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(2, 3, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F3")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F4")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(6, 3, 3, 0, 0, 0), pose);
+  // test other API
+  EXPECT_TRUE(model->FrameByName("F1")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(1, 0, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F2")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(4, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F3")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->FrameByName("F4")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(6, 3, 3, 0, 0, 0), pose);
+
+  // Test resolvePose for each frame with its relative_to value.
+  // Numbers should match the raw pose value in the model file.
+  EXPECT_TRUE(
+    model->LinkByName("P")->SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->LinkByName("C")->SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(
+    model->JointByName("J")->SemanticPose().Resolve(pose, "C").empty());
+  EXPECT_EQ(Pose(0, 3, 0, 0, -IGN_PI/2, 0), pose);
+
+  EXPECT_TRUE(
+    model->FrameByName("F1")->SemanticPose().Resolve(pose, "P").empty());
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F2")->SemanticPose().Resolve(pose, "C").empty());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F3")->SemanticPose().Resolve(pose, "J").empty());
+  EXPECT_EQ(Pose(0, 0, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("F4")->SemanticPose().Resolve(pose, "F3").empty());
+  EXPECT_EQ(Pose(0, 0, 4, 0, -IGN_PI/2, 0), pose);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMFrame, LoadWorldFramesRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_frame_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first world
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  EXPECT_EQ("world_frame_relative_to", world->Name());
+  EXPECT_EQ(4u, world->ModelCount());
+  EXPECT_NE(nullptr, world->ModelByIndex(0));
+  EXPECT_NE(nullptr, world->ModelByIndex(1));
+  EXPECT_NE(nullptr, world->ModelByIndex(2));
+  EXPECT_NE(nullptr, world->ModelByIndex(3));
+  EXPECT_EQ(nullptr, world->ModelByIndex(4));
+
+  ASSERT_TRUE(world->ModelNameExists("M1"));
+  ASSERT_TRUE(world->ModelNameExists("M2"));
+  ASSERT_TRUE(world->ModelNameExists("M3"));
+  ASSERT_TRUE(world->ModelNameExists("M4"));
+
+  const sdf::Model *model = world->ModelByName("M1");
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_EQ(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(1u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_EQ(nullptr, model->FrameByIndex(1));
+  ASSERT_TRUE(model->LinkNameExists("L"));
+  ASSERT_TRUE(model->FrameNameExists("F0"));
+  EXPECT_EQ("L", model->FrameByName("F0")->PoseRelativeTo());
+
+  EXPECT_TRUE(world->ModelByName("M1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(world->ModelByName("M2")->PoseRelativeTo().empty());
+  EXPECT_EQ("M2", world->ModelByName("M3")->PoseRelativeTo());
+  EXPECT_EQ("F1", world->ModelByName("M4")->PoseRelativeTo());
+
+  EXPECT_EQ(4u, world->FrameCount());
+  EXPECT_NE(nullptr, world->FrameByIndex(0));
+  EXPECT_NE(nullptr, world->FrameByIndex(1));
+  EXPECT_NE(nullptr, world->FrameByIndex(2));
+  EXPECT_NE(nullptr, world->FrameByIndex(3));
+  EXPECT_EQ(nullptr, world->FrameByIndex(4));
+  ASSERT_TRUE(world->FrameNameExists("world_frame"));
+  ASSERT_TRUE(world->FrameNameExists("F0"));
+  ASSERT_TRUE(world->FrameNameExists("F1"));
+  ASSERT_TRUE(world->FrameNameExists("F2"));
+
+  EXPECT_TRUE(world->FrameByName("world_frame")->PoseRelativeTo().empty());
+  EXPECT_TRUE(world->FrameByName("F0")->PoseRelativeTo().empty());
+  EXPECT_EQ("F0", world->FrameByName("F1")->PoseRelativeTo());
+  EXPECT_EQ("M1", world->FrameByName("F2")->PoseRelativeTo());
+
+  EXPECT_TRUE(world->FrameByName("world_frame")->AttachedTo().empty());
+  EXPECT_TRUE(world->FrameByName("F0")->AttachedTo().empty());
+  EXPECT_TRUE(world->FrameByName("F1")->AttachedTo().empty());
+  EXPECT_TRUE(world->FrameByName("F2")->AttachedTo().empty());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMFrame, LoadWorldFramesInvalidRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_frame_invalid_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(11u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "relative_to name[A] specified by model with name[M] does not match a "
+      "model or frame name in world"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "relative_to name[cycle] is identical to model name[cycle], "
+      "causing a graph cycle"));
 }
