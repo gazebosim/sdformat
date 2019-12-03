@@ -46,19 +46,16 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 
   if (!sdf::checkCanonicalLinkNames(&root))
   {
-    std::cerr << "Error: invalid canonical link name.\n";
     result = -1;
   }
 
   if (!sdf::checkJointParentChildLinkNames(&root))
   {
-    std::cerr << "Error: invalid parent or child link name.\n";
     result = -1;
   }
 
-  if (!sdf::checkFrameAttachedToNames(&root))
+  if (!sdf::checkFrameAttachedToGraph(&root))
   {
-    std::cerr << "Error: invalid frame attached_to name.\n";
     result = -1;
   }
 
@@ -77,12 +74,6 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   if (!sdf::checkKinematicGraph(&root))
   {
     std::cerr << "Error: invalid kinematic graph.\n";
-    result = -1;
-  }
-
-  if (!sdf::checkFrameAttachedToGraph(&root))
-  {
-    std::cerr << "Error: invalid frame attached_to graph.\n";
     result = -1;
   }
 
