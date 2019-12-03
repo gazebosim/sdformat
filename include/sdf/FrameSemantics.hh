@@ -84,8 +84,9 @@ namespace sdf
   struct SDFORMAT_VISIBLE PoseRelativeToGraph
   {
     /// \brief A DirectedGraph with a vertex for each explicit or implicit
-    /// frame and edges pointing from the frame relative to which its pose
-    /// is defined. Each vertex stores its FrameType and each edge
+    /// frame and edges pointing to a given frame from its relative-to frame.
+    /// When well-formed, it should form a directed tree with a root vertex
+    /// named __model__ or world. Each vertex stores its FrameType and each edge
     /// stores the Pose3 between those frames.
     using Pose3d = ignition::math::Pose3d;
     using GraphType = ignition::math::graph::DirectedGraph<FrameType, Pose3d>;
