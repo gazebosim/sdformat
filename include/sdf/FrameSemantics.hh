@@ -203,7 +203,7 @@ namespace sdf
   /// \param[out] _pose Pose object to write.
   /// \param[in] _graph PoseRelativeToGraph to read from.
   /// \param[in] _frameName Name of frame whose pose is to be resolved.
-  /// \param[in] _relativeTo Name of frame relative to which the pose is
+  /// \param[in] _resolveTo Name of frame relative to which the pose is
   /// to be resolved.
   /// \return Errors.
   SDFORMAT_VISIBLE
@@ -211,7 +211,7 @@ namespace sdf
       ignition::math::Pose3d &_pose,
       const PoseRelativeToGraph &_graph,
       const std::string &_frameName,
-      const std::string &_relativeTo);
+      const std::string &_resolveTo);
   }
 }
 #endif

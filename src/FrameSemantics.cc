@@ -1299,12 +1299,12 @@ Errors resolvePose(
     ignition::math::Pose3d &_pose,
     const PoseRelativeToGraph &_graph,
     const std::string &_frameName,
-    const std::string &_relativeTo)
+    const std::string &_resolveTo)
 {
   Errors errors = resolvePoseRelativeToRoot(_pose, _graph, _frameName);
 
   ignition::math::Pose3d poseR;
-  Errors errorsR = resolvePoseRelativeToRoot(poseR, _graph, _relativeTo);
+  Errors errorsR = resolvePoseRelativeToRoot(poseR, _graph, _resolveTo);
   errors.insert(errors.end(), errorsR.begin(), errorsR.end());
 
   if (errors.empty())
