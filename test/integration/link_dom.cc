@@ -315,7 +315,7 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("contact_sensor", contactSensor->Name());
   EXPECT_EQ(sdf::SensorType::CONTACT, contactSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), contactSensor->RawPose());
-  EXPECT_TRUE(contactSensor->SemanticPose().Resolve("__model__", pose).empty());
+  EXPECT_TRUE(contactSensor->SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), pose);
   EXPECT_TRUE(contactSensor->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(4, 5, 3, 0, 0, 0), pose);
@@ -617,13 +617,13 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   // Test SemanticPose().Resolve to get each link pose in the model frame
   Pose pose;
   EXPECT_TRUE(
-    model->LinkByName("L1")->SemanticPose().Resolve("__model__", pose).empty());
+    model->LinkByName("L1")->SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(
-    model->LinkByName("L2")->SemanticPose().Resolve("__model__", pose).empty());
+    model->LinkByName("L2")->SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(
-    model->LinkByName("L3")->SemanticPose().Resolve("__model__", pose).empty());
+    model->LinkByName("L3")->SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
   // test other API too
   EXPECT_TRUE(model->LinkByName("L1")->SemanticPose().Resolve(pose).empty());
@@ -636,7 +636,7 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   // resolve pose of L1 relative to L3
   // should be inverse of L3's Pose()
   EXPECT_TRUE(
-    model->LinkByName("L1")->SemanticPose().Resolve("L3", pose).empty());
+    model->LinkByName("L1")->SemanticPose().Resolve(pose, "L3").empty());
   EXPECT_EQ(Pose(-3, 0, 0, 0, 0, 0), pose);
 
   EXPECT_TRUE(model->CanonicalLinkName().empty());

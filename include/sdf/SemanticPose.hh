@@ -56,20 +56,12 @@ namespace sdf
     /// \brief Resolve pose of this object with respect to another named frame.
     /// If there are any errors resolving the pose, the output will not be
     /// modified.
+    /// \param[out] _pose The resolved pose.
     /// \param[in] _resolveTo The pose will be resolved with respect to this
-    /// frame.
-    /// \param[out] _pose The resolved pose.
+    /// frame. If unset or empty, the default resolve-to frame will be used.
     /// \return Errors in resolving pose.
-    public: Errors Resolve(const std::string &_resolveTo,
-                           ignition::math::Pose3d &_pose) const;
-
-    /// \brief Resolve pose of this object with respect to this object's
-    /// default resolve-to frame.
-    /// If there are any errors resolving the pose, the output will not be
-    /// modified.
-    /// \param[out] _pose The resolved pose.
-    /// \return Errors in resolving pose.
-    public: Errors Resolve(ignition::math::Pose3d &_pose) const;
+    public: Errors Resolve(ignition::math::Pose3d &_pose,
+                           const std::string &_resolveTo = "") const;
 
     /// \brief Private constructor.
     private: SemanticPose(

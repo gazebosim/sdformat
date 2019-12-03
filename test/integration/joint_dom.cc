@@ -212,37 +212,37 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   Pose pose;
   EXPECT_TRUE(
     model->LinkByName("P1")->
-      SemanticPose().Resolve("__model__", pose).empty());
+      SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(
     model->LinkByName("C1")->
-      SemanticPose().Resolve("__model__", pose).empty());
+      SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), pose);
   EXPECT_TRUE(
     model->JointByName("J1")->
-      SemanticPose().Resolve("__model__", pose).empty());
+      SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(1, 0, 0, 0, -IGN_PI/2, 0), pose);
 
   EXPECT_TRUE(
     model->LinkByName("P2")->
-      SemanticPose().Resolve("__model__", pose).empty());
+      SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(
     model->JointByName("J2")->
-      SemanticPose().Resolve("__model__", pose).empty());
+      SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(5, 0, 0, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(
     model->LinkByName("C2")->
-      SemanticPose().Resolve("__model__", pose).empty());
+      SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(5, 0, -4, 0, IGN_PI/2, 0), pose);
 
   // resolve pose of J1 relative to C1, J2 relative to P2
   // these should match the numbers in the model file
   EXPECT_TRUE(
-    model->JointByName("J1")->SemanticPose().Resolve("C1", pose).empty());
+    model->JointByName("J1")->SemanticPose().Resolve(pose, "C1").empty());
   EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), pose);
   EXPECT_TRUE(
-    model->JointByName("J2")->SemanticPose().Resolve("P2", pose).empty());
+    model->JointByName("J2")->SemanticPose().Resolve(pose, "P2").empty());
   EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), pose);
 
   EXPECT_EQ(0u, model->FrameCount());

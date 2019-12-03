@@ -71,7 +71,8 @@ const std::string &SemanticPose::RelativeTo() const
 
 /////////////////////////////////////////////////
 Errors SemanticPose::Resolve(
-    const std::string &_resolveTo, ignition::math::Pose3d &_pose) const
+    ignition::math::Pose3d &_pose,
+    const std::string &_resolveTo) const
 {
   Errors errors;
 
@@ -89,15 +90,14 @@ Errors SemanticPose::Resolve(
     relativeTo = this->dataPtr->defaultResolveTo;
   }
 
-  if (_resolveTo.empty())
+  std::string resolveTo = _resolveTo;
+  if (resolveTo.empty())
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "SemanticPose with invalid empty resolveTo value."});
-    return errors;
+    resolveTo = this->dataPtr->defaultResolveTo;
   }
 
   ignition::math::Pose3d pose;
-  errors = resolvePose(pose, *graph, relativeTo, _resolveTo);
+  errors = resolvePose(pose, *graph, relativeTo, resolveTo);
   pose *= this->RawPose();
 
   if (errors.empty())
@@ -106,10 +106,4 @@ Errors SemanticPose::Resolve(
   }
 
   return errors;
-}
-
-/////////////////////////////////////////////////
-Errors SemanticPose::Resolve(ignition::math::Pose3d &_pose) const
-{
-  return this->Resolve(this->dataPtr->defaultResolveTo, _pose);
 }

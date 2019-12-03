@@ -51,7 +51,7 @@ TEST(DOMWorld, LoadLights)
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 10, 0, 0, 0), pointLight->RawPose());
   EXPECT_EQ("world", pointLight->PoseRelativeTo());
   ignition::math::Pose3d pose;
-  EXPECT_TRUE(pointLight->SemanticPose().Resolve("world", pose).empty());
+  EXPECT_TRUE(pointLight->SemanticPose().Resolve(pose, "world").empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 10, 0, 0, 0), pose);
   EXPECT_TRUE(pointLight->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 10, 0, 0, 0), pose);
@@ -74,9 +74,9 @@ TEST(DOMWorld, LoadLights)
   EXPECT_EQ("directional_light", dirLight->Name());
   EXPECT_EQ(ignition::math::Pose3d(0, 10, 20, 0, 0, 0), dirLight->RawPose());
   EXPECT_EQ("frame1", dirLight->PoseRelativeTo());
-  EXPECT_TRUE(dirLight->SemanticPose().Resolve("frame1", pose).empty());
+  EXPECT_TRUE(dirLight->SemanticPose().Resolve(pose, "frame1").empty());
   EXPECT_EQ(ignition::math::Pose3d(0, 10, 20, 0, 0, 0), pose);
-  EXPECT_TRUE(dirLight->SemanticPose().Resolve("world", pose).empty());
+  EXPECT_TRUE(dirLight->SemanticPose().Resolve(pose, "world").empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 12, 23, 0, 0, 0), pose);
   EXPECT_TRUE(dirLight->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 12, 23, 0, 0, 0), pose);
@@ -89,12 +89,12 @@ TEST(DOMWorld, LoadLights)
   ASSERT_NE(nullptr, model);
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("frame1", model->PoseRelativeTo());
-  EXPECT_TRUE(model->SemanticPose().Resolve("frame1", pose).empty());
-  errors = model->SemanticPose().Resolve("frame1", pose);
+  EXPECT_TRUE(model->SemanticPose().Resolve(pose, "frame1").empty());
+  errors = model->SemanticPose().Resolve(pose, "frame1");
   for (auto e : errors)
     std::cout << e.Message() << std::endl;
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), pose);
-  EXPECT_TRUE(model->SemanticPose().Resolve("world", pose).empty());
+  EXPECT_TRUE(model->SemanticPose().Resolve(pose, "world").empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), pose);
   EXPECT_TRUE(model->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), pose);
@@ -104,9 +104,9 @@ TEST(DOMWorld, LoadLights)
   const sdf::Light *linkLight = link->LightByIndex(0);
   ASSERT_NE(nullptr, linkLight);
   EXPECT_EQ("spot_light", linkLight->Name());
-  EXPECT_TRUE(linkLight->SemanticPose().Resolve("frame2", pose).empty());
+  EXPECT_TRUE(linkLight->SemanticPose().Resolve(pose, "frame2").empty());
   EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), pose);
-  EXPECT_TRUE(linkLight->SemanticPose().Resolve("__model__", pose).empty());
+  EXPECT_TRUE(linkLight->SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(ignition::math::Pose3d(11, 13, 15, 0, 0, 0), pose);
   EXPECT_TRUE(linkLight->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(11, 13, 15, 0, 0, 0), pose);
