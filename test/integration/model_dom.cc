@@ -69,10 +69,15 @@ TEST(DOMModel, NoLinks)
   sdf::Root root;
   auto errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(1u, errors.size());
+  ASSERT_EQ(4u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::MODEL_WITHOUT_LINK, errors[0].Code());
   EXPECT_TRUE(errors[0].Message().find("model must have at least one link") !=
                std::string::npos);
+  EXPECT_EQ(sdf::ErrorCode::MODEL_WITHOUT_LINK, errors[1].Code());
+  EXPECT_TRUE(errors[1].Message().find("model must have at least one link") !=
+               std::string::npos);
+  // errors[2]
+  // errors[3]
 }
 
 /////////////////////////////////////////////////
