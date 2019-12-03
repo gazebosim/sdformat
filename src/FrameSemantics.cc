@@ -80,7 +80,7 @@ FindSourceVertex(
     {
       _errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
           "PoseRelativeToGraph error: multiple vertices incident to "
-          "current vertex [" + std::to_string(vertex.get().Id()) + "]."});
+          "current vertex [" + vertex.get().Name() + "]."});
       return PairType(Vertex::NullVertex, EdgesType());
     }
     auto const &edge = incidentsTo.begin()->second;
@@ -90,7 +90,7 @@ FindSourceVertex(
     {
       _errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
           "PoseRelativeToGraph cycle detected, already visited vertex [" +
-          std::to_string(vertex.get().Id()) + "]."});
+          vertex.get().Name() + "]."});
       return PairType(Vertex::NullVertex, EdgesType());
     }
     visited.insert(vertex.get().Id());
@@ -144,7 +144,7 @@ FindSinkVertex(
     {
       _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
           "FrameAttachedToGraph error: multiple vertices incident from "
-          "current vertex [" + std::to_string(vertex.get().Id()) + "]."});
+          "current vertex [" + vertex.get().Name() + "]."});
       return PairType(Vertex::NullVertex, EdgesType());
     }
     auto const &edge = incidentsFrom.begin()->second;
@@ -154,7 +154,7 @@ FindSinkVertex(
     {
       _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
           "FrameAttachedToGraph cycle detected, already visited vertex [" +
-          std::to_string(vertex.get().Id()) + "]."});
+          vertex.get().Name() + "]."});
       return PairType(Vertex::NullVertex, EdgesType());
     }
     visited.insert(vertex.get().Id());
@@ -1123,7 +1123,14 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
     }
   }
 
-  // TODO: check graph for cycles
+  // check graph for cycles by finding source from each vertex
+  for (auto const &namePair : _in.map)
+  {
+    Errors e;
+    FindSourceVertex(_in.graph, namePair.second, e);
+    errors.insert(errors.end(), e.begin(), e.end());
+  }
+
   return errors;
 }
 
@@ -1200,8 +1207,9 @@ Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
 
   if (_graph.map.count(_vertexName) != 1)
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Unique vertex with name [" + _vertexName + "] not found in graph."});
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+        "PoseRelativeToGraph unable to find unique frame with name [" +
+        _vertexName + "] in graph."});
     return errors;
   }
   auto vertexId = _graph.map.at(_vertexName);
@@ -1214,15 +1222,15 @@ Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
   }
   else if (!incomingVertexEdges.first.Valid())
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Source vertex not found in graph when starting from vertex with "
-        "name [" + _vertexName + "]."});
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "PoseRelativeToGraph unable to find path to source vertex "
+        "when starting from vertex with name [" + _vertexName + "]."});
     return errors;
   }
   else if (incomingVertexEdges.first.Name() != _graph.sourceName)
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Source vertex found with name [" +
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "PoseRelativeToGraph source vertex found with name [" +
         incomingVertexEdges.first.Name() +
         "], but its name should be " + _graph.sourceName + "."});
     return errors;
@@ -1234,7 +1242,10 @@ Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
     pose = edge.Data() * pose;
   }
 
-  _pose = pose;
+  if (errors.empty())
+  {
+    _pose = pose;
+  }
 
   return errors;
 }
@@ -1252,7 +1263,11 @@ Errors resolvePose(
   Errors errorsR = resolvePoseRelativeToRoot(_graph, _relativeTo, poseR);
   errors.insert(errors.end(), errorsR.begin(), errorsR.end());
 
-  _pose = poseR.Inverse() * _pose;
+  if (errors.empty())
+  {
+    _pose = poseR.Inverse() * _pose;
+  }
+
   return errors;
 }
 }

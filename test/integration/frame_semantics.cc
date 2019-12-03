@@ -200,4 +200,26 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 3, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(sdf::resolvePose(graph, "F4", "F3", pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 4, 0, -IGN_PI/2, 0), pose);
+
+  // Try to resolve invalid frame names
+  errors = sdf::resolvePose(graph, "invalid", "__model__", pose);
+  for (auto &e : errors)
+    std::cerr << e.Message() << std::endl;
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+      errors[0].Message().find(
+        "PoseRelativeToGraph unable to find unique frame with name ["
+        "invalid] in graph."));
+
+  errors = sdf::resolvePose(graph, "__model__", "invalid", pose);
+  for (auto &e : errors)
+    std::cerr << e.Message() << std::endl;
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+      errors[0].Message().find(
+        "PoseRelativeToGraph unable to find unique frame with name ["
+        "invalid] in graph."));
+
 }

@@ -487,6 +487,21 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
+  // Check an SDF file with a cycle in its PoseRelativeTo graph
+  {
+    std::string path = pathBase +"/model_invalid_frame_relative_to_cycle.sdf";
+
+    // Check model_invalid_frame_relative_to_cycle.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(std::string::npos, output.find(
+      "Error in validatePoseRelativeToGraph: PoseRelativeToGraph cycle "
+      "detected, already visited vertex [F1]."));
+    EXPECT_NE(std::string::npos, output.find(
+      "Error in validatePoseRelativeToGraph: PoseRelativeToGraph cycle "
+      "detected, already visited vertex [F2]."));
+  }
+
   // Check an SDF file with model frames using the attached_to attribute.
   // This is a valid file.
   {
