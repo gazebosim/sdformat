@@ -26,6 +26,7 @@
 #include "sdf/Converter.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
+#include "sdf/FrameSemantics.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -1456,6 +1457,87 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
   {
     result = recursiveSiblingUniqueNames(child) && result;
     child = child->GetNextElement();
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkFrameAttachedToGraph(const sdf::Root *_root)
+{
+  bool result = true;
+
+  auto checkModelFrameAttachedToGraph = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    sdf::FrameAttachedToGraph graph;
+    auto errors = sdf::buildFrameAttachedToGraph(graph, _model);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      modelResult = false;
+    }
+    errors = sdf::validateFrameAttachedToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validateFrameAttachedToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      modelResult = false;
+    }
+    return modelResult;
+  };
+
+  auto checkWorldFrameAttachedToGraph = [](
+      const sdf::World *_world) -> bool
+  {
+    bool worldResult = true;
+    sdf::FrameAttachedToGraph graph;
+    auto errors = sdf::buildFrameAttachedToGraph(graph, _world);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      worldResult = false;
+    }
+    errors = sdf::validateFrameAttachedToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validateFrameAttachedToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      worldResult = false;
+    }
+    return worldResult;
+  };
+
+  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  {
+    auto model = _root->ModelByIndex(m);
+    result = checkModelFrameAttachedToGraph(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    result = checkWorldFrameAttachedToGraph(world) && result;
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelFrameAttachedToGraph(model) && result;
+    }
   }
 
   return result;

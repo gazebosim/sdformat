@@ -181,7 +181,9 @@ Errors Joint::Load(ElementPtr _sdf)
   std::pair<std::string, bool> parentPair =
     _sdf->Get<std::string>("parent", "");
   if (parentPair.second)
+  {
     this->dataPtr->parentLinkName = parentPair.first;
+  }
   else
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -191,11 +193,22 @@ Errors Joint::Load(ElementPtr _sdf)
   // Read the child link name
   std::pair<std::string, bool> childPair = _sdf->Get<std::string>("child", "");
   if (childPair.second)
+  {
     this->dataPtr->childLinkName = childPair.first;
+  }
   else
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
         "The child element is missing."});
+  }
+
+  if (this->dataPtr->childLinkName == this->dataPtr->parentLinkName)
+  {
+    errors.push_back({ErrorCode::JOINT_PARENT_SAME_AS_CHILD,
+        "Joint with name[" + this->dataPtr->name +
+        "] must specify different link names for "
+        "parent and child, while [" + this->dataPtr->childLinkName +
+        "] was specified for both."});
   }
 
   if (_sdf->HasElement("axis"))

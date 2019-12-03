@@ -44,25 +44,22 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 
   if (!sdf::checkCanonicalLinkNames(&root))
   {
-    std::cerr << "Error: invalid canonical link name.\n";
     result = -1;
   }
 
   if (!sdf::checkJointParentChildLinkNames(&root))
   {
-    std::cerr << "Error: invalid parent or child link name.\n";
     result = -1;
   }
 
-  if (!sdf::checkFrameAttachedToNames(&root))
+  if (!sdf::checkFrameAttachedToGraph(&root))
   {
-    std::cerr << "Error: invalid frame attached_to name.\n";
     result = -1;
   }
 
   if (!sdf::recursiveSiblingUniqueNames(root.Element()))
   {
-    std::cerr << "Error: non-unique names detected.\n";
+    std::cerr << "Error: Non-unique names detected.\n";
     result = -1;
   }
 
