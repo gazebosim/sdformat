@@ -174,11 +174,11 @@ namespace sdf
   /// \brief Resolve the attached-to body for a given frame. Following the
   /// edges of the frame attached-to graph from a given frame must lead
   /// to a link or world frame.
+  /// \param[out] _attachedToBody Name of link to which this frame is
+  /// attached or "world" if frame is attached to the world.
   /// \param[in] _in Graph to use for resolving the body.
   /// \param[in] _vertexName This resolves the attached-to body of the
   /// vertex with this name.
-  /// \param[out] _attachedToBody Name of link to which this frame is
-  /// attached or "world" if frame is attached to the world.
   /// \return Errors if the graph is invalid or the frame does not lead to
   /// a link or world frame.
   SDFORMAT_VISIBLE
@@ -189,9 +189,9 @@ namespace sdf
 
   /// \brief Resolve pose of a vertex relative to its outgoing ancestor
   /// (analog of the root of a tree).
+  /// \param[out] _pose Pose object to write.
   /// \param[in] _graph PoseRelativeToGraph to read from.
   /// \param[in] _vertexName Name of vertex whose pose is to be computed.
-  /// \param[out] _pose Pose object to write.
   /// \return Errors.
   SDFORMAT_VISIBLE
   Errors resolvePoseRelativeToRoot(
@@ -200,11 +200,11 @@ namespace sdf
       const std::string &_vertexName);
 
   /// \brief Resolve pose of a frame relative to named frame.
+  /// \param[out] _pose Pose object to write.
   /// \param[in] _graph PoseRelativeToGraph to read from.
   /// \param[in] _frameName Name of frame whose pose is to be resolved.
   /// \param[in] _relativeTo Name of frame relative to which the pose is
   /// to be resolved.
-  /// \param[out] _pose Pose object to write.
   /// \return Errors.
   SDFORMAT_VISIBLE
   Errors resolvePose(
