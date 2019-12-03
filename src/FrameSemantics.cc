@@ -997,7 +997,7 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
   for (auto const &namePair : _in.map)
   {
     std::string resolvedBody;
-    Errors e = resolveFrameAttachedToBody(_in, namePair.first, resolvedBody);
+    Errors e = resolveFrameAttachedToBody(resolvedBody, _in, namePair.first);
     errors.insert(errors.end(), e.begin(), e.end());
   }
 
@@ -1167,7 +1167,7 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
   for (auto const &namePair : _in.map)
   {
     ignition::math::Pose3d pose;
-    Errors e = resolvePoseRelativeToRoot(_in, namePair.first, pose);
+    Errors e = resolvePoseRelativeToRoot(pose, _in, namePair.first);
     errors.insert(errors.end(), e.begin(), e.end());
   }
 
@@ -1175,8 +1175,10 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
 }
 
 /////////////////////////////////////////////////
-Errors resolveFrameAttachedToBody(const FrameAttachedToGraph &_in,
-    const std::string &_vertexName, std::string &_attachedToBody)
+Errors resolveFrameAttachedToBody(
+    std::string &_attachedToBody,
+    const FrameAttachedToGraph &_in,
+    const std::string &_vertexName)
 {
   Errors errors;
 
@@ -1239,8 +1241,10 @@ Errors resolveFrameAttachedToBody(const FrameAttachedToGraph &_in,
 }
 
 /////////////////////////////////////////////////
-Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
-      const std::string &_vertexName, ignition::math::Pose3d &_pose)
+Errors resolvePoseRelativeToRoot(
+      ignition::math::Pose3d &_pose,
+      const PoseRelativeToGraph &_graph,
+      const std::string &_vertexName)
 {
   Errors errors;
 
@@ -1292,15 +1296,15 @@ Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
 
 /////////////////////////////////////////////////
 Errors resolvePose(
+    ignition::math::Pose3d &_pose,
     const PoseRelativeToGraph &_graph,
     const std::string &_frameName,
-    const std::string &_relativeTo,
-    ignition::math::Pose3d &_pose)
+    const std::string &_relativeTo)
 {
-  Errors errors = resolvePoseRelativeToRoot(_graph, _frameName, _pose);
+  Errors errors = resolvePoseRelativeToRoot(_pose, _graph, _frameName);
 
   ignition::math::Pose3d poseR;
-  Errors errorsR = resolvePoseRelativeToRoot(_graph, _relativeTo, poseR);
+  Errors errorsR = resolvePoseRelativeToRoot(poseR, _graph, _relativeTo);
   errors.insert(errors.end(), errorsR.begin(), errorsR.end());
 
   if (errors.empty())

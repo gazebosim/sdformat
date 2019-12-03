@@ -120,26 +120,26 @@ TEST(FrameSemantics, buildFrameAttachedToGraph)
 
   std::string resolvedBody;
   EXPECT_TRUE(
-    sdf::resolveFrameAttachedToBody(graph, "L", resolvedBody).empty());
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "L").empty());
   EXPECT_EQ("L", resolvedBody);
   EXPECT_TRUE(
-    sdf::resolveFrameAttachedToBody(graph, "__model__", resolvedBody).empty());
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "__model__").empty());
   EXPECT_EQ("L", resolvedBody);
   EXPECT_TRUE(
-    sdf::resolveFrameAttachedToBody(graph, "F00", resolvedBody).empty());
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F00").empty());
   EXPECT_EQ("L", resolvedBody);
   EXPECT_TRUE(
-    sdf::resolveFrameAttachedToBody(graph, "F0", resolvedBody).empty());
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F0").empty());
   EXPECT_EQ("L", resolvedBody);
   EXPECT_TRUE(
-    sdf::resolveFrameAttachedToBody(graph, "F1", resolvedBody).empty());
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F1").empty());
   EXPECT_EQ("L", resolvedBody);
   EXPECT_TRUE(
-    sdf::resolveFrameAttachedToBody(graph, "F2", resolvedBody).empty());
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F2").empty());
   EXPECT_EQ("L", resolvedBody);
 
   // Try to resolve invalid frame name
-  errors = sdf::resolveFrameAttachedToBody(graph, "invalid", resolvedBody);
+  errors = sdf::resolveFrameAttachedToBody(resolvedBody, graph, "invalid");
   for (auto &e : errors)
     std::cerr << e.Message() << std::endl;
   ASSERT_EQ(1u, errors.size());
@@ -195,45 +195,45 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
 
   // Test resolvePoseRelativeToRoot for each frame.
   ignition::math::Pose3d pose;
-  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "__model__", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "__model__").empty());
   EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
-  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "P", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "P").empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), pose);
-  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "F1", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "F1").empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 0, 1, 0, 0, 0), pose);
 
-  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "C", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "C").empty());
   EXPECT_EQ(ignition::math::Pose3d(2, 0, 0, 0, IGN_PI/2, 0), pose);
-  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "F2", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "F2").empty());
   EXPECT_EQ(ignition::math::Pose3d(4, 0, 0, 0, IGN_PI/2, 0), pose);
 
-  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "J", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "J").empty());
   EXPECT_EQ(ignition::math::Pose3d(2, 3, 0, 0, 0, 0), pose);
-  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "F3", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "F3").empty());
   EXPECT_EQ(ignition::math::Pose3d(2, 3, 3, 0, IGN_PI/2, 0), pose);
-  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(graph, "F4", pose).empty());
+  EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "F4").empty());
   EXPECT_EQ(ignition::math::Pose3d(6, 3, 3, 0, 0, 0), pose);
 
   // Test resolvePose for each frame with its relative_to value.
   // Numbers should match the raw pose value in the model file.
-  EXPECT_TRUE(sdf::resolvePose(graph, "P", "__model__", pose).empty());
+  EXPECT_TRUE(sdf::resolvePose(pose, graph, "P", "__model__").empty());
   EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), pose);
-  EXPECT_TRUE(sdf::resolvePose(graph, "C", "__model__", pose).empty());
+  EXPECT_TRUE(sdf::resolvePose(pose, graph, "C", "__model__").empty());
   EXPECT_EQ(ignition::math::Pose3d(2, 0, 0, 0, IGN_PI/2, 0), pose);
-  EXPECT_TRUE(sdf::resolvePose(graph, "J", "C", pose).empty());
+  EXPECT_TRUE(sdf::resolvePose(pose, graph, "J", "C").empty());
   EXPECT_EQ(ignition::math::Pose3d(0, 3, 0, 0, -IGN_PI/2, 0), pose);
 
-  EXPECT_TRUE(sdf::resolvePose(graph, "F1", "P", pose).empty());
+  EXPECT_TRUE(sdf::resolvePose(pose, graph, "F1", "P").empty());
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 1, 0, 0, 0), pose);
-  EXPECT_TRUE(sdf::resolvePose(graph, "F2", "C", pose).empty());
+  EXPECT_TRUE(sdf::resolvePose(pose, graph, "F2", "C").empty());
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 2, 0, 0, 0), pose);
-  EXPECT_TRUE(sdf::resolvePose(graph, "F3", "J", pose).empty());
+  EXPECT_TRUE(sdf::resolvePose(pose, graph, "F3", "J").empty());
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 3, 0, IGN_PI/2, 0), pose);
-  EXPECT_TRUE(sdf::resolvePose(graph, "F4", "F3", pose).empty());
+  EXPECT_TRUE(sdf::resolvePose(pose, graph, "F4", "F3").empty());
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 4, 0, -IGN_PI/2, 0), pose);
 
   // Try to resolve invalid frame names
-  errors = sdf::resolvePose(graph, "invalid", "__model__", pose);
+  errors = sdf::resolvePose(pose, graph, "invalid", "__model__");
   for (auto &e : errors)
     std::cerr << e.Message() << std::endl;
   ASSERT_EQ(1u, errors.size());
@@ -243,7 +243,7 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
         "PoseRelativeToGraph unable to find unique frame with name ["
         "invalid] in graph."));
 
-  errors = sdf::resolvePose(graph, "__model__", "invalid", pose);
+  errors = sdf::resolvePose(pose, graph, "__model__", "invalid");
   for (auto &e : errors)
     std::cerr << e.Message() << std::endl;
   ASSERT_EQ(1u, errors.size());

@@ -402,7 +402,7 @@ Errors JointAxis::ResolveXyz(
     axisExpressedIn = this->dataPtr->xmlParentName;
   }
   ignition::math::Pose3d pose;
-  errors = resolvePose(*graph, axisExpressedIn, _expressedIn, pose);
+  errors = resolvePose(pose, *graph, axisExpressedIn, _expressedIn);
   _xyz = pose.Rot() * this->Xyz();
   return errors;
 }

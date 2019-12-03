@@ -1647,7 +1647,7 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
     {
       ignition::math::Pose3d pose;
       errors = sdf::resolvePoseRelativeToRoot(
-          graph, namePair.first, pose);
+          pose, graph, namePair.first);
       if (!errors.empty())
       {
         for (auto &error : errors)

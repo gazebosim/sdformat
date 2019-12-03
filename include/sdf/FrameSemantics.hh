@@ -183,9 +183,9 @@ namespace sdf
   /// a link or world frame.
   SDFORMAT_VISIBLE
   Errors resolveFrameAttachedToBody(
+      std::string &_attachedToBody,
       const FrameAttachedToGraph &_in,
-      const std::string &_vertexName,
-      std::string &_attachedToBody);
+      const std::string &_vertexName);
 
   /// \brief Resolve pose of a vertex relative to its outgoing ancestor
   /// (analog of the root of a tree).
@@ -194,8 +194,10 @@ namespace sdf
   /// \param[out] _pose Pose object to write.
   /// \return Errors.
   SDFORMAT_VISIBLE
-  Errors resolvePoseRelativeToRoot(const PoseRelativeToGraph &_graph,
-      const std::string &_vertexName, ignition::math::Pose3d &_pose);
+  Errors resolvePoseRelativeToRoot(
+      ignition::math::Pose3d &_pose,
+      const PoseRelativeToGraph &_graph,
+      const std::string &_vertexName);
 
   /// \brief Resolve pose of a frame relative to named frame.
   /// \param[in] _graph PoseRelativeToGraph to read from.
@@ -206,10 +208,10 @@ namespace sdf
   /// \return Errors.
   SDFORMAT_VISIBLE
   Errors resolvePose(
+      ignition::math::Pose3d &_pose,
       const PoseRelativeToGraph &_graph,
       const std::string &_frameName,
-      const std::string &_relativeTo,
-      ignition::math::Pose3d &_pose);
+      const std::string &_relativeTo);
   }
 }
 #endif
