@@ -198,6 +198,17 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool checkJointParentChildLinkNames(const sdf::Root *_root);
 
+  /// \brief For the world and each model, check that the attached_to graphs
+  /// build without errors and have no cycles.
+  /// Confirm that following directed edges from each vertex in the graph
+  /// leads to a model, link, or world frame.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root sdf Root object to check recursively.
+  /// \return True if all attached_to graphs are valid.
+  SDFORMAT_VISIBLE
+  bool checkPoseRelativeToGraph(const sdf::Root *_root);
+
   /// \brief Check that all sibling elements of the same type have unique names.
   /// This checks recursively and should check the files exhaustively
   /// rather than terminating early when the first duplicate name is found.

@@ -1544,6 +1544,105 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root)
 }
 
 //////////////////////////////////////////////////
+bool checkPoseRelativeToGraph(const sdf::Root *_root)
+{
+  bool result = true;
+
+  auto checkModelPoseRelativeToGraph = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    sdf::PoseRelativeToGraph graph;
+    auto errors = sdf::buildPoseRelativeToGraph(graph, _model);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      modelResult = false;
+    }
+    errors = sdf::validatePoseRelativeToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validatePoseRelativeToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      modelResult = false;
+    }
+    return modelResult;
+  };
+
+  auto checkWorldPoseRelativeToGraph = [](
+      const sdf::World *_world) -> bool
+  {
+    bool worldResult = true;
+    sdf::PoseRelativeToGraph graph;
+    auto errors = sdf::buildPoseRelativeToGraph(graph, _world);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      worldResult = false;
+    }
+    errors = sdf::validatePoseRelativeToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validatePoseRelativeToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      worldResult = false;
+    }
+    // compute pose of each vertex relative to root
+    for (auto const &namePair : graph.map)
+    {
+      ignition::math::Pose3d pose;
+      errors = sdf::resolvePoseRelativeToRoot(
+          pose, graph, namePair.first);
+      if (!errors.empty())
+      {
+        for (auto &error : errors)
+        {
+          std::cerr << "Error in resolvePoseRelativeToRoot for vertex named ["
+                    << namePair.first << "]: "
+                    << error.Message()
+                    << std::endl;
+        }
+        worldResult = false;
+      }
+    }
+    return worldResult;
+  };
+
+  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  {
+    auto model = _root->ModelByIndex(m);
+    result = checkModelPoseRelativeToGraph(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    result = checkWorldPoseRelativeToGraph(world) && result;
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelPoseRelativeToGraph(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
 bool checkJointParentChildLinkNames(const sdf::Root *_root)
 {
   bool result = true;

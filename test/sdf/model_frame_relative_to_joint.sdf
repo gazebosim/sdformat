@@ -1,0 +1,124 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_frame_relative_to_joint">
+    <link name="P">
+      <pose>1 0 0 0 0 0</pose>
+      <collision name="P1">
+        <pose>0 0 10 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <collision name="P2">
+        <pose relative_to="">0 0 11 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <visual name="vP1">
+        <pose>0 0 10 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name="vP2">
+        <pose relative_to="">0 0 11 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
+    </link>
+    <link name="C">
+      <pose>2 0 0 0 1.5707963267948966 0</pose>
+      <collision name="P">
+        <pose relative_to="P">0 0 12 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <collision name="J">
+        <pose relative_to="J">0 0 13 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <collision name="F3">
+        <pose relative_to="F3">0 0 14 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <collision name="F4">
+        <pose relative_to="F4">0 0 15 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <visual name="vP">
+        <pose relative_to="P">0 0 12 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name="vJ">
+        <pose relative_to="J">0 0 13 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name="vF3">
+        <pose relative_to="F3">0 0 14 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name="vF4">
+        <pose relative_to="F4">0 0 15 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="J" type="fixed">
+      <pose>0 3 0 0 -1.5707963267948966 0</pose>
+      <parent>P</parent>
+      <child>C</child>
+    </joint>
+    <frame name="F1">
+      <pose relative_to="P">0 0 1 0 0 0</pose>  <!-- VALID: Directly relative_to link P. -->
+    </frame>
+    <frame name="F2">
+      <pose relative_to="C">0 0 2 0 0 0</pose>  <!-- VALID: Directly relative_to link C. -->
+    </frame>
+    <frame name="F3">
+      <pose relative_to="J">0 0 3 0 1.5707963267948966 0</pose>   <!-- VALID: Indirectly relative_to link C via joint J. -->
+    </frame>
+    <frame name="F4">
+      <pose relative_to="F3">0 0 4 0 -1.5707963267948966 0</pose> <!-- VALID: Indirectly relative_to link C via frame F3. -->
+    </frame>
+  </model>
+</sdf>

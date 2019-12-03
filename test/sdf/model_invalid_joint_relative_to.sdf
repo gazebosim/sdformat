@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_invalid_joint_relative_to">
+    <link name="P"/>
+    <link name="C"/>
+    <joint name="Jcycle" type="fixed">
+      <pose relative_to="Jcycle">0 1 0 0 0 0</pose>   <!-- INVALID: cycle in relative_to graph does not lead to model frame. -->
+      <parent>P</parent>
+      <child>C</child>
+    </joint>
+    <joint name="J" type="fixed">
+      <pose relative_to="A">0 2 0 0 0 0</pose>        <!-- INVALID: no sibling frame named A. -->
+      <parent>P</parent>
+      <child>C</child>
+    </joint>
+  </model>
+</sdf>
