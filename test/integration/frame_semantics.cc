@@ -95,6 +95,8 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_Model)
   auto errors = sdf::buildFrameAttachedToGraph(graph, model);
   EXPECT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::validateFrameAttachedToGraph(graph).empty());
+  EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
+  EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
   EXPECT_EQ(6u, graph.map.size());
   EXPECT_EQ(6u, graph.graph.Vertices().size());
@@ -158,6 +160,8 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_World)
   auto errors = sdf::buildFrameAttachedToGraph(graph, world);
   EXPECT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::validateFrameAttachedToGraph(graph).empty());
+  EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
+  EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
   EXPECT_EQ(6u, graph.map.size());
   EXPECT_EQ(6u, graph.graph.Vertices().size());
@@ -264,17 +268,6 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   EXPECT_EQ(1u, graph.map.count("F2"));
   EXPECT_EQ(1u, graph.map.count("F3"));
   EXPECT_EQ(1u, graph.map.count("F4"));
-
-  // Disable this part of test since FindSinkVertex isn't part of public API.
-  // auto sinkId = graph.map["__model__"];
-
-  // for (auto const &nameId : graph.map)
-  // {
-  //   EXPECT_EQ(nameId.first, graph.graph.VertexFromId(nameId.second).Name());
-  //   auto sinkVertexPair =
-  //     ignition::math::graph::FindSinkVertex(graph.graph, nameId.second);
-  //   EXPECT_EQ(sinkId, sinkVertexPair.first.Id());
-  // }
 
   // Test resolvePoseRelativeToRoot for each frame.
   ignition::math::Pose3d pose;
