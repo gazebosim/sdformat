@@ -90,6 +90,10 @@ Model::Model(const Model &_model)
     this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
         *_model.dataPtr->poseGraph);
   }
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -105,6 +109,10 @@ Model &Model::operator=(const Model &_model)
   {
     this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
         *_model.dataPtr->poseGraph);
+  }
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
 
   return *this;
@@ -236,6 +244,10 @@ Errors Model::Load(ElementPtr _sdf)
     validatePoseRelativeToGraph(*this->dataPtr->poseGraph);
   errors.insert(errors.end(), validatePoseGraphErrors.begin(),
                               validatePoseGraphErrors.end());
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
 
   return errors;
 }

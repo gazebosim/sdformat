@@ -16,6 +16,9 @@ but with improved human-readability..
 
 ### Additions
 
+1. **sdf/Collision.hh**
+    + sdf::SemanticPose SemanticPose() const
+
 1. **sdf/Frame.hh**: DOM class for frames in the model or world.
 
 1. **sdf/FrameSemantics.hh**
@@ -31,11 +34,16 @@ but with improved human-readability..
     + Errors resolvePoseRelativeToRoot(ignition::math::Pose3d&, const PoseRelativeToGraph\*, const std::string&)
     + Errors resolvePose(ignition::math::Pose3d&, const PoseRelativeToGraph\*, const std::string&, const std::string&)
 
+1. **sdf/Link.hh**
+    + sdf::SemanticPose SemanticPose() const
+
 1. **sdf/Model.hh**
     + uint64\_t FrameCount() const
     + const Frame \*FrameByIndex(const uint64\_t) const
     + const Frame \*FrameByName(const std::string &) const
     + bool FrameNameExists(const std::string &) const
+
+1. **sdf/SemanticPose.hh**: Helper class for resolving poses of DOM objects.
 
 1. **sdf/World.hh**
     + uint64\_t FrameCount() const
