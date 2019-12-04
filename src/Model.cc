@@ -72,7 +72,7 @@ class sdf::ModelPrivate
   public: sdf::KinematicGraph kinematicGraph;
 
   /// \brief Frame Attached-To Graph constructed during Load.
-  public: sdf::FrameAttachedToGraph frameAttachedToGraph;
+  public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
   /// \brief Pose Relative-To Graph constructed during Load.
   public: std::shared_ptr<sdf::PoseRelativeToGraph> poseGraph;
@@ -216,14 +216,20 @@ Errors Model::Load(ElementPtr _sdf)
   buildKinematicGraph(this->dataPtr->kinematicGraph, this);
   // errors.insert(errors.end(), kinematicGraphErrors.begin(),
   //                             kinematicGraphErrors.end());
+  this->dataPtr->frameAttachedToGraph
+      = std::make_shared<FrameAttachedToGraph>();
   Errors frameAttachedToGraphErrors =
-  buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
+  buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
   errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
                               frameAttachedToGraphErrors.end());
   Errors validateFrameAttachedGraphErrors =
-    validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
   errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
                               validateFrameAttachedGraphErrors.end());
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  }
 
   this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>();
   Errors poseGraphErrors =

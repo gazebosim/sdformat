@@ -42,4 +42,8 @@ TEST(DOMframe, Construction)
 
   frame.SetPoseRelativeTo("link");
   EXPECT_EQ("link", frame.PoseRelativeTo());
+
+  std::string body;
+  EXPECT_FALSE(frame.ResolveAttachedToBody(body).empty());
+  EXPECT_TRUE(body.empty());
 }
