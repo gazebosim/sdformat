@@ -94,6 +94,10 @@ Model::Model(const Model &_model)
   {
     link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -113,6 +117,10 @@ Model &Model::operator=(const Model &_model)
   for (auto &link : this->dataPtr->links)
   {
     link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
 
   return *this;
@@ -247,6 +255,10 @@ Errors Model::Load(ElementPtr _sdf)
   for (auto &link : this->dataPtr->links)
   {
     link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
 
   return errors;

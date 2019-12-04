@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+#include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 #include "sdf/Error.hh"
 #include "sdf/JointAxis.hh"
@@ -74,6 +75,12 @@ class sdf::JointAxisPrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Name of xml parent object.
+  public: std::string xmlParentName;
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -353,6 +360,64 @@ const std::string &JointAxis::XyzExpressedIn() const
 void JointAxis::SetXyzExpressedIn(const std::string &_frame)
 {
   this->dataPtr->xyzExpressedIn = _frame;
+}
+
+/////////////////////////////////////////////////
+void JointAxis::SetXmlParentName(const std::string &_xmlParentName)
+{
+  this->dataPtr->xmlParentName = _xmlParentName;
+}
+
+/////////////////////////////////////////////////
+void JointAxis::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+Errors JointAxis::ResolveXyz(
+    ignition::math::Vector3d &_xyz,
+    const std::string &_resolveTo) const
+{
+  Errors errors;
+  auto graph = this->dataPtr->poseRelativeToGraph.lock();
+  if (!graph)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "JointAxis has invalid pointer to PoseRelativeToGraph."});
+    return errors;
+  }
+  if (this->dataPtr->xmlParentName.empty())
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "JointAxis has invalid name of xml parent object."});
+    return errors;
+  }
+
+  // JointAxis is not in the graph, but its XyzExpressedIn() name should be.
+  // If XyzExpressedIn() is empty, use the name of the xml parent object.
+  std::string axisExpressedIn = this->XyzExpressedIn();
+  if (axisExpressedIn.empty())
+  {
+    axisExpressedIn = this->dataPtr->xmlParentName;
+  }
+
+  std::string resolveTo = _resolveTo;
+  if (resolveTo.empty())
+  {
+    resolveTo = this->dataPtr->xmlParentName;
+  }
+
+  ignition::math::Pose3d pose;
+  errors = resolvePose(pose, *graph, axisExpressedIn, resolveTo);
+
+  if (errors.empty())
+  {
+    _xyz = pose.Rot() * this->Xyz();
+  }
+
+  return errors;
 }
 
 /////////////////////////////////////////////////

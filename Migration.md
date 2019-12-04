@@ -34,6 +34,12 @@ but with improved human-readability..
     + Errors resolvePoseRelativeToRoot(ignition::math::Pose3d&, const PoseRelativeToGraph\*, const std::string&)
     + Errors resolvePose(ignition::math::Pose3d&, const PoseRelativeToGraph\*, const std::string&, const std::string&)
 
+1. **sdf/Joint.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/JointAxis.hh**
+    + Errors ResolveXyz(ignition::math::Vector3d &, const std::string &) const
+
 1. **sdf/Link.hh**
     + sdf::SemanticPose SemanticPose() const
 

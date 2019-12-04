@@ -22,6 +22,7 @@
 #include "sdf/Filesystem.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
+#include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
@@ -89,6 +90,10 @@ TEST(DOMJoint, DoublePendulum)
   EXPECT_EQ("upper_link", lowerJoint->ParentLinkName());
   EXPECT_EQ("lower_link", lowerJoint->ChildLinkName());
 
+  // Check that the pose relative_to values are empty
+  EXPECT_TRUE(upperJoint->PoseRelativeTo().empty());
+  EXPECT_TRUE(lowerJoint->PoseRelativeTo().empty());
+
   // The two joinst should not have a second axis.
   EXPECT_TRUE(upperJoint->Axis(1) == nullptr);
   EXPECT_TRUE(upperJoint->Axis(2) == nullptr);
@@ -147,4 +152,128 @@ TEST(DOMJoint, Complete)
     ASSERT_NE(nullptr, joint->Element());
     EXPECT_DOUBLE_EQ(20, joint->ThreadPitch());
   }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, LoadJointPoseRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_joint_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  using Pose = ignition::math::Pose3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_joint_relative_to", model->Name());
+  EXPECT_EQ(4u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_NE(nullptr, model->LinkByIndex(2));
+  EXPECT_NE(nullptr, model->LinkByIndex(3));
+  EXPECT_EQ(nullptr, model->LinkByIndex(4));
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  ASSERT_TRUE(model->LinkNameExists("P1"));
+  ASSERT_TRUE(model->LinkNameExists("P2"));
+  ASSERT_TRUE(model->LinkNameExists("C1"));
+  ASSERT_TRUE(model->LinkNameExists("C2"));
+  EXPECT_TRUE(model->LinkByName("P1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->LinkByName("P2")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->LinkByName("C1")->PoseRelativeTo().empty());
+  EXPECT_EQ("J2", model->LinkByName("C2")->PoseRelativeTo());
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P1")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), model->LinkByName("C1")->RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P2")->RawPose());
+  EXPECT_EQ(Pose(4, 0, 0, 0, 0, 0), model->LinkByName("C2")->RawPose());
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(2u, model->JointCount());
+  EXPECT_NE(nullptr, model->JointByIndex(0));
+  EXPECT_NE(nullptr, model->JointByIndex(1));
+  EXPECT_EQ(nullptr, model->JointByIndex(2));
+  ASSERT_TRUE(model->JointNameExists("J1"));
+  ASSERT_TRUE(model->JointNameExists("J2"));
+  EXPECT_TRUE(model->JointByName("J1")->PoseRelativeTo().empty());
+  EXPECT_EQ("P2", model->JointByName("J2")->PoseRelativeTo());
+
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->JointByName("J1")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->JointByName("J2")->RawPose());
+
+  // Test ResolveFrame to get each link and joint pose in the model frame.
+  Pose pose;
+  EXPECT_TRUE(
+    model->LinkByName("P1")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(
+    model->LinkByName("C1")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_TRUE(
+    model->JointByName("J1")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, -IGN_PI/2, 0), pose);
+
+  EXPECT_TRUE(
+    model->LinkByName("P2")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(
+    model->JointByName("J2")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(5, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(
+    model->LinkByName("C2")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(5, 0, -4, 0, IGN_PI/2, 0), pose);
+
+  // resolve pose of J1 relative to C1, J2 relative to P2
+  // these should match the numbers in the model file
+  EXPECT_TRUE(
+    model->JointByName("J1")->SemanticPose().Resolve(pose, "C1").empty());
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->JointByName("J2")->SemanticPose().Resolve(pose, "P2").empty());
+  EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), pose);
+
+  EXPECT_EQ(0u, model->FrameCount());
+  EXPECT_EQ(nullptr, model->FrameByIndex(0));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, LoadInvalidJointPoseRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_invalid_joint_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(5u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "relative_to name[Jcycle] is identical to joint name[Jcycle], causing "
+      "a graph cycle"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "relative_to name[A] specified by joint with name[J] does not match a "
+      "link, joint, or frame name in model"));
+  // errors[2]
+  // errors[3]
+  // errors[4]
 }

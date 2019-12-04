@@ -72,6 +72,9 @@ class sdf::JointPrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -83,7 +86,8 @@ JointPrivate::JointPrivate(const JointPrivate &_jointPrivate)
       pose(_jointPrivate.pose),
       poseRelativeTo(_jointPrivate.poseRelativeTo),
       threadPitch(_jointPrivate.threadPitch),
-      sdf(_jointPrivate.sdf)
+      sdf(_jointPrivate.sdf),
+      poseRelativeToGraph(_jointPrivate.poseRelativeToGraph)
 {
   for (std::size_t i = 0; i < _jointPrivate.axis.size(); ++i)
   {
@@ -375,6 +379,32 @@ void Joint::SetPoseFrame(const std::string &_frame)
 void Joint::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseRelativeTo = _frame;
+}
+
+/////////////////////////////////////////////////
+void Joint::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
+
+  for (auto& axis : this->dataPtr->axis)
+  {
+    if (axis)
+    {
+      axis->SetXmlParentName(this->dataPtr->name);
+      axis->SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+sdf::SemanticPose Joint::SemanticPose() const
+{
+  return sdf::SemanticPose(
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
+      this->ChildLinkName(),
+      this->dataPtr->poseRelativeToGraph);
 }
 
 /////////////////////////////////////////////////
