@@ -25,21 +25,6 @@
 
 using namespace sdf;
 
-class sdf::SemanticPosePrivate
-{
-  /// \brief Raw pose of the SemanticPose object.
-  public: ignition::math::Pose3d rawPose = ignition::math::Pose3d::Zero;
-
-  /// \brief Name of the relative-to frame.
-  public: std::string relativeTo = "";
-
-  /// \brief Name of the default frame to resolve to.
-  public: std::string defaultResolveTo = "";
-
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
-};
-
 /////////////////////////////////////////////////
 SemanticPose::SemanticPose(
         const ignition::math::Pose3d &_pose,
