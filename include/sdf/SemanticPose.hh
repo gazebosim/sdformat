@@ -65,6 +65,12 @@ namespace sdf
                            const std::string &_resolveTo = "") const;
 
     /// \brief Private constructor.
+    /// \param[in] _pose Raw pose of object.
+    /// \param[in] _relativeTo Name of frame in graph relative-to which the
+    /// raw pose is applied.
+    /// \param[in] _defaultResolveTo Default frame to resolve-to in Resolve()
+    /// if no frame is specified.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: SemanticPose(
         const ignition::math::Pose3d &_pose,
         const std::string &_relativeTo,
