@@ -39,6 +39,12 @@ class sdf::FramePrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Name of graph source.
+  std::string graphSourceName = "";
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -181,6 +187,33 @@ void Frame::SetRawPose(const ignition::math::Pose3d &_pose)
 void Frame::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseRelativeTo = _frame;
+}
+
+/////////////////////////////////////////////////
+void Frame::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
+  auto graph = this->dataPtr->poseRelativeToGraph.lock();
+  if (graph)
+  {
+    this->dataPtr->graphSourceName = graph->sourceName;
+  }
+}
+
+/////////////////////////////////////////////////
+sdf::SemanticPose Frame::SemanticPose() const
+{
+  std::string relativeTo = this->dataPtr->poseRelativeTo;
+  if (relativeTo.empty())
+  {
+    relativeTo = this->dataPtr->attachedTo;
+  }
+  return sdf::SemanticPose(
+      this->dataPtr->pose,
+      relativeTo,
+      this->dataPtr->graphSourceName,
+      this->dataPtr->poseRelativeToGraph);
 }
 
 /////////////////////////////////////////////////

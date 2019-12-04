@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
@@ -56,6 +57,12 @@ class sdf::VisualPrivate
 
   /// \brief Pointer to the visual's material properties.
   public: std::unique_ptr<Material> material;
+
+  /// \brief Name of xml parent object.
+  public: std::string xmlParentName;
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -259,6 +266,29 @@ const Geometry *Visual::Geom() const
 void Visual::SetGeom(const Geometry &_geom)
 {
   this->dataPtr->geom = _geom;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetXmlParentName(const std::string &_xmlParentName)
+{
+  this->dataPtr->xmlParentName = _xmlParentName;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+sdf::SemanticPose Visual::SemanticPose() const
+{
+  return sdf::SemanticPose(
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
+      this->dataPtr->xmlParentName,
+      this->dataPtr->poseRelativeToGraph);
 }
 
 /////////////////////////////////////////////////

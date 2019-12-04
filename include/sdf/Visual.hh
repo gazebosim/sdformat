@@ -17,13 +17,16 @@
 #ifndef SDF_VISUAL_HH_
 #define SDF_VISUAL_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Box.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
+#include "sdf/FrameSemantics.hh"
 #include "sdf/Material.hh"
 #include "sdf/Plane.hh"
+#include "sdf/SemanticPose.hh"
 #include "sdf/Sphere.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -153,6 +156,11 @@ namespace sdf
     public: void SetPoseFrame(const std::string &_frame)
         SDF_DEPRECATED(9.0);
 
+    /// \brief Get SemanticPose object of this object to aid in resolving
+    /// poses.
+    /// \return SemanticPose object for this link.
+    public: sdf::SemanticPose SemanticPose() const;
+
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
@@ -168,6 +176,24 @@ namespace sdf
     /// \brief Set the visual's material
     /// \param[in] _material The material of the visual object
     public: void SetMaterial(const sdf::Material &_material);
+
+    /// \brief Give the name of the xml parent of this object, to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Link::SetPoseRelativeToGraph.
+    /// \param[in] _xmlParentName Name of xml parent object.
+    private: void SetXmlParentName(const std::string &_xmlParentName);
+
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Link::SetPoseRelativeToGraph.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    private: void SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
+    /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is
+    /// a private function, so we need to befriend the entire class.
+    friend class Link;
 
     /// \brief Private data pointer.
     private: VisualPrivate *dataPtr = nullptr;

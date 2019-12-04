@@ -73,6 +73,9 @@ class sdf::ModelPrivate
 
   /// \brief Pose Relative-To Graph constructed during Load.
   public: std::shared_ptr<sdf::PoseRelativeToGraph> poseGraph;
+
+  /// \brief Pose Relative-To Graph in parent (world) scope.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> parentPoseGraph;
 };
 
 /////////////////////////////////////////////////
@@ -98,6 +101,10 @@ Model::Model(const Model &_model)
   {
     joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -121,6 +128,10 @@ Model &Model::operator=(const Model &_model)
   for (auto &joint : this->dataPtr->joints)
   {
     joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
 
   return *this;
@@ -259,6 +270,10 @@ Errors Model::Load(ElementPtr _sdf)
   for (auto &joint : this->dataPtr->joints)
   {
     joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
 
   return errors;
@@ -502,6 +517,23 @@ void Model::SetPoseFrame(const std::string &_frame)
 void Model::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseRelativeTo = _frame;
+}
+
+/////////////////////////////////////////////////
+void Model::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->parentPoseGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+sdf::SemanticPose Model::SemanticPose() const
+{
+  return sdf::SemanticPose(
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
+      "world",
+      this->dataPtr->parentPoseGraph);
 }
 
 /////////////////////////////////////////////////

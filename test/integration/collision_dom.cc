@@ -21,7 +21,9 @@
 #include "sdf/Collision.hh"
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
+#include "sdf/Frame.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
@@ -133,6 +135,11 @@ TEST(DOMCollision, LoadModelFramesRelativeToJoint)
   ASSERT_TRUE(model->FrameNameExists("F3"));
   ASSERT_TRUE(model->FrameNameExists("F4"));
 
+  EXPECT_EQ("P", model->FrameByName("F1")->PoseRelativeTo());
+  EXPECT_EQ("C", model->FrameByName("F2")->PoseRelativeTo());
+  EXPECT_EQ("J", model->FrameByName("F3")->PoseRelativeTo());
+  EXPECT_EQ("F3", model->FrameByName("F4")->PoseRelativeTo());
+
   // test Collision SemanticPose().Resolve functions
   auto linkP = model->LinkByName("P");
   auto linkC = model->LinkByName("C");
@@ -210,15 +217,25 @@ TEST(DOMCollision, LoadModelFramesRelativeToJoint)
   EXPECT_EQ(Pose(1, 0, 12, 0, 0, 0), pose);
 
   EXPECT_TRUE(
+      model->JointByName("J")->
+          SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(2, 3, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
       linkC->CollisionByName("J")->
           SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(2, 3, 13, 0, 0, 0), pose);
 
   EXPECT_TRUE(
+      model->FrameByName("F3")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(
       linkC->CollisionByName("F3")->
           SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(16, 3, 3, 0, IGN_PI/2, 0), pose);
 
+  EXPECT_TRUE(
+      model->FrameByName("F4")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(6, 3, 3, 0, 0, 0), pose);
   EXPECT_TRUE(
       linkC->CollisionByName("F4")->
           SemanticPose().Resolve(pose, "__model__").empty());
