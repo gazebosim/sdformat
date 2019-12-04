@@ -24,6 +24,12 @@ but with improved human-readability..
     + Errors buildFrameAttachedToGraph(FrameAttachedToGraph&, const World\*)
     + Errors validateFrameAttachedToGraph(const FrameAttachedToGraph\*)
     + Errors resolveFrameAttachedToBody(std::string&, const FrameAttachedToGraph\*, const std::string&)
+    + struct PoseRelativeToGraph
+    + Errors buildPoseRelativeToGraph(PoseRelativeToGraph&, const Model\*)
+    + Errors buildPoseRelativeToGraph(PoseRelativeToGraph&, const World\*)
+    + Errors validatePoseRelativeToGraph(const PoseRelativeToGraph\*)
+    + Errors resolvePoseRelativeToRoot(ignition::math::Pose3d&, const PoseRelativeToGraph\*, const std::string&)
+    + Errors resolvePose(ignition::math::Pose3d&, const PoseRelativeToGraph\*, const std::string&, const std::string&)
 
 1. **sdf/Model.hh**
     + uint64\_t FrameCount() const
@@ -43,6 +49,7 @@ but with improved human-readability..
    + bool checkFrameAttachedToGraph(sdf::Root\*)
    + bool checkFrameAttachedToNames(sdf::Root\*)
    + bool checkJointParentChildLinkNames(sdf::Root\*)
+   + bool checkPoseRelativeToGraph(sdf::Root\*)
    + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)
    + bool recursiveSiblingUniqueNames(sdf::ElementPtr)
    + bool shouldValidateElement(sdf::ElementPtr)

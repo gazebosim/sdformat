@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 
+#include <ignition/math/Pose3.hh>
 #include <ignition/math/graph/Graph.hh>
 
 #include "sdf/Error.hh"
@@ -79,6 +80,26 @@ namespace sdf
     std::string scopeName;
   };
 
+  /// \brief Data structure for pose relative_to graphs for Model or World.
+  struct SDFORMAT_VISIBLE PoseRelativeToGraph
+  {
+    /// \brief A DirectedGraph with a vertex for each explicit or implicit
+    /// frame and edges pointing to a given frame from its relative-to frame.
+    /// When well-formed, it should form a directed tree with a root vertex
+    /// named __model__ or world. Each vertex stores its FrameType and each edge
+    /// stores the Pose3 between those frames.
+    using Pose3d = ignition::math::Pose3d;
+    using GraphType = ignition::math::graph::DirectedGraph<FrameType, Pose3d>;
+    GraphType graph;
+
+    /// \brief A Map from Vertex names to Vertex Ids.
+    using MapType = std::map<std::string, ignition::math::graph::VertexId>;
+    MapType map;
+
+    /// \brief Name of source vertex, either __model__ or world.
+    std::string sourceName;
+  };
+
   /// \brief Build a FrameAttachedToGraph for a model.
   /// \param[out] _out Graph object to write.
   /// \param[in] _model Model from which to build attached_to graph.
@@ -95,12 +116,36 @@ namespace sdf
   Errors buildFrameAttachedToGraph(
               FrameAttachedToGraph &_out, const World *_world);
 
+  /// \brief Build a PoseRelativeToGraph for a model.
+  /// \param[out] _out Graph object to write.
+  /// \param[in] _model Model from which to build attached_to graph.
+  /// \return Errors.
+  SDFORMAT_VISIBLE
+  Errors buildPoseRelativeToGraph(
+              PoseRelativeToGraph &_out, const Model *_model);
+
+  /// \brief Build a PoseRelativeToGraph for a world.
+  /// \param[out] _out Graph object to write.
+  /// \param[in] _world World from which to build attached_to graph.
+  /// \return Errors.
+  SDFORMAT_VISIBLE
+  Errors buildPoseRelativeToGraph(
+              PoseRelativeToGraph &_out, const World *_world);
+
+
   /// \brief Confirm that FrameAttachedToGraph is valid by checking the number
   /// of outbound edges for each vertex and checking for graph cycles.
   /// \param[in] _in Graph object to validate.
   /// \return Errors.
   SDFORMAT_VISIBLE
   Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in);
+
+  /// \brief Confirm that PoseRelativeToGraph is valid by checking the number
+  /// of outbound edges for each vertex and checking for graph cycles.
+  /// \param[in] _in Graph object to validate.
+  /// \return Errors.
+  SDFORMAT_VISIBLE
+  Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in);
 
   /// \brief Resolve the attached-to body for a given frame. Following the
   /// edges of the frame attached-to graph from a given frame must lead
@@ -117,6 +162,32 @@ namespace sdf
       std::string &_attachedToBody,
       const FrameAttachedToGraph &_in,
       const std::string &_vertexName);
+
+  /// \brief Resolve pose of a vertex relative to its outgoing ancestor
+  /// (analog of the root of a tree).
+  /// \param[out] _pose Pose object to write.
+  /// \param[in] _graph PoseRelativeToGraph to read from.
+  /// \param[in] _vertexName Name of vertex whose pose is to be computed.
+  /// \return Errors.
+  SDFORMAT_VISIBLE
+  Errors resolvePoseRelativeToRoot(
+      ignition::math::Pose3d &_pose,
+      const PoseRelativeToGraph &_graph,
+      const std::string &_vertexName);
+
+  /// \brief Resolve pose of a frame relative to named frame.
+  /// \param[out] _pose Pose object to write.
+  /// \param[in] _graph PoseRelativeToGraph to read from.
+  /// \param[in] _frameName Name of frame whose pose is to be resolved.
+  /// \param[in] _resolveTo Name of frame relative to which the pose is
+  /// to be resolved.
+  /// \return Errors.
+  SDFORMAT_VISIBLE
+  Errors resolvePose(
+      ignition::math::Pose3d &_pose,
+      const PoseRelativeToGraph &_graph,
+      const std::string &_frameName,
+      const std::string &_resolveTo);
   }
 }
 #endif

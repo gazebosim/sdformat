@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_frame_relative_to">
+    <link name="L">
+      <pose>1 0 0 0 0 0</pose>                <!-- Link pose relative_to the model frame (M) by default. -->
+    </link>
+
+    <frame name="F0">                         <!-- Frame indirectly attached_to canonical link L via model frame. -->
+      <pose>0 1 0 0 0 0</pose>                <!-- Pose relative_to the attached_to frame (M) by default. -->
+    </frame>
+
+    <frame name="F1" attached_to="L">         <!-- Frame directly attached_to link L. -->
+      <pose>0 0 1 0 0 0</pose>                <!-- Pose relative_to the attached_to frame (L -> M) by default. -->
+    </frame>
+    <frame name="F2" attached_to="L">         <!-- Frame directly attached_to link L. -->
+      <pose relative_to="">0 0 2 0 0 0</pose> <!-- Pose relative_to the attached_to frame (L -> M) by default. -->
+    </frame>
+    <frame name="F3">                           <!-- Frame indirectly attached_to canonical link L via model frame. -->
+      <pose relative_to="L">0 0 3 0 0 0</pose>  <!-- Pose relative_to link frame L -> M. -->
+    </frame>
+    <frame name="F4">                           <!-- Frame indirectly attached_to canonical link L via model frame. -->
+      <pose relative_to="F3"/>                  <!-- Pose identical to that of F3. -->
+    </frame>
+  </model>
+</sdf>

@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_joint_relative_to">
+    <link name="P1">
+      <pose>1 0 0 0 1.5707963267948966 0</pose>   <!-- Link pose relative to model frame (M) by default. -->
+    </link>
+    <link name="C1">
+      <pose>2 0 0 0 -1.5707963267948966 0</pose>  <!-- Link pose relative to model frame (M) by default. -->
+    </link>
+    <joint name="J1" type="fixed">
+      <pose relative_to="">0 0 1 0 0 0</pose> <!-- Joint pose relative to child link frame (C1 -> M) by default. -->
+      <parent>P1</parent>
+      <child>C1</child>
+    </joint>
+
+    <link name="P2">
+      <pose>3 0 0 0 1.5707963267948966 0</pose>   <!-- Link pose relative to model frame (M) by default. -->
+    </link>
+    <joint name="J2" type="fixed">
+      <pose relative_to="P2">0 0 2 0 0 0</pose>   <!-- Joint pose relative to link frame P2 -> M. -->
+      <parent>P2</parent>
+      <child>C2</child>
+    </joint>
+    <link name="C2">
+      <pose relative_to="J2">4 0 0 0 0 0</pose>   <!-- Link pose relative to joint frame J2 -> P2 -> M. -->
+    </link>
+  </model>
+</sdf>

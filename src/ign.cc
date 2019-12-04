@@ -57,9 +57,13 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     result = -1;
   }
 
+  if (!sdf::checkPoseRelativeToGraph(&root))
+  {
+    result = -1;
+  }
+
   if (!sdf::recursiveSiblingUniqueNames(root.Element()))
   {
-    std::cerr << "Error: Non-unique names detected.\n";
     result = -1;
   }
 
