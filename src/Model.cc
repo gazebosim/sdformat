@@ -14,11 +14,13 @@
  * limitations under the License.
  *
 */
+#include <memory>
 #include <string>
 #include <vector>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
+#include "sdf/FrameSemantics.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -65,6 +67,12 @@ class sdf::ModelPrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Frame Attached-To Graph constructed during Load.
+  public: sdf::FrameAttachedToGraph frameAttachedToGraph;
+
+  /// \brief Pose Relative-To Graph constructed during Load.
+  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseGraph;
 };
 
 /////////////////////////////////////////////////
@@ -77,6 +85,11 @@ Model::Model()
 Model::Model(const Model &_model)
   : dataPtr(new ModelPrivate(*_model.dataPtr))
 {
+  if (_model.dataPtr->poseGraph)
+  {
+    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *_model.dataPtr->poseGraph);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -87,6 +100,13 @@ Model &Model::operator=(const Model &_model)
     this->dataPtr = new ModelPrivate;
   }
   *this->dataPtr = (*_model.dataPtr);
+
+  if (_model.dataPtr->poseGraph)
+  {
+    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *_model.dataPtr->poseGraph);
+  }
+
   return *this;
 }
 
@@ -196,6 +216,26 @@ Errors Model::Load(ElementPtr _sdf)
   Errors frameLoadErrors = loadUniqueRepeated<Frame>(_sdf, "frame",
     this->dataPtr->frames);
   errors.insert(errors.end(), frameLoadErrors.begin(), frameLoadErrors.end());
+
+  // Build the graphs.
+  Errors frameAttachedToGraphErrors =
+  buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
+  errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+                              frameAttachedToGraphErrors.end());
+  Errors validateFrameAttachedGraphErrors =
+    validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
+                              validateFrameAttachedGraphErrors.end());
+
+  this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>();
+  Errors poseGraphErrors =
+  buildPoseRelativeToGraph(*this->dataPtr->poseGraph, this);
+  errors.insert(errors.end(), poseGraphErrors.begin(),
+                              poseGraphErrors.end());
+  Errors validatePoseGraphErrors =
+    validatePoseRelativeToGraph(*this->dataPtr->poseGraph);
+  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
+                              validatePoseGraphErrors.end());
 
   return errors;
 }

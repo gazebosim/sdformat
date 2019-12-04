@@ -20,6 +20,7 @@
 
 #include "sdf/Actor.hh"
 #include "sdf/Frame.hh"
+#include "sdf/FrameSemantics.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Physics.hh"
@@ -85,6 +86,12 @@ class sdf::WorldPrivate
   /// \brief Linear velocity of wind.
   public: ignition::math::Vector3d windLinearVelocity =
            ignition::math::Vector3d::Zero;
+
+  /// \brief Frame Attached-To Graph constructed during Load.
+  public: sdf::FrameAttachedToGraph frameAttachedToGraph;
+
+  /// \brief Pose Relative-To Graph constructed during Load.
+  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -93,6 +100,7 @@ WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
       gravity(_worldPrivate.gravity),
       frames(_worldPrivate.frames),
       lights(_worldPrivate.lights),
+      actors(_worldPrivate.actors),
       magneticField(_worldPrivate.magneticField),
       models(_worldPrivate.models),
       name(_worldPrivate.name),
@@ -108,6 +116,11 @@ WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
   if (_worldPrivate.gui)
   {
     this->gui = std::make_unique<Gui>(*(_worldPrivate.gui));
+  }
+  if (_worldPrivate.poseRelativeToGraph)
+  {
+    this->poseRelativeToGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *(_worldPrivate.poseRelativeToGraph));
   }
   if (_worldPrivate.scene)
   {
@@ -279,6 +292,25 @@ Errors World::Load(sdf::ElementPtr _sdf)
     errors.insert(errors.end(), sceneLoadErrors.begin(), sceneLoadErrors.end());
   }
 
+  // Build the graphs.
+  Errors frameAttachedToGraphErrors =
+  buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
+  errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+                              frameAttachedToGraphErrors.end());
+  Errors validateFrameAttachedGraphErrors =
+    validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
+                              validateFrameAttachedGraphErrors.end());
+
+  this->dataPtr->poseRelativeToGraph = std::make_shared<PoseRelativeToGraph>();
+  Errors poseRelativeToGraphErrors =
+  buildPoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph, this);
+  errors.insert(errors.end(), poseRelativeToGraphErrors.begin(),
+                              poseRelativeToGraphErrors.end());
+  Errors validatePoseGraphErrors =
+    validatePoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph);
+  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
+                              validatePoseGraphErrors.end());
   return errors;
 }
 
