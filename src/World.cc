@@ -117,6 +117,11 @@ WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
   {
     this->gui = std::make_unique<Gui>(*(_worldPrivate.gui));
   }
+  if (_worldPrivate.frameAttachedToGraph)
+  {
+    this->frameAttachedToGraph = std::make_shared<sdf::FrameAttachedToGraph>(
+        *(_worldPrivate.frameAttachedToGraph));
+  }
   if (_worldPrivate.poseRelativeToGraph)
   {
     this->poseRelativeToGraph = std::make_shared<sdf::PoseRelativeToGraph>(
@@ -148,6 +153,7 @@ World::World(const World &_world)
 {
   for (auto &frame : this->dataPtr->frames)
   {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
     frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
   for (auto &model : this->dataPtr->models)
@@ -175,6 +181,7 @@ World &World::operator=(const World &_world)
 
   for (auto &frame : this->dataPtr->frames)
   {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
     frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
   for (auto &model : this->dataPtr->models)
