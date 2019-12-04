@@ -101,6 +101,10 @@ Model::Model(const Model &_model)
   {
     joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -124,6 +128,10 @@ Model &Model::operator=(const Model &_model)
   for (auto &joint : this->dataPtr->joints)
   {
     joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
 
   return *this;
