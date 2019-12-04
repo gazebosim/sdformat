@@ -88,6 +88,15 @@ Model::Model()
 Model::Model(const Model &_model)
   : dataPtr(new ModelPrivate(*_model.dataPtr))
 {
+  if (_model.dataPtr->poseGraph)
+  {
+    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *_model.dataPtr->poseGraph);
+  }
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -98,6 +107,17 @@ Model &Model::operator=(const Model &_model)
     this->dataPtr = new ModelPrivate;
   }
   *this->dataPtr = (*_model.dataPtr);
+
+  if (_model.dataPtr->poseGraph)
+  {
+    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *_model.dataPtr->poseGraph);
+  }
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+
   return *this;
 }
 
@@ -500,8 +520,8 @@ void Model::SetPoseRelativeToGraph(
 sdf::SemanticPose Model::SemanticPose() const
 {
   return sdf::SemanticPose(
-      ignition::math::Pose3d::Zero,
-      this->dataPtr->name,
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
       "world",
       this->dataPtr->parentPoseGraph);
 }

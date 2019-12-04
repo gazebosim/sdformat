@@ -61,12 +61,28 @@ TEST(DOMLink, Construction)
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, link.RawPose());
   EXPECT_TRUE(link.PoseRelativeTo().empty());
+  {
+    auto semanticPose = link.SemanticPose();
+    EXPECT_EQ(ignition::math::Pose3d::Zero, semanticPose.RawPose());
+    EXPECT_TRUE(semanticPose.RelativeTo().empty());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 
   link.SetRawPose({10, 20, 30, 0, IGN_PI, 0});
   EXPECT_EQ(ignition::math::Pose3d(10, 20, 30, 0, IGN_PI, 0), link.RawPose());
 
   link.SetPoseRelativeTo("model");
   EXPECT_EQ("model", link.PoseRelativeTo());
+  {
+    auto semanticPose = link.SemanticPose();
+    EXPECT_EQ(link.RawPose(), semanticPose.RawPose());
+    EXPECT_EQ("model", semanticPose.RelativeTo());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 
   // Get the default inertial
   const ignition::math::Inertiald inertial = link.Inertial();

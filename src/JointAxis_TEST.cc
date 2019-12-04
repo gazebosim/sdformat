@@ -46,6 +46,10 @@ TEST(DOMJointAxis, Construction)
   axis.SetXyzExpressedIn("__model__");
   EXPECT_EQ("__model__", axis.XyzExpressedIn());
 
+  // expect errors when trying to resolve axis without graph
+  ignition::math::Vector3d vec3;
+  EXPECT_FALSE(axis.ResolveXyz(vec3).empty());
+
   axis.SetDamping(0.2);
   EXPECT_DOUBLE_EQ(0.2, axis.Damping());
 

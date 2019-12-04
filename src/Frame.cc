@@ -236,9 +236,14 @@ Errors Frame::ResolveAttachedToBody(std::string &_body) const
 /////////////////////////////////////////////////
 sdf::SemanticPose Frame::SemanticPose() const
 {
+  std::string relativeTo = this->dataPtr->poseRelativeTo;
+  if (relativeTo.empty())
+  {
+    relativeTo = this->dataPtr->attachedTo;
+  }
   return sdf::SemanticPose(
-      ignition::math::Pose3d::Zero,
-      this->dataPtr->name,
+      this->dataPtr->pose,
+      relativeTo,
       this->dataPtr->graphSourceName,
       this->dataPtr->poseRelativeToGraph);
 }

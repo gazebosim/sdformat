@@ -73,12 +73,28 @@ TEST(DOMModel, Construction)
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, model.RawPose());
   EXPECT_TRUE(model.PoseRelativeTo().empty());
+  {
+    auto semanticPose = model.SemanticPose();
+    EXPECT_EQ(model.RawPose(), semanticPose.RawPose());
+    EXPECT_TRUE(semanticPose.RelativeTo().empty());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 
   model.SetRawPose({1, 2, 3, 0, 0, IGN_PI});
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), model.RawPose());
 
   model.SetPoseRelativeTo("world");
   EXPECT_EQ("world", model.PoseRelativeTo());
+  {
+    auto semanticPose = model.SemanticPose();
+    EXPECT_EQ(model.RawPose(), semanticPose.RawPose());
+    EXPECT_EQ("world", semanticPose.RelativeTo());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 }
 
 /////////////////////////////////////////////////
