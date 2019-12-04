@@ -134,5 +134,5 @@ Errors SemanticPose::Resolve(
 
   return errors;
 }
-} // inline namespace
-} // namespace sdf
+}  // inline namespace
+}  // namespace sdf
