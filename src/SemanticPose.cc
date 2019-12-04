@@ -23,7 +23,25 @@
 #include "sdf/Types.hh"
 #include "Utils.hh"
 
-using namespace sdf;
+namespace sdf
+{
+inline namespace SDF_VERSION_NAMESPACE {
+/// \internal
+/// \brief Private data for the SemanticPose class.
+class SemanticPosePrivate
+{
+  /// \brief Raw pose of the SemanticPose object.
+  public: ignition::math::Pose3d rawPose = ignition::math::Pose3d::Zero;
+
+  /// \brief Name of the relative-to frame.
+  public: std::string relativeTo = "";
+
+  /// \brief Name of the default frame to resolve to.
+  public: std::string defaultResolveTo = "";
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+};
 
 /////////////////////////////////////////////////
 SemanticPose::SemanticPose(
@@ -31,12 +49,39 @@ SemanticPose::SemanticPose(
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
         const std::weak_ptr<const sdf::PoseRelativeToGraph> _graph)
-  : dataPtr(new SemanticPosePrivate)
+  : dataPtr(std::make_unique<SemanticPosePrivate>())
 {
   this->dataPtr->rawPose = _pose;
   this->dataPtr->relativeTo = _relativeTo;
   this->dataPtr->defaultResolveTo = _defaultResolveTo;
   this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+SemanticPose::~SemanticPose() = default;
+
+/////////////////////////////////////////////////
+SemanticPose::SemanticPose(const SemanticPose &_semanticPose)
+  : dataPtr(std::make_unique<SemanticPosePrivate>(*_semanticPose.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+SemanticPose::SemanticPose(SemanticPose &&_semanticPose) noexcept = default;
+
+/////////////////////////////////////////////////
+SemanticPose &SemanticPose::operator=(SemanticPose &&_semanticPose) = default;
+
+/////////////////////////////////////////////////
+SemanticPose &SemanticPose::operator=(const SemanticPose &_semanticPose)
+{
+  if (!this->dataPtr)
+  {
+    // This would happen if this object is moved from.
+    this->dataPtr = std::make_unique<SemanticPosePrivate>();
+  }
+  *this->dataPtr =  *_semanticPose.dataPtr;
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -89,3 +134,5 @@ Errors SemanticPose::Resolve(
 
   return errors;
 }
+}  // inline namespace
+}  // namespace sdf
