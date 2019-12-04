@@ -39,7 +39,7 @@ namespace sdf
   /// a Pose3 object, the name of the frame relative to which it is defined,
   /// a pointer to a PoseRelativeToGraph, and a default frame to resolve to.
   /// The name of the default frame to resolve to must not be empty.
-  /// This class only has a private constructor, and is may be accessed from
+  /// This class only has a private constructor, and may only be accessed from
   /// its friend DOM classes.
   class SDFORMAT_VISIBLE SemanticPose
   {

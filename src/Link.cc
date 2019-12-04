@@ -415,7 +415,7 @@ void Link::SetPoseRelativeToGraph(
 sdf::SemanticPose Link::SemanticPose() const
 {
   return sdf::SemanticPose(
-      ignition::math::Pose3d::Zero,
+      this->dataPtr->pose,
       this->dataPtr->name,
       "__model__",
       this->dataPtr->poseRelativeToGraph);
