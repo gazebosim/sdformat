@@ -416,7 +416,7 @@ sdf::SemanticPose Link::SemanticPose() const
 {
   return sdf::SemanticPose(
       this->dataPtr->pose,
-      this->dataPtr->name,
+      this->dataPtr->poseRelativeTo,
       "__model__",
       this->dataPtr->poseRelativeToGraph);
 }

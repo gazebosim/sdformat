@@ -98,6 +98,7 @@ Errors SemanticPose::Resolve(
 
   ignition::math::Pose3d pose;
   errors = resolvePose(pose, *graph, relativeTo, resolveTo);
+  pose *= this->RawPose();
 
   if (errors.empty())
   {
