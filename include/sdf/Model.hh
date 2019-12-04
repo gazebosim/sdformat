@@ -286,7 +286,7 @@ namespace sdf
 
     /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
     /// for resolving poses. This is private and is intended to be called by
-    /// Model::Load.
+    /// World::Load.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: void SetPoseRelativeToGraph(
         std::weak_ptr<const PoseRelativeToGraph> _graph);

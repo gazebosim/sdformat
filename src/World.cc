@@ -117,6 +117,16 @@ WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
   {
     this->gui = std::make_unique<Gui>(*(_worldPrivate.gui));
   }
+  if (_worldPrivate.frameAttachedToGraph)
+  {
+    this->frameAttachedToGraph = std::make_shared<sdf::FrameAttachedToGraph>(
+        *(_worldPrivate.frameAttachedToGraph));
+  }
+  if (_worldPrivate.poseRelativeToGraph)
+  {
+    this->poseRelativeToGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *(_worldPrivate.poseRelativeToGraph));
+  }
   if (_worldPrivate.scene)
   {
     this->scene = std::make_unique<Scene>(*(_worldPrivate.scene));
@@ -141,6 +151,20 @@ World::~World()
 World::World(const World &_world)
   : dataPtr(new WorldPrivate(*_world.dataPtr))
 {
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &light : this->dataPtr->lights)
+  {
+    light.SetXmlParentName("world");
+    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -154,6 +178,22 @@ World &World::operator=(const World &_world)
   {
     this->dataPtr = new(this->dataPtr) WorldPrivate(*_world.dataPtr);
   }
+
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &light : this->dataPtr->lights)
+  {
+    light.SetXmlParentName("world");
+    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+
   return *this;
 }
 
