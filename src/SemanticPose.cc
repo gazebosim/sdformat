@@ -52,9 +52,6 @@ SemanticPose::SemanticPose(
   this->dataPtr->relativeTo = _relativeTo;
   this->dataPtr->defaultResolveTo = _defaultResolveTo;
   this->dataPtr->poseRelativeToGraph = _graph;
-
-  SDF_ASSERT(!_defaultResolveTo.empty(),
-             "SemanticPose defaultResolveTo is empty");
 }
 
 /////////////////////////////////////////////////
