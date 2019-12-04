@@ -85,6 +85,11 @@ Model::Model()
 Model::Model(const Model &_model)
   : dataPtr(new ModelPrivate(*_model.dataPtr))
 {
+  if (_model.dataPtr->poseGraph)
+  {
+    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *_model.dataPtr->poseGraph);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -95,6 +100,13 @@ Model &Model::operator=(const Model &_model)
     this->dataPtr = new ModelPrivate;
   }
   *this->dataPtr = (*_model.dataPtr);
+
+  if (_model.dataPtr->poseGraph)
+  {
+    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *_model.dataPtr->poseGraph);
+  }
+
   return *this;
 }
 

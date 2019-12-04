@@ -117,6 +117,11 @@ WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
   {
     this->gui = std::make_unique<Gui>(*(_worldPrivate.gui));
   }
+  if (_worldPrivate.poseRelativeToGraph)
+  {
+    this->poseRelativeToGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *(_worldPrivate.poseRelativeToGraph));
+  }
   if (_worldPrivate.scene)
   {
     this->scene = std::make_unique<Scene>(*(_worldPrivate.scene));
