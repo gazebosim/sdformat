@@ -1,6 +1,6 @@
---- # Subcommands available inside ignition-transport.
+--- # Subcommands available inside sdformat.
 format: 1.0.0
-library_name: @PROJECT_NAME_LOWER@
+library_name: @PROJECT_NAME_NO_VERSION@
 library_version: @SDF_VERSION_FULL@
 library_path: @ign_library_path@
 commands:

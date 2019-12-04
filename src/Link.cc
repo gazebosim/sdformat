@@ -409,14 +409,21 @@ void Link::SetPoseRelativeToGraph(
     std::weak_ptr<const PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
+
+  // Pass graph to child elements.
+  for (auto &collision : this->dataPtr->collisions)
+  {
+    collision.SetXmlParentName(this->dataPtr->name);
+    collision.SetPoseRelativeToGraph(_graph);
+  }
 }
 
 /////////////////////////////////////////////////
 sdf::SemanticPose Link::SemanticPose() const
 {
   return sdf::SemanticPose(
-      ignition::math::Pose3d::Zero,
-      this->dataPtr->name,
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
       "__model__",
       this->dataPtr->poseRelativeToGraph);
 }

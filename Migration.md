@@ -16,6 +16,9 @@ but with improved human-readability..
 
 ### Additions
 
+1. **sdf/Collision.hh**
+    + sdf::SemanticPose SemanticPose() const
+
 1. **sdf/Frame.hh**: DOM class for frames in the model or world.
 
 1. **sdf/FrameSemantics.hh**
