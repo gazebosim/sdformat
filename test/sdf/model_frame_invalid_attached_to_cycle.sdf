@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_frame_invalid_attached_to_cycle">
+    <link name="L"/>
+    <frame name="F1" attached_to="F2"/>
+    <frame name="F2" attached_to="F1"/>  <!-- INVALID: graph cycle between F1 and F2. -->
+  </model>
+</sdf>

@@ -103,7 +103,7 @@ TEST(check, SDF)
     // Check world_sibling_same_names.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: non-unique names"), std::string::npos)
+    EXPECT_NE(output.find("Error: Non-unique names"), std::string::npos)
       << output;
   }
 
@@ -139,7 +139,7 @@ TEST(check, SDF)
     // Check model_link_joint_same_name.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: non-unique names"), std::string::npos)
+    EXPECT_NE(output.find("Error: Non-unique names"), std::string::npos)
       << output;
   }
 
@@ -197,7 +197,7 @@ TEST(check, SDF)
     // Check joint_invalid_child.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: child link with name[invalid] specified by "
+    EXPECT_NE(output.find("Error: Child link with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_child]."),
               std::string::npos) << output;
@@ -223,8 +223,7 @@ TEST(check, SDF)
     // Check joint_invalid_parent_same_as_child.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: joint with name[joint] in model with "
-                          "name[joint_invalid_parent_same_as_child] must "
+    EXPECT_NE(output.find("Error: Joint with name[joint] must "
                           "specify different link names for parent and child, "
                           "while [link] was specified for both."),
               std::string::npos) << output;
@@ -358,6 +357,21 @@ TEST(check, SDF)
                           "name[F4], causing a graph cycle in model with "
                           "name[model_frame_invalid_attached_to]."),
               std::string::npos) << output;
+  }
+
+  // Check an SDF file with a cycle in its FrameAttachedTo graph
+  {
+    std::string path = pathBase +"/model_frame_invalid_attached_to_cycle.sdf";
+
+    // Check model_frame_invalid_attached_to_cycle.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(std::string::npos, output.find(
+      "FrameAttachedToGraph cycle detected, already visited vertex [F1]."))
+        << output;
+    EXPECT_NE(std::string::npos, output.find(
+      "FrameAttachedToGraph cycle detected, already visited vertex [F2]."))
+        << output;
   }
 
   // Check an SDF file with model frames using the attached_to attribute.

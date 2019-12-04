@@ -18,6 +18,13 @@ but with improved human-readability..
 
 1. **sdf/Frame.hh**: DOM class for frames in the model or world.
 
+1. **sdf/FrameSemantics.hh**
+    + struct FrameAttachedToGraph
+    + Errors buildFrameAttachedToGraph(FrameAttachedToGraph&, const Model\*)
+    + Errors buildFrameAttachedToGraph(FrameAttachedToGraph&, const World\*)
+    + Errors validateFrameAttachedToGraph(const FrameAttachedToGraph\*)
+    + Errors resolveFrameAttachedToBody(std::string&, const FrameAttachedToGraph\*, const std::string&)
+
 1. **sdf/Model.hh**
     + uint64\_t FrameCount() const
     + const Frame \*FrameByIndex(const uint64\_t) const
@@ -33,6 +40,7 @@ but with improved human-readability..
 
 1. **sdf/parser.hh**
    + bool checkCanonicalLinkNames(sdf::Root\*)
+   + bool checkFrameAttachedToGraph(sdf::Root\*)
    + bool checkFrameAttachedToNames(sdf::Root\*)
    + bool checkJointParentChildLinkNames(sdf::Root\*)
    + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)

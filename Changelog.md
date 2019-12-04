@@ -40,6 +40,9 @@
 1. sdf 1.7: add `//frame/attached_to`, only allow frames in model and world, add Frame DOM.
     * [pull request 603](https://bitbucket.org/osrf/sdformat/pull-requests/603)
 
+1. FrameSemantics API: add FrameAttachedToGraph and functions for building graph and resolving attached-to body.
+    * [Pull request 613](https://bitbucket.org/osrf/sdformat/pull-requests/613)
+
 1. DOM API: deprecate `(Set)?PoseFrame` API and replace with `(Set)?PoseRelativeTo`
     * [Pull request 598](https://bitbucket.org/osrf/sdformat/pull-requests/598)
 
