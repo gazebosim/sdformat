@@ -1642,24 +1642,6 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
       }
       worldResult = false;
     }
-    // compute pose of each vertex relative to root
-    for (auto const &namePair : graph.map)
-    {
-      ignition::math::Pose3d pose;
-      errors = sdf::resolvePoseRelativeToRoot(
-          pose, graph, namePair.first);
-      if (!errors.empty())
-      {
-        for (auto &error : errors)
-        {
-          std::cerr << "Error in resolvePoseRelativeToRoot for vertex named ["
-                    << namePair.first << "]: "
-                    << error.Message()
-                    << std::endl;
-        }
-        worldResult = false;
-      }
-    }
     return worldResult;
   };
 

@@ -158,7 +158,7 @@ namespace sdf
     private: void SetPoseRelativeToGraph(
         std::weak_ptr<const PoseRelativeToGraph> _graph);
 
-    /// \brief Allow Model::Load to call SetPoseRelativeToGraph.
+    /// \brief Allow Model::Load and World::Load to call SetPoseRelativeToGraph.
     friend class Model;
     friend class World;
 

@@ -614,6 +614,13 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), model->LinkByName("L2")->RawPose());
   EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0), model->LinkByName("L3")->RawPose());
 
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI / 2, 0),
+            model->LinkByName("L1")->SemanticPose().RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0),
+            model->LinkByName("L2")->SemanticPose().RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0),
+            model->LinkByName("L3")->SemanticPose().RawPose());
+
   // Test SemanticPose().Resolve to get each link pose in the model frame
   Pose pose;
   EXPECT_TRUE(

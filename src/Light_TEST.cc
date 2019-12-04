@@ -32,12 +32,28 @@ TEST(DOMLight, DefaultConstruction)
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, light.RawPose());
   EXPECT_TRUE(light.PoseRelativeTo().empty());
+  {
+    auto semanticPose = light.SemanticPose();
+    EXPECT_EQ(light.RawPose(), semanticPose.RawPose());
+    EXPECT_TRUE(semanticPose.RelativeTo().empty());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 
   light.SetRawPose({1, 2, 3, 0, 0, IGN_PI});
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), light.RawPose());
 
   light.SetPoseRelativeTo("world");
   EXPECT_EQ("world", light.PoseRelativeTo());
+  {
+    auto semanticPose = light.SemanticPose();
+    EXPECT_EQ(light.RawPose(), semanticPose.RawPose());
+    EXPECT_EQ("world", semanticPose.RelativeTo());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 
   EXPECT_FALSE(light.CastShadows());
   light.SetCastShadows(true);

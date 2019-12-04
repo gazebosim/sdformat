@@ -35,13 +35,30 @@ TEST(DOMSensor, Construction)
   EXPECT_EQ(sdf::SensorType::ALTIMETER, sensor.Type());
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, sensor.RawPose());
+  EXPECT_TRUE(sensor.PoseRelativeTo().empty());
+  {
+    auto semanticPose = sensor.SemanticPose();
+    EXPECT_EQ(sensor.RawPose(), semanticPose.RawPose());
+    EXPECT_TRUE(semanticPose.RelativeTo().empty());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 
   sensor.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), sensor.RawPose());
 
-  EXPECT_TRUE(sensor.PoseRelativeTo().empty());
   sensor.SetPoseRelativeTo("a_frame");
   EXPECT_EQ("a_frame", sensor.PoseRelativeTo());
+  {
+    auto semanticPose = sensor.SemanticPose();
+    EXPECT_EQ(sensor.RawPose(), semanticPose.RawPose());
+    EXPECT_EQ("a_frame", semanticPose.RelativeTo());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
+
 
   EXPECT_DOUBLE_EQ(0.0, sensor.UpdateRate());
 

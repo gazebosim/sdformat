@@ -31,6 +31,14 @@ TEST(DOMcollision, Construction)
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, collision.RawPose());
   EXPECT_TRUE(collision.PoseRelativeTo().empty());
+  {
+    auto semanticPose = collision.SemanticPose();
+    EXPECT_EQ(collision.RawPose(), semanticPose.RawPose());
+    EXPECT_TRUE(semanticPose.RelativeTo().empty());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 
   collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
   EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
@@ -38,6 +46,14 @@ TEST(DOMcollision, Construction)
 
   collision.SetPoseRelativeTo("link");
   EXPECT_EQ("link", collision.PoseRelativeTo());
+  {
+    auto semanticPose = collision.SemanticPose();
+    EXPECT_EQ(collision.RawPose(), semanticPose.RawPose());
+    EXPECT_EQ("link", semanticPose.RelativeTo());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 
   ASSERT_NE(nullptr, collision.Geom());
   EXPECT_EQ(sdf::GeometryType::EMPTY, collision.Geom()->Type());

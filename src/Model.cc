@@ -563,8 +563,8 @@ void Model::SetPoseRelativeToGraph(
 sdf::SemanticPose Model::SemanticPose() const
 {
   return sdf::SemanticPose(
-      ignition::math::Pose3d::Zero,
-      this->dataPtr->name,
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
       "world",
       this->dataPtr->parentPoseGraph);
 }

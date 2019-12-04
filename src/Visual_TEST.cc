@@ -34,6 +34,14 @@ TEST(DOMVisual, Construction)
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, visual.RawPose());
   EXPECT_TRUE(visual.PoseRelativeTo().empty());
+  {
+    auto semanticPose = visual.SemanticPose();
+    EXPECT_EQ(visual.RawPose(), semanticPose.RawPose());
+    EXPECT_TRUE(semanticPose.RelativeTo().empty());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 
   visual.SetRawPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
@@ -41,6 +49,14 @@ TEST(DOMVisual, Construction)
 
   visual.SetPoseRelativeTo("link");
   EXPECT_EQ("link", visual.PoseRelativeTo());
+  {
+    auto semanticPose = visual.SemanticPose();
+    EXPECT_EQ(visual.RawPose(), semanticPose.RawPose());
+    EXPECT_EQ("link", semanticPose.RelativeTo());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 
   ASSERT_NE(nullptr, visual.Geom());
   EXPECT_EQ(sdf::GeometryType::EMPTY, visual.Geom()->Type());
