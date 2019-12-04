@@ -26,6 +26,13 @@
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 
+#ifdef _WIN32
+// Disable warning C4251 which is triggered by
+// std::unique_ptr
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
@@ -77,6 +84,27 @@ namespace sdf
         const std::string &_defaultResolveTo,
         std::weak_ptr<const sdf::PoseRelativeToGraph> _graph);
 
+    /// \brief Destructor
+    public: ~SemanticPose();
+
+    /// \brief Copy constructor
+    /// \param[in] _semanticpose SemanticPose to copy.
+    public: SemanticPose(const SemanticPose &_semanticPose);
+
+    /// \brief Move constructor
+    /// \param[in] _semanticpose SemanticPose to move.
+    public: SemanticPose(SemanticPose &&_semanticPose) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _semanticpose SemanticPose to move.
+    /// \return Reference to this.
+    public: SemanticPose &operator=(SemanticPose &&_semanticPose);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _semanticpose SemanticPose to copy.
+    /// \return Reference to this.
+    public: SemanticPose &operator=(const SemanticPose &_semanticPose);
+
     friend class Collision;
     friend class Frame;
     friend class Joint;
@@ -89,21 +117,11 @@ namespace sdf
     /// \brief Private data pointer.
     private: std::unique_ptr<SemanticPosePrivate> dataPtr;
   };
-
-  class SemanticPosePrivate
-  {
-    /// \brief Raw pose of the SemanticPose object.
-    public: ignition::math::Pose3d rawPose = ignition::math::Pose3d::Zero;
-
-    /// \brief Name of the relative-to frame.
-    public: std::string relativeTo = "";
-
-    /// \brief Name of the default frame to resolve to.
-    public: std::string defaultResolveTo = "";
-
-    /// \brief Weak pointer to model's Pose Relative-To Graph.
-    public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
-  };
   }
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
+
 #endif
