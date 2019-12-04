@@ -17,6 +17,7 @@
 #ifndef SDF_SEMANTIC_POSE_HH_
 #define SDF_SEMANTIC_POSE_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 
@@ -39,7 +40,7 @@ namespace sdf
   /// a Pose3 object, the name of the frame relative to which it is defined,
   /// a pointer to a PoseRelativeToGraph, and a default frame to resolve to.
   /// The name of the default frame to resolve to must not be empty.
-  /// This class only has a private constructor, and is may be accessed from
+  /// This class only has a private constructor, and may only be accessed from
   /// its friend DOM classes.
   class SDFORMAT_VISIBLE SemanticPose
   {
@@ -49,7 +50,7 @@ namespace sdf
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
-    /// relative to the parent model.
+    /// relative to the default parent object.
     /// \return The name of the pose relative-to frame.
     public: const std::string &RelativeTo() const;
 
@@ -80,7 +81,22 @@ namespace sdf
     friend class Visual;
 
     /// \brief Private data pointer.
-    private: SemanticPosePrivate *dataPtr;
+    private: std::unique_ptr<SemanticPosePrivate> dataPtr;
+  };
+
+  class SemanticPosePrivate
+  {
+    /// \brief Raw pose of the SemanticPose object.
+    public: ignition::math::Pose3d rawPose = ignition::math::Pose3d::Zero;
+
+    /// \brief Name of the relative-to frame.
+    public: std::string relativeTo = "";
+
+    /// \brief Name of the default frame to resolve to.
+    public: std::string defaultResolveTo = "";
+
+    /// \brief Weak pointer to model's Pose Relative-To Graph.
+    public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
   };
   }
 }
