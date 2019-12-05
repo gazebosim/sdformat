@@ -173,7 +173,7 @@ Errors Link::Load(ElementPtr _sdf)
   ignition::math::Vector3d xxyyzz = ignition::math::Vector3d::One;
   ignition::math::Vector3d xyxzyz = ignition::math::Vector3d::Zero;
   ignition::math::Pose3d inertiaPose;
-  std::string inertiaFrame = "";
+  std::string inertiaPoseRelativeTo = "";
   double mass = 1.0;
 
   if (_sdf->HasElement("inertial"))
@@ -181,7 +181,19 @@ Errors Link::Load(ElementPtr _sdf)
     sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
 
     if (inertialElem->HasElement("pose"))
-      loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
+    {
+      loadPose(
+          inertialElem->GetElement("pose"),
+          inertiaPose,
+          inertiaPoseRelativeTo);
+    }
+    if (!inertiaPoseRelativeTo.empty())
+    {
+      sdfwarn << "Inertial pose in link with name [" << this->Name()
+              << "] defined relative-to [" << inertiaPoseRelativeTo
+              << "], but this attribute is not yet supported for "
+              << "inertial poses.\n";
+    }
 
     // Get the mass.
     mass = inertialElem->Get<double>("mass", 1.0).first;
