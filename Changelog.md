@@ -70,6 +70,9 @@
 1. DOM API: deprecate `(Set)?Pose` API and replace with `(Set)?RawPose`
     * [Pull request 599](https://bitbucket.org/osrf/sdformat/pull-requests/599)
 
+1. Hide FrameSemantics implementation.
+    * [Pull request 622](https://bitbucket.org/osrf/sdformat/pull-requests/622)
+
 ## SDFormat 8.0
 
 ### SDFormat 8.X.X (201X-XX-XX)
