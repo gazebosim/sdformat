@@ -25,7 +25,6 @@
 
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
-#include "sdf/system_util.hh"
 
 /// \ingroup sdf_frame_semantics
 /// \brief namespace for Simulation Description Format Frame Semantics Utilities
@@ -64,7 +63,7 @@ namespace sdf
   };
 
   /// \brief Data structure for frame attached_to graphs for Model or World.
-  struct SDFORMAT_VISIBLE FrameAttachedToGraph
+  struct FrameAttachedToGraph
   {
     /// \brief A DirectedGraph with a vertex for each frame and edges pointing
     /// to the frame to which another frame is attached. Each vertex stores
@@ -81,7 +80,7 @@ namespace sdf
   };
 
   /// \brief Data structure for pose relative_to graphs for Model or World.
-  struct SDFORMAT_VISIBLE PoseRelativeToGraph
+  struct PoseRelativeToGraph
   {
     /// \brief A DirectedGraph with a vertex for each explicit or implicit
     /// frame and edges pointing to a given frame from its relative-to frame.
@@ -104,7 +103,6 @@ namespace sdf
   /// \param[out] _out Graph object to write.
   /// \param[in] _model Model from which to build attached_to graph.
   /// \return Errors.
-  SDFORMAT_VISIBLE
   Errors buildFrameAttachedToGraph(
               FrameAttachedToGraph &_out, const Model *_model);
 
@@ -112,7 +110,6 @@ namespace sdf
   /// \param[out] _out Graph object to write.
   /// \param[in] _world World from which to build attached_to graph.
   /// \return Errors.
-  SDFORMAT_VISIBLE
   Errors buildFrameAttachedToGraph(
               FrameAttachedToGraph &_out, const World *_world);
 
@@ -120,7 +117,6 @@ namespace sdf
   /// \param[out] _out Graph object to write.
   /// \param[in] _model Model from which to build attached_to graph.
   /// \return Errors.
-  SDFORMAT_VISIBLE
   Errors buildPoseRelativeToGraph(
               PoseRelativeToGraph &_out, const Model *_model);
 
@@ -128,7 +124,6 @@ namespace sdf
   /// \param[out] _out Graph object to write.
   /// \param[in] _world World from which to build attached_to graph.
   /// \return Errors.
-  SDFORMAT_VISIBLE
   Errors buildPoseRelativeToGraph(
               PoseRelativeToGraph &_out, const World *_world);
 
@@ -137,14 +132,12 @@ namespace sdf
   /// of outbound edges for each vertex and checking for graph cycles.
   /// \param[in] _in Graph object to validate.
   /// \return Errors.
-  SDFORMAT_VISIBLE
   Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in);
 
   /// \brief Confirm that PoseRelativeToGraph is valid by checking the number
   /// of outbound edges for each vertex and checking for graph cycles.
   /// \param[in] _in Graph object to validate.
   /// \return Errors.
-  SDFORMAT_VISIBLE
   Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in);
 
   /// \brief Resolve the attached-to body for a given frame. Following the
@@ -157,7 +150,6 @@ namespace sdf
   /// vertex with this name.
   /// \return Errors if the graph is invalid or the frame does not lead to
   /// a link or world frame.
-  SDFORMAT_VISIBLE
   Errors resolveFrameAttachedToBody(
       std::string &_attachedToBody,
       const FrameAttachedToGraph &_in,
@@ -169,7 +161,6 @@ namespace sdf
   /// \param[in] _graph PoseRelativeToGraph to read from.
   /// \param[in] _vertexName Name of vertex whose pose is to be computed.
   /// \return Errors.
-  SDFORMAT_VISIBLE
   Errors resolvePoseRelativeToRoot(
       ignition::math::Pose3d &_pose,
       const PoseRelativeToGraph &_graph,
@@ -182,7 +173,6 @@ namespace sdf
   /// \param[in] _resolveTo Name of frame relative to which the pose is
   /// to be resolved.
   /// \return Errors.
-  SDFORMAT_VISIBLE
   Errors resolvePose(
       ignition::math::Pose3d &_pose,
       const PoseRelativeToGraph &_graph,
