@@ -16,15 +16,16 @@
 */
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Types.hh"
+#include "FrameSemantics.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -235,10 +236,28 @@ Errors Model::Load(ElementPtr _sdf)
                      "skipping model [" + this->dataPtr->name + "]."});
   }
 
+  if (!_sdf->HasUniqueChildNames())
+  {
+    sdfwarn << "Non-unique names detected in XML children of model with name["
+            << this->Name() << "].\n";
+  }
+
+  // Set of implicit and explicit frame names in this model for tracking
+  // name collisions
+  std::unordered_set<std::string> frameNames;
+
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
     this->dataPtr->links);
   errors.insert(errors.end(), linkLoadErrors.begin(), linkLoadErrors.end());
+
+  // Links are loaded first, and loadUniqueRepeated ensures there are no
+  // duplicate names, so these names can be added to frameNames without
+  // checking uniqueness.
+  for (const auto &link : this->dataPtr->links)
+  {
+    frameNames.insert(link.Name());
+  }
 
   // Require at least one link so the implicit model frame can be attached to
   // something.
@@ -253,10 +272,52 @@ Errors Model::Load(ElementPtr _sdf)
     this->dataPtr->joints);
   errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
 
+  // Check joints for name collisions and modify and warn if so.
+  for (auto &joint : this->dataPtr->joints)
+  {
+    std::string jointName = joint.Name();
+    if (frameNames.count(jointName) > 0)
+    {
+      jointName += "_joint";
+      int i = 0;
+      while (frameNames.count(jointName) > 0)
+      {
+        jointName = joint.Name() + "_joint" + std::to_string(i++);
+      }
+      sdfwarn << "Joint with name [" << joint.Name() << "] "
+              << "in model with name [" << this->Name() << "] "
+              << "has a name collision, changing joint name to ["
+              << jointName << "].\n";
+      joint.SetName(jointName);
+    }
+    frameNames.insert(jointName);
+  }
+
   // Load all the frames.
   Errors frameLoadErrors = loadUniqueRepeated<Frame>(_sdf, "frame",
     this->dataPtr->frames);
   errors.insert(errors.end(), frameLoadErrors.begin(), frameLoadErrors.end());
+
+  // Check frames for name collisions and modify and warn if so.
+  for (auto &frame : this->dataPtr->frames)
+  {
+    std::string frameName = frame.Name();
+    if (frameNames.count(frameName) > 0)
+    {
+      frameName += "_frame";
+      int i = 0;
+      while (frameNames.count(frameName) > 0)
+      {
+        frameName = frame.Name() + "_frame" + std::to_string(i++);
+      }
+      sdfwarn << "Frame with name [" << frame.Name() << "] "
+              << "in model with name [" << this->Name() << "] "
+              << "has a name collision, changing frame name to ["
+              << frameName << "].\n";
+      frame.SetName(frameName);
+    }
+    frameNames.insert(frameName);
+  }
 
   // Build the graphs.
   this->dataPtr->frameAttachedToGraph

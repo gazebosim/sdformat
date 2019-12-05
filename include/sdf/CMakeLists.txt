@@ -16,7 +16,6 @@ set (headers
   Exception.hh
   Filesystem.hh
   Frame.hh
-  FrameSemantics.hh
   Geometry.hh
   Gui.hh
   Imu.hh

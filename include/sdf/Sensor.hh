@@ -21,7 +21,6 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
@@ -40,6 +39,7 @@ namespace sdf
   class Lidar;
   class Magnetometer;
   class SensorPrivate;
+  struct PoseRelativeToGraph;
 
   /// \enum SensorType
   /// \brief The set of sensor types.

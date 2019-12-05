@@ -19,6 +19,12 @@
 1. Enforce rules about reserved names and unique names among sibling elements.
     * [Pull request 600](https://bitbucket.org/osrf/sdformat/pull-requests/600)
 
+1. Relax name checking, so name collisions generate warnings and names are automatically changed.
+    * [Pull request 621](https://bitbucket.org/osrf/sdformat/pull-requests/621)
+
+1. Unversioned library name for ign tool commands.
+    * [Pull request 612](https://bitbucket.org/osrf/sdformat/pull-requests/612)
+
 1. Initial version of sdformat 1.7 specification.
     * [Pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
 
@@ -66,6 +72,10 @@
 
 1. DOM API: deprecate `(Set)?Pose` API and replace with `(Set)?RawPose`
     * [Pull request 599](https://bitbucket.org/osrf/sdformat/pull-requests/599)
+
+1. Hide FrameSemantics implementation.
+    * [Pull request 622](https://bitbucket.org/osrf/sdformat/pull-requests/622)
+    * [Pull request 623](https://bitbucket.org/osrf/sdformat/pull-requests/623)
 
 ## SDFormat 8.0
 

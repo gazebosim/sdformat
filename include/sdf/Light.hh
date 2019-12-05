@@ -23,7 +23,6 @@
 #include <ignition/math/Angle.hh>
 
 #include "sdf/Element.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -37,6 +36,7 @@ namespace sdf
 
   // Forward declare private data class.
   class LightPrivate;
+  struct PoseRelativeToGraph;
 
   /// \enum LightType
   /// \brief The set of light types. INVALID indicates that light type has

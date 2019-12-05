@@ -17,10 +17,10 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Assert.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
+#include "FrameSemantics.hh"
 #include "Utils.hh"
 
 namespace sdf

@@ -21,7 +21,6 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -40,6 +39,7 @@ namespace sdf
   class Sensor;
   class Visual;
   class LinkPrivate;
+  struct PoseRelativeToGraph;
 
   class SDFORMAT_VISIBLE Link
   {

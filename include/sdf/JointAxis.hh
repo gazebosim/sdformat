@@ -21,7 +21,6 @@
 #include <string>
 #include <ignition/math/Vector3.hh>
 #include "sdf/Element.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -34,6 +33,7 @@ namespace sdf
 
   // Forward declare private data class.
   class JointAxisPrivate;
+  struct PoseRelativeToGraph;
 
   /// \brief Parameters related to the axis of rotation for rotational joints,
   /// and the axis of translation for prismatic joints.

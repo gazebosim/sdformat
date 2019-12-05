@@ -15,17 +15,18 @@
  *
 */
 #include <string>
+#include <unordered_set>
 #include <vector>
 #include <ignition/math/Vector3.hh>
 
 #include "sdf/Actor.hh"
 #include "sdf/Frame.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Physics.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
+#include "FrameSemantics.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -280,10 +281,28 @@ Errors World::Load(sdf::ElementPtr _sdf)
     _sdf->Get<ignition::math::Vector3d>("magnetic_field",
         this->dataPtr->magneticField).first;
 
+  if (!_sdf->HasUniqueChildNames())
+  {
+    sdfwarn << "Non-unique names detected in XML children of world with name["
+            << this->Name() << "].\n";
+  }
+
+  // Set of implicit and explicit frame names in this model for tracking
+  // name collisions
+  std::unordered_set<std::string> frameNames;
+
   // Load all the models.
   Errors modelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
       this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
+
+  // Models are loaded first, and loadUniqueRepeated ensures there are no
+  // duplicate names, so these names can be added to frameNames without
+  // checking uniqueness.
+  for (const auto &model : this->dataPtr->models)
+  {
+    frameNames.insert(model.Name());
+  }
 
   // Load all the physics.
   if (_sdf->HasElement("physics"))
@@ -309,6 +328,27 @@ Errors World::Load(sdf::ElementPtr _sdf)
   Errors frameLoadErrors = loadUniqueRepeated<Frame>(_sdf, "frame",
       this->dataPtr->frames);
   errors.insert(errors.end(), frameLoadErrors.begin(), frameLoadErrors.end());
+
+  // Check frames for name collisions and modify and warn if so.
+  for (auto &frame : this->dataPtr->frames)
+  {
+    std::string frameName = frame.Name();
+    if (frameNames.count(frameName) > 0)
+    {
+      frameName += "_frame";
+      int i = 0;
+      while (frameNames.count(frameName) > 0)
+      {
+        frameName = frame.Name() + "_frame" + std::to_string(i++);
+      }
+      sdfwarn << "Frame with name [" << frame.Name() << "] "
+              << "in world with name [" << this->Name() << "] "
+              << "has a name collision, changing frame name to ["
+              << frameName << "].\n";
+      frame.SetName(frameName);
+    }
+    frameNames.insert(frameName);
+  }
 
   // Load the Gui
   if (_sdf->HasElement("gui"))

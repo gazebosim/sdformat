@@ -23,19 +23,6 @@ but with improved human-readability..
     + Errors ResolveAttachedToBody(std::string&) const
     + sdf::SemanticPose SemanticPose() const
 
-1. **sdf/FrameSemantics.hh**
-    + struct FrameAttachedToGraph
-    + Errors buildFrameAttachedToGraph(FrameAttachedToGraph&, const Model\*)
-    + Errors buildFrameAttachedToGraph(FrameAttachedToGraph&, const World\*)
-    + Errors validateFrameAttachedToGraph(const FrameAttachedToGraph\*)
-    + Errors resolveFrameAttachedToBody(std::string&, const FrameAttachedToGraph\*, const std::string&)
-    + struct PoseRelativeToGraph
-    + Errors buildPoseRelativeToGraph(PoseRelativeToGraph&, const Model\*)
-    + Errors buildPoseRelativeToGraph(PoseRelativeToGraph&, const World\*)
-    + Errors validatePoseRelativeToGraph(const PoseRelativeToGraph\*)
-    + Errors resolvePoseRelativeToRoot(ignition::math::Pose3d&, const PoseRelativeToGraph\*, const std::string&)
-    + Errors resolvePose(ignition::math::Pose3d&, const PoseRelativeToGraph\*, const std::string&, const std::string&)
-
 1. **sdf/Joint.hh**
     + sdf::SemanticPose SemanticPose() const
 

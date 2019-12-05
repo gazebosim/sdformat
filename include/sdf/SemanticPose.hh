@@ -41,6 +41,7 @@ namespace sdf
 
   // Forward declare private data class.
   class SemanticPosePrivate;
+  struct PoseRelativeToGraph;
 
   /// \brief SemanticPose is a data structure that can be used by different
   /// DOM objects to resolve poses on a PoseRelativeToGraph. This object holds

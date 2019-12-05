@@ -25,7 +25,7 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 
-#include "sdf/FrameSemantics.hh"
+#include "FrameSemantics.hh"
 
 namespace sdf
 {
@@ -190,12 +190,6 @@ Errors buildFrameAttachedToGraph(
         "Invalid model element in sdf::Model."});
     return errors;
   }
-  else if (!_model->Element()->HasUniqueChildNames())
-  {
-    errors.push_back({ErrorCode::DUPLICATE_NAME,
-        "Non-unique names detected in XML children of model."});
-    return errors;
-  }
   else if (_model->LinkCount() < 1)
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
@@ -226,6 +220,14 @@ Errors buildFrameAttachedToGraph(
   for (uint64_t l = 0; l < _model->LinkCount(); ++l)
   {
     auto link = _model->LinkByIndex(l);
+    if (_out.map.count(link->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Link with non-unique name [" + link->Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
     auto linkId =
         _out.graph.AddVertex(link->Name(), sdf::FrameType::LINK).Id();
     _out.map[link->Name()] = linkId;
@@ -241,6 +243,14 @@ Errors buildFrameAttachedToGraph(
   for (uint64_t j = 0; j < _model->JointCount(); ++j)
   {
     auto joint = _model->JointByIndex(j);
+    if (_out.map.count(joint->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Joint with non-unique name [" + joint->Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
     auto jointId =
         _out.graph.AddVertex(joint->Name(), sdf::FrameType::JOINT).Id();
     _out.map[joint->Name()] = jointId;
@@ -262,6 +272,14 @@ Errors buildFrameAttachedToGraph(
   for (uint64_t f = 0; f < _model->FrameCount(); ++f)
   {
     auto frame = _model->FrameByIndex(f);
+    if (_out.map.count(frame->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Frame with non-unique name [" + frame->Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
     auto frameId =
         _out.graph.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
     _out.map[frame->Name()] = frameId;
@@ -332,17 +350,19 @@ Errors buildFrameAttachedToGraph(
         "Invalid world element in sdf::World."});
     return errors;
   }
-  else if (!_world->Element()->HasUniqueChildNames())
-  {
-    errors.push_back({ErrorCode::DUPLICATE_NAME,
-        "Non-unique names detected in XML children of world."});
-    return errors;
-  }
 
   // add model vertices
   for (uint64_t l = 0; l < _world->ModelCount(); ++l)
   {
     auto model = _world->ModelByIndex(l);
+    if (_out.map.count(model->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Model with non-unique name [" + model->Name() +
+          "] detected in world with name [" + _world->Name() +
+          "]."});
+      continue;
+    }
     auto modelId =
         _out.graph.AddVertex(model->Name(), sdf::FrameType::MODEL).Id();
     _out.map[model->Name()] = modelId;
@@ -352,6 +372,14 @@ Errors buildFrameAttachedToGraph(
   for (uint64_t f = 0; f < _world->FrameCount(); ++f)
   {
     auto frame = _world->FrameByIndex(f);
+    if (_out.map.count(frame->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Frame with non-unique name [" + frame->Name() +
+          "] detected in world with name [" + _world->Name() +
+          "]."});
+      continue;
+    }
     auto frameId =
         _out.graph.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
     _out.map[frame->Name()] = frameId;
@@ -421,12 +449,6 @@ Errors buildPoseRelativeToGraph(
         "Invalid model element in sdf::Model."});
     return errors;
   }
-  else if (!_model->Element()->HasUniqueChildNames())
-  {
-    errors.push_back({ErrorCode::DUPLICATE_NAME,
-        "Non-unique names detected in XML children of model."});
-    return errors;
-  }
 
   // add implicit model frame vertex first
   const std::string sourceName = "__model__";
@@ -439,6 +461,14 @@ Errors buildPoseRelativeToGraph(
   for (uint64_t l = 0; l < _model->LinkCount(); ++l)
   {
     auto link = _model->LinkByIndex(l);
+    if (_out.map.count(link->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Link with non-unique name [" + link->Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
     auto linkId =
         _out.graph.AddVertex(link->Name(), sdf::FrameType::LINK).Id();
     _out.map[link->Name()] = linkId;
@@ -454,6 +484,14 @@ Errors buildPoseRelativeToGraph(
   for (uint64_t j = 0; j < _model->JointCount(); ++j)
   {
     auto joint = _model->JointByIndex(j);
+    if (_out.map.count(joint->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Joint with non-unique name [" + joint->Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
     auto jointId =
         _out.graph.AddVertex(joint->Name(), sdf::FrameType::JOINT).Id();
     _out.map[joint->Name()] = jointId;
@@ -480,6 +518,14 @@ Errors buildPoseRelativeToGraph(
   for (uint64_t f = 0; f < _model->FrameCount(); ++f)
   {
     auto frame = _model->FrameByIndex(f);
+    if (_out.map.count(frame->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Frame with non-unique name [" + frame->Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
     auto frameId =
         _out.graph.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
     _out.map[frame->Name()] = frameId;
@@ -634,12 +680,6 @@ Errors buildPoseRelativeToGraph(
         "Invalid world element in sdf::World."});
     return errors;
   }
-  else if (!_world->Element()->HasUniqueChildNames())
-  {
-    errors.push_back({ErrorCode::DUPLICATE_NAME,
-        "Non-unique names detected in XML children of world."});
-    return errors;
-  }
 
   // add implicit world frame vertex first
   const std::string sourceName = "world";
@@ -652,6 +692,14 @@ Errors buildPoseRelativeToGraph(
   for (uint64_t m = 0; m < _world->ModelCount(); ++m)
   {
     auto model = _world->ModelByIndex(m);
+    if (_out.map.count(model->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Model with non-unique name [" + model->Name() +
+          "] detected in world with name [" + _world->Name() +
+          "]."});
+      continue;
+    }
     auto modelId =
         _out.graph.AddVertex(model->Name(), sdf::FrameType::MODEL).Id();
     _out.map[model->Name()] = modelId;
@@ -668,6 +716,14 @@ Errors buildPoseRelativeToGraph(
   for (uint64_t f = 0; f < _world->FrameCount(); ++f)
   {
     auto frame = _world->FrameByIndex(f);
+    if (_out.map.count(frame->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Frame with non-unique name [" + frame->Name() +
+          "] detected in world with name [" + _world->Name() +
+          "]."});
+      continue;
+    }
     auto frameId =
         _out.graph.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
     _out.map[frame->Name()] = frameId;

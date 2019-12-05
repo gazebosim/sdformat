@@ -21,7 +21,6 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -38,6 +37,7 @@ namespace sdf
   class Joint;
   class Link;
   class ModelPrivate;
+  struct PoseRelativeToGraph;
 
   class SDFORMAT_VISIBLE Model
   {
