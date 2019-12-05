@@ -25,8 +25,12 @@
 #include "sdf/Console.hh"
 #include "sdf/Converter.hh"
 #include "sdf/Filesystem.hh"
-#include "sdf/Param.hh"
+#include "sdf/Frame.hh"
+#include "sdf/FrameSemantics.hh"
+#include "sdf/Joint.hh"
+#include "sdf/Link.hh"
 #include "sdf/Model.hh"
+#include "sdf/Param.hh"
 #include "sdf/Root.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/World.hh"
@@ -1296,6 +1300,114 @@ bool checkCanonicalLinkNames(const sdf::Root *_root)
 }
 
 //////////////////////////////////////////////////
+bool checkFrameAttachedToNames(const sdf::Root *_root)
+{
+  bool result = true;
+
+  auto checkModelFrameAttachedToNames = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    for (uint64_t f = 0; f < _model->FrameCount(); ++f)
+    {
+      auto frame = _model->FrameByIndex(f);
+
+      const std::string &attachedTo = frame->AttachedTo();
+
+      // the attached_to attribute is always permitted to be empty
+      if (attachedTo.empty())
+      {
+        continue;
+      }
+
+      if (attachedTo == frame->Name())
+      {
+        std::cerr << "Error: attached_to name[" << attachedTo
+                  << "] is identical to frame name[" << frame->Name()
+                  << "], causing a graph cycle "
+                  << "in model with name[" << _model->Name()
+                  << "]."
+                  << std::endl;
+        modelResult = false;
+      }
+      else if (!_model->LinkNameExists(attachedTo) &&
+               !_model->JointNameExists(attachedTo) &&
+               !_model->FrameNameExists(attachedTo))
+      {
+        std::cerr << "Error: attached_to name[" << attachedTo
+                  << "] specified by frame with name[" << frame->Name()
+                  << "] does not match a link, joint, or frame name "
+                  << "in model with name[" << _model->Name()
+                  << "]."
+                  << std::endl;
+        modelResult = false;
+      }
+    }
+    return modelResult;
+  };
+
+  auto checkWorldFrameAttachedToNames = [](
+      const sdf::World *_world) -> bool
+  {
+    bool worldResult = true;
+    for (uint64_t f = 0; f < _world->FrameCount(); ++f)
+    {
+      auto frame = _world->FrameByIndex(f);
+
+      const std::string &attachedTo = frame->AttachedTo();
+
+      // the attached_to attribute is always permitted to be empty
+      if (attachedTo.empty())
+      {
+        continue;
+      }
+
+      if (attachedTo == frame->Name())
+      {
+        std::cerr << "Error: attached_to name[" << attachedTo
+                  << "] is identical to frame name[" << frame->Name()
+                  << "], causing a graph cycle "
+                  << "in world with name[" << _world->Name()
+                  << "]."
+                  << std::endl;
+        worldResult = false;
+      }
+      else if (!_world->ModelNameExists(attachedTo) &&
+               !_world->FrameNameExists(attachedTo))
+      {
+        std::cerr << "Error: attached_to name[" << attachedTo
+                  << "] specified by frame with name[" << frame->Name()
+                  << "] does not match a model or frame name "
+                  << "in world with name[" << _world->Name()
+                  << "]."
+                  << std::endl;
+        worldResult = false;
+      }
+    }
+    return worldResult;
+  };
+
+  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  {
+    auto model = _root->ModelByIndex(m);
+    result = checkModelFrameAttachedToNames(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    result = checkWorldFrameAttachedToNames(world) && result;
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelFrameAttachedToNames(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
 bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
 {
   if (!shouldValidateElement(_elem))
@@ -1345,6 +1457,236 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
   {
     result = recursiveSiblingUniqueNames(child) && result;
     child = child->GetNextElement();
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkFrameAttachedToGraph(const sdf::Root *_root)
+{
+  bool result = true;
+
+  auto checkModelFrameAttachedToGraph = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    sdf::FrameAttachedToGraph graph;
+    auto errors = sdf::buildFrameAttachedToGraph(graph, _model);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      modelResult = false;
+    }
+    errors = sdf::validateFrameAttachedToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validateFrameAttachedToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      modelResult = false;
+    }
+    return modelResult;
+  };
+
+  auto checkWorldFrameAttachedToGraph = [](
+      const sdf::World *_world) -> bool
+  {
+    bool worldResult = true;
+    sdf::FrameAttachedToGraph graph;
+    auto errors = sdf::buildFrameAttachedToGraph(graph, _world);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      worldResult = false;
+    }
+    errors = sdf::validateFrameAttachedToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validateFrameAttachedToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      worldResult = false;
+    }
+    return worldResult;
+  };
+
+  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  {
+    auto model = _root->ModelByIndex(m);
+    result = checkModelFrameAttachedToGraph(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    result = checkWorldFrameAttachedToGraph(world) && result;
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelFrameAttachedToGraph(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkPoseRelativeToGraph(const sdf::Root *_root)
+{
+  bool result = true;
+
+  auto checkModelPoseRelativeToGraph = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    sdf::PoseRelativeToGraph graph;
+    auto errors = sdf::buildPoseRelativeToGraph(graph, _model);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      modelResult = false;
+    }
+    errors = sdf::validatePoseRelativeToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validatePoseRelativeToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      modelResult = false;
+    }
+    return modelResult;
+  };
+
+  auto checkWorldPoseRelativeToGraph = [](
+      const sdf::World *_world) -> bool
+  {
+    bool worldResult = true;
+    sdf::PoseRelativeToGraph graph;
+    auto errors = sdf::buildPoseRelativeToGraph(graph, _world);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error: " << error.Message() << std::endl;
+      }
+      worldResult = false;
+    }
+    errors = sdf::validatePoseRelativeToGraph(graph);
+    if (!errors.empty())
+    {
+      for (auto &error : errors)
+      {
+        std::cerr << "Error in validatePoseRelativeToGraph: "
+                  << error.Message()
+                  << std::endl;
+      }
+      worldResult = false;
+    }
+    return worldResult;
+  };
+
+  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  {
+    auto model = _root->ModelByIndex(m);
+    result = checkModelPoseRelativeToGraph(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    result = checkWorldPoseRelativeToGraph(world) && result;
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelPoseRelativeToGraph(model) && result;
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkJointParentChildLinkNames(const sdf::Root *_root)
+{
+  bool result = true;
+
+  auto checkModelJointParentChildNames = [](
+      const sdf::Model *_model) -> bool
+  {
+    bool modelResult = true;
+    for (uint64_t j = 0; j < _model->JointCount(); ++j)
+    {
+      auto joint = _model->JointByIndex(j);
+
+      const std::string &parentName = joint->ParentLinkName();
+      if (parentName != "world" && !_model->LinkNameExists(parentName))
+      {
+        std::cerr << "Error: parent link with name[" << parentName
+                  << "] specified by joint with name[" << joint->Name()
+                  << "] not found in model with name[" << _model->Name()
+                  << "]."
+                  << std::endl;
+        modelResult = false;
+      }
+
+      const std::string &childName = joint->ChildLinkName();
+      if (childName != "world" && !_model->LinkNameExists(childName))
+      {
+        std::cerr << "Error: child link with name[" << childName
+                  << "] specified by joint with name[" << joint->Name()
+                  << "] not found in model with name[" << _model->Name()
+                  << "]."
+                  << std::endl;
+        modelResult = false;
+      }
+
+      if (childName == parentName)
+      {
+        std::cerr << "Error: joint with name[" << joint->Name()
+                  << "] in model with name[" << _model->Name()
+                  << "] must specify different link names for "
+                  << "parent and child, while [" << childName
+                  << "] was specified for both."
+                  << std::endl;
+        modelResult = false;
+      }
+    }
+    return modelResult;
+  };
+
+  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  {
+    auto model = _root->ModelByIndex(m);
+    result = checkModelJointParentChildNames(model) && result;
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      result = checkModelJointParentChildNames(model) && result;
+    }
   }
 
   return result;

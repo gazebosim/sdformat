@@ -53,6 +53,21 @@ TEST(DOMUtils, PoseNoFrame)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMUtils, PoseNoValue)
+{
+  sdf::ElementPtr element(new sdf::Element);
+  element->SetName("pose");
+  element->AddValue("pose", "", true);
+
+  ignition::math::Pose3d pose;
+  std::string frame;
+  EXPECT_TRUE(sdf::loadPose(element, pose, frame));
+
+  EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
+  EXPECT_TRUE(frame.empty());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMUtils, PoseWithFrame)
 {
   sdf::ElementPtr element(new sdf::Element);

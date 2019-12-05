@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.6">
+<sdf version="1.7">
   <world name="default">
     <physics name="my_physics" type="bullet">
       <max_step_size>0.1</max_step_size>
@@ -30,7 +30,7 @@
 
     <light name="point_light" type="point">
       <cast_shadows>false</cast_shadows>
-      <pose frame="world">1 2 10 0 0 0</pose>
+      <pose relative_to="world">1 2 10 0 0 0</pose>
       <diffuse>1.0 0.0 0.5 1.0</diffuse>
       <specular>0.2 0.1 0.0 1.0</specular>
       <attenuation>
@@ -51,7 +51,7 @@
     </light>
 
     <light name="directional_light" type="directional">
-      <pose>0 10 20 0 0 0</pose>
+      <pose relative_to="frame1">0 10 20 0 0 0</pose>
       <attenuation>
         <range>-123.5</range>
         <linear>-1.0</linear>
@@ -59,6 +59,28 @@
         <quadratic>-100.2</quadratic>
       </attenuation>
     </light>
+
+    <frame name="frame1" attached_to="world">
+      <pose>1 2 3 0 0 0</pose>
+    </frame>
+
+    <model name="model1">
+      <pose relative_to="frame1"/>
+      <frame name="frame2">
+        <pose>4 5 6 0 0 0</pose>
+      </frame>
+      <link name="link">
+        <light name="spot_light" type="spot">
+          <pose relative_to="frame2">7 8 9 0 0 0</pose>
+          <cast_shadows>true</cast_shadows>
+          <spot>
+            <inner_angle>0.1</inner_angle>
+            <outer_angle>0.5</outer_angle>
+            <falloff>2.2</falloff>
+          </spot>
+        </light>
+      </link>
+    </model>
 
     <actor name="actor_1">
       <skin>

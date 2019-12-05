@@ -51,7 +51,6 @@
 
   </element><!-- End Distribution -->
 
-  <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
 
   <include filename="model.sdf" required="1"/>

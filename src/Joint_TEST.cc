@@ -31,6 +31,14 @@ TEST(DOMJoint, Construction)
   EXPECT_EQ(ignition::math::Pose3d::Zero, joint.RawPose());
   EXPECT_TRUE(joint.PoseRelativeTo().empty());
   EXPECT_EQ(nullptr, joint.Element());
+  {
+    auto semanticPose = joint.SemanticPose();
+    EXPECT_EQ(ignition::math::Pose3d::Zero, semanticPose.RawPose());
+    EXPECT_TRUE(semanticPose.RelativeTo().empty());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose without graph
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 
   joint.SetRawPose({-1, -2, -3, IGN_PI, IGN_PI, 0});
   EXPECT_EQ(ignition::math::Pose3d(-1, -2, -3, IGN_PI, IGN_PI, 0),
@@ -38,6 +46,14 @@ TEST(DOMJoint, Construction)
 
   joint.SetPoseRelativeTo("link");
   EXPECT_EQ("link", joint.PoseRelativeTo());
+  {
+    auto semanticPose = joint.SemanticPose();
+    EXPECT_EQ(joint.RawPose(), semanticPose.RawPose());
+    EXPECT_EQ("link", semanticPose.RelativeTo());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose without graph
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
 
   joint.SetName("test_joint");
   EXPECT_EQ("test_joint", joint.Name());

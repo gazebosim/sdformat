@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_frame_attached_to_joint">
+    <link name="P"/>
+    <link name="C"/>
+    <joint name="J" type="fixed">
+      <parent>P</parent>
+      <child>C</child>
+    </joint>
+    <frame name="F1" attached_to="P"/>   <!-- VALID: Directly attached_to link P. -->
+    <frame name="F2" attached_to="C"/>   <!-- VALID: Directly attached_to link C. -->
+    <frame name="F3" attached_to="J"/>   <!-- VALID: Indirectly attached_to link C via joint J. -->
+    <frame name="F4" attached_to="F3"/>  <!-- VALID: Indirectly attached_to link C via frame F3. -->
+  </model>
+</sdf>

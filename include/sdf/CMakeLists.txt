@@ -15,6 +15,8 @@ set (headers
   Error.hh
   Exception.hh
   Filesystem.hh
+  Frame.hh
+  FrameSemantics.hh
   Geometry.hh
   Gui.hh
   Imu.hh
@@ -36,6 +38,7 @@ set (headers
   Root.hh
   Scene.hh
   SDFImpl.hh
+  SemanticPose.hh
   Sensor.hh
   Sphere.hh
   Types.hh

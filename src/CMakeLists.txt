@@ -26,6 +26,8 @@ set (sources
   Element.cc
   Error.cc
   Exception.cc
+  Frame.cc
+  FrameSemantics.cc
   Filesystem.cc
   Geometry.cc
   Gui.cc
@@ -51,6 +53,7 @@ set (sources
   Scene.cc
   SDF.cc
   SDFExtension.cc
+  SemanticPose.cc
   Sensor.cc
   Sphere.cc
   Types.cc
@@ -101,6 +104,7 @@ set (gtest_sources
   Element_TEST.cc
   Error_TEST.cc
   Exception_TEST.cc
+  Frame_TEST.cc
   Filesystem_TEST.cc
   Geometry_TEST.cc
   Gui_TEST.cc
@@ -123,6 +127,7 @@ set (gtest_sources
   Plane_TEST.cc
   Root_TEST.cc
   Scene_TEST.cc
+  SemanticPose_TEST.cc
   SDF_TEST.cc
   Sensor_TEST.cc
   Sphere_TEST.cc

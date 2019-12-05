@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <world name="world_frame_invalid_attached_to">
+
+    <frame name="F" attached_to="A"/>                     <!-- INVALID: no sibling frame named A. -->
+    <frame name="self_cycle" attached_to="self_cycle"/>   <!-- INVALID: graph cycle when frame attached_to itself. -->
+
+  </world>
+</sdf>

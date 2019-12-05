@@ -17,9 +17,12 @@
 #ifndef SDF_COLLISION_HH_
 #define SDF_COLLISION_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
+#include "sdf/FrameSemantics.hh"
+#include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -33,7 +36,7 @@ namespace sdf
   class CollisionPrivate;
   class Geometry;
 
-  /// \brief A collision element descibes the collison properties associated
+  /// \brief A collision element descibes the collision properties associated
   /// with a link. This can be different from the visual properties of a link.
   /// For example, simple collision models are often used to reduce
   /// computation time.
@@ -90,7 +93,7 @@ namespace sdf
     public: void SetGeom(const Geometry &_geom);
 
     /// \brief Get the pose of the collision object. This is the pose of the
-    /// collison as specified in SDF
+    /// collision as specified in SDF
     /// (<collision><pose> ... </pose></collision>).
     /// \return The pose of the collision object.
     /// \deprecated See RawPose.
@@ -143,11 +146,34 @@ namespace sdf
     public: void SetPoseFrame(const std::string &_frame)
         SDF_DEPRECATED(9.0);
 
+    /// \brief Get SemanticPose object of this object to aid in resolving
+    /// poses.
+    /// \return SemanticPose object for this link.
+    public: sdf::SemanticPose SemanticPose() const;
+
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Give the name of the xml parent of this object, to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Link::SetPoseRelativeToGraph.
+    /// \param[in] _xmlParentName Name of xml parent object.
+    private: void SetXmlParentName(const std::string &_xmlParentName);
+
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Link::SetPoseRelativeToGraph.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    private: void SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
+    /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is
+    /// a private function, so we need to befriend the entire class.
+    friend class Link;
 
     /// \brief Private data pointer.
     private: CollisionPrivate *dataPtr = nullptr;

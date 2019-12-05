@@ -7,6 +7,12 @@
 1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
     * [Pull request 606](https://bitbucket.org/osrf/sdformat/pull-requests/606)
 
+1. Check that joints have valid parent and child names in `ign sdf --check`.
+    * [Pull request 609](https://bitbucket.org/osrf/sdformat/pull-requests/609)
+
+1. Model DOM: error when trying to load nested models, which aren't yet supported.
+    * [Pull request 610](https://bitbucket.org/osrf/sdformat/pull-requests/610)
+
 1. Use consistent namespaces in Filesystem.
     * [Pull request 567](https://bitbucket.org/osrf/sdformat/pull-requests/567)
 
@@ -30,6 +36,30 @@
 
 1. sdf 1.7: add `//model/@canonical_link` attribute and require models to have at least one link.
     * [Pull request 601](https://bitbucket.org/osrf/sdformat/pull-requests/601)
+
+1. sdf 1.7: add `//frame/attached_to`, only allow frames in model and world, add Frame DOM.
+    * [pull request 603](https://bitbucket.org/osrf/sdformat/pull-requests/603)
+
+1. FrameSemantics API: add FrameAttachedToGraph and functions for building graph and resolving attached-to body.
+    * [Pull request 613](https://bitbucket.org/osrf/sdformat/pull-requests/613)
+
+1. FrameSemantics API: add PoseRelativeToGraph and functions for building graph and resolving poses.
+    * [Pull request 614](https://bitbucket.org/osrf/sdformat/pull-requests/614)
+
+1. Build and validate graphs during Model::Load and World::Load.
+    * [Pull request 615](https://bitbucket.org/osrf/sdformat/pull-requests/615)
+
+1. Add SemanticPose class with implementation for Link.
+    * [Pull request 616](https://bitbucket.org/osrf/sdformat/pull-requests/616)
+
+1. Add JointAxis::ResolveXyz and Joint::SemanticPose.
+    * [Pull request 617](https://bitbucket.org/osrf/sdformat/pull-requests/617)
+
+1. Implement SemanticPose() for Collision, Frame, Light, Model, Sensor, Visual.
+    * [Pull request 618](https://bitbucket.org/osrf/sdformat/pull-requests/618)
+
+1. Add Frame::ResolveAttachedToBody API for resolving the attached-to body of a frame.
+    * [Pull request 619](https://bitbucket.org/osrf/sdformat/pull-requests/619)
 
 1. DOM API: deprecate `(Set)?PoseFrame` API and replace with `(Set)?PoseRelativeTo`
     * [Pull request 598](https://bitbucket.org/osrf/sdformat/pull-requests/598)

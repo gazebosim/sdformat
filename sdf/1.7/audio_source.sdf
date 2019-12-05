@@ -25,7 +25,6 @@
     <description>True to make the audio source loop playback.</description>
   </element>
 
-  <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
 
 </element>

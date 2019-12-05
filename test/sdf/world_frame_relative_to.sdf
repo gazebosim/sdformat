@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <world name="world_frame_relative_to">
+
+    <frame name="world_frame"/>                 <!-- VALID: Directly relative_to implicit world frame. -->
+    <frame name="F0">
+      <pose relative_to="">1 0 0 0 0 0</pose>   <!-- VALID: Directly relative_to implicit world frame by default. -->
+    </frame>
+    <frame name="F1">
+      <pose relative_to="F0">2 0 0 0 0 0</pose> <!-- VALID: Indirectly relative_to implicit world frame via frame F0. -->
+    </frame>
+
+    <model name="M1">
+      <link name="L"/>
+      <frame name="F0">
+        <pose relative_to="L">0 3 0 0 0 0</pose>  <!-- VALID: Directly relative_to link L. -->
+      </frame>
+    </model>
+
+    <frame name="F2">
+      <pose relative_to="M1">3 0 0 0 0 0</pose>   <!-- VALID: Indirectly relative to canonical link L of model M1. -->
+    </frame>
+
+    <model name="M2">
+      <pose relative_to="">0 0 4 0 0 0</pose>
+      <link name="L"/>
+    </model>
+
+    <model name="M3">
+      <pose relative_to="M2">0 0 5 0 0 0</pose>
+      <link name="L"/>
+    </model>
+
+    <model name="M4">
+      <pose relative_to="F1">0 0 6 0 0 0</pose>
+      <link name="L"/>
+    </model>
+
+  </world>
+</sdf>

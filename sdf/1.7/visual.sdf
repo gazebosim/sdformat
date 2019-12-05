@@ -26,7 +26,6 @@
     </element>
   </element>
 
-  <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
 
   <include filename="material.sdf" required="0"/>

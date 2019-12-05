@@ -21,6 +21,7 @@
 
 #include "sdf/SDFImpl.hh"
 #include "sdf/parser.hh"
+#include "sdf/Frame.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "sdf/Filesystem.hh"
@@ -133,4 +134,13 @@ TEST(DOMWorld, Load)
   EXPECT_EQ(physics, physicsDefault);
   EXPECT_TRUE(world->PhysicsNameExists("my_physics"));
   EXPECT_FALSE(world->PhysicsNameExists("invalid_physics"));
+
+  EXPECT_EQ(1u, world->FrameCount());
+  EXPECT_NE(nullptr, world->FrameByIndex(0));
+  EXPECT_EQ(nullptr, world->FrameByIndex(1));
+  ASSERT_TRUE(world->FrameNameExists("frame1"));
+
+  EXPECT_EQ("world", world->FrameByName("frame1")->AttachedTo());
+
+  EXPECT_TRUE(world->FrameByName("frame1")->PoseRelativeTo().empty());
 }

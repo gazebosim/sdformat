@@ -16,8 +16,69 @@ but with improved human-readability..
 
 ### Additions
 
+1. **sdf/Collision.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/Frame.hh**: DOM class for frames in the model or world.
+    + Errors ResolveAttachedToBody(std::string&) const
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/FrameSemantics.hh**
+    + struct FrameAttachedToGraph
+    + Errors buildFrameAttachedToGraph(FrameAttachedToGraph&, const Model\*)
+    + Errors buildFrameAttachedToGraph(FrameAttachedToGraph&, const World\*)
+    + Errors validateFrameAttachedToGraph(const FrameAttachedToGraph\*)
+    + Errors resolveFrameAttachedToBody(std::string&, const FrameAttachedToGraph\*, const std::string&)
+    + struct PoseRelativeToGraph
+    + Errors buildPoseRelativeToGraph(PoseRelativeToGraph&, const Model\*)
+    + Errors buildPoseRelativeToGraph(PoseRelativeToGraph&, const World\*)
+    + Errors validatePoseRelativeToGraph(const PoseRelativeToGraph\*)
+    + Errors resolvePoseRelativeToRoot(ignition::math::Pose3d&, const PoseRelativeToGraph\*, const std::string&)
+    + Errors resolvePose(ignition::math::Pose3d&, const PoseRelativeToGraph\*, const std::string&, const std::string&)
+
+1. **sdf/Joint.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/JointAxis.hh**
+    + Errors ResolveXyz(ignition::math::Vector3d &, const std::string &) const
+
+1. **sdf/Light.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/Link.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/Model.hh**
+    + uint64\_t FrameCount() const
+    + const Frame \*FrameByIndex(const uint64\_t) const
+    + const Frame \*FrameByName(const std::string &) const
+    + bool FrameNameExists(const std::string &) const
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/SemanticPose.hh**: Helper class for resolving poses of DOM objects.
+
+1. **sdf/Sensor.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/Visual.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/World.hh**
+    + uint64\_t FrameCount() const
+    + const Frame \*FrameByIndex(const uint64\_t) const
+    + const Frame \*FrameByName(const std::string &) const
+    + bool FrameNameExists(const std::string &) const
+    + const Model \*ModelByName(const std::string &) const
+
 1. **sdf/parser.hh**
+   + bool checkCanonicalLinkNames(sdf::Root\*)
+   + bool checkFrameAttachedToGraph(sdf::Root\*)
+   + bool checkFrameAttachedToNames(sdf::Root\*)
+   + bool checkJointParentChildLinkNames(sdf::Root\*)
+   + bool checkPoseRelativeToGraph(sdf::Root\*)
    + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)
+   + bool recursiveSiblingUniqueNames(sdf::ElementPtr)
+   + bool shouldValidateElement(sdf::ElementPtr)
 
 ### Deprecations
 
@@ -129,6 +190,15 @@ but with improved human-readability..
 
 ### Additions
 
+1. **frame.sdf** `//frame/@attached_to` attribute
+    + description: Name of the link or frame to which this frame is attached.
+      If a frame is specified, recursively following the attached\_to attributes
+      of the specified frames must lead to the name of a link or the world frame.
+    + type: string
+    + default: ""
+    + required: *
+    + [pull request 603](https://bitbucket.org/osrf/sdformat/pull-requests/603)
+
 1. **joint.sdf** `//axis/xyz/@expressed_in` and `//axis2/xyz/@expressed_in` attributes
     + description: The name of the frame in which the `//axis/xyz` value is
       expressed. When migrating from sdf 1.6, a `use_parent_model_frame` value
@@ -148,10 +218,14 @@ but with improved human-readability..
     + required: 0
     + [pull request 601](https://bitbucket.org/osrf/sdformat/pull-requests/601)
 
+1. **world.sdf** `//world/frame` element is now allowed.
+    + [pull request 603](https://bitbucket.org/osrf/sdformat/pull-requests/603)
+
 ### Modifications
 
 1.  A model must have at least one link, as specified in the
     [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#2-model-frame-and-canonical-link).
+    + [pull request 601](https://bitbucket.org/osrf/sdformat/pull-requests/601)
 
 1. Unique names for all sibling elements:
     + As described in the [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#3-2-unique-names-for-all-sibling-elements),
@@ -179,6 +253,26 @@ but with improved human-readability..
     + [pull request 597](https://bitbucket.org/osrf/sdformat/pull-requests/597)
 
 ### Removals
+
+1. `<frame>` element is now only allowed in `<model>` and `<world>`.
+    It is no longer allowed in the following elements:
+    + actor
+    + audio\_source
+    + camera
+    + collision
+    + frame
+    + gui
+    + inertial
+    + joint
+    + light
+    + light\_state
+    + link
+    + link\_state
+    + population
+    + projector
+    + sensor
+    + visual
+    + [pull request 603](https://bitbucket.org/osrf/sdformat/pull-requests/603)
 
 1. **actor.sdf** `static` element was deprecated in
     [pull request 280](https://bitbucket.org/osrf/sdformat/pull-requests/280)

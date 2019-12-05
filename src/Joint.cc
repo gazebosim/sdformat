@@ -72,6 +72,9 @@ class sdf::JointPrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -83,7 +86,8 @@ JointPrivate::JointPrivate(const JointPrivate &_jointPrivate)
       pose(_jointPrivate.pose),
       poseRelativeTo(_jointPrivate.poseRelativeTo),
       threadPitch(_jointPrivate.threadPitch),
-      sdf(_jointPrivate.sdf)
+      sdf(_jointPrivate.sdf),
+      poseRelativeToGraph(_jointPrivate.poseRelativeToGraph)
 {
   for (std::size_t i = 0; i < _jointPrivate.axis.size(); ++i)
   {
@@ -181,7 +185,9 @@ Errors Joint::Load(ElementPtr _sdf)
   std::pair<std::string, bool> parentPair =
     _sdf->Get<std::string>("parent", "");
   if (parentPair.second)
+  {
     this->dataPtr->parentLinkName = parentPair.first;
+  }
   else
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -191,11 +197,22 @@ Errors Joint::Load(ElementPtr _sdf)
   // Read the child link name
   std::pair<std::string, bool> childPair = _sdf->Get<std::string>("child", "");
   if (childPair.second)
+  {
     this->dataPtr->childLinkName = childPair.first;
+  }
   else
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
         "The child element is missing."});
+  }
+
+  if (this->dataPtr->childLinkName == this->dataPtr->parentLinkName)
+  {
+    errors.push_back({ErrorCode::JOINT_PARENT_SAME_AS_CHILD,
+        "Joint with name[" + this->dataPtr->name +
+        "] must specify different link names for "
+        "parent and child, while [" + this->dataPtr->childLinkName +
+        "] was specified for both."});
   }
 
   if (_sdf->HasElement("axis"))
@@ -362,6 +379,32 @@ void Joint::SetPoseFrame(const std::string &_frame)
 void Joint::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseRelativeTo = _frame;
+}
+
+/////////////////////////////////////////////////
+void Joint::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
+
+  for (auto& axis : this->dataPtr->axis)
+  {
+    if (axis)
+    {
+      axis->SetXmlParentName(this->dataPtr->name);
+      axis->SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+sdf::SemanticPose Joint::SemanticPose() const
+{
+  return sdf::SemanticPose(
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
+      this->ChildLinkName(),
+      this->dataPtr->poseRelativeToGraph);
 }
 
 /////////////////////////////////////////////////

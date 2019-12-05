@@ -209,13 +209,17 @@ TEST(DOMLink, InertialInvalid)
   sdf::Root root;
   auto errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(2u, errors.size());
+  ASSERT_EQ(5u, errors.size());
   for (auto err : errors)
      std::cout << err.Message() << std::endl;
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::LINK_INERTIA_INVALID);
   EXPECT_EQ(errors[0].Message(), "A link named link has invalid inertia.");
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::MODEL_WITHOUT_LINK);
   EXPECT_EQ(errors[1].Message(), "A model must have at least one link.");
+  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::MODEL_WITHOUT_LINK);
+  EXPECT_EQ(errors[2].Message(), "A model must have at least one link.");
+  // errors[3]
+  // errors[4]
 
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_EQ(nullptr, model);
@@ -303,12 +307,18 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(124, camSensor->LensIntrinsicsCy());
   EXPECT_DOUBLE_EQ(1.2, camSensor->LensIntrinsicsSkew());
 
+  ignition::math::Pose3d pose;
+
   // Get the contact sensor
   const sdf::Sensor *contactSensor = link->SensorByName("contact_sensor");
   ASSERT_NE(nullptr, contactSensor);
   EXPECT_EQ("contact_sensor", contactSensor->Name());
   EXPECT_EQ(sdf::SensorType::CONTACT, contactSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), contactSensor->RawPose());
+  EXPECT_TRUE(contactSensor->SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), pose);
+  EXPECT_TRUE(contactSensor->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(ignition::math::Pose3d(4, 5, 3, 0, 0, 0), pose);
 
   // Get the depth sensor
   const sdf::Sensor *depthSensor = link->SensorByName("depth_sensor");
@@ -566,4 +576,110 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(3.4, airSensor->PressureNoise().Mean());
   EXPECT_DOUBLE_EQ(5.6, airSensor->PressureNoise().StdDev());
   EXPECT_DOUBLE_EQ(123.4, airSensor->ReferenceAltitude());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, LoadLinkPoseRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_link_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  using Pose = ignition::math::Pose3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_link_relative_to", model->Name());
+  EXPECT_EQ(3u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_NE(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(nullptr, model->LinkByIndex(3));
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  ASSERT_TRUE(model->LinkNameExists("L1"));
+  ASSERT_TRUE(model->LinkNameExists("L2"));
+  ASSERT_TRUE(model->LinkNameExists("L3"));
+  EXPECT_TRUE(model->LinkByName("L1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->LinkByName("L2")->PoseRelativeTo().empty());
+  EXPECT_EQ("L1", model->LinkByName("L3")->PoseRelativeTo());
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("L1")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), model->LinkByName("L2")->RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0), model->LinkByName("L3")->RawPose());
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI / 2, 0),
+            model->LinkByName("L1")->SemanticPose().RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0),
+            model->LinkByName("L2")->SemanticPose().RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0),
+            model->LinkByName("L3")->SemanticPose().RawPose());
+
+  // Test SemanticPose().Resolve to get each link pose in the model frame
+  Pose pose;
+  EXPECT_TRUE(
+    model->LinkByName("L1")->SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(
+    model->LinkByName("L2")->SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->LinkByName("L3")->SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+  // test other API too
+  EXPECT_TRUE(model->LinkByName("L1")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->LinkByName("L2")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(model->LinkByName("L3")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+
+  // resolve pose of L1 relative to L3
+  // should be inverse of L3's Pose()
+  EXPECT_TRUE(
+    model->LinkByName("L1")->SemanticPose().Resolve(pose, "L3").empty());
+  EXPECT_EQ(Pose(-3, 0, 0, 0, 0, 0), pose);
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(0u, model->FrameCount());
+  EXPECT_EQ(nullptr, model->FrameByIndex(0));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, LoadInvalidLinkPoseRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_invalid_link_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(5u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "relative_to name[A] specified by link with name[L] does not match a "
+      "link, joint, or frame name in model"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "relative_to name[self_cycle] is identical to link name[self_cycle], "
+      "causing a graph cycle"));
+  // errors[2]
+  // errors[3]
+  // errors[4]
 }

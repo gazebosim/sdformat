@@ -103,7 +103,7 @@ TEST(check, SDF)
     // Check world_sibling_same_names.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: non-unique names"), std::string::npos)
+    EXPECT_NE(output.find("Error: Non-unique names"), std::string::npos)
       << output;
   }
 
@@ -139,7 +139,7 @@ TEST(check, SDF)
     // Check model_link_joint_same_name.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: non-unique names"), std::string::npos)
+    EXPECT_NE(output.find("Error: Non-unique names"), std::string::npos)
       << output;
   }
 
@@ -190,6 +190,56 @@ TEST(check, SDF)
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
+  // Check an SDF file with a joint with an invalid child link.
+  {
+    std::string path = pathBase +"/joint_invalid_child.sdf";
+
+    // Check joint_invalid_child.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: Child link with name[invalid] specified by "
+                          "joint with name[joint] not found in model with "
+                          "name[joint_invalid_child]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with a joint with an invalid parent link.
+  {
+    std::string path = pathBase +"/joint_invalid_parent.sdf";
+
+    // Check joint_invalid_parent.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: parent link with name[invalid] specified by "
+                          "joint with name[joint] not found in model with "
+                          "name[joint_invalid_parent]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with a joint with identical parent and child.
+  {
+    std::string path = pathBase +"/joint_invalid_parent_same_as_child.sdf";
+
+    // Check joint_invalid_parent_same_as_child.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: Joint with name[joint] must "
+                          "specify different link names for parent and child, "
+                          "while [link] was specified for both."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with the world specified as a parent link.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/joint_parent_world.sdf";
+
+    // Check joint_parent_world.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
   // Check an SDF file with the second link specified as the canonical link.
   // This is a valid file.
   {
@@ -210,6 +260,18 @@ TEST(check, SDF)
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: canonical_link with name[link3] not found in "
                           "model with name[model_invalid_canonical_link]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with a nested model.
+  {
+    std::string path = pathBase +"/nested_model.sdf";
+
+    // Check nested_model.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: Nested models are not yet supported by DOM "
+              "objects, skipping model [top_level_model]."),
               std::string::npos) << output;
   }
 
@@ -234,6 +296,9 @@ TEST(check, SDF)
     EXPECT_NE(output.find("Error: The supplied joint name [__joint__] "
                           "is reserved."),
               std::string::npos) << output;
+    EXPECT_NE(output.find("Error: The supplied frame name [__frame__] "
+                          "is reserved."),
+              std::string::npos) << output;
   }
 
   // Check that validity checks are disabled inside <plugin> elements
@@ -252,6 +317,244 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model frames using the attached_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_frame_attached_to.sdf";
+
+    // Check model_frame_attached_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model frames attached_to joints.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_frame_attached_to_joint.sdf";
+
+    // Check model_frame_attached_to_joint.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model frames with invalid attached_to attributes.
+  {
+    std::string path = pathBase +"/model_frame_invalid_attached_to.sdf";
+
+    // Check model_frame_invalid_attached_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: attached_to name[A] specified by frame with "
+                          "name[F3] does not match a link, joint, or frame "
+                          "name in model with "
+                          "name[model_frame_invalid_attached_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: attached_to name[F4] is identical to frame "
+                          "name[F4], causing a graph cycle in model with "
+                          "name[model_frame_invalid_attached_to]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with a cycle in its FrameAttachedTo graph
+  {
+    std::string path = pathBase +"/model_frame_invalid_attached_to_cycle.sdf";
+
+    // Check model_frame_invalid_attached_to_cycle.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(std::string::npos, output.find(
+      "FrameAttachedToGraph cycle detected, already visited vertex [F1]."))
+        << output;
+    EXPECT_NE(std::string::npos, output.find(
+      "FrameAttachedToGraph cycle detected, already visited vertex [F2]."))
+        << output;
+  }
+
+  // Check an SDF file with model frames using the attached_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/world_frame_attached_to.sdf";
+
+    // Check world_frame_attached_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with world frames with invalid attached_to attributes.
+  {
+    std::string path = pathBase +"/world_frame_invalid_attached_to.sdf";
+
+    // Check world_frame_invalid_attached_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: attached_to name[A] specified by frame with "
+                          "name[F] does not match a model or frame "
+                          "name in world with "
+                          "name[world_frame_invalid_attached_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: attached_to name[self_cycle] is identical "
+                          "to frame name[self_cycle], causing a graph cycle "
+                          "in world with "
+                          "name[world_frame_invalid_attached_to]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with links using the relative_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_link_relative_to.sdf";
+
+    // Check model_link_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model links with invalid relative_to attributes.
+  {
+    std::string path = pathBase +"/model_invalid_link_relative_to.sdf";
+
+    // Check model_invalid_link_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: relative_to name[A] specified by link with "
+                          "name[L] does not match a link, joint, or frame "
+                          "name in model with "
+                          "name[model_invalid_link_relative_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: relative_to name[self_cycle] is identical to "
+                          "link name[self_cycle], causing a graph cycle in "
+                          "model with name[model_invalid_link_relative_to]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with joints using the relative_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_joint_relative_to.sdf";
+
+    // Check model_joint_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model joints with invalid relative_to attributes.
+  {
+    std::string path = pathBase +"/model_invalid_joint_relative_to.sdf";
+
+    // Check model_invalid_joint_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: relative_to name[A] specified by joint with "
+                          "name[J] does not match a link, joint, or frame "
+                          "name in model with "
+                          "name[model_invalid_joint_relative_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: relative_to name[Jcycle] is identical to "
+                          "joint name[Jcycle], causing a graph cycle in "
+                          "model with name[model_invalid_joint_relative_to]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with model frames using the relative_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_frame_relative_to.sdf";
+
+    // Check model_frame_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model frames relative_to joints.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_frame_relative_to_joint.sdf";
+
+    // Check model_frame_relative_to_joint.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model frames with invalid relative_to attributes.
+  {
+    std::string path = pathBase +"/model_invalid_frame_relative_to.sdf";
+
+    // Check model_invalid_frame_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: relative_to name[A] specified by frame with "
+                          "name[F] does not match a link, joint, or frame "
+                          "name in model with "
+                          "name[model_invalid_frame_relative_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: relative_to name[cycle] is identical to "
+                          "frame name[cycle], causing a graph cycle in model "
+                          "with name[model_invalid_frame_relative_to]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with a cycle in its PoseRelativeTo graph
+  {
+    std::string path = pathBase +"/model_invalid_frame_relative_to_cycle.sdf";
+
+    // Check model_invalid_frame_relative_to_cycle.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(std::string::npos, output.find(
+      "PoseRelativeToGraph cycle detected, already visited vertex [F1]."))
+        << output;
+    EXPECT_NE(std::string::npos, output.find(
+      "PoseRelativeToGraph cycle detected, already visited vertex [F2]."))
+        << output;
+  }
+
+  // Check an SDF file with model frames using the attached_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/world_frame_relative_to.sdf";
+
+    // Check world_frame_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with world frames with invalid relative_to attributes.
+  {
+    std::string path = pathBase +"/world_frame_invalid_relative_to.sdf";
+
+    // Check world_frame_invalid_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: relative_to name[A] specified by model with "
+                          "name[M] does not match a model or frame "
+                          "name in world with "
+                          "name[world_frame_invalid_relative_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: relative_to name[cycle] is identical "
+                          "to model name[cycle], causing a graph cycle "
+                          "in world with "
+                          "name[world_frame_invalid_relative_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: relative_to name[A] specified by frame with "
+                          "name[F] does not match a model or frame "
+                          "name in world with "
+                          "name[world_frame_invalid_relative_to]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: relative_to name[self_cycle] is identical "
+                          "to frame name[self_cycle], causing a graph cycle "
+                          "in world with "
+                          "name[world_frame_invalid_relative_to]."),
+              std::string::npos) << output;
   }
 }
 

@@ -17,9 +17,12 @@
 #ifndef SDF_MODEL_HH_
 #define SDF_MODEL_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
+#include "sdf/FrameSemantics.hh"
+#include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -31,6 +34,7 @@ namespace sdf
   //
 
   // Forward declarations.
+  class Frame;
   class Joint;
   class Link;
   class ModelPrivate;
@@ -171,6 +175,29 @@ namespace sdf
     /// \sa bool JointNameExists(const std::string &_name) const
     public: const Joint *JointByName(const std::string &_name) const;
 
+    /// \brief Get the number of explicit frames.
+    /// \return Number of explicit frames contained in this Model object.
+    public: uint64_t FrameCount() const;
+
+    /// \brief Get an explicit frame based on an index.
+    /// \param[in] _index Index of the explicit frame. The index should be in
+    /// the range [0..FrameCount()).
+    /// \return Pointer to the explicit frame. Nullptr if the index does not
+    /// exist.
+    /// \sa uint64_t FrameCount() const
+    public: const Frame *FrameByIndex(const uint64_t _index) const;
+
+    /// \brief Get an explicit frame based on a name.
+    /// \param[in] _name Name of the explicit frame.
+    /// \return Pointer to the explicit frame. Nullptr if the name does not
+    /// exist.
+    public: const Frame *FrameByName(const std::string &_name) const;
+
+    /// \brief Get whether an explicit frame name exists.
+    /// \param[in] _name Name of the explicit frame to check.
+    /// \return True if there exists an explicit frame with the given name.
+    public: bool FrameNameExists(const std::string &_name) const;
+
     /// \brief Get the pose of the model. This is the pose of the model
     /// as specified in SDF (<model> <pose> ... </pose></model>), and is
     /// typically used to express the position and rotation of a model in a
@@ -246,6 +273,21 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Get SemanticPose object of this object to aid in resolving
+    /// poses.
+    /// \return SemanticPose object for this link.
+    public: sdf::SemanticPose SemanticPose() const;
+
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// World::Load.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    private: void SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    /// \brief Allow World::Load to call SetPoseRelativeToGraph.
+    friend class World;
 
     /// \brief Private data pointer.
     private: ModelPrivate *dataPtr = nullptr;

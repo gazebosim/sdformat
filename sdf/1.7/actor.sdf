@@ -6,7 +6,6 @@
     <description>A unique name for the actor.</description>
   </attribute>
 
-  <include filename="frame.sdf" required="*"/>
   <include filename="pose.sdf" required="0"/>
 
   <element name="skin" required="0">

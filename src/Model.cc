@@ -14,10 +14,13 @@
  * limitations under the License.
  *
 */
+#include <memory>
 #include <string>
 #include <vector>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
+#include "sdf/Frame.hh"
+#include "sdf/FrameSemantics.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -59,8 +62,20 @@ class sdf::ModelPrivate
   /// \brief The joints specified in this model.
   public: std::vector<Joint> joints;
 
+  /// \brief The frames specified in this model.
+  public: std::vector<Frame> frames;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Frame Attached-To Graph constructed during Load.
+  public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
+
+  /// \brief Pose Relative-To Graph constructed during Load.
+  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseGraph;
+
+  /// \brief Pose Relative-To Graph in parent (world) scope.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> parentPoseGraph;
 };
 
 /////////////////////////////////////////////////
@@ -73,6 +88,30 @@ Model::Model()
 Model::Model(const Model &_model)
   : dataPtr(new ModelPrivate(*_model.dataPtr))
 {
+  if (_model.dataPtr->frameAttachedToGraph)
+  {
+    this->dataPtr->frameAttachedToGraph =
+        std::make_shared<sdf::FrameAttachedToGraph>(
+            *_model.dataPtr->frameAttachedToGraph);
+  }
+  if (_model.dataPtr->poseGraph)
+  {
+    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *_model.dataPtr->poseGraph);
+  }
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -83,6 +122,32 @@ Model &Model::operator=(const Model &_model)
     this->dataPtr = new ModelPrivate;
   }
   *this->dataPtr = (*_model.dataPtr);
+
+  if (_model.dataPtr->frameAttachedToGraph)
+  {
+    this->dataPtr->frameAttachedToGraph =
+        std::make_shared<sdf::FrameAttachedToGraph>(
+            *_model.dataPtr->frameAttachedToGraph);
+  }
+  if (_model.dataPtr->poseGraph)
+  {
+    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *_model.dataPtr->poseGraph);
+  }
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+
   return *this;
 }
 
@@ -162,6 +227,14 @@ Errors Model::Load(ElementPtr _sdf)
   // Load the pose. Ignore the return value since the model pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
+  // Nested models are not yet supported.
+  if (_sdf->HasElement("model"))
+  {
+    errors.push_back({ErrorCode::NESTED_MODELS_UNSUPPORTED,
+                     "Nested models are not yet supported by DOM objects, "
+                     "skipping model [" + this->dataPtr->name + "]."});
+  }
+
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
     this->dataPtr->links);
@@ -179,6 +252,49 @@ Errors Model::Load(ElementPtr _sdf)
   Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
     this->dataPtr->joints);
   errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
+
+  // Load all the frames.
+  Errors frameLoadErrors = loadUniqueRepeated<Frame>(_sdf, "frame",
+    this->dataPtr->frames);
+  errors.insert(errors.end(), frameLoadErrors.begin(), frameLoadErrors.end());
+
+  // Build the graphs.
+  this->dataPtr->frameAttachedToGraph
+      = std::make_shared<FrameAttachedToGraph>();
+  Errors frameAttachedToGraphErrors =
+  buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
+  errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+                              frameAttachedToGraphErrors.end());
+  Errors validateFrameAttachedGraphErrors =
+    validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
+  errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
+                              validateFrameAttachedGraphErrors.end());
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  }
+
+  this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>();
+  Errors poseGraphErrors =
+  buildPoseRelativeToGraph(*this->dataPtr->poseGraph, this);
+  errors.insert(errors.end(), poseGraphErrors.begin(),
+                              poseGraphErrors.end());
+  Errors validatePoseGraphErrors =
+    validatePoseRelativeToGraph(*this->dataPtr->poseGraph);
+  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
+                              validatePoseGraphErrors.end());
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
 
   return errors;
 }
@@ -311,6 +427,46 @@ const Joint *Model::JointByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+uint64_t Model::FrameCount() const
+{
+  return this->dataPtr->frames.size();
+}
+
+/////////////////////////////////////////////////
+const Frame *Model::FrameByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->frames.size())
+    return &this->dataPtr->frames[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Model::FrameNameExists(const std::string &_name) const
+{
+  for (auto const &f : this->dataPtr->frames)
+  {
+    if (f.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Frame *Model::FrameByName(const std::string &_name) const
+{
+  for (auto const &f : this->dataPtr->frames)
+  {
+    if (f.Name() == _name)
+    {
+      return &f;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
 const Link *Model::CanonicalLink() const
 {
   if (this->CanonicalLinkName().empty())
@@ -381,6 +537,23 @@ void Model::SetPoseFrame(const std::string &_frame)
 void Model::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseRelativeTo = _frame;
+}
+
+/////////////////////////////////////////////////
+void Model::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->parentPoseGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+sdf::SemanticPose Model::SemanticPose() const
+{
+  return sdf::SemanticPose(
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
+      "world",
+      this->dataPtr->parentPoseGraph);
 }
 
 /////////////////////////////////////////////////

@@ -23,6 +23,7 @@
 #include "sdf/Filesystem.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
+#include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
@@ -107,4 +108,114 @@ TEST(DOMJointAxis, Complete)
 
   EXPECT_DOUBLE_EQ(10.6, axis->SpringStiffness());
   EXPECT_DOUBLE_EQ(0.0, axis2->SpringStiffness());
+}
+
+//////////////////////////////////////////////////
+TEST(DOMJointAxis, XyzExpressedIn)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_joint_axis_expressed_in.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+
+  using Pose = ignition::math::Pose3d;
+  using Quaternion = ignition::math::Quaterniond;
+  using Vector3 = ignition::math::Vector3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_joint_axis_expressed_in", model->Name());
+  EXPECT_EQ(4u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_NE(nullptr, model->LinkByIndex(2));
+  EXPECT_NE(nullptr, model->LinkByIndex(3));
+  EXPECT_EQ(nullptr, model->LinkByIndex(4));
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  ASSERT_TRUE(model->LinkNameExists("P1"));
+  ASSERT_TRUE(model->LinkNameExists("P2"));
+  ASSERT_TRUE(model->LinkNameExists("C1"));
+  ASSERT_TRUE(model->LinkNameExists("C2"));
+  EXPECT_TRUE(model->LinkByName("P1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->LinkByName("P2")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->LinkByName("C1")->PoseRelativeTo().empty());
+  EXPECT_EQ("J2", model->LinkByName("C2")->PoseRelativeTo());
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P1")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), model->LinkByName("C1")->RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P2")->RawPose());
+  EXPECT_EQ(Pose(4, 0, 0, 0, 0, 0), model->LinkByName("C2")->RawPose());
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(2u, model->JointCount());
+  EXPECT_NE(nullptr, model->JointByIndex(0));
+  EXPECT_NE(nullptr, model->JointByIndex(1));
+  EXPECT_EQ(nullptr, model->JointByIndex(2));
+  ASSERT_TRUE(model->JointNameExists("J1"));
+  ASSERT_TRUE(model->JointNameExists("J2"));
+  EXPECT_EQ(sdf::JointType::REVOLUTE, model->JointByName("J1")->Type());
+  EXPECT_EQ(sdf::JointType::REVOLUTE, model->JointByName("J2")->Type());
+  ASSERT_NE(nullptr, model->JointByName("J1")->Axis(0));
+  ASSERT_NE(nullptr, model->JointByName("J2")->Axis(0));
+  EXPECT_EQ(nullptr, model->JointByName("J1")->Axis(1));
+  EXPECT_EQ(nullptr, model->JointByName("J2")->Axis(1));
+
+  EXPECT_TRUE(model->JointByName("J1")->PoseRelativeTo().empty());
+  EXPECT_EQ("P2", model->JointByName("J2")->PoseRelativeTo());
+  EXPECT_EQ(Quaternion(0, 0, 0), model->JointByName("J1")->RawPose().Rot());
+  EXPECT_EQ(Quaternion(0, 0, 0), model->JointByName("J2")->RawPose().Rot());
+
+  auto joint1axis = model->JointByName("J1")->Axis();
+  auto joint2axis = model->JointByName("J2")->Axis();
+  EXPECT_TRUE(joint1axis->XyzExpressedIn().empty());
+  EXPECT_EQ("__model__", joint2axis->XyzExpressedIn());
+  EXPECT_EQ(Vector3(0, 0, 1), joint1axis->Xyz());
+  EXPECT_EQ(Vector3(0, 0, 1), joint2axis->Xyz());
+  // resolve axis xyz relative to expressed-in frame and confirm it matches
+  // numbers in the model file
+  Vector3 vec3;
+  EXPECT_TRUE(joint1axis->ResolveXyz(vec3, "C1").empty());
+  EXPECT_EQ(Vector3(0, 0, 1), vec3);
+  EXPECT_TRUE(joint1axis->ResolveXyz(vec3).empty());
+  EXPECT_EQ(Vector3(0, 0, 1), vec3);
+  EXPECT_TRUE(joint2axis->ResolveXyz(vec3, "__model__").empty());
+  EXPECT_EQ(Vector3(0, 0, 1), vec3);
+
+  Pose pose;
+
+  // Test ResolveFrame to get each joint pose rotation in the model frame.
+  EXPECT_TRUE(
+      model->JointByName("J1")->
+          SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Quaternion(0, -IGN_PI/2, 0), pose.Rot());
+  EXPECT_TRUE(
+      model->JointByName("J2")->
+          SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Quaternion(0, IGN_PI/2, 0), pose.Rot());
+
+  // Resolve joint axis xyz values in __model__ and child link frames
+  EXPECT_TRUE(joint1axis->ResolveXyz(vec3, "__model__").empty());
+  EXPECT_EQ(Vector3(-1, 0, 0), vec3);
+  EXPECT_TRUE(joint2axis->ResolveXyz(vec3, "__model__").empty());
+  EXPECT_EQ(Vector3(0, 0, 1), vec3);
+
+  EXPECT_TRUE(joint1axis->ResolveXyz(vec3, "C1").empty());
+  EXPECT_EQ(Vector3(0, 0, 1), vec3);
+  EXPECT_TRUE(joint1axis->ResolveXyz(vec3).empty());
+  EXPECT_EQ(Vector3(0, 0, 1), vec3);
+  EXPECT_TRUE(joint2axis->ResolveXyz(vec3, "C2").empty());
+  EXPECT_EQ(Vector3(-1, 0, 0), vec3);
+  EXPECT_TRUE(joint2axis->ResolveXyz(vec3).empty());
+  EXPECT_EQ(Vector3(-1, 0, 0), vec3);
+
+  EXPECT_EQ(0u, model->FrameCount());
+  EXPECT_EQ(nullptr, model->FrameByIndex(0));
 }

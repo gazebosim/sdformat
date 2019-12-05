@@ -19,6 +19,8 @@
 #include <ignition/math/Vector3.hh>
 
 #include "sdf/Actor.hh"
+#include "sdf/Frame.hh"
+#include "sdf/FrameSemantics.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Physics.hh"
@@ -56,6 +58,9 @@ class sdf::WorldPrivate
   /// \brief Pointer to Sene parameters.
   public: std::unique_ptr<Scene> scene;
 
+  /// \brief The frames specified in this world.
+  public: std::vector<Frame> frames;
+
   /// \brief The lights specified in this world.
   public: std::vector<Light> lights;
 
@@ -81,13 +86,21 @@ class sdf::WorldPrivate
   /// \brief Linear velocity of wind.
   public: ignition::math::Vector3d windLinearVelocity =
            ignition::math::Vector3d::Zero;
+
+  /// \brief Frame Attached-To Graph constructed during Load.
+  public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
+
+  /// \brief Pose Relative-To Graph constructed during Load.
+  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
 WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
     : audioDevice(_worldPrivate.audioDevice),
       gravity(_worldPrivate.gravity),
+      frames(_worldPrivate.frames),
       lights(_worldPrivate.lights),
+      actors(_worldPrivate.actors),
       magneticField(_worldPrivate.magneticField),
       models(_worldPrivate.models),
       name(_worldPrivate.name),
@@ -103,6 +116,16 @@ WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
   if (_worldPrivate.gui)
   {
     this->gui = std::make_unique<Gui>(*(_worldPrivate.gui));
+  }
+  if (_worldPrivate.frameAttachedToGraph)
+  {
+    this->frameAttachedToGraph = std::make_shared<sdf::FrameAttachedToGraph>(
+        *(_worldPrivate.frameAttachedToGraph));
+  }
+  if (_worldPrivate.poseRelativeToGraph)
+  {
+    this->poseRelativeToGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *(_worldPrivate.poseRelativeToGraph));
   }
   if (_worldPrivate.scene)
   {
@@ -128,6 +151,20 @@ World::~World()
 World::World(const World &_world)
   : dataPtr(new WorldPrivate(*_world.dataPtr))
 {
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &light : this->dataPtr->lights)
+  {
+    light.SetXmlParentName("world");
+    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -141,6 +178,22 @@ World &World::operator=(const World &_world)
   {
     this->dataPtr = new(this->dataPtr) WorldPrivate(*_world.dataPtr);
   }
+
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &light : this->dataPtr->lights)
+  {
+    light.SetXmlParentName("world");
+    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+
   return *this;
 }
 
@@ -252,6 +305,11 @@ Errors World::Load(sdf::ElementPtr _sdf)
       this->dataPtr->lights);
   errors.insert(errors.end(), lightLoadErrors.begin(), lightLoadErrors.end());
 
+  // Load all the frames.
+  Errors frameLoadErrors = loadUniqueRepeated<Frame>(_sdf, "frame",
+      this->dataPtr->frames);
+  errors.insert(errors.end(), frameLoadErrors.begin(), frameLoadErrors.end());
+
   // Load the Gui
   if (_sdf->HasElement("gui"))
   {
@@ -267,6 +325,45 @@ Errors World::Load(sdf::ElementPtr _sdf)
     Errors sceneLoadErrors =
         this->dataPtr->scene->Load(_sdf->GetElement("scene"));
     errors.insert(errors.end(), sceneLoadErrors.begin(), sceneLoadErrors.end());
+  }
+
+  // Build the graphs.
+  this->dataPtr->frameAttachedToGraph =
+      std::make_shared<FrameAttachedToGraph>();
+  Errors frameAttachedToGraphErrors =
+  buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
+  errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+                              frameAttachedToGraphErrors.end());
+  Errors validateFrameAttachedGraphErrors =
+    validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
+  errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
+                              validateFrameAttachedGraphErrors.end());
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  }
+
+  this->dataPtr->poseRelativeToGraph = std::make_shared<PoseRelativeToGraph>();
+  Errors poseRelativeToGraphErrors =
+  buildPoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph, this);
+  errors.insert(errors.end(), poseRelativeToGraphErrors.begin(),
+                              poseRelativeToGraphErrors.end());
+  Errors validatePoseGraphErrors =
+    validatePoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph);
+  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
+                              validatePoseGraphErrors.end());
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &light : this->dataPtr->lights)
+  {
+    light.SetXmlParentName("world");
+    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
 
   return errors;
@@ -360,6 +457,19 @@ bool World::ModelNameExists(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+const Model *World::ModelByName(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
+    {
+      return &m;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
 const sdf::Atmosphere *World::Atmosphere() const
 {
   return this->dataPtr->atmosphere.get();
@@ -399,6 +509,46 @@ void World::SetScene(const sdf::Scene &_scene)
 sdf::ElementPtr World::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+uint64_t World::FrameCount() const
+{
+  return this->dataPtr->frames.size();
+}
+
+/////////////////////////////////////////////////
+const Frame *World::FrameByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->frames.size())
+    return &this->dataPtr->frames[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool World::FrameNameExists(const std::string &_name) const
+{
+  for (auto const &f : this->dataPtr->frames)
+  {
+    if (f.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Frame *World::FrameByName(const std::string &_name) const
+{
+  for (auto const &f : this->dataPtr->frames)
+  {
+    if (f.Name() == _name)
+    {
+      return &f;
+    }
+  }
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
