@@ -25,7 +25,7 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 
-#include "sdf/FrameSemantics.hh"
+#include "FrameSemantics.hh"
 
 namespace sdf
 {
