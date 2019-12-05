@@ -19,6 +19,9 @@
 1. Enforce rules about reserved names and unique names among sibling elements.
     * [Pull request 600](https://bitbucket.org/osrf/sdformat/pull-requests/600)
 
+1. Relax name checking, so name collisions generate warnings and names are automatically changed.
+    * [Pull request 621](https://bitbucket.org/osrf/sdformat/pull-requests/621)
+
 1. Unversioned library name for ign tool commands.
     * [Pull request 612](https://bitbucket.org/osrf/sdformat/pull-requests/612)
 
