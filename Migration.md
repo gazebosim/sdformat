@@ -20,6 +20,7 @@ but with improved human-readability..
     + sdf::SemanticPose SemanticPose() const
 
 1. **sdf/Frame.hh**: DOM class for frames in the model or world.
+    + Errors ResolveAttachedToBody(std::string&) const
     + sdf::SemanticPose SemanticPose() const
 
 1. **sdf/FrameSemantics.hh**

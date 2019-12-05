@@ -88,7 +88,7 @@ class sdf::WorldPrivate
            ignition::math::Vector3d::Zero;
 
   /// \brief Frame Attached-To Graph constructed during Load.
-  public: sdf::FrameAttachedToGraph frameAttachedToGraph;
+  public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
   /// \brief Pose Relative-To Graph constructed during Load.
   public: std::shared_ptr<sdf::PoseRelativeToGraph> poseRelativeToGraph;
@@ -116,6 +116,11 @@ WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
   if (_worldPrivate.gui)
   {
     this->gui = std::make_unique<Gui>(*(_worldPrivate.gui));
+  }
+  if (_worldPrivate.frameAttachedToGraph)
+  {
+    this->frameAttachedToGraph = std::make_shared<sdf::FrameAttachedToGraph>(
+        *(_worldPrivate.frameAttachedToGraph));
   }
   if (_worldPrivate.poseRelativeToGraph)
   {
@@ -148,6 +153,7 @@ World::World(const World &_world)
 {
   for (auto &frame : this->dataPtr->frames)
   {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
     frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
   for (auto &model : this->dataPtr->models)
@@ -175,6 +181,7 @@ World &World::operator=(const World &_world)
 
   for (auto &frame : this->dataPtr->frames)
   {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
     frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
   for (auto &model : this->dataPtr->models)
@@ -321,14 +328,20 @@ Errors World::Load(sdf::ElementPtr _sdf)
   }
 
   // Build the graphs.
+  this->dataPtr->frameAttachedToGraph =
+      std::make_shared<FrameAttachedToGraph>();
   Errors frameAttachedToGraphErrors =
-  buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
+  buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
   errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
                               frameAttachedToGraphErrors.end());
   Errors validateFrameAttachedGraphErrors =
-    validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
   errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
                               validateFrameAttachedGraphErrors.end());
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  }
 
   this->dataPtr->poseRelativeToGraph = std::make_shared<PoseRelativeToGraph>();
   Errors poseRelativeToGraphErrors =

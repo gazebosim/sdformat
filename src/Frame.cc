@@ -43,7 +43,10 @@ class sdf::FramePrivate
   /// \brief Name of graph source.
   std::string graphSourceName = "";
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  /// \brief Weak pointer to model's or worlds's Frame Attached-To Graph.
+  public: std::weak_ptr<const sdf::FrameAttachedToGraph> frameAttachedToGraph;
+
+  /// \brief Weak pointer to model's or world's Pose Relative-To Graph.
   public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
@@ -190,6 +193,13 @@ void Frame::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
+void Frame::SetFrameAttachedToGraph(
+    std::weak_ptr<const FrameAttachedToGraph> _graph)
+{
+  this->dataPtr->frameAttachedToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
 void Frame::SetPoseRelativeToGraph(
     std::weak_ptr<const PoseRelativeToGraph> _graph)
 {
@@ -199,6 +209,28 @@ void Frame::SetPoseRelativeToGraph(
   {
     this->dataPtr->graphSourceName = graph->sourceName;
   }
+}
+
+/////////////////////////////////////////////////
+Errors Frame::ResolveAttachedToBody(std::string &_body) const
+{
+  Errors errors;
+
+  auto graph = this->dataPtr->frameAttachedToGraph.lock();
+  if (!graph)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Frame has invalid pointer to FrameAttachedToGraph."});
+    return errors;
+  }
+
+  std::string body;
+  errors = resolveFrameAttachedToBody(body, *graph, this->dataPtr->name);
+  if (errors.empty())
+  {
+    _body = body;
+  }
+  return errors;
 }
 
 /////////////////////////////////////////////////

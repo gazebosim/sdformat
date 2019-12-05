@@ -66,4 +66,8 @@ TEST(DOMframe, Construction)
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
+
+  std::string body;
+  EXPECT_FALSE(frame.ResolveAttachedToBody(body).empty());
+  EXPECT_TRUE(body.empty());
 }
