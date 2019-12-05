@@ -23,7 +23,6 @@
 #include "sdf/Box.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/Material.hh"
 #include "sdf/Plane.hh"
 #include "sdf/SemanticPose.hh"
@@ -41,6 +40,7 @@ namespace sdf
   // Forward declarations.
   class VisualPrivate;
   class Geometry;
+  struct PoseRelativeToGraph;
 
   class SDFORMAT_VISIBLE Visual
   {

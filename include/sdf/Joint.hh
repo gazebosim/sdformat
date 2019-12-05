@@ -21,7 +21,6 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -36,6 +35,7 @@ namespace sdf
   // Forward declarations.
   class JointAxis;
   class JointPrivate;
+  struct PoseRelativeToGraph;
 
   /// \enum JointType
   /// \brief The set of joint types. INVALID indicates that joint type has

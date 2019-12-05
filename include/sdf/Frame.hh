@@ -21,7 +21,6 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -34,6 +33,8 @@ namespace sdf
   //
   // Forward declaration.
   class FramePrivate;
+  struct FrameAttachedToGraph;
+  struct PoseRelativeToGraph;
 
   /// \brief A Frame element descibes the properties associated with an
   /// explicit frame defined in a Model or World.

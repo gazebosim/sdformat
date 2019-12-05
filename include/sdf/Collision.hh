@@ -21,7 +21,6 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -35,6 +34,7 @@ namespace sdf
   // Forward declaration.
   class CollisionPrivate;
   class Geometry;
+  struct PoseRelativeToGraph;
 
   /// \brief A collision element descibes the collision properties associated
   /// with a link. This can be different from the visual properties of a link.

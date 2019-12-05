@@ -18,6 +18,7 @@
 #include <ignition/math/Vector3.hh>
 #include "sdf/Error.hh"
 #include "sdf/JointAxis.hh"
+#include "sdf/FrameSemantics.hh"
 
 using namespace sdf;
 
