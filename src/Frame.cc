@@ -19,6 +19,7 @@
 #include "sdf/Frame.hh"
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
+#include "sdf/FrameSemantics.hh"
 #include "Utils.hh"
 
 using namespace sdf;
