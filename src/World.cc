@@ -20,12 +20,12 @@
 
 #include "sdf/Actor.hh"
 #include "sdf/Frame.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Physics.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
+#include "FrameSemantics.hh"
 #include "Utils.hh"
 
 using namespace sdf;

@@ -26,7 +26,6 @@
 #include "sdf/Converter.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
-#include "sdf/FrameSemantics.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -38,6 +37,8 @@
 #include "sdf/parser_private.hh"
 #include "sdf/parser_urdf.hh"
 #include "sdf/sdf_config.h"
+
+#include "FrameSemantics.hh"
 
 namespace sdf
 {
