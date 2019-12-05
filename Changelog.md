@@ -72,6 +72,7 @@
 
 1. Hide FrameSemantics implementation.
     * [Pull request 622](https://bitbucket.org/osrf/sdformat/pull-requests/622)
+    * [Pull request 623](https://bitbucket.org/osrf/sdformat/pull-requests/623)
 
 ## SDFormat 8.0
 
