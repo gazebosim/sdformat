@@ -2,6 +2,11 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+### SDFormat 8.6.1 (2019-12-05)
+
+1. Unversioned lib name for cmds
+    * [Pull request 612](https://bitbucket.org/osrf/sdformat/pull-requests/612)
+
 ### SDFormat 8.6.0 (2019-11-20)
 
 1. configure.bat: use ign-math6, not gz11
