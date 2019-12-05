@@ -143,12 +143,17 @@ if (IGNITION-TOOLS_BINARY_DIRS)
   )
 endif()
 
+sdf_build_tests(${gtest_sources})
+
 if (NOT WIN32)
   set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
   sdf_build_tests(Utils_TEST.cc)
 endif()
 
-sdf_build_tests(${gtest_sources})
+if (NOT WIN32)
+  set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS FrameSemantics.cc)
+  sdf_build_tests(FrameSemantics_TEST.cc)
+endif()
 
 sdf_add_library(${sdf_target} ${sources})
 target_link_libraries(${sdf_target} PUBLIC ${IGNITION-MATH_LIBRARIES})
