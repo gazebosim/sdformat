@@ -1419,7 +1419,7 @@ bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
   {
     if (!_elem->HasUniqueChildNames(typeName))
     {
-      std::cerr << "Non-unique names detected in type "
+      std::cerr << "Error: Non-unique names detected in type "
                 << typeName << " in\n"
                 << _elem->ToString("")
                 << std::endl;
@@ -1446,7 +1446,7 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
   bool result = _elem->HasUniqueChildNames();
   if (!result)
   {
-    std::cerr << "Non-unique names detected in "
+    std::cerr << "Error: Non-unique names detected in "
               << _elem->ToString("")
               << std::endl;
     result = false;

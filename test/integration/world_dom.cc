@@ -22,6 +22,7 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/parser.hh"
 #include "sdf/Frame.hh"
+#include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "sdf/Filesystem.hh"
@@ -143,4 +144,79 @@ TEST(DOMWorld, Load)
   EXPECT_EQ("world", world->FrameByName("frame1")->AttachedTo());
 
   EXPECT_TRUE(world->FrameByName("frame1")->PoseRelativeTo().empty());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, LoadModelFrameSameName)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_model_frame_same_name.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_TRUE(errors.empty());
+
+  using Pose = ignition::math::Pose3d;
+
+  // Get the first world
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  EXPECT_EQ("world_model_frame_same_name", world->Name());
+  EXPECT_EQ(2u, world->ModelCount());
+  EXPECT_NE(nullptr, world->ModelByIndex(0));
+  EXPECT_NE(nullptr, world->ModelByIndex(1));
+  EXPECT_EQ(nullptr, world->ModelByIndex(2));
+
+  ASSERT_TRUE(world->ModelNameExists("base"));
+  ASSERT_TRUE(world->ModelNameExists("ground"));
+  EXPECT_TRUE(world->ModelByName("base")->PoseRelativeTo().empty());
+  EXPECT_TRUE(world->ModelByName("ground")->PoseRelativeTo().empty());
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), world->ModelByName("base")->RawPose());
+  EXPECT_EQ(Pose(0, 2, 0, 0, 0, 0), world->ModelByName("ground")->RawPose());
+
+  EXPECT_EQ(1u, world->FrameCount());
+  EXPECT_NE(nullptr, world->FrameByIndex(0));
+  EXPECT_EQ(nullptr, world->FrameByIndex(1));
+  // ground frame name should be changed
+  EXPECT_FALSE(world->FrameNameExists("ground"));
+  ASSERT_TRUE(world->FrameNameExists("ground_frame"));
+  EXPECT_TRUE(world->FrameByName("ground_frame")->PoseRelativeTo().empty());
+
+  EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0),
+      world->FrameByName("ground_frame")->RawPose());
+
+  // Test ResolveFrame to get each link and frame pose in the world frame.
+  Pose pose;
+  EXPECT_TRUE(
+    world->ModelByName("base")->
+      SemanticPose().Resolve(pose, "world").empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    world->ModelByName("ground")->
+      SemanticPose().Resolve(pose, "world").empty());
+  EXPECT_EQ(Pose(0, 2, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    world->FrameByName("ground_frame")->
+      SemanticPose().Resolve(pose, "world").empty());
+  EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0), pose);
+
+  // Resolve poses relative to different frames
+  EXPECT_TRUE(
+    world->ModelByName("ground")->
+      SemanticPose().Resolve(pose, "base").empty());
+  EXPECT_EQ(Pose(-1, 2, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    world->FrameByName("ground_frame")->
+      SemanticPose().Resolve(pose, "base").empty());
+  EXPECT_EQ(Pose(-1, 0, 3, 0, 0, 0), pose);
+
+  EXPECT_TRUE(
+    world->FrameByName("ground_frame")->
+      SemanticPose().Resolve(pose, "ground").empty());
+  EXPECT_EQ(Pose(0, -2, 3, 0, 0, 0), pose);
 }
