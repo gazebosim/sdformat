@@ -259,9 +259,10 @@ Errors Model::Load(ElementPtr _sdf)
     frameNames.insert(link.Name());
   }
 
+  // If the model is not static:
   // Require at least one link so the implicit model frame can be attached to
   // something.
-  if (this->dataPtr->links.empty())
+  if (!this->Static() && this->dataPtr->links.empty())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
                      "A model must have at least one link."});
@@ -320,21 +321,29 @@ Errors Model::Load(ElementPtr _sdf)
   }
 
   // Build the graphs.
-  this->dataPtr->frameAttachedToGraph
-      = std::make_shared<FrameAttachedToGraph>();
-  Errors frameAttachedToGraphErrors =
-  buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
-  errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
-                              frameAttachedToGraphErrors.end());
-  Errors validateFrameAttachedGraphErrors =
-    validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
-  errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
-                              validateFrameAttachedGraphErrors.end());
-  for (auto &frame : this->dataPtr->frames)
+
+  // Build the FrameAttachedToGraph if the model is not static.
+  // Re-enable this when the buildFrameAttachedToGraph implementation handles
+  // static models.
+  if (!this->Static())
   {
-    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    this->dataPtr->frameAttachedToGraph
+        = std::make_shared<FrameAttachedToGraph>();
+    Errors frameAttachedToGraphErrors =
+    buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
+    errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+                                frameAttachedToGraphErrors.end());
+    Errors validateFrameAttachedGraphErrors =
+      validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
+    errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
+                                validateFrameAttachedGraphErrors.end());
+    for (auto &frame : this->dataPtr->frames)
+    {
+      frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    }
   }
 
+  // Build the PoseRelativeToGraph
   this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>();
   Errors poseGraphErrors =
   buildPoseRelativeToGraph(*this->dataPtr->poseGraph, this);
