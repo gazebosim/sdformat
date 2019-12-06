@@ -160,6 +160,22 @@ namespace sdf
     /// \param[in] _fmt The pixel format string.
     public: void SetPixelFormatStr(const std::string &_fmt);
 
+    /// \brief Get the near clip distance for the depth camera.
+    /// \return The near clip depth distance.
+    public: double NearDepthClip() const;
+
+    /// \brief Set the near clip distance for the depth camera.
+    /// \param[in] _near The near clip depth distance.
+    public: void SetNearDepthClip(double _near);
+
+    /// \brief Get the far clip distance for the depth camera.
+    /// \return The far clip depth distance.
+    public: double FarDepthClip() const;
+
+    /// \brief Set the far clip distance for the depth camera.
+    /// \param[in] _far The far clip depth distance.
+    public: void SetFarDepthClip(double _far);
+
     /// \brief Get the near clip distance.
     /// \return The near clip distance.
     public: double NearClip() const;

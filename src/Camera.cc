@@ -72,6 +72,12 @@ class sdf::CameraPrivate
   /// \brief Far clip distance.
   public: double farClip{100};
 
+  /// \brief Near clip distance for depth camera.
+  public: double nearDepthClip{0.1};
+
+  /// \brief Far clip distance for depth camera.
+  public: double farDepthClip{10.0};
+
   /// \brief True indicates frames should be saved.
   public: bool save{false};
 
@@ -247,6 +253,24 @@ Errors Camera::Load(ElementPtr _sdf)
         "Camera sensor is missing an <image> element."});
   }
 
+  if (_sdf->HasElement("depth_camera"))
+  {
+    sdf::ElementPtr elem = _sdf->GetElement("depth_camera");
+    if (elem->HasElement("clip"))
+    { 
+      sdf::ElementPtr func = elem->GetElement("clip");
+      this->dataPtr->nearDepthClip = func->Get<double>("near",
+          this->dataPtr->nearClip).first;
+      this->dataPtr->farDepthClip = func->Get<double>("far",
+          this->dataPtr->farClip).first;
+    }
+    else
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "Depth camera is missing a <clip> element."});
+    }
+  }
+
   if (_sdf->HasElement("clip"))
   {
     sdf::ElementPtr elem = _sdf->GetElement("clip");
@@ -410,6 +434,30 @@ std::string Camera::PixelFormatStr() const
 void Camera::SetPixelFormatStr(const std::string &_fmt)
 {
   this->dataPtr->pixelFormat = ConvertPixelFormat(_fmt);
+}
+
+//////////////////////////////////////////////////
+double Camera::NearDepthClip() const
+{
+  return this->dataPtr->nearDepthClip;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetNearDepthClip(double _near)
+{
+  this->dataPtr->nearDepthClip = _near;
+}
+
+//////////////////////////////////////////////////
+double Camera::FarDepthClip() const
+{
+  return this->dataPtr->farDepthClip;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetFarDepthClip(double _far)
+{
+  this->dataPtr->farDepthClip = _far;
 }
 
 //////////////////////////////////////////////////
