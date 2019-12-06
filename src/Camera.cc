@@ -260,9 +260,9 @@ Errors Camera::Load(ElementPtr _sdf)
     {
       sdf::ElementPtr func = elem->GetElement("clip");
       this->dataPtr->nearDepthClip = func->Get<double>("near",
-          this->dataPtr->nearClip).first;
+          this->dataPtr->nearDepthClip).first;
       this->dataPtr->farDepthClip = func->Get<double>("far",
-          this->dataPtr->farClip).first;
+          this->dataPtr->farDepthClip).first;
     }
     else
     {
