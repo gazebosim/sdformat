@@ -199,7 +199,8 @@ but with improved human-readability..
 1. **model.sdf** `//model/@canonical_link` attribute
     + description: The name of the canonical link in this model to which the
       model's implicit frame is attached. This implies that a model must have
-      at least one link, which is also stated in the Modifications section.
+      at least one link (unless it is static), which is also stated in the
+      Modifications section.
     + type: string
     + default: ""
     + required: 0
@@ -210,9 +211,10 @@ but with improved human-readability..
 
 ### Modifications
 
-1.  A model must have at least one link, as specified in the
+1.  A non-static model must have at least one link, as specified in the
     [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#2-model-frame-and-canonical-link).
     + [pull request 601](https://bitbucket.org/osrf/sdformat/pull-requests/601)
+    + [pull request 626](https://bitbucket.org/osrf/sdformat/pull-requests/626)
 
 1. Unique names for all sibling elements:
     + As described in the [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#3-2-unique-names-for-all-sibling-elements),
