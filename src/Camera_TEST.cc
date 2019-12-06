@@ -43,11 +43,11 @@ TEST(DOMCamera, Construction)
   EXPECT_EQ(sdf::PixelFormatType::L_INT8 , cam.PixelFormat());
 
   EXPECT_DOUBLE_EQ(0.1, cam.NearDepthClip());
-  cam.SetNearClip(0.2);
+  cam.SetNearDepthClip(0.2);
   EXPECT_DOUBLE_EQ(0.2, cam.NearDepthClip());
 
   EXPECT_DOUBLE_EQ(10.0, cam.FarDepthClip());
-  cam.SetFarClip(20.2);
+  cam.SetFarDepthClip(20.2);
   EXPECT_DOUBLE_EQ(20.2, cam.FarDepthClip());
 
   EXPECT_DOUBLE_EQ(0.1, cam.NearClip());
