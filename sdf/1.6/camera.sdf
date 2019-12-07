@@ -56,7 +56,7 @@
         <description>Near clipping plane for depth camera</description>
       </element>
 
-      <element name="far" type="double" default="10.0" min="1.0" required="1">
+      <element name="far" type="double" default="10.0" min="0.1" required="1">
         <description>Far clipping plane for depth camera</description>
       </element>
     </element>
