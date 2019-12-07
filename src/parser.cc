@@ -1472,6 +1472,13 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root)
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
+    if (_model->Static() && _model->LinkCount() == 0)
+    {
+      // skip checking FrameAttachedToGraph for now
+      std::cerr << "Skip checking FrameAttachedToGraph for static model "
+                << "without links." << std::endl;
+      return true;
+    }
     sdf::FrameAttachedToGraph graph;
     auto errors = sdf::buildFrameAttachedToGraph(graph, _model);
     if (!errors.empty())
