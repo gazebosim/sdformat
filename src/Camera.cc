@@ -507,7 +507,7 @@ void Camera::SetHasDepthCamera(bool _camera)
 }
 
 //////////////////////////////////////////////////
-bool Camera::HasDepthCamera()
+bool Camera::HasDepthCamera() const
 {
   return this->dataPtr->hasDepthCamera;
 }
@@ -519,7 +519,7 @@ void Camera::SetHasDepthNearClip(bool _near)
 }
 
 //////////////////////////////////////////////////
-bool Camera::HasDepthNearClip()
+bool Camera::HasDepthNearClip() const
 {
   return this->dataPtr->hasDepthNearClip;
 }
@@ -531,7 +531,7 @@ void Camera::SetHasDepthFarClip(bool _far)
 }
 
 //////////////////////////////////////////////////
-bool Camera::HasDepthFarClip()
+bool Camera::HasDepthFarClip() const
 {
   return this->dataPtr->hasDepthFarClip;
 }

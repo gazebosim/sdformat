@@ -190,7 +190,7 @@ namespace sdf
 
     /// \brief Get whether the depth camera was set.
     /// \return True if the depth camera was set.
-    public: bool HasDepthCamera();
+    public: bool HasDepthCamera() const;
 
     /// \brief Set whether the depth camera near clip distance
     /// has been specified.
@@ -200,7 +200,7 @@ namespace sdf
 
     /// \brief Get whether the depth camera near clip distance was set.
     /// \return True if the depth camera near clip distance was set.
-    public: bool HasDepthNearClip();
+    public: bool HasDepthNearClip() const;
 
     /// \brief Set whether the depth camera far clip distance
     /// has been specified.
@@ -210,7 +210,7 @@ namespace sdf
 
     /// \brief Get whether the depth camera far clip distance was set.
     /// \return True if the depth camera far clip distance was set.
-    public: bool HasDepthFarClip();
+    public: bool HasDepthFarClip() const;
 
     /// \brief Get the far clip distance.
     /// \return The far clip distance.
