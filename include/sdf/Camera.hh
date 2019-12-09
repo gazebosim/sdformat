@@ -183,7 +183,7 @@ namespace sdf
     /// \brief Set the near clip distance.
     /// \param[in] _near The near clip distance.
     public: void SetNearClip(double _near);
-    
+
     /// \brief Set whether the depth camera has been specified.
     /// \param[in] _camera True if the depth camera has been set in the sdf.
     public: void SetHasDepthCamera(bool _camera);
