@@ -73,10 +73,19 @@ class sdf::CameraPrivate
   public: double farClip{100};
 
   /// \brief Near clip distance for depth camera.
-  public: double nearDepthClip{0.1};
+  public: double depthNearClip{0.1};
 
   /// \brief Far clip distance for depth camera.
-  public: double farDepthClip{10.0};
+  public: double depthFarClip{10.0};
+
+  /// \brief True indicates the depth camera was set.
+  public: bool hasDepthCamera{false};
+
+  /// \brief True indicates the depth camera far clip distance was set.
+  public: bool hasDepthFarClip{false};
+
+  /// \brief True indicates the depth camera near clip distance was set.
+  public: bool hasDepthNearClip{false};
 
   /// \brief True indicates frames should be saved.
   public: bool save{false};
@@ -256,13 +265,20 @@ Errors Camera::Load(ElementPtr _sdf)
   if (_sdf->HasElement("depth_camera"))
   {
     sdf::ElementPtr elem = _sdf->GetElement("depth_camera");
+    this->dataPtr->hasDepthCamera = true;
     if (elem->HasElement("clip"))
     {
       sdf::ElementPtr func = elem->GetElement("clip");
-      this->dataPtr->nearDepthClip = func->Get<double>("near",
-          this->dataPtr->nearDepthClip).first;
-      this->dataPtr->farDepthClip = func->Get<double>("far",
-          this->dataPtr->farDepthClip).first;
+      if (func->HasElement("near")) {
+        this->dataPtr->hasDepthNearClip = true;
+        this->dataPtr->depthNearClip = func->Get<double>("near",
+            this->dataPtr->depthNearClip).first;
+      }
+      if (func->HasElement("far")) {
+        this->dataPtr->hasDepthFarClip = true;
+        this->dataPtr->depthFarClip = func->Get<double>("far",
+            this->dataPtr->depthFarClip).first;
+      }
     }
     else
     {
@@ -437,27 +453,27 @@ void Camera::SetPixelFormatStr(const std::string &_fmt)
 }
 
 //////////////////////////////////////////////////
-double Camera::NearDepthClip() const
+double Camera::DepthNearClip() const
 {
-  return this->dataPtr->nearDepthClip;
+  return this->dataPtr->depthNearClip;
 }
 
 //////////////////////////////////////////////////
-void Camera::SetNearDepthClip(double _near)
+void Camera::SetDepthNearClip(double _near)
 {
-  this->dataPtr->nearDepthClip = _near;
+  this->dataPtr->depthNearClip = _near;
 }
 
 //////////////////////////////////////////////////
-double Camera::FarDepthClip() const
+double Camera::DepthFarClip() const
 {
-  return this->dataPtr->farDepthClip;
+  return this->dataPtr->depthFarClip;
 }
 
 //////////////////////////////////////////////////
-void Camera::SetFarDepthClip(double _far)
+void Camera::SetDepthFarClip(double _far)
 {
-  this->dataPtr->farDepthClip = _far;
+  this->dataPtr->depthFarClip = _far;
 }
 
 //////////////////////////////////////////////////
@@ -482,6 +498,42 @@ double Camera::FarClip() const
 void Camera::SetFarClip(double _far)
 {
   this->dataPtr->farClip = _far;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetHasDepthCamera(bool _camera)
+{
+  this->dataPtr->hasDepthCamera = _camera;
+}
+
+//////////////////////////////////////////////////
+bool Camera::HasDepthCamera()
+{
+  return this->dataPtr->hasDepthCamera;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetHasDepthNearClip(bool _near)
+{
+  this->dataPtr->hasDepthNearClip = _near;
+}
+
+//////////////////////////////////////////////////
+bool Camera::HasDepthNearClip()
+{
+  return this->dataPtr->hasDepthNearClip;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetHasDepthFarClip(bool _far)
+{
+  this->dataPtr->hasDepthFarClip = _far;
+}
+
+//////////////////////////////////////////////////
+bool Camera::HasDepthFarClip()
+{
+  return this->dataPtr->hasDepthFarClip;
 }
 
 //////////////////////////////////////////////////

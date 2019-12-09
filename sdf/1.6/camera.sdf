@@ -49,14 +49,14 @@
     <element name="output" type="string" default="depths" required="1">
       <description>Type of output</description>
     </element>
-    <element name="clip" required="1">
+    <element name="clip" required="0">
       <description>The near and far clip planes. Objects closer or farther than these planes are not detected by the depth camera.</description>
 
-      <element name="near" type="double" default=".1" min="0.0" required="1">
+      <element name="near" type="double" default=".1" min="0.0" required="0">
         <description>Near clipping plane for depth camera</description>
       </element>
 
-      <element name="far" type="double" default="10.0" min="0.1" required="1">
+      <element name="far" type="double" default="10.0" min="0.1" required="0">
         <description>Far clipping plane for depth camera</description>
       </element>
     </element>

@@ -162,19 +162,19 @@ namespace sdf
 
     /// \brief Get the near clip distance for the depth camera.
     /// \return The near clip depth distance.
-    public: double NearDepthClip() const;
+    public: double DepthNearClip() const;
 
     /// \brief Set the near clip distance for the depth camera.
     /// \param[in] _near The near clip depth distance.
-    public: void SetNearDepthClip(double _near);
+    public: void SetDepthNearClip(double _near);
 
     /// \brief Get the far clip distance for the depth camera.
     /// \return The far clip depth distance.
-    public: double FarDepthClip() const;
+    public: double DepthFarClip() const;
 
     /// \brief Set the far clip distance for the depth camera.
     /// \param[in] _far The far clip depth distance.
-    public: void SetFarDepthClip(double _far);
+    public: void SetDepthFarClip(double _far);
 
     /// \brief Get the near clip distance.
     /// \return The near clip distance.
@@ -183,6 +183,34 @@ namespace sdf
     /// \brief Set the near clip distance.
     /// \param[in] _near The near clip distance.
     public: void SetNearClip(double _near);
+    
+    /// \brief Set whether the depth camera has been specified.
+    /// \param[in] _camera True if the depth camera has been set in the sdf.
+    public: void SetHasDepthCamera(bool _camera);
+
+    /// \brief Get whether the depth camera was set.
+    /// \return True if the depth camera was set.
+    public: bool HasDepthCamera();
+
+    /// \brief Set whether the depth camera near clip distance
+    /// has been specified.
+    /// \param[in] _camera True if the depth camera near clip distance
+    /// has been set in the sdf.
+    public: void SetHasDepthNearClip(bool _near);
+
+    /// \brief Get whether the depth camera near clip distance was set.
+    /// \return True if the depth camera near clip distance was set.
+    public: bool HasDepthNearClip();
+
+    /// \brief Set whether the depth camera far clip distance
+    /// has been specified.
+    /// \param[in] _camera True if the depth camera far clip distance
+    /// has been set in the sdf.
+    public: void SetHasDepthFarClip(bool _far);
+
+    /// \brief Get whether the depth camera far clip distance was set.
+    /// \return True if the depth camera far clip distance was set.
+    public: bool HasDepthFarClip();
 
     /// \brief Get the far clip distance.
     /// \return The far clip distance.
