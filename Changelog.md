@@ -1,8 +1,6 @@
 ## SDFormat 9.X
 
-### SDFormat 9.X.X (201X-XX-XX)
-
-### SDFormat 9.0.0 (201X-XX-XX)
+### SDFormat 9.0.0 (2019-12-10)
 
 1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
     * [Pull request 606](https://bitbucket.org/osrf/sdformat/pull-requests/606)
