@@ -463,6 +463,7 @@ double Camera::DepthNearClip() const
 //////////////////////////////////////////////////
 void Camera::SetDepthNearClip(double _near)
 {
+  this->dataPtr->hasDepthNearClip = true;
   this->dataPtr->depthNearClip = _near;
 }
 
@@ -475,6 +476,7 @@ double Camera::DepthFarClip() const
 //////////////////////////////////////////////////
 void Camera::SetDepthFarClip(double _far)
 {
+  this->dataPtr->hasDepthFarClip = true;
   this->dataPtr->depthFarClip = _far;
 }
 
