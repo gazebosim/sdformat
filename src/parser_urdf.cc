@@ -246,6 +246,7 @@ ignition::math::Pose3d CopyPose(urdf::Pose _pose);
 ///   math::Pose
 urdf::Pose CopyPose(ignition::math::Pose3d _pose);
 
+////////////////////////////////////////////////////////////////////////////////
 bool URDF2SDF::IsURDF(const std::string &_filename)
 {
   TiXmlDocument xmlDoc;
@@ -2722,7 +2723,7 @@ void CreateLink(TiXmlElement *_root,
                 ignition::math::Pose3d &_currentTransform)
 {
   // create new body
-  TiXmlElement *elem     = new TiXmlElement("link");
+  TiXmlElement *elem = new TiXmlElement("link");
 
   // set body name
   elem->SetAttribute("name", _link->name);
@@ -2735,7 +2736,7 @@ void CreateLink(TiXmlElement *_root,
   {
     localTransform = CopyPose(
         _link->parent_joint->parent_to_joint_origin_transform);
-    _currentTransform = localTransform * _currentTransform;
+    _currentTransform *= localTransform;
   }
   else
   {
