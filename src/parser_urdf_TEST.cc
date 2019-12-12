@@ -625,6 +625,73 @@ TEST(URDFParser, CheckFixedJointOptions_NoOption_Repeated)
 }
 
 /////////////////////////////////////////////////
+TEST(URDFParser, CheckJointTransform)
+{
+  std::ostringstream str;
+  str << "<robot name='test_robot'>"
+    << "  <link name='link1'>"
+    << "    <inertial>"
+    << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+    << "      <mass value='1.0'/>"
+    << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+    << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+    << "    </inertial>"
+    << "  </link>"
+    << "  <joint name='joint1_2' type='continuous'>"
+    << "    <parent link='link1' />"
+    << "    <child  link='link2' />"
+    << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 " << IGN_PI*0.5 << "' />"
+    << "  </joint>"
+    << "  <link name='link2'>"
+    << "    <inertial>"
+    << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+    << "      <mass value='1.0'/>"
+    << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+    << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+    << "    </inertial>"
+    << "  </link>"
+    << "  <joint name='joint2_3' type='continuous'>"
+    << "    <parent link='link2' />"
+    << "    <child  link='link3' />"
+    << "    <origin xyz='1.0 0.0 0.0' rpy='0.0 0.0 0.0' />"
+    << "  </joint>"
+    << "  <link name='link3'>"
+    << "    <inertial>"
+    << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+    << "      <mass value='1.0'/>"
+    << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+    << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+    << "    </inertial>"
+    << "  </link>"
+    << "</robot>";
+
+  sdf::SDF sdf;
+  convert_urdf_str_to_sdf(str.str(), sdf);
+
+  auto root = sdf.Root();
+  ASSERT_NE(nullptr, root);
+  auto model = root->GetElement("model");
+  ASSERT_NE(nullptr, model);
+
+  auto link = model->GetElement("link");
+  ASSERT_NE(nullptr, link);
+  EXPECT_EQ("link1", link->Get<std::string>("name"));
+  EXPECT_EQ(ignition::math::Pose3d::Zero, link->Get<ignition::math::Pose3d>("pose"));
+
+  link = link->GetNextElement("link");
+  ASSERT_NE(nullptr, link);
+  EXPECT_EQ("link2", link->Get<std::string>("name"));
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, IGN_PI*0.5),
+      link->Get<ignition::math::Pose3d>("pose"));
+
+  link = link->GetNextElement("link");
+  ASSERT_NE(nullptr, link);
+  EXPECT_EQ("link3", link->Get<std::string>("name"));
+  EXPECT_EQ(ignition::math::Pose3d(0, 1, 0, 0, 0, IGN_PI*0.5),
+      link->Get<ignition::math::Pose3d>("pose"));
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {
