@@ -1990,43 +1990,43 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
           // in visual blobs by using the <visual> tag.
           // So there's no need for custom code for each property.
 
-          // construct new elements if not in blobs
-          if (material == nullptr)
-          {
-            material  = new TiXmlElement("material");
-            if (!material)
-            {
-              // Memory allocation error
-              sdferr << "Memory allocation error while"
-                     << " processing <material>.\n";
-            }
-            _elem->LinkEndChild(material);
-          }
-
-          if (script == nullptr)
-          {
-            if (material->FirstChildElement("script") == nullptr)
-            {
-              script  = new TiXmlElement("script");
-              if (!script)
-              {
-                // Memory allocation error
-                sdferr << "Memory allocation error while"
-                       << " processing <script>.\n";
-              }
-              material->LinkEndChild(script);
-            }
-            else
-            {
-              script  = material->FirstChildElement("script");
-            }
-          }
-
           // backward compatibility for old code
           // insert material/script block for visual
           // (*ge)->material block goes under sdf <material><script><name>.
           if (!(*ge)->material.empty())
           {
+            // construct new elements if not in blobs
+            if (material == nullptr)
+            {
+              material  = new TiXmlElement("material");
+              if (!material)
+              {
+                // Memory allocation error
+                sdferr << "Memory allocation error while"
+                       << " processing <material>.\n";
+              }
+              _elem->LinkEndChild(material);
+            }
+
+            if (script == nullptr)
+            {
+              if (material->FirstChildElement("script") == nullptr)
+              {
+                script  = new TiXmlElement("script");
+                if (!script)
+                {
+                  // Memory allocation error
+                  sdferr << "Memory allocation error while"
+                         << " processing <script>.\n";
+                }
+                material->LinkEndChild(script);
+              }
+              else
+              {
+                script  = material->FirstChildElement("script");
+              }
+            }
+
             AddKeyValue(script, "name", (*ge)->material);
             // hard code original default gazebo materials files
             AddKeyValue(script, "uri",
