@@ -51,7 +51,7 @@ TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
     TiXmlDocument doc = TiXmlDocument();
     sdf::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  );
+  );    // NOLINT(whitespace/parens)
 }
 
 /////////////////////////////////////////////////
@@ -62,7 +62,7 @@ TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
     doc.Parse(get_minimal_urdf_txt().c_str());
     sdf::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  );
+  );    // NOLINT(whitespace/parens)
 }
 
 /////////////////////////////////////////////////
@@ -258,7 +258,7 @@ TEST(URDFParser, ParseGazeboLinkFactors)
     {"laserRetro", {"model", "link", "collision", "laser_retro", "72.8"}},
   };
 
-  for (std::map<std::string, std::vector<std::string>>::iterator it =
+  for (std::map<std::string, std::vector<std::string> >::iterator it =
          elements.begin(); it != elements.end(); ++it)
   {
     std::string value = it->second[it->second.size() - 1];
@@ -334,10 +334,11 @@ TEST(URDFParser, ParseGazeboJointElements)
   {
     {"stopCfm", {"model", "joint", "physics", "ode", "limit", "cfm", "0.8"}},
     {"stopErp", {"model", "joint", "physics", "ode", "limit", "erp", "0.8"}},
-    {"fudgeFactor", {"model", "joint", "physics", "ode", "fudge_factor", "11.1"}},
+    {"fudgeFactor", {"model", "joint", "physics", "ode", "fudge_factor",
+        "11.1"}},
   };
 
-  for (std::map<std::string, std::vector<std::string>>::iterator it =
+  for (std::map<std::string, std::vector<std::string> >::iterator it =
          elements.begin(); it != elements.end(); ++it)
   {
     std::string value = it->second[it->second.size() - 1];
@@ -361,16 +362,16 @@ TEST(URDFParser, ParseGazeboJointElements)
            << "  <link name=\"neck_tilt\">"
            << "    <inertial>"
            << "      <mass value=\"0.940\" />"
-           << "	     <origin xyz=\"0.000061 0.003310 0.028798\"/>"
-           << "	     <inertia ixx=\"0.001395\""
-           << "	              iyy=\"0.001345\""
-           << "	              izz=\"0.000392\""
-           << "	              ixy=\"-0.000000\""
-           << "	              ixz=\"-0.000000\""
-           << "	              iyz=\"-0.000085\" />"
+           << "      <origin xyz=\"0.000061 0.003310 0.028798\"/>"
+           << "      <inertia ixx=\"0.001395\""
+           << "               iyy=\"0.001345\""
+           << "               izz=\"0.000392\""
+           << "               ixy=\"-0.000000\""
+           << "               ixz=\"-0.000000\""
+           << "               iyz=\"-0.000085\" />"
            << "    </inertial>"
            << "    <collision>"
-           << "	     <origin xyz=\"0 0 0\" rpy=\"0.0 0.0 0.0\" />"
+           << "      <origin xyz=\"0 0 0\" rpy=\"0.0 0.0 0.0\" />"
            << "    </collision>"
            << "  </link>"
            << "  <joint name=\"head_j0\" type=\"revolute\">"
@@ -378,7 +379,10 @@ TEST(URDFParser, ParseGazeboJointElements)
            << "    <origin xyz=\"0.0 0.0 0.07785\" rpy=\"0 0 0\" />"
            << "    <parent link=\"chest_link\"/>"
            << "    <child link=\"neck_tilt\"/>"
-           << "    <limit effort=\"100\" velocity=\"0.349\" lower=\"-0.314\" upper=\"0.017\" />"
+           << "    <limit effort=\"100\""
+           << "           velocity=\"0.349\""
+           << "           lower=\"-0.314\""
+           << "           upper=\"0.017\"/>"
            << "  </joint>"
            << "  <gazebo reference=\"head_j0\">"
            << "    <" << it->first << ">" << value << "</" << it->first << ">"
@@ -448,7 +452,8 @@ TEST(URDFParser, CheckFixedJointOptions_NoOption)
 /////////////////////////////////////////////////
 TEST(URDFParser, CheckFixedJointOptions_disableJointLumping)
 {
-  // Convert a fixed joint with disableJointLumping (i.e. converted to fake revolute joint)
+  // Convert a fixed joint with disableJointLumping
+  // (i.e. converted to fake revolute joint)
   std::ostringstream fixedJointDisableJointLumping;
   fixedJointDisableJointLumping << "<robot name='test_robot'>"
     << "  <link name='link1'>"
@@ -479,7 +484,8 @@ TEST(URDFParser, CheckFixedJointOptions_disableJointLumping)
 
   // Check that there is a revolute joint in the converted SDF
   sdf::SDF fixedJointDisableJointLumpingSDF;
-  convert_urdf_str_to_sdf(fixedJointDisableJointLumping.str(), fixedJointDisableJointLumpingSDF);
+  convert_urdf_str_to_sdf(fixedJointDisableJointLumping.str(),
+      fixedJointDisableJointLumpingSDF);
   sdf::ElementPtr elem = fixedJointDisableJointLumpingSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -493,7 +499,8 @@ TEST(URDFParser, CheckFixedJointOptions_disableJointLumping)
 /////////////////////////////////////////////////
 TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
 {
-  // Convert a fixed joint with only preserveFixedJoint (i.e. converted to fixed joint)
+  // Convert a fixed joint with only preserveFixedJoint
+  // (i.e. converted to fixed joint)
   std::ostringstream fixedJointPreserveFixedJoint;
   fixedJointPreserveFixedJoint << "<robot name='test_robot'>"
     << "  <link name='link1'>"
@@ -524,7 +531,8 @@ TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
 
   // Check that there is a fixed joint in the converted SDF
   sdf::SDF fixedJointPreserveFixedJointSDF;
-  convert_urdf_str_to_sdf(fixedJointPreserveFixedJoint.str(), fixedJointPreserveFixedJointSDF);
+  convert_urdf_str_to_sdf(fixedJointPreserveFixedJoint.str(),
+      fixedJointPreserveFixedJointSDF);
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -536,9 +544,11 @@ TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
 }
 
 /////////////////////////////////////////////////
-TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint_and_disableJointLumping)
+TEST(URDFParser,
+    CheckFixedJointOptions_preserveFixedJoint_and_disableJointLumping)
 {
-  // Convert a fixed joint with disableJointLumping and preserveFixedJoint (i.e. converted to fixed joint)
+  // Convert a fixed joint with disableJointLumping and preserveFixedJoint
+  // (i.e. converted to fixed joint)
   std::ostringstream fixedJointPreserveFixedJoint;
   fixedJointPreserveFixedJoint << "<robot name='test_robot'>"
     << "  <link name='link1'>"
@@ -572,7 +582,8 @@ TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint_and_disableJointLumpi
 
   // Check that there is a fixed joint in the converted SDF
   sdf::SDF fixedJointPreserveFixedJointSDF;
-  convert_urdf_str_to_sdf(fixedJointPreserveFixedJoint.str(), fixedJointPreserveFixedJointSDF);
+  convert_urdf_str_to_sdf(fixedJointPreserveFixedJoint.str(),
+      fixedJointPreserveFixedJointSDF);
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -676,7 +687,8 @@ TEST(URDFParser, CheckJointTransform)
   auto link = model->GetElement("link");
   ASSERT_NE(nullptr, link);
   EXPECT_EQ("link1", link->Get<std::string>("name"));
-  EXPECT_EQ(ignition::math::Pose3d::Zero, link->Get<ignition::math::Pose3d>("pose"));
+  EXPECT_EQ(ignition::math::Pose3d::Zero,
+      link->Get<ignition::math::Pose3d>("pose"));
 
   link = link->GetNextElement("link");
   ASSERT_NE(nullptr, link);
