@@ -2,10 +2,7 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
-### SDFormat 8.6.1 (2019-12-05)
-
-1. Unversioned lib name for cmds
-    * [Pull request 612](https://bitbucket.org/osrf/sdformat/pull-requests/612)
+### SDFormat 8.7.0 (201X-12-13)
 
 1. Remove some URDF error messages
     * [Pull request 605](https://bitbucket.org/osrf/sdformat/pull-requests/605)
@@ -18,6 +15,11 @@
 
 1. Add clipping for depth camera on rgbd camera sensor
     * [Pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
+
+### SDFormat 8.6.1 (2019-12-05)
+
+1. Unversioned lib name for cmds
+    * [Pull request 612](https://bitbucket.org/osrf/sdformat/pull-requests/612)
 
 ### SDFormat 8.6.0 (2019-11-20)
 
