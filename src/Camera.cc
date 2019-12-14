@@ -282,11 +282,6 @@ Errors Camera::Load(ElementPtr _sdf)
             this->dataPtr->depthFarClip).first;
       }
     }
-    else
-    {
-      errors.push_back({ErrorCode::ELEMENT_MISSING,
-          "Depth camera is missing a <clip> element."});
-    }
   }
 
   if (_sdf->HasElement("clip"))
