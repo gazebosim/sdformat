@@ -7,6 +7,18 @@
 1. Unversioned lib name for cmds
     * [Pull request 612](https://bitbucket.org/osrf/sdformat/pull-requests/612)
 
+1. Remove some URDF error messages
+    * [Pull request 605](https://bitbucket.org/osrf/sdformat/pull-requests/605)
+
+1. Fix parsing URDF without <material> inside <gazebo>
+    * [Pull request 608](https://bitbucket.org/osrf/sdformat/pull-requests/608)
+
+1. Backport URDF multiplication and linter
+    * [Pull request 632](https://bitbucket.org/osrf/sdformat/pull-requests/632)
+
+1. Add clipping for depth camera on rgbd camera sensor
+    * [Pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
+
 ### SDFormat 8.6.0 (2019-11-20)
 
 1. configure.bat: use ign-math6, not gz11
