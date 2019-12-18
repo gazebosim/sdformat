@@ -238,7 +238,7 @@ TEST(check, SDF)
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: Child link with name[world] specified by "
                           "joint with name[joint] not found in model with "
-                          "name[joint_parent_world]."),
+                          "name[joint_child_world]."),
               std::string::npos) << output;
   }
 
