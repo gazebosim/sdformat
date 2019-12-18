@@ -125,11 +125,19 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
 
   if (pathCStr)
   {
+    // Strip scheme, if any
+    auto suffix = _filename;
+    auto idx = suffix.find("://");
+    if (idx != std::string::npos)
+    {
+      suffix = suffix.substr(idx + 3);
+    }
+
     std::vector<std::string> paths = sdf::split(pathCStr, ":");
     for (std::vector<std::string>::iterator iter = paths.begin();
          iter != paths.end(); ++iter)
     {
-      path = sdf::filesystem::append(*iter, _filename);
+      path = sdf::filesystem::append(*iter, suffix);
       if (sdf::filesystem::exists(path))
       {
         return path;
