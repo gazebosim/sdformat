@@ -155,6 +155,80 @@ TEST(DOMJoint, Complete)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMJoint, LoadJointParentWorld)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "joint_parent_world.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  using Pose = ignition::math::Pose3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("joint_parent_world", model->Name());
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_EQ(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  ASSERT_TRUE(model->LinkNameExists("link"));
+  EXPECT_TRUE(model->LinkByName("link")->PoseRelativeTo().empty());
+
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->LinkByName("link")->RawPose());
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(1u, model->JointCount());
+  EXPECT_NE(nullptr, model->JointByIndex(0));
+  EXPECT_EQ(nullptr, model->JointByIndex(1));
+  ASSERT_TRUE(model->JointNameExists("joint"));
+  EXPECT_EQ("link", model->JointByName("joint")->ChildLinkName());
+  EXPECT_EQ("world", model->JointByName("joint")->ParentLinkName());
+  EXPECT_TRUE(model->JointByName("joint")->PoseRelativeTo().empty());
+
+  EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0), model->JointByName("joint")->RawPose());
+
+  EXPECT_EQ(0u, model->FrameCount());
+  EXPECT_EQ(nullptr, model->FrameByIndex(0));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, LoadInvalidJointChildWorld)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "joint_child_world.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(6u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "Child link with name[world] specified by joint with name[joint] not "
+      "found in model"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "FrameAttachedToGraph error, Non-LINK vertex with name [joint] is "
+      "disconnected"));
+  // errors[2]
+  // errors[3]
+  // errors[4]
+  // errors[5]
+}
+
+/////////////////////////////////////////////////
 TEST(DOMJoint, LoadJointPoseRelativeTo)
 {
   const std::string testFile =
@@ -276,6 +350,36 @@ TEST(DOMJoint, LoadInvalidJointPoseRelativeTo)
   // errors[2]
   // errors[3]
   // errors[4]
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, LoadInvalidChild)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "joint_invalid_child.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(6u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "Child link with name[invalid] specified by joint with name[joint] not "
+      "found"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "FrameAttachedToGraph error, Non-LINK vertex with name [joint] is "
+      "disconnected"));
+  // errors[2]
+  // errors[3]
+  // errors[4]
+  // errors[5]
 }
 
 /////////////////////////////////////////////////
