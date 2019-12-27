@@ -2,7 +2,10 @@
 
 ### SDFormat 9.X.X (201X-XX-XX)
 
-### SDFormat 9.0.1 (201X-XX-XX)
+### SDFormat 9.1.0 (201X-XX-XX)
+
+1. Add clipping for depth camera on rgbd camera sensor
+    * [Pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
 
 1. Add tests to confirm that world is not allowed as child link of a joint.
     * [Pull request 634](https://bitbucket.org/osrf/sdformat/pull-requests/634)
@@ -94,6 +97,20 @@
 ## SDFormat 8.0
 
 ### SDFormat 8.X.X (201X-XX-XX)
+
+### SDFormat 8.7.0 (201X-12-13)
+
+1. Remove some URDF error messages
+    * [Pull request 605](https://bitbucket.org/osrf/sdformat/pull-requests/605)
+
+1. Fix parsing URDF without <material> inside <gazebo>
+    * [Pull request 608](https://bitbucket.org/osrf/sdformat/pull-requests/608)
+
+1. Backport URDF multiplication and linter
+    * [Pull request 632](https://bitbucket.org/osrf/sdformat/pull-requests/632)
+
+1. Add clipping for depth camera on rgbd camera sensor
+    * [Pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
 
 ### SDFormat 8.6.1 (2019-12-05)
 

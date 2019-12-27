@@ -302,6 +302,10 @@ but with improved human-readability..
     + required: 0
     + [pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
 
+1. **camera.sdf** `depth_camera/clip` sub-elements: `near`, `far`
+    + description: Clipping parameters for depth camera on rgbd camera sensor.
+    + [pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
+
 1. **camera.sdf** `intrinsics` sub-elements: `fx`, `fy`, `cx`, `cy`, `s`
     + description: Camera intrinsic parameters for setting a custom perspective projection matrix.
     + [pull request 496](https://bitbucket.org/osrf/sdformat/pull-requests/496)
