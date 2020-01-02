@@ -286,6 +286,9 @@ but with improved human-readability..
     and is now removed.
     + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
 
+1. **world.sdf** `//world/joint` was removed as it has never been used.
+    + [pull request 637](https://bitbucket.org/osrf/sdformat/pull-requests/637)
+
 ## SDF protocol 1.5 to 1.6
 
 ### Additions
