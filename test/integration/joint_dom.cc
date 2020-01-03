@@ -211,21 +211,11 @@ TEST(DOMJoint, LoadInvalidJointChildWorld)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(6u, errors.size());
+  EXPECT_EQ(1u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
-      "Child link with name[world] specified by joint with name[joint] not "
-      "found in model"));
-  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
-  EXPECT_NE(std::string::npos,
-    errors[1].Message().find(
-      "FrameAttachedToGraph error, Non-LINK vertex with name [joint] is "
-      "disconnected"));
-  // errors[2]
-  // errors[3]
-  // errors[4]
-  // errors[5]
+      "Joint with name[joint] specified invalid child link [world]"));
 }
 
 /////////////////////////////////////////////////
