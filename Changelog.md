@@ -16,6 +16,9 @@
 1. Enable linter for URDF parser and fix style.
     * [Pull request 631](https://bitbucket.org/osrf/sdformat/pull-requests/631)
 
+1. Converter: fix memory leak pointed out by ASan.
+    * [Pull request 638](https://bitbucket.org/osrf/sdformat/pull-requests/638)
+
 ### SDFormat 9.0.0 (2019-12-10)
 
 1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
