@@ -238,6 +238,9 @@ but with improved human-readability..
       If explicitly stated, they can be referred to (e.g. `__model__` / `world`
       for implicit model / world frames, respectively).
 
+1. **joint.sdf** `//joint/child` may no longer be specified as `world`.
+    + [pull request 634](https://bitbucket.org/osrf/sdformat/pull-requests/634)
+
 1. **pose.sdf** `//pose/@frame` attribute is renamed to `//pose/@relative_to`.
     + [pull request 597](https://bitbucket.org/osrf/sdformat/pull-requests/597)
 

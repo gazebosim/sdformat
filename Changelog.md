@@ -2,12 +2,26 @@
 
 ### SDFormat 9.X.X (201X-XX-XX)
 
-1. Add clipping for depth camera on rgbd camera sensor
-    * [Pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
-
 1. Added accessors to `ignition::math::[Boxd, Cylinderd, Planed, Sphered]`
    in the matching `sdf::[Box, Cylinder, Plane, Sphere]` classes.
     * [Pull request 639](https://bitbucket.org/osrf/sdformat/pull-requests/639)
+
+### SDFormat 9.1.0 (201X-XX-XX)
+
+1. Add clipping for depth camera on rgbd camera sensor
+    * [Pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
+
+1. Add tests to confirm that world is not allowed as child link of a joint.
+    * [Pull request 634](https://bitbucket.org/osrf/sdformat/pull-requests/634)
+
+1. Fix link pose multiplication for URDF.
+    * [Pull request 630](https://bitbucket.org/osrf/sdformat/pull-requests/630)
+
+1. Enable linter for URDF parser and fix style.
+    * [Pull request 631](https://bitbucket.org/osrf/sdformat/pull-requests/631)
+
+1. Converter: fix memory leak pointed out by ASan.
+    * [Pull request 638](https://bitbucket.org/osrf/sdformat/pull-requests/638)
 
 ### SDFormat 9.0.0 (2019-12-10)
 
