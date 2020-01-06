@@ -5,6 +5,10 @@
 1. Add clipping for depth camera on rgbd camera sensor
     * [Pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
 
+1. Added accessors to `ignition::math::[Boxd, Cylinderd, Planed, Sphered]`
+   in the matching `sdf::[Box, Cylinder, Plane, Sphere]` classes.
+    * [Pull request 639](https://bitbucket.org/osrf/sdformat/pull-requests/639)
+
 ### SDFormat 9.0.0 (2019-12-10)
 
 1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
