@@ -41,6 +41,9 @@ TEST(DOMBox, MoveConstructor)
 
   sdf::Box box2(std::move(box));
   EXPECT_EQ(size, box2.Size());
+
+  EXPECT_DOUBLE_EQ(1 * 2 * 3, box2.Shape().Volume());
+  EXPECT_EQ(size, box2.Shape().Size());
 }
 
 /////////////////////////////////////////////////

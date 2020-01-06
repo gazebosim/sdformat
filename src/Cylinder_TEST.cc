@@ -44,6 +44,10 @@ TEST(DOMCylinder, MoveConstructor)
   sdf::Cylinder cylinder2(std::move(cylinder));
   EXPECT_DOUBLE_EQ(0.2, cylinder2.Radius());
   EXPECT_DOUBLE_EQ(3.0, cylinder2.Length());
+
+  EXPECT_DOUBLE_EQ(IGN_PI * std::pow(0.2, 2) * 3.0, cylinder2.Shape().Volume());
+  EXPECT_DOUBLE_EQ(0.2, cylinder2.Shape().Radius());
+  EXPECT_DOUBLE_EQ(3.0, cylinder2.Shape().Length());
 }
 
 /////////////////////////////////////////////////

@@ -49,6 +49,9 @@ TEST(DOMPlane, MoveConstructor)
   sdf::Plane plane2(std::move(plane));
   EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
   EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Size());
+
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Shape().Normal());
+  EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Shape().Size());
 }
 
 /////////////////////////////////////////////////

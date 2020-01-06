@@ -17,6 +17,7 @@
 #ifndef SDF_BOX_HH_
 #define SDF_BOX_HH_
 
+#include <ignition/math/Box.hh>
 #include <ignition/math/Vector3.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -79,6 +80,14 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Get the Ignition Math representation of this Box.
+    /// \return A const reference to an ignition::math::Boxd object.
+    public: const ignition::math::Boxd &Shape() const;
+
+    /// \brief Get a mutable Ignition Math representation of this Box.
+    /// \return A reference to an ignition::math::Boxd object.
+    public: ignition::math::Boxd &Shape();
 
     /// \brief Private data pointer.
     private: BoxPrivate *dataPtr;
