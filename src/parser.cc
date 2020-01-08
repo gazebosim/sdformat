@@ -509,7 +509,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
   }
   else
   {
-    // try to use the old deprecated parser
     if (!sdfNode)
     {
       sdfdbg << "No <sdf> element in file[" << _source << "]\n";
@@ -518,13 +517,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
     {
       sdfdbg << "SDF <sdf> element has no version in file["
              << _source << "]\n";
-    }
-    else if (strcmp(sdfNode->Attribute("version"),
-                    SDF::Version().c_str()) != 0)
-    {
-      sdfdbg << "SDF version ["
-             << sdfNode->Attribute("version")
-             << "] is not " << SDF::Version() << "\n";
     }
     return false;
   }
@@ -575,7 +567,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   }
   else
   {
-    // try to use the old deprecated parser
     if (!sdfNode)
     {
       sdfdbg << "SDF has no <sdf> element\n";
@@ -583,13 +574,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
     else if (!sdfNode->Attribute("version"))
     {
       sdfdbg << "<sdf> element has no version\n";
-    }
-    else if (strcmp(sdfNode->Attribute("version"),
-                    SDF::Version().c_str()) != 0)
-    {
-      sdfdbg << "SDF version ["
-             << sdfNode->Attribute("version")
-             << "] is not " << SDF::Version() << "\n";
     }
     return false;
   }
