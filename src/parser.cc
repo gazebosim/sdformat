@@ -1175,6 +1175,20 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
 }
 
 /////////////////////////////////////////////////
+void recursiveElementSetParsedVersion(
+    sdf::ElementPtr _elem,
+    const std::string &_version)
+{
+  _elem->SetParsedVersion(_version);
+  sdf::ElementPtr child = _elem->GetFirstElement();
+  while (child)
+  {
+    recursiveElementSetParsedVersion(child, _version);
+    child = child->GetNextElement();
+  }
+}
+
+/////////////////////////////////////////////////
 bool convertFile(const std::string &_filename, const std::string &_version,
                  SDFPtr _sdf)
 {
@@ -1189,6 +1203,16 @@ bool convertFile(const std::string &_filename, const std::string &_version,
   TiXmlDocument xmlDoc;
   if (xmlDoc.LoadFile(filename))
   {
+    // read initial sdf version
+    std::string parsedVersion;
+    {
+      TiXmlElement *sdfNode = xmlDoc.FirstChildElement("sdf");
+      if (sdfNode && sdfNode->Attribute("version"))
+      {
+        parsedVersion = sdfNode->Attribute("version");
+      }
+    }
+
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
       Errors errors;
@@ -1197,6 +1221,10 @@ bool convertFile(const std::string &_filename, const std::string &_version,
       // Output errors
       for (auto const &e : errors)
         std::cerr << e << std::endl;
+
+      // overwrite ParsedVersion, since sdf::Converter::Convert changed it
+      _sdf->SetParsedVersion(parsedVersion);
+      recursiveElementSetParsedVersion(_sdf->Root(), parsedVersion);
 
       return result;
     }
@@ -1224,6 +1252,16 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
 
   if (!xmlDoc.Error())
   {
+    // read initial sdf version
+    std::string parsedVersion;
+    {
+      TiXmlElement *sdfNode = xmlDoc.FirstChildElement("sdf");
+      if (sdfNode && sdfNode->Attribute("version"))
+      {
+        parsedVersion = sdfNode->Attribute("version");
+      }
+    }
+
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
       Errors errors;
@@ -1232,6 +1270,10 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
       // Output errors
       for (auto const &e : errors)
         std::cerr << e << std::endl;
+
+      // overwrite ParsedVersion, since sdf::Converter::Convert changed it
+      _sdf->SetParsedVersion(parsedVersion);
+      recursiveElementSetParsedVersion(_sdf->Root(), parsedVersion);
 
       return result;
     }
