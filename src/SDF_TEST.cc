@@ -548,6 +548,16 @@ TEST(SDF, FilePath)
 }
 
 /////////////////////////////////////////////////
+TEST(SDF, ParsedVersion)
+{
+  sdf::SDF sdf;
+  EXPECT_TRUE(sdf.ParsedVersion().empty());
+
+  sdf.SetParsedVersion("1.5");
+  EXPECT_EQ("1.5", sdf.ParsedVersion());
+}
+
+/////////////////////////////////////////////////
 TEST(SDF, PrintDoc)
 {
   std::stringstream buffer;

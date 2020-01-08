@@ -55,6 +55,12 @@ void Element::SetParent(const ElementPtr _parent)
   {
     this->SetFilePath(_parent->FilePath());
   }
+
+  // If this element doesn't have a parsed version, get it from the parent
+  if (nullptr != _parent && this->ParsedVersion().empty())
+  {
+    this->SetParsedVersion(_parent->ParsedVersion());
+  }
 }
 
 /////////////////////////////////////////////////
@@ -187,6 +193,7 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->copyChildren = _elem->GetCopyChildren();
   this->dataPtr->includeFilename = _elem->dataPtr->includeFilename;
   this->dataPtr->referenceSDF = _elem->ReferenceSDF();
+  this->dataPtr->parsedVersion = _elem->ParsedVersion();
   this->dataPtr->path = _elem->FilePath();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
@@ -880,6 +887,18 @@ void Element::SetFilePath(const std::string &_path)
 const std::string &Element::FilePath() const
 {
   return this->dataPtr->path;
+}
+
+/////////////////////////////////////////////////
+void Element::SetParsedVersion(const std::string &_version)
+{
+  this->dataPtr->parsedVersion = _version;
+}
+
+/////////////////////////////////////////////////
+const std::string &Element::ParsedVersion() const
+{
+  return this->dataPtr->parsedVersion;
 }
 
 /////////////////////////////////////////////////

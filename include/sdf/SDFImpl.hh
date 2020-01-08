@@ -110,6 +110,14 @@ namespace sdf
     /// \param[in] _path Path on disk.
     public: void SetFilePath(const std::string &_path);
 
+    /// \brief Set the spec version that this was parsed from.
+    /// \param[in] _version Spec version string.
+    public: void SetParsedVersion(const std::string &_version);
+
+    /// \brief Get the spec version that this was parsed from.
+    /// \return Spec version string.
+    public: const std::string &ParsedVersion() const;
+
     /// \brief Get the version
     /// \return The version as a string
     public: static std::string Version();

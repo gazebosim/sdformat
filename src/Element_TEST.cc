@@ -37,6 +37,7 @@ TEST(Element, Child)
   sdf::Element child;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   parent->SetFilePath("/parent/path/model.sdf");
+  parent->SetParsedVersion("1.5");
 
   ASSERT_EQ(child.GetParent(), nullptr);
 
@@ -44,6 +45,7 @@ TEST(Element, Child)
 
   ASSERT_NE(child.GetParent(), nullptr);
   EXPECT_EQ("/parent/path/model.sdf", child.FilePath());
+  EXPECT_EQ("1.5", child.ParsedVersion());
 }
 
 /////////////////////////////////////////////////
@@ -502,6 +504,7 @@ TEST(Element, Copy)
 
   src->SetName("test");
   src->SetFilePath("/path/to/file.sdf");
+  src->SetParsedVersion("1.5");
   src->AddValue("string", "val", false, "val description");
   src->AddAttribute("test", "string", "foo", false, "foo description");
   src->InsertElement(std::make_shared<sdf::Element>());
@@ -509,6 +512,7 @@ TEST(Element, Copy)
   dest->Copy(src);
 
   EXPECT_EQ("/path/to/file.sdf", dest->FilePath());
+  EXPECT_EQ("1.5", dest->ParsedVersion());
 
   sdf::ParamPtr param = dest->GetValue();
   ASSERT_TRUE(param->IsType<std::string>());
