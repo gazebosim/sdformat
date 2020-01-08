@@ -491,6 +491,9 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
+    _sdf->SetParsedVersion(sdfNode->Attribute("version"));
+    _sdf->Root()->SetParsedVersion(sdfNode->Attribute("version"));
+
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
@@ -541,8 +544,15 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
     return false;
   }
 
+  if (_source != "data-string")
+  {
+    _sdf->SetFilePath(_source);
+  }
+
   if (sdfNode && sdfNode->Attribute("version"))
   {
+    _sdf->SetParsedVersion(sdfNode->Attribute("version"));
+
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {

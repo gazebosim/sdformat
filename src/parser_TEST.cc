@@ -75,6 +75,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->ParsedVersion());
+    EXPECT_EQ("1.6", sdf->Root()->ParsedVersion());
   }
 
   // Check an SDF file with sibling elements of different types (model, light)
@@ -84,6 +88,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->ParsedVersion());
+    EXPECT_EQ("1.6", sdf->Root()->ParsedVersion());
   }
 
   // Check an SDF file with sibling elements of the same type (link)
@@ -93,6 +101,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->ParsedVersion());
+    EXPECT_EQ("1.6", sdf->Root()->ParsedVersion());
   }
 
   // Check an SDF file with sibling elements of the same type (joint)
@@ -102,6 +114,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->ParsedVersion());
+    EXPECT_EQ("1.6", sdf->Root()->ParsedVersion());
   }
 
   // Check an SDF file with sibling elements of different types (link, joint)
@@ -111,6 +127,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->ParsedVersion());
+    EXPECT_EQ("1.6", sdf->Root()->ParsedVersion());
   }
 
   // Check an SDF file with sibling elements of the same type (collision)
@@ -120,6 +140,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->ParsedVersion());
+    EXPECT_EQ("1.6", sdf->Root()->ParsedVersion());
   }
 
   // Check an SDF file with sibling elements of the same type (visual)
@@ -129,6 +153,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->ParsedVersion());
+    EXPECT_EQ("1.6", sdf->Root()->ParsedVersion());
   }
 
   // Check an SDF file with cousin elements of the same type (collision)
@@ -139,6 +167,10 @@ TEST(Parser, NameUniqueness)
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_TRUE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
     EXPECT_TRUE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->ParsedVersion());
+    EXPECT_EQ("1.6", sdf->Root()->ParsedVersion());
   }
 
   // Check an SDF file with cousin elements of the same type (visual)
@@ -149,6 +181,10 @@ TEST(Parser, NameUniqueness)
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_TRUE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
     EXPECT_TRUE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->ParsedVersion());
+    EXPECT_EQ("1.6", sdf->Root()->ParsedVersion());
   }
 }
 
