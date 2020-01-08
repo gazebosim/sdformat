@@ -19,6 +19,9 @@
 1. Converter: fix memory leak pointed out by ASan.
     * [Pull request 638](https://bitbucket.org/osrf/sdformat/pull-requests/638)
 
+1. Access the original parsed version of an SDF document with `Element::ParsedVersion`.
+    * [Pull request 640](https://bitbucket.org/osrf/sdformat/pull-requests/640)
+
 ### SDFormat 9.0.0 (2019-12-10)
 
 1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
