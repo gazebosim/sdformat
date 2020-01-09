@@ -373,13 +373,13 @@ namespace sdf
     /// \return Full path to SDF document.
     public: const std::string &FilePath() const;
 
-    /// \brief Set the spec version that this was parsed from.
+    /// \brief Set the spec version that this was originally parsed from.
     /// \param[in] _version Spec version string.
-    public: void SetParsedVersion(const std::string &_version);
+    public: void SetOriginalVersion(const std::string &_version);
 
-    /// \brief Get the spec version that this was parsed from.
+    /// \brief Get the spec version that this was originally parsed from.
     /// \return Spec version string.
-    public: const std::string &ParsedVersion() const;
+    public: const std::string &OriginalVersion() const;
 
     /// \brief Get a text description of the element.
     /// \return The text description of the element.
@@ -469,8 +469,8 @@ namespace sdf
     /// \brief Path to file where this element came from
     public: std::string path;
 
-    /// \brief Spec version that this was parsed from.
-    public: std::string parsedVersion;
+    /// \brief Spec version that this was originally parsed from.
+    public: std::string originalVersion;
   };
 
   ///////////////////////////////////////////////

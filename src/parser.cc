@@ -491,8 +491,8 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
-    _sdf->SetParsedVersion(sdfNode->Attribute("version"));
-    _sdf->Root()->SetParsedVersion(sdfNode->Attribute("version"));
+    _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
+    _sdf->Root()->SetOriginalVersion(sdfNode->Attribute("version"));
 
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
@@ -551,7 +551,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
-    _sdf->SetParsedVersion(sdfNode->Attribute("version"));
+    _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
 
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
@@ -1175,15 +1175,15 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
 }
 
 /////////////////////////////////////////////////
-void recursiveElementSetParsedVersion(
+void recursiveElementSetOriginalVersion(
     sdf::ElementPtr _elem,
     const std::string &_version)
 {
-  _elem->SetParsedVersion(_version);
+  _elem->SetOriginalVersion(_version);
   sdf::ElementPtr child = _elem->GetFirstElement();
   while (child)
   {
-    recursiveElementSetParsedVersion(child, _version);
+    recursiveElementSetOriginalVersion(child, _version);
     child = child->GetNextElement();
   }
 }
@@ -1204,12 +1204,12 @@ bool convertFile(const std::string &_filename, const std::string &_version,
   if (xmlDoc.LoadFile(filename))
   {
     // read initial sdf version
-    std::string parsedVersion;
+    std::string originalVersion;
     {
       TiXmlElement *sdfNode = xmlDoc.FirstChildElement("sdf");
       if (sdfNode && sdfNode->Attribute("version"))
       {
-        parsedVersion = sdfNode->Attribute("version");
+        originalVersion = sdfNode->Attribute("version");
       }
     }
 
@@ -1222,9 +1222,9 @@ bool convertFile(const std::string &_filename, const std::string &_version,
       for (auto const &e : errors)
         std::cerr << e << std::endl;
 
-      // overwrite ParsedVersion, since sdf::Converter::Convert changed it
-      _sdf->SetParsedVersion(parsedVersion);
-      recursiveElementSetParsedVersion(_sdf->Root(), parsedVersion);
+      // overwrite OriginalVersion, since sdf::Converter::Convert changed it
+      _sdf->SetOriginalVersion(originalVersion);
+      recursiveElementSetOriginalVersion(_sdf->Root(), originalVersion);
 
       return result;
     }
@@ -1253,12 +1253,12 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
   if (!xmlDoc.Error())
   {
     // read initial sdf version
-    std::string parsedVersion;
+    std::string originalVersion;
     {
       TiXmlElement *sdfNode = xmlDoc.FirstChildElement("sdf");
       if (sdfNode && sdfNode->Attribute("version"))
       {
-        parsedVersion = sdfNode->Attribute("version");
+        originalVersion = sdfNode->Attribute("version");
       }
     }
 
@@ -1271,9 +1271,9 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
       for (auto const &e : errors)
         std::cerr << e << std::endl;
 
-      // overwrite ParsedVersion, since sdf::Converter::Convert changed it
-      _sdf->SetParsedVersion(parsedVersion);
-      recursiveElementSetParsedVersion(_sdf->Root(), parsedVersion);
+      // overwrite OriginalVersion, since sdf::Converter::Convert changed it
+      _sdf->SetOriginalVersion(originalVersion);
+      recursiveElementSetOriginalVersion(_sdf->Root(), originalVersion);
 
       return result;
     }

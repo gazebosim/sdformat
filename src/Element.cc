@@ -56,10 +56,10 @@ void Element::SetParent(const ElementPtr _parent)
     this->SetFilePath(_parent->FilePath());
   }
 
-  // If this element doesn't have a parsed version, get it from the parent
-  if (nullptr != _parent && this->ParsedVersion().empty())
+  // If this element doesn't have an original version, get it from the parent
+  if (nullptr != _parent && this->OriginalVersion().empty())
   {
-    this->SetParsedVersion(_parent->ParsedVersion());
+    this->SetOriginalVersion(_parent->OriginalVersion());
   }
 }
 
@@ -154,7 +154,7 @@ ElementPtr Element::Clone() const
   clone->dataPtr->includeFilename = this->dataPtr->includeFilename;
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
   clone->dataPtr->path = this->dataPtr->path;
-  clone->dataPtr->parsedVersion = this->dataPtr->parsedVersion;
+  clone->dataPtr->originalVersion = this->dataPtr->originalVersion;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
@@ -194,7 +194,7 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->copyChildren = _elem->GetCopyChildren();
   this->dataPtr->includeFilename = _elem->dataPtr->includeFilename;
   this->dataPtr->referenceSDF = _elem->ReferenceSDF();
-  this->dataPtr->parsedVersion = _elem->ParsedVersion();
+  this->dataPtr->originalVersion = _elem->OriginalVersion();
   this->dataPtr->path = _elem->FilePath();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
@@ -891,15 +891,15 @@ const std::string &Element::FilePath() const
 }
 
 /////////////////////////////////////////////////
-void Element::SetParsedVersion(const std::string &_version)
+void Element::SetOriginalVersion(const std::string &_version)
 {
-  this->dataPtr->parsedVersion = _version;
+  this->dataPtr->originalVersion = _version;
 }
 
 /////////////////////////////////////////////////
-const std::string &Element::ParsedVersion() const
+const std::string &Element::OriginalVersion() const
 {
-  return this->dataPtr->parsedVersion;
+  return this->dataPtr->originalVersion;
 }
 
 /////////////////////////////////////////////////

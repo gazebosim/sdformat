@@ -37,7 +37,7 @@ TEST(Element, Child)
   sdf::Element child;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   parent->SetFilePath("/parent/path/model.sdf");
-  parent->SetParsedVersion("1.5");
+  parent->SetOriginalVersion("1.5");
 
   ASSERT_EQ(child.GetParent(), nullptr);
 
@@ -45,7 +45,7 @@ TEST(Element, Child)
 
   ASSERT_NE(child.GetParent(), nullptr);
   EXPECT_EQ("/parent/path/model.sdf", child.FilePath());
-  EXPECT_EQ("1.5", child.ParsedVersion());
+  EXPECT_EQ("1.5", child.OriginalVersion());
 }
 
 /////////////////////////////////////////////////
@@ -274,12 +274,12 @@ TEST(Element, Clone)
   parent->AddValue("string", "foo", false, "foo description");
 
   parent->SetFilePath("/path/to/file.sdf");
-  parent->SetParsedVersion("1.5");
+  parent->SetOriginalVersion("1.5");
 
   sdf::ElementPtr newelem = parent->Clone();
 
   EXPECT_EQ("/path/to/file.sdf", newelem->FilePath());
-  EXPECT_EQ("1.5", newelem->ParsedVersion());
+  EXPECT_EQ("1.5", newelem->OriginalVersion());
   ASSERT_NE(newelem->GetFirstElement(), nullptr);
   ASSERT_EQ(newelem->GetElementDescriptionCount(), 1UL);
   ASSERT_EQ(newelem->GetAttributeCount(), 1UL);
@@ -509,7 +509,7 @@ TEST(Element, Copy)
 
   src->SetName("test");
   src->SetFilePath("/path/to/file.sdf");
-  src->SetParsedVersion("1.5");
+  src->SetOriginalVersion("1.5");
   src->AddValue("string", "val", false, "val description");
   src->AddAttribute("test", "string", "foo", false, "foo description");
   src->InsertElement(std::make_shared<sdf::Element>());
@@ -517,7 +517,7 @@ TEST(Element, Copy)
   dest->Copy(src);
 
   EXPECT_EQ("/path/to/file.sdf", dest->FilePath());
-  EXPECT_EQ("1.5", dest->ParsedVersion());
+  EXPECT_EQ("1.5", dest->OriginalVersion());
 
   sdf::ParamPtr param = dest->GetValue();
   ASSERT_TRUE(param->IsType<std::string>());

@@ -161,31 +161,31 @@ TEST(ConverterIntegration, ParserFileConverter)
   sdf::ElementPtr rootElem = sdf->Root();
   ASSERT_NE(nullptr, rootElem);
   EXPECT_EQ("1.6", rootElem->Get<std::string>("version"));
-  EXPECT_EQ("1.4", sdf->ParsedVersion());
-  EXPECT_EQ("1.4", rootElem->ParsedVersion());
+  EXPECT_EQ("1.4", sdf->OriginalVersion());
+  EXPECT_EQ("1.4", rootElem->OriginalVersion());
 
   sdf::ElementPtr modelElem = rootElem->GetElement("model");
   ASSERT_NE(nullptr, modelElem);
   EXPECT_EQ(modelElem->Get<std::string>("name"), "full_audio_parameters");
-  EXPECT_EQ("1.4", modelElem->ParsedVersion());
+  EXPECT_EQ("1.4", modelElem->OriginalVersion());
 
   sdf::ElementPtr linkElem = modelElem->GetElement("link");
   ASSERT_NE(nullptr, linkElem);
   EXPECT_EQ(linkElem->Get<std::string>("name"), "link");
-  EXPECT_EQ("1.4", linkElem->ParsedVersion());
+  EXPECT_EQ("1.4", linkElem->OriginalVersion());
 
   sdf::ElementPtr collElem = linkElem->GetElement("collision");
   ASSERT_NE(nullptr, collElem);
   EXPECT_EQ(collElem->Get<std::string>("name"), "collision");
-  EXPECT_EQ("1.4", collElem->ParsedVersion());
+  EXPECT_EQ("1.4", collElem->OriginalVersion());
 
   sdf::ElementPtr sinkElem = linkElem->GetElement("audio_sink");
   ASSERT_NE(nullptr, sinkElem);
-  EXPECT_EQ("1.4", sinkElem->ParsedVersion());
+  EXPECT_EQ("1.4", sinkElem->OriginalVersion());
 
   sdf::ElementPtr sourceElem = linkElem->GetElement("audio_source");
   ASSERT_NE(nullptr, sourceElem);
-  EXPECT_EQ("1.4", sourceElem->ParsedVersion());
+  EXPECT_EQ("1.4", sourceElem->OriginalVersion());
 }
 
 /////////////////////////////////////////////////
@@ -203,8 +203,8 @@ TEST(ConverterIntegration, convertFileToNotLatestVersion)
   sdf::ElementPtr rootElem = sdf->Root();
   ASSERT_NE(nullptr, rootElem);
   EXPECT_EQ("1.5", rootElem->Get<std::string>("version"));
-  EXPECT_EQ("1.4", sdf->ParsedVersion());
-  EXPECT_EQ("1.4", rootElem->ParsedVersion());
+  EXPECT_EQ("1.4", sdf->OriginalVersion());
+  EXPECT_EQ("1.4", rootElem->OriginalVersion());
 }
 
 /////////////////////////////////////////////////
@@ -240,19 +240,19 @@ void ParserStringConverter(const std::string &_version)
   ASSERT_NE(nullptr, sdf->Root());
   EXPECT_EQ(sdf->Root()->GetName(), "sdf");
   EXPECT_EQ("1.6", sdf->Root()->Get<std::string>("version"));
-  EXPECT_EQ(_version, sdf->ParsedVersion());
-  EXPECT_EQ(_version, sdf->Root()->ParsedVersion());
+  EXPECT_EQ(_version, sdf->OriginalVersion());
+  EXPECT_EQ(_version, sdf->Root()->OriginalVersion());
 
   sdf::ElementPtr worldElem = sdf->Root()->GetElement("world");
   ASSERT_NE(nullptr, worldElem);
   EXPECT_EQ(worldElem->Get<std::string>("name"), "default");
-  EXPECT_EQ(_version, worldElem->ParsedVersion());
+  EXPECT_EQ(_version, worldElem->OriginalVersion());
 
   sdf::ElementPtr physicsElem = worldElem->GetElement("physics");
   ASSERT_NE(nullptr, physicsElem);
   EXPECT_EQ(physicsElem->Get<std::string>("name"), "default_physics");
   EXPECT_EQ(physicsElem->Get<std::string>("type"), "ode");
-  EXPECT_EQ(_version, physicsElem->ParsedVersion());
+  EXPECT_EQ(_version, physicsElem->OriginalVersion());
 
   // gravity and magnetic_field should have been moved from physics to world
   EXPECT_FALSE(physicsElem->HasElement("gravity"));
@@ -262,13 +262,13 @@ void ParserStringConverter(const std::string &_version)
   ASSERT_NE(nullptr, gravityElem);
   EXPECT_EQ(gravityElem->Get<ignition::math::Vector3d>(),
             ignition::math::Vector3d(1, 0, -9.8));
-  EXPECT_EQ(_version, gravityElem->ParsedVersion());
+  EXPECT_EQ(_version, gravityElem->OriginalVersion());
 
   sdf::ElementPtr magElem = worldElem->GetElement("magnetic_field");
   ASSERT_NE(nullptr, magElem);
   EXPECT_EQ(magElem->Get<ignition::math::Vector3d>(),
             ignition::math::Vector3d(1, 2, 3));
-  EXPECT_EQ(_version, magElem->ParsedVersion());
+  EXPECT_EQ(_version, magElem->OriginalVersion());
 }
 
 /////////////////////////////////////////////////

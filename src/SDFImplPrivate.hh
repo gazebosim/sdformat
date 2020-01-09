@@ -44,8 +44,8 @@ namespace sdf
     /// \brief Path to SDF document on disk.
     public: std::string path;
 
-    /// \brief Spec version that this was parsed from.
-    public: std::string parsedVersion;
+    /// \brief Spec version that this was originally parsed from.
+    public: std::string originalVersion;
   };
   /// \}
 }

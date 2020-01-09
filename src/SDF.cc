@@ -393,15 +393,15 @@ void SDF::SetFilePath(const std::string &_path)
 }
 
 /////////////////////////////////////////////////
-void SDF::SetParsedVersion(const std::string &_version)
+void SDF::SetOriginalVersion(const std::string &_version)
 {
-  this->dataPtr->parsedVersion = _version;
+  this->dataPtr->originalVersion = _version;
 }
 
 /////////////////////////////////////////////////
-const std::string &SDF::ParsedVersion() const
+const std::string &SDF::OriginalVersion() const
 {
-  return this->dataPtr->parsedVersion;
+  return this->dataPtr->originalVersion;
 }
 
 /////////////////////////////////////////////////
