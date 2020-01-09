@@ -273,8 +273,13 @@ TEST(Element, Clone)
 
   parent->AddValue("string", "foo", false, "foo description");
 
+  parent->SetFilePath("/path/to/file.sdf");
+  parent->SetParsedVersion("1.5");
+
   sdf::ElementPtr newelem = parent->Clone();
 
+  EXPECT_EQ("/path/to/file.sdf", newelem->FilePath());
+  EXPECT_EQ("1.5", newelem->ParsedVersion());
   ASSERT_NE(newelem->GetFirstElement(), nullptr);
   ASSERT_EQ(newelem->GetElementDescriptionCount(), 1UL);
   ASSERT_EQ(newelem->GetAttributeCount(), 1UL);

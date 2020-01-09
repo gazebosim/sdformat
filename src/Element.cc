@@ -154,6 +154,7 @@ ElementPtr Element::Clone() const
   clone->dataPtr->includeFilename = this->dataPtr->includeFilename;
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
   clone->dataPtr->path = this->dataPtr->path;
+  clone->dataPtr->parsedVersion = this->dataPtr->parsedVersion;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
