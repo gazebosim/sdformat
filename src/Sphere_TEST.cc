@@ -123,3 +123,13 @@ TEST(DOMSphere, Load)
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <radius>"));
   EXPECT_NE(nullptr, sphere.Element());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, Shape)
+{
+  sdf::Sphere sphere;
+  EXPECT_DOUBLE_EQ(1.0, sphere.Radius());
+
+  sphere.Shape().SetRadius(0.123);
+  EXPECT_DOUBLE_EQ(0.123, sphere.Radius());
+}

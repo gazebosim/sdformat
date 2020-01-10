@@ -157,3 +157,16 @@ TEST(DOMCylinder, Load)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <length>"));
 }
+
+/////////////////////////////////////////////////
+TEST(DOMCylinder, Shape)
+{
+  sdf::Cylinder cylinder;
+  EXPECT_DOUBLE_EQ(1.0, cylinder.Radius());
+  EXPECT_DOUBLE_EQ(1.0, cylinder.Length());
+
+  cylinder.Shape().SetRadius(0.123);
+  cylinder.Shape().SetLength(0.456);
+  EXPECT_DOUBLE_EQ(0.123, cylinder.Radius());
+  EXPECT_DOUBLE_EQ(0.456, cylinder.Length());
+}

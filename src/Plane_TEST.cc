@@ -156,3 +156,14 @@ TEST(DOMPlane, Load)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <size>"));
 }
+
+/////////////////////////////////////////////////
+TEST(DOMPlane, Shape)
+{
+  sdf::Plane plane;
+  EXPECT_EQ(ignition::math::Vector2d::One, plane.Size());
+
+  plane.Shape().Set(plane.Shape().Normal(), ignition::math::Vector2d(1, 2),
+      plane.Shape().Offset());
+  EXPECT_EQ(ignition::math::Vector2d(1, 2), plane.Size());
+}
