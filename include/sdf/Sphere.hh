@@ -17,6 +17,8 @@
 #ifndef SDF_SPHERE_HH_
 #define SDF_SPHERE_HH_
 
+#include <ignition/math/Sphere.hh>
+
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -73,6 +75,14 @@ namespace sdf
     /// \brief Set the sphere's radius in meters.
     /// \param[in] _radius The radius of the sphere in meters.
     public: void SetRadius(const double _radius);
+
+    /// \brief Get the Ignition Math representation of this Sphere.
+    /// \return A const reference to an ignition::math::Sphered object.
+    public: const ignition::math::Sphered &Shape() const;
+
+    /// \brief Get a mutable Ignition Math representation of this Sphere.
+    /// \return A reference to an ignition::math::Sphered object.
+    public: ignition::math::Sphered &Shape();
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

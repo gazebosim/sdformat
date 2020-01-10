@@ -23,11 +23,10 @@ using namespace sdf;
 // Private data class
 class sdf::PlanePrivate
 {
-  // Plane normal
-  public: ignition::math::Vector3d normal = ignition::math::Vector3d::UnitZ;
-
-  // Size of the plane
-  public: ignition::math::Vector2d size = ignition::math::Vector2d::One;
+  /// \brief A plane with a unit Z normal vector, size of 1x1 meters, and
+  /// a zero offest.
+  public: ignition::math::Planed plane{ignition::math::Vector3d::UnitZ,
+            ignition::math::Vector2d::One, 0};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -50,8 +49,7 @@ Plane::~Plane()
 Plane::Plane(const Plane &_plane)
   : dataPtr(new PlanePrivate)
 {
-  this->dataPtr->normal = _plane.dataPtr->normal;
-  this->dataPtr->size = _plane.dataPtr->size;
+  this->dataPtr->plane = _plane.dataPtr->plane;
   this->dataPtr->sdf = _plane.dataPtr->sdf;
 }
 
@@ -62,8 +60,7 @@ Plane &Plane::operator=(const Plane &_plane)
   {
     this->dataPtr = new PlanePrivate;
   }
-  this->dataPtr->normal = _plane.dataPtr->normal;
-  this->dataPtr->size = _plane.dataPtr->size;
+  this->dataPtr->plane = _plane.dataPtr->plane;
   this->dataPtr->sdf = _plane.dataPtr->sdf;
   return *this;
 }
@@ -111,7 +108,8 @@ Errors Plane::Load(ElementPtr _sdf)
   if (_sdf->HasElement("normal"))
   {
     std::pair<ignition::math::Vector3d, bool> pair =
-      _sdf->Get<ignition::math::Vector3d>("normal", this->dataPtr->normal);
+      _sdf->Get<ignition::math::Vector3d>("normal",
+          this->dataPtr->plane.Normal());
 
     if (!pair.second)
     {
@@ -131,7 +129,7 @@ Errors Plane::Load(ElementPtr _sdf)
   if (_sdf->HasElement("size"))
   {
     std::pair<ignition::math::Vector2d, bool> pair =
-      _sdf->Get<ignition::math::Vector2d>("size", this->dataPtr->size);
+      _sdf->Get<ignition::math::Vector2d>("size", this->dataPtr->plane.Size());
 
     if (!pair.second)
     {
@@ -139,7 +137,7 @@ Errors Plane::Load(ElementPtr _sdf)
           "Invalid <size> data for a <plane> geometry. "
           "Using a size of 1, 1."});
     }
-    this->dataPtr->size = pair.first;
+    this->SetSize(pair.first);
   }
   else
   {
@@ -154,30 +152,43 @@ Errors Plane::Load(ElementPtr _sdf)
 //////////////////////////////////////////////////
 ignition::math::Vector3d Plane::Normal() const
 {
-  return this->dataPtr->normal;
+  return this->dataPtr->plane.Normal();
 }
 
 //////////////////////////////////////////////////
 void Plane::SetNormal(const ignition::math::Vector3d &_normal)
 {
-  this->dataPtr->normal = _normal;
-  this->dataPtr->normal.Normalize();
+  this->dataPtr->plane.Set(_normal.Normalized(), this->dataPtr->plane.Offset());
 }
 
 //////////////////////////////////////////////////
 ignition::math::Vector2d Plane::Size() const
 {
-  return this->dataPtr->size;
+  return this->dataPtr->plane.Size();
 }
 
 //////////////////////////////////////////////////
 void Plane::SetSize(const ignition::math::Vector2d &_size)
 {
-  this->dataPtr->size = _size;
+  this->dataPtr->plane.Set(this->dataPtr->plane.Normal(),
+                           _size,
+                           this->dataPtr->plane.Offset());
 }
 
 /////////////////////////////////////////////////
 sdf::ElementPtr Plane::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Planed &Plane::Shape() const
+{
+  return this->dataPtr->plane;
+}
+
+/////////////////////////////////////////////////
+ignition::math::Planed &Plane::Shape()
+{
+  return this->dataPtr->plane;
 }

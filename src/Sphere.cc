@@ -21,8 +21,8 @@ using namespace sdf;
 // Private data class
 class sdf::SpherePrivate
 {
-  // Radius of the sphere
-  public: double radius = 1.0;
+  /// \brief Representation of the sphere
+  public: ignition::math::Sphered sphere{1.0};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -45,7 +45,7 @@ Sphere::~Sphere()
 Sphere::Sphere(const Sphere &_sphere)
   : dataPtr(new SpherePrivate)
 {
-  this->dataPtr->radius = _sphere.dataPtr->radius;
+  this->dataPtr->sphere = _sphere.dataPtr->sphere;
   this->dataPtr->sdf = _sphere.dataPtr->sdf;
 }
 
@@ -56,7 +56,7 @@ Sphere &Sphere::operator=(const Sphere &_sphere)
   {
     this->dataPtr = new SpherePrivate;
   }
-  this->dataPtr->radius = _sphere.dataPtr->radius;
+  this->dataPtr->sphere = _sphere.dataPtr->sphere;
   this->dataPtr->sdf = _sphere.dataPtr->sdf;
   return *this;
 }
@@ -103,7 +103,7 @@ Errors Sphere::Load(ElementPtr _sdf)
   if (_sdf->HasElement("radius"))
   {
     std::pair<double, bool> pair = _sdf->Get<double>("radius",
-        this->dataPtr->radius);
+        this->dataPtr->sphere.Radius());
 
     if (!pair.second)
     {
@@ -111,7 +111,7 @@ Errors Sphere::Load(ElementPtr _sdf)
           "Invalid <radius> data for a <sphere> geometry. "
           "Using a radius of 1.0."});
     }
-    this->dataPtr->radius = pair.first;
+    this->dataPtr->sphere.SetRadius(pair.first);
   }
   else
   {
@@ -126,14 +126,27 @@ Errors Sphere::Load(ElementPtr _sdf)
 //////////////////////////////////////////////////
 double Sphere::Radius() const
 {
-  return this->dataPtr->radius;
+  return this->dataPtr->sphere.Radius();
 }
 
 //////////////////////////////////////////////////
 void Sphere::SetRadius(const double _radius)
 {
-  this->dataPtr->radius = _radius;
+  this->dataPtr->sphere.SetRadius(_radius);
 }
+
+/////////////////////////////////////////////////
+const ignition::math::Sphered &Sphere::Shape() const
+{
+  return this->dataPtr->sphere;
+}
+
+/////////////////////////////////////////////////
+ignition::math::Sphered &Sphere::Shape()
+{
+  return this->dataPtr->sphere;
+}
+
 
 /////////////////////////////////////////////////
 sdf::ElementPtr Sphere::Element() const

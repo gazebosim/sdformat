@@ -49,6 +49,9 @@ TEST(DOMPlane, MoveConstructor)
   sdf::Plane plane2(std::move(plane));
   EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
   EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Size());
+
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Shape().Normal());
+  EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Shape().Size());
 }
 
 /////////////////////////////////////////////////
@@ -152,4 +155,15 @@ TEST(DOMPlane, Load)
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <size>"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPlane, Shape)
+{
+  sdf::Plane plane;
+  EXPECT_EQ(ignition::math::Vector2d::One, plane.Size());
+
+  plane.Shape().Set(plane.Shape().Normal(), ignition::math::Vector2d(1, 2),
+      plane.Shape().Offset());
+  EXPECT_EQ(ignition::math::Vector2d(1, 2), plane.Size());
 }
