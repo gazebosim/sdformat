@@ -2,7 +2,10 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
-### SDFormat 8.7.0 (201X-12-13)
+1. Fix memory leaks in move assignment operator.
+    * [Pull request 641](https://bitbucket.org/osrf/sdformat/pull-requests/641)
+
+### SDFormat 8.7.0 (2019-12-13)
 
 1. Remove some URDF error messages
     * [Pull request 605](https://bitbucket.org/osrf/sdformat/pull-requests/605)
