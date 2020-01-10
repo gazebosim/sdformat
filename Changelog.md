@@ -8,6 +8,9 @@
 
 ### SDFormat 9.1.0 (201X-XX-XX)
 
+1. sdf 1.7: remove `//world/joint` element since it has never been used.
+    * [Pull request 637](https://bitbucket.org/osrf/sdformat/pull-requests/637)
+
 1. Add clipping for depth camera on rgbd camera sensor
     * [Pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
 
