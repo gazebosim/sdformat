@@ -61,19 +61,6 @@ Noise::Noise()
 }
 
 //////////////////////////////////////////////////
-Noise::Noise(const Noise &_noise)
-  :dataPtr(new NoisePrivate(*_noise.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-Noise::Noise(Noise &&_noise) noexcept
-{
-  this->dataPtr = _noise.dataPtr;
-  _noise.dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
 Noise::~Noise()
 {
   delete this->dataPtr;
@@ -81,12 +68,21 @@ Noise::~Noise()
 }
 
 //////////////////////////////////////////////////
+Noise::Noise(const Noise &_noise)
+  : dataPtr(new NoisePrivate(*_noise.dataPtr))
+{
+}
+
+//////////////////////////////////////////////////
+Noise::Noise(Noise &&_noise) noexcept
+  : dataPtr(std::exchange(_noise.dataPtr, nullptr))
+{
+}
+
+//////////////////////////////////////////////////
 Noise &Noise::operator=(const Noise &_noise)
 {
-  if (!this->dataPtr)
-    this->dataPtr = new NoisePrivate;
-  *this->dataPtr = *_noise.dataPtr;
-  return *this;
+  return *this = Noise(_noise);
 }
 
 //////////////////////////////////////////////////

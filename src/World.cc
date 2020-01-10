@@ -131,24 +131,15 @@ World::World(const World &_world)
 }
 
 /////////////////////////////////////////////////
-World &World::operator=(const World &_world)
+World::World(World &&_world) noexcept
+  : dataPtr(std::exchange(_world.dataPtr, nullptr))
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new WorldPrivate(*_world.dataPtr);
-  }
-  else
-  {
-    this->dataPtr = new(this->dataPtr) WorldPrivate(*_world.dataPtr);
-  }
-  return *this;
 }
 
 /////////////////////////////////////////////////
-World::World(World &&_world) noexcept
+World &World::operator=(const World &_world)
 {
-  this->dataPtr = _world.dataPtr;
-  _world.dataPtr = nullptr;
+  return *this = World(_world);
 }
 
 /////////////////////////////////////////////////

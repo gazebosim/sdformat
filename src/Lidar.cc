@@ -69,19 +69,6 @@ Lidar::Lidar()
 }
 
 //////////////////////////////////////////////////
-Lidar::Lidar(const Lidar &_lidar)
-  : dataPtr(new LidarPrivate(*_lidar.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-Lidar::Lidar(Lidar &&_lidar) noexcept
-{
-  this->dataPtr = _lidar.dataPtr;
-  _lidar.dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
 Lidar::~Lidar()
 {
   delete this->dataPtr;
@@ -89,14 +76,21 @@ Lidar::~Lidar()
 }
 
 //////////////////////////////////////////////////
+Lidar::Lidar(const Lidar &_lidar)
+  : dataPtr(new LidarPrivate(*_lidar.dataPtr))
+{
+}
+
+//////////////////////////////////////////////////
+Lidar::Lidar(Lidar &&_lidar) noexcept
+  : dataPtr(std::exchange(_lidar.dataPtr, nullptr))
+{
+}
+
+//////////////////////////////////////////////////
 Lidar &Lidar::operator=(const Lidar &_lidar)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new LidarPrivate;
-  }
-  *this->dataPtr = *_lidar.dataPtr;
-  return *this;
+  return *this = Lidar(_lidar);
 }
 
 //////////////////////////////////////////////////

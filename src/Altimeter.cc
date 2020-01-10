@@ -40,19 +40,6 @@ Altimeter::Altimeter()
 }
 
 //////////////////////////////////////////////////
-Altimeter::Altimeter(const Altimeter &_altimeter)
-  : dataPtr(new AltimeterPrivate(*_altimeter.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-Altimeter::Altimeter(Altimeter &&_altimeter) noexcept
-{
-  this->dataPtr = _altimeter.dataPtr;
-  _altimeter.dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
 Altimeter::~Altimeter()
 {
   delete this->dataPtr;
@@ -60,14 +47,21 @@ Altimeter::~Altimeter()
 }
 
 //////////////////////////////////////////////////
+Altimeter::Altimeter(const Altimeter &_altimeter)
+  : dataPtr(new AltimeterPrivate(*_altimeter.dataPtr))
+{
+}
+
+//////////////////////////////////////////////////
+Altimeter::Altimeter(Altimeter &&_altimeter) noexcept
+  : dataPtr(std::exchange(_altimeter.dataPtr, nullptr))
+{
+}
+
+//////////////////////////////////////////////////
 Altimeter &Altimeter::operator=(const Altimeter &_altimeter)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new AltimeterPrivate;
-  }
-  *this->dataPtr = *_altimeter.dataPtr;
-  return *this;
+  return *this = Altimeter(_altimeter);
 }
 
 //////////////////////////////////////////////////

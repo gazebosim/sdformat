@@ -106,14 +106,15 @@ PbrWorkflow::PbrWorkflow(const PbrWorkflow &_pbr)
 }
 
 /////////////////////////////////////////////////
+PbrWorkflow::PbrWorkflow(PbrWorkflow &&_pbr) noexcept
+  : dataPtr(std::exchange(_pbr.dataPtr, nullptr))
+{
+}
+
+/////////////////////////////////////////////////
 PbrWorkflow &PbrWorkflow::operator=(const PbrWorkflow &_pbr)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new PbrWorkflowPrivate;
-  }
-  *this->dataPtr = *_pbr.dataPtr;
-  return *this;
+  return *this = PbrWorkflow(_pbr);
 }
 
 /////////////////////////////////////////////////
@@ -147,13 +148,6 @@ bool PbrWorkflow::operator==(const PbrWorkflow &_workflow) const
         this->dataPtr->roughness, _workflow.dataPtr->roughness))
     && (ignition::math::equal(
         this->dataPtr->glossiness, _workflow.dataPtr->glossiness));
-}
-
-/////////////////////////////////////////////////
-PbrWorkflow::PbrWorkflow(PbrWorkflow &&_pbr) noexcept
-{
-  this->dataPtr = _pbr.dataPtr;
-  _pbr.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -411,14 +405,15 @@ Pbr::Pbr(const Pbr &_pbr)
 }
 
 /////////////////////////////////////////////////
+Pbr::Pbr(Pbr &&_pbr) noexcept
+  : dataPtr(std::exchange(_pbr.dataPtr, nullptr))
+{
+}
+
+/////////////////////////////////////////////////
 Pbr &Pbr::operator=(const Pbr &_pbr)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new PbrPrivate;
-  }
-  *this->dataPtr = *_pbr.dataPtr;
-  return *this;
+  return *this = Pbr(_pbr);
 }
 
 /////////////////////////////////////////////////
@@ -426,13 +421,6 @@ Pbr &Pbr::operator=(Pbr &&_pbr)
 {
   std::swap(this->dataPtr, _pbr.dataPtr);
   return *this;
-}
-
-/////////////////////////////////////////////////
-Pbr::Pbr(Pbr &&_pbr) noexcept
-{
-  this->dataPtr = _pbr.dataPtr;
-  _pbr.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

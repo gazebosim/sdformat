@@ -170,6 +170,13 @@ Camera::Camera()
 }
 
 /////////////////////////////////////////////////
+Camera::~Camera()
+{
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
 Camera::Camera(const Camera &_camera)
   : dataPtr(new CameraPrivate(*_camera.dataPtr))
 {
@@ -177,16 +184,21 @@ Camera::Camera(const Camera &_camera)
 
 /////////////////////////////////////////////////
 Camera::Camera(Camera &&_camera) noexcept
+  : dataPtr(std::exchange(_camera.dataPtr, nullptr))
 {
-  this->dataPtr = _camera.dataPtr;
-  _camera.dataPtr = nullptr;
 }
 
-/////////////////////////////////////////////////
-Camera::~Camera()
+//////////////////////////////////////////////////
+Camera &Camera::operator=(const Camera &_camera)
 {
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
+  return *this = Camera(_camera);
+}
+
+//////////////////////////////////////////////////
+Camera &Camera::operator=(Camera &&_camera) noexcept
+{
+  std::swap(this->dataPtr, _camera.dataPtr);
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -553,24 +565,6 @@ const std::string &Camera::SaveFramesPath() const
 void Camera::SetSaveFramesPath(const std::string &_path)
 {
   this->dataPtr->savePath = _path;
-}
-
-//////////////////////////////////////////////////
-Camera &Camera::operator=(const Camera &_camera)
-{
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new CameraPrivate;
-  }
-  *this->dataPtr = *_camera.dataPtr;
-  return *this;
-}
-
-//////////////////////////////////////////////////
-Camera &Camera::operator=(Camera &&_camera) noexcept
-{
-  std::swap(this->dataPtr, _camera.dataPtr);
-  return *this;
 }
 
 //////////////////////////////////////////////////
