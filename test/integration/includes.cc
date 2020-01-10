@@ -269,10 +269,13 @@ TEST(IncludesTest, Includes_15_convert)
   EXPECT_EQ("1.5", worldElem->OriginalVersion());
 
   // The included models were version 1.6
-  // TODO(anyone) these are not currently set correctly by
+  // but their OriginalVersion is incorrectly set to
+  // the version of the world file by
   // sdf::convertFile and sdf::convertString
-  // EXPECT_EQ("1.6", actorElem->OriginalVersion());
-  // EXPECT_EQ("1.6", lightElem->OriginalVersion());
-  // EXPECT_EQ("1.6", modelElem->OriginalVersion());
-  // EXPECT_EQ("1.6", linkElem->OriginalVersion());
+  // TODO(anyone) fix convertFile and convertString and change
+  // the following expectations from "1.5" to "1.6"
+  EXPECT_EQ("1.5", actorElem->OriginalVersion());
+  EXPECT_EQ("1.5", lightElem->OriginalVersion());
+  EXPECT_EQ("1.5", modelElem->OriginalVersion());
+  EXPECT_EQ("1.5", linkElem->OriginalVersion());
 }
