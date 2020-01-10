@@ -102,8 +102,7 @@ Lidar &Lidar::operator=(const Lidar &_lidar)
 //////////////////////////////////////////////////
 Lidar &Lidar::operator=(Lidar &&_lidar) noexcept
 {
-  this->dataPtr = _lidar.dataPtr;
-  _lidar.dataPtr = nullptr;
+  std::swap(this->dataPtr, _lidar.dataPtr);
   return * this;
 }
 

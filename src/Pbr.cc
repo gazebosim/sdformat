@@ -119,8 +119,7 @@ PbrWorkflow &PbrWorkflow::operator=(const PbrWorkflow &_pbr)
 /////////////////////////////////////////////////
 PbrWorkflow &PbrWorkflow::operator=(PbrWorkflow &&_pbr)
 {
-  this->dataPtr = _pbr.dataPtr;
-  _pbr.dataPtr = nullptr;
+  std::swap(this->dataPtr, _pbr.dataPtr);
   return *this;
 }
 
@@ -425,8 +424,7 @@ Pbr &Pbr::operator=(const Pbr &_pbr)
 /////////////////////////////////////////////////
 Pbr &Pbr::operator=(Pbr &&_pbr)
 {
-  this->dataPtr = _pbr.dataPtr;
-  _pbr.dataPtr = nullptr;
+  std::swap(this->dataPtr, _pbr.dataPtr);
   return *this;
 }
 

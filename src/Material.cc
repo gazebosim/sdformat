@@ -126,8 +126,7 @@ Material::Material(Material &&_material) noexcept
 /////////////////////////////////////////////////
 Material &Material::operator=(Material &&_material)
 {
-  this->dataPtr = _material.dataPtr;
-  _material.dataPtr = nullptr;
+  std::swap(this->dataPtr, _material.dataPtr);
   return *this;
 }
 

@@ -76,8 +76,7 @@ Cylinder::Cylinder(Cylinder &&_cylinder) noexcept
 /////////////////////////////////////////////////
 Cylinder &Cylinder::operator=(Cylinder &&_cylinder)
 {
-  this->dataPtr = _cylinder.dataPtr;
-  _cylinder.dataPtr = nullptr;
+  std::swap(this->dataPtr, _cylinder.dataPtr);
   return *this;
 }
 

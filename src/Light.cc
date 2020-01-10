@@ -115,8 +115,7 @@ Light &Light::operator=(const Light &_light)
 //////////////////////////////////////////////////
 Light &Light::operator=(Light &&_light)
 {
-  this->dataPtr = _light.dataPtr;
-  _light.dataPtr = nullptr;
+  std::swap(this->dataPtr, _light.dataPtr);
   return *this;
 }
 

@@ -99,8 +99,7 @@ Link::Link(Link &&_link) noexcept
 /////////////////////////////////////////////////
 Link &Link::operator=(Link &&_link)
 {
-  this->dataPtr = _link.dataPtr;
-  _link.dataPtr = nullptr;
+  std::swap(this->dataPtr, _link.dataPtr);
   return *this;
 }
 

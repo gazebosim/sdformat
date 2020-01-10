@@ -75,8 +75,7 @@ Collision &Collision::operator=(const Collision &_collision)
 /////////////////////////////////////////////////
 Collision &Collision::operator=(Collision &&_collision)
 {
-  this->dataPtr = _collision.dataPtr;
-  _collision.dataPtr = nullptr;
+  std::swap(this->dataPtr, _collision.dataPtr);
   return *this;
 }
 

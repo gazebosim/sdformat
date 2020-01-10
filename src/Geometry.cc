@@ -150,8 +150,7 @@ Geometry::Geometry(Geometry &&_geometry) noexcept
 //////////////////////////////////////////////////
 Geometry &Geometry::operator=(Geometry &&_geometry)
 {
-  this->dataPtr = _geometry.dataPtr;
-  _geometry.dataPtr = nullptr;
+  std::swap(this->dataPtr, _geometry.dataPtr);
   return *this;
 }
 

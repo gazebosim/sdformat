@@ -92,8 +92,7 @@ Noise &Noise::operator=(const Noise &_noise)
 //////////////////////////////////////////////////
 Noise &Noise::operator=(Noise &&_noise)
 {
-  this->dataPtr = _noise.dataPtr;
-  _noise.dataPtr = nullptr;
+  std::swap(this->dataPtr, _noise.dataPtr);
   return *this;
 }
 
