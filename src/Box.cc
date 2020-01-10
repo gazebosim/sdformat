@@ -23,7 +23,7 @@ using namespace sdf;
 class sdf::BoxPrivate
 {
   // Size of the box
-  public: ignition::math::Vector3d size = ignition::math::Vector3d::One;
+  public: ignition::math::Boxd box{ignition::math::Vector3d::One};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -46,7 +46,7 @@ Box::~Box()
 Box::Box(const Box &_box)
   : dataPtr(new BoxPrivate)
 {
-  this->dataPtr->size = _box.dataPtr->size;
+  this->dataPtr->box = _box.dataPtr->box;
   this->dataPtr->sdf = _box.dataPtr->sdf;
 }
 
@@ -57,7 +57,7 @@ Box &Box::operator=(const Box &_box)
   {
     this->dataPtr = new BoxPrivate;
   }
-  this->dataPtr->size = _box.dataPtr->size;
+  this->dataPtr->box = _box.dataPtr->box;
   this->dataPtr->sdf = _box.dataPtr->sdf;
   return *this;
 }
@@ -105,7 +105,7 @@ Errors Box::Load(ElementPtr _sdf)
   if (_sdf->HasElement("size"))
   {
     std::pair<ignition::math::Vector3d, bool> pair =
-      _sdf->Get<ignition::math::Vector3d>("size", this->dataPtr->size);
+      _sdf->Get<ignition::math::Vector3d>("size", this->dataPtr->box.Size());
 
     if (!pair.second)
     {
@@ -113,7 +113,7 @@ Errors Box::Load(ElementPtr _sdf)
           "Invalid <size> data for a <box> geometry. "
           "Using a size of 1, 1, 1 "});
     }
-    this->dataPtr->size = pair.first;
+    this->dataPtr->box.SetSize(pair.first);
   }
   else
   {
@@ -128,17 +128,29 @@ Errors Box::Load(ElementPtr _sdf)
 //////////////////////////////////////////////////
 ignition::math::Vector3d Box::Size() const
 {
-  return this->dataPtr->size;
+  return this->dataPtr->box.Size();
 }
 
 //////////////////////////////////////////////////
 void Box::SetSize(const ignition::math::Vector3d &_size)
 {
-  this->dataPtr->size = _size;
+  this->dataPtr->box.SetSize(_size);
 }
 
 /////////////////////////////////////////////////
 sdf::ElementPtr Box::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Boxd &Box::Shape() const
+{
+  return this->dataPtr->box;
+}
+
+/////////////////////////////////////////////////
+ignition::math::Boxd &Box::Shape()
+{
+  return this->dataPtr->box;
 }

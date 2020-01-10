@@ -7,6 +7,6 @@
     <link name="link"/>
   </model>
   <model name="last_robot">
-    <link name="link"/>
+    <static>true</static>
   </model>
 </sdf>

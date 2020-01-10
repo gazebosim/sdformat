@@ -42,6 +42,18 @@ TEST(DOMCamera, Construction)
   cam.SetPixelFormat(sdf::PixelFormatType::L_INT8);
   EXPECT_EQ(sdf::PixelFormatType::L_INT8 , cam.PixelFormat());
 
+  EXPECT_DOUBLE_EQ(0.1, cam.DepthNearClip());
+  EXPECT_FALSE(cam.HasDepthNearClip());
+  cam.SetDepthNearClip(0.2);
+  EXPECT_DOUBLE_EQ(0.2, cam.DepthNearClip());
+  EXPECT_TRUE(cam.HasDepthNearClip());
+
+  EXPECT_DOUBLE_EQ(10.0, cam.DepthFarClip());
+  EXPECT_FALSE(cam.HasDepthFarClip());
+  cam.SetDepthFarClip(20.2);
+  EXPECT_DOUBLE_EQ(20.2, cam.DepthFarClip());
+  EXPECT_TRUE(cam.HasDepthFarClip());
+
   EXPECT_DOUBLE_EQ(0.1, cam.NearClip());
   cam.SetNearClip(0.2);
   EXPECT_DOUBLE_EQ(0.2, cam.NearClip());

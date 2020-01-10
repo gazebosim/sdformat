@@ -199,7 +199,8 @@ but with improved human-readability..
 1. **model.sdf** `//model/@canonical_link` attribute
     + description: The name of the canonical link in this model to which the
       model's implicit frame is attached. This implies that a model must have
-      at least one link, which is also stated in the Modifications section.
+      at least one link (unless it is static), which is also stated in the
+      Modifications section.
     + type: string
     + default: ""
     + required: 0
@@ -210,9 +211,10 @@ but with improved human-readability..
 
 ### Modifications
 
-1.  A model must have at least one link, as specified in the
+1.  A non-static model must have at least one link, as specified in the
     [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#2-model-frame-and-canonical-link).
     + [pull request 601](https://bitbucket.org/osrf/sdformat/pull-requests/601)
+    + [pull request 626](https://bitbucket.org/osrf/sdformat/pull-requests/626)
 
 1. Unique names for all sibling elements:
     + As described in the [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#3-2-unique-names-for-all-sibling-elements),
@@ -235,6 +237,9 @@ but with improved human-readability..
       sentinel or default names for elements with missing names.
       If explicitly stated, they can be referred to (e.g. `__model__` / `world`
       for implicit model / world frames, respectively).
+
+1. **joint.sdf** `//joint/child` may no longer be specified as `world`.
+    + [pull request 634](https://bitbucket.org/osrf/sdformat/pull-requests/634)
 
 1. **pose.sdf** `//pose/@frame` attribute is renamed to `//pose/@relative_to`.
     + [pull request 597](https://bitbucket.org/osrf/sdformat/pull-requests/597)
@@ -284,6 +289,9 @@ but with improved human-readability..
     and is now removed.
     + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
 
+1. **world.sdf** `//world/joint` was removed as it has never been used.
+    + [pull request 637](https://bitbucket.org/osrf/sdformat/pull-requests/637)
+
 ## SDF protocol 1.5 to 1.6
 
 ### Additions
@@ -299,6 +307,10 @@ but with improved human-readability..
     + max: 1.0
     + required: 0
     + [pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
+
+1. **camera.sdf** `depth_camera/clip` sub-elements: `near`, `far`
+    + description: Clipping parameters for depth camera on rgbd camera sensor.
+    + [pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
 
 1. **camera.sdf** `intrinsics` sub-elements: `fx`, `fy`, `cx`, `cy`, `s`
     + description: Camera intrinsic parameters for setting a custom perspective projection matrix.

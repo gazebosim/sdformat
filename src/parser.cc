@@ -474,7 +474,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
-    sdferr << "Missing <sdf> element.\n";
     return false;
   }
 
@@ -547,7 +546,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
-    sdferr << "Missing <sdf> element.\n";
     return false;
   }
 

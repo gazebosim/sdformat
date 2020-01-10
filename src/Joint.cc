@@ -206,6 +206,13 @@ Errors Joint::Load(ElementPtr _sdf)
         "The child element is missing."});
   }
 
+  if (this->dataPtr->childLinkName == "world")
+  {
+    errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+        "Joint with name[" + this->dataPtr->name +
+        "] specified invalid child link [world]."});
+  }
+
   if (this->dataPtr->childLinkName == this->dataPtr->parentLinkName)
   {
     errors.push_back({ErrorCode::JOINT_PARENT_SAME_AS_CHILD,
