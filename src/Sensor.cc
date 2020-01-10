@@ -194,8 +194,7 @@ Sensor &Sensor::operator=(const Sensor &_sensor)
 /////////////////////////////////////////////////
 Sensor &Sensor::operator=(Sensor &&_sensor)
 {
-  this->dataPtr = _sensor.dataPtr;
-  _sensor.dataPtr = nullptr;
+  std::swap(this->dataPtr, _sensor.dataPtr);
   return *this;
 }
 

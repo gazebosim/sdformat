@@ -109,8 +109,7 @@ Visual::Visual(Visual &&_visual) noexcept
 /////////////////////////////////////////////////
 Visual &Visual::operator=(Visual &&_visual)
 {
-  this->dataPtr = _visual.dataPtr;
-  _visual.dataPtr = nullptr;
+  std::swap(this->dataPtr, _visual.dataPtr);
   return *this;
 }
 

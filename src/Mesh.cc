@@ -91,8 +91,7 @@ Mesh::Mesh(Mesh &&_mesh) noexcept
 /////////////////////////////////////////////////
 Mesh &Mesh::operator=(Mesh &&_mesh)
 {
-  this->dataPtr = _mesh.dataPtr;
-  _mesh.dataPtr = nullptr;
+  std::swap(this->dataPtr, _mesh.dataPtr);
   return *this;
 }
 

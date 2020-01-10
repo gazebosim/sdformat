@@ -154,8 +154,7 @@ World::World(World &&_world) noexcept
 /////////////////////////////////////////////////
 World &World::operator=(World &&_world)
 {
-  this->dataPtr = _world.dataPtr;
-  _world.dataPtr = nullptr;
+  std::swap(this->dataPtr, _world.dataPtr);
   return *this;
 }
 
