@@ -26,8 +26,8 @@ project (sdformat9)
 # It represents the current version of sdformat implement by the software
 set (SDF_PROTOCOL_VERSION 1.7)
 
-set (SDF_MAJOR_VERSION 9)
-set (SDF_MINOR_VERSION 1)
+set (SDF_MAJOR_VERSION 10)
+set (SDF_MINOR_VERSION 0)
 set (SDF_PATCH_VERSION 0)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
