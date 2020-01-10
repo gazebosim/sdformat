@@ -3,7 +3,7 @@
 ### SDFormat 10.X.X (202X-XX-XX)
 
 1. Changed the default radius of a Cylinder from 1.0 to 0.5 meters.
-    * [Pull request xxx](https://bitbucket.org/osrf/sdformat/pull-requests/xxx)
+    * [Pull request 643](https://bitbucket.org/osrf/sdformat/pull-requests/643)
 
 ## SDFormat 9.X
 
