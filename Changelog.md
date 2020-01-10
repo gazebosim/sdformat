@@ -1,6 +1,12 @@
+## SDFormat 10.X
+
+### SDFormat 10.X.X (202X-XX-XX)
+
+### SDFormat 10.0.0 (202X-XX-XX)
+
 ## SDFormat 9.X
 
-### SDFormat 9.X.X (201X-XX-XX)
+### SDFormat 9.X.X (202X-XX-XX)
 
 1. Added accessors to `ignition::math::[Boxd, Cylinderd, Planed, Sphered]`
    in the matching `sdf::[Box, Cylinder, Plane, Sphere]` classes.
