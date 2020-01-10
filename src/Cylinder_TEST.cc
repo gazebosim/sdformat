@@ -23,8 +23,10 @@ TEST(DOMCylinder, Construction)
 {
   sdf::Cylinder cylinder;
   EXPECT_EQ(nullptr, cylinder.Element());
+  // A default cylinder has a length of 1 meter and radius if 0.5 meters.
+  EXPECT_DOUBLE_EQ(IGN_PI * std::pow(0.5, 2) * 1.0, cylinder.Shape().Volume());
 
-  EXPECT_DOUBLE_EQ(1.0, cylinder.Radius());
+  EXPECT_DOUBLE_EQ(0.5, cylinder.Radius());
   EXPECT_DOUBLE_EQ(1.0, cylinder.Length());
 
   cylinder.SetRadius(0.5);
@@ -162,7 +164,7 @@ TEST(DOMCylinder, Load)
 TEST(DOMCylinder, Shape)
 {
   sdf::Cylinder cylinder;
-  EXPECT_DOUBLE_EQ(1.0, cylinder.Radius());
+  EXPECT_DOUBLE_EQ(0.5, cylinder.Radius());
   EXPECT_DOUBLE_EQ(1.0, cylinder.Length());
 
   cylinder.Shape().SetRadius(0.123);

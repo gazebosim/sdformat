@@ -21,8 +21,8 @@ using namespace sdf;
 // Private data class
 class sdf::CylinderPrivate
 {
-  // A cylinder with a length and radius if 1 meter.
-  public: ignition::math::Cylinderd cylinder{1.0, 1.0};
+  // A cylinder with a length of 1 meter and radius if 0.5 meters.
+  public: ignition::math::Cylinderd cylinder{1.0, 0.5};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
