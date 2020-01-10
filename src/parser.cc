@@ -1223,6 +1223,8 @@ bool convertFile(const std::string &_filename, const std::string &_version,
         std::cerr << e << std::endl;
 
       // overwrite OriginalVersion, since sdf::Converter::Convert changed it
+      // TODO(anyone) improve this, since it currently will overwrite the
+      // original version of included models
       _sdf->SetOriginalVersion(originalVersion);
       recursiveElementSetOriginalVersion(_sdf->Root(), originalVersion);
 
@@ -1272,6 +1274,8 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
         std::cerr << e << std::endl;
 
       // overwrite OriginalVersion, since sdf::Converter::Convert changed it
+      // TODO(anyone) improve this, since it currently will overwrite the
+      // original version of included models
       _sdf->SetOriginalVersion(originalVersion);
       recursiveElementSetOriginalVersion(_sdf->Root(), originalVersion);
 

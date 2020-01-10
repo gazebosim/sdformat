@@ -223,3 +223,56 @@ TEST(IncludesTest, Includes_15)
   EXPECT_EQ("1.6", model->Element()->OriginalVersion());
   EXPECT_EQ("1.6", link->Element()->OriginalVersion());
 }
+
+//////////////////////////////////////////////////
+TEST(IncludesTest, Includes_15_convert)
+{
+  sdf::setFindCallback(findFileCb);
+
+  const auto worldFile =
+    sdf::filesystem::append(g_testPath, "sdf", "includes_1.5.sdf");
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+  sdf::init(sdf);
+
+  EXPECT_TRUE(sdf::convertFile(worldFile, "1.7", sdf));
+
+  sdf::ElementPtr rootElem = sdf->Root();
+  ASSERT_NE(nullptr, rootElem);
+
+  // it is parsed to 1.7
+  EXPECT_EQ("1.7", rootElem->Get<std::string>("version"));
+
+  sdf::ElementPtr worldElem = rootElem->GetElement("world");
+  ASSERT_NE(nullptr, worldElem);
+  EXPECT_EQ(worldElem->Get<std::string>("name"), "default");
+
+  sdf::ElementPtr actorElem = worldElem->GetElement("actor");
+  ASSERT_NE(nullptr, actorElem);
+  EXPECT_EQ(actorElem->Get<std::string>("name"), "actor");
+
+  sdf::ElementPtr lightElem = worldElem->GetElement("light");
+  ASSERT_NE(nullptr, lightElem);
+  EXPECT_EQ(lightElem->Get<std::string>("name"), "point_light");
+
+  sdf::ElementPtr modelElem = worldElem->GetElement("model");
+  ASSERT_NE(nullptr, modelElem);
+  EXPECT_EQ(modelElem->Get<std::string>("name"), "test_model");
+
+  sdf::ElementPtr linkElem = modelElem->GetElement("link");
+  ASSERT_NE(nullptr, linkElem);
+  EXPECT_EQ(linkElem->Get<std::string>("name"), "link");
+
+  // The root and world were version 1.5
+  EXPECT_EQ("1.5", sdf->OriginalVersion());
+  EXPECT_EQ("1.5", rootElem->OriginalVersion());
+  EXPECT_EQ("1.5", worldElem->OriginalVersion());
+
+  // The included models were version 1.6
+  // TODO(anyone) these are not currently set correctly by
+  // sdf::convertFile and sdf::convertString
+  // EXPECT_EQ("1.6", actorElem->OriginalVersion());
+  // EXPECT_EQ("1.6", lightElem->OriginalVersion());
+  // EXPECT_EQ("1.6", modelElem->OriginalVersion());
+  // EXPECT_EQ("1.6", linkElem->OriginalVersion());
+}
