@@ -2,6 +2,8 @@
 
 ### SDFormat 10.X.X (202X-XX-XX)
 
+### SDFormat 10.0.0 (202X-XX-XX)
+
 ## SDFormat 9.X
 
 ### SDFormat 9.X.X (202X-XX-XX)
