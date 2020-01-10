@@ -2,6 +2,10 @@
 
 ### SDFormat 9.X.X (201X-XX-XX)
 
+1. Added accessors to `ignition::math::[Boxd, Cylinderd, Planed, Sphered]`
+   in the matching `sdf::[Box, Cylinder, Plane, Sphere]` classes.
+    * [Pull request 639](https://bitbucket.org/osrf/sdformat/pull-requests/639)
+
 ### SDFormat 9.1.0 (201X-XX-XX)
 
 1. sdf 1.7: remove `//world/joint` element since it has never been used.

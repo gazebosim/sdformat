@@ -17,6 +17,7 @@
 #ifndef SDF_PLANE_HH_
 #define SDF_PLANE_HH_
 
+#include <ignition/math/Plane.hh>
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Vector2.hh>
 #include <sdf/Error.hh>
@@ -93,6 +94,14 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Get the Ignition Math representation of this Plane.
+    /// \return A const reference to an ignition::math::Planed object.
+    public: const ignition::math::Planed &Shape() const;
+
+    /// \brief Get a mutable Ignition Math representation of this Plane.
+    /// \return A reference to an ignition::math::Planed object.
+    public: ignition::math::Planed &Shape();
 
     /// \brief Private data pointer.
     private: PlanePrivate *dataPtr;
