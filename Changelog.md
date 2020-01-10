@@ -2,7 +2,31 @@
 
 ### SDFormat 9.X.X (201X-XX-XX)
 
-### SDFormat 9.0.0 (201X-XX-XX)
+1. Added accessors to `ignition::math::[Boxd, Cylinderd, Planed, Sphered]`
+   in the matching `sdf::[Box, Cylinder, Plane, Sphere]` classes.
+    * [Pull request 639](https://bitbucket.org/osrf/sdformat/pull-requests/639)
+
+### SDFormat 9.1.0 (201X-XX-XX)
+
+1. sdf 1.7: remove `//world/joint` element since it has never been used.
+    * [Pull request 637](https://bitbucket.org/osrf/sdformat/pull-requests/637)
+
+1. Add clipping for depth camera on rgbd camera sensor
+    * [Pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
+
+1. Add tests to confirm that world is not allowed as child link of a joint.
+    * [Pull request 634](https://bitbucket.org/osrf/sdformat/pull-requests/634)
+
+1. Fix link pose multiplication for URDF.
+    * [Pull request 630](https://bitbucket.org/osrf/sdformat/pull-requests/630)
+
+1. Enable linter for URDF parser and fix style.
+    * [Pull request 631](https://bitbucket.org/osrf/sdformat/pull-requests/631)
+
+1. Converter: fix memory leak pointed out by ASan.
+    * [Pull request 638](https://bitbucket.org/osrf/sdformat/pull-requests/638)
+
+### SDFormat 9.0.0 (2019-12-10)
 
 1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
     * [Pull request 606](https://bitbucket.org/osrf/sdformat/pull-requests/606)
@@ -43,6 +67,9 @@
 1. sdf 1.7: add `//model/@canonical_link` attribute and require models to have at least one link.
     * [Pull request 601](https://bitbucket.org/osrf/sdformat/pull-requests/601)
 
+1. Static models: allow them to have no links and skip building FrameAttachedToGraph.
+    * [Pull request 626](https://bitbucket.org/osrf/sdformat/pull-requests/626)
+
 1. sdf 1.7: add `//frame/attached_to`, only allow frames in model and world, add Frame DOM.
     * [pull request 603](https://bitbucket.org/osrf/sdformat/pull-requests/603)
 
@@ -80,6 +107,25 @@
 ## SDFormat 8.0
 
 ### SDFormat 8.X.X (201X-XX-XX)
+
+### SDFormat 8.7.0 (201X-12-13)
+
+1. Remove some URDF error messages
+    * [Pull request 605](https://bitbucket.org/osrf/sdformat/pull-requests/605)
+
+1. Fix parsing URDF without <material> inside <gazebo>
+    * [Pull request 608](https://bitbucket.org/osrf/sdformat/pull-requests/608)
+
+1. Backport URDF multiplication and linter
+    * [Pull request 632](https://bitbucket.org/osrf/sdformat/pull-requests/632)
+
+1. Add clipping for depth camera on rgbd camera sensor
+    * [Pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
+
+### SDFormat 8.6.1 (2019-12-05)
+
+1. Unversioned lib name for cmds
+    * [Pull request 612](https://bitbucket.org/osrf/sdformat/pull-requests/612)
 
 ### SDFormat 8.6.0 (2019-11-20)
 

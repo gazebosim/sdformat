@@ -44,6 +44,10 @@ TEST(DOMCylinder, MoveConstructor)
   sdf::Cylinder cylinder2(std::move(cylinder));
   EXPECT_DOUBLE_EQ(0.2, cylinder2.Radius());
   EXPECT_DOUBLE_EQ(3.0, cylinder2.Length());
+
+  EXPECT_DOUBLE_EQ(IGN_PI * std::pow(0.2, 2) * 3.0, cylinder2.Shape().Volume());
+  EXPECT_DOUBLE_EQ(0.2, cylinder2.Shape().Radius());
+  EXPECT_DOUBLE_EQ(3.0, cylinder2.Shape().Length());
 }
 
 /////////////////////////////////////////////////
@@ -152,4 +156,17 @@ TEST(DOMCylinder, Load)
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <length>"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCylinder, Shape)
+{
+  sdf::Cylinder cylinder;
+  EXPECT_DOUBLE_EQ(1.0, cylinder.Radius());
+  EXPECT_DOUBLE_EQ(1.0, cylinder.Length());
+
+  cylinder.Shape().SetRadius(0.123);
+  cylinder.Shape().SetLength(0.456);
+  EXPECT_DOUBLE_EQ(0.123, cylinder.Radius());
+  EXPECT_DOUBLE_EQ(0.456, cylinder.Length());
 }

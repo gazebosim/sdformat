@@ -141,7 +141,8 @@ void CreateCollisions(TiXmlElement* _elem, urdf::LinkConstSharedPtr _link);
 void CreateInertial(TiXmlElement *_elem, urdf::LinkConstSharedPtr _link);
 
 /// append transform (pose) to the end of the xml element
-void AddTransform(TiXmlElement *_elem, const ignition::math::Pose3d &_transform);
+void AddTransform(TiXmlElement *_elem,
+    const ignition::math::Pose3d &_transform);
 
 /// create SDF from URDF link
 void CreateSDF(TiXmlElement *_root, urdf::LinkConstSharedPtr _link,
@@ -197,12 +198,11 @@ void ReduceSDFExtensionToParent(urdf::LinkSharedPtr _link);
 
 /// reduced fixed joints:  apply appropriate frame updates
 ///   in urdf extensions when doing fixed joint reduction
-void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge, urdf::LinkSharedPtr _link);
-
+void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
+    urdf::LinkSharedPtr _link);
 
 /// get value from <key value="..."/> pair and return it as string
 std::string GetKeyValueAsString(TiXmlElement* _elem);
-
 
 /// \brief append key value pair to the end of the xml element
 /// \param[in] _elem pointer to xml element
@@ -217,8 +217,7 @@ void AddKeyValue(TiXmlElement *_elem, const std::string &_key,
 /// \return a string
 std::string Values2str(unsigned int _count, const double *_values);
 
-
-void CreateGeometry(TiXmlElement* _elem, urdf::GeometrySharedPtr _geometry);
+void CreateGeometry(TiXmlElement *_elem, urdf::GeometrySharedPtr _geometry);
 
 ignition::math::Pose3d inverseTransformToParentFrame(
     ignition::math::Pose3d _transformInLinkFrame,
@@ -246,6 +245,7 @@ ignition::math::Pose3d CopyPose(urdf::Pose _pose);
 ///   math::Pose
 urdf::Pose CopyPose(ignition::math::Pose3d _pose);
 
+////////////////////////////////////////////////////////////////////////////////
 bool URDF2SDF::IsURDF(const std::string &_filename)
 {
   TiXmlDocument xmlDoc;
@@ -443,8 +443,8 @@ void ReduceFixedJoints(TiXmlElement *_root, urdf::LinkSharedPtr _link)
 // ODE dMatrix
 typedef double dMatrix3[4*3];
 typedef double dVector3[4];
-#define _R(i,j) R[(i)*4+(j)]
-#define _I(i,j) I[(i)*4+(j)]
+#define _R(i, j) R[(i)*4+(j)]
+#define _I(i, j) I[(i)*4+(j)]
 #define dRecip(x) ((1.0f/(x)))
 
 struct dMass;
@@ -504,8 +504,8 @@ void dMassSetZero(dMass *m)
 {
   // dAASSERT (m);
   m->mass = 0.0;
-  dSetZero(m->c, sizeof(m->c) / sizeof(double));
-  dSetZero(m->I, sizeof(m->I) / sizeof(double));
+  dSetZero(m->c, sizeof(m->c) / sizeof(m->c[0]));
+  dSetZero(m->I, sizeof(m->I) / sizeof(m->I[0]));
 }
 
 void dMassSetParameters(dMass *m, double themass,
@@ -519,21 +519,21 @@ void dMassSetParameters(dMass *m, double themass,
   m->c[0] = cgx;
   m->c[1] = cgy;
   m->c[2] = cgz;
-  m->_I(0,0) = I11;
-  m->_I(1,1) = I22;
-  m->_I(2,2) = I33;
-  m->_I(0,1) = I12;
-  m->_I(0,2) = I13;
-  m->_I(1,2) = I23;
-  m->_I(1,0) = I12;
-  m->_I(2,0) = I13;
-  m->_I(2,1) = I23;
+  m->_I(0, 0) = I11;
+  m->_I(1, 1) = I22;
+  m->_I(2, 2) = I33;
+  m->_I(0, 1) = I12;
+  m->_I(0, 2) = I13;
+  m->_I(1, 2) = I23;
+  m->_I(1, 0) = I12;
+  m->_I(2, 0) = I13;
+  m->_I(2, 1) = I23;
   // dMassCheck (m);
 }
 
 void dRFromEulerAngles(dMatrix3 R, double phi, double theta, double psi)
 {
-  double sphi,cphi,stheta,ctheta,spsi,cpsi;
+  double sphi, cphi, stheta, ctheta, spsi, cpsi;
   // dAASSERT (R);
   sphi = sin(phi);
   cphi = cos(phi);
@@ -541,18 +541,18 @@ void dRFromEulerAngles(dMatrix3 R, double phi, double theta, double psi)
   ctheta = cos(theta);
   spsi = sin(psi);
   cpsi = cos(psi);
-  _R(0,0) = cpsi*ctheta;
-  _R(0,1) = spsi*ctheta;
-  _R(0,2) =-stheta;
-  _R(0,3) = 0.0;
-  _R(1,0) = cpsi*stheta*sphi - spsi*cphi;
-  _R(1,1) = spsi*stheta*sphi + cpsi*cphi;
-  _R(1,2) = ctheta*sphi;
-  _R(1,3) = 0.0;
-  _R(2,0) = cpsi*stheta*cphi + spsi*sphi;
-  _R(2,1) = spsi*stheta*cphi - cpsi*sphi;
-  _R(2,2) = ctheta*cphi;
-  _R(2,3) = 0.0;
+  _R(0, 0) = cpsi*ctheta;
+  _R(0, 1) = spsi*ctheta;
+  _R(0, 2) =-stheta;
+  _R(0, 3) = 0.0;
+  _R(1, 0) = cpsi*stheta*sphi - spsi*cphi;
+  _R(1, 1) = spsi*stheta*sphi + cpsi*cphi;
+  _R(1, 2) = ctheta*sphi;
+  _R(1, 3) = 0.0;
+  _R(2, 0) = cpsi*stheta*cphi + spsi*sphi;
+  _R(2, 1) = spsi*stheta*cphi - cpsi*sphi;
+  _R(2, 2) = ctheta*cphi;
+  _R(2, 3) = 0.0;
 }
 
 double _dCalcVectorDot3(const double *a, const double *b, unsigned step_a,
@@ -577,7 +577,9 @@ void dMultiply0_331(double *res, const double *a, const double *b)
   res_0 = dCalcVectorDot3(a, b);
   res_1 = dCalcVectorDot3(a + 4, b);
   res_2 = dCalcVectorDot3(a + 8, b);
-  res[0] = res_0; res[1] = res_1; res[2] = res_2;
+  res[0] = res_0;
+  res[1] = res_1;
+  res[2] = res_2;
 }
 
 void dMultiply1_331(double *res, const double *a, const double *b)
@@ -586,7 +588,9 @@ void dMultiply1_331(double *res, const double *a, const double *b)
   res_0 = dCalcVectorDot3_41(a, b);
   res_1 = dCalcVectorDot3_41(a + 1, b);
   res_2 = dCalcVectorDot3_41(a + 2, b);
-  res[0] = res_0; res[1] = res_1; res[2] = res_2;
+  res[0] = res_0;
+  res[1] = res_1;
+  res[2] = res_2;
 }
 
 void dMultiply0_133(double *res, const double *a, const double *b)
@@ -627,9 +631,9 @@ void dMassRotate(dMass *m, const dMatrix3 R)
   dMultiply0_333(m->I, R, t1);
 
   // ensure perfect symmetry
-  m->_I(1,0) = m->_I(0,1);
-  m->_I(2,0) = m->_I(0,2);
-  m->_I(2,1) = m->_I(1,2);
+  m->_I(1, 0) = m->_I(0, 1);
+  m->_I(2, 0) = m->_I(0, 2);
+  m->_I(2, 1) = m->_I(1, 2);
 
   // rotate center of mass
   dMultiply0_331(t2, R, m->c);
@@ -658,8 +662,8 @@ void dMassTranslate(dMass *m, double x, double y, double z)
   //
   // where c is the existing center of mass and I is the old inertia.
 
-  int i,j;
-  dMatrix3 ahat,chat,t1,t2;
+  int i, j;
+  dMatrix3 ahat, chat, t1, t2;
   double a[3];
 
   // dAASSERT (m);
@@ -678,14 +682,14 @@ void dMassTranslate(dMass *m, double x, double y, double z)
   {
     for (j = 0; j < 3; j++)
     {
-      m->_I(i,j) += m->mass * (t2[i*4+j]-t1[i*4+j]);
+      m->_I(i, j) += m->mass * (t2[i*4+j]-t1[i*4+j]);
     }
   }
 
   // ensure perfect symmetry
-  m->_I(1,0) = m->_I(0, 1);
-  m->_I(2,0) = m->_I(0, 2);
-  m->_I(2,1) = m->_I(1, 2);
+  m->_I(1, 0) = m->_I(0, 1);
+  m->_I(2, 0) = m->_I(0, 2);
+  m->_I(2, 1) = m->_I(1, 2);
 
   // adjust center of mass
   m->c[0] += x;
@@ -1734,7 +1738,6 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
 
           if (contactOde == nullptr)
           {
-
             if (contact->FirstChild("ode") == nullptr)
             {
               contactOde  = new TiXmlElement("ode");
@@ -1990,43 +1993,43 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
           // in visual blobs by using the <visual> tag.
           // So there's no need for custom code for each property.
 
-          // construct new elements if not in blobs
-          if (material == nullptr)
-          {
-            material  = new TiXmlElement("material");
-            if (!material)
-            {
-              // Memory allocation error
-              sdferr << "Memory allocation error while"
-                     << " processing <material>.\n";
-            }
-            _elem->LinkEndChild(material);
-          }
-
-          if (script == nullptr)
-          {
-            if (material->FirstChildElement("script") == nullptr)
-            {
-              script  = new TiXmlElement("script");
-              if (!script)
-              {
-                // Memory allocation error
-                sdferr << "Memory allocation error while"
-                       << " processing <script>.\n";
-              }
-              material->LinkEndChild(script);
-            }
-            else
-            {
-              script  = material->FirstChildElement("script");
-            }
-          }
-
           // backward compatibility for old code
           // insert material/script block for visual
           // (*ge)->material block goes under sdf <material><script><name>.
           if (!(*ge)->material.empty())
           {
+            // construct new elements if not in blobs
+            if (material == nullptr)
+            {
+              material  = new TiXmlElement("material");
+              if (!material)
+              {
+                // Memory allocation error
+                sdferr << "Memory allocation error while"
+                       << " processing <material>.\n";
+              }
+              _elem->LinkEndChild(material);
+            }
+
+            if (script == nullptr)
+            {
+              if (material->FirstChildElement("script") == nullptr)
+              {
+                script  = new TiXmlElement("script");
+                if (!script)
+                {
+                  // Memory allocation error
+                  sdferr << "Memory allocation error while"
+                         << " processing <script>.\n";
+                }
+                material->LinkEndChild(script);
+              }
+              else
+              {
+                script  = material->FirstChildElement("script");
+              }
+            }
+
             AddKeyValue(script, "name", (*ge)->material);
             // hard code original default gazebo materials files
             AddKeyValue(script, "uri",
@@ -2085,7 +2088,6 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
         {
           _elem->LinkEndChild((*blobIt)->Clone());
         }
-
       }
     }
   }
@@ -2105,7 +2107,6 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
           ge = sdfIt->second.begin();
           ge != sdfIt->second.end(); ++ge)
       {
-
         TiXmlElement *physics = _elem->FirstChildElement("physics");
         bool newPhysics = false;
         if (physics == nullptr)
@@ -2483,7 +2484,7 @@ void ReduceSDFExtensionToParent(urdf::LinkSharedPtr _link)
 
     // find pointer to the existing extension with the new _link reference
     std::string parentLinkName = _link->getParent()->name;
-    StringSDFExtensionPtrMap::iterator parentExt = g_extensions.find(parentLinkName);
+    auto parentExt = g_extensions.find(parentLinkName);
 
     // if none exist, create new extension with parentLinkName
     if (parentExt == g_extensions.end())
@@ -2722,7 +2723,7 @@ void CreateLink(TiXmlElement *_root,
                 ignition::math::Pose3d &_currentTransform)
 {
   // create new body
-  TiXmlElement *elem     = new TiXmlElement("link");
+  TiXmlElement *elem = new TiXmlElement("link");
 
   // set body name
   elem->SetAttribute("name", _link->name);
@@ -2735,7 +2736,7 @@ void CreateLink(TiXmlElement *_root,
   {
     localTransform = CopyPose(
         _link->parent_joint->parent_to_joint_origin_transform);
-    _currentTransform = localTransform * _currentTransform;
+    _currentTransform *= localTransform;
   }
   else
   {
@@ -2933,10 +2934,9 @@ void CreateJoint(TiXmlElement *_root,
   if (jtype == "fixed")
   {
     fixedJointConvertedToRevoluteJoint =
-      (g_fixedJointsTransformedInRevoluteJoints.find( _link->parent_joint->name) !=
-       g_fixedJointsTransformedInRevoluteJoints.end());
+      (g_fixedJointsTransformedInRevoluteJoints.find(_link->parent_joint->name)
+       != g_fixedJointsTransformedInRevoluteJoints.end());
   }
-
 
   // skip if joint type is fixed and it is lumped
   //   skip/return with the exception of root link being world,
@@ -3109,7 +3109,7 @@ void CreateCollision(TiXmlElement* _elem, urdf::LinkConstSharedPtr _link,
 
 ////////////////////////////////////////////////////////////////////////////////
 void CreateVisual(TiXmlElement *_elem, urdf::LinkConstSharedPtr _link,
-                  urdf::VisualSharedPtr _visual, const std::string &_oldLinkName)
+    urdf::VisualSharedPtr _visual, const std::string &_oldLinkName)
 {
   // begin create sdf visual node
   TiXmlElement *sdfVisual = new TiXmlElement("visual");

@@ -86,7 +86,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 
   // Starting with the original SDF version, perform all the conversions
   // necessary in order to reach the _toVersion.
-  while (fromIter->first != _toVersion && fromIter != conversionMap.end())
+  while (fromIter != conversionMap.end() && fromIter->first != _toVersion)
   {
     // Get the SDF to version.
     toVer = fromIter->second.first;
