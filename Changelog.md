@@ -6,6 +6,11 @@
    in the matching `sdf::[Box, Cylinder, Plane, Sphere]` classes.
     * [Pull request 639](https://bitbucket.org/osrf/sdformat/pull-requests/639)
 
+1. Forward port of adjustments for memory leaks:
+   [Pull Request 641](https://bitbucket.org/osrf/sdformat/pull-requests/641) and
+   [Pull Request 644](https://bitbucket.org/osrf/sdformat/pull-requests/644)
+    * [Pull Request 645](https://bitbucket.org/osrf/sdformat/pull-requests/645)
+
 ### SDFormat 9.1.0 (201X-XX-XX)
 
 1. sdf 1.7: remove `//world/joint` element since it has never been used.
