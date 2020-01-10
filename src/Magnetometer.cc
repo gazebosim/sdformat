@@ -37,19 +37,6 @@ Magnetometer::Magnetometer()
 }
 
 //////////////////////////////////////////////////
-Magnetometer::Magnetometer(const Magnetometer &_magnetometer)
-  : dataPtr(new MagnetometerPrivate(*_magnetometer.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-Magnetometer::Magnetometer(Magnetometer &&_magnetometer) noexcept
-{
-  this->dataPtr = _magnetometer.dataPtr;
-  _magnetometer.dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
 Magnetometer::~Magnetometer()
 {
   delete this->dataPtr;
@@ -57,12 +44,21 @@ Magnetometer::~Magnetometer()
 }
 
 //////////////////////////////////////////////////
+Magnetometer::Magnetometer(const Magnetometer &_magnetometer)
+  : dataPtr(new MagnetometerPrivate(*_magnetometer.dataPtr))
+{
+}
+
+//////////////////////////////////////////////////
+Magnetometer::Magnetometer(Magnetometer &&_magnetometer) noexcept
+  : dataPtr(std::exchange(_magnetometer.dataPtr, nullptr))
+{
+}
+
+//////////////////////////////////////////////////
 Magnetometer &Magnetometer::operator=(const Magnetometer &_magnetometer)
 {
-  if (!this->dataPtr)
-    this->dataPtr = new MagnetometerPrivate;
-  *this->dataPtr = *_magnetometer.dataPtr;
-  return *this;
+  return *this = Magnetometer(_magnetometer);
 }
 
 //////////////////////////////////////////////////

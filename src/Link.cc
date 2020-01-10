@@ -77,27 +77,28 @@ Link::Link()
 }
 
 /////////////////////////////////////////////////
+Link::~Link()
+{
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
 Link::Link(const Link &_link)
   : dataPtr(new LinkPrivate(*_link.dataPtr))
 {
 }
 
 /////////////////////////////////////////////////
-Link &Link::operator=(const Link &_link)
+Link::Link(Link &&_link) noexcept
+  : dataPtr(std::exchange(_link.dataPtr, nullptr))
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new LinkPrivate;
-  }
-  *this->dataPtr = (*_link.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
-Link::Link(Link &&_link) noexcept
+Link &Link::operator=(const Link &_link)
 {
-  this->dataPtr = _link.dataPtr;
-  _link.dataPtr = nullptr;
+  return *this = Link(_link);
 }
 
 /////////////////////////////////////////////////
@@ -105,13 +106,6 @@ Link &Link::operator=(Link &&_link)
 {
   std::swap(this->dataPtr, _link.dataPtr);
   return *this;
-}
-
-/////////////////////////////////////////////////
-Link::~Link()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

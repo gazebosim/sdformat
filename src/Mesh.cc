@@ -65,27 +65,16 @@ Mesh::Mesh(const Mesh &_mesh)
   this->dataPtr->filePath = _mesh.dataPtr->filePath;
 }
 
+//////////////////////////////////////////////////
+Mesh::Mesh(Mesh &&_mesh) noexcept
+  : dataPtr(std::exchange(_mesh.dataPtr, nullptr))
+{
+}
+
 /////////////////////////////////////////////////
 Mesh &Mesh::operator=(const Mesh &_mesh)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new MeshPrivate;
-  }
-  this->dataPtr->uri = _mesh.dataPtr->uri;
-  this->dataPtr->scale = _mesh.dataPtr->scale;
-  this->dataPtr->submesh = _mesh.dataPtr->submesh;
-  this->dataPtr->centerSubmesh = _mesh.dataPtr->centerSubmesh;
-  this->dataPtr->sdf = _mesh.dataPtr->sdf;
-  this->dataPtr->filePath = _mesh.dataPtr->filePath;
-  return *this;
-}
-
-//////////////////////////////////////////////////
-Mesh::Mesh(Mesh &&_mesh) noexcept
-{
-  this->dataPtr = _mesh.dataPtr;
-  _mesh.dataPtr = nullptr;
+  return *this = Mesh(_mesh);
 }
 
 /////////////////////////////////////////////////

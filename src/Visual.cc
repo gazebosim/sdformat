@@ -87,30 +87,28 @@ Visual::Visual()
 }
 
 /////////////////////////////////////////////////
+Visual::~Visual()
+{
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
 Visual::Visual(const Visual &_visual)
   : dataPtr(new VisualPrivate(*_visual.dataPtr))
 {
 }
 
 /////////////////////////////////////////////////
-Visual &Visual::operator=(const Visual &_visual)
+Visual::Visual(Visual &&_visual) noexcept
+  : dataPtr(std::exchange(_visual.dataPtr, nullptr))
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new VisualPrivate(*_visual.dataPtr);
-  }
-  else
-  {
-    this->dataPtr = new(this->dataPtr) VisualPrivate(*_visual.dataPtr);
-  }
-  return *this;
 }
 
 /////////////////////////////////////////////////
-Visual::Visual(Visual &&_visual) noexcept
+Visual &Visual::operator=(const Visual &_visual)
 {
-  this->dataPtr = _visual.dataPtr;
-  _visual.dataPtr = nullptr;
+  return *this = Visual(_visual);
 }
 
 /////////////////////////////////////////////////
@@ -118,13 +116,6 @@ Visual &Visual::operator=(Visual &&_visual)
 {
   std::swap(this->dataPtr, _visual.dataPtr);
   return *this;
-}
-
-/////////////////////////////////////////////////
-Visual::~Visual()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

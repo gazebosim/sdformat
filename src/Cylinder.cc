@@ -49,23 +49,16 @@ Cylinder::Cylinder(const Cylinder &_cylinder)
   this->dataPtr->sdf = _cylinder.dataPtr->sdf;
 }
 
+//////////////////////////////////////////////////
+Cylinder::Cylinder(Cylinder &&_cylinder) noexcept
+  : dataPtr(std::exchange(_cylinder.dataPtr, nullptr))
+{
+}
+
 /////////////////////////////////////////////////
 Cylinder &Cylinder::operator=(const Cylinder &_cylinder)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new CylinderPrivate;
-  }
-  this->dataPtr->cylinder = _cylinder.dataPtr->cylinder;
-  this->dataPtr->sdf = _cylinder.dataPtr->sdf;
-  return *this;
-}
-
-//////////////////////////////////////////////////
-Cylinder::Cylinder(Cylinder &&_cylinder) noexcept
-{
-  this->dataPtr = _cylinder.dataPtr;
-  _cylinder.dataPtr = nullptr;
+  return *this = Cylinder(_cylinder);
 }
 
 /////////////////////////////////////////////////
@@ -74,7 +67,6 @@ Cylinder &Cylinder::operator=(Cylinder &&_cylinder)
   std::swap(this->dataPtr, _cylinder.dataPtr);
   return *this;
 }
-
 
 /////////////////////////////////////////////////
 Errors Cylinder::Load(ElementPtr _sdf)

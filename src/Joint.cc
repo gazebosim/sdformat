@@ -105,10 +105,10 @@ Joint::Joint()
 }
 
 /////////////////////////////////////////////////
-Joint::Joint(Joint &&_joint) noexcept
+Joint::~Joint()
 {
-  this->dataPtr = _joint.dataPtr;
-  _joint.dataPtr = nullptr;
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -118,17 +118,15 @@ Joint::Joint(const Joint &_joint)
 }
 
 /////////////////////////////////////////////////
+Joint::Joint(Joint &&_joint) noexcept
+  : dataPtr(std::exchange(_joint.dataPtr, nullptr))
+{
+}
+
+/////////////////////////////////////////////////
 Joint &Joint::operator=(const Joint &_joint)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new JointPrivate(*_joint.dataPtr);
-  }
-  else
-  {
-    this->dataPtr = new(this->dataPtr) JointPrivate(*_joint.dataPtr);
-  }
-  return *this;
+  return *this = Joint(_joint);
 }
 
 /////////////////////////////////////////////////
@@ -136,13 +134,6 @@ Joint &Joint::operator=(Joint &&_joint)
 {
   std::swap(this->dataPtr, _joint.dataPtr);
   return *this;
-}
-
-/////////////////////////////////////////////////
-Joint::~Joint()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

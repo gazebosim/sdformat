@@ -40,19 +40,6 @@ AirPressure::AirPressure()
 }
 
 //////////////////////////////////////////////////
-AirPressure::AirPressure(const AirPressure &_sensor)
-  : dataPtr(new AirPressurePrivate(*_sensor.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-AirPressure::AirPressure(AirPressure &&_sensor)
-{
-  this->dataPtr = _sensor.dataPtr;
-  _sensor.dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
 AirPressure::~AirPressure()
 {
   delete this->dataPtr;
@@ -60,15 +47,22 @@ AirPressure::~AirPressure()
 }
 
 //////////////////////////////////////////////////
+AirPressure::AirPressure(const AirPressure &_sensor)
+  : dataPtr(new AirPressurePrivate(*_sensor.dataPtr))
+{
+}
+
+//////////////////////////////////////////////////
+AirPressure::AirPressure(AirPressure &&_sensor)
+  : dataPtr(std::exchange(_sensor.dataPtr, nullptr))
+{
+}
+
+//////////////////////////////////////////////////
 AirPressure &AirPressure::operator=(
     const AirPressure &_sensor)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new AirPressurePrivate;
-  }
-  *this->dataPtr = *_sensor.dataPtr;
-  return *this;
+  return *this = AirPressure(_sensor);
 }
 
 //////////////////////////////////////////////////
