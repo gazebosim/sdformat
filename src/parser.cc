@@ -491,8 +491,15 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
-    _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
-    _sdf->Root()->SetOriginalVersion(sdfNode->Attribute("version"));
+    if (_sdf->OriginalVersion().empty())
+    {
+      _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
+    }
+
+    if (_sdf->Root()->OriginalVersion().empty())
+    {
+      _sdf->Root()->SetOriginalVersion(sdfNode->Attribute("version"));
+    }
 
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
@@ -551,7 +558,10 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
-    _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
+    if (_sdf->OriginalVersion().empty())
+    {
+      _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
+    }
 
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
@@ -1175,20 +1185,6 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
 }
 
 /////////////////////////////////////////////////
-void recursiveElementSetOriginalVersion(
-    sdf::ElementPtr _elem,
-    const std::string &_version)
-{
-  _elem->SetOriginalVersion(_version);
-  sdf::ElementPtr child = _elem->GetFirstElement();
-  while (child)
-  {
-    recursiveElementSetOriginalVersion(child, _version);
-    child = child->GetNextElement();
-  }
-}
-
-/////////////////////////////////////////////////
 bool convertFile(const std::string &_filename, const std::string &_version,
                  SDFPtr _sdf)
 {
@@ -1197,6 +1193,12 @@ bool convertFile(const std::string &_filename, const std::string &_version,
   if (filename.empty())
   {
     sdferr << "Error finding file [" << _filename << "].\n";
+    return false;
+  }
+
+  if (nullptr == _sdf || nullptr == _sdf->Root())
+  {
+    sdferr << "SDF pointer or its Root is null.\n";
     return false;
   }
 
@@ -1213,6 +1215,9 @@ bool convertFile(const std::string &_filename, const std::string &_version,
       }
     }
 
+    _sdf->SetOriginalVersion(originalVersion);
+    _sdf->Root()->SetOriginalVersion(originalVersion);
+
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
       Errors errors;
@@ -1221,12 +1226,6 @@ bool convertFile(const std::string &_filename, const std::string &_version,
       // Output errors
       for (auto const &e : errors)
         std::cerr << e << std::endl;
-
-      // overwrite OriginalVersion, since sdf::Converter::Convert changed it
-      // TODO(anyone) improve this, since it currently will overwrite the
-      // original version of included models
-      _sdf->SetOriginalVersion(originalVersion);
-      recursiveElementSetOriginalVersion(_sdf->Root(), originalVersion);
 
       return result;
     }
@@ -1264,6 +1263,9 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
       }
     }
 
+    _sdf->SetOriginalVersion(originalVersion);
+    _sdf->Root()->SetOriginalVersion(originalVersion);
+
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
       Errors errors;
@@ -1272,12 +1274,6 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
       // Output errors
       for (auto const &e : errors)
         std::cerr << e << std::endl;
-
-      // overwrite OriginalVersion, since sdf::Converter::Convert changed it
-      // TODO(anyone) improve this, since it currently will overwrite the
-      // original version of included models
-      _sdf->SetOriginalVersion(originalVersion);
-      recursiveElementSetOriginalVersion(_sdf->Root(), originalVersion);
 
       return result;
     }
