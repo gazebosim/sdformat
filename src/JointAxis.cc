@@ -117,8 +117,7 @@ JointAxis::JointAxis(JointAxis &&_jointAxis) noexcept
 /////////////////////////////////////////////////
 JointAxis &JointAxis::operator=(JointAxis &&_jointAxis)
 {
-  this->dataPtr = _jointAxis.dataPtr;
-  _jointAxis.dataPtr = nullptr;
+  std::swap(this->dataPtr, _jointAxis.dataPtr);
   return *this;
 }
 

@@ -83,8 +83,7 @@ Scene &Scene::operator=(const Scene &_scene)
 /////////////////////////////////////////////////
 Scene &Scene::operator=(Scene &&_scene)
 {
-  this->dataPtr = _scene.dataPtr;
-  _scene.dataPtr = nullptr;
+  std::swap(this->dataPtr, _scene.dataPtr);
   return *this;
 }
 

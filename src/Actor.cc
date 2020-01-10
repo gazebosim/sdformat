@@ -165,8 +165,7 @@ Animation &Animation::operator=(const Animation &_animation)
 //////////////////////////////////////////////////
 Animation &Animation::operator=(Animation &&_animation)
 {
-  this->dataPtr = _animation.dataPtr;
-  _animation.dataPtr = nullptr;
+  std::swap(this->dataPtr, _animation.dataPtr);
   return *this;
 }
 
@@ -304,8 +303,7 @@ Waypoint &Waypoint::operator=(const Waypoint &_waypoint)
 //////////////////////////////////////////////////
 Waypoint &Waypoint::operator=(Waypoint &&_waypoint)
 {
-  this->dataPtr = _waypoint.dataPtr;
-  _waypoint.dataPtr = nullptr;
+  std::swap(this->dataPtr, _waypoint.dataPtr);
   return *this;
 }
 
@@ -404,8 +402,7 @@ Trajectory &Trajectory::operator=(const Trajectory &_trajectory)
 //////////////////////////////////////////////////
 Trajectory &Trajectory::operator=(Trajectory &&_trajectory)
 {
-  this->dataPtr = _trajectory.dataPtr;
-  _trajectory.dataPtr = nullptr;
+  std::swap(this->dataPtr, _trajectory.dataPtr);
   return *this;
 }
 
@@ -539,8 +536,7 @@ Actor &Actor::operator=(const Actor &_actor)
 //////////////////////////////////////////////////
 Actor &Actor::operator=(Actor &&_actor)
 {
-  this->dataPtr = _actor.dataPtr;
-  _actor.dataPtr = nullptr;
+  std::swap(this->dataPtr, _actor.dataPtr);
   return *this;
 }
 

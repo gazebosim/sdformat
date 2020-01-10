@@ -73,8 +73,7 @@ Altimeter &Altimeter::operator=(const Altimeter &_altimeter)
 //////////////////////////////////////////////////
 Altimeter &Altimeter::operator=(Altimeter &&_altimeter) noexcept
 {
-  this->dataPtr = _altimeter.dataPtr;
-  _altimeter.dataPtr = nullptr;
+  std::swap(this->dataPtr, _altimeter.dataPtr);
   return *this;
 }
 

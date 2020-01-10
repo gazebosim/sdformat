@@ -134,8 +134,7 @@ Joint &Joint::operator=(const Joint &_joint)
 /////////////////////////////////////////////////
 Joint &Joint::operator=(Joint &&_joint)
 {
-  this->dataPtr = _joint.dataPtr;
-  _joint.dataPtr = nullptr;
+  std::swap(this->dataPtr, _joint.dataPtr);
   return *this;
 }
 

@@ -106,8 +106,7 @@ Imu &Imu::operator=(const Imu &_imu)
 //////////////////////////////////////////////////
 Imu &Imu::operator=(Imu &&_imu) noexcept
 {
-  this->dataPtr = _imu.dataPtr;
-  _imu.dataPtr = nullptr;
+  std::swap(this->dataPtr, _imu.dataPtr);
   return *this;
 }
 

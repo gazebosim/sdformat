@@ -62,8 +62,7 @@ Gui &Gui::operator=(const Gui &_gui)
 /////////////////////////////////////////////////
 Gui &Gui::operator=(Gui &&_gui)
 {
-  this->dataPtr = _gui.dataPtr;
-  _gui.dataPtr = nullptr;
+  std::swap(this->dataPtr, _gui.dataPtr);
   return *this;
 }
 

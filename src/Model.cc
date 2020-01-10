@@ -162,8 +162,7 @@ Model::Model(Model &&_model) noexcept
 /////////////////////////////////////////////////
 Model &Model::operator=(Model &&_model)
 {
-  this->dataPtr = _model.dataPtr;
-  _model.dataPtr = nullptr;
+  std::swap(this->dataPtr, _model.dataPtr);
   return *this;
 }
 

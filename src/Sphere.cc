@@ -71,8 +71,7 @@ Sphere::Sphere(Sphere &&_sphere) noexcept
 /////////////////////////////////////////////////
 Sphere &Sphere::operator=(Sphere &&_sphere)
 {
-  this->dataPtr = _sphere.dataPtr;
-  _sphere.dataPtr = nullptr;
+  std::swap(this->dataPtr, _sphere.dataPtr);
   return *this;
 }
 

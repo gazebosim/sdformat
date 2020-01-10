@@ -75,8 +75,7 @@ Plane::Plane(Plane &&_plane) noexcept
 /////////////////////////////////////////////////
 Plane &Plane::operator=(Plane &&_plane)
 {
-  this->dataPtr = _plane.dataPtr;
-  _plane.dataPtr = nullptr;
+  std::swap(this->dataPtr, _plane.dataPtr);
   return *this;
 }
 

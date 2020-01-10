@@ -569,8 +569,7 @@ Camera &Camera::operator=(const Camera &_camera)
 //////////////////////////////////////////////////
 Camera &Camera::operator=(Camera &&_camera) noexcept
 {
-  this->dataPtr = _camera.dataPtr;
-  _camera.dataPtr = nullptr;
+  std::swap(this->dataPtr, _camera.dataPtr);
   return *this;
 }
 

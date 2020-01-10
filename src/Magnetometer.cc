@@ -68,8 +68,7 @@ Magnetometer &Magnetometer::operator=(const Magnetometer &_magnetometer)
 //////////////////////////////////////////////////
 Magnetometer &Magnetometer::operator=(Magnetometer &&_magnetometer)
 {
-  this->dataPtr = _magnetometer.dataPtr;
-  _magnetometer.dataPtr = nullptr;
+  std::swap(this->dataPtr, _magnetometer.dataPtr);
   return *this;
 }
 

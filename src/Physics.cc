@@ -76,8 +76,7 @@ Physics::Physics(Physics &&_physics) noexcept
 /////////////////////////////////////////////////
 Physics &Physics::operator=(Physics &&_physics)
 {
-  this->dataPtr = _physics.dataPtr;
-  _physics.dataPtr = nullptr;
+  std::swap(this->dataPtr, _physics.dataPtr);
   return *this;
 }
 

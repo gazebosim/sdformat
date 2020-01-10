@@ -72,8 +72,7 @@ Box::Box(Box &&_box) noexcept
 /////////////////////////////////////////////////
 Box &Box::operator=(Box &&_box)
 {
-  this->dataPtr = _box.dataPtr;
-  _box.dataPtr = nullptr;
+  std::swap(this->dataPtr, _box.dataPtr);
   return *this;
 }
 
