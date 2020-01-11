@@ -67,27 +67,28 @@ Model::Model()
 }
 
 /////////////////////////////////////////////////
+Model::~Model()
+{
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
 Model::Model(const Model &_model)
   : dataPtr(new ModelPrivate(*_model.dataPtr))
 {
 }
 
 /////////////////////////////////////////////////
-Model &Model::operator=(const Model &_model)
+Model::Model(Model &&_model) noexcept
+  : dataPtr(std::exchange(_model.dataPtr, nullptr))
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new ModelPrivate;
-  }
-  *this->dataPtr = (*_model.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
-Model::Model(Model &&_model) noexcept
+Model &Model::operator=(const Model &_model)
 {
-  this->dataPtr = _model.dataPtr;
-  _model.dataPtr = nullptr;
+  return *this = Model(_model);
 }
 
 /////////////////////////////////////////////////
@@ -95,13 +96,6 @@ Model &Model::operator=(Model &&_model)
 {
   std::swap(this->dataPtr, _model.dataPtr);
   return *this;
-}
-
-/////////////////////////////////////////////////
-Model::~Model()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

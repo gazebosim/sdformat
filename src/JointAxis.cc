@@ -80,27 +80,28 @@ JointAxis::JointAxis()
 }
 
 /////////////////////////////////////////////////
+JointAxis::~JointAxis()
+{
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
 JointAxis::JointAxis(const JointAxis &_jointAxis)
   : dataPtr(new JointAxisPrivate(*_jointAxis.dataPtr))
 {
 }
 
 /////////////////////////////////////////////////
-JointAxis &JointAxis::operator=(const JointAxis &_jointAxis)
+JointAxis::JointAxis(JointAxis &&_jointAxis) noexcept
+  : dataPtr(std::exchange(_jointAxis.dataPtr, nullptr))
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new JointAxisPrivate;
-  }
-  *this->dataPtr = (*_jointAxis.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
-JointAxis::JointAxis(JointAxis &&_jointAxis) noexcept
+JointAxis &JointAxis::operator=(const JointAxis &_jointAxis)
 {
-  this->dataPtr = _jointAxis.dataPtr;
-  _jointAxis.dataPtr = nullptr;
+  return *this = JointAxis(_jointAxis);
 }
 
 /////////////////////////////////////////////////
@@ -108,13 +109,6 @@ JointAxis &JointAxis::operator=(JointAxis &&_jointAxis)
 {
   std::swap(this->dataPtr, _jointAxis.dataPtr);
   return *this;
-}
-
-/////////////////////////////////////////////////
-JointAxis::~JointAxis()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

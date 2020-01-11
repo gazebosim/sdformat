@@ -121,23 +121,6 @@ Animation::Animation()
 }
 
 /////////////////////////////////////////////////
-void Animation::CopyFrom(const Animation &_animation)
-{
-  this->dataPtr->name = _animation.dataPtr->name;
-  this->dataPtr->filename = _animation.dataPtr->filename;
-  this->dataPtr->scale = _animation.dataPtr->scale;
-  this->dataPtr->interpolateX = _animation.dataPtr->interpolateX;
-  this->dataPtr->filePath = _animation.dataPtr->filePath;
-}
-
-/////////////////////////////////////////////////
-Animation::Animation(Animation &&_animation) noexcept
-{
-  this->dataPtr = _animation.dataPtr;
-  _animation.dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
 Animation::~Animation()
 {
   delete this->dataPtr;
@@ -151,15 +134,16 @@ Animation::Animation(const Animation &_animation)
   this->CopyFrom(_animation);
 }
 
+/////////////////////////////////////////////////
+Animation::Animation(Animation &&_animation) noexcept
+  : dataPtr(std::exchange(_animation.dataPtr, nullptr))
+{
+}
+
 //////////////////////////////////////////////////
 Animation &Animation::operator=(const Animation &_animation)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new AnimationPrivate;
-  }
-  this->CopyFrom(_animation);
-  return *this;
+  return *this = Animation(_animation);
 }
 
 //////////////////////////////////////////////////
@@ -167,6 +151,16 @@ Animation &Animation::operator=(Animation &&_animation)
 {
   std::swap(this->dataPtr, _animation.dataPtr);
   return *this;
+}
+
+/////////////////////////////////////////////////
+void Animation::CopyFrom(const Animation &_animation)
+{
+  this->dataPtr->name = _animation.dataPtr->name;
+  this->dataPtr->filename = _animation.dataPtr->filename;
+  this->dataPtr->scale = _animation.dataPtr->scale;
+  this->dataPtr->interpolateX = _animation.dataPtr->interpolateX;
+  this->dataPtr->filePath = _animation.dataPtr->filePath;
 }
 
 /////////////////////////////////////////////////
@@ -266,19 +260,6 @@ Waypoint::Waypoint()
 {
 }
 
-void Waypoint::CopyFrom(const Waypoint &_waypoint)
-{
-  this->dataPtr->time = _waypoint.dataPtr->time;
-  this->dataPtr->pose = _waypoint.dataPtr->pose;
-}
-
-/////////////////////////////////////////////////
-Waypoint::Waypoint(Waypoint &&_waypoint) noexcept
-{
-  this->dataPtr = _waypoint.dataPtr;
-  _waypoint.dataPtr = nullptr;
-}
-
 /////////////////////////////////////////////////
 Waypoint::~Waypoint()
 {
@@ -293,11 +274,16 @@ Waypoint::Waypoint(const Waypoint &_waypoint)
   this->CopyFrom(_waypoint);
 }
 
+/////////////////////////////////////////////////
+Waypoint::Waypoint(Waypoint &&_waypoint) noexcept
+  : dataPtr(std::exchange(_waypoint.dataPtr, nullptr))
+{
+}
+
 //////////////////////////////////////////////////
 Waypoint &Waypoint::operator=(const Waypoint &_waypoint)
 {
-  this->CopyFrom(_waypoint);
-  return *this;
+  return *this = Waypoint(_waypoint);
 }
 
 //////////////////////////////////////////////////
@@ -305,6 +291,13 @@ Waypoint &Waypoint::operator=(Waypoint &&_waypoint)
 {
   std::swap(this->dataPtr, _waypoint.dataPtr);
   return *this;
+}
+
+/////////////////////////////////////////////////
+void Waypoint::CopyFrom(const Waypoint &_waypoint)
+{
+  this->dataPtr->time = _waypoint.dataPtr->time;
+  this->dataPtr->pose = _waypoint.dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
@@ -363,22 +356,6 @@ Trajectory::Trajectory()
 }
 
 /////////////////////////////////////////////////
-void Trajectory::CopyFrom(const Trajectory &_trajectory)
-{
-  this->dataPtr->id = _trajectory.dataPtr->id;
-  this->dataPtr->type = _trajectory.dataPtr->type;
-  this->dataPtr->tension = _trajectory.dataPtr->tension;
-  this->dataPtr->waypoints = _trajectory.dataPtr->waypoints;
-}
-
-/////////////////////////////////////////////////
-Trajectory::Trajectory(Trajectory &&_trajectory) noexcept
-{
-  this->dataPtr = _trajectory.dataPtr;
-  _trajectory.dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
 Trajectory::~Trajectory()
 {
   delete this->dataPtr;
@@ -392,11 +369,16 @@ Trajectory::Trajectory(const Trajectory &_trajectory)
   this->CopyFrom(_trajectory);
 }
 
+/////////////////////////////////////////////////
+Trajectory::Trajectory(Trajectory &&_trajectory) noexcept
+  : dataPtr(std::exchange(_trajectory.dataPtr, nullptr))
+{
+}
+
 //////////////////////////////////////////////////
 Trajectory &Trajectory::operator=(const Trajectory &_trajectory)
 {
-  this->CopyFrom(_trajectory);
-  return *this;
+  return *this = Trajectory(_trajectory);
 }
 
 //////////////////////////////////////////////////
@@ -404,6 +386,15 @@ Trajectory &Trajectory::operator=(Trajectory &&_trajectory)
 {
   std::swap(this->dataPtr, _trajectory.dataPtr);
   return *this;
+}
+
+/////////////////////////////////////////////////
+void Trajectory::CopyFrom(const Trajectory &_trajectory)
+{
+  this->dataPtr->id = _trajectory.dataPtr->id;
+  this->dataPtr->type = _trajectory.dataPtr->type;
+  this->dataPtr->tension = _trajectory.dataPtr->tension;
+  this->dataPtr->waypoints = _trajectory.dataPtr->waypoints;
 }
 
 /////////////////////////////////////////////////
@@ -502,13 +493,6 @@ Actor::Actor()
 }
 
 /////////////////////////////////////////////////
-Actor::Actor(Actor &&_actor) noexcept
-{
-  this->dataPtr = _actor.dataPtr;
-  _actor.dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
 Actor::~Actor()
 {
   delete this->dataPtr;
@@ -522,15 +506,16 @@ Actor::Actor(const Actor &_actor)
   this->CopyFrom(_actor);
 }
 
+/////////////////////////////////////////////////
+Actor::Actor(Actor &&_actor) noexcept
+    : dataPtr(std::exchange(_actor.dataPtr, nullptr))
+{
+}
+
 //////////////////////////////////////////////////
 Actor &Actor::operator=(const Actor &_actor)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new ActorPrivate;
-  }
-  this->CopyFrom(_actor);
-  return *this;
+  return *this = Actor(_actor);
 }
 
 //////////////////////////////////////////////////

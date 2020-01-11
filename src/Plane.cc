@@ -55,24 +55,16 @@ Plane::Plane(const Plane &_plane)
   this->dataPtr->sdf = _plane.dataPtr->sdf;
 }
 
+//////////////////////////////////////////////////
+Plane::Plane(Plane &&_plane) noexcept
+  : dataPtr(std::exchange(_plane.dataPtr, nullptr))
+{
+}
+
 /////////////////////////////////////////////////
 Plane &Plane::operator=(const Plane &_plane)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new PlanePrivate;
-  }
-  this->dataPtr->normal = _plane.dataPtr->normal;
-  this->dataPtr->size = _plane.dataPtr->size;
-  this->dataPtr->sdf = _plane.dataPtr->sdf;
-  return *this;
-}
-
-//////////////////////////////////////////////////
-Plane::Plane(Plane &&_plane) noexcept
-{
-  this->dataPtr = _plane.dataPtr;
-  _plane.dataPtr = nullptr;
+  return *this = Plane(_plane);
 }
 
 /////////////////////////////////////////////////

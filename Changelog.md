@@ -5,6 +5,9 @@
 1. Fix memory leaks in move assignment operator.
     * [Pull request 641](https://bitbucket.org/osrf/sdformat/pull-requests/641)
 
+1. Refactoring based on rule-of-five guidance to address memory leaks
+   * [Pull request 644](https://bitbucket.org/osrf/sdformat/pull-requests/644)
+
 ### SDFormat 8.7.0 (2019-12-13)
 
 1. Remove some URDF error messages
