@@ -2,6 +2,8 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+### SDFormat 8.7.1 (2020-01-13)
+
 1. Fix memory leaks in move assignment operator.
     * [Pull request 641](https://bitbucket.org/osrf/sdformat/pull-requests/641)
 
