@@ -2,11 +2,14 @@
 
 ### SDFormat 9.X.X (201X-XX-XX)
 
+### SDFormat 9.1.0 (201X-XX-XX)
+
+1. Parser: add boolean parameter to `readFile` and `readString` for disabling conversion to latest SDF spec.
+    * [Pull request 647](https://bitbucket.org/osrf/sdformat/pull-requests/647)
+
 1. Added accessors to `ignition::math::[Boxd, Cylinderd, Planed, Sphered]`
    in the matching `sdf::[Box, Cylinder, Plane, Sphere]` classes.
     * [Pull request 639](https://bitbucket.org/osrf/sdformat/pull-requests/639)
-
-### SDFormat 9.1.0 (201X-XX-XX)
 
 1. sdf 1.7: remove `//world/joint` element since it has never been used.
     * [Pull request 637](https://bitbucket.org/osrf/sdformat/pull-requests/637)
