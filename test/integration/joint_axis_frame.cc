@@ -66,6 +66,47 @@ TEST(JointAxisFrame, Version_1_4_missing)
 }
 
 ////////////////////////////////////////
+// sdf model, version 1.4, use_parent_model_frame tag should
+// not be added when reading without converting.
+TEST(JointAxisFrame, Version_1_4_no_convert)
+{
+  sdf::Errors errors;
+  sdf::SDFPtr model(new sdf::SDF());
+  sdf::init(model);
+  ASSERT_TRUE(sdf::readString(get_sdf_string("1.4"), model, false, errors));
+
+  EXPECT_EQ("1.4", model->Root()->Get<std::string>("version"));
+  sdf::ElementPtr joint = model->Root()->GetElement(
+    "model")->GetElement("joint");
+  sdf::ElementPtr axis = joint->GetElement("axis");
+  ASSERT_NE(nullptr, axis);
+
+  axis->PrintValues("");
+  EXPECT_FALSE(axis->HasElement("use_parent_model_frame"));
+}
+
+////////////////////////////////////////
+// sdf model, version 1.4, use_parent_model_frame tag should
+// be added when converted to 1.5.
+TEST(JointAxisFrame, Version_1_4_to_1_5)
+{
+  sdf::Errors errors;
+  sdf::SDFPtr model(new sdf::SDF());
+  sdf::init(model);
+  ASSERT_TRUE(sdf::convertString(get_sdf_string("1.4"), "1.5", model));
+
+  EXPECT_EQ("1.5", model->Root()->Get<std::string>("version"));
+  sdf::ElementPtr joint = model->Root()->GetElement(
+    "model")->GetElement("joint");
+  sdf::ElementPtr axis = joint->GetElement("axis");
+  ASSERT_NE(nullptr, axis);
+
+  axis->PrintValues("");
+  EXPECT_TRUE(axis->HasElement("use_parent_model_frame"));
+  EXPECT_TRUE(axis->Get<bool>("use_parent_model_frame"));
+}
+
+////////////////////////////////////////
 // sdf model, version 1.5, use_parent_model_frame tag should
 // be removed when converted to 1.7.
 TEST(JointAxisFrame, Version_1_5_missing)

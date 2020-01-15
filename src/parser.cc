@@ -329,6 +329,13 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
+  return readFile(_filename, _sdf, true, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readFile(const std::string &_filename, SDFPtr _sdf,
+      const bool _convert, Errors &_errors)
+{
   TiXmlDocument xmlDoc;
   std::string filename = sdf::findFile(_filename, true, true);
 
@@ -356,7 +363,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
     return false;
   }
 
-  if (readDoc(&xmlDoc, _sdf, filename, true, _errors))
+  if (readDoc(&xmlDoc, _sdf, filename, _convert, _errors))
   {
     return true;
   }
@@ -364,7 +371,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
   {
     sdf::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelFile(filename);
-    if (sdf::readDoc(&doc, _sdf, "urdf file", true, _errors))
+    if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
       return true;
@@ -395,6 +402,13 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
 {
+  return readString(_xmlString, _sdf, true, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readString(const std::string &_xmlString, SDFPtr _sdf,
+    const bool _convert, Errors &_errors)
+{
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
@@ -402,7 +416,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, "data-string", true, _errors))
+  if (readDoc(&xmlDoc, _sdf, "data-string", _convert, _errors))
   {
     return true;
   }
@@ -410,7 +424,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
   {
     sdf::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelString(_xmlString);
-    if (sdf::readDoc(&doc, _sdf, "urdf string", true, _errors))
+    if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {
       sdfdbg << "Parsing from urdf.\n";
       return true;
