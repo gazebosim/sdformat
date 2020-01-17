@@ -318,17 +318,28 @@ Errors Model::Load(ElementPtr _sdf)
     std::string frameName = frame.Name();
     if (frameNames.count(frameName) > 0)
     {
-      frameName += "_frame";
-      int i = 0;
-      while (frameNames.count(frameName) > 0)
+      // This joint has a name collision
+      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
       {
-        frameName = frame.Name() + "_frame" + std::to_string(i++);
+        // This came from an old file, so try to workaround by renaming frame
+        frameName += "_frame";
+        int i = 0;
+        while (frameNames.count(frameName) > 0)
+        {
+          frameName = frame.Name() + "_frame" + std::to_string(i++);
+        }
+        sdfwarn << "Frame with name [" << frame.Name() << "] "
+                << "in model with name [" << this->Name() << "] "
+                << "has a name collision, changing frame name to ["
+                << frameName << "].\n";
+        frame.SetName(frameName);
       }
-      sdfwarn << "Frame with name [" << frame.Name() << "] "
-              << "in model with name [" << this->Name() << "] "
-              << "has a name collision, changing frame name to ["
-              << frameName << "].\n";
-      frame.SetName(frameName);
+      else
+      {
+        sdferr << "Frame with name [" << frame.Name() << "] "
+               << "in model with name [" << this->Name() << "] "
+               << "has a name collision. Please rename this frame.\n";
+      }
     }
     frameNames.insert(frameName);
   }
