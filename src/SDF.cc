@@ -369,6 +369,14 @@ void SDF::SetFromString(const std::string &_sdfData)
 }
 
 /////////////////////////////////////////////////
+void SDF::Clear()
+{
+  this->dataPtr->root->ClearElements();
+  this->dataPtr->path.clear();
+  this->dataPtr->originalVersion.clear();
+}
+
+/////////////////////////////////////////////////
 ElementPtr SDF::Root() const
 {
   return this->dataPtr->root;
