@@ -19,6 +19,10 @@ but with improved human-readability..
 1. **sdf/Collision.hh**
     + sdf::SemanticPose SemanticPose() const
 
+1. **sdf/Element.hh**
+    + const std::string &OriginalVersion() const
+    + void SetOriginalVersion(const std::string &)
+
 1. **sdf/Frame.hh**: DOM class for frames in the model or world.
     + Errors ResolveAttachedToBody(std::string&) const
     + sdf::SemanticPose SemanticPose() const
@@ -41,6 +45,11 @@ but with improved human-readability..
     + const Frame \*FrameByName(const std::string &) const
     + bool FrameNameExists(const std::string &) const
     + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/SDFImpl.hh**
+    + void Clear()
+    + const std::string &OriginalVersion() const
+    + void SetOriginalVersion(const std::string &)
 
 1. **sdf/SemanticPose.hh**: Helper class for resolving poses of DOM objects.
 
@@ -66,6 +75,11 @@ but with improved human-readability..
    + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)
    + bool recursiveSiblingUniqueNames(sdf::ElementPtr)
    + bool shouldValidateElement(sdf::ElementPtr)
+
+### Modifications
+
+1.  + `Element::ClearElements` now clears file path and original version as well.
+    + [pull request 640](https://bitbucket.org/osrf/sdformat/pull-requests/640)
 
 ### Deprecations
 
