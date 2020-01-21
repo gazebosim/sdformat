@@ -63,6 +63,11 @@ TEST(JointAxisFrame, Version_1_4_missing)
   ASSERT_NE(nullptr, xyz);
   ASSERT_TRUE(xyz->HasAttribute("expressed_in"));
   EXPECT_EQ("__model__", xyz->Get<std::string>("expressed_in"));
+
+  // Try to load DOM object and expect it to succeed with no errors
+  sdf::Root root;
+  auto errors = root.Load(model);
+  EXPECT_EQ(0u, errors.size());
 }
 
 ////////////////////////////////////////
@@ -83,6 +88,18 @@ TEST(JointAxisFrame, Version_1_4_no_convert)
 
   axis->PrintValues("");
   EXPECT_FALSE(axis->HasElement("use_parent_model_frame"));
+
+  // Try to load DOM object and expect it to fail since SDF is not updated
+  sdf::Root root;
+  errors = root.Load(model);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  EXPECT_TRUE(errors[0].Message().find(
+    "SDF version attribute[1.4] should match the latest version[1.7] when "
+    "loading DOM objects.") !=
+               std::string::npos)
+    << errors[0].Message();
 }
 
 ////////////////////////////////////////
@@ -104,6 +121,18 @@ TEST(JointAxisFrame, Version_1_4_to_1_5)
   axis->PrintValues("");
   EXPECT_TRUE(axis->HasElement("use_parent_model_frame"));
   EXPECT_TRUE(axis->Get<bool>("use_parent_model_frame"));
+
+  // Try to load DOM object and expect it to fail since SDF is not updated
+  sdf::Root root;
+  errors = root.Load(model);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  EXPECT_TRUE(errors[0].Message().find(
+    "SDF version attribute[1.5] should match the latest version[1.7] when "
+    "loading DOM objects.") !=
+               std::string::npos)
+    << errors[0].Message();
 }
 
 ////////////////////////////////////////
@@ -119,4 +148,9 @@ TEST(JointAxisFrame, Version_1_5_missing)
     "model")->GetElement("joint");
   sdf::ElementPtr axis = joint->GetElement("axis");
   EXPECT_FALSE(axis->HasElement("use_parent_model_frame"));
+
+  // Try to load DOM object and expect it to succeed with no errors
+  sdf::Root root;
+  auto errors = root.Load(model);
+  EXPECT_EQ(0u, errors.size());
 }
