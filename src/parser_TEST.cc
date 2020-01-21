@@ -60,6 +60,29 @@ sdf::SDFPtr InitSDF()
 }
 
 /////////////////////////////////////////////////
+TEST(Parser, ReusedSDFVersion)
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+  const std::string path17 = pathBase +"/model_link_relative_to.sdf";
+  const std::string path16 = pathBase +"/joint_complete.sdf";
+
+  // Call readFile API that always converts
+  sdf::SDFPtr sdf = InitSDF();
+  EXPECT_TRUE(sdf::readFile(path17, sdf));
+  EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+  EXPECT_EQ("1.7", sdf->OriginalVersion());
+  EXPECT_EQ("1.7", sdf->Root()->OriginalVersion());
+
+  sdf->Clear();
+
+  EXPECT_TRUE(sdf::readFile(path16, sdf));
+  EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+  EXPECT_EQ("1.6", sdf->OriginalVersion());
+  EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
+}
+
+/////////////////////////////////////////////////
 TEST(Parser, NameUniqueness)
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
