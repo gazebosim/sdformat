@@ -291,13 +291,22 @@ TEST(Element, ClearElements)
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
 
+  parent->SetFilePath("/path/to/file.sdf");
+  parent->SetOriginalVersion("1.5");
+  child->SetParent(parent);
   parent->InsertElement(child);
 
+  EXPECT_EQ("/path/to/file.sdf", parent->FilePath());
+  EXPECT_EQ("1.5", parent->OriginalVersion());
   ASSERT_NE(parent->GetFirstElement(), nullptr);
+  EXPECT_EQ("/path/to/file.sdf", parent->GetFirstElement()->FilePath());
+  EXPECT_EQ("1.5", parent->GetFirstElement()->OriginalVersion());
 
   parent->ClearElements();
 
   ASSERT_EQ(parent->GetFirstElement(), nullptr);
+  EXPECT_TRUE(parent->FilePath().empty());
+  EXPECT_TRUE(parent->OriginalVersion().empty());
 }
 
 /////////////////////////////////////////////////
