@@ -94,6 +94,9 @@ namespace sdf
     /// \brief Set SDF values from a string
     public: void SetFromString(const std::string &_sdfData);
 
+    /// \brief Clear the data in this object.
+    public: void Clear();
+
     /// \brief Get a pointer to the root element
     /// \return Pointer to the root element
     public: ElementPtr Root() const;

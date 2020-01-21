@@ -807,6 +807,8 @@ void Element::ClearElements()
   }
 
   this->dataPtr->elements.clear();
+  this->dataPtr->originalVersion.clear();
+  this->dataPtr->path.clear();
 }
 
 /////////////////////////////////////////////////
