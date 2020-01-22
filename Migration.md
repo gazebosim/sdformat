@@ -20,6 +20,7 @@ but with improved human-readability..
     + sdf::SemanticPose SemanticPose() const
 
 1. **sdf/Element.hh**
+    + void Clear()
     + const std::string &OriginalVersion() const
     + void SetOriginalVersion(const std::string &)
 
@@ -75,11 +76,6 @@ but with improved human-readability..
    + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)
    + bool recursiveSiblingUniqueNames(sdf::ElementPtr)
    + bool shouldValidateElement(sdf::ElementPtr)
-
-### Modifications
-
-1.  + `Element::ClearElements` now clears file path and original version as well.
-    + [pull request 640](https://bitbucket.org/osrf/sdformat/pull-requests/640)
 
 ### Deprecations
 
