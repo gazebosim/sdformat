@@ -50,19 +50,6 @@ Scene::Scene()
 }
 
 /////////////////////////////////////////////////
-Scene::Scene(const Scene &_scene)
-  : dataPtr(new ScenePrivate(*_scene.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Scene::Scene(Scene &&_scene) noexcept
-{
-  this->dataPtr = _scene.dataPtr;
-  _scene.dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
 Scene::~Scene()
 {
   delete this->dataPtr;
@@ -70,21 +57,27 @@ Scene::~Scene()
 }
 
 /////////////////////////////////////////////////
+Scene::Scene(const Scene &_scene)
+  : dataPtr(new ScenePrivate(*_scene.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Scene::Scene(Scene &&_scene) noexcept
+  : dataPtr(std::exchange(_scene.dataPtr, nullptr))
+{
+}
+
+/////////////////////////////////////////////////
 Scene &Scene::operator=(const Scene &_scene)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new ScenePrivate;
-  }
-  *this->dataPtr = *_scene.dataPtr;
-  return *this;
+  return *this = Scene(_scene);
 }
 
 /////////////////////////////////////////////////
 Scene &Scene::operator=(Scene &&_scene)
 {
-  this->dataPtr = _scene.dataPtr;
-  _scene.dataPtr = nullptr;
+  std::swap(this->dataPtr, _scene.dataPtr);
   return *this;
 }
 

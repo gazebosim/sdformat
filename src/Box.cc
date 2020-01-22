@@ -50,30 +50,23 @@ Box::Box(const Box &_box)
   this->dataPtr->sdf = _box.dataPtr->sdf;
 }
 
-/////////////////////////////////////////////////
-Box &Box::operator=(const Box &_box)
-{
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new BoxPrivate;
-  }
-  this->dataPtr->box = _box.dataPtr->box;
-  this->dataPtr->sdf = _box.dataPtr->sdf;
-  return *this;
-}
 
 //////////////////////////////////////////////////
 Box::Box(Box &&_box) noexcept
+  : dataPtr(std::exchange(_box.dataPtr, nullptr))
 {
-  this->dataPtr = _box.dataPtr;
-  _box.dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Box &Box::operator=(const Box &_box)
+{
+  return *this = Box(_box);
 }
 
 /////////////////////////////////////////////////
 Box &Box::operator=(Box &&_box)
 {
-  this->dataPtr = _box.dataPtr;
-  _box.dataPtr = nullptr;
+  std::swap(this->dataPtr, _box.dataPtr);
   return *this;
 }
 

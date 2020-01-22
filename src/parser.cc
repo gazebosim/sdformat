@@ -500,7 +500,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
   if (_source != "data-string")
   {
     _sdf->SetFilePath(_source);
-    _sdf->Root()->SetFilePath(_source);
   }
 
   if (sdfNode && sdfNode->Attribute("version"))
@@ -1230,7 +1229,6 @@ bool convertFile(const std::string &_filename, const std::string &_version,
     }
 
     _sdf->SetOriginalVersion(originalVersion);
-    _sdf->Root()->SetOriginalVersion(originalVersion);
 
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
@@ -1278,7 +1276,6 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
     }
 
     _sdf->SetOriginalVersion(originalVersion);
-    _sdf->Root()->SetOriginalVersion(originalVersion);
 
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {

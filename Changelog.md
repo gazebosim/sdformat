@@ -11,6 +11,11 @@
    in the matching `sdf::[Box, Cylinder, Plane, Sphere]` classes.
     * [Pull request 639](https://bitbucket.org/osrf/sdformat/pull-requests/639)
 
+1. Forward port of adjustments for memory leaks:
+   [Pull Request 641](https://bitbucket.org/osrf/sdformat/pull-requests/641) and
+   [Pull Request 644](https://bitbucket.org/osrf/sdformat/pull-requests/644)
+    * [Pull Request 645](https://bitbucket.org/osrf/sdformat/pull-requests/645)
+
 1. sdf 1.7: remove `//world/joint` element since it has never been used.
     * [Pull request 637](https://bitbucket.org/osrf/sdformat/pull-requests/637)
 
@@ -114,7 +119,15 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
-### SDFormat 8.7.0 (201X-12-13)
+### SDFormat 8.7.1 (2020-01-13)
+
+1. Fix memory leaks in move assignment operator.
+    * [Pull request 641](https://bitbucket.org/osrf/sdformat/pull-requests/641)
+
+1. Refactoring based on rule-of-five guidance to address memory leaks
+   * [Pull request 644](https://bitbucket.org/osrf/sdformat/pull-requests/644)
+
+### SDFormat 8.7.0 (2019-12-13)
 
 1. Remove some URDF error messages
     * [Pull request 605](https://bitbucket.org/osrf/sdformat/pull-requests/605)

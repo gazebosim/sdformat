@@ -87,13 +87,6 @@ Light::Light()
 }
 
 /////////////////////////////////////////////////
-Light::Light(Light &&_light) noexcept
-{
-  this->dataPtr = _light.dataPtr;
-  _light.dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
 Light::~Light()
 {
   delete this->dataPtr;
@@ -107,22 +100,22 @@ Light::Light(const Light &_light)
   this->CopyFrom(_light);
 }
 
+/////////////////////////////////////////////////
+Light::Light(Light &&_light) noexcept
+  : dataPtr(std::exchange(_light.dataPtr, nullptr))
+{
+}
+
 //////////////////////////////////////////////////
 Light &Light::operator=(const Light &_light)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new LightPrivate;
-  }
-  this->CopyFrom(_light);
-  return *this;
+  return *this = Light(_light);
 }
 
 //////////////////////////////////////////////////
 Light &Light::operator=(Light &&_light)
 {
-  this->dataPtr = _light.dataPtr;
-  _light.dataPtr = nullptr;
+  std::swap(this->dataPtr, _light.dataPtr);
   return *this;
 }
 
