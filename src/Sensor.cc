@@ -165,19 +165,6 @@ Sensor::Sensor()
 }
 
 /////////////////////////////////////////////////
-Sensor::Sensor(const Sensor &_sensor)
-  : dataPtr(new SensorPrivate(*_sensor.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Sensor::Sensor(Sensor &&_sensor) noexcept
-{
-  this->dataPtr = _sensor.dataPtr;
-  _sensor.dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
 Sensor::~Sensor()
 {
   delete this->dataPtr;
@@ -185,24 +172,27 @@ Sensor::~Sensor()
 }
 
 /////////////////////////////////////////////////
+Sensor::Sensor(const Sensor &_sensor)
+  : dataPtr(new SensorPrivate(*_sensor.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Sensor::Sensor(Sensor &&_sensor) noexcept
+  : dataPtr(std::exchange(_sensor.dataPtr, nullptr))
+{
+}
+
+/////////////////////////////////////////////////
 Sensor &Sensor::operator=(const Sensor &_sensor)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new SensorPrivate(*_sensor.dataPtr);
-  }
-  else
-  {
-    this->dataPtr = new(this->dataPtr) SensorPrivate(*_sensor.dataPtr);
-  }
-  return *this;
+  return *this = Sensor(_sensor);
 }
 
 /////////////////////////////////////////////////
 Sensor &Sensor::operator=(Sensor &&_sensor)
 {
-  this->dataPtr = _sensor.dataPtr;
-  _sensor.dataPtr = nullptr;
+  std::swap(this->dataPtr, _sensor.dataPtr);
   return *this;
 }
 

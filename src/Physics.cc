@@ -50,42 +50,35 @@ Physics::Physics()
 }
 
 /////////////////////////////////////////////////
+Physics::~Physics()
+{
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
 Physics::Physics(const Physics &_physics)
   : dataPtr(new PhysicsPrivate(*_physics.dataPtr))
 {
 }
 
 /////////////////////////////////////////////////
-Physics &Physics::operator=(const Physics &_physics)
+Physics::Physics(Physics &&_physics) noexcept
+  : dataPtr(std::exchange(_physics.dataPtr, nullptr))
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new PhysicsPrivate;
-  }
-  *this->dataPtr = (*_physics.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
-Physics::Physics(Physics &&_physics) noexcept
+Physics &Physics::operator=(const Physics &_physics)
 {
-  this->dataPtr = _physics.dataPtr;
-  _physics.dataPtr = nullptr;
+  return *this = Physics(_physics);
 }
 
 /////////////////////////////////////////////////
 Physics &Physics::operator=(Physics &&_physics)
 {
-  this->dataPtr = _physics.dataPtr;
-  _physics.dataPtr = nullptr;
+  std::swap(this->dataPtr, _physics.dataPtr);
   return *this;
-}
-
-/////////////////////////////////////////////////
-Physics::~Physics()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

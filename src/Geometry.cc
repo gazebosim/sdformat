@@ -98,60 +98,22 @@ Geometry::Geometry(const Geometry &_geometry)
   this->dataPtr->sdf = _geometry.dataPtr->sdf;
 }
 
+//////////////////////////////////////////////////
+Geometry::Geometry(Geometry &&_geometry) noexcept
+  : dataPtr(std::exchange(_geometry.dataPtr, nullptr))
+{
+}
+
 /////////////////////////////////////////////////
 Geometry &Geometry::operator=(const Geometry &_geometry)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new GeometryPrivate;
-  }
-  this->dataPtr->type = _geometry.dataPtr->type;
-
-  if (_geometry.dataPtr->box)
-  {
-    this->dataPtr->box = std::make_unique<sdf::Box>(*_geometry.dataPtr->box);
-  }
-
-  if (_geometry.dataPtr->cylinder)
-  {
-    this->dataPtr->cylinder = std::make_unique<sdf::Cylinder>(
-        *_geometry.dataPtr->cylinder);
-  }
-
-  if (_geometry.dataPtr->plane)
-  {
-    this->dataPtr->plane = std::make_unique<sdf::Plane>(
-        *_geometry.dataPtr->plane);
-  }
-
-  if (_geometry.dataPtr->sphere)
-  {
-    this->dataPtr->sphere = std::make_unique<sdf::Sphere>(
-        *_geometry.dataPtr->sphere);
-  }
-
-  if (_geometry.dataPtr->mesh)
-  {
-    this->dataPtr->mesh = std::make_unique<sdf::Mesh>(*_geometry.dataPtr->mesh);
-  }
-
-  this->dataPtr->sdf = _geometry.dataPtr->sdf;
-
-  return *this;
-}
-
-//////////////////////////////////////////////////
-Geometry::Geometry(Geometry &&_geometry) noexcept
-{
-  this->dataPtr = _geometry.dataPtr;
-  _geometry.dataPtr = nullptr;
+  return *this = Geometry(_geometry);
 }
 
 //////////////////////////////////////////////////
 Geometry &Geometry::operator=(Geometry &&_geometry)
 {
-  this->dataPtr = _geometry.dataPtr;
-  _geometry.dataPtr = nullptr;
+  std::swap(this->dataPtr, _geometry.dataPtr);
   return *this;
 }
 
