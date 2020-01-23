@@ -44,6 +44,41 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
 //////////////////////////////////////////////////
+/// \brief Internal helper for readFile, which populates the SDF values
+/// from a file
+///
+/// This populates the given sdf pointer from a file. If the file is a URDF
+/// file it is converted to SDF first. Conversion to the latest
+/// SDF version is controlled by a function parameter.
+/// \param[in] _filename Name of the SDF file
+/// \param[in] _sdf Pointer to an SDF object.
+/// \param[in] _convert Convert to the latest version if true.
+/// \param[out] _errors Parsing errors will be appended to this variable.
+/// \return True if successful.
+bool readFileInternal(
+    const std::string &_filename,
+    SDFPtr _sdf,
+    const bool _convert,
+    Errors &_errors);
+
+/// \brief Internal helper for readString, which populates the SDF values
+/// from a string
+///
+/// This populates the sdf pointer from a string. If the string is from a URDF
+/// file it is converted to SDF first. Conversion to the latest
+/// SDF version is controlled by a function parameter.
+/// \param[in] _xmlString XML string to be parsed.
+/// \param[in] _sdf Pointer to an SDF object.
+/// \param[in] _convert Convert to the latest version if true.
+/// \param[out] _errors Parsing errors will be appended to this variable.
+/// \return True if successful.
+bool readStringInternal(
+    const std::string &_xmlString,
+    SDFPtr _sdf,
+    const bool _convert,
+    Errors &_errors);
+
+//////////////////////////////////////////////////
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
@@ -329,6 +364,20 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
+  return readFileInternal(_filename, _sdf, true, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readFileWithoutConversion(
+    const std::string &_filename, SDFPtr _sdf, Errors &_errors)
+{
+  return readFileInternal(_filename, _sdf, false, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
+      const bool _convert, Errors &_errors)
+{
   TiXmlDocument xmlDoc;
   std::string filename = sdf::findFile(_filename, true, true);
 
@@ -356,7 +405,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
     return false;
   }
 
-  if (readDoc(&xmlDoc, _sdf, filename, true, _errors))
+  if (readDoc(&xmlDoc, _sdf, filename, _convert, _errors))
   {
     return true;
   }
@@ -364,7 +413,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
   {
     sdf::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelFile(filename);
-    if (sdf::readDoc(&doc, _sdf, "urdf file", true, _errors))
+    if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
       return true;
@@ -395,6 +444,20 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
 {
+  return readStringInternal(_xmlString, _sdf, true, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readStringWithoutConversion(
+    const std::string &_filename, SDFPtr _sdf, Errors &_errors)
+{
+  return readStringInternal(_filename, _sdf, false, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
+    const bool _convert, Errors &_errors)
+{
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
@@ -402,7 +465,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, "data-string", true, _errors))
+  if (readDoc(&xmlDoc, _sdf, "data-string", _convert, _errors))
   {
     return true;
   }
@@ -410,7 +473,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
   {
     sdf::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelString(_xmlString);
-    if (sdf::readDoc(&doc, _sdf, "urdf string", true, _errors))
+    if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {
       sdfdbg << "Parsing from urdf.\n";
       return true;

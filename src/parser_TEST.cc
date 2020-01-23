@@ -83,6 +83,33 @@ TEST(Parser, ReusedSDFVersion)
 }
 
 /////////////////////////////////////////////////
+TEST(Parser, readFileConversions)
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+  const std::string path = pathBase +"/joint_complete.sdf";
+
+  // Call readFile API that always converts
+  {
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
+  }
+
+  // Call readFile API that does not convert
+  {
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFileWithoutConversion(path, sdf, errors));
+    EXPECT_EQ("1.6", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
+  }
+}
+
+/////////////////////////////////////////////////
 TEST(Parser, NameUniqueness)
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
