@@ -78,7 +78,8 @@ TEST(JointAxisFrame, Version_1_4_no_convert)
   sdf::Errors errors;
   sdf::SDFPtr model(new sdf::SDF());
   sdf::init(model);
-  ASSERT_TRUE(sdf::readString(get_sdf_string("1.4"), model, false, errors));
+  ASSERT_TRUE(
+      sdf::readStringWithoutConversion(get_sdf_string("1.4"), model, errors));
 
   EXPECT_EQ("1.4", model->Root()->Get<std::string>("version"));
   sdf::ElementPtr joint = model->Root()->GetElement(

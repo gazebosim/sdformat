@@ -48,7 +48,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 /// from a file
 ///
 /// This populates the given sdf pointer from a file. If the file is a URDF
-/// file it is converted to SDF first. Conversion of files to the latest
+/// file it is converted to SDF first. Conversion to the latest
 /// SDF version is controlled by a function parameter.
 /// \param[in] _filename Name of the SDF file
 /// \param[in] _sdf Pointer to an SDF object.
@@ -57,6 +57,22 @@ inline namespace SDF_VERSION_NAMESPACE {
 /// \return True if successful.
 bool readFileInternal(
     const std::string &_filename,
+    SDFPtr _sdf,
+    const bool _convert,
+    Errors &_errors);
+
+/// \brief Populate the SDF values from a string
+///
+/// This populates the sdf pointer from a string. If the string is from a URDF
+/// file it is converted to SDF first. Conversion to the latest
+/// SDF version is controlled by a function parameter.
+/// \param[in] _xmlString XML string to be parsed.
+/// \param[in] _sdf Pointer to an SDF object.
+/// \param[in] _convert Convert to the latest version if true.
+/// \param[out] _errors Parsing errors will be appended to this variable.
+/// \return True if successful.
+bool readStringInternal(
+    const std::string &_xmlString,
     SDFPtr _sdf,
     const bool _convert,
     Errors &_errors);
@@ -427,11 +443,18 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
 {
-  return readString(_xmlString, _sdf, true, _errors);
+  return readStringInternal(_xmlString, _sdf, true, _errors);
 }
 
 //////////////////////////////////////////////////
-bool readString(const std::string &_xmlString, SDFPtr _sdf,
+bool readStringWithoutConversion(
+    const std::string &_filename, SDFPtr _sdf, Errors &_errors)
+{
+  return readStringInternal(_filename, _sdf, false, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
     const bool _convert, Errors &_errors)
 {
   TiXmlDocument xmlDoc;
