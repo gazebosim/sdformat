@@ -73,19 +73,6 @@ Imu::Imu()
 }
 
 //////////////////////////////////////////////////
-Imu::Imu(const Imu &_imu)
-  : dataPtr(new ImuPrivate(*_imu.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-Imu::Imu(Imu &&_imu) noexcept
-{
-  this->dataPtr = _imu.dataPtr;
-  _imu.dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
 Imu::~Imu()
 {
   delete this->dataPtr;
@@ -93,21 +80,27 @@ Imu::~Imu()
 }
 
 //////////////////////////////////////////////////
+Imu::Imu(const Imu &_imu)
+  : dataPtr(new ImuPrivate(*_imu.dataPtr))
+{
+}
+
+//////////////////////////////////////////////////
+Imu::Imu(Imu &&_imu) noexcept
+  : dataPtr(std::exchange(_imu.dataPtr, nullptr))
+{
+}
+
+//////////////////////////////////////////////////
 Imu &Imu::operator=(const Imu &_imu)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new ImuPrivate;
-  }
-  *this->dataPtr = *_imu.dataPtr;
-  return *this;
+  return *this = Imu(_imu);
 }
 
 //////////////////////////////////////////////////
 Imu &Imu::operator=(Imu &&_imu) noexcept
 {
-  this->dataPtr = _imu.dataPtr;
-  _imu.dataPtr = nullptr;
+  std::swap(this->dataPtr, _imu.dataPtr);
   return *this;
 }
 

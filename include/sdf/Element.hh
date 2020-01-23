@@ -348,6 +348,10 @@ namespace sdf
     /// \brief Remove all child elements.
     public: void ClearElements();
 
+    /// \brief Remove all child elements and reset file path and
+    /// original version.
+    public: void Clear();
+
     /// \brief Call the Update() callback on each element, as well as
     ///        the embedded Param.
     public: void Update();

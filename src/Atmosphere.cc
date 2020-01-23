@@ -45,6 +45,13 @@ Atmosphere::Atmosphere()
 }
 
 //////////////////////////////////////////////////
+Atmosphere::~Atmosphere()
+{
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
 Atmosphere::Atmosphere(const Atmosphere &_atmosphere)
   : dataPtr(new AtmospherePrivate)
 {
@@ -56,35 +63,21 @@ Atmosphere::Atmosphere(const Atmosphere &_atmosphere)
 
 //////////////////////////////////////////////////
 Atmosphere::Atmosphere(Atmosphere &&_atmosphere) noexcept
+  : dataPtr(std::exchange(_atmosphere.dataPtr, nullptr))
 {
-  this->dataPtr = _atmosphere.dataPtr;
-  _atmosphere.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
 Atmosphere &Atmosphere::operator=(const Atmosphere &_atmosphere)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new AtmospherePrivate;
-  }
-  *this->dataPtr = (*_atmosphere.dataPtr);
-  return *this;
+  return *this = Atmosphere(_atmosphere);
 }
 
 /////////////////////////////////////////////////
 Atmosphere &Atmosphere::operator=(Atmosphere &&_atmosphere)
 {
-  this->dataPtr = _atmosphere.dataPtr;
-  _atmosphere.dataPtr = nullptr;
+  std::swap(this->dataPtr, _atmosphere.dataPtr);
   return *this;
-}
-
-//////////////////////////////////////////////////
-Atmosphere::~Atmosphere()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////

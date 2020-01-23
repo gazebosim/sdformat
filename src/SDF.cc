@@ -369,6 +369,14 @@ void SDF::SetFromString(const std::string &_sdfData)
 }
 
 /////////////////////////////////////////////////
+void SDF::Clear()
+{
+  this->dataPtr->root->Clear();
+  this->dataPtr->path.clear();
+  this->dataPtr->originalVersion.clear();
+}
+
+/////////////////////////////////////////////////
 ElementPtr SDF::Root() const
 {
   return this->dataPtr->root;
@@ -390,12 +398,14 @@ std::string SDF::FilePath() const
 void SDF::SetFilePath(const std::string &_path)
 {
   this->dataPtr->path = _path;
+  this->dataPtr->root->SetFilePath(_path);
 }
 
 /////////////////////////////////////////////////
 void SDF::SetOriginalVersion(const std::string &_version)
 {
   this->dataPtr->originalVersion = _version;
+  this->dataPtr->root->SetOriginalVersion(_version);
 }
 
 /////////////////////////////////////////////////

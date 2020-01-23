@@ -87,6 +87,13 @@ Model::Model()
 }
 
 /////////////////////////////////////////////////
+Model::~Model()
+{
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
 Model::Model(const Model &_model)
   : dataPtr(new ModelPrivate(*_model.dataPtr))
 {
@@ -117,62 +124,22 @@ Model::Model(const Model &_model)
 }
 
 /////////////////////////////////////////////////
-Model &Model::operator=(const Model &_model)
+Model::Model(Model &&_model) noexcept
+  : dataPtr(std::exchange(_model.dataPtr, nullptr))
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new ModelPrivate;
-  }
-  *this->dataPtr = (*_model.dataPtr);
-
-  if (_model.dataPtr->frameAttachedToGraph)
-  {
-    this->dataPtr->frameAttachedToGraph =
-        std::make_shared<sdf::FrameAttachedToGraph>(
-            *_model.dataPtr->frameAttachedToGraph);
-  }
-  if (_model.dataPtr->poseGraph)
-  {
-    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
-        *_model.dataPtr->poseGraph);
-  }
-  for (auto &link : this->dataPtr->links)
-  {
-    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &joint : this->dataPtr->joints)
-  {
-    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &frame : this->dataPtr->frames)
-  {
-    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-
-  return *this;
 }
 
 /////////////////////////////////////////////////
-Model::Model(Model &&_model) noexcept
+Model &Model::operator=(const Model &_model)
 {
-  this->dataPtr = _model.dataPtr;
-  _model.dataPtr = nullptr;
+  return *this = Model(_model);
 }
 
 /////////////////////////////////////////////////
 Model &Model::operator=(Model &&_model)
 {
-  this->dataPtr = _model.dataPtr;
-  _model.dataPtr = nullptr;
+  std::swap(this->dataPtr, _model.dataPtr);
   return *this;
-}
-
-/////////////////////////////////////////////////
-Model::~Model()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

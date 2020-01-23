@@ -49,30 +49,22 @@ Sphere::Sphere(const Sphere &_sphere)
   this->dataPtr->sdf = _sphere.dataPtr->sdf;
 }
 
+//////////////////////////////////////////////////
+Sphere::Sphere(Sphere &&_sphere) noexcept
+  : dataPtr(std::exchange(_sphere.dataPtr, nullptr))
+{
+}
+
 /////////////////////////////////////////////////
 Sphere &Sphere::operator=(const Sphere &_sphere)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new SpherePrivate;
-  }
-  this->dataPtr->sphere = _sphere.dataPtr->sphere;
-  this->dataPtr->sdf = _sphere.dataPtr->sdf;
-  return *this;
-}
-
-//////////////////////////////////////////////////
-Sphere::Sphere(Sphere &&_sphere) noexcept
-{
-  this->dataPtr = _sphere.dataPtr;
-  _sphere.dataPtr = nullptr;
+  return *this = Sphere(_sphere);
 }
 
 /////////////////////////////////////////////////
 Sphere &Sphere::operator=(Sphere &&_sphere)
 {
-  this->dataPtr = _sphere.dataPtr;
-  _sphere.dataPtr = nullptr;
+  std::swap(this->dataPtr, _sphere.dataPtr);
   return *this;
 }
 

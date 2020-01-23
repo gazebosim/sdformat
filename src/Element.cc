@@ -798,6 +798,14 @@ ElementPtr Element::AddElement(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
+void Element::Clear()
+{
+  this->ClearElements();
+  this->dataPtr->originalVersion.clear();
+  this->dataPtr->path.clear();
+}
+
+/////////////////////////////////////////////////
 void Element::ClearElements()
 {
   for (sdf::ElementPtr_V::iterator iter = this->dataPtr->elements.begin();
