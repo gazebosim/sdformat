@@ -61,7 +61,8 @@ bool readFileInternal(
     const bool _convert,
     Errors &_errors);
 
-/// \brief Populate the SDF values from a string
+/// \brief Internal helper for readString, which populates the SDF values
+/// from a string
 ///
 /// This populates the sdf pointer from a string. If the string is from a URDF
 /// file it is converted to SDF first. Conversion to the latest
