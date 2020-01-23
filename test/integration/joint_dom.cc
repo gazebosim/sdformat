@@ -25,7 +25,9 @@
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
+#include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
+#include "sdf/parser.hh"
 #include "test_config.h"
 
 //////////////////////////////////////////////////
@@ -373,7 +375,38 @@ TEST(DOMJoint, LoadInvalidChild)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMJoint, LoadLinkJointSameName)
+TEST(DOMJoint, LoadLinkJointSameName17Invalid)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_link_joint_same_name.sdf");
+
+  // Read with sdf::readFile, which converts from 1.6 to latest
+  sdf::SDFPtr sdf(new sdf::SDF());
+  sdf::init(sdf);
+  sdf::readFile(testFile, sdf);
+
+  // Load the SDF file from the converted string and expect errors
+  sdf::Root root;
+  auto errors = root.LoadSdfString(sdf->Root()->ToString(""));
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(2u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "Joint with non-unique name [attachment] detected in model with name "
+      "[link_joint_same_name]."));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "Joint with non-unique name [attachment] detected in model with name "
+      "[link_joint_same_name]."));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, LoadLinkJointSameName16Valid)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
