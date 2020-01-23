@@ -44,6 +44,24 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
 //////////////////////////////////////////////////
+/// \brief Internal helper for readFile, which populates the SDF values
+/// from a file
+///
+/// This populates the given sdf pointer from a file. If the file is a URDF
+/// file it is converted to SDF first. Conversion of files to the latest
+/// SDF version is controlled by a function parameter.
+/// \param[in] _filename Name of the SDF file
+/// \param[in] _sdf Pointer to an SDF object.
+/// \param[in] _convert Convert to the latest version if true.
+/// \param[out] _errors Parsing errors will be appended to this variable.
+/// \return True if successful.
+bool readFileInternal(
+    const std::string &_filename,
+    SDFPtr _sdf,
+    const bool _convert,
+    Errors &_errors);
+
+//////////////////////////////////////////////////
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
@@ -329,11 +347,18 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
-  return readFile(_filename, _sdf, true, _errors);
+  return readFileInternal(_filename, _sdf, true, _errors);
 }
 
 //////////////////////////////////////////////////
-bool readFile(const std::string &_filename, SDFPtr _sdf,
+bool readFileWithoutConversion(
+    const std::string &_filename, SDFPtr _sdf, Errors &_errors)
+{
+  return readFileInternal(_filename, _sdf, false, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
       const bool _convert, Errors &_errors)
 {
   TiXmlDocument xmlDoc;
