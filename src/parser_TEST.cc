@@ -98,21 +98,11 @@ TEST(Parser, readFileConversions)
     EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
   }
 
-  // Call readFile API that explicitly converts
-  {
-    sdf::Errors errors;
-    sdf::SDFPtr sdf = InitSDF();
-    EXPECT_TRUE(sdf::readFile(path, sdf, true, errors));
-    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
-    EXPECT_EQ("1.6", sdf->OriginalVersion());
-    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
-  }
-
   // Call readFile API that does not convert
   {
     sdf::Errors errors;
     sdf::SDFPtr sdf = InitSDF();
-    EXPECT_TRUE(sdf::readFile(path, sdf, false, errors));
+    EXPECT_TRUE(sdf::readFileWithoutConversion(path, sdf, errors));
     EXPECT_EQ("1.6", sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ("1.6", sdf->OriginalVersion());
     EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
