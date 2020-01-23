@@ -486,11 +486,20 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
   if (_source != "data-string")
   {
     _sdf->SetFilePath(_source);
-    _sdf->Root()->SetFilePath(_source);
   }
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
+    if (_sdf->OriginalVersion().empty())
+    {
+      _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
+    }
+
+    if (_sdf->Root()->OriginalVersion().empty())
+    {
+      _sdf->Root()->SetOriginalVersion(sdfNode->Attribute("version"));
+    }
+
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
@@ -509,7 +518,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
   }
   else
   {
-    // try to use the old deprecated parser
     if (!sdfNode)
     {
       sdfdbg << "No <sdf> element in file[" << _source << "]\n";
@@ -518,13 +526,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
     {
       sdfdbg << "SDF <sdf> element has no version in file["
              << _source << "]\n";
-    }
-    else if (strcmp(sdfNode->Attribute("version"),
-                    SDF::Version().c_str()) != 0)
-    {
-      sdfdbg << "SDF version ["
-             << sdfNode->Attribute("version")
-             << "] is not " << SDF::Version() << "\n";
     }
     return false;
   }
@@ -549,8 +550,18 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
     return false;
   }
 
+  if (_source != "data-string")
+  {
+    _sdf->SetFilePath(_source);
+  }
+
   if (sdfNode && sdfNode->Attribute("version"))
   {
+    if (_sdf->OriginalVersion().empty())
+    {
+      _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
+    }
+
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
@@ -575,7 +586,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   }
   else
   {
-    // try to use the old deprecated parser
     if (!sdfNode)
     {
       sdfdbg << "SDF has no <sdf> element\n";
@@ -583,13 +593,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
     else if (!sdfNode->Attribute("version"))
     {
       sdfdbg << "<sdf> element has no version\n";
-    }
-    else if (strcmp(sdfNode->Attribute("version"),
-                    SDF::Version().c_str()) != 0)
-    {
-      sdfdbg << "SDF version ["
-             << sdfNode->Attribute("version")
-             << "] is not " << SDF::Version() << "\n";
     }
     return false;
   }
@@ -1192,9 +1195,27 @@ bool convertFile(const std::string &_filename, const std::string &_version,
     return false;
   }
 
+  if (nullptr == _sdf || nullptr == _sdf->Root())
+  {
+    sdferr << "SDF pointer or its Root is null.\n";
+    return false;
+  }
+
   TiXmlDocument xmlDoc;
   if (xmlDoc.LoadFile(filename))
   {
+    // read initial sdf version
+    std::string originalVersion;
+    {
+      TiXmlElement *sdfNode = xmlDoc.FirstChildElement("sdf");
+      if (sdfNode && sdfNode->Attribute("version"))
+      {
+        originalVersion = sdfNode->Attribute("version");
+      }
+    }
+
+    _sdf->SetOriginalVersion(originalVersion);
+
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
       Errors errors;
@@ -1230,6 +1251,18 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
 
   if (!xmlDoc.Error())
   {
+    // read initial sdf version
+    std::string originalVersion;
+    {
+      TiXmlElement *sdfNode = xmlDoc.FirstChildElement("sdf");
+      if (sdfNode && sdfNode->Attribute("version"))
+      {
+        originalVersion = sdfNode->Attribute("version");
+      }
+    }
+
+    _sdf->SetOriginalVersion(originalVersion);
+
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
       Errors errors;

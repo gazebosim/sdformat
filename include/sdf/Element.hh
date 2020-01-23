@@ -348,6 +348,10 @@ namespace sdf
     /// \brief Remove all child elements.
     public: void ClearElements();
 
+    /// \brief Remove all child elements and reset file path and
+    /// original version.
+    public: void Clear();
+
     /// \brief Call the Update() callback on each element, as well as
     ///        the embedded Param.
     public: void Update();
@@ -372,6 +376,14 @@ namespace sdf
     /// \brief Get the path to the SDF document where this element came from.
     /// \return Full path to SDF document.
     public: const std::string &FilePath() const;
+
+    /// \brief Set the spec version that this was originally parsed from.
+    /// \param[in] _version Spec version string.
+    public: void SetOriginalVersion(const std::string &_version);
+
+    /// \brief Get the spec version that this was originally parsed from.
+    /// \return Spec version string.
+    public: const std::string &OriginalVersion() const;
 
     /// \brief Get a text description of the element.
     /// \return The text description of the element.
@@ -460,6 +472,9 @@ namespace sdf
 
     /// \brief Path to file where this element came from
     public: std::string path;
+
+    /// \brief Spec version that this was originally parsed from.
+    public: std::string originalVersion;
   };
 
   ///////////////////////////////////////////////
