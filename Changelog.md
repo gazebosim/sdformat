@@ -2,6 +2,9 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Remove URI scheme, if present, when finding files.
+    * [Pull request 650](https://bitbucket.org/osrf/sdformat/pull-requests/650)
+
 ### SDFormat 8.7.1 (2020-01-13)
 
 1. Fix memory leaks in move assignment operator.

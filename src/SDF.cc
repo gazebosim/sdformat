@@ -96,10 +96,8 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   size_t idx = _filename.find("://");
   if (idx != std::string::npos)
   {
-    std::cout << "\n\n HAS SCHEME \n\n";
     filename = filename.substr(idx + 3);
   }
-  std::cout << "FILENAME[" << filename << "]\n";
 
   // Next check the install path.
   path = sdf::filesystem::append(SDF_SHARE_PATH, filename);
