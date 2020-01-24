@@ -1072,3 +1072,61 @@ TEST(DOMFrame, LoadWorldFramesInvalidRelativeTo)
       "relative_to name[cycle] is identical to model name[cycle], "
       "causing a graph cycle"));
 }
+
+////////////////////////////////////////
+TEST(DOMFrame, WorldIncludeModel)
+{
+  const std::string MODEL_PATH =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                            "model", "box");
+
+  std::ostringstream stream;
+  std::string version = SDF_VERSION;
+  stream
+    << "<sdf version='" << version << "'>"
+    << "<world name='default'>"
+    << "<frame name='F1'>"
+    << "  <pose>1 0 0 0 0 0</pose>"
+    << "</frame>"
+    << "<include>"
+    << "  <name>M1</name>"
+    << "  <pose />"
+    << "  <uri>" + MODEL_PATH +"</uri>"
+    << "</include>"
+    << "<include>"
+    << "  <name>M2</name>"
+    << "  <pose relative_to='F1'/>"
+    << "  <uri>" + MODEL_PATH +"</uri>"
+    << "</include>"
+    << "<include>"
+    << "  <pose relative_to='F1'>0 1 0 0 0 0</pose>"
+    << "  <uri>" + MODEL_PATH +"</uri>"
+    << "</include>"
+    << "</world>"
+    << "</sdf>";
+
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(stream.str());
+  EXPECT_TRUE(errors.empty()) << errors[0].Message();
+
+  ignition::math::Pose3d expectedPoses[] = {
+    {0, 0, 0, 0, 0, 0},
+    {1, 0, 0, 0, 0, 0},
+    {1, 1, 0, 0, 0, 0},
+  };
+  // Get the first model
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  ASSERT_EQ(3u, world->ModelCount());
+
+  for (std::size_t i = 0; i < 3; ++i)
+  {
+    const sdf::Model *model = world->ModelByIndex(i);
+    ASSERT_NE(nullptr, model);
+    ignition::math::Pose3d modelPose;
+    sdf::Errors resolveErrors = model->SemanticPose().Resolve(modelPose);
+    EXPECT_TRUE(resolveErrors.empty());
+    EXPECT_EQ(expectedPoses[i], modelPose);
+  }
+}
