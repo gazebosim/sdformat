@@ -91,8 +91,18 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     }
   }
 
+  // Strip scheme, if any
+  std::string filename = _filename;
+  size_t idx = _filename.find("://");
+  if (idx != std::string::npos)
+  {
+    std::cout << "\n\n HAS SCHEME \n\n";
+    filename = filename.substr(idx + 3);
+  }
+  std::cout << "FILENAME[" << filename << "]\n";
+
   // Next check the install path.
-  path = sdf::filesystem::append(SDF_SHARE_PATH, _filename);
+  path = sdf::filesystem::append(SDF_SHARE_PATH, filename);
   if (sdf::filesystem::exists(path))
   {
     return path;
@@ -101,14 +111,14 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   // Next check the versioned install path.
   path = sdf::filesystem::append(SDF_SHARE_PATH,
                                  "sdformat" SDF_MAJOR_VERSION_STR,
-                                 sdf::SDF::Version(), _filename);
+                                 sdf::SDF::Version(), filename);
   if (sdf::filesystem::exists(path))
   {
     return path;
   }
 
   // Next check to see if the given file exists.
-  path = _filename;
+  path = filename;
   if (sdf::filesystem::exists(path))
   {
     return path;
@@ -129,7 +139,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     for (std::vector<std::string>::iterator iter = paths.begin();
          iter != paths.end(); ++iter)
     {
-      path = sdf::filesystem::append(*iter, _filename);
+      path = sdf::filesystem::append(*iter, filename);
       if (sdf::filesystem::exists(path))
       {
         return path;
@@ -140,7 +150,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   // Finally check the local path, if the flag is set.
   if (_searchLocalPath)
   {
-    path = sdf::filesystem::append(sdf::filesystem::current_path(), _filename);
+    path = sdf::filesystem::append(sdf::filesystem::current_path(), filename);
     if (sdf::filesystem::exists(path))
     {
       return path;
