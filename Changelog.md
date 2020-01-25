@@ -2,10 +2,10 @@
 
 ### SDFormat 9.X.X (201X-XX-XX)
 
+### SDFormat 9.1.0 (201X-XX-XX)
+
 1. Fix parsing of pose elements under `<include>`
     * [Pull request 649](https://bitbucket.org/osrf/sdformat/pull-requests/649)
-
-### SDFormat 9.1.0 (201X-XX-XX)
 
 1. Parser: add boolean parameter to `readFile` and `readString` for disabling conversion to latest SDF spec.
     * [Pull request 647](https://bitbucket.org/osrf/sdformat/pull-requests/647)
