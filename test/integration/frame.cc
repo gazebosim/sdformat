@@ -342,6 +342,75 @@ TEST(Frame, IncludeRelativeTo)
             ignition::math::Pose3d(5, -2, 1, 0, 0, 0));
 }
 
+////////////////////////////////////////
+// Test parsing an include element that has a pose element that may not have a
+// value or a relative_to attribute
+TEST(Frame, IncludeRelativeToEmptyPose)
+{
+  const std::string MODEL_PATH =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                            "model", "box");
+
+  std::ostringstream stream;
+  std::string version = SDF_VERSION;
+  stream
+    << "<sdf version='" << version << "'>"
+    << "<world name='default'>"
+    << "<include>"
+    << "  <name>my_model</name>"
+    << "  <pose relative_to='/world'/>"
+    << "  <uri>" + MODEL_PATH +"</uri>"
+    << "</include>"
+    << "<include>"
+    << "  <name>my_model2</name>"
+    << "  <pose />"
+    << "  <uri>" + MODEL_PATH +"</uri>"
+    << "</include>"
+    << "</world>"
+    << "</sdf>";
+
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
+
+  // Verify correct parsing
+
+  // model
+  EXPECT_TRUE(sdfParsed->Root()->HasElement("world"));
+  sdf::ElementPtr worldElem = sdfParsed->Root()->GetElement("world");
+
+  EXPECT_TRUE(worldElem->HasElement("model"));
+  sdf::ElementPtr modelElem = worldElem->GetElement("model");
+  EXPECT_TRUE(modelElem->HasAttribute("name"));
+  EXPECT_EQ(modelElem->Get<std::string>("name"), "my_model");
+
+  // model pose
+  {
+    EXPECT_TRUE(modelElem->HasElement("pose"));
+    sdf::ElementPtr modelPoseElem = modelElem->GetElement("pose");
+    EXPECT_TRUE(modelPoseElem->HasAttribute("relative_to"));
+    EXPECT_EQ(modelPoseElem->Get<std::string>("relative_to"), "/world");
+    EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
+        ignition::math::Pose3d::Zero);
+  }
+  // Check next model
+  modelElem = modelElem->GetNextElement("model");
+  ASSERT_NE(nullptr, modelElem);
+  EXPECT_TRUE(modelElem->HasAttribute("name"));
+  EXPECT_EQ(modelElem->Get<std::string>("name"), "my_model2");
+
+  // model pose
+  {
+    EXPECT_TRUE(modelElem->HasElement("pose"));
+    sdf::ElementPtr modelPoseElem = modelElem->GetElement("pose");
+    EXPECT_TRUE(modelPoseElem->HasAttribute("relative_to"));
+    EXPECT_FALSE(modelPoseElem->GetAttribute("relative_to")->GetSet());
+    EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
+        ignition::math::Pose3d::Zero);
+  }
+}
+
 /////////////////////////////////////////////////
 TEST(DOMFrame, LoadModelFramesAttachedTo)
 {
@@ -1002,4 +1071,62 @@ TEST(DOMFrame, LoadWorldFramesInvalidRelativeTo)
     errors[1].Message().find(
       "relative_to name[cycle] is identical to model name[cycle], "
       "causing a graph cycle"));
+}
+
+////////////////////////////////////////
+TEST(DOMFrame, WorldIncludeModel)
+{
+  const std::string MODEL_PATH =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                            "model", "box");
+
+  std::ostringstream stream;
+  std::string version = SDF_VERSION;
+  stream
+    << "<sdf version='" << version << "'>"
+    << "<world name='default'>"
+    << "<frame name='F1'>"
+    << "  <pose>1 0 0 0 0 0</pose>"
+    << "</frame>"
+    << "<include>"
+    << "  <name>M1</name>"
+    << "  <pose />"
+    << "  <uri>" + MODEL_PATH +"</uri>"
+    << "</include>"
+    << "<include>"
+    << "  <name>M2</name>"
+    << "  <pose relative_to='F1'/>"
+    << "  <uri>" + MODEL_PATH +"</uri>"
+    << "</include>"
+    << "<include>"
+    << "  <pose relative_to='F1'>0 1 0 0 0 0</pose>"
+    << "  <uri>" + MODEL_PATH +"</uri>"
+    << "</include>"
+    << "</world>"
+    << "</sdf>";
+
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(stream.str());
+  EXPECT_TRUE(errors.empty()) << errors[0].Message();
+
+  ignition::math::Pose3d expectedPoses[] = {
+    {0, 0, 0, 0, 0, 0},
+    {1, 0, 0, 0, 0, 0},
+    {1, 1, 0, 0, 0, 0},
+  };
+  // Get the first model
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  ASSERT_EQ(3u, world->ModelCount());
+
+  for (std::size_t i = 0; i < 3; ++i)
+  {
+    const sdf::Model *model = world->ModelByIndex(i);
+    ASSERT_NE(nullptr, model);
+    ignition::math::Pose3d modelPose;
+    sdf::Errors resolveErrors = model->SemanticPose().Resolve(modelPose);
+    EXPECT_TRUE(resolveErrors.empty());
+    EXPECT_EQ(expectedPoses[i], modelPose);
+  }
 }

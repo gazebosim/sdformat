@@ -969,12 +969,23 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           sdf::ElementPtr poseElem =
               includeSDF->Root()->GetElement("model")->GetElement("pose");
 
-          poseElem->GetValue()->SetFromString(poseElemXml->GetText());
+          if (poseElemXml->GetText())
+          {
+            poseElem->GetValue()->SetFromString(poseElemXml->GetText());
+          }
+          else
+          {
+            poseElem->GetValue()->Reset();
+          }
 
           const char *relativeTo = poseElemXml->Attribute("relative_to");
           if (relativeTo)
           {
             poseElem->GetAttribute("relative_to")->SetFromString(relativeTo);
+          }
+          else
+          {
+            poseElem->GetAttribute("relative_to")->Reset();
           }
         }
 
