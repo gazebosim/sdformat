@@ -93,10 +93,11 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
 
   // Strip scheme, if any
   std::string filename = _filename;
-  size_t idx = _filename.find("://");
+  std::string sep("://");
+  size_t idx = _filename.find(sep);
   if (idx != std::string::npos)
   {
-    filename = filename.substr(idx + 3);
+    filename = filename.substr(idx + sep.length());
   }
 
   // Next check the install path.
