@@ -44,6 +44,41 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
 //////////////////////////////////////////////////
+/// \brief Internal helper for readFile, which populates the SDF values
+/// from a file
+///
+/// This populates the given sdf pointer from a file. If the file is a URDF
+/// file it is converted to SDF first. Conversion to the latest
+/// SDF version is controlled by a function parameter.
+/// \param[in] _filename Name of the SDF file
+/// \param[in] _sdf Pointer to an SDF object.
+/// \param[in] _convert Convert to the latest version if true.
+/// \param[out] _errors Parsing errors will be appended to this variable.
+/// \return True if successful.
+bool readFileInternal(
+    const std::string &_filename,
+    SDFPtr _sdf,
+    const bool _convert,
+    Errors &_errors);
+
+/// \brief Internal helper for readString, which populates the SDF values
+/// from a string
+///
+/// This populates the sdf pointer from a string. If the string is from a URDF
+/// file it is converted to SDF first. Conversion to the latest
+/// SDF version is controlled by a function parameter.
+/// \param[in] _xmlString XML string to be parsed.
+/// \param[in] _sdf Pointer to an SDF object.
+/// \param[in] _convert Convert to the latest version if true.
+/// \param[out] _errors Parsing errors will be appended to this variable.
+/// \return True if successful.
+bool readStringInternal(
+    const std::string &_xmlString,
+    SDFPtr _sdf,
+    const bool _convert,
+    Errors &_errors);
+
+//////////////////////////////////////////////////
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
@@ -329,6 +364,20 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
+  return readFileInternal(_filename, _sdf, true, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readFileWithoutConversion(
+    const std::string &_filename, SDFPtr _sdf, Errors &_errors)
+{
+  return readFileInternal(_filename, _sdf, false, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
+      const bool _convert, Errors &_errors)
+{
   TiXmlDocument xmlDoc;
   std::string filename = sdf::findFile(_filename, true, true);
 
@@ -356,7 +405,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
     return false;
   }
 
-  if (readDoc(&xmlDoc, _sdf, filename, true, _errors))
+  if (readDoc(&xmlDoc, _sdf, filename, _convert, _errors))
   {
     return true;
   }
@@ -364,7 +413,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
   {
     sdf::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelFile(filename);
-    if (sdf::readDoc(&doc, _sdf, "urdf file", true, _errors))
+    if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
       return true;
@@ -395,6 +444,20 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
 {
+  return readStringInternal(_xmlString, _sdf, true, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readStringWithoutConversion(
+    const std::string &_filename, SDFPtr _sdf, Errors &_errors)
+{
+  return readStringInternal(_filename, _sdf, false, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
+    const bool _convert, Errors &_errors)
+{
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
@@ -402,7 +465,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, "data-string", true, _errors))
+  if (readDoc(&xmlDoc, _sdf, "data-string", _convert, _errors))
   {
     return true;
   }
@@ -410,7 +473,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
   {
     sdf::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelString(_xmlString);
-    if (sdf::readDoc(&doc, _sdf, "urdf string", true, _errors))
+    if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {
       sdfdbg << "Parsing from urdf.\n";
       return true;
@@ -486,11 +549,20 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
   if (_source != "data-string")
   {
     _sdf->SetFilePath(_source);
-    _sdf->Root()->SetFilePath(_source);
   }
 
   if (sdfNode && sdfNode->Attribute("version"))
   {
+    if (_sdf->OriginalVersion().empty())
+    {
+      _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
+    }
+
+    if (_sdf->Root()->OriginalVersion().empty())
+    {
+      _sdf->Root()->SetOriginalVersion(sdfNode->Attribute("version"));
+    }
+
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
@@ -509,7 +581,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
   }
   else
   {
-    // try to use the old deprecated parser
     if (!sdfNode)
     {
       sdfdbg << "No <sdf> element in file[" << _source << "]\n";
@@ -518,13 +589,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
     {
       sdfdbg << "SDF <sdf> element has no version in file["
              << _source << "]\n";
-    }
-    else if (strcmp(sdfNode->Attribute("version"),
-                    SDF::Version().c_str()) != 0)
-    {
-      sdfdbg << "SDF version ["
-             << sdfNode->Attribute("version")
-             << "] is not " << SDF::Version() << "\n";
     }
     return false;
   }
@@ -549,8 +613,18 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
     return false;
   }
 
+  if (_source != "data-string")
+  {
+    _sdf->SetFilePath(_source);
+  }
+
   if (sdfNode && sdfNode->Attribute("version"))
   {
+    if (_sdf->OriginalVersion().empty())
+    {
+      _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
+    }
+
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
@@ -575,7 +649,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   }
   else
   {
-    // try to use the old deprecated parser
     if (!sdfNode)
     {
       sdfdbg << "SDF has no <sdf> element\n";
@@ -583,13 +656,6 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
     else if (!sdfNode->Attribute("version"))
     {
       sdfdbg << "<sdf> element has no version\n";
-    }
-    else if (strcmp(sdfNode->Attribute("version"),
-                    SDF::Version().c_str()) != 0)
-    {
-      sdfdbg << "SDF version ["
-             << sdfNode->Attribute("version")
-             << "] is not " << SDF::Version() << "\n";
     }
     return false;
   }
@@ -903,12 +969,23 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           sdf::ElementPtr poseElem =
               includeSDF->Root()->GetElement("model")->GetElement("pose");
 
-          poseElem->GetValue()->SetFromString(poseElemXml->GetText());
+          if (poseElemXml->GetText())
+          {
+            poseElem->GetValue()->SetFromString(poseElemXml->GetText());
+          }
+          else
+          {
+            poseElem->GetValue()->Reset();
+          }
 
           const char *relativeTo = poseElemXml->Attribute("relative_to");
           if (relativeTo)
           {
             poseElem->GetAttribute("relative_to")->SetFromString(relativeTo);
+          }
+          else
+          {
+            poseElem->GetAttribute("relative_to")->Reset();
           }
         }
 
@@ -1192,9 +1269,27 @@ bool convertFile(const std::string &_filename, const std::string &_version,
     return false;
   }
 
+  if (nullptr == _sdf || nullptr == _sdf->Root())
+  {
+    sdferr << "SDF pointer or its Root is null.\n";
+    return false;
+  }
+
   TiXmlDocument xmlDoc;
   if (xmlDoc.LoadFile(filename))
   {
+    // read initial sdf version
+    std::string originalVersion;
+    {
+      TiXmlElement *sdfNode = xmlDoc.FirstChildElement("sdf");
+      if (sdfNode && sdfNode->Attribute("version"))
+      {
+        originalVersion = sdfNode->Attribute("version");
+      }
+    }
+
+    _sdf->SetOriginalVersion(originalVersion);
+
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
       Errors errors;
@@ -1230,6 +1325,18 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
 
   if (!xmlDoc.Error())
   {
+    // read initial sdf version
+    std::string originalVersion;
+    {
+      TiXmlElement *sdfNode = xmlDoc.FirstChildElement("sdf");
+      if (sdfNode && sdfNode->Attribute("version"))
+      {
+        originalVersion = sdfNode->Attribute("version");
+      }
+    }
+
+    _sdf->SetOriginalVersion(originalVersion);
+
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
       Errors errors;

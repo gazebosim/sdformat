@@ -11,11 +11,25 @@
 
 ### SDFormat 9.X.X (202X-XX-XX)
 
+### SDFormat 9.1.0 (2020-01-29)
+
+1. Remove URI scheme, if present, when finding files.
+    * [Pull request 653](https://bitbucket.org/osrf/sdformat/pull-requests/653)
+
+1. Fix parsing of pose elements under `<include>`
+    * [Pull request 649](https://bitbucket.org/osrf/sdformat/pull-requests/649)
+
+1. Parser: add readFileWithoutConversion and readStringWithoutConversion.
+    * [Pull request 647](https://bitbucket.org/osrf/sdformat/pull-requests/647)
+
 1. Added accessors to `ignition::math::[Boxd, Cylinderd, Planed, Sphered]`
    in the matching `sdf::[Box, Cylinder, Plane, Sphere]` classes.
     * [Pull request 639](https://bitbucket.org/osrf/sdformat/pull-requests/639)
 
-### SDFormat 9.1.0 (201X-XX-XX)
+1. Forward port of adjustments for memory leaks:
+   [Pull Request 641](https://bitbucket.org/osrf/sdformat/pull-requests/641) and
+   [Pull Request 644](https://bitbucket.org/osrf/sdformat/pull-requests/644)
+    * [Pull Request 645](https://bitbucket.org/osrf/sdformat/pull-requests/645)
 
 1. sdf 1.7: remove `//world/joint` element since it has never been used.
     * [Pull request 637](https://bitbucket.org/osrf/sdformat/pull-requests/637)
@@ -34,6 +48,15 @@
 
 1. Converter: fix memory leak pointed out by ASan.
     * [Pull request 638](https://bitbucket.org/osrf/sdformat/pull-requests/638)
+
+1. Access the original parsed version of an SDF document with `Element::OriginalVersion`.
+    * [Pull request 640](https://bitbucket.org/osrf/sdformat/pull-requests/640)
+
+1. Model::Load: fail fast if an sdf 1.7 file has name collisions.
+    * [Pull request 648](https://bitbucket.org/osrf/sdformat/pull-requests/648)
+
+1. Keep DOM objects even if they were loaded with errors.
+    * [Pull request 655](https://bitbucket.org/osrf/sdformat/pull-requests/655)
 
 ### SDFormat 9.0.0 (2019-12-10)
 
@@ -117,7 +140,18 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
-### SDFormat 8.7.0 (201X-12-13)
+1. Remove URI scheme, if present, when finding files.
+    * [Pull request 650](https://bitbucket.org/osrf/sdformat/pull-requests/650)
+
+### SDFormat 8.7.1 (2020-01-13)
+
+1. Fix memory leaks in move assignment operator.
+    * [Pull request 641](https://bitbucket.org/osrf/sdformat/pull-requests/641)
+
+1. Refactoring based on rule-of-five guidance to address memory leaks
+   * [Pull request 644](https://bitbucket.org/osrf/sdformat/pull-requests/644)
+
+### SDFormat 8.7.0 (2019-12-13)
 
 1. Remove some URDF error messages
     * [Pull request 605](https://bitbucket.org/osrf/sdformat/pull-requests/605)

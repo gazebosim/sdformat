@@ -91,8 +91,17 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     }
   }
 
+  // Strip scheme, if any
+  std::string filename = _filename;
+  std::string sep("://");
+  size_t idx = _filename.find(sep);
+  if (idx != std::string::npos)
+  {
+    filename = filename.substr(idx + sep.length());
+  }
+
   // Next check the install path.
-  path = sdf::filesystem::append(SDF_SHARE_PATH, _filename);
+  path = sdf::filesystem::append(SDF_SHARE_PATH, filename);
   if (sdf::filesystem::exists(path))
   {
     return path;
@@ -101,14 +110,14 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   // Next check the versioned install path.
   path = sdf::filesystem::append(SDF_SHARE_PATH,
                                  "sdformat" SDF_MAJOR_VERSION_STR,
-                                 sdf::SDF::Version(), _filename);
+                                 sdf::SDF::Version(), filename);
   if (sdf::filesystem::exists(path))
   {
     return path;
   }
 
   // Next check to see if the given file exists.
-  path = _filename;
+  path = filename;
   if (sdf::filesystem::exists(path))
   {
     return path;
@@ -129,7 +138,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     for (std::vector<std::string>::iterator iter = paths.begin();
          iter != paths.end(); ++iter)
     {
-      path = sdf::filesystem::append(*iter, _filename);
+      path = sdf::filesystem::append(*iter, filename);
       if (sdf::filesystem::exists(path))
       {
         return path;
@@ -140,7 +149,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   // Finally check the local path, if the flag is set.
   if (_searchLocalPath)
   {
-    path = sdf::filesystem::append(sdf::filesystem::current_path(), _filename);
+    path = sdf::filesystem::append(sdf::filesystem::current_path(), filename);
     if (sdf::filesystem::exists(path))
     {
       return path;
@@ -369,6 +378,14 @@ void SDF::SetFromString(const std::string &_sdfData)
 }
 
 /////////////////////////////////////////////////
+void SDF::Clear()
+{
+  this->dataPtr->root->Clear();
+  this->dataPtr->path.clear();
+  this->dataPtr->originalVersion.clear();
+}
+
+/////////////////////////////////////////////////
 ElementPtr SDF::Root() const
 {
   return this->dataPtr->root;
@@ -390,6 +407,20 @@ std::string SDF::FilePath() const
 void SDF::SetFilePath(const std::string &_path)
 {
   this->dataPtr->path = _path;
+  this->dataPtr->root->SetFilePath(_path);
+}
+
+/////////////////////////////////////////////////
+void SDF::SetOriginalVersion(const std::string &_version)
+{
+  this->dataPtr->originalVersion = _version;
+  this->dataPtr->root->SetOriginalVersion(_version);
+}
+
+/////////////////////////////////////////////////
+const std::string &SDF::OriginalVersion() const
+{
+  return this->dataPtr->originalVersion;
 }
 
 /////////////////////////////////////////////////

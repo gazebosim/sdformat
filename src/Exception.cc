@@ -41,6 +41,9 @@ Exception::Exception(const char *_file, std::int64_t _line, std::string _msg)
 }
 
 //////////////////////////////////////////////////
+Exception::~Exception() = default;
+
+//////////////////////////////////////////////////
 Exception::Exception(const Exception &_e)
   : dataPtr(new ExceptionPrivate)
 {
@@ -50,25 +53,16 @@ Exception::Exception(const Exception &_e)
 }
 
 //////////////////////////////////////////////////
+Exception::Exception(Exception &&_exception) noexcept = default;
+
+//////////////////////////////////////////////////
 Exception &Exception::operator=(const Exception &_exception)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = std::make_unique<ExceptionPrivate>();
-  }
-  *this->dataPtr = (*_exception.dataPtr);
-  return *this;
+  return *this = Exception(_exception);
 }
-//////////////////////////////////////////////////
-Exception::Exception(Exception &&_exception) noexcept = default;
 
 /////////////////////////////////////////////////
 Exception &Exception::operator=(Exception &&_exception) = default;
-
-//////////////////////////////////////////////////
-Exception::~Exception()
-{
-}
 
 //////////////////////////////////////////////////
 void Exception::Print() const

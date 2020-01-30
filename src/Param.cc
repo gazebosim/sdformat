@@ -76,6 +76,15 @@ Param::~Param()
 {
 }
 
+/////////////////////////////////////////////////
+Param &Param::operator=(const Param &_param)
+{
+  this->dataPtr->value = _param.dataPtr->value;
+  this->dataPtr->defaultValue  = _param.dataPtr->defaultValue;
+  this->dataPtr->set  = _param.dataPtr->set;
+  return *this;
+}
+
 //////////////////////////////////////////////////
 bool Param::GetAny(std::any &_anyVal) const
 {
@@ -506,15 +515,6 @@ const std::string &Param::GetKey() const
 bool Param::GetRequired() const
 {
   return this->dataPtr->required;
-}
-
-/////////////////////////////////////////////////
-Param &Param::operator=(const Param &_param)
-{
-  this->dataPtr->value = _param.dataPtr->value;
-  this->dataPtr->defaultValue  = _param.dataPtr->defaultValue;
-  this->dataPtr->set  = _param.dataPtr->set;
-  return *this;
 }
 
 /////////////////////////////////////////////////

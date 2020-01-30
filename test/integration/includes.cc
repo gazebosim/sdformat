@@ -60,9 +60,11 @@ TEST(IncludesTest, Includes)
 
   ASSERT_NE(nullptr, root.Element());
   EXPECT_EQ(worldFile, root.Element()->FilePath());
+  EXPECT_EQ("1.6", root.Element()->OriginalVersion());
 
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
+  EXPECT_EQ("1.6", world->Element()->OriginalVersion());
 
   // Actor
   EXPECT_EQ(1u, world->ActorCount());
@@ -72,6 +74,7 @@ TEST(IncludesTest, Includes)
   EXPECT_TRUE(world->ActorNameExists("actor"));
 
   const auto *actor = world->ActorByIndex(0);
+  EXPECT_EQ("1.6", actor->Element()->OriginalVersion());
 
   const auto actorFile = sdf::filesystem::append(g_modelsPath, "test_actor",
       "model.sdf");
@@ -117,6 +120,7 @@ TEST(IncludesTest, Includes)
   EXPECT_DOUBLE_EQ(1.0, pointLight->LinearAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.0, pointLight->ConstantAttenuationFactor());
   EXPECT_DOUBLE_EQ(20.2, pointLight->QuadraticAttenuationFactor());
+  EXPECT_EQ("1.6", pointLight->Element()->OriginalVersion());
 
   // Model
   const sdf::Model *model = world->ModelByIndex(0);
@@ -129,11 +133,14 @@ TEST(IncludesTest, Includes)
   EXPECT_TRUE(nullptr == model->LinkByIndex(1));
   EXPECT_TRUE(model->LinkNameExists("link"));
   EXPECT_FALSE(model->LinkNameExists("coconut"));
+  EXPECT_EQ("1.6", model->Element()->OriginalVersion());
 
   const auto modelFile = sdf::filesystem::append(g_modelsPath, "test_model",
       "model.sdf");
 
   const auto *link = model->LinkByName("link");
+  ASSERT_NE(nullptr, link);
+  EXPECT_EQ("1.6", link->Element()->OriginalVersion());
   const auto *meshCol = link->CollisionByName("mesh_col");
   ASSERT_NE(nullptr, meshCol);
   ASSERT_NE(nullptr, meshCol->Geom());
@@ -160,3 +167,110 @@ TEST(IncludesTest, Includes)
   EXPECT_FALSE(meshVisGeom->CenterSubmesh());
 }
 
+//////////////////////////////////////////////////
+TEST(IncludesTest, Includes_15)
+{
+  sdf::setFindCallback(findFileCb);
+
+  const auto worldFile =
+    sdf::filesystem::append(g_testPath, "sdf", "includes_1.5.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(worldFile);
+  for (auto e : errors)
+    std::cout << e.Message() << std::endl;
+  EXPECT_TRUE(errors.empty());
+
+  ASSERT_NE(nullptr, root.Element());
+  EXPECT_EQ(worldFile, root.Element()->FilePath());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  // Actor
+  EXPECT_EQ(1u, world->ActorCount());
+  EXPECT_NE(nullptr, world->ActorByIndex(0));
+  EXPECT_EQ(nullptr, world->ActorByIndex(1));
+  EXPECT_FALSE(world->ActorNameExists(""));
+  EXPECT_TRUE(world->ActorNameExists("actor"));
+
+  const auto *actor = world->ActorByIndex(0);
+
+  // Light
+  EXPECT_EQ(1u, world->LightCount());
+  const auto *pointLight = world->LightByIndex(0);
+  ASSERT_NE(nullptr, pointLight);
+  EXPECT_EQ("point_light", pointLight->Name());
+  EXPECT_EQ(sdf::LightType::POINT, pointLight->Type());
+
+  // Model
+  const sdf::Model *model = world->ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("test_model", model->Name());
+  EXPECT_EQ(1u, model->LinkCount());
+  ASSERT_FALSE(nullptr == model->LinkByName("link"));
+
+  const auto *link = model->LinkByName("link");
+  ASSERT_NE(nullptr, link);
+
+  // The root and world were version 1.5
+  EXPECT_EQ("1.5", root.Element()->OriginalVersion());
+  EXPECT_EQ("1.5", world->Element()->OriginalVersion());
+
+  // The included models were version 1.6
+  EXPECT_EQ("1.6", actor->Element()->OriginalVersion());
+  EXPECT_EQ("1.6", pointLight->Element()->OriginalVersion());
+  EXPECT_EQ("1.6", model->Element()->OriginalVersion());
+  EXPECT_EQ("1.6", link->Element()->OriginalVersion());
+}
+
+//////////////////////////////////////////////////
+TEST(IncludesTest, Includes_15_convert)
+{
+  sdf::setFindCallback(findFileCb);
+
+  const auto worldFile =
+    sdf::filesystem::append(g_testPath, "sdf", "includes_1.5.sdf");
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+  sdf::init(sdf);
+
+  EXPECT_TRUE(sdf::convertFile(worldFile, "1.7", sdf));
+
+  sdf::ElementPtr rootElem = sdf->Root();
+  ASSERT_NE(nullptr, rootElem);
+
+  // it is parsed to 1.7
+  EXPECT_EQ("1.7", rootElem->Get<std::string>("version"));
+
+  sdf::ElementPtr worldElem = rootElem->GetElement("world");
+  ASSERT_NE(nullptr, worldElem);
+  EXPECT_EQ(worldElem->Get<std::string>("name"), "default");
+
+  sdf::ElementPtr actorElem = worldElem->GetElement("actor");
+  ASSERT_NE(nullptr, actorElem);
+  EXPECT_EQ(actorElem->Get<std::string>("name"), "actor");
+
+  sdf::ElementPtr lightElem = worldElem->GetElement("light");
+  ASSERT_NE(nullptr, lightElem);
+  EXPECT_EQ(lightElem->Get<std::string>("name"), "point_light");
+
+  sdf::ElementPtr modelElem = worldElem->GetElement("model");
+  ASSERT_NE(nullptr, modelElem);
+  EXPECT_EQ(modelElem->Get<std::string>("name"), "test_model");
+
+  sdf::ElementPtr linkElem = modelElem->GetElement("link");
+  ASSERT_NE(nullptr, linkElem);
+  EXPECT_EQ(linkElem->Get<std::string>("name"), "link");
+
+  // The root and world were version 1.5
+  EXPECT_EQ("1.5", sdf->OriginalVersion());
+  EXPECT_EQ("1.5", rootElem->OriginalVersion());
+  EXPECT_EQ("1.5", worldElem->OriginalVersion());
+
+  // The included models were version 1.6
+  EXPECT_EQ("1.6", actorElem->OriginalVersion());
+  EXPECT_EQ("1.6", lightElem->OriginalVersion());
+  EXPECT_EQ("1.6", modelElem->OriginalVersion());
+  EXPECT_EQ("1.6", linkElem->OriginalVersion());
+}

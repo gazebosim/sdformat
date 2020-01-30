@@ -36,6 +36,13 @@ Gui::Gui()
 }
 
 /////////////////////////////////////////////////
+Gui::~Gui()
+{
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
 Gui::Gui(const Gui &_gui)
   : dataPtr(new GuiPrivate(*_gui.dataPtr))
 {
@@ -43,35 +50,21 @@ Gui::Gui(const Gui &_gui)
 
 /////////////////////////////////////////////////
 Gui::Gui(Gui &&_gui) noexcept
+  : dataPtr(std::exchange(_gui.dataPtr, nullptr))
 {
-  this->dataPtr = _gui.dataPtr;
-  _gui.dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
 Gui &Gui::operator=(const Gui &_gui)
 {
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new GuiPrivate;
-  }
-  *this->dataPtr = (*_gui.dataPtr);
-  return *this;
+  return *this = Gui(_gui);
 }
 
 /////////////////////////////////////////////////
 Gui &Gui::operator=(Gui &&_gui)
 {
-  this->dataPtr = _gui.dataPtr;
-  _gui.dataPtr = nullptr;
+  std::swap(this->dataPtr, _gui.dataPtr);
   return *this;
-}
-
-/////////////////////////////////////////////////
-Gui::~Gui()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

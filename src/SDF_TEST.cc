@@ -545,6 +545,22 @@ TEST(SDF, FilePath)
 
   sdf.SetFilePath("/some/path");
   EXPECT_EQ("/some/path", sdf.FilePath());
+
+  sdf.Clear();
+  EXPECT_TRUE(sdf.FilePath().empty());
+}
+
+/////////////////////////////////////////////////
+TEST(SDF, OriginalVersion)
+{
+  sdf::SDF sdf;
+  EXPECT_TRUE(sdf.OriginalVersion().empty());
+
+  sdf.SetOriginalVersion("1.5");
+  EXPECT_EQ("1.5", sdf.OriginalVersion());
+
+  sdf.Clear();
+  EXPECT_TRUE(sdf.OriginalVersion().empty());
 }
 
 /////////////////////////////////////////////////

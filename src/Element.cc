@@ -55,6 +55,12 @@ void Element::SetParent(const ElementPtr _parent)
   {
     this->SetFilePath(_parent->FilePath());
   }
+
+  // If this element doesn't have an original version, get it from the parent
+  if (nullptr != _parent && this->OriginalVersion().empty())
+  {
+    this->SetOriginalVersion(_parent->OriginalVersion());
+  }
 }
 
 /////////////////////////////////////////////////
@@ -148,6 +154,7 @@ ElementPtr Element::Clone() const
   clone->dataPtr->includeFilename = this->dataPtr->includeFilename;
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
   clone->dataPtr->path = this->dataPtr->path;
+  clone->dataPtr->originalVersion = this->dataPtr->originalVersion;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
@@ -187,6 +194,7 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->copyChildren = _elem->GetCopyChildren();
   this->dataPtr->includeFilename = _elem->dataPtr->includeFilename;
   this->dataPtr->referenceSDF = _elem->ReferenceSDF();
+  this->dataPtr->originalVersion = _elem->OriginalVersion();
   this->dataPtr->path = _elem->FilePath();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
@@ -790,6 +798,14 @@ ElementPtr Element::AddElement(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
+void Element::Clear()
+{
+  this->ClearElements();
+  this->dataPtr->originalVersion.clear();
+  this->dataPtr->path.clear();
+}
+
+/////////////////////////////////////////////////
 void Element::ClearElements()
 {
   for (sdf::ElementPtr_V::iterator iter = this->dataPtr->elements.begin();
@@ -880,6 +896,18 @@ void Element::SetFilePath(const std::string &_path)
 const std::string &Element::FilePath() const
 {
   return this->dataPtr->path;
+}
+
+/////////////////////////////////////////////////
+void Element::SetOriginalVersion(const std::string &_version)
+{
+  this->dataPtr->originalVersion = _version;
+}
+
+/////////////////////////////////////////////////
+const std::string &Element::OriginalVersion() const
+{
+  return this->dataPtr->originalVersion;
 }
 
 /////////////////////////////////////////////////
