@@ -1,8 +1,8 @@
 ## SDFormat 9.X
 
-### SDFormat 9.X.X (201X-XX-XX)
+### SDFormat 9.X.X (202X-XX-XX)
 
-### SDFormat 9.1.0 (201X-XX-XX)
+### SDFormat 9.1.0 (2020-01-29)
 
 1. Remove URI scheme, if present, when finding files.
     * [Pull request 653](https://bitbucket.org/osrf/sdformat/pull-requests/653)
@@ -10,7 +10,7 @@
 1. Fix parsing of pose elements under `<include>`
     * [Pull request 649](https://bitbucket.org/osrf/sdformat/pull-requests/649)
 
-1. Parser: add boolean parameter to `readFile` and `readString` for disabling conversion to latest SDF spec.
+1. Parser: add readFileWithoutConversion and readStringWithoutConversion.
     * [Pull request 647](https://bitbucket.org/osrf/sdformat/pull-requests/647)
 
 1. Added accessors to `ignition::math::[Boxd, Cylinderd, Planed, Sphered]`
