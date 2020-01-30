@@ -156,11 +156,31 @@ TEST(DOMRoot, NestedModel)
   sdf::Root root;
   auto errors = root.Load(testFile);
 
-  // it should fail to load because nested models aren't yet supported
+  // it should complain because nested models aren't yet supported
   EXPECT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::NESTED_MODELS_UNSUPPORTED);
 
-  EXPECT_EQ(0u, root.ModelCount());
+  EXPECT_EQ(1u, root.ModelCount());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("top_level_model", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  EXPECT_TRUE(model->LinkNameExists("parent"));
+  EXPECT_TRUE(model->LinkNameExists("child"));
+
+  EXPECT_EQ(1u, model->JointCount());
+  EXPECT_NE(nullptr, model->JointByIndex(0));
+  EXPECT_EQ(nullptr, model->JointByIndex(1));
+
+  EXPECT_TRUE(model->JointNameExists("top_level_joint"));
 }
 
 /////////////////////////////////////////////////

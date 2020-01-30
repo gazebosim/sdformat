@@ -107,4 +107,5 @@ TEST(DOMRoot, LoadDuplicateModels)
   sdf::Errors errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
   EXPECT_EQ(1u, root.ModelCount());
+  EXPECT_EQ("robot1", root.ModelByIndex(0)->Name());
 }
