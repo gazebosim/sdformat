@@ -4,6 +4,9 @@
 
 ### SDFormat 9.1.0 (201X-XX-XX)
 
+1. Remove URI scheme, if present, when finding files.
+    * [Pull request 653](https://bitbucket.org/osrf/sdformat/pull-requests/653)
+
 1. Fix parsing of pose elements under `<include>`
     * [Pull request 649](https://bitbucket.org/osrf/sdformat/pull-requests/649)
 
