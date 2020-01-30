@@ -209,20 +209,19 @@ TEST(DOMLink, InertialInvalid)
   sdf::Root root;
   auto errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(5u, errors.size());
+  ASSERT_EQ(1u, errors.size());
   for (auto err : errors)
      std::cout << err.Message() << std::endl;
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::LINK_INERTIA_INVALID);
   EXPECT_EQ(errors[0].Message(), "A link named link has invalid inertia.");
-  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::MODEL_WITHOUT_LINK);
-  EXPECT_EQ(errors[1].Message(), "A model must have at least one link.");
-  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::MODEL_WITHOUT_LINK);
-  EXPECT_EQ(errors[2].Message(), "A model must have at least one link.");
-  // errors[3]
-  // errors[4]
 
   const sdf::Model *model = root.ModelByIndex(0);
-  ASSERT_EQ(nullptr, model);
+  ASSERT_NE(nullptr, model);
+
+  ASSERT_EQ(1u, model->LinkCount());
+  const sdf::Link *link = model->LinkByIndex(0);
+  ASSERT_NE(nullptr, link);
+  EXPECT_EQ("link", link->Name());
 }
 
 //////////////////////////////////////////////////

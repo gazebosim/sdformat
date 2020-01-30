@@ -85,8 +85,7 @@ namespace sdf
         // Load the model and capture the errors.
         Errors loadErrors = obj.Load(elem);
 
-        // If there are no errors...
-        if (loadErrors.empty())
+        // keep processing even if there are loadErrors
         {
           std::string name;
 
@@ -106,9 +105,7 @@ namespace sdf
             _objs.push_back(std::move(obj));
             names.push_back(name);
           }
-        }
-        else
-        {
+
           // Add the load errors to the master error list.
           errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
         }
@@ -149,15 +146,11 @@ namespace sdf
         // Load the model and capture the errors.
         Errors loadErrors = obj.Load(elem);
 
-        // If there are errors...
-        if (!loadErrors.empty())
         {
           // Add the load errors to the master error list.
           errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
-        }
-        else
-        {
-          // If there are no errors...
+
+          // but keep object anyway
           _objs.push_back(std::move(obj));
         }
 

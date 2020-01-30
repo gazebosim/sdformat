@@ -213,11 +213,16 @@ TEST(DOMJoint, LoadInvalidJointChildWorld)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(7u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
       "Joint with name[joint] specified invalid child link [world]"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "Child link with name[world] specified by joint with name[joint] "
+      "not found in model with name[joint_child_world]"));
 }
 
 /////////////////////////////////////////////////
