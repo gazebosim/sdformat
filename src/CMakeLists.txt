@@ -105,6 +105,7 @@ set (gtest_sources
   Error_TEST.cc
   Exception_TEST.cc
   Frame_TEST.cc
+  FrameSemantics_TEST.cc
   Filesystem_TEST.cc
   Geometry_TEST.cc
   Gui_TEST.cc
@@ -143,16 +144,15 @@ if (IGNITION-TOOLS_BINARY_DIRS)
   )
 endif()
 
+
+# Build extra sources since their symbols will not available in the sdformat
+# library
+set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc FrameSemantics.cc)
 sdf_build_tests(${gtest_sources})
 
 if (NOT WIN32)
   set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
   sdf_build_tests(Utils_TEST.cc)
-endif()
-
-if (NOT WIN32)
-  set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS FrameSemantics.cc)
-  sdf_build_tests(FrameSemantics_TEST.cc)
 endif()
 
 sdf_add_library(${sdf_target} ${sources})
