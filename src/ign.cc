@@ -21,9 +21,10 @@
 #include "sdf/sdf_config.h"
 #include "sdf/Filesystem.hh"
 #include "sdf/Root.hh"
-#include "sdf/ign.hh"
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
+
+#include "ign.hh"
 
 //////////////////////////////////////////////////
 // cppcheck-suppress unusedFunction
