@@ -281,7 +281,6 @@ TEST(NestedModel, NestedInclude)
   sdf::init(sdfParsed);
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
 
-  std::cout << sdfParsed->Root()->ToString("") << std::endl;
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfParsed);
   EXPECT_TRUE(errors.empty());
