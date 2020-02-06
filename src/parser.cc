@@ -1219,9 +1219,14 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
       if (elem->HasElement("axis"))
       {
         ElementPtr axisElem = elem->GetElement("axis");
-        ignition::math::Vector3d newAxis =  modelPose.Rot().RotateVector(
-          axisElem->Get<ignition::math::Vector3d>("xyz"));
-        axisElem->GetElement("xyz")->Set(newAxis);
+        ElementPtr xyzElem = axisElem->GetElement("xyz");
+        if (xyzElem->HasAttribute("expressed_in") &&
+            xyzElem->Get<std::string>("expressed_in") == "__model__")
+        {
+          ignition::math::Vector3d newAxis = modelPose.Rot().RotateVector(
+            xyzElem->Get<ignition::math::Vector3d>());
+          xyzElem->Set(newAxis);
+        }
       }
     }
     elem = elem->GetNextElement();
