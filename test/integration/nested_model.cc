@@ -24,6 +24,8 @@
 
 #include "sdf/sdf.hh"
 
+#include "test_config.h"
+
 ////////////////////////////////////////
 // Test parsing nested model with joint
 TEST(NestedModel, NestedModel)
@@ -238,4 +240,105 @@ TEST(NestedModel, State)
   EXPECT_TRUE(nestedLinkStateElem->HasElement("wrench"));
   EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("wrench"),
     ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+}
+
+////////////////////////////////////////
+// Test parsing nested model with joint
+TEST(NestedModel, NestedInclude)
+{
+  const std::string name = "double_pendulum_with_base";
+  const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
+      + "/test/integration/model/" + name;
+
+  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const ignition::math::Pose3d model2Pose(-10, 0, 0, 0, 0, IGN_PI/2);
+  std::ostringstream stream;
+  std::string version = "1.5";
+  stream
+    << "<sdf version='" << version << "'>"
+    << "<world name='default'>"
+    << "  <include>"
+    << "    <uri>" + MODEL_PATH + "</uri>"
+    << "    <pose>" << model1Pose << "</pose>"
+    << "  </include>"
+    << "  <model name='include_with_rotation'>"
+    << "    <include>"
+    << "      <uri>" + MODEL_PATH + "</uri>"
+    << "      <pose>" << model2Pose << "</pose>"
+    << "    </include>"
+    << "  </model>"
+    << "</world>"
+    << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
+
+  std::cout << sdfParsed->Root()->ToString("") << std::endl;
+  sdf::Root root;
+  sdf::Errors errors = root.Load(sdfParsed);
+  EXPECT_TRUE(errors.empty());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  EXPECT_EQ(version, world->Element()->OriginalVersion());
+
+  const sdf::Model *model1 = world->ModelByName(name);
+  const sdf::Model *model2 = world->ModelByName("include_with_rotation");
+  ASSERT_NE(nullptr, model1);
+  ASSERT_NE(nullptr, model2);
+  EXPECT_EQ(model1Pose, model1->RawPose());
+  EXPECT_EQ(ignition::math::Pose3d::Zero, model2->RawPose());
+  EXPECT_TRUE(model1->PoseRelativeTo().empty());
+  EXPECT_TRUE(model2->PoseRelativeTo().empty());
+
+  EXPECT_EQ(3u, model1->LinkCount());
+  EXPECT_EQ(3u, model2->LinkCount());
+  const sdf::Link *baseLink1 = model1->LinkByName("base");
+  const sdf::Link *baseLink2 = model2->LinkByName(name + "::base");
+  ASSERT_NE(nullptr, baseLink1);
+  ASSERT_NE(nullptr, baseLink2);
+  const sdf::Link *lowerLink1 = model1->LinkByName("lower_link");
+  const sdf::Link *lowerLink2 = model2->LinkByName(name + "::lower_link");
+  ASSERT_NE(nullptr, lowerLink1);
+  ASSERT_NE(nullptr, lowerLink2);
+  const sdf::Link *upperLink1 = model1->LinkByName("upper_link");
+  const sdf::Link *upperLink2 = model2->LinkByName(name + "::upper_link");
+  ASSERT_NE(nullptr, upperLink1);
+  ASSERT_NE(nullptr, upperLink2);
+
+  EXPECT_EQ(baseLink2->RawPose(), model2Pose * baseLink1->RawPose());
+  EXPECT_EQ(lowerLink2->RawPose(), model2Pose * lowerLink1->RawPose());
+  EXPECT_EQ(upperLink2->RawPose(), model2Pose * upperLink1->RawPose());
+  EXPECT_TRUE(baseLink1->PoseRelativeTo().empty());
+  EXPECT_TRUE(baseLink2->PoseRelativeTo().empty());
+  EXPECT_TRUE(lowerLink1->PoseRelativeTo().empty());
+  EXPECT_TRUE(lowerLink2->PoseRelativeTo().empty());
+  EXPECT_TRUE(upperLink1->PoseRelativeTo().empty());
+  EXPECT_TRUE(upperLink2->PoseRelativeTo().empty());
+
+  EXPECT_EQ(2u, model1->JointCount());
+  EXPECT_EQ(2u, model2->JointCount());
+
+  const sdf::Joint *lowerJoint1 = model1->JointByName("lower_joint");
+  const sdf::Joint *lowerJoint2 = model2->JointByName(name + "::lower_joint");
+  ASSERT_NE(nullptr, lowerJoint1);
+  ASSERT_NE(nullptr, lowerJoint2);
+  const sdf::Joint *upperJoint1 = model1->JointByName("upper_joint");
+  const sdf::Joint *upperJoint2 = model2->JointByName(name + "::upper_joint");
+  ASSERT_NE(nullptr, upperJoint1);
+  ASSERT_NE(nullptr, upperJoint2);
+
+  const sdf::JointAxis *lowerAxis1 = lowerJoint1->Axis(0);
+  const sdf::JointAxis *lowerAxis2 = lowerJoint2->Axis(0);
+  ASSERT_NE(nullptr, lowerAxis1);
+  ASSERT_NE(nullptr, lowerAxis2);
+  const sdf::JointAxis *upperAxis1 = upperJoint1->Axis(0);
+  const sdf::JointAxis *upperAxis2 = upperJoint2->Axis(0);
+  ASSERT_NE(nullptr, upperAxis1);
+  ASSERT_NE(nullptr, upperAxis2);
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, lowerAxis1->Xyz());
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, upperAxis1->Xyz());
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, lowerAxis2->Xyz());
+  EXPECT_EQ(ignition::math::Vector3d::UnitX, upperAxis2->Xyz());
 }
