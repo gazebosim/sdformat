@@ -409,9 +409,9 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
   {
     return true;
   }
-  else if (sdf::URDF2SDF::IsURDF(filename))
+  else if (internal::URDF2SDF::IsURDF(filename))
   {
-    sdf::URDF2SDF u2g;
+    internal::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelFile(filename);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
@@ -471,7 +471,7 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   }
   else
   {
-    sdf::URDF2SDF u2g;
+    internal::URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelString(_xmlString);
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {

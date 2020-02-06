@@ -247,7 +247,7 @@ ignition::math::Pose3d CopyPose(urdf::Pose _pose);
 urdf::Pose CopyPose(ignition::math::Pose3d _pose);
 
 ////////////////////////////////////////////////////////////////////////////////
-bool URDF2SDF::IsURDF(const std::string &_filename)
+bool internal::URDF2SDF::IsURDF(const std::string &_filename)
 {
   TiXmlDocument xmlDoc;
 
@@ -1068,7 +1068,7 @@ std::string lowerStr(const std::string &_str)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-URDF2SDF::URDF2SDF()
+internal::URDF2SDF::URDF2SDF()
 {
   // default options
   g_enforceLimits = true;
@@ -1076,7 +1076,7 @@ URDF2SDF::URDF2SDF()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-URDF2SDF::~URDF2SDF()
+internal::URDF2SDF::~URDF2SDF()
 {
 }
 
@@ -1218,7 +1218,7 @@ void InsertRobotOrigin(TiXmlElement *_elem)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
+void internal::URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
 {
   TiXmlElement* robotXml = _urdfXml.FirstChildElement("robot");
 
@@ -2577,7 +2577,7 @@ void ReduceSDFExtensionsTransform(SDFExtensionPtr _ge)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void URDF2SDF::ListSDFExtensions()
+void internal::URDF2SDF::ListSDFExtensions()
 {
   for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
@@ -2606,7 +2606,7 @@ void URDF2SDF::ListSDFExtensions()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void URDF2SDF::ListSDFExtensions(const std::string &_reference)
+void internal::URDF2SDF::ListSDFExtensions(const std::string &_reference)
 {
   for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
@@ -3153,7 +3153,7 @@ void CreateVisual(TiXmlElement *_elem, urdf::LinkConstSharedPtr _link,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
+TiXmlDocument internal::URDF2SDF::InitModelString(const std::string &_urdfStr,
                                         bool _enforceLimits)
 {
   g_enforceLimits = _enforceLimits;
@@ -3259,7 +3259,7 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-TiXmlDocument URDF2SDF::InitModelDoc(TiXmlDocument* _xmlDoc)
+TiXmlDocument internal::URDF2SDF::InitModelDoc(TiXmlDocument* _xmlDoc)
 {
   std::ostringstream stream;
   stream << *_xmlDoc;
@@ -3268,7 +3268,7 @@ TiXmlDocument URDF2SDF::InitModelDoc(TiXmlDocument* _xmlDoc)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-TiXmlDocument URDF2SDF::InitModelFile(const std::string &_filename)
+TiXmlDocument internal::URDF2SDF::InitModelFile(const std::string &_filename)
 {
   TiXmlDocument xmlDoc;
   if (xmlDoc.LoadFile(_filename))
