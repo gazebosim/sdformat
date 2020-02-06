@@ -35,7 +35,7 @@ std::string get_minimal_urdf_txt()
 /////////////////////////////////////////////////
 void convert_urdf_str_to_sdf(const std::string& urdf, sdf::SDF& _sdf)
 {
-  sdf::URDF2SDF parser_;
+  sdf::internal::URDF2SDF parser_;
   TiXmlDocument sdf_result = parser_.InitModelString(urdf);
   std::string sdf_result_string;
   sdf_result_string << sdf_result;
@@ -49,7 +49,7 @@ TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
 {
   ASSERT_NO_THROW(
     TiXmlDocument doc = TiXmlDocument();
-    sdf::URDF2SDF parser_;
+    sdf::internal::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   );    // NOLINT(whitespace/parens)
 }
@@ -60,7 +60,7 @@ TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
   ASSERT_NO_THROW(
     TiXmlDocument doc;
     doc.Parse(get_minimal_urdf_txt().c_str());
-    sdf::URDF2SDF parser_;
+    sdf::internal::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   );    // NOLINT(whitespace/parens)
 }
@@ -71,7 +71,7 @@ TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
   // URDF -> SDF
   TiXmlDocument doc;
   doc.Parse(get_minimal_urdf_txt().c_str());
-  sdf::URDF2SDF parser_;
+  sdf::internal::URDF2SDF parser_;
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   std::string sdf_result_str;
   sdf_result_str << sdf_result;
@@ -100,7 +100,7 @@ TEST(URDFParser, ParseRobotOriginXYZBlank)
          << "</robot>";
   TiXmlDocument doc;
   doc.Parse(stream.str().c_str());
-  sdf::URDF2SDF parser_;
+  sdf::internal::URDF2SDF parser_;
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdf);
@@ -119,7 +119,7 @@ TEST(URDFParser, ParseRobotOriginRPYBlank)
          << "  <link name=\"link\" />"
          << "</robot>";
   TiXmlDocument doc;
-  sdf::URDF2SDF parser_;
+  sdf::internal::URDF2SDF parser_;
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
@@ -153,7 +153,7 @@ TEST(URDFParser, ParseRobotMaterialBlank)
          << "</robot>";
   TiXmlDocument doc;
   doc.Parse(stream.str().c_str());
-  sdf::URDF2SDF parser;
+  sdf::internal::URDF2SDF parser;
   auto sdfXml = parser.InitModelDoc(&doc);
   auto sdfElem = sdfXml.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdfElem);
@@ -191,7 +191,7 @@ TEST(URDFParser, ParseRobotMaterialName)
          << "</robot>";
   TiXmlDocument doc;
   doc.Parse(stream.str().c_str());
-  sdf::URDF2SDF parser;
+  sdf::internal::URDF2SDF parser;
   auto sdfXml = parser.InitModelDoc(&doc);
   auto sdfElem = sdfXml.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdfElem);
@@ -224,7 +224,7 @@ TEST(URDFParser, ParseRobotOriginInvalidXYZ)
          << "  <link name=\"link\" />"
          << "</robot>";
   TiXmlDocument doc;
-  sdf::URDF2SDF parser_;
+  sdf::internal::URDF2SDF parser_;
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
@@ -285,7 +285,7 @@ TEST(URDFParser, ParseGazeboLinkFactors)
            << "</robot>";
 
     TiXmlDocument doc;
-    sdf::URDF2SDF parser_;
+    sdf::internal::URDF2SDF parser_;
     doc.Parse(stream.str().c_str());
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
@@ -321,7 +321,7 @@ TEST(URDFParser, ParseGazeboInvalidDampingFactor)
          << "  </gazebo>"
          << "</robot>";
   TiXmlDocument doc;
-  sdf::URDF2SDF parser_;
+  sdf::internal::URDF2SDF parser_;
   doc.Parse(stream.str().c_str());
   ASSERT_THROW(TiXmlDocument sdf_result = parser_.InitModelDoc(&doc),
                std::invalid_argument);
@@ -390,7 +390,7 @@ TEST(URDFParser, ParseGazeboJointElements)
            << "</robot>";
 
     TiXmlDocument doc;
-    sdf::URDF2SDF parser_;
+    sdf::internal::URDF2SDF parser_;
     doc.Parse(stream.str().c_str());
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 

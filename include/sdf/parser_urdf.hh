@@ -23,6 +23,7 @@
 #include <string>
 
 #include "sdf/Console.hh"
+#include "sdf/Types.hh"
 #include "sdf/system_util.hh"
 
 namespace sdf
@@ -31,6 +32,8 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
+  namespace internal
+  {
   /// \brief URDF to SDF converter
   class SDFORMAT_VISIBLE URDF2SDF
   {
@@ -73,6 +76,10 @@ namespace sdf
     /// list extensions for debugging
     private: void ListSDFExtensions(const std::string &_reference);
   };
+
+  }  // namespace internal
+
+  using URDF2SDF SDF_DEPRECATED(9.0) = internal::URDF2SDF;
   }
 }
 #endif
