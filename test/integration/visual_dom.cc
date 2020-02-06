@@ -152,22 +152,13 @@ TEST(DOMVisual, MaterialScriptNoUri)
   sdf::Errors errors = root.Load(testFile);
   for (auto err : errors)
     std::cout << err.Message() << std::endl;
-  EXPECT_EQ(7u, errors.size());
+  EXPECT_EQ(3u, errors.size());
   EXPECT_NE(std::string::npos,
       errors[0].Message().find("missing a child <uri> element"));
   EXPECT_NE(std::string::npos,
       errors[1].Message().find("missing a child <name> element"));
   EXPECT_NE(std::string::npos,
       errors[2].Message().find("<shader><type> element is not supported"));
-  EXPECT_NE(std::string::npos,
-      errors[3].Message().find("A model must have at least one link"));
-  EXPECT_NE(std::string::npos,
-      errors[4].Message().find("A model must have at least one link"));
-  EXPECT_NE(std::string::npos,
-      errors[5].Message().find(
-        "FrameAttachedToGraph error, Non-LINK vertex with name [__model__] "
-        "is disconnected"));
-  // errors[6]
 }
 
 //////////////////////////////////////////////////
@@ -182,18 +173,9 @@ TEST(DOMVisual, MaterialScriptNormalMapMissing)
   sdf::Errors errors = root.Load(testFile);
   for (auto err : errors)
     std::cout << err.Message() << std::endl;
-  EXPECT_EQ(5u, errors.size());
+  EXPECT_EQ(1u, errors.size());
   EXPECT_NE(std::string::npos,
       errors[0].Message().find("but a normal_map has not."));
-  EXPECT_NE(std::string::npos,
-      errors[1].Message().find("A model must have at least one link"));
-  EXPECT_NE(std::string::npos,
-      errors[2].Message().find("A model must have at least one link"));
-  EXPECT_NE(std::string::npos,
-      errors[3].Message().find(
-        "FrameAttachedToGraph error, Non-LINK vertex with name [__model__] "
-        "is disconnected"));
-  // errors[4]
 }
 
 /////////////////////////////////////////////////

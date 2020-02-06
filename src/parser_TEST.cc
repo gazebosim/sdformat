@@ -60,6 +60,56 @@ sdf::SDFPtr InitSDF()
 }
 
 /////////////////////////////////////////////////
+TEST(Parser, ReusedSDFVersion)
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+  const std::string path17 = pathBase +"/model_link_relative_to.sdf";
+  const std::string path16 = pathBase +"/joint_complete.sdf";
+
+  // Call readFile API that always converts
+  sdf::SDFPtr sdf = InitSDF();
+  EXPECT_TRUE(sdf::readFile(path17, sdf));
+  EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+  EXPECT_EQ("1.7", sdf->OriginalVersion());
+  EXPECT_EQ("1.7", sdf->Root()->OriginalVersion());
+
+  sdf->Clear();
+
+  EXPECT_TRUE(sdf::readFile(path16, sdf));
+  EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+  EXPECT_EQ("1.6", sdf->OriginalVersion());
+  EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
+}
+
+/////////////////////////////////////////////////
+TEST(Parser, readFileConversions)
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+  const std::string path = pathBase +"/joint_complete.sdf";
+
+  // Call readFile API that always converts
+  {
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
+  }
+
+  // Call readFile API that does not convert
+  {
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFileWithoutConversion(path, sdf, errors));
+    EXPECT_EQ("1.6", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
+  }
+}
+
+/////////////////////////////////////////////////
 TEST(Parser, NameUniqueness)
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
@@ -75,6 +125,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
   }
 
   // Check an SDF file with sibling elements of different types (model, light)
@@ -84,6 +138,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
   }
 
   // Check an SDF file with sibling elements of the same type (link)
@@ -93,6 +151,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
   }
 
   // Check an SDF file with sibling elements of the same type (joint)
@@ -102,6 +164,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
   }
 
   // Check an SDF file with sibling elements of different types (link, joint)
@@ -111,6 +177,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
   }
 
   // Check an SDF file with sibling elements of the same type (collision)
@@ -120,6 +190,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
   }
 
   // Check an SDF file with sibling elements of the same type (visual)
@@ -129,6 +203,10 @@ TEST(Parser, NameUniqueness)
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
   }
 
   // Check an SDF file with cousin elements of the same type (collision)
@@ -139,6 +217,10 @@ TEST(Parser, NameUniqueness)
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_TRUE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
     EXPECT_TRUE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
   }
 
   // Check an SDF file with cousin elements of the same type (visual)
@@ -149,6 +231,10 @@ TEST(Parser, NameUniqueness)
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_TRUE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
     EXPECT_TRUE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
+    EXPECT_EQ(path, sdf->FilePath());
+    EXPECT_EQ(path, sdf->Root()->FilePath());
+    EXPECT_EQ("1.6", sdf->OriginalVersion());
+    EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
   }
 }
 
