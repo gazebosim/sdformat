@@ -16,6 +16,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <array>
 #include <sstream>
 #include "sdf/Exception.hh"
 #include "sdf/Filesystem.hh"
