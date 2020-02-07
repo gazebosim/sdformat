@@ -2,6 +2,9 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Fix cmake type for `tinyxml_INCLUDE_DIRS`.
+    * [Pull request 663](https://bitbucket.org/osrf/sdformat/pull-requests/663)
+
 1. Remove URI scheme, if present, when finding files.
     * [Pull request 650](https://bitbucket.org/osrf/sdformat/pull-requests/650)
 
