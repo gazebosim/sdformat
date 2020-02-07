@@ -36,6 +36,7 @@ set (headers
   Plane.hh
   Root.hh
   Scene.hh
+  Surface.hh
   SDFImpl.hh
   SemanticPose.hh
   Sensor.hh
