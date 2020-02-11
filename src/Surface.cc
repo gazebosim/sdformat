@@ -208,13 +208,13 @@ sdf::ElementPtr Surface::Element() const
 }
 
 /////////////////////////////////////////////////
-const Contact *Surface::Cont() const
+sdf::Contact *Surface::Contact() const
 {
   return &this->dataPtr->contact;
 }
 
 /////////////////////////////////////////////////
-void Surface::SetCont(const Contact &_cont)
+void Surface::SetContact(const sdf::Contact &_contact)
 {
-  this->dataPtr->contact = _cont;
+  this->dataPtr->contact = _contact;
 }

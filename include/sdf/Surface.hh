@@ -125,11 +125,11 @@ namespace sdf
     /// \brief Get the associated contact object
     /// \returns Pointer to the associated Contact object,
     /// nullptr if the Surface doesn't contain a Contact element.
-    public: const Contact *Cont() const;
+    public: sdf::Contact *Contact() const;
 
     /// \brief Set the associated contact object.
     /// \param[in] _cont The contact object.
-    public: void SetCont(const Contact &_cont);
+    public: void SetContact(const sdf::Contact &_contact);
 
     /// \brief Private data pointer.
     private: SurfacePrivate *dataPtr;

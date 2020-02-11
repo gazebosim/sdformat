@@ -161,13 +161,13 @@ void Collision::SetGeom(const Geometry &_geom)
 }
 
 /////////////////////////////////////////////////
-const Surface *Collision::Surf() const
+sdf::Surface *Collision::Surface() const
 {
   return &this->dataPtr->surf;
 }
 
 /////////////////////////////////////////////////
-void Collision::SetSurf(const Surface &_surf)
+void Collision::SetSurface(const sdf::Surface &_surf)
 {
   this->dataPtr->surf = _surf;
 }

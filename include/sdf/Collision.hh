@@ -95,11 +95,11 @@ namespace sdf
 
     /// \brief Get a pointer to the collisions's surface parameters.
     /// \return The collision's surface parameters.
-    public: const Surface *Surf() const;
+    public: sdf::Surface *Surface() const;
 
     /// \brief Set the collision's surface parameters
     /// \param[in] _geom The surface parameters of the collision object
-    public: void SetSurf(const Surface &_surf);
+    public: void SetSurface(const sdf::Surface &_surf);
 
     /// \brief Get the pose of the collision object. This is the pose of the
     /// collision as specified in SDF
