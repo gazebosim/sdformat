@@ -143,15 +143,11 @@ macro (sdf_build_tests)
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlparser.cpp)
     endif()
 
-    if (UNIX)
-      add_executable(${BINARY_NAME}
-        ${GTEST_SOURCE_file}
-        ${SDF_BUILD_TESTS_EXTRA_EXE_SRCS}
-        ${tinyxml_SRC}
-      )
-    else()
-      message(FATAL_ERROR "Unsupported platform")
-    endif()
+    add_executable(${BINARY_NAME}
+      ${GTEST_SOURCE_file}
+      ${SDF_BUILD_TESTS_EXTRA_EXE_SRCS}
+      ${tinyxml_SRC}
+    )
 
     add_dependencies(${BINARY_NAME}
       gtest gtest_main ${sdf_target}
