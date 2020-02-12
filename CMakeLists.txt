@@ -111,17 +111,21 @@ set (sdf_cmake_dir ${PROJECT_SOURCE_DIR}/cmake CACHE PATH
 
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 
-message (STATUS "\n\n====== Finding 3rd Party Packages ======")
- # Use of tinyxml. System installation on UNIX. Internal copy on WIN
 if (UNIX)
-  message (STATUS "Using system tinyxml")
-  set (USE_EXTERNAL_TINYXML True)
+  option (USE_EXTERNAL_TINYXML "Use external TinyXML" ON)
 elseif(WIN32)
-  message (STATUS "Using internal tinyxml code")
-  set (USE_EXTERNAL_TINYXML False)
+  option (USE_EXTERNAL_TINYXML "Use external TinyXML" OFF)
 else()
   message (STATUS "Unknown platform")
   BUILD_ERROR("Unknown platform")
+endif()
+
+message (STATUS "\n\n====== Finding 3rd Party Packages ======")
+ # Use of tinyxml. System installation on UNIX. Internal copy on WIN
+if (USE_EXTERNAL_TINYXML)
+  message (STATUS "Using system tinyxml")
+else()
+  message (STATUS "Using internal tinyxml code")
 endif()
 include (${sdf_cmake_dir}/SearchForStuff.cmake)
 message (STATUS "----------------------------------------\n")
