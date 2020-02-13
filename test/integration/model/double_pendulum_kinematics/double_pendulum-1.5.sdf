@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
-<sdf version="1.4">
-  <model name="double_pendulum_with_base_14">
+<sdf version="1.5">
+  <model name="double_pendulum_kinematics">
     <link name="base"/>
     <!-- upper link, length 1, IC -90 degrees -->
     <link name="upper_link">

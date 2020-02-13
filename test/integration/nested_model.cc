@@ -247,7 +247,7 @@ TEST(NestedModel, State)
 // Confirm that joint axis rotation is handled differently for 1.4 and 1.5+
 TEST(NestedModel, NestedInclude)
 {
-  const std::string name = "double_pendulum_with_base";
+  const std::string name = "double_pendulum_kinematics";
   const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
       + "/test/integration/model/" + name;
 
