@@ -23,7 +23,6 @@
 #include <ignition/math/SemanticVersion.hh>
 
 #include "sdf/Console.hh"
-#include "sdf/Converter.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
@@ -34,11 +33,12 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
-#include "sdf/parser_private.hh"
 #include "sdf/parser_urdf.hh"
 #include "sdf/sdf_config.h"
 
+#include "Converter.hh"
 #include "FrameSemantics.hh"
+#include "parser_private.hh"
 
 namespace sdf
 {
