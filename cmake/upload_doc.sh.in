@@ -28,3 +28,16 @@ read ans
 if [ "$ans" = "y" ] || [ "$ans" = "Y" ]; then
   s3cmd sync @CMAKE_BINARY_DIR@/doxygen/html/* s3://osrf-distributions/sdformat/api/@SDF_VERSION_FULL@/ -v
 fi
+
+# Make sdf descriptions
+make sdf_descriptions
+
+# Upload sdf descriptions
+s3cmd sync @CMAKE_BINARY_DIR@/sdf/full_*.sdf s3://osrf-distributions/sdformat/api/ --dry-run -v
+
+echo -n "Upload sdf descriptions API(Y/n)? "
+read ans
+
+if [ "$ans" = "y" ] || [ "$ans" = "Y" ]; then
+  s3cmd sync @CMAKE_BINARY_DIR@/sdf/full_*.sdf s3://osrf-distributions/sdformat/api/  -v
+fi
