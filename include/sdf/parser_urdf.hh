@@ -32,10 +32,15 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
-  namespace internal
-  {
   /// \brief URDF to SDF converter
-  class SDFORMAT_VISIBLE URDF2SDF
+  ///
+  /// This is now deprecated for external usage and will be removed in the next
+  /// major version of libsdformat. Instead, consider using `sdf::readFile` or
+  /// `sdf::readString`, which automatically convert URDF to SDF.
+  ///
+  /// For libsdformat developers, use `internal::URDF2SDF` to avoid compiler
+  /// warnings.
+  class SDFORMAT_VISIBLE SDF_DEPRECATED(9.0) URDF2SDF
   {
     /// \brief constructor
     public: URDF2SDF();
@@ -77,9 +82,19 @@ namespace sdf
     private: void ListSDFExtensions(const std::string &_reference);
   };
 
+  namespace internal
+  {
+#ifndef _WIN32
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+    // Ignore deprecation warning for internal usage
+    using URDF2SDF = sdf::URDF2SDF;
+#ifndef _WIN32
+# pragma GCC diagnostic pop
+#endif
   }  // namespace internal
 
-  using URDF2SDF SDF_DEPRECATED(9.0) = internal::URDF2SDF;
   }
 }
 #endif
