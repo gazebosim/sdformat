@@ -1215,7 +1215,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
       std::string elemName = elem->Get<std::string>("name");
       std::string newName =  modelName + "::" + elemName;
       replace[elemName] = newName;
-      //   rotate the joint axis because they are model-global
+      //  rotate the joint axis if it is expressed in __model__ frame
       if (elem->HasElement("axis"))
       {
         ElementPtr axisElem = elem->GetElement("axis");
