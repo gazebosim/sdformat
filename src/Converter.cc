@@ -25,9 +25,10 @@
 
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
-#include "sdf/Converter.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
+
+#include "Converter.hh"
 
 // This include file is generated at configure time.
 #include "sdf/EmbeddedSdf.hh"
