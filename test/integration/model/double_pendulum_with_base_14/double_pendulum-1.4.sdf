@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <sdf version="1.4">
-  <model name="double_pendulum_with_base">
+  <model name="double_pendulum_with_base_14">
     <link name="base">
       <inertial>
         <mass>100</mass>

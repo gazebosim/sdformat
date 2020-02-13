@@ -243,16 +243,29 @@ TEST(NestedModel, State)
 }
 
 ////////////////////////////////////////
-// Test parsing nested model with joint
+// Test parsing models with joints nested via <include>
+// Confirm that joint axis rotation is handled differently for 1.4 and 1.5+
 TEST(NestedModel, NestedInclude)
 {
   const std::string name = "double_pendulum_with_base";
   const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
       + "/test/integration/model/" + name;
 
+  // this uses two models from the test/integration/model folder that are
+  // identical except for the //sdf/@version attribute
+  // * version 1.5: double_pendulum_with_base
+  // * version 1.4: double_pendulum_with_base_14
+  //
+  // 1. double_pendulum_with_base is included directly into the world
+  //    with the following pose
   const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  // 2. it's also included into the model named "include_with_rotation"
+  //    with the following pose
   const ignition::math::Pose3d model2Pose(-10, 0, 0, 0, 0, IGN_PI/2);
+  // 3. double_pendulum_with_base_14 is included into
+  //    the model named "include_with_rotation_1.4" with the following pose
   const ignition::math::Pose3d model3Pose(0, 10, 0, 0, 0, IGN_PI/2);
+
   std::ostringstream stream;
   std::string version = "1.5";
   stream
@@ -295,41 +308,51 @@ TEST(NestedModel, NestedInclude)
   ASSERT_NE(nullptr, model1);
   ASSERT_NE(nullptr, model2);
   ASSERT_NE(nullptr, model3);
+
+  // model1Pose is used at //model[0]/pose
+  // but model2Pose and model3Pose are applied to the link poses, so those
+  // //model/pose values should be identity
   EXPECT_EQ(model1Pose, model1->RawPose());
   EXPECT_EQ(ignition::math::Pose3d::Zero, model2->RawPose());
   EXPECT_EQ(ignition::math::Pose3d::Zero, model3->RawPose());
+  // expect empty //pose/@relative_to
   EXPECT_TRUE(model1->PoseRelativeTo().empty());
   EXPECT_TRUE(model2->PoseRelativeTo().empty());
   EXPECT_TRUE(model3->PoseRelativeTo().empty());
 
+  // each model has 3 links, and the link names of the nested models have
+  // been transformed
   EXPECT_EQ(3u, model1->LinkCount());
   EXPECT_EQ(3u, model2->LinkCount());
   EXPECT_EQ(3u, model3->LinkCount());
   const sdf::Link *baseLink1 = model1->LinkByName("base");
   const sdf::Link *baseLink2 = model2->LinkByName(name + "::base");
-  const sdf::Link *baseLink3 = model3->LinkByName(name + "::base");
+  const sdf::Link *baseLink3 = model3->LinkByName(name + "_14::base");
   ASSERT_NE(nullptr, baseLink1);
   ASSERT_NE(nullptr, baseLink2);
   ASSERT_NE(nullptr, baseLink3);
   const sdf::Link *lowerLink1 = model1->LinkByName("lower_link");
   const sdf::Link *lowerLink2 = model2->LinkByName(name + "::lower_link");
-  const sdf::Link *lowerLink3 = model3->LinkByName(name + "::lower_link");
+  const sdf::Link *lowerLink3 = model3->LinkByName(name + "_14::lower_link");
   ASSERT_NE(nullptr, lowerLink1);
   ASSERT_NE(nullptr, lowerLink2);
   ASSERT_NE(nullptr, lowerLink3);
   const sdf::Link *upperLink1 = model1->LinkByName("upper_link");
   const sdf::Link *upperLink2 = model2->LinkByName(name + "::upper_link");
-  const sdf::Link *upperLink3 = model3->LinkByName(name + "::upper_link");
+  const sdf::Link *upperLink3 = model3->LinkByName(name + "_14::upper_link");
   ASSERT_NE(nullptr, upperLink1);
   ASSERT_NE(nullptr, upperLink2);
   ASSERT_NE(nullptr, upperLink3);
 
+  // expect link poses from model2 and model3 to match raw link poses
+  // from model1 when transformed by model2 / model3 pose
   EXPECT_EQ(baseLink2->RawPose(), model2Pose * baseLink1->RawPose());
   EXPECT_EQ(baseLink3->RawPose(), model3Pose * baseLink1->RawPose());
   EXPECT_EQ(lowerLink2->RawPose(), model2Pose * lowerLink1->RawPose());
   EXPECT_EQ(lowerLink3->RawPose(), model3Pose * lowerLink1->RawPose());
   EXPECT_EQ(upperLink2->RawPose(), model2Pose * upperLink1->RawPose());
   EXPECT_EQ(upperLink3->RawPose(), model3Pose * upperLink1->RawPose());
+  // expect empty //pose/@relative_to
   EXPECT_TRUE(baseLink1->PoseRelativeTo().empty());
   EXPECT_TRUE(baseLink2->PoseRelativeTo().empty());
   EXPECT_TRUE(baseLink3->PoseRelativeTo().empty());
@@ -340,19 +363,20 @@ TEST(NestedModel, NestedInclude)
   EXPECT_TRUE(upperLink2->PoseRelativeTo().empty());
   EXPECT_TRUE(upperLink3->PoseRelativeTo().empty());
 
+  // each model has 2 joints, and the joint names of the nested models have
+  // been transformed
   EXPECT_EQ(2u, model1->JointCount());
   EXPECT_EQ(2u, model2->JointCount());
   EXPECT_EQ(2u, model3->JointCount());
-
-  const sdf::Joint *lowerJoint1 = model1->JointByName("lower_joint");
-  const sdf::Joint *lowerJoint2 = model2->JointByName(name + "::lower_joint");
-  const sdf::Joint *lowerJoint3 = model3->JointByName(name + "::lower_joint");
+  auto *lowerJoint1 = model1->JointByName("lower_joint");
+  auto *lowerJoint2 = model2->JointByName(name + "::lower_joint");
+  auto *lowerJoint3 = model3->JointByName(name + "_14::lower_joint");
   ASSERT_NE(nullptr, lowerJoint1);
   ASSERT_NE(nullptr, lowerJoint2);
   ASSERT_NE(nullptr, lowerJoint3);
-  const sdf::Joint *upperJoint1 = model1->JointByName("upper_joint");
-  const sdf::Joint *upperJoint2 = model2->JointByName(name + "::upper_joint");
-  const sdf::Joint *upperJoint3 = model3->JointByName(name + "::upper_joint");
+  auto *upperJoint1 = model1->JointByName("upper_joint");
+  auto *upperJoint2 = model2->JointByName(name + "::upper_joint");
+  auto *upperJoint3 = model3->JointByName(name + "_14::upper_joint");
   ASSERT_NE(nullptr, upperJoint1);
   ASSERT_NE(nullptr, upperJoint2);
   ASSERT_NE(nullptr, upperJoint3);
@@ -369,10 +393,14 @@ TEST(NestedModel, NestedInclude)
   ASSERT_NE(nullptr, upperAxis1);
   ASSERT_NE(nullptr, upperAxis2);
   ASSERT_NE(nullptr, upperAxis3);
+
+  // expect //axis/xyz to be unchanged for model1 and model2
   EXPECT_EQ(ignition::math::Vector3d::UnitX, lowerAxis1->Xyz());
   EXPECT_EQ(ignition::math::Vector3d::UnitX, upperAxis1->Xyz());
   EXPECT_EQ(ignition::math::Vector3d::UnitX, lowerAxis2->Xyz());
   EXPECT_EQ(ignition::math::Vector3d::UnitX, upperAxis2->Xyz());
+  // expect //axis/xyz to be rotated for model3 since it came from
+  // SDFormat 1.4, which implies //axis/xyz/@expressed_in == "__model__"
   const ignition::math::Vector3d rotatedAxis =
       model3Pose.Rot() * ignition::math::Vector3d::UnitX;
   EXPECT_EQ(rotatedAxis, lowerAxis3->Xyz());
