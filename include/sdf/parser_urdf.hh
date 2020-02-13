@@ -94,7 +94,6 @@ namespace sdf
 # pragma GCC diagnostic pop
 #endif
   }  // namespace internal
-
   }
 }
 #endif
