@@ -30,10 +30,12 @@ if (IGNITION-TOOLS_BINARY_DIRS)
     list(APPEND description_targets ${CMAKE_CURRENT_BINARY_DIR}/full_${desc_ver_dash}.sdf)
     add_custom_command(
       OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/full_${desc_ver_dash}.sdf
-      COMMAND ${IGNITION-TOOLS_BINARY_DIRS}/ign
+      COMMAND
+        ${CMAKE_COMMAND} -E env IGN_CONFIG_PATH=${CMAKE_BINARY_DIR}/test/conf
+        ${IGNITION-TOOLS_BINARY_DIRS}/ign
       ARGS sdf -d ${desc_ver} > ${CMAKE_CURRENT_BINARY_DIR}/full_${desc_ver_dash}.sdf
       COMMENT "Generating full description for spec ${desc_ver}"
       VERBATIM)
   endforeach()
-  add_custom_target(sdf_descriptions DEPENDS ${description_targets})
+  add_custom_target(sdf_descriptions DEPENDS ${description_targets} ${sdf_target})
 endif()
