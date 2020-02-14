@@ -12,23 +12,6 @@ if [ ! -f "${HOME}/.s3cfg" ]; then
     exit 1
 fi
 
-# Make documentation if not build
-make doc
-if [ ! -f "@CMAKE_BINARY_DIR@/doxygen/html/index.html" ]; then
-  echo "Documentation not present. Install doxygen, and run `make doc` in the build directory"
-  exit 1
-fi
-
-# The code API
-s3cmd sync @CMAKE_BINARY_DIR@/doxygen/html/* s3://osrf-distributions/sdformat/api/@SDF_VERSION_FULL@/ --dry-run -v
-
-echo -n "Upload code API(Y/n)? "
-read ans
-
-if [ "$ans" = "y" ] || [ "$ans" = "Y" ]; then
-  s3cmd sync @CMAKE_BINARY_DIR@/doxygen/html/* s3://osrf-distributions/sdformat/api/@SDF_VERSION_FULL@/ -v
-fi
-
 # Make sdf descriptions
 rm @CMAKE_BINARY_DIR@/sdf/full_*.sdf
 make sdf_descriptions
@@ -46,4 +29,21 @@ read ans
 
 if [ "$ans" = "y" ] || [ "$ans" = "Y" ]; then
   s3cmd sync @CMAKE_BINARY_DIR@/sdf/full_*.sdf s3://osrf-distributions/sdformat/api/  -v
+fi
+
+# Make documentation if not build
+make doc
+if [ ! -f "@CMAKE_BINARY_DIR@/doxygen/html/index.html" ]; then
+  echo "Documentation not present. Install doxygen, and run `make doc` in the build directory"
+  exit 1
+fi
+
+# The code API
+s3cmd sync @CMAKE_BINARY_DIR@/doxygen/html/* s3://osrf-distributions/sdformat/api/@SDF_VERSION_FULL@/ --dry-run -v
+
+echo -n "Upload code API(Y/n)? "
+read ans
+
+if [ "$ans" = "y" ] || [ "$ans" = "Y" ]; then
+  s3cmd sync @CMAKE_BINARY_DIR@/doxygen/html/* s3://osrf-distributions/sdformat/api/@SDF_VERSION_FULL@/ -v
 fi
