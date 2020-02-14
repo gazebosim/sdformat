@@ -30,7 +30,13 @@ if [ "$ans" = "y" ] || [ "$ans" = "Y" ]; then
 fi
 
 # Make sdf descriptions
+rm @CMAKE_BINARY_DIR@/sdf/full_*.sdf
 make sdf_descriptions
+
+# Date/time stamp sdf descriptions
+for f in @CMAKE_BINARY_DIR@/sdf/full_*.sdf; do
+  cp ${f} ${f%.sdf}_@SDF_VERSION_FULL@_$(date +%Y%m%d_%H%M%S).sdf
+done
 
 # Upload sdf descriptions
 s3cmd sync @CMAKE_BINARY_DIR@/sdf/full_*.sdf s3://osrf-distributions/sdformat/api/ --dry-run -v
