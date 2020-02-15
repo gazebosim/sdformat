@@ -1016,7 +1016,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 
         if (_sdf->GetName() == "model")
         {
-          addNestedModel(_sdf, includeSDF->Root());
+          addNestedModel(_sdf, includeSDF->Root(), _errors);
         }
         else
         {
@@ -1182,6 +1182,17 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml, const bool _onlyUnknown)
 /////////////////////////////////////////////////
 void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
 {
+  Errors errors;
+  addNestedModel(_sdf, _includeSDF, errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e << '\n';
+  }
+}
+
+/////////////////////////////////////////////////
+void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
+{
   ElementPtr modelPtr = _includeSDF->GetElement("model");
   ElementPtr elem = modelPtr->GetFirstElement();
   std::map<std::string, std::string> replace;
@@ -1220,12 +1231,22 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
       {
         ElementPtr axisElem = elem->GetElement("axis");
         ElementPtr xyzElem = axisElem->GetElement("xyz");
-        if (xyzElem->HasAttribute("expressed_in") &&
-            xyzElem->Get<std::string>("expressed_in") == "__model__")
+        if (xyzElem->HasAttribute("expressed_in"))
         {
-          ignition::math::Vector3d newAxis = modelPose.Rot().RotateVector(
-            xyzElem->Get<ignition::math::Vector3d>());
-          xyzElem->Set(newAxis);
+          const auto expressedIn = xyzElem->Get<std::string>("expressed_in");
+          if (expressedIn == "__model__")
+          {
+            ignition::math::Vector3d newAxis = modelPose.Rot().RotateVector(
+              xyzElem->Get<ignition::math::Vector3d>());
+            xyzElem->Set(newAxis);
+          }
+          else if (!expressedIn.empty())
+          {
+            _errors.push_back({ErrorCode::ELEMENT_INVALID,
+              "addNestedModel called for model with non-trivial value "
+              "of //axis/xyz/@expressed_in='" + expressedIn +
+              ", joint axis rotations may be incorrect."});
+          }
         }
       }
     }
