@@ -1240,7 +1240,8 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
               xyzElem->Get<ignition::math::Vector3d>());
             xyzElem->Set(newAxis);
           }
-          else if (!expressedIn.empty())
+          else if (!expressedIn.empty() &&
+                   expressedIn != elem->Get<std::string>("child"))
           {
             _errors.push_back({ErrorCode::ELEMENT_INVALID,
               "addNestedModel called for model with non-trivial value "

@@ -113,7 +113,8 @@ TEST(Parser, readFileConversions)
 TEST(Parser, addNestedModel)
 {
   auto getIncludedModelSdfString = [](
-      const std::string &_version) -> std::string
+      const std::string &_version,
+      const std::string &_expressedIn = "") -> std::string
   {
     std::ostringstream stream;
     stream
@@ -126,13 +127,13 @@ TEST(Parser, addNestedModel)
       << "    <parent>parent</parent>"
       << "    <child>child</child>"
       << "    <axis>";
-    if (_version == "1.7")
+    if (_expressedIn.empty())
     {
-      stream << "<xyz expressed_in='child'>1 0 0</xyz>";
+      stream << "<xyz>1 0 0</xyz>";
     }
     else
     {
-      stream << "<xyz>1 0 0</xyz>";
+      stream << "<xyz expressed_in='" << _expressedIn << "'>1 0 0</xyz>";
     }
     stream
       << "    </axis>"
@@ -222,13 +223,45 @@ TEST(Parser, addNestedModel)
         xyz->Get<ignition::math::Vector3d>());
   }
 
-  // insert as 1.7, expect no change to //joint/axis/xyz
+  // insert as 1.7, expressed_in=child
+  // expect no change to //joint/axis/xyz
   {
     const std::string version = "1.7";
     sdf::Errors errors;
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(
-        sdf::readString(getIncludedModelSdfString(version), sdf, errors));
+        sdf::readString(getIncludedModelSdfString(version, "child"),
+            sdf, errors));
+    EXPECT_TRUE(errors.empty());
+    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(version, sdf->OriginalVersion());
+    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
+
+    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+
+    sdf::addNestedModel(elem, sdf->Root(), errors);
+    EXPECT_TRUE(errors.empty());
+
+    sdf::ElementPtr xyz = checkNestedModel(elem);
+
+    EXPECT_EQ("included::child", xyz->Get<std::string>("expressed_in"));
+    EXPECT_EQ(ignition::math::Vector3d::UnitX,
+        xyz->Get<ignition::math::Vector3d>());
+
+    // test coverage for addNestedModel without returning Errors
+    sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
+    sdf::addNestedModel(elem2, sdf->Root());
+  }
+
+  // insert as 1.7, expressed_in=parent
+  // expect error
+  {
+    const std::string version = "1.7";
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(
+        sdf::readString(getIncludedModelSdfString(version, "parent"),
+            sdf, errors));
     EXPECT_TRUE(errors.empty());
     EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ(version, sdf->OriginalVersion());
@@ -241,11 +274,11 @@ TEST(Parser, addNestedModel)
 
     sdf::ElementPtr xyz = checkNestedModel(elem);
 
-    EXPECT_EQ("included::child", xyz->Get<std::string>("expressed_in"));
+    EXPECT_EQ("included::parent", xyz->Get<std::string>("expressed_in"));
     EXPECT_EQ(ignition::math::Vector3d::UnitX,
         xyz->Get<ignition::math::Vector3d>());
 
-    // improve test coverage for addNestedModel without Errors
+    // test coverage for addNestedModel without returning Errors
     sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
     sdf::addNestedModel(elem2, sdf->Root());
   }
