@@ -223,6 +223,32 @@ TEST(Parser, addNestedModel)
         xyz->Get<ignition::math::Vector3d>());
   }
 
+  // insert as 1.7, expressed_in=__model__
+  // expect rotation of //joint/axis/xyz
+  {
+    const std::string version = "1.7";
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(
+        sdf::readString(getIncludedModelSdfString(version, "__model__"),
+            sdf, errors));
+    EXPECT_TRUE(errors.empty());
+    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(version, sdf->OriginalVersion());
+    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
+
+    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+
+    sdf::addNestedModel(elem, sdf->Root(), errors);
+    EXPECT_TRUE(errors.empty());
+
+    sdf::ElementPtr xyz = checkNestedModel(elem);
+
+    EXPECT_EQ("__model__", xyz->Get<std::string>("expressed_in"));
+    EXPECT_EQ(ignition::math::Vector3d(0.000796, 1, 0),
+        xyz->Get<ignition::math::Vector3d>());
+  }
+
   // insert as 1.7, expressed_in=child
   // expect no change to //joint/axis/xyz
   {
