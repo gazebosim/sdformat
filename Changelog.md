@@ -3,6 +3,7 @@
 ### SDFormat 9.X.X (202X-XX-XX)
 
 1.  Remove TinyXML symbols from public API: Move uninstalled headers
+    * [Pull request 658](https://bitbucket.org/osrf/sdformat/pull-requests/658)
     * [Pull request 662](https://bitbucket.org/osrf/sdformat/pull-requests/662)
 
 ### SDFormat 9.1.0 (2020-01-29)
