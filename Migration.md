@@ -81,7 +81,7 @@ but with improved human-readability..
 
 1. **sdf/parser_urdf.hh**
    + ***Deprecation:*** URDF2SDF
-   + ***Replacement:*** None. Use the functions sdf::readFile or sdf::readString, which automatically URDF to SDFormat
+   + ***Replacement:*** None. Use the functions sdf::readFile or sdf::readString, which automatically convert URDF to SDFormat.
 
 1. All DOM classes with `Pose()` and `PoseFrame()` API's:
    + ***Deprecation:*** const ignition::math::Pose3d &Pose()
