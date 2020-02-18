@@ -22,6 +22,8 @@
 #include "sdf/sdf.hh"
 #include "sdf/parser_urdf.hh"
 
+#include "parser_urdf_private.hh"
+
 /////////////////////////////////////////////////
 std::string get_minimal_urdf_txt()
 {

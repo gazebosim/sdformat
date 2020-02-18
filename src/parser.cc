@@ -39,6 +39,7 @@
 #include "Converter.hh"
 #include "FrameSemantics.hh"
 #include "parser_private.hh"
+#include "parser_urdf_private.hh"
 
 namespace sdf
 {

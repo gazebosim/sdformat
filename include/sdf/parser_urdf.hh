@@ -81,19 +81,6 @@ namespace sdf
     /// list extensions for debugging
     private: void ListSDFExtensions(const std::string &_reference);
   };
-
-  namespace internal
-  {
-#ifndef _WIN32
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-    // Ignore deprecation warning for internal usage
-    using URDF2SDF = sdf::URDF2SDF;
-#ifndef _WIN32
-# pragma GCC diagnostic pop
-#endif
-  }  // namespace internal
   }
 }
 #endif

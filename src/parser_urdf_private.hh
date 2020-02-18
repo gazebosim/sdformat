@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Open Source Robotics Foundation
+ * Copyright 2020 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,31 @@
  * limitations under the License.
  *
  */
+#ifndef SDF_PARSER_URDF_PRIVATE_HH
+#define SDF_PARSER_URDF_PRIVATE_HH
 
-#include <string>
+#include <sdf/sdf_config.h>
 
-#include <gtest/gtest.h>
-
-#include "sdf/sdf.hh"
+#include "sdf/Types.hh"
 #include "sdf/parser_urdf.hh"
 
-#include "test_config.h"
-
-TEST(URDFParser, AtlasURDF_5runs_performance)
+namespace sdf
 {
-  const std::string
-    URDF_TEST_FILE = sdf::filesystem::append(PROJECT_SOURCE_PATH, "test",
-                                             "performance",
-                                             "parser_urdf_atlas.urdf");
-  for (int i = 0; i < 5; i++)
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  namespace internal
   {
-    sdf::SDFPtr root = sdf::readFile(URDF_TEST_FILE);
+#ifndef _WIN32
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+    // Ignore deprecation warning for internal usage
+    using URDF2SDF = sdf::URDF2SDF;
+#ifndef _WIN32
+# pragma GCC diagnostic pop
+#endif
+  }  // namespace internal
   }
 }
+
+#endif
