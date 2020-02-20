@@ -39,7 +39,6 @@
 #include "Converter.hh"
 #include "FrameSemantics.hh"
 #include "parser_private.hh"
-#include "parser_urdf_private.hh"
 
 namespace sdf
 {
@@ -406,13 +405,15 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
     return false;
   }
 
+  // Suppress deprecation for sdf::URDF2SDF
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   if (readDoc(&xmlDoc, _sdf, filename, _convert, _errors))
   {
     return true;
   }
-  else if (internal::URDF2SDF::IsURDF(filename))
+  else if (URDF2SDF::IsURDF(filename))
   {
-    internal::URDF2SDF u2g;
+    URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelFile(filename);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
@@ -425,6 +426,7 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
       return false;
     }
   }
+  SDF_SUPPRESS_DEPRECATED_END
 
   return false;
 }
@@ -472,7 +474,9 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   }
   else
   {
-    internal::URDF2SDF u2g;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
+    URDF2SDF u2g;
+    SDF_SUPPRESS_DEPRECATED_END
     TiXmlDocument doc = u2g.InitModelString(_xmlString);
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {
