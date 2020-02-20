@@ -37,7 +37,7 @@ namespace sdf
   /// This is now deprecated for external usage and will be removed in the next
   /// major version of libsdformat. Instead, consider using `sdf::readFile` or
   /// `sdf::readString`, which automatically convert URDF to SDF.
-  class SDFORMAT_VISIBLE SDF_DEPRECATED(9.0) URDF2SDF
+  class SDFORMAT_VISIBLE SDF_DEPRECATED(9.2) URDF2SDF
   {
     /// \brief constructor
     public: URDF2SDF();
