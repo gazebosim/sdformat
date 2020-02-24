@@ -51,7 +51,7 @@
 #  define SDF_SUPPRESS_DEPRECATED_END _Pragma("clang diagnostic pop")
 #elif defined(MSVC)
 #  define SDF_SUPPRESS_DEPRECATED_BEGIN
-#  define DART_SUPPRESS_DEPRECATED_END
+#  define SDF_SUPPRESS_DEPRECATED_END
 #endif
 
 namespace sdf
