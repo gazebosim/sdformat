@@ -1,9 +1,9 @@
-# Migration Guide for SDF Protocol
+# Migration Guide for SDFormat Specification
 This document contains information about migrating
-between different versions of the SDF protocol.
-The SDF protocol version number is specified in the `version` attribute
+between different versions of the SDFormat specification.
+The SDFormat specification version number is specified in the `version` attribute
 of the `sdf` element (1.4, 1.5, 1.6, etc.)
-and is distinct from sdformat library version
+and is distinct from libsdformat library version
 (2.3, 3.0, 4.0, etc.).
 
 # Note on backward compatibility
@@ -12,7 +12,7 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability.
 
-## SDF protocol 1.5 to 1.6
+## SDFormat specification 1.5 to 1.6
 
 ### Additions
 
