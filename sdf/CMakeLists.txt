@@ -23,7 +23,7 @@ execute_process(
 if (IGNITION-TOOLS_BINARY_DIRS)
 
   # Update this list as new sdformat spec versions are added.
-  set(sdf_desc_versions 1.4 1.5 1.6)
+  set(sdf_desc_versions 1.4 1.5 1.6 1.7)
 
   set(description_targets)
   foreach(desc_ver ${sdf_desc_versions})
