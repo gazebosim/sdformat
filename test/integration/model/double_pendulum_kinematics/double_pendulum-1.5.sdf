@@ -1,0 +1,36 @@
+<?xml version='1.0'?>
+<sdf version="1.5">
+  <model name="double_pendulum_kinematics">
+    <link name="base"/>
+    <!-- upper link, length 1, IC -90 degrees -->
+    <link name="upper_link">
+      <pose>0 0 2.1  -1.5708 0 0</pose>
+      <inertial>
+        <pose>0 0 0.5  0 0 0</pose>
+      </inertial>
+    </link>
+    <!-- lower link, length 1, IC ~-120 degrees more -->
+    <link name="lower_link">
+      <pose>0.25 1.0 2.1  -2 0 0</pose>
+      <inertial>
+        <pose>0 0 0.5  0 0 0</pose>
+      </inertial>
+    </link>
+    <!-- pin joint for upper link, at origin of upper link -->
+    <joint name="upper_joint" type="revolute">
+      <parent>base</parent>
+      <child>upper_link</child>
+      <axis>
+        <xyz>1.0 0 0</xyz>
+      </axis>
+    </joint>
+    <!-- pin joint for lower link, at origin of child link -->
+    <joint name="lower_joint" type="revolute">
+      <parent>upper_link</parent>
+      <child>lower_link</child>
+      <axis>
+        <xyz>1.0 0 0</xyz>
+      </axis>
+    </joint>
+  </model>
+</sdf>
