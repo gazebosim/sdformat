@@ -31,16 +31,16 @@ require 'optparse'
 LIBRARY_NAME = '@library_location@'
 LIBRARY_VERSION = '@SDF_VERSION_FULL@'
 COMMON_OPTIONS =
-               "  -h [ --help ]              Print this help message.\n"\
-               "  --force-version <VERSION>  Use a specific library version.\n"\
-               '  --versions                 Show the available versions.'
+               "  -h [ --help ]                    Print this help message.\n"\
+               "  --force-version <VERSION>        Use a specific library version.\n"\
+               '  --versions                       Show the available versions.'
 COMMANDS = {  'sdf' =>
                        "Utilities for SDF files.\n\n"\
                        "  ign sdf [options]\n\n"\
                        "Options:\n\n"\
-                       "  -k [ --check ] arg     Check if an SDF file is valid.\n" +
-                       "  -d [ --describe ]      Print the SDF description.\n" +
-                       "  -p [ --print ] arg     Print converted arg.\n" +
+                       "  -k [ --check ] arg               Check if an SDFormat file is valid.\n" +
+                       "  -d [ --describe ] [SPEC VERSION] Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
+                       "  -p [ --print ] arg               Print converted arg.\n" +
                        COMMON_OPTIONS
             }
 
@@ -67,10 +67,10 @@ class Cmd
       end
 
       opts.on('-k arg', '--check arg', String,
-              'Check if an SDF file is valid.') do |arg|
+              'Check if an SDFormat file is valid.') do |arg|
         options['check'] = arg
       end
-      opts.on('-d', '--describe', 'Print the SDF description') do |v|
+      opts.on('-d', '--describe [VERSION]', 'Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@)') do |v|
         options['describe'] = v
       end
       opts.on('-p arg', '--print arg', String,
@@ -151,8 +151,8 @@ class Cmd
           Importer.extern 'int cmdCheck(const char *)'
           exit(Importer.cmdCheck(File.expand_path(options['check'])))
         elsif options.key?('describe')
-          Importer.extern 'int cmdDescribe()'
-          exit(Importer.cmdDescribe())
+          Importer.extern 'int cmdDescribe(const char *)'
+          exit(Importer.cmdDescribe(options['describe']))
         elsif options.key?('print')
           Importer.extern 'int cmdPrint(const char *)'
           exit(Importer.cmdPrint(File.expand_path(options['print'])))

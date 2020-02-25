@@ -134,6 +134,9 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Add functionality to generate aggregated SDFormat descriptions via CMake.
+    * [Pull request 665](https://bitbucket.org/osrf/sdformat/pull-requests/665)
+
 1. Remove URI scheme, if present, when finding files.
     * [Pull request 650](https://bitbucket.org/osrf/sdformat/pull-requests/650)
 
