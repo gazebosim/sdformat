@@ -31,7 +31,7 @@
 #if defined(__GNUC__) || defined(__clang__)
 #define SDF_DEPRECATED(version) __attribute__((deprecated))
 #define SDF_FORCEINLINE __attribute__((always_inline))
-#elif defined(_MSVC_VER)
+#elif defined(_MSC_VER)
 #define SDF_DEPRECATED(version)
 #define SDF_FORCEINLINE __forceinline
 #else
