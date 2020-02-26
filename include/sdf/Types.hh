@@ -31,7 +31,7 @@
 #if defined(__GNUC__) || defined(__clang__)
 #define SDF_DEPRECATED(version) __attribute__((deprecated))
 #define SDF_FORCEINLINE __attribute__((always_inline))
-#elif defined(MSVC)
+#elif defined(_MSVC_VER)
 #define SDF_DEPRECATED(version)
 #define SDF_FORCEINLINE __forceinline
 #else
@@ -49,7 +49,7 @@
      _Pragma("clang diagnostic push") \
      _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"")
 #  define SDF_SUPPRESS_DEPRECATED_END _Pragma("clang diagnostic pop")
-#elif defined(MSVC)
+#else
 #  define SDF_SUPPRESS_DEPRECATED_BEGIN
 #  define SDF_SUPPRESS_DEPRECATED_END
 #endif
