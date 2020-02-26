@@ -1201,23 +1201,55 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
     modelPtr->Get<ignition::math::Pose3d>("pose");
 
   std::string modelName = modelPtr->Get<std::string>("name");
+  // Inject a frame that replaces the model frame of the nested model.
+  ElementPtr nestedModelFrame = _sdf->AddElement("frame");
+  const std::string nestedModelFrameName = modelName + "::__model__";
+  nestedModelFrame->GetAttribute("name")->Set(nestedModelFrameName);
+
+  std::string canonicalLinkName = "";
+  if (modelPtr->GetAttribute("canonical_link")->GetSet())
+  {
+    canonicalLinkName = modelPtr->GetAttribute("canonical_link")->GetAsString();
+  }
+  else
+  {
+    if (modelPtr->HasElement("link"))
+    {
+      canonicalLinkName =
+          modelPtr->GetElement("link")->GetAttribute("name")->GetAsString();
+    }
+  }
+  nestedModelFrame->GetAttribute("attached_to")
+      ->Set(modelName + "::" + canonicalLinkName);
+
+  ElementPtr nestedModelFramePose = nestedModelFrame->AddElement("pose");
+  nestedModelFramePose->GetAttribute("relative_to")->Set("__model__");
+  nestedModelFramePose->Set(modelPose);
+
   while (elem)
   {
+    if ((elem->GetName() == "link") || elem->GetName() == "joint")
+    {
+      // Add a pose element even if the element doesn't originally have one
+      auto elemPose = elem->GetElement("pose");
+      // If the pose has a relative_to attribute, we leave it as is because
+      // the frame to which it is relative will have been updated to
+      // account for the nested_model_frame and the name replacement step
+      // following this will take care of updating the name in this element's
+      // relative_to attribute.
+      auto relativeTo = elemPose->GetAttribute("relative_to");
+      if (relativeTo->GetAsString().empty() ||
+          relativeTo->GetAsString() == "__model__")
+      {
+        relativeTo->Set(nestedModelFrameName);
+      }
+    }
+
     if (elem->GetName() == "link")
     {
       std::string elemName = elem->Get<std::string>("name");
       std::string newName =  modelName + "::" + elemName;
       replace[elemName] = newName;
-      if (elem->HasElementDescription("pose"))
-      {
-        ignition::math::Pose3d offsetPose =
-          elem->Get<ignition::math::Pose3d>("pose");
-        ignition::math::Pose3d newPose = ignition::math::Pose3d(
-          modelPose.Pos() +
-            modelPose.Rot().RotateVector(offsetPose.Pos()),
-            modelPose.Rot() * offsetPose.Rot());
-        elem->GetElement("pose")->Set(newPose);
-      }
     }
     else if (elem->GetName() == "joint")
     {
@@ -1226,29 +1258,45 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
       std::string elemName = elem->Get<std::string>("name");
       std::string newName =  modelName + "::" + elemName;
       replace[elemName] = newName;
+
       //  rotate the joint axis if it is expressed in __model__ frame
       if (elem->HasElement("axis"))
       {
         ElementPtr axisElem = elem->GetElement("axis");
         ElementPtr xyzElem = axisElem->GetElement("xyz");
-        if (xyzElem->HasAttribute("expressed_in"))
+        std::string expressedIn =
+            xyzElem->GetAttribute("expressed_in")->GetAsString();
+        if (!expressedIn.empty())
         {
-          const auto expressedIn = xyzElem->Get<std::string>("expressed_in");
-          if (expressedIn == "__model__")
-          {
-            ignition::math::Vector3d newAxis = modelPose.Rot().RotateVector(
-              xyzElem->Get<ignition::math::Vector3d>());
-            xyzElem->Set(newAxis);
-          }
-          else if (!expressedIn.empty() &&
-                   expressedIn != elem->Get<std::string>("child"))
-          {
-            _errors.push_back({ErrorCode::ELEMENT_INVALID,
-              "addNestedModel called for model with non-trivial value "
-              "of //axis/xyz/@expressed_in='" + expressedIn +
-              ", joint axis rotations may be incorrect."});
-          }
+          xyzElem->GetAttribute("expressed_in")
+              ->Set(modelName + "::" + expressedIn);
         }
+      }
+    }
+    if (elem->GetName() == "frame")
+    {
+      std::string elemName = elem->Get<std::string>("name");
+      std::string newName =  modelName + "::" + elemName;
+      replace[elemName] = newName;
+      auto attachedTo = elem->GetAttribute("attached_to");
+      if (attachedTo->GetAsString().empty() ||
+          attachedTo->GetAsString() == "__model__")
+      {
+        attachedTo->Set(nestedModelFrameName);
+      }
+
+      // Add a pose element even if the frame doesn't originally have one
+      auto elemPose = elem->GetElement("pose");
+      // If the pose has a relative_to attribute, we leave it as is because
+      // the frame to which it is relative will have been updated to account for
+      // the nested_model_frame. If the original relative_to is empty, we leave
+      // the new relative_to empty because it will default to the attached_to
+      // frame, unlike links and joints which use the nested model frame.
+      auto relativeTo = elemPose->GetAttribute("relative_to");
+
+      if (!relativeTo->GetAsString().empty())
+      {
+        relativeTo->Set(modelName + "::" + relativeTo->GetAsString());
       }
     }
     elem = elem->GetNextElement();
@@ -1267,7 +1315,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
   }
 
   _includeSDF->ClearElements();
-  readString(str, _includeSDF);
+  readString(str, _includeSDF, _errors);
 
   elem = _includeSDF->GetElement("model")->GetFirstElement();
   ElementPtr nextElem;

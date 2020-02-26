@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <model name="test_model_with_frames">
+    <frame name="F1">
+      <pose>0 0 0 3.141592 0 0 </pose>
+    </frame>
+    <frame name="F2">
+      <pose relative_to="F1">0 0 0 0 3.141592 0 </pose>
+    </frame>
+    <link name="L1">
+      <pose relative_to="F1"/>
+    </link>
+    <link name="L2">
+      <pose relative_to="F1">1 0 0 0 0 0</pose>
+    </link>
+    <joint name="J1" type="revolute">
+      <pose relative_to="L1"/>
+      <parent>L1</parent>
+      <child>L2</child>
+      <axis>
+        <xyz expressed_in="F2">0 0 1</xyz>
+      </axis>
+    </joint>
+  </model>
+</sdf>
