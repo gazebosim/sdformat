@@ -2,12 +2,16 @@
 
 ### SDFormat 9.X.X (202X-XX-XX)
 
-1.  Remove TinyXML symbols from public API: Move uninstalled headers
-    * [Pull request 662](https://bitbucket.org/osrf/sdformat/pull-requests/662)
+1. Add functionality to generate aggregated SDFormat descriptions via CMake.
+    * [Pull request 667](https://bitbucket.org/osrf/sdformat/pull-requests/667)
+    * [Pull request 665](https://bitbucket.org/osrf/sdformat/pull-requests/665)
 
 1. parser addNestedModel: check `//axis/xyz/@expressed_in` before rotating joint axis.
     * [Pull request 657](https://bitbucket.org/osrf/sdformat/pull-requests/657)
     * [Issue 219](https://bitbucket.org/osrf/sdformat/issues/219)
+
+1.  Remove TinyXML symbols from public API: Move uninstalled headers
+    * [Pull request 662](https://bitbucket.org/osrf/sdformat/pull-requests/662)
 
 ### SDFormat 9.1.0 (2020-01-29)
 
@@ -137,6 +141,9 @@
 ## SDFormat 8.0
 
 ### SDFormat 8.X.X (201X-XX-XX)
+
+1. Add functionality to generate aggregated SDFormat descriptions via CMake.
+    * [Pull request 665](https://bitbucket.org/osrf/sdformat/pull-requests/665)
 
 1. Remove URI scheme, if present, when finding files.
     * [Pull request 650](https://bitbucket.org/osrf/sdformat/pull-requests/650)
