@@ -10,6 +10,9 @@
     * [Pull request 661](https://bitbucket.org/osrf/sdformat/pull-requests/661)
     * [Pull request 663](https://bitbucket.org/osrf/sdformat/pull-requests/663)
 
+1. Add functionality to generate aggregated SDFormat descriptions via CMake.
+    * [Pull request 665](https://bitbucket.org/osrf/sdformat/pull-requests/665)
+
 1. Remove URI scheme, if present, when finding files.
     * [Pull request 650](https://bitbucket.org/osrf/sdformat/pull-requests/650)
 

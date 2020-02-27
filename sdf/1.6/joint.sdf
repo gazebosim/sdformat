@@ -181,7 +181,7 @@
     <element name="ode" required="0">
       <description>ODE specific parameters</description>
       <element name="provide_feedback" type="bool" default="false" required="0">
-        <description>(DEPRECATION WARNING:  In SDF 1.5 this tag will be replaced by the same tag directly under the physics-block.  For now, this tag overrides the one outside of ode-block, but in SDF 1.5 this tag will be removed completely.)  If provide feedback is set to true, ODE will compute the constraint forces at this joint.</description>
+        <description>(DEPRECATION WARNING:  In SDFormat 1.5 this tag will be replaced by the same tag directly under the physics-block.  For now, this tag overrides the one outside of ode-block, but in SDFormat 1.5 this tag will be removed completely.)  If provide feedback is set to true, ODE will compute the constraint forces at this joint.</description>
       </element>
 
       <element name="cfm_damping" type="bool" default="false" required="0">
@@ -189,7 +189,7 @@
       </element>
 
       <element name="implicit_spring_damper" type="bool" default="false" required="0">
-        <description>If implicit_spring_damper is set to true, ODE will use CFM, ERP to simulate stiffness and damping, allows for infinite damping, and one additional constraint row (previously used for joint limit) is always active.  This replaces cfm_damping parameter in sdf 1.4.</description>
+        <description>If implicit_spring_damper is set to true, ODE will use CFM, ERP to simulate stiffness and damping, allows for infinite damping, and one additional constraint row (previously used for joint limit) is always active.  This replaces cfm_damping parameter in SDFormat 1.4.</description>
       </element>
 
       <element name="fudge_factor" type="double" default="0" required="0">
@@ -233,7 +233,7 @@
     </element>
 
     <element name="provide_feedback" type="bool" default="false" required="0">
-      <description>If provide feedback is set to true, physics engine will compute the constraint forces at this joint.  For now, provide_feedback under ode block will override this tag and given user warning about the migration.  provide_feedback under ode is scheduled to be removed in SDF 1.5.</description>
+      <description>If provide feedback is set to true, physics engine will compute the constraint forces at this joint.  For now, provide_feedback under ode block will override this tag and given user warning about the migration.  provide_feedback under ode is scheduled to be removed in SDFormat 1.5.</description>
     </element>
   </element> <!-- End Physics -->
 
