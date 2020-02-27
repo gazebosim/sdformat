@@ -181,7 +181,7 @@
       </element>
 
       <element name="implicit_spring_damper" type="bool" default="false" required="0">
-        <description>If implicit_spring_damper is set to true, ODE will use CFM, ERP to simulate stiffness and damping, allows for infinite damping, and one additional constraint row (previously used for joint limit) is always active.  This replaces cfm_damping parameter in sdf 1.4.</description>
+        <description>If implicit_spring_damper is set to true, ODE will use CFM, ERP to simulate stiffness and damping, allows for infinite damping, and one additional constraint row (previously used for joint limit) is always active.  This replaces cfm_damping parameter in SDFormat 1.4.</description>
       </element>
 
       <element name="fudge_factor" type="double" default="0" required="0">

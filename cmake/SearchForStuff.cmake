@@ -76,7 +76,9 @@ find_package(ignition-tools)
 if (IGNITION-TOOLS_BINARY_DIRS)
   message(STATUS "Looking for ignition-tools-config.cmake - found")
 else()
-  BUILD_WARNING ("ignition-tools not found, for command line utilities, please install ignition-tools.")
+  BUILD_WARNING ("ignition-tools not found, for command line utilities and for \
+generating aggregated SDFormat descriptions for sdformat.org, please install \
+ignition-tools.")
 endif()
 
 ################################################
