@@ -454,8 +454,8 @@ TEST(NestedModel, NestedModelWithFrames)
   using ignition::math::Pose3d;
   using ignition::math::Vector3d;
   // Expected poses for frames, links and joints after nesting.
-  Pose3d frame1ExpPose = model1Pose * Pose3d(0, 0, 0, IGN_PI, 0, 0);
-  Pose3d frame2ExpPose = frame1ExpPose * Pose3d(0, 0, 0, 0, IGN_PI, 0);
+  Pose3d frame1ExpPose = model1Pose * Pose3d(0, 0, 0, IGN_PI/2, 0, 0);
+  Pose3d frame2ExpPose = frame1ExpPose * Pose3d(0, 0, 0, 0, IGN_PI/4, 0);
   Pose3d link1ExpPose = frame1ExpPose;
   Pose3d link2ExpPose = frame1ExpPose * Pose3d(1, 0, 0, 0, 0, 0);
   Pose3d joint1ExpPose = link1ExpPose;
