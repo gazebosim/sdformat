@@ -2,6 +2,9 @@
 
 ### SDFormat 9.X.X (202X-XX-XX)
 
+1.  Remove TinyXML symbols from public API: Deprecate URDF2SDF
+    * [Pull request 658](https://bitbucket.org/osrf/sdformat/pull-requests/658)
+
 1. Add functionality to generate aggregated SDFormat descriptions via CMake.
     * [Pull request 667](https://bitbucket.org/osrf/sdformat/pull-requests/667)
     * [Pull request 665](https://bitbucket.org/osrf/sdformat/pull-requests/665)
