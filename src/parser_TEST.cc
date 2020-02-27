@@ -173,7 +173,8 @@ TEST(Parser, addNestedModel)
     EXPECT_EQ("included::parent", joint->Get<std::string>("parent"));
     EXPECT_EQ("included::child", joint->Get<std::string>("child"));
 
-    EXPECT_EQ(_canonicalLink, nestedModelFrame->Get<std::string>("attached_to"));
+    EXPECT_EQ(_canonicalLink,
+              nestedModelFrame->Get<std::string>("attached_to"));
     using ignition::math::Pose3d;
     const Pose3d pose(0, 0, 10, 0, 0, 1.57);
     EXPECT_EQ(pose, nestedModelFrame->Get<Pose3d>("pose"));

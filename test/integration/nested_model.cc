@@ -499,7 +499,8 @@ TEST(NestedModel, NestedModelWithFrames)
 }
 
 //////////////////////////////////////////////////
-// Test parsing models with child models containg only frames nested via <include>
+// Test parsing models with child models that contain only frames
+// and are nested via <include>
 TEST(NestedModel, NestedFrameOnlyModel)
 {
   const std::string name = "frame_only_model";
