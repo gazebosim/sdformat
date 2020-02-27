@@ -8,6 +8,10 @@
 1. Add functionality to generate aggregated SDFormat descriptions via CMake.
     * [Pull request 665](https://bitbucket.org/osrf/sdformat/pull-requests/665)
 
+1. parser addNestedModel: check `//axis/xyz/@expressed_in` before rotating joint axis.
+    * [Pull request 657](https://bitbucket.org/osrf/sdformat/pull-requests/657)
+    * [Issue 219](https://bitbucket.org/osrf/sdformat/issues/219)
+
 ### SDFormat 9.1.0 (2020-01-29)
 
 1. Remove URI scheme, if present, when finding files.
