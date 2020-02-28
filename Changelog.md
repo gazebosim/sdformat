@@ -2,6 +2,9 @@
 
 ### SDFormat 9.X.X (202X-XX-XX)
 
+1. Include overrides for actor and light
+    * [Pull request 669](https://bitbucket.org/osrf/sdformat/pull-requests/669)
+
 1.  Remove TinyXML symbols from public API: Deprecate URDF2SDF
     * [Pull request 658](https://bitbucket.org/osrf/sdformat/pull-requests/658)
 
