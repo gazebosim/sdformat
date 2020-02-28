@@ -978,6 +978,13 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
         {
           topLevelElem = includeSDF->Root()->GetElement("light");
         }
+        else
+        {
+          _errors.push_back({ErrorCode::ELEMENT_MISSING,
+              "Failed to find top level <model> / <actor> / <light> for "
+              "<include>\n"});
+          continue;
+        }
 
         if (elemXml->FirstChildElement("name"))
         {
