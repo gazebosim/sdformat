@@ -66,11 +66,12 @@ TEST(IncludesTest, Includes)
   ASSERT_NE(nullptr, world);
   EXPECT_EQ("1.6", world->Element()->OriginalVersion());
 
-  // Actor
-  EXPECT_EQ(1u, world->ActorCount());
-  EXPECT_NE(nullptr, world->ActorByIndex(0));
-  EXPECT_EQ(nullptr, world->ActorByIndex(1));
+  // Actors
+  EXPECT_EQ(2u, world->ActorCount());
   EXPECT_FALSE(world->ActorNameExists(""));
+
+  // Actor without overrides
+  EXPECT_NE(nullptr, world->ActorByIndex(0));
   EXPECT_TRUE(world->ActorNameExists("actor"));
 
   const auto *actor = world->ActorByIndex(0);
@@ -107,8 +108,25 @@ TEST(IncludesTest, Includes)
   EXPECT_DOUBLE_EQ(1.0, actor->ScriptDelayStart());
   EXPECT_TRUE(actor->ScriptAutoStart());
 
-  // Light
-  EXPECT_EQ(1u, world->LightCount());
+  ASSERT_NE(nullptr, actor->Element());
+  EXPECT_FALSE(actor->Element()->HasElement("plugin"));
+
+  // Actor with overrides
+  EXPECT_NE(nullptr, world->ActorByIndex(1));
+  EXPECT_TRUE(world->ActorNameExists("override_actor_name"));
+
+  const auto *actor1 = world->ActorByIndex(1);
+  EXPECT_EQ("override_actor_name", actor1->Name());
+  EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), actor1->RawPose());
+  EXPECT_EQ("", actor1->PoseRelativeTo());
+  ASSERT_NE(nullptr, actor1->Element());
+  EXPECT_TRUE(actor1->Element()->HasElement("plugin"));
+
+  // Lights
+  EXPECT_EQ(2u, world->LightCount());
+  EXPECT_FALSE(world->LightNameExists(""));
+
+  // Light without overrides
   const auto *pointLight = world->LightByIndex(0);
   ASSERT_NE(nullptr, pointLight);
   EXPECT_EQ("point_light", pointLight->Name());
@@ -121,11 +139,24 @@ TEST(IncludesTest, Includes)
   EXPECT_DOUBLE_EQ(0.0, pointLight->ConstantAttenuationFactor());
   EXPECT_DOUBLE_EQ(20.2, pointLight->QuadraticAttenuationFactor());
   EXPECT_EQ("1.6", pointLight->Element()->OriginalVersion());
+  ASSERT_NE(nullptr, pointLight->Element());
 
-  // Model
+  // Light with overrides
+  const auto *pointLight1 = world->LightByIndex(1);
+  ASSERT_NE(nullptr, pointLight1);
+  EXPECT_EQ("override_light_name", pointLight1->Name());
+  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), pointLight1->RawPose());
+  EXPECT_EQ("", pointLight1->PoseRelativeTo());
+
+  // Models
+  EXPECT_EQ(2u, world->ModelCount());
+  EXPECT_FALSE(world->ModelNameExists(""));
+
+  // Model without overrides
   const sdf::Model *model = world->ModelByIndex(0);
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("test_model", model->Name());
+  EXPECT_FALSE(model->Static());
   EXPECT_EQ(1u, model->LinkCount());
   ASSERT_FALSE(nullptr == model->LinkByIndex(0));
   ASSERT_FALSE(nullptr == model->LinkByName("link"));
@@ -165,6 +196,19 @@ TEST(IncludesTest, Includes)
       meshVisGeom->Scale());
   EXPECT_EQ("another_submesh", meshVisGeom->Submesh());
   EXPECT_FALSE(meshVisGeom->CenterSubmesh());
+
+  ASSERT_NE(nullptr, model->Element());
+  EXPECT_FALSE(model->Element()->HasElement("plugin"));
+
+  // Model with overrides
+  const sdf::Model *model1 = world->ModelByIndex(1);
+  ASSERT_NE(nullptr, model1);
+  EXPECT_EQ("override_model_name", model1->Name());
+  EXPECT_TRUE(model1->Static());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), model1->RawPose());
+  EXPECT_EQ("", model1->PoseRelativeTo());
+  ASSERT_NE(nullptr, model1->Element());
+  EXPECT_TRUE(model1->Element()->HasElement("plugin"));
 }
 
 //////////////////////////////////////////////////
