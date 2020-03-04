@@ -2,6 +2,14 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Install the Windows `.dll` shared libraries to bin folder.
+    * [Pull request 659](https://bitbucket.org/osrf/sdformat/pull-requests/659)
+    * [Pull request 663](https://bitbucket.org/osrf/sdformat/pull-requests/663)
+
+1. Fix cmake type for `tinyxml_INCLUDE_DIRS`.
+    * [Pull request 661](https://bitbucket.org/osrf/sdformat/pull-requests/661)
+    * [Pull request 663](https://bitbucket.org/osrf/sdformat/pull-requests/663)
+
 1. Add functionality to generate aggregated SDFormat descriptions via CMake.
     * [Pull request 665](https://bitbucket.org/osrf/sdformat/pull-requests/665)
 
