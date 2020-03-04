@@ -170,6 +170,7 @@ TEST(Parser, addNestedModel)
     EXPECT_EQ("included::parent", link1->Get<std::string>("name"));
     EXPECT_EQ("included::child", link2->Get<std::string>("name"));
     EXPECT_EQ("included::joint", joint->Get<std::string>("name"));
+    EXPECT_EQ("revolute", joint->Get<std::string>("type"));
     EXPECT_EQ("included::parent", joint->Get<std::string>("parent"));
     EXPECT_EQ("included::child", joint->Get<std::string>("child"));
 
@@ -340,6 +341,254 @@ TEST(Parser, addNestedModel)
     EXPECT_EQ(0u, errors.size());
 
     checkNestedModel(elem, "included::parent", "included::child");
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(Parser, addNestedModelNameCollision)
+{
+  auto getIncludedModelSdfString = [](
+      const std::string &_version,
+      const std::string &_expressedIn = "",
+      const std::string &_canonicalLink = "") -> std::string
+  {
+    std::string canonicalLinkString = "";
+    if (!_canonicalLink.empty())
+    {
+      canonicalLinkString = " canonical_link='" + _canonicalLink + "'";
+    }
+    std::ostringstream stream;
+    stream
+      << "<sdf version='" << _version << "'>"
+      << "<model name='included'" << canonicalLinkString << ">"
+      << "  <pose>0 0 10 0 0 1.57</pose>"
+      << "  <link name='revolute'/>"
+      << "  <link name='child'>"
+      << "    <collision name='child'>"
+      << "      <geometry>"
+      << "        <sphere>"
+      << "          <radius>1</radius>"
+      << "        </sphere>"
+      << "      </geometry>"
+      << "    </collision>"
+      << "  </link>"
+      << "  <joint name='joint' type='revolute'>"
+      << "    <parent>revolute</parent>"
+      << "    <child>child</child>"
+      << "    <axis>";
+    if (_expressedIn.empty())
+    {
+      stream << "<xyz>1 0 0</xyz>";
+    }
+    else
+    {
+      stream << "<xyz expressed_in='" << _expressedIn << "'>1 0 0</xyz>";
+    }
+    stream
+      << "    </axis>"
+      << "  </joint>"
+      << "</model>"
+      << "</sdf>";
+    return stream.str();
+  };
+
+  auto checkNestedModel = [](
+      sdf::ElementPtr _elem, const std::string &_expressedIn = "",
+      const std::string &_canonicalLink = "included::revolute")
+  {
+    EXPECT_TRUE(_elem->HasElement("frame"));
+    sdf::ElementPtr nestedModelFrame = _elem->GetElement("frame");
+    EXPECT_EQ(nullptr, nestedModelFrame->GetNextElement("frame"));
+
+    sdf::ElementPtr link1 = _elem->GetElement("link");
+    sdf::ElementPtr link2 = link1->GetNextElement("link");
+    EXPECT_EQ(nullptr, link2->GetNextElement("link"));
+
+    EXPECT_TRUE(link2->HasElement("collision"));
+    sdf::ElementPtr collision = link2->GetElement("collision");
+    EXPECT_EQ(nullptr, collision->GetNextElement("collision"));
+
+    EXPECT_TRUE(_elem->HasElement("joint"));
+    sdf::ElementPtr joint = _elem->GetElement("joint");
+    EXPECT_EQ(nullptr, joint->GetNextElement("joint"));
+
+    EXPECT_EQ(
+        "included::__model__", nestedModelFrame->Get<std::string>("name"));
+    EXPECT_EQ("included::revolute", link1->Get<std::string>("name"));
+    EXPECT_EQ("included::child", link2->Get<std::string>("name"));
+    EXPECT_EQ("included::joint", joint->Get<std::string>("name"));
+    EXPECT_EQ("revolute", joint->Get<std::string>("type"));
+    EXPECT_EQ("included::revolute", joint->Get<std::string>("parent"));
+    EXPECT_EQ("included::child", joint->Get<std::string>("child"));
+    EXPECT_EQ("child", collision->Get<std::string>("name"));
+
+    EXPECT_EQ(_canonicalLink,
+              nestedModelFrame->Get<std::string>("attached_to"));
+    using ignition::math::Pose3d;
+    const Pose3d pose(0, 0, 10, 0, 0, 1.57);
+    EXPECT_EQ(pose, nestedModelFrame->Get<Pose3d>("pose"));
+
+    EXPECT_FALSE(_elem->HasElement("pose"));
+    EXPECT_EQ("included::__model__",
+              link1->GetElement("pose")->Get<std::string>("relative_to"));
+    EXPECT_EQ("included::__model__",
+              link2->GetElement("pose")->Get<std::string>("relative_to"));
+    EXPECT_EQ(Pose3d::Zero, link1->Get<Pose3d>("pose"));
+    EXPECT_EQ(Pose3d::Zero, link2->Get<Pose3d>("pose"));
+    EXPECT_EQ(Pose3d::Zero, joint->Get<Pose3d>("pose"));
+
+    EXPECT_TRUE(joint->HasElement("axis"));
+    sdf::ElementPtr axis = joint->GetElement("axis");
+    EXPECT_TRUE(axis->HasElement("xyz"));
+    sdf::ElementPtr xyz = axis->GetElement("xyz");
+
+    EXPECT_EQ(_expressedIn, xyz->Get<std::string>("expressed_in"));
+    EXPECT_EQ(
+        ignition::math::Vector3d::UnitX, xyz->Get<ignition::math::Vector3d>());
+  };
+
+  // insert as 1.4, expect rotation of //joint/axis/xyz
+  {
+    const std::string version = "1.4";
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(
+        sdf::readString(getIncludedModelSdfString(version), sdf, errors));
+    EXPECT_TRUE(errors.empty());
+    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(version, sdf->OriginalVersion());
+    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
+
+    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+    sdf::initFile("model.sdf", elem);
+
+    sdf::addNestedModel(elem, sdf->Root(), errors);
+    EXPECT_TRUE(errors.empty());
+
+    // Expect //joint/axis/xyz[@expressed_in] = "included::__model__" because
+    // it is the default behavior 1.4
+    checkNestedModel(elem, "included::__model__");
+  }
+
+  // insert as 1.5, expect no change to //joint/axis/xyz
+  {
+    const std::string version = "1.5";
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(
+        sdf::readString(getIncludedModelSdfString(version), sdf, errors));
+    EXPECT_TRUE(errors.empty());
+    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(version, sdf->OriginalVersion());
+    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
+
+    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+    sdf::initFile("model.sdf", elem);
+
+    sdf::addNestedModel(elem, sdf->Root(), errors);
+    EXPECT_TRUE(errors.empty());
+
+    checkNestedModel(elem);
+  }
+
+  // insert as 1.7, expressed_in=__model__
+  // expect rotation of //joint/axis/xyz
+  {
+    const std::string version = "1.7";
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(
+        sdf::readString(getIncludedModelSdfString(version, "__model__"),
+            sdf, errors));
+    EXPECT_TRUE(errors.empty());
+    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(version, sdf->OriginalVersion());
+    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
+
+    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+    sdf::initFile("model.sdf", elem);
+
+    sdf::addNestedModel(elem, sdf->Root(), errors);
+    EXPECT_TRUE(errors.empty());
+
+    checkNestedModel(elem, "included::__model__");
+  }
+
+  // insert as 1.7, expressed_in=child
+  // expect no change to //joint/axis/xyz
+  {
+    const std::string version = "1.7";
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(
+        sdf::readString(getIncludedModelSdfString(version, "child"),
+            sdf, errors));
+    EXPECT_TRUE(errors.empty());
+    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(version, sdf->OriginalVersion());
+    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
+
+    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+    sdf::initFile("model.sdf", elem);
+
+    sdf::addNestedModel(elem, sdf->Root(), errors);
+    EXPECT_TRUE(errors.empty());
+
+    checkNestedModel(elem, "included::child");
+
+    // test coverage for addNestedModel without returning Errors
+    sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
+    sdf::initFile("model.sdf", elem2);
+    sdf::addNestedModel(elem2, sdf->Root());
+  }
+
+  // insert as 1.7, expressed_in=revolute
+  {
+    const std::string version = "1.7";
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(
+        sdf::readString(getIncludedModelSdfString(version, "revolute"),
+            sdf, errors));
+    EXPECT_TRUE(errors.empty());
+    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(version, sdf->OriginalVersion());
+    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
+
+    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+    sdf::initFile("model.sdf", elem);
+
+    sdf::addNestedModel(elem, sdf->Root(), errors);
+    EXPECT_EQ(0u, errors.size());
+
+    checkNestedModel(elem, "included::revolute");
+
+    // test coverage for addNestedModel without returning Errors
+    sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
+    sdf::initFile("model.sdf", elem2);
+    sdf::addNestedModel(elem2, sdf->Root());
+  }
+
+  // insert as 1.7, expressed_in=revolute, canonicalLink = child
+  {
+    const std::string version = "1.7";
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(
+        sdf::readString(getIncludedModelSdfString(version, "revolute", "child"),
+            sdf, errors));
+    EXPECT_TRUE(errors.empty());
+    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(version, sdf->OriginalVersion());
+    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
+
+    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+    sdf::initFile("model.sdf", elem);
+
+    sdf::addNestedModel(elem, sdf->Root(), errors);
+    EXPECT_EQ(0u, errors.size());
+
+    checkNestedModel(elem, "included::revolute", "included::child");
   }
 }
 
