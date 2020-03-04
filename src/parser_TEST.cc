@@ -120,7 +120,7 @@ TEST(Parser, addNestedModel)
     std::string canonicalLinkString = "";
     if (!_canonicalLink.empty())
     {
-      canonicalLinkString = "canonical_link ='" + _canonicalLink + "'";
+      canonicalLinkString = " canonical_link='" + _canonicalLink + "'";
     }
     std::ostringstream stream;
     stream
