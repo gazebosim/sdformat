@@ -1213,13 +1213,10 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
   {
     canonicalLinkName = modelPtr->GetAttribute("canonical_link")->GetAsString();
   }
-  else
+  else if (modelPtr->HasElement("link"))
   {
-    if (modelPtr->HasElement("link"))
-    {
-      canonicalLinkName =
-          modelPtr->GetElement("link")->GetAttribute("name")->GetAsString();
-    }
+    canonicalLinkName =
+      modelPtr->GetElement("link")->GetAttribute("name")->GetAsString();
   }
   nestedModelFrame->GetAttribute("attached_to")
       ->Set(modelName + "::" + canonicalLinkName);
@@ -1261,7 +1258,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
       std::string newName =  modelName + "::" + elemName;
       replace[elemName] = newName;
     }
-    if (elem->GetName() == "frame")
+    else if (elem->GetName() == "frame")
     {
       std::string elemName = elem->Get<std::string>("name");
       std::string newName =  modelName + "::" + elemName;
