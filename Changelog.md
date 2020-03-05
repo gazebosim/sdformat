@@ -2,6 +2,9 @@
 
 ### SDFormat 9.X.X (202X-XX-XX)
 
+1.  Support frame semantics for models nested with <include>
+    * [Pull request 668](https://bitbucket.org/osrf/sdformat/pull-requests/668)
+
 1. Add functionality to generate aggregated SDFormat descriptions via CMake.
     * [Pull request 667](https://bitbucket.org/osrf/sdformat/pull-requests/667)
     * [Pull request 665](https://bitbucket.org/osrf/sdformat/pull-requests/665)
