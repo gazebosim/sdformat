@@ -174,3 +174,26 @@ TEST(DOMVisual, MaterialScriptNormalMapMissing)
   EXPECT_NE(std::string::npos,
       errors[0].Message().find("but a normal_map has not."));
 }
+
+//////////////////////////////////////////////////
+TEST(DOMVisual, Transparency)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "shapes.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  const sdf::Link *link = model->LinkByIndex(0);
+  ASSERT_NE(nullptr, link);
+
+  const sdf::Visual *vis1 = link->VisualByName("sphere_vis_transparency");
+  ASSERT_NE(nullptr, vis1);
+
+  EXPECT_FLOAT_EQ(0.22, vis1->Transparency());
+}
