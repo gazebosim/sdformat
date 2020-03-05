@@ -9,17 +9,36 @@
     </frame>
     <link name="L1">
       <pose relative_to="F1"/>
+      <visual name="V1">
+        <pose relative_to="F2"/>
+        <geometry>
+          <sphere>
+            <radius>1</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <collision name="C1">
+        <pose relative_to="__model__"/>
+        <geometry>
+          <sphere>
+            <radius>1</radius>
+          </sphere>
+        </geometry>
+      </collision>
     </link>
     <link name="L2">
       <pose relative_to="F1">1 0 0 0 0 0</pose>
     </link>
-    <joint name="J1" type="revolute">
+    <joint name="J1" type="universal">
       <pose relative_to="L1"/>
       <parent>L1</parent>
       <child>L2</child>
       <axis>
         <xyz expressed_in="F2">0 0 1</xyz>
       </axis>
+      <axis2>
+        <xyz expressed_in="F2">1 0 0</xyz>
+      </axis2>
     </joint>
   </model>
 </sdf>

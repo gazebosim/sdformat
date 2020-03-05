@@ -1206,6 +1206,8 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
   const std::string nestedModelFrameName = modelName + "::__model__";
   nestedModelFrame->GetAttribute("name")->Set(nestedModelFrameName);
 
+  replace["__model__"] = nestedModelFrameName;
+
   std::string canonicalLinkName = "";
   if (modelPtr->GetAttribute("canonical_link")->GetSet())
   {
@@ -1258,20 +1260,6 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
       std::string elemName = elem->Get<std::string>("name");
       std::string newName =  modelName + "::" + elemName;
       replace[elemName] = newName;
-
-      //  rotate the joint axis if it is expressed in __model__ frame
-      if (elem->HasElement("axis"))
-      {
-        ElementPtr axisElem = elem->GetElement("axis");
-        ElementPtr xyzElem = axisElem->GetElement("xyz");
-        std::string expressedIn =
-            xyzElem->GetAttribute("expressed_in")->GetAsString();
-        if (!expressedIn.empty())
-        {
-          xyzElem->GetAttribute("expressed_in")
-              ->Set(modelName + "::" + expressedIn);
-        }
-      }
     }
     if (elem->GetName() == "frame")
     {
@@ -1279,8 +1267,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
       std::string newName =  modelName + "::" + elemName;
       replace[elemName] = newName;
       auto attachedTo = elem->GetAttribute("attached_to");
-      if (attachedTo->GetAsString().empty() ||
-          attachedTo->GetAsString() == "__model__")
+      if (attachedTo->GetAsString().empty())
       {
         attachedTo->Set(nestedModelFrameName);
       }

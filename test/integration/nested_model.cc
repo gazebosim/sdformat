@@ -16,6 +16,7 @@
  */
 
 #include <sstream>
+#include <fstream>
 #include <string>
 
 #include <gtest/gtest.h>
@@ -460,6 +461,7 @@ TEST(NestedModel, NestedModelWithFrames)
   Pose3d link2ExpPose = frame1ExpPose * Pose3d(1, 0, 0, 0, 0, 0);
   Pose3d joint1ExpPose = link1ExpPose;
   Vector3d joint1AxisExpVector = frame2ExpPose.Rot() * Vector3d::UnitZ;
+  Vector3d joint1Axis2ExpVector = frame2ExpPose.Rot() * Vector3d::UnitX;
 
   const auto *frame1 = parentModel->FrameByName("M1::F1");
   ASSERT_NE(nullptr, frame1);
@@ -479,6 +481,14 @@ TEST(NestedModel, NestedModelWithFrames)
   EXPECT_TRUE(link1->SemanticPose().Resolve(link1Pose).empty());
   EXPECT_EQ(link1ExpPose, link1Pose);
 
+  const auto *visual1 = link1->VisualByName("V1");
+  ASSERT_NE(nullptr, visual1);
+  EXPECT_EQ("M1::F2", visual1->PoseRelativeTo());
+
+  const auto *collision1 = link1->CollisionByName("C1");
+  ASSERT_NE(nullptr, collision1);
+  EXPECT_EQ("M1::__model__", collision1->PoseRelativeTo());
+
   const auto *link2 = parentModel->LinkByName("M1::L2");
   ASSERT_NE(nullptr, link2);
   Pose3d link2Pose;
@@ -496,6 +506,12 @@ TEST(NestedModel, NestedModelWithFrames)
   Vector3d joint1AxisVector;
   EXPECT_TRUE(joint1Axis->ResolveXyz(joint1AxisVector, "__model__").empty());
   EXPECT_EQ(joint1AxisExpVector, joint1AxisVector);
+
+  const auto joint1Axis2 = joint1->Axis(1);
+  ASSERT_NE(nullptr, joint1Axis2);
+  Vector3d joint1Axis2Vector;
+  EXPECT_TRUE(joint1Axis2->ResolveXyz(joint1Axis2Vector, "__model__").empty());
+  EXPECT_EQ(joint1Axis2ExpVector, joint1Axis2Vector);
 }
 
 //////////////////////////////////////////////////
