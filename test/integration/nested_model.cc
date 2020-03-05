@@ -515,6 +515,101 @@ TEST(NestedModel, NestedModelWithFrames)
 }
 
 //////////////////////////////////////////////////
+// Test parsing models with child models containg frames nested via <include>
+// Compare parsed SDF with expected string
+TEST(NestedModel, NestedModelWithFramesDirectComparison)
+{
+  const std::string name = "test_model_with_frames";
+  const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
+      + "/test/integration/model/" + name;
+
+  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+
+  std::ostringstream stream;
+  std::string version = "1.7";
+  stream
+    << "<sdf version='" << version << "'>"
+    << "<world name='default'>"
+    << "  <model name='ParentModel'>"
+    << "    <include>"
+    << "      <uri>" + MODEL_PATH + "</uri>"
+    << "      <name>M1</name>"
+    << "      <pose>" << model1Pose << "</pose>"
+    << "    </include>"
+    << "  </model>"
+    << "</world>"
+    << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
+
+  // Function to remove any element in //joint/axis that is not <xyz>
+  auto removeNoneXyz = [](const sdf::ElementPtr &_elem)
+  {
+    std::vector<sdf::ElementPtr> toRemove;
+    for (auto el = _elem->GetFirstElement(); el; el = el->GetNextElement())
+    {
+      if (el->GetName() != "xyz")
+      {
+        toRemove.push_back(el);
+      }
+    }
+
+    for (auto el : toRemove)
+    {
+      _elem->RemoveChild(el);
+    }
+  };
+
+  // Remove elements in world that are not model for comparison with
+  // expectation. Also remove any element in //joint/axis that is not <xyz>
+  auto worldElem = sdfParsed->Root()->GetElement("world");
+  std::vector<sdf::ElementPtr> toRemove;
+  for (auto elem = worldElem->GetFirstElement(); elem;
+       elem = elem->GetNextElement())
+  {
+    if (elem->GetName() != "model")
+    {
+      toRemove.push_back(elem);
+    }
+    else
+    {
+      if (elem->HasElement("joint"))
+      {
+        auto joint = elem->GetElement("joint");
+        if (joint->HasElement("axis"))
+        {
+          removeNoneXyz(joint->GetElement("axis"));
+        }
+        if (joint->HasElement("axis2"))
+        {
+          removeNoneXyz(joint->GetElement("axis2"));
+        }
+      }
+    }
+  }
+
+  for (auto elem : toRemove)
+  {
+    worldElem->RemoveChild(elem);
+  }
+
+  // Compare with expected output
+  const std::string expectedSdfPath =
+      std::string(PROJECT_SOURCE_PATH) +
+      "/test/integration/nested_model_with_frames_expected.sdf";
+  std::fstream fs;
+  fs.open(expectedSdfPath);
+  EXPECT_TRUE(fs.is_open());
+  std::stringstream expected;
+  // ignore the first line
+  fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  fs >> expected.rdbuf();
+  EXPECT_EQ(expected.str(), sdfParsed->ToString());
+}
+
+//////////////////////////////////////////////////
 // Test parsing models with child models that contain only frames
 // and are nested via <include>
 TEST(NestedModel, NestedFrameOnlyModel)
