@@ -32,8 +32,8 @@ TEST(DOMVisual, Construction)
   visual.SetCastShadows(false);
   EXPECT_FALSE(visual.CastShadows());
 
-  visual.SetTransparency(0.34);
-  EXPECT_FLOAT_EQ(0.34, visual.Transparency());
+  visual.SetTransparency(0.34f);
+  EXPECT_FLOAT_EQ(0.34f, visual.Transparency());
 
   EXPECT_EQ(ignition::math::Pose3d::Zero, visual.Pose());
   EXPECT_TRUE(visual.PoseFrame().empty());
@@ -61,7 +61,7 @@ TEST(DOMVisual, CopyConstructor)
   sdf::Visual visual;
   visual.SetName("test_visual");
   visual.SetCastShadows(false);
-  visual.SetTransparency(0.345);
+  visual.SetTransparency(0.345f);
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
   visual.SetPoseFrame("link");
@@ -74,7 +74,7 @@ TEST(DOMVisual, CopyConstructor)
 
   EXPECT_EQ("test_visual", visual.Name());
   EXPECT_FALSE(visual.CastShadows());
-  EXPECT_FLOAT_EQ(0.345, visual.Transparency());
+  EXPECT_FLOAT_EQ(0.345f, visual.Transparency());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual.Pose());
   EXPECT_EQ("link", visual.PoseFrame());
@@ -83,7 +83,7 @@ TEST(DOMVisual, CopyConstructor)
 
   EXPECT_EQ("test_visual", visual2.Name());
   EXPECT_FALSE(visual2.CastShadows());
-  EXPECT_FLOAT_EQ(0.345, visual2.Transparency());
+  EXPECT_FLOAT_EQ(0.345f, visual2.Transparency());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.Pose());
   EXPECT_EQ("link", visual2.PoseFrame());
@@ -97,7 +97,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
   sdf::Visual visual;
   visual.SetName("test_visual");
   visual.SetCastShadows(false);
-  visual.SetTransparency(0.345);
+  visual.SetTransparency(0.345f);
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
   visual.SetPoseFrame("link");
@@ -111,7 +111,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
 
   EXPECT_EQ("test_visual", visual.Name());
   EXPECT_FALSE(visual.CastShadows());
-  EXPECT_FLOAT_EQ(0.345, visual.Transparency());
+  EXPECT_FLOAT_EQ(0.345f, visual.Transparency());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual.Pose());
   EXPECT_EQ("link", visual.PoseFrame());
@@ -120,7 +120,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
 
   EXPECT_EQ("test_visual", visual2.Name());
   EXPECT_FALSE(visual2.CastShadows());
-  EXPECT_FLOAT_EQ(0.345, visual2.Transparency());
+  EXPECT_FLOAT_EQ(0.345f, visual2.Transparency());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.Pose());
   EXPECT_EQ("link", visual2.PoseFrame());
@@ -134,7 +134,7 @@ TEST(DOMVisual, MoveConstructor)
   sdf::Visual visual;
   visual.SetName("test_visual");
   visual.SetCastShadows(false);
-  visual.SetTransparency(0.345);
+  visual.SetTransparency(0.345f);
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
   visual.SetPoseFrame("link");
@@ -147,7 +147,7 @@ TEST(DOMVisual, MoveConstructor)
 
   EXPECT_EQ("test_visual", visual2.Name());
   EXPECT_FALSE(visual2.CastShadows());
-  EXPECT_FLOAT_EQ(0.345, visual2.Transparency());
+  EXPECT_FLOAT_EQ(0.345f, visual2.Transparency());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.Pose());
   EXPECT_EQ("link", visual2.PoseFrame());
@@ -161,7 +161,7 @@ TEST(DOMVisual, MoveAssignmentOperator)
   sdf::Visual visual;
   visual.SetName("test_visual");
   visual.SetCastShadows(false);
-  visual.SetTransparency(0.345);
+  visual.SetTransparency(0.345f);
   visual.SetPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
   visual.SetPoseFrame("link");
@@ -175,7 +175,7 @@ TEST(DOMVisual, MoveAssignmentOperator)
 
   EXPECT_EQ("test_visual", visual2.Name());
   EXPECT_FALSE(visual2.CastShadows());
-  EXPECT_FLOAT_EQ(0.345, visual2.Transparency());
+  EXPECT_FLOAT_EQ(0.345f, visual2.Transparency());
   EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.Pose());
   EXPECT_EQ("link", visual2.PoseFrame());

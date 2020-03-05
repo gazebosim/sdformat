@@ -195,5 +195,5 @@ TEST(DOMVisual, Transparency)
   const sdf::Visual *vis1 = link->VisualByName("sphere_vis_transparency");
   ASSERT_NE(nullptr, vis1);
 
-  EXPECT_FLOAT_EQ(0.22, vis1->Transparency());
+  EXPECT_FLOAT_EQ(0.22f, vis1->Transparency());
 }
