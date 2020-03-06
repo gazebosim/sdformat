@@ -32,6 +32,9 @@ TEST(DOMVisual, Construction)
   visual.SetCastShadows(false);
   EXPECT_FALSE(visual.CastShadows());
 
+  // check default transparency is 0
+  EXPECT_FLOAT_EQ(0.0, visual.Transparency());
+
   visual.SetTransparency(0.34f);
   EXPECT_FLOAT_EQ(0.34f, visual.Transparency());
 
