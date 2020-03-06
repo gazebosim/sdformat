@@ -5,6 +5,12 @@
 1.  Support frame semantics for models nested with <include>
     * [Pull request 668](https://bitbucket.org/osrf/sdformat/pull-requests/668)
 
+1. Include overrides for actor and light
+    * [Pull request 669](https://bitbucket.org/osrf/sdformat/pull-requests/669)
+
+1.  Remove TinyXML symbols from public API: Deprecate URDF2SDF
+    * [Pull request 658](https://bitbucket.org/osrf/sdformat/pull-requests/658)
+
 1. Add functionality to generate aggregated SDFormat descriptions via CMake.
     * [Pull request 667](https://bitbucket.org/osrf/sdformat/pull-requests/667)
     * [Pull request 665](https://bitbucket.org/osrf/sdformat/pull-requests/665)

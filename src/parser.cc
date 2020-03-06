@@ -405,13 +405,15 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
     return false;
   }
 
+  // Suppress deprecation for sdf::URDF2SDF
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   if (readDoc(&xmlDoc, _sdf, filename, _convert, _errors))
   {
     return true;
   }
-  else if (sdf::URDF2SDF::IsURDF(filename))
+  else if (URDF2SDF::IsURDF(filename))
   {
-    sdf::URDF2SDF u2g;
+    URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelFile(filename);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
@@ -424,6 +426,7 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
       return false;
     }
   }
+  SDF_SUPPRESS_DEPRECATED_END
 
   return false;
 }
@@ -471,7 +474,9 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   }
   else
   {
-    sdf::URDF2SDF u2g;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
+    URDF2SDF u2g;
+    SDF_SUPPRESS_DEPRECATED_END
     TiXmlDocument doc = u2g.InitModelString(_xmlString);
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {
@@ -956,18 +961,41 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           return false;
         }
 
+        sdf::ElementPtr topLevelElem;
+        bool isModel{false};
+        bool isActor{false};
+        if (includeSDF->Root()->HasElement("model"))
+        {
+          topLevelElem = includeSDF->Root()->GetElement("model");
+          isModel = true;
+        }
+        else if (includeSDF->Root()->HasElement("actor"))
+        {
+          topLevelElem = includeSDF->Root()->GetElement("actor");
+          isActor = true;
+        }
+        else if (includeSDF->Root()->HasElement("light"))
+        {
+          topLevelElem = includeSDF->Root()->GetElement("light");
+        }
+        else
+        {
+          _errors.push_back({ErrorCode::ELEMENT_MISSING,
+              "Failed to find top level <model> / <actor> / <light> for "
+              "<include>\n"});
+          continue;
+        }
+
         if (elemXml->FirstChildElement("name"))
         {
-          includeSDF->Root()->GetElement("model")->GetAttribute(
-              "name")->SetFromString(
+          topLevelElem->GetAttribute("name")->SetFromString(
                 elemXml->FirstChildElement("name")->GetText());
         }
 
         TiXmlElement *poseElemXml = elemXml->FirstChildElement("pose");
         if (poseElemXml)
         {
-          sdf::ElementPtr poseElem =
-              includeSDF->Root()->GetElement("model")->GetElement("pose");
+          sdf::ElementPtr poseElem = topLevelElem->GetElement("pose");
 
           if (poseElemXml->GetText())
           {
@@ -989,27 +1017,28 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           }
         }
 
-        if (elemXml->FirstChildElement("static"))
+        if (isModel && elemXml->FirstChildElement("static"))
         {
-          includeSDF->Root()->GetElement("model")->GetElement(
-              "static")->GetValue()->SetFromString(
+          topLevelElem->GetElement("static")->GetValue()->SetFromString(
                 elemXml->FirstChildElement("static")->GetText());
         }
 
-        for (TiXmlElement *childElemXml = elemXml->FirstChildElement();
-             childElemXml; childElemXml = childElemXml->NextSiblingElement())
+        if (isModel || isActor)
         {
-          if (std::string("plugin") == childElemXml->Value())
+          for (TiXmlElement *childElemXml = elemXml->FirstChildElement();
+               childElemXml; childElemXml = childElemXml->NextSiblingElement())
           {
-            sdf::ElementPtr pluginElem;
-            pluginElem = includeSDF->Root()->GetElement(
-                "model")->AddElement("plugin");
-
-            if (!readXml(childElemXml, pluginElem, _errors))
+            if (std::string("plugin") == childElemXml->Value())
             {
-              _errors.push_back({ErrorCode::ELEMENT_INVALID,
-                                 "Error reading plugin element"});
-              return false;
+              sdf::ElementPtr pluginElem;
+              pluginElem = topLevelElem->AddElement("plugin");
+
+              if (!readXml(childElemXml, pluginElem, _errors))
+              {
+                _errors.push_back({ErrorCode::ELEMENT_INVALID,
+                                   "Error reading plugin element"});
+                return false;
+              }
             }
           }
         }

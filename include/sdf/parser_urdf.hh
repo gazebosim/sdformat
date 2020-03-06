@@ -23,6 +23,7 @@
 #include <string>
 
 #include "sdf/Console.hh"
+#include "sdf/Types.hh"
 #include "sdf/system_util.hh"
 
 namespace sdf
@@ -32,7 +33,11 @@ namespace sdf
   //
 
   /// \brief URDF to SDF converter
-  class SDFORMAT_VISIBLE URDF2SDF
+  ///
+  /// This is now deprecated for external usage and will be removed in the next
+  /// major version of libsdformat. Instead, consider using `sdf::readFile` or
+  /// `sdf::readString`, which automatically convert URDF to SDF.
+  class SDFORMAT_VISIBLE SDF_DEPRECATED(9.2) URDF2SDF
   {
     /// \brief constructor
     public: URDF2SDF();
