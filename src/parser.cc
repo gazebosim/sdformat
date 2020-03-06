@@ -1222,8 +1222,28 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
       ->Set(modelName + "::" + canonicalLinkName);
 
   ElementPtr nestedModelFramePose = nestedModelFrame->AddElement("pose");
-  nestedModelFramePose->GetAttribute("relative_to")->Set("__model__");
   nestedModelFramePose->Set(modelPose);
+
+  // Set the pose's relative_to to the frame used in the
+  // //include/pose/@relative_to. If that @relative_to is empty, use "__model__"
+  // as opposed to also leaving it empty because the default @relative_to of a
+  // //frame/pose is the frame specified in the //frame/@attached_to of its
+  // parent frame
+  std::string modelPoseRelativeTo = "";
+  if (modelPtr->HasElement("pose"))
+  {
+    modelPoseRelativeTo =
+        modelPtr->GetElement("pose")->Get<std::string>("relative_to");
+  }
+
+  if (modelPoseRelativeTo.empty())
+  {
+    nestedModelFramePose->GetAttribute("relative_to")->Set("__model__");
+  }
+  else
+  {
+    nestedModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
+  }
 
   while (elem)
   {
