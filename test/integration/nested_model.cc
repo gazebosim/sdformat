@@ -663,7 +663,7 @@ TEST(NestedModel, NestedModelWithSiblingFrames)
 
   using ignition::math::Pose3d;
   using ignition::math::Vector3d;
-  // // Expected poses
+  // Expected poses
   Pose3d nestedModel1FrameExpPose = testFramePose * model1Pose;
   Pose3d frame1ExpPose =
       nestedModel1FrameExpPose * Pose3d(0, 0, 0, IGN_PI / 2, 0, 0);
