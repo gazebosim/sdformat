@@ -577,14 +577,17 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
     {
       if (elem->HasElement("joint"))
       {
-        auto joint = elem->GetElement("joint");
-        if (joint->HasElement("axis"))
+        for (auto joint = elem->GetElement("joint"); joint;
+             joint = joint->GetNextElement("joint"))
         {
-          removeNoneXyz(joint->GetElement("axis"));
-        }
-        if (joint->HasElement("axis2"))
-        {
-          removeNoneXyz(joint->GetElement("axis2"));
+          if (joint->HasElement("axis"))
+          {
+            removeNoneXyz(joint->GetElement("axis"));
+          }
+          if (joint->HasElement("axis2"))
+          {
+            removeNoneXyz(joint->GetElement("axis2"));
+          }
         }
       }
     }

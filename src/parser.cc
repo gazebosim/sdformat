@@ -1276,7 +1276,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
 
   while (elem)
   {
-    if ((elem->GetName() == "link") || elem->GetName() == "joint")
+    if ((elem->GetName() == "link"))
     {
       // Add a pose element even if the element doesn't originally have one
       auto elemPose = elem->GetElement("pose");
@@ -1286,8 +1286,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
       // following this will take care of updating the name in this element's
       // relative_to attribute.
       auto relativeTo = elemPose->GetAttribute("relative_to");
-      if (relativeTo->GetAsString().empty() ||
-          relativeTo->GetAsString() == "__model__")
+      if (relativeTo->GetAsString().empty())
       {
         relativeTo->Set(nestedModelFrameName);
       }
