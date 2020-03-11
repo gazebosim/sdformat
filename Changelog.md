@@ -5,9 +5,6 @@
 1. Include overrides for actor and light
     * [Pull request 669](https://bitbucket.org/osrf/sdformat/pull-requests/669)
 
-1.  Remove TinyXML symbols from public API: Deprecate URDF2SDF
-    * [Pull request 658](https://bitbucket.org/osrf/sdformat/pull-requests/658)
-
 1. Add functionality to generate aggregated SDFormat descriptions via CMake.
     * [Pull request 667](https://bitbucket.org/osrf/sdformat/pull-requests/667)
     * [Pull request 665](https://bitbucket.org/osrf/sdformat/pull-requests/665)
@@ -16,8 +13,19 @@
     * [Pull request 657](https://bitbucket.org/osrf/sdformat/pull-requests/657)
     * [Issue 219](https://bitbucket.org/osrf/sdformat/issues/219)
 
+1.  Remove TinyXML symbols from public API: Deprecate URDF2SDF
+    * [Pull request 658](https://bitbucket.org/osrf/sdformat/pull-requests/658)
+
 1.  Remove TinyXML symbols from public API: Move uninstalled headers
     * [Pull request 662](https://bitbucket.org/osrf/sdformat/pull-requests/662)
+
+1. Install the Windows `.dll` shared libraries to bin folder.
+    * [Pull request 659](https://bitbucket.org/osrf/sdformat/pull-requests/659)
+    * [Pull request 663](https://bitbucket.org/osrf/sdformat/pull-requests/663)
+
+1. Fix cmake type for `tinyxml_INCLUDE_DIRS`.
+    * [Pull request 661](https://bitbucket.org/osrf/sdformat/pull-requests/661)
+    * [Pull request 663](https://bitbucket.org/osrf/sdformat/pull-requests/663)
 
 ### SDFormat 9.1.0 (2020-01-29)
 
@@ -147,6 +155,14 @@
 ## SDFormat 8.0
 
 ### SDFormat 8.X.X (201X-XX-XX)
+
+1. Install the Windows `.dll` shared libraries to bin folder.
+    * [Pull request 659](https://bitbucket.org/osrf/sdformat/pull-requests/659)
+    * [Pull request 663](https://bitbucket.org/osrf/sdformat/pull-requests/663)
+
+1. Fix cmake type for `tinyxml_INCLUDE_DIRS`.
+    * [Pull request 661](https://bitbucket.org/osrf/sdformat/pull-requests/661)
+    * [Pull request 663](https://bitbucket.org/osrf/sdformat/pull-requests/663)
 
 1. Add functionality to generate aggregated SDFormat descriptions via CMake.
     * [Pull request 665](https://bitbucket.org/osrf/sdformat/pull-requests/665)
