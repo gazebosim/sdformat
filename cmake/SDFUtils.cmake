@@ -135,22 +135,19 @@ macro (sdf_build_tests)
     string(REGEX REPLACE ".cc" "" BINARY_NAME ${GTEST_SOURCE_file})
     set(BINARY_NAME ${TEST_TYPE}_${BINARY_NAME})
 
-    if (UNIX)
-      add_executable(${BINARY_NAME}
-        ${GTEST_SOURCE_file}
-        ${SDF_BUILD_TESTS_EXTRA_EXE_SRCS})
-    elseif(WIN32)
-      add_executable(${BINARY_NAME}
-        ${GTEST_SOURCE_file}
-        ${SDF_BUILD_TESTS_EXTRA_EXE_SRCS}
+    if (NOT USE_EXTERNAL_TINYXML)
+      set(tinyxml_SRC
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinystr.cpp
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlerror.cpp
         ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxml.cpp
-        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlparser.cpp
-      )
-    else()
-      message(FATAL_ERROR "Unsupported platform")
+        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlparser.cpp)
     endif()
+
+    add_executable(${BINARY_NAME}
+      ${GTEST_SOURCE_file}
+      ${SDF_BUILD_TESTS_EXTRA_EXE_SRCS}
+      ${tinyxml_SRC}
+    )
 
     add_dependencies(${BINARY_NAME}
       gtest gtest_main ${sdf_target}
@@ -158,13 +155,17 @@ macro (sdf_build_tests)
 
     link_directories(${IGNITION-MATH_LIBRARY_DIRS})
 
+    if (USE_EXTERNAL_TINYXML)
+      target_link_libraries(${BINARY_NAME}
+        ${tinyxml_LIBRARIES})
+    endif()
+
     if (UNIX)
       target_link_libraries(${BINARY_NAME}
         libgtest.a
         libgtest_main.a
         ${sdf_target}
         pthread
-        ${tinyxml_LIBRARIES}
         ${IGNITION-MATH_LIBRARIES}
       )
     elseif(WIN32)
