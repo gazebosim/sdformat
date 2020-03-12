@@ -371,3 +371,26 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
     linkC->VisualByName("vF4")->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(Pose(-18, 3, 4, 0, -IGN_PI/2, 0), pose);
 }
+
+//////////////////////////////////////////////////
+TEST(DOMVisual, VisibilityFlags)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "shapes.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  const sdf::Link *link = model->LinkByIndex(0);
+  ASSERT_NE(nullptr, link);
+
+  const sdf::Visual *vis1 = link->VisualByName("sphere_vis_transparency");
+  ASSERT_NE(nullptr, vis1);
+
+  EXPECT_EQ(0x00000001u, vis1->VisibilityFlags());
+}
