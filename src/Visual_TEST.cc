@@ -153,7 +153,7 @@ TEST(DOMVisual, MoveConstructor)
   sdf::Visual visual;
   visual.SetName("test_visual");
   visual.SetCastShadows(false);
- visual.SetTransparency(0.345f);
+  visual.SetTransparency(0.345f);
   visual.SetRawPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
   visual.SetPoseRelativeTo("link");
@@ -180,7 +180,7 @@ TEST(DOMVisual, MoveAssignmentOperator)
   sdf::Visual visual;
   visual.SetName("test_visual");
   visual.SetCastShadows(false);
- visual.SetTransparency(0.345f);
+  visual.SetTransparency(0.345f);
   visual.SetRawPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
 
   visual.SetPoseRelativeTo("link");
