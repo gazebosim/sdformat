@@ -1230,7 +1230,8 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
     modelPtr->Get<ignition::math::Pose3d>("pose");
 
   std::string modelName = modelPtr->Get<std::string>("name");
-  // Inject a frame that replaces the model frame of the nested model.
+
+  // Inject a frame to represent the nested __model__ frame.
   ElementPtr nestedModelFrame = _sdf->AddElement("frame");
   const std::string nestedModelFrameName = modelName + "::__model__";
   nestedModelFrame->GetAttribute("name")->Set(nestedModelFrameName);
@@ -1253,11 +1254,8 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
   ElementPtr nestedModelFramePose = nestedModelFrame->AddElement("pose");
   nestedModelFramePose->Set(modelPose);
 
-  // Set the pose's relative_to to the frame used in the
-  // //include/pose/@relative_to. If that @relative_to is empty, use "__model__"
-  // as opposed to also leaving it empty because the default @relative_to of a
-  // //frame/pose is the frame specified in the //frame/@attached_to of its
-  // parent frame
+  // Set the nestedModelFrame's //pose/@relative_to to the frame used in
+  // //include/pose/@relative_to.
   std::string modelPoseRelativeTo = "";
   if (modelPtr->HasElement("pose"))
   {
@@ -1265,71 +1263,52 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
         modelPtr->GetElement("pose")->Get<std::string>("relative_to");
   }
 
+  // If empty, use "__model__", since leaving it empty would make it
+  // relative_to the canonical link frame specified in //frame/@attached_to.
   if (modelPoseRelativeTo.empty())
   {
-    nestedModelFramePose->GetAttribute("relative_to")->Set("__model__");
+    modelPoseRelativeTo = "__model__";
   }
-  else
-  {
-    nestedModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
-  }
+
+  nestedModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
 
   while (elem)
   {
+    if ((elem->GetName() == "link") ||
+        (elem->GetName() == "joint") ||
+        (elem->GetName() == "frame"))
+    {
+      std::string elemName = elem->Get<std::string>("name");
+      std::string newName =  modelName + "::" + elemName;
+      replace[elemName] = newName;
+    }
+
     if ((elem->GetName() == "link"))
     {
       // Add a pose element even if the element doesn't originally have one
       auto elemPose = elem->GetElement("pose");
-      // If the pose has a relative_to attribute, we leave it as is because
-      // the frame to which it is relative will have been updated to
-      // account for the nested_model_frame and the name replacement step
-      // following this will take care of updating the name in this element's
-      // relative_to attribute.
+
+      // If //pose/@relative_to is empty, explicitly set it to the name
+      // of the nested model frame.
       auto relativeTo = elemPose->GetAttribute("relative_to");
       if (relativeTo->GetAsString().empty())
       {
         relativeTo->Set(nestedModelFrameName);
       }
-    }
 
-    if (elem->GetName() == "link")
-    {
-      std::string elemName = elem->Get<std::string>("name");
-      std::string newName =  modelName + "::" + elemName;
-      replace[elemName] = newName;
-    }
-    else if (elem->GetName() == "joint")
-    {
-      // for joints, we need to
-      //   prefix name like we did with links, and
-      std::string elemName = elem->Get<std::string>("name");
-      std::string newName =  modelName + "::" + elemName;
-      replace[elemName] = newName;
+      // If //pose/@relative_to is set, let the replacement step handle it.
     }
     else if (elem->GetName() == "frame")
     {
-      std::string elemName = elem->Get<std::string>("name");
-      std::string newName =  modelName + "::" + elemName;
-      replace[elemName] = newName;
+      // If //frame/@attached_to is empty, explicitly set it to the name
+      // of the nested model frame.
       auto attachedTo = elem->GetAttribute("attached_to");
       if (attachedTo->GetAsString().empty())
       {
         attachedTo->Set(nestedModelFrameName);
       }
 
-      // Add a pose element even if the frame doesn't originally have one
-      auto elemPose = elem->GetElement("pose");
-      // If the pose has a relative_to attribute, we leave it as is because
-      // the frame to which it is relative will have been updated to account for
-      // the nested_model_frame. If the original relative_to is empty, we leave
-      // the new relative_to empty because it will default to the attached_to
-      // frame, unlike links and joints which use the nested model frame.
-      auto relativeTo = elemPose->GetAttribute("relative_to");
-
-      if (!relativeTo->GetAsString().empty())
-      {
-        relativeTo->Set(modelName + "::" + relativeTo->GetAsString());
-      }
+      // If //frame/@attached_to is set, let the replacement step handle it.
     }
     elem = elem->GetNextElement();
   }
