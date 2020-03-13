@@ -2,6 +2,9 @@
 
 ### SDFormat 9.X.X (202X-XX-XX)
 
+1. Add camera visibility mask and visual visibility flags
+    * [Pull request 673](https://bitbucket.org/osrf/sdformat/pull-requests/673)
+
 1. Include overrides for actor and light
     * [Pull request 669](https://bitbucket.org/osrf/sdformat/pull-requests/669)
 
