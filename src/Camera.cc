@@ -382,7 +382,7 @@ Errors Camera::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("visibility_mask"))
   {
-    this->dataPtr->visibilityMask = _sdf->Get<uint32_t>("visiblility_mask",
+    this->dataPtr->visibilityMask = _sdf->Get<uint32_t>("visibility_mask",
         this->dataPtr->visibilityMask).first;
   }
 
