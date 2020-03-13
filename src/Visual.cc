@@ -43,6 +43,9 @@ class sdf::VisualPrivate
   /// \brief Whether the visual casts shadows
   public: bool castShadows = true;
 
+  /// \brief Transparency value between 0 and 1
+  public: float transparency  = 0.0;
+
   /// \brief Pose of the visual object
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
@@ -69,6 +72,7 @@ class sdf::VisualPrivate
 VisualPrivate::VisualPrivate(const VisualPrivate &_visualPrivate)
     : name(_visualPrivate.name),
       castShadows(_visualPrivate.castShadows),
+      transparency(_visualPrivate.transparency),
       pose(_visualPrivate.pose),
       poseRelativeTo(_visualPrivate.poseRelativeTo),
       geom(_visualPrivate.geom),
@@ -157,6 +161,12 @@ Errors Visual::Load(ElementPtr _sdf)
         this->dataPtr->castShadows).first;
   }
 
+  // load transparency
+  if (_sdf->HasElement("transparency"))
+  {
+    this->dataPtr->transparency = _sdf->Get<float>("transparency");
+  }
+
   if (_sdf->HasElement("material"))
   {
     this->dataPtr->material.reset(new sdf::Material());
@@ -196,6 +206,18 @@ bool Visual::CastShadows() const
 void Visual::SetCastShadows(bool _castShadows)
 {
   this->dataPtr->castShadows = _castShadows;
+}
+
+/////////////////////////////////////////////////
+float Visual::Transparency() const
+{
+  return this->dataPtr->transparency;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetTransparency(float _transparency)
+{
+  this->dataPtr->transparency = _transparency;
 }
 
 /////////////////////////////////////////////////
