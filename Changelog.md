@@ -156,6 +156,9 @@
 
 ### SDFormat 8.X.X (201X-XX-XX)
 
+1. Add Transparency to visual DOM
+    * [Pull request 671](https://bitbucket.org/osrf/sdformat/pull-requests/671)
+
 1. Install the Windows `.dll` shared libraries to bin folder.
     * [Pull request 659](https://bitbucket.org/osrf/sdformat/pull-requests/659)
     * [Pull request 663](https://bitbucket.org/osrf/sdformat/pull-requests/663)
