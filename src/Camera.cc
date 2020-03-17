@@ -162,8 +162,8 @@ class sdf::CameraPrivate
   /// \brief lens instrinsics s.
   public: double lensIntrinsicsS{1.0};
 
-  /// \brief Visibility mask of a camera
-  public: uint32_t visibilityMask{65535u};
+  /// \brief Visibility mask of a camera. Defaults to 0xFFFFFFFF
+  public: uint32_t visibilityMask{4294967295u};
 };
 
 /////////////////////////////////////////////////

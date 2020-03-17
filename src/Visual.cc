@@ -67,8 +67,8 @@ class sdf::VisualPrivate
   /// \brief Weak pointer to model's Pose Relative-To Graph.
   public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 
-  /// \brief Visibility flags of a visual
-  public: uint32_t visibilityFlags = 65535u;
+  /// \brief Visibility flags of a visual. Defaults to 0xFFFFFFFF
+  public: uint32_t visibilityFlags = 4294967295u;
 };
 
 /////////////////////////////////////////////////
