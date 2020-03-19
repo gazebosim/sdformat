@@ -1,6 +1,8 @@
 ## SDFormat 8.0
 
-### SDFormat 8.X.X (201X-XX-XX)
+### SDFormat 8.X.X (202X-XX-XX)
+
+### SDFormat 8.8.0 (2020-03-18)
 
 1. Add Transparency to visual DOM
     * [Pull request 671](https://bitbucket.org/osrf/sdformat/pull-requests/671)
@@ -18,6 +20,10 @@
 
 1. Remove URI scheme, if present, when finding files.
     * [Pull request 650](https://bitbucket.org/osrf/sdformat/pull-requests/650)
+    * [Pull request 652](https://bitbucket.org/osrf/sdformat/pull-requests/652)
+
+1. Rename SDF to SDFormat / libsdformat on documentation
+    * [Pull request 666](https://bitbucket.org/osrf/sdformat/pull-requests/666)
 
 ### SDFormat 8.7.1 (2020-01-13)
 
