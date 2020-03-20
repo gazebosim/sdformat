@@ -66,6 +66,9 @@ class sdf::VisualPrivate
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
   public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+
+  /// \brief Visibility flags of a visual. Defaults to 0xFFFFFFFF
+  public: uint32_t visibilityFlags = 4294967295u;
 };
 
 /////////////////////////////////////////////////
@@ -76,7 +79,8 @@ VisualPrivate::VisualPrivate(const VisualPrivate &_visualPrivate)
       pose(_visualPrivate.pose),
       poseRelativeTo(_visualPrivate.poseRelativeTo),
       geom(_visualPrivate.geom),
-      sdf(_visualPrivate.sdf)
+      sdf(_visualPrivate.sdf),
+      visibilityFlags(_visualPrivate.visibilityFlags)
 {
   if (_visualPrivate.material)
   {
@@ -176,6 +180,14 @@ Errors Visual::Load(ElementPtr _sdf)
 
   // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
+
+
+  // load visibility flags
+  if (_sdf->HasElement("visibility_flags"))
+  {
+    this->dataPtr->visibilityFlags = _sdf->Get<uint32_t>("visibility_flags",
+        this->dataPtr->visibilityFlags).first;
+  }
 
   // Load the geometry
   Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
@@ -319,4 +331,16 @@ sdf::Material *Visual::Material() const
 void Visual::SetMaterial(const sdf::Material &_material)
 {
   this->dataPtr->material.reset(new sdf::Material(_material));
+}
+
+/////////////////////////////////////////////////
+uint32_t Visual::VisibilityFlags() const
+{
+  return this->dataPtr->visibilityFlags;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetVisibilityFlags(uint32_t _flags)
+{
+  this->dataPtr->visibilityFlags = _flags;
 }

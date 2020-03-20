@@ -185,6 +185,14 @@ namespace sdf
     /// \param[in] _material The material of the visual object
     public: void SetMaterial(const sdf::Material &_material);
 
+    /// \brief Get the visibility flags of a visual
+    /// \return visibility flags
+    public: uint32_t VisibilityFlags() const;
+
+    /// \brief Set the visibility flags of a visual
+    /// \param[in] _flags visibility flags
+    public: void SetVisibilityFlags(uint32_t _flags);
+
     /// \brief Give the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.
