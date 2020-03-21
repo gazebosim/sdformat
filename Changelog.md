@@ -2,7 +2,7 @@
 
 ### SDFormat 8.X.X (202X-XX-XX)
 
-1. Pass URDF_CFLAGS and URDF_LDFLAGS from pkg-config to sdf_target.
+1. Fix homebrew build with external urdfdom.
     * [Pull request 677](https://bitbucket.org/osrf/sdformat/pull-requests/677)
 
 ### SDFormat 8.8.0 (2020-03-18)
