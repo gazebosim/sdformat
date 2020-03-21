@@ -167,6 +167,8 @@ message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
 message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
 
 if (NOT USE_INTERNAL_URDF)
+  target_compile_options(${sdf_target} PRIVATE ${URDF_CFLAGS})
+  target_link_options(${sdf_target} PRIVATE ${URDF_LDFLAGS})
   target_link_libraries(${sdf_target} PRIVATE ${URDF_LIBRARIES})
 endif()
 
