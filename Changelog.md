@@ -2,6 +2,9 @@
 
 ### SDFormat 8.X.X (202X-XX-XX)
 
+1. Pass URDF_CFLAGS and URDF_LDFLAGS from pkg-config to sdf_target.
+    * [Pull request 677](https://bitbucket.org/osrf/sdformat/pull-requests/677)
+
 ### SDFormat 8.8.0 (2020-03-18)
 
 1. Add Transparency to visual DOM
