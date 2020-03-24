@@ -158,6 +158,10 @@ TEST(DOMCamera, Construction)
   cam.SetLensIntrinsicsSkew(2.3);
   EXPECT_DOUBLE_EQ(2.3, cam.LensIntrinsicsSkew());
 
+  EXPECT_EQ(4294967295u, cam.VisibilityMask());
+  cam.SetVisibilityMask(123u);
+  EXPECT_EQ(123u, cam.VisibilityMask());
+
   // Copy Constructor
   sdf::Camera cam2(cam);
   EXPECT_EQ(cam, cam2);

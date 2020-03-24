@@ -481,9 +481,16 @@ namespace sdf
     /// \return String equivalent of _type.
     public: static std::string ConvertPixelFormat(PixelFormatType _type);
 
+    /// \brief Get the visibility mask of a camera
+    /// \return visibility mask
+    public: uint32_t VisibilityMask() const;
+
+    /// \brief Set the visibility mask of a camera
+    /// \param[in] _mask visibility mask
+    public: void SetVisibilityMask(uint32_t _mask);
 
     /// \brief Private data pointer.
-    private: CameraPrivate *dataPtr;
+    private: CameraPrivate *dataPtr = nullptr;
   };
   }
 }

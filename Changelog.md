@@ -2,6 +2,12 @@
 
 ### SDFormat 9.X.X (202X-XX-XX)
 
+1. Increase output precision of URDF to SDF conversion, output -0 as 0.
+    * [Pull request 675](https://bitbucket.org/osrf/sdformat/pull-requests/675)
+
+1. Add camera visibility mask and visual visibility flags
+    * [Pull request 673](https://bitbucket.org/osrf/sdformat/pull-requests/673)
+
 1. Include overrides for actor and light
     * [Pull request 669](https://bitbucket.org/osrf/sdformat/pull-requests/669)
 
@@ -26,6 +32,9 @@
 1. Fix cmake type for `tinyxml_INCLUDE_DIRS`.
     * [Pull request 661](https://bitbucket.org/osrf/sdformat/pull-requests/661)
     * [Pull request 663](https://bitbucket.org/osrf/sdformat/pull-requests/663)
+
+1. Rename SDF to SDFormat / libsdformat on documentation
+    * [Pull request 666](https://bitbucket.org/osrf/sdformat/pull-requests/666)
 
 ### SDFormat 9.1.0 (2020-01-29)
 
@@ -154,7 +163,12 @@
 
 ## SDFormat 8.0
 
-### SDFormat 8.X.X (201X-XX-XX)
+### SDFormat 8.X.X (202X-XX-XX)
+
+1. Increase output precision of URDF to SDF conversion, output -0 as 0.
+    * [Pull request 675](https://bitbucket.org/osrf/sdformat/pull-requests/675)
+
+### SDFormat 8.8.0 (2020-03-18)
 
 1. Add Transparency to visual DOM
     * [Pull request 671](https://bitbucket.org/osrf/sdformat/pull-requests/671)
@@ -172,6 +186,10 @@
 
 1. Remove URI scheme, if present, when finding files.
     * [Pull request 650](https://bitbucket.org/osrf/sdformat/pull-requests/650)
+    * [Pull request 652](https://bitbucket.org/osrf/sdformat/pull-requests/652)
+
+1. Rename SDF to SDFormat / libsdformat on documentation
+    * [Pull request 666](https://bitbucket.org/osrf/sdformat/pull-requests/666)
 
 ### SDFormat 8.7.1 (2020-01-13)
 

@@ -72,6 +72,11 @@ TEST(DOMVisual, Construction)
   EXPECT_EQ(nullptr, visual.Geom()->SphereShape());
 
   EXPECT_EQ(nullptr, visual.Material());
+
+  // visibility flags
+  EXPECT_EQ(4294967295u, visual.VisibilityFlags());
+  visual.SetVisibilityFlags(1u);
+  EXPECT_EQ(1u, visual.VisibilityFlags());
 }
 
 /////////////////////////////////////////////////
@@ -82,6 +87,7 @@ TEST(DOMVisual, CopyConstructor)
   visual.SetCastShadows(false);
   visual.SetTransparency(0.345f);
   visual.SetRawPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
+  visual.SetVisibilityFlags(2u);
 
   visual.SetPoseRelativeTo("link");
 
@@ -99,6 +105,7 @@ TEST(DOMVisual, CopyConstructor)
   EXPECT_EQ("link", visual.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual.Material());
   EXPECT_EQ(mat.Ambient(), visual.Material()->Ambient());
+  EXPECT_EQ(2u, visual.VisibilityFlags());
 
   EXPECT_EQ("test_visual", visual2.Name());
   EXPECT_FALSE(visual2.CastShadows());
@@ -108,6 +115,7 @@ TEST(DOMVisual, CopyConstructor)
   EXPECT_EQ("link", visual2.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual2.Material());
   EXPECT_EQ(mat.Ambient(), visual2.Material()->Ambient());
+  EXPECT_EQ(2u, visual2.VisibilityFlags());
 }
 
 /////////////////////////////////////////////////
@@ -118,6 +126,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
   visual.SetCastShadows(false);
   visual.SetTransparency(0.345f);
   visual.SetRawPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
+  visual.SetVisibilityFlags(2u);
 
   visual.SetPoseRelativeTo("link");
 
@@ -136,6 +145,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
   EXPECT_EQ("link", visual.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual.Material());
   EXPECT_EQ(mat.Ambient(), visual.Material()->Ambient());
+  EXPECT_EQ(2u, visual.VisibilityFlags());
 
   EXPECT_EQ("test_visual", visual2.Name());
   EXPECT_FALSE(visual2.CastShadows());
@@ -145,6 +155,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
   EXPECT_EQ("link", visual2.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual2.Material());
   EXPECT_EQ(mat.Ambient(), visual2.Material()->Ambient());
+  EXPECT_EQ(2u, visual2.VisibilityFlags());
 }
 
 /////////////////////////////////////////////////
@@ -155,6 +166,7 @@ TEST(DOMVisual, MoveConstructor)
   visual.SetCastShadows(false);
   visual.SetTransparency(0.345f);
   visual.SetRawPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
+  visual.SetVisibilityFlags(2u);
 
   visual.SetPoseRelativeTo("link");
 
@@ -172,6 +184,7 @@ TEST(DOMVisual, MoveConstructor)
   EXPECT_EQ("link", visual2.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual2.Material());
   EXPECT_EQ(mat.Ambient(), visual2.Material()->Ambient());
+  EXPECT_EQ(2u, visual2.VisibilityFlags());
 }
 
 /////////////////////////////////////////////////
@@ -182,6 +195,7 @@ TEST(DOMVisual, MoveAssignmentOperator)
   visual.SetCastShadows(false);
   visual.SetTransparency(0.345f);
   visual.SetRawPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
+  visual.SetVisibilityFlags(2u);
 
   visual.SetPoseRelativeTo("link");
 
@@ -200,6 +214,7 @@ TEST(DOMVisual, MoveAssignmentOperator)
   EXPECT_EQ("link", visual2.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual2.Material());
   EXPECT_EQ(mat.Ambient(), visual2.Material()->Ambient());
+  EXPECT_EQ(2u, visual2.VisibilityFlags());
 }
 
 /////////////////////////////////////////////////
