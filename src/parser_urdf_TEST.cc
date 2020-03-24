@@ -712,7 +712,7 @@ TEST(URDFParser, CheckJointTransform)
     <model name="test_robot">
         <link name="link1">
             <inertial>
-                <pose>0 0 0 0 -0 0</pose>
+                <pose>0 0 0 0 0 0</pose>
                 <mass>1</mass>
                 <inertia>
                     <ixx>1</ixx>
@@ -727,7 +727,7 @@ TEST(URDFParser, CheckJointTransform)
         <link name="link2">
             <pose relative_to="joint1_2" />
             <inertial>
-                <pose>0 0 0 0 -0 0</pose>
+                <pose>0 0 0 0 0 0</pose>
                 <mass>1</mass>
                 <inertia>
                     <ixx>1</ixx>
@@ -740,7 +740,7 @@ TEST(URDFParser, CheckJointTransform)
             </inertial>
         </link>
         <joint type="revolute" name="joint1_2">
-            <pose relative_to="link1">0 0 0 0 -0 1.5708</pose>
+            <pose relative_to="link1">0 0 0 0 0 1.570796326794897</pose>
             <child>link2</child>
             <parent>link1</parent>
             <axis>
@@ -752,7 +752,7 @@ TEST(URDFParser, CheckJointTransform)
         <link name="link3">
             <pose relative_to="joint2_3" />
             <inertial>
-                <pose>0 0 0 0 -0 0</pose>
+                <pose>0 0 0 0 0 0</pose>
                 <mass>1</mass>
                 <inertia>
                     <ixx>1</ixx>
@@ -765,7 +765,7 @@ TEST(URDFParser, CheckJointTransform)
             </inertial>
         </link>
         <joint type="revolute" name="joint2_3">
-            <pose relative_to="link2">1 0 0 0 -0 0</pose>
+            <pose relative_to="link2">1 0 0 0 0 0</pose>
             <child>link3</child>
             <parent>link2</parent>
             <axis>
