@@ -31,7 +31,7 @@ namespace sdf
   //
 
   /// \brief Convert from one version of SDF to another
-  class SDFORMAT_VISIBLE Converter
+  class Converter
   {
     /// \brief Convert SDF to the specified version.
     /// \param[in] _doc SDF xml doc

@@ -30,9 +30,8 @@ TEST(URDFParser, AtlasURDF_5runs_performance)
     URDF_TEST_FILE = sdf::filesystem::append(PROJECT_SOURCE_PATH, "test",
                                              "performance",
                                              "parser_urdf_atlas.urdf");
-  sdf::URDF2SDF parser;
   for (int i = 0; i < 5; i++)
   {
-    TiXmlDocument sdf_result = parser.InitModelFile(URDF_TEST_FILE);
+    sdf::SDFPtr root = sdf::readFile(URDF_TEST_FILE);
   }
 }

@@ -28,11 +28,11 @@
     </element>
 
     <element name="name" type="string" default="" required="0">
-      <description>Override the name of the included model.</description>
+      <description>Override the name of the included entity.</description>
     </element>
 
     <element name="static" type="bool" default="false" required="0">
-      <description>Override the static value of the included model.</description>
+      <description>Override the static value of the included entity.</description>
     </element>
 
     <include filename="pose.sdf" required="0"/>

@@ -94,6 +94,14 @@ namespace sdf
     /// \param[in] _castShadows True to cast shadows, false to not cast shadows
     public: void SetCastShadows(bool _castShadows);
 
+    /// \brief Get the transparency value of the visual
+    /// \return Transparency value
+    public: float Transparency() const;
+
+    /// \brief Set the transparency value for the visual
+    /// \param[in] _transparency Transparency value between 0 and 1
+    public: void SetTransparency(float _transparency);
+
     /// \brief Get a pointer to the visual's geometry.
     /// \return The visual's geometry.
     public: const Geometry *Geom() const;
@@ -176,6 +184,14 @@ namespace sdf
     /// \brief Set the visual's material
     /// \param[in] _material The material of the visual object
     public: void SetMaterial(const sdf::Material &_material);
+
+    /// \brief Get the visibility flags of a visual
+    /// \return visibility flags
+    public: uint32_t VisibilityFlags() const;
+
+    /// \brief Set the visibility flags of a visual
+    /// \param[in] _flags visibility flags
+    public: void SetVisibilityFlags(uint32_t _flags);
 
     /// \brief Give the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by

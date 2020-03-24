@@ -96,6 +96,15 @@
         </geometry>
       </visual>
 
+      <visual name="sphere_vis_transparency">
+        <transparency>0.22</transparency>
+        <visibility_flags>1</visibility_flags>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
     </link>
   </model>
 </sdf>
