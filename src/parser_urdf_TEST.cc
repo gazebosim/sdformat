@@ -742,7 +742,9 @@ TEST(URDFParser, OutputPrecision)
         </link>
     </robot>)";
 
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser;
+  SDF_SUPPRESS_DEPRECATED_END
   TiXmlDocument sdfResult = parser.InitModelString(str);
 
   auto root = sdfResult.RootElement();
