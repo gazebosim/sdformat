@@ -553,9 +553,9 @@ void FixedJointReductionEquivalence(const std::string &_file)
     linkPoses[linkName] = ignition::math::Pose3d(
       1.6, -2.72857, -0.342857, -2.14159, 0.141593, 0.858407);
     mapIxxIyyIzz[linkName] =
-      ignition::math::Vector3d(576.477, 527.681, 420.127);
+      ignition::math::Vector3d(576.477313, 527.680922, 420.127477);
     mapIxyIxzIyz[linkName] =
-      ignition::math::Vector3d(-65.6808, 134.562, 264.781);
+      ignition::math::Vector3d(-65.680839, 134.562430, 264.780538);
   }
 
   // Count collisions and visuals

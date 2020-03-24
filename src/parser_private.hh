@@ -38,23 +38,24 @@ namespace sdf
   ///            model XML tag
   /// \param[out] _modelFileName file name of the best model file
   /// \return string with the best SDF version supported
-  std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
-                                           std::string &_modelFileName);
+  static std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
+                                                  std::string &_modelFileName);
 
   /// \brief Initialize the SDF interface using a TinyXML document
-  bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf);
+  static bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf);
 
   /// \brief Initialize and SDF Element using a TinyXML document
-  bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf);
+  static bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf);
 
   /// \brief For internal use only. Do not use this function.
-  bool initXml(TiXmlElement *_xml, ElementPtr _sdf);
+  static bool initXml(TiXmlElement *_xml, ElementPtr _sdf);
 
   /// \brief Populate the SDF values from a TinyXML document
-  bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf, const std::string &_source,
-      bool _convert, Errors &_errors);
+  static bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
+                      const std::string &_source, bool _convert,
+                      Errors &_errors);
 
-  bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
+  static bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
       const std::string &_source, bool _convert, Errors &_errors);
 
   /// \brief For internal use only. Do not use this function.
@@ -62,7 +63,7 @@ namespace sdf
   /// \param[in,out] _sdf SDF pointer to parse data into.
   /// \param[out] _errors Captures errors found during parsing.
   /// \return True on success, false on error.
-  bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors);
+  static bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors);
 
   /// \brief Copy child XML elements into the _sdf element.
   /// \param[in] _sdf Parent Element.
@@ -70,7 +71,7 @@ namespace sdf
   /// copied.
   /// \param[in] _onlyUnknown True to copy only elements that are NOT part of
   /// the SDF spec. Set this to false to copy everything.
-  void copyChildren(ElementPtr _sdf, TiXmlElement *_xml,
+  static void copyChildren(ElementPtr _sdf, TiXmlElement *_xml,
                     const bool _onlyUnknown);
   }
 }

@@ -23,7 +23,6 @@
 #include <ignition/math/SemanticVersion.hh>
 
 #include "sdf/Console.hh"
-#include "sdf/Converter.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
@@ -34,11 +33,12 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
-#include "sdf/parser_private.hh"
 #include "sdf/parser_urdf.hh"
 #include "sdf/sdf_config.h"
 
+#include "Converter.hh"
 #include "FrameSemantics.hh"
+#include "parser_private.hh"
 
 namespace sdf
 {
@@ -405,13 +405,15 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
     return false;
   }
 
+  // Suppress deprecation for sdf::URDF2SDF
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   if (readDoc(&xmlDoc, _sdf, filename, _convert, _errors))
   {
     return true;
   }
-  else if (sdf::URDF2SDF::IsURDF(filename))
+  else if (URDF2SDF::IsURDF(filename))
   {
-    sdf::URDF2SDF u2g;
+    URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelFile(filename);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
@@ -424,6 +426,7 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
       return false;
     }
   }
+  SDF_SUPPRESS_DEPRECATED_END
 
   return false;
 }
@@ -471,7 +474,9 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   }
   else
   {
-    sdf::URDF2SDF u2g;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
+    URDF2SDF u2g;
+    SDF_SUPPRESS_DEPRECATED_END
     TiXmlDocument doc = u2g.InitModelString(_xmlString);
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {
@@ -956,18 +961,41 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           return false;
         }
 
+        sdf::ElementPtr topLevelElem;
+        bool isModel{false};
+        bool isActor{false};
+        if (includeSDF->Root()->HasElement("model"))
+        {
+          topLevelElem = includeSDF->Root()->GetElement("model");
+          isModel = true;
+        }
+        else if (includeSDF->Root()->HasElement("actor"))
+        {
+          topLevelElem = includeSDF->Root()->GetElement("actor");
+          isActor = true;
+        }
+        else if (includeSDF->Root()->HasElement("light"))
+        {
+          topLevelElem = includeSDF->Root()->GetElement("light");
+        }
+        else
+        {
+          _errors.push_back({ErrorCode::ELEMENT_MISSING,
+              "Failed to find top level <model> / <actor> / <light> for "
+              "<include>\n"});
+          continue;
+        }
+
         if (elemXml->FirstChildElement("name"))
         {
-          includeSDF->Root()->GetElement("model")->GetAttribute(
-              "name")->SetFromString(
+          topLevelElem->GetAttribute("name")->SetFromString(
                 elemXml->FirstChildElement("name")->GetText());
         }
 
         TiXmlElement *poseElemXml = elemXml->FirstChildElement("pose");
         if (poseElemXml)
         {
-          sdf::ElementPtr poseElem =
-              includeSDF->Root()->GetElement("model")->GetElement("pose");
+          sdf::ElementPtr poseElem = topLevelElem->GetElement("pose");
 
           if (poseElemXml->GetText())
           {
@@ -989,34 +1017,35 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           }
         }
 
-        if (elemXml->FirstChildElement("static"))
+        if (isModel && elemXml->FirstChildElement("static"))
         {
-          includeSDF->Root()->GetElement("model")->GetElement(
-              "static")->GetValue()->SetFromString(
+          topLevelElem->GetElement("static")->GetValue()->SetFromString(
                 elemXml->FirstChildElement("static")->GetText());
         }
 
-        for (TiXmlElement *childElemXml = elemXml->FirstChildElement();
-             childElemXml; childElemXml = childElemXml->NextSiblingElement())
+        if (isModel || isActor)
         {
-          if (std::string("plugin") == childElemXml->Value())
+          for (TiXmlElement *childElemXml = elemXml->FirstChildElement();
+               childElemXml; childElemXml = childElemXml->NextSiblingElement())
           {
-            sdf::ElementPtr pluginElem;
-            pluginElem = includeSDF->Root()->GetElement(
-                "model")->AddElement("plugin");
-
-            if (!readXml(childElemXml, pluginElem, _errors))
+            if (std::string("plugin") == childElemXml->Value())
             {
-              _errors.push_back({ErrorCode::ELEMENT_INVALID,
-                                 "Error reading plugin element"});
-              return false;
+              sdf::ElementPtr pluginElem;
+              pluginElem = topLevelElem->AddElement("plugin");
+
+              if (!readXml(childElemXml, pluginElem, _errors))
+              {
+                _errors.push_back({ErrorCode::ELEMENT_INVALID,
+                                   "Error reading plugin element"});
+                return false;
+              }
             }
           }
         }
 
         if (_sdf->GetName() == "model")
         {
-          addNestedModel(_sdf, includeSDF->Root());
+          addNestedModel(_sdf, includeSDF->Root(), _errors);
         }
         else
         {
@@ -1182,6 +1211,17 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml, const bool _onlyUnknown)
 /////////////////////////////////////////////////
 void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
 {
+  Errors errors;
+  addNestedModel(_sdf, _includeSDF, errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e << '\n';
+  }
+}
+
+/////////////////////////////////////////////////
+void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
+{
   ElementPtr modelPtr = _includeSDF->GetElement("model");
   ElementPtr elem = modelPtr->GetFirstElement();
   std::map<std::string, std::string> replace;
@@ -1215,13 +1255,29 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
       std::string elemName = elem->Get<std::string>("name");
       std::string newName =  modelName + "::" + elemName;
       replace[elemName] = newName;
-      //   rotate the joint axis because they are model-global
+      //  rotate the joint axis if it is expressed in __model__ frame
       if (elem->HasElement("axis"))
       {
         ElementPtr axisElem = elem->GetElement("axis");
-        ignition::math::Vector3d newAxis =  modelPose.Rot().RotateVector(
-          axisElem->Get<ignition::math::Vector3d>("xyz"));
-        axisElem->GetElement("xyz")->Set(newAxis);
+        ElementPtr xyzElem = axisElem->GetElement("xyz");
+        if (xyzElem->HasAttribute("expressed_in"))
+        {
+          const auto expressedIn = xyzElem->Get<std::string>("expressed_in");
+          if (expressedIn == "__model__")
+          {
+            ignition::math::Vector3d newAxis = modelPose.Rot().RotateVector(
+              xyzElem->Get<ignition::math::Vector3d>());
+            xyzElem->Set(newAxis);
+          }
+          else if (!expressedIn.empty() &&
+                   expressedIn != elem->Get<std::string>("child"))
+          {
+            _errors.push_back({ErrorCode::ELEMENT_INVALID,
+              "addNestedModel called for model with non-trivial value "
+              "of //axis/xyz/@expressed_in='" + expressedIn +
+              ", joint axis rotations may be incorrect."});
+          }
+        }
       }
     }
     elem = elem->GetNextElement();

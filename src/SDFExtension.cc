@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/SDFExtension.hh"
+#include "SDFExtension.hh"
 
 using namespace sdf;
 
