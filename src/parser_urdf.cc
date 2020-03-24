@@ -56,6 +56,7 @@ urdf::Pose g_initialRobotPose;
 bool g_initialRobotPoseValid = false;
 std::set<std::string> g_fixedJointsTransformedInRevoluteJoints;
 std::set<std::string> g_fixedJointsTransformedInFixedJoints;
+const int g_outputDecimalPrecision = 16;
 
 
 /// \brief parser xml string into urdf::Vector3
@@ -1086,13 +1087,17 @@ URDF2SDF::~URDF2SDF()
 std::string Values2str(unsigned int _count, const double *_values)
 {
   std::stringstream ss;
+  ss.precision(g_outputDecimalPrecision);
   for (unsigned int i = 0 ; i < _count ; ++i)
   {
     if (i > 0)
     {
       ss << " ";
     }
-    ss << _values[i];
+    if (std::fpclassify(_values[i]) == FP_ZERO)
+      ss << 0;
+    else
+      ss << _values[i];
   }
   return ss.str();
 }

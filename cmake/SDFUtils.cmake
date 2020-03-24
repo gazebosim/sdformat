@@ -79,7 +79,9 @@ macro (sdf_install_library _name)
   install (
     TARGETS ${_name}
     EXPORT ${_name}
-    DESTINATION ${LIB_INSTALL_DIR}
+    ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+    LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+    RUNTIME DESTINATION ${BIN_INSTALL_DIR}
     COMPONENT shlib)
 
 # Export and install target
