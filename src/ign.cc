@@ -21,9 +21,10 @@
 #include "sdf/sdf_config.h"
 #include "sdf/Filesystem.hh"
 #include "sdf/Root.hh"
-#include "sdf/ign.hh"
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
+
+#include "ign.hh"
 
 //////////////////////////////////////////////////
 // cppcheck-suppress unusedFunction
@@ -109,10 +110,14 @@ extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
 /// \brief Print the full description of the SDF spec.
 /// \return 0 on success, -1 if SDF could not be initialized.
 // cppcheck-suppress unusedFunction
-extern "C" SDFORMAT_VISIBLE int cmdDescribe()
+extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 {
   sdf::SDFPtr sdf(new sdf::SDF());
 
+  if (nullptr != _version)
+  {
+    sdf->Version(_version);
+  }
   if (!sdf::init(sdf))
   {
     std::cerr << "Error: SDF schema initialization failed.\n";

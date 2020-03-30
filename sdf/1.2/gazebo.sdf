@@ -1,8 +1,8 @@
 <element name="gazebo" required="1">
-  <description>Gazebo SDF base element.</description>
+  <description>Gazebo SDFormat base element.</description>
 
   <attribute name="version" type="string" default="1.2" required="1">
-    <description>Version number of the SDF format.</description>
+    <description>Version number of the SDFormat specification.</description>
   </attribute>
 
   <include filename="world.sdf" required="*"/>

@@ -100,7 +100,6 @@ set (gtest_sources
   Camera_TEST.cc
   Collision_TEST.cc
   Console_TEST.cc
-  Converter_TEST.cc
   Cylinder_TEST.cc
   Element_TEST.cc
   Error_TEST.cc
@@ -155,6 +154,11 @@ endif()
 if (NOT WIN32)
   set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS FrameSemantics.cc)
   sdf_build_tests(FrameSemantics_TEST.cc)
+endif()
+
+if (NOT WIN32)
+  set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc)
+  sdf_build_tests(Converter_TEST.cc)
 endif()
 
 sdf_add_library(${sdf_target} ${sources})

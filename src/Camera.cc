@@ -161,6 +161,9 @@ class sdf::CameraPrivate
 
   /// \brief lens instrinsics s.
   public: double lensIntrinsicsS{1.0};
+
+  /// \brief Visibility mask of a camera. Defaults to 0xFFFFFFFF
+  public: uint32_t visibilityMask{4294967295u};
 };
 
 /////////////////////////////////////////////////
@@ -376,6 +379,13 @@ Errors Camera::Load(ElementPtr _sdf)
           this->dataPtr->lensIntrinsicsS).first;
     }
   }
+
+  if (_sdf->HasElement("visibility_mask"))
+  {
+    this->dataPtr->visibilityMask = _sdf->Get<uint32_t>("visibility_mask",
+        this->dataPtr->visibilityMask).first;
+  }
+
   return errors;
 }
 
@@ -579,7 +589,8 @@ bool Camera::operator==(const Camera &_cam) const
     ignition::math::equal(this->FarClip(), _cam.FarClip()) &&
     this->SaveFrames() == _cam.SaveFrames() &&
     this->SaveFramesPath() == _cam.SaveFramesPath() &&
-    this->ImageNoise() == _cam.ImageNoise();
+    this->ImageNoise() == _cam.ImageNoise() &&
+    this->VisibilityMask() == _cam.VisibilityMask();
 }
 
 //////////////////////////////////////////////////
@@ -927,4 +938,16 @@ PixelFormatType Camera::ConvertPixelFormat(const std::string &_format)
     return PixelFormatType::BAYER_GRBG8;
 
   return PixelFormatType::UNKNOWN_PIXEL_FORMAT;
+}
+
+/////////////////////////////////////////////////
+uint32_t Camera::VisibilityMask() const
+{
+  return this->dataPtr->visibilityMask;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetVisibilityMask(uint32_t _mask)
+{
+  this->dataPtr->visibilityMask = _mask;
 }

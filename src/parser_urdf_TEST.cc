@@ -35,7 +35,9 @@ std::string get_minimal_urdf_txt()
 /////////////////////////////////////////////////
 void convert_urdf_str_to_sdf(const std::string& urdf, sdf::SDF& _sdf)
 {
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
+  SDF_SUPPRESS_DEPRECATED_END
   TiXmlDocument sdf_result = parser_.InitModelString(urdf);
   std::string sdf_result_string;
   sdf_result_string << sdf_result;
@@ -47,22 +49,28 @@ void convert_urdf_str_to_sdf(const std::string& urdf, sdf::SDF& _sdf)
 /* By design, errors are only reported in std output */
 TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
 {
+  // Suppress deprecation for sdf::URDF2SDF
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   ASSERT_NO_THROW(
     TiXmlDocument doc = TiXmlDocument();
     sdf::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   );    // NOLINT(whitespace/parens)
+  SDF_SUPPRESS_DEPRECATED_END
 }
 
 /////////////////////////////////////////////////
 TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
 {
+  // Suppress deprecation for sdf::URDF2SDF
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   ASSERT_NO_THROW(
     TiXmlDocument doc;
     doc.Parse(get_minimal_urdf_txt().c_str());
     sdf::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   );    // NOLINT(whitespace/parens)
+  SDF_SUPPRESS_DEPRECATED_END
 }
 
 /////////////////////////////////////////////////
@@ -71,7 +79,9 @@ TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
   // URDF -> SDF
   TiXmlDocument doc;
   doc.Parse(get_minimal_urdf_txt().c_str());
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
+  SDF_SUPPRESS_DEPRECATED_END
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   std::string sdf_result_str;
   sdf_result_str << sdf_result;
@@ -100,7 +110,9 @@ TEST(URDFParser, ParseRobotOriginXYZBlank)
          << "</robot>";
   TiXmlDocument doc;
   doc.Parse(stream.str().c_str());
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
+  SDF_SUPPRESS_DEPRECATED_END
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdf);
@@ -119,7 +131,9 @@ TEST(URDFParser, ParseRobotOriginRPYBlank)
          << "  <link name=\"link\" />"
          << "</robot>";
   TiXmlDocument doc;
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
+  SDF_SUPPRESS_DEPRECATED_END
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
@@ -153,7 +167,9 @@ TEST(URDFParser, ParseRobotMaterialBlank)
          << "</robot>";
   TiXmlDocument doc;
   doc.Parse(stream.str().c_str());
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser;
+  SDF_SUPPRESS_DEPRECATED_END
   auto sdfXml = parser.InitModelDoc(&doc);
   auto sdfElem = sdfXml.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdfElem);
@@ -191,7 +207,9 @@ TEST(URDFParser, ParseRobotMaterialName)
          << "</robot>";
   TiXmlDocument doc;
   doc.Parse(stream.str().c_str());
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser;
+  SDF_SUPPRESS_DEPRECATED_END
   auto sdfXml = parser.InitModelDoc(&doc);
   auto sdfElem = sdfXml.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdfElem);
@@ -224,7 +242,9 @@ TEST(URDFParser, ParseRobotOriginInvalidXYZ)
          << "  <link name=\"link\" />"
          << "</robot>";
   TiXmlDocument doc;
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
+  SDF_SUPPRESS_DEPRECATED_END
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
@@ -285,7 +305,9 @@ TEST(URDFParser, ParseGazeboLinkFactors)
            << "</robot>";
 
     TiXmlDocument doc;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
     sdf::URDF2SDF parser_;
+    SDF_SUPPRESS_DEPRECATED_END
     doc.Parse(stream.str().c_str());
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
@@ -321,7 +343,9 @@ TEST(URDFParser, ParseGazeboInvalidDampingFactor)
          << "  </gazebo>"
          << "</robot>";
   TiXmlDocument doc;
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
+  SDF_SUPPRESS_DEPRECATED_END
   doc.Parse(stream.str().c_str());
   ASSERT_THROW(TiXmlDocument sdf_result = parser_.InitModelDoc(&doc),
                std::invalid_argument);
@@ -390,7 +414,9 @@ TEST(URDFParser, ParseGazeboJointElements)
            << "</robot>";
 
     TiXmlDocument doc;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
     sdf::URDF2SDF parser_;
+    SDF_SUPPRESS_DEPRECATED_END
     doc.Parse(stream.str().c_str());
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
@@ -701,6 +727,56 @@ TEST(URDFParser, CheckJointTransform)
   EXPECT_EQ("link3", link->Get<std::string>("name"));
   EXPECT_EQ(ignition::math::Pose3d(0, 1, 0, 0, 0, IGN_PI*0.5),
       link->Get<ignition::math::Pose3d>("pose"));
+}
+/////////////////////////////////////////////////
+TEST(URDFParser, OutputPrecision)
+{
+  std::string str = R"(
+    <robot name='test_robot'>
+      <link name='link1'>
+          <inertial>
+            <mass value="0.1" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+    </robot>)";
+
+  SDF_SUPPRESS_DEPRECATED_BEGIN
+  sdf::URDF2SDF parser;
+  SDF_SUPPRESS_DEPRECATED_END
+  TiXmlDocument sdfResult = parser.InitModelString(str);
+
+  auto root = sdfResult.RootElement();
+  auto model = root->FirstChild("model");
+  ASSERT_NE(nullptr, model);
+  auto link = model->FirstChild("link");
+  ASSERT_NE(nullptr, link);
+  auto inertial = link->FirstChild("inertial");
+  ASSERT_NE(nullptr, inertial);
+  auto pose = inertial->FirstChild("pose");
+  ASSERT_NE(nullptr, pose);
+  ASSERT_NE(nullptr, pose->FirstChild());
+  std::string poseTxt = pose->FirstChild()->ValueStr();
+  EXPECT_FALSE(poseTxt.empty());
+
+  std::string poseValues[6];
+  std::istringstream ss(poseTxt);
+
+  for (int i = 0; i < 6; ++i)
+  {
+    ss >> poseValues[i];
+  }
+
+  // Check output precision
+  EXPECT_EQ("0.123456789123456", poseValues[0]);
+  EXPECT_EQ("1.570796326794895", poseValues[3]);
+
+  // Check that 0 doesn't get printed as -0
+  EXPECT_EQ("0", poseValues[1]);
+  EXPECT_EQ("0", poseValues[2]);
+  EXPECT_EQ("0", poseValues[4]);
+  EXPECT_EQ("0", poseValues[5]);
 }
 
 /////////////////////////////////////////////////

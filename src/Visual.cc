@@ -43,6 +43,9 @@ class sdf::VisualPrivate
   /// \brief Whether the visual casts shadows
   public: bool castShadows = true;
 
+  /// \brief Transparency value between 0 and 1
+  public: float transparency  = 0.0;
+
   /// \brief Pose of the visual object
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
@@ -63,16 +66,21 @@ class sdf::VisualPrivate
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
   public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+
+  /// \brief Visibility flags of a visual. Defaults to 0xFFFFFFFF
+  public: uint32_t visibilityFlags = 4294967295u;
 };
 
 /////////////////////////////////////////////////
 VisualPrivate::VisualPrivate(const VisualPrivate &_visualPrivate)
     : name(_visualPrivate.name),
       castShadows(_visualPrivate.castShadows),
+      transparency(_visualPrivate.transparency),
       pose(_visualPrivate.pose),
       poseRelativeTo(_visualPrivate.poseRelativeTo),
       geom(_visualPrivate.geom),
-      sdf(_visualPrivate.sdf)
+      sdf(_visualPrivate.sdf),
+      visibilityFlags(_visualPrivate.visibilityFlags)
 {
   if (_visualPrivate.material)
   {
@@ -157,6 +165,12 @@ Errors Visual::Load(ElementPtr _sdf)
         this->dataPtr->castShadows).first;
   }
 
+  // load transparency
+  if (_sdf->HasElement("transparency"))
+  {
+    this->dataPtr->transparency = _sdf->Get<float>("transparency");
+  }
+
   if (_sdf->HasElement("material"))
   {
     this->dataPtr->material.reset(new sdf::Material());
@@ -166,6 +180,14 @@ Errors Visual::Load(ElementPtr _sdf)
 
   // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
+
+
+  // load visibility flags
+  if (_sdf->HasElement("visibility_flags"))
+  {
+    this->dataPtr->visibilityFlags = _sdf->Get<uint32_t>("visibility_flags",
+        this->dataPtr->visibilityFlags).first;
+  }
 
   // Load the geometry
   Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
@@ -196,6 +218,18 @@ bool Visual::CastShadows() const
 void Visual::SetCastShadows(bool _castShadows)
 {
   this->dataPtr->castShadows = _castShadows;
+}
+
+/////////////////////////////////////////////////
+float Visual::Transparency() const
+{
+  return this->dataPtr->transparency;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetTransparency(float _transparency)
+{
+  this->dataPtr->transparency = _transparency;
 }
 
 /////////////////////////////////////////////////
@@ -297,4 +331,16 @@ sdf::Material *Visual::Material() const
 void Visual::SetMaterial(const sdf::Material &_material)
 {
   this->dataPtr->material.reset(new sdf::Material(_material));
+}
+
+/////////////////////////////////////////////////
+uint32_t Visual::VisibilityFlags() const
+{
+  return this->dataPtr->visibilityFlags;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetVisibilityFlags(uint32_t _flags)
+{
+  this->dataPtr->visibilityFlags = _flags;
 }
