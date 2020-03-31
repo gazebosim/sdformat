@@ -514,59 +514,30 @@ TEST(NestedModel, NestedModelWithFrames)
   EXPECT_EQ(joint1Axis2ExpVector, joint1Axis2Vector);
 }
 
-//////////////////////////////////////////////////
-// Test parsing models with child models containg frames nested via <include>
-// Compare parsed SDF with expected string
-TEST(NestedModel, NestedModelWithFramesDirectComparison)
+// Function to remove any element in //joint/axis that is not <xyz>
+static void removeNoneXyz(const sdf::ElementPtr &_elem)
 {
-  const std::string name = "test_model_with_frames";
-  const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
-      + "/test/integration/model/" + name;
-
-  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
-
-  std::ostringstream stream;
-  std::string version = "1.7";
-  stream
-    << "<sdf version='" << version << "'>"
-    << "<world name='default'>"
-    << "  <model name='ParentModel'>"
-    << "    <include>"
-    << "      <uri>" + MODEL_PATH + "</uri>"
-    << "      <name>M1</name>"
-    << "      <pose>" << model1Pose << "</pose>"
-    << "    </include>"
-    << "  </model>"
-    << "</world>"
-    << "</sdf>";
-
-  sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
-  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
-
-  // Function to remove any element in //joint/axis that is not <xyz>
-  auto removeNoneXyz = [](const sdf::ElementPtr &_elem)
-  {
-    std::vector<sdf::ElementPtr> toRemove;
-    for (auto el = _elem->GetFirstElement(); el; el = el->GetNextElement())
-    {
-      if (el->GetName() != "xyz")
-      {
-        toRemove.push_back(el);
-      }
-    }
-
-    for (auto el : toRemove)
-    {
-      _elem->RemoveChild(el);
-    }
-  };
-
-  // Remove elements in world that are not model for comparison with
-  // expectation. Also remove any element in //joint/axis that is not <xyz>
-  auto worldElem = sdfParsed->Root()->GetElement("world");
   std::vector<sdf::ElementPtr> toRemove;
-  for (auto elem = worldElem->GetFirstElement(); elem;
+  for (auto el = _elem->GetFirstElement(); el; el = el->GetNextElement())
+  {
+    if (el->GetName() != "xyz")
+    {
+      toRemove.push_back(el);
+    }
+  }
+
+  for (auto el : toRemove)
+  {
+    _elem->RemoveChild(el);
+  }
+}
+
+// Remove elements in world that are not model for comparison with
+// expectation. Also remove any element in //joint/axis that is not <xyz>
+void prepareForDirectComparison(sdf::ElementPtr _worldElem)
+{
+  std::vector<sdf::ElementPtr> toRemove;
+  for (auto elem = _worldElem->GetFirstElement(); elem;
        elem = elem->GetNextElement())
   {
     if (elem->GetName() != "model")
@@ -595,8 +566,42 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
 
   for (auto elem : toRemove)
   {
-    worldElem->RemoveChild(elem);
+    _worldElem->RemoveChild(elem);
   }
+}
+
+//////////////////////////////////////////////////
+// Test parsing models with child models containg frames nested via <include>
+// Compare parsed SDF with expected string
+TEST(NestedModel, NestedModelWithFramesDirectComparison)
+{
+  const std::string name = "test_model_with_frames";
+  const std::string modelPath = std::string(PROJECT_SOURCE_PATH)
+      + "/test/integration/model/" + name;
+
+  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+
+  std::ostringstream stream;
+  std::string version = "1.7";
+  stream
+    << "<sdf version='" << version << "'>"
+    << "<world name='default'>"
+    << "  <model name='ParentModel'>"
+    << "    <include>"
+    << "      <uri>" + modelPath + "</uri>"
+    << "      <name>M1</name>"
+    << "      <pose>" << model1Pose << "</pose>"
+    << "    </include>"
+    << "  </model>"
+    << "</world>"
+    << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
+
+  auto worldElem = sdfParsed->Root()->GetElement("world");
+  prepareForDirectComparison(worldElem);
 
   // Compare with expected output
   const std::string expectedSdfPath =
@@ -606,8 +611,10 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
   fs.open(expectedSdfPath);
   EXPECT_TRUE(fs.is_open());
   std::stringstream expected;
-  // ignore the first line
-  fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  fs >> expected.rdbuf();
+  EXPECT_EQ(expected.str(), sdfParsed->ToString());
+}
+
   fs >> expected.rdbuf();
   EXPECT_EQ(expected.str(), sdfParsed->ToString());
 }

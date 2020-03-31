@@ -1,4 +1,3 @@
-<!-- THIS FILE IS USED AS AN EXPECTED OUTPUT IN test/integration/nested_model.cc. THIS LINE IS IGNORED -->
 <?xml version='1.0'?>
 <sdf version='1.7'>
   <world name='default'>
