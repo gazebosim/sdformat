@@ -416,7 +416,7 @@ TEST(NestedModel, NestedInclude)
 TEST(NestedModel, NestedModelWithFrames)
 {
   const std::string name = "test_model_with_frames";
-  const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
+  const std::string modelPath = std::string(PROJECT_SOURCE_PATH)
       + "/test/integration/model/" + name;
 
   const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
@@ -428,7 +428,7 @@ TEST(NestedModel, NestedModelWithFrames)
     << "<world name='default'>"
     << "  <model name='ParentModel'>"
     << "    <include>"
-    << "      <uri>" + MODEL_PATH + "</uri>"
+    << "      <uri>" + modelPath + "</uri>"
     << "      <name>M1</name>"
     << "      <pose>" << model1Pose << "</pose>"
     << "    </include>"
@@ -615,6 +615,56 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
   EXPECT_EQ(expected.str(), sdfParsed->ToString());
 }
 
+//////////////////////////////////////////////////
+// Test parsing models that have two levels of nesting with child models
+// containg frames nested via <include>.
+// Compare parsed SDF with expected string
+TEST(NestedModel, TwoLevelNestedModelWithFramesDirectComparison)
+{
+  const std::string modelRootPath = std::string(PROJECT_SOURCE_PATH)
+      + "/test/integration/model/";
+  const std::string name = "test_nested_model_with_frames";
+  const std::string modelPath = modelRootPath + name;
+
+  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+
+  std::ostringstream stream;
+  std::string version = "1.7";
+  stream
+    << "<sdf version='" << version << "'>"
+    << "<world name='default'>"
+    << "  <model name='ParentModel'>"
+    << "    <include>"
+    << "      <uri>" + modelPath + "</uri>"
+    << "      <name>M1</name>"
+    << "      <pose>" << model1Pose << "</pose>"
+    << "    </include>"
+    << "  </model>"
+    << "</world>"
+    << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+
+  sdf::setFindCallback(
+      [&](const std::string &_file)
+      {
+        return modelRootPath + _file;
+      });
+
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
+
+  auto worldElem = sdfParsed->Root()->GetElement("world");
+  prepareForDirectComparison(worldElem);
+
+  // Compare with expected output
+  const std::string expectedSdfPath =
+      std::string(PROJECT_SOURCE_PATH) +
+      "/test/integration/two_level_nested_model_with_frames_expected.sdf";
+  std::fstream fs;
+  fs.open(expectedSdfPath);
+  EXPECT_TRUE(fs.is_open());
+  std::stringstream expected;
   fs >> expected.rdbuf();
   EXPECT_EQ(expected.str(), sdfParsed->ToString());
 }
