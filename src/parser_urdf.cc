@@ -2978,7 +2978,12 @@ void CreateJoint(TiXmlElement *_root,
     AddTransform(
         joint, CopyPose(_link->parent_joint->parent_to_joint_origin_transform));
     auto pose = joint->FirstChildElement("pose");
-    pose->SetAttribute("relative_to", _link->getParent()->name);
+    std::string parentLinkName = _link->getParent()->name;
+    if ("world" == parentLinkName)
+    {
+      parentLinkName = "__model__";
+    }
+    pose->SetAttribute("relative_to", parentLinkName);
 
     AddKeyValue(joint, "child", _link->name);
     AddKeyValue(joint, "parent", _link->getParent()->name);
