@@ -672,6 +672,12 @@ TEST(URDFParser, CheckJointTransform)
   std::stringstream str;
   str.precision(16);
   str << "<robot name='test_robot'>"
+    << "  <link name='world'/>"
+    << "  <joint name='jointw_1' type='fixed'>"
+    << "    <parent link='world' />"
+    << "    <child  link='link1' />"
+    << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0' />"
+    << "  </joint>"
     << "  <link name='link1'>"
     << "    <inertial>"
     << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
@@ -711,6 +717,7 @@ TEST(URDFParser, CheckJointTransform)
   std::string expectedSdf = R"(<sdf version="1.7">
     <model name="test_robot">
         <link name="link1">
+            <pose relative_to="jointw_1" />
             <inertial>
                 <pose>0 0 0 0 0 0</pose>
                 <mass>1</mass>
@@ -724,6 +731,11 @@ TEST(URDFParser, CheckJointTransform)
                 </inertia>
             </inertial>
         </link>
+        <joint type="fixed" name="jointw_1">
+            <pose relative_to="__model__">0 0 0 0 0 0</pose>
+            <child>link1</child>
+            <parent>world</parent>
+        </joint>
         <link name="link2">
             <pose relative_to="joint1_2" />
             <inertial>
