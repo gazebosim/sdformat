@@ -117,15 +117,15 @@ TEST(Parser, addNestedModel)
       const std::string &_expressedIn = "",
       const std::string &_canonicalLink = "") -> std::string
   {
-    std::string canonicalLinkString = "";
+    std::string modelAttributeString = "";
     if (!_canonicalLink.empty())
     {
-      canonicalLinkString = " canonical_link='" + _canonicalLink + "'";
+      modelAttributeString = " canonical_link='" + _canonicalLink + "'";
     }
     std::ostringstream stream;
     stream
       << "<sdf version='" << _version << "'>"
-      << "<model name='included'" << canonicalLinkString << ">"
+      << "<model name='included'" << modelAttributeString << ">"
       << "  <pose>0 0 10 0 0 1.57</pose>"
       << "  <link name='parent'/>"
       << "  <link name='child'/>"
