@@ -106,7 +106,10 @@ Errors Contact::Load(ElementPtr _sdf)
   }
 
   if (_sdf->HasElement("collide_bitmask"))
-    this->dataPtr->collideBitmask = _sdf->Get<unsigned int>("collide_bitmask");
+  {
+    this->dataPtr->collideBitmask =
+        static_cast<uint16_t>(_sdf->Get<unsigned int>("collide_bitmask"));
+  }
 
   return errors;
 }
