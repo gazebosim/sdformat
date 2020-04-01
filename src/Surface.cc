@@ -41,7 +41,6 @@ class sdf::SurfacePrivate
   public: sdf::ElementPtr sdf{nullptr};
 };
 
-// TODO add destructors
 /////////////////////////////////////////////////
 Contact::Contact()
   : dataPtr(new ContactPrivate)
