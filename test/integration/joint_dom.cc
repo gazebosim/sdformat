@@ -488,3 +488,87 @@ TEST(DOMJoint, LoadLinkJointSameName16Valid)
       SemanticPose().Resolve(pose, "attachment").empty());
   EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0), pose);
 }
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, LoadURDFJointPoseRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+        "provide_feedback.urdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_TRUE(errors.empty());
+
+  using Pose = ignition::math::Pose3d;
+  using Vector3 = ignition::math::Vector3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("provide_feedback_test", model->Name());
+  EXPECT_EQ(3u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_NE(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(nullptr, model->LinkByIndex(3));
+
+  ASSERT_TRUE(model->LinkNameExists("link0"));
+  ASSERT_TRUE(model->LinkNameExists("link1"));
+  ASSERT_TRUE(model->LinkNameExists("link2"));
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(3u, model->JointCount());
+  EXPECT_NE(nullptr, model->JointByIndex(0));
+  EXPECT_NE(nullptr, model->JointByIndex(1));
+  EXPECT_NE(nullptr, model->JointByIndex(2));
+  EXPECT_EQ(nullptr, model->JointByIndex(3));
+  ASSERT_TRUE(model->JointNameExists("jointw0"));
+  ASSERT_TRUE(model->JointNameExists("joint01"));
+  ASSERT_TRUE(model->JointNameExists("joint12"));
+
+  // Confirm each link's pose relative to parent joint is identity
+  Pose pose;
+  EXPECT_TRUE(
+    model->LinkByName("link0")->
+      SemanticPose().Resolve(pose, "jointw0").empty());
+  EXPECT_EQ(Pose::Zero, pose);
+  EXPECT_TRUE(
+    model->LinkByName("link1")->
+      SemanticPose().Resolve(pose, "joint01").empty());
+  EXPECT_EQ(Pose::Zero, pose);
+  EXPECT_TRUE(
+    model->LinkByName("link2")->
+      SemanticPose().Resolve(pose, "joint12").empty());
+  EXPECT_EQ(Pose::Zero, pose);
+
+  // Confirm joint pose relative to parent link matches origin tag
+  EXPECT_TRUE(
+    model->JointByName("jointw0")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(0, 0, 1.0, 0, 0, 1.57079632679), pose);
+  EXPECT_TRUE(
+    model->JointByName("joint01")->
+      SemanticPose().Resolve(pose, "link0").empty());
+  EXPECT_EQ(Pose(0, 0, -1.0, 0, 0, 1.57079632679), pose);
+  EXPECT_TRUE(
+    model->JointByName("joint12")->
+      SemanticPose().Resolve(pose, "link1").empty());
+  EXPECT_EQ(Pose(0, -3.0, 0, -1.57079632679, 0, -1.57079632679), pose);
+
+  // Confirm joint axis relative to joint frame matches //axis/@xyz
+  Vector3 vec3;
+  EXPECT_TRUE(
+    model->JointByName("jointw0")->Axis()->ResolveXyz(vec3, "jointw0").empty());
+  EXPECT_EQ(Vector3(1.0, 0, 0), vec3);
+  EXPECT_TRUE(
+    model->JointByName("joint01")->Axis()->ResolveXyz(vec3, "joint01").empty());
+  EXPECT_EQ(Vector3(1.0, 0, 0), vec3);
+  EXPECT_TRUE(
+    model->JointByName("joint12")->Axis()->ResolveXyz(vec3, "joint12").empty());
+  EXPECT_EQ(Vector3(0, 1.0, 0), vec3);
+}
