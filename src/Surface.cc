@@ -29,7 +29,7 @@ class sdf::ContactPrivate
   public: uint16_t collideBitmask = 0xff;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: sdf::ElementPtr sdf{nullptr};
 };
 
 class sdf::SurfacePrivate
@@ -38,7 +38,7 @@ class sdf::SurfacePrivate
   public: Contact contact;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: sdf::ElementPtr sdf{nullptr};
 };
 
 // TODO add destructors
@@ -46,6 +46,13 @@ class sdf::SurfacePrivate
 Contact::Contact()
   : dataPtr(new ContactPrivate)
 {
+}
+
+/////////////////////////////////////////////////
+Contact::~Contact()
+{
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -61,22 +68,16 @@ Contact::Contact(Contact &&_contact) noexcept
 }
 
 /////////////////////////////////////////////////
-Contact &Contact::operator=(Contact &&_contact)
-{
-  std::swap(this->dataPtr, _contact.dataPtr);
-  return *this;
-}
-/////////////////////////////////////////////////
 Contact &Contact::operator=(const Contact &_contact)
 {
   return *this = Contact(_contact);
 }
 
 /////////////////////////////////////////////////
-Contact::~Contact()
+Contact &Contact::operator=(Contact &&_contact)
 {
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
+  std::swap(this->dataPtr, _contact.dataPtr);
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -138,10 +139,16 @@ Surface::Surface()
 }
 
 /////////////////////////////////////////////////
-Surface::Surface(const Surface &_surface)
-  : dataPtr(new SurfacePrivate)
+Surface::~Surface()
 {
-  dataPtr->contact = _surface.dataPtr->contact;
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Surface::Surface(const Surface &_surface)
+  : dataPtr(new SurfacePrivate(*_surface.dataPtr))
+{
 }
 
 /////////////////////////////////////////////////
@@ -161,13 +168,6 @@ Surface &Surface::operator=(Surface &&_surface)
 {
   std::swap(this->dataPtr, _surface.dataPtr);
   return *this;
-}
-
-/////////////////////////////////////////////////
-Surface::~Surface()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////

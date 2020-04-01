@@ -65,9 +65,56 @@ TEST(DOMsurface, CopyAssignmentAfterMove)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMsurface, CollideBitmask)
+TEST(DOMcontact, DefaultConstruction)
+{
+  sdf::Contact contact;
+  EXPECT_EQ(nullptr, contact.Element());
+  EXPECT_EQ(contact.CollideBitmask(), 0xFF);
+  EXPECT_EQ(contact.Element(), nullptr);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMcontact, CopyOperator)
+{
+  sdf::Contact contact1;
+  contact1.SetCollideBitmask(0x12);
+
+  sdf::Contact contact2(contact1);
+  EXPECT_EQ(contact2.CollideBitmask(), 0x12);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMcontact, CopyAssignmentOperator)
+{
+  sdf::Contact contact1;
+  contact1.SetCollideBitmask(0x12);
+
+  sdf::Contact contact2 = contact1;
+  EXPECT_EQ(contact2.CollideBitmask(), 0x12);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMcontact, CopyAssignmentAfterMove)
+{
+  sdf::Contact contact1;
+  sdf::Contact contact2;
+
+  contact1.SetCollideBitmask(0x12);
+  contact2.SetCollideBitmask(0x34);
+
+  sdf::Contact tmp = std::move(contact1);
+  contact1 = contact2;
+  contact2 = tmp;
+
+  EXPECT_EQ(contact2.CollideBitmask(), 0x12);
+  EXPECT_EQ(contact1.CollideBitmask(), 0x34);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMcontact, CollideBitmask)
 {
   sdf::Contact contact;
   contact.SetCollideBitmask(0x67);
   EXPECT_EQ(contact.CollideBitmask(), 0x67);
 }
+

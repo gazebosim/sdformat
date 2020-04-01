@@ -55,8 +55,8 @@ set (sources
   SDFExtension.cc
   SemanticPose.cc
   Sensor.cc
-  Surface.cc
   Sphere.cc
+  Surface.cc
   Types.cc
   Utils.cc
   Visual.cc
@@ -130,8 +130,8 @@ set (gtest_sources
   SemanticPose_TEST.cc
   SDF_TEST.cc
   Sensor_TEST.cc
-  Surface_TEST.cc
   Sphere_TEST.cc
+  Surface_TEST.cc
   Types_TEST.cc
   Visual_TEST.cc
   World_TEST.cc

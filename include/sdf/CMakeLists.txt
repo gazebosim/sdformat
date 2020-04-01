@@ -36,11 +36,11 @@ set (headers
   Plane.hh
   Root.hh
   Scene.hh
-  Surface.hh
   SDFImpl.hh
   SemanticPose.hh
   Sensor.hh
   Sphere.hh
+  Surface.hh
   Types.hh
   system_util.hh
   Visual.hh
