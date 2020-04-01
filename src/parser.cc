@@ -790,9 +790,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
   // Check if the element pointer is deprecated.
   if (_sdf->GetRequired() == "-1")
   {
-    _errors.push_back({ErrorCode::ELEMENT_DEPRECATED,
-        "SDF Element[" + _sdf->GetName() + "] is deprecated"});
-    return true;
+    sdfwarn << "SDF Element[" + _sdf->GetName() + "] is deprecated\n";
   }
 
   if (!_xml)

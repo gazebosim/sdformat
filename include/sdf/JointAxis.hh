@@ -75,12 +75,12 @@ namespace sdf
     /// default value is zero (0.0).
     /// \return The initial joint position.
     /// \sa void SetInitialPosition(const double _pos)
-    public: double InitialPosition() const;
+    public: double InitialPosition() const SDF_DEPRECATED(10.0);
 
     /// \brief Set the initial joint position for this joint axis.
     /// \param[in] _pos The initial joint position.
     /// \sa double InitialPosition() const
-    public: void SetInitialPosition(const double _pos);
+    public: void SetInitialPosition(const double _pos) SDF_DEPRECATED(10.0);
 
     /// \brief Get the x,y,z components of the axis unit vector.
     /// The axis is expressed in the joint frame unless UseParentModelFrame
