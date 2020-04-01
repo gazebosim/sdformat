@@ -130,7 +130,7 @@ Errors Root::Load(SDFPtr _sdf)
   }
 
   // Check that the version is 1.7, since this is assumed by the DOM API
-  if ("1.7" != versionPair.first)
+  if (SDF_PROTOCOL_VERSION != versionPair.first)
   {
     errors.push_back(
         {ErrorCode::ATTRIBUTE_INVALID,
