@@ -18,9 +18,9 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Collision.hh"
+#include "sdf/Error.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Surface.hh"
-#include "sdf/Error.hh"
 #include "sdf/Types.hh"
 #include "Utils.hh"
 
@@ -41,7 +41,7 @@ class sdf::CollisionPrivate
   public: Geometry geom;
 
   /// \brief The collision's surface parameters.
-  public: Surface surf;
+  public: Surface surface;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -131,7 +131,7 @@ Errors Collision::Load(ElementPtr _sdf)
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
 
   // Load the surface parameters
-  this->dataPtr->surf.Load(_sdf->GetElement("surface"));
+  this->dataPtr->surface.Load(_sdf->GetElement("surface"));
 
   return errors;
 }
@@ -163,13 +163,13 @@ void Collision::SetGeom(const Geometry &_geom)
 /////////////////////////////////////////////////
 sdf::Surface *Collision::Surface() const
 {
-  return &this->dataPtr->surf;
+  return &this->dataPtr->surface;
 }
 
 /////////////////////////////////////////////////
-void Collision::SetSurface(const sdf::Surface &_surf)
+void Collision::SetSurface(const sdf::Surface &_surface)
 {
-  this->dataPtr->surf = _surf;
+  this->dataPtr->surface = _surface;
 }
 
 /////////////////////////////////////////////////

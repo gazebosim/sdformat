@@ -8,6 +8,11 @@
             <size>3 4 5</size>
           </box>
         </geometry>
+        <surface>
+          <contact>
+            <collide_bitmask>0xAB</collide_bitmask>
+          </contact>
+        </surface>
       </collision>
 
       <visual name="box_vis">

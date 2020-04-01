@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include "sdf/Collision.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/Surface.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMcollision, Construction)
@@ -61,6 +62,9 @@ TEST(DOMcollision, Construction)
   EXPECT_EQ(nullptr, collision.Geom()->CylinderShape());
   EXPECT_EQ(nullptr, collision.Geom()->PlaneShape());
   EXPECT_EQ(nullptr, collision.Geom()->SphereShape());
+
+  ASSERT_NE(nullptr, collision.Surface());
+  ASSERT_NE(nullptr, collision.Surface()->Contact());
 }
 
 /////////////////////////////////////////////////
@@ -144,4 +148,21 @@ TEST(DOMcollision, SetGeometry)
 
   ASSERT_NE(nullptr, collision.Geom());
   EXPECT_EQ(sdf::GeometryType::BOX, collision.Geom()->Type());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMcollision, SetSurface)
+{
+  sdf::Collision collision;
+  EXPECT_EQ(nullptr, collision.Element());
+
+  sdf::Surface surface;
+  ASSERT_NE(nullptr, surface.Contact());
+  surface.Contact()->SetCollideBitmask(0x2);
+
+  collision.SetSurface(surface);
+
+  ASSERT_NE(nullptr, collision.Surface());
+  ASSERT_NE(nullptr, collision.Surface()->Contact());
+  EXPECT_EQ(collision.Surface()->Contact()->CollideBitmask(), 0x2);
 }

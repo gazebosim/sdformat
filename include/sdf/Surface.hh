@@ -31,6 +31,7 @@ namespace sdf
   class ContactPrivate;
   class SurfacePrivate;
 
+  /// \brief Contact information for a surface.
   class SDFORMAT_VISIBLE Contact
   {
     /// \brief Default constructor
@@ -82,6 +83,7 @@ namespace sdf
     private: ContactPrivate *dataPtr;
   };
 
+  /// \brief Surface information for a collision.
   class SDFORMAT_VISIBLE Surface
   {
     /// \brief Default constructor
