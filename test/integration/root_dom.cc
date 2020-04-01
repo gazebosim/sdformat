@@ -62,7 +62,7 @@ TEST(DOMRoot, Load)
   sdf::Root root;
   EXPECT_EQ(0u, root.WorldCount());
   EXPECT_TRUE(root.Load(testFile).empty());
-  EXPECT_EQ("1.7", root.Version());
+  EXPECT_EQ(SDF_PROTOCOL_VERSION, root.Version());
   EXPECT_EQ(1u, root.WorldCount());
   EXPECT_TRUE(root.WorldByIndex(0) != nullptr);
   EXPECT_TRUE(root.WorldByIndex(1) == nullptr);

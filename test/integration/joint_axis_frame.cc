@@ -96,11 +96,11 @@ TEST(JointAxisFrame, Version_1_4_no_convert)
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(1u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
-  EXPECT_TRUE(errors[0].Message().find(
-    "SDF version attribute[1.4] should match the latest version[1.7] when "
-    "loading DOM objects.") !=
-               std::string::npos)
-    << errors[0].Message();
+  const auto expErr =
+      "SDF version attribute[1.4] should match the latest "
+      "version[" SDF_PROTOCOL_VERSION "] when loading DOM objects.";
+  EXPECT_TRUE(errors[0].Message().find(expErr) != std::string::npos)
+      << errors[0].Message();
 }
 
 ////////////////////////////////////////
@@ -129,11 +129,11 @@ TEST(JointAxisFrame, Version_1_4_to_1_5)
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(1u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
-  EXPECT_TRUE(errors[0].Message().find(
-    "SDF version attribute[1.5] should match the latest version[1.7] when "
-    "loading DOM objects.") !=
-               std::string::npos)
-    << errors[0].Message();
+  const auto expErr =
+      "SDF version attribute[1.5] should match the latest "
+      "version[" SDF_PROTOCOL_VERSION "] when loading DOM objects.";
+  EXPECT_TRUE(errors[0].Message().find(expErr) != std::string::npos)
+      << errors[0].Message();
 }
 
 ////////////////////////////////////////
