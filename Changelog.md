@@ -5,6 +5,9 @@
 1. Increase output precision of URDF to SDF conversion, output -0 as 0.
     * [Pull request 675](https://bitbucket.org/osrf/sdformat/pull-requests/675)
 
+1. Add test of URDF frame semantics.
+    * [Pull request 680](https://bitbucket.org/osrf/sdformat/pull-requests/680)
+
 1.  Support frame semantics for models nested with <include>
     * [Pull request 668](https://bitbucket.org/osrf/sdformat/pull-requests/668)
 
