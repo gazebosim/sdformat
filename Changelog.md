@@ -2,6 +2,9 @@
 
 ### SDFormat 8.X.X (202X-XX-XX)
 
+1. Increase output precision of URDF to SDF conversion, output -0 as 0.
+    * [Pull request 675](https://bitbucket.org/osrf/sdformat/pull-requests/675)
+
 1. Fix homebrew build with external urdfdom.
     * [Pull request 677](https://bitbucket.org/osrf/sdformat/pull-requests/677)
 
