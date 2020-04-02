@@ -716,28 +716,13 @@ TEST(URDFParser, CheckJointTransform)
 
   std::string expectedSdf = R"(<sdf version="1.7">
     <model name="test_robot">
-        <link name="link1">
-            <pose relative_to="jointw_1" />
-            <inertial>
-                <pose>0 0 0 0 0 0</pose>
-                <mass>1</mass>
-                <inertia>
-                    <ixx>1</ixx>
-                    <ixy>0</ixy>
-                    <ixz>0</ixz>
-                    <iyy>1</iyy>
-                    <iyz>0</iyz>
-                    <izz>1</izz>
-                </inertia>
-            </inertial>
-        </link>
         <joint type="fixed" name="jointw_1">
             <pose relative_to="__model__">0 0 0 0 0 0</pose>
             <child>link1</child>
             <parent>world</parent>
         </joint>
-        <link name="link2">
-            <pose relative_to="joint1_2" />
+        <link name="link1">
+            <pose relative_to="jointw_1" />
             <inertial>
                 <pose>0 0 0 0 0 0</pose>
                 <mass>1</mass>
@@ -761,8 +746,8 @@ TEST(URDFParser, CheckJointTransform)
                 <dynamics />
             </axis>
         </joint>
-        <link name="link3">
-            <pose relative_to="joint2_3" />
+        <link name="link2">
+            <pose relative_to="joint1_2" />
             <inertial>
                 <pose>0 0 0 0 0 0</pose>
                 <mass>1</mass>
@@ -786,6 +771,21 @@ TEST(URDFParser, CheckJointTransform)
                 <dynamics />
             </axis>
         </joint>
+        <link name="link3">
+            <pose relative_to="joint2_3" />
+            <inertial>
+                <pose>0 0 0 0 0 0</pose>
+                <mass>1</mass>
+                <inertia>
+                    <ixx>1</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>1</iyy>
+                    <iyz>0</iyz>
+                    <izz>1</izz>
+                </inertia>
+            </inertial>
+        </link>
     </model>
 </sdf>
 )";

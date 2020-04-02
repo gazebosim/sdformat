@@ -2772,11 +2772,11 @@ void CreateLink(TiXmlElement *_root,
   // copy sdf extensions data
   InsertSDFExtensionLink(elem, _link->name);
 
-  // add body to document
-  _root->LinkEndChild(elem);
-
   // make a <joint:...> block
   CreateJoint(_root, _link, _currentTransform);
+
+  // add body to document
+  _root->LinkEndChild(elem);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
