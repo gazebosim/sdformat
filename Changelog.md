@@ -8,6 +8,9 @@
 1. Add test of URDF frame semantics.
     * [Pull request 680](https://bitbucket.org/osrf/sdformat/pull-requests/680)
 
+1.  Support frame semantics for models nested with <include>
+    * [Pull request 668](https://bitbucket.org/osrf/sdformat/pull-requests/668)
+
 1. Add camera visibility mask and visual visibility flags
     * [Pull request 673](https://bitbucket.org/osrf/sdformat/pull-requests/673)
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <model name="frame_only_model">
+    <static>true</static>
+    <frame name="F1">
+      <pose>0 0 0 3.141592 0 0 </pose>
+    </frame>
+    <frame name="F2">
+      <pose relative_to="F1">0 0 0 0 3.141592 0 </pose>
+    </frame>
+  </model>
+</sdf>
