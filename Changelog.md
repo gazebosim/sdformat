@@ -20,8 +20,8 @@
 1. Add test of URDF frame semantics.
     * [Pull request 680](https://bitbucket.org/osrf/sdformat/pull-requests/680)
 
-1.  support frame semantics for models nested with <include>
-    * [pull request 668](https://bitbucket.org/osrf/sdformat/pull-requests/668)
+1. Support frame semantics for models nested with <include>
+    * [Pull request 668](https://bitbucket.org/osrf/sdformat/pull-requests/668)
 
 1. Add surface DOM
     * [pull request 660](https://bitbucket.org/osrf/sdformat/pull-requests/660)
@@ -43,10 +43,10 @@
     * [Pull request 657](https://bitbucket.org/osrf/sdformat/pull-requests/657)
     * [Issue 219](https://bitbucket.org/osrf/sdformat/issues/219)
 
-1.  Remove TinyXML symbols from public API: Deprecate URDF2SDF
+1. Remove TinyXML symbols from public API: Deprecate URDF2SDF
     * [Pull request 658](https://bitbucket.org/osrf/sdformat/pull-requests/658)
 
-1.  Remove TinyXML symbols from public API: Move uninstalled headers
+1. Remove TinyXML symbols from public API: Move uninstalled headers
     * [Pull request 662](https://bitbucket.org/osrf/sdformat/pull-requests/662)
 
 1. Install the Windows `.dll` shared libraries to bin folder.
