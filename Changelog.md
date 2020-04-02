@@ -2,6 +2,9 @@
 
 ### SDFormat 9.X.X (202X-XX-XX)
 
+1. Keep the URDF style of specifying kinematics when converting URDF to SDF by using frame semantics.
+    * [Pull request 676](https://bitbucket.org/osrf/sdformat/pull-requests/676)
+
 1. Increase output precision of URDF to SDF conversion, output -0 as 0.
     * [Pull request 675](https://bitbucket.org/osrf/sdformat/pull-requests/675)
 
