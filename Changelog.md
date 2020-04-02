@@ -60,9 +60,6 @@
 1. Rename SDF to SDFormat / libsdformat on documentation
     * [Pull request 666](https://bitbucket.org/osrf/sdformat/pull-requests/666)
 
-1. Increase output precision of URDF to SDF conversion, output -0 as 0.
-    * [Pull request 675](https://bitbucket.org/osrf/sdformat/pull-requests/675)
-
 ### SDFormat 9.1.0 (2020-01-29)
 
 1. Remove URI scheme, if present, when finding files.
