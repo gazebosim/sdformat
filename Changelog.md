@@ -2,6 +2,15 @@
 
 ### SDFormat 9.X.X (202X-XX-XX)
 
+### SDFormat 9.2.0 (2020-04-02)
+
+1. Remove URI scheme, if present, when finding files.
+    * [Pull request 650](https://bitbucket.org/osrf/sdformat/pull-requests/650)
+    * [Pull request 652](https://bitbucket.org/osrf/sdformat/pull-requests/652)
+
+1. Build `Utils_TEST` with Utils.cc explicitly passed since its symbols are not visible.
+    * [Pull request 572](https://bitbucket.org/osrf/sdformat/pull-requests/572)
+
 1. Keep the URDF style of specifying kinematics when converting URDF to SDF by using frame semantics.
     * [Pull request 676](https://bitbucket.org/osrf/sdformat/pull-requests/676)
 
@@ -11,8 +20,14 @@
 1. Add test of URDF frame semantics.
     * [Pull request 680](https://bitbucket.org/osrf/sdformat/pull-requests/680)
 
-1.  Support frame semantics for models nested with <include>
+1. Support frame semantics for models nested with <include>
     * [Pull request 668](https://bitbucket.org/osrf/sdformat/pull-requests/668)
+
+1. Add surface DOM
+    * [pull request 660](https://bitbucket.org/osrf/sdformat/pull-requests/660)
+
+1. Add Transparency to visual DOM
+    * [Pull request 671](https://bitbucket.org/osrf/sdformat/pull-requests/671)
 
 1. Add camera visibility mask and visual visibility flags
     * [Pull request 673](https://bitbucket.org/osrf/sdformat/pull-requests/673)
@@ -28,10 +43,10 @@
     * [Pull request 657](https://bitbucket.org/osrf/sdformat/pull-requests/657)
     * [Issue 219](https://bitbucket.org/osrf/sdformat/issues/219)
 
-1.  Remove TinyXML symbols from public API: Deprecate URDF2SDF
+1. Remove TinyXML symbols from public API: Deprecate URDF2SDF
     * [Pull request 658](https://bitbucket.org/osrf/sdformat/pull-requests/658)
 
-1.  Remove TinyXML symbols from public API: Move uninstalled headers
+1. Remove TinyXML symbols from public API: Move uninstalled headers
     * [Pull request 662](https://bitbucket.org/osrf/sdformat/pull-requests/662)
 
 1. Install the Windows `.dll` shared libraries to bin folder.
