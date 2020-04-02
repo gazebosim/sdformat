@@ -2985,8 +2985,8 @@ void CreateJoint(TiXmlElement *_root,
     }
     pose->SetAttribute("relative_to", relativeToAttr);
 
-    AddKeyValue(joint, "child", _link->name);
     AddKeyValue(joint, "parent", _link->getParent()->name);
+    AddKeyValue(joint, "child", _link->name);
 
     TiXmlElement *jointAxis = new TiXmlElement("axis");
     TiXmlElement *jointAxisLimit = new TiXmlElement("limit");
