@@ -40,6 +40,7 @@ set (headers
   SemanticPose.hh
   Sensor.hh
   Sphere.hh
+  Surface.hh
   Types.hh
   system_util.hh
   Visual.hh
