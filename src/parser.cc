@@ -1230,55 +1230,85 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
     modelPtr->Get<ignition::math::Pose3d>("pose");
 
   std::string modelName = modelPtr->Get<std::string>("name");
+
+  // Inject a frame to represent the nested __model__ frame.
+  ElementPtr nestedModelFrame = _sdf->AddElement("frame");
+  const std::string nestedModelFrameName = modelName + "::__model__";
+  nestedModelFrame->GetAttribute("name")->Set(nestedModelFrameName);
+
+  replace["__model__"] = nestedModelFrameName;
+
+  std::string canonicalLinkName = "";
+  if (modelPtr->GetAttribute("canonical_link")->GetSet())
+  {
+    canonicalLinkName = modelPtr->GetAttribute("canonical_link")->GetAsString();
+  }
+  else if (modelPtr->HasElement("link"))
+  {
+    canonicalLinkName =
+      modelPtr->GetElement("link")->GetAttribute("name")->GetAsString();
+  }
+  nestedModelFrame->GetAttribute("attached_to")
+      ->Set(modelName + "::" + canonicalLinkName);
+
+  ElementPtr nestedModelFramePose = nestedModelFrame->AddElement("pose");
+  nestedModelFramePose->Set(modelPose);
+
+  // Set the nestedModelFrame's //pose/@relative_to to the frame used in
+  // //include/pose/@relative_to.
+  std::string modelPoseRelativeTo = "";
+  if (modelPtr->HasElement("pose"))
+  {
+    modelPoseRelativeTo =
+        modelPtr->GetElement("pose")->Get<std::string>("relative_to");
+  }
+
+  // If empty, use "__model__", since leaving it empty would make it
+  // relative_to the canonical link frame specified in //frame/@attached_to.
+  if (modelPoseRelativeTo.empty())
+  {
+    modelPoseRelativeTo = "__model__";
+  }
+
+  nestedModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
+
   while (elem)
   {
-    if (elem->GetName() == "link")
+    if ((elem->GetName() == "link") ||
+        (elem->GetName() == "joint") ||
+        (elem->GetName() == "frame"))
     {
       std::string elemName = elem->Get<std::string>("name");
       std::string newName =  modelName + "::" + elemName;
       replace[elemName] = newName;
-      if (elem->HasElementDescription("pose"))
-      {
-        ignition::math::Pose3d offsetPose =
-          elem->Get<ignition::math::Pose3d>("pose");
-        ignition::math::Pose3d newPose = ignition::math::Pose3d(
-          modelPose.Pos() +
-            modelPose.Rot().RotateVector(offsetPose.Pos()),
-            modelPose.Rot() * offsetPose.Rot());
-        elem->GetElement("pose")->Set(newPose);
-      }
     }
-    else if (elem->GetName() == "joint")
+
+    if ((elem->GetName() == "link"))
     {
-      // for joints, we need to
-      //   prefix name like we did with links, and
-      std::string elemName = elem->Get<std::string>("name");
-      std::string newName =  modelName + "::" + elemName;
-      replace[elemName] = newName;
-      //  rotate the joint axis if it is expressed in __model__ frame
-      if (elem->HasElement("axis"))
+      // Add a pose element even if the element doesn't originally have one
+      auto elemPose = elem->GetElement("pose");
+
+      // If //pose/@relative_to is empty, explicitly set it to the name
+      // of the nested model frame.
+      auto relativeTo = elemPose->GetAttribute("relative_to");
+      if (relativeTo->GetAsString().empty())
       {
-        ElementPtr axisElem = elem->GetElement("axis");
-        ElementPtr xyzElem = axisElem->GetElement("xyz");
-        if (xyzElem->HasAttribute("expressed_in"))
-        {
-          const auto expressedIn = xyzElem->Get<std::string>("expressed_in");
-          if (expressedIn == "__model__")
-          {
-            ignition::math::Vector3d newAxis = modelPose.Rot().RotateVector(
-              xyzElem->Get<ignition::math::Vector3d>());
-            xyzElem->Set(newAxis);
-          }
-          else if (!expressedIn.empty() &&
-                   expressedIn != elem->Get<std::string>("child"))
-          {
-            _errors.push_back({ErrorCode::ELEMENT_INVALID,
-              "addNestedModel called for model with non-trivial value "
-              "of //axis/xyz/@expressed_in='" + expressedIn +
-              ", joint axis rotations may be incorrect."});
-          }
-        }
+        relativeTo->Set(nestedModelFrameName);
       }
+
+      // If //pose/@relative_to is set, let the replacement step handle it.
+    }
+    else if (elem->GetName() == "frame")
+    {
+      // If //frame/@attached_to is empty, explicitly set it to the name
+      // of the nested model frame.
+      auto attachedTo = elem->GetAttribute("attached_to");
+      if (attachedTo->GetAsString().empty())
+      {
+        attachedTo->Set(nestedModelFrameName);
+      }
+
+      // If //frame/@attached_to is set, let the replacement step handle it.
     }
     elem = elem->GetNextElement();
   }
@@ -1296,7 +1326,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
   }
 
   _includeSDF->ClearElements();
-  readString(str, _includeSDF);
+  readString(str, _includeSDF, _errors);
 
   elem = _includeSDF->GetElement("model")->GetFirstElement();
   ElementPtr nextElem;
