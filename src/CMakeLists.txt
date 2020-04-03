@@ -168,7 +168,9 @@ message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
 
 if (NOT USE_INTERNAL_URDF)
   target_compile_options(${sdf_target} PRIVATE ${URDF_CFLAGS})
-  target_link_options(${sdf_target} PRIVATE ${URDF_LDFLAGS})
+  if (${CMAKE_VERSION} VERSION_GREATER 3.13)
+    target_link_options(${sdf_target} PRIVATE ${URDF_LDFLAGS})
+  endif()
   target_link_libraries(${sdf_target} PRIVATE ${URDF_LIBRARIES})
 endif()
 
