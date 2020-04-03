@@ -7,6 +7,7 @@
 
 1. Fix homebrew build with external urdfdom.
     * [Pull request 677](https://bitbucket.org/osrf/sdformat/pull-requests/677)
+    * [Pull request 686](https://bitbucket.org/osrf/sdformat/pull-requests/686)
 
 ### SDFormat 8.8.0 (2020-03-18)
 
