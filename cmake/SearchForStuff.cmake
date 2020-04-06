@@ -54,7 +54,7 @@ endif()
 
 if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
   # check for urdfdom with pkg-config
-  pkg_check_modules(URDF urdfdom>=1.0)
+  pkg_check_modules(URDF urdfdom>=1.0 urdfdom_headers>=1.0)
 
   if (NOT URDF_FOUND)
     if (NOT DEFINED USE_INTERNAL_URDF)
