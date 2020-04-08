@@ -329,7 +329,7 @@ TEST(Parser, addNestedModel)
         sdf::readString(getIncludedModelSdfString(version, "parent", "child"),
             sdf, errors));
     EXPECT_TRUE(errors.empty());
-    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ(version, sdf->OriginalVersion());
     EXPECT_EQ(version, sdf->Root()->OriginalVersion());
 
