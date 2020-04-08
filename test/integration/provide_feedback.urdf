@@ -5,16 +5,19 @@
   <link name="link0">
     <inertial>
       <mass value="0.5" />
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
     </inertial>
   </link>
   <link name="link1">
     <inertial>
       <mass value="0.5" />
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
     </inertial>
   </link>
   <link name="link2">
     <inertial>
       <mass value="0.5" />
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
     </inertial>
   </link>
 
