@@ -56,6 +56,7 @@ set (sources
   SemanticPose.cc
   Sensor.cc
   Sphere.cc
+  Surface.cc
   Types.cc
   Utils.cc
   Visual.cc
@@ -130,6 +131,7 @@ set (gtest_sources
   SDF_TEST.cc
   Sensor_TEST.cc
   Sphere_TEST.cc
+  Surface_TEST.cc
   Types_TEST.cc
   Visual_TEST.cc
   World_TEST.cc
@@ -181,6 +183,10 @@ message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
 message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
 
 if (NOT USE_INTERNAL_URDF)
+  target_compile_options(${sdf_target} PRIVATE ${URDF_CFLAGS})
+  if (${CMAKE_VERSION} VERSION_GREATER 3.13)
+    target_link_options(${sdf_target} PRIVATE ${URDF_LDFLAGS})
+  endif()
   target_link_libraries(${sdf_target} PRIVATE ${URDF_LIBRARIES})
 endif()
 

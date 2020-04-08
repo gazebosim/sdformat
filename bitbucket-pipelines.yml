@@ -24,6 +24,7 @@ pipelines:
           # Dependency: Ignition packages
           - apt-get -y install
             libignition-cmake2-dev libignition-tools-dev libignition-math6-dev
+            liburdfdom-dev
           # SDFormat
           - mkdir build
           - cd build

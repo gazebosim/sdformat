@@ -34,6 +34,7 @@ namespace sdf
   // Forward declaration.
   class CollisionPrivate;
   class Geometry;
+  class Surface;
   struct PoseRelativeToGraph;
 
   /// \brief A collision element descibes the collision properties associated
@@ -91,6 +92,14 @@ namespace sdf
     /// \brief Set the collision's geometry
     /// \param[in] _geom The geometry of the collision object
     public: void SetGeom(const Geometry &_geom);
+
+    /// \brief Get a pointer to the collisions's surface parameters.
+    /// \return The collision's surface parameters.
+    public: sdf::Surface *Surface() const;
+
+    /// \brief Set the collision's surface parameters
+    /// \param[in] _surface The surface parameters of the collision object
+    public: void SetSurface(const sdf::Surface &_surface);
 
     /// \brief Get the pose of the collision object. This is the pose of the
     /// collision as specified in SDF
