@@ -27,7 +27,7 @@ TEST(DOMUtils, PoseDefaultValues)
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("pose");
   element->AddValue("pose", "0 0 0 0 0 0", true);
-  element->AddAttribute("frame", "string", "", false);
+  element->AddAttribute("relative_to", "string", "", false);
 
   ignition::math::Pose3d pose;
   std::string frame;
@@ -53,13 +53,28 @@ TEST(DOMUtils, PoseNoFrame)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMUtils, PoseNoValue)
+{
+  sdf::ElementPtr element(new sdf::Element);
+  element->SetName("pose");
+  element->AddValue("pose", "", true);
+
+  ignition::math::Pose3d pose;
+  std::string frame;
+  EXPECT_TRUE(sdf::loadPose(element, pose, frame));
+
+  EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
+  EXPECT_TRUE(frame.empty());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMUtils, PoseWithFrame)
 {
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("pose");
   element->AddValue("pose", "0 0 0 0 0 0", true);
-  element->AddAttribute("frame", "string", "", false);
-  element->GetAttribute("frame")->SetFromString("frame_name");
+  element->AddAttribute("relative_to", "string", "", false);
+  element->GetAttribute("relative_to")->SetFromString("frame_name");
 
   ignition::math::Pose3d pose;
   std::string frame;
@@ -75,8 +90,8 @@ TEST(DOMUtils, PoseWithValue)
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("pose");
   element->AddValue("pose", "0 0 0 0 0 0", true);
-  element->AddAttribute("frame", "string", "", false);
-  element->GetAttribute("frame")->SetFromString("another frame");
+  element->AddAttribute("relative_to", "string", "", false);
+  element->GetAttribute("relative_to")->SetFromString("another frame");
   element->GetValue()->SetFromString("1 2 3 0.1 0.2 0.3");
 
   ignition::math::Pose3d pose;
@@ -85,4 +100,25 @@ TEST(DOMUtils, PoseWithValue)
 
   EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3), pose);
   EXPECT_EQ("another frame", frame);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMUtils, ReservedNames)
+{
+  EXPECT_FALSE(sdf::isReservedName("model"));
+  EXPECT_FALSE(sdf::isReservedName("link"));
+  EXPECT_FALSE(sdf::isReservedName("joint"));
+  EXPECT_FALSE(sdf::isReservedName("frame"));
+  EXPECT_FALSE(sdf::isReservedName("collision"));
+  EXPECT_FALSE(sdf::isReservedName("visual"));
+  EXPECT_FALSE(sdf::isReservedName("not_reserved"));
+  EXPECT_FALSE(sdf::isReservedName("_"));
+  EXPECT_FALSE(sdf::isReservedName("__"));
+  EXPECT_FALSE(sdf::isReservedName("___"));
+
+  EXPECT_TRUE(sdf::isReservedName("____"));
+  EXPECT_TRUE(sdf::isReservedName("world"));
+  EXPECT_TRUE(sdf::isReservedName("__model__"));
+  EXPECT_TRUE(sdf::isReservedName("__world__"));
+  EXPECT_TRUE(sdf::isReservedName("__anything__"));
 }

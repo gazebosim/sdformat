@@ -17,17 +17,25 @@
 #ifndef SDF_JOINT_HH_
 #define SDF_JOINT_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
+#include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declarations.
   class JointAxis;
   class JointPrivate;
+  struct PoseRelativeToGraph;
 
   /// \enum JointType
   /// \brief The set of joint types. INVALID indicates that joint type has
@@ -76,9 +84,23 @@ namespace sdf
     /// \brief Default constructor
     public: Joint();
 
+    /// \brief Copy constructor
+    /// \param[in] _joint Joint to copy.
+    public: Joint(const Joint &_joint);
+
     /// \brief Move constructor
     /// \param[in] _joint Joint to move.
-    public: Joint(Joint &&_joint);
+    public: Joint(Joint &&_joint) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _joint Joint to move.
+    /// \return Reference to this.
+    public: Joint &operator=(Joint &&_joint);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _joint Joint to copy.
+    /// \return Reference to this.
+    public: Joint &operator=(const Joint &_joint);
 
     /// \brief Destructor
     public: ~Joint();
@@ -99,7 +121,7 @@ namespace sdf
     /// \brief Set the name of the joint.
     /// The name of the joint must be unique within the scope of a Model.
     /// \param[in] _name Name of the joint.
-    public: void SetName(const std::string &_name) const;
+    public: void SetName(const std::string &_name);
 
     /// \brief Get the joint type
     /// \return Type of joint.
@@ -115,7 +137,7 @@ namespace sdf
 
     /// \brief Set the name of the parent link.
     /// \param[in] _name Name of the parent link.
-    public: void SetParentLinkName(const std::string &_name) const;
+    public: void SetParentLinkName(const std::string &_name);
 
     /// \brief Get the name of this joint's child link.
     /// \return The name of the child link.
@@ -123,7 +145,7 @@ namespace sdf
 
     /// \brief Set the name of the child link.
     /// \param[in] _name Name of the child link.
-    public: void SetChildLinkName(const std::string &_name) const;
+    public: void SetChildLinkName(const std::string &_name);
 
     /// \brief Get a joint axis.
     /// \param[in] _index This value specifies which axis to get. A value of
@@ -135,29 +157,77 @@ namespace sdf
     /// specified.
     public: const JointAxis *Axis(const unsigned int _index = 0) const;
 
+    /// \brief Set a joint axis.
+    /// \param[in] _index This value specifies which axis to set. A value of
+    /// zero corresponds to the first axis, which is the <axis> SDF
+    /// element. Any other value will set the second axis, which is the
+    /// <axis2> SDF element.
+    /// \param[in] _axis The JointAxis of the joint
+    public: void SetAxis(const unsigned int _index, const JointAxis &_axis);
+
     /// \brief Get the pose of the joint. This is the pose of the joint
     /// as specified in SDF (<joint> <pose> ... </pose></joint>).
     /// Transformations have not been applied to the return value.
     /// \return The pose of the joint. This is the raw pose value, as set in
     /// the SDF file.
-    public: const ignition::math::Pose3d &Pose() const;
+    /// \deprecated See RawPose.
+    public: const ignition::math::Pose3d &Pose() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the pose of the joint.
     /// \sa const ignition::math::Pose3d &Pose() const;
     /// \param[in] _pose The pose of the joint.
-    public: void SetPose(const ignition::math::Pose3d &_pose);
+    /// \deprecated See SetRawPose.
+    public: void SetPose(const ignition::math::Pose3d &_pose)
+        SDF_DEPRECATED(9.0);
+
+    /// \brief Get the pose of the joint. This is the pose of the joint
+    /// as specified in SDF (<joint> <pose> ... </pose></joint>).
+    /// Transformations have not been applied to the return value.
+    /// \return The pose of the joint. This is the raw pose value, as set in
+    /// the SDF file.
+    public: const ignition::math::Pose3d &RawPose() const;
+
+    /// \brief Set the pose of the joint.
+    /// \sa const ignition::math::Pose3d &RawPose() const;
+    /// \param[in] _pose The pose of the joint.
+    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+
+    /// \brief Get the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the child link frame.
+    /// \return The name of the pose relative-to frame.
+    public: const std::string &PoseRelativeTo() const;
+
+    /// \brief Set the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the child link frame.
+    /// \param[in] _frame The name of the pose relative-to frame.
+    public: void SetPoseRelativeTo(const std::string &_frame);
 
     /// \brief Get the name of the coordinate frame in which this joint's
     /// pose is expressed. A empty value indicates that the frame is the
     /// child link frame.
     /// \return The name of the pose frame.
-    public: const std::string &PoseFrame() const;
+    /// \deprecated See PoseRelativeTo.
+    public: const std::string &PoseFrame() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the name of the coordinate frame in which this joint's
     /// pose is expressed. A empty value indicates that the frame is the
     /// child link frame.
     /// \param[in] _frame The name of the pose frame.
-    public: void SetPoseFrame(const std::string &_frame);
+    /// \deprecated See SetPoseRelativeTo.
+    public: void SetPoseFrame(const std::string &_frame)
+        SDF_DEPRECATED(9.0);
+
+    /// \brief Get the thread pitch (only valid for screw joints)
+    /// \return The thread pitch
+    public: double ThreadPitch() const;
+
+    /// \brief Set the thread pitch (only valid for screw joints)
+    /// \param[in] _threadPitch The thread pitch of the joint
+    public: void SetThreadPitch(double _threadPitch);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
@@ -165,8 +235,24 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Get SemanticPose object of this object to aid in resolving
+    /// poses.
+    /// \return SemanticPose object for this link.
+    public: sdf::SemanticPose SemanticPose() const;
+
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Model::Load.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    private: void SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    /// \brief Allow Model::Load to call SetPoseRelativeToGraph.
+    friend class Model;
+
     /// \brief Private data pointer.
     private: JointPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif

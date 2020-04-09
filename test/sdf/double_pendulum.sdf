@@ -20,6 +20,7 @@
             <name>Gazebo/Grey</name>
           </script>
         </material>
+        <cast_shadows>false</cast_shadows>
       </visual>
       <visual name="vis_pole">
         <pose>-0.275 0 1.1 0 0 0</pose>
@@ -55,6 +56,7 @@
     </link>
     <!-- upper link, length 1, IC -90 degrees -->
     <link name="upper_link">
+      <enable_wind>true</enable_wind>
       <pose>0 0 2.1 -1.5708 0 0</pose>
       <self_collide>0</self_collide>
       <inertial>

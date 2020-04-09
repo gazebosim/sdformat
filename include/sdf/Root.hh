@@ -21,17 +21,28 @@
 
 #include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declarations.
+  class Actor;
+  class Light;
   class Model;
   class RootPrivate;
   class World;
 
   /// \brief Root class that acts as an entry point to the SDF document
   /// model.
+  ///
+  /// Multiple worlds can exist in a single SDF file. A user of multiple
+  /// worlds could run parallel instances of simulation, or offer selection
+  /// of a world at runtime.
   ///
   /// # Usage
   ///
@@ -112,6 +123,38 @@ namespace sdf
     /// \return True if there exists a model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
 
+    /// \brief Get the number of lights.
+    /// \return Number of lights contained in this Root object.
+    public: uint64_t LightCount() const;
+
+    /// \brief Get a light based on an index.
+    /// \param[in] _index Index of the light. The index should be in the
+    /// range [0..LightCount()).
+    /// \return Pointer to the light. Nullptr if the index does not exist.
+    /// \sa uint64_t LightCount() const
+    public: const Light *LightByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a light name exists.
+    /// \param[in] _name Name of the light to check.
+    /// \return True if there exists a light with the given name.
+    public: bool LightNameExists(const std::string &_name) const;
+
+    /// \brief Get the number of actors.
+    /// \return Number of actors contained in this Root object.
+    public: uint64_t ActorCount() const;
+
+    /// \brief Get an actor based on an index.
+    /// \param[in] _index Index of the actor. The actor should be in the
+    /// range [0..ActorCount()).
+    /// \return Pointer to the actor. Nullptr if the index does not exist.
+    /// \sa uint64_t ActorCount() const
+    public: const Actor *ActorByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether an actor name exists.
+    /// \param[in] _name Name of the actor to check.
+    /// \return True if there exists an actor with the given name.
+    public: bool ActorNameExists(const std::string &_name) const;
+
     /// \brief Get a pointer to the SDF element that was generated during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
@@ -121,5 +164,6 @@ namespace sdf
     /// \brief Private data pointer
     private: RootPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif

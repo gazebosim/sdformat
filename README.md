@@ -1,12 +1,17 @@
 # sdformat #
 
-SDF is an XML file format that describes environments, objects, and robots
-in a manner suitable for robotic applications. SDF is capable of representing
+SDFormat is an XML file format that describes environments, objects, and robots
+in a manner suitable for robotic applications. SDFormat is capable of representing
 and describing different physic engines, lighting properties, terrain, static
 or dynamic objects, and articulated robots with various sensors, and acutators.
-The format of SDF is also described by XML, which facilitates updates and
-allows conversion from previous versions. A parser is also contained within
-this package that reads SDF files and returns a C++ interface.
+The format of SDFormat is also described by XML, which facilitates updates and
+allows conversion from previous versions.
+
+* SDFormat - The specification.
+    * SDF - Synonym for SDFormat, though SDFormat should be preferred, as "SDF"
+      is an acronym with other meanings.
+* libsdformat - The C++ parsing code contained within this repository,
+  which can be used to read SDFormat files and return a C++ interface.
 
 Test coverage:
 

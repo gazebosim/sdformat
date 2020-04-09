@@ -17,18 +17,26 @@
 #ifndef SDF_LIGHT_HH_
 #define SDF_LIGHT_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Angle.hh>
 
 #include "sdf/Element.hh"
+#include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declare private data class.
   class LightPrivate;
+  struct PoseRelativeToGraph;
 
   /// \enum LightType
   /// \brief The set of light types. INVALID indicates that light type has
@@ -56,12 +64,26 @@ namespace sdf
     /// \brief Default constructor
     public: Light();
 
+    /// \brief Copy constructor
+    /// \param[in] _light Light to copy.
+    public: Light(const Light &_light);
+
     /// \brief Move constructor
     /// \param[in] _light Light to move.
-    public: Light(Light &&_light);
+    public: Light(Light &&_light) noexcept;
 
     /// \brief Destructor
     public: ~Light();
+
+    /// \brief Move assignment operator.
+    /// \param[in] _light Light to move.
+    /// \return Reference to this.
+    public: Light &operator=(Light &&_light);
+
+    /// \brief Assignment operator.
+    /// \param[in] _light The light to set values from.
+    /// \return *this
+    public: Light &operator=(const Light &_light);
 
     /// \brief Load the light based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -92,24 +114,61 @@ namespace sdf
     /// typically used to express the position and rotation of a light in a
     /// global coordinate frame.
     /// \return The pose of the light.
-    public: const ignition::math::Pose3d &Pose() const;
+    /// \deprecated See RawPose.
+    public: const ignition::math::Pose3d &Pose() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the pose of the light.
     /// \sa const ignition::math::Pose3d &Pose() const
     /// \param[in] _pose The new light pose.
-    public: void SetPose(const ignition::math::Pose3d &_pose);
+    /// \deprecated See SetRawPose.
+    public: void SetPose(const ignition::math::Pose3d &_pose)
+        SDF_DEPRECATED(9.0);
+
+    /// \brief Get the pose of the light. This is the pose of the light
+    /// as specified in SDF (<light> <pose> ... </pose></light>), and is
+    /// typically used to express the position and rotation of a light in a
+    /// global coordinate frame.
+    /// \return The pose of the light.
+    public: const ignition::math::Pose3d &RawPose() const;
+
+    /// \brief Set the pose of the light.
+    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \param[in] _pose The new light pose.
+    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+
+    /// \brief Get the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the parent link/world coordinate frame.
+    /// \return The name of the pose relative-to frame.
+    public: const std::string &PoseRelativeTo() const;
+
+    /// \brief Set the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the parent model/world coordinate frame.
+    /// \param[in] _frame The name of the pose relative-to frame.
+    public: void SetPoseRelativeTo(const std::string &_frame);
 
     /// \brief Get the name of the coordinate frame in which this light's
     /// pose is expressed. A empty value indicates that the frame is the
     /// global/world coordinate frame.
     /// \return The name of the pose frame.
-    public: const std::string &PoseFrame() const;
+    /// \deprecated See PoseRelativeTo.
+    public: const std::string &PoseFrame() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the name of the coordinate frame in which this light's
     /// pose is expressed. A empty value indicates that the frame is the
     /// global/world coordinate frame.
     /// \param[in] _frame The name of the pose frame.
-    public: void SetPoseFrame(const std::string &_frame);
+    /// \deprecated See SetPoseRelativeTo.
+    public: void SetPoseFrame(const std::string &_frame)
+        SDF_DEPRECATED(9.0);
+
+    /// \brief Get SemanticPose object of this object to aid in resolving
+    /// poses.
+    /// \return SemanticPose object for this link.
+    public: sdf::SemanticPose SemanticPose() const;
 
     /// \brief Get whether the light casts shadows.
     /// \return True if the light casts shadows.
@@ -236,8 +295,33 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Helper function to copy from another light
+    /// \param[in] _light Light to copy.
+    private: void CopyFrom(const Light &_light);
+
+    /// \brief Give the name of the xml parent of this object, to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Link::SetPoseRelativeToGraph or World::Load.
+    /// \param[in] _xmlParentName Name of xml parent object.
+    private: void SetXmlParentName(const std::string &_xmlParentName);
+
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Link::SetPoseRelativeToGraph or World::Load.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    private: void SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    /// \brief Allow Link::SetPoseRelativeToGraph or World::Load to call
+    /// SetXmlParentName and SetPoseRelativeToGraph,
+    /// but Link::SetPoseRelativeToGraph is a private function, so we need
+    /// to befriend the entire class.
+    friend class Link;
+    friend class World;
+
     /// \brief Private data pointer.
     private: LightPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif

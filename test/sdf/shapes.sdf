@@ -8,6 +8,11 @@
             <size>3 4 5</size>
           </box>
         </geometry>
+        <surface>
+          <contact>
+            <collide_bitmask>0xAB</collide_bitmask>
+          </contact>
+        </surface>
       </collision>
 
       <visual name="box_vis">
@@ -96,6 +101,15 @@
         </geometry>
       </visual>
 
+      <visual name="sphere_vis_transparency">
+        <transparency>0.22</transparency>
+        <visibility_flags>1</visibility_flags>
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </visual>
     </link>
   </model>
 </sdf>

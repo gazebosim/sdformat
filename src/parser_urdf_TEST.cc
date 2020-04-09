@@ -23,7 +23,7 @@
 #include "sdf/parser_urdf.hh"
 
 /////////////////////////////////////////////////
-std::string get_minimal_urdf_txt()
+std::string getMinimalUrdfTxt()
 {
   std::ostringstream stream;
   stream << "<robot name='test_robot'>"
@@ -33,36 +33,49 @@ std::string get_minimal_urdf_txt()
 }
 
 /////////////////////////////////////////////////
-void convert_urdf_str_to_sdf(const std::string& urdf, sdf::SDF& _sdf)
+std::string convertUrdfStrToSdfStr(const std::string &_urdf)
 {
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
-  TiXmlDocument sdf_result = parser_.InitModelString(urdf);
-  std::string sdf_result_string;
-  sdf_result_string << sdf_result;
-  _sdf.SetFromString(sdf_result_string);
-  return;
+  SDF_SUPPRESS_DEPRECATED_END
+  TiXmlDocument sdf_result = parser_.InitModelString(_urdf);
+  TiXmlPrinter printer;
+  sdf_result.Accept(&printer);
+  return printer.Str();
+}
+
+/////////////////////////////////////////////////
+void convertUrdfStrToSdf(const std::string &_urdf, sdf::SDF &_sdf)
+{
+  _sdf.SetFromString(convertUrdfStrToSdfStr(_urdf));
 }
 
 /////////////////////////////////////////////////
 /* By design, errors are only reported in std output */
 TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
 {
+  // Suppress deprecation for sdf::URDF2SDF
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   ASSERT_NO_THROW(
     TiXmlDocument doc = TiXmlDocument();
     sdf::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  );
+  );    // NOLINT(whitespace/parens)
+  SDF_SUPPRESS_DEPRECATED_END
 }
 
 /////////////////////////////////////////////////
 TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
 {
+  // Suppress deprecation for sdf::URDF2SDF
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   ASSERT_NO_THROW(
     TiXmlDocument doc;
-    doc.Parse(get_minimal_urdf_txt().c_str());
+    doc.Parse(getMinimalUrdfTxt().c_str());
     sdf::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  );
+  );    // NOLINT(whitespace/parens)
+  SDF_SUPPRESS_DEPRECATED_END
 }
 
 /////////////////////////////////////////////////
@@ -70,19 +83,18 @@ TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
 {
   // URDF -> SDF
   TiXmlDocument doc;
-  doc.Parse(get_minimal_urdf_txt().c_str());
+  doc.Parse(getMinimalUrdfTxt().c_str());
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
+  SDF_SUPPRESS_DEPRECATED_END
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   std::string sdf_result_str;
   sdf_result_str << sdf_result;
 
   // SDF -> SDF
   std::ostringstream stream;
-  // Use hard-coded "1.4" for version string
-  // until parser_urdf.cc exports version "1.5"
-  // see `sdf->SetAttribute("version", "1.4");`
-  // in URDF2SDF::InitModelString()
-  stream << "<sdf version='" << "1.4" << "'>"
+  // parser_urdf.cc exports version "1.7"
+  stream << "<sdf version='" << "1.7" << "'>"
          << "  <model name='test_robot' />"
          << "</sdf>";
   TiXmlDocument sdf_doc;
@@ -103,7 +115,9 @@ TEST(URDFParser, ParseRobotOriginXYZBlank)
          << "</robot>";
   TiXmlDocument doc;
   doc.Parse(stream.str().c_str());
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
+  SDF_SUPPRESS_DEPRECATED_END
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdf);
@@ -122,7 +136,9 @@ TEST(URDFParser, ParseRobotOriginRPYBlank)
          << "  <link name=\"link\" />"
          << "</robot>";
   TiXmlDocument doc;
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
+  SDF_SUPPRESS_DEPRECATED_END
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
@@ -134,6 +150,95 @@ TEST(URDFParser, ParseRobotOriginRPYBlank)
 }
 
 /////////////////////////////////////////////////
+TEST(URDFParser, ParseRobotMaterialBlank)
+{
+  std::ostringstream stream;
+  stream << "<robot name=\"test\">"
+         << "  <link name=\"link\">"
+         << "    <inertial>"
+         << "      <mass value=\"1\"/>"
+         << "      <inertia ixx=\"1\" ixy=\"0.0\" ixz=\"0.0\""
+         << "               iyy=\"1\" iyz=\"0.0\" izz=\"1\"/>"
+         << "    </inertial>"
+         << "    <visual>"
+         << "      <geometry>"
+         << "        <sphere radius=\"1.0\"/>"
+         << "      </geometry>"
+         << "    </visual>"
+         << "  </link>"
+         << "  <gazebo reference=\"link\">"
+         << "    <mu1>0.2</mu1>"
+         << "  </gazebo>"
+         << "</robot>";
+  TiXmlDocument doc;
+  doc.Parse(stream.str().c_str());
+  SDF_SUPPRESS_DEPRECATED_BEGIN
+  sdf::URDF2SDF parser;
+  SDF_SUPPRESS_DEPRECATED_END
+  auto sdfXml = parser.InitModelDoc(&doc);
+  auto sdfElem = sdfXml.FirstChildElement("sdf");
+  ASSERT_NE(nullptr, sdfElem);
+  auto modelElem = sdfElem->FirstChildElement("model");
+  ASSERT_NE(nullptr, modelElem);
+  auto linkElem = modelElem->FirstChildElement("link");
+  ASSERT_NE(nullptr, linkElem);
+  auto visualElem = linkElem->FirstChildElement("visual");
+  ASSERT_NE(nullptr, visualElem);
+
+  auto materialElem = visualElem->FirstChildElement("material");
+  ASSERT_EQ(nullptr, materialElem);
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, ParseRobotMaterialName)
+{
+  std::ostringstream stream;
+  stream << "<robot name=\"test\">"
+         << "  <link name=\"link\">"
+         << "    <inertial>"
+         << "      <mass value=\"1\"/>"
+         << "      <inertia ixx=\"1\" ixy=\"0.0\" ixz=\"0.0\""
+         << "               iyy=\"1\" iyz=\"0.0\" izz=\"1\"/>"
+         << "    </inertial>"
+         << "    <visual>"
+         << "      <geometry>"
+         << "        <sphere radius=\"1.0\"/>"
+         << "      </geometry>"
+         << "    </visual>"
+         << "  </link>"
+         << "  <gazebo reference=\"link\">"
+         << "    <material>Gazebo/Orange</material>"
+         << "  </gazebo>"
+         << "</robot>";
+  TiXmlDocument doc;
+  doc.Parse(stream.str().c_str());
+  SDF_SUPPRESS_DEPRECATED_BEGIN
+  sdf::URDF2SDF parser;
+  SDF_SUPPRESS_DEPRECATED_END
+  auto sdfXml = parser.InitModelDoc(&doc);
+  auto sdfElem = sdfXml.FirstChildElement("sdf");
+  ASSERT_NE(nullptr, sdfElem);
+  auto modelElem = sdfElem->FirstChildElement("model");
+  ASSERT_NE(nullptr, modelElem);
+  auto linkElem = modelElem->FirstChildElement("link");
+  ASSERT_NE(nullptr, linkElem);
+  auto visualElem = linkElem->FirstChildElement("visual");
+  ASSERT_NE(nullptr, visualElem);
+
+  auto materialElem = visualElem->FirstChildElement("material");
+  ASSERT_NE(nullptr, materialElem);
+  auto scriptElem = materialElem->FirstChildElement("script");
+  ASSERT_NE(nullptr, scriptElem);
+  auto nameElem = scriptElem->FirstChildElement("name");
+  ASSERT_NE(nullptr, nameElem);
+  EXPECT_EQ("Gazebo/Orange", std::string(nameElem->GetText()));
+  auto uriElem = scriptElem->FirstChildElement("uri");
+  ASSERT_NE(nullptr, uriElem);
+  EXPECT_EQ("file://media/materials/scripts/gazebo.material",
+      std::string(uriElem->GetText()));
+}
+
+/////////////////////////////////////////////////
 TEST(URDFParser, ParseRobotOriginInvalidXYZ)
 {
   std::ostringstream stream;
@@ -142,7 +247,9 @@ TEST(URDFParser, ParseRobotOriginInvalidXYZ)
          << "  <link name=\"link\" />"
          << "</robot>";
   TiXmlDocument doc;
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
+  SDF_SUPPRESS_DEPRECATED_END
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
@@ -176,7 +283,7 @@ TEST(URDFParser, ParseGazeboLinkFactors)
     {"laserRetro", {"model", "link", "collision", "laser_retro", "72.8"}},
   };
 
-  for (std::map<std::string, std::vector<std::string>>::iterator it =
+  for (std::map<std::string, std::vector<std::string> >::iterator it =
          elements.begin(); it != elements.end(); ++it)
   {
     std::string value = it->second[it->second.size() - 1];
@@ -203,7 +310,9 @@ TEST(URDFParser, ParseGazeboLinkFactors)
            << "</robot>";
 
     TiXmlDocument doc;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
     sdf::URDF2SDF parser_;
+    SDF_SUPPRESS_DEPRECATED_END
     doc.Parse(stream.str().c_str());
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
@@ -239,7 +348,9 @@ TEST(URDFParser, ParseGazeboInvalidDampingFactor)
          << "  </gazebo>"
          << "</robot>";
   TiXmlDocument doc;
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
+  SDF_SUPPRESS_DEPRECATED_END
   doc.Parse(stream.str().c_str());
   ASSERT_THROW(TiXmlDocument sdf_result = parser_.InitModelDoc(&doc),
                std::invalid_argument);
@@ -252,10 +363,11 @@ TEST(URDFParser, ParseGazeboJointElements)
   {
     {"stopCfm", {"model", "joint", "physics", "ode", "limit", "cfm", "0.8"}},
     {"stopErp", {"model", "joint", "physics", "ode", "limit", "erp", "0.8"}},
-    {"fudgeFactor", {"model", "joint", "physics", "ode", "fudge_factor", "11.1"}},
+    {"fudgeFactor", {"model", "joint", "physics", "ode", "fudge_factor",
+        "11.1"}},
   };
 
-  for (std::map<std::string, std::vector<std::string>>::iterator it =
+  for (std::map<std::string, std::vector<std::string> >::iterator it =
          elements.begin(); it != elements.end(); ++it)
   {
     std::string value = it->second[it->second.size() - 1];
@@ -279,16 +391,16 @@ TEST(URDFParser, ParseGazeboJointElements)
            << "  <link name=\"neck_tilt\">"
            << "    <inertial>"
            << "      <mass value=\"0.940\" />"
-           << "	     <origin xyz=\"0.000061 0.003310 0.028798\"/>"
-           << "	     <inertia ixx=\"0.001395\""
-           << "	              iyy=\"0.001345\""
-           << "	              izz=\"0.000392\""
-           << "	              ixy=\"-0.000000\""
-           << "	              ixz=\"-0.000000\""
-           << "	              iyz=\"-0.000085\" />"
+           << "      <origin xyz=\"0.000061 0.003310 0.028798\"/>"
+           << "      <inertia ixx=\"0.001395\""
+           << "               iyy=\"0.001345\""
+           << "               izz=\"0.000392\""
+           << "               ixy=\"-0.000000\""
+           << "               ixz=\"-0.000000\""
+           << "               iyz=\"-0.000085\" />"
            << "    </inertial>"
            << "    <collision>"
-           << "	     <origin xyz=\"0 0 0\" rpy=\"0.0 0.0 0.0\" />"
+           << "      <origin xyz=\"0 0 0\" rpy=\"0.0 0.0 0.0\" />"
            << "    </collision>"
            << "  </link>"
            << "  <joint name=\"head_j0\" type=\"revolute\">"
@@ -296,7 +408,10 @@ TEST(URDFParser, ParseGazeboJointElements)
            << "    <origin xyz=\"0.0 0.0 0.07785\" rpy=\"0 0 0\" />"
            << "    <parent link=\"chest_link\"/>"
            << "    <child link=\"neck_tilt\"/>"
-           << "    <limit effort=\"100\" velocity=\"0.349\" lower=\"-0.314\" upper=\"0.017\" />"
+           << "    <limit effort=\"100\""
+           << "           velocity=\"0.349\""
+           << "           lower=\"-0.314\""
+           << "           upper=\"0.017\"/>"
            << "  </joint>"
            << "  <gazebo reference=\"head_j0\">"
            << "    <" << it->first << ">" << value << "</" << it->first << ">"
@@ -304,7 +419,9 @@ TEST(URDFParser, ParseGazeboJointElements)
            << "</robot>";
 
     TiXmlDocument doc;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
     sdf::URDF2SDF parser_;
+    SDF_SUPPRESS_DEPRECATED_END
     doc.Parse(stream.str().c_str());
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
@@ -355,7 +472,7 @@ TEST(URDFParser, CheckFixedJointOptions_NoOption)
 
   // Check that there are no joints in the converted SDF
   sdf::SDF fixedJointNoOptionsSDF;
-  convert_urdf_str_to_sdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
+  convertUrdfStrToSdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
   sdf::ElementPtr elem = fixedJointNoOptionsSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -366,7 +483,8 @@ TEST(URDFParser, CheckFixedJointOptions_NoOption)
 /////////////////////////////////////////////////
 TEST(URDFParser, CheckFixedJointOptions_disableJointLumping)
 {
-  // Convert a fixed joint with disableJointLumping (i.e. converted to fake revolute joint)
+  // Convert a fixed joint with disableJointLumping
+  // (i.e. converted to fake revolute joint)
   std::ostringstream fixedJointDisableJointLumping;
   fixedJointDisableJointLumping << "<robot name='test_robot'>"
     << "  <link name='link1'>"
@@ -397,7 +515,8 @@ TEST(URDFParser, CheckFixedJointOptions_disableJointLumping)
 
   // Check that there is a revolute joint in the converted SDF
   sdf::SDF fixedJointDisableJointLumpingSDF;
-  convert_urdf_str_to_sdf(fixedJointDisableJointLumping.str(), fixedJointDisableJointLumpingSDF);
+  convertUrdfStrToSdf(fixedJointDisableJointLumping.str(),
+      fixedJointDisableJointLumpingSDF);
   sdf::ElementPtr elem = fixedJointDisableJointLumpingSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -411,7 +530,8 @@ TEST(URDFParser, CheckFixedJointOptions_disableJointLumping)
 /////////////////////////////////////////////////
 TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
 {
-  // Convert a fixed joint with only preserveFixedJoint (i.e. converted to fixed joint)
+  // Convert a fixed joint with only preserveFixedJoint
+  // (i.e. converted to fixed joint)
   std::ostringstream fixedJointPreserveFixedJoint;
   fixedJointPreserveFixedJoint << "<robot name='test_robot'>"
     << "  <link name='link1'>"
@@ -442,7 +562,8 @@ TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
 
   // Check that there is a fixed joint in the converted SDF
   sdf::SDF fixedJointPreserveFixedJointSDF;
-  convert_urdf_str_to_sdf(fixedJointPreserveFixedJoint.str(), fixedJointPreserveFixedJointSDF);
+  convertUrdfStrToSdf(fixedJointPreserveFixedJoint.str(),
+      fixedJointPreserveFixedJointSDF);
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -454,9 +575,11 @@ TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
 }
 
 /////////////////////////////////////////////////
-TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint_and_disableJointLumping)
+TEST(URDFParser,
+    CheckFixedJointOptions_preserveFixedJoint_and_disableJointLumping)
 {
-  // Convert a fixed joint with disableJointLumping and preserveFixedJoint (i.e. converted to fixed joint)
+  // Convert a fixed joint with disableJointLumping and preserveFixedJoint
+  // (i.e. converted to fixed joint)
   std::ostringstream fixedJointPreserveFixedJoint;
   fixedJointPreserveFixedJoint << "<robot name='test_robot'>"
     << "  <link name='link1'>"
@@ -490,7 +613,8 @@ TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint_and_disableJointLumpi
 
   // Check that there is a fixed joint in the converted SDF
   sdf::SDF fixedJointPreserveFixedJointSDF;
-  convert_urdf_str_to_sdf(fixedJointPreserveFixedJoint.str(), fixedJointPreserveFixedJointSDF);
+  convertUrdfStrToSdf(fixedJointPreserveFixedJoint.str(),
+      fixedJointPreserveFixedJointSDF);
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -534,12 +658,190 @@ TEST(URDFParser, CheckFixedJointOptions_NoOption_Repeated)
 
   // Check that there are no joints in the converted SDF
   sdf::SDF fixedJointNoOptionsSDF;
-  convert_urdf_str_to_sdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
+  convertUrdfStrToSdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
   sdf::ElementPtr elem = fixedJointNoOptionsSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
   elem = elem->GetElement("model");
   ASSERT_FALSE(elem->HasElement("joint"));
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, CheckJointTransform)
+{
+  std::stringstream str;
+  str.precision(16);
+  str << "<robot name='test_robot'>"
+    << "  <link name='world'/>"
+    << "  <joint name='jointw_1' type='fixed'>"
+    << "    <parent link='world' />"
+    << "    <child  link='link1' />"
+    << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0' />"
+    << "  </joint>"
+    << "  <link name='link1'>"
+    << "    <inertial>"
+    << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+    << "      <mass value='1.0'/>"
+    << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+    << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+    << "    </inertial>"
+    << "  </link>"
+    << "  <joint name='joint1_2' type='continuous'>"
+    << "    <parent link='link1' />"
+    << "    <child  link='link2' />"
+    << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 " << IGN_PI*0.5 << "' />"
+    << "  </joint>"
+    << "  <link name='link2'>"
+    << "    <inertial>"
+    << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+    << "      <mass value='1.0'/>"
+    << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+    << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+    << "    </inertial>"
+    << "  </link>"
+    << "  <joint name='joint2_3' type='continuous'>"
+    << "    <parent link='link2' />"
+    << "    <child  link='link3' />"
+    << "    <origin xyz='1.0 0.0 0.0' rpy='0.0 0.0 0.0' />"
+    << "  </joint>"
+    << "  <link name='link3'>"
+    << "    <inertial>"
+    << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+    << "      <mass value='1.0'/>"
+    << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+    << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+    << "    </inertial>"
+    << "  </link>"
+    << "</robot>";
+
+  std::string expectedSdf = R"(<sdf version="1.7">
+    <model name="test_robot">
+        <joint type="fixed" name="jointw_1">
+            <pose relative_to="__model__">0 0 0 0 0 0</pose>
+            <parent>world</parent>
+            <child>link1</child>
+        </joint>
+        <link name="link1">
+            <pose relative_to="jointw_1" />
+            <inertial>
+                <pose>0 0 0 0 0 0</pose>
+                <mass>1</mass>
+                <inertia>
+                    <ixx>1</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>1</iyy>
+                    <iyz>0</iyz>
+                    <izz>1</izz>
+                </inertia>
+            </inertial>
+        </link>
+        <joint type="revolute" name="joint1_2">
+            <pose relative_to="link1">0 0 0 0 0 1.570796326794897</pose>
+            <parent>link1</parent>
+            <child>link2</child>
+            <axis>
+                <xyz>1 0 0</xyz>
+                <limit />
+                <dynamics />
+            </axis>
+        </joint>
+        <link name="link2">
+            <pose relative_to="joint1_2" />
+            <inertial>
+                <pose>0 0 0 0 0 0</pose>
+                <mass>1</mass>
+                <inertia>
+                    <ixx>1</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>1</iyy>
+                    <iyz>0</iyz>
+                    <izz>1</izz>
+                </inertia>
+            </inertial>
+        </link>
+        <joint type="revolute" name="joint2_3">
+            <pose relative_to="link2">1 0 0 0 0 0</pose>
+            <parent>link2</parent>
+            <child>link3</child>
+            <axis>
+                <xyz>1 0 0</xyz>
+                <limit />
+                <dynamics />
+            </axis>
+        </joint>
+        <link name="link3">
+            <pose relative_to="joint2_3" />
+            <inertial>
+                <pose>0 0 0 0 0 0</pose>
+                <mass>1</mass>
+                <inertia>
+                    <ixx>1</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>1</iyy>
+                    <iyz>0</iyz>
+                    <izz>1</izz>
+                </inertia>
+            </inertial>
+        </link>
+    </model>
+</sdf>
+)";
+
+  std::string sdfStr = convertUrdfStrToSdfStr(str.str());
+  EXPECT_EQ(expectedSdf, sdfStr);
+}
+/////////////////////////////////////////////////
+TEST(URDFParser, OutputPrecision)
+{
+  std::string str = R"(
+    <robot name='test_robot'>
+      <link name='link1'>
+          <inertial>
+            <mass value="0.1" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+    </robot>)";
+
+  SDF_SUPPRESS_DEPRECATED_BEGIN
+  sdf::URDF2SDF parser;
+  SDF_SUPPRESS_DEPRECATED_END
+  TiXmlDocument sdfResult = parser.InitModelString(str);
+
+  auto root = sdfResult.RootElement();
+  auto model = root->FirstChild("model");
+  ASSERT_NE(nullptr, model);
+  auto link = model->FirstChild("link");
+  ASSERT_NE(nullptr, link);
+  auto inertial = link->FirstChild("inertial");
+  ASSERT_NE(nullptr, inertial);
+  auto pose = inertial->FirstChild("pose");
+  ASSERT_NE(nullptr, pose);
+  ASSERT_NE(nullptr, pose->FirstChild());
+  std::string poseTxt = pose->FirstChild()->ValueStr();
+  EXPECT_FALSE(poseTxt.empty());
+
+  std::string poseValues[6];
+  std::istringstream ss(poseTxt);
+
+  for (int i = 0; i < 6; ++i)
+  {
+    ss >> poseValues[i];
+  }
+
+  // Check output precision
+  EXPECT_EQ("0.123456789123456", poseValues[0]);
+  EXPECT_EQ("1.570796326794895", poseValues[3]);
+
+  // Check that 0 doesn't get printed as -0
+  EXPECT_EQ("0", poseValues[1]);
+  EXPECT_EQ("0", poseValues[2]);
+  EXPECT_EQ("0", poseValues[4]);
+  EXPECT_EQ("0", poseValues[5]);
 }
 
 /////////////////////////////////////////////////

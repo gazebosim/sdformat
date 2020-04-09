@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef _SDF_EXCEPTION_HH_
-#define _SDF_EXCEPTION_HH_
+#ifndef SDF_EXCEPTION_HH_
+#define SDF_EXCEPTION_HH_
 
 #include <cstdint>
 #include <iostream>
@@ -24,6 +24,7 @@
 #include <sstream>
 #include <string>
 
+#include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 
 #ifdef _WIN32
@@ -35,6 +36,10 @@
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \addtogroup sdf
   /// \{
 
@@ -64,6 +69,20 @@ namespace sdf
     /// \brief Copy constructor
     /// \param[in] _e Exception to copy.
     public: Exception(const Exception &_e);
+
+    /// \brief Move constructor
+    /// \param[in] _e Exception to move.
+    public: Exception(Exception &&_e) noexcept;
+
+    /// \brief Assignment operator.
+    /// \param[in] _exception The exception to set values from.
+    /// \return *this
+    public: Exception &operator=(const Exception &_exception);
+
+    /// \brief Move assignment operator.
+    /// \param[in] _exception Exception to move.
+    /// \return Reference to this.
+    public: Exception &operator=(Exception &&_exception);
 
     /// \brief Destructor
     public: virtual ~Exception();
@@ -136,6 +155,7 @@ namespace sdf
     public: virtual ~AssertionInternalError();
   };
   /// \}
+  }
 }
 
 #ifdef _WIN32

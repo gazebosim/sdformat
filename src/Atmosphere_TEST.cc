@@ -77,3 +77,56 @@ TEST(DOMAtmosphere, CopyConstructor)
 
   EXPECT_TRUE(atmosphere == atmosphere2);
 }
+
+/////////////////////////////////////////////////
+TEST(DOMAtmosphere, MoveAssignment)
+{
+  sdf::Atmosphere atmosphere;
+  atmosphere.SetTemperature(123.23);
+  atmosphere.SetTemperatureGradient(-1.65);
+  atmosphere.SetPressure(76531.3);
+
+  sdf::Atmosphere atmosphere2;
+  atmosphere2 = std::move(atmosphere);
+  EXPECT_EQ(sdf::AtmosphereType::ADIABATIC, atmosphere2.Type());
+  EXPECT_DOUBLE_EQ(123.23, atmosphere2.Temperature().Kelvin());
+  EXPECT_DOUBLE_EQ(-1.65, atmosphere2.TemperatureGradient());
+  EXPECT_DOUBLE_EQ(76531.3, atmosphere2.Pressure());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMAtmosphere, CopyAssignment)
+{
+  sdf::Atmosphere atmosphere;
+  atmosphere.SetTemperature(123.23);
+  atmosphere.SetTemperatureGradient(-1.65);
+  atmosphere.SetPressure(76531.3);
+
+  sdf::Atmosphere atmosphere2;
+  atmosphere2 = atmosphere;
+  EXPECT_EQ(sdf::AtmosphereType::ADIABATIC, atmosphere2.Type());
+  EXPECT_DOUBLE_EQ(123.23, atmosphere2.Temperature().Kelvin());
+  EXPECT_DOUBLE_EQ(-1.65, atmosphere2.TemperatureGradient());
+  EXPECT_DOUBLE_EQ(76531.3, atmosphere2.Pressure());
+
+  EXPECT_TRUE(atmosphere == atmosphere2);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMAtmosphere, CopyAssignmentAfterMove)
+{
+  sdf::Atmosphere atmosphere1;
+  atmosphere1.SetTemperature(100.0);
+
+  sdf::Atmosphere atmosphere2;
+  atmosphere2.SetTemperature(200.0);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Atmosphere tmp = std::move(atmosphere1);
+  atmosphere1 = atmosphere2;
+  atmosphere2 = tmp;
+
+  EXPECT_DOUBLE_EQ(200.0, atmosphere1.Temperature().Kelvin());
+  EXPECT_DOUBLE_EQ(100.0, atmosphere2.Temperature().Kelvin());
+}

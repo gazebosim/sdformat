@@ -24,10 +24,104 @@ TEST(DOMMesh, Construction)
   sdf::Mesh mesh;
   EXPECT_EQ(nullptr, mesh.Element());
 
+  EXPECT_EQ(std::string(), mesh.FilePath());
   EXPECT_EQ(std::string(), mesh.Uri());
   EXPECT_EQ(std::string(), mesh.Submesh());
   EXPECT_TRUE(ignition::math::Vector3d(1, 1, 1) == mesh.Scale());
   EXPECT_FALSE(mesh.CenterSubmesh());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, MoveConstructor)
+{
+  sdf::Mesh mesh;
+  mesh.SetUri("banana");
+  mesh.SetSubmesh("watermelon");
+  mesh.SetCenterSubmesh(true);
+  mesh.SetScale({0.5, 0.6, 0.7});
+  mesh.SetFilePath("/pear");
+
+  sdf::Mesh mesh2(std::move(mesh));
+  EXPECT_EQ("banana", mesh2.Uri());
+  EXPECT_EQ("watermelon", mesh2.Submesh());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
+  EXPECT_TRUE(mesh2.CenterSubmesh());
+  EXPECT_EQ("/pear", mesh2.FilePath());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, CopyConstructor)
+{
+  sdf::Mesh mesh;
+  mesh.SetUri("banana");
+  mesh.SetSubmesh("watermelon");
+  mesh.SetCenterSubmesh(true);
+  mesh.SetScale({0.5, 0.6, 0.7});
+  mesh.SetFilePath("/pear");
+
+  sdf::Mesh mesh2(mesh);
+  EXPECT_EQ("banana", mesh2.Uri());
+  EXPECT_EQ("watermelon", mesh2.Submesh());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
+  EXPECT_TRUE(mesh2.CenterSubmesh());
+  EXPECT_EQ("/pear", mesh2.FilePath());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, CopyAssignmentOperator)
+{
+  sdf::Mesh mesh;
+  mesh.SetUri("banana");
+  mesh.SetSubmesh("watermelon");
+  mesh.SetCenterSubmesh(true);
+  mesh.SetScale({0.5, 0.6, 0.7});
+  mesh.SetFilePath("/pear");
+
+  sdf::Mesh mesh2;
+  mesh2 = mesh;
+  EXPECT_EQ("banana", mesh2.Uri());
+  EXPECT_EQ("watermelon", mesh2.Submesh());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
+  EXPECT_TRUE(mesh2.CenterSubmesh());
+  EXPECT_EQ("/pear", mesh2.FilePath());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, MoveAssignmentOperator)
+{
+  sdf::Mesh mesh;
+  mesh.SetUri("banana");
+  mesh.SetSubmesh("watermelon");
+  mesh.SetCenterSubmesh(true);
+  mesh.SetScale({0.5, 0.6, 0.7});
+  mesh.SetFilePath("/pear");
+
+  sdf::Mesh mesh2;
+  mesh2 = std::move(mesh);
+  EXPECT_EQ("banana", mesh2.Uri());
+  EXPECT_EQ("watermelon", mesh2.Submesh());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
+  EXPECT_TRUE(mesh2.CenterSubmesh());
+  EXPECT_EQ("/pear", mesh2.FilePath());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, CopyAssignmentAfterMove)
+{
+  sdf::Mesh mesh1;
+  mesh1.SetUri("banana");
+
+  sdf::Mesh mesh2;
+  mesh2.SetUri("watermelon");
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Mesh tmp = std::move(mesh1);
+  mesh1 = mesh2;
+  mesh2 = tmp;
+
+  EXPECT_EQ("watermelon", mesh1.Uri());
+  EXPECT_EQ("banana", mesh2.Uri());
 }
 
 /////////////////////////////////////////////////
@@ -51,6 +145,10 @@ TEST(DOMMesh, Set)
   EXPECT_FALSE(mesh.CenterSubmesh());
   mesh.SetCenterSubmesh(true);
   EXPECT_TRUE(mesh.CenterSubmesh());
+
+  EXPECT_EQ(std::string(), mesh.FilePath());
+  mesh.SetFilePath("/mypath");
+  EXPECT_EQ("/mypath", mesh.FilePath());
 }
 
 /////////////////////////////////////////////////

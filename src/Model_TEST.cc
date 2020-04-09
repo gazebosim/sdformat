@@ -59,12 +59,101 @@ TEST(DOMModel, Construction)
   EXPECT_FALSE(model.JointNameExists(""));
   EXPECT_FALSE(model.JointNameExists("default"));
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, model.Pose());
-  EXPECT_TRUE(model.PoseFrame().empty());
+  EXPECT_EQ(0u, model.FrameCount());
+  EXPECT_EQ(nullptr, model.FrameByIndex(0));
+  EXPECT_EQ(nullptr, model.FrameByIndex(1));
+  EXPECT_FALSE(model.FrameNameExists(""));
+  EXPECT_FALSE(model.FrameNameExists("default"));
 
-  model.SetPose({1, 2, 3, 0, 0, IGN_PI});
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), model.Pose());
+  EXPECT_TRUE(model.CanonicalLinkName().empty());
+  EXPECT_EQ(nullptr, model.CanonicalLink());
+  model.SetCanonicalLinkName("link");
+  EXPECT_EQ("link", model.CanonicalLinkName());
+  EXPECT_EQ(nullptr, model.CanonicalLink());
 
-  model.SetPoseFrame("world");
-  EXPECT_EQ("world", model.PoseFrame());
+  EXPECT_EQ(ignition::math::Pose3d::Zero, model.RawPose());
+  EXPECT_TRUE(model.PoseRelativeTo().empty());
+  {
+    auto semanticPose = model.SemanticPose();
+    EXPECT_EQ(model.RawPose(), semanticPose.RawPose());
+    EXPECT_TRUE(semanticPose.RelativeTo().empty());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
+
+  model.SetRawPose({1, 2, 3, 0, 0, IGN_PI});
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), model.RawPose());
+
+  model.SetPoseRelativeTo("world");
+  EXPECT_EQ("world", model.PoseRelativeTo());
+  {
+    auto semanticPose = model.SemanticPose();
+    EXPECT_EQ(model.RawPose(), semanticPose.RawPose());
+    EXPECT_EQ("world", semanticPose.RelativeTo());
+    ignition::math::Pose3d pose;
+    // expect errors when trying to resolve pose
+    EXPECT_FALSE(semanticPose.Resolve(pose).empty());
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, CopyConstructor)
+{
+  sdf::Model model;
+  model.SetName("test_model");
+
+  sdf::Model model2(model);
+  EXPECT_EQ("test_model", model2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, CopyAssignmentOperator)
+{
+  sdf::Model model;
+  model.SetName("test_model");
+
+  sdf::Model model2;
+  model2 = model;
+  EXPECT_EQ("test_model", model2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, MoveConstructor)
+{
+  sdf::Model model;
+  model.SetName("test_model");
+
+  sdf::Model model2(model);
+  EXPECT_EQ("test_model", model2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, MoveAssignmentOperator)
+{
+  sdf::Model model;
+  model.SetName("test_model");
+
+  sdf::Model model2;
+  model2 = std::move(model);
+  EXPECT_EQ("test_model", model2.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, CopyAssignmentAfterMove)
+{
+  sdf::Model model1;
+  model1.SetName("model1");
+
+  sdf::Model model2;
+  model2.SetName("model2");
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Model tmp = std::move(model1);
+  model1 = model2;
+  model2 = tmp;
+
+  EXPECT_EQ("model2", model1.Name());
+  EXPECT_EQ("model1", model2.Name());
 }

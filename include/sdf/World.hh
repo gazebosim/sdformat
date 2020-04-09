@@ -23,12 +23,20 @@
 #include "sdf/Atmosphere.hh"
 #include "sdf/Element.hh"
 #include "sdf/Gui.hh"
+#include "sdf/Scene.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declare private data class.
+  class Actor;
+  class Frame;
   class Light;
   class Model;
   class Physics;
@@ -39,9 +47,23 @@ namespace sdf
     /// \brief Default constructor
     public: World();
 
+    /// \brief Copy constructor
+    /// \param[in] _world World to copy.
+    public: World(const World &_world);
+
     /// \brief Move constructor
     /// \param[in] _world World to move.
-    public: World(World &&_world);
+    public: World(World &&_world) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _world World to move.
+    /// \return Reference to this.
+    public: World &operator=(World &&_world);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _world World to copy.
+    /// \return Reference to this.
+    public: World &operator=(const World &_world);
 
     /// \brief Destructor
     public: ~World();
@@ -125,10 +147,54 @@ namespace sdf
     /// \sa uint64_t ModelCount() const
     public: const Model *ModelByIndex(const uint64_t _index) const;
 
+    /// \brief Get a model based on a name.
+    /// \param[in] _name Name of the model.
+    /// \return Pointer to the model. Nullptr if the name does not exist.
+    public: const Model *ModelByName(const std::string &_name) const;
+
     /// \brief Get whether a model name exists.
     /// \param[in] _name Name of the model to check.
     /// \return True if there exists a model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
+
+    /// \brief Get the number of actors.
+    /// \return Number of actors contained in this World object.
+    public: uint64_t ActorCount() const;
+
+    /// \brief Get an actor based on an index.
+    /// \param[in] _index Index of the actor. The index should be in the
+    /// range [0..ActorCount()).
+    /// \return Pointer to the actor. Nullptr if the index does not exist.
+    /// \sa uint64_t ActorCount() const
+    public: const Actor *ActorByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether an actor name exists.
+    /// \param[in] _name Name of the actor to check.
+    /// \return True if there exists an actor with the given name.
+    public: bool ActorNameExists(const std::string &_name) const;
+
+    /// \brief Get the number of explicit frames.
+    /// \return Number of explicit frames contained in this World object.
+    public: uint64_t FrameCount() const;
+
+    /// \brief Get an explicit frame based on an index.
+    /// \param[in] _index Index of the explicit frame. The index should be in
+    /// the range [0..FrameCount()).
+    /// \return Pointer to the explicit frame. Nullptr if the index does not
+    /// exist.
+    /// \sa uint64_t FrameCount() const
+    public: const Frame *FrameByIndex(const uint64_t _index) const;
+
+    /// \brief Get an explicit frame based on a name.
+    /// \param[in] _name Name of the explicit frame.
+    /// \return Pointer to the explicit frame. Nullptr if the name does not
+    /// exist.
+    public: const Frame *FrameByName(const std::string &_name) const;
+
+    /// \brief Get whether an explicit frame name exists.
+    /// \param[in] _name Name of the explicit frame to check.
+    /// \return True if there exists an explicit frame with the given name.
+    public: bool FrameNameExists(const std::string &_name) const;
 
     /// \brief Get the number of lights.
     /// \return Number of lights contained in this World object.
@@ -166,6 +232,16 @@ namespace sdf
     /// \param[in] _gui The new Gui parameter for this world
     public: void SetGui(const sdf::Gui &_gui);
 
+    /// \brief Get a pointer to the Scene associated with this
+    /// world. A nullptr indicates that a Scene element has not been specified.
+    /// \return Pointer to this world's Scene parameters. Nullptr inidicates
+    /// that there are no Scene parameters.
+    public: const sdf::Scene *Scene() const;
+
+    /// \brief Set the Scene parameters associated with this world.
+    /// \param[in] _gui The new Scene parameter for this world
+    public: void SetScene(const sdf::Scene &_scene);
+
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
@@ -196,5 +272,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: WorldPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif

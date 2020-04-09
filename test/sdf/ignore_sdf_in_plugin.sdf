@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <world name="default">
+    <model name="M" >
+      <link name="link"/>
+      <plugin name="ignore_plugin" filename="nofile">
+        <link name="L"/>
+        <link name="L"/>
+      </plugin>
+    </model>
+  </world>
+</sdf>

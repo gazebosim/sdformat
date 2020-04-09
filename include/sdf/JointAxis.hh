@@ -17,15 +17,23 @@
 #ifndef SDF_JOINTAXIS_HH_
 #define SDF_JOINTAXIS_HH_
 
+#include <memory>
 #include <string>
+#include <ignition/math/Vector3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declare private data class.
   class JointAxisPrivate;
+  struct PoseRelativeToGraph;
 
   /// \brief Parameters related to the axis of rotation for rotational joints,
   /// and the axis of translation for prismatic joints.
@@ -34,9 +42,23 @@ namespace sdf
     /// \brief Default constructor
     public: JointAxis();
 
+    /// \brief Copy constructor
+    /// \param[in] _jointAxis Joint axis to copy.
+    public: JointAxis(const JointAxis &_jointAxis);
+
     /// \brief Move constructor
     /// \param[in] _jointAxis Joint axis to move.
-    public: JointAxis(JointAxis &&_jointAxis);
+    public: JointAxis(JointAxis &&_jointAxis) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _jointAxis JointAxis component to move.
+    /// \return Reference to this.
+    public: JointAxis &operator=(JointAxis &&_jointAxis);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _jointAxis JointAxis component to copy.
+    /// \return Reference to this.
+    public: JointAxis &operator=(const JointAxis &_jointAxis);
 
     /// \brief Destructor
     public: ~JointAxis();
@@ -79,14 +101,16 @@ namespace sdf
     /// \return True to interpret the axis xyz value in the parent model
     /// frame, false to use the joint frame.
     /// \sa void SetUseParentModelFrame(const bool _parentModelFrame)
-    public: bool UseParentModelFrame() const;
+    public: bool UseParentModelFrame() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set whether to interpret the axis xyz value in the parent model
     /// instead of the joint frame.
     /// \param[in] _parentModelFrame True to interpret the axis xyz value in
     /// the parent model frame, false to use the joint frame.
     /// \sa bool UseParentModelFrame() const
-    public: void SetUseParentModelFrame(const bool _parentModelFrame);
+    public: void SetUseParentModelFrame(const bool _parentModelFrame)
+        SDF_DEPRECATED(9.0);
 
     /// \brief Get the physical velocity dependent viscous damping coefficient
     /// of the joint axis. The default value is zero (0.0).
@@ -207,14 +231,54 @@ namespace sdf
     /// \sa double Dissipation() const
     public: void SetDissipation(const double _dissipation) const;
 
+    /// Get the name of the coordinate frame in which this joint axis's
+    /// unit vector is expressed. An empty value implies the parent (joint)
+    /// frame.
+    /// \return The name of the xyz expressed-in frame.
+    public: const std::string& XyzExpressedIn() const;
+
+    /// Set the name of the coordinate frame in which this joint axis's
+    /// unit vector is expressed. An empty value implies the parent (joint)
+    /// frame.
+    /// \param[in] The name of the xyz expressed-in frame.
+    public: void SetXyzExpressedIn(const std::string &_frame);
+
+    /// \brief Express xyz unit vector of this axis in the coordinates of
+    /// another named frame.
+    /// \param[out] _xyz Resolved unit vector.
+    /// \param[in] _resolveTo Name of frame in whose coordinates this object
+    /// should be resolved. If unset, it is resolved in the coordinates of its
+    /// xml parent object, which is always a joint frame.
+    /// \return Errors.
+    public: Errors ResolveXyz(
+        ignition::math::Vector3d &_xyz,
+        const std::string &_resolveTo = "") const;
+
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Give the name of the xml parent of this object, to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// Link::SetPoseRelativeToGraph.
+    /// \param[in] _xmlParentName Name of xml parent object.
+    private: void SetXmlParentName(const std::string &_xmlParentName);
+
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called
+    /// by Joint::SetPoseRelativeToGraph.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    private: void SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    /// \brief Allow Joint::SetPoseRelativeToGraph to propagate.
+    friend class Joint;
+
     /// \brief Private data pointer
     private: JointAxisPrivate *dataPtr;
   };
+  }
 }
 #endif

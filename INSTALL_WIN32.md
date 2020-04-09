@@ -18,10 +18,6 @@ Windows `cmd` for configuring and building.
         mkdir sdformat-ws
         cd sdformat-ws
 
-1. Download boost into that directory:
-
-    - [boost 1.56.0](http://packages.osrfoundation.org/win32/deps/boost_1_56_0.zip)
-
 1. Unzip it in sdformat-ws.
 
 1. Clone sdformat

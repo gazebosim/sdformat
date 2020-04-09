@@ -16,8 +16,13 @@
  */
 
 #include <gtest/gtest.h>
+#include <array>
+#include <sstream>
 #include "sdf/Exception.hh"
-#include "sdf/Converter.hh"
+#include "sdf/Filesystem.hh"
+
+#include "Converter.hh"
+#include "test_config.h"
 
 ////////////////////////////////////////////////////
 /// Set up an xml string for testing
@@ -27,6 +32,24 @@ std::string getXmlString()
   stream << "<elemA attrA='A'>"
          << "  <elemB attrB='B'>"
          << "    <elemC attrC='C'>"
+         << "      <elemD>D</elemD>"
+         << "    </elemC>"
+         << "  </elemB>"
+         << "</elemA>";
+  return stream.str();
+}
+
+////////////////////////////////////////////////////
+/// Set up an xml string with a repeated element for testing
+std::string getRepeatedXmlString()
+{
+  std::stringstream stream;
+  stream << "<elemA attrA='A'>"
+         << "  <elemB attrB='B'>"
+         << "    <elemC attrC='C'>"
+         << "      <elemD>D</elemD>"
+         << "      <elemD>D</elemD>"
+         << "      <elemD>D</elemD>"
          << "      <elemD>D</elemD>"
          << "    </elemC>"
          << "  </elemB>"
@@ -500,7 +523,7 @@ TEST(Converter, AddNoValue)
 TEST(Converter, RemoveElement)
 {
   // Set up an xml string for testing
-  std::string xmlString = getXmlString();
+  std::string xmlString = getRepeatedXmlString();
 
   // Verify the xml
   TiXmlDocument xmlDoc;
@@ -518,7 +541,7 @@ TEST(Converter, RemoveElement)
   ASSERT_NE(nullptr, childElem);
   EXPECT_EQ(childElem->ValueStr(), "elemD");
 
-  // Test adding element
+  // Test removing element
   // Set up a convert file
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
@@ -542,6 +565,171 @@ TEST(Converter, RemoveElement)
   ASSERT_NE(nullptr, convertedElem);
   convertedElem = convertedElem->FirstChildElement("elemD");
   ASSERT_TRUE(convertedElem == nullptr);
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Remove function is working with descendant_name
+/// Test removing element
+TEST(Converter, RemoveDescendantElement)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getRepeatedXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Test removing element
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert descendant_name='elemC'>"
+                << "    <remove element='elemD'/>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  EXPECT_NE(nullptr, convertedElem->FirstChildElement("elemC"));
+  convertedElem = convertedElem->FirstChildElement("elemC");
+  ASSERT_NE(nullptr, convertedElem);
+  convertedElem = convertedElem->FirstChildElement("elemD");
+  ASSERT_TRUE(convertedElem == nullptr);
+}
+
+TEST(Converter, RemoveDescendantNestedElement)
+{
+  // Set up an xml string for testing
+  std::string xmlString = R"(
+  <sdf>
+    <model name="M">
+      <frame name="F1"/>
+      <link name="L1"/>
+      <link name="L2"/>
+      <model name="NM1">
+        <frame name="L1"/>
+      </model>
+      <model name="NM2">
+        <frame name="L2"/>
+      </model>
+      <link name="L3"/>
+    </model>
+  </sdf>)";
+
+  std::string convertString = R"(
+    <convert name="sdf">
+      <convert descendant_name="model">
+        <remove element="frame"/>
+      </convert>
+    </convert>)";
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertString.c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::string expectedString = R"(
+  <sdf>
+    <model name="M">
+      <link name="L1"/>
+      <link name="L2"/>
+      <model name="NM1"/>
+      <model name="NM2"/>
+      <link name="L3"/>
+    </model>
+  </sdf>)";
+  TiXmlDocument expectedXmlDoc;
+  expectedXmlDoc.Parse(expectedString.c_str());
+
+  std::stringstream xmlDocOut;
+  xmlDocOut << xmlDoc;
+
+  std::stringstream expectedXmlDocOut;
+  expectedXmlDocOut << expectedXmlDoc;
+  EXPECT_EQ(xmlDocOut.str(), expectedXmlDocOut.str());
+}
+////////////////////////////////////////////////////
+/// Ensure that Converter ignores descendants of <plugin> or namespaced elements
+TEST(Converter, DescendantIgnorePluginOrNamespacedElements)
+{
+  // Set up an xml string for testing
+  std::string xmlString = R"(
+  <sdf>
+      <elemA>
+        <elemB />
+      </elemA>
+      <plugin name="P">
+        <elemA>
+          <elemB />
+        </elemA>
+      </plugin>
+      <nsA:elemC>
+        <elemA>
+          <elemB />
+        </elemA>
+      </nsA:elemC>
+  </sdf>)";
+
+  std::string convertString = R"(
+    <convert name="sdf">
+      <convert descendant_name="elemA">
+        <remove element="elemB"/>
+      </convert>
+    </convert>)";
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertString.c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // Only the elemB directly under the first elemA should be removed
+  std::string expectedString = R"(
+  <sdf>
+      <elemA/>
+      <plugin name="P">
+        <elemA>
+          <elemB />
+        </elemA>
+      </plugin>
+      <nsA:elemC>
+        <elemA>
+          <elemB />
+        </elemA>
+      </nsA:elemC>
+  </sdf>)";
+  TiXmlDocument expectedXmlDoc;
+  expectedXmlDoc.Parse(expectedString.c_str());
+
+  std::stringstream xmlDocOut;
+  xmlDocOut << xmlDoc;
+
+  std::stringstream expectedXmlDocOut;
+  expectedXmlDocOut << expectedXmlDoc;
+  EXPECT_EQ(xmlDocOut.str(), expectedXmlDocOut.str());
 }
 
 ////////////////////////////////////////////////////
@@ -771,7 +959,7 @@ TEST(Converter, MoveInvalidPrefix)
   convertXmlDoc.Parse(convertStream.str().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  // In this case, we had an invalid elemC:: in the conversion, which
+  // In this case, we had an invalid ::elemC in the conversion, which
   // means that the conversion quietly failed.  Make sure the new
   // document is the same as the original.
   // Verify the xml
@@ -790,7 +978,7 @@ TEST(Converter, MoveInvalidPrefix)
 }
 
 ////////////////////////////////////////////////////
-/// Ensure that Converter::Move function is working
+/// Ensure that Converter::Copy function is working
 /// Test moving from elem to elem
 TEST(Converter, CopyElemElem)
 {
@@ -843,6 +1031,615 @@ TEST(Converter, CopyElemElem)
   ASSERT_NE(nullptr, elemE);
   elemValue = elemE->GetText();
   EXPECT_EQ(elemValue, "D");
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Map function is working
+/// Test an invalid map
+TEST(Converter, MapInvalid)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem =  childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem =  childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem =  childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Set up an invalid convert file that should do nothing
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                // missing from and to
+                << "  <map/>"
+                << "  <map>"
+                << "    <from/>"
+                << "  </map>"
+                // missing/empty name attributes
+                << "  <map>"
+                << "    <from/>"
+                << "    <to/>"
+                << "  </map>"
+                << "  <map>"
+                << "    <from name=''/>"
+                << "    <to/>"
+                << "  </map>"
+                << "  <map>"
+                << "    <from name='attrA'/>"
+                << "    <to name=''/>"
+                << "  </map>"
+                // missing value elements
+                << "  <map>"
+                << "    <from name='attrA'/>"
+                << "    <to name='attrB'/>"
+                << "  </map>"
+                << "  <map>"
+                << "    <from name='attrA'>"
+                << "      <value/>"
+                << "    </from>"
+                << "    <to name='attrB'/>"
+                << "  </map>"
+                // empty first value elements
+                << "  <map>"
+                << "    <from name='attrA'>"
+                << "      <value/>"
+                << "    </from>"
+                << "    <to name='attrB'>"
+                << "      <value/>"
+                << "    </to>"
+                << "  </map>"
+                << "  <map>"
+                << "    <from name='attrA'>"
+                << "      <value>A</value>"
+                << "    </from>"
+                << "    <to name='attrB'>"
+                << "      <value/>"
+                << "    </to>"
+                << "  </map>"
+                // empty subsequent value elements
+                << "  <map>"
+                << "    <from name='attrA'>"
+                << "      <value>A</value>"
+                << "      <value/>"
+                << "    </from>"
+                << "    <to name='attrB'>"
+                << "      <value>A1</value>"
+                << "    </to>"
+                << "  </map>"
+                << "  <map>"
+                << "    <from name='attrA'>"
+                << "      <value>A</value>"
+                << "      <value>B</value>"
+                << "    </from>"
+                << "    <to name='attrB'>"
+                << "      <value>A1</value>"
+                << "      <value/>"
+                << "    </to>"
+                << "  </map>"
+                << "  <convert name='elemB'>"
+                // invalid elemC/
+                << "    <map>"
+                << "      <from name='elemC/'>"
+                << "        <value>C</value>"
+                << "      </from>"
+                << "      <to name='elemE'>"
+                << "        <value>E</value>"
+                << "      </to>"
+                << "    </map>"
+                // invalid elemC/
+                << "    <map>"
+                << "      <from name='elemC/@'>"
+                << "        <value>C</value>"
+                << "      </from>"
+                << "      <to name='elemE'>"
+                << "        <value>E</value>"
+                << "      </to>"
+                << "    </map>"
+                // invalid /elemC, errors without message
+                << "    <map>"
+                << "      <from name='/elemC'>"
+                << "        <value>C</value>"
+                << "      </from>"
+                << "      <to name='elemE'>"
+                << "        <value>E</value>"
+                << "      </to>"
+                << "    </map>"
+                // invalid elemE/, errors without message
+                << "    <map>"
+                << "      <from name='elemC/elemD'>"
+                << "        <value>D</value>"
+                << "      </from>"
+                << "      <to name='elemE/'>"
+                << "        <value>E</value>"
+                << "      </to>"
+                << "    </map>"
+                // invalid elemE/, errors without message
+                << "    <map>"
+                << "      <from name='elemC/elemD'>"
+                << "        <value>D</value>"
+                << "      </from>"
+                << "      <to name='elemE/@'>"
+                << "        <value>E</value>"
+                << "      </to>"
+                << "    </map>"
+                // invalid /elemE, errors without message
+                << "    <map>"
+                << "      <from name='elemC/elemD'>"
+                << "        <value>D</value>"
+                << "      </from>"
+                << "      <to name='/elemE'>"
+                << "        <value>E</value>"
+                << "      </to>"
+                << "    </map>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  std::ostringstream xmlDocBefore;
+  xmlDocBefore << xmlDoc;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // Only invalid conversion statements.
+  // Make sure the new document is the same as the original.
+  std::ostringstream xmlDocAfter;
+  xmlDocAfter << xmlDoc;
+  EXPECT_EQ(xmlDocBefore.str(), xmlDocAfter.str());
+  // Verify the xml
+  TiXmlElement *convertElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, convertElem);
+  EXPECT_EQ(convertElem->ValueStr(), "elemA");
+  ASSERT_NE(nullptr, convertElem->Attribute("attrA"));
+  std::string attrValue = convertElem->Attribute("attrA");
+  EXPECT_EQ("A", attrValue);
+  convertElem = convertElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertElem);
+  EXPECT_EQ(convertElem->ValueStr(), "elemB");
+  ASSERT_NE(nullptr, convertElem->Attribute("attrB"));
+  attrValue = convertElem->Attribute("attrB");
+  EXPECT_EQ("B", attrValue);
+  convertElem = convertElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertElem);
+  EXPECT_EQ(convertElem->ValueStr(), "elemC");
+  ASSERT_NE(nullptr, convertElem->Attribute("attrC"));
+  attrValue = convertElem->Attribute("attrC");
+  EXPECT_EQ("C", attrValue);
+  convertElem = convertElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertElem);
+  EXPECT_EQ(convertElem->ValueStr(), "elemD");
+  ASSERT_NE(nullptr, convertElem->GetText());
+  std::string textValue = convertElem->GetText();
+  EXPECT_EQ("D", textValue);
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Map function is working
+/// Test moving from elem to elem
+TEST(Converter, MapElemElem)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Verify the xml
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  TiXmlElement *childElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemA");
+  childElem =  childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemB");
+  childElem =  childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemC");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_EQ(childElem->ValueStr(), "elemD");
+
+  // Test moving from elem to elem
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <convert name='elemC'>"
+                << "      <map>"
+                << "        <from name='elemD'>"
+                << "          <value>D</value>"
+                << "        </from>"
+                << "        <to name='elemE'>"
+                << "          <value>E</value>"
+                << "        </to>"
+                << "      </map>"
+                // test with multiple from/to values
+                << "      <map>"
+                << "        <from name='elemD'>"
+                << "          <value>d</value>"
+                << "          <value>D</value>"
+                << "        </from>"
+                << "        <to name='elemF'>"
+                << "          <value>f</value>"
+                << "          <value>F</value>"
+                << "        </to>"
+                << "      </map>"
+                // test with multiple 'from' values, and 1 'to'
+                << "      <map>"
+                << "        <from name='elemD'>"
+                << "          <value>d</value>"
+                << "          <value>D</value>"
+                << "        </from>"
+                << "        <to name='elemG'>"
+                << "          <value>g</value>"
+                << "        </to>"
+                << "      </map>"
+                // test with 'from' values that don't match
+                << "      <map>"
+                << "        <from name='elemD'>"
+                << "          <value>e</value>"
+                << "          <value>E</value>"
+                << "        </from>"
+                << "        <to name='elemH'>"
+                << "          <value>h</value>"
+                << "          <value>H</value>"
+                << "        </to>"
+                << "      </map>"
+                << "    </convert>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  ASSERT_NE(nullptr, convertedElem->FirstChildElement("elemD"));
+  std::string elemValue = convertedElem->FirstChildElement("elemD")->GetText();
+  EXPECT_EQ(elemValue, "D");
+  ASSERT_NE(nullptr, convertedElem->FirstChildElement("elemE"));
+  elemValue = convertedElem->FirstChildElement("elemE")->GetText();
+  EXPECT_EQ(elemValue, "E");
+  ASSERT_NE(nullptr, convertedElem->FirstChildElement("elemF"));
+  elemValue = convertedElem->FirstChildElement("elemF")->GetText();
+  EXPECT_EQ(elemValue, "F");
+  ASSERT_NE(nullptr, convertedElem->FirstChildElement("elemG"));
+  elemValue = convertedElem->FirstChildElement("elemG")->GetText();
+  EXPECT_EQ(elemValue, "g");
+  EXPECT_EQ(nullptr, convertedElem->FirstChildElement("elemH"));
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Map function is working
+/// Test moving from elem to attr
+TEST(Converter, MapElemAttr)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Test moving from elem to attr
+  TiXmlDocument xmlDoc2;
+  xmlDoc2.Parse(xmlString.c_str());
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <map>"
+                << "      <from name='elemC/elemD'>"
+                << "        <value>D</value>"
+                << "      </from>"
+                << "      <to name='@attrE'>"
+                << "        <value>E</value>"
+                << "      </to>"
+                << "    </map>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc2;
+  convertXmlDoc2.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc2, &convertXmlDoc2);
+
+  TiXmlElement *convertedElem =  xmlDoc2.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  // check for new attribute
+  ASSERT_NE(nullptr, convertedElem->Attribute("attrE"));
+  std::string attrValue = convertedElem->Attribute("attrE");
+  EXPECT_EQ(attrValue, "E");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemD"));
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Map function is working
+/// Test moving from attr to attr
+TEST(Converter, MapAttrAttr)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Test moving from attr to attr
+  TiXmlDocument xmlDoc3;
+  xmlDoc3.Parse(xmlString.c_str());
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <map>"
+                << "      <from name='@attrB'>"
+                << "        <value>B</value>"
+                << "      </from>"
+                << "      <to name='@attrE'>"
+                << "        <value>E</value>"
+                << "      </to>"
+                << "    </map>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc3;
+  convertXmlDoc3.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3);
+
+  TiXmlElement *convertedElem =  xmlDoc3.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  // check for new attribute
+  ASSERT_NE(nullptr, convertedElem->Attribute("attrE"));
+  std::string attrValue = convertedElem->Attribute("attrE");
+  EXPECT_EQ(attrValue, "E");
+  // check that original attribute still exists
+  ASSERT_NE(nullptr, convertedElem->Attribute("attrB"));
+  attrValue = convertedElem->Attribute("attrB");
+  EXPECT_EQ(attrValue, "B");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  EXPECT_TRUE(convertedElem->Attribute("attrC"));
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemD");
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Map function is working
+/// Test moving from attr to elem
+TEST(Converter, MapAttrElem)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Test moving from attr to elem
+  TiXmlDocument xmlDoc4;
+  xmlDoc4.Parse(xmlString.c_str());
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <map>"
+                << "      <from name='@attrB'>"
+                << "        <value>B</value>"
+                << "      </from>"
+                << "      <to name='elemE'>"
+                << "        <value>E</value>"
+                << "      </to>"
+                << "    </map>"
+                << "  </convert>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc4;
+  convertXmlDoc4.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc4, &convertXmlDoc4);
+
+  TiXmlElement *convertedElem =  xmlDoc4.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemB");
+  ASSERT_NE(nullptr, convertedElem->FirstChildElement("elemE"));
+  std::string elemValue = convertedElem->FirstChildElement("elemE")->GetText();
+  EXPECT_EQ(elemValue, "E");
+  // check that original attribute still exists
+  ASSERT_NE(nullptr, convertedElem->Attribute("attrB"));
+  std::string attrValue = convertedElem->Attribute("attrB");
+  EXPECT_EQ(attrValue, "B");
+  EXPECT_NE(nullptr, convertedElem->FirstChildElement("elemC"));
+  convertedElem = convertedElem->FirstChildElement("elemC");
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_TRUE(convertedElem->Attribute("attrC"));
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemD");
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Map function is working
+/// Test moving from elem to elem across multiple levels
+TEST(Converter, MapElemElemMultipleLevels)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Test moving from elem to elem across multiple levels
+  TiXmlDocument xmlDoc5;
+  xmlDoc5.Parse(xmlString.c_str());
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <map>"
+                << "    <from name='elemB/elemC/elemD'>"
+                << "      <value>D</value>"
+                << "    </from>"
+                << "    <to name='elemCC/elemDD/elemE'>"
+                << "      <value>E</value>"
+                << "    </to>"
+                << "  </map>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc5;
+  convertXmlDoc5.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc5, &convertXmlDoc5);
+
+  TiXmlElement *convertedElem =  xmlDoc5.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  TiXmlElement *convertedElem2 = convertedElem->FirstChildElement("elemCC");
+  ASSERT_NE(nullptr, convertedElem2);
+  convertedElem2 = convertedElem2->FirstChildElement("elemDD");
+  ASSERT_NE(nullptr, convertedElem2);
+  ASSERT_NE(nullptr, convertedElem2->FirstChildElement("elemE"));
+  std::string elemValue = convertedElem2->FirstChildElement("elemE")->GetText();
+  EXPECT_EQ(elemValue, "E");
+  convertedElem = convertedElem->FirstChildElement("elemB");
+  ASSERT_NE(nullptr, convertedElem);
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemD"));
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Map function is working
+/// Test moving from attr to attr across multiple levels
+TEST(Converter, MapAttrAttrMultipleLevels)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Test moving from attr to attr across multiple levels
+  TiXmlDocument xmlDoc6;
+  xmlDoc6.Parse(xmlString.c_str());
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <map>"
+                << "    <from name='elemB/elemC/@attrC'>"
+                << "      <value>C</value>"
+                << "    </from>"
+                << "    <to name='elemCC/elemDD/@attrDD'>"
+                << "      <value>DD</value>"
+                << "    </to>"
+                << "  </map>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc6;
+  convertXmlDoc6.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc6, &convertXmlDoc6);
+
+  TiXmlElement *convertedElem =  xmlDoc6.FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  TiXmlElement *convertedElem2 = convertedElem->FirstChildElement("elemCC");
+  ASSERT_NE(nullptr, convertedElem2);
+  convertedElem2 = convertedElem2->FirstChildElement("elemDD");
+  ASSERT_NE(nullptr, convertedElem2);
+  std::string attrValue = convertedElem2->Attribute("attrDD");
+  EXPECT_EQ(attrValue, "DD");
+  convertedElem = convertedElem->FirstChildElement("elemB");
+  ASSERT_NE(nullptr, convertedElem);
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  EXPECT_TRUE(convertedElem->Attribute("attrC"));
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemD");
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Map function is working
+/// Test moving from elem to attr across multiple levels
+TEST(Converter, MapElemAttrMultipleLevels)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Test moving from elem to attr across multiple levels
+  TiXmlDocument xmlDoc7;
+  xmlDoc7.Parse(xmlString.c_str());
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <map>"
+                << "    <from name='elemB/elemC/elemD'>"
+                << "      <value>D</value>"
+                << "    </from>"
+                << "    <to name='elemCC/elemDD/@attrDD'>"
+                << "      <value>DD</value>"
+                << "    </to>"
+                << "  </map>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc7;
+  convertXmlDoc7.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc7, &convertXmlDoc7);
+
+  TiXmlElement *convertedElem =  xmlDoc7.FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  TiXmlElement *convertedElem2 = convertedElem->FirstChildElement("elemCC");
+  ASSERT_NE(nullptr, convertedElem2);
+  convertedElem2 = convertedElem2->FirstChildElement("elemDD");
+  ASSERT_NE(nullptr, convertedElem2);
+  std::string attrValue = convertedElem2->Attribute("attrDD");
+  EXPECT_EQ(attrValue, "DD");
+  convertedElem = convertedElem->FirstChildElement("elemB");
+  ASSERT_NE(nullptr, convertedElem);
+  convertedElem =  convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  EXPECT_TRUE(convertedElem->FirstChildElement("elemD"));
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Map function is working
+/// Test moving from attr to elem across multiple levels
+TEST(Converter, MapAttrElemMultipleLevels)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getXmlString();
+
+  // Test moving from attr to elem across multiple levels
+  TiXmlDocument xmlDoc8;
+  xmlDoc8.Parse(xmlString.c_str());
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <map>"
+                << "    <from name='elemB/elemC/@attrC'>"
+                << "      <value>C</value>"
+                << "    </from>"
+                << "    <to name='elemCC/elemDD/elemE'>"
+                << "      <value>E</value>"
+                << "    </to>"
+                << "  </map>"
+                << "</convert>";
+  TiXmlDocument convertXmlDoc8;
+  convertXmlDoc8.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc8, &convertXmlDoc8);
+
+  TiXmlElement *convertedElem =  xmlDoc8.FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemA");
+  TiXmlElement *convertedElem2 = convertedElem->FirstChildElement("elemCC");
+  ASSERT_NE(nullptr, convertedElem2);
+  convertedElem2 = convertedElem2->FirstChildElement("elemDD");
+  ASSERT_NE(nullptr, convertedElem2);
+  EXPECT_NE(nullptr, convertedElem2->FirstChildElement("elemE"));
+  std::string elemValue = convertedElem2->FirstChildElement("elemE")->GetText();
+  EXPECT_EQ(elemValue, "E");
+  convertedElem =  convertedElem->FirstChildElement("elemB");
+  ASSERT_NE(nullptr, convertedElem);
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemC");
+  EXPECT_TRUE(convertedElem->Attribute("attrC"));
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_EQ(convertedElem->ValueStr(), "elemD");
 }
 
 ////////////////////////////////////////////////////
@@ -1055,7 +1852,15 @@ TEST(Converter, SameVersion)
   TiXmlDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
+  std::ostringstream xmlDocBefore;
+  xmlDocBefore << xmlDoc;
+
   ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.3"));
+  std::ostringstream xmlDocAfter;
+  xmlDocAfter << xmlDoc;
+
+  // Expect xmlDoc to be unchanged after conversion
+  EXPECT_EQ(xmlDocBefore.str(), xmlDocAfter.str());
 }
 
 ////////////////////////////////////////////////////
@@ -1078,6 +1883,248 @@ TEST(Converter, MuchNewerVersion)
   xmlDoc.Parse(xmlString.c_str());
 
   ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6"));
+}
+
+const std::string CONVERT_DOC_15_16 =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.6", "1_5.convert");
+const std::string CONVERT_DOC_16_17 =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.7", "1_6.convert");
+
+/////////////////////////////////////////////////
+/// Test conversion of imu in 1.5 to 1.6
+TEST(Converter, IMU_15_to_16)
+{
+  // The imu noise in 1.5 format
+  std::string xmlString = R"(
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default">
+    <model name="box_old_imu_noise">
+      <link name="link">
+        <sensor name='imu_sensor' type='imu'>
+          <imu>
+            <noise>
+              <type>gaussian</type>
+              <rate>
+                <mean>0</mean>
+                <stddev>0.0002</stddev>
+                <bias_mean>7.5e-06</bias_mean>
+                <bias_stddev>8e-07</bias_stddev>
+              </rate>
+              <accel>
+                <mean>0</mean>
+                <stddev>0.017</stddev>
+                <bias_mean>0.1</bias_mean>
+                <bias_stddev>0.001</bias_stddev>
+              </accel>
+            </noise>
+          </imu>
+        </sensor>
+      </link>
+    </model>
+  </world>
+</sdf>)";
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  // Convert
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.LoadFile(CONVERT_DOC_15_16);
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // Check some basic elements
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "sdf");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "world");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "model");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "link");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "sensor");
+
+  // Get the imu
+  TiXmlElement *imuElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(imuElem->ValueStr(), "imu");
+
+  // Get the angular_velocity
+  TiXmlElement *angVelElem = imuElem->FirstChildElement();
+  EXPECT_EQ(angVelElem->ValueStr(), "angular_velocity");
+
+  // Get the linear_acceleration
+  TiXmlElement *linAccElem = angVelElem->NextSiblingElement();
+  EXPECT_EQ(linAccElem->ValueStr(), "linear_acceleration");
+
+  std::array<char, 3> axis = {'x', 'y', 'z'};
+
+  TiXmlElement *angVelAxisElem = angVelElem->FirstChildElement();
+  TiXmlElement *linAccAxisElem = linAccElem->FirstChildElement();
+
+  // Iterate over <x>, <y>, and <z> elements under <angular_velocity> and
+  // <linear_acceleration>
+  for (auto const &a : axis)
+  {
+    EXPECT_EQ(angVelAxisElem->Value()[0], a);
+    EXPECT_EQ(linAccAxisElem->Value()[0], a);
+
+    TiXmlElement *angVelAxisNoiseElem = angVelAxisElem->FirstChildElement();
+    TiXmlElement *linAccAxisNoiseElem = linAccAxisElem->FirstChildElement();
+
+    EXPECT_EQ(angVelAxisNoiseElem->ValueStr(), "noise");
+    EXPECT_EQ(linAccAxisNoiseElem->ValueStr(), "noise");
+
+    EXPECT_STREQ(angVelAxisNoiseElem->Attribute("type"), "gaussian");
+    EXPECT_STREQ(linAccAxisNoiseElem->Attribute("type"), "gaussian");
+
+    EXPECT_STREQ(angVelAxisNoiseElem->FirstChildElement("mean")->GetText(),
+                 "0");
+    EXPECT_STREQ(linAccAxisNoiseElem->FirstChildElement("mean")->GetText(),
+                 "0");
+
+    EXPECT_STREQ(angVelAxisNoiseElem->FirstChildElement("stddev")->GetText(),
+                 "0.0002");
+    EXPECT_STREQ(linAccAxisNoiseElem->FirstChildElement("stddev")->GetText(),
+                 "0.017");
+
+    EXPECT_STREQ(angVelAxisNoiseElem->FirstChildElement("bias_mean")->GetText(),
+                 "7.5e-06");
+    EXPECT_STREQ(linAccAxisNoiseElem->FirstChildElement("bias_mean")->GetText(),
+                 "0.1");
+
+    EXPECT_STREQ(angVelAxisNoiseElem->FirstChildElement(
+          "bias_stddev")->GetText(), "8e-07");
+    EXPECT_STREQ(linAccAxisNoiseElem->FirstChildElement(
+          "bias_stddev")->GetText(), "0.001");
+
+    angVelAxisElem = angVelAxisElem->NextSiblingElement();
+    linAccAxisElem = linAccAxisElem->NextSiblingElement();
+  }
+}
+
+/////////////////////////////////////////////////
+/// Test conversion of gravity, magnetic_field in 1.5 to 1.6
+TEST(Converter, World_15_to_16)
+{
+  // The gravity and magnetic_field in 1.5 format
+  std::string xmlString = R"(
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default">
+    <physics type="ode">
+      <gravity>1 0 -9.8</gravity>
+      <magnetic_field>1 2 3</magnetic_field>
+    </physics>
+  </world>
+</sdf>)";
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  // Convert
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.LoadFile(CONVERT_DOC_15_16);
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // Check some basic elements
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "sdf");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "world");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "physics");
+
+  // gravity and magnetic_field should have been moved from physics to world
+  EXPECT_EQ(nullptr, convertedElem->FirstChildElement("gravity"));
+  EXPECT_EQ(nullptr, convertedElem->FirstChildElement("magnetic_field"));
+
+  // Get the gravity
+  TiXmlElement *gravityElem = convertedElem->NextSiblingElement("gravity");
+  ASSERT_NE(nullptr, gravityElem);
+  EXPECT_STREQ(gravityElem->GetText(), "1 0 -9.8");
+
+  // Get the magnetic_field
+  TiXmlElement *magneticFieldElem =
+    convertedElem->NextSiblingElement("magnetic_field");
+  ASSERT_NE(nullptr, magneticFieldElem);
+  EXPECT_STREQ(magneticFieldElem->GetText(), "1 2 3");
+}
+
+/////////////////////////////////////////////////
+/// Test conversion of pose attributes in 1.6 to 1.7
+TEST(Converter, Pose_16_to_17)
+{
+  // A world file with pose elements in 1.5 format
+  std::string xmlString = R"(
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+    <model name="model">
+      <pose frame="world">0 0 0 0 0 0</pose>
+      <link name="parent"/>
+      <link name="child">
+        <pose frame="joint">0 0 0 0 0 0</pose>
+      </link>
+      <joint name="joint" type="fixed">
+        <parent>parent</parent>
+        <child>child</child>
+        <pose frame="parent">0 0 0 0 0 0</pose>
+      </joint>
+    </model>
+  </world>
+</sdf>)";
+
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  // Convert
+  TiXmlDocument convertXmlDoc;
+  convertXmlDoc.LoadFile(CONVERT_DOC_16_17);
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // Check some basic elements
+  TiXmlElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "sdf");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "world");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_EQ(convertedElem->ValueStr(), "model");
+
+  TiXmlElement *modelPoseElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, modelPoseElem);
+  EXPECT_EQ("pose", modelPoseElem->ValueStr());
+  // frame attribute should have been moved to relative_to
+  EXPECT_EQ(nullptr, modelPoseElem->Attribute("frame"));
+  EXPECT_NE(nullptr, modelPoseElem->Attribute("relative_to"));
+  EXPECT_STREQ("world", modelPoseElem->Attribute("relative_to"));
+
+  TiXmlElement *parentLinkElem = modelPoseElem->NextSiblingElement();
+  ASSERT_NE(nullptr, parentLinkElem);
+  EXPECT_EQ("link", parentLinkElem->ValueStr());
+  EXPECT_EQ(nullptr, parentLinkElem->FirstChildElement());
+
+  TiXmlElement *childLinkElem = parentLinkElem->NextSiblingElement();
+  ASSERT_NE(nullptr, childLinkElem);
+  EXPECT_EQ("link", childLinkElem->ValueStr());
+  TiXmlElement *childLinkPoseElem = childLinkElem->FirstChildElement();
+  ASSERT_NE(nullptr, childLinkPoseElem);
+  EXPECT_EQ("pose", childLinkPoseElem->ValueStr());
+  // frame attribute should have been moved to relative_to
+  EXPECT_EQ(nullptr, childLinkPoseElem->Attribute("frame"));
+  EXPECT_NE(nullptr, childLinkPoseElem->Attribute("relative_to"));
+  EXPECT_STREQ("joint", childLinkPoseElem->Attribute("relative_to"));
+
+  TiXmlElement *jointLinkElem = childLinkElem->NextSiblingElement();
+  ASSERT_NE(nullptr, jointLinkElem);
+  EXPECT_EQ("joint", jointLinkElem->ValueStr());
+  TiXmlElement *jointLinkPoseElem = jointLinkElem->FirstChildElement("pose");
+  ASSERT_NE(nullptr, jointLinkPoseElem);
+  EXPECT_EQ("pose", jointLinkPoseElem->ValueStr());
+  // frame attribute should have been moved to relative_to
+  EXPECT_EQ(nullptr, jointLinkPoseElem->Attribute("frame"));
+  EXPECT_NE(nullptr, jointLinkPoseElem->Attribute("relative_to"));
+  EXPECT_STREQ("parent", jointLinkPoseElem->Attribute("relative_to"));
 }
 
 /////////////////////////////////////////////////

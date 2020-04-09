@@ -21,10 +21,15 @@
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declare private data class.
   class PhysicsPrivate;
 
@@ -35,9 +40,23 @@ namespace sdf
     /// \brief Default constructor
     public: Physics();
 
+    /// \brief Copy constructor
+    /// \param[in] _physics Physics to copy.
+    public: Physics(const Physics &_physics);
+
     /// \brief Move constructor
     /// \param[in] _physics Physics to move.
     public: Physics(Physics &&_physics) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _physics Physics to move.
+    /// \return Reference to this.
+    public: Physics &operator=(Physics &&_physics);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _physics Physics to copy.
+    /// \return Reference to this.
+    public: Physics &operator=(const Physics &_physics);
 
     /// \brief Destructor
     public: ~Physics();
@@ -109,5 +128,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: PhysicsPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif

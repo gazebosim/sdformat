@@ -14,15 +14,19 @@
  * limitations under the License.
  *
  */
-#ifndef _SDF_ELEMENT_HH_
-#define _SDF_ELEMENT_HH_
+#ifndef SDF_ELEMENT_HH_
+#define SDF_ELEMENT_HH_
 
+#include <any>
+#include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "sdf/Param.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 #include "sdf/Types.hh"
 
@@ -37,6 +41,10 @@
 /// \brief namespace for Simulation Description Format parser
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   class ElementPrivate;
   class SDFORMAT_VISIBLE Element;
 
@@ -222,11 +230,11 @@ namespace sdf
     /// return A Param pointer to the value of this element.
     public: ParamPtr GetValue() const;
 
-    /// \brief Get the element value/attribute as a boost::any.
+    /// \brief Get the element value/attribute as a std::any.
     /// \param[in] _key The key of the attribute. If empty, get the value of
     /// the element. Defaults to empty.
-    /// \return The element as a boost::any.
-    public: boost::any GetAny(const std::string &_key = "") const;
+    /// \return The element as a std::any.
+    public: std::any GetAny(const std::string &_key = "") const;
 
     /// \brief Get the value of a key. This function assumes the _key
     /// exists.
@@ -287,6 +295,29 @@ namespace sdf
     /// child = child->GetNextElement() to iterate through the children.
     public: ElementPtr GetNextElement(const std::string &_name = "") const;
 
+    /// \brief Get set of child element type names.
+    /// \return A set of the names of the child elements.
+    public: std::set<std::string> GetElementTypeNames() const;
+
+    /// \brief Checks whether any child elements of the specified element type
+    /// have identical name attribute values and returns false if so.
+    /// \param[in] _type The type of Element to check. If empty, check names
+    /// of all child elements.
+    /// \return True if all child elements with name attributes of the
+    /// specified type have unique names, return false if there are duplicated
+    /// names. Also return true if no elements of the specified type are found.
+    public: bool HasUniqueChildNames(const std::string &_type = "") const;
+
+    /// \brief Count the number of child elements of the specified element type
+    /// that have the same name attribute value.
+    /// \param[in] _type The type of Element to check. If empty, count names
+    /// of all child elements.
+    /// \return Map from Element names to a count of how many times the name
+    /// occurs. The count should never be 0. If all 2nd values are 1, then
+    /// there are exclusively unique names.
+    public: std::map<std::string, std::size_t>
+            CountNamedElements(const std::string &_type = "") const;
+
     /// \brief Return a pointer to the child element with the provided name.
     ///
     /// A new child element, with the provided name, is added to this element
@@ -317,6 +348,10 @@ namespace sdf
     /// \brief Remove all child elements.
     public: void ClearElements();
 
+    /// \brief Remove all child elements and reset file path and
+    /// original version.
+    public: void Clear();
+
     /// \brief Call the Update() callback on each element, as well as
     ///        the embedded Param.
     public: void Update();
@@ -333,6 +368,22 @@ namespace sdf
     /// \brief Get the include filename.
     /// \return The include filename.
     public: std::string GetInclude() const;
+
+    /// \brief Set the path to the SDF document where this element came from.
+    /// \param[in] _path Full path to SDF document.
+    public: void SetFilePath(const std::string &_path);
+
+    /// \brief Get the path to the SDF document where this element came from.
+    /// \return Full path to SDF document.
+    public: const std::string &FilePath() const;
+
+    /// \brief Set the spec version that this was originally parsed from.
+    /// \param[in] _version Spec version string.
+    public: void SetOriginalVersion(const std::string &_version);
+
+    /// \brief Get the spec version that this was originally parsed from.
+    /// \return Spec version string.
+    public: const std::string &OriginalVersion() const;
 
     /// \brief Get a text description of the element.
     /// \return The text description of the element.
@@ -418,6 +469,12 @@ namespace sdf
 
     /// \brief Name of reference sdf.
     public: std::string referenceSDF;
+
+    /// \brief Path to file where this element came from
+    public: std::string path;
+
+    /// \brief Spec version that this was originally parsed from.
+    public: std::string originalVersion;
   };
 
   ///////////////////////////////////////////////
@@ -493,6 +550,7 @@ namespace sdf
     return false;
   }
   /// \}
+  }
 }
 
 #ifdef _WIN32

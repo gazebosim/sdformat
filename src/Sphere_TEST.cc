@@ -32,6 +32,70 @@ TEST(DOMSphere, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMSphere, MoveConstructor)
+{
+  sdf::Sphere sphere;
+  sphere.SetRadius(0.2);
+
+  sdf::Sphere sphere2(std::move(sphere));
+  EXPECT_DOUBLE_EQ(0.2, sphere2.Radius());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, CopyConstructor)
+{
+  sdf::Sphere sphere;
+  sphere.SetRadius(0.2);
+
+  sdf::Sphere sphere2(sphere);
+  EXPECT_DOUBLE_EQ(0.2, sphere2.Radius());
+
+  EXPECT_DOUBLE_EQ(4.0/3.0*IGN_PI*std::pow(0.2, 3), sphere2.Shape().Volume());
+  EXPECT_DOUBLE_EQ(0.2, sphere2.Shape().Radius());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, CopyAssignmentOperator)
+{
+  sdf::Sphere sphere;
+  sphere.SetRadius(0.2);
+
+  sdf::Sphere sphere2;
+  sphere2 = sphere;
+  EXPECT_DOUBLE_EQ(0.2, sphere2.Radius());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, MoveAssignmentOperator)
+{
+  sdf::Sphere sphere;
+  sphere.SetRadius(0.2);
+
+  sdf::Sphere sphere2;
+  sphere2 = std::move(sphere);
+  EXPECT_DOUBLE_EQ(0.2, sphere2.Radius());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, CopyAssignmentAfterMove)
+{
+  sdf::Sphere sphere1;
+  sphere1.SetRadius(0.1);
+
+  sdf::Sphere sphere2;
+  sphere2.SetRadius(0.2);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Sphere tmp = std::move(sphere1);
+  sphere1 = sphere2;
+  sphere2 = tmp;
+
+  EXPECT_DOUBLE_EQ(0.2, sphere1.Radius());
+  EXPECT_DOUBLE_EQ(0.1, sphere2.Radius());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMSphere, Load)
 {
   sdf::Sphere sphere;
@@ -58,4 +122,14 @@ TEST(DOMSphere, Load)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <radius>"));
   EXPECT_NE(nullptr, sphere.Element());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, Shape)
+{
+  sdf::Sphere sphere;
+  EXPECT_DOUBLE_EQ(1.0, sphere.Radius());
+
+  sphere.Shape().SetRadius(0.123);
+  EXPECT_DOUBLE_EQ(0.123, sphere.Radius());
 }

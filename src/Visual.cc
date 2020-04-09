@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
@@ -26,14 +27,30 @@ using namespace sdf;
 
 class sdf::VisualPrivate
 {
+  /// \brief Default constructor
+  public: VisualPrivate() = default;
+
+  /// \brief Copy constructor
+  /// \param[in] _visualPrivate Joint axis to move.
+  public: explicit VisualPrivate(const VisualPrivate &_visualPrivate);
+
+  // Delete copy assignment so it is not accidentally used
+  public: VisualPrivate &operator=(const VisualPrivate &) = delete;
+
   /// \brief Name of the visual.
   public: std::string name = "";
 
-  /// \brief Pose of the collision object
+  /// \brief Whether the visual casts shadows
+  public: bool castShadows = true;
+
+  /// \brief Transparency value between 0 and 1
+  public: float transparency  = 0.0;
+
+  /// \brief Pose of the visual object
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief The visual's a geometry.
   public: Geometry geom;
@@ -43,7 +60,33 @@ class sdf::VisualPrivate
 
   /// \brief Pointer to the visual's material properties.
   public: std::unique_ptr<Material> material;
+
+  /// \brief Name of xml parent object.
+  public: std::string xmlParentName;
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+
+  /// \brief Visibility flags of a visual. Defaults to 0xFFFFFFFF
+  public: uint32_t visibilityFlags = 4294967295u;
 };
+
+/////////////////////////////////////////////////
+VisualPrivate::VisualPrivate(const VisualPrivate &_visualPrivate)
+    : name(_visualPrivate.name),
+      castShadows(_visualPrivate.castShadows),
+      transparency(_visualPrivate.transparency),
+      pose(_visualPrivate.pose),
+      poseRelativeTo(_visualPrivate.poseRelativeTo),
+      geom(_visualPrivate.geom),
+      sdf(_visualPrivate.sdf),
+      visibilityFlags(_visualPrivate.visibilityFlags)
+{
+  if (_visualPrivate.material)
+  {
+    this->material = std::make_unique<Material>(*(_visualPrivate.material));
+  }
+}
 
 /////////////////////////////////////////////////
 Visual::Visual()
@@ -52,17 +95,35 @@ Visual::Visual()
 }
 
 /////////////////////////////////////////////////
-Visual::Visual(Visual &&_visual)
-{
-  this->dataPtr = _visual.dataPtr;
-  _visual.dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
 Visual::~Visual()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Visual::Visual(const Visual &_visual)
+  : dataPtr(new VisualPrivate(*_visual.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Visual::Visual(Visual &&_visual) noexcept
+  : dataPtr(std::exchange(_visual.dataPtr, nullptr))
+{
+}
+
+/////////////////////////////////////////////////
+Visual &Visual::operator=(const Visual &_visual)
+{
+  return *this = Visual(_visual);
+}
+
+/////////////////////////////////////////////////
+Visual &Visual::operator=(Visual &&_visual)
+{
+  std::swap(this->dataPtr, _visual.dataPtr);
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -89,6 +150,27 @@ Errors Visual::Load(ElementPtr _sdf)
                      "A visual name is required, but the name is not set."});
   }
 
+  // Check that the visual's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::RESERVED_NAME,
+                     "The supplied visual name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
+  // load cast shadows
+  if (_sdf->HasElement("cast_shadows"))
+  {
+    this->dataPtr->castShadows = _sdf->Get<bool>("cast_shadows",
+        this->dataPtr->castShadows).first;
+  }
+
+  // load transparency
+  if (_sdf->HasElement("transparency"))
+  {
+    this->dataPtr->transparency = _sdf->Get<float>("transparency");
+  }
+
   if (_sdf->HasElement("material"))
   {
     this->dataPtr->material.reset(new sdf::Material());
@@ -97,7 +179,15 @@ Errors Visual::Load(ElementPtr _sdf)
   }
 
   // Load the pose. Ignore the return value since the pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
+
+
+  // load visibility flags
+  if (_sdf->HasElement("visibility_flags"))
+  {
+    this->dataPtr->visibilityFlags = _sdf->Get<uint32_t>("visibility_flags",
+        this->dataPtr->visibilityFlags).first;
+  }
 
   // Load the geometry
   Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
@@ -119,7 +209,37 @@ void Visual::SetName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+bool Visual::CastShadows() const
+{
+  return this->dataPtr->castShadows;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetCastShadows(bool _castShadows)
+{
+  this->dataPtr->castShadows = _castShadows;
+}
+
+/////////////////////////////////////////////////
+float Visual::Transparency() const
+{
+  return this->dataPtr->transparency;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetTransparency(float _transparency)
+{
+  this->dataPtr->transparency = _transparency;
+}
+
+/////////////////////////////////////////////////
 const ignition::math::Pose3d &Visual::Pose() const
+{
+  return this->RawPose();
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Visual::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -127,11 +247,23 @@ const ignition::math::Pose3d &Visual::Pose() const
 /////////////////////////////////////////////////
 const std::string &Visual::PoseFrame() const
 {
-  return this->dataPtr->poseFrame;
+  return this->PoseRelativeTo();
+}
+
+/////////////////////////////////////////////////
+const std::string &Visual::PoseRelativeTo() const
+{
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
 void Visual::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->SetRawPose(_pose);
+}
+
+/////////////////////////////////////////////////
+void Visual::SetRawPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -139,13 +271,48 @@ void Visual::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Visual::SetPoseFrame(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->SetPoseRelativeTo(_frame);
+}
+
+/////////////////////////////////////////////////
+void Visual::SetPoseRelativeTo(const std::string &_frame)
+{
+  this->dataPtr->poseRelativeTo = _frame;
 }
 
 /////////////////////////////////////////////////
 const Geometry *Visual::Geom() const
 {
   return &this->dataPtr->geom;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetGeom(const Geometry &_geom)
+{
+  this->dataPtr->geom = _geom;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetXmlParentName(const std::string &_xmlParentName)
+{
+  this->dataPtr->xmlParentName = _xmlParentName;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+sdf::SemanticPose Visual::SemanticPose() const
+{
+  return sdf::SemanticPose(
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
+      this->dataPtr->xmlParentName,
+      this->dataPtr->poseRelativeToGraph);
 }
 
 /////////////////////////////////////////////////
@@ -158,4 +325,22 @@ sdf::ElementPtr Visual::Element() const
 sdf::Material *Visual::Material() const
 {
   return this->dataPtr->material.get();
+}
+
+/////////////////////////////////////////////////
+void Visual::SetMaterial(const sdf::Material &_material)
+{
+  this->dataPtr->material.reset(new sdf::Material(_material));
+}
+
+/////////////////////////////////////////////////
+uint32_t Visual::VisibilityFlags() const
+{
+  return this->dataPtr->visibilityFlags;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetVisibilityFlags(uint32_t _flags)
+{
+  this->dataPtr->visibilityFlags = _flags;
 }

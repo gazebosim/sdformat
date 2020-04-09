@@ -29,14 +29,16 @@
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/SDFImpl.hh"
-#include "sdf/SDFImplPrivate.hh"
+#include "SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
 
 // This include file is generated at configure time.
 #include "sdf/EmbeddedSdf.hh"
 
-using namespace sdf;
-
+namespace sdf
+{
+inline namespace SDF_VERSION_NAMESPACE
+{
 typedef std::list<std::string> PathList;
 typedef std::map<std::string, PathList> URIPathMap;
 
@@ -47,13 +49,14 @@ static std::function<std::string(const std::string &)> g_findFileCB;
 std::string SDF::version = SDF_VERSION;
 
 /////////////////////////////////////////////////
-void sdf::setFindCallback(std::function<std::string(const std::string &)> _cb)
+// cppcheck-suppress passedByValue
+void setFindCallback(std::function<std::string(const std::string &)> _cb)
 {
   g_findFileCB = _cb;
 }
 
 /////////////////////////////////////////////////
-std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
+std::string findFile(const std::string &_filename, bool _searchLocalPath,
                           bool _useCallback)
 {
   std::string path = _filename;
@@ -64,6 +67,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
   {
     // Check to see if the URI in the global map is the first part of the
     // given filename
+    // cppcheck-suppress stlIfStrFind
     if (_filename.find(iter->first) == 0)
     {
       std::string suffix = _filename;
@@ -87,23 +91,46 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
     }
   }
 
+  // Strip scheme, if any
+  std::string filename = _filename;
+  std::string sep("://");
+  size_t idx = _filename.find(sep);
+  if (idx != std::string::npos)
+  {
+    filename = filename.substr(idx + sep.length());
+  }
+
   // Next check the install path.
-  path = sdf::filesystem::append(SDF_SHARE_PATH, _filename);
+  path = sdf::filesystem::append(SDF_SHARE_PATH, filename);
   if (sdf::filesystem::exists(path))
   {
     return path;
   }
 
   // Next check the versioned install path.
-  path = sdf::filesystem::append(SDF_SHARE_PATH, "sdformat",
-                                 sdf::SDF::Version(), _filename);
+  path = sdf::filesystem::append(SDF_SHARE_PATH,
+                                 "sdformat" SDF_MAJOR_VERSION_STR,
+                                 sdf::SDF::Version(), filename);
+  if (sdf::filesystem::exists(path))
+  {
+    return path;
+  }
+
+  // Next check to see if the given file exists.
+  path = filename;
   if (sdf::filesystem::exists(path))
   {
     return path;
   }
 
   // Next check SDF_PATH environment variable
+#ifndef _WIN32
   const char *pathCStr = std::getenv("SDF_PATH");
+#else
+  char *pathCStr;
+  size_t sz = 0;
+  _dupenv_s(&pathCStr, &sz, "SDF_PATH");
+#endif
 
   if (pathCStr)
   {
@@ -111,7 +138,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
     for (std::vector<std::string>::iterator iter = paths.begin();
          iter != paths.end(); ++iter)
     {
-      path = sdf::filesystem::append(*iter, _filename);
+      path = sdf::filesystem::append(*iter, filename);
       if (sdf::filesystem::exists(path))
       {
         return path;
@@ -119,17 +146,10 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
     }
   }
 
-  // Next check to see if the given file exists.
-  path = _filename;
-  if (sdf::filesystem::exists(path))
-  {
-    return path;
-  }
-
   // Finally check the local path, if the flag is set.
   if (_searchLocalPath)
   {
-    path = sdf::filesystem::append(sdf::filesystem::current_path(), _filename);
+    path = sdf::filesystem::append(sdf::filesystem::current_path(), filename);
     if (sdf::filesystem::exists(path))
     {
       return path;
@@ -156,7 +176,7 @@ std::string sdf::findFile(const std::string &_filename, bool _searchLocalPath,
 }
 
 /////////////////////////////////////////////////
-void sdf::addURIPath(const std::string &_uri, const std::string &_path)
+void addURIPath(const std::string &_uri, const std::string &_path)
 {
   // Split _path on colons.
   std::vector<std::string> parts = sdf::split(_path, ":");
@@ -358,6 +378,14 @@ void SDF::SetFromString(const std::string &_sdfData)
 }
 
 /////////////////////////////////////////////////
+void SDF::Clear()
+{
+  this->dataPtr->root->Clear();
+  this->dataPtr->path.clear();
+  this->dataPtr->originalVersion.clear();
+}
+
+/////////////////////////////////////////////////
 ElementPtr SDF::Root() const
 {
   return this->dataPtr->root;
@@ -367,6 +395,32 @@ ElementPtr SDF::Root() const
 void SDF::Root(const ElementPtr _root)
 {
   this->dataPtr->root = _root;
+}
+
+/////////////////////////////////////////////////
+std::string SDF::FilePath() const
+{
+  return this->dataPtr->path;
+}
+
+/////////////////////////////////////////////////
+void SDF::SetFilePath(const std::string &_path)
+{
+  this->dataPtr->path = _path;
+  this->dataPtr->root->SetFilePath(_path);
+}
+
+/////////////////////////////////////////////////
+void SDF::SetOriginalVersion(const std::string &_version)
+{
+  this->dataPtr->originalVersion = _version;
+  this->dataPtr->root->SetOriginalVersion(_version);
+}
+
+/////////////////////////////////////////////////
+const std::string &SDF::OriginalVersion() const
+{
+  return this->dataPtr->originalVersion;
 }
 
 /////////////////////////////////////////////////
@@ -408,4 +462,6 @@ const std::string &SDF::EmbeddedSpec(
         << "version " << SDF::Version() << "\n";
   }
   return emptySdfString;
+}
+}
 }

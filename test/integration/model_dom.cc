@@ -58,6 +58,28 @@ TEST(DOMModel, NoName)
                std::string::npos);
 }
 
+//////////////////////////////////////////////////
+TEST(DOMModel, NoLinks)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_without_links.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_FALSE(errors.empty());
+  ASSERT_EQ(4u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::MODEL_WITHOUT_LINK, errors[0].Code());
+  EXPECT_TRUE(errors[0].Message().find("model must have at least one link") !=
+               std::string::npos);
+  EXPECT_EQ(sdf::ErrorCode::MODEL_WITHOUT_LINK, errors[1].Code());
+  EXPECT_TRUE(errors[1].Message().find("model must have at least one link") !=
+               std::string::npos);
+  // errors[2]
+  // errors[3]
+}
+
 /////////////////////////////////////////////////
 TEST(DOMRoot, LoadLinkCheck)
 {
@@ -107,8 +129,8 @@ TEST(DOMRoot, LoadDoublePendulum)
   EXPECT_FALSE(nullptr == model->LinkByIndex(1));
   EXPECT_FALSE(nullptr == model->LinkByIndex(2));
   EXPECT_TRUE(nullptr == model->LinkByIndex(3));
-  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), model->Pose());
-  EXPECT_EQ("", model->PoseFrame());
+  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("base"));
   EXPECT_TRUE(model->LinkNameExists("upper_link"));
@@ -122,3 +144,76 @@ TEST(DOMRoot, LoadDoublePendulum)
   EXPECT_TRUE(model->JointNameExists("upper_joint"));
   EXPECT_TRUE(model->JointNameExists("lower_joint"));
 }
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, NestedModel)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "nested_model.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+
+  // it should complain because nested models aren't yet supported
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::NESTED_MODELS_UNSUPPORTED);
+
+  EXPECT_EQ(1u, root.ModelCount());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("top_level_model", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  EXPECT_TRUE(model->LinkNameExists("parent"));
+  EXPECT_TRUE(model->LinkNameExists("child"));
+
+  EXPECT_EQ(1u, model->JointCount());
+  EXPECT_NE(nullptr, model->JointByIndex(0));
+  EXPECT_EQ(nullptr, model->JointByIndex(1));
+
+  EXPECT_TRUE(model->JointNameExists("top_level_joint"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, LoadCanonicalLink)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_canonical_link.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_canonical_link", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  EXPECT_TRUE(model->LinkNameExists("link1"));
+  EXPECT_TRUE(model->LinkNameExists("link2"));
+
+  EXPECT_EQ("link2", model->CanonicalLinkName());
+
+  ASSERT_NE(nullptr, model->CanonicalLink());
+  EXPECT_EQ("link2", model->CanonicalLink()->Name());
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+}
+

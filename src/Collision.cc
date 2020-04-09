@@ -14,11 +14,13 @@
  * limitations under the License.
  *
 */
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Collision.hh"
-#include "sdf/Geometry.hh"
 #include "sdf/Error.hh"
+#include "sdf/Geometry.hh"
+#include "sdf/Surface.hh"
 #include "sdf/Types.hh"
 #include "Utils.hh"
 
@@ -33,13 +35,22 @@ class sdf::CollisionPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
-  /// \brief The collisions's a geometry.
+  /// \brief The collision's geometry.
   public: Geometry geom;
+
+  /// \brief The collision's surface parameters.
+  public: Surface surface;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Name of xml parent object.
+  public: std::string xmlParentName;
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -49,17 +60,35 @@ Collision::Collision()
 }
 
 /////////////////////////////////////////////////
-Collision::Collision(Collision &&_collision)
-{
-  this->dataPtr = _collision.dataPtr;
-  _collision.dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
 Collision::~Collision()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Collision::Collision(const Collision &_collision)
+  : dataPtr(new CollisionPrivate(*_collision.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Collision::Collision(Collision &&_collision) noexcept
+  : dataPtr(std::exchange(_collision.dataPtr, nullptr))
+{
+}
+
+/////////////////////////////////////////////////
+Collision &Collision::operator=(const Collision &_collision)
+{
+  return *this = Collision(_collision);
+}
+
+/////////////////////////////////////////////////
+Collision &Collision::operator=(Collision &&_collision)
+{
+  std::swap(this->dataPtr, _collision.dataPtr);
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -86,12 +115,23 @@ Errors Collision::Load(ElementPtr _sdf)
                      "A collision name is required, but the name is not set."});
   }
 
+  // Check that the collision's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::RESERVED_NAME,
+                     "The supplied collision name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   // Load the pose. Ignore the return value since the pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   // Load the geometry
   Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
+
+  // Load the surface parameters
+  this->dataPtr->surface.Load(_sdf->GetElement("surface"));
 
   return errors;
 }
@@ -115,7 +155,31 @@ const Geometry *Collision::Geom() const
 }
 
 /////////////////////////////////////////////////
+void Collision::SetGeom(const Geometry &_geom)
+{
+  this->dataPtr->geom = _geom;
+}
+
+/////////////////////////////////////////////////
+sdf::Surface *Collision::Surface() const
+{
+  return &this->dataPtr->surface;
+}
+
+/////////////////////////////////////////////////
+void Collision::SetSurface(const sdf::Surface &_surface)
+{
+  this->dataPtr->surface = _surface;
+}
+
+/////////////////////////////////////////////////
 const ignition::math::Pose3d &Collision::Pose() const
+{
+  return this->RawPose();
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Collision::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -123,11 +187,23 @@ const ignition::math::Pose3d &Collision::Pose() const
 /////////////////////////////////////////////////
 const std::string &Collision::PoseFrame() const
 {
-  return this->dataPtr->poseFrame;
+  return this->PoseRelativeTo();
+}
+
+/////////////////////////////////////////////////
+const std::string &Collision::PoseRelativeTo() const
+{
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
 void Collision::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->SetRawPose(_pose);
+}
+
+/////////////////////////////////////////////////
+void Collision::SetRawPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -135,7 +211,36 @@ void Collision::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Collision::SetPoseFrame(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->SetPoseRelativeTo(_frame);
+}
+
+/////////////////////////////////////////////////
+void Collision::SetPoseRelativeTo(const std::string &_frame)
+{
+  this->dataPtr->poseRelativeTo = _frame;
+}
+
+/////////////////////////////////////////////////
+void Collision::SetXmlParentName(const std::string &_xmlParentName)
+{
+  this->dataPtr->xmlParentName = _xmlParentName;
+}
+
+/////////////////////////////////////////////////
+void Collision::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+sdf::SemanticPose Collision::SemanticPose() const
+{
+  return sdf::SemanticPose(
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
+      this->dataPtr->xmlParentName,
+      this->dataPtr->poseRelativeToGraph);
 }
 
 /////////////////////////////////////////////////

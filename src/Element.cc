@@ -21,6 +21,7 @@
 
 #include "sdf/Assert.hh"
 #include "sdf/Element.hh"
+#include "sdf/Filesystem.hh"
 
 using namespace sdf;
 
@@ -47,6 +48,19 @@ ElementPtr Element::GetParent() const
 void Element::SetParent(const ElementPtr _parent)
 {
   this->dataPtr->parent = _parent;
+
+  // If this element doesn't have a path, get it from the parent
+  if (nullptr != _parent && (this->FilePath().empty() ||
+      this->FilePath() == "data-string"))
+  {
+    this->SetFilePath(_parent->FilePath());
+  }
+
+  // If this element doesn't have an original version, get it from the parent
+  if (nullptr != _parent && this->OriginalVersion().empty())
+  {
+    this->SetOriginalVersion(_parent->OriginalVersion());
+  }
 }
 
 /////////////////////////////////////////////////
@@ -139,6 +153,8 @@ ElementPtr Element::Clone() const
   clone->dataPtr->copyChildren = this->dataPtr->copyChildren;
   clone->dataPtr->includeFilename = this->dataPtr->includeFilename;
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
+  clone->dataPtr->path = this->dataPtr->path;
+  clone->dataPtr->originalVersion = this->dataPtr->originalVersion;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
@@ -158,7 +174,7 @@ ElementPtr Element::Clone() const
        eiter != this->dataPtr->elements.end(); ++eiter)
   {
     clone->dataPtr->elements.push_back((*eiter)->Clone());
-    clone->dataPtr->elements.back()->dataPtr->parent = clone;
+    clone->dataPtr->elements.back()->SetParent(clone);
   }
 
   if (this->dataPtr->value)
@@ -178,6 +194,8 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->copyChildren = _elem->GetCopyChildren();
   this->dataPtr->includeFilename = _elem->dataPtr->includeFilename;
   this->dataPtr->referenceSDF = _elem->ReferenceSDF();
+  this->dataPtr->originalVersion = _elem->OriginalVersion();
+  this->dataPtr->path = _elem->FilePath();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
        iter != _elem->dataPtr->attributes.end(); ++iter)
@@ -216,7 +234,7 @@ void Element::Copy(const ElementPtr _elem)
   {
     ElementPtr elem = (*iter)->Clone();
     elem->Copy(*iter);
-    elem->dataPtr->parent = shared_from_this();
+    elem->SetParent(shared_from_this());
     this->dataPtr->elements.push_back(elem);
   }
 }
@@ -408,8 +426,16 @@ void Element::PrintValuesImpl(const std::string &_prefix,
   for (aiter = this->dataPtr->attributes.begin();
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
-    _out << " " << (*aiter)->GetKey() << "='"
-         << (*aiter)->GetAsString() << "'";
+    // Only print attribute values if they were set
+    // TODO(anyone): GetRequired is added here to support up-conversions where a
+    // new required attribute with a default value is added. We would have
+    // better separation of concerns if the conversion process set the required
+    // attributes with their default values.
+    if ((*aiter)->GetSet() || (*aiter)->GetRequired())
+    {
+      _out << " " << (*aiter)->GetKey() << "='"
+           << (*aiter)->GetAsString() << "'";
+    }
   }
 
   if (this->dataPtr->elements.size() > 0)
@@ -634,6 +660,74 @@ ElementPtr Element::GetNextElement(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+std::set<std::string> Element::GetElementTypeNames() const
+{
+  std::set<std::string> result;
+  auto elem = this->GetFirstElement();
+  while (elem)
+  {
+    std::string typeName = elem->GetName();
+    result.insert(typeName);
+    elem = elem->GetNextElement();
+  }
+  return result;
+}
+
+/////////////////////////////////////////////////
+bool Element::HasUniqueChildNames(const std::string &_type) const
+{
+  auto namedElementsCount = this->CountNamedElements(_type);
+  for (auto &iter : namedElementsCount)
+  {
+    if (iter.second > 1)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+/////////////////////////////////////////////////
+std::map<std::string, std::size_t>
+Element::CountNamedElements(const std::string &_type) const
+{
+  std::map<std::string, std::size_t> result;
+
+  sdf::ElementPtr elem;
+  if (_type.empty())
+  {
+    elem = this->GetFirstElement();
+  }
+  else
+  {
+    elem = this->GetElementImpl(_type);
+  }
+
+  while (elem)
+  {
+    if (elem->HasAttribute("name"))
+    {
+      // Get("name") returns attribute value if it exists before checking
+      // for the value of a child element <name>, so it's safe to use
+      // here since we've checked HasAttribute("name").
+      std::string childNameAttributeValue = elem->Get<std::string>("name");
+      if (result.find(childNameAttributeValue) == result.end())
+      {
+        result[childNameAttributeValue] = 1;
+      }
+      else
+      {
+        ++result[childNameAttributeValue];
+      }
+    }
+
+    elem = elem->GetNextElement(_type);
+  }
+
+  return result;
+}
+
+/////////////////////////////////////////////////
 ElementPtr Element::GetElement(const std::string &_name)
 {
   ElementPtr result = this->GetElementImpl(_name);
@@ -701,6 +795,14 @@ ElementPtr Element::AddElement(const std::string &_name)
 
   sdferr << "Missing element description for [" << _name << "]\n";
   return ElementPtr();
+}
+
+/////////////////////////////////////////////////
+void Element::Clear()
+{
+  this->ClearElements();
+  this->dataPtr->originalVersion.clear();
+  this->dataPtr->path.clear();
 }
 
 /////////////////////////////////////////////////
@@ -785,6 +887,30 @@ std::string Element::GetInclude() const
 }
 
 /////////////////////////////////////////////////
+void Element::SetFilePath(const std::string &_path)
+{
+  this->dataPtr->path = _path;
+}
+
+/////////////////////////////////////////////////
+const std::string &Element::FilePath() const
+{
+  return this->dataPtr->path;
+}
+
+/////////////////////////////////////////////////
+void Element::SetOriginalVersion(const std::string &_version)
+{
+  this->dataPtr->originalVersion = _version;
+}
+
+/////////////////////////////////////////////////
+const std::string &Element::OriginalVersion() const
+{
+  return this->dataPtr->originalVersion;
+}
+
+/////////////////////////////////////////////////
 std::string Element::GetDescription() const
 {
   return this->dataPtr->description;
@@ -831,15 +957,15 @@ void Element::RemoveChild(ElementPtr _child)
 }
 
 /////////////////////////////////////////////////
-boost::any Element::GetAny(const std::string &_key) const
+std::any Element::GetAny(const std::string &_key) const
 {
-  boost::any result;
+  std::any result;
   if (_key.empty() && this->dataPtr->value)
   {
     if (!this->dataPtr->value->GetAny(result))
     {
       sdferr << "Couldn't get element [" << this->GetName()
-             << "] as boost::any\n";
+             << "] as std::any\n";
     }
   }
   else if (!_key.empty())
@@ -849,7 +975,7 @@ boost::any Element::GetAny(const std::string &_key) const
     {
       if (!this->GetAttribute(_key)->GetAny(result))
       {
-        sdferr << "Couldn't get attribute [" << _key << "] as boost::any\n";
+        sdferr << "Couldn't get attribute [" << _key << "] as std::any\n";
       }
     }
     else

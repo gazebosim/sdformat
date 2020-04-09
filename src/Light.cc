@@ -32,13 +32,19 @@ class sdf::LightPrivate
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
-  public: std::string poseFrame = "";
+  public: std::string poseRelativeTo = "";
 
   /// \brief The light type.
   public: LightType type = LightType::POINT;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Name of xml parent object.
+  public: std::string xmlParentName;
+
+  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief True if the light should cast shadows.
   public: bool castShadows = false;
@@ -81,17 +87,57 @@ Light::Light()
 }
 
 /////////////////////////////////////////////////
-Light::Light(Light &&_light)
-{
-  this->dataPtr = _light.dataPtr;
-  _light.dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
 Light::~Light()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Light::Light(const Light &_light)
+  : dataPtr(new LightPrivate)
+{
+  this->CopyFrom(_light);
+}
+
+/////////////////////////////////////////////////
+Light::Light(Light &&_light) noexcept
+  : dataPtr(std::exchange(_light.dataPtr, nullptr))
+{
+}
+
+//////////////////////////////////////////////////
+Light &Light::operator=(const Light &_light)
+{
+  return *this = Light(_light);
+}
+
+//////////////////////////////////////////////////
+Light &Light::operator=(Light &&_light)
+{
+  std::swap(this->dataPtr, _light.dataPtr);
+  return *this;
+}
+
+//////////////////////////////////////////////////
+void Light::CopyFrom(const Light &_light)
+{
+  this->dataPtr->name= _light.dataPtr->name;
+  this->dataPtr->pose = _light.dataPtr->pose;
+  this->dataPtr->poseRelativeTo = _light.dataPtr->poseRelativeTo;
+  this->dataPtr->type = _light.dataPtr->type;
+  this->dataPtr->sdf = _light.dataPtr->sdf;
+  this->dataPtr->castShadows = _light.dataPtr->castShadows;
+  this->dataPtr->attenuationRange = _light.dataPtr->attenuationRange;
+  this->dataPtr->linearAttenuation = _light.dataPtr->linearAttenuation;
+  this->dataPtr->constantAttenuation = _light.dataPtr->constantAttenuation;
+  this->dataPtr->quadraticAttenuation = _light.dataPtr->quadraticAttenuation;
+  this->dataPtr->direction = _light.dataPtr->direction;
+  this->dataPtr->diffuse = _light.dataPtr->diffuse;
+  this->dataPtr->specular = _light.dataPtr->specular;
+  this->dataPtr->spotInnerAngle = _light.dataPtr->spotInnerAngle;
+  this->dataPtr->spotOuterAngle = _light.dataPtr->spotOuterAngle;
+  this->dataPtr->spotFalloff = _light.dataPtr->spotFalloff;
 }
 
 /////////////////////////////////////////////////
@@ -133,8 +179,16 @@ Errors Light::Load(ElementPtr _sdf)
                      "A light name is required, but the name is not set."});
   }
 
+  // Check that the light's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::RESERVED_NAME,
+                     "The supplied light name [" + this->dataPtr->name +
+                     "] is reserved."});
+  }
+
   // Load the pose. Ignore the return value since the light pose is optional.
-  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseFrame);
+  loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   this->dataPtr->castShadows = _sdf->Get<bool>("cast_shadows",
       this->dataPtr->castShadows).first;
@@ -234,17 +288,35 @@ void Light::SetName(const std::string &_name) const
 /////////////////////////////////////////////////
 const ignition::math::Pose3d &Light::Pose() const
 {
+  return this->RawPose();
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Light::RawPose() const
+{
   return this->dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
 const std::string &Light::PoseFrame() const
 {
-  return this->dataPtr->poseFrame;
+  return this->PoseRelativeTo();
+}
+
+/////////////////////////////////////////////////
+const std::string &Light::PoseRelativeTo() const
+{
+  return this->dataPtr->poseRelativeTo;
 }
 
 /////////////////////////////////////////////////
 void Light::SetPose(const ignition::math::Pose3d &_pose)
+{
+  this->SetRawPose(_pose);
+}
+
+/////////////////////////////////////////////////
+void Light::SetRawPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -252,7 +324,36 @@ void Light::SetPose(const ignition::math::Pose3d &_pose)
 /////////////////////////////////////////////////
 void Light::SetPoseFrame(const std::string &_frame)
 {
-  this->dataPtr->poseFrame = _frame;
+  this->SetPoseRelativeTo(_frame);
+}
+
+/////////////////////////////////////////////////
+void Light::SetPoseRelativeTo(const std::string &_frame)
+{
+  this->dataPtr->poseRelativeTo = _frame;
+}
+
+/////////////////////////////////////////////////
+void Light::SetXmlParentName(const std::string &_xmlParentName)
+{
+  this->dataPtr->xmlParentName = _xmlParentName;
+}
+
+/////////////////////////////////////////////////
+void Light::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+sdf::SemanticPose Light::SemanticPose() const
+{
+  return sdf::SemanticPose(
+      this->dataPtr->pose,
+      this->dataPtr->poseRelativeTo,
+      this->dataPtr->xmlParentName,
+      this->dataPtr->poseRelativeToGraph);
 }
 
 /////////////////////////////////////////////////

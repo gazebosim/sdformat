@@ -28,18 +28,19 @@ end
 require 'optparse'
 
 # Constants.
-LIBRARY_NAME = '@IGN_LIBRARY_NAME@'
+LIBRARY_NAME = '@library_location@'
 LIBRARY_VERSION = '@SDF_VERSION_FULL@'
 COMMON_OPTIONS =
-               "  -h [ --help ]              Print this help message.\n"\
-               "  --force-version <VERSION>  Use a specific library version.\n"\
-               '  --versions                 Show the available versions.'
+               "  -h [ --help ]                    Print this help message.\n"\
+               "  --force-version <VERSION>        Use a specific library version.\n"\
+               '  --versions                       Show the available versions.'
 COMMANDS = {  'sdf' =>
                        "Utilities for SDF files.\n\n"\
                        "  ign sdf [options]\n\n"\
                        "Options:\n\n"\
-                       "  -k [ --check ] arg     Validate arg.\n" +
-                       "  -d [ --describe ]      Print the SDF description.\n" +
+                       "  -k [ --check ] arg               Check if an SDFormat file is valid.\n" +
+                       "  -d [ --describe ] [SPEC VERSION] Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
+                       "  -p [ --print ] arg               Print converted arg.\n" +
                        COMMON_OPTIONS
             }
 
@@ -66,11 +67,15 @@ class Cmd
       end
 
       opts.on('-k arg', '--check arg', String,
-              'Validate arg') do |arg|
+              'Check if an SDFormat file is valid.') do |arg|
         options['check'] = arg
       end
-      opts.on('-d', '--describe', 'Print the SDF description') do |v|
+      opts.on('-d', '--describe [VERSION]', 'Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@)') do |v|
         options['describe'] = v
+      end
+      opts.on('-p arg', '--print arg', String,
+              'Print converted arg') do |arg|
+        options['print'] = arg
       end
     end
     begin
@@ -104,13 +109,21 @@ class Cmd
     # puts options
 
     # Read the plugin that handles the command.
-    plugin = LIBRARY_NAME
+    if LIBRARY_NAME[0] == '/'
+      # If the first character is a slash, we'll assume that we've been given an
+      # absolute path to the library. This is only used during test mode.
+      plugin = LIBRARY_NAME
+    else
+      # We're assuming that the library path is relative to the current
+      # location of this script.
+      plugin = File.expand_path(File.join(File.dirname(__FILE__), LIBRARY_NAME))
+    end
     conf_version = LIBRARY_VERSION
 
     begin
       Importer.dlload plugin
-    rescue => exception
-      puts "Library error: #{exception.message}"
+    rescue DLError
+      puts "Library error: [#{plugin}] not found."
       exit(-1)
     end
 
@@ -136,10 +149,13 @@ class Cmd
       when 'sdf'
         if options.key?('check')
           Importer.extern 'int cmdCheck(const char *)'
-          exit(Importer.cmdCheck(options['check']))
+          exit(Importer.cmdCheck(File.expand_path(options['check'])))
         elsif options.key?('describe')
-          Importer.extern 'int cmdDescribe()'
-          exit(Importer.cmdDescribe())
+          Importer.extern 'int cmdDescribe(const char *)'
+          exit(Importer.cmdDescribe(options['describe']))
+        elsif options.key?('print')
+          Importer.extern 'int cmdPrint(const char *)'
+          exit(Importer.cmdPrint(File.expand_path(options['print'])))
         else
           puts 'Command error: I do not have an implementation '\
                'for this command.'

@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <string>
+#include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 
 #ifdef _WIN32
@@ -30,6 +31,10 @@
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \enum ErrorCode
   /// \brief Set of error codes. Usually one or more errors are returned in
   /// an Errors vector. The collection of Errors should be take as a whole,
@@ -47,6 +52,9 @@ namespace sdf
     /// \brief A duplicate name was found for an element where unique names
     /// are required.
     DUPLICATE_NAME,
+
+    /// \brief A reserved name was used in an entity name attribute.
+    RESERVED_NAME,
 
     /// \brief Indicates that a required SDF attribute is missing.
     ATTRIBUTE_MISSING,
@@ -80,8 +88,46 @@ namespace sdf
     /// \brief A filesystem directory does not exist.
     DIRECTORY_NONEXISTANT,
 
+    /// \brief A model with an invalid canonical link.
+    MODEL_CANONICAL_LINK_INVALID,
+
+    /// \brief A model without a link.
+    MODEL_WITHOUT_LINK,
+
+    /// \brief Indicates that a DOM object tried to read a nested model.
+    NESTED_MODELS_UNSUPPORTED,
+
     /// \brief A link has invalid inertia.
     LINK_INERTIA_INVALID,
+
+    /// \brief A joint has an invalid child link.
+    JOINT_CHILD_LINK_INVALID,
+
+    /// \brief A joint has an invalid parent link.
+    JOINT_PARENT_LINK_INVALID,
+
+    /// \brief A joint has the same link specified as parent and child.
+    JOINT_PARENT_SAME_AS_CHILD,
+
+    /// \brief The frame attached-to value does not match the name of an
+    /// existing frame in the current scope.
+    FRAME_ATTACHED_TO_INVALID,
+
+    /// \brief The frame attached-to graph contains a cycle.
+    FRAME_ATTACHED_TO_CYCLE,
+
+    /// \brief The frame attached-to graph has an internal error.
+    FRAME_ATTACHED_TO_GRAPH_ERROR,
+
+    /// \brief The pose relative-to value does not match the name of an
+    /// existing frame in the current scope.
+    POSE_RELATIVE_TO_INVALID,
+
+    /// \brief The pose relative-to graph contains a cycle.
+    POSE_RELATIVE_TO_CYCLE,
+
+    /// \brief The pose relative-to graph has an internal error.
+    POSE_RELATIVE_TO_GRAPH_ERROR,
 
     /// \brief Indicates that reading an SDF string failed.
     STRING_READ,
@@ -149,6 +195,7 @@ namespace sdf
   #pragma warning(pop)
 #endif
   };
+  }
 }
 #ifdef _WIN32
 #pragma warning(pop)

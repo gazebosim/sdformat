@@ -1,9 +1,12 @@
 <?xml version="1.0" ?>
-<sdf version="1.6">
+<sdf version="1.7">
   <model name="robot1">
+    <link name="link"/>
   </model>
   <model name="robot2">
+    <link name="link"/>
   </model>
   <model name="last_robot">
+    <static>true</static>
   </model>
 </sdf>

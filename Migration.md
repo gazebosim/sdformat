@@ -12,6 +12,101 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDFormat 8.x to 9.0
+
+### Additions
+
+1. **sdf/Collision.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/Element.hh**
+    + void Clear()
+    + const std::string &OriginalVersion() const
+    + void SetOriginalVersion(const std::string &)
+
+1. **sdf/Frame.hh**: DOM class for frames in the model or world.
+    + Errors ResolveAttachedToBody(std::string&) const
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/Joint.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/JointAxis.hh**
+    + Errors ResolveXyz(ignition::math::Vector3d &, const std::string &) const
+
+1. **sdf/Light.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/Link.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/Model.hh**
+    + uint64\_t FrameCount() const
+    + const Frame \*FrameByIndex(const uint64\_t) const
+    + const Frame \*FrameByName(const std::string &) const
+    + bool FrameNameExists(const std::string &) const
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/SDFImpl.hh**
+    + void Clear()
+    + const std::string &OriginalVersion() const
+    + void SetOriginalVersion(const std::string &)
+
+1. **sdf/SemanticPose.hh**: Helper class for resolving poses of DOM objects.
+
+1. **sdf/Sensor.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/Visual.hh**
+    + sdf::SemanticPose SemanticPose() const
+
+1. **sdf/World.hh**
+    + uint64\_t FrameCount() const
+    + const Frame \*FrameByIndex(const uint64\_t) const
+    + const Frame \*FrameByName(const std::string &) const
+    + bool FrameNameExists(const std::string &) const
+    + const Model \*ModelByName(const std::string &) const
+
+1. **sdf/parser.hh**
+   + bool checkCanonicalLinkNames(sdf::Root\*)
+   + bool checkFrameAttachedToGraph(sdf::Root\*)
+   + bool checkFrameAttachedToNames(sdf::Root\*)
+   + bool checkJointParentChildLinkNames(sdf::Root\*)
+   + bool checkPoseRelativeToGraph(sdf::Root\*)
+   + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)
+   + bool recursiveSiblingUniqueNames(sdf::ElementPtr)
+   + bool shouldValidateElement(sdf::ElementPtr)
+
+### Deprecations
+
+1. **sdf/parser_urdf.hh**
+   + ***Deprecation:*** URDF2SDF
+   + ***Replacement:*** None. Use the functions sdf::readFile or sdf::readString, which automatically convert URDF to SDFormat.
+
+1. All DOM classes with `Pose()` and `PoseFrame()` API's:
+   + ***Deprecation:*** const ignition::math::Pose3d &Pose()
+   + ***Replacement:*** const ignition::math::Pose3d &RawPose()
+   + ***Deprecation:*** const std::string &PoseFrame()
+   + ***Replacement:*** const std::string &PoseRelativeTo()
+   + ***Deprecation:*** void SetPose(const ignition::math::Pose3d &)
+   + ***Replacement:*** void SetRawPose(const ignition::math::Pose3d &)
+   + ***Deprecation:*** void SetPoseFrame(const std::string &)
+   + ***Replacement:*** void SetPoseRelativeTo(const std::string &)
+
+1. **sdf/JointAxis.hh**
+   + ***Deprecation:*** bool UseParentModelFrame()
+   + ***Replacement:*** const std::string &XyzExpressedIn()
+   + ***Deprecation:*** void SetUseParentModelFrame(bool)
+   + ***Replacement:*** void SetXyzExpressedIn(const std::string &)
+
+## SDFormat 8.0 to 8.1
+
+### Modifications
+
+1.  + Change installation path of SDF description files to allow side-by-side installation.
+    + `{prefix}/share/sdformat/1.*/*.sdf` -> `{prefix}/share/sdformat8/1.*/*.sdf`
+    + [pull request 538](https://bitbucket.org/osrf/sdformat/pull-requests/538)
+
 ## SDFormat 5.x to 6.x
 
 ### Deprecations
@@ -42,7 +137,7 @@ but with improved human-readability..
 
 1. **sdf/SDFImpl.hh**
     + ***Deprecation:*** ElementPtr root
-    + ***Replacement:*** ElementPtr Root() const / void Root(const ElementPtr _root)
+    + ***Replacement:*** ElementPtr Root() const / void Root(const ElementPtr \_root)
     + ***Deprecation:*** static std::string version
     + ***Replacement:*** static std::string Version()
 
@@ -73,7 +168,7 @@ but with improved human-readability..
       by their std:: equivalents (C++11 standard)
 
 1. **`gravity` and `magnetic_field` elements are moved  from `physics` to `world`**
-    + In physics element: gravity and magnetic_field tags have been moved
+    + In physics element: gravity and `magnetic_field` tags have been moved
       from Physics to World element.
     + [pull request 247](https://bitbucket.org/osrf/sdformat/pull-requests/247)
     + [gazebo pull request 2090](https://bitbucket.org/osrf/gazebo/pull-requests/2090)
@@ -89,20 +184,151 @@ but with improved human-readability..
     + [pull request 244](https://bitbucket.org/osrf/sdformat/pull-requests/244)
 
 1. **Lump:: prefix in link names**
-    + Changed to \_fixed_joint_lump__ to avoid confusion with scoped names
+    + Changed to `_fixed_joint_lump__` to avoid confusion with scoped names
     + [Pull request 245](https://bitbucket.org/osrf/sdformat/pull-request/245)
+
+## SDF protocol 1.6 to 1.7
+
+### Additions
+
+1. **frame.sdf** `//frame/@attached_to` attribute
+    + description: Name of the link or frame to which this frame is attached.
+      If a frame is specified, recursively following the attached\_to attributes
+      of the specified frames must lead to the name of a link or the world frame.
+    + type: string
+    + default: ""
+    + required: *
+    + [pull request 603](https://bitbucket.org/osrf/sdformat/pull-requests/603)
+
+1. **joint.sdf** `//axis/xyz/@expressed_in` and `//axis2/xyz/@expressed_in` attributes
+    + description: The name of the frame in which the `//axis/xyz` value is
+      expressed. When migrating from sdf 1.6, a `use_parent_model_frame` value
+      of `true` will be mapped to a value of `__model__` for the `expressed_in`
+      attribute.
+    + type: string
+    + default: ""
+    + required: 0
+    + [pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
+
+1. **model.sdf** `//model/@canonical_link` attribute
+    + description: The name of the canonical link in this model to which the
+      model's implicit frame is attached. This implies that a model must have
+      at least one link (unless it is static), which is also stated in the
+      Modifications section.
+    + type: string
+    + default: ""
+    + required: 0
+    + [pull request 601](https://bitbucket.org/osrf/sdformat/pull-requests/601)
+
+1. **world.sdf** `//world/frame` element is now allowed.
+    + [pull request 603](https://bitbucket.org/osrf/sdformat/pull-requests/603)
+
+### Modifications
+
+1.  A non-static model must have at least one link, as specified in the
+    [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#2-model-frame-and-canonical-link).
+    + [pull request 601](https://bitbucket.org/osrf/sdformat/pull-requests/601)
+    + [pull request 626](https://bitbucket.org/osrf/sdformat/pull-requests/626)
+
+1. Unique names for all sibling elements:
+    + As described in the [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#3-2-unique-names-for-all-sibling-elements),
+      all named sibling elements must have unique names.
+      Uniqueness is forced so that referencing implicit frames is not ambiguous,
+      e.g. you cannot have a link and joint share an implicit frame name.
+      Some existing SDFormat models may not comply with this requirement.
+      The `ign sdf --check` command can be used to identify models that violate
+      this requirement.
+    + [pull request 600](https://bitbucket.org/osrf/sdformat/pull-requests/600)
+
+1. Reserved names:
+    + As described in the [proposal](http://sdformat.org/tutorials?tut=pose_frame_semantics_proposal&cat=pose_semantics_docs&#3-3-reserved-names),
+      entities in a simulation must not use world as a name.
+      It has a special interpretation when specified as a parent or child link
+      of a joint.
+      Names starting and ending with double underscores (eg. `__wheel__`) must
+      be reserved for use by library implementors and the specification.
+      For example, such names might be useful during parsing for setting
+      sentinel or default names for elements with missing names.
+      If explicitly stated, they can be referred to (e.g. `__model__` / `world`
+      for implicit model / world frames, respectively).
+
+1. **joint.sdf** `//joint/child` may no longer be specified as `world`.
+    + [pull request 634](https://bitbucket.org/osrf/sdformat/pull-requests/634)
+
+1. **pose.sdf** `//pose/@frame` attribute is renamed to `//pose/@relative_to`.
+    + [pull request 597](https://bitbucket.org/osrf/sdformat/pull-requests/597)
+
+### Removals
+
+1. `<frame>` element is now only allowed in `<model>` and `<world>`.
+    It is no longer allowed in the following elements:
+    + actor
+    + audio\_source
+    + camera
+    + collision
+    + frame
+    + gui
+    + inertial
+    + joint
+    + light
+    + light\_state
+    + link
+    + link\_state
+    + population
+    + projector
+    + sensor
+    + visual
+    + [pull request 603](https://bitbucket.org/osrf/sdformat/pull-requests/603)
+
+1. **actor.sdf** `static` element was deprecated in
+    [pull request 280](https://bitbucket.org/osrf/sdformat/pull-requests/280)
+    and is now removed.
+    + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
+1. **imu.sdf** `topic` element was deprecated in
+    [pull request 532](https://bitbucket.org/osrf/sdformat/pull-requests/532)
+    and is now removed.
+    + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
+1. **joint.sdf** `//axis/use_parent_model_frame` and `//axis2/use_parent_model_frame` elements
+    are removed in favor of the `//axis/xyz/@expressed_in` and
+    `//axis2/xyz/@expressed_in` attributes.
+    When migrating from sdf 1.6, a `use_parent_model_frame` value
+    of `true` will be mapped to a value of `__model__` for the `expressed_in`
+    attribute.
+    + [pull request 589](https://bitbucket.org/osrf/sdformat/pull-requests/589)
+
+1. **joint.sdf** `//physics/ode/provide_feedback` was deprecated in
+    [pull request 38](https://bitbucket.org/osrf/sdformat/pull-requests/38)
+    and is now removed.
+    + [pull request 588](https://bitbucket.org/osrf/sdformat/pull-requests/588)
+
+1. **world.sdf** `//world/joint` was removed as it has never been used.
+    + [pull request 637](https://bitbucket.org/osrf/sdformat/pull-requests/637)
 
 ## SDF protocol 1.5 to 1.6
 
 ### Additions
 
-1. **physics.sdf** `dart::solver::solver_type` element
-    + description: The DART LCP/constraint solver to use.
-      Either dantzig or pgs (projected Gauss-Seidel)
-    + type: string
-    + default: dantzig
+1. **actor.sdf** `tension` element
+    + description: The tension of the trajectory spline. The default value of
+      zero equates to a Catmull-Rom spline, which may also cause the animation
+      to overshoot keyframes. A value of one will cause the animation to stick
+      to the keyframes.
+    + type: double
+    + default: 0.0
+    + min: 0.0
+    + max: 1.0
     + required: 0
-    + [pull request 369](https://bitbucket.org/osrf/sdformat/pull-requests/369)
+    + [pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
+
+1. **camera.sdf** `depth_camera/clip` sub-elements: `near`, `far`
+    + description: Clipping parameters for depth camera on rgbd camera sensor.
+    + [pull request 628](https://bitbucket.org/osrf/sdformat/pull-requests/628)
+
+1. **camera.sdf** `intrinsics` sub-elements: `fx`, `fy`, `cx`, `cy`, `s`
+    + description: Camera intrinsic parameters for setting a custom perspective projection matrix.
+    + [pull request 496](https://bitbucket.org/osrf/sdformat/pull-requests/496)
 
 1. **link.sdf** `enable_wind` element
     + description: If true, the link is affected by the wind
@@ -112,7 +338,7 @@ but with improved human-readability..
     + [pull request 240](https://bitbucket.org/osrf/sdformat/pull-requests/240)
 
 1. **link.sdf** `light` element
-    + included from `light.sdf` with required="*",
+    + included from `light.sdf` with `required="*"`,
       so a link can have any number of attached lights.
     + [pull request 373](https://bitbucket.org/osrf/sdformat/pull-requests/373)
 
@@ -131,6 +357,22 @@ but with improved human-readability..
     + required: 0
     + [pull request 246](https://bitbucket.org/osrf/sdformat/pull-requests/246)
 
+1. **physics.sdf** `dart::collision_detector` element
+    + description: The collision detector for DART to use.
+      Can be dart, fcl, bullet or ode.
+    + type: string
+    + default: fcl
+    + required: 0
+    + [pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
+
+1. **physics.sdf** `dart::solver::solver_type` element
+    + description: The DART LCP/constraint solver to use.
+      Either dantzig or pgs (projected Gauss-Seidel)
+    + type: string
+    + default: dantzig
+    + required: 0
+    + [pull request 369](https://bitbucket.org/osrf/sdformat/pull-requests/369)
+
 1. **physics.sdf** `island_threads` element under `ode::solver`
     + description: Number of threads to use for "islands" of disconnected models.
     + type: int
@@ -144,6 +386,13 @@ but with improved human-readability..
     + default: 0
     + required: 0
     + [pull request 380](https://bitbucket.org/osrf/sdformat/pull-requests/380)
+
+1. **sonar.sdf** `geometry` element
+    + description: The sonar collision shape. Currently supported geometries are: "cone" and "sphere".
+    + type: string
+    + default: "cone"
+    + required: 0
+    + [pull request 495](https://bitbucket.org/osrf/sdformat/pull-requests/495)
 
 1. **state.sdf** allow `light` tags within `insertions` element
     * [pull request 325](https://bitbucket.org/osrf/sdformat/pull-request/325)

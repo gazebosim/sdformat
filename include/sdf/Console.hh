@@ -15,14 +15,15 @@
  *
  */
 
-#ifndef _SDF_CONSOLE_HH_
-#define _SDF_CONSOLE_HH_
+#ifndef SDF_CONSOLE_HH_
+#define SDF_CONSOLE_HH_
 
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
 
+#include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 
 #ifdef _WIN32
@@ -34,6 +35,10 @@
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \addtogroup sdf SDF
   /// \{
 
@@ -161,6 +166,7 @@ namespace sdf
     }
 
     return *this;
+  }
   }
 
   /// \}

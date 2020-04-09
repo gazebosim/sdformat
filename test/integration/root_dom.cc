@@ -62,7 +62,7 @@ TEST(DOMRoot, Load)
   sdf::Root root;
   EXPECT_EQ(0u, root.WorldCount());
   EXPECT_TRUE(root.Load(testFile).empty());
-  EXPECT_EQ("1.6", root.Version());
+  EXPECT_EQ("1.7", root.Version());
   EXPECT_EQ(1u, root.WorldCount());
   EXPECT_TRUE(root.WorldByIndex(0) != nullptr);
   EXPECT_TRUE(root.WorldByIndex(1) == nullptr);
@@ -107,4 +107,5 @@ TEST(DOMRoot, LoadDuplicateModels)
   sdf::Errors errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
   EXPECT_EQ(1u, root.ModelCount());
+  EXPECT_EQ("robot1", root.ModelByIndex(0)->Name());
 }

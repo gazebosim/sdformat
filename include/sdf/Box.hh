@@ -17,12 +17,17 @@
 #ifndef SDF_BOX_HH_
 #define SDF_BOX_HH_
 
+#include <ignition/math/Box.hh>
 #include <ignition/math/Vector3.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
   // Forward declare private data class.
   class BoxPrivate;
 
@@ -33,8 +38,26 @@ namespace sdf
     /// \brief Constructor
     public: Box();
 
+    /// \brief Copy constructor
+    /// \param[in] _box Box to copy.
+    public: Box(const Box &_box);
+
+    /// \brief Move constructor
+    /// \param[in] _box Box to move.
+    public: Box(Box &&_box) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _box Box to move.
+    /// \return Reference to this.
+    public: Box &operator=(Box &&_box);
+
     /// \brief Destructor
     public: virtual ~Box();
+
+    /// \brief Assignment operator.
+    /// \param[in] _box The box to set values from.
+    /// \return *this
+    public: Box &operator=(const Box &_box);
 
     /// \brief Load the box geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -58,9 +81,18 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Get the Ignition Math representation of this Box.
+    /// \return A const reference to an ignition::math::Boxd object.
+    public: const ignition::math::Boxd &Shape() const;
+
+    /// \brief Get a mutable Ignition Math representation of this Box.
+    /// \return A reference to an ignition::math::Boxd object.
+    public: ignition::math::Boxd &Shape();
+
     /// \brief Private data pointer.
     private: BoxPrivate *dataPtr;
   };
+  }
 }
 
 #endif

@@ -18,8 +18,22 @@
 #include <utility>
 #include "Utils.hh"
 
+namespace sdf
+{
+inline namespace SDF_VERSION_NAMESPACE {
+
 /////////////////////////////////////////////////
-bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
+bool isReservedName(const std::string &_name)
+{
+  const std::size_t size = _name.size();
+  return _name == "world" ||
+      (size >= 4 &&
+       _name.compare(0, 2, "__") == 0 &&
+       _name.compare(size-2, 2, "__") == 0);
+}
+
+/////////////////////////////////////////////////
+bool loadName(sdf::ElementPtr _sdf, std::string &_name)
 {
   // Read the name
   std::pair<std::string, bool> namePair = _sdf->Get<std::string>("name", "");
@@ -29,7 +43,7 @@ bool sdf::loadName(sdf::ElementPtr _sdf, std::string &_name)
 }
 
 /////////////////////////////////////////////////
-bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
+bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
               std::string &_frame)
 {
   sdf::ElementPtr sdf = _sdf;
@@ -42,7 +56,8 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
   }
 
   // Read the frame. An empty frame implies the parent frame.
-  std::pair<std::string, bool> framePair = sdf->Get<std::string>("frame", "");
+  std::pair<std::string, bool> framePair =
+      sdf->Get<std::string>("relative_to", "");
 
   // Read the pose value.
   std::pair<ignition::math::Pose3d, bool> posePair =
@@ -61,10 +76,12 @@ bool sdf::loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
 }
 
 /////////////////////////////////////////////////
-double sdf::infiniteIfNegative(const double _value)
+double infiniteIfNegative(const double _value)
 {
   if (_value < 0.0)
     return std::numeric_limits<double>::infinity();
 
   return _value;
+}
+}
 }

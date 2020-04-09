@@ -18,7 +18,7 @@
 #include <cstdint>
 #include <string>
 
-#include "sdf/ExceptionPrivate.hh"
+#include "ExceptionPrivate.hh"
 #include "sdf/Console.hh"
 #include "sdf/Exception.hh"
 
@@ -41,6 +41,9 @@ Exception::Exception(const char *_file, std::int64_t _line, std::string _msg)
 }
 
 //////////////////////////////////////////////////
+Exception::~Exception() = default;
+
+//////////////////////////////////////////////////
 Exception::Exception(const Exception &_e)
   : dataPtr(new ExceptionPrivate)
 {
@@ -50,9 +53,16 @@ Exception::Exception(const Exception &_e)
 }
 
 //////////////////////////////////////////////////
-Exception::~Exception()
+Exception::Exception(Exception &&_exception) noexcept = default;
+
+//////////////////////////////////////////////////
+Exception &Exception::operator=(const Exception &_exception)
 {
+  return *this = Exception(_exception);
 }
+
+/////////////////////////////////////////////////
+Exception &Exception::operator=(Exception &&_exception) = default;
 
 //////////////////////////////////////////////////
 void Exception::Print() const

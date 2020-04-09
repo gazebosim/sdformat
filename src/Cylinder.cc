@@ -14,7 +14,6 @@
  * limitations under the License.
  *
 */
-#include "sdf/Geometry.hh"
 #include "sdf/Cylinder.hh"
 
 using namespace sdf;
@@ -22,11 +21,8 @@ using namespace sdf;
 // Private data class
 class sdf::CylinderPrivate
 {
-  // Radius of the cylinder
-  public: double radius = 1.0;
-
-  // Length of the cylinder
-  public: double length = 1.0;
+  // A cylinder with a length and radius if 1 meter.
+  public: ignition::math::Cylinderd cylinder{1.0, 1.0};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -43,6 +39,33 @@ Cylinder::~Cylinder()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+Cylinder::Cylinder(const Cylinder &_cylinder)
+  : dataPtr(new CylinderPrivate)
+{
+  this->dataPtr->cylinder = _cylinder.dataPtr->cylinder;
+  this->dataPtr->sdf = _cylinder.dataPtr->sdf;
+}
+
+//////////////////////////////////////////////////
+Cylinder::Cylinder(Cylinder &&_cylinder) noexcept
+  : dataPtr(std::exchange(_cylinder.dataPtr, nullptr))
+{
+}
+
+/////////////////////////////////////////////////
+Cylinder &Cylinder::operator=(const Cylinder &_cylinder)
+{
+  return *this = Cylinder(_cylinder);
+}
+
+/////////////////////////////////////////////////
+Cylinder &Cylinder::operator=(Cylinder &&_cylinder)
+{
+  std::swap(this->dataPtr, _cylinder.dataPtr);
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -73,7 +96,7 @@ Errors Cylinder::Load(ElementPtr _sdf)
   if (_sdf->HasElement("radius"))
   {
     std::pair<double, bool> pair = _sdf->Get<double>("radius",
-        this->dataPtr->radius);
+        this->dataPtr->cylinder.Radius());
 
     if (!pair.second)
     {
@@ -81,7 +104,7 @@ Errors Cylinder::Load(ElementPtr _sdf)
           "Invalid <radius> data for a <cylinder> geometry. "
           "Using a radius of 1."});
     }
-    this->dataPtr->radius = pair.first;
+    this->dataPtr->cylinder.SetRadius(pair.first);
   }
   else
   {
@@ -93,7 +116,7 @@ Errors Cylinder::Load(ElementPtr _sdf)
   if (_sdf->HasElement("length"))
   {
     std::pair<double, bool> pair = _sdf->Get<double>("length",
-        this->dataPtr->length);
+        this->dataPtr->cylinder.Length());
 
     if (!pair.second)
     {
@@ -101,7 +124,7 @@ Errors Cylinder::Load(ElementPtr _sdf)
           "Invalid <length> data for a <cylinder> geometry. "
           "Using a length of 1."});
     }
-    this->dataPtr->length = pair.first;
+    this->dataPtr->cylinder.SetLength(pair.first);
   }
   else
   {
@@ -116,29 +139,41 @@ Errors Cylinder::Load(ElementPtr _sdf)
 //////////////////////////////////////////////////
 double Cylinder::Radius() const
 {
-  return this->dataPtr->radius;
+  return this->dataPtr->cylinder.Radius();
 }
 
 //////////////////////////////////////////////////
 void Cylinder::SetRadius(const double _radius)
 {
-  this->dataPtr->radius = _radius;
+  this->dataPtr->cylinder.SetRadius(_radius);
 }
 
 //////////////////////////////////////////////////
 double Cylinder::Length() const
 {
-  return this->dataPtr->length;
+  return this->dataPtr->cylinder.Length();
 }
 
 //////////////////////////////////////////////////
 void Cylinder::SetLength(const double _length)
 {
-  this->dataPtr->length = _length;
+  this->dataPtr->cylinder.SetLength(_length);
 }
 
 /////////////////////////////////////////////////
 sdf::ElementPtr Cylinder::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Cylinderd &Cylinder::Shape() const
+{
+  return this->dataPtr->cylinder;
+}
+
+/////////////////////////////////////////////////
+ignition::math::Cylinderd &Cylinder::Shape()
+{
+  return this->dataPtr->cylinder;
 }

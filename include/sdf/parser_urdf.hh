@@ -14,20 +14,30 @@
  * limitations under the License.
  *
 */
-#ifndef _SDFORMAT_URDF2SDF_HH_
-#define _SDFORMAT_URDF2SDF_HH_
+#ifndef SDFORMAT_URDF2SDF_HH_
+#define SDFORMAT_URDF2SDF_HH_
 
 #include <tinyxml.h>
+#include <sdf/sdf_config.h>
 
 #include <string>
 
 #include "sdf/Console.hh"
+#include "sdf/Types.hh"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   /// \brief URDF to SDF converter
-  class SDFORMAT_VISIBLE URDF2SDF
+  ///
+  /// This is now deprecated for external usage and will be removed in the next
+  /// major version of libsdformat. Instead, consider using `sdf::readFile` or
+  /// `sdf::readString`, which automatically convert URDF to SDF.
+  class SDFORMAT_VISIBLE SDF_DEPRECATED(9.2) URDF2SDF
   {
     /// \brief constructor
     public: URDF2SDF();
@@ -68,5 +78,6 @@ namespace sdf
     /// list extensions for debugging
     private: void ListSDFExtensions(const std::string &_reference);
   };
+  }
 }
 #endif

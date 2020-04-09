@@ -1,9 +1,13 @@
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 
 set (headers
+  Actor.hh
+  AirPressure.hh
+  Altimeter.hh
   Assert.hh
   Atmosphere.hh
   Box.hh
+  Camera.hh
   Collision.hh
   Console.hh
   Cylinder.hh
@@ -11,22 +15,32 @@ set (headers
   Error.hh
   Exception.hh
   Filesystem.hh
+  Frame.hh
   Geometry.hh
   Gui.hh
+  Imu.hh
   Joint.hh
   JointAxis.hh
+  Lidar.hh
   Light.hh
   Link.hh
+  Magnetometer.hh
   Material.hh
   Mesh.hh
   Model.hh
+  Noise.hh
   Param.hh
   parser.hh
+  Pbr.hh
   Physics.hh
   Plane.hh
   Root.hh
+  Scene.hh
   SDFImpl.hh
+  SemanticPose.hh
+  Sensor.hh
   Sphere.hh
+  Surface.hh
   Types.hh
   system_util.hh
   Visual.hh

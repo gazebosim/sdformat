@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 
 #include "sdf/Element.hh"
+#include "sdf/Filesystem.hh"
 #include "sdf/Param.hh"
 
 /////////////////////////////////////////////////
@@ -35,12 +36,16 @@ TEST(Element, Child)
 {
   sdf::Element child;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  parent->SetFilePath("/parent/path/model.sdf");
+  parent->SetOriginalVersion("1.5");
 
   ASSERT_EQ(child.GetParent(), nullptr);
 
   child.SetParent(parent);
 
   ASSERT_NE(child.GetParent(), nullptr);
+  EXPECT_EQ("/parent/path/model.sdf", child.FilePath());
+  EXPECT_EQ("1.5", child.OriginalVersion());
 }
 
 /////////////////////////////////////////////////
@@ -268,8 +273,13 @@ TEST(Element, Clone)
 
   parent->AddValue("string", "foo", false, "foo description");
 
+  parent->SetFilePath("/path/to/file.sdf");
+  parent->SetOriginalVersion("1.5");
+
   sdf::ElementPtr newelem = parent->Clone();
 
+  EXPECT_EQ("/path/to/file.sdf", newelem->FilePath());
+  EXPECT_EQ("1.5", newelem->OriginalVersion());
   ASSERT_NE(newelem->GetFirstElement(), nullptr);
   ASSERT_EQ(newelem->GetElementDescriptionCount(), 1UL);
   ASSERT_EQ(newelem->GetAttributeCount(), 1UL);
@@ -281,13 +291,46 @@ TEST(Element, ClearElements)
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
 
+  parent->SetFilePath("/path/to/file.sdf");
+  parent->SetOriginalVersion("1.5");
+  child->SetParent(parent);
   parent->InsertElement(child);
 
+  EXPECT_EQ("/path/to/file.sdf", parent->FilePath());
+  EXPECT_EQ("1.5", parent->OriginalVersion());
   ASSERT_NE(parent->GetFirstElement(), nullptr);
+  EXPECT_EQ("/path/to/file.sdf", parent->GetFirstElement()->FilePath());
+  EXPECT_EQ("1.5", parent->GetFirstElement()->OriginalVersion());
 
   parent->ClearElements();
 
   ASSERT_EQ(parent->GetFirstElement(), nullptr);
+  EXPECT_EQ("/path/to/file.sdf", parent->FilePath());
+  EXPECT_EQ("1.5", parent->OriginalVersion());
+}
+
+/////////////////////////////////////////////////
+TEST(Element, Clear)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  sdf::ElementPtr child = std::make_shared<sdf::Element>();
+
+  parent->SetFilePath("/path/to/file.sdf");
+  parent->SetOriginalVersion("1.5");
+  child->SetParent(parent);
+  parent->InsertElement(child);
+
+  EXPECT_EQ("/path/to/file.sdf", parent->FilePath());
+  EXPECT_EQ("1.5", parent->OriginalVersion());
+  ASSERT_NE(parent->GetFirstElement(), nullptr);
+  EXPECT_EQ("/path/to/file.sdf", parent->GetFirstElement()->FilePath());
+  EXPECT_EQ("1.5", parent->GetFirstElement()->OriginalVersion());
+
+  parent->Clear();
+
+  ASSERT_EQ(parent->GetFirstElement(), nullptr);
+  EXPECT_TRUE(parent->FilePath().empty());
+  EXPECT_TRUE(parent->OriginalVersion().empty());
 }
 
 /////////////////////////////////////////////////
@@ -296,14 +339,54 @@ TEST(Element, ToStringElements)
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
 
+  parent->SetName("parent");
+  child->SetName("child");
+
   parent->InsertElement(child);
   ASSERT_NE(parent->GetFirstElement(), nullptr);
 
   parent->AddAttribute("test", "string", "foo", false, "foo description");
   ASSERT_EQ(parent->GetAttributeCount(), 1UL);
 
-  std::string stringval = parent->ToString("myprefix");
-  ASSERT_EQ(stringval, "myprefix< test='foo'>\nmyprefix  </>\nmyprefix</>\n");
+  // attribute won't print unless it has been set
+  EXPECT_FALSE(parent->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("<!-- prefix -->"),
+    "<!-- prefix --><parent>\n"
+    "<!-- prefix -->  <child/>\n"
+    "<!-- prefix --></parent>\n");
+
+  sdf::ParamPtr test = parent->GetAttribute("test");
+  ASSERT_NE(nullptr, test);
+  EXPECT_FALSE(test->GetSet());
+  EXPECT_TRUE(test->SetFromString("foo"));
+  EXPECT_TRUE(test->GetSet());
+  EXPECT_TRUE(parent->GetAttributeSet("test"));
+
+  EXPECT_EQ(parent->ToString("<!-- prefix -->"),
+    "<!-- prefix --><parent test='foo'>\n"
+    "<!-- prefix -->  <child/>\n"
+    "<!-- prefix --></parent>\n");
+}
+
+/////////////////////////////////////////////////
+TEST(Element, ToStringRequiredAttributes)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  parent->AddAttribute("test", "string", "foo", true, "foo description");
+  ASSERT_EQ(parent->GetAttributeCount(), 1UL);
+
+  // A required attribute should print even if it has not been set
+  EXPECT_FALSE(parent->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("myprefix"), "myprefix< test='foo'/>\n");
+
+  sdf::ParamPtr test = parent->GetAttribute("test");
+  ASSERT_NE(nullptr, test);
+  EXPECT_FALSE(test->GetSet());
+  EXPECT_TRUE(test->SetFromString("bar"));
+  EXPECT_TRUE(test->GetSet());
+  EXPECT_TRUE(parent->GetAttributeSet("test"));
+
+  EXPECT_EQ(parent->ToString("myprefix"), "myprefix< test='bar'/>\n");
 }
 
 /////////////////////////////////////////////////
@@ -316,8 +399,38 @@ TEST(Element, ToStringValue)
 
   parent->AddValue("string", "val", false, "val description");
 
-  std::string stringval = parent->ToString("myprefix");
-  ASSERT_EQ(stringval, "myprefix< test='foo'>val</>\n");
+  EXPECT_FALSE(parent->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("myprefix"),
+            "myprefix<>val</>\n");
+
+  sdf::ParamPtr test = parent->GetAttribute("test");
+  ASSERT_NE(nullptr, test);
+  EXPECT_FALSE(test->GetSet());
+  EXPECT_TRUE(test->SetFromString("foo"));
+  EXPECT_TRUE(test->GetSet());
+  EXPECT_TRUE(parent->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("myprefix"),
+            "myprefix< test='foo'>val</>\n");
+}
+
+
+/////////////////////////////////////////////////
+TEST(Element, ToStringClonedElement)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+
+  parent->AddAttribute("test", "string", "foo", false, "foo description");
+  ASSERT_EQ(parent->GetAttributeCount(), 1UL);
+
+  sdf::ParamPtr test = parent->GetAttribute("test");
+  ASSERT_NE(nullptr, test);
+  EXPECT_FALSE(test->GetSet());
+  EXPECT_TRUE(test->SetFromString("foo"));
+  EXPECT_TRUE(test->GetSet());
+
+  sdf::ElementPtr parentClone = parent->Clone();
+  EXPECT_TRUE(parentClone->GetAttributeSet("test"));
+  EXPECT_EQ(parent->ToString("myprefix"), parentClone->ToString("myprefix"));
 }
 
 /////////////////////////////////////////////////
@@ -428,11 +541,16 @@ TEST(Element, Copy)
   sdf::ElementPtr dest = std::make_shared<sdf::Element>();
 
   src->SetName("test");
+  src->SetFilePath("/path/to/file.sdf");
+  src->SetOriginalVersion("1.5");
   src->AddValue("string", "val", false, "val description");
   src->AddAttribute("test", "string", "foo", false, "foo description");
   src->InsertElement(std::make_shared<sdf::Element>());
 
   dest->Copy(src);
+
+  EXPECT_EQ("/path/to/file.sdf", dest->FilePath());
+  EXPECT_EQ("1.5", dest->OriginalVersion());
 
   sdf::ParamPtr param = dest->GetValue();
   ASSERT_TRUE(param->IsType<std::string>());
@@ -508,6 +626,96 @@ TEST(Element, GetNextElementMultiple)
   parent->InsertElement(child2);
 
   ASSERT_NE(child1->GetNextElement(""), nullptr);
+  ASSERT_EQ(child2->GetNextElement(""), nullptr);
+}
+
+/////////////////////////////////////////////////
+TEST(Element, CountNamedElements)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  // expect empty map element with no children
+  EXPECT_TRUE(parent->CountNamedElements().empty());
+  EXPECT_TRUE(parent->CountNamedElements("child").empty());
+  // expect empty set of element type names
+  EXPECT_TRUE(parent->GetElementTypeNames().empty());
+  // since there are no child names, they must be unique
+  EXPECT_TRUE(parent->HasUniqueChildNames());
+  EXPECT_TRUE(parent->HasUniqueChildNames("child"));
+
+  auto addChildElement = [](
+      sdf::ElementPtr _parent,
+      const std::string &_elementName,
+      const bool _addNameAttribute,
+      const std::string &_childName)
+  {
+    sdf::ElementPtr child = std::make_shared<sdf::Element>();
+    child->SetParent(_parent);
+    child->SetName(_elementName);
+    _parent->InsertElement(child);
+
+    if (_addNameAttribute)
+    {
+      child->AddAttribute("name", "string", _childName, false, "description");
+    }
+  };
+
+  // The following calls should make the following child elements:
+  // <child name="child1"/>
+  // <child name="child2"/>
+  // <element name="child2"/>
+  // <element name="child3"/>
+  // <element />
+  addChildElement(parent, "child", true, "child1");
+  addChildElement(parent, "child", true, "child2");
+  addChildElement(parent, "element", true, "child2");
+  addChildElement(parent, "element", true, "child3");
+  addChildElement(parent, "element", false, "unset");
+
+  // test GetElementTypeNames
+  auto typeNames = parent->GetElementTypeNames();
+  EXPECT_EQ(typeNames.size(), 2u);
+  EXPECT_EQ(typeNames.count("child"), 1u);
+  EXPECT_EQ(typeNames.count("element"), 1u);
+
+  // test HasUniqueChildNames
+  EXPECT_TRUE(parent->HasUniqueChildNames("empty"));
+  EXPECT_TRUE(parent->HasUniqueChildNames("child"));
+  EXPECT_TRUE(parent->HasUniqueChildNames("element"));
+  // The following have matching names that are detected when passing
+  // default "" to HasUniqueChildNames().
+  // <child name="child2"/>
+  // <element name="child2"/>
+  EXPECT_FALSE(parent->HasUniqueChildNames());
+  EXPECT_FALSE(parent->HasUniqueChildNames(""));
+
+  EXPECT_TRUE(parent->CountNamedElements("empty").empty());
+
+  auto childMap = parent->CountNamedElements("child");
+  EXPECT_FALSE(childMap.empty());
+  EXPECT_EQ(childMap.size(), 2u);
+  EXPECT_EQ(childMap.count("child1"), 1u);
+  EXPECT_EQ(childMap.count("child2"), 1u);
+  EXPECT_EQ(childMap.at("child1"), 1u);
+  EXPECT_EQ(childMap.at("child2"), 1u);
+
+  auto elementMap = parent->CountNamedElements("element");
+  EXPECT_FALSE(elementMap.empty());
+  EXPECT_EQ(elementMap.size(), 2u);
+  EXPECT_EQ(elementMap.count("child2"), 1u);
+  EXPECT_EQ(elementMap.count("child3"), 1u);
+  EXPECT_EQ(elementMap.at("child2"), 1u);
+  EXPECT_EQ(elementMap.at("child3"), 1u);
+
+  auto allMap = parent->CountNamedElements("");
+  EXPECT_FALSE(allMap.empty());
+  EXPECT_EQ(allMap.size(), 3u);
+  EXPECT_EQ(allMap.count("child1"), 1u);
+  EXPECT_EQ(allMap.count("child2"), 1u);
+  EXPECT_EQ(allMap.count("child3"), 1u);
+  EXPECT_EQ(allMap.count("unset"), 0u);
+  EXPECT_EQ(allMap.at("child1"), 1u);
+  EXPECT_EQ(allMap.at("child2"), 2u);
+  EXPECT_EQ(allMap.at("child3"), 1u);
 }
 
 /////////////////////////////////////////////////

@@ -20,10 +20,14 @@
 #include <ignition/math/Temperature.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
   /// \enum AtmosphereType
   /// \brief The set of atmosphere model types.
   enum class AtmosphereType
@@ -50,7 +54,17 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _atmosphere Atmosphere to move.
-    public: Atmosphere(Atmosphere &&_atmosphere);
+    public: Atmosphere(Atmosphere &&_atmosphere) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _atmosphere Atmosphere to move.
+    /// \return Reference to this.
+    public: Atmosphere &operator=(Atmosphere &&_atmosphere);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _atmosphere Atmosphere to copy.
+    /// \return Reference to this.
+    public: Atmosphere &operator=(const Atmosphere &_atmosphere);
 
     /// \brief Destructor
     public: ~Atmosphere();
@@ -106,5 +120,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: AtmospherePrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif

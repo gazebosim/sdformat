@@ -15,12 +15,13 @@
  *
  */
 
-#ifndef _SDF_FILESYSTEM_HH_
-#define _SDF_FILESYSTEM_HH_
+#ifndef SDF_FILESYSTEM_HH_
+#define SDF_FILESYSTEM_HH_
 
 #include <memory>
 #include <string>
 
+#include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 
 #ifdef _WIN32
@@ -32,6 +33,10 @@
 
 namespace sdf
 {
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   namespace filesystem
   {
     /// \brief Determine whether the given path exists on the filesystem.
@@ -131,6 +136,7 @@ namespace sdf
       /// \brief Private data.
       private: std::unique_ptr<DirIterPrivate> dataPtr;
     };
+  }
   }
 }
 

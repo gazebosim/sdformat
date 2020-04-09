@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_invalid_link_relative_to">
+    <link name="L">
+      <pose relative_to="A">1 0 0 0 0 0</pose>            <!-- INVALID: no sibling frame named A. -->
+    </link>
+    <link name="self_cycle">
+      <pose relative_to="self_cycle">2 0 0 0 0 0</pose>   <!-- INVALID: cycle in relative_to graph. -->
+    </link>
+  </model>
+</sdf>

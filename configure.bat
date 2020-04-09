@@ -4,8 +4,7 @@
 
 
 :: Install dependencies
-call %win_lib% :download_unzip_install boost_1.67.0_any_variant_version.zip
-call %win_lib% :install_ign_project ign-math ign-math4
+call %win_lib% :install_ign_project ign-math ign-math6
 
 :: Set configuration variables
 @set build_type=Release

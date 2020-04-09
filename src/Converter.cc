@@ -16,6 +16,7 @@
  */
 
 #include <algorithm>
+#include <map>
 #include <set>
 #include <sstream>
 #include <string>
@@ -24,9 +25,10 @@
 
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
-#include "sdf/Converter.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
+
+#include "Converter.hh"
 
 // This include file is generated at configure time.
 #include "sdf/EmbeddedSdf.hh"
@@ -81,18 +83,24 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
   std::map<std::string, std::pair<std::string, std::string> >::const_iterator
     fromIter = conversionMap.find(origVersion);
 
-  TiXmlDocument xmlDoc;
   std::string toVer = "";
 
   // Starting with the original SDF version, perform all the conversions
   // necessary in order to reach the _toVersion.
-  while (fromIter->first != _toVersion && fromIter != conversionMap.end())
+  while (fromIter != conversionMap.end() && fromIter->first != _toVersion)
   {
     // Get the SDF to version.
     toVer = fromIter->second.first;
 
     // Parse and apply the conversion XML.
+    TiXmlDocument xmlDoc;
     xmlDoc.Parse(fromIter->second.second.c_str());
+    if (xmlDoc.Error())
+    {
+      sdferr << "Error parsing XML from string: "
+             << xmlDoc.ErrorDesc() << '\n';
+      return false;
+    }
     ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
 
     // Get the next conversion XML map element.
@@ -120,6 +128,37 @@ void Converter::Convert(TiXmlDocument *_doc, TiXmlDocument *_convertDoc)
 }
 
 /////////////////////////////////////////////////
+void Converter::ConvertDescendantsImpl(TiXmlElement *_e, TiXmlElement *_c)
+{
+  if (!_c->Attribute("descendant_name"))
+  {
+    return;
+  }
+
+  if (_e->ValueStr() == "plugin")
+  {
+    return;
+  }
+
+  if (_e->ValueStr().find(":") != std::string::npos)
+  {
+    return;
+  }
+
+  std::string name = _c->Attribute("descendant_name");
+  TiXmlElement *e = _e->FirstChildElement();
+  while (e)
+  {
+    if (name == e->ValueStr())
+    {
+      ConvertImpl(e, _c);
+    }
+    ConvertDescendantsImpl(e, _c);
+    e = e->NextSiblingElement();
+  }
+}
+
+/////////////////////////////////////////////////
 void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
@@ -130,12 +169,19 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
   for (TiXmlElement *convertElem = _convert->FirstChildElement("convert");
        convertElem; convertElem = convertElem->NextSiblingElement("convert"))
   {
-    TiXmlElement *elem = _elem->FirstChildElement(
-        convertElem->Attribute("name"));
-    while (elem)
+    if (convertElem->Attribute("name"))
     {
-      ConvertImpl(elem, convertElem);
-      elem = elem->NextSiblingElement(convertElem->Attribute("name"));
+      TiXmlElement *elem = _elem->FirstChildElement(
+          convertElem->Attribute("name"));
+      while (elem)
+      {
+        ConvertImpl(elem, convertElem);
+        elem = elem->NextSiblingElement(convertElem->Attribute("name"));
+      }
+    }
+    if (convertElem->Attribute("descendant_name"))
+    {
+      ConvertDescendantsImpl(_elem, convertElem);
     }
   }
 
@@ -149,6 +195,10 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
     else if (childElem->ValueStr() == "copy")
     {
       Move(_elem, childElem, true);
+    }
+    else if (childElem->ValueStr() == "map")
+    {
+      Map(_elem, childElem);
     }
     else if (childElem->ValueStr() == "move")
     {
@@ -295,7 +345,197 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
   }
   else
   {
-    _elem->RemoveChild(_elem->FirstChildElement(elementName));
+    TiXmlElement *childElem = _elem->FirstChildElement(elementName);
+    while (childElem)
+    {
+      _elem->RemoveChild(childElem);
+      childElem = _elem->FirstChildElement(elementName);
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
+{
+  SDF_ASSERT(_elem != nullptr, "SDF element is nullptr");
+  SDF_ASSERT(_mapElem != nullptr, "Map element is nullptr");
+
+  TiXmlElement *fromConvertElem = _mapElem->FirstChildElement("from");
+  TiXmlElement *toConvertElem = _mapElem->FirstChildElement("to");
+
+  if (!fromConvertElem)
+  {
+    sdferr << "<map> element requires a <from> child element.\n";
+    return;
+  }
+  if (!toConvertElem)
+  {
+    sdferr << "<map> element requires a <to> child element.\n";
+    return;
+  }
+
+  const char *fromNameStr = fromConvertElem->Attribute("name");
+  const char *toNameStr = toConvertElem->Attribute("name");
+
+  if (!fromNameStr || fromNameStr[0] == '\0')
+  {
+    sdferr << "Map: <from> element requires a non-empty name attribute.\n";
+    return;
+  }
+  if (!toNameStr || toNameStr[0] == '\0')
+  {
+    sdferr << "Map: <to> element requires a non-empty name attribute.\n";
+    return;
+  }
+
+  // create map of input and output values
+  std::map<std::string, std::string> valueMap;
+  TiXmlElement *fromValueElem = fromConvertElem->FirstChildElement("value");
+  TiXmlElement *toValueElem = toConvertElem->FirstChildElement("value");
+  if (!fromValueElem)
+  {
+    sdferr << "Map: <from> element requires at least one <value> element.\n";
+    return;
+  }
+  if (!toValueElem)
+  {
+    sdferr << "Map: <to> element requires at least one <value> element.\n";
+    return;
+  }
+  if (!fromValueElem->GetText())
+  {
+    sdferr << "Map: from value must not be empty.\n";
+    return;
+  }
+  if (!toValueElem->GetText())
+  {
+    sdferr << "Map: to value must not be empty.\n";
+    return;
+  }
+  valueMap[fromValueElem->GetText()] = toValueElem->GetText();
+  while (fromValueElem->NextSiblingElement("value"))
+  {
+    fromValueElem = fromValueElem->NextSiblingElement("value");
+    if (toValueElem->NextSiblingElement("value"))
+    {
+      toValueElem = toValueElem->NextSiblingElement("value");
+    }
+    if (!fromValueElem->GetText())
+    {
+      sdferr << "Map: from value must not be empty.\n";
+      return;
+    }
+    if (!toValueElem->GetText())
+    {
+      sdferr << "Map: to value must not be empty.\n";
+      return;
+    }
+    valueMap[fromValueElem->GetText()] = toValueElem->GetText();
+  }
+
+  // tokenize 'from' and 'to' name attributes
+  std::string fromStr = fromNameStr;
+  std::string toStr = toNameStr;
+
+  std::vector<std::string> fromTokens = split(fromStr, "/");
+  std::vector<std::string> toTokens = split(toStr, "/");
+
+  // split() always returns at least one element, even with the
+  // empty string.  Thus we don't check if the fromTokens or toTokens are empty.
+
+  // get value of the 'from' element/attribute
+  TiXmlElement *fromElem = _elem;
+  for (unsigned int i = 0; i < fromTokens.size()-1; ++i)
+  {
+    fromElem = fromElem->FirstChildElement(fromTokens[i]);
+    if (!fromElem)
+    {
+      // Return when the tokens don't match. Don't output an error message
+      // because it spams the console.
+      return;
+    }
+  }
+
+  const char *fromLeaf = fromTokens.back().c_str();
+  if (fromLeaf[0] == '\0' ||
+      (fromLeaf[0] == '@' && fromLeaf[1] == '\0'))
+  {
+    sdferr << "Map: <from> has invalid name attribute\n";
+    return;
+  }
+  const char *fromValue = nullptr;
+  if (fromLeaf[0] == '@')
+  {
+    // from an attribute
+    fromValue = GetValue(nullptr, fromLeaf+1, fromElem);
+  }
+  else
+  {
+    // from an element
+    fromValue = GetValue(fromLeaf, nullptr, fromElem);
+  }
+
+  if (!fromValue || valueMap.end() == valueMap.find(std::string(fromValue)))
+  {
+    // No match, no message to avoid spam.
+    return;
+  }
+  const char *toValue = valueMap[std::string(fromValue)].c_str();
+  // sdfdbg << "Map from [" << fromValue << "] to [" << toValue << "]\n";
+
+  // check if destination elements before leaf exist and create if necessary
+  unsigned int newDirIndex = 0;
+  TiXmlElement *toElem = _elem;
+  TiXmlElement *childElem = NULL;
+  for (unsigned int i = 0; i < toTokens.size()-1; ++i)
+  {
+    childElem = toElem->FirstChildElement(toTokens[i]);
+    if (!childElem)
+    {
+      newDirIndex = i;
+      break;
+    }
+    toElem = childElem;
+  }
+
+  // get the destination leaf name
+  const char *toLeaf = toTokens.back().c_str();
+  if (toLeaf[0] == '\0' ||
+      (toLeaf[0] == '@' && toLeaf[1] == '\0'))
+  {
+    sdferr << "Map: <to> has invalid name attribute\n";
+    return;
+  }
+  bool toAttribute = toLeaf[0] == '@';
+
+  // found elements in 'to' string that are not present, so create new
+  // elements if they aren't empty
+  if (!childElem)
+  {
+    int offset = toAttribute ? 1 : 0;
+    while (newDirIndex < (toTokens.size()-offset))
+    {
+      if (toTokens[newDirIndex].empty())
+      {
+        sdferr << "Map: <to> has invalid name attribute\n";
+        return;
+      }
+
+      TiXmlElement *newElem = new TiXmlElement(toTokens[newDirIndex]);
+      toElem->LinkEndChild(newElem);
+      toElem = newElem;
+      newDirIndex++;
+    }
+  }
+
+  if (toAttribute)
+  {
+    toElem->SetAttribute(toLeaf+1, toValue);
+  }
+  else
+  {
+    TiXmlText *text = new TiXmlText(toValue);
+    toElem->LinkEndChild(text);
   }
 }
 
@@ -354,12 +594,12 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     }
   }
 
-  const char *fromName = fromTokens[fromTokens.size()-1].c_str();
+  const char *fromName = fromTokens.back().c_str();
   const char *value = NULL;
 
   unsigned int newDirIndex = 0;
   // get the new element/attribute name
-  const char *toName = toTokens[toTokens.size()-1].c_str();
+  const char *toName = toTokens.back().c_str();
   TiXmlElement *toElem = _elem;
   TiXmlElement *childElem = NULL;
   for (unsigned int i = 0; i < toTokens.size()-1; ++i)
@@ -373,7 +613,7 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     toElem = childElem;
   }
 
-  // found elements in 'to' string that is not present, so create new
+  // found elements in 'to' string that are not present, so create new
   // elements
   if (!childElem)
   {

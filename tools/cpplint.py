@@ -1352,13 +1352,13 @@ def CheckForNonStandardConstructs(filename, clean_lines, linenum,
   # For the rest, work with both comments and strings removed.
   line = clean_lines.elided[linenum]
 
-  if Search(r'\b(const|volatile|void|char|short|int|long'
-            r'|float|double|signed|unsigned'
-            r'|schar|u?int8|u?int16|u?int32|u?int64)'
-            r'\s+(auto|register|static|extern|typedef)\b',
-            line):
-    error(filename, linenum, 'build/storage_class', 5,
-          'Storage class (static, extern, typedef, etc) should be first.')
+  # if Search(r'\b(const|volatile|void|char|short|int|long'
+  #           r'|float|double|signed|unsigned'
+  #           r'|schar|u?int8|u?int16|u?int32|u?int64)'
+  #           r'\s+(auto|register|static|extern|typedef)\b',
+  #           line):
+  #   error(filename, linenum, 'build/storage_class', 5,
+  #         'Storage class (static, extern, typedef, etc) should be first.')
 
   if Match(r'\s*#\s*endif\s*[^/\s]+', line):
     error(filename, linenum, 'build/endif_comment', 5,
@@ -1869,9 +1869,9 @@ def CheckSpacing(filename, clean_lines, linenum, error):
   # an initializer list, for instance), you should have spaces before your
   # braces. And since you should never have braces at the beginning of a line,
   # this is an easy test.
-  if Search(r'[^ ({]{', line):
-    error(filename, linenum, 'whitespace/braces', 5,
-          'Missing space before {')
+  # if Search(r'[^ ({]{', line):
+  #   error(filename, linenum, 'whitespace/braces', 5,
+  #         'Missing space before {')
 
   # Make sure '} else {' has spaces.
   if Search(r'}else', line):

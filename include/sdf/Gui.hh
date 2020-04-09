@@ -19,10 +19,15 @@
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declarations.
   class GuiPrivate;
 
@@ -37,7 +42,17 @@ namespace sdf
 
     /// \brief Move constructor
     /// \param[in] _gui Gui to move.
-    public: Gui(Gui &&_gui);
+    public: Gui(Gui &&_gui) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _gui Gui to move.
+    /// \return Reference to this.
+    public: Gui &operator=(Gui &&_gui);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _gui Gui to copy.
+    /// \return Reference to this.
+    public: Gui &operator=(const Gui &_gui);
 
     /// \brief Destructor
     public: ~Gui();
@@ -74,5 +89,6 @@ namespace sdf
     /// \brief Private data pointer.
     private: GuiPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif

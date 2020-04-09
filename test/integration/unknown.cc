@@ -32,6 +32,7 @@ TEST(Unknown, CopyUnknownElement)
 <?xml version="1.0" ?>
 <sdf version="1.6">
   <world name="default">
+    <gui/>
     <custom>
       <custom_child>ThisIsCustom</custom_child>
       <another test="yes">1.23</another>
@@ -39,6 +40,7 @@ TEST(Unknown, CopyUnknownElement)
         <string>AString</string>
       </nested>
     </custom>
+    <unknown/>
   </world>
 </sdf>)";
 
@@ -55,8 +57,20 @@ TEST(Unknown, CopyUnknownElement)
   sdf::ElementPtr worldElem = elem->GetElement("world");
   ASSERT_NE(nullptr, worldElem);
 
+  // Expect exactly one copy of gui element
+  sdf::ElementPtr guiElem = worldElem->GetElement("gui");
+  ASSERT_NE(nullptr, guiElem);
+  EXPECT_EQ(nullptr, guiElem->GetNextElement("gui"));
+
+  // Expect exactly one copy of unknown element
+  sdf::ElementPtr unknownElem = worldElem->GetElement("unknown");
+  ASSERT_NE(nullptr, unknownElem);
+  EXPECT_EQ(nullptr, unknownElem->GetNextElement("unknown"));
+
+  // Expect exactly one copy of custom element
   sdf::ElementPtr customElem = worldElem->GetElement("custom");
   ASSERT_NE(nullptr, customElem);
+  EXPECT_EQ(nullptr, customElem->GetNextElement("custom"));
 
   std::string customChild = customElem->Get<std::string>("custom_child");
   EXPECT_EQ("ThisIsCustom", customChild);

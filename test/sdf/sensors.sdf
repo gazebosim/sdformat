@@ -1,0 +1,460 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <model name="model">
+    <link name="link">
+      <pose> 0 0 3  0 0 0</pose>
+      <sensor name="altimeter_sensor" type="altimeter">
+        <altimeter>
+          <vertical_position>
+            <noise type="gaussian">
+              <mean>0.1</mean>
+              <stddev>0.2</stddev>
+            </noise>
+          </vertical_position>
+          <vertical_velocity>
+            <noise type="gaussian">
+              <mean>2.3</mean>
+              <stddev>4.5</stddev>
+            </noise>
+          </vertical_velocity>
+        </altimeter>
+      </sensor>
+
+      <sensor name="camera_sensor" type="camera">
+        <pose>1 2 3 0 0 0</pose>
+        <camera name="my_camera">
+          <pose>0.1 0.2 0.3 0 0 0</pose>
+          <horizontal_fov>.75</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.2</near>
+            <far>12.3</far>
+          </clip>
+
+          <save enabled="true">
+            <path>/tmp/cam</path>
+          </save>
+
+          <noise>
+            <type>gaussian</type>
+            <mean>0.5</mean>
+            <stddev>0.1</stddev>
+          </noise>
+
+          <distortion>
+            <k1>0.1</k1>
+            <k2>0.2</k2>
+            <k3>0.3</k3>
+            <p1>0.4</p1>
+            <p2>0.5</p2>
+            <center>0.2 0.4</center>
+          </distortion>
+          <lens>
+            <type>custom</type>
+            <scale_to_hfov>false</scale_to_hfov>
+            <custom_function>
+              <c1>1.1</c1>
+              <c2>2.2</c2>
+              <c3>3.3</c3>
+              <f>1.2</f>
+              <fun>sin</fun>
+            </custom_function>
+            <cutoff_angle>0.7505</cutoff_angle>
+            <env_texture_size>128</env_texture_size>
+            <intrinsics>
+              <fx>280</fx>
+              <fy>281</fy>
+              <cx>162</cx>
+              <cy>124</cy>
+              <s>1.2</s>
+            </intrinsics>
+          </lens>
+        </camera>
+      </sensor>
+
+      <sensor name="contact_sensor" type="contact">
+        <pose relative_to="__model__">4 5 6 0 0 0</pose>
+      </sensor>
+
+      <sensor name="depth_sensor" type="depth">
+        <pose>7 8 9 0 0 0</pose>
+        <camera name="my_depth_camera">
+          <pose>0.1 0.2 0.3 0 0 0</pose>
+          <horizontal_fov>.75</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.2</near>
+            <far>12.3</far>
+          </clip>
+
+          <save enabled="true">
+            <path>/tmp/cam</path>
+          </save>
+
+          <noise>
+            <type>gaussian</type>
+            <mean>0.5</mean>
+            <stddev>0.1</stddev>
+          </noise>
+
+          <distortion>
+            <k1>0.1</k1>
+            <k2>0.2</k2>
+            <k3>0.3</k3>
+            <p1>0.4</p1>
+            <p2>0.5</p2>
+            <center>0.2 0.4</center>
+          </distortion>
+          <lens>
+            <type>custom</type>
+            <scale_to_hfov>false</scale_to_hfov>
+            <custom_function>
+              <c1>1.1</c1>
+              <c2>2.2</c2>
+              <c3>3.3</c3>
+              <f>1.2</f>
+              <fun>sin</fun>
+            </custom_function>
+            <cutoff_angle>0.7505</cutoff_angle>
+            <env_texture_size>128</env_texture_size>
+            <intrinsics>
+              <fx>280</fx>
+              <fy>281</fy>
+              <cx>162</cx>
+              <cy>124</cy>
+              <s>1.2</s>
+            </intrinsics>
+          </lens>
+        </camera>
+
+      </sensor>
+
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose>10 11 12 0 0 0</pose>
+      </sensor>
+
+      <sensor name="gps_sensor" type="gps">
+        <pose>13 14 15 0 0 0</pose>
+      </sensor>
+
+      <sensor name="gpu_ray_sensor" type="gpu_ray">
+        <pose>1 2 3 0 0 0</pose>
+      </sensor>
+
+      <sensor name="gpu_lidar_sensor" type="gpu_lidar">
+        <pose>1 2 3 0 0 0</pose>
+      </sensor>
+
+      <sensor name="imu_sensor" type="imu">
+        <pose>4 5 6 0 0 0</pose>
+        <imu>
+          <linear_acceleration>
+            <x>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.1</stddev>
+                <dynamic_bias_stddev>0.2</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>1</dynamic_bias_correlation_time>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>1</mean>
+                <stddev>1.1</stddev>
+                <dynamic_bias_stddev>1.2</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>2</dynamic_bias_correlation_time>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>2</mean>
+                <stddev>2.1</stddev>
+                <dynamic_bias_stddev>2.2</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>3</dynamic_bias_correlation_time>
+              </noise>
+            </z>
+          </linear_acceleration>
+          <angular_velocity>
+            <x>
+              <noise type="gaussian">
+                <mean>3</mean>
+                <stddev>3.1</stddev>
+                <dynamic_bias_stddev>4.2</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>4</dynamic_bias_correlation_time>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>4</mean>
+                <stddev>4.1</stddev>
+                <dynamic_bias_stddev>5.2</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>5</dynamic_bias_correlation_time>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>5</mean>
+                <stddev>5.1</stddev>
+                <dynamic_bias_stddev>6.2</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>6</dynamic_bias_correlation_time>
+              </noise>
+            </z>
+          </angular_velocity>
+          <orientation_reference_frame>
+            <localization>ENU</localization>
+            <custom_rpy parent_frame="linka">0 1 0</custom_rpy>
+            <grav_dir_x parent_frame="linkb">0 0 1</grav_dir_x>
+          </orientation_reference_frame>
+        </imu>
+      </sensor>
+
+      <sensor name="logical_camera_sensor" type="logical_camera">
+        <pose>7 8 9 0 0 0</pose>
+      </sensor>
+
+      <sensor name="magnetometer_sensor" type="magnetometer">
+        <pose>10 11 12 0 0 0</pose>
+        <magnetometer>
+          <x>
+            <noise type="gaussian">
+              <mean>0.1</mean>
+              <stddev>0.2</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>1.2</mean>
+              <stddev>2.3</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>3.4</mean>
+              <stddev>5.6</stddev>
+            </noise>
+          </z>
+        </magnetometer>
+      </sensor>
+
+      <sensor name="multicamera_sensor" type="multicamera">
+        <pose>13 14 15 0 0 0</pose>
+      </sensor>
+
+      <sensor name="ray_sensor" type="ray">
+        <pose>1 2 3 0 0 0</pose>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>320</samples>
+              <resolution>0.9</resolution>
+              <min_angle>1.75</min_angle>
+              <max_angle>2.94</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>240</samples>
+              <resolution>0.8</resolution>
+              <min_angle>2.75</min_angle>
+              <max_angle>3.94</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>1.23</min>
+            <max>4.56</max>
+            <resolution>7.89</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.98</mean>
+            <stddev>0.76</stddev>
+          </noise>
+        </ray>
+      </sensor>
+
+      <sensor name="lidar_sensor" type="lidar">
+        <pose>1 2 3 0 0 0</pose>
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>320</samples>
+              <resolution>0.9</resolution>
+              <min_angle>1.75</min_angle>
+              <max_angle>2.94</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>240</samples>
+              <resolution>0.8</resolution>
+              <min_angle>2.75</min_angle>
+              <max_angle>3.94</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>1.23</min>
+            <max>4.56</max>
+            <resolution>7.89</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.98</mean>
+            <stddev>0.76</stddev>
+          </noise>
+        </lidar>
+      </sensor>
+
+ 
+      <sensor name="rfid_sensor" type="rfid">
+        <pose>4 5 6 0 0 0</pose>
+      </sensor>
+
+      <sensor name="rfid_tag" type="rfidtag">
+        <pose>7 8 9 0 0 0</pose>
+      </sensor>
+
+      <sensor name="rgbd_sensor" type="rgbd">
+        <pose>37 38 39 0 0 0</pose>
+        <camera name="my_rgbd_camera">
+          <pose>0.1 0.2 0.3 0 0 0</pose>
+          <horizontal_fov>.75</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.2</near>
+            <far>12.3</far>
+          </clip>
+
+          <save enabled="true">
+            <path>/tmp/cam</path>
+          </save>
+
+          <noise>
+            <type>gaussian</type>
+            <mean>0.5</mean>
+            <stddev>0.1</stddev>
+          </noise>
+
+          <distortion>
+            <k1>0.1</k1>
+            <k2>0.2</k2>
+            <k3>0.3</k3>
+            <p1>0.4</p1>
+            <p2>0.5</p2>
+            <center>0.2 0.4</center>
+          </distortion>
+          <lens>
+            <type>custom</type>
+            <scale_to_hfov>false</scale_to_hfov>
+            <custom_function>
+              <c1>1.1</c1>
+              <c2>2.2</c2>
+              <c3>3.3</c3>
+              <f>1.2</f>
+              <fun>sin</fun>
+            </custom_function>
+            <cutoff_angle>0.7505</cutoff_angle>
+            <env_texture_size>128</env_texture_size>
+            <intrinsics>
+              <fx>280</fx>
+              <fy>281</fy>
+              <cx>162</cx>
+              <cy>124</cy>
+              <s>1.2</s>
+            </intrinsics>
+          </lens>
+        </camera>
+
+      </sensor>
+
+      <sensor name="sonar_sensor" type="sonar">
+        <pose>10 11 12 0 0 0</pose>
+      </sensor>
+
+      <sensor name="thermal_sensor" type="thermal">
+        <pose>37 38 39 0 0 0</pose>
+        <camera name="my_thermal_camera">
+          <pose>0.1 0.2 0.3 0 0 0</pose>
+          <horizontal_fov>.75</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.2</near>
+            <far>12.3</far>
+          </clip>
+
+          <save enabled="true">
+            <path>/tmp/cam</path>
+          </save>
+
+          <noise>
+            <type>gaussian</type>
+            <mean>0.5</mean>
+            <stddev>0.1</stddev>
+          </noise>
+
+          <distortion>
+            <k1>0.1</k1>
+            <k2>0.2</k2>
+            <k3>0.3</k3>
+            <p1>0.4</p1>
+            <p2>0.5</p2>
+            <center>0.2 0.4</center>
+          </distortion>
+          <lens>
+            <type>custom</type>
+            <scale_to_hfov>false</scale_to_hfov>
+            <custom_function>
+              <c1>1.1</c1>
+              <c2>2.2</c2>
+              <c3>3.3</c3>
+              <f>1.2</f>
+              <fun>sin</fun>
+            </custom_function>
+            <cutoff_angle>0.7505</cutoff_angle>
+            <env_texture_size>128</env_texture_size>
+            <intrinsics>
+              <fx>280</fx>
+              <fy>281</fy>
+              <cx>162</cx>
+              <cy>124</cy>
+              <s>1.2</s>
+            </intrinsics>
+          </lens>
+        </camera>
+
+      </sensor>
+
+      <sensor name="wireless_receiver" type="wireless_receiver">
+        <pose>13 14 15 0 0 0</pose>
+      </sensor>
+
+      <sensor name="wireless_transmitter" type="wireless_transmitter">
+        <pose>1 2 3 0 0 0</pose>
+      </sensor>
+
+      <sensor name="air_pressure_sensor" type="air_pressure">
+        <pose>10 20 30 0 0 0</pose>
+        <air_pressure>
+          <reference_altitude>123.4</reference_altitude>
+          <pressure>
+            <noise type="gaussian">
+              <mean>3.4</mean>
+              <stddev>5.6</stddev>
+            </noise>
+          </pressure>
+        </air_pressure>
+      </sensor>
+    </link>
+  </model>
+</sdf>

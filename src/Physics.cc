@@ -50,17 +50,35 @@ Physics::Physics()
 }
 
 /////////////////////////////////////////////////
-Physics::Physics(Physics &&_physics) noexcept
-{
-  this->dataPtr = _physics.dataPtr;
-  _physics.dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
 Physics::~Physics()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
+}
+
+/////////////////////////////////////////////////
+Physics::Physics(const Physics &_physics)
+  : dataPtr(new PhysicsPrivate(*_physics.dataPtr))
+{
+}
+
+/////////////////////////////////////////////////
+Physics::Physics(Physics &&_physics) noexcept
+  : dataPtr(std::exchange(_physics.dataPtr, nullptr))
+{
+}
+
+/////////////////////////////////////////////////
+Physics &Physics::operator=(const Physics &_physics)
+{
+  return *this = Physics(_physics);
+}
+
+/////////////////////////////////////////////////
+Physics &Physics::operator=(Physics &&_physics)
+{
+  std::swap(this->dataPtr, _physics.dataPtr);
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -85,6 +103,14 @@ Errors Physics::Load(sdf::ElementPtr _sdf)
   {
     errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
                      "A physics name is required, but the name is not set."});
+  }
+
+  // Check that the physics's name is valid
+  if (isReservedName(this->dataPtr->name))
+  {
+    errors.push_back({ErrorCode::RESERVED_NAME,
+                     "The supplied physics name [" + this->dataPtr->name +
+                     "] is reserved."});
   }
 
   this->dataPtr->isDefault =

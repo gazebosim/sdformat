@@ -32,6 +32,81 @@ TEST(DOMBox, Construction)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMBox, MoveConstructor)
+{
+  const ignition::math::Vector3d size(1, 2, 3);
+
+  sdf::Box box;
+  box.SetSize(size);
+
+  sdf::Box box2(std::move(box));
+  EXPECT_EQ(size, box2.Size());
+
+  EXPECT_DOUBLE_EQ(1 * 2 * 3, box2.Shape().Volume());
+  EXPECT_EQ(size, box2.Shape().Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, CopyConstructor)
+{
+  const ignition::math::Vector3d size(0.1, 0.2, 0.3);
+
+  sdf::Box box;
+  box.SetSize(size);
+
+  sdf::Box box2(box);
+  EXPECT_EQ(size, box2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, CopyAssigmentOperator)
+{
+  const ignition::math::Vector3d size(0.2, 0.3, 0.4);
+
+  sdf::Box box;
+  box.SetSize(size);
+
+  sdf::Box box2;
+  box2 = box;
+  EXPECT_EQ(size, box2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, MoveAssignmentConstructor)
+{
+  const ignition::math::Vector3d size(1, 2, 3);
+
+  sdf::Box box;
+  box.SetSize(size);
+
+  sdf::Box box2;
+  box2 = std::move(box);
+  EXPECT_EQ(size, box2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, CopyAssignmentAfterMove)
+{
+  const ignition::math::Vector3d size1(1, 2, 3);
+  const ignition::math::Vector3d size2(4, 5, 6);
+
+  sdf::Box box1;
+  box1.SetSize(size1);
+
+  sdf::Box box2;
+  box2.SetSize(size2);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Box tmp = std::move(box1);
+  box1 = box2;
+  box2 = tmp;
+
+  EXPECT_EQ(size2, box1.Size());
+  EXPECT_EQ(size1, box2.Size());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMBox, Load)
 {
   sdf::Box box;
@@ -57,4 +132,14 @@ TEST(DOMBox, Load)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <size>"));
   EXPECT_NE(nullptr, box.Element());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, Shape)
+{
+  sdf::Box box;
+  EXPECT_EQ(ignition::math::Vector3d::One, box.Size());
+
+  box.Shape().SetSize(ignition::math::Vector3d(1, 2, 3));
+  EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), box.Size());
 }

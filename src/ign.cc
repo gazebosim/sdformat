@@ -20,13 +20,118 @@
 
 #include "sdf/sdf_config.h"
 #include "sdf/Filesystem.hh"
-#include "sdf/ign.hh"
+#include "sdf/Root.hh"
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
+
+#include "ign.hh"
 
 //////////////////////////////////////////////////
 // cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
+{
+  int result = 0;
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(_path);
+  if (!errors.empty())
+  {
+    for (auto &error : errors)
+    {
+      std::cerr << "Error: " << error.Message() << std::endl;
+    }
+    return -1;
+  }
+
+  if (!sdf::checkCanonicalLinkNames(&root))
+  {
+    result = -1;
+  }
+
+  if (!sdf::checkJointParentChildLinkNames(&root))
+  {
+    result = -1;
+  }
+
+  if (!sdf::checkFrameAttachedToGraph(&root))
+  {
+    result = -1;
+  }
+
+  if (!sdf::checkPoseRelativeToGraph(&root))
+  {
+    result = -1;
+  }
+
+  if (!sdf::recursiveSiblingUniqueNames(root.Element()))
+  {
+    result = -1;
+  }
+
+  if (!sdf::filesystem::exists(_path))
+  {
+    std::cerr << "Error: File [" << _path << "] does not exist.\n";
+    return -1;
+  }
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+
+  if (!sdf::init(sdf))
+  {
+    std::cerr << "Error: SDF schema initialization failed.\n";
+    return -1;
+  }
+
+  if (!sdf::readFile(_path, sdf))
+  {
+    std::cerr << "Error: SDF parsing the xml failed.\n";
+    return -1;
+  }
+
+  if (result == 0)
+  {
+    std::cout << "Valid.\n";
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
+extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
+{
+#ifdef _MSC_VER
+  return _strdup(SDF_VERSION_FULL);
+#else
+  return strdup(SDF_VERSION_FULL);
+#endif
+}
+
+//////////////////////////////////////////////////
+/// \brief Print the full description of the SDF spec.
+/// \return 0 on success, -1 if SDF could not be initialized.
+// cppcheck-suppress unusedFunction
+extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
+{
+  sdf::SDFPtr sdf(new sdf::SDF());
+
+  if (nullptr != _version)
+  {
+    sdf->Version(_version);
+  }
+  if (!sdf::init(sdf))
+  {
+    std::cerr << "Error: SDF schema initialization failed.\n";
+    return -1;
+  }
+
+  sdf->PrintDescription();
+
+  return 0;
+}
+
+//////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
+extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path)
 {
   if (!sdf::filesystem::exists(_path))
   {
@@ -48,36 +153,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     return -1;
   }
 
-  std::cout << "Valid.\n";
-  return 0;
-}
-
-//////////////////////////////////////////////////
-// cppcheck-suppress unusedFunction
-extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
-{
-#ifdef _MSC_VER
-  return _strdup(SDF_VERSION_FULL);
-#else
-  return strdup(SDF_VERSION_FULL);
-#endif
-}
-
-//////////////////////////////////////////////////
-/// \brief Print the full description of the SDF spec.
-/// \return 0 on success, -1 if SDF could not be initialized.
-// cppcheck-suppress unusedFunction
-extern "C" SDFORMAT_VISIBLE int cmdDescribe()
-{
-  sdf::SDFPtr sdf(new sdf::SDF());
-
-  if (!sdf::init(sdf))
-  {
-    std::cerr << "Error: SDF schema initialization failed.\n";
-    return -1;
-  }
-
-  sdf->PrintDescription();
+  sdf->PrintValues();
 
   return 0;
 }

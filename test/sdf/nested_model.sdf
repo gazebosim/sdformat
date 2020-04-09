@@ -1,0 +1,16 @@
+<sdf version='1.6'>
+<model name='top_level_model'>
+  <link name='parent'/>
+  <link name='child'/>
+  <model name='nested_model'>
+    <link name='nested_link01'/>
+  </model>
+  <joint name='top_level_joint' type='revolute'>
+    <parent>parent</parent>
+    <child>child</child>
+    <axis>
+      <xyz>1 0 0</xyz>
+    </axis>
+  </joint>
+</model>
+</sdf>

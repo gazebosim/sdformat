@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_link_relative_to">
+    <link name="L1">
+      <pose>1 0 0 0 1.5707963267948966 0</pose>
+    </link>
+    <link name="L2">
+      <pose relative_to="">2 0 0 0 0 0</pose>
+    </link>
+    <link name="L3">
+      <pose relative_to="L1">3 0 0 0 0 0</pose>
+    </link>
+  </model>
+</sdf>

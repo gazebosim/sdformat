@@ -57,6 +57,7 @@
 
 namespace sdf
 {
+inline namespace SDF_VERSION_NAMESPACE {
 namespace filesystem
 {
 /// \internal
@@ -577,6 +578,7 @@ DirIter::~DirIter()
     close_handle();
     this->dataPtr->handle = nullptr;
   }
+}
 }
 }  // namespace filesystem
 }  // namespace sdf

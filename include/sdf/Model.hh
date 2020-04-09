@@ -17,27 +17,50 @@
 #ifndef SDF_MODEL_HH_
 #define SDF_MODEL_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
+#include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
 {
+  // Inline bracket to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+
   // Forward declarations.
+  class Frame;
   class Joint;
   class Link;
   class ModelPrivate;
+  struct PoseRelativeToGraph;
 
   class SDFORMAT_VISIBLE Model
   {
     /// \brief Default constructor
     public: Model();
 
+    /// \brief Copy constructor
+    /// \param[in] _model Model to copy.
+    public: Model(const Model &_model);
+
     /// \brief Move constructor
     /// \param[in] _model Model to move.
-    public: Model(Model &&_model);
+    public: Model(Model &&_model) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _model Model to move.
+    /// \return Reference to this.
+    public: Model &operator=(Model &&_model);
+
+    /// \brief Copy assignment operator.
+    /// \param[in] _model Model to copy.
+    /// \return Reference to this.
+    public: Model &operator=(const Model &_model);
 
     /// \brief Destructor
     public: ~Model();
@@ -152,29 +175,98 @@ namespace sdf
     /// \sa bool JointNameExists(const std::string &_name) const
     public: const Joint *JointByName(const std::string &_name) const;
 
+    /// \brief Get the number of explicit frames.
+    /// \return Number of explicit frames contained in this Model object.
+    public: uint64_t FrameCount() const;
+
+    /// \brief Get an explicit frame based on an index.
+    /// \param[in] _index Index of the explicit frame. The index should be in
+    /// the range [0..FrameCount()).
+    /// \return Pointer to the explicit frame. Nullptr if the index does not
+    /// exist.
+    /// \sa uint64_t FrameCount() const
+    public: const Frame *FrameByIndex(const uint64_t _index) const;
+
+    /// \brief Get an explicit frame based on a name.
+    /// \param[in] _name Name of the explicit frame.
+    /// \return Pointer to the explicit frame. Nullptr if the name does not
+    /// exist.
+    public: const Frame *FrameByName(const std::string &_name) const;
+
+    /// \brief Get whether an explicit frame name exists.
+    /// \param[in] _name Name of the explicit frame to check.
+    /// \return True if there exists an explicit frame with the given name.
+    public: bool FrameNameExists(const std::string &_name) const;
+
     /// \brief Get the pose of the model. This is the pose of the model
     /// as specified in SDF (<model> <pose> ... </pose></model>), and is
     /// typically used to express the position and rotation of a model in a
     /// global coordinate frame.
     /// \return The pose of the model.
-    public: const ignition::math::Pose3d &Pose() const;
+    /// \deprecated See RawPose.
+    public: const ignition::math::Pose3d &Pose() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the pose of the model.
     /// \sa const ignition::math::Pose3d &Pose() const
     /// \param[in] _pose The new model pose.
-    public: void SetPose(const ignition::math::Pose3d &_pose);
+    /// \deprecated See SetRawPose.
+    public: void SetPose(const ignition::math::Pose3d &_pose)
+        SDF_DEPRECATED(9.0);
+
+    /// \brief Get the pose of the model. This is the pose of the model
+    /// as specified in SDF (<model> <pose> ... </pose></model>), and is
+    /// typically used to express the position and rotation of a model in a
+    /// global coordinate frame.
+    /// \return The pose of the model.
+    public: const ignition::math::Pose3d &RawPose() const;
+
+    /// \brief Set the pose of the model.
+    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \param[in] _pose The new model pose.
+    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+
+    /// \brief Get the model's canonical link
+    /// \return An immutable pointer to the canonical link
+    public: const Link *CanonicalLink() const;
+
+    /// \brief Get the name of the model's canonical link. An empty value
+    /// indicates that the first link in the model is the canonical link.
+    /// \return The name of the canonical link.
+    public: const std::string &CanonicalLinkName() const;
+
+    /// \brief Set the name of the model's canonical link. An empty value
+    /// indicates that the first link in the model is the canonical link.
+    /// \param[in] _canonicalLink The name of the canonical link.
+    public: void SetCanonicalLinkName(const std::string &_canonicalLink);
+
+    /// \brief Get the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the parent model/world coordinate frame.
+    /// \return The name of the pose relative-to frame.
+    public: const std::string &PoseRelativeTo() const;
+
+    /// \brief Set the name of the coordinate frame relative to which this
+    /// object's pose is expressed. An empty value indicates that the frame is
+    /// relative to the parent model/world coordinate frame.
+    /// \param[in] _frame The name of the pose relative-to frame.
+    public: void SetPoseRelativeTo(const std::string &_frame);
 
     /// \brief Get the name of the coordinate frame in which this model's
     /// pose is expressed. A empty value indicates that the frame is the
     /// global/world coordinate frame.
     /// \return The name of the pose frame.
-    public: const std::string &PoseFrame() const;
+    /// \deprecated See PoseRelativeTo.
+    public: const std::string &PoseFrame() const
+        SDF_DEPRECATED(9.0);
 
     /// \brief Set the name of the coordinate frame in which this model's
     /// pose is expressed. A empty value indicates that the frame is the
     /// global/world coordinate frame.
     /// \param[in] _frame The name of the pose frame.
-    public: void SetPoseFrame(const std::string &_frame);
+    /// \deprecated See SetPoseRelativeTo.
+    public: void SetPoseFrame(const std::string &_frame)
+        SDF_DEPRECATED(9.0);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
@@ -182,8 +274,24 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Get SemanticPose object of this object to aid in resolving
+    /// poses.
+    /// \return SemanticPose object for this link.
+    public: sdf::SemanticPose SemanticPose() const;
+
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// World::Load.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    private: void SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    /// \brief Allow World::Load to call SetPoseRelativeToGraph.
+    friend class World;
+
     /// \brief Private data pointer.
     private: ModelPrivate *dataPtr = nullptr;
   };
+  }
 }
 #endif
