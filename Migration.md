@@ -187,6 +187,12 @@ but with improved human-readability..
     + Changed to `_fixed_joint_lump__` to avoid confusion with scoped names
     + [Pull request 245](https://bitbucket.org/osrf/sdformat/pull-request/245)
 
+## SDF protocol 1.7 to 1.8
+
+### Deprecations
+
+1. **joint.sdf** `initial_position` element in `<joint><axis>` and `<joint><axis2>` is deprecated
+
 ## SDF protocol 1.6 to 1.7
 
 ### Additions

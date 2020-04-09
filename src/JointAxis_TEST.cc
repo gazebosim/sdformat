@@ -23,7 +23,9 @@ TEST(DOMJointAxis, Construction)
 {
   sdf::JointAxis axis;
   EXPECT_EQ(nullptr, axis.Element());
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   EXPECT_DOUBLE_EQ(0.0, axis.InitialPosition());
+  SDF_SUPPRESS_DEPRECATED_END
   EXPECT_EQ(ignition::math::Vector3d::UnitZ, axis.Xyz());
   EXPECT_TRUE(axis.XyzExpressedIn().empty());
   EXPECT_DOUBLE_EQ(0.0, axis.Damping());
@@ -37,8 +39,10 @@ TEST(DOMJointAxis, Construction)
   EXPECT_DOUBLE_EQ(1e8, axis.Stiffness());
   EXPECT_DOUBLE_EQ(1.0, axis.Dissipation());
 
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   axis.SetInitialPosition(1.2);
   EXPECT_DOUBLE_EQ(1.2, axis.InitialPosition());
+  SDF_SUPPRESS_DEPRECATED_END
 
   axis.SetXyz(ignition::math::Vector3d(0, 1, 0));
   EXPECT_EQ(ignition::math::Vector3d::UnitY, axis.Xyz());

@@ -10,6 +10,9 @@
 1. Initial version of sdformat 1.8 specification.
     * [Pull request 682](https://bitbucket.org/osrf/sdformat/pull-requests/682)
 
+1. sdf 1.8: Deprecate //joint/axis/initial_position.
+    * [Pull request 683](https://bitbucket.org/osrf/sdformat/pull-requests/683)
+
 ## SDFormat 9.X
 
 ### SDFormat 9.X.X (202X-XX-XX)
