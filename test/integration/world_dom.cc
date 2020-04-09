@@ -87,7 +87,7 @@ TEST(DOMWorld, Load)
 
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
-  EXPECT_EQ(root.Version(), "1.7");
+  EXPECT_EQ(root.Version(), SDF_PROTOCOL_VERSION);
   EXPECT_EQ(root.WorldCount(), 1u);
   EXPECT_TRUE(root.WorldNameExists("default"));
   ASSERT_NE(nullptr, root.Element());

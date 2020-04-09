@@ -1,0 +1,20 @@
+<element name="force_torque" required="0">
+  <description>These elements are specific to the force torque sensor.</description>
+  <element name="frame" type="string" default="child" required="0">
+    <description>
+      Frame in which to report the wrench values. Currently supported frames are:
+        "parent" report the wrench expressed in the orientation of the parent link frame,
+        "child" report the wrench expressed in the orientation of the child link frame,
+        "sensor" report the wrench expressed in the orientation of the joint sensor frame.
+      Note that for each option the point with respect to which the
+      torque component of the wrench is expressed is the joint origin.
+    </description>
+  </element>
+  <element name="measure_direction" type="string" default="child_to_parent" required="0">
+    <description>
+      Direction of the wrench measured by the sensor. The supported options are:
+        "parent_to_child" if the measured wrench is the one applied by parent link on the child link,
+        "child_to_parent" if the measured wrench is the one applied by the child link on the parent link.
+    </description>
+  </element>
+</element>

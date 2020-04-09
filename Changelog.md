@@ -7,6 +7,9 @@
 1. Changed the default radius of a Cylinder from 1.0 to 0.5 meters.
     * [Pull request 643](https://bitbucket.org/osrf/sdformat/pull-requests/643)
 
+1. Initial version of sdformat 1.8 specification.
+    * [Pull request 682](https://bitbucket.org/osrf/sdformat/pull-requests/682)
+
 ## SDFormat 9.X
 
 ### SDFormat 9.X.X (202X-XX-XX)

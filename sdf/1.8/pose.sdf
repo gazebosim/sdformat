@@ -1,0 +1,11 @@
+<!-- Pose -->
+<element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
+  <description>A position(x,y,z) and orientation(roll, pitch yaw) with respect to the frame named in the relative_to attribute.</description>
+
+  <attribute name="relative_to" type="string" default="" required="*">
+    <description>
+      Name of frame relative to which the pose is applied.
+    </description>
+  </attribute>
+
+</element> <!-- End Pose -->

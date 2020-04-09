@@ -70,14 +70,14 @@ TEST(Parser, ReusedSDFVersion)
   // Call readFile API that always converts
   sdf::SDFPtr sdf = InitSDF();
   EXPECT_TRUE(sdf::readFile(path17, sdf));
-  EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+  EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
   EXPECT_EQ("1.7", sdf->OriginalVersion());
   EXPECT_EQ("1.7", sdf->Root()->OriginalVersion());
 
   sdf->Clear();
 
   EXPECT_TRUE(sdf::readFile(path16, sdf));
-  EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+  EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
   EXPECT_EQ("1.6", sdf->OriginalVersion());
   EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
 }
@@ -93,7 +93,7 @@ TEST(Parser, readFileConversions)
   {
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
-    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ("1.6", sdf->OriginalVersion());
     EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
   }
@@ -206,7 +206,7 @@ TEST(Parser, addNestedModel)
     EXPECT_TRUE(
         sdf::readString(getIncludedModelSdfString(version), sdf, errors));
     EXPECT_TRUE(errors.empty());
-    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ(version, sdf->OriginalVersion());
     EXPECT_EQ(version, sdf->Root()->OriginalVersion());
 
@@ -229,7 +229,7 @@ TEST(Parser, addNestedModel)
     EXPECT_TRUE(
         sdf::readString(getIncludedModelSdfString(version), sdf, errors));
     EXPECT_TRUE(errors.empty());
-    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ(version, sdf->OriginalVersion());
     EXPECT_EQ(version, sdf->Root()->OriginalVersion());
 
@@ -252,7 +252,7 @@ TEST(Parser, addNestedModel)
         sdf::readString(getIncludedModelSdfString(version, "__model__"),
             sdf, errors));
     EXPECT_TRUE(errors.empty());
-    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ(version, sdf->OriginalVersion());
     EXPECT_EQ(version, sdf->Root()->OriginalVersion());
 
@@ -275,7 +275,7 @@ TEST(Parser, addNestedModel)
         sdf::readString(getIncludedModelSdfString(version, "child"),
             sdf, errors));
     EXPECT_TRUE(errors.empty());
-    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ(version, sdf->OriginalVersion());
     EXPECT_EQ(version, sdf->Root()->OriginalVersion());
 
@@ -302,7 +302,7 @@ TEST(Parser, addNestedModel)
         sdf::readString(getIncludedModelSdfString(version, "parent"),
             sdf, errors));
     EXPECT_TRUE(errors.empty());
-    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ(version, sdf->OriginalVersion());
     EXPECT_EQ(version, sdf->Root()->OriginalVersion());
 
@@ -329,7 +329,7 @@ TEST(Parser, addNestedModel)
         sdf::readString(getIncludedModelSdfString(version, "parent", "child"),
             sdf, errors));
     EXPECT_TRUE(errors.empty());
-    EXPECT_EQ("1.7", sdf->Root()->Get<std::string>("version"));
+    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ(version, sdf->OriginalVersion());
     EXPECT_EQ(version, sdf->Root()->OriginalVersion());
 

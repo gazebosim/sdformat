@@ -129,13 +129,14 @@ Errors Root::Load(SDFPtr _sdf)
     return errors;
   }
 
-  // Check that the version is 1.7, since this is assumed by the DOM API
-  if ("1.7" != versionPair.first)
+  // Check that the version is the latest, since this is assumed by the DOM API
+  if (SDF_PROTOCOL_VERSION != versionPair.first)
   {
     errors.push_back(
         {ErrorCode::ATTRIBUTE_INVALID,
         "SDF version attribute[" + versionPair.first + "] should match "
-        "the latest version[1.7] when loading DOM objects."});
+        "the latest version[" + SDF_PROTOCOL_VERSION + "] when loading DOM "
+        "objects."});
     return errors;
   }
 
