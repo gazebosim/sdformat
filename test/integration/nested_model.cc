@@ -598,7 +598,9 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
   sdf::init(sdfParsed);
-  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
+  sdf::Errors errors;
+  ASSERT_TRUE(
+      sdf::readStringWithoutConversion(stream.str(), sdfParsed, errors));
 
   auto worldElem = sdfParsed->Root()->GetElement("world");
   prepareForDirectComparison(worldElem);
@@ -652,7 +654,9 @@ TEST(NestedModel, TwoLevelNestedModelWithFramesDirectComparison)
         return modelRootPath + _file;
       });
 
-  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
+  sdf::Errors errors;
+  ASSERT_TRUE(
+      sdf::readStringWithoutConversion(stream.str(), sdfParsed, errors));
 
   auto worldElem = sdfParsed->Root()->GetElement("world");
   prepareForDirectComparison(worldElem);
