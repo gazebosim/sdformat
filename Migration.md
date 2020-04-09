@@ -12,6 +12,12 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDF protocol 1.7 to 1.8
+
+### Deprecations
+
+1. **joint.sdf** `initial_position` element in `<joint><axis>` and `<joint><axis2>` is deprecated
+
 ## SDFormat 8.x to 9.0
 
 ### Additions
