@@ -86,6 +86,11 @@ TEST(DOMJointAxis, Complete)
   EXPECT_EQ("__model__", axis->XyzExpressedIn());
   EXPECT_TRUE(axis2->XyzExpressedIn().empty());
 
+  SDF_SUPPRESS_DEPRECATED_BEGIN
+  EXPECT_DOUBLE_EQ(0.5, axis->InitialPosition());
+  EXPECT_DOUBLE_EQ(1.5, axis2->InitialPosition());
+  SDF_SUPPRESS_DEPRECATED_END
+
   EXPECT_DOUBLE_EQ(-0.5, axis->Lower());
   EXPECT_DOUBLE_EQ(0.5, axis->Upper());
   EXPECT_DOUBLE_EQ(-1.0, axis2->Lower());

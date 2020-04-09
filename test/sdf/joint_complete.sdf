@@ -28,6 +28,7 @@
       <parent>link2</parent>
       <axis>
         <xyz>0 0 1</xyz>
+        <initial_position>0.5</initial_position>
         <use_parent_model_frame>true</use_parent_model_frame>
         <limit>
           <lower>-0.5</lower>
@@ -44,6 +45,7 @@
       </axis>
       <axis2>
         <xyz>0 1 0</xyz>
+        <initial_position>1.5</initial_position>
         <use_parent_model_frame>false</use_parent_model_frame>
         <limit>
           <lower>-1</lower>
