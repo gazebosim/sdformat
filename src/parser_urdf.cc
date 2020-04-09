@@ -1074,6 +1074,13 @@ URDF2SDF::URDF2SDF()
   // default options
   g_enforceLimits = true;
   g_reduceFixedJoints = true;
+  g_extensions.clear();
+  g_collisionExt = "_collision";
+  g_visualExt = "_visual";
+  g_lumpPrefix = "_fixed_joint_lump__";
+  g_initialRobotPoseValid = false;
+  g_fixedJointsTransformedInRevoluteJoints.clear();
+  g_fixedJointsTransformedInFixedJoints.clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2734,23 +2741,24 @@ void CreateLink(TiXmlElement *_root,
   // set body name
   elem->SetAttribute("name", _link->name);
 
-  // compute global transform
-  ignition::math::Pose3d localTransform;
   // this is the transform from parent link to current _link
   // this transform does not exist for the root link
   if (_link->parent_joint)
   {
-    localTransform = CopyPose(
-        _link->parent_joint->parent_to_joint_origin_transform);
-    _currentTransform *= localTransform;
+    TiXmlElement *pose = new TiXmlElement("pose");
+    pose->SetAttribute("relative_to", _link->parent_joint->name);
+    elem->LinkEndChild(pose);
   }
   else
   {
     sdfdbg << "[" << _link->name << "] has no parent joint\n";
-  }
 
-  // create origin tag for this element
-  AddTransform(elem, _currentTransform);
+    if (_currentTransform != ignition::math::Pose3d::Zero)
+    {
+      // create origin tag for this element
+      AddTransform(elem, _currentTransform);
+    }
+  }
 
   // create new inerial block
   CreateInertial(elem, _link);
@@ -2764,11 +2772,11 @@ void CreateLink(TiXmlElement *_root,
   // copy sdf extensions data
   InsertSDFExtensionLink(elem, _link->name);
 
-  // add body to document
-  _root->LinkEndChild(elem);
-
   // make a <joint:...> block
   CreateJoint(_root, _link, _currentTransform);
+
+  // add body to document
+  _root->LinkEndChild(elem);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2966,8 +2974,19 @@ void CreateJoint(TiXmlElement *_root,
       joint->SetAttribute("type", jtype);
     }
     joint->SetAttribute("name", _link->parent_joint->name);
-    AddKeyValue(joint, "child", _link->name);
+    // Add joint pose relative to parent link
+    AddTransform(
+        joint, CopyPose(_link->parent_joint->parent_to_joint_origin_transform));
+    auto pose = joint->FirstChildElement("pose");
+    std::string relativeToAttr = _link->getParent()->name;
+    if ("world" == relativeToAttr )
+    {
+      relativeToAttr = "__model__";
+    }
+    pose->SetAttribute("relative_to", relativeToAttr);
+
     AddKeyValue(joint, "parent", _link->getParent()->name);
+    AddKeyValue(joint, "child", _link->name);
 
     TiXmlElement *jointAxis = new TiXmlElement("axis");
     TiXmlElement *jointAxisLimit = new TiXmlElement("limit");
@@ -3240,9 +3259,9 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
 
     try
     {
-      // URDF is compatible with version 1.5. The automatic conversion script
+      // URDF is compatible with version 1.7. The automatic conversion script
       // will up-convert URDF to SDF.
-      sdf->SetAttribute("version", "1.5");
+      sdf->SetAttribute("version", "1.7");
       // add robot to sdf
       sdf->LinkEndChild(robot);
     }

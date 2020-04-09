@@ -23,7 +23,7 @@
 #include "sdf/parser_urdf.hh"
 
 /////////////////////////////////////////////////
-std::string get_minimal_urdf_txt()
+std::string getMinimalUrdfTxt()
 {
   std::ostringstream stream;
   stream << "<robot name='test_robot'>"
@@ -33,16 +33,21 @@ std::string get_minimal_urdf_txt()
 }
 
 /////////////////////////////////////////////////
-void convert_urdf_str_to_sdf(const std::string& urdf, sdf::SDF& _sdf)
+std::string convertUrdfStrToSdfStr(const std::string &_urdf)
 {
   SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
   SDF_SUPPRESS_DEPRECATED_END
-  TiXmlDocument sdf_result = parser_.InitModelString(urdf);
-  std::string sdf_result_string;
-  sdf_result_string << sdf_result;
-  _sdf.SetFromString(sdf_result_string);
-  return;
+  TiXmlDocument sdf_result = parser_.InitModelString(_urdf);
+  TiXmlPrinter printer;
+  sdf_result.Accept(&printer);
+  return printer.Str();
+}
+
+/////////////////////////////////////////////////
+void convertUrdfStrToSdf(const std::string &_urdf, sdf::SDF &_sdf)
+{
+  _sdf.SetFromString(convertUrdfStrToSdfStr(_urdf));
 }
 
 /////////////////////////////////////////////////
@@ -66,7 +71,7 @@ TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
   SDF_SUPPRESS_DEPRECATED_BEGIN
   ASSERT_NO_THROW(
     TiXmlDocument doc;
-    doc.Parse(get_minimal_urdf_txt().c_str());
+    doc.Parse(getMinimalUrdfTxt().c_str());
     sdf::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   );    // NOLINT(whitespace/parens)
@@ -78,7 +83,7 @@ TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
 {
   // URDF -> SDF
   TiXmlDocument doc;
-  doc.Parse(get_minimal_urdf_txt().c_str());
+  doc.Parse(getMinimalUrdfTxt().c_str());
   SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
   SDF_SUPPRESS_DEPRECATED_END
@@ -88,8 +93,8 @@ TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
 
   // SDF -> SDF
   std::ostringstream stream;
-  // parser_urdf.cc exports version "1.5"
-  stream << "<sdf version='" << "1.5" << "'>"
+  // parser_urdf.cc exports version "1.7"
+  stream << "<sdf version='" << "1.7" << "'>"
          << "  <model name='test_robot' />"
          << "</sdf>";
   TiXmlDocument sdf_doc;
@@ -467,7 +472,7 @@ TEST(URDFParser, CheckFixedJointOptions_NoOption)
 
   // Check that there are no joints in the converted SDF
   sdf::SDF fixedJointNoOptionsSDF;
-  convert_urdf_str_to_sdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
+  convertUrdfStrToSdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
   sdf::ElementPtr elem = fixedJointNoOptionsSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -510,7 +515,7 @@ TEST(URDFParser, CheckFixedJointOptions_disableJointLumping)
 
   // Check that there is a revolute joint in the converted SDF
   sdf::SDF fixedJointDisableJointLumpingSDF;
-  convert_urdf_str_to_sdf(fixedJointDisableJointLumping.str(),
+  convertUrdfStrToSdf(fixedJointDisableJointLumping.str(),
       fixedJointDisableJointLumpingSDF);
   sdf::ElementPtr elem = fixedJointDisableJointLumpingSDF.Root();
   ASSERT_NE(nullptr, elem);
@@ -557,7 +562,7 @@ TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
 
   // Check that there is a fixed joint in the converted SDF
   sdf::SDF fixedJointPreserveFixedJointSDF;
-  convert_urdf_str_to_sdf(fixedJointPreserveFixedJoint.str(),
+  convertUrdfStrToSdf(fixedJointPreserveFixedJoint.str(),
       fixedJointPreserveFixedJointSDF);
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
   ASSERT_NE(nullptr, elem);
@@ -608,7 +613,7 @@ TEST(URDFParser,
 
   // Check that there is a fixed joint in the converted SDF
   sdf::SDF fixedJointPreserveFixedJointSDF;
-  convert_urdf_str_to_sdf(fixedJointPreserveFixedJoint.str(),
+  convertUrdfStrToSdf(fixedJointPreserveFixedJoint.str(),
       fixedJointPreserveFixedJointSDF);
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
   ASSERT_NE(nullptr, elem);
@@ -653,7 +658,7 @@ TEST(URDFParser, CheckFixedJointOptions_NoOption_Repeated)
 
   // Check that there are no joints in the converted SDF
   sdf::SDF fixedJointNoOptionsSDF;
-  convert_urdf_str_to_sdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
+  convertUrdfStrToSdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
   sdf::ElementPtr elem = fixedJointNoOptionsSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -664,8 +669,15 @@ TEST(URDFParser, CheckFixedJointOptions_NoOption_Repeated)
 /////////////////////////////////////////////////
 TEST(URDFParser, CheckJointTransform)
 {
-  std::ostringstream str;
+  std::stringstream str;
+  str.precision(16);
   str << "<robot name='test_robot'>"
+    << "  <link name='world'/>"
+    << "  <joint name='jointw_1' type='fixed'>"
+    << "    <parent link='world' />"
+    << "    <child  link='link1' />"
+    << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0' />"
+    << "  </joint>"
     << "  <link name='link1'>"
     << "    <inertial>"
     << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
@@ -702,31 +714,84 @@ TEST(URDFParser, CheckJointTransform)
     << "  </link>"
     << "</robot>";
 
-  sdf::SDF sdf;
-  convert_urdf_str_to_sdf(str.str(), sdf);
+  std::string expectedSdf = R"(<sdf version="1.7">
+    <model name="test_robot">
+        <joint type="fixed" name="jointw_1">
+            <pose relative_to="__model__">0 0 0 0 0 0</pose>
+            <parent>world</parent>
+            <child>link1</child>
+        </joint>
+        <link name="link1">
+            <pose relative_to="jointw_1" />
+            <inertial>
+                <pose>0 0 0 0 0 0</pose>
+                <mass>1</mass>
+                <inertia>
+                    <ixx>1</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>1</iyy>
+                    <iyz>0</iyz>
+                    <izz>1</izz>
+                </inertia>
+            </inertial>
+        </link>
+        <joint type="revolute" name="joint1_2">
+            <pose relative_to="link1">0 0 0 0 0 1.570796326794897</pose>
+            <parent>link1</parent>
+            <child>link2</child>
+            <axis>
+                <xyz>1 0 0</xyz>
+                <limit />
+                <dynamics />
+            </axis>
+        </joint>
+        <link name="link2">
+            <pose relative_to="joint1_2" />
+            <inertial>
+                <pose>0 0 0 0 0 0</pose>
+                <mass>1</mass>
+                <inertia>
+                    <ixx>1</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>1</iyy>
+                    <iyz>0</iyz>
+                    <izz>1</izz>
+                </inertia>
+            </inertial>
+        </link>
+        <joint type="revolute" name="joint2_3">
+            <pose relative_to="link2">1 0 0 0 0 0</pose>
+            <parent>link2</parent>
+            <child>link3</child>
+            <axis>
+                <xyz>1 0 0</xyz>
+                <limit />
+                <dynamics />
+            </axis>
+        </joint>
+        <link name="link3">
+            <pose relative_to="joint2_3" />
+            <inertial>
+                <pose>0 0 0 0 0 0</pose>
+                <mass>1</mass>
+                <inertia>
+                    <ixx>1</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>1</iyy>
+                    <iyz>0</iyz>
+                    <izz>1</izz>
+                </inertia>
+            </inertial>
+        </link>
+    </model>
+</sdf>
+)";
 
-  auto root = sdf.Root();
-  ASSERT_NE(nullptr, root);
-  auto model = root->GetElement("model");
-  ASSERT_NE(nullptr, model);
-
-  auto link = model->GetElement("link");
-  ASSERT_NE(nullptr, link);
-  EXPECT_EQ("link1", link->Get<std::string>("name"));
-  EXPECT_EQ(ignition::math::Pose3d::Zero,
-      link->Get<ignition::math::Pose3d>("pose"));
-
-  link = link->GetNextElement("link");
-  ASSERT_NE(nullptr, link);
-  EXPECT_EQ("link2", link->Get<std::string>("name"));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, IGN_PI*0.5),
-      link->Get<ignition::math::Pose3d>("pose"));
-
-  link = link->GetNextElement("link");
-  ASSERT_NE(nullptr, link);
-  EXPECT_EQ("link3", link->Get<std::string>("name"));
-  EXPECT_EQ(ignition::math::Pose3d(0, 1, 0, 0, 0, IGN_PI*0.5),
-      link->Get<ignition::math::Pose3d>("pose"));
+  std::string sdfStr = convertUrdfStrToSdfStr(str.str());
+  EXPECT_EQ(expectedSdf, sdfStr);
 }
 /////////////////////////////////////////////////
 TEST(URDFParser, OutputPrecision)

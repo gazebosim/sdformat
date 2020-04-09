@@ -18,8 +18,9 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Collision.hh"
-#include "sdf/Geometry.hh"
 #include "sdf/Error.hh"
+#include "sdf/Geometry.hh"
+#include "sdf/Surface.hh"
 #include "sdf/Types.hh"
 #include "Utils.hh"
 
@@ -36,8 +37,11 @@ class sdf::CollisionPrivate
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
 
-  /// \brief The collisions's a geometry.
+  /// \brief The collision's geometry.
   public: Geometry geom;
+
+  /// \brief The collision's surface parameters.
+  public: Surface surface;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -126,6 +130,9 @@ Errors Collision::Load(ElementPtr _sdf)
   Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
 
+  // Load the surface parameters
+  this->dataPtr->surface.Load(_sdf->GetElement("surface"));
+
   return errors;
 }
 
@@ -151,6 +158,18 @@ const Geometry *Collision::Geom() const
 void Collision::SetGeom(const Geometry &_geom)
 {
   this->dataPtr->geom = _geom;
+}
+
+/////////////////////////////////////////////////
+sdf::Surface *Collision::Surface() const
+{
+  return &this->dataPtr->surface;
+}
+
+/////////////////////////////////////////////////
+void Collision::SetSurface(const sdf::Surface &_surface)
+{
+  this->dataPtr->surface = _surface;
 }
 
 /////////////////////////////////////////////////
