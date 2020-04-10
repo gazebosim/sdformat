@@ -90,14 +90,6 @@
     <child link="link3"/>
   </joint>
 
-  <joint name="joint23" type="revolute">
-    <origin rpy="-1.57079632679 0 -1.57079632679" xyz="-0.5 0.5 2.5"/>
-    <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
-    <limit lower="0" upper="0" velocity="1000" effort="10000"/>
-    <parent link="link2"/>
-    <child link="link3"/>
-  </joint>
-
   <link name="link3">
     <inertial>
       <mass value="400"/>
