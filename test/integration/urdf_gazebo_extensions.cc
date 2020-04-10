@@ -63,6 +63,11 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       EXPECT_TRUE(!ode->Get<bool>("cfm_damping"));
       ASSERT_TRUE(ode->HasElement("fudge_factor"));
       EXPECT_DOUBLE_EQ(ode->Get<double>("fudge_factor"), 0.56789);
+      EXPECT_TRUE(ode->HasElement("cfm"));
+      EXPECT_TRUE(ode->HasElement("erp"));
+
+      // expect only one //joint/physics element
+      EXPECT_EQ(nullptr, physics->GetNextElement("physics"));
 
       ASSERT_TRUE(ode->HasElement("limit"));
       sdf::ElementPtr limit = ode->GetElement("limit");

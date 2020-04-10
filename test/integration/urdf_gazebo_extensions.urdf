@@ -41,6 +41,12 @@
     <provideFeedback>1</provideFeedback>
     <implicitSpringDamper>false</implicitSpringDamper>
     <fudgeFactor>0.56789</fudgeFactor>
+    <physics>
+      <ode>
+        <erp>1.5</erp>
+        <cfm>10.5</cfm>
+      </ode>
+    </physics>
   </gazebo>
 
   <link name="link1">
