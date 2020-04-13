@@ -60,7 +60,7 @@
 
 1. parser addNestedModel: check `//axis/xyz/@expressed_in` before rotating joint axis.
     * [Pull request 657](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/657)
-    * [Issue 219](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/issues/219)
+    * [Issue 219](https://github.com/osrf/sdformat/issues/219)
 
 1. Remove TinyXML symbols from public API: Deprecate URDF2SDF
     * [Pull request 658](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/658)
@@ -413,7 +413,7 @@
 
 1. Disable macOS tests failing due to issue 202.
     * [Pull request 511](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/511)
-    * [Issue 202](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/issues/202)
+    * [Issue 202](https://github.com/osrf/sdformat/issues/202)
 
 ### SDFormat 8.0.0 (2019-03-01)
 
@@ -680,7 +680,7 @@
 
 1. Choosing models with more recent sdf version with `<include>` tag
     * [Pull request 291](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/291)
-    * [Issue 123](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/issues/123)
+    * [Issue 123](https://github.com/osrf/sdformat/issues/123)
 
 1. Added `<category_bitmask>` to 1.6 surface contact parameters
     * [Pull request 318](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/318)
@@ -763,13 +763,13 @@
 
 1. Fix segmentation Fault in `sdf::getBestSupportedModelVersion`
     * [Pull request 327](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/327)
-    * [Issue 152](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/issues/152)
+    * [Issue 152](https://github.com/osrf/sdformat/issues/152)
 
 ### SDFormat 4.3.0 (2017-03-20)
 
 1. Choosing models with more recent sdf version with `<include>` tag
     * [Pull request 291](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/291)
-    * [Issue 123](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/issues/123)
+    * [Issue 123](https://github.com/osrf/sdformat/issues/123)
 
 1. Added `<category_bitmask>` to 1.6 surface contact parameters
     * [Pull request 318](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/318)
@@ -958,7 +958,7 @@
      * [Pull request 145](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/145)
 1. Fix problems with latin locales and decimal numbers (issue #60)
      * [Pull request 147](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/147)
-     * [Issue 60](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/issues/60)
+     * [Issue 60](https://github.com/osrf/sdformat/issues/60)
 
 ## SDFormat 2.x
 
@@ -976,15 +976,15 @@
      * [Pull request 75](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/75)
 1. adding deformable properties per issue #32
      * [Pull request 78](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/78)
-     * [Issue 32](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/issues/32)
+     * [Issue 32](https://github.com/osrf/sdformat/issues/32)
 1. Support to use external URDF
      * [Pull request 77](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/77)
 1. Add lighting element to visual
      * [Pull request 79](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/79)
 1. SDF 1.5: add flag to fix joint axis frame #43 (gazebo issue 494)
      * [Pull request 83](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/83)
-     * [Issue 43](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/issues/43)
-     * [Gazebo issue 494](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/gazebo/issues/494)
+     * [Issue 43](https://github.com/osrf/sdformat/issues/43)
+     * [Gazebo issue 494](https://bitbucket.org/osrf/gazebo/issues/494)
 1. Implement SDF_PROTOCOL_VERSION (issue #51)
      * [Pull request 90](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/90)
 1. Port sdformat to compile on Windows (MSVC)
