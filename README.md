@@ -7,6 +7,20 @@ or dynamic objects, and articulated robots with various sensors, and acutators.
 The format of SDFormat is also described by XML, which facilitates updates and
 allows conversion from previous versions.
 
+## Documentation
+
+See the [SDFormat Website](http://sdformat.org/) for a more comprehensive
+description of the specification, proposals for modifications, developer
+information, etc.
+This website is published using some information from the
+[`sdf_tutorials`](https://github.com/osrf/sdf_tutorials) repository.
+
+<!--
+TODO(eric.cousineau): Move installation instructions to sdf_tutorials, and link
+there?
+TODO(eric.cousineau): Move terminology section to sdf_tutorials?
+-->
+
 ## Terminology
 
 * **SDFormat** - The specification.
