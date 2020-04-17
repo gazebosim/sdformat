@@ -34,8 +34,8 @@ using namespace sdf;
 // comma. To avoid that the SDF parsing is influenced by the current
 // global C or C++ locale, we define a custom std::stringstream variant
 // that always uses the std::locale::classic() locale.
-// See issues https://bitbucket.org/osrf/sdformat/issues/60
-// and https://bitbucket.org/osrf/sdformat/issues/207 for more details.
+// See issues https://github.com/osrf/sdformat/issues/60
+// and https://github.com/osrf/sdformat/issues/207 for more details.
 namespace sdf
 {
   inline namespace SDF_VERSION_NAMESPACE {
