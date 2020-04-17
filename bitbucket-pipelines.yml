@@ -6,7 +6,7 @@ pipelines:
         script:
           # Dependencies
           - apt update
-          - apt -y install cmake build-essential lcov curl mercurial lsb-release wget
+          - apt -y install cmake build-essential lcov curl git lsb-release wget
             libtinyxml-dev libxml2-utils ruby-dev libboost-dev
             python-psutil cppcheck
           # Static checking before building - fail fast
