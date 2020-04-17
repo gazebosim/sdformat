@@ -50,7 +50,7 @@
 
 1. Add `friction_model` parameter to ode solver
     * [BitBucket pull request 294](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/294)
-    * [Gazebo pull request 1522](https://bitbucket.org/osrf/gazebo/pull-request/1522)
+    * [Gazebo pull request 1522](https://osrf-migration.github.io/gazebo-gh-pages/#!/osrf/gazebo/pull-request/1522)
 
 1. Added `sampling` parameter to `<heightmap>` SDF element.
     * [BitBucket pull request 293](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/293)
@@ -249,7 +249,7 @@
 1. SDF 1.5: add flag to fix joint axis frame #43 (gazebo issue 494)
     * [BitBucket pull request 83](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/83)
     * [Issue 43](https://github.com/osrf/sdformat/issues/43)
-    * [Gazebo issue 494](https://bitbucket.org/osrf/gazebo/issues/494)
+    * [Gazebo issue 494](https://github.com/osrf/gazebo/issues/494)
 1. Implement SDF_PROTOCOL_VERSION (issue #51)
     * [BitBucket pull request 90](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/90)
 1. Port sdformat to compile on Windows (MSVC)
