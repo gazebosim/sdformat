@@ -44,7 +44,7 @@ but with improved human-readability..
 
 1. **Lump:: prefix in link names**
     + Changed to \_fixed_joint_lump__ to avoid confusion with scoped names
-    + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/245)
+    + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
 
 ## SDF protocol 1.5 to 1.6
 
@@ -92,7 +92,7 @@ but with improved human-readability..
     + [BitBucket pull request 380](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/380)
 
 1. **state.sdf** allow `light` tags within `insertions` element
-    * [BitBucket pull request 325](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/325)
+    * [BitBucket pull request 325](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/325)
 
 1. **surface.sdf** `category_bitmask` element
     + description: Bitmask for category of collision filtering.
