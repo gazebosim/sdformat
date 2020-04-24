@@ -1,0 +1,66 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install base dependencies
+      run: |
+        apt update;
+        apt -y install wget lsb-release gnupg;
+        sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list';
+        wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -;
+        apt-get update;
+        apt -y install cmake build-essential curl git mercurial libtinyxml-dev libxml2-utils ruby-dev python-psutil cppcheck;
+    - name: Install lcov
+      run: |
+        git clone https://github.com/linux-test-project/lcov.git -b v1.14;
+        cd lcov;
+        make install;
+        cd ..;
+    - name: Static checking before building - fail fast
+      run: sh tools/code_check.sh
+    - name: Install ignition dependencies
+      run: |
+        apt -y install \
+            libignition-cmake2-dev \
+            libignition-math6-dev \
+            libignition-tools-dev \
+            liburdfdom-dev;
+    - name: cmake
+      run: |
+        mkdir build;
+        cd build;
+        cmake .. -DCMAKE_BUILD_TYPE=coverage;
+    - name: make sdf_descriptions
+      run: make sdf_descriptions
+    - name: make
+      run: make
+    - name: make test
+      env:
+        CTEST_OUTPUT_ON_FAILURE: 1
+      run: make test
+    - name: make coverage
+      run: make coverage
+    - name: Upload to codecov
+      run: bash <(curl -s https://codecov.io/bash)
+    - name: make install
+      run: make install
+    - name: Compile example code
+      run: |
+        cd ..;
+        cd examples;
+        mkdir build;
+        cd build;
+        cmake ..;
+        make;
+        ./simple ../simple.sdf;
