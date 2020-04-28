@@ -189,7 +189,7 @@
         <description>
           Flag to enable dynamic rescaling of moment of inertia in constrained directions.
           See gazebo pull request 1114 for the implementation of this feature.
-          https://bitbucket.org/osrf/gazebo/pull-request/1114
+          https://osrf-migration.github.io/gazebo-gh-pages/#!/osrf/gazebo/pull-request/1114
         </description>
       </element>
     </element> <!-- End Solver -->
