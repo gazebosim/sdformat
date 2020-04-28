@@ -391,6 +391,26 @@ TEST(Param, SetTemplate)
   EXPECT_DOUBLE_EQ(value, 25.456);
 }
 
+////////////////////////////////////////////////////
+TEST(Param, MinMaxViolation)
+{
+  sdf::Param doubleParam("key", "double", "1.0", false, "0", "10.0",
+                         "description");
+  {
+    double value;
+    EXPECT_TRUE(doubleParam.Get<double>(value));
+    EXPECT_DOUBLE_EQ(value, 1.0);
+  }
+
+  EXPECT_FALSE(doubleParam.Set<double>(-1));
+
+  {
+    double value;
+    EXPECT_TRUE(doubleParam.Get<double>(value));
+    EXPECT_DOUBLE_EQ(value, 1.0);
+  }
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)

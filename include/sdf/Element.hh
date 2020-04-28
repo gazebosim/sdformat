@@ -174,14 +174,29 @@ namespace sdf
                               const std::string &_description="");
 
     /// \brief Add a value to this Element.
-    /// \param[in] _type Type of data the attribute will hold.
-    /// \param[in] _defaultValue Default value for the attribute.
+    /// \param[in] _type Type of data the parameter will hold.
+    /// \param[in] _defaultValue Default value for the parameter.
     /// \param[in] _required Requirement string. \as Element::SetRequired.
-    /// \param[in] _description A text description of the attribute.
+    /// \param[in] _description A text description of the parameter.
     /// \throws sdf::AssertionInternalError if an invalid type is given.
     public: void AddValue(const std::string &_type,
                           const std::string &_defaultValue, bool _required,
                           const std::string &_description="");
+
+    /// \brief Add a value to this Element. This override allows passing min and
+    /// max values of the parameter.
+    /// \param[in] _type Type of data the parameter will hold.
+    /// \param[in] _defaultValue Default value for the parameter.
+    /// \param[in] _required Requirement string. \as Element::SetRequired.
+    /// \param[in] _minValue Minimum allowed value for the parameter.
+    /// \param[in] _maxValue Maximum allowed value for the parameter.
+    /// \param[in] _description A text description of the parameter.
+    /// \throws sdf::AssertionInternalError if an invalid type is given.
+    public: void AddValue(const std::string &_type,
+                          const std::string &_defaultValue, bool _required,
+                          const std::string &_minValue,
+                          const std::string &_maxValue,
+                          const std::string &_description = "");
 
     /// \brief Get the param of an attribute.
     /// \param[in] _key the name of the attribute.

@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <typeinfo>
@@ -105,6 +106,41 @@ namespace sdf
                   const std::string &_default, bool _required,
                   const std::string &_description = "");
 
+    /// \brief Constructor with min and max values.
+    /// \param[in] _key Key for the parameter.
+    /// \param[in] _typeName String name for the value type (double,
+    /// int,...).
+    /// \param[in] _default Default value.
+    /// \param[in] _required True if the parameter is required to be set.
+    /// \param[in] _minValue Minimum allowed value for the parameter.
+    /// \param[in] _maxValue Maximum allowed value for the parameter.
+    /// \param[in] _description Description of the parameter.
+    /// \throws sdf::AssertionInternalError if an invalid type is given.
+    public: Param(const std::string &_key, const std::string &_typeName,
+                  const std::string &_default, bool _required,
+                  const std::string &_minValue, const std::string &_maxValue,
+                  const std::string &_description = "");
+
+    /// \brief Copy constructor
+    /// Note that the updateFunc member does not get copied
+    /// \param[in] _param Param to copy
+    public: Param(const Param &_param);
+
+    /// \brief Move constructor
+    /// \param[in] _param Param to move from
+    public: Param(Param &&_param) noexcept = default;
+
+    /// \brief Copy assignment operator
+    /// Note that the updateFunc member will not get copied
+    /// \param[in] _param The parameter to set values from.
+    /// \return *This
+    public: Param &operator=(const Param &_param);
+
+    /// \brief Move assignment operator
+    /// \param[in] _param Param to move from
+    /// \returns Reference to this
+    public: Param &operator=(Param &&_param) noexcept = default;
+
     /// \brief Destructor
     public: virtual ~Param();
 
@@ -115,6 +151,18 @@ namespace sdf
     /// \brief Get the default value as a string.
     /// \return String containing the default value of the parameter.
     public: std::string GetDefaultAsString() const;
+
+    /// \brief Get the minimum allowed value as a string
+    /// \return Returns a string containing the minimum allowed value of the
+    /// parameter if the minimum value is specified in the SDFormat description
+    /// of the parameter. nullopt otherwise.
+    public: std::optional<std::string> GetMinValueAsString() const;
+
+    /// \brief Get the maximum allowed value as a string
+    /// \return Returns a string containing the maximum allowed value of the
+    /// parameter if the maximum value is specified in the SDFormat description
+    /// of the parameter. nullopt otherwise.
+    public: std::optional<std::string> GetMaxValueAsString() const;
 
     /// \brief Set the parameter value from a string.
     /// \param[in] _value New value for the parameter in string form.
@@ -186,12 +234,6 @@ namespace sdf
     public: template<typename T>
             bool GetDefault(T &_value) const;
 
-    /// \brief Equal operator. Set's the value and default value from the
-    /// provided Param.
-    /// \param[in] _param The parameter to set values from.
-    /// \return *This
-    public: Param &operator=(const Param &_param);
-
     /// \brief Set the description of the parameter.
     /// \param[in] _desc New description for the parameter.
     public: void SetDescription(const std::string &_desc);
@@ -199,6 +241,10 @@ namespace sdf
     /// \brief Get the description of the parameter.
     /// \return The description of the parameter.
     public: std::string GetDescription() const;
+
+    /// \brief Validate the value against minimum and maximum allowed values
+    /// \return True if the value is valid
+    public: bool ValidateValue() const;
 
     /// \brief Ostream operator. Outputs the parameter's value.
     /// \param[in] _out Output stream.
@@ -258,6 +304,12 @@ namespace sdf
 
     /// \brief This parameter's default value
     public: ParamVariant defaultValue;
+
+    /// \brief This parameter's minimum allowed value
+    public: std::optional<ParamVariant> minValue;
+
+    /// \brief This parameter's maximum allowed value
+    public: std::optional<ParamVariant> maxValue;
   };
 
   ///////////////////////////////////////////////
