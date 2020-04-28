@@ -73,6 +73,42 @@ Param::Param(const std::string &_key, const std::string &_typeName,
 }
 
 //////////////////////////////////////////////////
+Param::Param(const std::string &_key, const std::string &_typeName,
+             const std::string &_default, bool _required,
+             const std::string &_minValue, const std::string &_maxValue,
+             const std::string &_description)
+    : Param(_key, _typeName, _default, _required, _description)
+{
+  auto valCopy = this->dataPtr->value;
+  if (!_minValue.empty())
+  {
+    SDF_ASSERT(
+        this->ValueFromString(_minValue),
+        std::string("Invalid [min] parameter in SDFormat description of [") +
+            _key + "]");
+    this->dataPtr->minValue = this->dataPtr->value;
+  }
+
+  if (!_maxValue.empty())
+  {
+    SDF_ASSERT(
+        this->ValueFromString(_maxValue),
+        std::string("Invalid [max] parameter in SDFormat description of [") +
+            _key + "]");
+    this->dataPtr->maxValue = this->dataPtr->value;
+  }
+
+  this->dataPtr->value = valCopy;
+}
+
+Param::Param(const Param &_param)
+    : dataPtr(std::make_unique<ParamPrivate>(*_param.dataPtr))
+{
+  // We don't want to copy the updateFunc
+  this->dataPtr->updateFunc = nullptr;
+}
+
+//////////////////////////////////////////////////
 Param::~Param()
 {
 }
@@ -80,9 +116,11 @@ Param::~Param()
 /////////////////////////////////////////////////
 Param &Param::operator=(const Param &_param)
 {
-  this->dataPtr->value = _param.dataPtr->value;
-  this->dataPtr->defaultValue  = _param.dataPtr->defaultValue;
-  this->dataPtr->set  = _param.dataPtr->set;
+  auto updateFuncCopy = this->dataPtr->updateFunc;
+  *this = Param(_param);
+
+  // Restore the update func
+  this->dataPtr->updateFunc = updateFuncCopy;
   return *this;
 }
 
@@ -270,6 +308,32 @@ std::string Param::GetDefaultAsString() const
 
   ss << ParamStreamer{ this->dataPtr->defaultValue };
   return ss.str();
+}
+
+//////////////////////////////////////////////////
+std::optional<std::string> Param::GetMinValueAsString() const
+{
+  if (this->dataPtr->minValue.has_value())
+  {
+    StringStreamClassicLocale ss;
+
+    ss << ParamStreamer{ *this->dataPtr->minValue };
+    return ss.str();
+  }
+  return std::nullopt;
+}
+
+//////////////////////////////////////////////////
+std::optional<std::string> Param::GetMaxValueAsString() const
+{
+  if (this->dataPtr->maxValue.has_value())
+  {
+    StringStreamClassicLocale ss;
+
+    ss << ParamStreamer{ *this->dataPtr->maxValue };
+    return ss.str();
+  }
+  return std::nullopt;
 }
 
 //////////////////////////////////////////////////
@@ -478,8 +542,16 @@ bool Param::SetFromString(const std::string &_value)
     return true;
   }
 
+  auto oldValue = this->dataPtr->value;
   if (!this->ValueFromString(str))
   {
+    return false;
+  }
+
+  // Check if the value is permitted
+  if (!this->ValidateValue())
+  {
+    this->dataPtr->value = oldValue;
     return false;
   }
 
@@ -497,11 +569,7 @@ void Param::Reset()
 //////////////////////////////////////////////////
 ParamPtr Param::Clone() const
 {
-  ParamPtr clone(new Param(this->dataPtr->key, this->dataPtr->typeName,
-                            this->GetAsString(), this->dataPtr->required,
-                            this->dataPtr->description));
-  clone->dataPtr->set = this->dataPtr->set;
-  return clone;
+  return std::make_shared<Param>(*this);
 }
 
 //////////////////////////////////////////////////
@@ -538,4 +606,40 @@ bool Param::GetRequired() const
 bool Param::GetSet() const
 {
   return this->dataPtr->set;
+}
+
+bool Param::ValidateValue() const
+{
+  return std::visit(
+      [this](const auto &_val) -> bool
+      {
+        using T = std::decay_t<decltype(_val)>;
+        // cppcheck-suppress syntaxError
+        if constexpr (std::is_scalar_v<T>)
+        {
+          if (this->dataPtr->minValue.has_value())
+          {
+            if (_val < std::get<T>(*this->dataPtr->minValue))
+            {
+              sdferr << "The value [" << _val
+                     << "] is less than the minimum allowed value of ["
+                     << *this->GetMinValueAsString() << "] for key ["
+                     << this->GetKey() << "]\n";
+              return false;
+            }
+          }
+          if (this->dataPtr->maxValue.has_value())
+          {
+            if (_val > std::get<T>(*this->dataPtr->maxValue))
+            {
+              sdferr << "The value [" << _val
+                     << "] is greater than the maximum allowed value of ["
+                     << *this->GetMaxValueAsString() << "] for key ["
+                     << this->GetKey() << "]\n";
+              return false;
+            }
+          }
+        }
+        return true;
+      }, this->dataPtr->value);
 }
