@@ -18,7 +18,7 @@
 #ifndef SDFORMAT_SDFEXTENSION_HH_
 #define SDFORMAT_SDFEXTENSION_HH_
 
-#include <tinyxml.h>
+#include <tinyxml2.h>
 
 #include <memory>
 #include <string>

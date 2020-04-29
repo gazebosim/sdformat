@@ -40,7 +40,7 @@
 #include <string>
 #include <urdf_model/joint.h>
 // #include <console_bridge/console.h>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 #include <urdf_parser/urdf_parser.h>
 
 namespace urdf{
