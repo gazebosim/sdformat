@@ -8,9 +8,9 @@ if (NOT USE_INTERNAL_URDF)
   link_directories(${URDF_LIBRARY_DIRS})
 endif()
 
-if (USE_EXTERNAL_TINYXML)
-  link_directories(${tinyxml_LIBRARY_DIRS})
-endif()
+# TODO(mjcarroll) These should probably actually be target_* variants
+link_directories(${tinyxml2_LIBRARY_DIRS})
+include_directories(${tinyxml2_INCLUDE_DIRS})
 
 set (sources
   Actor.cc
@@ -64,19 +64,6 @@ set (sources
   World.cc
 )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-if (USE_EXTERNAL_TINYXML)
-  include_directories(${tinyxml_INCLUDE_DIRS})
-else()
-  set(sources ${sources}
-    win/tinyxml/tinystr.cpp
-    win/tinyxml/tinyxmlerror.cpp
-    win/tinyxml/tinyxml.cpp
-    win/tinyxml/tinyxmlparser.cpp)
-
-    install (FILES win/tinyxml/tinyxml.h
-	    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sdformat-${SDF_VERSION})
-endif()
 
 if (USE_INTERNAL_URDF)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/urdf)
