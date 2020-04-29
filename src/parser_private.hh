@@ -17,7 +17,7 @@
 #ifndef SDF_PARSER_PRIVATE_HH_
 #define SDF_PARSER_PRIVATE_HH_
 
-#include <tinyxml.h>
+#include <tinyxml2.h>
 
 #include <string>
 
