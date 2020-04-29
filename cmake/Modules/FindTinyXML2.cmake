@@ -1,3 +1,10 @@
+# CMake Logic to find system TinyXML2, sourced from:
+# ros2/tinyxml2_vendor
+# https://github.com/ros2/tinyxml2_vendor/commit/fde8000d31d68ff555431d63af3c324afba9f117#diff-120198e331f1dd3e7806c31af0cfb425
+
+# The CMake Logic here is licensed under Apache License 2.0
+# TinyXML2 itself is licensed under the zlib License
+
 # TinyXML2_FOUND
 # TinyXML2_INCLUDE_DIRS
 # TinyXML2_LIBRARIES
