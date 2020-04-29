@@ -5,36 +5,10 @@ include (${project_cmake_dir}/TargetArch.cmake)
 target_architecture(ARCH)
 message(STATUS "Building for arch: ${ARCH}")
 
-if (USE_EXTERNAL_TINYXML)
-  #################################################
-  # Find tinyxml. Only debian distributions package tinyxml with a pkg-config
-  # Use pkg_check_modules and fallback to manual detection (needed, at least, for MacOS)
-  pkg_check_modules(tinyxml tinyxml)
-  if (NOT tinyxml_FOUND)
-    find_path (tinyxml_INCLUDE_DIRS tinyxml.h ${tinyxml_INCLUDE_DIRS} ENV CPATH)
-    find_library(tinyxml_LIBRARIES NAMES tinyxml)
-    set (tinyxml_FAIL False)
-    if (NOT tinyxml_INCLUDE_DIRS)
-      message (STATUS "Looking for tinyxml headers - not found")
-      set (tinyxml_FAIL True)
-    endif()
-    if (NOT tinyxml_LIBRARIES)
-      message (STATUS "Looking for tinyxml library - not found")
-      set (tinyxml_FAIL True)
-    endif()
-  endif()
-
-  if (tinyxml_FAIL)
-    message (STATUS "Looking for tinyxml.h - not found")
-    BUILD_ERROR("Missing: tinyxml")
-  endif()
-else()
-  # Needed in WIN32 since in UNIX the flag is added in the code installed
-  add_definitions(-DTIXML_USE_STL)
-  include_directories (${PROJECT_SOURCE_DIR}/src/win/tinyxml)
-  set (tinyxml_LIBRARIES "tinyxml")
-  set (tinyxml_LIBRARY_DIRS "")
-endif()
+#################################################
+# Find tinyxml2.
+list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
+find_package(TinyXML2 REQUIRED)
 
 ################################################
 # Find urdfdom parser. Logic:
