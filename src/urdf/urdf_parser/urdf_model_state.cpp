@@ -47,7 +47,7 @@
 
 namespace urdf{
 
-bool parseModelState(ModelState &ms, TiXmlElement* config)
+bool parseModelState(ModelState &ms, tinyxml2::XMLElement* config)
 {
   ms.clear();
 
@@ -73,7 +73,7 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
     }
   }
 
-  TiXmlElement *joint_state_elem = config->FirstChildElement("joint_state");
+  tinyxml2::XMLElement *joint_state_elem = config->FirstChildElement("joint_state");
   if (joint_state_elem)
   {
     JointStateSharedPtr joint_state;

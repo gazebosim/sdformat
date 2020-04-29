@@ -46,7 +46,7 @@
 
 namespace urdf{
 
-bool parseWorld(World &/*world*/, TiXmlElement* /*config*/)
+bool parseWorld(World &/*world*/, tinyxml2::XMLElement* /*config*/)
 {
 
   // to be implemented
@@ -54,9 +54,9 @@ bool parseWorld(World &/*world*/, TiXmlElement* /*config*/)
   return true;
 }
 
-bool exportWorld(World &world, TiXmlElement* xml)
+bool exportWorld(World &world, tinyxml2::XMLElement* xml)
 {
-  TiXmlElement * world_xml = new TiXmlElement("world");
+  tinyxml2::XMLElement * world_xml = new tinyxml2::XMLElement("world");
   world_xml->SetAttribute("name", world.name);
 
   // to be implemented

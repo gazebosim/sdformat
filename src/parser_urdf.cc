@@ -40,7 +40,7 @@ using namespace sdf;
 
 namespace sdf {
 inline namespace SDF_VERSION_NAMESPACE {
-typedef std::shared_ptr<TiXmlElement> TiXmlElementPtr;
+typedef std::shared_ptr<tinyxml2::XMLElement> tinyxml2::XMLElementPtr;
 typedef std::shared_ptr<SDFExtension> SDFExtensionPtr;
 typedef std::map<std::string, std::vector<SDFExtensionPtr> >
   StringSDFExtensionPtrMap;
@@ -63,23 +63,23 @@ const int g_outputDecimalPrecision = 16;
 /// \param[in] _key XML key where vector3 value might be
 /// \param[in] _scale scalar scale for the vector3
 /// \return a urdf::Vector3
-urdf::Vector3 ParseVector3(TiXmlNode* _key, double _scale = 1.0);
+urdf::Vector3 ParseVector3(tinyxml2::XMLNode* _key, double _scale = 1.0);
 urdf::Vector3 ParseVector3(const std::string &_str, double _scale = 1.0);
 
 /// insert extensions into collision geoms
-void InsertSDFExtensionCollision(TiXmlElement *_elem,
+void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
                                  const std::string &_linkName);
 
 /// insert extensions into model
-void InsertSDFExtensionRobot(TiXmlElement *_elem);
+void InsertSDFExtensionRobot(tinyxml2::XMLElement *_elem);
 
 /// insert extensions into visuals
-void InsertSDFExtensionVisual(TiXmlElement *_elem,
+void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
                               const std::string &_linkName);
 
 
 /// insert extensions into joints
-void InsertSDFExtensionJoint(TiXmlElement *_elem,
+void InsertSDFExtensionJoint(tinyxml2::XMLElement *_elem,
                              const std::string &_jointName);
 
 /// reduced fixed joints:  check if a fixed joint should be lumped
@@ -90,13 +90,13 @@ bool FixedJointShouldBeReduced(urdf::JointSharedPtr _jnt);
 /// reduced fixed joints:  apply transform reduction for ray sensors
 ///   in extensions when doing fixed joint reduction
 void ReduceSDFExtensionSensorTransformReduction(
-      std::vector<TiXmlElementPtr>::iterator _blobIt,
+      std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
       ignition::math::Pose3d _reductionTransform);
 
 /// reduced fixed joints:  apply transform reduction for projectors in
 ///   extensions when doing fixed joint reduction
 void ReduceSDFExtensionProjectorTransformReduction(
-      std::vector<TiXmlElementPtr>::iterator _blobIt,
+      std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
       ignition::math::Pose3d _reductionTransform);
 
 
@@ -117,65 +117,65 @@ void ReduceVisualsToParent(urdf::LinkSharedPtr _link);
 void ReduceInertialToParent(urdf::LinkSharedPtr /*_link*/);
 
 /// create SDF Collision block based on URDF
-void CreateCollision(TiXmlElement* _elem, urdf::LinkConstSharedPtr _link,
+void CreateCollision(tinyxml2::XMLElement* _elem, urdf::LinkConstSharedPtr _link,
                      urdf::CollisionSharedPtr _collision,
                      const std::string &_oldLinkName = std::string(""));
 
 /// create SDF Visual block based on URDF
-void CreateVisual(TiXmlElement *_elem, urdf::LinkConstSharedPtr _link,
+void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
                   urdf::VisualSharedPtr _visual,
                   const std::string &_oldLinkName = std::string(""));
 
 /// create SDF Joint block based on URDF
-void CreateJoint(TiXmlElement *_root, urdf::LinkConstSharedPtr _link,
+void CreateJoint(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
                  ignition::math::Pose3d &_currentTransform);
 
 /// insert extensions into links
-void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName);
+void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem, const std::string &_linkName);
 
 /// create visual blocks from urdf visuals
-void CreateVisuals(TiXmlElement* _elem, urdf::LinkConstSharedPtr _link);
+void CreateVisuals(tinyxml2::XMLElement* _elem, urdf::LinkConstSharedPtr _link);
 
 /// create collision blocks from urdf collisions
-void CreateCollisions(TiXmlElement* _elem, urdf::LinkConstSharedPtr _link);
+void CreateCollisions(tinyxml2::XMLElement* _elem, urdf::LinkConstSharedPtr _link);
 
 /// create SDF Inertial block based on URDF
-void CreateInertial(TiXmlElement *_elem, urdf::LinkConstSharedPtr _link);
+void CreateInertial(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link);
 
 /// append transform (pose) to the end of the xml element
-void AddTransform(TiXmlElement *_elem,
+void AddTransform(tinyxml2::XMLElement *_elem,
     const ignition::math::Pose3d &_transform);
 
 /// create SDF from URDF link
-void CreateSDF(TiXmlElement *_root, urdf::LinkConstSharedPtr _link,
+void CreateSDF(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
                const ignition::math::Pose3d &_transform);
 
 /// create SDF Link block based on URDF
-void CreateLink(TiXmlElement *_root, urdf::LinkConstSharedPtr _link,
+void CreateLink(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
                 ignition::math::Pose3d &_currentTransform);
 
 /// reduced fixed joints:  apply appropriate frame updates in joint
 ///   inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionJointFrameReplace(
-    std::vector<TiXmlElementPtr>::iterator _blobIt,
+    std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
     urdf::LinkSharedPtr _link);
 
 /// reduced fixed joints:  apply appropriate frame updates in gripper
 ///   inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionGripperFrameReplace(
-    std::vector<TiXmlElementPtr>::iterator _blobIt,
+    std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
     urdf::LinkSharedPtr _link);
 
 /// reduced fixed joints:  apply appropriate frame updates in projector
 /// inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionProjectorFrameReplace(
-    std::vector<TiXmlElementPtr>::iterator _blobIt,
+    std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
     urdf::LinkSharedPtr _link);
 
 /// reduced fixed joints:  apply appropriate frame updates in plugins
 ///   inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionPluginFrameReplace(
-      std::vector<TiXmlElementPtr>::iterator _blobIt,
+      std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
       urdf::LinkSharedPtr _link, const std::string &_pluginName,
       const std::string &_elementName,
       ignition::math::Pose3d _reductionTransform);
@@ -183,7 +183,7 @@ void ReduceSDFExtensionPluginFrameReplace(
 /// reduced fixed joints:  apply appropriate frame updates in urdf
 ///   extensions when doing fixed joint reduction
 void ReduceSDFExtensionContactSensorFrameReplace(
-    std::vector<TiXmlElementPtr>::iterator _blobIt,
+    std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
     urdf::LinkSharedPtr _link);
 
 /// \brief reduced fixed joints:  apply appropriate updates to urdf
@@ -204,13 +204,13 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
     urdf::LinkSharedPtr _link);
 
 /// get value from <key value="..."/> pair and return it as string
-std::string GetKeyValueAsString(TiXmlElement* _elem);
+std::string GetKeyValueAsString(tinyxml2::XMLElement* _elem);
 
 /// \brief append key value pair to the end of the xml element
 /// \param[in] _elem pointer to xml element
 /// \param[in] _key string containing key to add to xml element
 /// \param[in] _value string containing value for the key added
-void AddKeyValue(TiXmlElement *_elem, const std::string &_key,
+void AddKeyValue(tinyxml2::XMLElement *_elem, const std::string &_key,
                  const std::string &_value);
 
 /// \brief convert values to string
@@ -219,7 +219,7 @@ void AddKeyValue(TiXmlElement *_elem, const std::string &_key,
 /// \return a string
 std::string Values2str(unsigned int _count, const double *_values);
 
-void CreateGeometry(TiXmlElement *_elem, urdf::GeometrySharedPtr _geometry);
+void CreateGeometry(tinyxml2::XMLElement *_elem, urdf::GeometrySharedPtr _geometry);
 
 ignition::math::Pose3d inverseTransformToParentFrame(
     ignition::math::Pose3d _transformInLinkFrame,
@@ -250,7 +250,7 @@ urdf::Pose CopyPose(ignition::math::Pose3d _pose);
 ////////////////////////////////////////////////////////////////////////////////
 bool URDF2SDF::IsURDF(const std::string &_filename)
 {
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
 
   if (xmlDoc.LoadFile(_filename))
   {
@@ -299,11 +299,11 @@ urdf::Vector3 ParseVector3(const std::string &_str, double _scale)
 }
 
 /////////////////////////////////////////////////
-urdf::Vector3 ParseVector3(TiXmlNode *_key, double _scale)
+urdf::Vector3 ParseVector3(tinyxml2::XMLNode *_key, double _scale)
 {
   if (_key != nullptr)
   {
-    TiXmlElement *key = _key->ToElement();
+    tinyxml2::XMLElement *key = _key->ToElement();
     if (key != nullptr)
     {
       return ParseVector3(GetKeyValueAsString(key), _scale);
@@ -402,7 +402,7 @@ void ReduceVisualToParent(urdf::LinkSharedPtr _parentLink,
 ////////////////////////////////////////////////////////////////////////////////
 /// reduce fixed joints by lumping inertial, visual and
 // collision elements of the child link into the parent link
-void ReduceFixedJoints(TiXmlElement *_root, urdf::LinkSharedPtr _link)
+void ReduceFixedJoints(tinyxml2::XMLElement *_root, urdf::LinkSharedPtr _link)
 {
   // if child is attached to self by fixed _link first go up the tree,
   //   check it's children recursively
@@ -1125,10 +1125,10 @@ std::string Values2str(unsigned int _count, const int *_values)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void AddKeyValue(TiXmlElement *_elem, const std::string &_key,
+void AddKeyValue(tinyxml2::XMLElement *_elem, const std::string &_key,
                  const std::string &_value)
 {
-  TiXmlElement* childElem = _elem->FirstChildElement(_key);
+  tinyxml2::XMLElement* childElem = _elem->FirstChildElement(_key);
   if (childElem)
   {
     std::string oldValue = GetKeyValueAsString(childElem);
@@ -1148,14 +1148,14 @@ void AddKeyValue(TiXmlElement *_elem, const std::string &_key,
     _elem->RemoveChild(childElem);  // remove old _elem
   }
 
-  TiXmlElement *ekey = new TiXmlElement(_key);
-  TiXmlText *textEkey = new TiXmlText(_value);
+  tinyxml2::XMLElement *ekey = new tinyxml2::XMLElement(_key);
+  tinyxml2::XMLText *textEkey = new tinyxml2::XMLText(_value);
   ekey->LinkEndChild(textEkey);
   _elem->LinkEndChild(ekey);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void AddTransform(TiXmlElement *_elem, const ignition::math::Pose3d &_transform)
+void AddTransform(tinyxml2::XMLElement *_elem, const ignition::math::Pose3d &_transform)
 {
   ignition::math::Vector3d e = _transform.Rot().Euler();
   double cpose[6] = { _transform.Pos().X(), _transform.Pos().Y(),
@@ -1166,7 +1166,7 @@ void AddTransform(TiXmlElement *_elem, const ignition::math::Pose3d &_transform)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string GetKeyValueAsString(TiXmlElement* _elem)
+std::string GetKeyValueAsString(tinyxml2::XMLElement* _elem)
 {
   std::string valueStr;
   if (_elem->Attribute("value"))
@@ -1176,7 +1176,7 @@ std::string GetKeyValueAsString(TiXmlElement* _elem)
   else if (_elem->FirstChild())
     /// @todo: FIXME: comment out check for now, different tinyxml
     /// versions fails to compile:
-    //  && _elem->FirstChild()->Type() == TiXmlNode::TINYXML_TEXT)
+    //  && _elem->FirstChild()->Type() == tinyxml2::XMLNode::TINYXML_TEXT)
   {
     valueStr = _elem->FirstChild()->ValueStr();
   }
@@ -1184,10 +1184,10 @@ std::string GetKeyValueAsString(TiXmlElement* _elem)
 }
 
 /////////////////////////////////////////////////
-void ParseRobotOrigin(TiXmlDocument &_urdfXml)
+void ParseRobotOrigin(tinyxml2::XMLDocument &_urdfXml)
 {
-  TiXmlElement *robotXml = _urdfXml.FirstChildElement("robot");
-  TiXmlElement *originXml = robotXml->FirstChildElement("origin");
+  tinyxml2::XMLElement *robotXml = _urdfXml.FirstChildElement("robot");
+  tinyxml2::XMLElement *originXml = robotXml->FirstChildElement("origin");
   if (originXml)
   {
     const char *xyzstr = originXml->Attribute("xyz");
@@ -1215,7 +1215,7 @@ void ParseRobotOrigin(TiXmlDocument &_urdfXml)
 }
 
 /////////////////////////////////////////////////
-void InsertRobotOrigin(TiXmlElement *_elem)
+void InsertRobotOrigin(tinyxml2::XMLElement *_elem)
 {
   if (g_initialRobotPoseValid)
   {
@@ -1230,14 +1230,14 @@ void InsertRobotOrigin(TiXmlElement *_elem)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
+void URDF2SDF::ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml)
 {
-  TiXmlElement* robotXml = _urdfXml.FirstChildElement("robot");
+  tinyxml2::XMLElement* robotXml = _urdfXml.FirstChildElement("robot");
 
   // Get all SDF extension elements, put everything in
   //   g_extensions map, containing a key string
   //   (link/joint name) and values
-  for (TiXmlElement* sdfXml = robotXml->FirstChildElement("gazebo");
+  for (tinyxml2::XMLElement* sdfXml = robotXml->FirstChildElement("gazebo");
        sdfXml; sdfXml = sdfXml->NextSiblingElement("gazebo"))
   {
     const char* ref = sdfXml->Attribute("reference");
@@ -1264,7 +1264,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
     SDFExtensionPtr sdf(new SDFExtension());
 
     // begin parsing xml node
-    for (TiXmlElement *childElem = sdfXml->FirstChildElement();
+    for (tinyxml2::XMLElement *childElem = sdfXml->FirstChildElement();
          childElem; childElem = childElem->NextSiblingElement())
     {
       sdf->oldLinkName = refStr;
@@ -1303,18 +1303,18 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         // </visual>
 
         // a place to store converted doc
-        for (TiXmlElement* e = childElem->FirstChildElement(); e;
+        for (tinyxml2::XMLElement* e = childElem->FirstChildElement(); e;
              e = e->NextSiblingElement())
         {
-          TiXmlDocument xmlNewDoc;
+          tinyxml2::XMLDocument xmlNewDoc;
 
           std::ostringstream origStream;
           origStream << *e;
           xmlNewDoc.Parse(origStream.str().c_str());
 
           // save all unknown stuff in a vector of blobs
-          TiXmlElementPtr blob(
-            new TiXmlElement(*xmlNewDoc.FirstChildElement()));
+          tinyxml2::XMLElementPtr blob(
+            new tinyxml2::XMLElement(*xmlNewDoc.FirstChildElement()));
           if (childElem->ValueStr() == "collision")
           {
             sdf->collision_blobs.push_back(blob);
@@ -1510,7 +1510,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       else
       {
         // a place to store converted doc
-        TiXmlDocument xmlNewDoc;
+        tinyxml2::XMLDocument xmlNewDoc;
 
         std::ostringstream stream;
         stream << *childElem;
@@ -1519,7 +1519,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
         xmlNewDoc.Parse(stream.str().c_str());
 
         // save all unknown stuff in a vector of blobs
-        TiXmlElementPtr blob(new TiXmlElement(*xmlNewDoc.FirstChildElement()));
+        tinyxml2::XMLElementPtr blob(new tinyxml2::XMLElement(*xmlNewDoc.FirstChildElement()));
         sdf->blobs.push_back(blob);
       }
     }
@@ -1543,7 +1543,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void InsertSDFExtensionCollision(TiXmlElement *_elem,
+void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
                                  const std::string &_linkName)
 {
   // loop through extensions for the whole model
@@ -1561,11 +1561,11 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
       // std::cerr << "working on g_extensions for link ["
       //           << sdfIt->first << "]\n";
       // if _elem already has a surface element, use it
-      TiXmlNode *surface = _elem->FirstChild("surface");
-      TiXmlNode *friction = nullptr;
-      TiXmlNode *frictionOde = nullptr;
-      TiXmlNode *contact = nullptr;
-      TiXmlNode *contactOde = nullptr;
+      tinyxml2::XMLNode *surface = _elem->FirstChild("surface");
+      tinyxml2::XMLNode *friction = nullptr;
+      tinyxml2::XMLNode *frictionOde = nullptr;
+      tinyxml2::XMLNode *contact = nullptr;
+      tinyxml2::XMLNode *contactOde = nullptr;
 
       // loop through all the gazebo extensions stored in sdfIt->second
       for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
@@ -1622,7 +1622,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           // explicitly specified fields (above).
           if (!(*ge)->collision_blobs.empty())
           {
-            std::vector<TiXmlElementPtr>::iterator blob;
+            std::vector<tinyxml2::XMLElementPtr>::iterator blob;
             for (blob = (*ge)->collision_blobs.begin();
                  blob != (*ge)->collision_blobs.end(); ++blob)
             {
@@ -1634,7 +1634,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
 
               // print for debug
               std::ostringstream origStream;
-              std::unique_ptr<TiXmlNode> blobClone((*blob)->Clone());
+              std::unique_ptr<tinyxml2::XMLNode> blobClone((*blob)->Clone());
               origStream << *blobClone;
               // std::cerr << "collision extension ["
               //           << origStream.str() << "]\n";
@@ -1719,7 +1719,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           // construct new elements if not in blobs
           if (surface == nullptr)
           {
-            surface  = new TiXmlElement("surface");
+            surface  = new tinyxml2::XMLElement("surface");
             if (!surface)
             {
               // Memory allocation error
@@ -1734,7 +1734,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           {
             if (surface->FirstChild("contact") == nullptr)
             {
-              contact  = new TiXmlElement("contact");
+              contact  = new tinyxml2::XMLElement("contact");
               if (!contact)
               {
                 // Memory allocation error
@@ -1753,7 +1753,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           {
             if (contact->FirstChild("ode") == nullptr)
             {
-              contactOde  = new TiXmlElement("ode");
+              contactOde  = new tinyxml2::XMLElement("ode");
               if (!contactOde)
               {
                 // Memory allocation error
@@ -1772,7 +1772,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           {
             if (surface->FirstChild("friction") == nullptr)
             {
-              friction  = new TiXmlElement("friction");
+              friction  = new tinyxml2::XMLElement("friction");
               if (!friction)
               {
                 // Memory allocation error
@@ -1791,7 +1791,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
           {
             if (friction->FirstChild("ode") == nullptr)
             {
-              frictionOde  = new TiXmlElement("ode");
+              frictionOde  = new tinyxml2::XMLElement("ode");
               if (!frictionOde)
               {
                 // Memory allocation error
@@ -1860,7 +1860,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void InsertSDFExtensionVisual(TiXmlElement *_elem,
+void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
                               const std::string &_linkName)
 {
   // loop through extensions for the whole model
@@ -1878,8 +1878,8 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
       // std::cerr << "working on g_extensions for link ["
       //           << sdfIt->first << "]\n";
       // if _elem already has a material element, use it
-      TiXmlNode *material = _elem->FirstChild("material");
-      TiXmlElement *script = nullptr;
+      tinyxml2::XMLNode *material = _elem->FirstChild("material");
+      tinyxml2::XMLElement *script = nullptr;
 
       // loop through all the gazebo extensions stored in sdfIt->second
       for (std::vector<SDFExtensionPtr>::iterator ge = sdfIt->second.begin();
@@ -1936,7 +1936,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
           // explicitly specified fields (above).
           if (!(*ge)->visual_blobs.empty())
           {
-            std::vector<TiXmlElementPtr>::iterator blob;
+            std::vector<tinyxml2::XMLElementPtr>::iterator blob;
             for (blob = (*ge)->visual_blobs.begin();
                 blob != (*ge)->visual_blobs.end(); ++blob)
             {
@@ -2014,7 +2014,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
             // construct new elements if not in blobs
             if (material == nullptr)
             {
-              material  = new TiXmlElement("material");
+              material  = new tinyxml2::XMLElement("material");
               if (!material)
               {
                 // Memory allocation error
@@ -2028,7 +2028,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
             {
               if (material->FirstChildElement("script") == nullptr)
               {
-                script  = new TiXmlElement("script");
+                script  = new tinyxml2::XMLElement("script");
                 if (!script)
                 {
                   // Memory allocation error
@@ -2055,7 +2055,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
+void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem, const std::string &_linkName)
 {
   for (StringSDFExtensionPtrMap::iterator
        sdfIt = g_extensions.begin();
@@ -2079,7 +2079,7 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
         }
 
         // damping factor
-        TiXmlElement *velocityDecay = new TiXmlElement("velocity_decay");
+        tinyxml2::XMLElement *velocityDecay = new tinyxml2::XMLElement("velocity_decay");
         if ((*ge)->isDampingFactor)
         {
           /// @todo separate linear and angular velocity decay
@@ -2095,7 +2095,7 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
           AddKeyValue(_elem, "self_collide", (*ge)->selfCollide ? "1" : "0");
         }
         // insert blobs into body
-        for (std::vector<TiXmlElementPtr>::iterator
+        for (std::vector<tinyxml2::XMLElementPtr>::iterator
             blobIt = (*ge)->blobs.begin();
             blobIt != (*ge)->blobs.end(); ++blobIt)
         {
@@ -2107,7 +2107,7 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void InsertSDFExtensionJoint(TiXmlElement *_elem,
+void InsertSDFExtensionJoint(tinyxml2::XMLElement *_elem,
                              const std::string &_jointName)
 {
   for (StringSDFExtensionPtrMap::iterator
@@ -2120,43 +2120,43 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
           ge = sdfIt->second.begin();
           ge != sdfIt->second.end(); ++ge)
       {
-        TiXmlElement *physics = _elem->FirstChildElement("physics");
+        tinyxml2::XMLElement *physics = _elem->FirstChildElement("physics");
         bool newPhysics = false;
         if (physics == nullptr)
         {
-          physics = new TiXmlElement("physics");
+          physics = new tinyxml2::XMLElement("physics");
           newPhysics = true;
         }
 
-        TiXmlElement *physicsOde = physics->FirstChildElement("ode");
+        tinyxml2::XMLElement *physicsOde = physics->FirstChildElement("ode");
         bool newPhysicsOde = false;
         if (physicsOde == nullptr)
         {
-          physicsOde = new TiXmlElement("ode");
+          physicsOde = new tinyxml2::XMLElement("ode");
           newPhysicsOde = true;
         }
 
-        TiXmlElement *limit = physicsOde->FirstChildElement("limit");
+        tinyxml2::XMLElement *limit = physicsOde->FirstChildElement("limit");
         bool newLimit = false;
         if (limit == nullptr)
         {
-          limit = new TiXmlElement("limit");
+          limit = new tinyxml2::XMLElement("limit");
           newLimit = true;
         }
 
-        TiXmlElement *axis = _elem->FirstChildElement("axis");
+        tinyxml2::XMLElement *axis = _elem->FirstChildElement("axis");
         bool newAxis = false;
         if (axis == nullptr)
         {
-          axis = new TiXmlElement("axis");
+          axis = new tinyxml2::XMLElement("axis");
           newAxis = true;
         }
 
-        TiXmlElement *dynamics = axis->FirstChildElement("dynamics");
+        tinyxml2::XMLElement *dynamics = axis->FirstChildElement("dynamics");
         bool newDynamics = false;
         if (dynamics == nullptr)
         {
-          dynamics = new TiXmlElement("dynamics");
+          dynamics = new tinyxml2::XMLElement("dynamics");
           newDynamics = true;
         }
 
@@ -2242,7 +2242,7 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
         }
 
         // insert all additional blobs into joint
-        for (std::vector<TiXmlElementPtr>::iterator
+        for (std::vector<tinyxml2::XMLElementPtr>::iterator
             blobIt = (*ge)->blobs.begin();
             blobIt != (*ge)->blobs.end(); ++blobIt)
         {
@@ -2254,7 +2254,7 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void InsertSDFExtensionRobot(TiXmlElement *_elem)
+void InsertSDFExtensionRobot(tinyxml2::XMLElement *_elem)
 {
   for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
@@ -2277,7 +2277,7 @@ void InsertSDFExtensionRobot(TiXmlElement *_elem)
         }
 
         // copy extension containing blobs and without reference
-        for (std::vector<TiXmlElementPtr>::iterator
+        for (std::vector<tinyxml2::XMLElementPtr>::iterator
             blobIt = (*ge)->blobs.begin();
             blobIt != (*ge)->blobs.end(); ++blobIt)
         {
@@ -2291,12 +2291,12 @@ void InsertSDFExtensionRobot(TiXmlElement *_elem)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CreateGeometry(TiXmlElement* _elem, urdf::GeometrySharedPtr _geometry)
+void CreateGeometry(tinyxml2::XMLElement* _elem, urdf::GeometrySharedPtr _geometry)
 {
-  TiXmlElement *sdfGeometry = new TiXmlElement("geometry");
+  tinyxml2::XMLElement *sdfGeometry = new tinyxml2::XMLElement("geometry");
 
   std::string type;
-  TiXmlElement *geometryType = nullptr;
+  tinyxml2::XMLElement *geometryType = nullptr;
 
   switch (_geometry->type)
   {
@@ -2310,7 +2310,7 @@ void CreateGeometry(TiXmlElement* _elem, urdf::GeometrySharedPtr _geometry)
         sizeVals[0] = box->dim.x;
         sizeVals[1] = box->dim.y;
         sizeVals[2] = box->dim.z;
-        geometryType = new TiXmlElement(type);
+        geometryType = new tinyxml2::XMLElement(type);
         AddKeyValue(geometryType, "size", Values2str(sizeCount, sizeVals));
       }
       break;
@@ -2319,7 +2319,7 @@ void CreateGeometry(TiXmlElement* _elem, urdf::GeometrySharedPtr _geometry)
       {
         urdf::CylinderConstSharedPtr cylinder =
           urdf::dynamic_pointer_cast<urdf::Cylinder>(_geometry);
-        geometryType = new TiXmlElement(type);
+        geometryType = new tinyxml2::XMLElement(type);
         AddKeyValue(geometryType, "length", Values2str(1, &cylinder->length));
         AddKeyValue(geometryType, "radius", Values2str(1, &cylinder->radius));
       }
@@ -2329,7 +2329,7 @@ void CreateGeometry(TiXmlElement* _elem, urdf::GeometrySharedPtr _geometry)
       {
         urdf::SphereConstSharedPtr sphere =
           urdf::dynamic_pointer_cast<urdf::Sphere>(_geometry);
-        geometryType = new TiXmlElement(type);
+        geometryType = new tinyxml2::XMLElement(type);
         AddKeyValue(geometryType, "radius", Values2str(1, &sphere->radius));
       }
       break;
@@ -2338,7 +2338,7 @@ void CreateGeometry(TiXmlElement* _elem, urdf::GeometrySharedPtr _geometry)
       {
         urdf::MeshConstSharedPtr mesh =
           urdf::dynamic_pointer_cast<urdf::Mesh>(_geometry);
-        geometryType = new TiXmlElement(type);
+        geometryType = new tinyxml2::XMLElement(type);
         AddKeyValue(geometryType, "scale", Vector32Str(mesh->scale));
         // do something more to meshes
         {
@@ -2548,7 +2548,7 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
   //         <collision>base_footprint_collision</collision>
   sdfdbg << "  STRING REPLACE: instances of _link name ["
          << linkName << "] with [" << parentLinkName << "]\n";
-  for (std::vector<TiXmlElementPtr>::iterator blobIt = _ge->blobs.begin();
+  for (std::vector<tinyxml2::XMLElementPtr>::iterator blobIt = _ge->blobs.begin();
        blobIt != _ge->blobs.end(); ++blobIt)
   {
     std::ostringstream debugStreamIn;
@@ -2577,7 +2577,7 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionsTransform(SDFExtensionPtr _ge)
 {
-  for (std::vector<TiXmlElementPtr>::iterator blobIt = _ge->blobs.begin();
+  for (std::vector<tinyxml2::XMLElementPtr>::iterator blobIt = _ge->blobs.begin();
        blobIt != _ge->blobs.end(); ++blobIt)
   {
     /// @todo make sure we are not missing any additional transform reductions
@@ -2604,7 +2604,7 @@ void URDF2SDF::ListSDFExtensions()
         sdfdbg <<  "  PRINTING [" << static_cast<int>((*ge)->blobs.size())
                << "] BLOBS for extension [" << ++extCount
                << "] referencing [" << sdfIt->first << "]\n";
-        for (std::vector<TiXmlElementPtr>::iterator
+        for (std::vector<tinyxml2::XMLElementPtr>::iterator
             blobIt = (*ge)->blobs.begin();
             blobIt != (*ge)->blobs.end(); ++blobIt)
         {
@@ -2631,7 +2631,7 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
       for (std::vector<SDFExtensionPtr>::iterator
           ge = sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
       {
-        for (std::vector<TiXmlElementPtr>::iterator
+        for (std::vector<tinyxml2::XMLElementPtr>::iterator
             blobIt = (*ge)->blobs.begin();
             blobIt != (*ge)->blobs.end(); ++blobIt)
         {
@@ -2645,7 +2645,7 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CreateSDF(TiXmlElement *_root,
+void CreateSDF(tinyxml2::XMLElement *_root,
                urdf::LinkConstSharedPtr _link,
                const ignition::math::Pose3d &_transform)
 {
@@ -2731,12 +2731,12 @@ urdf::Pose CopyPose(ignition::math::Pose3d _pose)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CreateLink(TiXmlElement *_root,
+void CreateLink(tinyxml2::XMLElement *_root,
                 urdf::LinkConstSharedPtr _link,
                 ignition::math::Pose3d &_currentTransform)
 {
   // create new body
-  TiXmlElement *elem = new TiXmlElement("link");
+  tinyxml2::XMLElement *elem = new tinyxml2::XMLElement("link");
 
   // set body name
   elem->SetAttribute("name", _link->name);
@@ -2745,7 +2745,7 @@ void CreateLink(TiXmlElement *_root,
   // this transform does not exist for the root link
   if (_link->parent_joint)
   {
-    TiXmlElement *pose = new TiXmlElement("pose");
+    tinyxml2::XMLElement *pose = new tinyxml2::XMLElement("pose");
     pose->SetAttribute("relative_to", _link->parent_joint->name);
     elem->LinkEndChild(pose);
   }
@@ -2780,7 +2780,7 @@ void CreateLink(TiXmlElement *_root,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CreateCollisions(TiXmlElement* _elem,
+void CreateCollisions(tinyxml2::XMLElement* _elem,
                       urdf::LinkConstSharedPtr _link)
 {
   // loop through all collisions in
@@ -2825,7 +2825,7 @@ void CreateCollisions(TiXmlElement* _elem,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CreateVisuals(TiXmlElement* _elem,
+void CreateVisuals(tinyxml2::XMLElement* _elem,
                    urdf::LinkConstSharedPtr _link)
 {
   // loop through all visuals in
@@ -2870,10 +2870,10 @@ void CreateVisuals(TiXmlElement* _elem,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CreateInertial(TiXmlElement *_elem,
+void CreateInertial(tinyxml2::XMLElement *_elem,
                     urdf::LinkConstSharedPtr _link)
 {
-  TiXmlElement *inertial = new TiXmlElement("inertial");
+  tinyxml2::XMLElement *inertial = new tinyxml2::XMLElement("inertial");
 
   // set mass properties
   // check and print a warning message
@@ -2889,7 +2889,7 @@ void CreateInertial(TiXmlElement *_elem,
               Values2str(1, &_link->inertial->mass));
 
   // add inertia (ixx, ixy, ixz, iyy, iyz, izz)
-  TiXmlElement *inertia = new TiXmlElement("inertia");
+  tinyxml2::XMLElement *inertia = new tinyxml2::XMLElement("inertia");
   AddKeyValue(inertia, "ixx",
               Values2str(1, &_link->inertial->ixx));
   AddKeyValue(inertia, "ixy",
@@ -2908,7 +2908,7 @@ void CreateInertial(TiXmlElement *_elem,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CreateJoint(TiXmlElement *_root,
+void CreateJoint(tinyxml2::XMLElement *_root,
                  urdf::LinkConstSharedPtr _link,
                  ignition::math::Pose3d &/*_currentTransform*/)
 {
@@ -2964,7 +2964,7 @@ void CreateJoint(TiXmlElement *_root,
 
   if (!jtype.empty())
   {
-    TiXmlElement *joint = new TiXmlElement("joint");
+    tinyxml2::XMLElement *joint = new tinyxml2::XMLElement("joint");
     if (jtype == "fixed" && fixedJointConvertedToRevoluteJoint)
     {
       joint->SetAttribute("type", "revolute");
@@ -2988,9 +2988,9 @@ void CreateJoint(TiXmlElement *_root,
     AddKeyValue(joint, "parent", _link->getParent()->name);
     AddKeyValue(joint, "child", _link->name);
 
-    TiXmlElement *jointAxis = new TiXmlElement("axis");
-    TiXmlElement *jointAxisLimit = new TiXmlElement("limit");
-    TiXmlElement *jointAxisDynamics = new TiXmlElement("dynamics");
+    tinyxml2::XMLElement *jointAxis = new tinyxml2::XMLElement("axis");
+    tinyxml2::XMLElement *jointAxisLimit = new tinyxml2::XMLElement("limit");
+    tinyxml2::XMLElement *jointAxisDynamics = new tinyxml2::XMLElement("dynamics");
     if (jtype == "fixed" && fixedJointConvertedToRevoluteJoint)
     {
       AddKeyValue(jointAxisLimit, "lower", "0");
@@ -3080,12 +3080,12 @@ void CreateJoint(TiXmlElement *_root,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CreateCollision(TiXmlElement* _elem, urdf::LinkConstSharedPtr _link,
+void CreateCollision(tinyxml2::XMLElement* _elem, urdf::LinkConstSharedPtr _link,
                      urdf::CollisionSharedPtr _collision,
                      const std::string &_oldLinkName)
 {
   // begin create geometry node, skip if no collision specified
-  TiXmlElement *sdfCollision = new TiXmlElement("collision");
+  tinyxml2::XMLElement *sdfCollision = new tinyxml2::XMLElement("collision");
 
   // std::cerr << "CreateCollision link [" << _link->name
   //           << "] old [" << _oldLinkName
@@ -3133,11 +3133,11 @@ void CreateCollision(TiXmlElement* _elem, urdf::LinkConstSharedPtr _link,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CreateVisual(TiXmlElement *_elem, urdf::LinkConstSharedPtr _link,
+void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
     urdf::VisualSharedPtr _visual, const std::string &_oldLinkName)
 {
   // begin create sdf visual node
-  TiXmlElement *sdfVisual = new TiXmlElement("visual");
+  tinyxml2::XMLElement *sdfVisual = new tinyxml2::XMLElement("visual");
 
   // set its name
   if (_oldLinkName.compare(0, _link->name.size(), _link->name) == 0 ||
@@ -3177,7 +3177,7 @@ void CreateVisual(TiXmlElement *_elem, urdf::LinkConstSharedPtr _link,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
+tinyxml2::XMLDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
                                         bool _enforceLimits)
 {
   g_enforceLimits = _enforceLimits;
@@ -3186,7 +3186,7 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   urdf::ModelInterfaceSharedPtr robotModel = urdf::parseURDF(_urdfStr);
 
   // an xml object to hold the xml result
-  TiXmlDocument sdfXmlOut;
+  tinyxml2::XMLDocument sdfXmlOut;
 
   if (!robotModel)
   {
@@ -3199,7 +3199,7 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   ignition::math::Pose3d transform;
 
   // parse sdf extension
-  TiXmlDocument urdfXml;
+  tinyxml2::XMLDocument urdfXml;
   urdfXml.Parse(_urdfStr.c_str());
   g_extensions.clear();
   g_fixedJointsTransformedInFixedJoints.clear();
@@ -3212,9 +3212,9 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
   urdf::LinkConstSharedPtr rootLink = robotModel->getRoot();
 
   // create root element and define needed namespaces
-  TiXmlElement *robot = new TiXmlElement("model");
+  tinyxml2::XMLElement *robot = new tinyxml2::XMLElement("model");
 
-  TiXmlElement *sdf;
+  tinyxml2::XMLElement *sdf;
 
   try
   {
@@ -3255,7 +3255,7 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
     InsertRobotOrigin(robot);
 
     // Create new sdf
-    sdf = new TiXmlElement("sdf");
+    sdf = new tinyxml2::XMLElement("sdf");
 
     try
     {
@@ -3283,7 +3283,7 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-TiXmlDocument URDF2SDF::InitModelDoc(TiXmlDocument* _xmlDoc)
+tinyxml2::XMLDocument URDF2SDF::InitModelDoc(tinyxml2::XMLDocument* _xmlDoc)
 {
   std::ostringstream stream;
   stream << *_xmlDoc;
@@ -3292,9 +3292,9 @@ TiXmlDocument URDF2SDF::InitModelDoc(TiXmlDocument* _xmlDoc)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-TiXmlDocument URDF2SDF::InitModelFile(const std::string &_filename)
+tinyxml2::XMLDocument URDF2SDF::InitModelFile(const std::string &_filename)
 {
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   if (xmlDoc.LoadFile(_filename))
   {
     return this->InitModelDoc(&xmlDoc);
@@ -3322,7 +3322,7 @@ bool FixedJointShouldBeReduced(urdf::JointSharedPtr _jnt)
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionSensorTransformReduction(
-    std::vector<TiXmlElementPtr>::iterator _blobIt,
+    std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
     ignition::math::Pose3d _reductionTransform)
 {
   // overwrite <xyz> and <rpy> if they exist
@@ -3332,7 +3332,7 @@ void ReduceSDFExtensionSensorTransformReduction(
     // find first instance of xyz and rpy, replace with reduction transform
 
     // debug print
-    // for (TiXmlNode* elIt = (*_blobIt)->FirstChild();
+    // for (tinyxml2::XMLNode* elIt = (*_blobIt)->FirstChild();
     //      elIt; elIt = elIt->NextSibling())
     // {
     //   std::ostringstream streamIn;
@@ -3341,7 +3341,7 @@ void ReduceSDFExtensionSensorTransformReduction(
     // }
 
     {
-      TiXmlNode* oldPoseKey = (*_blobIt)->FirstChild("pose");
+      tinyxml2::XMLNode* oldPoseKey = (*_blobIt)->FirstChild("pose");
       /// @todo: FIXME:  we should read xyz, rpy and aggregate it to
       /// reductionTransform instead of just throwing the info away.
       if (oldPoseKey)
@@ -3367,9 +3367,9 @@ void ReduceSDFExtensionSensorTransformReduction(
     poseStream << reductionXyz.x << " " << reductionXyz.y
                << " " << reductionXyz.z << " " << reductionRpy.x
                << " " << reductionRpy.y << " " << reductionRpy.z;
-    TiXmlText* poseTxt = new TiXmlText(poseStream.str());
+    tinyxml2::XMLText* poseTxt = new tinyxml2::XMLText(poseStream.str());
 
-    TiXmlElement* poseKey = new TiXmlElement("pose");
+    tinyxml2::XMLElement* poseKey = new tinyxml2::XMLElement("pose");
     poseKey->LinkEndChild(poseTxt);
 
     (*_blobIt)->LinkEndChild(poseKey);
@@ -3378,7 +3378,7 @@ void ReduceSDFExtensionSensorTransformReduction(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionProjectorTransformReduction(
-    std::vector<TiXmlElementPtr>::iterator _blobIt,
+    std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
     ignition::math::Pose3d _reductionTransform)
 {
   // overwrite <pose> (xyz/rpy) if it exists
@@ -3387,7 +3387,7 @@ void ReduceSDFExtensionProjectorTransformReduction(
     // parse it and add/replace the reduction transform
     // find first instance of xyz and rpy, replace with reduction transform
     //
-    // for (TiXmlNode* elIt = (*_blobIt)->FirstChild();
+    // for (tinyxml2::XMLNode* elIt = (*_blobIt)->FirstChild();
     // elIt; elIt = elIt->NextSibling())
     // {
     //   std::ostringstream streamIn;
@@ -3396,7 +3396,7 @@ void ReduceSDFExtensionProjectorTransformReduction(
     // }
 
     // should read <pose>...</pose> and agregate reductionTransform
-    TiXmlNode* poseKey = (*_blobIt)->FirstChild("pose");
+    tinyxml2::XMLNode* poseKey = (*_blobIt)->FirstChild("pose");
     // read pose and save it
 
     // remove the tag for now
@@ -3422,9 +3422,9 @@ void ReduceSDFExtensionProjectorTransformReduction(
     poseStream << reductionXyz.x << " " << reductionXyz.y
                << " " << reductionXyz.z << " " << reductionRpy.x
                << " " << reductionRpy.y << " " << reductionRpy.z;
-    TiXmlText* poseTxt = new TiXmlText(poseStream.str());
+    tinyxml2::XMLText* poseTxt = new tinyxml2::XMLText(poseStream.str());
 
-    poseKey = new TiXmlElement("pose");
+    poseKey = new tinyxml2::XMLElement("pose");
     poseKey->LinkEndChild(poseTxt);
 
     (*_blobIt)->LinkEndChild(poseKey);
@@ -3433,7 +3433,7 @@ void ReduceSDFExtensionProjectorTransformReduction(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionContactSensorFrameReplace(
-    std::vector<TiXmlElementPtr>::iterator _blobIt,
+    std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
     urdf::LinkSharedPtr _link)
 {
   std::string linkName = _link->name;
@@ -3442,21 +3442,21 @@ void ReduceSDFExtensionContactSensorFrameReplace(
   {
     // parse it and add/replace the reduction transform
     // find first instance of xyz and rpy, replace with reduction transform
-    TiXmlNode* contact = (*_blobIt)->FirstChild("contact");
+    tinyxml2::XMLNode* contact = (*_blobIt)->FirstChild("contact");
     if (contact)
     {
-      TiXmlNode* collision = contact->FirstChild("collision");
+      tinyxml2::XMLNode* collision = contact->FirstChild("collision");
       if (collision)
       {
         if (GetKeyValueAsString(collision->ToElement()) ==
             linkName + g_collisionExt)
         {
           contact->RemoveChild(collision);
-          TiXmlElement* collisionNameKey = new TiXmlElement("collision");
+          tinyxml2::XMLElement* collisionNameKey = new tinyxml2::XMLElement("collision");
           std::ostringstream collisionNameStream;
           collisionNameStream << parentLinkName << g_collisionExt
                               << "_" << linkName;
-          TiXmlText* collisionNameTxt = new TiXmlText(
+          tinyxml2::XMLText* collisionNameTxt = new tinyxml2::XMLText(
               collisionNameStream.str());
           collisionNameKey->LinkEndChild(collisionNameTxt);
           contact->LinkEndChild(collisionNameKey);
@@ -3471,7 +3471,7 @@ void ReduceSDFExtensionContactSensorFrameReplace(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionPluginFrameReplace(
-    std::vector<TiXmlElementPtr>::iterator _blobIt,
+    std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
     urdf::LinkSharedPtr _link,
     const std::string &_pluginName, const std::string &_elementName,
     ignition::math::Pose3d _reductionTransform)
@@ -3482,22 +3482,22 @@ void ReduceSDFExtensionPluginFrameReplace(
   {
     // replace element containing _link names to parent link names
     // find first instance of xyz and rpy, replace with reduction transform
-    TiXmlNode* elementNode = (*_blobIt)->FirstChild(_elementName);
+    tinyxml2::XMLNode* elementNode = (*_blobIt)->FirstChild(_elementName);
     if (elementNode)
     {
       if (GetKeyValueAsString(elementNode->ToElement()) == linkName)
       {
         (*_blobIt)->RemoveChild(elementNode);
-        TiXmlElement* bodyNameKey = new TiXmlElement(_elementName);
+        tinyxml2::XMLElement* bodyNameKey = new tinyxml2::XMLElement(_elementName);
         std::ostringstream bodyNameStream;
         bodyNameStream << parentLinkName;
-        TiXmlText* bodyNameTxt = new TiXmlText(bodyNameStream.str());
+        tinyxml2::XMLText* bodyNameTxt = new tinyxml2::XMLText(bodyNameStream.str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
         (*_blobIt)->LinkEndChild(bodyNameKey);
         /// @todo update transforms for this sdf plugin too
 
         // look for offset transforms, add reduction transform
-        TiXmlNode* xyzKey = (*_blobIt)->FirstChild("xyzOffset");
+        tinyxml2::XMLNode* xyzKey = (*_blobIt)->FirstChild("xyzOffset");
         if (xyzKey)
         {
           urdf::Vector3 v1 = ParseVector3(xyzKey);
@@ -3506,7 +3506,7 @@ void ReduceSDFExtensionPluginFrameReplace(
           // remove xyzOffset and rpyOffset
           (*_blobIt)->RemoveChild(xyzKey);
         }
-        TiXmlNode* rpyKey = (*_blobIt)->FirstChild("rpyOffset");
+        tinyxml2::XMLNode* rpyKey = (*_blobIt)->FirstChild("rpyOffset");
         if (rpyKey)
         {
           urdf::Vector3 rpy = ParseVector3(rpyKey, M_PI/180.0);
@@ -3521,8 +3521,8 @@ void ReduceSDFExtensionPluginFrameReplace(
             _link->parent_joint->parent_to_joint_origin_transform);
 
         // create new offset xml blocks
-        xyzKey = new TiXmlElement("xyzOffset");
-        rpyKey = new TiXmlElement("rpyOffset");
+        xyzKey = new tinyxml2::XMLElement("xyzOffset");
+        rpyKey = new tinyxml2::XMLElement("rpyOffset");
 
         // create new offset xml blocks
         urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
@@ -3541,8 +3541,8 @@ void ReduceSDFExtensionPluginFrameReplace(
         rpyStream << reductionRpy.x << " " << reductionRpy.y << " "
                   << reductionRpy.z;
 
-        TiXmlText* xyzTxt = new TiXmlText(xyzStream.str());
-        TiXmlText* rpyTxt = new TiXmlText(rpyStream.str());
+        tinyxml2::XMLText* xyzTxt = new tinyxml2::XMLText(xyzStream.str());
+        tinyxml2::XMLText* rpyTxt = new tinyxml2::XMLText(rpyStream.str());
 
         xyzKey->LinkEndChild(xyzTxt);
         rpyKey->LinkEndChild(rpyTxt);
@@ -3556,7 +3556,7 @@ void ReduceSDFExtensionPluginFrameReplace(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionProjectorFrameReplace(
-    std::vector<TiXmlElementPtr>::iterator _blobIt,
+    std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
     urdf::LinkSharedPtr _link)
 {
   std::string linkName = _link->name;
@@ -3566,7 +3566,7 @@ void ReduceSDFExtensionProjectorFrameReplace(
   // projector plugins
   // update from <projector>MyLinkName/MyProjectorName</projector>
   // to <projector>NewLinkName/MyProjectorName</projector>
-  TiXmlNode* projectorElem = (*_blobIt)->FirstChild("projector");
+  tinyxml2::XMLNode* projectorElem = (*_blobIt)->FirstChild("projector");
   {
     if (projectorElem)
     {
@@ -3590,10 +3590,10 @@ void ReduceSDFExtensionProjectorFrameReplace(
             projectorName.substr(pos+1, projectorName.size());
 
           (*_blobIt)->RemoveChild(projectorElem);
-          TiXmlElement *bodyNameKey = new TiXmlElement("projector");
+          tinyxml2::XMLElement *bodyNameKey = new tinyxml2::XMLElement("projector");
           std::ostringstream bodyNameStream;
           bodyNameStream << projectorName;
-          TiXmlText *bodyNameTxt = new TiXmlText(bodyNameStream.str());
+          tinyxml2::XMLText *bodyNameTxt = new tinyxml2::XMLText(bodyNameStream.str());
           bodyNameKey->LinkEndChild(bodyNameTxt);
           (*_blobIt)->LinkEndChild(bodyNameKey);
         }
@@ -3604,7 +3604,7 @@ void ReduceSDFExtensionProjectorFrameReplace(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionGripperFrameReplace(
-    std::vector<TiXmlElementPtr>::iterator _blobIt,
+    std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
     urdf::LinkSharedPtr _link)
 {
   std::string linkName = _link->name;
@@ -3612,30 +3612,30 @@ void ReduceSDFExtensionGripperFrameReplace(
 
   if ((*_blobIt)->ValueStr() == "gripper")
   {
-    TiXmlNode* gripperLink = (*_blobIt)->FirstChild("gripper_link");
+    tinyxml2::XMLNode* gripperLink = (*_blobIt)->FirstChild("gripper_link");
     if (gripperLink)
     {
       if (GetKeyValueAsString(gripperLink->ToElement()) == linkName)
       {
         (*_blobIt)->RemoveChild(gripperLink);
-        TiXmlElement* bodyNameKey = new TiXmlElement("gripper_link");
+        tinyxml2::XMLElement* bodyNameKey = new tinyxml2::XMLElement("gripper_link");
         std::ostringstream bodyNameStream;
         bodyNameStream << parentLinkName;
-        TiXmlText* bodyNameTxt = new TiXmlText(bodyNameStream.str());
+        tinyxml2::XMLText* bodyNameTxt = new tinyxml2::XMLText(bodyNameStream.str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
         (*_blobIt)->LinkEndChild(bodyNameKey);
       }
     }
-    TiXmlNode* palmLink = (*_blobIt)->FirstChild("palm_link");
+    tinyxml2::XMLNode* palmLink = (*_blobIt)->FirstChild("palm_link");
     if (palmLink)
     {
       if (GetKeyValueAsString(palmLink->ToElement()) == linkName)
       {
         (*_blobIt)->RemoveChild(palmLink);
-        TiXmlElement* bodyNameKey = new TiXmlElement("palm_link");
+        tinyxml2::XMLElement* bodyNameKey = new tinyxml2::XMLElement("palm_link");
         std::ostringstream bodyNameStream;
         bodyNameStream << parentLinkName;
-        TiXmlText* bodyNameTxt = new TiXmlText(bodyNameStream.str());
+        tinyxml2::XMLText* bodyNameTxt = new tinyxml2::XMLText(bodyNameStream.str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
         (*_blobIt)->LinkEndChild(bodyNameKey);
       }
@@ -3645,7 +3645,7 @@ void ReduceSDFExtensionGripperFrameReplace(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionJointFrameReplace(
-    std::vector<TiXmlElementPtr>::iterator _blobIt,
+    std::vector<tinyxml2::XMLElementPtr>::iterator _blobIt,
     urdf::LinkSharedPtr _link)
 {
   std::string linkName = _link->name;
@@ -3655,30 +3655,30 @@ void ReduceSDFExtensionJointFrameReplace(
   {
     // parse it and add/replace the reduction transform
     // find first instance of xyz and rpy, replace with reduction transform
-    TiXmlNode* parent = (*_blobIt)->FirstChild("parent");
+    tinyxml2::XMLNode* parent = (*_blobIt)->FirstChild("parent");
     if (parent)
     {
       if (GetKeyValueAsString(parent->ToElement()) == linkName)
       {
         (*_blobIt)->RemoveChild(parent);
-        TiXmlElement* parentNameKey = new TiXmlElement("parent");
+        tinyxml2::XMLElement* parentNameKey = new tinyxml2::XMLElement("parent");
         std::ostringstream parentNameStream;
         parentNameStream << parentLinkName;
-        TiXmlText* parentNameTxt = new TiXmlText(parentNameStream.str());
+        tinyxml2::XMLText* parentNameTxt = new tinyxml2::XMLText(parentNameStream.str());
         parentNameKey->LinkEndChild(parentNameTxt);
         (*_blobIt)->LinkEndChild(parentNameKey);
       }
     }
-    TiXmlNode* child = (*_blobIt)->FirstChild("child");
+    tinyxml2::XMLNode* child = (*_blobIt)->FirstChild("child");
     if (child)
     {
       if (GetKeyValueAsString(child->ToElement()) == linkName)
       {
         (*_blobIt)->RemoveChild(child);
-        TiXmlElement* childNameKey = new TiXmlElement("child");
+        tinyxml2::XMLElement* childNameKey = new tinyxml2::XMLElement("child");
         std::ostringstream childNameStream;
         childNameStream << parentLinkName;
-        TiXmlText* childNameTxt = new TiXmlText(childNameStream.str());
+        tinyxml2::XMLText* childNameTxt = new tinyxml2::XMLText(childNameStream.str());
         childNameKey->LinkEndChild(childNameTxt);
         (*_blobIt)->LinkEndChild(childNameKey);
       }

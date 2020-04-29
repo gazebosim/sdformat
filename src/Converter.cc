@@ -42,12 +42,12 @@ bool EndsWith(const std::string& _a, const std::string& _b)
 }
 
 /////////////////////////////////////////////////
-bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
+bool Converter::Convert(tinyxml2::XMLDocument *_doc, const std::string &_toVersion,
                         bool _quiet)
 {
   SDF_ASSERT(_doc != nullptr, "SDF XML doc is NULL");
 
-  TiXmlElement *elem = _doc->FirstChildElement("sdf");
+  tinyxml2::XMLElement *elem = _doc->FirstChildElement("sdf");
 
   // Check that the <sdf> element exists
   if (!elem)
@@ -107,7 +107,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
     }
 
     // Parse and apply the conversion XML.
-    TiXmlDocument xmlDoc;
+    tinyxml2::XMLDocument xmlDoc;
     xmlDoc.Parse(convertXml);
     if (xmlDoc.Error())
     {
@@ -130,7 +130,7 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 }
 
 /////////////////////////////////////////////////
-void Converter::Convert(TiXmlDocument *_doc, TiXmlDocument *_convertDoc)
+void Converter::Convert(tinyxml2::XMLDocument *_doc, tinyxml2::XMLDocument *_convertDoc)
 {
   SDF_ASSERT(_doc != NULL, "SDF XML doc is NULL");
   SDF_ASSERT(_convertDoc != NULL, "Convert XML doc is NULL");
@@ -139,7 +139,7 @@ void Converter::Convert(TiXmlDocument *_doc, TiXmlDocument *_convertDoc)
 }
 
 /////////////////////////////////////////////////
-void Converter::ConvertDescendantsImpl(TiXmlElement *_e, TiXmlElement *_c)
+void Converter::ConvertDescendantsImpl(tinyxml2::XMLElement *_e, tinyxml2::XMLElement *_c)
 {
   if (!_c->Attribute("descendant_name"))
   {
@@ -157,7 +157,7 @@ void Converter::ConvertDescendantsImpl(TiXmlElement *_e, TiXmlElement *_c)
   }
 
   std::string name = _c->Attribute("descendant_name");
-  TiXmlElement *e = _e->FirstChildElement();
+  tinyxml2::XMLElement *e = _e->FirstChildElement();
   while (e)
   {
     if (name == e->ValueStr())
@@ -170,19 +170,19 @@ void Converter::ConvertDescendantsImpl(TiXmlElement *_e, TiXmlElement *_c)
 }
 
 /////////////////////////////////////////////////
-void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
+void Converter::ConvertImpl(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_convert)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_convert != NULL, "Convert element is NULL");
 
   CheckDeprecation(_elem, _convert);
 
-  for (TiXmlElement *convertElem = _convert->FirstChildElement("convert");
+  for (tinyxml2::XMLElement *convertElem = _convert->FirstChildElement("convert");
        convertElem; convertElem = convertElem->NextSiblingElement("convert"))
   {
     if (convertElem->Attribute("name"))
     {
-      TiXmlElement *elem = _elem->FirstChildElement(
+      tinyxml2::XMLElement *elem = _elem->FirstChildElement(
           convertElem->Attribute("name"));
       while (elem)
       {
@@ -196,7 +196,7 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
     }
   }
 
-  for (TiXmlElement *childElem = _convert->FirstChildElement();
+  for (tinyxml2::XMLElement *childElem = _convert->FirstChildElement();
        childElem; childElem = childElem->NextSiblingElement())
   {
     if (childElem->ValueStr() == "rename")
@@ -231,13 +231,13 @@ void Converter::ConvertImpl(TiXmlElement *_elem, TiXmlElement *_convert)
 }
 
 /////////////////////////////////////////////////
-void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
+void Converter::Rename(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_renameElem)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_renameElem != NULL, "Rename element is NULL");
 
-  TiXmlElement *fromConvertElem = _renameElem->FirstChildElement("from");
-  TiXmlElement *toConvertElem = _renameElem->FirstChildElement("to");
+  tinyxml2::XMLElement *fromConvertElem = _renameElem->FirstChildElement("from");
+  tinyxml2::XMLElement *toConvertElem = _renameElem->FirstChildElement("to");
 
   const char *fromElemName = fromConvertElem->Attribute("element");
   const char *fromAttrName = fromConvertElem->Attribute("attribute");
@@ -257,14 +257,14 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
     return;
   }
 
-  TiXmlElement *replaceTo = new TiXmlElement(toElemName);
+  tinyxml2::XMLElement *replaceTo = new tinyxml2::XMLElement(toElemName);
   if (toAttrName)
   {
     replaceTo->SetAttribute(toAttrName, value);
   }
   else
   {
-    TiXmlText *text = new TiXmlText(value);
+    tinyxml2::XMLText *text = new tinyxml2::XMLText(value);
     // The tinyxml function LinkEndChild takes the pointer and takes ownership
     // of the memory, so it is responsible for freeing it later.
     replaceTo->LinkEndChild(text);
@@ -272,7 +272,7 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
 
   if (fromElemName)
   {
-    TiXmlElement *replaceFrom = _elem->FirstChildElement(fromElemName);
+    tinyxml2::XMLElement *replaceFrom = _elem->FirstChildElement(fromElemName);
     if (_elem->ReplaceChild(replaceFrom, *replaceTo) == nullptr)
     {
       sdferr << "Failed to rename element\n";
@@ -294,7 +294,7 @@ void Converter::Rename(TiXmlElement *_elem, TiXmlElement *_renameElem)
 }
 
 /////////////////////////////////////////////////
-void Converter::Add(TiXmlElement *_elem, TiXmlElement *_addElem)
+void Converter::Add(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_addElem)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_addElem != NULL, "Add element is NULL");
@@ -324,10 +324,10 @@ void Converter::Add(TiXmlElement *_elem, TiXmlElement *_addElem)
   }
   else
   {
-    TiXmlElement *addElem = new TiXmlElement(elementName);
+    tinyxml2::XMLElement *addElem = new tinyxml2::XMLElement(elementName);
     if (value)
     {
-      TiXmlText *addText = new TiXmlText(value);
+      tinyxml2::XMLText *addText = new tinyxml2::XMLText(value);
       addElem->LinkEndChild(addText);
     }
     _elem->LinkEndChild(addElem);
@@ -335,7 +335,7 @@ void Converter::Add(TiXmlElement *_elem, TiXmlElement *_addElem)
 }
 
 /////////////////////////////////////////////////
-void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
+void Converter::Remove(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_removeElem)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_removeElem != NULL, "Move element is NULL");
@@ -356,7 +356,7 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
   }
   else
   {
-    TiXmlElement *childElem = _elem->FirstChildElement(elementName);
+    tinyxml2::XMLElement *childElem = _elem->FirstChildElement(elementName);
     while (childElem)
     {
       _elem->RemoveChild(childElem);
@@ -366,13 +366,13 @@ void Converter::Remove(TiXmlElement *_elem, TiXmlElement *_removeElem)
 }
 
 /////////////////////////////////////////////////
-void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
+void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
 {
   SDF_ASSERT(_elem != nullptr, "SDF element is nullptr");
   SDF_ASSERT(_mapElem != nullptr, "Map element is nullptr");
 
-  TiXmlElement *fromConvertElem = _mapElem->FirstChildElement("from");
-  TiXmlElement *toConvertElem = _mapElem->FirstChildElement("to");
+  tinyxml2::XMLElement *fromConvertElem = _mapElem->FirstChildElement("from");
+  tinyxml2::XMLElement *toConvertElem = _mapElem->FirstChildElement("to");
 
   if (!fromConvertElem)
   {
@@ -401,8 +401,8 @@ void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
 
   // create map of input and output values
   std::map<std::string, std::string> valueMap;
-  TiXmlElement *fromValueElem = fromConvertElem->FirstChildElement("value");
-  TiXmlElement *toValueElem = toConvertElem->FirstChildElement("value");
+  tinyxml2::XMLElement *fromValueElem = fromConvertElem->FirstChildElement("value");
+  tinyxml2::XMLElement *toValueElem = toConvertElem->FirstChildElement("value");
   if (!fromValueElem)
   {
     sdferr << "Map: <from> element requires at least one <value> element.\n";
@@ -455,7 +455,7 @@ void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
   // empty string.  Thus we don't check if the fromTokens or toTokens are empty.
 
   // get value of the 'from' element/attribute
-  TiXmlElement *fromElem = _elem;
+  tinyxml2::XMLElement *fromElem = _elem;
   for (unsigned int i = 0; i < fromTokens.size()-1; ++i)
   {
     fromElem = fromElem->FirstChildElement(fromTokens[i]);
@@ -496,8 +496,8 @@ void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
 
   // check if destination elements before leaf exist and create if necessary
   unsigned int newDirIndex = 0;
-  TiXmlElement *toElem = _elem;
-  TiXmlElement *childElem = NULL;
+  tinyxml2::XMLElement *toElem = _elem;
+  tinyxml2::XMLElement *childElem = NULL;
   for (unsigned int i = 0; i < toTokens.size()-1; ++i)
   {
     childElem = toElem->FirstChildElement(toTokens[i]);
@@ -532,7 +532,7 @@ void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
         return;
       }
 
-      TiXmlElement *newElem = new TiXmlElement(toTokens[newDirIndex]);
+      tinyxml2::XMLElement *newElem = new tinyxml2::XMLElement(toTokens[newDirIndex]);
       toElem->LinkEndChild(newElem);
       toElem = newElem;
       newDirIndex++;
@@ -545,20 +545,20 @@ void Converter::Map(TiXmlElement *_elem, TiXmlElement *_mapElem)
   }
   else
   {
-    TiXmlText *text = new TiXmlText(toValue);
+    tinyxml2::XMLText *text = new tinyxml2::XMLText(toValue);
     toElem->LinkEndChild(text);
   }
 }
 
 /////////////////////////////////////////////////
-void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
+void Converter::Move(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_moveElem,
                      const bool _copy)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_moveElem != NULL, "Move element is NULL");
 
-  TiXmlElement *fromConvertElem = _moveElem->FirstChildElement("from");
-  TiXmlElement *toConvertElem = _moveElem->FirstChildElement("to");
+  tinyxml2::XMLElement *fromConvertElem = _moveElem->FirstChildElement("from");
+  tinyxml2::XMLElement *toConvertElem = _moveElem->FirstChildElement("to");
 
   const char *fromElemStr = fromConvertElem->Attribute("element");
   const char *fromAttrStr = fromConvertElem->Attribute("attribute");
@@ -593,7 +593,7 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   // empty string.  Thus we don't check if the fromTokens or toTokens are empty.
 
   // get value of the 'from' element/attribute
-  TiXmlElement *fromElem = _elem;
+  tinyxml2::XMLElement *fromElem = _elem;
   for (unsigned int i = 0; i < fromTokens.size()-1; ++i)
   {
     fromElem = fromElem->FirstChildElement(fromTokens[i]);
@@ -611,8 +611,8 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   unsigned int newDirIndex = 0;
   // get the new element/attribute name
   const char *toName = toTokens.back().c_str();
-  TiXmlElement *toElem = _elem;
-  TiXmlElement *childElem = NULL;
+  tinyxml2::XMLElement *toElem = _elem;
+  tinyxml2::XMLElement *childElem = NULL;
   for (unsigned int i = 0; i < toTokens.size()-1; ++i)
   {
     childElem = toElem->FirstChildElement(toTokens[i]);
@@ -631,7 +631,7 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
     int offset = toElemStr != NULL && toAttrStr != NULL ? 0 : 1;
     while (newDirIndex < (toTokens.size()-offset))
     {
-      TiXmlElement *newElem = new TiXmlElement(toTokens[newDirIndex]);
+      tinyxml2::XMLElement *newElem = new tinyxml2::XMLElement(toTokens[newDirIndex]);
       toElem->LinkEndChild(newElem);
       toElem = newElem;
       newDirIndex++;
@@ -642,7 +642,7 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
   // be specified in the sdf.
   if (fromElemStr)
   {
-    TiXmlElement *moveFrom = fromElem->FirstChildElement(fromName);
+    tinyxml2::XMLElement *moveFrom = fromElem->FirstChildElement(fromName);
 
     // No matching element, so return.
     if (!moveFrom)
@@ -652,7 +652,7 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
 
     if (toElemStr && !toAttrStr)
     {
-      TiXmlElement *moveTo = static_cast<TiXmlElement*>(moveFrom->Clone());
+      tinyxml2::XMLElement *moveTo = static_cast<tinyxml2::XMLElement*>(moveFrom->Clone());
       moveTo->SetValue(toName);
       toElem->LinkEndChild(moveTo);
     }
@@ -686,8 +686,8 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
 
     if (toElemStr)
     {
-      TiXmlElement *moveTo = new TiXmlElement(toName);
-      TiXmlText *text = new TiXmlText(valueStr);
+      tinyxml2::XMLElement *moveTo = new tinyxml2::XMLElement(toName);
+      tinyxml2::XMLText *text = new tinyxml2::XMLText(valueStr);
       moveTo->LinkEndChild(text);
       toElem->LinkEndChild(moveTo);
     }
@@ -705,7 +705,7 @@ void Converter::Move(TiXmlElement *_elem, TiXmlElement *_moveElem,
 
 /////////////////////////////////////////////////
 const char *Converter::GetValue(const char *_valueElem, const char *_valueAttr,
-                                TiXmlElement *_elem)
+                                tinyxml2::XMLElement *_elem)
 {
   if (_valueElem)
   {
@@ -733,10 +733,10 @@ const char *Converter::GetValue(const char *_valueElem, const char *_valueAttr,
 }
 
 /////////////////////////////////////////////////
-void Converter::CheckDeprecation(TiXmlElement *_elem, TiXmlElement *_convert)
+void Converter::CheckDeprecation(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_convert)
 {
   // Process deprecated elements
-  for (TiXmlElement *deprecatedElem = _convert->FirstChildElement("deprecated");
+  for (tinyxml2::XMLElement *deprecatedElem = _convert->FirstChildElement("deprecated");
        deprecatedElem;
        deprecatedElem = deprecatedElem->NextSiblingElement("deprecated"))
   {
@@ -744,7 +744,7 @@ void Converter::CheckDeprecation(TiXmlElement *_elem, TiXmlElement *_convert)
     std::vector<std::string> valueSplit = split(value, "/");
 
     bool found = false;
-    TiXmlElement *e = _elem;
+    tinyxml2::XMLElement *e = _elem;
     std::ostringstream stream;
 
     std::string prefix = "";

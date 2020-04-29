@@ -45,9 +45,9 @@
 
 namespace urdf{
 
-bool parsePose(Pose &pose, TiXmlElement* xml);
+bool parsePose(Pose &pose, tinyxml2::XMLElement* xml);
 
-bool parseJointDynamics(JointDynamics &jd, TiXmlElement* config)
+bool parseJointDynamics(JointDynamics &jd, tinyxml2::XMLElement* config)
 {
   jd.clear();
 
@@ -102,7 +102,7 @@ bool parseJointDynamics(JointDynamics &jd, TiXmlElement* config)
   }
 }
 
-bool parseJointLimits(JointLimits &jl, TiXmlElement* config)
+bool parseJointLimits(JointLimits &jl, tinyxml2::XMLElement* config)
 {
   jl.clear();
 
@@ -193,7 +193,7 @@ bool parseJointLimits(JointLimits &jl, TiXmlElement* config)
   return true;
 }
 
-bool parseJointSafety(JointSafety &js, TiXmlElement* config)
+bool parseJointSafety(JointSafety &js, tinyxml2::XMLElement* config)
 {
   js.clear();
 
@@ -287,7 +287,7 @@ bool parseJointSafety(JointSafety &js, TiXmlElement* config)
   return true;
 }
 
-bool parseJointCalibration(JointCalibration &jc, TiXmlElement* config)
+bool parseJointCalibration(JointCalibration &jc, tinyxml2::XMLElement* config)
 {
   jc.clear();
 
@@ -338,7 +338,7 @@ bool parseJointCalibration(JointCalibration &jc, TiXmlElement* config)
   return true;
 }
 
-bool parseJointMimic(JointMimic &jm, TiXmlElement* config)
+bool parseJointMimic(JointMimic &jm, tinyxml2::XMLElement* config)
 {
   jm.clear();
 
@@ -401,7 +401,7 @@ bool parseJointMimic(JointMimic &jm, TiXmlElement* config)
   return true;
 }
 
-bool parseJoint(Joint &joint, TiXmlElement* config)
+bool parseJoint(Joint &joint, tinyxml2::XMLElement* config)
 {
   joint.clear();
 
@@ -414,7 +414,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   joint.name = name;
 
   // Get transform from Parent Link to Joint Frame
-  TiXmlElement *origin_xml = config->FirstChildElement("origin");
+  tinyxml2::XMLElement *origin_xml = config->FirstChildElement("origin");
   if (!origin_xml)
   {
     joint.parent_to_joint_origin_transform.clear();
@@ -429,7 +429,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   }
 
   // Get Parent Link
-  TiXmlElement *parent_xml = config->FirstChildElement("parent");
+  tinyxml2::XMLElement *parent_xml = config->FirstChildElement("parent");
   if (parent_xml)
   {
     const char *pname = parent_xml->Attribute("link");
@@ -443,7 +443,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   }
 
   // Get Child Link
-  TiXmlElement *child_xml = config->FirstChildElement("child");
+  tinyxml2::XMLElement *child_xml = config->FirstChildElement("child");
   if (child_xml)
   {
     const char *pname = child_xml->Attribute("link");
@@ -485,7 +485,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   if (joint.type != Joint::FLOATING && joint.type != Joint::FIXED)
   {
     // axis
-    TiXmlElement *axis_xml = config->FirstChildElement("axis");
+    tinyxml2::XMLElement *axis_xml = config->FirstChildElement("axis");
     if (!axis_xml){
       joint.axis = Vector3(1.0, 0.0, 0.0);
     }
@@ -503,7 +503,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   }
 
   // Get limit
-  TiXmlElement *limit_xml = config->FirstChildElement("limit");
+  tinyxml2::XMLElement *limit_xml = config->FirstChildElement("limit");
   if (limit_xml)
   {
     joint.limits.reset(new JointLimits());
@@ -523,7 +523,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   }
 
   // Get safety
-  TiXmlElement *safety_xml = config->FirstChildElement("safety_controller");
+  tinyxml2::XMLElement *safety_xml = config->FirstChildElement("safety_controller");
   if (safety_xml)
   {
     joint.safety.reset(new JointSafety());
@@ -535,7 +535,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   }
 
   // Get calibration
-  TiXmlElement *calibration_xml = config->FirstChildElement("calibration");
+  tinyxml2::XMLElement *calibration_xml = config->FirstChildElement("calibration");
   if (calibration_xml)
   {
     joint.calibration.reset(new JointCalibration());
@@ -547,7 +547,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   }
 
   // Get Joint Mimic
-  TiXmlElement *mimic_xml = config->FirstChildElement("mimic");
+  tinyxml2::XMLElement *mimic_xml = config->FirstChildElement("mimic");
   if (mimic_xml)
   {
     joint.mimic.reset(new JointMimic());
@@ -559,7 +559,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   }
 
   // Get Dynamics
-  TiXmlElement *prop_xml = config->FirstChildElement("dynamics");
+  tinyxml2::XMLElement *prop_xml = config->FirstChildElement("dynamics");
   if (prop_xml)
   {
     joint.dynamics.reset(new JointDynamics());
@@ -575,20 +575,20 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
 
 
 /* exports */
-bool exportPose(Pose &pose, TiXmlElement* xml);
+bool exportPose(Pose &pose, tinyxml2::XMLElement* xml);
 
-bool exportJointDynamics(JointDynamics &jd, TiXmlElement* xml)
+bool exportJointDynamics(JointDynamics &jd, tinyxml2::XMLElement* xml)
 {
-  TiXmlElement *dynamics_xml = new TiXmlElement("dynamics");
+  tinyxml2::XMLElement *dynamics_xml = new tinyxml2::XMLElement("dynamics");
   dynamics_xml->SetAttribute("damping", urdf_export_helpers::values2str(jd.damping) );
   dynamics_xml->SetAttribute("friction", urdf_export_helpers::values2str(jd.friction) );
   xml->LinkEndChild(dynamics_xml);
   return true;
 }
 
-bool exportJointLimits(JointLimits &jl, TiXmlElement* xml)
+bool exportJointLimits(JointLimits &jl, tinyxml2::XMLElement* xml)
 {
-  TiXmlElement *limit_xml = new TiXmlElement("limit");
+  tinyxml2::XMLElement *limit_xml = new tinyxml2::XMLElement("limit");
   limit_xml->SetAttribute("effort", urdf_export_helpers::values2str(jl.effort) );
   limit_xml->SetAttribute("velocity", urdf_export_helpers::values2str(jl.velocity) );
   limit_xml->SetAttribute("lower", urdf_export_helpers::values2str(jl.lower) );
@@ -597,9 +597,9 @@ bool exportJointLimits(JointLimits &jl, TiXmlElement* xml)
   return true;
 }
 
-bool exportJointSafety(JointSafety &js, TiXmlElement* xml)
+bool exportJointSafety(JointSafety &js, tinyxml2::XMLElement* xml)
 {
-  TiXmlElement *safety_xml = new TiXmlElement("safety_controller");
+  tinyxml2::XMLElement *safety_xml = new tinyxml2::XMLElement("safety_controller");
   safety_xml->SetAttribute("k_position", urdf_export_helpers::values2str(js.k_position) );
   safety_xml->SetAttribute("k_velocity", urdf_export_helpers::values2str(js.k_velocity) );
   safety_xml->SetAttribute("soft_lower_limit", urdf_export_helpers::values2str(js.soft_lower_limit) );
@@ -608,11 +608,11 @@ bool exportJointSafety(JointSafety &js, TiXmlElement* xml)
   return true;
 }
 
-bool exportJointCalibration(JointCalibration &jc, TiXmlElement* xml)
+bool exportJointCalibration(JointCalibration &jc, tinyxml2::XMLElement* xml)
 {
   if (jc.falling || jc.rising)
   {
-    TiXmlElement *calibration_xml = new TiXmlElement("calibration");
+    tinyxml2::XMLElement *calibration_xml = new tinyxml2::XMLElement("calibration");
     if (jc.falling)
       calibration_xml->SetAttribute("falling", urdf_export_helpers::values2str(*jc.falling) );
     if (jc.rising)
@@ -623,11 +623,11 @@ bool exportJointCalibration(JointCalibration &jc, TiXmlElement* xml)
   return true;
 }
 
-bool exportJointMimic(JointMimic &jm, TiXmlElement* xml)
+bool exportJointMimic(JointMimic &jm, tinyxml2::XMLElement* xml)
 {
   if (!jm.joint_name.empty())
   {
-    TiXmlElement *mimic_xml = new TiXmlElement("mimic");
+    tinyxml2::XMLElement *mimic_xml = new tinyxml2::XMLElement("mimic");
     mimic_xml->SetAttribute("offset", urdf_export_helpers::values2str(jm.offset) );
     mimic_xml->SetAttribute("multiplier", urdf_export_helpers::values2str(jm.multiplier) );
     mimic_xml->SetAttribute("joint", jm.joint_name );
@@ -636,9 +636,9 @@ bool exportJointMimic(JointMimic &jm, TiXmlElement* xml)
   return true;
 }
 
-bool exportJoint(Joint &joint, TiXmlElement* xml)
+bool exportJoint(Joint &joint, tinyxml2::XMLElement* xml)
 {
-  TiXmlElement * joint_xml = new TiXmlElement("joint");
+  tinyxml2::XMLElement * joint_xml = new tinyxml2::XMLElement("joint");
   joint_xml->SetAttribute("name", joint.name);
   if (joint.type == urdf::Joint::PLANAR)
     joint_xml->SetAttribute("type", "planar");
@@ -658,17 +658,17 @@ bool exportJoint(Joint &joint, TiXmlElement* xml)
   exportPose(joint.parent_to_joint_origin_transform, joint_xml);
 
   // axis
-  TiXmlElement * axis_xml = new TiXmlElement("axis");
+  tinyxml2::XMLElement * axis_xml = new tinyxml2::XMLElement("axis");
   axis_xml->SetAttribute("xyz", urdf_export_helpers::values2str(joint.axis));
   joint_xml->LinkEndChild(axis_xml);
 
   // parent 
-  TiXmlElement * parent_xml = new TiXmlElement("parent");
+  tinyxml2::XMLElement * parent_xml = new tinyxml2::XMLElement("parent");
   parent_xml->SetAttribute("link", joint.parent_link_name);
   joint_xml->LinkEndChild(parent_xml);
 
   // child
-  TiXmlElement * child_xml = new TiXmlElement("child");
+  tinyxml2::XMLElement * child_xml = new tinyxml2::XMLElement("child");
   child_xml->SetAttribute("link", joint.child_link_name);
   joint_xml->LinkEndChild(child_xml);
 

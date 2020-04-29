@@ -37,7 +37,7 @@ namespace sdf
     /// \param[in] _doc SDF xml doc
     /// \param[in] _toVersion Version number in string format
     /// \param[in] _quiet False to be more verbose
-    public: static bool Convert(TiXmlDocument *_doc,
+    public: static bool Convert(tinyxml2::XMLDocument *_doc,
                                 const std::string &_toVersion,
                                 bool _quiet = false);
 
@@ -47,38 +47,38 @@ namespace sdf
     /// given Convert file.
     /// \param[in] _doc SDF xml doc
     /// \param[in] _convertDoc Convert xml doc
-    public: static void Convert(TiXmlDocument *_doc,
-                                TiXmlDocument *_convertDoc);
+    public: static void Convert(tinyxml2::XMLDocument *_doc,
+                                tinyxml2::XMLDocument *_convertDoc);
     /// \endcond
 
     /// \brief Implementation of Convert functionality.
     /// \param[in] _elem SDF xml element tree to convert.
     /// \param[in] _convert Convert xml element tree.
-    private: static void ConvertImpl(TiXmlElement *_elem,
-                                     TiXmlElement *_convert);
+    private: static void ConvertImpl(tinyxml2::XMLElement *_elem,
+                                     tinyxml2::XMLElement *_convert);
 
     /// \brief Recursive helper function for ConvertImpl that converts
     /// elements named by the descendant_name attribute.
     /// \param[in] _e SDF xml element tree to convert.
     /// \param[in] _c Convert xml element tree.
-    private: static void ConvertDescendantsImpl(TiXmlElement *_e,
-                                                TiXmlElement *_c);
+    private: static void ConvertDescendantsImpl(tinyxml2::XMLElement *_e,
+                                                tinyxml2::XMLElement *_c);
 
     /// \brief Rename an element or attribute.
     /// \param[in] _elem The element to be renamed, or the element which
     /// has the attribute to be renamed.
     /// \param[in] _renameElem A 'convert' element that describes the rename
     /// operation.
-    private: static void Rename(TiXmlElement *_elem,
-                                TiXmlElement *_renameElem);
+    private: static void Rename(tinyxml2::XMLElement *_elem,
+                                tinyxml2::XMLElement *_renameElem);
 
     /// \brief Map values from one element or attribute to another.
     /// \param[in] _elem Ancestor element of the element or attribute to
     /// be mapped.
     /// \param[in] _mapElem A 'convert' element that describes the map
     /// operation.
-    private: static void Map(TiXmlElement *_elem,
-                             TiXmlElement *_mapElem);
+    private: static void Map(tinyxml2::XMLElement *_elem,
+                             tinyxml2::XMLElement *_mapElem);
 
     /// \brief Move an element or attribute within a common ancestor element.
     /// \param[in] _elem Ancestor element of the element or attribute to
@@ -86,28 +86,28 @@ namespace sdf
     /// \param[in] _moveElem A 'convert' element that describes the move
     /// operation.
     /// \param[in] _copy True to copy the element
-    private: static void Move(TiXmlElement *_elem,
-                              TiXmlElement *_moveElem,
+    private: static void Move(tinyxml2::XMLElement *_elem,
+                              tinyxml2::XMLElement *_moveElem,
                               const bool _copy);
 
     /// \brief Add an element or attribute to an element.
     /// \param[in] _elem The element to receive the value.
     /// \param[in] _addElem A 'convert' element that describes the add
     /// operation.
-    private: static void Add(TiXmlElement *_elem,
-                             TiXmlElement *_addElem);
+    private: static void Add(tinyxml2::XMLElement *_elem,
+                             tinyxml2::XMLElement *_addElem);
 
     /// \brief Remove an element.
     /// \param[in] _elem The element that has the _removeElem child.
     /// \param[in] _removeElem The element to remove.
-    private: static void Remove(TiXmlElement *_elem, TiXmlElement *_removeElem);
+    private: static void Remove(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_removeElem);
 
     private: static const char *GetValue(const char *_valueElem,
                                          const char *_valueAttr,
-                                         TiXmlElement *_elem);
+                                         tinyxml2::XMLElement *_elem);
 
-    private: static void CheckDeprecation(TiXmlElement *_elem,
-                                          TiXmlElement *_convert);
+    private: static void CheckDeprecation(tinyxml2::XMLElement *_elem,
+                                          tinyxml2::XMLElement *_convert);
   };
   }
 }

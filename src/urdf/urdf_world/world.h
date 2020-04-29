@@ -100,7 +100,7 @@ public:
 
   std::vector<Entity> models;
 
-  void initXml(TiXmlElement* config);
+  void initXml(tinyxml2::XMLElement* config);
 
   void clear()
   {
