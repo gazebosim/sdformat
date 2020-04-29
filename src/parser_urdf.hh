@@ -48,19 +48,19 @@ namespace sdf
     /// \brief convert urdf xml document string to sdf xml document
     /// \param[in] _xmlDoc a tinyxml document containing the urdf model
     /// \return a tinyxml document containing sdf of the model
-    public: TiXmlDocument InitModelDoc(TiXmlDocument* _xmlDoc);
+    public: tinyxml2::XMLDocument InitModelDoc(tinyxml2::XMLDocument* _xmlDoc);
 
     /// \brief convert urdf file to sdf xml document
     /// \param[in] _urdfStr a string containing filename of the urdf model
     /// \return a tinyxml document containing sdf of the model
-    public: TiXmlDocument InitModelFile(const std::string &_filename);
+    public: tinyxml2::XMLDocument InitModelFile(const std::string &_filename);
 
     /// \brief convert urdf string to sdf xml document, with option to enforce
     /// limits.
     /// \param[in] _urdfStr a string containing model urdf
     /// \param[in] _enforceLimits option to enforce joint limits
     /// \return a tinyxml document containing sdf of the model
-    public: TiXmlDocument InitModelString(const std::string &_urdfStr,
+    public: tinyxml2::XMLDocument InitModelString(const std::string &_urdfStr,
                                           bool _enforceLimits = true);
 
     /// \brief Return true if the filename is a URDF model.
@@ -76,7 +76,7 @@ namespace sdf
 
     /// things that do not belong in urdf but should be mapped into sdf
     /// @todo: do this using sdf definitions, not hard coded stuff
-    private: void ParseSDFExtension(TiXmlDocument &_urdfXml);
+    private: void ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml);
   };
   }
 }

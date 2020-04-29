@@ -44,7 +44,7 @@
 
 namespace urdf{
 
-bool parseTwist(Twist &twist, TiXmlElement* xml)
+bool parseTwist(Twist &twist, tinyxml2::XMLElement* xml)
 {
   twist.clear();
   if (xml)
