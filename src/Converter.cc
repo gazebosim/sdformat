@@ -30,6 +30,7 @@
 
 #include "Converter.hh"
 #include "EmbeddedSdf.hh"
+#include "XmlUtils.hh"
 
 using namespace sdf;
 
@@ -77,7 +78,7 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc, const std::string &_toVersi
            << "    $ gz sdf -c [sdf_file]\n";
   }
 
-  elem->SetAttribute("version", _toVersion);
+  elem->SetAttribute("version", _toVersion.c_str());
 
   // The conversion recipes within the embedded files database are named, e.g.,
   // "1.8/1_7.convert" to upgrade from 1.7 to 1.8.
@@ -112,7 +113,7 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc, const std::string &_toVersi
     if (xmlDoc.Error())
     {
       sdferr << "Error parsing XML from string: "
-             << xmlDoc.ErrorDesc() << '\n';
+             << xmlDoc.ErrorStr() << '\n';
       return false;
     }
     ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
@@ -146,21 +147,20 @@ void Converter::ConvertDescendantsImpl(tinyxml2::XMLElement *_e, tinyxml2::XMLEl
     return;
   }
 
-  if (_e->ValueStr() == "plugin")
+  if (strcmp(_e->Name(), "plugin") == 0)
   {
     return;
   }
 
-  if (_e->ValueStr().find(":") != std::string::npos)
+  if (strchr(_e->Name(), ':') != nullptr)
   {
     return;
   }
 
-  std::string name = _c->Attribute("descendant_name");
   tinyxml2::XMLElement *e = _e->FirstChildElement();
   while (e)
   {
-    if (name == e->ValueStr())
+    if (strcmp(_e->Name(), _c->Attribute("descendant_name")) == 0)
     {
       ConvertImpl(e, _c);
     }
@@ -199,33 +199,35 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_
   for (tinyxml2::XMLElement *childElem = _convert->FirstChildElement();
        childElem; childElem = childElem->NextSiblingElement())
   {
-    if (childElem->ValueStr() == "rename")
+    const auto name = std::string(childElem->Name());
+
+    if (name == "rename")
     {
       Rename(_elem, childElem);
     }
-    else if (childElem->ValueStr() == "copy")
+    else if (name == "copy")
     {
       Move(_elem, childElem, true);
     }
-    else if (childElem->ValueStr() == "map")
+    else if (name == "map")
     {
       Map(_elem, childElem);
     }
-    else if (childElem->ValueStr() == "move")
+    else if (name == "move")
     {
       Move(_elem, childElem, false);
     }
-    else if (childElem->ValueStr() == "add")
+    else if (name == "add")
     {
       Add(_elem, childElem);
     }
-    else if (childElem->ValueStr() == "remove")
+    else if (name == "remove")
     {
       Remove(_elem, childElem);
     }
-    else if (childElem->ValueStr() != "convert")
+    else if (name != "convert")
     {
-      sdferr << "Unknown convert element[" << childElem->ValueStr() << "]\n";
+      sdferr << "Unknown convert element[" << name << "]\n";
     }
   }
 }
@@ -257,38 +259,27 @@ void Converter::Rename(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_renam
     return;
   }
 
-  tinyxml2::XMLElement *replaceTo = new tinyxml2::XMLElement(toElemName);
+  auto *doc = _elem->GetDocument();
+  tinyxml2::XMLElement *replaceTo = doc->NewElement(toElemName);
   if (toAttrName)
   {
     replaceTo->SetAttribute(toAttrName, value);
   }
   else
   {
-    tinyxml2::XMLText *text = new tinyxml2::XMLText(value);
-    // The tinyxml function LinkEndChild takes the pointer and takes ownership
-    // of the memory, so it is responsible for freeing it later.
+    tinyxml2::XMLText *text = doc->NewText(value);
     replaceTo->LinkEndChild(text);
   }
 
   if (fromElemName)
   {
     tinyxml2::XMLElement *replaceFrom = _elem->FirstChildElement(fromElemName);
-    if (_elem->ReplaceChild(replaceFrom, *replaceTo) == nullptr)
-    {
-      sdferr << "Failed to rename element\n";
-      // fall through so we can reclaim memory
-    }
-
-    // In this case, the tinyxml function ReplaceChild does a deep copy of the
-    // node that is passed in, so we want to free it here.
-    delete replaceTo;
+    _elem->InsertAfterChild(replaceFrom, replaceTo);
+    _elem->DeleteChild(replaceFrom);
   }
   else if (fromAttrName)
   {
-    _elem->RemoveAttribute(fromAttrName);
-    // In this case, the tinyxml function LinkEndChild just takes the pointer
-    // and takes ownership of the memory, so it is responsible for freeing it
-    // later.
+    _elem->DeleteAttribute(fromAttrName);
     _elem->LinkEndChild(replaceTo);
   }
 }
@@ -324,10 +315,11 @@ void Converter::Add(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_addElem)
   }
   else
   {
-    tinyxml2::XMLElement *addElem = new tinyxml2::XMLElement(elementName);
+    auto *doc = _elem->GetDocument();
+    tinyxml2::XMLElement *addElem = doc->NewElement(elementName);
     if (value)
     {
-      tinyxml2::XMLText *addText = new tinyxml2::XMLText(value);
+      tinyxml2::XMLText *addText = doc->NewText(value);
       addElem->LinkEndChild(addText);
     }
     _elem->LinkEndChild(addElem);
@@ -352,14 +344,14 @@ void Converter::Remove(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_remov
 
   if (attributeName)
   {
-    _elem->RemoveAttribute(attributeName);
+    _elem->DeleteAttribute(attributeName);
   }
   else
   {
     tinyxml2::XMLElement *childElem = _elem->FirstChildElement(elementName);
     while (childElem)
     {
-      _elem->RemoveChild(childElem);
+      _elem->DeleteChild(childElem);
       childElem = _elem->FirstChildElement(elementName);
     }
   }
@@ -458,7 +450,7 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   tinyxml2::XMLElement *fromElem = _elem;
   for (unsigned int i = 0; i < fromTokens.size()-1; ++i)
   {
-    fromElem = fromElem->FirstChildElement(fromTokens[i]);
+    fromElem = fromElem->FirstChildElement(fromTokens[i].c_str());
     if (!fromElem)
     {
       // Return when the tokens don't match. Don't output an error message
@@ -500,7 +492,7 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   tinyxml2::XMLElement *childElem = NULL;
   for (unsigned int i = 0; i < toTokens.size()-1; ++i)
   {
-    childElem = toElem->FirstChildElement(toTokens[i]);
+    childElem = toElem->FirstChildElement(toTokens[i].c_str());
     if (!childElem)
     {
       newDirIndex = i;
@@ -519,6 +511,8 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   }
   bool toAttribute = toLeaf[0] == '@';
 
+  auto *doc = _elem->GetDocument();
+
   // found elements in 'to' string that are not present, so create new
   // elements if they aren't empty
   if (!childElem)
@@ -532,7 +526,7 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
         return;
       }
 
-      tinyxml2::XMLElement *newElem = new tinyxml2::XMLElement(toTokens[newDirIndex]);
+      tinyxml2::XMLElement *newElem = doc->NewElement(toTokens[newDirIndex].c_str());
       toElem->LinkEndChild(newElem);
       toElem = newElem;
       newDirIndex++;
@@ -545,7 +539,7 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   }
   else
   {
-    tinyxml2::XMLText *text = new tinyxml2::XMLText(toValue);
+    tinyxml2::XMLText *text = doc->NewText(toValue);
     toElem->LinkEndChild(text);
   }
 }
@@ -596,7 +590,7 @@ void Converter::Move(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_moveEle
   tinyxml2::XMLElement *fromElem = _elem;
   for (unsigned int i = 0; i < fromTokens.size()-1; ++i)
   {
-    fromElem = fromElem->FirstChildElement(fromTokens[i]);
+    fromElem = fromElem->FirstChildElement(fromTokens[i].c_str());
     if (!fromElem)
     {
       // Return when the tokens don't match. Don't output an error message
@@ -606,16 +600,16 @@ void Converter::Move(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_moveEle
   }
 
   const char *fromName = fromTokens.back().c_str();
-  const char *value = NULL;
+  const char *value = nullptr;
 
   unsigned int newDirIndex = 0;
   // get the new element/attribute name
   const char *toName = toTokens.back().c_str();
   tinyxml2::XMLElement *toElem = _elem;
-  tinyxml2::XMLElement *childElem = NULL;
+  tinyxml2::XMLElement *childElem = nullptr;
   for (unsigned int i = 0; i < toTokens.size()-1; ++i)
   {
-    childElem = toElem->FirstChildElement(toTokens[i]);
+    childElem = toElem->FirstChildElement(toTokens[i].c_str());
     if (!childElem)
     {
       newDirIndex = i;
@@ -628,10 +622,11 @@ void Converter::Move(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_moveEle
   // elements
   if (!childElem)
   {
-    int offset = toElemStr != NULL && toAttrStr != NULL ? 0 : 1;
+    int offset = toElemStr != nullptr && toAttrStr != nullptr ? 0 : 1;
     while (newDirIndex < (toTokens.size()-offset))
     {
-      tinyxml2::XMLElement *newElem = new tinyxml2::XMLElement(toTokens[newDirIndex]);
+      auto *doc = toElem->GetDocument();
+      tinyxml2::XMLElement *newElem = doc->NewElement(toTokens[newDirIndex].c_str());
       toElem->LinkEndChild(newElem);
       toElem = newElem;
       newDirIndex++;
@@ -652,30 +647,31 @@ void Converter::Move(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_moveEle
 
     if (toElemStr && !toAttrStr)
     {
-      tinyxml2::XMLElement *moveTo = static_cast<tinyxml2::XMLElement*>(moveFrom->Clone());
+      tinyxml2::XMLElement *moveTo = static_cast<tinyxml2::XMLElement*>(
+          DeepClone(moveFrom->GetDocument(), moveFrom));
       moveTo->SetValue(toName);
       toElem->LinkEndChild(moveTo);
     }
     else
     {
-      value = GetValue(fromName, NULL, fromElem);
+      value = GetValue(fromName, nullptr, fromElem);
       if (!value)
       {
         return;
       }
       std::string valueStr = value;
 
-      toElem->SetAttribute(toAttrStr, valueStr);
+      toElem->SetAttribute(toAttrStr, valueStr.c_str());
     }
 
     if (!_copy)
     {
-      fromElem->RemoveChild(moveFrom);
+      fromElem->DeleteChild(moveFrom);
     }
   }
   else if (fromAttrStr)
   {
-    value = GetValue(NULL, fromName, fromElem);
+    value = GetValue(nullptr, fromName, fromElem);
 
     if (!value)
     {
@@ -686,19 +682,20 @@ void Converter::Move(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_moveEle
 
     if (toElemStr)
     {
-      tinyxml2::XMLElement *moveTo = new tinyxml2::XMLElement(toName);
-      tinyxml2::XMLText *text = new tinyxml2::XMLText(valueStr);
+      auto *doc = toElem->GetDocument();
+      tinyxml2::XMLElement *moveTo = doc->NewElement(toName);
+      tinyxml2::XMLText *text = doc->NewText(valueStr.c_str());
       moveTo->LinkEndChild(text);
       toElem->LinkEndChild(moveTo);
     }
     else if (toAttrStr)
     {
-      toElem->SetAttribute(toName, valueStr);
+      toElem->SetAttribute(toName, valueStr.c_str());
     }
 
     if (!_copy && fromAttrStr)
     {
-      fromElem->RemoveAttribute(fromName);
+      fromElem->DeleteAttribute(fromName);
     }
   }
 }
@@ -750,7 +747,7 @@ void Converter::CheckDeprecation(tinyxml2::XMLElement *_elem, tinyxml2::XMLEleme
     std::string prefix = "";
     for (unsigned int i = 0; i < valueSplit.size() && !found; ++i)
     {
-      if (e->FirstChildElement(valueSplit[i]))
+      if (e->FirstChildElement(valueSplit[i].c_str()))
       {
         if (stream.str().size() != 0)
         {
@@ -759,9 +756,9 @@ void Converter::CheckDeprecation(tinyxml2::XMLElement *_elem, tinyxml2::XMLEleme
         }
 
         stream << prefix << "<" << valueSplit[i];
-        e = e->FirstChildElement(valueSplit[i]);
+        e = e->FirstChildElement(valueSplit[i].c_str());
       }
-      else if (e->Attribute(valueSplit[i]))
+      else if (e->Attribute(valueSplit[i].c_str()))
       {
         stream << " " << valueSplit[i] << "='"
                << e->Attribute(valueSplit[i].c_str()) << "'";
