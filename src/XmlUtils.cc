@@ -53,6 +53,26 @@ tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc, const tinyxml2::XMLNod
   return copy;
 }
 
+/////////////////////////////////////////////////
+std::string &TrimStringLeft(std::string &_s)
+{
+  _s.erase(_s.begin(),find_if_not(_s.begin(),_s.end(),[](int c){return isspace(c);}));
+  return _s;
+}
+
+/////////////////////////////////////////////////
+std::string &TrimStringRight(std::string &_s)
+{
+  _s.erase(find_if_not(_s.rbegin(),_s.rend(),[](int c){return isspace(c);}).base(), _s.end());
+  return _s;
+}
+
+/////////////////////////////////////////////////
+std::string TrimString(const std::string &_s)
+{
+  std::string t = _s;
+  return TrimStringLeft(TrimStringRight(t));
+}
 }
 }
 

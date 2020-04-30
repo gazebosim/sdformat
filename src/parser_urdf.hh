@@ -46,22 +46,27 @@ namespace sdf
     public: ~URDF2SDF();
 
     /// \brief convert urdf xml document string to sdf xml document
-    /// \param[in] _xmlDoc a tinyxml document containing the urdf model
-    /// \return a tinyxml document containing sdf of the model
-    public: tinyxml2::XMLDocument InitModelDoc(tinyxml2::XMLDocument* _xmlDoc);
+    /// \param[in] _xmlDoc document containing the urdf model.
+    /// \param[inout] _sdfXmlDoc document to populate with the sdf model.
+    public: void InitModelDoc(const tinyxml2::XMLDocument* _xmlDoc,
+                              tinyxml2::XMLDocument *_sdfXmlDoc);
 
     /// \brief convert urdf file to sdf xml document
-    /// \param[in] _urdfStr a string containing filename of the urdf model
+    /// \param[in] _urdfStr a string containing filename of the urdf model.
+    /// \param[inout] _sdfXmlDoc document to populate with the sdf model.
     /// \return a tinyxml document containing sdf of the model
-    public: tinyxml2::XMLDocument InitModelFile(const std::string &_filename);
+    public: void InitModelFile(const std::string &_filename,
+                               tinyxml2::XMLDocument *_sdfXmlDoc);
 
     /// \brief convert urdf string to sdf xml document, with option to enforce
     /// limits.
     /// \param[in] _urdfStr a string containing model urdf
+    /// \param[inout] _sdfXmlDoc document to populate with the sdf model.
     /// \param[in] _enforceLimits option to enforce joint limits
     /// \return a tinyxml document containing sdf of the model
-    public: tinyxml2::XMLDocument InitModelString(const std::string &_urdfStr,
-                                          bool _enforceLimits = true);
+    public: void InitModelString(const std::string &_urdfStr,
+                                 tinyxml2::XMLDocument *_sdfXmlDoc,
+                                 bool _enforceLimits = true);
 
     /// \brief Return true if the filename is a URDF model.
     /// \param[in] _filename File to check.
