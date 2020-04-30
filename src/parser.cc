@@ -83,16 +83,13 @@ template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
   tinyxml2::XMLDocument xmlDoc;
-  if (xmlDoc.LoadFile(_filename))
+  if (xmlDoc.LoadFile(_filename.c_str()))
   {
-    return initDoc(&xmlDoc, _sdf);
-  }
-  else
-  {
-    sdferr << "Unable to load file[" << _filename << "]\n";
+    sdferr << "Unable to load file[" << _filename << "]: " << xmlDoc.ErrorStr() << "\n";
+    return false;
   }
 
-  return false;
+  return initDoc(&xmlDoc, _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -134,10 +131,9 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
 bool initString(const std::string &_xmlString, SDFPtr _sdf)
 {
   tinyxml2::XMLDocument xmlDoc;
-  xmlDoc.Parse(_xmlString.c_str());
-  if (xmlDoc.Error())
+  if (xmlDoc.Parse(_xmlString.c_str()))
   {
-    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorDesc() << '\n';
+    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
 
@@ -413,10 +409,11 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
     return false;
   }
 
-  if (!xmlDoc.LoadFile(filename))
+  auto error_code = xmlDoc.LoadFile(filename.c_str());
+  if (error_code)
   {
     sdferr << "Error parsing XML in file [" << filename << "]: "
-           << xmlDoc.ErrorDesc() << '\n';
+           << xmlDoc.ErrorStr() << '\n';
     return false;
   }
 
@@ -478,7 +475,7 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
-    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
   if (readDoc(&xmlDoc, _sdf, "data-string", _convert, _errors))
@@ -488,7 +485,9 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   else
   {
     URDF2SDF u2g;
-    tinyxml2::XMLDocument doc = u2g.InitModelString(_xmlString);
+    tinyxml2::XMLDocument doc;
+    u2g.InitModelString(&doc, _xmlString);
+
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {
       sdfdbg << "Parsing from urdf.\n";
@@ -524,7 +523,7 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
-    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
   if (readDoc(&xmlDoc, _sdf, "data-string", true, _errors))
@@ -587,7 +586,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     }
 
     // parse new sdf xml
-    tinyxml2::XMLElement *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName());
+    tinyxml2::XMLElement *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
     if (!readXml(elemXml, _sdf->Root(), _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -650,9 +649,9 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
 
     tinyxml2::XMLElement *elemXml = sdfNode;
     if (sdfNode->Value() != _sdf->GetName() &&
-        sdfNode->FirstChildElement(_sdf->GetName()))
+        sdfNode->FirstChildElement(_sdf->GetName().c_str()))
     {
-      elemXml = sdfNode->FirstChildElement(_sdf->GetName());
+      elemXml = sdfNode->FirstChildElement(_sdf->GetName().c_str());
     }
 
     // parse new sdf xml
@@ -770,11 +769,11 @@ std::string getModelFilePath(const std::string &_modelDirPath)
   }
 
   tinyxml2::XMLDocument configFileDoc;
-  if (!configFileDoc.LoadFile(configFilePath))
+  if (!configFileDoc.LoadFile(configFilePath.c_str()))
   {
     sdferr << "Error parsing XML in file ["
            << configFilePath << "]: "
-           << configFileDoc.ErrorDesc() << '\n';
+           << configFileDoc.ErrorStr() << '\n';
     return std::string();
   }
 
@@ -838,7 +837,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
     _sdf->Copy(refSDF);
   }
 
-  tinyxml2::XMLAttribute *attribute = _xml->FirstAttribute();
+  const tinyxml2::XMLAttribute *attribute = _xml->FirstAttribute();
 
   unsigned int i = 0;
 
@@ -851,7 +850,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
     {
       _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
       _sdf->GetAttribute(attribute->Name())->SetFromString(
-          attribute->ValueStr());
+          attribute->Value());
       attribute = attribute->Next();
       continue;
     }
@@ -862,7 +861,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
       if (p->GetKey() == attribute->Name())
       {
         // Set the value of the SDF attribute
-        if (!p->SetFromString(attribute->ValueStr()))
+        if (!p->SetFromString(attribute->Value()))
         {
           _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
               "Unable to read attribute[" + p->GetKey() + "]"});
@@ -1170,7 +1169,7 @@ void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml, const bool _onlyU
   for (elemXml = _xml->FirstChildElement(); elemXml;
        elemXml = elemXml->NextSiblingElement())
   {
-    std::string elem_name = elemXml->ValueStr();
+    std::string elem_name = elemXml->Name();
 
     if (_sdf->HasElementDescription(elem_name))
     {
@@ -1179,11 +1178,11 @@ void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml, const bool _onlyU
         sdf::ElementPtr element = _sdf->AddElement(elem_name);
 
         // FIXME: copy attributes
-        for (tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
+        for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
              attribute; attribute = attribute->Next())
         {
           element->GetAttribute(attribute->Name())->SetFromString(
-            attribute->ValueStr());
+            attribute->Value());
         }
 
         // copy value
@@ -1205,12 +1204,12 @@ void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml, const bool _onlyU
         element->AddValue("string", elemXml->GetText(), "1");
       }
 
-      for (tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
+      for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
            attribute; attribute = attribute->Next())
       {
         element->AddAttribute(attribute->Name(), "string", "", 1, "");
         element->GetAttribute(attribute->Name())->SetFromString(
-          attribute->ValueStr());
+          attribute->Value());
       }
 
       copyChildren(element, elemXml, _onlyUnknown);
@@ -1373,7 +1372,7 @@ bool convertFile(const std::string &_filename, const std::string &_version,
   }
 
   tinyxml2::XMLDocument xmlDoc;
-  if (xmlDoc.LoadFile(filename))
+  if (!xmlDoc.LoadFile(filename.c_str()))
   {
     // read initial sdf version
     std::string originalVersion;
