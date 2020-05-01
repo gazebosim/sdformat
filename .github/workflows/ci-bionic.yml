@@ -14,4 +14,5 @@ jobs:
         uses: ignition-tooling/ubuntu-bionic-ci-action@master
         with:
           apt-dependencies: 'libtinyxml-dev libxml2-utils ruby-dev python-psutil libignition-cmake2-dev libignition-tools-dev libignition-math6-dev liburdfdom-dev'
+          codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
