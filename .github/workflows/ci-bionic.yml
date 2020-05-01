@@ -11,8 +11,10 @@ jobs:
         uses: actions/checkout@v2
       - name: Bionic CI
         id: ci
-        uses: ignition-tooling/ubuntu-bionic-ci-action@master
+        uses: ignition-tooling/ubuntu-bionic-ci-action@script_hooks
         with:
           apt-dependencies: 'libtinyxml-dev libxml2-utils ruby-dev python-psutil libignition-cmake2-dev libignition-tools-dev libignition-math6-dev liburdfdom-dev'
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
+          script-between-cmake-make: .github/ci-bionic/between_cmake_make.sh
+          script-after-make: .github/ci-bionic/after_make.sh
 
