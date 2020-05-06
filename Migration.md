@@ -75,22 +75,22 @@ but with improved human-readability..
 1. **`gravity` and `magnetic_field` elements are moved  from `physics` to `world`**
     + In physics element: gravity and magnetic_field tags have been moved
       from Physics to World element.
-    + [pull request 247](https://bitbucket.org/osrf/sdformat/pull-requests/247)
-    + [gazebo pull request 2090](https://bitbucket.org/osrf/gazebo/pull-requests/2090)
+    + [BitBucket pull request 247](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/247)
+    + [gazebo pull request 2090](https://osrf-migration.github.io/gazebo-gh-pages/#!/osrf/gazebo/pull-requests/2090)
 
 1. **New noise for IMU**
     + A new style for representing the noise properties of an `imu` was implemented
-      in [pull request 199](https://bitbucket.org/osrf/sdformat/pull-requests/199)
+      in [BitBucket pull request 199](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/199)
       for sdf 1.5 and the old style was declared as deprecated.
       The old style has been removed from sdf 1.6 with the conversion script
       updating to the new style.
-    + [pull request 199](https://bitbucket.org/osrf/sdformat/pull-requests/199)
-    + [pull request 243](https://bitbucket.org/osrf/sdformat/pull-requests/243)
-    + [pull request 244](https://bitbucket.org/osrf/sdformat/pull-requests/244)
+    + [BitBucket pull request 199](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/199)
+    + [BitBucket pull request 243](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/243)
+    + [BitBucket pull request 244](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/244)
 
 1. **Lump:: prefix in link names**
     + Changed to \_fixed_joint_lump__ to avoid confusion with scoped names
-    + [Pull request 245](https://bitbucket.org/osrf/sdformat/pull-request/245)
+    + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
 
 ## SDF protocol 1.5 to 1.6
 
@@ -106,23 +106,23 @@ but with improved human-readability..
     + min: 0.0
     + max: 1.0
     + required: 0
-    + [pull request 466](https://bitbucket.org/osrf/sdformat/pull-requests/466)
+    + [BitBucket pull request 466](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/466)
 
 1. **camera.sdf** `intrinsics` sub-elements: `fx`, `fy`, `cx`, `cy`, `s`
     + description: Camera intrinsic parameters for setting a custom perspective projection matrix.
-    + [pull request 496](https://bitbucket.org/osrf/sdformat/pull-requests/496)
+    + [BitBucket pull request 496](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/496)
 
 1. **link.sdf** `enable_wind` element
     + description: If true, the link is affected by the wind
     + type: bool
     + default: false
     + required: 0
-    + [pull request 240](https://bitbucket.org/osrf/sdformat/pull-requests/240)
+    + [BitBucket pull request 240](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/240)
 
 1. **link.sdf** `light` element
     + included from `light.sdf` with required="*",
       so a link can have any number of attached lights.
-    + [pull request 373](https://bitbucket.org/osrf/sdformat/pull-requests/373)
+    + [BitBucket pull request 373](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/373)
 
 1. **model.sdf** `enable_wind` element
     + description: If set to true, all links in the model will be affected by
@@ -130,14 +130,14 @@ but with improved human-readability..
     + type: bool
     + default: false
     + required: 0
-    + [pull request 240](https://bitbucket.org/osrf/sdformat/pull-requests/240)
+    + [BitBucket pull request 240](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/240)
 
 1. **model_state.sdf** `scale` element
     + description: Scale for the 3 dimensions of the model.
     + type: vector3
     + default: "1 1 1"
     + required: 0
-    + [pull request 246](https://bitbucket.org/osrf/sdformat/pull-requests/246)
+    + [BitBucket pull request 246](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/246)
 
 1. **physics.sdf** `dart::collision_detector` element
     + description: The collision detector for DART to use.
@@ -145,7 +145,7 @@ but with improved human-readability..
     + type: string
     + default: fcl
     + required: 0
-    + [pull request 440](https://bitbucket.org/osrf/sdformat/pull-requests/440)
+    + [BitBucket pull request 440](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/440)
 
 1. **physics.sdf** `dart::solver::solver_type` element
     + description: The DART LCP/constraint solver to use.
@@ -153,31 +153,31 @@ but with improved human-readability..
     + type: string
     + default: dantzig
     + required: 0
-    + [pull request 369](https://bitbucket.org/osrf/sdformat/pull-requests/369)
+    + [BitBucket pull request 369](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/369)
 
 1. **physics.sdf** `island_threads` element under `ode::solver`
     + description: Number of threads to use for "islands" of disconnected models.
     + type: int
     + default: 0
     + required: 0
-    + [pull request 380](https://bitbucket.org/osrf/sdformat/pull-requests/380)
+    + [BitBucket pull request 380](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/380)
 
 1. **physics.sdf** `thread_position_correction` element under `ode::solver`
     + description: Flag to use threading to speed up position correction computation.
     + type: bool
     + default: 0
     + required: 0
-    + [pull request 380](https://bitbucket.org/osrf/sdformat/pull-requests/380)
+    + [BitBucket pull request 380](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/380)
 
 1. **sonar.sdf** `geometry` element
     + description: The sonar collision shape. Currently supported geometries are: "cone" and "sphere".
     + type: string
     + default: "cone"
     + required: 0
-    + [pull request 495](https://bitbucket.org/osrf/sdformat/pull-requests/495)
+    + [BitBucket pull request 495](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/495)
 
 1. **state.sdf** allow `light` tags within `insertions` element
-    * [pull request 325](https://bitbucket.org/osrf/sdformat/pull-request/325)
+    * [BitBucket pull request 325](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/325)
 
 1. **surface.sdf** `category_bitmask` element
     + description: Bitmask for category of collision filtering.
@@ -186,16 +186,16 @@ but with improved human-readability..
     + type: unsigned int
     + default: 65535
     + required: 0
-    + [pull request 318](https://bitbucket.org/osrf/sdformat/pull-requests/318)
+    + [BitBucket pull request 318](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/318)
 
 1. **world.sdf** `wind` element
     + description: The wind tag specifies the type and properties of the wind.
     + required: 0
-    + [pull request 240](https://bitbucket.org/osrf/sdformat/pull-requests/240)
+    + [BitBucket pull request 240](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/240)
 
 1. **world.sdf** `wind::linear_velocity` element
     + description: Linear velocity of the wind.
     + type: vector3
     + default: "0 0 0"
     + required: 0
-    + [pull request 240](https://bitbucket.org/osrf/sdformat/pull-requests/240)
+    + [BitBucket pull request 240](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/240)
