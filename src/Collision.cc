@@ -130,8 +130,11 @@ Errors Collision::Load(ElementPtr _sdf)
   Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
 
-  // Load the surface parameters
-  this->dataPtr->surface.Load(_sdf->GetElement("surface"));
+  // Load the surface parameters if they are given
+  if (_sdf->HasElement("surface"))
+  {
+    this->dataPtr->surface.Load(_sdf->GetElement("surface"));
+  }
 
   return errors;
 }
