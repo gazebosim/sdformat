@@ -157,7 +157,7 @@ TEST(Param, HexUInt)
 TEST(Param, HexFloat)
 {
 // Microsoft does not parse hex values properly.
-// https://bitbucket.org/osrf/sdformat/issues/114
+// https://github.com/osrf/sdformat/issues/114
 #ifndef _MSC_VER
   sdf::Param floatParam("key", "float", "0", false, "description");
   float value;
@@ -192,7 +192,7 @@ TEST(Param, HexDouble)
   EXPECT_DOUBLE_EQ(value, 0.0);
 
 // Microsoft does not parse hex values properly.
-// https://bitbucket.org/osrf/sdformat/issues/114
+// https://github.com/osrf/sdformat/issues/114
 #ifndef _MSC_VER
   EXPECT_TRUE(doubleParam.SetFromString("0x01"));
   EXPECT_TRUE(doubleParam.Get<double>(value));

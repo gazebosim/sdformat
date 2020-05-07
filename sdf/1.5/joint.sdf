@@ -55,7 +55,7 @@
       <description>
         Flag to interpret the axis xyz element in the parent model frame instead
         of joint frame. Provided for Gazebo compatibility
-        (see https://bitbucket.org/osrf/gazebo/issue/494 ).
+        (see https://github.com/osrf/gazebo/issue/494 ).
       </description>
     </element>
     <element name="dynamics" required="0">
@@ -114,7 +114,7 @@
       <description>
         Flag to interpret the axis xyz element in the parent model frame instead
         of joint frame. Provided for Gazebo compatibility
-        (see https://bitbucket.org/osrf/gazebo/issue/494 ).
+        (see https://github.com/osrf/gazebo/issue/494 ).
       </description>
     </element>
     <element name="dynamics" required="0">
