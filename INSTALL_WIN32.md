@@ -22,7 +22,7 @@ Windows `cmd` for configuring and building.
 
 1. Clone sdformat
 
-        hg clone https://bitbucket.org/osrf/sdformat
+        git clone https://github.com/osrf/sdformat
 
 1. Load your compiler setup, e.g. (note that we are asking for the 64-bit toolchain here):
 
