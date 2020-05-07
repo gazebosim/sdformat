@@ -31,9 +31,7 @@
 #include "sdf/SDFImpl.hh"
 #include "SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
-
-// This include file is generated at configure time.
-#include "sdf/EmbeddedSdf.hh"
+#include "EmbeddedSdf.hh"
 
 namespace sdf
 {
@@ -453,7 +451,8 @@ const std::string &SDF::EmbeddedSpec(
 {
   try
   {
-    return embeddedSdf.at(SDF::Version()).at(_filename);
+    const std::string pathname = SDF::Version() + "/" + _filename;
+    return GetEmbeddedSdf().at(pathname);
   }
   catch(const std::out_of_range &)
   {
@@ -461,6 +460,9 @@ const std::string &SDF::EmbeddedSpec(
       sdferr << "Unable to find SDF filename[" << _filename << "] with "
         << "version " << SDF::Version() << "\n";
   }
+
+  // An empty SDF string is returned if a query into the embeddedSdf map fails.
+  static const std::string emptySdfString;
   return emptySdfString;
 }
 }

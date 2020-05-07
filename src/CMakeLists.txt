@@ -24,6 +24,7 @@ set (sources
   Converter.cc
   Cylinder.cc
   Element.cc
+  EmbeddedSdf.cc
   Error.cc
   Exception.cc
   Frame.cc
@@ -62,6 +63,7 @@ set (sources
   Visual.cc
   World.cc
 )
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 if (USE_EXTERNAL_TINYXML)
   include_directories(${tinyxml_INCLUDE_DIRS})
@@ -157,7 +159,7 @@ if (NOT WIN32)
 endif()
 
 if (NOT WIN32)
-  set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc)
+  set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc EmbeddedSdf.cc)
   sdf_build_tests(Converter_TEST.cc)
 endif()
 

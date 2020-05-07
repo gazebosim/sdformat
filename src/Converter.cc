@@ -29,11 +29,17 @@
 #include "sdf/Types.hh"
 
 #include "Converter.hh"
-
-// This include file is generated at configure time.
-#include "sdf/EmbeddedSdf.hh"
+#include "EmbeddedSdf.hh"
 
 using namespace sdf;
+
+namespace {
+bool EndsWith(const std::string& _a, const std::string& _b)
+{
+  return (_a.size() >= _b.size()) &&
+      (_a.compare(_a.size() - _b.size(), _b.size(), _b) == 0);
+}
+}
 
 /////////////////////////////////////////////////
 bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
@@ -73,28 +79,36 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
 
   elem->SetAttribute("version", _toVersion);
 
-  // The conversionMap in EmbeddedSdf.hh has keys that represent a version
-  // of SDF to convert from. The values in conversionmap are pairs, where
-  // the first element is the SDF version that the second element will
-  // convert to. For example, the following will convert from 1.4 to 1.5
-  // according to "conversion_xml":
-  //
-  // {"1.4", {"1.5", "conversion_xml"}}
-  std::map<std::string, std::pair<std::string, std::string> >::const_iterator
-    fromIter = conversionMap.find(origVersion);
+  // The conversion recipes within the embedded files database are named, e.g.,
+  // "1.8/1_7.convert" to upgrade from 1.7 to 1.8.
+  const std::map<std::string, std::string> &embedded = GetEmbeddedSdf();
 
-  std::string toVer = "";
-
-  // Starting with the original SDF version, perform all the conversions
-  // necessary in order to reach the _toVersion.
-  while (fromIter != conversionMap.end() && fromIter->first != _toVersion)
+  // Apply the conversions one at a time until we reach the desired _toVersion.
+  std::string curVersion = origVersion;
+  while (curVersion != _toVersion)
   {
-    // Get the SDF to version.
-    toVer = fromIter->second.first;
+    // Find the (at most one) file named, e.g., ".../1_7.convert".
+    std::string snakeVersion = curVersion;
+    std::replace(snakeVersion.begin(), snakeVersion.end(), '.', '_');
+    const std::string suffix = "/" + snakeVersion + ".convert";
+    const char* convertXml = nullptr;
+    for (const auto& [pathname, data] : embedded)
+    {
+      if (EndsWith(pathname, suffix))
+      {
+        curVersion = pathname.substr(0, pathname.size() - suffix.size());
+        convertXml = data.c_str();
+        break;
+      }
+    }
+    if (convertXml == nullptr)
+    {
+      break;
+    }
 
     // Parse and apply the conversion XML.
     TiXmlDocument xmlDoc;
-    xmlDoc.Parse(fromIter->second.second.c_str());
+    xmlDoc.Parse(convertXml);
     if (xmlDoc.Error())
     {
       sdferr << "Error parsing XML from string: "
@@ -102,13 +116,10 @@ bool Converter::Convert(TiXmlDocument *_doc, const std::string &_toVersion,
       return false;
     }
     ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
-
-    // Get the next conversion XML map element.
-    fromIter = conversionMap.find(toVer);
   }
 
   // Check that we actually converted to the desired final version.
-  if (toVer != _toVersion)
+  if (curVersion != _toVersion)
   {
     sdferr << "Unable to convert from SDF version " << origVersion
            << " to " << _toVersion << "\n";
