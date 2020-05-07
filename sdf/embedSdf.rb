@@ -9,62 +9,37 @@ supportedSdfVersions = ['1.7', '1.6', '1.5', '1.4', '1.3', '1.2']
 supportedSdfConversions = ['1.7', '1.6', '1.5', '1.4', '1.3']
 
 puts %q!
-#ifndef SDF_INTERNAL_EMBEDDEDSDF_HH_
-#define SDF_INTERNAL_EMBEDDEDSDF_HH_
+#include "EmbeddedSdf.hh"
 
-// An empty SDF string is returned if a query into the embeddedSdf map fails.
-static const std::string emptySdfString = "";
+namespace sdf {
+inline namespace SDF_VERSION_NAMESPACE {
 
-// A map of maps where the keys in the first/parent map are SDF version
-// strings, keys in the second/child map are SDF specification filenames and
-// values are the contents of the SDF specification files.
-static const std::map<std::string, std::map<std::string, std::string>> embeddedSdf = {
+const std::map<std::string, std::string> &GetEmbeddedSdf() {
+  static const std::map<std::string, std::string> result{
 !
 
-# Iterate over each version
-supportedSdfVersions.each do |version|
-  # Make sure the directory exists. Quietly fail so that we don't pollute
-  # the output, which gets included in EmbeddedSdf.hh
-  if Dir.exist?(version)
-    puts "{\"#{version}\", {"
-
-    # Iterate over each .sdf file in the version directory
-    Dir.glob("#{version}/*.sdf") do |file|
-
-      # Store the contents of the file in the child map
-      puts "{\"#{File.basename(file)}\", R\"__sdf_literal__("
-      infile = File.open(file)
-      puts infile.read
-      puts ")__sdf_literal__\"},"
-    end
-    puts "}},"
-  end
+# Stores the contents of the file in the map.
+def embed(pathname)
+  puts "{\"#{pathname}\", R\"__sdf_literal__("
+  infile = File.open(pathname)
+  puts infile.read
+  puts ")__sdf_literal__\"},"
 end
 
-puts "};"
+# Embed the supported *.sdf files.
+supportedSdfVersions.each do |version|
+  Dir.glob("#{version}/*.sdf").sort.each { |file| embed(file) }
+end
 
-puts "static const std::map<std::string, std::pair<std::string, std::string>> conversionMap = {"
-
-# Iterate over each version
+# Embed the supported *.convert files.
 supportedSdfConversions.each do |version|
-  # from-to
-  # Make sure the directory exists. Quietly fail so that we don't pollute
-  # the output, which gets included in EmbeddedSdf.hh
-  if Dir.exist?(version)
-
-    # Iterate over each .sdf file in the version directory
-    Dir.glob("#{version}/*.convert") do |file|
-
-      basename = File.basename(file, ".*").gsub(/_/, '.')
-      # Store the contents of the file in the child map
-      puts "{\"#{basename}\", {\"#{version}\", R\"__sdf_literal__("
-      infile = File.open(file)
-      puts infile.read
-      puts ")__sdf_literal__\"}},"
-    end
-  end
+  Dir.glob("#{version}/*.convert").sort.each { |file| embed(file) }
 end
 puts %q!
-};
-#endif
+  };
+  return result;
+}
+
+}
+}
 !
