@@ -266,6 +266,11 @@ TEST(Param, Vector2i)
   EXPECT_TRUE(vect2iParam.SetFromString("-1 -2"));
   EXPECT_TRUE(vect2iParam.Get<ignition::math::Vector2i>(value));
   EXPECT_EQ(value, ignition::math::Vector2i(-1, -2));
+
+  // set with whitespace string and expect default value
+  EXPECT_TRUE(vect2iParam.SetFromString(" "));
+  EXPECT_TRUE(vect2iParam.Get<ignition::math::Vector2i>(value));
+  EXPECT_EQ(value, ignition::math::Vector2i(1, 2));
 }
 
 ////////////////////////////////////////////////////
@@ -282,6 +287,11 @@ TEST(Param, Vector2d)
   EXPECT_TRUE(vect2dParam.SetFromString("-3 -2.1"));
   EXPECT_TRUE(vect2dParam.Get<ignition::math::Vector2d>(value));
   EXPECT_EQ(value, ignition::math::Vector2d(-3, -2.1));
+
+  // set with whitespace string and expect default value
+  EXPECT_TRUE(vect2dParam.SetFromString(" "));
+  EXPECT_TRUE(vect2dParam.Get<ignition::math::Vector2d>(value));
+  EXPECT_EQ(value, ignition::math::Vector2d(1.2, -0.3));
 }
 
 ////////////////////////////////////////////////////
@@ -298,6 +308,11 @@ TEST(Param, Vector3d)
   EXPECT_TRUE(vect3dParam.SetFromString("-3 -2.1 -1.9"));
   EXPECT_TRUE(vect3dParam.Get<ignition::math::Vector3d>(value));
   EXPECT_EQ(value, ignition::math::Vector3d(-3, -2.1, -1.9));
+
+  // set with whitespace string and expect default value
+  EXPECT_TRUE(vect3dParam.SetFromString(" "));
+  EXPECT_TRUE(vect3dParam.Get<ignition::math::Vector3d>(value));
+  EXPECT_EQ(value, ignition::math::Vector3d(00.45, -6.7, 0.089));
 }
 
 ////////////////////////////////////////////////////
@@ -314,6 +329,11 @@ TEST(Param, Quaterniond)
   EXPECT_TRUE(quatParam.SetFromString("-0.75 0.12 -0.34"));
   EXPECT_TRUE(quatParam.Get<ignition::math::Quaterniond>(value));
   EXPECT_EQ(value, ignition::math::Quaterniond(-0.75, 0.12, -0.34));
+
+  // set with whitespace string and expect default value
+  EXPECT_TRUE(quatParam.SetFromString(" "));
+  EXPECT_TRUE(quatParam.Get<ignition::math::Quaterniond>(value));
+  EXPECT_EQ(value, ignition::math::Quaterniond(0.1, 0.2, 0.3));
 }
 
 ////////////////////////////////////////////////////
@@ -330,6 +350,11 @@ TEST(Param, Pose3d)
   EXPECT_TRUE(poseParam.SetFromString("-11 22 -33 -0.4 0.7 -0.6"));
   EXPECT_TRUE(poseParam.Get<ignition::math::Pose3d>(value));
   EXPECT_EQ(value, ignition::math::Pose3d(-11, 22, -33, -0.4, 0.7, -0.6));
+
+  // set with whitespace string and expect default value
+  EXPECT_TRUE(poseParam.SetFromString(" "));
+  EXPECT_TRUE(poseParam.Get<ignition::math::Pose3d>(value));
+  EXPECT_EQ(value, ignition::math::Pose3d(1, 2, 3, 0.4, 0.5, 0.6));
 }
 
 ////////////////////////////////////////////////////
