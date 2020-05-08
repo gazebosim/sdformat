@@ -32,6 +32,7 @@ bool check_double(std::string num)
   const std::string def = "0.0";
 
   sdf::Param param(name, type, def, true);
+  EXPECT_TRUE(param.IsType<double>());
   return param.SetFromString(num);
 }
 
@@ -40,6 +41,8 @@ bool check_double(std::string num)
 TEST(Param, Bool)
 {
   sdf::Param boolParam("key", "bool", "true", false, "description");
+  EXPECT_TRUE(boolParam.IsType<bool>());
+
   bool value = true;
   boolParam.Get<bool>(value);
   EXPECT_TRUE(value);
@@ -50,6 +53,7 @@ TEST(Param, Bool)
 
   // String parameter that represents a boolean.
   sdf::Param strParam("key", "string", "true", false, "description");
+  EXPECT_TRUE(strParam.IsType<std::string>());
 
   strParam.Get<bool>(value);
   EXPECT_TRUE(value);
@@ -105,6 +109,8 @@ TEST(SetFromString, Decimals)
 TEST(Param, HexInt)
 {
   sdf::Param intParam("key", "int", "0", false, "description");
+  EXPECT_TRUE(intParam.IsType<int>());
+
   int value;
   EXPECT_TRUE(intParam.Get<int>(value));
   EXPECT_EQ(value, 0);
@@ -131,6 +137,8 @@ TEST(Param, HexInt)
 TEST(Param, HexUInt)
 {
   sdf::Param uintParam("key", "unsigned int", "0", false, "description");
+  EXPECT_TRUE(uintParam.IsType<unsigned int>());
+
   unsigned int value;
   EXPECT_TRUE(uintParam.Get<unsigned int>(value));
   EXPECT_EQ(value, 0u);
@@ -160,6 +168,8 @@ TEST(Param, HexFloat)
 // https://bitbucket.org/osrf/sdformat/issues/114
 #ifndef _MSC_VER
   sdf::Param floatParam("key", "float", "0", false, "description");
+  EXPECT_TRUE(floatParam.IsType<float>());
+
   float value;
   EXPECT_TRUE(floatParam.Get<float>(value));
   EXPECT_FLOAT_EQ(value, 0.0f);
@@ -187,6 +197,8 @@ TEST(Param, HexFloat)
 TEST(Param, HexDouble)
 {
   sdf::Param doubleParam("key", "double", "0", false, "description");
+  EXPECT_TRUE(doubleParam.IsType<double>());
+
   double value;
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 0.0);
@@ -216,6 +228,8 @@ TEST(Param, HexDouble)
 TEST(Param, uint64t)
 {
   sdf::Param uint64tParam("key", "uint64_t", "1", false, "description");
+  EXPECT_TRUE(uint64tParam.IsType<uint64_t>());
+
   std::uint64_t value;
   EXPECT_TRUE(uint64tParam.Get<std::uint64_t>(value));
   EXPECT_EQ(value, 1u);
@@ -231,6 +245,8 @@ TEST(Param, uint64t)
 TEST(Param, UnknownType)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  EXPECT_TRUE(doubleParam.IsType<double>());
+
   ignition::math::Angle value;
   EXPECT_TRUE(doubleParam.Get<ignition::math::Angle>(value));
   EXPECT_DOUBLE_EQ(value.Radian(), 1.0);
@@ -240,6 +256,8 @@ TEST(Param, UnknownType)
 TEST(Param, Vector2i)
 {
   sdf::Param vect2iParam("key", "vector2i", "0 0", false, "description");
+  EXPECT_TRUE(vect2iParam.IsType<ignition::math::Vector2i>());
+
   ignition::math::Vector2i value;
 
   EXPECT_TRUE(vect2iParam.Get<ignition::math::Vector2i>(value));
