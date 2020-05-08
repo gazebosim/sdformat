@@ -255,13 +255,81 @@ TEST(Param, UnknownType)
 ////////////////////////////////////////////////////
 TEST(Param, Vector2i)
 {
-  sdf::Param vect2iParam("key", "vector2i", "0 0", false, "description");
+  sdf::Param vect2iParam("key", "vector2i", "1 2", false, "description");
   EXPECT_TRUE(vect2iParam.IsType<ignition::math::Vector2i>());
 
   ignition::math::Vector2i value;
 
   EXPECT_TRUE(vect2iParam.Get<ignition::math::Vector2i>(value));
-  EXPECT_EQ(value, ignition::math::Vector2i(0, 0));
+  EXPECT_EQ(value, ignition::math::Vector2i(1, 2));
+
+  EXPECT_TRUE(vect2iParam.SetFromString("-1 -2"));
+  EXPECT_TRUE(vect2iParam.Get<ignition::math::Vector2i>(value));
+  EXPECT_EQ(value, ignition::math::Vector2i(-1, -2));
+}
+
+////////////////////////////////////////////////////
+TEST(Param, Vector2d)
+{
+  sdf::Param vect2dParam("key", "vector2d", "1.2 -0.3", false, "description");
+  EXPECT_TRUE(vect2dParam.IsType<ignition::math::Vector2d>());
+
+  ignition::math::Vector2d value;
+
+  EXPECT_TRUE(vect2dParam.Get<ignition::math::Vector2d>(value));
+  EXPECT_EQ(value, ignition::math::Vector2d(1.2, -0.3));
+
+  EXPECT_TRUE(vect2dParam.SetFromString("-3 -2.1"));
+  EXPECT_TRUE(vect2dParam.Get<ignition::math::Vector2d>(value));
+  EXPECT_EQ(value, ignition::math::Vector2d(-3, -2.1));
+}
+
+////////////////////////////////////////////////////
+TEST(Param, Vector3d)
+{
+  sdf::Param vect3dParam("key", "vector3", "0.45 -6.7 0.089", false, "description");
+  EXPECT_TRUE(vect3dParam.IsType<ignition::math::Vector3d>());
+
+  ignition::math::Vector3d value;
+
+  EXPECT_TRUE(vect3dParam.Get<ignition::math::Vector3d>(value));
+  EXPECT_EQ(value, ignition::math::Vector3d(00.45, -6.7, 0.089));
+
+  EXPECT_TRUE(vect3dParam.SetFromString("-3 -2.1 -1.9"));
+  EXPECT_TRUE(vect3dParam.Get<ignition::math::Vector3d>(value));
+  EXPECT_EQ(value, ignition::math::Vector3d(-3, -2.1, -1.9));
+}
+
+////////////////////////////////////////////////////
+TEST(Param, Quaterniond)
+{
+  sdf::Param quatParam("key", "quaternion", "0.1 0.2 0.3", false, "description");
+  EXPECT_TRUE(quatParam.IsType<ignition::math::Quaterniond>());
+
+  ignition::math::Quaterniond value;
+
+  EXPECT_TRUE(quatParam.Get<ignition::math::Quaterniond>(value));
+  EXPECT_EQ(value, ignition::math::Quaterniond(0.1, 0.2, 0.3));
+
+  EXPECT_TRUE(quatParam.SetFromString("-0.75 0.12 -0.34"));
+  EXPECT_TRUE(quatParam.Get<ignition::math::Quaterniond>(value));
+  EXPECT_EQ(value, ignition::math::Quaterniond(-0.75, 0.12, -0.34));
+}
+
+////////////////////////////////////////////////////
+TEST(Param, Pose3d)
+{
+  sdf::Param poseParam("key", "pose", "1 2 3 0.4 0.5 0.6", false, "description");
+  EXPECT_TRUE(poseParam.IsType<ignition::math::Pose3d>());
+
+  ignition::math::Pose3d value;
+
+  EXPECT_TRUE(poseParam.Get<ignition::math::Pose3d>(value));
+  EXPECT_EQ(value, ignition::math::Pose3d(1, 2, 3, 0.4, 0.5, 0.6));
+
+  EXPECT_TRUE(poseParam.SetFromString("-11 22 -33 -0.4 0.7 -0.6"));
+  EXPECT_TRUE(poseParam.Get<ignition::math::Pose3d>(value));
+  EXPECT_EQ(value, ignition::math::Pose3d(-11, 22, -33, -0.4, 0.7, -0.6));
 }
 
 ////////////////////////////////////////////////////
