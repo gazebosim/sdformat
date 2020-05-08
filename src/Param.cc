@@ -417,21 +417,11 @@ bool Param::ValueFromString(const std::string &_value)
              this->dataPtr->typeName == "pose" ||
              this->dataPtr->typeName == "Pose")
     {
-      // if the value is an empty string or white space we avoid parsing since
-      // its considered a valid value
-      auto isWhiteSpace = [](unsigned char _c)
-      {
-        return std::isspace(_c);
-      };
+      StringStreamClassicLocale ss(tmp);
+      ignition::math::Pose3d posetmp;
 
-      if (!tmp.empty() || !std::all_of(tmp.begin(), tmp.end(), isWhiteSpace))
-      {
-        StringStreamClassicLocale ss(tmp);
-        ignition::math::Pose3d posetmp;
-
-        ss >> posetmp;
-        this->dataPtr->value = posetmp;
-      }
+      ss >> posetmp;
+      this->dataPtr->value = posetmp;
     }
     else if (this->dataPtr->typeName == "ignition::math::Quaterniond" ||
              this->dataPtr->typeName == "quaternion")
