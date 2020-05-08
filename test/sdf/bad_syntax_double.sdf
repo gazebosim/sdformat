@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+    <model name="robot1">
+      <link name="link">
+        <velocity_decay>
+          <linear>bad</linear>
+        </velocity_decay>
+      </link>
+    </model>
+  </world>
+</sdf>
+
