@@ -37,7 +37,7 @@ namespace sdf
   /// This is now deprecated for external usage and will be removed in the next
   /// major version of libsdformat. Instead, consider using `sdf::readFile` or
   /// `sdf::readString`, which automatically convert URDF to SDF.
-  class SDFORMAT_VISIBLE SDF_DEPRECATED(9.2) URDF2SDF
+  class URDF2SDF
   {
     /// \brief constructor
     public: URDF2SDF();
@@ -68,15 +68,15 @@ namespace sdf
     /// \return True if _filename is a URDF model.
     public: static bool IsURDF(const std::string &_filename);
 
+    /// list extensions for debugging
+    public: void ListSDFExtensions();
+
+    /// list extensions for debugging
+    public: void ListSDFExtensions(const std::string &_reference);
+
     /// things that do not belong in urdf but should be mapped into sdf
     /// @todo: do this using sdf definitions, not hard coded stuff
     private: void ParseSDFExtension(TiXmlDocument &_urdfXml);
-
-    /// list extensions for debugging
-    private: void ListSDFExtensions();
-
-    /// list extensions for debugging
-    private: void ListSDFExtensions(const std::string &_reference);
   };
   }
 }
