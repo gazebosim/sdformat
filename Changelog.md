@@ -4,6 +4,9 @@
 
 ### libsdformat 10.0.0 (202X-XX-XX)
 
+1. Don't install deprecated parser_urdf.hh header file, fix cmake warning about newline file, fix cmake warning about newlines.
+    * [Pull request 276](https://github.com/osrf/sdformat/pull/276)
+
 1. Changed the default radius of a Cylinder from 1.0 to 0.5 meters.
     * [BitBucket pull request 643](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/643)
 
