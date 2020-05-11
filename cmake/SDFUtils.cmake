@@ -156,12 +156,12 @@ macro (sdf_build_tests)
     link_directories(${IGNITION-MATH_LIBRARY_DIRS})
 
     if (USE_EXTERNAL_TINYXML)
-      target_link_libraries(${BINARY_NAME}
+      target_link_libraries(${BINARY_NAME} PRIVATE
         ${tinyxml_LIBRARIES})
     endif()
 
     if (UNIX)
-      target_link_libraries(${BINARY_NAME}
+      target_link_libraries(${BINARY_NAME} PRIVATE
         libgtest.a
         libgtest_main.a
         ${sdf_target}
@@ -169,7 +169,7 @@ macro (sdf_build_tests)
         ${IGNITION-MATH_LIBRARIES}
       )
     elseif(WIN32)
-      target_link_libraries(${BINARY_NAME}
+      target_link_libraries(${BINARY_NAME} PRIVATE
         gtest.lib
         gtest_main.lib
         ${sdf_target}

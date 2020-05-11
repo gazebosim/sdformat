@@ -21,7 +21,6 @@
 #include <gtest/gtest.h>
 
 #include "sdf/sdf.hh"
-#include "sdf/parser_urdf.hh"
 
 #include "test_config.h"
 

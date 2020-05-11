@@ -55,5 +55,5 @@ endforeach()
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sdf.hh.in
                 ${CMAKE_CURRENT_BINARY_DIR}/sdf.hh)
 
-sdf_install_includes("" ${headers} parser_urdf.hh
+sdf_install_includes("" ${headers}
   ${CMAKE_CURRENT_BINARY_DIR}/sdf.hh)
