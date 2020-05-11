@@ -20,7 +20,7 @@
 #include <list>
 
 #include "sdf/sdf.hh"
-#include "sdf/parser_urdf.hh"
+#include "parser_urdf.hh"
 
 /////////////////////////////////////////////////
 std::string getMinimalUrdfTxt()
@@ -35,9 +35,7 @@ std::string getMinimalUrdfTxt()
 /////////////////////////////////////////////////
 std::string convertUrdfStrToSdfStr(const std::string &_urdf)
 {
-  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
-  SDF_SUPPRESS_DEPRECATED_END
   TiXmlDocument sdf_result = parser_.InitModelString(_urdf);
   TiXmlPrinter printer;
   sdf_result.Accept(&printer);
@@ -55,27 +53,23 @@ void convertUrdfStrToSdf(const std::string &_urdf, sdf::SDF &_sdf)
 TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
 {
   // Suppress deprecation for sdf::URDF2SDF
-  SDF_SUPPRESS_DEPRECATED_BEGIN
   ASSERT_NO_THROW(
     TiXmlDocument doc = TiXmlDocument();
     sdf::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   );    // NOLINT(whitespace/parens)
-  SDF_SUPPRESS_DEPRECATED_END
 }
 
 /////////////////////////////////////////////////
 TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
 {
   // Suppress deprecation for sdf::URDF2SDF
-  SDF_SUPPRESS_DEPRECATED_BEGIN
   ASSERT_NO_THROW(
     TiXmlDocument doc;
     doc.Parse(getMinimalUrdfTxt().c_str());
     sdf::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   );    // NOLINT(whitespace/parens)
-  SDF_SUPPRESS_DEPRECATED_END
 }
 
 /////////////////////////////////////////////////
@@ -84,9 +78,7 @@ TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
   // URDF -> SDF
   TiXmlDocument doc;
   doc.Parse(getMinimalUrdfTxt().c_str());
-  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
-  SDF_SUPPRESS_DEPRECATED_END
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   std::string sdf_result_str;
   sdf_result_str << sdf_result;
@@ -115,9 +107,7 @@ TEST(URDFParser, ParseRobotOriginXYZBlank)
          << "</robot>";
   TiXmlDocument doc;
   doc.Parse(stream.str().c_str());
-  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
-  SDF_SUPPRESS_DEPRECATED_END
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdf);
@@ -136,9 +126,7 @@ TEST(URDFParser, ParseRobotOriginRPYBlank)
          << "  <link name=\"link\" />"
          << "</robot>";
   TiXmlDocument doc;
-  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
-  SDF_SUPPRESS_DEPRECATED_END
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
@@ -172,9 +160,7 @@ TEST(URDFParser, ParseRobotMaterialBlank)
          << "</robot>";
   TiXmlDocument doc;
   doc.Parse(stream.str().c_str());
-  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser;
-  SDF_SUPPRESS_DEPRECATED_END
   auto sdfXml = parser.InitModelDoc(&doc);
   auto sdfElem = sdfXml.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdfElem);
@@ -187,6 +173,9 @@ TEST(URDFParser, ParseRobotMaterialBlank)
 
   auto materialElem = visualElem->FirstChildElement("material");
   ASSERT_EQ(nullptr, materialElem);
+
+  parser.ListSDFExtensions();
+  parser.ListSDFExtensions("link");
 }
 
 /////////////////////////////////////////////////
@@ -212,9 +201,7 @@ TEST(URDFParser, ParseRobotMaterialName)
          << "</robot>";
   TiXmlDocument doc;
   doc.Parse(stream.str().c_str());
-  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser;
-  SDF_SUPPRESS_DEPRECATED_END
   auto sdfXml = parser.InitModelDoc(&doc);
   auto sdfElem = sdfXml.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdfElem);
@@ -236,6 +223,9 @@ TEST(URDFParser, ParseRobotMaterialName)
   ASSERT_NE(nullptr, uriElem);
   EXPECT_EQ("file://media/materials/scripts/gazebo.material",
       std::string(uriElem->GetText()));
+
+  parser.ListSDFExtensions();
+  parser.ListSDFExtensions("link");
 }
 
 /////////////////////////////////////////////////
@@ -247,9 +237,7 @@ TEST(URDFParser, ParseRobotOriginInvalidXYZ)
          << "  <link name=\"link\" />"
          << "</robot>";
   TiXmlDocument doc;
-  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
-  SDF_SUPPRESS_DEPRECATED_END
   doc.Parse(stream.str().c_str());
   TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
   TiXmlElement *sdf = sdf_result.FirstChildElement("sdf");
@@ -310,9 +298,7 @@ TEST(URDFParser, ParseGazeboLinkFactors)
            << "</robot>";
 
     TiXmlDocument doc;
-    SDF_SUPPRESS_DEPRECATED_BEGIN
     sdf::URDF2SDF parser_;
-    SDF_SUPPRESS_DEPRECATED_END
     doc.Parse(stream.str().c_str());
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
@@ -329,6 +315,9 @@ TEST(URDFParser, ParseGazeboLinkFactors)
 
     // For the last element, check that it is exactly what we expect
     EXPECT_EQ(tmp->FirstChild()->ValueStr(), it->second[i]);
+
+    parser_.ListSDFExtensions();
+    parser_.ListSDFExtensions("wheel_left_link");
   }
 }
 
@@ -348,12 +337,13 @@ TEST(URDFParser, ParseGazeboInvalidDampingFactor)
          << "  </gazebo>"
          << "</robot>";
   TiXmlDocument doc;
-  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser_;
-  SDF_SUPPRESS_DEPRECATED_END
   doc.Parse(stream.str().c_str());
   ASSERT_THROW(TiXmlDocument sdf_result = parser_.InitModelDoc(&doc),
                std::invalid_argument);
+
+  parser_.ListSDFExtensions();
+  parser_.ListSDFExtensions("link");
 }
 
 /////////////////////////////////////////////////
@@ -419,9 +409,7 @@ TEST(URDFParser, ParseGazeboJointElements)
            << "</robot>";
 
     TiXmlDocument doc;
-    SDF_SUPPRESS_DEPRECATED_BEGIN
     sdf::URDF2SDF parser_;
-    SDF_SUPPRESS_DEPRECATED_END
     doc.Parse(stream.str().c_str());
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
@@ -438,6 +426,9 @@ TEST(URDFParser, ParseGazeboJointElements)
 
     // For the last element, check that it is exactly what we expect
     EXPECT_EQ(tmp->FirstChild()->ValueStr(), it->second[i]);
+
+    parser_.ListSDFExtensions();
+    parser_.ListSDFExtensions("head_j0");
   }
 }
 
@@ -807,9 +798,7 @@ TEST(URDFParser, OutputPrecision)
         </link>
     </robot>)";
 
-  SDF_SUPPRESS_DEPRECATED_BEGIN
   sdf::URDF2SDF parser;
-  SDF_SUPPRESS_DEPRECATED_END
   TiXmlDocument sdfResult = parser.InitModelString(str);
 
   auto root = sdfResult.RootElement();

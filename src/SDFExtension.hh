@@ -120,9 +120,7 @@ namespace sdf
     // blobs into body or robot
     public: std::vector<std::shared_ptr<TiXmlElement> > blobs;
 
-    SDF_SUPPRESS_DEPRECATED_BEGIN
     friend class URDF2SDF;
-    SDF_SUPPRESS_DEPRECATED_END
   };
   }
 }

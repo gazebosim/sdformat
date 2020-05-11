@@ -33,12 +33,12 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
-#include "sdf/parser_urdf.hh"
 #include "sdf/sdf_config.h"
 
 #include "Converter.hh"
 #include "FrameSemantics.hh"
 #include "parser_private.hh"
+#include "parser_urdf.hh"
 
 namespace sdf
 {
@@ -406,7 +406,6 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
   }
 
   // Suppress deprecation for sdf::URDF2SDF
-  SDF_SUPPRESS_DEPRECATED_BEGIN
   if (readDoc(&xmlDoc, _sdf, filename, _convert, _errors))
   {
     return true;
@@ -426,7 +425,6 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
       return false;
     }
   }
-  SDF_SUPPRESS_DEPRECATED_END
 
   return false;
 }
@@ -474,9 +472,7 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   }
   else
   {
-    SDF_SUPPRESS_DEPRECATED_BEGIN
     URDF2SDF u2g;
-    SDF_SUPPRESS_DEPRECATED_END
     TiXmlDocument doc = u2g.InitModelString(_xmlString);
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {

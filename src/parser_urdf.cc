@@ -31,10 +31,10 @@
 #include <urdf_model/link.h>
 #include <urdf_parser/urdf_parser.h>
 
-#include "sdf/parser_urdf.hh"
 #include "sdf/sdf.hh"
 
 #include "SDFExtension.hh"
+#include "parser_urdf.hh"
 
 using namespace sdf;
 

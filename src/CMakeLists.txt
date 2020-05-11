@@ -121,7 +121,6 @@ set (gtest_sources
   Mesh_TEST.cc
   Model_TEST.cc
   Noise_TEST.cc
-  parser_urdf_TEST.cc
   Param_TEST.cc
   parser_TEST.cc
   Pbr_TEST.cc
@@ -161,6 +160,18 @@ endif()
 if (NOT WIN32)
   set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc EmbeddedSdf.cc)
   sdf_build_tests(Converter_TEST.cc)
+endif()
+
+if (NOT WIN32)
+  set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS SDFExtension.cc parser_urdf.cc)
+  sdf_build_tests(parser_urdf_TEST.cc)
+  if (NOT USE_INTERNAL_URDF)
+    target_compile_options(UNIT_parser_urdf_TEST PRIVATE ${URDF_CFLAGS})
+    if (${CMAKE_VERSION} VERSION_GREATER 3.13)
+      target_link_options(UNIT_parser_urdf_TEST PRIVATE ${URDF_LDFLAGS})
+    endif()
+    target_link_libraries(UNIT_parser_urdf_TEST PRIVATE ${URDF_LIBRARIES})
+  endif()
 endif()
 
 sdf_add_library(${sdf_target} ${sources})
