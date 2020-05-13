@@ -17,6 +17,7 @@
 
 #include <any>
 #include <cstdint>
+#include <limits>
 
 #include <gtest/gtest.h>
 
@@ -25,7 +26,7 @@
 #include "sdf/Exception.hh"
 #include "sdf/Param.hh"
 
-bool check_double(std::string num)
+bool check_double(const std::string &num)
 {
   const std::string name = "number";
   const std::string type = "double";
@@ -98,6 +99,42 @@ TEST(Param, Bool)
 TEST(SetFromString, Decimals)
 {
   ASSERT_TRUE(check_double("0.2345"));
+}
+
+////////////////////////////////////////////////////
+/// Test Inf
+TEST(SetFromString, DoublePositiveInf)
+{
+  ASSERT_TRUE(std::numeric_limits<double>::has_infinity);
+  std::vector<std::string> positiveInfStrings{
+    "inf", "Inf", "INF", "+inf", "+Inf", "+INF"};
+  for (const auto &infString : positiveInfStrings)
+  {
+    sdf::Param doubleParam("key", "double", "0", false, "description");
+    double value = 0.;
+
+    EXPECT_TRUE(doubleParam.SetFromString(infString));
+    doubleParam.Get<double>(value);
+    EXPECT_DOUBLE_EQ(std::numeric_limits<double>::infinity(), value);
+  }
+}
+
+////////////////////////////////////////////////////
+/// Test -Inf
+TEST(SetFromString, DoubleNegativeInf)
+{
+  ASSERT_TRUE(std::numeric_limits<double>::is_iec559);
+  std::vector<std::string> negativeInfStrings{
+    "-inf", "-Inf", "-INF"};
+  for (const auto &infString : negativeInfStrings)
+  {
+    sdf::Param doubleParam("key", "double", "0", false, "description");
+    double value = 0.;
+
+    EXPECT_TRUE(doubleParam.SetFromString(infString));
+    doubleParam.Get<double>(value);
+    EXPECT_DOUBLE_EQ(- std::numeric_limits<double>::infinity(), value);
+  }
 }
 
 ////////////////////////////////////////////////////
