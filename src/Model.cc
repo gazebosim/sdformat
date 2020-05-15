@@ -200,14 +200,6 @@ Errors Model::Load(ElementPtr _sdf)
   // Load the pose. Ignore the return value since the model pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
-  // Nested models are not yet supported.
-  if (_sdf->HasElement("model"))
-  {
-    errors.push_back({ErrorCode::NESTED_MODELS_UNSUPPORTED,
-                     "Nested models are not yet supported by DOM objects, "
-                     "skipping model [" + this->dataPtr->name + "]."});
-  }
-
   if (!_sdf->HasUniqueChildNames())
   {
     sdfwarn << "Non-unique names detected in XML children of model with name["
@@ -218,17 +210,56 @@ Errors Model::Load(ElementPtr _sdf)
   // name collisions
   std::unordered_set<std::string> frameNames;
 
+  // Load nested models.
+  Errors nestedModelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
+    this->dataPtr->models);
+  errors.insert(errors.end(),
+                nestedModelLoadErrors.begin(),
+                nestedModelLoadErrors.end());
+
+  // Nested models are loaded first, and loadUniqueRepeated ensures there are no
+  // duplicate names, so these names can be added to frameNames without
+  // checking uniqueness.
+  for (const auto &model : this->dataPtr->models)
+  {
+    frameNames.insert(model.Name());
+  }
+
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
     this->dataPtr->links);
   errors.insert(errors.end(), linkLoadErrors.begin(), linkLoadErrors.end());
 
-  // Links are loaded first, and loadUniqueRepeated ensures there are no
-  // duplicate names, so these names can be added to frameNames without
-  // checking uniqueness.
-  for (const auto &link : this->dataPtr->links)
+  // Check links for name collisions and modify and warn if so.
+  for (auto &link : this->dataPtr->links)
   {
-    frameNames.insert(link.Name());
+    std::string linkName = link.Name();
+    if (frameNames.count(linkName) > 0)
+    {
+      // This link has a name collision
+      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
+      {
+        // This came from an old file, so try to workaround by renaming link
+        linkName += "_link";
+        int i = 0;
+        while (frameNames.count(linkName) > 0)
+        {
+          linkName = link.Name() + "_link" + std::to_string(i++);
+        }
+        sdfwarn << "Link with name [" << link.Name() << "] "
+                << "in model with name [" << this->Name() << "] "
+                << "has a name collision, changing link name to ["
+                << linkName << "].\n";
+        link.SetName(linkName);
+      }
+      else
+      {
+        sdferr << "Link with name [" << link.Name() << "] "
+               << "in model with name [" << this->Name() << "] "
+               << "has a name collision. Please rename this link.\n";
+      }
+    }
+    frameNames.insert(linkName);
   }
 
   // If the model is not static:
