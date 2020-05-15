@@ -155,10 +155,7 @@ TEST(DOMRoot, NestedModel)
   // Load the SDF file
   sdf::Root root;
   auto errors = root.Load(testFile);
-
-  // it should complain because nested models aren't yet supported
-  EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::NESTED_MODELS_UNSUPPORTED);
+  EXPECT_TRUE(errors.empty());
 
   EXPECT_EQ(1u, root.ModelCount());
 
@@ -181,6 +178,24 @@ TEST(DOMRoot, NestedModel)
   EXPECT_EQ(nullptr, model->JointByIndex(1));
 
   EXPECT_TRUE(model->JointNameExists("top_level_joint"));
+
+  ASSERT_EQ(1u, model->ModelCount());
+  const sdf::Model *nestedModel = model->ModelByIndex(0);
+  ASSERT_NE(nullptr, nestedModel);
+  EXPECT_EQ(nullptr, model->ModelByIndex(1));
+
+  EXPECT_TRUE(model->ModelNameExists("nested_model"));
+  EXPECT_EQ(nestedModel, model->ModelByName("nested_model"));
+  EXPECT_EQ("nested_model", nestedModel->Name());
+
+  EXPECT_EQ(1u, nestedModel->LinkCount());
+  EXPECT_NE(nullptr, nestedModel->LinkByIndex(0));
+  EXPECT_EQ(nullptr, nestedModel->LinkByIndex(1));
+
+  EXPECT_TRUE(nestedModel->LinkNameExists("nested_link01"));
+
+  EXPECT_EQ(0u, nestedModel->JointCount());
+  EXPECT_EQ(0u, nestedModel->FrameCount());
 }
 
 /////////////////////////////////////////////////
