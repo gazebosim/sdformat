@@ -45,6 +45,10 @@ but with improved human-readability..
     + const Frame \*FrameByIndex(const uint64\_t) const
     + const Frame \*FrameByName(const std::string &) const
     + bool FrameNameExists(const std::string &) const
+    + uint64\_t ModelCount() const
+    + const Model \*ModelByIndex(const uint64\_t) const
+    + const Model \*ModelByName(const std::string &) const
+    + bool ModelNameExists(const std::string &) const
     + sdf::SemanticPose SemanticPose() const
 
 1. **sdf/SDFImpl.hh**

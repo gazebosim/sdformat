@@ -67,6 +67,9 @@ class sdf::ModelPrivate
   /// \brief The frames specified in this model.
   public: std::vector<Frame> frames;
 
+  /// \brief The nested models specified in this model.
+  public: std::vector<Model> models;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
@@ -522,6 +525,46 @@ const Frame *Model::FrameByName(const std::string &_name) const
     if (f.Name() == _name)
     {
       return &f;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+uint64_t Model::ModelCount() const
+{
+  return this->dataPtr->models.size();
+}
+
+/////////////////////////////////////////////////
+const Model *Model::ModelByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->models.size())
+    return &this->dataPtr->models[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Model::ModelNameExists(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Model *Model::ModelByName(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
+    {
+      return &m;
     }
   }
   return nullptr;
