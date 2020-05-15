@@ -2,6 +2,15 @@
 
 ### SDFormat 9.X.X (202X-XX-XX)
 
+1. Change bitbucket links to GitHub.
+    * [Pull request 240](https://github.com/osrf/sdformat/pull/240)
+
+1. Collision: don't load Surface without `<surface>`.
+    * [Pull request 268](https://github.com/osrf/sdformat/pull/268)
+
+1. Properly handle the requirement of C++17 at the CMake exported target level.
+    * [Pull request 251](https://github.com/osrf/sdformat/pull/251)
+
 1. Fix homebrew build with external urdfdom.
     * [BitBucket pull request 677](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/677)
     * [BitBucket pull request 686](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/686)
