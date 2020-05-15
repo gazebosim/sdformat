@@ -198,6 +198,29 @@ namespace sdf
     /// \return True if there exists an explicit frame with the given name.
     public: bool FrameNameExists(const std::string &_name) const;
 
+    /// \brief Get the number of nested models.
+    /// \return Number of nested models contained in this Model object.
+    public: uint64_t ModelCount() const;
+
+    /// \brief Get a nested model based on an index.
+    /// \param[in] _index Index of the nested model. The index should be in the
+    /// range [0..ModelCount()).
+    /// \return Pointer to the model. Nullptr if the index does not exist.
+    /// \sa uint64_t ModelCount() const
+    public: const Model *ModelByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a nested model name exists.
+    /// \param[in] _name Name of the nested model to check.
+    /// \return True if there exists a nested model with the given name.
+    public: bool ModelNameExists(const std::string &_name) const;
+
+    /// \brief Get a nested model based on a name.
+    /// \param[in] _name Name of the nested model.
+    /// \return Pointer to the model. Nullptr if a model with the given name
+    ///  does not exist.
+    /// \sa bool ModelNameExists(const std::string &_name) const
+    public: const Model *ModelByName(const std::string &_name) const;
+
     /// \brief Get the pose of the model. This is the pose of the model
     /// as specified in SDF (<model> <pose> ... </pose></model>), and is
     /// typically used to express the position and rotation of a model in a
