@@ -154,6 +154,9 @@
 
 1. Enforce rules about reserved names and unique names among sibling elements.
     * [BitBucket pull request 600](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/600)
+    * This also implements changes necessary for parsing custom elements and
+    attributes per the following proposal:
+    [Custom elements and attributes](http://sdformat.org/tutorials?tut=custom_elements_attributes_proposal)
 
 1. Relax name checking, so name collisions generate warnings and names are automatically changed.
     * [BitBucket pull request 621](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/621)
