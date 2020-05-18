@@ -38,6 +38,12 @@
 1. Change bitbucket links to GitHub.
     * [Pull request 240](https://github.com/osrf/sdformat/pull/240)
 
+1. Param_TEST: test parsing +Inf and -Inf.
+    * [Pull request 277](https://github.com/osrf/sdformat/pull/277)
+
+1. Observe the CMake variable `BUILD_TESTING` if it is defined.
+    * [Pull request 269](https://github.com/osrf/sdformat/pull/269)
+
 1. Collision: don't load Surface without `<surface>`.
     * [Pull request 268](https://github.com/osrf/sdformat/pull/268)
 
