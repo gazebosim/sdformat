@@ -18,11 +18,14 @@
 
 #include <algorithm>
 
+#include "sdf/Console.hh"
+
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
 
 /////////////////////////////////////////////////
+//*
 tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc, const tinyxml2::XMLNode *_src)
 {
   if (_src == nullptr)

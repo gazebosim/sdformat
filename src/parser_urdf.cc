@@ -2029,7 +2029,7 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
             // construct new elements if not in blobs
             if (material == nullptr)
             {
-              material  = new tinyxml2::XMLElement("material");
+              material  = _elem->GetDocument()->NewElement("material");
               if (!material)
               {
                 // Memory allocation error
@@ -2043,7 +2043,7 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
             {
               if (material->FirstChildElement("script") == nullptr)
               {
-                script  = new tinyxml2::XMLElement("script");
+                script  = _elem->GetDocument()->NewElement("script");
                 if (!script)
                 {
                   // Memory allocation error
@@ -2054,7 +2054,7 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
               }
               else
               {
-                script  = material->FirstChildElement("script");
+                script = material->FirstChildElement("script");
               }
             }
 
@@ -2755,8 +2755,8 @@ void CreateLink(tinyxml2::XMLElement *_root,
   // this transform does not exist for the root link
   if (_link->parent_joint)
   {
-    tinyxml2::XMLElement *pose = new tinyxml2::XMLElement("pose");
-    pose->SetAttribute("relative_to", _link->parent_joint->name);
+    tinyxml2::XMLElement *pose = _root->GetDocument()->NewElement("pose");
+    pose->SetAttribute("relative_to", _link->parent_joint->name.c_str());
     elem->LinkEndChild(pose);
   }
   else
@@ -2995,7 +2995,7 @@ void CreateJoint(tinyxml2::XMLElement *_root,
     {
       relativeToAttr = "__model__";
     }
-    pose->SetAttribute("relative_to", relativeToAttr);
+    pose->SetAttribute("relative_to", relativeToAttr.c_str());
 
     AddKeyValue(joint, "parent", _link->getParent()->name);
     AddKeyValue(joint, "child", _link->name);
@@ -3191,8 +3191,9 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void URDF2SDF::InitModelString(tinyxml2::XMLDocument* _sdfXmlOut, const std::string &_urdfStr,
-                                        bool _enforceLimits)
+void URDF2SDF::InitModelString(const std::string &_urdfStr,
+                               tinyxml2::XMLDocument* _sdfXmlOut,
+                               bool _enforceLimits)
 {
   g_enforceLimits = _enforceLimits;
 
@@ -3230,16 +3231,12 @@ void URDF2SDF::InitModelString(tinyxml2::XMLDocument* _sdfXmlOut, const std::str
   ParseRobotOrigin(urdfXml);
 
   urdf::LinkConstSharedPtr rootLink = robotModel->getRoot();
-
-  // create root element and define needed namespaces
-  tinyxml2::XMLElement *robot = new tinyxml2::XMLElement("model");
-
   tinyxml2::XMLElement *sdf;
 
   try
   {
     // set model name to urdf robot name if not specified
-    robot->SetAttribute("name", robotModel->getName());
+    robot->SetAttribute("name", robotModel->getName().c_str());
 
     // Fixed Joint Reduction
     // if link connects to parent via fixed joint, lump down and remove link
@@ -3275,7 +3272,7 @@ void URDF2SDF::InitModelString(tinyxml2::XMLDocument* _sdfXmlOut, const std::str
     InsertRobotOrigin(robot);
 
     // Create new sdf
-    sdf = new tinyxml2::XMLElement("sdf");
+    sdf = _sdfXmlOut->NewElement("sdf");
 
     try
     {
@@ -3287,13 +3284,11 @@ void URDF2SDF::InitModelString(tinyxml2::XMLDocument* _sdfXmlOut, const std::str
     }
     catch(...)
     {
-      delete sdf;
       throw;
     }
   }
   catch(...)
   {
-    delete robot;
     throw;
   }
 
@@ -3307,7 +3302,7 @@ void URDF2SDF::InitModelDoc(const tinyxml2::XMLDocument *_xmlDoc,
   tinyxml2::XMLPrinter printer;
   _xmlDoc->Print(&printer);
   std::string urdfStr = printer.CStr();
-  return InitModelString(_sdfXmlOut, urdfStr);
+  InitModelString(urdfStr, _sdfXmlDoc);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3317,7 +3312,7 @@ void URDF2SDF::InitModelFile(const std::string &_filename,
   tinyxml2::XMLDocument xmlDoc;
   if (!xmlDoc.LoadFile(_filename.c_str()))
   {
-    return this->InitModelDoc(_sdfXmlOut, &xmlDoc);
+    return this->InitModelDoc(&xmlDoc, _sdfXmlDoc);
   }
   else
   {

@@ -425,7 +425,8 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
   else if (URDF2SDF::IsURDF(filename))
   {
     URDF2SDF u2g;
-    tinyxml2::XMLDocument doc = u2g.InitModelFile(filename);
+    tinyxml2::XMLDocument doc;
+    u2g.InitModelFile(filename, &doc);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
@@ -486,7 +487,7 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   {
     URDF2SDF u2g;
     tinyxml2::XMLDocument doc;
-    u2g.InitModelString(&doc, _xmlString);
+    u2g.InitModelString(_xmlString, &doc);
 
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {
