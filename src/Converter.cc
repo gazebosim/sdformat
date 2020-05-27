@@ -157,10 +157,11 @@ void Converter::ConvertDescendantsImpl(tinyxml2::XMLElement *_e, tinyxml2::XMLEl
     return;
   }
 
+  std::string name = _c->Attribute("descendant_name");
   tinyxml2::XMLElement *e = _e->FirstChildElement();
   while (e)
   {
-    if (strcmp(_e->Name(), _c->Attribute("descendant_name")) == 0)
+    if (strcmp(e->Name(), _c->Attribute("descendant_name")) == 0)
     {
       ConvertImpl(e, _c);
     }
@@ -349,6 +350,7 @@ void Converter::Remove(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_remov
   else
   {
     tinyxml2::XMLElement *childElem = _elem->FirstChildElement(elementName);
+
     while (childElem)
     {
       _elem->DeleteChild(childElem);
@@ -647,8 +649,9 @@ void Converter::Move(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_moveEle
 
     if (toElemStr && !toAttrStr)
     {
-      tinyxml2::XMLElement *moveTo = static_cast<tinyxml2::XMLElement*>(
-          DeepClone(moveFrom->GetDocument(), moveFrom));
+      tinyxml2::XMLNode* cloned = DeepClone(moveFrom->GetDocument(), moveFrom);
+      tinyxml2::XMLElement *moveTo = static_cast<tinyxml2::XMLElement*>(cloned);
+
       moveTo->SetValue(toName);
       toElem->LinkEndChild(moveTo);
     }
