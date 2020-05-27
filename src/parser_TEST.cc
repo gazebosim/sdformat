@@ -489,6 +489,10 @@ TEST(Parser, SyntaxErrorInValues)
   std::stringstream buffer;
   auto old = std::cerr.rdbuf(buffer.rdbuf());
 
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+#endif
+
   {
     std::string path = pathBase +"/bad_syntax_pose.sdf";
     sdf::SDFPtr sdf(new sdf::SDF());
@@ -523,6 +527,9 @@ TEST(Parser, SyntaxErrorInValues)
 
   // Revert cerr rdbug so as to not interfere with other tests
   std::cerr.rdbuf(old);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(true);
+#endif
 }
 
 /////////////////////////////////////////////////
