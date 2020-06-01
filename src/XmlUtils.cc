@@ -14,9 +14,9 @@
  * limitations under the License.
  *
 */
-#include "XmlUtils.hh"
-
 #include <algorithm>
+
+#include "XmlUtils.hh"
 
 #include "sdf/Console.hh"
 
@@ -25,8 +25,8 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 
 /////////////////////////////////////////////////
-//*
-tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc, const tinyxml2::XMLNode *_src)
+tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc,
+                             const tinyxml2::XMLNode *_src)
 {
   if (_src == nullptr)
   {
@@ -45,7 +45,7 @@ tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc, const tinyxml2::XMLNod
        node = node->NextSibling())
   {
     auto* child_copy = DeepClone(_doc, node);
-    if(child_copy == nullptr)
+    if (child_copy == nullptr)
     {
       sdferr << "Failed to clone child " << node->Value() << "\n";
       return nullptr;
@@ -59,14 +59,26 @@ tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc, const tinyxml2::XMLNod
 /////////////////////////////////////////////////
 std::string &TrimStringLeft(std::string &_s)
 {
-  _s.erase(_s.begin(),find_if_not(_s.begin(),_s.end(),[](int c){return isspace(c);}));
+  _s.erase(
+    _s.begin(),
+    find_if_not(_s.begin(), _s.end(),
+      [](int c)
+      {
+        return isspace(c);
+      }));
   return _s;
 }
 
 /////////////////////////////////////////////////
 std::string &TrimStringRight(std::string &_s)
 {
-  _s.erase(find_if_not(_s.rbegin(),_s.rend(),[](int c){return isspace(c);}).base(), _s.end());
+  _s.erase(
+    find_if_not(_s.rbegin(), _s.rend(),
+        [](int c)
+        {
+          return isspace(c);
+        }).base(),
+    _s.end());
   return _s;
 }
 

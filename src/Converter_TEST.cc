@@ -1499,7 +1499,8 @@ TEST(Converter, MapElemElemMultipleLevels)
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc5.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
-  tinyxml2::XMLElement *convertedElem2 = convertedElem->FirstChildElement("elemCC");
+  tinyxml2::XMLElement *convertedElem2 =
+    convertedElem->FirstChildElement("elemCC");
   ASSERT_NE(nullptr, convertedElem2);
   convertedElem2 = convertedElem2->FirstChildElement("elemDD");
   ASSERT_NE(nullptr, convertedElem2);
@@ -1543,7 +1544,8 @@ TEST(Converter, MapAttrAttrMultipleLevels)
   tinyxml2::XMLElement *convertedElem =  xmlDoc6.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
   EXPECT_STREQ(convertedElem->Name(), "elemA");
-  tinyxml2::XMLElement *convertedElem2 = convertedElem->FirstChildElement("elemCC");
+  tinyxml2::XMLElement *convertedElem2 =
+    convertedElem->FirstChildElement("elemCC");
   ASSERT_NE(nullptr, convertedElem2);
   convertedElem2 = convertedElem2->FirstChildElement("elemDD");
   ASSERT_NE(nullptr, convertedElem2);
@@ -1589,7 +1591,8 @@ TEST(Converter, MapElemAttrMultipleLevels)
   tinyxml2::XMLElement *convertedElem =  xmlDoc7.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
   EXPECT_STREQ(convertedElem->Name(), "elemA");
-  tinyxml2::XMLElement *convertedElem2 = convertedElem->FirstChildElement("elemCC");
+  tinyxml2::XMLElement *convertedElem2 =
+    convertedElem->FirstChildElement("elemCC");
   ASSERT_NE(nullptr, convertedElem2);
   convertedElem2 = convertedElem2->FirstChildElement("elemDD");
   ASSERT_NE(nullptr, convertedElem2);
@@ -1632,7 +1635,8 @@ TEST(Converter, MapAttrElemMultipleLevels)
   tinyxml2::XMLElement *convertedElem =  xmlDoc8.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
   EXPECT_STREQ(convertedElem->Name(), "elemA");
-  tinyxml2::XMLElement *convertedElem2 = convertedElem->FirstChildElement("elemCC");
+  tinyxml2::XMLElement *convertedElem2 =
+    convertedElem->FirstChildElement("elemCC");
   ASSERT_NE(nullptr, convertedElem2);
   convertedElem2 = convertedElem2->FirstChildElement("elemDD");
   ASSERT_NE(nullptr, convertedElem2);
@@ -1978,8 +1982,8 @@ TEST(Converter, IMU_15_to_16)
     EXPECT_EQ(angVelAxisElem->Value()[0], a);
     EXPECT_EQ(linAccAxisElem->Value()[0], a);
 
-    tinyxml2::XMLElement *angVelAxisNoiseElem = angVelAxisElem->FirstChildElement();
-    tinyxml2::XMLElement *linAccAxisNoiseElem = linAccAxisElem->FirstChildElement();
+    auto *angVelAxisNoiseElem = angVelAxisElem->FirstChildElement();
+    auto *linAccAxisNoiseElem = linAccAxisElem->FirstChildElement();
 
     EXPECT_STREQ(angVelAxisNoiseElem->Name(), "noise");
     EXPECT_STREQ(linAccAxisNoiseElem->Name(), "noise");
@@ -2049,7 +2053,7 @@ TEST(Converter, World_15_to_16)
   EXPECT_EQ(nullptr, convertedElem->FirstChildElement("magnetic_field"));
 
   // Get the gravity
-  tinyxml2::XMLElement *gravityElem = convertedElem->NextSiblingElement("gravity");
+  auto *gravityElem = convertedElem->NextSiblingElement("gravity");
   ASSERT_NE(nullptr, gravityElem);
   EXPECT_STREQ(gravityElem->GetText(), "1 0 -9.8");
 
@@ -2127,7 +2131,8 @@ TEST(Converter, Pose_16_to_17)
   tinyxml2::XMLElement *jointLinkElem = childLinkElem->NextSiblingElement();
   ASSERT_NE(nullptr, jointLinkElem);
   EXPECT_STREQ("joint", jointLinkElem->Name());
-  tinyxml2::XMLElement *jointLinkPoseElem = jointLinkElem->FirstChildElement("pose");
+  tinyxml2::XMLElement *jointLinkPoseElem =
+    jointLinkElem->FirstChildElement("pose");
   ASSERT_NE(nullptr, jointLinkPoseElem);
   EXPECT_STREQ("pose", jointLinkPoseElem->Name());
   // frame attribute should have been moved to relative_to

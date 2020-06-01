@@ -100,7 +100,8 @@ namespace sdf
     /// \brief Remove an element.
     /// \param[in] _elem The element that has the _removeElem child.
     /// \param[in] _removeElem The element to remove.
-    private: static void Remove(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_removeElem);
+    private: static void Remove(tinyxml2::XMLElement *_elem,
+                                tinyxml2::XMLElement *_removeElem);
 
     private: static const char *GetValue(const char *_valueElem,
                                          const char *_valueAttr,

@@ -121,7 +121,8 @@ void ReduceVisualsToParent(urdf::LinkSharedPtr _link);
 void ReduceInertialToParent(urdf::LinkSharedPtr /*_link*/);
 
 /// create SDF Collision block based on URDF
-void CreateCollision(tinyxml2::XMLElement* _elem, urdf::LinkConstSharedPtr _link,
+void CreateCollision(tinyxml2::XMLElement* _elem,
+                     urdf::LinkConstSharedPtr _link,
                      urdf::CollisionSharedPtr _collision,
                      const std::string &_oldLinkName = std::string(""));
 
@@ -135,16 +136,19 @@ void CreateJoint(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
                  ignition::math::Pose3d &_currentTransform);
 
 /// insert extensions into links
-void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem, const std::string &_linkName);
+void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem,
+                            const std::string &_linkName);
 
 /// create visual blocks from urdf visuals
 void CreateVisuals(tinyxml2::XMLElement* _elem, urdf::LinkConstSharedPtr _link);
 
 /// create collision blocks from urdf collisions
-void CreateCollisions(tinyxml2::XMLElement* _elem, urdf::LinkConstSharedPtr _link);
+void CreateCollisions(tinyxml2::XMLElement* _elem,
+                      urdf::LinkConstSharedPtr _link);
 
 /// create SDF Inertial block based on URDF
-void CreateInertial(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link);
+void CreateInertial(tinyxml2::XMLElement *_elem,
+                    urdf::LinkConstSharedPtr _link);
 
 /// append transform (pose) to the end of the xml element
 void AddTransform(tinyxml2::XMLElement *_elem,
@@ -223,7 +227,8 @@ void AddKeyValue(tinyxml2::XMLElement *_elem, const std::string &_key,
 /// \return a string
 std::string Values2str(unsigned int _count, const double *_values);
 
-void CreateGeometry(tinyxml2::XMLElement *_elem, urdf::GeometrySharedPtr _geometry);
+void CreateGeometry(tinyxml2::XMLElement *_elem,
+                    urdf::GeometrySharedPtr _geometry);
 
 ignition::math::Pose3d inverseTransformToParentFrame(
     ignition::math::Pose3d _transformInLinkFrame,
@@ -1160,7 +1165,8 @@ void AddKeyValue(tinyxml2::XMLElement *_elem, const std::string &_key,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void AddTransform(tinyxml2::XMLElement *_elem, const ignition::math::Pose3d &_transform)
+void AddTransform(tinyxml2::XMLElement *_elem,
+                  const ignition::math::Pose3d &_transform)
 {
   ignition::math::Vector3d e = _transform.Rot().Euler();
   double cpose[6] = { _transform.Pos().X(), _transform.Pos().Y(),
@@ -1181,11 +1187,12 @@ std::string GetKeyValueAsString(tinyxml2::XMLElement* _elem)
   else if (_elem->FirstChild())
   {
     // Check that this node is a XMLText
-    if(_elem->FirstChild()->ToText())
+    if (_elem->FirstChild()->ToText())
     {
       valueStr = _elem->FirstChild()->Value();
     }
-    else {
+    else
+    {
       sdfwarn << "Attribute value string not set\n";
     }
   }
@@ -1316,7 +1323,7 @@ void URDF2SDF::ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml)
              e = e->NextSiblingElement())
         {
           tinyxml2::XMLPrinter printer;
-          e->Accept( &printer );
+          e->Accept(&printer);
 
           XMLDocumentPtr xmlDocBlob(new tinyxml2::XMLDocument);
           xmlDocBlob->Parse(printer.CStr());
@@ -1550,7 +1557,7 @@ void URDF2SDF::ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml)
 
 void CopyBlob(tinyxml2::XMLElement *_src, tinyxml2::XMLElement *_blob_parent)
 {
-  if(_blob_parent == nullptr)
+  if (_blob_parent == nullptr)
   {
     sdferr << "blob parent is null\n";
     return;
@@ -1560,7 +1567,9 @@ void CopyBlob(tinyxml2::XMLElement *_src, tinyxml2::XMLElement *_blob_parent)
   if (clone == nullptr)
   {
     sdferr << "Unable to deep copy blob\n";
-  } else {
+  }
+  else
+  {
     _blob_parent->LinkEndChild(clone);
   }
 }
@@ -2070,7 +2079,8 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem, const std::string &_linkName)
+void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem,
+                            const std::string &_linkName)
 {
   for (StringSDFExtensionPtrMap::iterator
        sdfIt = g_extensions.begin();
@@ -2095,7 +2105,8 @@ void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem, const std::string &_lin
 
         // damping factor
 
-        tinyxml2::XMLElement *velocityDecay = _elem->GetDocument()->NewElement("velocity_decay");
+        tinyxml2::XMLElement *velocityDecay =
+          _elem->GetDocument()->NewElement("velocity_decay");
         if ((*ge)->isDampingFactor)
         {
           /// @todo separate linear and angular velocity decay
@@ -2303,7 +2314,8 @@ void InsertSDFExtensionRobot(tinyxml2::XMLElement *_elem)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CreateGeometry(tinyxml2::XMLElement* _elem, urdf::GeometrySharedPtr _geometry)
+void CreateGeometry(tinyxml2::XMLElement* _elem,
+                    urdf::GeometrySharedPtr _geometry)
 {
   auto* doc = _elem->GetDocument();
   tinyxml2::XMLElement *sdfGeometry = doc->NewElement("geometry");
@@ -2510,7 +2522,8 @@ void ReduceSDFExtensionToParent(urdf::LinkSharedPtr _link)
 
     // find pointer to the existing extension with the new _link reference
     std::string parentLinkName = _link->getParent()->name;
-    StringSDFExtensionPtrMap::iterator parentExt = g_extensions.find(parentLinkName);
+    StringSDFExtensionPtrMap::iterator parentExt =
+      g_extensions.find(parentLinkName);
 
     // if none exist, create new extension with parentLinkName
     if (parentExt == g_extensions.end())
@@ -2642,7 +2655,6 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
         for (auto blobIt = (*ge)->blobs.begin();
             blobIt != (*ge)->blobs.end(); ++blobIt)
         {
-
           tinyxml2::XMLPrinter streamIn;
           (*blobIt)->Print(&streamIn);
           sdfdbg << "    BLOB: [" << streamIn.CStr() << "]\n";
@@ -3092,7 +3104,8 @@ void CreateJoint(tinyxml2::XMLElement *_root,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CreateCollision(tinyxml2::XMLElement* _elem, urdf::LinkConstSharedPtr _link,
+void CreateCollision(tinyxml2::XMLElement* _elem,
+                     urdf::LinkConstSharedPtr _link,
                      urdf::CollisionSharedPtr _collision,
                      const std::string &_oldLinkName)
 {
@@ -3161,7 +3174,8 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
   }
   else
   {
-    sdfVisual->SetAttribute("name", (_link->name + g_lumpPrefix + _oldLinkName).c_str());
+    sdfVisual->SetAttribute("name",
+        (_link->name + g_lumpPrefix + _oldLinkName).c_str());
   }
 
   // add the visualisation transfrom
@@ -3218,7 +3232,8 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
 
   // parse sdf extension
   tinyxml2::XMLDocument urdfXml;
-  if(urdfXml.Parse(_urdfStr.c_str())) {
+  if (urdfXml.Parse(_urdfStr.c_str()))
+  {
     sdferr << "Unable to parse URDF string: " << urdfXml.ErrorStr() << "\n";
     return;
   }
@@ -3316,7 +3331,8 @@ void URDF2SDF::InitModelFile(const std::string &_filename,
   }
   else
   {
-    sdferr << "Unable to load file[" << _filename << "]:" << xmlDoc.ErrorStr() << "\n";
+    sdferr << "Unable to load file["
+      << _filename << "]:" << xmlDoc.ErrorStr() << "\n";
   }
 }
 
@@ -3500,17 +3516,20 @@ void ReduceSDFExtensionPluginFrameReplace(
   {
     // replace element containing _link names to parent link names
     // find first instance of xyz and rpy, replace with reduction transform
-    tinyxml2::XMLNode *elementNode = (*_blobIt)->FirstChildElement(_elementName.c_str());
+    tinyxml2::XMLNode *elementNode =
+      (*_blobIt)->FirstChildElement(_elementName.c_str());
     if (elementNode)
     {
       if (GetKeyValueAsString(elementNode->ToElement()) == linkName)
       {
         (*_blobIt)->DeleteChild(elementNode);
         auto* doc = elementNode->GetDocument();
-        tinyxml2::XMLElement *bodyNameKey = doc->NewElement(_elementName.c_str());
+        tinyxml2::XMLElement *bodyNameKey =
+          doc->NewElement(_elementName.c_str());
         std::ostringstream bodyNameStream;
         bodyNameStream << parentLinkName;
-        tinyxml2::XMLText *bodyNameTxt = doc->NewText(bodyNameStream.str().c_str());
+        tinyxml2::XMLText *bodyNameTxt =
+          doc->NewText(bodyNameStream.str().c_str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
         (*_blobIt)->LinkEndChild(bodyNameKey);
         /// @todo update transforms for this sdf plugin too
@@ -3613,7 +3632,8 @@ void ReduceSDFExtensionProjectorFrameReplace(
           tinyxml2::XMLElement *bodyNameKey = doc->NewElement("projector");
           std::ostringstream bodyNameStream;
           bodyNameStream << projectorName;
-          tinyxml2::XMLText *bodyNameTxt = doc->NewText(bodyNameStream.str().c_str());
+          tinyxml2::XMLText *bodyNameTxt =
+            doc->NewText(bodyNameStream.str().c_str());
           bodyNameKey->LinkEndChild(bodyNameTxt);
           (*_blobIt)->LinkEndChild(bodyNameKey);
         }
@@ -3632,7 +3652,8 @@ void ReduceSDFExtensionGripperFrameReplace(
 
   if (strcmp((*_blobIt)->FirstChildElement()->Name(), "gripper") == 0)
   {
-    tinyxml2::XMLNode *gripperLink = (*_blobIt)->FirstChildElement("gripper_link");
+    tinyxml2::XMLNode *gripperLink =
+      (*_blobIt)->FirstChildElement("gripper_link");
     if (gripperLink)
     {
       if (GetKeyValueAsString(gripperLink->ToElement()) == linkName)
@@ -3642,7 +3663,8 @@ void ReduceSDFExtensionGripperFrameReplace(
         tinyxml2::XMLElement *bodyNameKey = doc->NewElement("gripper_link");
         std::ostringstream bodyNameStream;
         bodyNameStream << parentLinkName;
-        tinyxml2::XMLText *bodyNameTxt = doc->NewText(bodyNameStream.str().c_str());
+        tinyxml2::XMLText *bodyNameTxt =
+          doc->NewText(bodyNameStream.str().c_str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
         (*_blobIt)->LinkEndChild(bodyNameKey);
       }
@@ -3658,7 +3680,8 @@ void ReduceSDFExtensionGripperFrameReplace(
             doc->NewElement("palm_link");
         std::ostringstream bodyNameStream;
         bodyNameStream << parentLinkName;
-        tinyxml2::XMLText *bodyNameTxt = doc->NewText(bodyNameStream.str().c_str());
+        tinyxml2::XMLText *bodyNameTxt =
+          doc->NewText(bodyNameStream.str().c_str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
         (*_blobIt)->LinkEndChild(bodyNameKey);
       }
@@ -3688,7 +3711,8 @@ void ReduceSDFExtensionJointFrameReplace(
         tinyxml2::XMLElement *parentNameKey = doc->NewElement("parent");
         std::ostringstream parentNameStream;
         parentNameStream << parentLinkName;
-        tinyxml2::XMLText *parentNameTxt = doc->NewText(parentNameStream.str().c_str());
+        tinyxml2::XMLText *parentNameTxt =
+          doc->NewText(parentNameStream.str().c_str());
         parentNameKey->LinkEndChild(parentNameTxt);
         (*_blobIt)->LinkEndChild(parentNameKey);
       }
@@ -3702,7 +3726,8 @@ void ReduceSDFExtensionJointFrameReplace(
         tinyxml2::XMLElement *childNameKey = doc->NewElement("child");
         std::ostringstream childNameStream;
         childNameStream << parentLinkName;
-        tinyxml2::XMLText *childNameTxt = doc->NewText(childNameStream.str().c_str());
+        tinyxml2::XMLText *childNameTxt =
+          doc->NewText(childNameStream.str().c_str());
         childNameKey->LinkEndChild(childNameTxt);
         (*_blobIt)->LinkEndChild(childNameKey);
       }
