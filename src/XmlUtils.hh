@@ -30,7 +30,8 @@ namespace sdf
   /// \param[in] _doc Document in which to place the copied node
   /// \param[in] _src The node to deep copy
   /// \returns The newly copied node
-  tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc, const tinyxml2::XMLNode *_src);
+  tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc,
+                               const tinyxml2::XMLNode *_src);
 
   /// \brief Trim whitespace from a string
   /// \param[in] _s String to trim

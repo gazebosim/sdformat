@@ -43,7 +43,8 @@ bool EndsWith(const std::string& _a, const std::string& _b)
 }
 
 /////////////////////////////////////////////////
-bool Converter::Convert(tinyxml2::XMLDocument *_doc, const std::string &_toVersion,
+bool Converter::Convert(tinyxml2::XMLDocument *_doc,
+                        const std::string &_toVersion,
                         bool _quiet)
 {
   SDF_ASSERT(_doc != nullptr, "SDF XML doc is NULL");
@@ -131,7 +132,8 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc, const std::string &_toVersi
 }
 
 /////////////////////////////////////////////////
-void Converter::Convert(tinyxml2::XMLDocument *_doc, tinyxml2::XMLDocument *_convertDoc)
+void Converter::Convert(tinyxml2::XMLDocument *_doc,
+                        tinyxml2::XMLDocument *_convertDoc)
 {
   SDF_ASSERT(_doc != NULL, "SDF XML doc is NULL");
   SDF_ASSERT(_convertDoc != NULL, "Convert XML doc is NULL");
@@ -140,7 +142,8 @@ void Converter::Convert(tinyxml2::XMLDocument *_doc, tinyxml2::XMLDocument *_con
 }
 
 /////////////////////////////////////////////////
-void Converter::ConvertDescendantsImpl(tinyxml2::XMLElement *_e, tinyxml2::XMLElement *_c)
+void Converter::ConvertDescendantsImpl(tinyxml2::XMLElement *_e,
+                                       tinyxml2::XMLElement *_c)
 {
   if (!_c->Attribute("descendant_name"))
   {
@@ -157,7 +160,6 @@ void Converter::ConvertDescendantsImpl(tinyxml2::XMLElement *_e, tinyxml2::XMLEl
     return;
   }
 
-  std::string name = _c->Attribute("descendant_name");
   tinyxml2::XMLElement *e = _e->FirstChildElement();
   while (e)
   {
@@ -171,14 +173,15 @@ void Converter::ConvertDescendantsImpl(tinyxml2::XMLElement *_e, tinyxml2::XMLEl
 }
 
 /////////////////////////////////////////////////
-void Converter::ConvertImpl(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_convert)
+void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
+                            tinyxml2::XMLElement *_convert)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_convert != NULL, "Convert element is NULL");
 
   CheckDeprecation(_elem, _convert);
 
-  for (tinyxml2::XMLElement *convertElem = _convert->FirstChildElement("convert");
+  for (auto *convertElem = _convert->FirstChildElement("convert");
        convertElem; convertElem = convertElem->NextSiblingElement("convert"))
   {
     if (convertElem->Attribute("name"))
@@ -234,13 +237,14 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_
 }
 
 /////////////////////////////////////////////////
-void Converter::Rename(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_renameElem)
+void Converter::Rename(tinyxml2::XMLElement *_elem,
+                       tinyxml2::XMLElement *_renameElem)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_renameElem != NULL, "Rename element is NULL");
 
-  tinyxml2::XMLElement *fromConvertElem = _renameElem->FirstChildElement("from");
-  tinyxml2::XMLElement *toConvertElem = _renameElem->FirstChildElement("to");
+  auto *fromConvertElem = _renameElem->FirstChildElement("from");
+  auto *toConvertElem = _renameElem->FirstChildElement("to");
 
   const char *fromElemName = fromConvertElem->Attribute("element");
   const char *fromAttrName = fromConvertElem->Attribute("attribute");
@@ -328,7 +332,8 @@ void Converter::Add(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_addElem)
 }
 
 /////////////////////////////////////////////////
-void Converter::Remove(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_removeElem)
+void Converter::Remove(tinyxml2::XMLElement *_elem,
+                       tinyxml2::XMLElement *_removeElem)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_removeElem != NULL, "Move element is NULL");
@@ -395,8 +400,8 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
 
   // create map of input and output values
   std::map<std::string, std::string> valueMap;
-  tinyxml2::XMLElement *fromValueElem = fromConvertElem->FirstChildElement("value");
-  tinyxml2::XMLElement *toValueElem = toConvertElem->FirstChildElement("value");
+  auto *fromValueElem = fromConvertElem->FirstChildElement("value");
+  auto *toValueElem = toConvertElem->FirstChildElement("value");
   if (!fromValueElem)
   {
     sdferr << "Map: <from> element requires at least one <value> element.\n";
@@ -528,7 +533,7 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
         return;
       }
 
-      tinyxml2::XMLElement *newElem = doc->NewElement(toTokens[newDirIndex].c_str());
+      auto *newElem = doc->NewElement(toTokens[newDirIndex].c_str());
       toElem->LinkEndChild(newElem);
       toElem = newElem;
       newDirIndex++;
@@ -547,7 +552,8 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
 }
 
 /////////////////////////////////////////////////
-void Converter::Move(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_moveElem,
+void Converter::Move(tinyxml2::XMLElement *_elem,
+                     tinyxml2::XMLElement *_moveElem,
                      const bool _copy)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
@@ -628,7 +634,7 @@ void Converter::Move(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_moveEle
     while (newDirIndex < (toTokens.size()-offset))
     {
       auto *doc = toElem->GetDocument();
-      tinyxml2::XMLElement *newElem = doc->NewElement(toTokens[newDirIndex].c_str());
+      auto *newElem = doc->NewElement(toTokens[newDirIndex].c_str());
       toElem->LinkEndChild(newElem);
       toElem = newElem;
       newDirIndex++;
@@ -733,10 +739,11 @@ const char *Converter::GetValue(const char *_valueElem, const char *_valueAttr,
 }
 
 /////////////////////////////////////////////////
-void Converter::CheckDeprecation(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_convert)
+void Converter::CheckDeprecation(tinyxml2::XMLElement *_elem,
+                                 tinyxml2::XMLElement *_convert)
 {
   // Process deprecated elements
-  for (tinyxml2::XMLElement *deprecatedElem = _convert->FirstChildElement("deprecated");
+  for (auto *deprecatedElem = _convert->FirstChildElement("deprecated");
        deprecatedElem;
        deprecatedElem = deprecatedElem->NextSiblingElement("deprecated"))
   {

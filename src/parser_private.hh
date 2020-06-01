@@ -38,8 +38,8 @@ namespace sdf
   ///            model XML tag
   /// \param[out] _modelFileName file name of the best model file
   /// \return string with the best SDF version supported
-  static std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
-                                                  std::string &_modelFileName);
+  static std::string getBestSupportedModelVersion(
+      tinyxml2::XMLElement *_modelXML, std::string &_modelFileName);
 
   /// \brief Initialize the SDF interface using a TinyXML2 document.
   ///
@@ -83,7 +83,9 @@ namespace sdf
   /// \param[in,out] _sdf SDF pointer to parse data into.
   /// \param[out] _errors Captures errors found during parsing.
   /// \return True on success, false on error.
-  static bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors);
+  static bool readXml(tinyxml2::XMLElement *_xml,
+                      ElementPtr _sdf,
+                      Errors &_errors);
 
   /// \brief Copy child XML elements into the _sdf element.
   /// \param[in] _sdf Parent Element.

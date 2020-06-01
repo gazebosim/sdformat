@@ -85,7 +85,8 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
   tinyxml2::XMLDocument xmlDoc;
   if (xmlDoc.LoadFile(_filename.c_str()))
   {
-    sdferr << "Unable to load file[" << _filename << "]: " << xmlDoc.ErrorStr() << "\n";
+    sdferr << "Unable to load file["
+           << _filename << "]: " << xmlDoc.ErrorStr() << "\n";
     return false;
   }
 
@@ -242,7 +243,7 @@ bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
   for (tinyxml2::XMLElement *child = _xml->FirstChildElement("attribute");
        child; child = child->NextSiblingElement("attribute"))
   {
-    tinyxml2::XMLElement *descriptionChild = child->FirstChildElement("description");
+    auto *descriptionChild = child->FirstChildElement("description");
     const char *name = child->Attribute("name");
     const char *type = child->Attribute("type");
     const char *defaultValue = child->Attribute("default");
@@ -587,7 +588,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     }
 
     // parse new sdf xml
-    tinyxml2::XMLElement *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
+    auto *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
     if (!readXml(elemXml, _sdf->Root(), _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -1036,7 +1037,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
 
         if (isModel || isActor)
         {
-          for (tinyxml2::XMLElement *childElemXml = elemXml->FirstChildElement();
+          for (auto *childElemXml = elemXml->FirstChildElement();
                childElemXml; childElemXml = childElemXml->NextSiblingElement())
           {
             if (std::string("plugin") == childElemXml->Value())
@@ -1163,7 +1164,9 @@ static void replace_all(std::string &_str,
 }
 
 /////////////////////////////////////////////////
-void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml, const bool _onlyUnknown)
+void copyChildren(ElementPtr _sdf,
+                  tinyxml2::XMLElement *_xml,
+                  const bool _onlyUnknown)
 {
   // Iterate over all the child elements
   tinyxml2::XMLElement *elemXml = nullptr;
@@ -1179,7 +1182,7 @@ void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml, const bool _onlyU
         sdf::ElementPtr element = _sdf->AddElement(elem_name);
 
         // FIXME: copy attributes
-        for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
+        for (const auto *attribute = elemXml->FirstAttribute();
              attribute; attribute = attribute->Next())
         {
           element->GetAttribute(attribute->Name())->SetFromString(
