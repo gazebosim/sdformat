@@ -10,7 +10,7 @@ pipelines:
           - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
           - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
           - apt-get update
-          - apt -y install cmake build-essential curl git libtinyxml-dev libxml2-utils ruby-dev python-psutil cppcheck
+          - apt -y install cmake build-essential curl git libtinyxml2-dev libxml2-utils ruby-dev python-psutil cppcheck
           - gcc -v
           - g++ -v
           - gcov -v
