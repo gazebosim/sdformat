@@ -302,9 +302,9 @@ bool Param::ValueFromString(const std::string &_value)
   // comma for decimal position instead of a dot, making the conversion
   // to fail. See bug #60 for more information. Force to use always C
   setlocale(LC_NUMERIC, "C");
-
-  std::string tmp(_value);
-  std::string lowerTmp = lowercase(_value);
+  std::string trimmed = sdf::trim(_value);
+  std::string tmp(trimmed);
+  std::string lowerTmp = lowercase(trimmed);
 
   // "true" and "false" doesn't work properly
   if (lowerTmp == "true")
@@ -423,14 +423,7 @@ bool Param::ValueFromString(const std::string &_value)
              this->dataPtr->typeName == "pose" ||
              this->dataPtr->typeName == "Pose")
     {
-      // if the value is an empty string or white space we avoid parsing since
-      // its considered a valid value
-      auto isWhiteSpace = [](unsigned char _c)
-      {
-        return std::isspace(_c);
-      };
-
-      if (!tmp.empty() || !std::all_of(tmp.begin(), tmp.end(), isWhiteSpace))
+      if (!tmp.empty())
       {
         return ParseUsingStringStream<ignition::math::Pose3d>(
             tmp, this->dataPtr->key, this->dataPtr->value);
