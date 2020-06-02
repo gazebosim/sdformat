@@ -20,7 +20,7 @@ if(UNIX AND NOT WIN32)
  endif(CMAKE_UNAME)
 endif()
 
-project (sdformat10)
+project (sdformat11)
 
 # The protocol version has nothing to do with the package version set below.
 # It represents the current version of sdformat implement by the software
