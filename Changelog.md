@@ -1,3 +1,15 @@
+## libsdformat 11.X
+
+### libsdformat 11.X.X (202X-XX-XX)
+
+### libsdformat 11.0.0 (202X-XX-XX)
+
+1. Initial version of SDFormat 1.8 specification.
+    * [BitBucket pull request 682](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/682)
+
+1. SDFormat 1.8: Deprecate //joint/axis/initial_position.
+    * [BitBucket pull request 683](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/683)
+
 ## libsdformat 10.X
 
 ### libsdformat 10.X.X (202X-XX-XX)
@@ -9,12 +21,6 @@
 
 1. Changed the default radius of a Cylinder from 1.0 to 0.5 meters.
     * [BitBucket pull request 643](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/643)
-
-1. Initial version of SDFormat 1.8 specification.
-    * [BitBucket pull request 682](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/682)
-
-1. SDFormat 1.8: Deprecate //joint/axis/initial_position.
-    * [BitBucket pull request 683](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/683)
 
 ## libsdformat 9.X
 
