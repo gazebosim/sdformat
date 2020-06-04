@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+    <model name="robot1">
+      <pose>bad 0 0 0 0 0</pose>
+      <link name="link"/>
+    </model>
+  </world>
+</sdf>
+
