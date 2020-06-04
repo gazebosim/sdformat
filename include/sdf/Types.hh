@@ -74,6 +74,12 @@ namespace sdf
   SDFORMAT_VISIBLE
   std::string trim(const char *_in);
 
+  /// \brief Trim leading and trailing whitespace from a string.
+  /// \param[in] _in The string to trim.
+  /// \return A string containing the trimmed value.
+  SDFORMAT_VISIBLE
+  std::string trim(const std::string &_in);
+
   /// \brief check if two values are equal, within a tolerance
   /// \param[in] _a the first value
   /// \param[in] _b the second value
