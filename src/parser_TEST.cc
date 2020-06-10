@@ -546,6 +546,7 @@ class ValueConstraintsFixture : public ::testing::Test
   // cppcheck-suppress unusedFunction
   protected: void SetUp() override
   {
+    sdf::Console::Instance()->SetQuiet(false);
     oldRdbuf = std::cerr.rdbuf(errBuffer.rdbuf());
   }
 
@@ -553,6 +554,9 @@ class ValueConstraintsFixture : public ::testing::Test
   protected: void TearDown() override
   {
     std::cerr.rdbuf(oldRdbuf);
+#ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(true);
+#endif
   }
 
   public: std::stringstream errBuffer;
