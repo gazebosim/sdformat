@@ -536,16 +536,20 @@ TEST(Parser, SyntaxErrorInValues)
 /// Fixture for setting up stream redirection
 class ValueConstraintsFixture : public ::testing::Test
 {
+  public: ValueConstraintsFixture() = default;
+
   public: void ClearErrorBuffer()
   {
     this->errBuffer.str("");
   }
 
+  // cppcheck-suppress unusedFunction
   protected: void SetUp() override
   {
     oldRdbuf = std::cerr.rdbuf(errBuffer.rdbuf());
   }
 
+  // cppcheck-suppress unusedFunction
   protected: void TearDown() override
   {
     std::cerr.rdbuf(oldRdbuf);
