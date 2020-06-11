@@ -54,7 +54,6 @@ namespace sdf
     /// \brief convert urdf file to sdf xml document
     /// \param[in] _urdfStr a string containing filename of the urdf model.
     /// \param[inout] _sdfXmlDoc document to populate with the sdf model.
-    /// \return a tinyxml document containing sdf of the model
     public: void InitModelFile(const std::string &_filename,
                                tinyxml2::XMLDocument *_sdfXmlDoc);
 
@@ -63,7 +62,6 @@ namespace sdf
     /// \param[in] _urdfStr a string containing model urdf
     /// \param[inout] _sdfXmlDoc document to populate with the sdf model.
     /// \param[in] _enforceLimits option to enforce joint limits
-    /// \return a tinyxml document containing sdf of the model
     public: void InitModelString(const std::string &_urdfStr,
                                  tinyxml2::XMLDocument *_sdfXmlDoc,
                                  bool _enforceLimits = true);

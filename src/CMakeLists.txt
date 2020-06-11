@@ -8,10 +8,6 @@ if (NOT USE_INTERNAL_URDF)
   link_directories(${URDF_LIBRARY_DIRS})
 endif()
 
-# TODO(mjcarroll) These should probably actually be target_* variants
-link_directories(${tinyxml2_LIBRARY_DIRS})
-include_directories(${tinyxml2_INCLUDE_DIRS})
-
 set (sources
   Actor.cc
   AirPressure.cc

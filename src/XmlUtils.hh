@@ -32,11 +32,6 @@ namespace sdf
   /// \returns The newly copied node
   tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc,
                                const tinyxml2::XMLNode *_src);
-
-  /// \brief Trim whitespace from a string
-  /// \param[in] _s String to trim
-  /// \returns String _s with whitespace trimmed from both ends
-  std::string TrimString(const std::string &_s);
   }
 }
 #endif

@@ -83,7 +83,7 @@ template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
   tinyxml2::XMLDocument xmlDoc;
-  if (xmlDoc.LoadFile(_filename.c_str()))
+  if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
   {
     sdferr << "Unable to load file["
            << _filename << "]: " << xmlDoc.ErrorStr() << "\n";
@@ -771,7 +771,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
   }
 
   tinyxml2::XMLDocument configFileDoc;
-  if (!configFileDoc.LoadFile(configFilePath.c_str()))
+  if (tinyxml2::XML_SUCCESS != configFileDoc.LoadFile(configFilePath.c_str()))
   {
     sdferr << "Error parsing XML in file ["
            << configFilePath << "]: "

@@ -36,7 +36,6 @@ std::string getMinimalUrdfTxt()
 std::string convertUrdfStrToSdfStr(const std::string &_urdf)
 {
   sdf::URDF2SDF parser_;
-  SDF_SUPPRESS_DEPRECATED_END
   tinyxml2::XMLDocument sdf_result;
   parser_.InitModelString(_urdf, &sdf_result);
   tinyxml2::XMLPrinter printer;
