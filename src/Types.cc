@@ -55,13 +55,13 @@ std::string trim(const char *_in)
 {
   std::string str(_in);
 
-  const size_t strBegin = str.find_first_not_of(" \t");
+  const size_t strBegin = str.find_first_not_of(" \t\n");
   if (strBegin == std::string::npos)
   {
     return "";
   }
 
-  const size_t strRange = str.find_last_not_of(" \t") - strBegin + 1;
+  const size_t strRange = str.find_last_not_of(" \t\n") - strBegin + 1;
 
   return str.substr(strBegin, strRange);
 }

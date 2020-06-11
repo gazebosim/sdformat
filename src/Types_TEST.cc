@@ -94,6 +94,9 @@ TEST(Types, trim_nothing)
 
   out = sdf::trim("\txyz\t");
   EXPECT_EQ(out, "xyz");
+
+  out = sdf::trim("\n    xyz    \n");
+  EXPECT_EQ(out, "xyz");
 }
 
 /////////////////////////////////////////////////
