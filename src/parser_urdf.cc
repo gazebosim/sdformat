@@ -1196,7 +1196,7 @@ std::string GetKeyValueAsString(tinyxml2::XMLElement* _elem)
       sdfwarn << "Attribute value string not set\n";
     }
   }
-  return trim(valueStr.c_str());
+  return trim(valueStr);
 }
 
 /////////////////////////////////////////////////

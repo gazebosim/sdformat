@@ -56,7 +56,6 @@ std::string trim(const char *_in)
   return sdf::trim(std::string(_in));
 }
 
-<<<<<<< HEAD
 //////////////////////////////////////////////////
 std::string trim(const std::string &_in)
 {
