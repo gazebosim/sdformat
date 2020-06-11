@@ -261,7 +261,7 @@ bool URDF2SDF::IsURDF(const std::string &_filename)
 {
   tinyxml2::XMLDocument xmlDoc;
 
-  if (!xmlDoc.LoadFile(_filename.c_str()))
+  if (tinyxml2::XML_SUCCESS == xmlDoc.LoadFile(_filename.c_str()))
   {
     tinyxml2::XMLPrinter printer;
     xmlDoc.Print(&printer);
@@ -1157,7 +1157,7 @@ void AddKeyValue(tinyxml2::XMLElement *_elem, const std::string &_key,
     _elem->DeleteChild(childElem);  // remove old _elem
   }
 
-  auto* doc = _elem->GetDocument();
+  auto *doc = _elem->GetDocument();
   tinyxml2::XMLElement *ekey = doc->NewElement(_key.c_str());
   tinyxml2::XMLText *textEkey = doc->NewText(_value.c_str());
   ekey->LinkEndChild(textEkey);
@@ -1196,7 +1196,7 @@ std::string GetKeyValueAsString(tinyxml2::XMLElement* _elem)
       sdfwarn << "Attribute value string not set\n";
     }
   }
-  return TrimString(valueStr);
+  return trim(valueStr.c_str());
 }
 
 /////////////////////////////////////////////////
