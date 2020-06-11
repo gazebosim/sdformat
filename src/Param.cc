@@ -16,6 +16,7 @@
  */
 
 #include <algorithm>
+#include <cctype>
 #include <cstdint>
 #include <locale>
 #include <sstream>
@@ -272,15 +273,38 @@ std::string Param::GetDefaultAsString() const
 }
 
 //////////////////////////////////////////////////
+/// \brief Helper function for Param::ValueFromString
+/// \param[in] _input Input string.
+/// \param[in] _key Key of the parameter, used for error message.
+/// \param[out] _value This will be set with the parsed value.
+/// \return True if parsing succeeded.
+template <typename T>
+bool ParseUsingStringStream(const std::string &_input, const std::string &_key,
+                            ParamPrivate::ParamVariant &_value)
+{
+  StringStreamClassicLocale ss(_input);
+  T _val;
+  ss >> _val;
+  if (ss.fail())
+  {
+    sdferr << "Unknown error. Unable to set value [" << _input << " ] for key["
+           << _key << "]\n";
+    return false;
+  }
+  _value = _val;
+  return true;
+}
+
+//////////////////////////////////////////////////
 bool Param::ValueFromString(const std::string &_value)
 {
   // Under some circumstances, latin locales (es_ES or pt_BR) will return a
   // comma for decimal position instead of a dot, making the conversion
   // to fail. See bug #60 for more information. Force to use always C
   setlocale(LC_NUMERIC, "C");
-
-  std::string tmp(_value);
-  std::string lowerTmp = lowercase(_value);
+  std::string trimmed = sdf::trim(_value);
+  std::string tmp(trimmed);
+  std::string lowerTmp = lowercase(trimmed);
 
   // "true" and "false" doesn't work properly
   if (lowerTmp == "true")
@@ -335,11 +359,8 @@ bool Param::ValueFromString(const std::string &_value)
     }
     else if (this->dataPtr->typeName == "uint64_t")
     {
-      StringStreamClassicLocale ss(tmp);
-      std::uint64_t u64tmp;
-
-      ss >> u64tmp;
-      this->dataPtr->value = u64tmp;
+      return ParseUsingStringStream<std::uint64_t>(tmp, this->dataPtr->key,
+                                                   this->dataPtr->value);
     }
     else if (this->dataPtr->typeName == "unsigned int")
     {
@@ -357,66 +378,62 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "sdf::Time" ||
              this->dataPtr->typeName == "time")
     {
-      StringStreamClassicLocale ss(tmp);
-      sdf::Time timetmp;
-
-      ss >> timetmp;
-      this->dataPtr->value = timetmp;
+      return ParseUsingStringStream<sdf::Time>(tmp, this->dataPtr->key,
+                                               this->dataPtr->value);
     }
     else if (this->dataPtr->typeName == "ignition::math::Color" ||
              this->dataPtr->typeName == "color")
     {
-      StringStreamClassicLocale ss(tmp);
-      ignition::math::Color colortmp;
+      // The insertion operator (>>) expects 4 values, but the last value (the
+      // alpha) is optional. We first try to parse assuming the alpha is
+      // specified. If that fails, we append the default value of alpha to the
+      // string and try to parse again.
+      bool result = ParseUsingStringStream<ignition::math::Color>(
+          tmp, this->dataPtr->key, this->dataPtr->value);
 
-      ss >> colortmp;
-      this->dataPtr->value = colortmp;
+      if (!result)
+      {
+        ignition::math::Color colortmp;
+        return ParseUsingStringStream<ignition::math::Color>(
+            tmp + " " + std::to_string(colortmp.A()), this->dataPtr->key,
+            this->dataPtr->value);
+      }
+      else
+        return true;
     }
     else if (this->dataPtr->typeName == "ignition::math::Vector2i" ||
              this->dataPtr->typeName == "vector2i")
     {
-      StringStreamClassicLocale ss(tmp);
-      ignition::math::Vector2i vectmp;
-
-      ss >> vectmp;
-      this->dataPtr->value = vectmp;
+      return ParseUsingStringStream<ignition::math::Vector2i>(
+          tmp, this->dataPtr->key, this->dataPtr->value);
     }
     else if (this->dataPtr->typeName == "ignition::math::Vector2d" ||
              this->dataPtr->typeName == "vector2d")
     {
-      StringStreamClassicLocale ss(tmp);
-      ignition::math::Vector2d vectmp;
-
-      ss >> vectmp;
-      this->dataPtr->value = vectmp;
+      return ParseUsingStringStream<ignition::math::Vector2d>(
+          tmp, this->dataPtr->key, this->dataPtr->value);
     }
     else if (this->dataPtr->typeName == "ignition::math::Vector3d" ||
              this->dataPtr->typeName == "vector3")
     {
-      StringStreamClassicLocale ss(tmp);
-      ignition::math::Vector3d vectmp;
-
-      ss >> vectmp;
-      this->dataPtr->value = vectmp;
+      return ParseUsingStringStream<ignition::math::Vector3d>(
+          tmp, this->dataPtr->key, this->dataPtr->value);
     }
     else if (this->dataPtr->typeName == "ignition::math::Pose3d" ||
              this->dataPtr->typeName == "pose" ||
              this->dataPtr->typeName == "Pose")
     {
-      StringStreamClassicLocale ss(tmp);
-      ignition::math::Pose3d posetmp;
-
-      ss >> posetmp;
-      this->dataPtr->value = posetmp;
+      if (!tmp.empty())
+      {
+        return ParseUsingStringStream<ignition::math::Pose3d>(
+            tmp, this->dataPtr->key, this->dataPtr->value);
+      }
     }
     else if (this->dataPtr->typeName == "ignition::math::Quaterniond" ||
              this->dataPtr->typeName == "quaternion")
     {
-      StringStreamClassicLocale ss(tmp);
-      ignition::math::Quaterniond quattmp;
-
-      ss >> quattmp;
-      this->dataPtr->value = quattmp;
+      return ParseUsingStringStream<ignition::math::Quaterniond>(
+          tmp, this->dataPtr->key, this->dataPtr->value);
     }
     else
     {
