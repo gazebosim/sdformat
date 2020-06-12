@@ -23,6 +23,11 @@
 #include "sdf/sdf_config.h"
 #include "test_config.h"
 
+#ifdef _WIN32
+  #define popen  _popen
+  #define pclose _pclose
+#endif
+
 static const std::string g_sdfVersion(" --force-version " +
   std::string(SDF_VERSION_FULL));
 static const std::string g_ignCommand(std::string(IGN_PATH) + "/ign");
