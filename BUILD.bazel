@@ -1,0 +1,245 @@
+load(
+    "//ign_bazel:generate_include_header.bzl",
+    "generate_include_header",
+)
+
+load(
+    "//ign_bazel:cmake_configure_file.bzl",
+    "cmake_configure_file",
+)
+
+package(default_visibility = ["//visibility:public"])
+
+SDF_MAJOR_VERSION = 10
+SDF_MINOR_VERSION = 0
+SDF_PATCH_VERSION = 0
+PROJECT_NAME = "ign"
+SDF_VERSION_NAME = "sdf10"
+INSTALL_DIR = "/tmp"
+SDF_PKG_VERSION = 0
+
+# Generates config.hh based on the version numbers in CMake code.
+cmake_configure_file(
+    name = "test_config",
+    src = "cmake/sdf_config.h.in",
+    out = "include/sdf/sdf_config.h",
+    cmakelists = ["CMakeLists.txt"],
+    defines = [
+        "SDF_MAJOR_VERSION=%d" % (SDF_MAJOR_VERSION),
+        "SDF_MINOR_VERSION=%d" % (SDF_MINOR_VERSION),
+        "SDF_PATCH_VERSION=%d" % (SDF_PATCH_VERSION),
+        "PROJECT_NAME=%s" % (PROJECT_NAME),
+        "SDF_VERSION_NAME=%s" % (SDF_VERSION_NAME),
+        "CMAKE_INSTALL_FULL_DATAROOTDIR=%s" % (INSTALL_DIR),
+        "SDF_PKG_VERSION=%d" % (SDF_PKG_VERSION),
+    ],
+    visibility = ["//visibility:private"],
+)
+
+test_sources = [
+    "src/Actor_TEST.cc",
+    "src/AirPressure_TEST.cc",
+    "src/Altimeter_TEST.cc",
+    "src/Atmosphere_TEST.cc",
+    "src/Box_TEST.cc",
+    "src/Camera_TEST.cc",
+    "src/Collision_TEST.cc",
+    "src/Console_TEST.cc",
+  # "src/Converter_TEST.cc",
+    "src/Cylinder_TEST.cc",
+    "src/Element_TEST.cc",
+    "src/Error_TEST.cc",
+    "src/Exception_TEST.cc",
+    "src/Filesystem_TEST.cc",
+    "src/FrameSemantics_TEST.cc",
+    "src/Frame_TEST.cc",
+    "src/Geometry_TEST.cc",
+    "src/Gui_TEST.cc",
+    "src/ign_TEST.cc",
+    "src/Imu_TEST.cc",
+    "src/JointAxis_TEST.cc",
+    "src/Joint_TEST.cc",
+    "src/Lidar_TEST.cc",
+    "src/Light_TEST.cc",
+    "src/Link_TEST.cc",
+    "src/Magnetometer_TEST.cc",
+    "src/Material_TEST.cc",
+    "src/Mesh_TEST.cc",
+    "src/Model_TEST.cc",
+    "src/Noise_TEST.cc",
+    "src/Param_TEST.cc",
+    "src/parser_TEST.cc",
+  # "src/parser_urdf_TEST.cc",
+    "src/Pbr_TEST.cc",
+    "src/Physics_TEST.cc",
+    "src/Plane_TEST.cc",
+    "src/Root_TEST.cc",
+    "src/Scene_TEST.cc",
+    "src/SDF_TEST.cc",
+    "src/SemanticPose_TEST.cc",
+    "src/Sensor_TEST.cc",
+    "src/Sphere_TEST.cc",
+    "src/Surface_TEST.cc",
+    "src/Types_TEST.cc",
+    "src/Utils_TEST.cc",
+    "src/Visual_TEST.cc",
+    "src/World_TEST.cc",
+]
+
+public_headers_no_gen = [
+    "include/sdf/Actor.hh",
+    "include/sdf/AirPressure.hh",
+    "include/sdf/Altimeter.hh",
+    "include/sdf/Assert.hh",
+    "include/sdf/Atmosphere.hh",
+    "include/sdf/Box.hh",
+    "include/sdf/Camera.hh",
+    "include/sdf/Collision.hh",
+    "include/sdf/Console.hh",
+    "include/sdf/Cylinder.hh",
+    "include/sdf/Element.hh",
+    "include/sdf/Error.hh",
+    "include/sdf/Exception.hh",
+    "include/sdf/Filesystem.hh",
+    "include/sdf/Frame.hh",
+    "include/sdf/Geometry.hh",
+    "include/sdf/Gui.hh",
+    "include/sdf/Imu.hh",
+    "include/sdf/JointAxis.hh",
+    "include/sdf/Joint.hh",
+    "include/sdf/Lidar.hh",
+    "include/sdf/Light.hh",
+    "include/sdf/Link.hh",
+    "include/sdf/Magnetometer.hh",
+    "include/sdf/Material.hh",
+    "include/sdf/Mesh.hh",
+    "include/sdf/Model.hh",
+    "include/sdf/Noise.hh",
+    "include/sdf/Param.hh",
+    "include/sdf/parser.hh",
+    "include/sdf/Pbr.hh",
+    "include/sdf/Physics.hh",
+    "include/sdf/Plane.hh",
+    "include/sdf/Root.hh",
+    "include/sdf/Scene.hh",
+    "include/sdf/SDFImpl.hh",
+    "include/sdf/SemanticPose.hh",
+    "include/sdf/Sensor.hh",
+    "include/sdf/Sphere.hh",
+    "include/sdf/Surface.hh",
+    "include/sdf/system_util.hh",
+    "include/sdf/Types.hh",
+    "include/sdf/Visual.hh",
+    "include/sdf/World.hh",
+]
+
+private_headers = [
+    "src/EmbeddedSdf.hh",
+    "src/ExceptionPrivate.hh",
+    "src/ign.hh",
+    "src/parser_private.hh",
+    "src/SDFExtension.hh",
+    "src/SDFImplPrivate.hh",
+]
+
+sources = [
+    "src/Actor.cc",
+    "src/AirPressure.cc",
+    "src/Altimeter.cc",
+    "src/Atmosphere.cc",
+    "src/Box.cc",
+    "src/Camera.cc",
+    "src/Collision.cc",
+    "src/Console.cc",
+    "src/Converter.cc",
+    "src/Cylinder.cc",
+    "src/Element.cc",
+    "src/Error.cc",
+    "src/Exception.cc",
+    "src/Filesystem.cc",
+    "src/Frame.cc",
+    "src/FrameSemantics.cc",
+    "src/Geometry.cc",
+    "src/Gui.cc",
+    "src/ign.cc",
+    "src/Imu.cc",
+    "src/JointAxis.cc",
+    "src/Joint.cc",
+    "src/Lidar.cc",
+    "src/Light.cc",
+    "src/Link.cc",
+    "src/Magnetometer.cc",
+    "src/Material.cc",
+    "src/Mesh.cc",
+    "src/Model.cc",
+    "src/Noise.cc",
+    "src/Param.cc",
+    "src/parser.cc",
+    "src/parser_urdf.cc",
+    "src/Pbr.cc",
+    "src/Physics.cc",
+    "src/Plane.cc",
+    "src/Root.cc",
+    "src/Scene.cc",
+    "src/SDF.cc",
+    "src/SDFExtension.cc",
+    "src/SemanticPose.cc",
+    "src/Sensor.cc",
+    "src/Sphere.cc",
+    "src/Surface.cc",
+    "src/Types.cc",
+    "src/Visual.cc",
+    "src/World.cc",
+    "src/Utils.cc",
+    "src/XmlUtils.cc",
+]
+
+generate_include_header(
+    name = "sdformathh_genrule",
+    out = "include/sdf/sdf.hh",
+    hdrs = public_headers_no_gen + [
+        "include/sdf/sdf_config.h"
+    ]
+)
+
+public_headers = public_headers_no_gen + [
+    "include/sdf/sdf_config.h",
+    "include/sdf/sdf.hh",
+    "src/Converter.hh",
+    "src/FrameSemantics.hh",
+    "src/parser_urdf.hh",
+    "src/Utils.hh",
+    "src/XmlUtils.hh",
+]
+
+cc_binary(
+    name = "libsdformat.so",
+    srcs = sources + public_headers + private_headers,
+    includes = ["include", "src"],
+    linkopts = ["-Wl,-soname,libsdformat.so", "-ltinyxml2"],
+    linkshared =  True,
+    visibility = [],
+    deps = [
+        "//ign_math",
+    ],
+)
+
+cc_library(
+    name = "sdformat",
+    srcs = ["libsdformat.so"],
+    hdrs = public_headers,
+    includes = ["include", "src"],
+    visibility = ["//visibility:public"],
+)
+
+[cc_test(
+    name = src.replace("/", "_").replace(".cc", "").replace("src_", ""),
+    srcs = [src],
+    deps = [
+        "//sdformat:sdformat",
+        "//sdformat/test:test_utils",
+        "//ign_math",
+        "@gtest//:gtest",
+        "@gtest//:gtest_main",
+    ]
+) for src in test_sources]
