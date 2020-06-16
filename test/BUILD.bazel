@@ -1,0 +1,38 @@
+load(
+    "//ign_bazel:cmake_configure_file.bzl",
+    "cmake_configure_file",
+)
+
+BINARY_DIR = "/tmp"
+SOURCE_DIR = "/tmp"
+CMAKE_BINARY_DIR = "/tmp"
+IGN_TOOLS_BINARY_DIR = "/tmp"
+IGN_MSGS_BINARY_DIR = "/tmp"
+IGN_MSGS_LIBRARY_DIR = "/tmp"
+SDF_PROTOCOL_VERSION = 10
+
+# Generates config.hh based on the version numbers in CMake code.
+cmake_configure_file(
+    name = "test_config",
+    src = "test_config.h.in",
+    out = "test_config.h",
+    cmakelists = ["CMakeLists.txt"],
+    defines = [
+        "PROJECT_BINARY_DIR=%s" % (BINARY_DIR),
+        "PROJECT_SOURCE_DIR=%s" % (SOURCE_DIR),
+        "CMAKE_BINARY_DIR=%s" % (CMAKE_BINARY_DIR),
+        "IGNITION-TOOLS_BINARY_DIRS=%s" % (IGN_TOOLS_BINARY_DIR),
+        "IGNITION-MSGS_BINARY_DIRS=%s" % (IGN_MSGS_BINARY_DIR),
+        "IGNITION-MSGS_LIBRARY_DIRS=%s" % (IGN_MSGS_LIBRARY_DIR),
+        "SDF_PROTOCOL_VERSION=%d" % (SDF_PROTOCOL_VERSION),
+    ],
+    visibility = ["//visibility:private"],
+)
+
+cc_library(
+    name = "test_utils",
+    srcs = ["test_config.h"],
+    includes = ["."],
+    visibility = ["//visibility:public"],
+)
+
