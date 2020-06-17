@@ -133,19 +133,43 @@ namespace sdf
 
     /// \brief Get the name of this joint's parent link.
     /// \return The name of the parent link.
-    public: const std::string &ParentLinkName() const;
+    /// \deprecated See ParentName.
+    public: const std::string &ParentLinkName() const
+        SDF_DEPRECATED(11.0);
 
     /// \brief Set the name of the parent link.
     /// \param[in] _name Name of the parent link.
-    public: void SetParentLinkName(const std::string &_name);
+    /// \deprecated See SetParentName.
+    public: void SetParentLinkName(const std::string &_name)
+        SDF_DEPRECATED(11.0);
 
     /// \brief Get the name of this joint's child link.
     /// \return The name of the child link.
-    public: const std::string &ChildLinkName() const;
+    /// \deprecated See ChildName.
+    public: const std::string &ChildLinkName() const
+        SDF_DEPRECATED(11.0);
 
     /// \brief Set the name of the child link.
     /// \param[in] _name Name of the child link.
-    public: void SetChildLinkName(const std::string &_name);
+    /// \deprecated See SetChildName.
+    public: void SetChildLinkName(const std::string &_name)
+        SDF_DEPRECATED(11.0);
+
+    /// \brief Get the name of this joint's parent frame.
+    /// \return The name of the parent frame.
+    public: const std::string &ParentName() const;
+
+    /// \brief Set the name of the parent frame.
+    /// \param[in] _name Name of the parent frame.
+    public: void SetParentName(const std::string &_name);
+
+    /// \brief Get the name of this joint's child frame.
+    /// \return The name of the child frame.
+    public: const std::string &ChildName() const;
+
+    /// \brief Set the name of the child frame.
+    /// \param[in] _name Name of the child frame.
+    public: void SetChildName(const std::string &_name);
 
     /// \brief Get a joint axis.
     /// \param[in] _index This value specifies which axis to get. A value of

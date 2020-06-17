@@ -12,6 +12,20 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDFormat 9.x to 10.0
+
+### Deprecations
+
+1. **sdf/Joint.hh**
+   + ***Deprecation:*** const std::string &ChildLinkName() const
+   + ***Replacement:*** const std::string &ChildName() const
+   + ***Deprecation:*** const std::string &ParentLinkName() const
+   + ***Replacement:*** const std::string &ParentName() const
+   + ***Deprecation:*** void SetChildLinkName(const std::string &)
+   + ***Replacement:*** void SetChildName(const std::string &)
+   + ***Deprecation:*** void SetParentLinkName(const std::string &)
+   + ***Replacement:*** void SetParentName(const std::string &)
+
 ## SDFormat 8.x to 9.0
 
 ### Additions

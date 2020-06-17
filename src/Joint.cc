@@ -296,11 +296,23 @@ void Joint::SetType(const JointType _jointType)
 /////////////////////////////////////////////////
 const std::string &Joint::ParentLinkName() const
 {
+  return this->ParentName();
+}
+
+/////////////////////////////////////////////////
+const std::string &Joint::ParentName() const
+{
   return this->dataPtr->parentLinkName;
 }
 
 /////////////////////////////////////////////////
 void Joint::SetParentLinkName(const std::string &_name)
+{
+  this->SetParentName(_name);
+}
+
+/////////////////////////////////////////////////
+void Joint::SetParentName(const std::string &_name)
 {
   this->dataPtr->parentLinkName = _name;
 }
@@ -308,11 +320,23 @@ void Joint::SetParentLinkName(const std::string &_name)
 /////////////////////////////////////////////////
 const std::string &Joint::ChildLinkName() const
 {
+  return this->ChildName();
+}
+
+/////////////////////////////////////////////////
+const std::string &Joint::ChildName() const
+{
   return this->dataPtr->childLinkName;
 }
 
 /////////////////////////////////////////////////
 void Joint::SetChildLinkName(const std::string &_name)
+{
+  this->SetChildName(_name);
+}
+
+/////////////////////////////////////////////////
+void Joint::SetChildName(const std::string &_name)
 {
   this->dataPtr->childLinkName = _name;
 }
