@@ -26,8 +26,8 @@ TEST(DOMJoint, Construction)
   sdf::Joint joint;
   EXPECT_TRUE(joint.Name().empty());
   EXPECT_EQ(sdf::JointType::INVALID, joint.Type());
-  EXPECT_TRUE(joint.ParentLinkName().empty());
-  EXPECT_TRUE(joint.ChildLinkName().empty());
+  EXPECT_TRUE(joint.ParentName().empty());
+  EXPECT_TRUE(joint.ChildName().empty());
   EXPECT_EQ(ignition::math::Pose3d::Zero, joint.RawPose());
   EXPECT_TRUE(joint.PoseRelativeTo().empty());
   EXPECT_EQ(nullptr, joint.Element());
@@ -58,11 +58,11 @@ TEST(DOMJoint, Construction)
   joint.SetName("test_joint");
   EXPECT_EQ("test_joint", joint.Name());
 
-  joint.SetParentLinkName("parent");
-  EXPECT_EQ("parent", joint.ParentLinkName());
+  joint.SetParentName("parent");
+  EXPECT_EQ("parent", joint.ParentName());
 
-  joint.SetChildLinkName("child");
-  EXPECT_EQ("child", joint.ChildLinkName());
+  joint.SetChildName("child");
+  EXPECT_EQ("child", joint.ChildName());
 
   joint.SetType(sdf::JointType::BALL);
   EXPECT_EQ(sdf::JointType::BALL, joint.Type());

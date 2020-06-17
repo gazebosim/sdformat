@@ -255,11 +255,11 @@ Errors buildFrameAttachedToGraph(
         _out.graph.AddVertex(joint->Name(), sdf::FrameType::JOINT).Id();
     _out.map[joint->Name()] = jointId;
 
-    auto childLink = _model->LinkByName(joint->ChildLinkName());
+    auto childLink = _model->LinkByName(joint->ChildName());
     if (nullptr == childLink)
     {
       errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
-        "Child link with name[" + joint->ChildLinkName() +
+        "Child link with name[" + joint->ChildName() +
         "] specified by joint with name[" + joint->Name() +
         "] not found in model with name[" + _model->Name() + "]."});
       continue;
@@ -499,11 +499,11 @@ Errors buildPoseRelativeToGraph(
     if (joint->PoseRelativeTo().empty())
     {
       // relative_to is empty, so add edge from joint to child link
-      auto childLink = _model->LinkByName(joint->ChildLinkName());
+      auto childLink = _model->LinkByName(joint->ChildName());
       if (nullptr == childLink)
       {
         errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
-          "Child link with name[" + joint->ChildLinkName() +
+          "Child link with name[" + joint->ChildName() +
           "] specified by joint with name[" + joint->Name() +
           "] not found in model with name[" + _model->Name() + "]."});
         continue;

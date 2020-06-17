@@ -87,10 +87,10 @@ TEST(DOMJoint, DoublePendulum)
   ASSERT_NE(nullptr, lowerJoint);
 
   // Check the parent and child link values
-  EXPECT_EQ("base", upperJoint->ParentLinkName());
-  EXPECT_EQ("upper_link", upperJoint->ChildLinkName());
-  EXPECT_EQ("upper_link", lowerJoint->ParentLinkName());
-  EXPECT_EQ("lower_link", lowerJoint->ChildLinkName());
+  EXPECT_EQ("base", upperJoint->ParentName());
+  EXPECT_EQ("upper_link", upperJoint->ChildName());
+  EXPECT_EQ("upper_link", lowerJoint->ParentName());
+  EXPECT_EQ("lower_link", lowerJoint->ChildName());
 
   // Check that the pose relative_to values are empty
   EXPECT_TRUE(upperJoint->PoseRelativeTo().empty());
@@ -190,8 +190,8 @@ TEST(DOMJoint, LoadJointParentWorld)
   EXPECT_NE(nullptr, model->JointByIndex(0));
   EXPECT_EQ(nullptr, model->JointByIndex(1));
   ASSERT_TRUE(model->JointNameExists("joint"));
-  EXPECT_EQ("link", model->JointByName("joint")->ChildLinkName());
-  EXPECT_EQ("world", model->JointByName("joint")->ParentLinkName());
+  EXPECT_EQ("link", model->JointByName("joint")->ChildName());
+  EXPECT_EQ("world", model->JointByName("joint")->ParentName());
   EXPECT_TRUE(model->JointByName("joint")->PoseRelativeTo().empty());
 
   EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0), model->JointByName("joint")->RawPose());

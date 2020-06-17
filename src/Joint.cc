@@ -424,7 +424,7 @@ sdf::SemanticPose Joint::SemanticPose() const
   return sdf::SemanticPose(
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
-      this->ChildLinkName(),
+      this->ChildName(),
       this->dataPtr->poseRelativeToGraph);
 }
 
