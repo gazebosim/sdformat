@@ -221,6 +221,10 @@ but with improved human-readability..
 
 ## SDF protocol 1.7 to 1.8
 
+### Modifications
+
+1. **joint.sdf** `child` and `parent` elements accept frame names instead of only link names
+
 ### Deprecations
 
 1. **joint.sdf** `initial_position` element in `<joint><axis>` and `<joint><axis2>` is deprecated
