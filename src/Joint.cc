@@ -48,11 +48,11 @@ class sdf::JointPrivate
   /// \brief Name of the joint.
   public: std::string name = "";
 
-  /// \brief Name of the parent link.
-  public: std::string parentLinkName = "";
+  /// \brief Name of the parent frame.
+  public: std::string parentName = "";
 
-  /// \brief Name of the child link.
-  public: std::string childLinkName = "";
+  /// \brief Name of the child frame.
+  public: std::string childName = "";
 
   /// \brief the joint type.
   public: JointType type = JointType::INVALID;
@@ -80,8 +80,8 @@ class sdf::JointPrivate
 /////////////////////////////////////////////////
 JointPrivate::JointPrivate(const JointPrivate &_jointPrivate)
     : name(_jointPrivate.name),
-      parentLinkName(_jointPrivate.parentLinkName),
-      childLinkName(_jointPrivate.childLinkName),
+      parentName(_jointPrivate.parentName),
+      childName(_jointPrivate.childName),
       type(_jointPrivate.type),
       pose(_jointPrivate.pose),
       poseRelativeTo(_jointPrivate.poseRelativeTo),
@@ -176,7 +176,7 @@ Errors Joint::Load(ElementPtr _sdf)
     _sdf->Get<std::string>("parent", "");
   if (parentPair.second)
   {
-    this->dataPtr->parentLinkName = parentPair.first;
+    this->dataPtr->parentName = parentPair.first;
   }
   else
   {
@@ -188,7 +188,7 @@ Errors Joint::Load(ElementPtr _sdf)
   std::pair<std::string, bool> childPair = _sdf->Get<std::string>("child", "");
   if (childPair.second)
   {
-    this->dataPtr->childLinkName = childPair.first;
+    this->dataPtr->childName = childPair.first;
   }
   else
   {
@@ -196,19 +196,19 @@ Errors Joint::Load(ElementPtr _sdf)
         "The child element is missing."});
   }
 
-  if (this->dataPtr->childLinkName == "world")
+  if (this->dataPtr->childName == "world")
   {
     errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
         "Joint with name[" + this->dataPtr->name +
         "] specified invalid child link [world]."});
   }
 
-  if (this->dataPtr->childLinkName == this->dataPtr->parentLinkName)
+  if (this->dataPtr->childName == this->dataPtr->parentName)
   {
     errors.push_back({ErrorCode::JOINT_PARENT_SAME_AS_CHILD,
         "Joint with name[" + this->dataPtr->name +
         "] must specify different link names for "
-        "parent and child, while [" + this->dataPtr->childLinkName +
+        "parent and child, while [" + this->dataPtr->childName +
         "] was specified for both."});
   }
 
@@ -302,7 +302,7 @@ const std::string &Joint::ParentLinkName() const
 /////////////////////////////////////////////////
 const std::string &Joint::ParentName() const
 {
-  return this->dataPtr->parentLinkName;
+  return this->dataPtr->parentName;
 }
 
 /////////////////////////////////////////////////
@@ -314,7 +314,7 @@ void Joint::SetParentLinkName(const std::string &_name)
 /////////////////////////////////////////////////
 void Joint::SetParentName(const std::string &_name)
 {
-  this->dataPtr->parentLinkName = _name;
+  this->dataPtr->parentName = _name;
 }
 
 /////////////////////////////////////////////////
@@ -326,7 +326,7 @@ const std::string &Joint::ChildLinkName() const
 /////////////////////////////////////////////////
 const std::string &Joint::ChildName() const
 {
-  return this->dataPtr->childLinkName;
+  return this->dataPtr->childName;
 }
 
 /////////////////////////////////////////////////
@@ -338,7 +338,7 @@ void Joint::SetChildLinkName(const std::string &_name)
 /////////////////////////////////////////////////
 void Joint::SetChildName(const std::string &_name)
 {
-  this->dataPtr->childLinkName = _name;
+  this->dataPtr->childName = _name;
 }
 
 /////////////////////////////////////////////////
