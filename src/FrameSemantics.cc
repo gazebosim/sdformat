@@ -239,7 +239,7 @@ Errors buildFrameAttachedToGraph(
     }
   }
 
-  // add joint vertices and edges to child link
+  // add joint vertices
   for (uint64_t j = 0; j < _model->JointCount(); ++j)
   {
     auto joint = _model->JointByIndex(j);
@@ -254,18 +254,6 @@ Errors buildFrameAttachedToGraph(
     auto jointId =
         _out.graph.AddVertex(joint->Name(), sdf::FrameType::JOINT).Id();
     _out.map[joint->Name()] = jointId;
-
-    auto childLink = _model->LinkByName(joint->ChildLinkName());
-    if (nullptr == childLink)
-    {
-      errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
-        "Child link with name[" + joint->ChildLinkName() +
-        "] specified by joint with name[" + joint->Name() +
-        "] not found in model with name[" + _model->Name() + "]."});
-      continue;
-    }
-    auto childLinkId = _out.map.at(childLink->Name());
-    _out.graph.AddEdge({jointId, childLinkId}, true);
   }
 
   // add frame vertices
@@ -283,6 +271,24 @@ Errors buildFrameAttachedToGraph(
     auto frameId =
         _out.graph.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
     _out.map[frame->Name()] = frameId;
+  }
+
+  // add edges from joint to child frames
+  for (uint64_t j = 0; j < _model->JointCount(); ++j)
+  {
+    auto joint = _model->JointByIndex(j);
+    auto jointId = _out.map.at(joint->Name());
+    auto childFrameName = joint->ChildLinkName();
+    if (_out.map.count(childFrameName) != 1)
+    {
+      errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+        "Child frame with name[" + childFrameName +
+        "] specified by joint with name[" + joint->Name() +
+        "] not found in model with name[" + _model->Name() + "]."});
+      continue;
+    }
+    auto childFrameId = _out.map.at(childFrameName);
+    _out.graph.AddEdge({jointId, childFrameId}, true);
   }
 
   // add frame edges
@@ -480,7 +486,7 @@ Errors buildPoseRelativeToGraph(
     }
   }
 
-  // add joint vertices and default edge if relative_to is empty
+  // add joint vertices
   for (uint64_t j = 0; j < _model->JointCount(); ++j)
   {
     auto joint = _model->JointByIndex(j);
@@ -495,22 +501,6 @@ Errors buildPoseRelativeToGraph(
     auto jointId =
         _out.graph.AddVertex(joint->Name(), sdf::FrameType::JOINT).Id();
     _out.map[joint->Name()] = jointId;
-
-    if (joint->PoseRelativeTo().empty())
-    {
-      // relative_to is empty, so add edge from joint to child link
-      auto childLink = _model->LinkByName(joint->ChildLinkName());
-      if (nullptr == childLink)
-      {
-        errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
-          "Child link with name[" + joint->ChildLinkName() +
-          "] specified by joint with name[" + joint->Name() +
-          "] not found in model with name[" + _model->Name() + "]."});
-        continue;
-      }
-      auto childLinkId = _out.map.at(childLink->Name());
-      _out.graph.AddEdge({childLinkId, jointId}, joint->RawPose());
-    }
   }
 
   // add frame vertices and default edge if both
@@ -579,11 +569,11 @@ Errors buildPoseRelativeToGraph(
   {
     auto joint = _model->JointByIndex(j);
 
-    // check if we've already added a default edge
-    const std::string relativeTo = joint->PoseRelativeTo();
-    if (joint->PoseRelativeTo().empty())
+    std::string relativeTo = joint->PoseRelativeTo();
+    if (relativeTo.empty())
     {
-      continue;
+      // since nothing else was specified, use the joint's child frame
+      relativeTo = joint->ChildLinkName();
     }
 
     auto jointId = _out.map.at(joint->Name());
