@@ -1813,6 +1813,12 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
 //////////////////////////////////////////////////
 bool checkJointParentChildLinkNames(const sdf::Root *_root)
 {
+  return checkJointParentChildNames(_root);
+}
+
+//////////////////////////////////////////////////
+bool checkJointParentChildNames(const sdf::Root *_root)
+{
   bool result = true;
 
   auto checkModelJointParentChildNames = [](

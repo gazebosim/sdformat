@@ -261,14 +261,26 @@ namespace sdf
   bool checkFrameAttachedToNames(const sdf::Root *_root);
 
   /// \brief Check that all joints in contained models specify parent
-  /// and child link names that match the names of sibling links.
+  /// and child names that match the names of sibling frames.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root sdf Root object to check recursively.
+  /// \return True if all models have joints with valid parent and child
+  /// link names.
+  /// \deprecated See checkJointParentChildNames.
+  SDFORMAT_VISIBLE
+  bool checkJointParentChildLinkNames(const sdf::Root *_root)
+      SDF_DEPRECATED(11.0);
+
+  /// \brief Check that all joints in contained models specify parent
+  /// and child names that match the names of sibling frames.
   /// This checks recursively and should check the files exhaustively
   /// rather than terminating early when the first error is found.
   /// \param[in] _root sdf Root object to check recursively.
   /// \return True if all models have joints with valid parent and child
   /// link names.
   SDFORMAT_VISIBLE
-  bool checkJointParentChildLinkNames(const sdf::Root *_root);
+  bool checkJointParentChildNames(const sdf::Root *_root);
 
   /// \brief For the world and each model, check that the attached_to graphs
   /// build without errors and have no cycles.

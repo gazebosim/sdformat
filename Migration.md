@@ -26,6 +26,10 @@ but with improved human-readability..
    + ***Deprecation:*** void SetParentLinkName(const std::string &)
    + ***Replacement:*** void SetParentName(const std::string &)
 
+1. **sdf/parser.hh**
+   + ***Deprecation:*** bool checkJointParentChildLinkNames(const sdf::Root \*)
+   + ***Replacement:*** bool checkJointParentChildNames(const sdf::Root \*)
+
 ## SDFormat 8.x to 9.0
 
 ### Additions
