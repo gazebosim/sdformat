@@ -221,7 +221,7 @@ TEST(DOMJoint, LoadInvalidJointChildWorld)
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
   EXPECT_NE(std::string::npos,
     errors[1].Message().find(
-      "Child link with name[world] specified by joint with name[joint] "
+      "Child frame with name[world] specified by joint with name[joint] "
       "not found in model with name[joint_child_world]"));
 }
 
@@ -366,7 +366,7 @@ TEST(DOMJoint, LoadInvalidChild)
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
-      "Child link with name[invalid] specified by joint with name[joint] not "
+      "Child frame with name[invalid] specified by joint with name[joint] not "
       "found"));
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
   EXPECT_NE(std::string::npos,
