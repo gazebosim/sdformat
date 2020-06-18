@@ -197,7 +197,7 @@ TEST(check, SDF)
     // Check joint_invalid_child.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: Child link with name[invalid] specified by "
+    EXPECT_NE(output.find("Error: Child frame with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_child]."),
               std::string::npos) << output;
@@ -210,9 +210,34 @@ TEST(check, SDF)
     // Check joint_invalid_parent.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: parent link with name[invalid] specified by "
+    EXPECT_NE(output.find("Error: parent frame with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_parent]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with a joint with an invalid child link.
+  {
+    std::string path = pathBase +"/joint_invalid_self_child.sdf";
+
+    // Check joint_invalid_self_child.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: FrameAttachedToGraph cycle detected, "
+                          "already visited vertex [self]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with a joint with an invalid parent link.
+  {
+    std::string path = pathBase +"/joint_invalid_self_parent.sdf";
+
+    // Check joint_invalid_self_parent.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: joint with name[self] in model with "
+                          "name[joint_invalid_self_parent] must not specify "
+                          "its own name as the parent frame."),
               std::string::npos) << output;
   }
 
@@ -247,6 +272,28 @@ TEST(check, SDF)
     std::string path = pathBase +"/joint_parent_world.sdf";
 
     // Check joint_parent_world.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with the world specified as a parent link.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/joint_child_frame.sdf";
+
+    // Check joint_child_frame.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with the world specified as a parent link.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/joint_parent_frame.sdf";
+
+    // Check joint_parent_frame.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;

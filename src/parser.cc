@@ -1839,9 +1839,11 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
       auto joint = _model->JointByIndex(j);
 
       const std::string &parentName = joint->ParentLinkName();
-      if (parentName != "world" && !_model->LinkNameExists(parentName))
+      if (parentName != "world" && !_model->LinkNameExists(parentName) &&
+          !_model->JointNameExists(parentName) &&
+          !_model->FrameNameExists(parentName))
       {
-        std::cerr << "Error: parent link with name[" << parentName
+        std::cerr << "Error: parent frame with name[" << parentName
                   << "] specified by joint with name[" << joint->Name()
                   << "] not found in model with name[" << _model->Name()
                   << "]."
@@ -1850,12 +1852,42 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
       }
 
       const std::string &childName = joint->ChildLinkName();
-      if (childName != "world" && !_model->LinkNameExists(childName))
+      if (childName == "world")
       {
-        std::cerr << "Error: child link with name[" << childName
+        std::cerr << "Error: invalid child name[world"
+                  << "] specified by joint with name[" << joint->Name()
+                  << "] in model with name[" << _model->Name()
+                  << "]."
+                  << std::endl;
+        modelResult = false;
+      }
+
+      if (!_model->LinkNameExists(childName) &&
+          !_model->JointNameExists(childName) &&
+          !_model->FrameNameExists(childName))
+      {
+        std::cerr << "Error: child frame with name[" << childName
                   << "] specified by joint with name[" << joint->Name()
                   << "] not found in model with name[" << _model->Name()
                   << "]."
+                  << std::endl;
+        modelResult = false;
+      }
+
+      if (childName == joint->Name())
+      {
+        std::cerr << "Error: joint with name[" << joint->Name()
+                  << "] in model with name[" << _model->Name()
+                  << "] must not specify its own name as the child frame."
+                  << std::endl;
+        modelResult = false;
+      }
+
+      if (parentName == joint->Name())
+      {
+        std::cerr << "Error: joint with name[" << joint->Name()
+                  << "] in model with name[" << _model->Name()
+                  << "] must not specify its own name as the parent frame."
                   << std::endl;
         modelResult = false;
       }
