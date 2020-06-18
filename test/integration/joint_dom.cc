@@ -397,17 +397,17 @@ TEST(DOMJoint, LoadLinkJointSameName17Invalid)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(2u, errors.size());
+  EXPECT_EQ(5u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
-      "Joint with non-unique name [attachment] detected in model with name "
-      "[link_joint_same_name]."));
-  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+      "Joint with non-unique name [same] detected in model with name "
+      "[model_link_joint_same_name]."));
+  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos,
-    errors[1].Message().find(
-      "Joint with non-unique name [attachment] detected in model with name "
-      "[link_joint_same_name]."));
+    errors[2].Message().find(
+      "Joint with non-unique name [same] detected in model with name "
+      "[model_link_joint_same_name]."));
 }
 
 /////////////////////////////////////////////////
@@ -429,34 +429,38 @@ TEST(DOMJoint, LoadLinkJointSameName16Valid)
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_NE(nullptr, model);
-  EXPECT_EQ("link_joint_same_name", model->Name());
-  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_EQ("model_link_joint_same_name", model->Name());
+  EXPECT_EQ(3u, model->LinkCount());
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
-  EXPECT_EQ(nullptr, model->LinkByIndex(2));
+  EXPECT_NE(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(nullptr, model->LinkByIndex(3));
   EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   ASSERT_TRUE(model->LinkNameExists("base"));
-  ASSERT_TRUE(model->LinkNameExists("attachment"));
+  ASSERT_TRUE(model->LinkNameExists("child"));
+  ASSERT_TRUE(model->LinkNameExists("same"));
   EXPECT_TRUE(model->LinkByName("base")->PoseRelativeTo().empty());
-  EXPECT_TRUE(model->LinkByName("attachment")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->LinkByName("child")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->LinkByName("same")->PoseRelativeTo().empty());
 
   EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), model->LinkByName("base")->RawPose());
-  EXPECT_EQ(Pose(0, 2, 0, 0, 0, 0), model->LinkByName("attachment")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), model->LinkByName("child")->RawPose());
+  EXPECT_EQ(Pose(0, 2, 0, 0, 0, 0), model->LinkByName("same")->RawPose());
 
   EXPECT_TRUE(model->CanonicalLinkName().empty());
 
   EXPECT_EQ(1u, model->JointCount());
   EXPECT_NE(nullptr, model->JointByIndex(0));
   EXPECT_EQ(nullptr, model->JointByIndex(1));
-  // attachment joint name should be changed
-  EXPECT_FALSE(model->JointNameExists("attachment"));
-  ASSERT_TRUE(model->JointNameExists("attachment_joint"));
-  EXPECT_TRUE(model->JointByName("attachment_joint")->PoseRelativeTo().empty());
+  // same joint name should be changed
+  EXPECT_FALSE(model->JointNameExists("same"));
+  ASSERT_TRUE(model->JointNameExists("same_joint"));
+  EXPECT_TRUE(model->JointByName("same_joint")->PoseRelativeTo().empty());
 
   EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0),
-      model->JointByName("attachment_joint")->RawPose());
+      model->JointByName("same_joint")->RawPose());
 
   // Test ResolveFrame to get each link and joint pose in the model frame.
   Pose pose;
@@ -465,28 +469,32 @@ TEST(DOMJoint, LoadLinkJointSameName16Valid)
       SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(
-    model->LinkByName("attachment")->
+    model->LinkByName("child")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->LinkByName("same")->
       SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(0, 2, 0, 0, 0, 0), pose);
   EXPECT_TRUE(
-    model->JointByName("attachment_joint")->
+    model->JointByName("same_joint")->
       SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(0, 2, 3, 0, 0, 0), pose);
+  EXPECT_EQ(Pose(2, 0, 3, 0, 0, 0), pose);
 
   // Resolve poses relative to different frames
   EXPECT_TRUE(
-    model->LinkByName("attachment")->
+    model->LinkByName("same")->
       SemanticPose().Resolve(pose, "base").empty());
   EXPECT_EQ(Pose(-1, 2, 0, 0, 0, 0), pose);
   EXPECT_TRUE(
-    model->JointByName("attachment_joint")->
+    model->JointByName("same_joint")->
       SemanticPose().Resolve(pose, "base").empty());
-  EXPECT_EQ(Pose(-1, 2, 3, 0, 0, 0), pose);
+  EXPECT_EQ(Pose(1, 0, 3, 0, 0, 0), pose);
 
   EXPECT_TRUE(
-    model->JointByName("attachment_joint")->
-      SemanticPose().Resolve(pose, "attachment").empty());
-  EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0), pose);
+    model->JointByName("same_joint")->
+      SemanticPose().Resolve(pose, "same").empty());
+  EXPECT_EQ(Pose(2, -2, 3, 0, 0, 0), pose);
 }
 
 /////////////////////////////////////////////////
