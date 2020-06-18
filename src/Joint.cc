@@ -212,6 +212,20 @@ Errors Joint::Load(ElementPtr _sdf)
         "] was specified for both."});
   }
 
+  if (this->dataPtr->childName == this->dataPtr->name)
+  {
+    errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+        "Joint with name[" + this->dataPtr->name +
+        "] must not specify its own name as the child link."});
+  }
+
+  if (this->dataPtr->parentName == this->dataPtr->name)
+  {
+    errors.push_back({ErrorCode::JOINT_PARENT_LINK_INVALID,
+        "Joint with name[" + this->dataPtr->name +
+        "] must not specify its own name as the parent link."});
+  }
+
   if (_sdf->HasElement("axis"))
   {
     this->dataPtr->axis[0].reset(new JointAxis());
