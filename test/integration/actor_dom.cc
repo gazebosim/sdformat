@@ -136,3 +136,22 @@ TEST(DOMActor, LoadActors)
   EXPECT_TRUE(actor2->ScriptAutoStart());
 }
 
+//////////////////////////////////////////////////
+TEST(DOMActor, CopySdfElementPtr)
+{
+  // Verify that copying an actor also copies the underling ElementPtr
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_complete.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+
+  ASSERT_NE(nullptr, root.Element());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  const sdf::Actor *actor1 = world->ActorByIndex(0);
+  sdf::Actor actor2(*actor1);
+
+  EXPECT_EQ(actor1->Element().get(), actor2.Element().get());
+}
