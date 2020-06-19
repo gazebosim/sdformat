@@ -142,7 +142,7 @@ TEST(DOMActor, LoadActors)
 //////////////////////////////////////////////////
 TEST(DOMActor, CopySdfLoadedProperties)
 {
-  // Verify that copying an actor also copies the underling ElementPtr
+  // Verify that copying an actor also copies the underlying ElementPtr
   // Joints and Links
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
