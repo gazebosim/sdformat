@@ -1,0 +1,10 @@
+cmake
+build-essential
+curl
+g++-8
+libtinyxml2-dev
+libxml2-utils
+ruby-dev
+python-psutil
+cppcheck
+liburdfdom-dev
