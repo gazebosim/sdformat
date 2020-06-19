@@ -134,12 +134,16 @@ TEST(DOMActor, LoadActors)
   EXPECT_TRUE(actor2->ScriptLoop());
   EXPECT_DOUBLE_EQ(1.0, actor2->ScriptDelayStart());
   EXPECT_TRUE(actor2->ScriptAutoStart());
+
+  EXPECT_EQ(actor2->LinkCount(), 2u);
+  EXPECT_EQ(actor2->JointCount(), 1u);
 }
 
 //////////////////////////////////////////////////
-TEST(DOMActor, CopySdfElementPtr)
+TEST(DOMActor, CopySdfLoadedProperties)
 {
   // Verify that copying an actor also copies the underling ElementPtr
+  // Joints and Links
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
         "world_complete.sdf");
@@ -150,8 +154,10 @@ TEST(DOMActor, CopySdfElementPtr)
   ASSERT_NE(nullptr, root.Element());
 
   const sdf::World *world = root.WorldByIndex(0);
-  const sdf::Actor *actor1 = world->ActorByIndex(0);
-  sdf::Actor actor2(*actor1);
+  const sdf::Actor *actor2 = world->ActorByIndex(1);
+  sdf::Actor actor1(*actor2);
 
-  EXPECT_EQ(actor1->Element().get(), actor2.Element().get());
+  EXPECT_EQ(actor1.Element().get(), actor2->Element().get());
+  EXPECT_EQ(actor1.LinkCount(), actor2->LinkCount());
+  EXPECT_EQ(actor1.JointCount(), actor2->JointCount());
 }
