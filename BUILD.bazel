@@ -36,6 +36,17 @@ cmake_configure_file(
     visibility = ["//visibility:private"],
 )
 
+genrule(
+    name = "embed_sdf_genrule",
+    srcs = glob([
+        "sdf/**/*.sdf",
+        "sdf/**/*.convert",
+    ]),
+    outs = ["EmbeddedSdf.cc"],
+    cmd = "$(execpath //ign_bazel:embed_sdf) $(SRCS) > $@",  # noqa
+    tools = ["//ign_bazel:embed_sdf"],
+)
+
 test_sources = [
     "src/Actor_TEST.cc",
     "src/AirPressure_TEST.cc",
@@ -134,7 +145,6 @@ public_headers_no_gen = [
 ]
 
 private_headers = [
-    "src/EmbeddedSdf.hh",
     "src/ExceptionPrivate.hh",
     "src/ign.hh",
     "src/parser_private.hh",
@@ -154,6 +164,7 @@ sources = [
     "src/Converter.cc",
     "src/Cylinder.cc",
     "src/Element.cc",
+    "EmbeddedSdf.cc",
     "src/Error.cc",
     "src/Exception.cc",
     "src/Filesystem.cc",
@@ -194,14 +205,6 @@ sources = [
     "src/XmlUtils.cc",
 ]
 
-generate_include_header(
-    name = "sdformathh_genrule",
-    out = "include/sdf/sdf.hh",
-    hdrs = public_headers_no_gen + [
-        "include/sdf/sdf_config.h"
-    ]
-)
-
 public_headers = public_headers_no_gen + [
     "include/sdf/sdf_config.h",
     "include/sdf/sdf.hh",
@@ -210,25 +213,45 @@ public_headers = public_headers_no_gen + [
     "src/parser_urdf.hh",
     "src/Utils.hh",
     "src/XmlUtils.hh",
+    "src/EmbeddedSdf.hh",
 ]
 
+generate_include_header(
+    name = "sdformathh_genrule",
+    out = "include/sdf/sdf.hh",
+    hdrs = public_headers_no_gen + [
+        "include/sdf/sdf_config.h"
+    ]
+)
+
 cc_binary(
-    name = "libsdformat.so",
+    name = "libsdformat10.so",
     srcs = sources + public_headers + private_headers,
-    includes = ["include", "src"],
-    linkopts = ["-Wl,-soname,libsdformat.so", "-ltinyxml2"],
-    linkshared =  True,
-    visibility = [],
+    includes = ["include", "."],
+    linkopts = [
+        "-Wl,-soname,libsdformat10.so",
+        "-ltinyxml2",
+        "-lurdfdom_sensor",
+        "-lurdfdom_model_state",
+        "-lurdfdom_model",
+        "-lurdfdom_world",
+        "-lconsole_bridge"
+    ],
     deps = [
         "//ign_math",
     ],
+    linkshared =  True,
+    visibility = [],
 )
 
 cc_library(
     name = "sdformat",
-    srcs = ["libsdformat.so"],
+    srcs = ["libsdformat10.so"],
     hdrs = public_headers,
-    includes = ["include", "src"],
+    includes = ["include", "."],
+    deps = [
+        "//ign_math",
+    ],
     visibility = ["//visibility:public"],
 )
 
