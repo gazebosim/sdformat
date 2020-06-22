@@ -18,8 +18,11 @@
 #define SDFORMAT_XMLUTILS_HH
 
 #include <string>
-
 #include <tinyxml2.h>
+
+#include "sdf/Error.hh"
+#include "sdf/Element.hh"
+#include "sdf/Types.hh"
 
 namespace sdf
 {
