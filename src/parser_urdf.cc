@@ -2933,7 +2933,7 @@ void CreateInertial(tinyxml2::XMLElement *_elem,
 ////////////////////////////////////////////////////////////////////////////////
 void CreateJoint(tinyxml2::XMLElement *_root,
                  urdf::LinkConstSharedPtr _link,
-                 ignition::math::Pose3d &_currentTransform)
+                 ignition::math::Pose3d &/*_currentTransform*/)
 {
   // compute the joint tag
   std::string jtype;
