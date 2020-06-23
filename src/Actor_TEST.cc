@@ -336,7 +336,6 @@ TEST(DOMAnimation, MoveConstructor)
 //////////////////////////////////////////////////
 TEST(DOMAnimation, MoveAssignment)
 {
-
   sdf::Animation anim1 = CreateDummyAnimation();
   sdf::Animation anim2;
   anim2 = std::move(anim1);
@@ -482,7 +481,6 @@ TEST(DOMTrajectory, MoveConstructor)
 //////////////////////////////////////////////////
 TEST(DOMTrajectory, MoveAssignment)
 {
-
   sdf::Trajectory trajectory1 = CreateDummyTrajectory();
   sdf::Trajectory trajectory2;
   trajectory2 = std::move(trajectory1);
