@@ -61,7 +61,7 @@ bool TrajectoriesEqual(const sdf::Trajectory &_traj1,
     const sdf::Trajectory &_traj2)
 {
   constexpr double EPS = 1e-6;
-  bool waypoints_equal = true;
+  bool waypointsEqual = true;
   if (_traj1.WaypointCount() != _traj2.WaypointCount())
   {
     return false;
@@ -70,10 +70,10 @@ bool TrajectoriesEqual(const sdf::Trajectory &_traj1,
   {
     auto wp1 = _traj1.WaypointByIndex(wp_idx);
     auto wp2 = _traj2.WaypointByIndex(wp_idx);
-    waypoints_equal &= (std::abs(wp1->Time() - wp2->Time()) < EPS) &&
+    waypointsEqual &= (std::abs(wp1->Time() - wp2->Time()) < EPS) &&
       wp1->Pose() == wp2->Pose();
   }
-  return waypoints_equal &&
+  return waypointsEqual &&
     (_traj1.Id() == _traj2.Id()) &&
     (_traj1.Type() == _traj2.Type()) &&
     (std::abs(_traj1.Tension() - _traj2.Tension()) < EPS);
@@ -103,29 +103,29 @@ bool ActorsEqual(const sdf::Actor &_actor1, const sdf::Actor &_actor2)
 {
   constexpr double EPS = 1e-6;
   // Check animations, trajectories and properties
-  bool animations_equal = true;
+  bool animationsEqual = true;
   if (_actor1.AnimationCount() != _actor2.AnimationCount())
   {
     return false;
   }
   for (uint64_t anim_idx = 0; anim_idx < _actor1.AnimationCount(); ++anim_idx)
   {
-    animations_equal &= AnimationsEqual(
+    animationsEqual &= AnimationsEqual(
         *_actor1.AnimationByIndex(anim_idx),
         *_actor2.AnimationByIndex(anim_idx));
   }
-  bool trajectories_equal = true;
+  bool trajectoriesEqual = true;
   if (_actor1.TrajectoryCount() != _actor2.TrajectoryCount())
   {
     return false;
   }
   for (uint64_t traj_idx = 0; traj_idx < _actor1.TrajectoryCount(); ++traj_idx)
   {
-    trajectories_equal &= TrajectoriesEqual(
+    trajectoriesEqual &= TrajectoriesEqual(
         *_actor1.TrajectoryByIndex(traj_idx),
         *_actor2.TrajectoryByIndex(traj_idx));
   }
-  return animations_equal && trajectories_equal &&
+  return animationsEqual && trajectoriesEqual &&
     (_actor1.Name() == _actor2.Name()) &&
     (_actor1.Pose() == _actor2.Pose()) &&
     (_actor1.PoseFrame() == _actor2.PoseFrame()) &&
