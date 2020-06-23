@@ -3,8 +3,8 @@ load(
     "cmake_configure_file",
 )
 
-BINARY_DIR = "/tmp"
-SOURCE_DIR = "/tmp"
+BINARY_DIR = "./sdformat"
+SOURCE_DIR = "./sdformat"
 CMAKE_BINARY_DIR = "/tmp"
 IGN_TOOLS_BINARY_DIR = "/tmp"
 IGN_MSGS_BINARY_DIR = "/tmp"
@@ -31,8 +31,9 @@ cmake_configure_file(
 
 cc_library(
     name = "test_utils",
-    srcs = ["test_config.h"],
+    srcs = ["test_config.h", "test_util.hh"],
     includes = ["."],
     visibility = ["//visibility:public"],
 )
 
+exports_files(["sdf"])

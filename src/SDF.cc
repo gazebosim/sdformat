@@ -452,6 +452,7 @@ const std::string &SDF::EmbeddedSpec(
   try
   {
     const std::string pathname = SDF::Version() + "/" + _filename;
+    std::cout << "sdf pathname is " << pathname << std::endl;
     return GetEmbeddedSdf().at(pathname);
   }
   catch(const std::out_of_range &)

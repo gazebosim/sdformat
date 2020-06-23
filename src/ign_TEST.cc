@@ -24,6 +24,7 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
 #include "test_config.h"
+#include "test_util.hh"
 
 #ifdef _WIN32
   #define popen  _popen
@@ -59,7 +60,8 @@ std::string custom_exec_str(std::string _cmd)
 /////////////////////////////////////////////////
 TEST(check, SDF)
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
+  std::string pathBase;
+  ASSERT_TRUE(sdf::testing::TestDataPath(pathBase));
   pathBase += "/test/sdf";
 
   // Check a good SDF file
