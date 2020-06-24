@@ -268,8 +268,16 @@ TEST(DOMJoint, LoadJointParentFrame)
   ASSERT_TRUE(model->JointNameExists("joint"));
   EXPECT_EQ("child_link", model->JointByName("joint")->ChildLinkName());
   EXPECT_EQ("parent_frame", model->JointByName("joint")->ParentLinkName());
-  EXPECT_TRUE(model->JointByName("joint")->PoseRelativeTo().empty());
 
+  std::string resolvedLinkName;
+  EXPECT_TRUE(
+    model->JointByName("joint")->ResolveChildLink(resolvedLinkName).empty());
+  EXPECT_EQ("child_link", resolvedLinkName);
+  EXPECT_TRUE(
+    model->JointByName("joint")->ResolveParentLink(resolvedLinkName).empty());
+  EXPECT_EQ("parent_link", resolvedLinkName);
+
+  EXPECT_TRUE(model->JointByName("joint")->PoseRelativeTo().empty());
   EXPECT_EQ(Pose(0, 1, 0, 0, 0, 0), model->JointByName("joint")->RawPose());
 
   EXPECT_EQ(1u, model->FrameCount());
@@ -353,8 +361,16 @@ TEST(DOMJoint, LoadJointChildFrame)
   ASSERT_TRUE(model->JointNameExists("joint"));
   EXPECT_EQ("child_frame", model->JointByName("joint")->ChildLinkName());
   EXPECT_EQ("parent_link", model->JointByName("joint")->ParentLinkName());
-  EXPECT_TRUE(model->JointByName("joint")->PoseRelativeTo().empty());
 
+  std::string resolvedLinkName;
+  EXPECT_TRUE(
+    model->JointByName("joint")->ResolveChildLink(resolvedLinkName).empty());
+  EXPECT_EQ("child_link", resolvedLinkName);
+  EXPECT_TRUE(
+    model->JointByName("joint")->ResolveParentLink(resolvedLinkName).empty());
+  EXPECT_EQ("parent_link", resolvedLinkName);
+
+  EXPECT_TRUE(model->JointByName("joint")->PoseRelativeTo().empty());
   EXPECT_EQ(Pose(0, 1, 0, 0, 0, 0), model->JointByName("joint")->RawPose());
 
   EXPECT_EQ(1u, model->FrameCount());
