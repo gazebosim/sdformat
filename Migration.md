@@ -12,6 +12,14 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDFormat 10.x to 11.0
+
+### Additions
+
+1. **sdf/Joint.hh**
+    + Errors ResolveChildLink(std::string&) const
+    + Errors ResolveParentLink(std::string&) const
+
 ## SDFormat 9.x to 10.0
 
 ### Modifications
