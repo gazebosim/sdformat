@@ -200,6 +200,7 @@ but with improved human-readability..
 ### Modifications
 
 1. **joint.sdf** `child` and `parent` elements accept frame names instead of only link names
+    * [Issue 204](https://github.com/osrf/sdformat/issues/204)
 
 ### Deprecations
 
