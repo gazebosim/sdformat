@@ -402,12 +402,14 @@ TEST(Param, MinMaxViolation)
     EXPECT_DOUBLE_EQ(value, 1.0);
   }
 
-  EXPECT_FALSE(doubleParam.Set<double>(-1));
+  EXPECT_FALSE(doubleParam.Set<double>(-1.));
+  EXPECT_FALSE(doubleParam.Set<double>(11.));
+  EXPECT_TRUE(doubleParam.Set<double>(5.));
 
   {
     double value;
     EXPECT_TRUE(doubleParam.Get<double>(value));
-    EXPECT_DOUBLE_EQ(value, 1.0);
+    EXPECT_DOUBLE_EQ(value, 5.0);
   }
 }
 
