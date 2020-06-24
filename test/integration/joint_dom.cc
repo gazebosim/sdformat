@@ -20,6 +20,7 @@
 
 #include "sdf/Element.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
 #include "sdf/Link.hh"
@@ -223,6 +224,176 @@ TEST(DOMJoint, LoadInvalidJointChildWorld)
     errors[1].Message().find(
       "Child frame with name[world] specified by joint with name[joint] "
       "not found in model with name[joint_child_world]"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, LoadJointParentFrame)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "joint_parent_frame.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  using Pose = ignition::math::Pose3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("joint_parent_frame", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  ASSERT_TRUE(model->LinkNameExists("parent_link"));
+  ASSERT_TRUE(model->LinkNameExists("child_link"));
+  EXPECT_TRUE(model->LinkByName("parent_link")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->LinkByName("child_link")->PoseRelativeTo().empty());
+
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0),
+            model->LinkByName("parent_link")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 10, 0, 0, 0),
+            model->LinkByName("child_link")->RawPose());
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(1u, model->JointCount());
+  EXPECT_NE(nullptr, model->JointByIndex(0));
+  EXPECT_EQ(nullptr, model->JointByIndex(1));
+  ASSERT_TRUE(model->JointNameExists("joint"));
+  EXPECT_EQ("child_link", model->JointByName("joint")->ChildLinkName());
+  EXPECT_EQ("parent_frame", model->JointByName("joint")->ParentLinkName());
+  EXPECT_TRUE(model->JointByName("joint")->PoseRelativeTo().empty());
+
+  EXPECT_EQ(Pose(0, 1, 0, 0, 0, 0), model->JointByName("joint")->RawPose());
+
+  EXPECT_EQ(1u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_EQ(nullptr, model->FrameByIndex(1));
+
+  ASSERT_TRUE(model->FrameNameExists("parent_frame"));
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0),
+            model->FrameByName("parent_frame")->RawPose());
+
+  // Test ResolveFrame to get each link, joint and frame pose in model frame.
+  Pose pose;
+  EXPECT_TRUE(
+    model->LinkByName("parent_link")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->LinkByName("child_link")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(0, 0, 10, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->JointByName("joint")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(0, 1, 10, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("parent_frame")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 1, 0, 0, 0), pose);
+
+  // joint frame relative to parent and child links
+  EXPECT_TRUE(
+    model->JointByName("joint")->
+      SemanticPose().Resolve(pose, "child_link").empty());
+  EXPECT_EQ(Pose(0, 1, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->JointByName("joint")->
+      SemanticPose().Resolve(pose, "parent_link").empty());
+  EXPECT_EQ(Pose(0, 1, 9, 0, 0, 0), pose);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, LoadJointChildFrame)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "joint_child_frame.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  using Pose = ignition::math::Pose3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("joint_child_frame", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_NE(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(nullptr, model->LinkByIndex(2));
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  ASSERT_TRUE(model->LinkNameExists("parent_link"));
+  ASSERT_TRUE(model->LinkNameExists("child_link"));
+  EXPECT_TRUE(model->LinkByName("parent_link")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->LinkByName("child_link")->PoseRelativeTo().empty());
+
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0),
+            model->LinkByName("parent_link")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 10, 0, 0, 0),
+            model->LinkByName("child_link")->RawPose());
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(1u, model->JointCount());
+  EXPECT_NE(nullptr, model->JointByIndex(0));
+  EXPECT_EQ(nullptr, model->JointByIndex(1));
+  ASSERT_TRUE(model->JointNameExists("joint"));
+  EXPECT_EQ("child_frame", model->JointByName("joint")->ChildLinkName());
+  EXPECT_EQ("parent_link", model->JointByName("joint")->ParentLinkName());
+  EXPECT_TRUE(model->JointByName("joint")->PoseRelativeTo().empty());
+
+  EXPECT_EQ(Pose(0, 1, 0, 0, 0, 0), model->JointByName("joint")->RawPose());
+
+  EXPECT_EQ(1u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_EQ(nullptr, model->FrameByIndex(1));
+
+  ASSERT_TRUE(model->FrameNameExists("child_frame"));
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0),
+            model->FrameByName("child_frame")->RawPose());
+
+  // Test ResolveFrame to get each link, joint and frame pose in model frame.
+  Pose pose;
+  EXPECT_TRUE(
+    model->LinkByName("parent_link")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->LinkByName("child_link")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(0, 0, 10, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->JointByName("joint")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 1, 10, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->FrameByName("child_frame")->
+      SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 10, 0, 0, 0), pose);
+
+  // joint frame relative to parent and child links
+  EXPECT_TRUE(
+    model->JointByName("joint")->
+      SemanticPose().Resolve(pose, "child_link").empty());
+  EXPECT_EQ(Pose(1, 1, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->JointByName("joint")->
+      SemanticPose().Resolve(pose, "parent_link").empty());
+  EXPECT_EQ(Pose(1, 1, 9, 0, 0, 0), pose);
 }
 
 /////////////////////////////////////////////////
