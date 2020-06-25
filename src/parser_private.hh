@@ -41,13 +41,29 @@ namespace sdf
   static std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
                                                   std::string &_modelFileName);
 
-  /// \brief Initialize the SDF interface using a TinyXML document
+  /// \brief Initialize the SDF interface using a TinyXML document.
+  ///
+  /// This actually forwards to initXml after converting the inputs
+  /// \param[in] _xmlDoc TinyXML document containing the SDFormat description
+  /// file that corresponds with the input SDFPtr
+  /// \param[in] _sdf SDF interface to be initialized
   static bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf);
 
-  /// \brief Initialize and SDF Element using a TinyXML document
+  /// \brief Initialize the SDF Element using a TinyXML document
+  ///
+  /// This actually forwards to initXml after converting the inputs
+  /// \param[in] _xmlDoc TinyXML document containing the SDFormat description
+  /// file that corresponds with the input ElementPtr
+  /// \param[in] _sdf SDF Element to be initialized
   static bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf);
 
-  /// \brief For internal use only. Do not use this function.
+  /// \brief Initialize the SDF Element by parsing the SDFormat description in
+  /// the input TinyXML element. This is where SDFormat spec/description files
+  /// are parsed
+  /// \remark For internal use only. Do not use this function.
+  /// \param[in] _xml TinyXML element containing the SDFormat description
+  /// file that corresponds with the input ElementPtr
+  /// \param[in] _sdf SDF ElementPtr to be initialized
   static bool initXml(TiXmlElement *_xml, ElementPtr _sdf);
 
   /// \brief Populate the SDF values from a TinyXML document
@@ -55,11 +71,15 @@ namespace sdf
                       const std::string &_source, bool _convert,
                       Errors &_errors);
 
+  /// \brief Populate the SDF values from a TinyXML document
   static bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
       const std::string &_source, bool _convert, Errors &_errors);
 
-  /// \brief For internal use only. Do not use this function.
-  /// \param[in] _xml Pointer to the XML document
+  /// \brief Populate an SDF Element from the XML input. The XML input here is
+  /// an actual SDFormat file or string, not the description of the SDFormat
+  /// spec.
+  /// \remark For internal use only. Do not use this function.
+  /// \param[in] _xml Pointer to the TinyXML element
   /// \param[in,out] _sdf SDF pointer to parse data into.
   /// \param[out] _errors Captures errors found during parsing.
   /// \return True on success, false on error.

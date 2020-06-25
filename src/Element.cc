@@ -122,6 +122,19 @@ void Element::AddValue(const std::string &_type,
 }
 
 /////////////////////////////////////////////////
+void Element::AddValue(const std::string &_type,
+                       const std::string &_defaultValue,
+                       bool _required,
+                       const std::string &_minValue,
+                       const std::string &_maxValue,
+                       const std::string &_description)
+{
+  this->dataPtr->value =
+      std::make_shared<Param>(this->dataPtr->name, _type, _defaultValue,
+                              _required, _minValue, _maxValue, _description);
+}
+
+/////////////////////////////////////////////////
 ParamPtr Element::CreateParam(const std::string &_key,
                               const std::string &_type,
                               const std::string &_defaultValue,
@@ -251,6 +264,17 @@ void Element::PrintDescription(const std::string &_prefix) const
               << "'"
               << " default ='" << this->dataPtr->value->GetDefaultAsString()
               << "'";
+    auto minValue = this->dataPtr->value->GetMinValueAsString();
+    if (minValue.has_value())
+    {
+      std::cout << " min ='" << *minValue << "'";
+    }
+
+    auto maxValue = this->dataPtr->value->GetMaxValueAsString();
+    if (maxValue.has_value())
+    {
+      std::cout << " max ='" << *maxValue << "'";
+    }
   }
 
   std::cout << ">\n";
