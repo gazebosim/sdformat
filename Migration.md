@@ -12,6 +12,24 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDFormat 9.x to 10.0
+
+### Modifications
+
+1. + Minimum/maximum values specified in SDFormat description files are now enforced
+   + [Pull request 303](https://github.com/osrf/sdformat/pull/303)
+
+### Additions
+
+1. **sdf/Element.hh**
+    + void AddValue(const std::string &, const std::string &, bool, const std::string &, const std::string &, const std::string &)
+
+1. **sdf/Param.hh**
+    + Param(const std::string &, const std::string &e, const std::string &, bool, const std::string &, const std::string &, const std::string &)
+    + std::optional<std::string> GetMinValueAsString() const;
+    + std::optional<std::string> GetMaxValueAsString() const;
+    + bool ValidateValue() const;
+
 ## SDFormat 8.x to 9.0
 
 ### Additions
