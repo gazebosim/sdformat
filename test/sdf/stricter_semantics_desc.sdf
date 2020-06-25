@@ -1,0 +1,5 @@
+<element name="test" required="1">
+  <element name="int_t" required="0" type="int" min="0" max="10" default="0"/>
+  <element name="double_t" required="0" type="double" min="0.0" max="10.0" default="0"/>
+</element>
+
