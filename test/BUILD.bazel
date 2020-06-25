@@ -5,8 +5,8 @@ load(
 
 BINARY_DIR = "/tmp"
 SOURCE_DIR = "./sdformat"
-CMAKE_BINARY_DIR = "/tmp"
-IGN_TOOLS_BINARY_DIR = "/tmp"
+CMAKE_BINARY_DIR = "./ign_tools"
+IGN_TOOLS_BINARY_DIR = "./ign_tools"
 IGN_MSGS_BINARY_DIR = "/tmp"
 IGN_MSGS_LIBRARY_DIR = "/tmp"
 SDF_PROTOCOL_VERSION = 10
