@@ -249,18 +249,10 @@ cc_library(
     srcs = ["libsdformat10.so"],
     hdrs = public_headers,
     includes = ["include", "."],
-    linkopts = [
-        "-Wl,-soname,libsdformat10.so",
-        "-ltinyxml2",
-        "-lurdfdom_sensor",
-        "-lurdfdom_model_state",
-        "-lurdfdom_model",
-        "-lurdfdom_world",
-        "-lconsole_bridge"
-    ],
     deps = [
         "//ign_math",
     ],
+    alwayslink = 1,
     visibility = ["//visibility:public"],
 )
 
@@ -283,5 +275,13 @@ cc_library(
         "//ign_math",
         "@gtest//:gtest",
         "@gtest//:gtest_main",
-    ]
+    ],
+    linkopts = [
+        "-ltinyxml2",
+        "-lurdfdom_sensor",
+        "-lurdfdom_model_state",
+        "-lurdfdom_model",
+        "-lurdfdom_world",
+        "-lconsole_bridge"
+    ],
 ) for src in test_sources]
