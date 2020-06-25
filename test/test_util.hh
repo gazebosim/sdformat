@@ -33,7 +33,6 @@ namespace sdf
       if (const char* tmpDir = std::getenv("TEST_UNDECLARED_OUTPUTS_DIR"))
       {
         _tmpDir = tmpDir;
-        std::cout << "1\n";
         return true;
       }
 
@@ -41,7 +40,6 @@ namespace sdf
       if (char* homeDir = std::getenv("HOME"))
       {
         _tmpDir = sdf::filesystem::append(homeDir, SDF_TMP_DIR);
-        std::cout << "2\n";
         return true;
       }
 

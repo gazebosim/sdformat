@@ -15,7 +15,7 @@ SDF_MINOR_VERSION = 0
 SDF_PATCH_VERSION = 0
 PROJECT_NAME = "ign"
 SDF_VERSION_NAME = "sdf10"
-INSTALL_DIR = "/installdir"
+INSTALL_DIR = "/tmp"
 SDF_PKG_VERSION = 0
 
 # Generates config.hh based on the version numbers in CMake code.

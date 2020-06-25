@@ -3,12 +3,12 @@ load(
     "cmake_configure_file",
 )
 
-BINARY_DIR = "/tmp1"
+BINARY_DIR = "/tmp"
 SOURCE_DIR = "./sdformat"
-CMAKE_BINARY_DIR = "/tmp3"
-IGN_TOOLS_BINARY_DIR = "/tmp4"
-IGN_MSGS_BINARY_DIR = "/tmp5"
-IGN_MSGS_LIBRARY_DIR = "/tmp6"
+CMAKE_BINARY_DIR = "/tmp"
+IGN_TOOLS_BINARY_DIR = "/tmp"
+IGN_MSGS_BINARY_DIR = "/tmp"
+IGN_MSGS_LIBRARY_DIR = "/tmp"
 SDF_PROTOCOL_VERSION = 10
 
 # Generates config.hh based on the version numbers in CMake code.
