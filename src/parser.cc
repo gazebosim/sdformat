@@ -224,7 +224,22 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
       description = descChild->GetText();
     }
 
-    _sdf->AddValue(elemTypeString, elemDefaultValue, required, description);
+    std::string minValue;
+    const char *elemMinValue = _xml->Attribute("min");
+    if (nullptr != elemMinValue)
+    {
+      minValue = elemMinValue;
+    }
+
+    std::string maxValue;
+    const char *elemMaxValue = _xml->Attribute("max");
+    if (nullptr != elemMaxValue)
+    {
+      maxValue = elemMaxValue;
+    }
+
+    _sdf->AddValue(elemTypeString, elemDefaultValue, required, minValue,
+                   maxValue, description);
   }
 
   // Get all attributes

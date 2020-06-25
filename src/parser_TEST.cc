@@ -533,6 +533,108 @@ TEST(Parser, SyntaxErrorInValues)
 }
 
 /////////////////////////////////////////////////
+/// Fixture for setting up stream redirection
+class ValueConstraintsFixture : public ::testing::Test
+{
+  public: ValueConstraintsFixture() = default;
+
+  public: void ClearErrorBuffer()
+  {
+    this->errBuffer.str("");
+  }
+
+  // cppcheck-suppress unusedFunction
+  protected: void SetUp() override
+  {
+    sdf::Console::Instance()->SetQuiet(false);
+    oldRdbuf = std::cerr.rdbuf(errBuffer.rdbuf());
+  }
+
+  // cppcheck-suppress unusedFunction
+  protected: void TearDown() override
+  {
+    std::cerr.rdbuf(oldRdbuf);
+#ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(true);
+#endif
+  }
+
+  public: std::stringstream errBuffer;
+  private: std::streambuf *oldRdbuf;
+};
+
+/////////////////////////////////////////////////
+/// Check if minimum/maximum values are valided
+TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
+{
+  std::string sdfDescPath = std::string(PROJECT_SOURCE_PATH) +
+                            "/test/sdf/stricter_semantics_desc.sdf";
+
+  auto sdfTest = std::make_shared<sdf::SDF>();
+  sdf::initFile(sdfDescPath, sdfTest);
+
+  // Initialize the root.sdf description and add our test description as one of
+  // its children
+  auto sdf = InitSDF();
+  sdf->Root()->AddElementDescription(sdfTest->Root());
+
+  auto wrapInSdf = [](std::string _xml) -> std::string
+  {
+    std::stringstream ss;
+    ss << "<sdf version=\"" << SDF_PROTOCOL_VERSION << "\"><test>" << _xml
+       << "</test></sdf>";
+    return ss.str();
+  };
+
+  {
+    auto elem = sdf->Root()->Clone();
+    sdf::Errors errors;
+    EXPECT_TRUE(sdf::readString(
+        wrapInSdf("<int_t>0</int_t><double_t>0</double_t>"), elem, errors));
+    EXPECT_TRUE(errors.empty()) << errors[0];
+  }
+
+  auto errorContains =
+      [](const std::string &_expStr, const std::string &_errs)
+  {
+    return _errs.find(_expStr) != std::string::npos;
+  };
+
+  {
+    this->ClearErrorBuffer();
+    auto elem = sdf->Root()->Clone();
+    EXPECT_FALSE(sdf::readString(
+        wrapInSdf("<int_t>-1</int_t>"), elem));
+    EXPECT_PRED2(errorContains,
+                 "The value [-1] is less than the minimum allowed value of [0] "
+                 "for key [int_t]",
+                 this->errBuffer.str());
+  }
+
+  {
+    this->ClearErrorBuffer();
+    auto elem = sdf->Root()->Clone();
+    EXPECT_FALSE(sdf::readString(
+        wrapInSdf("<double_t>-1.0</double_t>"), elem));
+
+    EXPECT_PRED2(
+        errorContains,
+        "The value [-1] is less than the minimum allowed value of [0] for key "
+        "[double_t]",
+        this->errBuffer.str());
+  }
+
+  {
+    this->ClearErrorBuffer();
+    auto elem = sdf->Root()->Clone();
+    EXPECT_FALSE(sdf::readString(wrapInSdf("<int_t>20</int_t>"), elem));
+    EXPECT_PRED2(
+        errorContains,
+        "The value [20] is greater than the maximum allowed value of [10]",
+        this->errBuffer.str());
+  }
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
