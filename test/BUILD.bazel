@@ -36,4 +36,30 @@ cc_library(
     visibility = ["//visibility:public"],
 )
 
+[
+    cc_test(
+        name = "INTEGRATION_" + test.split('/')[1].replace('.cc', ''),
+        srcs = [ test ],
+        deps = [
+            ":test_utils",
+            "//sdformat",
+            "@gtest//:gtest",
+            "@gtest//:gtest_main",
+        ],
+        data = [
+            ":sdf",
+            ":integration",
+            "//sdformat:tools",
+        ],
+        includes = [".", "integration"],
+    ) for test in glob(
+        ["integration/*.cc"],
+        exclude = [
+            "integration/nested_model.cc",
+            "integration/schema_test.cc",
+        ]
+    )
+]
+
 exports_files(["sdf"])
+exports_files(["integration"])

@@ -302,3 +302,4 @@ cc_library(
 ) for src in test_sources]
 
 exports_files(["src/cmd/cmdsdformat.rb.in"])
+exports_files(["tools"])
