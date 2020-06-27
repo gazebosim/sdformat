@@ -19,6 +19,14 @@ but with improved human-readability..
 1. + Minimum/maximum values specified in SDFormat description files are now enforced
    + [Pull request 303](https://github.com/osrf/sdformat/pull/303)
 
+1. + Parsing of bad values generates an error
+   + [Pull request 244](https://github.com/osrf/sdformat/pull/244)
+
+### Deletions
+
+1. + Removed the `parser_urdf.hh` header file and its `URDF2SDF` class
+   + [Pull request 276](https://github.com/osrf/sdformat/pull/276)
+
 ### Additions
 
 1. **sdf/Element.hh**
