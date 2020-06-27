@@ -245,12 +245,6 @@ const ignition::math::Pose3d &Visual::RawPose() const
 }
 
 /////////////////////////////////////////////////
-const std::string &Visual::PoseFrame() const
-{
-  return this->PoseRelativeTo();
-}
-
-/////////////////////////////////////////////////
 const std::string &Visual::PoseRelativeTo() const
 {
   return this->dataPtr->poseRelativeTo;
@@ -266,12 +260,6 @@ void Visual::SetPose(const ignition::math::Pose3d &_pose)
 void Visual::SetRawPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
-}
-
-/////////////////////////////////////////////////
-void Visual::SetPoseFrame(const std::string &_frame)
-{
-  this->SetPoseRelativeTo(_frame);
 }
 
 /////////////////////////////////////////////////

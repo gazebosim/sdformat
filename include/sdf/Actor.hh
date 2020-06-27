@@ -360,22 +360,6 @@ namespace sdf
     /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
 
-    /// \brief Get the name of the coordinate frame in which this actor's
-    /// pose is expressed. A empty value indicates that the frame is the
-    /// global/world coordinate frame.
-    /// \return The name of the pose frame.
-    /// \deprecated See PoseRelativeTo.
-    public: const std::string &PoseFrame() const
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Set the name of the coordinate frame in which this actor's
-    /// pose is expressed. A empty value indicates that the frame is the
-    /// global/world coordinate frame.
-    /// \param[in] _frame The name of the pose frame.
-    /// \deprecated See SetPoseRelativeTo.
-    public: void SetPoseFrame(const std::string &_frame)
-        SDF_DEPRECATED(9.0);
-
     /// \brief The path to the file where this element was loaded from.
     /// \return Full path to the file on disk.
     public: const std::string &FilePath() const;

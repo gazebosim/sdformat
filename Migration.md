@@ -27,6 +27,10 @@ but with improved human-readability..
 1. + Removed the `parser_urdf.hh` header file and its `URDF2SDF` class
    + [Pull request 276](https://github.com/osrf/sdformat/pull/276)
 
+1. + Removed the `PoseFrame()` API's in all DOM classes:
+   + const std::string &PoseFrame()
+   + void SetPoseFrame(const std::string &)
+
 ### Additions
 
 1. **sdf/Element.hh**

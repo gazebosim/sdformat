@@ -362,12 +362,6 @@ const ignition::math::Pose3d &Link::RawPose() const
 }
 
 /////////////////////////////////////////////////
-const std::string &Link::PoseFrame() const
-{
-  return this->PoseRelativeTo();
-}
-
-/////////////////////////////////////////////////
 const std::string &Link::PoseRelativeTo() const
 {
   return this->dataPtr->poseRelativeTo;
@@ -383,12 +377,6 @@ void Link::SetPose(const ignition::math::Pose3d &_pose)
 void Link::SetRawPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
-}
-
-/////////////////////////////////////////////////
-void Link::SetPoseFrame(const std::string &_frame)
-{
-  this->SetPoseRelativeTo(_frame);
 }
 
 /////////////////////////////////////////////////

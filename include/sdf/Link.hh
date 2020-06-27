@@ -228,22 +228,6 @@ namespace sdf
     /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
 
-    /// \brief Get the name of the coordinate frame in which this link's
-    /// pose is expressed. A empty value indicates that the frame is the
-    /// parent model.
-    /// \return The name of the pose frame.
-    /// \deprecated See PoseRelativeTo.
-    public: const std::string &PoseFrame() const
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Set the name of the coordinate frame in which this link's
-    /// pose is expressed. A empty value indicates that the frame is the
-    /// parent model.
-    /// \param[in] _frame The name of the pose frame.
-    /// \deprecated See SetPoseRelativeTo.
-    public: void SetPoseFrame(const std::string &_frame)
-        SDF_DEPRECATED(9.0);
-
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has

@@ -697,12 +697,6 @@ const ignition::math::Pose3d &Camera::RawPose() const
 }
 
 /////////////////////////////////////////////////
-const std::string &Camera::PoseFrame() const
-{
-  return this->PoseRelativeTo();
-}
-
-/////////////////////////////////////////////////
 const std::string &Camera::PoseRelativeTo() const
 {
   return this->dataPtr->poseRelativeTo;
@@ -718,12 +712,6 @@ void Camera::SetPose(const ignition::math::Pose3d &_pose)
 void Camera::SetRawPose(const ignition::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
-}
-
-/////////////////////////////////////////////////
-void Camera::SetPoseFrame(const std::string &_frame)
-{
-  this->SetPoseRelativeTo(_frame);
 }
 
 /////////////////////////////////////////////////
