@@ -216,7 +216,7 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
-  // Check an SDF file with a joint with an invalid child link.
+  // Check an SDF file with a joint that names itself as the child frame.
   {
     std::string path = pathBase +"/joint_invalid_self_child.sdf";
 
@@ -228,7 +228,7 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
-  // Check an SDF file with a joint with an invalid parent link.
+  // Check an SDF file with a joint that names itself as the parent frame.
   {
     std::string path = pathBase +"/joint_invalid_self_parent.sdf";
 
