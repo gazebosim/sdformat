@@ -114,21 +114,6 @@ namespace sdf
     /// visual as specified in SDF
     /// (<visual><pose> ... </pose></visual>).
     /// \return The pose of the visual object.
-    /// \deprecated See SetRawPose.
-    public: const ignition::math::Pose3d &Pose() const
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Set the pose of the visual object.
-    /// \sa const ignition::math::Pose3d &Pose() const
-    /// \param[in] _pose The pose of the visual object.
-    /// \deprecated See SetRawPose.
-    public: void SetPose(const ignition::math::Pose3d &_pose)
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Get the pose of the visual object. This is the pose of the
-    /// visual as specified in SDF
-    /// (<visual><pose> ... </pose></visual>).
-    /// \return The pose of the visual object.
     public: const ignition::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the visual object.

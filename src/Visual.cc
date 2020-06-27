@@ -233,12 +233,6 @@ void Visual::SetTransparency(float _transparency)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Visual::Pose() const
-{
-  return this->RawPose();
-}
-
-/////////////////////////////////////////////////
 const ignition::math::Pose3d &Visual::RawPose() const
 {
   return this->dataPtr->pose;
@@ -248,12 +242,6 @@ const ignition::math::Pose3d &Visual::RawPose() const
 const std::string &Visual::PoseRelativeTo() const
 {
   return this->dataPtr->poseRelativeTo;
-}
-
-/////////////////////////////////////////////////
-void Visual::SetPose(const ignition::math::Pose3d &_pose)
-{
-  this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////

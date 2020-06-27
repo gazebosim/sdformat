@@ -685,12 +685,6 @@ void Camera::SetDistortionCenter(
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Camera::Pose() const
-{
-  return this->RawPose();
-}
-
-/////////////////////////////////////////////////
 const ignition::math::Pose3d &Camera::RawPose() const
 {
   return this->dataPtr->pose;
@@ -700,12 +694,6 @@ const ignition::math::Pose3d &Camera::RawPose() const
 const std::string &Camera::PoseRelativeTo() const
 {
   return this->dataPtr->poseRelativeTo;
-}
-
-/////////////////////////////////////////////////
-void Camera::SetPose(const ignition::math::Pose3d &_pose)
-{
-  this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////

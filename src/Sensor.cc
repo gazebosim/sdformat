@@ -443,12 +443,6 @@ void Sensor::SetTopic(const std::string &_topic)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Sensor::Pose() const
-{
-  return this->RawPose();
-}
-
-/////////////////////////////////////////////////
 const ignition::math::Pose3d &Sensor::RawPose() const
 {
   return this->dataPtr->pose;
@@ -458,12 +452,6 @@ const ignition::math::Pose3d &Sensor::RawPose() const
 const std::string &Sensor::PoseRelativeTo() const
 {
   return this->dataPtr->poseRelativeTo;
-}
-
-/////////////////////////////////////////////////
-void Sensor::SetPose(const ignition::math::Pose3d &_pose)
-{
-  this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////

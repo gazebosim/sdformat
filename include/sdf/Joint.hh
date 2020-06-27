@@ -170,22 +170,6 @@ namespace sdf
     /// Transformations have not been applied to the return value.
     /// \return The pose of the joint. This is the raw pose value, as set in
     /// the SDF file.
-    /// \deprecated See RawPose.
-    public: const ignition::math::Pose3d &Pose() const
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Set the pose of the joint.
-    /// \sa const ignition::math::Pose3d &Pose() const;
-    /// \param[in] _pose The pose of the joint.
-    /// \deprecated See SetRawPose.
-    public: void SetPose(const ignition::math::Pose3d &_pose)
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Get the pose of the joint. This is the pose of the joint
-    /// as specified in SDF (<joint> <pose> ... </pose></joint>).
-    /// Transformations have not been applied to the return value.
-    /// \return The pose of the joint. This is the raw pose value, as set in
-    /// the SDF file.
     public: const ignition::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the joint.

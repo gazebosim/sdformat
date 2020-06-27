@@ -350,12 +350,6 @@ bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Link::Pose() const
-{
-  return this->RawPose();
-}
-
-/////////////////////////////////////////////////
 const ignition::math::Pose3d &Link::RawPose() const
 {
   return this->dataPtr->pose;
@@ -365,12 +359,6 @@ const ignition::math::Pose3d &Link::RawPose() const
 const std::string &Link::PoseRelativeTo() const
 {
   return this->dataPtr->poseRelativeTo;
-}
-
-/////////////////////////////////////////////////
-void Link::SetPose(const ignition::math::Pose3d &_pose)
-{
-  this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////

@@ -102,21 +102,6 @@ namespace sdf
     public: void SetSurface(const sdf::Surface &_surface);
 
     /// \brief Get the pose of the collision object. This is the pose of the
-    /// collision as specified in SDF
-    /// (<collision><pose> ... </pose></collision>).
-    /// \return The pose of the collision object.
-    /// \deprecated See RawPose.
-    public: const ignition::math::Pose3d &Pose() const
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Set the pose of the collision object.
-    /// \sa const ignition::math::Pose3d &Pose() const
-    /// \param[in] _pose The pose of the collision object.
-    /// \deprecated See SetRawPose.
-    public: void SetPose(const ignition::math::Pose3d &_pose)
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Get the pose of the collision object. This is the pose of the
     /// collison as specified in SDF
     /// (<collision><pose> ... </pose></collision>).
     /// \return The pose of the collision object.

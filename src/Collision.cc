@@ -176,12 +176,6 @@ void Collision::SetSurface(const sdf::Surface &_surface)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Collision::Pose() const
-{
-  return this->RawPose();
-}
-
-/////////////////////////////////////////////////
 const ignition::math::Pose3d &Collision::RawPose() const
 {
   return this->dataPtr->pose;
@@ -191,12 +185,6 @@ const ignition::math::Pose3d &Collision::RawPose() const
 const std::string &Collision::PoseRelativeTo() const
 {
   return this->dataPtr->poseRelativeTo;
-}
-
-/////////////////////////////////////////////////
-void Collision::SetPose(const ignition::math::Pose3d &_pose)
-{
-  this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////

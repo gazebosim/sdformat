@@ -114,22 +114,6 @@ namespace sdf
     /// typically used to express the position and rotation of a light in a
     /// global coordinate frame.
     /// \return The pose of the light.
-    /// \deprecated See RawPose.
-    public: const ignition::math::Pose3d &Pose() const
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Set the pose of the light.
-    /// \sa const ignition::math::Pose3d &Pose() const
-    /// \param[in] _pose The new light pose.
-    /// \deprecated See SetRawPose.
-    public: void SetPose(const ignition::math::Pose3d &_pose)
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Get the pose of the light. This is the pose of the light
-    /// as specified in SDF (<light> <pose> ... </pose></light>), and is
-    /// typically used to express the position and rotation of a light in a
-    /// global coordinate frame.
-    /// \return The pose of the light.
     public: const ignition::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the light.

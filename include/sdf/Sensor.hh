@@ -160,22 +160,6 @@ namespace sdf
     /// typically used to express the position and rotation of a sensor in a
     /// global coordinate frame.
     /// \return The pose of the sensor.
-    /// \deprecated See RawPose.
-    public: const ignition::math::Pose3d &Pose() const
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Set the pose of the sensor.
-    /// \sa const ignition::math::Pose3d &Pose() const
-    /// \param[in] _pose The new sensor pose.
-    /// \deprecated See SetRawPose.
-    public: void SetPose(const ignition::math::Pose3d &_pose)
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Get the pose of the sensor. This is the pose of the sensor
-    /// as specified in SDF (<sensor> <pose> ... </pose></sensor>), and is
-    /// typically used to express the position and rotation of a sensor in a
-    /// global coordinate frame.
-    /// \return The pose of the sensor.
     public: const ignition::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the sensor.

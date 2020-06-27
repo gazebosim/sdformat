@@ -553,12 +553,6 @@ void Model::SetCanonicalLinkName(const std::string &_canonicalLink)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Model::Pose() const
-{
-  return this->RawPose();
-}
-
-/////////////////////////////////////////////////
 const ignition::math::Pose3d &Model::RawPose() const
 {
   return this->dataPtr->pose;
@@ -568,12 +562,6 @@ const ignition::math::Pose3d &Model::RawPose() const
 const std::string &Model::PoseRelativeTo() const
 {
   return this->dataPtr->poseRelativeTo;
-}
-
-/////////////////////////////////////////////////
-void Model::SetPose(const ignition::math::Pose3d &_pose)
-{
-  this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////
