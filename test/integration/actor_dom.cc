@@ -135,8 +135,8 @@ TEST(DOMActor, LoadActors)
   EXPECT_DOUBLE_EQ(1.0, actor2->ScriptDelayStart());
   EXPECT_TRUE(actor2->ScriptAutoStart());
 
-  EXPECT_EQ(actor2->LinkCount(), 2u);
-  EXPECT_EQ(actor2->JointCount(), 1u);
+  EXPECT_EQ(2u, actor2->LinkCount());
+  EXPECT_EQ(1u, actor2->JointCount());
 }
 
 //////////////////////////////////////////////////
