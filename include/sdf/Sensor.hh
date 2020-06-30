@@ -160,22 +160,6 @@ namespace sdf
     /// typically used to express the position and rotation of a sensor in a
     /// global coordinate frame.
     /// \return The pose of the sensor.
-    /// \deprecated See RawPose.
-    public: const ignition::math::Pose3d &Pose() const
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Set the pose of the sensor.
-    /// \sa const ignition::math::Pose3d &Pose() const
-    /// \param[in] _pose The new sensor pose.
-    /// \deprecated See SetRawPose.
-    public: void SetPose(const ignition::math::Pose3d &_pose)
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Get the pose of the sensor. This is the pose of the sensor
-    /// as specified in SDF (<sensor> <pose> ... </pose></sensor>), and is
-    /// typically used to express the position and rotation of a sensor in a
-    /// global coordinate frame.
-    /// \return The pose of the sensor.
     public: const ignition::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the sensor.
@@ -194,22 +178,6 @@ namespace sdf
     /// relative to the parent link/joint coordinate frame.
     /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
-
-    /// \brief Get the name of the coordinate frame in which this sensor's
-    /// pose is expressed. A empty value indicates that the frame is the
-    /// global/world coordinate frame.
-    /// \return The name of the pose frame.
-    /// \deprecated See PoseRelativeTo.
-    public: const std::string &PoseFrame() const
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Set the name of the coordinate frame in which this sensor's
-    /// pose is expressed. A empty value indicates that the frame is the
-    /// global/world coordinate frame.
-    /// \param[in] _frame The name of the pose frame.
-    /// \deprecated See SetPoseRelativeTo.
-    public: void SetPoseFrame(const std::string &_frame)
-        SDF_DEPRECATED(9.0);
 
     /// \brief Get SemanticPose object of this object to aid in resolving
     /// poses.
