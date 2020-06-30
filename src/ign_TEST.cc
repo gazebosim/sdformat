@@ -277,7 +277,7 @@ TEST(check, SDF)
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
-  // Check an SDF file with the world specified as a parent link.
+  // Check an SDF file with a frame specified as the joint child.
   // This is a valid file.
   {
     std::string path = pathBase +"/joint_child_frame.sdf";
@@ -288,7 +288,7 @@ TEST(check, SDF)
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
-  // Check an SDF file with the world specified as a parent link.
+  // Check an SDF file with a frame specified as the joint parent.
   // This is a valid file.
   {
     std::string path = pathBase +"/joint_parent_frame.sdf";
