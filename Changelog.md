@@ -4,14 +4,17 @@
 
 ### libsdformat 10.0.0 (202X-XX-XX)
 
-1. Enforce minimum/maximum values specified in SDFormat description files
+1. Enforce minimum/maximum values specified in SDFormat description files.
     * [Pull request 303](https://github.com/osrf/sdformat/pull/303)
 
-1. Make parsing of values syntactically more strict with bad values generating an error
+1. Make parsing of values syntactically more strict with bad values generating an error.
     * [Pull request 244](https://github.com/osrf/sdformat/pull/244)
 
 1. Don't install deprecated parser_urdf.hh header file, fix cmake warning about newline file, fix cmake warning about newlines.
     * [Pull request 276](https://github.com/osrf/sdformat/pull/276)
+
+1. Remove deprecated Pose(), PoseFrame() functions from DOM objects.
+    * [Pull request 308](https://github.com/osrf/sdformat/pull/308)
 
 1. Changed the default radius of a Cylinder from 1.0 to 0.5 meters.
     * [BitBucket pull request 643](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/643)
