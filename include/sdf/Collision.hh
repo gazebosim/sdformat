@@ -102,21 +102,6 @@ namespace sdf
     public: void SetSurface(const sdf::Surface &_surface);
 
     /// \brief Get the pose of the collision object. This is the pose of the
-    /// collision as specified in SDF
-    /// (<collision><pose> ... </pose></collision>).
-    /// \return The pose of the collision object.
-    /// \deprecated See RawPose.
-    public: const ignition::math::Pose3d &Pose() const
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Set the pose of the collision object.
-    /// \sa const ignition::math::Pose3d &Pose() const
-    /// \param[in] _pose The pose of the collision object.
-    /// \deprecated See SetRawPose.
-    public: void SetPose(const ignition::math::Pose3d &_pose)
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Get the pose of the collision object. This is the pose of the
     /// collison as specified in SDF
     /// (<collision><pose> ... </pose></collision>).
     /// \return The pose of the collision object.
@@ -138,22 +123,6 @@ namespace sdf
     /// relative to the parent link.
     /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
-
-    /// \brief Get the name of the coordinate frame in which this collision
-    /// object's pose is expressed. A empty value indicates that the frame is
-    /// the parent link.
-    /// \return The name of the pose frame.
-    /// \deprecated See PoseRelativeTo.
-    public: const std::string &PoseFrame() const
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Set the name of the coordinate frame in which this collision
-    /// object's pose is expressed. A empty value indicates that the frame is
-    /// the parent link.
-    /// \param[in] _frame The name of the pose frame.
-    /// \deprecated See SetPoseRelativeTo.
-    public: void SetPoseFrame(const std::string &_frame)
-        SDF_DEPRECATED(9.0);
 
     /// \brief Get SemanticPose object of this object to aid in resolving
     /// poses.
