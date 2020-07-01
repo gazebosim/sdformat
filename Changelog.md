@@ -38,6 +38,9 @@
 1. Find python3 in cmake, fix cmake warning.
     * [Pull request 328](https://github.com/osrf/sdformat/pull/328)
 
+1. Fix Actor copy operators and increase test coverage.
+    * [Pull request 301](https://github.com/osrf/sdformat/pull/301)
+
 1. Change bitbucket links to GitHub.
     * [Pull request 240](https://github.com/osrf/sdformat/pull/240)
 
@@ -246,6 +249,9 @@
 ## libsdformat 8.0
 
 ### libsdformat 8.X.X (202X-XX-XX)
+
+1. Fix Actor copy operators and increase test coverage.
+    * [Pull request 301](https://github.com/osrf/sdformat/pull/301)
 
 1. Increase output precision of URDF to SDF conversion, output -0 as 0.
     * [BitBucket pull request 675](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/675)
