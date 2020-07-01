@@ -129,9 +129,8 @@ Animation::~Animation()
 
 //////////////////////////////////////////////////
 Animation::Animation(const Animation &_animation)
-  : dataPtr(new AnimationPrivate)
+  : dataPtr(new AnimationPrivate(*_animation.dataPtr))
 {
-  this->CopyFrom(_animation);
 }
 
 /////////////////////////////////////////////////
@@ -156,6 +155,7 @@ Animation &Animation::operator=(Animation &&_animation)
 /////////////////////////////////////////////////
 void Animation::CopyFrom(const Animation &_animation)
 {
+  // TODO(anyone) Deprecate function
   this->dataPtr->name = _animation.dataPtr->name;
   this->dataPtr->filename = _animation.dataPtr->filename;
   this->dataPtr->scale = _animation.dataPtr->scale;
@@ -269,9 +269,8 @@ Waypoint::~Waypoint()
 
 //////////////////////////////////////////////////
 Waypoint::Waypoint(const Waypoint &_waypoint)
-  : dataPtr(new WaypointPrivate)
+  : dataPtr(new WaypointPrivate(*_waypoint.dataPtr))
 {
-  this->CopyFrom(_waypoint);
 }
 
 /////////////////////////////////////////////////
@@ -296,6 +295,7 @@ Waypoint &Waypoint::operator=(Waypoint &&_waypoint)
 /////////////////////////////////////////////////
 void Waypoint::CopyFrom(const Waypoint &_waypoint)
 {
+  // TODO(anyone) deprecate function
   this->dataPtr->time = _waypoint.dataPtr->time;
   this->dataPtr->pose = _waypoint.dataPtr->pose;
 }
@@ -364,9 +364,8 @@ Trajectory::~Trajectory()
 
 //////////////////////////////////////////////////
 Trajectory::Trajectory(const Trajectory &_trajectory)
-  : dataPtr(new TrajectoryPrivate)
+  : dataPtr(new TrajectoryPrivate(*_trajectory.dataPtr))
 {
-  this->CopyFrom(_trajectory);
 }
 
 /////////////////////////////////////////////////
@@ -391,6 +390,7 @@ Trajectory &Trajectory::operator=(Trajectory &&_trajectory)
 /////////////////////////////////////////////////
 void Trajectory::CopyFrom(const Trajectory &_trajectory)
 {
+  // TODO(anyone) deprecate function
   this->dataPtr->id = _trajectory.dataPtr->id;
   this->dataPtr->type = _trajectory.dataPtr->type;
   this->dataPtr->tension = _trajectory.dataPtr->tension;
@@ -501,9 +501,8 @@ Actor::~Actor()
 
 //////////////////////////////////////////////////
 Actor::Actor(const Actor &_actor)
-  : dataPtr(new ActorPrivate)
+  : dataPtr(new ActorPrivate(*_actor.dataPtr))
 {
-  this->CopyFrom(_actor);
 }
 
 /////////////////////////////////////////////////
@@ -528,6 +527,7 @@ Actor &Actor::operator=(Actor &&_actor)
 //////////////////////////////////////////////////
 void Actor::CopyFrom(const Actor &_actor)
 {
+  // TODO(anyone) deprecate function
   this->dataPtr->name             = _actor.dataPtr->name;
   this->dataPtr->pose             = _actor.dataPtr->pose;
   this->dataPtr->poseRelativeTo   = _actor.dataPtr->poseRelativeTo;

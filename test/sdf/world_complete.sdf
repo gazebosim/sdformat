@@ -182,6 +182,15 @@
           </waypoint>
         </trajectory>
       </script>
+      <link name="link1">
+      </link>
+      <link name="link2">
+      </link>
+      <joint name="fixed_joint" type="fixed">
+        <pose>0 0 0 1 0 0</pose>
+        <child>link1</child>
+        <parent>link2</parent>
+      </joint>
     </actor>
 
   </world>
