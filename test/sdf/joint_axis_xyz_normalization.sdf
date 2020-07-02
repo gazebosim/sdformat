@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="test">
+    <link name="link1"/>
+    <link name="link2"/>
+    <link name="link3"/>
+    <link name="link4"/>
+    <link name="link5"/>
+
+    <joint name="joint1" type="revolute">
+      <child>link1</child>
+      <parent>link2</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+    <joint name="joint2" type="revolute">
+      <child>link3</child>
+      <parent>link4</parent>
+      <axis>
+        <xyz>10 0 0</xyz>
+      </axis>
+    </joint>
+    <joint name="joint3" type="universal">
+      <child>link4</child>
+      <parent>link5</parent>
+      <axis>
+        <xyz>-10 0 0</xyz>
+      </axis>
+      <axis2>
+        <xyz>0 10 0</xyz>
+      </axis2>
+    </joint>
+    <joint name="joint4" type="revolute">
+      <child>link5</child>
+      <parent>link6</parent>
+      <axis>
+        <xyz>0 0 0</xyz>
+      </axis>
+    </joint>
+  </model>
+</sdf>
+

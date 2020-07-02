@@ -138,6 +138,15 @@ Errors JointAxis::Load(ElementPtr _sdf)
   {
     this->dataPtr->xyz = _sdf->Get<ignition::math::Vector3d>("xyz",
         ignition::math::Vector3d::UnitZ).first;
+    if (sdf::equal(this->dataPtr->xyz.Length(), 0.0))
+    {
+      errors.push_back({ErrorCode::ELEMENT_INVALID,
+                        "The norm of the xyz vector cannot be zero"});
+    }
+    else
+    {
+      this->dataPtr->xyz.Normalize();
+    }
     auto e = _sdf->GetElement("xyz");
     if (e->HasAttribute("expressed_in"))
     {
