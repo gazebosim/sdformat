@@ -306,7 +306,8 @@ namespace sdf
     /// for resolving poses. This is private and is intended to be called by
     /// World::Load.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
-    private: void SetPoseRelativeToGraph(
+    /// \return Error if graph pointer is invalid.
+    private: sdf::Errors SetPoseRelativeToGraph(
         std::weak_ptr<const PoseRelativeToGraph> _graph);
 
     /// \brief Allow World::Load to call SetPoseRelativeToGraph.

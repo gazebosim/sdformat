@@ -79,8 +79,11 @@ class sdf::ModelPrivate
   /// \brief Pose Relative-To Graph constructed during Load.
   public: std::shared_ptr<sdf::PoseRelativeToGraph> poseGraph;
 
-  /// \brief Pose Relative-To Graph in parent (world) scope.
+  /// \brief Pose Relative-To Graph in parent (world or __model__) scope.
   public: std::weak_ptr<const sdf::PoseRelativeToGraph> parentPoseGraph;
+
+  /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
+  public: std::string parentPoseGraphScopeName;
 };
 
 /////////////////////////////////////////////////
@@ -114,6 +117,10 @@ Model::Model(const Model &_model)
   for (auto &link : this->dataPtr->links)
   {
     link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
   for (auto &joint : this->dataPtr->joints)
   {
@@ -381,6 +388,13 @@ Errors Model::Load(ElementPtr _sdf)
   for (auto &link : this->dataPtr->links)
   {
     link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    Errors setPoseRelativeToGraphErrors =
+      model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+    errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
+                                setPoseRelativeToGraphErrors.end());
   }
   for (auto &joint : this->dataPtr->joints)
   {
@@ -675,10 +689,23 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
-void Model::SetPoseRelativeToGraph(
+Errors Model::SetPoseRelativeToGraph(
     std::weak_ptr<const PoseRelativeToGraph> _graph)
 {
+  Errors errors;
+
+  auto graph = _graph.lock();
+  if (!graph)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Tried to set PoseRelativeToGraph with invalid pointer."});
+    return errors;
+  }
+
+  this->dataPtr->parentPoseGraphScopeName = graph->sourceName;
   this->dataPtr->parentPoseGraph = _graph;
+
+  return errors;
 }
 
 /////////////////////////////////////////////////
@@ -687,7 +714,7 @@ sdf::SemanticPose Model::SemanticPose() const
   return sdf::SemanticPose(
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
-      "world",
+      this->dataPtr->parentPoseGraphScopeName,
       this->dataPtr->parentPoseGraph);
 }
 

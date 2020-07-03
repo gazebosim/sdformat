@@ -275,6 +275,17 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
+  // Check an SDF file with an invalid model without links.
+  {
+    std::string path = pathBase +"/model_without_links.sdf";
+
+    // Check model_without_links.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: A model must have at least one link."),
+              std::string::npos) << output;
+  }
+
   // Check an SDF file with a nested model.
   {
     std::string path = pathBase +"/nested_model.sdf";
@@ -346,6 +357,17 @@ TEST(check, SDF)
     std::string path = pathBase +"/model_frame_attached_to_joint.sdf";
 
     // Check model_frame_attached_to_joint.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with model frames attached_to a nested model.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_frame_attached_to_nested_model.sdf";
+
+    // Check model_frame_attached_to_nested_model.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;
@@ -441,6 +463,17 @@ TEST(check, SDF)
                           "link name[self_cycle], causing a graph cycle in "
                           "model with name[model_invalid_link_relative_to]."),
               std::string::npos) << output;
+  }
+
+  // Check an SDF file with nested_models using the relative_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_nested_model_relative_to.sdf";
+
+    // Check model_nested_model_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
   }
 
   // Check an SDF file with joints using the relative_to attribute.

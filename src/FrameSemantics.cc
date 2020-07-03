@@ -285,6 +285,23 @@ Errors buildFrameAttachedToGraph(
     _out.map[frame->Name()] = frameId;
   }
 
+  // add nested model vertices
+  for (uint64_t m = 0; m < _model->ModelCount(); ++m)
+  {
+    auto nestedModel = _model->ModelByIndex(m);
+    if (_out.map.count(nestedModel->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Nested model with non-unique name [" + nestedModel->Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
+    auto nestedModelId =
+        _out.graph.AddVertex(nestedModel->Name(), sdf::FrameType::MODEL).Id();
+    _out.map[nestedModel->Name()] = nestedModelId;
+  }
+
   // add frame edges
   for (uint64_t f = 0; f < _model->FrameCount(); ++f)
   {
@@ -352,9 +369,9 @@ Errors buildFrameAttachedToGraph(
   }
 
   // add model vertices
-  for (uint64_t l = 0; l < _world->ModelCount(); ++l)
+  for (uint64_t m = 0; m < _world->ModelCount(); ++m)
   {
-    auto model = _world->ModelByIndex(l);
+    auto model = _world->ModelByIndex(m);
     if (_out.map.count(model->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
@@ -537,6 +554,30 @@ Errors buildPoseRelativeToGraph(
     }
   }
 
+  // add nested model vertices and default edge if relative_to is empty
+  for (uint64_t m = 0; m < _model->ModelCount(); ++m)
+  {
+    auto nestedModel = _model->ModelByIndex(m);
+    if (_out.map.count(nestedModel->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Nested model with non-unique name [" + nestedModel->Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
+    auto nestedModelId =
+        _out.graph.AddVertex(nestedModel->Name(), sdf::FrameType::MODEL).Id();
+    _out.map[nestedModel->Name()] = nestedModelId;
+
+    if (nestedModel->PoseRelativeTo().empty())
+    {
+      // relative_to is empty, so add edge from implicit model frame
+      // to nestedModel
+      _out.graph.AddEdge({modelFrameId, nestedModelId}, nestedModel->RawPose());
+    }
+  }
+
   // now that all vertices have been added to the graph,
   // add the edges that reference other vertices
 
@@ -657,6 +698,41 @@ Errors buildPoseRelativeToGraph(
           "in model with name[" + _model->Name() + "]."});
     }
     _out.graph.AddEdge({relativeToId, frameId}, frame->RawPose());
+  }
+
+  for (uint64_t m = 0; m < _model->ModelCount(); ++m)
+  {
+    auto nestedModel = _model->ModelByIndex(m);
+
+    // check if we've already added a default edge
+    const std::string relativeTo = nestedModel->PoseRelativeTo();
+    if (relativeTo.empty())
+    {
+      continue;
+    }
+
+    auto nestedModelId = _out.map.at(nestedModel->Name());
+
+    // look for vertex in graph that matches relative_to value
+    if (_out.map.count(relativeTo) != 1)
+    {
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+          "relative_to name[" + relativeTo +
+          "] specified by nested model with name[" + nestedModel->Name() +
+          "] does not match a nested model, link, joint, or frame name "
+          "in model with name[" + _model->Name() + "]."});
+      continue;
+    }
+    auto relativeToId = _out.map[relativeTo];
+    if (nestedModel->Name() == relativeTo)
+    {
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
+          "relative_to name[" + relativeTo +
+          "] is identical to nested model name[" + nestedModel->Name() +
+          "], causing a graph cycle "
+          "in model with name[" + _model->Name() + "]."});
+    }
+    _out.graph.AddEdge({relativeToId, nestedModelId}, nestedModel->RawPose());
   }
 
   return errors;
@@ -916,6 +992,22 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
                 "in MODEL attached_to graph."});
           }
           break;
+        case sdf::FrameType::MODEL:
+          if ("__model__" != vertexPair.second.get().Name())
+          {
+            if (outDegree != 0)
+            {
+              errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+                  "FrameAttachedToGraph error, "
+                  "nested MODEL vertex with name [" +
+                  vertexPair.second.get().Name() +
+                  "] should have no outgoing edges "
+                  "in MODEL attached_to graph."});
+            }
+            break;
+          }
+          // fall through to default case for __model__
+          [[fallthrough]];
         default:
           if (outDegree == 0)
           {
@@ -1065,22 +1157,26 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
               "should not have type WORLD in MODEL relative_to graph."});
           break;
         case sdf::FrameType::MODEL:
-          if (inDegree != 0)
+          if ("__model__" == vertexPair.second.get().Name())
           {
-            errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-                "PoseRelativeToGraph error, "
-                "MODEL vertex with name [" +
-                vertexPair.second.get().Name() +
-                "] should have no incoming edges "
-                "in MODEL relative_to graph."});
+            if (inDegree != 0)
+            {
+              errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+                  "PoseRelativeToGraph error, "
+                  "MODEL vertex with name [__model__"
+                  "] should have no incoming edges "
+                  "in MODEL relative_to graph."});
+            }
+            break;
           }
-          break;
+          // fall through to default case for nested models
+          [[fallthrough]];
         default:
           if (inDegree == 0)
           {
             errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
                 "PoseRelativeToGraph error, "
-                "Non-MODEL vertex with name [" +
+                "Vertex with name [" +
                 vertexPair.second.get().Name() +
                 "] is disconnected; it should have 1 incoming edge " +
                 "in MODEL relative_to graph."});
@@ -1206,13 +1302,26 @@ Errors resolveFrameAttachedToBody(
     return errors;
   }
 
-  if (_in.scopeName == "__model__" && sinkVertex.Data() != FrameType::LINK)
+  if (_in.scopeName == "__model__")
   {
-    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
-        "Graph has __model__ scope but sink vertex named [" +
-        sinkVertex.Name() + "] does not have FrameType LINK "
-        "when starting from vertex with name [" + _vertexName + "]."});
-    return errors;
+    if (sinkVertex.Data() == FrameType::MODEL &&
+        sinkVertex.Name() == "__model__")
+    {
+      errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+          "Graph with __model__ scope has sink vertex named [__model__] "
+          "when starting from vertex with name [" + _vertexName + "], "
+          "which is not permitted."});
+      return errors;
+    }
+    else if (sinkVertex.Data() != FrameType::LINK &&
+             sinkVertex.Data() != FrameType::MODEL)
+    {
+      errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+          "Graph has __model__ scope but sink vertex named [" +
+          sinkVertex.Name() + "] does not have FrameType LINK OR MODEL "
+          "when starting from vertex with name [" + _vertexName + "]."});
+      return errors;
+    }
   }
 
   _attachedToBody = sinkVertex.Name();
