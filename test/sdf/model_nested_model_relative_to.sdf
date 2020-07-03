@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_nested_model_relative_to">
+    <link name="L"/>
+    <model name="M1">
+      <pose>1 0 0 0 1.5707963267948966 0</pose>
+      <link name="L"/>
+    </model>
+    <model name="M2">
+      <pose relative_to="">2 0 0 0 0 0</pose>
+      <link name="L"/>
+    </model>
+    <model name="M3">
+      <pose relative_to="M1">3 0 0 0 0 0</pose>
+      <link name="L"/>
+    </model>
+  </model>
+</sdf>

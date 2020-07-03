@@ -579,6 +579,55 @@ TEST(DOMFrame, LoadModelFramesAttachedToJoint)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMFrame, LoadModelFramesAttachedToNestedModel)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_frame_attached_to_nested_model.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_frame_attached_to_nested_model", model->Name());
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_EQ(nullptr, model->LinkByIndex(1));
+
+  EXPECT_TRUE(model->LinkNameExists("link"));
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(1u, model->ModelCount());
+  EXPECT_NE(nullptr, model->ModelByIndex(0));
+  EXPECT_EQ(nullptr, model->ModelByIndex(1));
+
+  EXPECT_TRUE(model->ModelNameExists("nested_model"));
+
+  EXPECT_EQ(2u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_NE(nullptr, model->FrameByIndex(1));
+  EXPECT_EQ(nullptr, model->FrameByIndex(2));
+  ASSERT_TRUE(model->FrameNameExists("F1"));
+  ASSERT_TRUE(model->FrameNameExists("F2"));
+
+  EXPECT_EQ("nested_model", model->FrameByName("F1")->AttachedTo());
+  EXPECT_EQ("F1", model->FrameByName("F2")->AttachedTo());
+
+  std::string body;
+  EXPECT_TRUE(model->FrameByName("F1")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("nested_model", body);
+  EXPECT_TRUE(model->FrameByName("F2")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("nested_model", body);
+}
+
+/////////////////////////////////////////////////
 TEST(DOMFrame, LoadWorldFramesAttachedTo)
 {
   const std::string testFile =

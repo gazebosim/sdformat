@@ -199,6 +199,95 @@ TEST(DOMRoot, NestedModel)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMLink, NestedModelPoseRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_nested_model_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  using Pose = ignition::math::Pose3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_nested_model_relative_to", model->Name());
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_EQ(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  ASSERT_TRUE(model->LinkNameExists("L"));
+  EXPECT_TRUE(model->LinkByName("L")->PoseRelativeTo().empty());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->LinkByName("L")->RawPose());
+
+  ASSERT_TRUE(model->ModelNameExists("M1"));
+  ASSERT_TRUE(model->ModelNameExists("M2"));
+  ASSERT_TRUE(model->ModelNameExists("M3"));
+  EXPECT_TRUE(model->ModelByName("M1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->ModelByName("M2")->PoseRelativeTo().empty());
+  EXPECT_EQ("M1", model->ModelByName("M3")->PoseRelativeTo());
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->ModelByName("M1")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), model->ModelByName("M2")->RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0), model->ModelByName("M3")->RawPose());
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI / 2, 0),
+            model->ModelByName("M1")->SemanticPose().RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0),
+            model->ModelByName("M2")->SemanticPose().RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0),
+            model->ModelByName("M3")->SemanticPose().RawPose());
+
+  // Test SemanticPose().Resolve to get each nested model pose in the
+  // __model__ frame
+  Pose pose;
+  auto errors =
+    model->ModelByName("M1")->SemanticPose().Resolve(pose, "__model__");
+  for (auto error : errors)
+  {
+    std::cerr << error.Message() << std::endl;
+  }
+  EXPECT_TRUE(
+    model->ModelByName("M1")->SemanticPose().Resolve(pose,
+                                                     "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(
+    model->ModelByName("M2")->SemanticPose().Resolve(pose,
+                                                     "__model__").empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->ModelByName("M3")->SemanticPose().Resolve(pose,
+                                                     "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+  // test other API too
+  EXPECT_TRUE(model->ModelByName("M1")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->ModelByName("M2")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(model->ModelByName("M3")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+
+  // resolve pose of M1 relative to M3
+  // should be inverse of M3's Pose()
+  EXPECT_TRUE(
+    model->ModelByName("M1")->SemanticPose().Resolve(pose, "M3").empty());
+  EXPECT_EQ(Pose(-3, 0, 0, 0, 0, 0), pose);
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(0u, model->FrameCount());
+  EXPECT_EQ(nullptr, model->FrameByIndex(0));
+}
+
+/////////////////////////////////////////////////
 TEST(DOMRoot, LoadCanonicalLink)
 {
   const std::string testFile =
