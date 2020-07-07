@@ -4,9 +4,9 @@ load(
 )
 
 BINARY_DIR = "/tmp"
-SOURCE_DIR = "/tmp"
-CMAKE_BINARY_DIR = "/tmp"
-IGN_TOOLS_BINARY_DIR = "/tmp"
+SOURCE_DIR = "./sdformat"
+CMAKE_BINARY_DIR = "./ign_tools"
+IGN_TOOLS_BINARY_DIR = "./ign_tools"
 IGN_MSGS_BINARY_DIR = "/tmp"
 IGN_MSGS_LIBRARY_DIR = "/tmp"
 SDF_PROTOCOL_VERSION = 10
@@ -31,8 +31,35 @@ cmake_configure_file(
 
 cc_library(
     name = "test_utils",
-    srcs = ["test_config.h"],
+    srcs = ["test_config.h", "test_util.hh"],
     includes = ["."],
     visibility = ["//visibility:public"],
 )
 
+[
+    cc_test(
+        name = "INTEGRATION_" + test.split('/')[1].replace('.cc', ''),
+        srcs = [ test ],
+        deps = [
+            ":test_utils",
+            "//sdformat",
+            "@gtest//:gtest",
+            "@gtest//:gtest_main",
+        ],
+        data = [
+            ":sdf",
+            ":integration",
+            "//sdformat:tools",
+        ],
+        includes = [".", "integration"],
+    ) for test in glob(
+        ["integration/*.cc"],
+        exclude = [
+            "integration/nested_model.cc",
+            "integration/schema_test.cc",
+        ]
+    )
+]
+
+exports_files(["sdf"])
+exports_files(["integration"])

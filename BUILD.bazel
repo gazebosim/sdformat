@@ -8,15 +8,29 @@ load(
     "cmake_configure_file",
 )
 
+load(
+    "//ign_bazel:generate_yaml.bzl",
+    "generate_yaml",
+)
+
+load(
+    "@bazelruby_rules_ruby//ruby:defs.bzl",
+    "ruby_binary",
+    "ruby_library",
+    "ruby_test",
+    "ruby_rspec",
+)
+
 package(default_visibility = ["//visibility:public"])
 
 SDF_MAJOR_VERSION = 10
 SDF_MINOR_VERSION = 0
 SDF_PATCH_VERSION = 0
-PROJECT_NAME = "ign"
+PROJECT_NAME = "sdformat"
 SDF_VERSION_NAME = "sdf10"
 INSTALL_DIR = "/tmp"
 SDF_PKG_VERSION = 0
+library_location = "/usr"
 
 # Generates config.hh based on the version numbers in CMake code.
 cmake_configure_file(
@@ -56,7 +70,7 @@ test_sources = [
     "src/Camera_TEST.cc",
     "src/Collision_TEST.cc",
     "src/Console_TEST.cc",
-  # "src/Converter_TEST.cc",
+    "src/Converter_TEST.cc",
     "src/Cylinder_TEST.cc",
     "src/Element_TEST.cc",
     "src/Error_TEST.cc",
@@ -66,7 +80,7 @@ test_sources = [
     "src/Frame_TEST.cc",
     "src/Geometry_TEST.cc",
     "src/Gui_TEST.cc",
-    "src/ign_TEST.cc",
+    # "src/ign_TEST.cc",
     "src/Imu_TEST.cc",
     "src/JointAxis_TEST.cc",
     "src/Joint_TEST.cc",
@@ -80,7 +94,7 @@ test_sources = [
     "src/Noise_TEST.cc",
     "src/Param_TEST.cc",
     "src/parser_TEST.cc",
-  # "src/parser_urdf_TEST.cc",
+    "src/parser_urdf_TEST.cc",
     "src/Pbr_TEST.cc",
     "src/Physics_TEST.cc",
     "src/Plane_TEST.cc",
@@ -264,5 +278,28 @@ cc_library(
         "//ign_math",
         "@gtest//:gtest",
         "@gtest//:gtest_main",
-    ]
+    ],
+    linkopts = [
+        "-Wl,-soname,libsdformat10.so",
+        "-ltinyxml2",
+        "-lurdfdom_sensor",
+        "-lurdfdom_model_state",
+        "-lurdfdom_model",
+        "-lurdfdom_world",
+        "-lconsole_bridge"
+    ],
+    data = [
+        "//sdformat:sdf/1.2/1_0.convert",
+        "//sdformat:sdf/1.3/1_2.convert",
+        "//sdformat:sdf/1.4/1_3.convert",
+        "//sdformat:sdf/1.5/1_4.convert",
+        "//sdformat:sdf/1.6/1_5.convert",
+        "//sdformat:sdf/1.7/1_6.convert",
+        "//sdformat/test:sdf",
+        "//ign_tools:sdf.yaml",
+        "//ign_tools:ign",
+    ],
 ) for src in test_sources]
+
+exports_files(["src/cmd/cmdsdformat.rb.in"])
+exports_files(["tools"])
