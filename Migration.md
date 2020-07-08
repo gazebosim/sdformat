@@ -16,6 +16,10 @@ but with improved human-readability..
 
 ### Modifications
 
+1. Axis vectors specified in <joint><axis><xyz> are normalized if their norm is
+   greater than 0. A vector with 0 norm generates an error
+    * [Pull request 312](https://github.com/osrf/sdformat/pull/312)
+
 1. + Minimum/maximum values specified in SDFormat description files are now enforced
    + [Pull request 303](https://github.com/osrf/sdformat/pull/303)
 
