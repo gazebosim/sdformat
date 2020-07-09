@@ -269,7 +269,15 @@ else (build_errors)
 
     link_directories(${PROJECT_BINARY_DIR}/src)
 
-    add_subdirectory(test)
+    if (NOT DEFINED BUILD_TESTING OR BUILD_TESTING)
+      set(BUILD_SDF_TEST TRUE)
+    else()
+      set(BUILD_SDF_TEST FALSE)
+    endif()
+
+    if (BUILD_SDF_TEST)
+      add_subdirectory(test)
+    endif()
     add_subdirectory(src)
     add_subdirectory(include/sdf)
     add_subdirectory(sdf)
