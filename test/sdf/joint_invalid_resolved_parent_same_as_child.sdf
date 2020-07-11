@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <model name="joint_invalid_resolved_parent_same_as_child.sdf">
+    <link name="L1"/>
+
+    <joint name="J1" type="prismatic">
+      <parent>L1</parent>
+      <child>J2</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+
+    <joint name="J2" type="prismatic">
+      <parent>J1</parent>
+      <child>L2</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <link name="L2"/>
+  </model>
+</sdf>

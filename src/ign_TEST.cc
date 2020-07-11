@@ -254,6 +254,21 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
+  // Check an SDF file with a joint with parent parent frame that resolves
+  // to the same value as the child.
+  {
+    std::string path =
+        pathBase + "/joint_invalid_resolved_parent_same_as_child.sdf";
+
+    // Check joint_invalid_resolved_parent_same_as_child.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("specified parent frame [J1] and child frame [L2] "
+                          "that both resolve to [L2], but they should resolve "
+                          "to different values."),
+              std::string::npos) << output;
+  }
+
   // Check an SDF file with the world specified as a child link.
   {
     std::string path = pathBase +"/joint_child_world.sdf";

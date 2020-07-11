@@ -1892,13 +1892,39 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
         modelResult = false;
       }
 
-      if (childName == parentName)
+      // Check that parent and child frames resolve to different links
+      std::string resolvedChildName;
+      std::string resolvedParentName;
+      auto errors = joint->ResolveChildLink(resolvedChildName);
+      if (!errors.empty())
+      {
+        std::cerr << "Error when attempting to resolve child link name:"
+                  << std::endl;
+        for (auto error : errors)
+        {
+          std::cerr << error.Message() << std::endl;
+        }
+        modelResult = false;
+      }
+      errors = joint->ResolveParentLink(resolvedParentName);
+      if (!errors.empty())
+      {
+        std::cerr << "Error when attempting to resolve parent link name:"
+                  << std::endl;
+        for (auto error : errors)
+        {
+          std::cerr << error.Message() << std::endl;
+        }
+        modelResult = false;
+      }
+      if (resolvedChildName == resolvedParentName)
       {
         std::cerr << "Error: joint with name[" << joint->Name()
                   << "] in model with name[" << _model->Name()
-                  << "] must specify different link names for "
-                  << "parent and child, while [" << childName
-                  << "] was specified for both."
+                  << "] specified parent frame [" << parentName
+                  << "] and child frame [" << childName
+                  << "] that both resolve to [" << resolvedChildName
+                  << "], but they should resolve to different values."
                   << std::endl;
         modelResult = false;
       }
