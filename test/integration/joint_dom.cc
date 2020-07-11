@@ -193,9 +193,16 @@ TEST(DOMJoint, LoadJointParentWorld)
   ASSERT_TRUE(model->JointNameExists("joint"));
   EXPECT_EQ("link", model->JointByName("joint")->ChildLinkName());
   EXPECT_EQ("world", model->JointByName("joint")->ParentLinkName());
-  EXPECT_TRUE(model->JointByName("joint")->PoseRelativeTo().empty());
+  std::string resolvedLinkName;
+  EXPECT_TRUE(
+    model->JointByName("joint")->ResolveChildLink(resolvedLinkName).empty());
+  EXPECT_EQ("link", resolvedLinkName);
+  EXPECT_TRUE(
+    model->JointByName("joint")->ResolveParentLink(resolvedLinkName).empty());
+  EXPECT_EQ("world", resolvedLinkName);
 
   EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0), model->JointByName("joint")->RawPose());
+  EXPECT_TRUE(model->JointByName("joint")->PoseRelativeTo().empty());
 
   EXPECT_EQ(0u, model->FrameCount());
   EXPECT_EQ(nullptr, model->FrameByIndex(0));

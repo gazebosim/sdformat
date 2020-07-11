@@ -409,6 +409,14 @@ Errors Joint::ResolveParentLink(std::string &_link) const
 {
   Errors errors;
 
+  // special case for world, return without resolving since it's not in a
+  // model's FrameAttachedToGraph
+  if ("world" == this->ParentLinkName())
+  {
+    _link = "world";
+    return errors;
+  }
+
   auto graph = this->dataPtr->frameAttachedToGraph.lock();
   if (!graph)
   {
