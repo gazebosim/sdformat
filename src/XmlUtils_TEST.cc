@@ -31,8 +31,7 @@ TEST(XMLUtils, DeepClone)
     <nodeA>
       <nodeB attr="true">Hello World</nodeB>
     </nodeA>
-  </document>
-  )";
+  </document>)";
 
   auto ret = oldDoc.Parse(docXml.c_str());
   ASSERT_EQ(tinyxml2::XML_SUCCESS, ret);
