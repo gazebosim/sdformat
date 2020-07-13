@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software Ligcense Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -351,13 +351,13 @@ bool parseJointMimic(JointMimic &jm, tinyxml2::XMLElement* config)
   }
   else
     jm.joint_name = joint_name_str;
-  
+
   // Get mimic multiplier
   const char* multiplier_str = config->Attribute("multiplier");
 
   if (multiplier_str == NULL)
   {
-    jm.multiplier = 1;    
+    jm.multiplier = 1;
   }
   else
   {
@@ -375,7 +375,7 @@ bool parseJointMimic(JointMimic &jm, tinyxml2::XMLElement* config)
     }
   }
 
-  
+
   // Get mimic offset
   const char* offset_str = config->Attribute("offset");
   if (offset_str == NULL)
@@ -462,7 +462,7 @@ bool parseJoint(Joint &joint, tinyxml2::XMLElement* config)
   {
     return false;
   }
-  
+
   std::string type_str = type_char;
   if (type_str == "planar")
     joint.type = Joint::PLANAR;
@@ -579,31 +579,31 @@ bool exportPose(Pose &pose, tinyxml2::XMLElement* xml);
 
 bool exportJointDynamics(JointDynamics &jd, tinyxml2::XMLElement* xml)
 {
-  tinyxml2::XMLElement *dynamics_xml = new tinyxml2::XMLElement("dynamics");
-  dynamics_xml->SetAttribute("damping", urdf_export_helpers::values2str(jd.damping) );
-  dynamics_xml->SetAttribute("friction", urdf_export_helpers::values2str(jd.friction) );
+  tinyxml2::XMLElement *dynamics_xml = xml->GetDocument()->NewElement("dynamics");
+  dynamics_xml->SetAttribute("damping", urdf_export_helpers::values2str(jd.damping).c_str() );
+  dynamics_xml->SetAttribute("friction", urdf_export_helpers::values2str(jd.friction).c_str() );
   xml->LinkEndChild(dynamics_xml);
   return true;
 }
 
 bool exportJointLimits(JointLimits &jl, tinyxml2::XMLElement* xml)
 {
-  tinyxml2::XMLElement *limit_xml = new tinyxml2::XMLElement("limit");
-  limit_xml->SetAttribute("effort", urdf_export_helpers::values2str(jl.effort) );
-  limit_xml->SetAttribute("velocity", urdf_export_helpers::values2str(jl.velocity) );
-  limit_xml->SetAttribute("lower", urdf_export_helpers::values2str(jl.lower) );
-  limit_xml->SetAttribute("upper", urdf_export_helpers::values2str(jl.upper) );
+  tinyxml2::XMLElement *limit_xml = xml->GetDocument()->NewElement("limit");
+  limit_xml->SetAttribute("effort", urdf_export_helpers::values2str(jl.effort).c_str() );
+  limit_xml->SetAttribute("velocity", urdf_export_helpers::values2str(jl.velocity).c_str() );
+  limit_xml->SetAttribute("lower", urdf_export_helpers::values2str(jl.lower).c_str() );
+  limit_xml->SetAttribute("upper", urdf_export_helpers::values2str(jl.upper).c_str() );
   xml->LinkEndChild(limit_xml);
   return true;
 }
 
 bool exportJointSafety(JointSafety &js, tinyxml2::XMLElement* xml)
 {
-  tinyxml2::XMLElement *safety_xml = new tinyxml2::XMLElement("safety_controller");
-  safety_xml->SetAttribute("k_position", urdf_export_helpers::values2str(js.k_position) );
-  safety_xml->SetAttribute("k_velocity", urdf_export_helpers::values2str(js.k_velocity) );
-  safety_xml->SetAttribute("soft_lower_limit", urdf_export_helpers::values2str(js.soft_lower_limit) );
-  safety_xml->SetAttribute("soft_upper_limit", urdf_export_helpers::values2str(js.soft_upper_limit) );
+  tinyxml2::XMLElement *safety_xml = xml->GetDocument()->NewElement("safety_controller");
+  safety_xml->SetAttribute("k_position", urdf_export_helpers::values2str(js.k_position).c_str() );
+  safety_xml->SetAttribute("k_velocity", urdf_export_helpers::values2str(js.k_velocity).c_str() );
+  safety_xml->SetAttribute("soft_lower_limit", urdf_export_helpers::values2str(js.soft_lower_limit).c_str() );
+  safety_xml->SetAttribute("soft_upper_limit", urdf_export_helpers::values2str(js.soft_upper_limit).c_str() );
   xml->LinkEndChild(safety_xml);
   return true;
 }
@@ -612,11 +612,11 @@ bool exportJointCalibration(JointCalibration &jc, tinyxml2::XMLElement* xml)
 {
   if (jc.falling || jc.rising)
   {
-    tinyxml2::XMLElement *calibration_xml = new tinyxml2::XMLElement("calibration");
+    tinyxml2::XMLElement *calibration_xml = xml->GetDocument()->NewElement("calibration");
     if (jc.falling)
-      calibration_xml->SetAttribute("falling", urdf_export_helpers::values2str(*jc.falling) );
+      calibration_xml->SetAttribute("falling", urdf_export_helpers::values2str(*jc.falling).c_str() );
     if (jc.rising)
-      calibration_xml->SetAttribute("rising", urdf_export_helpers::values2str(*jc.rising) );
+      calibration_xml->SetAttribute("rising", urdf_export_helpers::values2str(*jc.rising).c_str() );
     //calibration_xml->SetAttribute("reference_position", urdf_export_helpers::values2str(jc.reference_position) );
     xml->LinkEndChild(calibration_xml);
   }
@@ -627,10 +627,10 @@ bool exportJointMimic(JointMimic &jm, tinyxml2::XMLElement* xml)
 {
   if (!jm.joint_name.empty())
   {
-    tinyxml2::XMLElement *mimic_xml = new tinyxml2::XMLElement("mimic");
-    mimic_xml->SetAttribute("offset", urdf_export_helpers::values2str(jm.offset) );
-    mimic_xml->SetAttribute("multiplier", urdf_export_helpers::values2str(jm.multiplier) );
-    mimic_xml->SetAttribute("joint", jm.joint_name );
+    tinyxml2::XMLElement *mimic_xml = xml->GetDocument()->NewElement("mimic");
+    mimic_xml->SetAttribute("offset", urdf_export_helpers::values2str(jm.offset).c_str() );
+    mimic_xml->SetAttribute("multiplier", urdf_export_helpers::values2str(jm.multiplier).c_str() );
+    mimic_xml->SetAttribute("joint", jm.joint_name.c_str() );
     xml->LinkEndChild(mimic_xml);
   }
   return true;
@@ -638,8 +638,8 @@ bool exportJointMimic(JointMimic &jm, tinyxml2::XMLElement* xml)
 
 bool exportJoint(Joint &joint, tinyxml2::XMLElement* xml)
 {
-  tinyxml2::XMLElement * joint_xml = new tinyxml2::XMLElement("joint");
-  joint_xml->SetAttribute("name", joint.name);
+  tinyxml2::XMLElement * joint_xml = xml->GetDocument()->NewElement("joinrt");
+  joint_xml->SetAttribute("name", joint.name.c_str());
   if (joint.type == urdf::Joint::PLANAR)
     joint_xml->SetAttribute("type", "planar");
   else if (joint.type == urdf::Joint::FLOATING)
@@ -658,18 +658,18 @@ bool exportJoint(Joint &joint, tinyxml2::XMLElement* xml)
   exportPose(joint.parent_to_joint_origin_transform, joint_xml);
 
   // axis
-  tinyxml2::XMLElement * axis_xml = new tinyxml2::XMLElement("axis");
-  axis_xml->SetAttribute("xyz", urdf_export_helpers::values2str(joint.axis));
+  tinyxml2::XMLElement * axis_xml = xml->GetDocument()->NewElement("axis");
+  axis_xml->SetAttribute("xyz", urdf_export_helpers::values2str(joint.axis).c_str());
   joint_xml->LinkEndChild(axis_xml);
 
-  // parent 
-  tinyxml2::XMLElement * parent_xml = new tinyxml2::XMLElement("parent");
-  parent_xml->SetAttribute("link", joint.parent_link_name);
+  // parent
+  tinyxml2::XMLElement * parent_xml = xml->GetDocument()->NewElement("parent");
+  parent_xml->SetAttribute("link", joint.parent_link_name.c_str());
   joint_xml->LinkEndChild(parent_xml);
 
   // child
-  tinyxml2::XMLElement * child_xml = new tinyxml2::XMLElement("child");
-  child_xml->SetAttribute("link", joint.child_link_name);
+  tinyxml2::XMLElement * child_xml = xml->GetDocument()->NewElement("child");
+  child_xml->SetAttribute("link", joint.child_link_name.c_str());
   joint_xml->LinkEndChild(child_xml);
 
   if (joint.dynamics)
