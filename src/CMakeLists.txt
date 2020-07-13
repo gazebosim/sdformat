@@ -171,6 +171,10 @@ target_link_libraries(${sdf_target} PUBLIC
   ${IGNITION-MATH_LIBRARIES}
   ${TinyXML2_LIBRARIES})
 
+if (WIN32)
+  target_compile_definitions(${sdf_target} PRIVATE URDFDOM_STATIC)
+endif()
+
 target_include_directories(${sdf_target}
   PUBLIC
     ${IGNITION-MATH_INCLUDE_DIRS}
