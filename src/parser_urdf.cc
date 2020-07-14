@@ -3327,7 +3327,7 @@ void URDF2SDF::InitModelFile(const std::string &_filename,
   tinyxml2::XMLDocument xmlDoc;
   if (!xmlDoc.LoadFile(_filename.c_str()))
   {
-    return this->InitModelDoc(&xmlDoc, _sdfXmlDoc);
+    this->InitModelDoc(&xmlDoc, _sdfXmlDoc);
   }
   else
   {
