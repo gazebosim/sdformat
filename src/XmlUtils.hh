@@ -30,9 +30,14 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
 
   /// \brief Perform a deep copy of an XML Node
+  /// 
+  /// This copies an XMLNode _src and all of its decendants
+  /// into a specified XMLDocument. 
+  ///
   /// \param[in] _doc Document in which to place the copied node
   /// \param[in] _src The node to deep copy
-  /// \returns The newly copied node
+  /// \returns The newly copied node upon success OR 
+  /// 	       nullptr if an error occurs.
   tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc,
                                const tinyxml2::XMLNode *_src);
   }

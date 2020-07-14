@@ -31,7 +31,7 @@ tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc,
   if (_src == nullptr)
   {
     sdferr << "Pointer to XML node _src is NULL\n";
-    return NULL;
+    return nullptr;
   }
 
   tinyxml2::XMLNode *copy = _src->ShallowClone(_doc);
