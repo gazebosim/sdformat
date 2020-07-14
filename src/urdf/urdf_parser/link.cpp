@@ -237,7 +237,7 @@ GeometrySharedPtr parseGeometry(tinyxml2::XMLElement *g)
     return geom;
   }
 
-  std::string type_name = shape->Value();
+  std::string type_name = shape->Name();
   if (type_name == "sphere")
   {
     Sphere *s = new Sphere();

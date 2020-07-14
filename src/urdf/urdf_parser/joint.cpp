@@ -638,7 +638,7 @@ bool exportJointMimic(JointMimic &jm, tinyxml2::XMLElement* xml)
 
 bool exportJoint(Joint &joint, tinyxml2::XMLElement* xml)
 {
-  tinyxml2::XMLElement * joint_xml = xml->GetDocument()->NewElement("joinrt");
+  tinyxml2::XMLElement * joint_xml = xml->GetDocument()->NewElement("joint");
   joint_xml->SetAttribute("name", joint.name.c_str());
   if (joint.type == urdf::Joint::PLANAR)
     joint_xml->SetAttribute("type", "planar");

@@ -1389,26 +1389,26 @@ void URDF2SDF::ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml)
         sdf->isMu1 = true;
         sdf->mu1 = std::stod(GetKeyValueAsString(childElem));
       }
-      else if (strcmp(childElem->Value(), "mu2") == 0)
+      else if (strcmp(childElem->Name(), "mu2") == 0)
       {
         sdf->isMu2 = true;
         sdf->mu2 = std::stod(GetKeyValueAsString(childElem));
       }
-      else if (strcmp(childElem->Value(), "fdir1") == 0)
+      else if (strcmp(childElem->Name(), "fdir1") == 0)
       {
         sdf->fdir1 = GetKeyValueAsString(childElem);
       }
-      else if (strcmp(childElem->Value(), "kp") == 0)
+      else if (strcmp(childElem->Name(), "kp") == 0)
       {
         sdf->isKp = true;
         sdf->kp = std::stod(GetKeyValueAsString(childElem));
       }
-      else if (strcmp(childElem->Value(), "kd") == 0)
+      else if (strcmp(childElem->Name(), "kd") == 0)
       {
         sdf->isKd = true;
         sdf->kd = std::stod(GetKeyValueAsString(childElem));
       }
-      else if (strcmp(childElem->Value(), "selfCollide") == 0)
+      else if (strcmp(childElem->Name(), "selfCollide") == 0)
       {
         sdf->isSelfCollide = true;
         std::string valueStr = GetKeyValueAsString(childElem);
@@ -1424,42 +1424,42 @@ void URDF2SDF::ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml)
           sdf->selfCollide = false;
         }
       }
-      else if (strcmp(childElem->Value(), "maxContacts") == 0)
+      else if (strcmp(childElem->Name(), "maxContacts") == 0)
       {
         sdf->isMaxContacts = true;
         sdf->maxContacts = std::stoi(GetKeyValueAsString(childElem));
       }
-      else if (strcmp(childElem->Value(), "laserRetro") == 0)
+      else if (strcmp(childElem->Name(), "laserRetro") == 0)
       {
         sdf->isLaserRetro = true;
         sdf->laserRetro = std::stod(GetKeyValueAsString(childElem));
       }
-      else if (strcmp(childElem->Value(), "springReference") == 0)
+      else if (strcmp(childElem->Name(), "springReference") == 0)
       {
         sdf->isSpringReference = true;
         sdf->springReference = std::stod(GetKeyValueAsString(childElem));
       }
-      else if (strcmp(childElem->Value(), "springStiffness") == 0)
+      else if (strcmp(childElem->Name(), "springStiffness") == 0)
       {
         sdf->isSpringStiffness = true;
         sdf->springStiffness = std::stod(GetKeyValueAsString(childElem));
       }
-      else if (strcmp(childElem->Value(), "stopCfm") == 0)
+      else if (strcmp(childElem->Name(), "stopCfm") == 0)
       {
         sdf->isStopCfm = true;
         sdf->stopCfm = std::stod(GetKeyValueAsString(childElem));
       }
-      else if (strcmp(childElem->Value(), "stopErp") == 0)
+      else if (strcmp(childElem->Name(), "stopErp") == 0)
       {
         sdf->isStopErp = true;
         sdf->stopErp = std::stod(GetKeyValueAsString(childElem));
       }
-      else if (strcmp(childElem->Value(), "fudgeFactor") == 0)
+      else if (strcmp(childElem->Name(), "fudgeFactor") == 0)
       {
         sdf->isFudgeFactor = true;
         sdf->fudgeFactor = std::stod(GetKeyValueAsString(childElem));
       }
-      else if (strcmp(childElem->Value(), "provideFeedback") == 0)
+      else if (strcmp(childElem->Name(), "provideFeedback") == 0)
       {
         sdf->isProvideFeedback = true;
         std::string valueStr = GetKeyValueAsString(childElem);
@@ -1474,14 +1474,14 @@ void URDF2SDF::ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml)
           sdf->provideFeedback = false;
         }
       }
-      else if (strcmp(childElem->Value(), "canonicalBody") == 0)
+      else if (strcmp(childElem->Name(), "canonicalBody") == 0)
       {
         sdfdbg << "do nothing with canonicalBody\n";
       }
-      else if (strcmp(childElem->Value(), "cfmDamping") == 0 ||
-                 strcmp(childElem->Value(), "implicitSpringDamper") == 0)
+      else if (strcmp(childElem->Name(), "cfmDamping") == 0 ||
+                 strcmp(childElem->Name(), "implicitSpringDamper") == 0)
       {
-        if (strcmp(childElem->Value(), "cfmDamping") == 0)
+        if (strcmp(childElem->Name(), "cfmDamping") == 0)
         {
           sdfwarn << "Note that cfmDamping is being deprecated by "
                   << "implicitSpringDamper, please replace instances "
@@ -1501,7 +1501,7 @@ void URDF2SDF::ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml)
           sdf->implicitSpringDamper = false;
         }
       }
-      else if (strcmp(childElem->Value(), "disableFixedJointLumping") == 0)
+      else if (strcmp(childElem->Name(), "disableFixedJointLumping") == 0)
       {
         std::string valueStr = GetKeyValueAsString(childElem);
 
@@ -1511,7 +1511,7 @@ void URDF2SDF::ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml)
           g_fixedJointsTransformedInRevoluteJoints.insert(refStr);
         }
       }
-      else if (strcmp(childElem->Value(), "preserveFixedJoint") == 0)
+      else if (strcmp(childElem->Name(), "preserveFixedJoint") == 0)
       {
         std::string valueStr = GetKeyValueAsString(childElem);
 
