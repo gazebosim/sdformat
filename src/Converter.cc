@@ -655,7 +655,7 @@ void Converter::Move(tinyxml2::XMLElement *_elem,
 
     if (toElemStr && !toAttrStr)
     {
-      tinyxml2::XMLNode* cloned = DeepClone(moveFrom->GetDocument(), moveFrom);
+      tinyxml2::XMLNode *cloned = DeepClone(moveFrom->GetDocument(), moveFrom);
       tinyxml2::XMLElement *moveTo = static_cast<tinyxml2::XMLElement*>(cloned);
 
       moveTo->SetValue(toName);

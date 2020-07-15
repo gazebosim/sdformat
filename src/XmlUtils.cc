@@ -25,8 +25,8 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 
 /////////////////////////////////////////////////
-tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc,
-                             const tinyxml2::XMLNode *_src)
+tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
+                              const tinyxml2::XMLNode *_src)
 {
   if (_src == nullptr)
   {
@@ -44,13 +44,13 @@ tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc,
   for (const tinyxml2::XMLNode *node = _src->FirstChild(); node != nullptr;
        node = node->NextSibling())
   {
-    auto* child_copy = DeepClone(_doc, node);
-    if (child_copy == nullptr)
+    auto *childCopy = DeepClone(_doc, node);
+    if (childCopy == nullptr)
     {
       sdferr << "Failed to clone child " << node->Value() << "\n";
       return nullptr;
     }
-    copy->InsertEndChild(child_copy);
+    copy->InsertEndChild(childCopy);
   }
 
   return copy;

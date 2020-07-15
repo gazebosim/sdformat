@@ -38,7 +38,7 @@ namespace sdf
   /// \param[in] _src The node to deep copy
   /// \returns The newly copied node upon success OR
   ///          nullptr if an error occurs.
-  tinyxml2::XMLNode* DeepClone(tinyxml2::XMLDocument *_doc,
+  tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
                                const tinyxml2::XMLNode *_src);
   }
 }
