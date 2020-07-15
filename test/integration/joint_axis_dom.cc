@@ -232,7 +232,9 @@ TEST(DOMJointAxis, XyzNormalization)
   sdf::Errors errors = root.Load(testFile);
 
   ASSERT_EQ(1u, errors.size());
-  EXPECT_EQ("The norm of the xyz vector cannot be zero", errors[0].Message());
+  EXPECT_TRUE(
+      errors[0].Message().find("The norm of the xyz vector cannot be zero") !=
+      std::string::npos);
 
   using ignition::math::Vector3d;
 
@@ -267,6 +269,6 @@ TEST(DOMJointAxis, XyzNormalization)
     auto joint4 = model->JointByName("joint4");
     ASSERT_FALSE(nullptr == joint4);
     ASSERT_FALSE(nullptr == joint4->Axis(0));
-    EXPECT_EQ(Vector3d::Zero, joint4->Axis(0)->Xyz());
+    EXPECT_EQ(Vector3d::UnitZ, joint4->Axis(0)->Xyz());
   }
 }

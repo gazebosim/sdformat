@@ -145,3 +145,12 @@ TEST(DOMJointAxis, CopyAssignmentAfterMove)
   EXPECT_EQ(axis2, jointAxis1.Xyz());
   EXPECT_EQ(axis1, jointAxis2.Xyz());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, ZeroNormVectorThrows)
+{
+  sdf::JointAxis axis;
+  EXPECT_NO_THROW(axis.SetXyz({1.0, 0, 0}));
+  EXPECT_THROW(axis.SetXyz(ignition::math::Vector3d::Zero),
+               sdf::AssertionInternalError);
+}

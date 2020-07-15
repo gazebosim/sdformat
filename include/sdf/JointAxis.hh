@@ -21,6 +21,7 @@
 #include <string>
 #include <ignition/math/Vector3.hh>
 #include "sdf/Element.hh"
+#include "sdf/Exception.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -93,6 +94,7 @@ namespace sdf
 
     /// \brief Set the x,y,z components of the axis unit vector.
     /// \param[in] _xyz The x,y,z components of the axis unit vector.
+    /// \throws sdf::AssertionInternalError if the norm of the xyz vector is 0.
     /// \sa ignition::math::Vector3d Xyz() const
     public: void SetXyz(const ignition::math::Vector3d &_xyz);
 
