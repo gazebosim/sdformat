@@ -16,6 +16,9 @@ but with improved human-readability..
 
 ### Modifications
 
+1. + Depend on tinyxml2 instead of tinyxml for XML parsing.
+   + [Pull request 264](https://github.com/osrf/sdformat/pull/264)
+
 1. + Minimum/maximum values specified in SDFormat description files are now enforced
    + [Pull request 303](https://github.com/osrf/sdformat/pull/303)
 
