@@ -12,6 +12,14 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDFormat 10.x to 11.0
+
+### Additions
+
+1. **sdf/Joint.hh**
+    + Errors ResolveChildLink(std::string&) const
+    + Errors ResolveParentLink(std::string&) const
+
 ## SDFormat 9.x to 10.0
 
 ### Modifications
@@ -27,7 +35,7 @@ but with improved human-readability..
 1. + Removed the `parser_urdf.hh` header file and its `URDF2SDF` class
    + [Pull request 276](https://github.com/osrf/sdformat/pull/276)
 
-1. + Removed the deprecated `Pose()`, `SetPose(), and `*PoseFrame()` API's in all DOM classes:
+1. + Removed the deprecated `Pose()`, `SetPose()`, and `*PoseFrame()` API's in all DOM classes:
    + const ignition::math::Pose3d &Pose()
    + void SetPose(const ignition::math::Pose3d &)
    + const std::string &PoseFrame()
@@ -220,6 +228,11 @@ but with improved human-readability..
     + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
 
 ## SDF protocol 1.7 to 1.8
+
+### Modifications
+
+1. **joint.sdf** `child` and `parent` elements accept frame names instead of only link names
+    * [Issue 204](https://github.com/osrf/sdformat/issues/204)
 
 ### Deprecations
 

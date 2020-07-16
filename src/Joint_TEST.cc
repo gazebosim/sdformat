@@ -64,6 +64,12 @@ TEST(DOMJoint, Construction)
   joint.SetChildLinkName("child");
   EXPECT_EQ("child", joint.ChildLinkName());
 
+  std::string body;
+  EXPECT_FALSE(joint.ResolveChildLink(body).empty());
+  EXPECT_TRUE(body.empty());
+  EXPECT_FALSE(joint.ResolveParentLink(body).empty());
+  EXPECT_TRUE(body.empty());
+
   joint.SetType(sdf::JointType::BALL);
   EXPECT_EQ(sdf::JointType::BALL, joint.Type());
   joint.SetType(sdf::JointType::CONTINUOUS);

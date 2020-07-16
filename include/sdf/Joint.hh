@@ -35,6 +35,7 @@ namespace sdf
   // Forward declarations.
   class JointAxis;
   class JointPrivate;
+  struct FrameAttachedToGraph;
   struct PoseRelativeToGraph;
 
   /// \enum JointType
@@ -147,6 +148,18 @@ namespace sdf
     /// \param[in] _name Name of the child link.
     public: void SetChildLinkName(const std::string &_name);
 
+    /// \brief Resolve the name of the child link from the
+    /// FrameAttachedToGraph.
+    /// \param[out] _body Name of child link of this joint.
+    /// \return Errors.
+    public: Errors ResolveChildLink(std::string &_link) const;
+
+    /// \brief Resolve the name of the parent link from the
+    /// FrameAttachedToGraph. It will return the name of a link or "world".
+    /// \param[out] _body Name of parent link of this joint.
+    /// \return Errors.
+    public: Errors ResolveParentLink(std::string &_link) const;
+
     /// \brief Get a joint axis.
     /// \param[in] _index This value specifies which axis to get. A value of
     /// zero corresponds to the first axis, which is the <axis> SDF
@@ -207,6 +220,13 @@ namespace sdf
     /// poses.
     /// \return SemanticPose object for this link.
     public: sdf::SemanticPose SemanticPose() const;
+
+    /// \brief Give a weak pointer to the FrameAttachedToGraph to be used
+    /// for resolving parent and child link names. This is private and is
+    /// intended to be called by  Model::Load.
+    /// \param[in] _graph Weak pointer to FrameAttachedToGraph.
+    private: void SetFrameAttachedToGraph(
+        std::weak_ptr<const FrameAttachedToGraph> _graph);
 
     /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
     /// for resolving poses. This is private and is intended to be called by

@@ -114,6 +114,7 @@ Model::Model(const Model &_model)
   }
   for (auto &joint : this->dataPtr->joints)
   {
+    joint.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
     joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
   for (auto &frame : this->dataPtr->frames)
@@ -328,6 +329,10 @@ Errors Model::Load(ElementPtr _sdf)
       validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
     errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
                                 validateFrameAttachedGraphErrors.end());
+    for (auto &joint : this->dataPtr->joints)
+    {
+      joint.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    }
     for (auto &frame : this->dataPtr->frames)
     {
       frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);

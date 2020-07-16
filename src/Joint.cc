@@ -24,6 +24,7 @@
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
 #include "sdf/Types.hh"
+#include "FrameSemantics.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -73,6 +74,9 @@ class sdf::JointPrivate
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
+  /// \brief Weak pointer to model's Frame Attached-To Graph.
+  public: std::weak_ptr<const sdf::FrameAttachedToGraph> frameAttachedToGraph;
+
   /// \brief Weak pointer to model's Pose Relative-To Graph.
   public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
@@ -87,6 +91,7 @@ JointPrivate::JointPrivate(const JointPrivate &_jointPrivate)
       poseRelativeTo(_jointPrivate.poseRelativeTo),
       threadPitch(_jointPrivate.threadPitch),
       sdf(_jointPrivate.sdf),
+      frameAttachedToGraph(_jointPrivate.frameAttachedToGraph),
       poseRelativeToGraph(_jointPrivate.poseRelativeToGraph)
 {
   for (std::size_t i = 0; i < _jointPrivate.axis.size(); ++i)
@@ -355,6 +360,13 @@ void Joint::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
+void Joint::SetFrameAttachedToGraph(
+    std::weak_ptr<const FrameAttachedToGraph> _graph)
+{
+  this->dataPtr->frameAttachedToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
 void Joint::SetPoseRelativeToGraph(
     std::weak_ptr<const PoseRelativeToGraph> _graph)
 {
@@ -368,6 +380,58 @@ void Joint::SetPoseRelativeToGraph(
       axis->SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
     }
   }
+}
+
+/////////////////////////////////////////////////
+Errors Joint::ResolveChildLink(std::string &_link) const
+{
+  Errors errors;
+
+  auto graph = this->dataPtr->frameAttachedToGraph.lock();
+  if (!graph)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Frame has invalid pointer to FrameAttachedToGraph."});
+    return errors;
+  }
+
+  std::string link;
+  errors = resolveFrameAttachedToBody(link, *graph, this->ChildLinkName());
+  if (errors.empty())
+  {
+    _link = link;
+  }
+  return errors;
+}
+
+/////////////////////////////////////////////////
+Errors Joint::ResolveParentLink(std::string &_link) const
+{
+  Errors errors;
+
+  // special case for world, return without resolving since it's not in a
+  // model's FrameAttachedToGraph
+  if ("world" == this->ParentLinkName())
+  {
+    _link = "world";
+    return errors;
+  }
+
+  auto graph = this->dataPtr->frameAttachedToGraph.lock();
+  if (!graph)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Frame has invalid pointer to FrameAttachedToGraph."});
+    return errors;
+  }
+
+  std::string link;
+  errors = resolveFrameAttachedToBody(link, *graph, this->ParentLinkName());
+  if (errors.empty())
+  {
+    _link = link;
+  }
+  return errors;
 }
 
 /////////////////////////////////////////////////

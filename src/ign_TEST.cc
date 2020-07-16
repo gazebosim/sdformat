@@ -197,7 +197,7 @@ TEST(check, SDF)
     // Check joint_invalid_child.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: Child link with name[invalid] specified by "
+    EXPECT_NE(output.find("Error: Child frame with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_child]."),
               std::string::npos) << output;
@@ -210,9 +210,34 @@ TEST(check, SDF)
     // Check joint_invalid_parent.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: parent link with name[invalid] specified by "
+    EXPECT_NE(output.find("Error: parent frame with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_parent]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with a joint that names itself as the child frame.
+  {
+    std::string path = pathBase +"/joint_invalid_self_child.sdf";
+
+    // Check joint_invalid_self_child.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: FrameAttachedToGraph cycle detected, "
+                          "already visited vertex [self]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with a joint that names itself as the parent frame.
+  {
+    std::string path = pathBase +"/joint_invalid_self_parent.sdf";
+
+    // Check joint_invalid_self_parent.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: joint with name[self] in model with "
+                          "name[joint_invalid_self_parent] must not specify "
+                          "its own name as the parent frame."),
               std::string::npos) << output;
   }
 
@@ -226,6 +251,21 @@ TEST(check, SDF)
     EXPECT_NE(output.find("Error: Joint with name[joint] must "
                           "specify different link names for parent and child, "
                           "while [link] was specified for both."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with a joint with parent parent frame that resolves
+  // to the same value as the child.
+  {
+    std::string path =
+        pathBase + "/joint_invalid_resolved_parent_same_as_child.sdf";
+
+    // Check joint_invalid_resolved_parent_same_as_child.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("specified parent frame [J1] and child frame [L2] "
+                          "that both resolve to [L2], but they should resolve "
+                          "to different values."),
               std::string::npos) << output;
   }
 
@@ -247,6 +287,28 @@ TEST(check, SDF)
     std::string path = pathBase +"/joint_parent_world.sdf";
 
     // Check joint_parent_world.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with a frame specified as the joint child.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/joint_child_frame.sdf";
+
+    // Check joint_child_frame.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with a frame specified as the joint parent.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/joint_parent_frame.sdf";
+
+    // Check joint_parent_frame.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;
