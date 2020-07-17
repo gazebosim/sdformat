@@ -10,7 +10,7 @@
     <description>
       Name of the link or frame to which this frame is attached.
       If a frame is specified, recursively following the attached_to attributes
-      of the specified frames must lead to the name of a link or the world frame.
+      of the specified frames must lead to the name of a link, a model, or the world frame.
     </description>
   </attribute>
 
