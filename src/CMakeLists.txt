@@ -8,10 +8,6 @@ if (NOT USE_INTERNAL_URDF)
   link_directories(${URDF_LIBRARY_DIRS})
 endif()
 
-if (USE_EXTERNAL_TINYXML)
-  link_directories(${tinyxml_LIBRARY_DIRS})
-endif()
-
 set (sources
   Actor.cc
   AirPressure.cc
@@ -62,21 +58,9 @@ set (sources
   Utils.cc
   Visual.cc
   World.cc
+  XmlUtils.cc
 )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-if (USE_EXTERNAL_TINYXML)
-  include_directories(${tinyxml_INCLUDE_DIRS})
-else()
-  set(sources ${sources}
-    win/tinyxml/tinystr.cpp
-    win/tinyxml/tinyxmlerror.cpp
-    win/tinyxml/tinyxml.cpp
-    win/tinyxml/tinyxmlparser.cpp)
-
-    install (FILES win/tinyxml/tinyxml.h
-	    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sdformat-${SDF_VERSION})
-endif()
 
 if (USE_INTERNAL_URDF)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/urdf)
@@ -154,17 +138,22 @@ if (BUILD_SDF_TEST)
   endif()
 
   if (NOT WIN32)
+    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS XmlUtils.cc)
+    sdf_build_tests(XmlUtils_TEST.cc)
+  endif()
+
+  if (NOT WIN32)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS FrameSemantics.cc)
     sdf_build_tests(FrameSemantics_TEST.cc)
   endif()
 
   if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc EmbeddedSdf.cc)
+    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc EmbeddedSdf.cc XmlUtils.cc)
     sdf_build_tests(Converter_TEST.cc)
   endif()
 
   if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS SDFExtension.cc parser_urdf.cc)
+    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS SDFExtension.cc parser_urdf.cc XmlUtils.cc)
     sdf_build_tests(parser_urdf_TEST.cc)
     if (NOT USE_INTERNAL_URDF)
       target_compile_options(UNIT_parser_urdf_TEST PRIVATE ${URDF_CFLAGS})
@@ -178,7 +167,13 @@ endif()
 
 sdf_add_library(${sdf_target} ${sources})
 target_compile_features(${sdf_target} PUBLIC cxx_std_17)
-target_link_libraries(${sdf_target} PUBLIC ${IGNITION-MATH_LIBRARIES})
+target_link_libraries(${sdf_target} PUBLIC
+  ${IGNITION-MATH_LIBRARIES}
+  ${TinyXML2_LIBRARIES})
+
+if (WIN32)
+  target_compile_definitions(${sdf_target} PRIVATE URDFDOM_STATIC)
+endif()
 
 target_include_directories(${sdf_target}
   PUBLIC
@@ -186,14 +181,6 @@ target_include_directories(${sdf_target}
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/..>
 )
-
-if (USE_EXTERNAL_TINYXML)
-  target_link_libraries(${sdf_target} PRIVATE ${tinyxml_LIBRARIES})
-else()
-  # Ignore the warnings from the internal library
-  set_target_properties(sdformat${SDF_MAJOR_VERSION} PROPERTIES
-      LINK_FLAGS "/IGNORE:4049 /IGNORE:4217")
-endif()
 
 message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
 message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
