@@ -82,24 +82,22 @@ bool readStringInternal(
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
-  TiXmlDocument xmlDoc;
-  if (xmlDoc.LoadFile(_filename))
+  tinyxml2::XMLDocument xmlDoc;
+  if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
   {
-    return initDoc(&xmlDoc, _sdf);
-  }
-  else
-  {
-    sdferr << "Unable to load file[" << _filename << "]\n";
+    sdferr << "Unable to load file["
+           << _filename << "]: " << xmlDoc.ErrorStr() << "\n";
+    return false;
   }
 
-  return false;
+  return initDoc(&xmlDoc, _sdf);
 }
 
 //////////////////////////////////////////////////
 bool init(SDFPtr _sdf)
 {
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmldata.c_str());
   return initDoc(&xmlDoc, _sdf);
 }
@@ -110,7 +108,7 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
-    TiXmlDocument xmlDoc;
+    tinyxml2::XMLDocument xmlDoc;
     xmlDoc.Parse(xmldata.c_str());
     return initDoc(&xmlDoc, _sdf);
   }
@@ -123,7 +121,7 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
-    TiXmlDocument xmlDoc;
+    tinyxml2::XMLDocument xmlDoc;
     xmlDoc.Parse(xmldata.c_str());
     return initDoc(&xmlDoc, _sdf);
   }
@@ -133,11 +131,10 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool initString(const std::string &_xmlString, SDFPtr _sdf)
 {
-  TiXmlDocument xmlDoc;
-  xmlDoc.Parse(_xmlString.c_str());
-  if (xmlDoc.Error())
+  tinyxml2::XMLDocument xmlDoc;
+  if (xmlDoc.Parse(_xmlString.c_str()))
   {
-    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorDesc() << '\n';
+    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
 
@@ -145,7 +142,7 @@ bool initString(const std::string &_xmlString, SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-inline TiXmlElement *_initDocGetElement(TiXmlDocument *_xmlDoc)
+inline tinyxml2::XMLElement *_initDocGetElement(tinyxml2::XMLDocument *_xmlDoc)
 {
   if (!_xmlDoc)
   {
@@ -153,7 +150,7 @@ inline TiXmlElement *_initDocGetElement(TiXmlDocument *_xmlDoc)
     return nullptr;
   }
 
-  TiXmlElement *element = _xmlDoc->FirstChildElement("element");
+  tinyxml2::XMLElement *element = _xmlDoc->FirstChildElement("element");
   if (!element)
   {
     sdferr << "Could not find the 'element' element in the xml file\n";
@@ -164,7 +161,7 @@ inline TiXmlElement *_initDocGetElement(TiXmlDocument *_xmlDoc)
 }
 
 //////////////////////////////////////////////////
-bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf)
+bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf)
 {
   auto element = _initDocGetElement(_xmlDoc);
   if (!element)
@@ -176,7 +173,7 @@ bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf)
+bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf)
 {
   auto element = _initDocGetElement(_xmlDoc);
   if (!element)
@@ -188,7 +185,7 @@ bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
+bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
 {
   const char *refString = _xml->Attribute("ref");
   if (refString)
@@ -218,7 +215,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
     bool required = std::string(requiredString) == "1" ? true : false;
     const char *elemDefaultValue = _xml->Attribute("default");
     std::string description;
-    TiXmlElement *descChild = _xml->FirstChildElement("description");
+    tinyxml2::XMLElement *descChild = _xml->FirstChildElement("description");
     if (descChild && descChild->GetText())
     {
       description = descChild->GetText();
@@ -243,10 +240,10 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
   }
 
   // Get all attributes
-  for (TiXmlElement *child = _xml->FirstChildElement("attribute");
+  for (tinyxml2::XMLElement *child = _xml->FirstChildElement("attribute");
        child; child = child->NextSiblingElement("attribute"))
   {
-    TiXmlElement *descriptionChild = child->FirstChildElement("description");
+    auto *descriptionChild = child->FirstChildElement("description");
     const char *name = child->Attribute("name");
     const char *type = child->Attribute("type");
     const char *defaultValue = child->Attribute("default");
@@ -286,14 +283,14 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
   }
 
   // Read the element description
-  TiXmlElement *descChild = _xml->FirstChildElement("description");
+  tinyxml2::XMLElement *descChild = _xml->FirstChildElement("description");
   if (descChild && descChild->GetText())
   {
     _sdf->SetDescription(descChild->GetText());
   }
 
   // Get all child elements
-  for (TiXmlElement *child = _xml->FirstChildElement("element");
+  for (tinyxml2::XMLElement *child = _xml->FirstChildElement("element");
        child; child = child->NextSiblingElement("element"))
   {
     const char *copyDataString = child->Attribute("copy_data");
@@ -312,7 +309,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
   }
 
   // Get all include elements
-  for (TiXmlElement *child = _xml->FirstChildElement("include");
+  for (tinyxml2::XMLElement *child = _xml->FirstChildElement("include");
        child; child = child->NextSiblingElement("include"))
   {
     std::string filename = child->Attribute("filename");
@@ -322,7 +319,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
     initFile(filename, element);
 
     // override description for include elements
-    TiXmlElement *description = child->FirstChildElement("description");
+    tinyxml2::XMLElement *description = child->FirstChildElement("description");
     if (description)
     {
       element->SetDescription(description->GetText());
@@ -393,7 +390,7 @@ bool readFileWithoutConversion(
 bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
       const bool _convert, Errors &_errors)
 {
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   std::string filename = sdf::findFile(_filename, true, true);
 
   if (filename.empty())
@@ -413,10 +410,11 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
     return false;
   }
 
-  if (!xmlDoc.LoadFile(filename))
+  auto error_code = xmlDoc.LoadFile(filename.c_str());
+  if (error_code)
   {
     sdferr << "Error parsing XML in file [" << filename << "]: "
-           << xmlDoc.ErrorDesc() << '\n';
+           << xmlDoc.ErrorStr() << '\n';
     return false;
   }
 
@@ -428,7 +426,8 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
   else if (URDF2SDF::IsURDF(filename))
   {
     URDF2SDF u2g;
-    TiXmlDocument doc = u2g.InitModelFile(filename);
+    tinyxml2::XMLDocument doc;
+    u2g.InitModelFile(filename, &doc);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
@@ -474,11 +473,11 @@ bool readStringWithoutConversion(
 bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
     const bool _convert, Errors &_errors)
 {
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
-    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
   if (readDoc(&xmlDoc, _sdf, "data-string", _convert, _errors))
@@ -488,7 +487,9 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   else
   {
     URDF2SDF u2g;
-    TiXmlDocument doc = u2g.InitModelString(_xmlString);
+    tinyxml2::XMLDocument doc;
+    u2g.InitModelString(_xmlString, &doc);
+
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {
       sdfdbg << "Parsing from urdf.\n";
@@ -520,11 +521,11 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 {
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
-    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
   if (readDoc(&xmlDoc, _sdf, "data-string", true, _errors))
@@ -540,7 +541,7 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 }
 
 //////////////////////////////////////////////////
-bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
+bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     const std::string &_source, bool _convert, Errors &_errors)
 {
   if (!_xmlDoc)
@@ -550,7 +551,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
   }
 
   // check sdf version
-  TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
+  tinyxml2::XMLElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
     return false;
@@ -587,7 +588,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
     }
 
     // parse new sdf xml
-    TiXmlElement *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName());
+    auto *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
     if (!readXml(elemXml, _sdf->Root(), _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -613,7 +614,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
 }
 
 //////////////////////////////////////////////////
-bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
+bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
              const std::string &_source, bool _convert, Errors &_errors)
 {
   if (!_xmlDoc)
@@ -623,7 +624,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   }
 
   // check sdf version
-  TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
+  tinyxml2::XMLElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
     return false;
@@ -648,11 +649,11 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
       Converter::Convert(_xmlDoc, SDF::Version());
     }
 
-    TiXmlElement *elemXml = sdfNode;
+    tinyxml2::XMLElement *elemXml = sdfNode;
     if (sdfNode->Value() != _sdf->GetName() &&
-        sdfNode->FirstChildElement(_sdf->GetName()))
+        sdfNode->FirstChildElement(_sdf->GetName().c_str()))
     {
-      elemXml = sdfNode->FirstChildElement(_sdf->GetName());
+      elemXml = sdfNode->FirstChildElement(_sdf->GetName().c_str());
     }
 
     // parse new sdf xml
@@ -680,18 +681,18 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
 }
 
 //////////////////////////////////////////////////
-std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
+std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
                                          std::string &_modelFileName)
 {
-  TiXmlElement *sdfXML = _modelXML->FirstChildElement("sdf");
-  TiXmlElement *nameSearch = _modelXML->FirstChildElement("name");
+  tinyxml2::XMLElement *sdfXML = _modelXML->FirstChildElement("sdf");
+  tinyxml2::XMLElement *nameSearch = _modelXML->FirstChildElement("name");
 
   // If a match is not found, use the latest version of the element
   // that is not older than the SDF parser.
   ignition::math::SemanticVersion sdfParserVersion(SDF_VERSION);
   std::string bestVersionStr = "0.0";
 
-  TiXmlElement *sdfSearch = sdfXML;
+  tinyxml2::XMLElement *sdfSearch = sdfXML;
   while (sdfSearch)
   {
     if (sdfSearch->Attribute("version"))
@@ -769,16 +770,16 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     }
   }
 
-  TiXmlDocument configFileDoc;
-  if (!configFileDoc.LoadFile(configFilePath))
+  tinyxml2::XMLDocument configFileDoc;
+  if (tinyxml2::XML_SUCCESS != configFileDoc.LoadFile(configFilePath.c_str()))
   {
     sdferr << "Error parsing XML in file ["
            << configFilePath << "]: "
-           << configFileDoc.ErrorDesc() << '\n';
+           << configFileDoc.ErrorStr() << '\n';
     return std::string();
   }
 
-  TiXmlElement *modelXML = configFileDoc.FirstChildElement("model");
+  tinyxml2::XMLElement *modelXML = configFileDoc.FirstChildElement("model");
 
   if (!modelXML)
   {
@@ -796,7 +797,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 }
 
 //////////////////////////////////////////////////
-bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
+bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
 {
   // Check if the element pointer is deprecated.
   if (_sdf->GetRequired() == "-1")
@@ -838,7 +839,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
     _sdf->Copy(refSDF);
   }
 
-  TiXmlAttribute *attribute = _xml->FirstAttribute();
+  const tinyxml2::XMLAttribute *attribute = _xml->FirstAttribute();
 
   unsigned int i = 0;
 
@@ -851,7 +852,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
     {
       _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
       _sdf->GetAttribute(attribute->Name())->SetFromString(
-          attribute->ValueStr());
+          attribute->Value());
       attribute = attribute->Next();
       continue;
     }
@@ -862,7 +863,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
       if (p->GetKey() == attribute->Name())
       {
         // Set the value of the SDF attribute
-        if (!p->SetFromString(attribute->ValueStr()))
+        if (!p->SetFromString(attribute->Value()))
         {
           _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
               "Unable to read attribute[" + p->GetKey() + "]"});
@@ -904,7 +905,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
     std::string filename;
 
     // Iterate over all the child elements
-    TiXmlElement *elemXml = nullptr;
+    tinyxml2::XMLElement *elemXml = nullptr;
     for (elemXml = _xml->FirstChildElement(); elemXml;
          elemXml = elemXml->NextSiblingElement())
     {
@@ -1003,7 +1004,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
                 elemXml->FirstChildElement("name")->GetText());
         }
 
-        TiXmlElement *poseElemXml = elemXml->FirstChildElement("pose");
+        tinyxml2::XMLElement *poseElemXml = elemXml->FirstChildElement("pose");
         if (poseElemXml)
         {
           sdf::ElementPtr poseElem = topLevelElem->GetElement("pose");
@@ -1036,7 +1037,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 
         if (isModel || isActor)
         {
-          for (TiXmlElement *childElemXml = elemXml->FirstChildElement();
+          for (auto *childElemXml = elemXml->FirstChildElement();
                childElemXml; childElemXml = childElemXml->NextSiblingElement())
           {
             if (std::string("plugin") == childElemXml->Value())
@@ -1163,14 +1164,16 @@ static void replace_all(std::string &_str,
 }
 
 /////////////////////////////////////////////////
-void copyChildren(ElementPtr _sdf, TiXmlElement *_xml, const bool _onlyUnknown)
+void copyChildren(ElementPtr _sdf,
+                  tinyxml2::XMLElement *_xml,
+                  const bool _onlyUnknown)
 {
   // Iterate over all the child elements
-  TiXmlElement *elemXml = nullptr;
+  tinyxml2::XMLElement *elemXml = nullptr;
   for (elemXml = _xml->FirstChildElement(); elemXml;
        elemXml = elemXml->NextSiblingElement())
   {
-    std::string elem_name = elemXml->ValueStr();
+    std::string elem_name = elemXml->Name();
 
     if (_sdf->HasElementDescription(elem_name))
     {
@@ -1179,11 +1182,11 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml, const bool _onlyUnknown)
         sdf::ElementPtr element = _sdf->AddElement(elem_name);
 
         // FIXME: copy attributes
-        for (TiXmlAttribute *attribute = elemXml->FirstAttribute();
+        for (const auto *attribute = elemXml->FirstAttribute();
              attribute; attribute = attribute->Next())
         {
           element->GetAttribute(attribute->Name())->SetFromString(
-            attribute->ValueStr());
+            attribute->Value());
         }
 
         // copy value
@@ -1205,12 +1208,12 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml, const bool _onlyUnknown)
         element->AddValue("string", elemXml->GetText(), "1");
       }
 
-      for (TiXmlAttribute *attribute = elemXml->FirstAttribute();
+      for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
            attribute; attribute = attribute->Next())
       {
         element->AddAttribute(attribute->Name(), "string", "", 1, "");
         element->GetAttribute(attribute->Name())->SetFromString(
-          attribute->ValueStr());
+          attribute->Value());
       }
 
       copyChildren(element, elemXml, _onlyUnknown);
@@ -1372,13 +1375,13 @@ bool convertFile(const std::string &_filename, const std::string &_version,
     return false;
   }
 
-  TiXmlDocument xmlDoc;
-  if (xmlDoc.LoadFile(filename))
+  tinyxml2::XMLDocument xmlDoc;
+  if (!xmlDoc.LoadFile(filename.c_str()))
   {
     // read initial sdf version
     std::string originalVersion;
     {
-      TiXmlElement *sdfNode = xmlDoc.FirstChildElement("sdf");
+      tinyxml2::XMLElement *sdfNode = xmlDoc.FirstChildElement("sdf");
       if (sdfNode && sdfNode->Attribute("version"))
       {
         originalVersion = sdfNode->Attribute("version");
@@ -1417,7 +1420,7 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
     return false;
   }
 
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(_sdfString.c_str());
 
   if (!xmlDoc.Error())
@@ -1425,7 +1428,7 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
     // read initial sdf version
     std::string originalVersion;
     {
-      TiXmlElement *sdfNode = xmlDoc.FirstChildElement("sdf");
+      tinyxml2::XMLElement *sdfNode = xmlDoc.FirstChildElement("sdf");
       if (sdfNode && sdfNode->Attribute("version"))
       {
         originalVersion = sdfNode->Attribute("version");

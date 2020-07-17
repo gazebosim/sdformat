@@ -17,7 +17,7 @@
 #ifndef SDFORMAT_URDF2SDF_HH_
 #define SDFORMAT_URDF2SDF_HH_
 
-#include <tinyxml.h>
+#include <tinyxml2.h>
 #include <sdf/sdf_config.h>
 
 #include <string>
@@ -46,22 +46,25 @@ namespace sdf
     public: ~URDF2SDF();
 
     /// \brief convert urdf xml document string to sdf xml document
-    /// \param[in] _xmlDoc a tinyxml document containing the urdf model
-    /// \return a tinyxml document containing sdf of the model
-    public: TiXmlDocument InitModelDoc(TiXmlDocument* _xmlDoc);
+    /// \param[in] _xmlDoc document containing the urdf model.
+    /// \param[inout] _sdfXmlDoc document to populate with the sdf model.
+    public: void InitModelDoc(const tinyxml2::XMLDocument* _xmlDoc,
+                              tinyxml2::XMLDocument *_sdfXmlDoc);
 
     /// \brief convert urdf file to sdf xml document
-    /// \param[in] _urdfStr a string containing filename of the urdf model
-    /// \return a tinyxml document containing sdf of the model
-    public: TiXmlDocument InitModelFile(const std::string &_filename);
+    /// \param[in] _urdfStr a string containing filename of the urdf model.
+    /// \param[inout] _sdfXmlDoc document to populate with the sdf model.
+    public: void InitModelFile(const std::string &_filename,
+                               tinyxml2::XMLDocument *_sdfXmlDoc);
 
     /// \brief convert urdf string to sdf xml document, with option to enforce
     /// limits.
     /// \param[in] _urdfStr a string containing model urdf
+    /// \param[inout] _sdfXmlDoc document to populate with the sdf model.
     /// \param[in] _enforceLimits option to enforce joint limits
-    /// \return a tinyxml document containing sdf of the model
-    public: TiXmlDocument InitModelString(const std::string &_urdfStr,
-                                          bool _enforceLimits = true);
+    public: void InitModelString(const std::string &_urdfStr,
+                                 tinyxml2::XMLDocument *_sdfXmlDoc,
+                                 bool _enforceLimits = true);
 
     /// \brief Return true if the filename is a URDF model.
     /// \param[in] _filename File to check.
@@ -76,7 +79,7 @@ namespace sdf
 
     /// things that do not belong in urdf but should be mapped into sdf
     /// @todo: do this using sdf definitions, not hard coded stuff
-    private: void ParseSDFExtension(TiXmlDocument &_urdfXml);
+    private: void ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml);
   };
   }
 }
