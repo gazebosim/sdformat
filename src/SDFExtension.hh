@@ -18,7 +18,7 @@
 #ifndef SDFORMAT_SDFEXTENSION_HH_
 #define SDFORMAT_SDFEXTENSION_HH_
 
-#include <tinyxml.h>
+#include <tinyxml2.h>
 
 #include <memory>
 #include <string>
@@ -34,6 +34,8 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
+  using XMLDocumentPtr= std::shared_ptr<tinyxml2::XMLDocument>;
+  using XMLElementPtr = std::shared_ptr<tinyxml2::XMLElement>;
 
   /// \internal
   /// \brief A class for holding sdf extension elements in urdf
@@ -57,7 +59,7 @@ namespace sdf
     public: std::string material;
 
     /// \brief blobs of xml to be copied into the visual sdf element
-    public: std::vector<std::shared_ptr<TiXmlElement> > visual_blobs;
+    public: std::vector<XMLDocumentPtr> visual_blobs;
 
     /// \brief blobs of xml to be copied into the collision sdf element
     /// An example might be:
@@ -84,7 +86,7 @@ namespace sdf
     /// </gazebo>
     /// where all the contents of `<collision>` element is copied into the
     /// resulting collision sdf.
-    public: std::vector<std::shared_ptr<TiXmlElement> > collision_blobs;
+    public: std::vector<XMLDocumentPtr> collision_blobs;
 
     // body, default off
     public: bool setStaticFlag;
@@ -118,7 +120,7 @@ namespace sdf
     public: bool implicitSpringDamper;
 
     // blobs into body or robot
-    public: std::vector<std::shared_ptr<TiXmlElement> > blobs;
+    public: std::vector<XMLDocumentPtr> blobs;
 
     friend class URDF2SDF;
   };
