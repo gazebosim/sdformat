@@ -7,6 +7,9 @@
 1. Normalize joint axis xyz vector when parsing from SDFormat
     * [Pull request 312](https://github.com/osrf/sdformat/pull/312)
 
+1. Migrate to using TinyXML2.
+    * [Pull request 264](https://github.com/osrf/sdformat/pull/264)
+
 1. Enforce minimum/maximum values specified in SDFormat description files.
     * [Pull request 303](https://github.com/osrf/sdformat/pull/303)
 
