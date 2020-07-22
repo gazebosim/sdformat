@@ -59,13 +59,13 @@ std::string trim(const char *_in)
 //////////////////////////////////////////////////
 std::string trim(const std::string &_in)
 {
-  const size_t strBegin = _in.find_first_not_of(" \t");
+  const size_t strBegin = _in.find_first_not_of(" \t\n");
   if (strBegin == std::string::npos)
   {
     return "";
   }
 
-  const size_t strRange = _in.find_last_not_of(" \t") - strBegin + 1;
+  const size_t strRange = _in.find_last_not_of(" \t\n") - strBegin + 1;
 
   return _in.substr(strBegin, strRange);
 }

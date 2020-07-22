@@ -3,4 +3,4 @@
 <model name='my_model'>
   <link name='link'/>
 </model>
-</sdf>"
+</sdf>
