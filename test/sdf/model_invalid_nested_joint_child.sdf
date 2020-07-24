@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_invalid_nested_joint_child">
+    <link name="P"/>
+    <model name="M">
+      <pose>1 0 0 0 1.5707963267948966 0</pose>
+      <link name="C"/>
+    </model>
+    <joint name="J" type="fixed">
+      <parent>P</parent>
+      <child>M::C</child>
+    </joint>
+  </model>
+</sdf>
