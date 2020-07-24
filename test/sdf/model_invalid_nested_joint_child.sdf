@@ -8,6 +8,8 @@
     </model>
     <joint name="J" type="fixed">
       <parent>P</parent>
+      <!-- INVALID: referencing children of nested models with :: is unsupported in SDFormat 1.7. -->
+      <!-- See https://github.com/osrf/sdformat/issues/293 -->
       <child>M::C</child>
     </joint>
   </model>
