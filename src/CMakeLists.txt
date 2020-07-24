@@ -167,7 +167,7 @@ endif()
 
 sdf_add_library(${sdf_target} ${sources})
 target_compile_features(${sdf_target} PUBLIC cxx_std_17)
-target_link_libraries(${sdf_target} PUBLIC
+target_link_libraries(${sdf_target} PRIVATE
   ${IGNITION-MATH_LIBRARIES}
   ${TinyXML2_LIBRARIES})
 
