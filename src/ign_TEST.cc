@@ -381,8 +381,8 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: attached_to name[A] specified by frame with "
-                          "name[F3] does not match a link, joint, or frame "
-                          "name in model with "
+                          "name[F3] does not match a nested model, link, "
+                          "joint, or frame name in model with "
                           "name[model_frame_invalid_attached_to]."),
               std::string::npos) << output;
     EXPECT_NE(output.find("Error: attached_to name[F4] is identical to frame "
@@ -455,8 +455,8 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: relative_to name[A] specified by link with "
-                          "name[L] does not match a link, joint, or frame "
-                          "name in model with "
+                          "name[L] does not match a nested model, link, "
+                          "joint, or frame name in model with "
                           "name[model_invalid_link_relative_to]."),
               std::string::npos) << output;
     EXPECT_NE(output.find("Error: relative_to name[self_cycle] is identical to "
@@ -495,8 +495,8 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: relative_to name[A] specified by joint with "
-                          "name[J] does not match a link, joint, or frame "
-                          "name in model with "
+                          "name[J] does not match a nested model, link, "
+                          "joint, or frame name in model with "
                           "name[model_invalid_joint_relative_to]."),
               std::string::npos) << output;
     EXPECT_NE(output.find("Error: relative_to name[Jcycle] is identical to "
@@ -535,8 +535,8 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: relative_to name[A] specified by frame with "
-                          "name[F] does not match a link, joint, or frame "
-                          "name in model with "
+                          "name[F] does not match a nested model, link, "
+                          "joint, or frame name in model with "
                           "name[model_invalid_frame_relative_to]."),
               std::string::npos) << output;
     EXPECT_NE(output.find("Error: relative_to name[cycle] is identical to "
