@@ -697,7 +697,7 @@ Errors Model::SetPoseRelativeToGraph(
   auto graph = _graph.lock();
   if (!graph)
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
         "Tried to set PoseRelativeToGraph with invalid pointer."});
     return errors;
   }
