@@ -246,12 +246,6 @@ TEST(DOMLink, NestedModelPoseRelativeTo)
   // Test SemanticPose().Resolve to get each nested model pose in the
   // __model__ frame
   Pose pose;
-  auto errors =
-    model->ModelByName("M1")->SemanticPose().Resolve(pose, "__model__");
-  for (auto error : errors)
-  {
-    std::cerr << error.Message() << std::endl;
-  }
   EXPECT_TRUE(
     model->ModelByName("M1")->SemanticPose().Resolve(pose,
                                                      "__model__").empty());
