@@ -319,7 +319,7 @@ Errors buildFrameAttachedToGraph(
       errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
           "attached_to name[" + attachedTo +
           "] specified by frame with name[" + frame->Name() +
-          "] does not match a link, joint, or frame name "
+          "] does not match a nested model, link, joint, or frame name "
           "in model with name[" + _model->Name() + "]."});
       continue;
     }
@@ -600,7 +600,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
           "relative_to name[" + relativeTo +
           "] specified by link with name[" + link->Name() +
-          "] does not match a link, joint, or frame name "
+          "] does not match a nested model, link, joint, or frame name "
           "in model with name[" + _model->Name() + "]."});
       continue;
     }
@@ -635,7 +635,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
           "relative_to name[" + relativeTo +
           "] specified by joint with name[" + joint->Name() +
-          "] does not match a link, joint, or frame name "
+          "] does not match a nested model, link, joint, or frame name "
           "in model with name[" + _model->Name() + "]."});
       continue;
     }
@@ -684,7 +684,7 @@ Errors buildPoseRelativeToGraph(
       errors.push_back({errorCode,
           typeForErrorMsg + " name[" + relativeTo +
           "] specified by frame with name[" + frame->Name() +
-          "] does not match a link, joint, or frame name "
+          "] does not match a nested model, link, joint, or frame name "
           "in model with name[" + _model->Name() + "]."});
       continue;
     }
