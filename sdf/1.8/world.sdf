@@ -36,6 +36,10 @@
     </element>
 
     <include filename="pose.sdf" required="0"/>
+
+    <element name="placement_frame" type="string" default="" required="0">
+      <description>The frame inside the included entity whose pose will be set by the specified pose element. If this element is specified, the pose must be specified.</description>
+    </element>
   </element>
 
   <element name="gravity" type="vector3" default="0 0 -9.8" required="1">

@@ -49,6 +49,10 @@
     <element name="static" type="bool" default="false" required="0">
       <description>Override the static value of the included model.</description>
     </element>
+
+    <element name="placement_frame" type="string" default="" required="0">
+      <description>The frame inside the included model whose pose will be set by the specified pose element. If this element is specified, the pose must be specified.</description>
+    </element>
   </element>
 
   <element name="model" ref="model" required="*">
