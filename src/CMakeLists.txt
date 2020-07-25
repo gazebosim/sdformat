@@ -173,9 +173,11 @@ endif()
 
 sdf_add_library(${sdf_target} ${sources})
 target_compile_features(${sdf_target} PUBLIC cxx_std_17)
-target_link_libraries(${sdf_target} PRIVATE
-  ${IGNITION-MATH_LIBRARIES}
-  ${TinyXML2_LIBRARIES})
+target_link_libraries(${sdf_target}
+  PUBLIC
+    ${IGNITION-MATH_LIBRARIES}
+  PRIVATE
+    ${TinyXML2_LIBRARIES})
 
 if (WIN32)
   target_compile_definitions(${sdf_target} PRIVATE URDFDOM_STATIC)
