@@ -140,6 +140,8 @@ if (BUILD_SDF_TEST)
   if (NOT WIN32)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS XmlUtils.cc)
     sdf_build_tests(XmlUtils_TEST.cc)
+    target_link_libraries(UNIT_XmlUtils_TEST PRIVATE
+      ${TinyXML2_LIBRARIES})
   endif()
 
   if (NOT WIN32)
@@ -150,6 +152,8 @@ if (BUILD_SDF_TEST)
   if (NOT WIN32)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc EmbeddedSdf.cc XmlUtils.cc)
     sdf_build_tests(Converter_TEST.cc)
+    target_link_libraries(UNIT_Converter_TEST PRIVATE
+      ${TinyXML2_LIBRARIES})
   endif()
 
   if (NOT WIN32)
@@ -162,14 +166,18 @@ if (BUILD_SDF_TEST)
       endif()
       target_link_libraries(UNIT_parser_urdf_TEST PRIVATE ${URDF_LIBRARIES})
     endif()
+    target_link_libraries(UNIT_parser_urdf_TEST PRIVATE
+      ${TinyXML2_LIBRARIES})
   endif()
 endif()
 
 sdf_add_library(${sdf_target} ${sources})
 target_compile_features(${sdf_target} PUBLIC cxx_std_17)
-target_link_libraries(${sdf_target} PUBLIC
-  ${IGNITION-MATH_LIBRARIES}
-  ${TinyXML2_LIBRARIES})
+target_link_libraries(${sdf_target}
+  PUBLIC
+    ${IGNITION-MATH_LIBRARIES}
+  PRIVATE
+    ${TinyXML2_LIBRARIES})
 
 if (WIN32)
   target_compile_definitions(${sdf_target} PRIVATE URDFDOM_STATIC)
