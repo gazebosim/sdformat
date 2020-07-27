@@ -157,5 +157,5 @@ TEST(DOMJointAxis, ZeroNormVectorReturnsError)
 
   sdf::Errors errors = axis.SetXyz(ignition::math::Vector3d::Zero);
   ASSERT_FALSE(errors.empty());
-  EXPECT_EQ(errors[0], "The norm of the xyz vector cannot be zero");
+  EXPECT_EQ(errors[0].Message(), "The norm of the xyz vector cannot be zero");
 }
