@@ -217,7 +217,7 @@ ignition::math::Vector3d JointAxis::Xyz() const
 /////////////////////////////////////////////////
 sdf::Errors JointAxis::SetXyz(const ignition::math::Vector3d &_xyz)
 {
-  if(sdf::equal(_xyz.Length(), 0.0))
+  if (sdf::equal(_xyz.Length(), 0.0))
   {
     return {Error(ErrorCode::ELEMENT_INVALID,
                   "The norm of the xyz vector cannot be zero")};
