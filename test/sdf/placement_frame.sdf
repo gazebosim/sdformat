@@ -1,0 +1,33 @@
+<sdf version='1.8'>
+<world name='default'>
+    <!-- The search path for the included models must be added by the test code -->
+  <include>
+    <name>no_placement_frame</name>
+    <uri>test_model_with_frames</uri>
+    <pose>0 10 0 1.570796326794895 0 0</pose>
+  </include>
+
+  <include>
+    <name>placement_frame_using_link</name>
+    <uri>test_model_with_frames</uri>
+    <pose>0 10 0 1.570796326794895 0 0</pose>
+    <placement_frame>L4</placement_frame>
+  </include>
+
+  <include>
+    <name>placement_frame_using_frame</name>
+    <uri>test_model_with_frames</uri>
+    <pose>0 10 0 1.570796326794895 0 0</pose>
+    <placement_frame>F2</placement_frame>
+  </include>
+
+  <include>
+    <name>placement_frame_using_joint</name>
+    <uri>test_model_with_frames</uri>
+    <pose>0 10 0 1.570796326794895 0 0</pose>
+    <placement_frame>J2</placement_frame>
+  </include>
+
+</world>
+</sdf>
+

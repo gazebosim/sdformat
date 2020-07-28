@@ -52,6 +52,9 @@ class sdf::ModelPrivate
   /// \brief Name of the canonical link.
   public: std::string canonicalLink = "";
 
+  /// \brief Name of the placement frame
+  public: std::string placementFrame = "";
+
   /// \brief Pose of the model
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
@@ -185,6 +188,10 @@ Errors Model::Load(ElementPtr _sdf)
       this->dataPtr->canonicalLink = pair.first;
     }
   }
+
+  this->dataPtr->placementFrame =
+      _sdf->Get<std::string>("placement_frame", this->dataPtr->placementFrame)
+          .first;
 
   this->dataPtr->isStatic = _sdf->Get<bool>("static", false).first;
 
@@ -360,6 +367,31 @@ Errors Model::Load(ElementPtr _sdf)
   for (auto &frame : this->dataPtr->frames)
   {
     frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+
+  // Update the model pose to account for the placement frame.
+  if (!this->dataPtr->placementFrame.empty())
+  {
+    ignition::math::Pose3d placementFramePose;
+
+    sdf::Errors resolveErrors =
+        sdf::resolvePose(placementFramePose, *this->dataPtr->poseGraph,
+                    this->dataPtr->placementFrame, "__model__");
+    if (resolveErrors.empty())
+    {
+      // Before this update, i.e, as specified in the SDFormat, the model pose
+      // (X_MpPf) is the pose of the placement frame (Pf) relative to a frame in
+      // the parent scope of the model (Mp). However, when this model (M) is
+      // inserted into a pose graph of the parent scope, only the pose (X_MpM)
+      // of the __model__ frame can be used. Thus, the model pose has to be
+      // updated to X_MpM. And this is done by:
+      // X_MpM = X_MpPf * inv(X_MPf)
+      this->dataPtr->pose = this->dataPtr->pose * placementFramePose.Inverse();
+    }
+    else
+    {
+      errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+    }
   }
 
   return errors;
@@ -555,6 +587,18 @@ const std::string &Model::CanonicalLinkName() const
 void Model::SetCanonicalLinkName(const std::string &_canonicalLink)
 {
   this->dataPtr->canonicalLink = _canonicalLink;
+}
+
+/////////////////////////////////////////////////
+const std::string &Model::PlacementFrameName() const
+{
+  return this->dataPtr->placementFrame;
+}
+
+/////////////////////////////////////////////////
+void Model::SetPlacementFrameName(const std::string &_placementFrame)
+{
+  this->dataPtr->placementFrame = _placementFrame;
 }
 
 /////////////////////////////////////////////////

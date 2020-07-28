@@ -247,6 +247,15 @@ namespace sdf
     /// \return SemanticPose object for this link.
     public: sdf::SemanticPose SemanticPose() const;
 
+    /// \brief Get the name of the placement frame of the model.
+    /// \return Name of the placement frame attribute of the model.
+    public: const std::string &PlacementFrameName() const;
+
+    /// \brief Set the name of the placement frame of the model.
+    /// The specified placement frame must exist within the model.
+    /// \param[in] _name Name of the placement frame.
+    public: void SetPlacementFrameName(const std::string &_name);
+
     /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
     /// for resolving poses. This is private and is intended to be called by
     /// World::Load.

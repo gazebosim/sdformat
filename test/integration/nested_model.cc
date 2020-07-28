@@ -832,3 +832,131 @@ TEST(NestedModel, NestedFrameOnlyModel)
   EXPECT_TRUE(frame2->SemanticPose().Resolve(frame2Pose).empty());
   EXPECT_EQ(frame2ExpPose, frame2Pose);
 }
+
+class PlacementFrame: public ::testing::Test
+{
+  protected: void SetUp() override
+  {
+    const std::string modelRootPath = sdf::filesystem::append(
+        PROJECT_SOURCE_PATH, "test", "integration", "model");
+
+    const std::string testModelPath = sdf::filesystem::append(
+        PROJECT_SOURCE_PATH, "test", "sdf", "placement_frame.sdf");
+
+    sdf::setFindCallback(
+        [&](const std::string &_file)
+        {
+          return sdf::filesystem::append(modelRootPath, _file);
+        });
+    sdf::Errors errors = this->root.Load(testModelPath);
+    for (const auto &e : errors)
+    {
+      std::cout << e.Message() << std::endl;
+    }
+    if (!errors.empty())
+    {
+      std::cout << this->root.Element()->ToString("") << std::endl;
+    }
+    EXPECT_TRUE(errors.empty());
+
+    this->world = this->root.WorldByIndex(0);
+    ASSERT_NE(nullptr, world);
+  }
+
+  protected: sdf::Root root;
+  protected: const sdf::World *world{nullptr};
+};
+
+//////////////////////////////////////////////////
+TEST_F(PlacementFrame, WorldInclude)
+{
+  ASSERT_NE(nullptr, this->world);
+  using ignition::math::Pose3d;
+  using ignition::math::Vector3d;
+
+  const Pose3d placementPose(0, 10, 0, IGN_PI_2, 0, 0);
+
+  // Test that link names can be used for <placement_frame>
+  {
+    const std::string testModelName = "placement_frame_using_link";
+    const sdf::Model *testModel = this->world->ModelByName(testModelName);
+    ASSERT_NE(nullptr, testModel);
+
+    const auto *testLink = testModel->LinkByName("L4");
+    ASSERT_NE(nullptr, testLink);
+    Pose3d linkRelPose;
+    {
+      sdf::Errors errors =
+        testLink->SemanticPose().Resolve(linkRelPose, "__model__");
+      EXPECT_TRUE(errors.empty()) << errors[0].Message();
+    }
+
+    EXPECT_EQ(Pose3d(0, 0, 1, 0, 0, 0), linkRelPose);
+
+    Pose3d expectedModelPose = placementPose * linkRelPose.Inverse();
+
+    {
+      Pose3d modelPose;
+      sdf::Errors errors = testModel->SemanticPose().Resolve(modelPose, "world");
+      EXPECT_TRUE(errors.empty()) << errors[0].Message();
+
+      EXPECT_EQ(expectedModelPose, modelPose);
+    }
+  }
+
+  // Test that frame names can be used for <placement_frame>
+  {
+    const std::string testModelName = "placement_frame_using_frame";
+    const sdf::Model *testModel = this->world->ModelByName(testModelName);
+    ASSERT_NE(nullptr, testModel);
+    const auto *testFrame = testModel->FrameByName("F2");
+    ASSERT_NE(nullptr, testFrame);
+
+    Pose3d frameRelPose;
+    {
+      sdf::Errors errors =
+        testFrame->SemanticPose().Resolve(frameRelPose, "__model__");
+      EXPECT_TRUE(errors.empty()) << errors[0].Message();
+    }
+
+    EXPECT_EQ(Pose3d(0, 0, 0, IGN_PI_2, 0, IGN_PI_4), frameRelPose);
+
+    Pose3d expectedModelPose = placementPose * frameRelPose.Inverse();
+
+    {
+      Pose3d modelPose;
+      sdf::Errors errors = testModel->SemanticPose().Resolve(modelPose, "world");
+      EXPECT_TRUE(errors.empty()) << errors[0].Message();
+
+      EXPECT_EQ(expectedModelPose, modelPose);
+    }
+  }
+
+  // Test that joint names can be used for <placement_frame>
+  {
+    const std::string testModelName = "placement_frame_using_joint";
+    const sdf::Model *testModel = this->world->ModelByName(testModelName);
+    ASSERT_NE(nullptr, testModel);
+    const auto *testFrame = testModel->JointByName("J2");
+    ASSERT_NE(nullptr, testFrame);
+
+    Pose3d frameRelPose;
+    {
+      sdf::Errors errors =
+        testFrame->SemanticPose().Resolve(frameRelPose, "__model__");
+      EXPECT_TRUE(errors.empty()) << errors[0].Message();
+    }
+
+    EXPECT_EQ(Pose3d(1, -1, 1, IGN_PI_2, 0, 0), frameRelPose);
+
+    Pose3d expectedModelPose = placementPose * frameRelPose.Inverse();
+
+    {
+      Pose3d modelPose;
+      sdf::Errors errors = testModel->SemanticPose().Resolve(modelPose, "world");
+      EXPECT_TRUE(errors.empty()) << errors[0].Message();
+
+      EXPECT_EQ(expectedModelPose, modelPose);
+    }
+  }
+}

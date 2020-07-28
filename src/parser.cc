@@ -1033,6 +1033,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
                 elemXml->FirstChildElement("static")->GetText());
         }
 
+        if (isModel && elemXml->FirstChildElement("placement_frame"))
+        {
+          // TODO(addisu): Add warning if pose is not specified
+          topLevelElem->GetAttribute("placement_frame")->SetFromString(
+                elemXml->FirstChildElement("placement_frame")->GetText());
+        }
+
         if (isModel || isActor)
         {
           for (auto *childElemXml = elemXml->FirstChildElement();

@@ -14,6 +14,9 @@
       as the canonical link.
     </description>
   </attribute>
+  <attribute name="placement_frame" type="string" default="" required="0">
+    <description>The frame inside the included model whose pose will be set by the specified pose element. If this element is specified, the pose must be specified.</description>
+  </attribute>
 
   <element name="static" type="bool" default="false" required="0">
     <description>If set to true, the model is immovable. Otherwise the model is simulated in the dynamics engine.</description>

@@ -71,6 +71,10 @@ TEST(DOMModel, Construction)
   EXPECT_EQ("link", model.CanonicalLinkName());
   EXPECT_EQ(nullptr, model.CanonicalLink());
 
+  EXPECT_TRUE(model.PlacementFrameName().empty());
+  model.SetPlacementFrameName("test_frame");
+  EXPECT_EQ("test_frame", model.PlacementFrameName());
+
   EXPECT_EQ(ignition::math::Pose3d::Zero, model.RawPose());
   EXPECT_TRUE(model.PoseRelativeTo().empty());
   {
