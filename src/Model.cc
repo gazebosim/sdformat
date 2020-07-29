@@ -53,7 +53,7 @@ class sdf::ModelPrivate
   public: std::string canonicalLink = "";
 
   /// \brief Name of the placement frame
-  public: std::string placementFrame = "";
+  public: std::string placementFrameName = "";
 
   /// \brief Pose of the model
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
@@ -189,9 +189,8 @@ Errors Model::Load(ElementPtr _sdf)
     }
   }
 
-  this->dataPtr->placementFrame =
-      _sdf->Get<std::string>("placement_frame", this->dataPtr->placementFrame)
-          .first;
+  this->dataPtr->placementFrameName = _sdf->Get<std::string>("placement_frame",
+                             this->dataPtr->placementFrameName).first;
 
   this->dataPtr->isStatic = _sdf->Get<bool>("static", false).first;
 
@@ -370,13 +369,13 @@ Errors Model::Load(ElementPtr _sdf)
   }
 
   // Update the model pose to account for the placement frame.
-  if (!this->dataPtr->placementFrame.empty())
+  if (!this->dataPtr->placementFrameName.empty())
   {
-    ignition::math::Pose3d placementFramePose;
+    ignition::math::Pose3d placementFrameRelPose;
 
     sdf::Errors resolveErrors =
-        sdf::resolvePose(placementFramePose, *this->dataPtr->poseGraph,
-                    this->dataPtr->placementFrame, "__model__");
+        sdf::resolvePose(placementFrameRelPose, *this->dataPtr->poseGraph,
+                    this->dataPtr->placementFrameName, "__model__");
     if (resolveErrors.empty())
     {
       // Before this update, i.e, as specified in the SDFormat, the model pose
@@ -386,11 +385,65 @@ Errors Model::Load(ElementPtr _sdf)
       // of the __model__ frame can be used. Thus, the model pose has to be
       // updated to X_MpM. And this is done by:
       // X_MpM = X_MpPf * inv(X_MPf)
-      this->dataPtr->pose = this->dataPtr->pose * placementFramePose.Inverse();
+      this->dataPtr->pose =
+          this->dataPtr->pose * placementFrameRelPose.Inverse();
     }
     else
     {
       errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+    }
+  }
+
+  // The placement_frame attributes of included child models are currently lost
+  // during parsing because the parser expands the included models into the
+  // parent model. As a temporary workardound to preserve this information, the
+  // parser injects <model name>::__placement_frame__ for every included child
+  // model. This serves as an identifier that the model frame of the child model
+  // should be treated as if it has its placement_frame attribute set.
+  // This will not be necessary when included nested models work as direclty
+  // nested models. See
+  // https://github.com/osrf/sdformat/issues/319#issuecomment-665214004
+  // TODO (addisu) Remove placementFrameIdentifier once PR addressing
+  // https://github.com/osrf/sdformat/issues/284 lands
+  for (auto &frame : this->dataPtr->frames)
+  {
+    auto placementSubstrInd = frame.Name().rfind("::__placement_frame__");
+    if (placementSubstrInd != std::string::npos)
+    {
+      const std::string childModelName =
+          frame.Name().substr(0, placementSubstrInd);
+      // Find the model frame associated with this placement frame
+      const Frame *childModelFrame =
+          this->FrameByName(childModelName + "::__model__");
+      if (nullptr != childModelFrame)
+      {
+        // We assume that all model frames are specified relative to their
+        // parent frame, so using the RawPose should be okay.
+        const auto &placementFramePose = childModelFrame->RawPose();
+
+        ignition::math::Pose3d placementFrameRelPose;
+        sdf::Errors resolveErrors = frame.SemanticPose().Resolve(
+            placementFrameRelPose, childModelFrame->Name());
+        errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+
+        // We need to update childModelFrame's pose relative to the parent
+        // frame as well as the corresponding edge in the pose graph because
+        // just updating childModelFrame doesn't update the pose graph.
+        //
+        // X_MpM = X_MpPf * inv(X_MPf)
+        auto newModelPose =
+            placementFramePose * placementFrameRelPose.Inverse();
+        frame.SetRawPose(newModelPose);
+        sdf::updateGraphPose(
+            *this->dataPtr->poseGraph, childModelFrame->Name(), newModelPose);
+      }
+      else
+      {
+        errors.push_back({ErrorCode::PLACEMENT_FRAME_INVALID,
+            "Found a __placement_frame__ for child model with name [" +
+            childModelName + "], but the model does not exist in the" +
+            " parent model with name [" + this->Name() + "]"});
+      }
     }
   }
 
@@ -592,13 +645,13 @@ void Model::SetCanonicalLinkName(const std::string &_canonicalLink)
 /////////////////////////////////////////////////
 const std::string &Model::PlacementFrameName() const
 {
-  return this->dataPtr->placementFrame;
+  return this->dataPtr->placementFrameName;
 }
 
 /////////////////////////////////////////////////
 void Model::SetPlacementFrameName(const std::string &_placementFrame)
 {
-  this->dataPtr->placementFrame = _placementFrame;
+  this->dataPtr->placementFrameName = _placementFrame;
 }
 
 /////////////////////////////////////////////////

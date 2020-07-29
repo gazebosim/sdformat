@@ -131,6 +131,9 @@ namespace sdf
 
     /// \brief Indicates that reading an SDF string failed.
     STRING_READ,
+
+    /// \brief The specified placement frame is invalid
+    PLACEMENT_FRAME_INVALID,
   };
 
   class SDFORMAT_VISIBLE Error

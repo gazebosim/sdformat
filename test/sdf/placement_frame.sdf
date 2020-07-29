@@ -28,6 +28,28 @@
     <placement_frame>J2</placement_frame>
   </include>
 
+  <model name='parent_model_include'>
+    <include>
+      <name>placement_frame_using_link</name>
+      <uri>test_model_with_frames</uri>
+      <pose>0 10 0 1.570796326794895 0 0</pose>
+      <placement_frame>L4</placement_frame>
+    </include>
+
+    <include>
+      <name>placement_frame_using_frame</name>
+      <uri>test_model_with_frames</uri>
+      <pose>0 10 0 1.570796326794895 0 0</pose>
+      <placement_frame>F2</placement_frame>
+    </include>
+
+    <include>
+      <name>placement_frame_using_joint</name>
+      <uri>test_model_with_frames</uri>
+      <pose>0 10 0 1.570796326794895 0 0</pose>
+      <placement_frame>J2</placement_frame>
+    </include>
+  </model>
 </world>
 </sdf>
 

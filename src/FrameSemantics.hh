@@ -178,6 +178,18 @@ namespace sdf
       const PoseRelativeToGraph &_graph,
       const std::string &_frameName,
       const std::string &_resolveTo);
+
+  /// \brief Update the pose of a frame in the pose graph. This updates the
+  /// content of the edge incident to the vertex identified by the given
+  /// _frameName.
+  /// \param[in] _graph PoseRelativeToGraph to update.
+  /// \param[in] _frameName Name of frame whose pose is to be updated.
+  /// \param[in] _pose New pose.
+  /// \return Errors.
+  Errors updateGraphPose(
+      PoseRelativeToGraph &_graph,
+      const std::string &_frameName,
+      const ignition::math::Pose3d &_pose);
   }
 }
 #endif

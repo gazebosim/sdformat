@@ -835,6 +835,8 @@ TEST(NestedModel, NestedFrameOnlyModel)
 
 class PlacementFrame: public ::testing::Test
 {
+  protected: using Pose3d = ignition::math::Pose3d;
+
   protected: void SetUp() override
   {
     const std::string modelRootPath = sdf::filesystem::append(
@@ -863,6 +865,88 @@ class PlacementFrame: public ::testing::Test
     ASSERT_NE(nullptr, world);
   }
 
+  public: template <typename FrameType>
+  const FrameType *GetFrameByName(
+      const sdf::Model *_model, const std::string &_testFrameName)
+  {
+    // cppcheck-suppress syntaxError
+    if constexpr (std::is_same_v<FrameType, sdf::Frame>)
+    {
+      return _model->FrameByName(_testFrameName);
+    }
+    else if constexpr (std::is_same_v<FrameType, sdf::Link>)
+    {
+      return _model->LinkByName(_testFrameName);
+    }
+    else if constexpr (std::is_same_v<FrameType, sdf::Joint>)
+    {
+      return _model->JointByName(_testFrameName);
+    }
+
+    return nullptr;
+  }
+
+  public: sdf::SemanticPose GetChildEntitySemanticPose(
+      const sdf::World *_world, const std::string _entityName)
+  {
+    return _world->ModelByName(_entityName)->SemanticPose();
+  }
+
+  public: template <typename FrameType>
+  void TestExpectedWorldPose(const std::string &_testModelName,
+                             const std::string &_testFrameName)
+  {
+    const Pose3d placementPose(0, 10, 0, IGN_PI_2, 0, 0);
+    const sdf::Model *testModel = this->world->ModelByName(_testModelName);
+    ASSERT_NE(nullptr, testModel);
+
+    // Pose of model in world frame
+    Pose3d modelPoseWorld;
+    {
+      sdf::Errors errors =
+          testModel->SemanticPose().Resolve(modelPoseWorld, "world");
+      EXPECT_TRUE(errors.empty()) << errors[0].Message();
+    }
+
+    const auto *testFrame =
+        this->GetFrameByName<FrameType>(testModel, _testFrameName);
+    ASSERT_NE(nullptr, testFrame);
+
+    // Pose of frame in its parent model frame.
+    Pose3d frameRelPose;
+    {
+      sdf::Errors errors =
+          testFrame->SemanticPose().Resolve(frameRelPose, "__model__");
+      EXPECT_TRUE(errors.empty()) << errors[0].Message();
+    }
+
+    Pose3d framePoseWorld = modelPoseWorld * frameRelPose;
+    EXPECT_EQ(placementPose, framePoseWorld);
+  }
+
+  public: template <typename FrameType>
+  void TestExpectedModelPose(const std::string &_parentModelName,
+                             const std::string &_testFrameName)
+  {
+    const Pose3d placementPose(0, 10, 0, IGN_PI_2, 0, 0);
+    const sdf::Model *parentModel = this->world->ModelByName(_parentModelName);
+    ASSERT_NE(nullptr, parentModel);
+
+    const auto *testFrame = this->GetFrameByName<FrameType>(
+        parentModel, _testFrameName);
+    ASSERT_NE(nullptr, testFrame);
+
+    Pose3d testFramePose;
+    {
+      sdf::Errors errors =
+          testFrame->SemanticPose().Resolve(testFramePose, "__model__");
+      EXPECT_TRUE(errors.empty()) << errors[0].Message();
+    }
+
+    // The expected pose of the test frame is precisely the placement pose
+    EXPECT_EQ(placementPose, testFramePose);
+  }
+
   protected: sdf::Root root;
   protected: const sdf::World *world{nullptr};
 };
@@ -870,93 +954,29 @@ class PlacementFrame: public ::testing::Test
 //////////////////////////////////////////////////
 TEST_F(PlacementFrame, WorldInclude)
 {
-  ASSERT_NE(nullptr, this->world);
-  using ignition::math::Pose3d;
-  using ignition::math::Vector3d;
-
-  const Pose3d placementPose(0, 10, 0, IGN_PI_2, 0, 0);
-
   // Test that link names can be used for <placement_frame>
-  {
-    const std::string testModelName = "placement_frame_using_link";
-    const sdf::Model *testModel = this->world->ModelByName(testModelName);
-    ASSERT_NE(nullptr, testModel);
-
-    const auto *testLink = testModel->LinkByName("L4");
-    ASSERT_NE(nullptr, testLink);
-    Pose3d linkRelPose;
-    {
-      sdf::Errors errors =
-        testLink->SemanticPose().Resolve(linkRelPose, "__model__");
-      EXPECT_TRUE(errors.empty()) << errors[0].Message();
-    }
-
-    EXPECT_EQ(Pose3d(0, 0, 1, 0, 0, 0), linkRelPose);
-
-    Pose3d expectedModelPose = placementPose * linkRelPose.Inverse();
-
-    {
-      Pose3d modelPose;
-      sdf::Errors errors = testModel->SemanticPose().Resolve(modelPose, "world");
-      EXPECT_TRUE(errors.empty()) << errors[0].Message();
-
-      EXPECT_EQ(expectedModelPose, modelPose);
-    }
-  }
+  this->TestExpectedWorldPose<sdf::Link>("placement_frame_using_link", "L4");
 
   // Test that frame names can be used for <placement_frame>
-  {
-    const std::string testModelName = "placement_frame_using_frame";
-    const sdf::Model *testModel = this->world->ModelByName(testModelName);
-    ASSERT_NE(nullptr, testModel);
-    const auto *testFrame = testModel->FrameByName("F2");
-    ASSERT_NE(nullptr, testFrame);
-
-    Pose3d frameRelPose;
-    {
-      sdf::Errors errors =
-        testFrame->SemanticPose().Resolve(frameRelPose, "__model__");
-      EXPECT_TRUE(errors.empty()) << errors[0].Message();
-    }
-
-    EXPECT_EQ(Pose3d(0, 0, 0, IGN_PI_2, 0, IGN_PI_4), frameRelPose);
-
-    Pose3d expectedModelPose = placementPose * frameRelPose.Inverse();
-
-    {
-      Pose3d modelPose;
-      sdf::Errors errors = testModel->SemanticPose().Resolve(modelPose, "world");
-      EXPECT_TRUE(errors.empty()) << errors[0].Message();
-
-      EXPECT_EQ(expectedModelPose, modelPose);
-    }
-  }
+  this->TestExpectedWorldPose<sdf::Frame>("placement_frame_using_frame", "F2");
 
   // Test that joint names can be used for <placement_frame>
-  {
-    const std::string testModelName = "placement_frame_using_joint";
-    const sdf::Model *testModel = this->world->ModelByName(testModelName);
-    ASSERT_NE(nullptr, testModel);
-    const auto *testFrame = testModel->JointByName("J2");
-    ASSERT_NE(nullptr, testFrame);
-
-    Pose3d frameRelPose;
-    {
-      sdf::Errors errors =
-        testFrame->SemanticPose().Resolve(frameRelPose, "__model__");
-      EXPECT_TRUE(errors.empty()) << errors[0].Message();
-    }
-
-    EXPECT_EQ(Pose3d(1, -1, 1, IGN_PI_2, 0, 0), frameRelPose);
-
-    Pose3d expectedModelPose = placementPose * frameRelPose.Inverse();
-
-    {
-      Pose3d modelPose;
-      sdf::Errors errors = testModel->SemanticPose().Resolve(modelPose, "world");
-      EXPECT_TRUE(errors.empty()) << errors[0].Message();
-
-      EXPECT_EQ(expectedModelPose, modelPose);
-    }
-  }
+  this->TestExpectedWorldPose<sdf::Joint>("placement_frame_using_joint", "J2");
 }
+
+//////////////////////////////////////////////////
+TEST_F(PlacementFrame, ModelInclude)
+{
+  // Test that link names can be used for <placement_frame>
+  this->TestExpectedModelPose<sdf::Link>("parent_model_include",
+                                         "placement_frame_using_link::L4");
+
+  // Test that frame names can be used for <placement_frame>
+  this->TestExpectedModelPose<sdf::Frame>("parent_model_include",
+                                          "placement_frame_using_frame::F2");
+
+  // Test that joint names can be used for <placement_frame>
+  this->TestExpectedModelPose<sdf::Joint>("parent_model_include",
+                                          "placement_frame_using_joint::J2");
+}
+
