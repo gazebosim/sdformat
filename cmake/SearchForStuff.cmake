@@ -84,7 +84,7 @@ endif()
 ################################################
 # Find the Python interpreter for running the
 # check_test_ran.py script
-find_package(PythonInterp QUIET)
+find_package(PythonInterp 3 QUIET)
 
 ################################################
 # Find psutil python package for memory tests
