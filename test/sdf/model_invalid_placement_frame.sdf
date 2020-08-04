@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <model name="model_invalid_placement_frame" placement_frame="link3"> <!-- INVALID: link3 doesn't exist -->
+    <link name="link1">
+      <pose>1 0 0 0 0 0</pose>
+    </link>
+    <link name="link2">
+      <pose>0 2 0 0 0 0</pose>
+    </link>
+  </model>
+</sdf>

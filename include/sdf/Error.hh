@@ -133,7 +133,7 @@ namespace sdf
     STRING_READ,
 
     /// \brief The specified placement frame is invalid
-    PLACEMENT_FRAME_INVALID,
+    MODEL_PLACEMENT_FRAME_INVALID,
   };
 
   class SDFORMAT_VISIBLE Error

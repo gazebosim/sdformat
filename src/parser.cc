@@ -1035,7 +1035,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
 
         if (isModel && elemXml->FirstChildElement("placement_frame"))
         {
-          // TODO(addisu): Add warning if pose is not specified
+          if (nullptr == elemXml->FirstChildElement("pose"))
+          {
+            _errors.push_back({ErrorCode::MODEL_PLACEMENT_FRAME_INVALID,
+                "<pose> is required when spacifying the placement_frame "
+                "element"});
+            return false;
+          }
           topLevelElem->GetAttribute("placement_frame")->SetFromString(
                 elemXml->FirstChildElement("placement_frame")->GetText());
         }

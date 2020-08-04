@@ -400,7 +400,7 @@ Errors Model::Load(ElementPtr _sdf)
   // parser injects <model name>::__placement_frame__ for every included child
   // model. This serves as an identifier that the model frame of the child model
   // should be treated as if it has its placement_frame attribute set.
-  // This will not be necessary when included nested models work as direclty
+  // This will not be necessary when included nested models work as directly
   // nested models. See
   // https://github.com/osrf/sdformat/issues/319#issuecomment-665214004
   // TODO (addisu) Remove placementFrameIdentifier once PR addressing
@@ -439,7 +439,7 @@ Errors Model::Load(ElementPtr _sdf)
       }
       else
       {
-        errors.push_back({ErrorCode::PLACEMENT_FRAME_INVALID,
+        errors.push_back({ErrorCode::MODEL_PLACEMENT_FRAME_INVALID,
             "Found a __placement_frame__ for child model with name [" +
             childModelName + "], but the model does not exist in the" +
             " parent model with name [" + this->Name() + "]"});
