@@ -968,15 +968,32 @@ TEST_F(PlacementFrame, WorldInclude)
 TEST_F(PlacementFrame, ModelInclude)
 {
   // Test that link names can be used for <placement_frame>
-  this->TestExpectedModelPose<sdf::Link>("parent_model_include",
-                                         "placement_frame_using_link::L4");
+  this->TestExpectedModelPose<sdf::Link>(
+      "parent_model_include", "placement_frame_using_link::L4");
 
   // Test that frame names can be used for <placement_frame>
-  this->TestExpectedModelPose<sdf::Frame>("parent_model_include",
-                                          "placement_frame_using_frame::F2");
+  this->TestExpectedModelPose<sdf::Frame>(
+      "parent_model_include", "placement_frame_using_frame::F2");
 
   // Test that joint names can be used for <placement_frame>
-  this->TestExpectedModelPose<sdf::Joint>("parent_model_include",
-                                          "placement_frame_using_joint::J2");
+  this->TestExpectedModelPose<sdf::Joint>(
+      "parent_model_include", "placement_frame_using_joint::J2");
 }
 
+//////////////////////////////////////////////////
+TEST_F(PlacementFrame, ModelPlacementFrameAttribute)
+{
+  // Test that link names can be used for <placement_frame>
+  this->TestExpectedWorldPose<sdf::Link>(
+      "model_with_link_placement_frame", "L4");
+
+  // Test that frame names can be used for <placement_frame>
+  this->TestExpectedWorldPose<sdf::Frame>(
+      "model_with_frame_placement_frame", "F2");
+
+  // Test that joint names can be used for <placement_frame>
+  this->TestExpectedWorldPose<sdf::Joint>(
+      "model_with_joint_placement_frame", "J2");
+}
+
+// TODO (addisu) Add NestedModelPlacementFrameAttribute tests

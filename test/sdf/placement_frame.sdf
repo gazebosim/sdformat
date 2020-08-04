@@ -1,6 +1,8 @@
 <sdf version='1.8'>
 <world name='default'>
-    <!-- The search path for the included models must be added by the test code -->
+  <!-- The search path for the included models must be added by the test code -->
+
+  <!-- World Include tests -->
   <include>
     <name>no_placement_frame</name>
     <uri>test_model_with_frames</uri>
@@ -27,7 +29,9 @@
     <pose>0 10 0 1.570796326794895 0 0</pose>
     <placement_frame>J2</placement_frame>
   </include>
+  <!-- // -->
 
+  <!-- Model Include tests -->
   <model name='parent_model_include'>
     <include>
       <name>placement_frame_using_link</name>
@@ -50,6 +54,52 @@
       <placement_frame>J2</placement_frame>
     </include>
   </model>
+  <!-- // -->
+
+  <!-- Model placement_frame attribute tests -->
+  <model name='model_with_link_placement_frame' placement_frame='L4'>
+    <pose>0 10 0 1.570796326794895 0 0</pose>
+    <link name='L4'>
+      <pose>0 0 1 0 0 0</pose>
+    </link>
+  </model>
+
+  <model name='model_with_frame_placement_frame' placement_frame='F2'>
+    <pose>0 10 0 1.570796326794895 0 0</pose>
+    <frame name="F1">
+      <pose>0 0 0 1.570796 0 0</pose>
+    </frame>
+    <frame name="F2">
+      <pose relative_to="F1">0 0 0 0 0.785398 0</pose>
+    </frame>
+    <link name="L1">
+      <pose relative_to="F1"/>
+    </link>
+  </model>
+  <model name='model_with_joint_placement_frame' placement_frame='J2'>
+    <pose>0 10 0 1.570796326794895 0 0</pose>
+    <frame name="F1">
+      <pose>0 0 0 1.570796 0 0</pose>
+    </frame>
+    <frame name="F2">
+      <pose relative_to="F1">0 0 0 0 0.785398 0</pose>
+    </frame>
+    <link name="L1">
+      <pose relative_to="F1"/>
+    </link>
+    <link name="L2">
+      <pose relative_to="F1">1 0 0 0 0 0</pose>
+    </link>
+    <link name="L3">
+      <pose relative_to="L2">0 1 0 0 0 0</pose>
+    </link>
+    <joint name="J2" type="revolute">
+      <pose relative_to="">0 0 1 0 0 0</pose>
+      <parent>L2</parent>
+      <child>L3</child>
+    </joint>
+  </model>
+  <!-- // -->
 </world>
 </sdf>
 
