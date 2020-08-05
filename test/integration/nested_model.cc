@@ -882,8 +882,10 @@ class PlacementFrame: public ::testing::Test
     {
       return _model->JointByName(_testFrameName);
     }
-
-    return nullptr;
+    else
+    {
+      return nullptr;
+    }
   }
 
   public: sdf::SemanticPose GetChildEntitySemanticPose(
@@ -962,6 +964,11 @@ TEST_F(PlacementFrame, WorldInclude)
 
   // Test that joint names can be used for <placement_frame>
   this->TestExpectedWorldPose<sdf::Joint>("placement_frame_using_joint", "J2");
+
+  // Test that the pose of an included model with placement_frame can use the
+  // relative_to attribute
+  this->TestExpectedWorldPose<sdf::Link>(
+      "include_with_placement_frame_and_pose_relative_to", "L4");
 }
 
 //////////////////////////////////////////////////
@@ -978,6 +985,11 @@ TEST_F(PlacementFrame, ModelInclude)
   // Test that joint names can be used for <placement_frame>
   this->TestExpectedModelPose<sdf::Joint>(
       "parent_model_include", "placement_frame_using_joint::J2");
+
+  // Test that the pose of an included model with placement_frame can use the
+  // relative_to attribute
+  this->TestExpectedModelPose<sdf::Link>("parent_model_include",
+      "include_with_placement_frame_and_pose_relative_to::L4");
 }
 
 //////////////////////////////////////////////////
@@ -994,6 +1006,11 @@ TEST_F(PlacementFrame, ModelPlacementFrameAttribute)
   // Test that joint names can be used for <placement_frame>
   this->TestExpectedWorldPose<sdf::Joint>(
       "model_with_joint_placement_frame", "J2");
+
+  // Test that the pose of an included model with placement_frame can use the
+  // relative_to attribute
+  this->TestExpectedWorldPose<sdf::Link>(
+      "model_with_placement_frame_and_pose_relative_to", "L4");
 }
 
 // TODO (addisu) Add NestedModelPlacementFrameAttribute tests
