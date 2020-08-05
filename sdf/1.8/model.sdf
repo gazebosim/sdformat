@@ -15,7 +15,7 @@
     </description>
   </attribute>
   <attribute name="placement_frame" type="string" default="" required="0">
-    <description>The frame inside this model whose pose will be set by the pose element of the model. i.e, the pose element specifies the pose of this frame instead of the model frame</description>
+    <description>The frame inside this model whose pose will be set by the pose element of the model. i.e, the pose element specifies the pose of this frame instead of the model frame.</description>
   </attribute>
 
   <element name="static" type="bool" default="false" required="0">

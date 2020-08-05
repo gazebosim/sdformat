@@ -1038,7 +1038,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
           if (nullptr == elemXml->FirstChildElement("pose"))
           {
             _errors.push_back({ErrorCode::MODEL_PLACEMENT_FRAME_INVALID,
-                "<pose> is required when spacifying the placement_frame "
+                "<pose> is required when specifying the placement_frame "
                 "element"});
             return false;
           }
@@ -1272,7 +1272,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
     {
       // The placementFrameIdentifier frame is added as a way to inject the
       // placement frame information into expanded nested models. This will not
-      // be necessary when included nested models work as direclty nested
+      // be necessary when included nested models work as directly nested
       // models. See
       // https://github.com/osrf/sdformat/issues/319#issuecomment-665214004
       // TODO (addisu) Remove placementFrameIdentifier once PR addressing
