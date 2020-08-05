@@ -379,12 +379,15 @@ Errors Model::Load(ElementPtr _sdf)
     if (resolveErrors.empty())
     {
       // Before this update, i.e, as specified in the SDFormat, the model pose
-      // (X_MpPf) is the pose of the placement frame (Pf) relative to a frame in
-      // the parent scope of the model (Mp). However, when this model (M) is
-      // inserted into a pose graph of the parent scope, only the pose (X_MpM)
+      // (X_RPf) is the pose of the placement frame (Pf) relative to a frame (R)
+      // in the parent scope of the model. However, when this model (M) is
+      // inserted into a pose graph of the parent scope, only the pose (X_RM)
       // of the __model__ frame can be used. Thus, the model pose has to be
-      // updated to X_MpM. And this is done by:
-      // X_MpM = X_MpPf * inv(X_MPf)
+      // updated to X_RM. And this is done by:
+      // X_RM = X_RPf * inv(X_MPf)
+      //
+      // Note that X_RPf is the raw pose specified in //model/pose before this
+      // update.
       this->dataPtr->pose =
           this->dataPtr->pose * placementFrameRelPose.Inverse();
     }
@@ -417,8 +420,11 @@ Errors Model::Load(ElementPtr _sdf)
           this->FrameByName(childModelName + "::__model__");
       if (nullptr != childModelFrame)
       {
-        // We assume that all model frames are specified relative to their
-        // parent frame, so using the RawPose should be okay.
+        // The RawPose of the child model frame is the desired pose of the
+        // placement frame relative to a frame (R) in the scope of the parent
+        // model. We don't need to resolve the pose because the relative_to
+        // frame remains unchanged after the pose update here. i.e, the updated
+        // pose of the child model frame will still be relative to R.
         const auto &placementFramePose = childModelFrame->RawPose();
 
         ignition::math::Pose3d placementFrameRelPose;
@@ -430,7 +436,7 @@ Errors Model::Load(ElementPtr _sdf)
         // frame as well as the corresponding edge in the pose graph because
         // just updating childModelFrame doesn't update the pose graph.
         //
-        // X_MpM = X_MpPf * inv(X_MPf)
+        // X_RM = X_RPf * inv(X_MPf)
         auto newModelPose =
             placementFramePose * placementFrameRelPose.Inverse();
         frame.SetRawPose(newModelPose);

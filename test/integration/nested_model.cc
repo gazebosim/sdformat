@@ -989,7 +989,7 @@ TEST_F(PlacementFrame, ModelInclude)
   // Test that the pose of an included model with placement_frame can use the
   // relative_to attribute
   this->TestExpectedModelPose<sdf::Link>("parent_model_include",
-      "include_with_placement_frame_and_pose_relative_to::L4");
+      "nested_include_with_placement_frame_and_pose_relative_to::L4");
 }
 
 //////////////////////////////////////////////////
@@ -1007,7 +1007,7 @@ TEST_F(PlacementFrame, ModelPlacementFrameAttribute)
   this->TestExpectedWorldPose<sdf::Joint>(
       "model_with_joint_placement_frame", "J2");
 
-  // Test that the pose of an included model with placement_frame can use the
+  // Test that the pose of a model with a placement_frame attribute can use the
   // relative_to attribute
   this->TestExpectedWorldPose<sdf::Link>(
       "model_with_placement_frame_and_pose_relative_to", "L4");
