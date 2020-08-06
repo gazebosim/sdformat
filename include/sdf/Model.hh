@@ -304,7 +304,7 @@ namespace sdf
 
     /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
     /// for resolving poses. This is private and is intended to be called by
-    /// World::Load.
+    /// World::Load and Model::Load if this is a nested model.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     /// \return Error if graph pointer is invalid.
     private: sdf::Errors SetPoseRelativeToGraph(
