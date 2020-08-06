@@ -2,6 +2,9 @@
 
 ### SDFormat 9.X.X (202X-XX-XX)
 
+1. Find python3 in cmake, fix cmake warning.
+    * [Pull request 328](https://github.com/osrf/sdformat/pull/328)
+
 1. Change bitbucket links to GitHub.
     * [Pull request 240](https://github.com/osrf/sdformat/pull/240)
 
