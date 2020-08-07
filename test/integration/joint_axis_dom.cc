@@ -224,3 +224,56 @@ TEST(DOMJointAxis, XyzExpressedIn)
   EXPECT_EQ(0u, model->FrameCount());
   EXPECT_EQ(nullptr, model->FrameByIndex(0));
 }
+
+//////////////////////////////////////////////////
+TEST(DOMJointAxis, XyzNormalization)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "joint_axis_xyz_normalization.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_TRUE(
+      errors[0].Message().find("The norm of the xyz vector cannot be zero") !=
+      std::string::npos);
+
+  using ignition::math::Vector3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  {
+    auto joint1 = model->JointByName("joint1");
+    ASSERT_FALSE(nullptr == joint1);
+    ASSERT_FALSE(nullptr == joint1->Axis(0));
+    EXPECT_EQ(Vector3d::UnitZ, joint1->Axis(0)->Xyz());
+  }
+
+  {
+    auto joint2 = model->JointByName("joint2");
+    ASSERT_FALSE(nullptr == joint2);
+    ASSERT_FALSE(nullptr == joint2->Axis(0));
+    EXPECT_EQ(Vector3d::UnitX, joint2->Axis(0)->Xyz());
+  }
+
+  {
+    auto joint3 = model->JointByName("joint3");
+    ASSERT_FALSE(nullptr == joint3);
+    ASSERT_FALSE(nullptr == joint3->Axis(0));
+    EXPECT_EQ(-Vector3d::UnitX, joint3->Axis(0)->Xyz());
+    ASSERT_FALSE(nullptr == joint3->Axis(1));
+    EXPECT_EQ(Vector3d::UnitY, joint3->Axis(1)->Xyz());
+  }
+
+  {
+    auto joint4 = model->JointByName("joint4");
+    ASSERT_FALSE(nullptr == joint4);
+    ASSERT_FALSE(nullptr == joint4->Axis(0));
+    EXPECT_EQ(Vector3d::UnitZ, joint4->Axis(0)->Xyz());
+  }
+}
