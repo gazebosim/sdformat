@@ -630,6 +630,19 @@ TEST(check, SDF)
                           "name[world_frame_invalid_relative_to]."),
               std::string::npos) << output;
   }
+  // Check an SDF file with an invalid frame specified as the placement_frame
+  // attribute.
+  {
+    std::string path = pathBase + "/model_invalid_placement_frame.sdf";
+
+    // Check model_invalid_placement_frame.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(
+        output.find("unable to find unique frame with name [link3] in graph"),
+        std::string::npos)
+        << output;
+  }
 }
 
 /////////////////////////////////////////////////

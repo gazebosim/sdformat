@@ -1,0 +1,12 @@
+<sdf version='1.8'>
+  <world name='default'>
+    <!-- The search path for the included models must be added by the test code -->
+
+    <include>
+      <name>placement_frame_without_pose</name>
+      <uri>test_model_with_frames</uri>
+      <placement_frame>L4</placement_frame> <!-- INVALID: <pose> is required if placement_frame is specified -->
+    </include>
+
+  </world>
+</sdf>

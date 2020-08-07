@@ -832,3 +832,185 @@ TEST(NestedModel, NestedFrameOnlyModel)
   EXPECT_TRUE(frame2->SemanticPose().Resolve(frame2Pose).empty());
   EXPECT_EQ(frame2ExpPose, frame2Pose);
 }
+
+class PlacementFrame: public ::testing::Test
+{
+  protected: using Pose3d = ignition::math::Pose3d;
+
+  protected: void SetUp() override
+  {
+    const std::string modelRootPath = sdf::filesystem::append(
+        PROJECT_SOURCE_PATH, "test", "integration", "model");
+
+    const std::string testModelPath = sdf::filesystem::append(
+        PROJECT_SOURCE_PATH, "test", "sdf", "placement_frame.sdf");
+
+    sdf::setFindCallback(
+        [&](const std::string &_file)
+        {
+          return sdf::filesystem::append(modelRootPath, _file);
+        });
+    sdf::Errors errors = this->root.Load(testModelPath);
+    for (const auto &e : errors)
+    {
+      std::cout << e.Message() << std::endl;
+    }
+    if (!errors.empty())
+    {
+      std::cout << this->root.Element()->ToString("") << std::endl;
+    }
+    EXPECT_TRUE(errors.empty());
+
+    this->world = this->root.WorldByIndex(0);
+    ASSERT_NE(nullptr, world);
+  }
+
+  public: template <typename FrameType>
+  const FrameType *GetFrameByName(
+      const sdf::Model *_model, const std::string &_testFrameName)
+  {
+    // cppcheck-suppress syntaxError
+    if constexpr (std::is_same_v<FrameType, sdf::Frame>)
+    {
+      return _model->FrameByName(_testFrameName);
+    }
+    else if constexpr (std::is_same_v<FrameType, sdf::Link>)
+    {
+      return _model->LinkByName(_testFrameName);
+    }
+    else if constexpr (std::is_same_v<FrameType, sdf::Joint>)
+    {
+      return _model->JointByName(_testFrameName);
+    }
+    else
+    {
+      return nullptr;
+    }
+  }
+
+  public: sdf::SemanticPose GetChildEntitySemanticPose(
+      const sdf::World *_world, const std::string _entityName)
+  {
+    return _world->ModelByName(_entityName)->SemanticPose();
+  }
+
+  public: template <typename FrameType>
+  void TestExpectedWorldPose(const std::string &_testModelName,
+                             const std::string &_testFrameName)
+  {
+    const Pose3d placementPose(0, 10, 0, IGN_PI_2, 0, 0);
+    const sdf::Model *testModel = this->world->ModelByName(_testModelName);
+    ASSERT_NE(nullptr, testModel);
+
+    // Pose of model in world frame
+    Pose3d modelPoseWorld;
+    {
+      sdf::Errors errors =
+          testModel->SemanticPose().Resolve(modelPoseWorld, "world");
+      EXPECT_TRUE(errors.empty()) << errors[0].Message();
+    }
+
+    const auto *testFrame =
+        this->GetFrameByName<FrameType>(testModel, _testFrameName);
+    ASSERT_NE(nullptr, testFrame);
+
+    // Pose of frame in its parent model frame.
+    Pose3d frameRelPose;
+    {
+      sdf::Errors errors =
+          testFrame->SemanticPose().Resolve(frameRelPose, "__model__");
+      EXPECT_TRUE(errors.empty()) << errors[0].Message();
+    }
+
+    Pose3d framePoseWorld = modelPoseWorld * frameRelPose;
+    EXPECT_EQ(placementPose, framePoseWorld);
+  }
+
+  public: template <typename FrameType>
+  void TestExpectedModelPose(const std::string &_parentModelName,
+                             const std::string &_testFrameName)
+  {
+    const Pose3d placementPose(0, 10, 0, IGN_PI_2, 0, 0);
+    const sdf::Model *parentModel = this->world->ModelByName(_parentModelName);
+    ASSERT_NE(nullptr, parentModel);
+
+    const auto *testFrame = this->GetFrameByName<FrameType>(
+        parentModel, _testFrameName);
+    ASSERT_NE(nullptr, testFrame);
+
+    Pose3d testFramePose;
+    {
+      sdf::Errors errors =
+          testFrame->SemanticPose().Resolve(testFramePose, "__model__");
+      EXPECT_TRUE(errors.empty()) << errors[0].Message();
+    }
+
+    // The expected pose of the test frame is precisely the placement pose
+    EXPECT_EQ(placementPose, testFramePose);
+  }
+
+  protected: sdf::Root root;
+  protected: const sdf::World *world{nullptr};
+};
+
+//////////////////////////////////////////////////
+TEST_F(PlacementFrame, WorldInclude)
+{
+  // Test that link names can be used for <placement_frame>
+  this->TestExpectedWorldPose<sdf::Link>("placement_frame_using_link", "L4");
+
+  // Test that frame names can be used for <placement_frame>
+  this->TestExpectedWorldPose<sdf::Frame>("placement_frame_using_frame", "F2");
+
+  // Test that joint names can be used for <placement_frame>
+  this->TestExpectedWorldPose<sdf::Joint>("placement_frame_using_joint", "J2");
+
+  // Test that the pose of an included model with placement_frame can use the
+  // relative_to attribute
+  this->TestExpectedWorldPose<sdf::Link>(
+      "include_with_placement_frame_and_pose_relative_to", "L4");
+}
+
+//////////////////////////////////////////////////
+TEST_F(PlacementFrame, ModelInclude)
+{
+  // Test that link names can be used for <placement_frame>
+  this->TestExpectedModelPose<sdf::Link>(
+      "parent_model_include", "placement_frame_using_link::L4");
+
+  // Test that frame names can be used for <placement_frame>
+  this->TestExpectedModelPose<sdf::Frame>(
+      "parent_model_include", "placement_frame_using_frame::F2");
+
+  // Test that joint names can be used for <placement_frame>
+  this->TestExpectedModelPose<sdf::Joint>(
+      "parent_model_include", "placement_frame_using_joint::J2");
+
+  // Test that the pose of an included model with placement_frame can use the
+  // relative_to attribute
+  this->TestExpectedModelPose<sdf::Link>("parent_model_include",
+      "nested_include_with_placement_frame_and_pose_relative_to::L4");
+}
+
+//////////////////////////////////////////////////
+TEST_F(PlacementFrame, ModelPlacementFrameAttribute)
+{
+  // Test that link names can be used for <placement_frame>
+  this->TestExpectedWorldPose<sdf::Link>(
+      "model_with_link_placement_frame", "L4");
+
+  // Test that frame names can be used for <placement_frame>
+  this->TestExpectedWorldPose<sdf::Frame>(
+      "model_with_frame_placement_frame", "F2");
+
+  // Test that joint names can be used for <placement_frame>
+  this->TestExpectedWorldPose<sdf::Joint>(
+      "model_with_joint_placement_frame", "J2");
+
+  // Test that the pose of a model with a placement_frame attribute can use the
+  // relative_to attribute
+  this->TestExpectedWorldPose<sdf::Link>(
+      "model_with_placement_frame_and_pose_relative_to", "L4");
+}
+
+// TODO (addisu) Add NestedModelPlacementFrameAttribute tests

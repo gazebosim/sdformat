@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include "sdf/parser.hh"
 #include "sdf/Element.hh"
+#include "sdf/Filesystem.hh"
 #include "test_config.h"
 
 /////////////////////////////////////////////////
@@ -530,6 +531,25 @@ TEST(Parser, SyntaxErrorInValues)
 #ifdef _WIN32
   sdf::Console::Instance()->SetQuiet(true);
 #endif
+}
+
+TEST(Parser, PlacementFrameMissingPose)
+{
+  const std::string modelRootPath = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "integration", "model");
+
+  const std::string testModelPath = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "sdf", "placement_frame_missing_pose.sdf");
+
+  sdf::setFindCallback([&](const std::string &_file)
+      {
+        return sdf::filesystem::append(modelRootPath, _file);
+      });
+  sdf::SDFPtr sdf = InitSDF();
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::readFile(testModelPath, sdf, errors));
+  ASSERT_GE(errors.size(), 0u);
+  EXPECT_EQ(sdf::ErrorCode::MODEL_PLACEMENT_FRAME_INVALID, errors[0].Code());
 }
 
 /////////////////////////////////////////////////

@@ -1284,5 +1284,51 @@ Errors resolvePose(
 
   return errors;
 }
+
+/////////////////////////////////////////////////
+Errors updateGraphPose(
+    PoseRelativeToGraph &_graph,
+    const std::string &_frameName,
+    const ignition::math::Pose3d &_pose)
+{
+  Errors errors;
+
+  if (_graph.map.count(_frameName) != 1)
+  {
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+        "PoseRelativeToGraph unable to find unique frame with name [" +
+        _frameName+ "] in graph."});
+    return errors;
+  }
+  auto vertexId = _graph.map.at(_frameName);
+  auto incidentsTo = _graph.graph.IncidentsTo(vertexId);
+  if (incidentsTo.size() == 1)
+  {
+    // There's no API to update the data of an edge, so we remove the edge and
+    // insert a new one with the new pose.
+    auto &edge = incidentsTo.begin()->second;
+    auto tailVertexId = edge.get().Tail();
+    auto headVertexId = edge.get().Head();
+    _graph.graph.RemoveEdge(edge.get().Id());
+    _graph.graph.AddEdge({tailVertexId, headVertexId}, _pose);
+  }
+  else if (incidentsTo.empty())
+  {
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "PoseRelativeToGraph error: no incoming edge to "
+        "vertex [" + _frameName + "]."});
+  }
+  else
+  {
+    // This is an error because there should be only one way to define the pose
+    // of a frame. This would be like a frame having two //pose elements with
+    // different //pose/@relative_to attributes.
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "PoseRelativeToGraph error: multiple incoming edges to "
+        "vertex [" + _frameName + "]."});
+  }
+
+  return errors;
+}
 }
 }

@@ -1033,6 +1033,19 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
                 elemXml->FirstChildElement("static")->GetText());
         }
 
+        if (isModel && elemXml->FirstChildElement("placement_frame"))
+        {
+          if (nullptr == elemXml->FirstChildElement("pose"))
+          {
+            _errors.push_back({ErrorCode::MODEL_PLACEMENT_FRAME_INVALID,
+                "<pose> is required when specifying the placement_frame "
+                "element"});
+            return false;
+          }
+          topLevelElem->GetAttribute("placement_frame")->SetFromString(
+                elemXml->FirstChildElement("placement_frame")->GetText());
+        }
+
         if (isModel || isActor)
         {
           for (auto *childElemXml = elemXml->FirstChildElement();
@@ -1249,6 +1262,28 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
   nestedModelFrame->GetAttribute("name")->Set(nestedModelFrameName);
 
   replace["__model__"] = nestedModelFrameName;
+
+  if (modelPtr->GetAttribute("placement_frame")->GetSet())
+  {
+    const std::string placementFrameName =
+        modelPtr->GetAttribute("placement_frame")->GetAsString();
+
+    if (!placementFrameName.empty())
+    {
+      // The placementFrameShimElement frame is added as a way to inject the
+      // placement frame information into expanded nested models. This will not
+      // be necessary when included nested models work as directly nested
+      // models. See
+      // https://github.com/osrf/sdformat/issues/319#issuecomment-665214004
+      // TODO (addisu) Remove placementFrameIdentifier once PR addressing
+      // https://github.com/osrf/sdformat/issues/284 lands
+      ElementPtr placementFrameShimElement = _sdf->AddElement("frame");
+      placementFrameShimElement->GetAttribute("name")->Set(
+          modelName + "::__placement_frame__");
+      placementFrameShimElement->GetAttribute("attached_to")
+          ->Set(modelName + "::" + placementFrameName);
+    }
+  }
 
   std::string canonicalLinkName = "";
   if (modelPtr->GetAttribute("canonical_link")->GetSet())
