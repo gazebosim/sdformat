@@ -4,6 +4,9 @@
 
 ### libsdformat 10.0.0 (202X-XX-XX)
 
+1. Normalize joint axis xyz vector when parsing from SDFormat
+    * [Pull request 312](https://github.com/osrf/sdformat/pull/312)
+
 1. Migrate to using TinyXML2.
     * [Pull request 264](https://github.com/osrf/sdformat/pull/264)
     * [Pull request 321](https://github.com/osrf/sdformat/pull/321)
