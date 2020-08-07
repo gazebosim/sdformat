@@ -18,6 +18,7 @@
 
 1. Migrate to using TinyXML2.
     * [Pull request 264](https://github.com/osrf/sdformat/pull/264)
+    * [Pull request 321](https://github.com/osrf/sdformat/pull/321)
 
 1. Enforce minimum/maximum values specified in SDFormat description files.
     * [Pull request 303](https://github.com/osrf/sdformat/pull/303)
@@ -37,6 +38,9 @@
 ## libsdformat 9.X
 
 ### libsdformat 9.X.X (202X-XX-XX)
+
+1. Find python3 in cmake, fix cmake warning.
+    * [Pull request 328](https://github.com/osrf/sdformat/pull/328)
 
 1. Change bitbucket links to GitHub.
     * [Pull request 240](https://github.com/osrf/sdformat/pull/240)
