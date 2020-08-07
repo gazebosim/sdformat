@@ -1307,8 +1307,10 @@ Errors updateGraphPose(
     // There's no API to update the data of an edge, so we remove the edge and
     // insert a new one with the new pose.
     auto &edge = incidentsTo.begin()->second;
-    _graph.graph.AddEdge({edge.get().Tail(), edge.get().Head()}, _pose);
+    auto tailVertexId = edge.get().Tail();
+    auto headVertexId = edge.get().Head();
     _graph.graph.RemoveEdge(edge.get().Id());
+    _graph.graph.AddEdge({tailVertexId, headVertexId}, _pose);
   }
   else if (incidentsTo.empty())
   {
@@ -1318,6 +1320,9 @@ Errors updateGraphPose(
   }
   else
   {
+    // This is an error because there should be only one way to define the pose
+    // of a frame. This would be like a frame having two //pose elements with
+    // different //pose/@relative_to attributes.
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
         "PoseRelativeToGraph error: multiple incoming edges to "
         "vertex [" + _frameName + "]."});

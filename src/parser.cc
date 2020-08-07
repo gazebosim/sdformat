@@ -1270,17 +1270,17 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
 
     if (!placementFrameName.empty())
     {
-      // The placementFrameIdentifier frame is added as a way to inject the
+      // The placementFrameShimElement frame is added as a way to inject the
       // placement frame information into expanded nested models. This will not
       // be necessary when included nested models work as directly nested
       // models. See
       // https://github.com/osrf/sdformat/issues/319#issuecomment-665214004
       // TODO (addisu) Remove placementFrameIdentifier once PR addressing
       // https://github.com/osrf/sdformat/issues/284 lands
-      ElementPtr placementFrameIdentifier = _sdf->AddElement("frame");
-      placementFrameIdentifier->GetAttribute("name")->Set(
+      ElementPtr placementFrameShimElement = _sdf->AddElement("frame");
+      placementFrameShimElement->GetAttribute("name")->Set(
           modelName + "::__placement_frame__");
-      placementFrameIdentifier->GetAttribute("attached_to")
+      placementFrameShimElement->GetAttribute("attached_to")
           ->Set(modelName + "::" + placementFrameName);
     }
   }

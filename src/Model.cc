@@ -371,11 +371,11 @@ Errors Model::Load(ElementPtr _sdf)
   // Update the model pose to account for the placement frame.
   if (!this->dataPtr->placementFrameName.empty())
   {
-    ignition::math::Pose3d placementFrameRelPose;
+    ignition::math::Pose3d X_MPf;
 
     sdf::Errors resolveErrors =
-        sdf::resolvePose(placementFrameRelPose, *this->dataPtr->poseGraph,
-                    this->dataPtr->placementFrameName, "__model__");
+        sdf::resolvePose(X_MPf, *this->dataPtr->poseGraph,
+            this->dataPtr->placementFrameName, "__model__");
     if (resolveErrors.empty())
     {
       // Before this update, i.e, as specified in the SDFormat, the model pose
@@ -383,13 +383,13 @@ Errors Model::Load(ElementPtr _sdf)
       // in the parent scope of the model. However, when this model (M) is
       // inserted into a pose graph of the parent scope, only the pose (X_RM)
       // of the __model__ frame can be used. Thus, the model pose has to be
-      // updated to X_RM. And this is done by:
-      // X_RM = X_RPf * inv(X_MPf)
+      // updated to X_RM.
       //
       // Note that X_RPf is the raw pose specified in //model/pose before this
       // update.
-      this->dataPtr->pose =
-          this->dataPtr->pose * placementFrameRelPose.Inverse();
+      const auto &X_RPf = this->dataPtr->pose;
+      auto &X_RM = this->dataPtr->pose;
+      X_RM = X_RPf * X_MPf.Inverse();
     }
     else
     {
@@ -425,23 +425,20 @@ Errors Model::Load(ElementPtr _sdf)
         // model. We don't need to resolve the pose because the relative_to
         // frame remains unchanged after the pose update here. i.e, the updated
         // pose of the child model frame will still be relative to R.
-        const auto &placementFramePose = childModelFrame->RawPose();
+        const auto &X_RPf = childModelFrame->RawPose();
 
-        ignition::math::Pose3d placementFrameRelPose;
-        sdf::Errors resolveErrors = frame.SemanticPose().Resolve(
-            placementFrameRelPose, childModelFrame->Name());
+        ignition::math::Pose3d X_MPf;
+        sdf::Errors resolveErrors =
+            frame.SemanticPose().Resolve(X_MPf, childModelFrame->Name());
         errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
         // We need to update childModelFrame's pose relative to the parent
         // frame as well as the corresponding edge in the pose graph because
         // just updating childModelFrame doesn't update the pose graph.
-        //
-        // X_RM = X_RPf * inv(X_MPf)
-        auto newModelPose =
-            placementFramePose * placementFrameRelPose.Inverse();
-        frame.SetRawPose(newModelPose);
+        auto X_RM = X_RPf * X_MPf.Inverse();
+        frame.SetRawPose(X_RM);
         sdf::updateGraphPose(
-            *this->dataPtr->poseGraph, childModelFrame->Name(), newModelPose);
+            *this->dataPtr->poseGraph, childModelFrame->Name(), X_RM);
       }
       else
       {
