@@ -14,8 +14,13 @@
  * limitations under the License.
  *
  */
+#include <algorithm>
+#include <iterator>
+
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
+
+#include "sdf/Assert.hh"
 #include "sdf/Error.hh"
 #include "sdf/JointAxis.hh"
 #include "FrameSemantics.hh"
@@ -136,8 +141,9 @@ Errors JointAxis::Load(ElementPtr _sdf)
   // Read the xyz values.
   if (_sdf->HasElement("xyz"))
   {
-    this->dataPtr->xyz = _sdf->Get<ignition::math::Vector3d>("xyz",
-        ignition::math::Vector3d::UnitZ).first;
+    using ignition::math::Vector3d;
+    auto errs = this->SetXyz(_sdf->Get<Vector3d>("xyz", Vector3d::UnitZ).first);
+    std::copy(errs.begin(), errs.end(), std::back_inserter(errors));
     auto e = _sdf->GetElement("xyz");
     if (e->HasAttribute("expressed_in"))
     {
@@ -209,9 +215,16 @@ ignition::math::Vector3d JointAxis::Xyz() const
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetXyz(const ignition::math::Vector3d &_xyz)
+sdf::Errors JointAxis::SetXyz(const ignition::math::Vector3d &_xyz)
 {
+  if (sdf::equal(_xyz.Length(), 0.0))
+  {
+    return {Error(ErrorCode::ELEMENT_INVALID,
+                  "The norm of the xyz vector cannot be zero")};
+  }
   this->dataPtr->xyz = _xyz;
+  this->dataPtr->xyz.Normalize();
+  return sdf::Errors();
 }
 
 /////////////////////////////////////////////////

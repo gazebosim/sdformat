@@ -24,6 +24,10 @@ but with improved human-readability..
 
 ### Modifications
 
+1. Axis vectors specified in <joint><axis><xyz> are normalized if their norm is
+   greater than 0. A vector with 0 norm generates an error
+    * [Pull request 312](https://github.com/osrf/sdformat/pull/312)
+
 1. + Depend on tinyxml2 instead of tinyxml for XML parsing.
    + [Pull request 264](https://github.com/osrf/sdformat/pull/264)
 
