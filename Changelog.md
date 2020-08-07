@@ -6,6 +6,7 @@
 
 1. Migrate to using TinyXML2.
     * [Pull request 264](https://github.com/osrf/sdformat/pull/264)
+    * [Pull request 321](https://github.com/osrf/sdformat/pull/321)
 
 1. Enforce minimum/maximum values specified in SDFormat description files.
     * [Pull request 303](https://github.com/osrf/sdformat/pull/303)
