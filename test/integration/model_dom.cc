@@ -22,6 +22,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Frame.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
@@ -313,5 +314,49 @@ TEST(DOMRoot, LoadCanonicalLink)
 
   EXPECT_EQ(0u, model->JointCount());
   EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(1u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_EQ(nullptr, model->FrameByIndex(1));
+
+  std::string body;
+  EXPECT_TRUE(model->FrameByName("F")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("link2", body);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, LoadNestedCanonicalLink)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "nested_canonical_link.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("top", model->Name());
+  EXPECT_EQ(0u, model->LinkCount());
+  EXPECT_EQ(nullptr, model->LinkByIndex(0));
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  ASSERT_NE(nullptr, model->CanonicalLink());
+  // this reports the local name, not the nested name "nested::link"
+  EXPECT_EQ("link", model->CanonicalLink()->Name());
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(1u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_EQ(nullptr, model->FrameByIndex(1));
+
+  std::string body;
+  EXPECT_TRUE(model->FrameByName("F")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("nested::link", body);
 }
 

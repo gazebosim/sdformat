@@ -269,10 +269,11 @@ Errors Model::Load(ElementPtr _sdf)
     frameNames.insert(linkName);
   }
 
-  // If the model is not static:
+  // If the model is not static and has no nested models:
   // Require at least one link so the implicit model frame can be attached to
   // something.
-  if (!this->Static() && this->dataPtr->links.empty())
+  if (!this->Static() && this->dataPtr->links.empty() &&
+      this->dataPtr->models.empty())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
                      "A model must have at least one link."});
@@ -620,7 +621,26 @@ const Link *Model::CanonicalLink() const
 {
   if (this->CanonicalLinkName().empty())
   {
-    return this->LinkByIndex(0);
+    if (this->LinkCount() >= 1)
+    {
+      return this->LinkByIndex(0);
+    }
+    else if (this->ModelCount() >= 1)
+    {
+      // Choose the first link of the first nested model
+      // as the canonical link.
+      // This does not recurse past the first nested model.
+      auto firstNestedModel = this->ModelByIndex(0);
+      if (firstNestedModel->LinkCount() < 1)
+      {
+        return nullptr;
+      }
+      return firstNestedModel->LinkByIndex(0);
+    }
+    else
+    {
+      return nullptr;
+    }
   }
   else
   {

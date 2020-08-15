@@ -190,7 +190,7 @@ Errors buildFrameAttachedToGraph(
         "Invalid model element in sdf::Model."});
     return errors;
   }
-  else if (_model->LinkCount() < 1)
+  else if (_model->LinkCount() < 1 && _model->ModelCount() < 1)
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
                      "A model must have at least one link."});
@@ -201,7 +201,32 @@ Errors buildFrameAttachedToGraph(
   const sdf::Link *canonicalLink = nullptr;
   if (_model->CanonicalLinkName().empty())
   {
-    canonicalLink = _model->LinkByIndex(0);
+    if (_model->LinkCount() >= 1)
+    {
+      canonicalLink = _model->LinkByIndex(0);
+    }
+    else
+    {
+      // Choose the first link of the first nested model
+      // as the canonical link.
+      // This does not recurse past the first nested model.
+      auto firstNestedModel = _model->ModelByIndex(0);
+      if (firstNestedModel->LinkCount() < 1)
+      {
+        errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
+                         "A model must have at least one link."});
+        return errors;
+      }
+      canonicalLink = firstNestedModel->LinkByIndex(0);
+
+      // Add vertex for this nested link with edge from __model__.
+      auto canonicalLinkName =
+          firstNestedModel->Name() + "::" + canonicalLink->Name();
+      auto linkId =
+          _out.graph.AddVertex(canonicalLinkName, sdf::FrameType::LINK).Id();
+      _out.map[canonicalLinkName] = linkId;
+      _out.graph.AddEdge({modelFrameId, linkId}, true);
+    }
   }
   else
   {
