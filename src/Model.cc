@@ -67,6 +67,9 @@ class sdf::ModelPrivate
   /// \brief The frames specified in this model.
   public: std::vector<Frame> frames;
 
+  /// \brief The nested models specified in this model.
+  public: std::vector<Model> models;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
@@ -76,8 +79,11 @@ class sdf::ModelPrivate
   /// \brief Pose Relative-To Graph constructed during Load.
   public: std::shared_ptr<sdf::PoseRelativeToGraph> poseGraph;
 
-  /// \brief Pose Relative-To Graph in parent (world) scope.
+  /// \brief Pose Relative-To Graph in parent (world or __model__) scope.
   public: std::weak_ptr<const sdf::PoseRelativeToGraph> parentPoseGraph;
+
+  /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
+  public: std::string parentPoseGraphScopeName;
 };
 
 /////////////////////////////////////////////////
@@ -111,6 +117,10 @@ Model::Model(const Model &_model)
   for (auto &link : this->dataPtr->links)
   {
     link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
   for (auto &joint : this->dataPtr->joints)
   {
@@ -197,14 +207,6 @@ Errors Model::Load(ElementPtr _sdf)
   // Load the pose. Ignore the return value since the model pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
-  // Nested models are not yet supported.
-  if (_sdf->HasElement("model"))
-  {
-    errors.push_back({ErrorCode::NESTED_MODELS_UNSUPPORTED,
-                     "Nested models are not yet supported by DOM objects, "
-                     "skipping model [" + this->dataPtr->name + "]."});
-  }
-
   if (!_sdf->HasUniqueChildNames())
   {
     sdfwarn << "Non-unique names detected in XML children of model with name["
@@ -215,17 +217,56 @@ Errors Model::Load(ElementPtr _sdf)
   // name collisions
   std::unordered_set<std::string> frameNames;
 
+  // Load nested models.
+  Errors nestedModelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
+    this->dataPtr->models);
+  errors.insert(errors.end(),
+                nestedModelLoadErrors.begin(),
+                nestedModelLoadErrors.end());
+
+  // Nested models are loaded first, and loadUniqueRepeated ensures there are no
+  // duplicate names, so these names can be added to frameNames without
+  // checking uniqueness.
+  for (const auto &model : this->dataPtr->models)
+  {
+    frameNames.insert(model.Name());
+  }
+
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
     this->dataPtr->links);
   errors.insert(errors.end(), linkLoadErrors.begin(), linkLoadErrors.end());
 
-  // Links are loaded first, and loadUniqueRepeated ensures there are no
-  // duplicate names, so these names can be added to frameNames without
-  // checking uniqueness.
-  for (const auto &link : this->dataPtr->links)
+  // Check links for name collisions and modify and warn if so.
+  for (auto &link : this->dataPtr->links)
   {
-    frameNames.insert(link.Name());
+    std::string linkName = link.Name();
+    if (frameNames.count(linkName) > 0)
+    {
+      // This link has a name collision
+      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
+      {
+        // This came from an old file, so try to workaround by renaming link
+        linkName += "_link";
+        int i = 0;
+        while (frameNames.count(linkName) > 0)
+        {
+          linkName = link.Name() + "_link" + std::to_string(i++);
+        }
+        sdfwarn << "Link with name [" << link.Name() << "] "
+                << "in model with name [" << this->Name() << "] "
+                << "has a name collision, changing link name to ["
+                << linkName << "].\n";
+        link.SetName(linkName);
+      }
+      else
+      {
+        sdferr << "Link with name [" << link.Name() << "] "
+               << "in model with name [" << this->Name() << "] "
+               << "has a name collision. Please rename this link.\n";
+      }
+    }
+    frameNames.insert(linkName);
   }
 
   // If the model is not static:
@@ -347,6 +388,13 @@ Errors Model::Load(ElementPtr _sdf)
   for (auto &link : this->dataPtr->links)
   {
     link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    Errors setPoseRelativeToGraphErrors =
+      model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+    errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
+                                setPoseRelativeToGraphErrors.end());
   }
   for (auto &joint : this->dataPtr->joints)
   {
@@ -528,6 +576,46 @@ const Frame *Model::FrameByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+uint64_t Model::ModelCount() const
+{
+  return this->dataPtr->models.size();
+}
+
+/////////////////////////////////////////////////
+const Model *Model::ModelByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->models.size())
+    return &this->dataPtr->models[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Model::ModelNameExists(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Model *Model::ModelByName(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
+    {
+      return &m;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
 const Link *Model::CanonicalLink() const
 {
   if (this->CanonicalLinkName().empty())
@@ -577,10 +665,23 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
-void Model::SetPoseRelativeToGraph(
+Errors Model::SetPoseRelativeToGraph(
     std::weak_ptr<const PoseRelativeToGraph> _graph)
 {
+  Errors errors;
+
+  auto graph = _graph.lock();
+  if (!graph)
+  {
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "Tried to set PoseRelativeToGraph with invalid pointer."});
+    return errors;
+  }
+
+  this->dataPtr->parentPoseGraphScopeName = graph->sourceName;
   this->dataPtr->parentPoseGraph = _graph;
+
+  return errors;
 }
 
 /////////////////////////////////////////////////
@@ -589,7 +690,7 @@ sdf::SemanticPose Model::SemanticPose() const
   return sdf::SemanticPose(
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
-      "world",
+      this->dataPtr->parentPoseGraphScopeName,
       this->dataPtr->parentPoseGraph);
 }
 

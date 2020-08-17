@@ -275,6 +275,17 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
+  // Check an SDF file with an invalid model without links.
+  {
+    std::string path = pathBase +"/model_without_links.sdf";
+
+    // Check model_without_links.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: A model must have at least one link."),
+              std::string::npos) << output;
+  }
+
   // Check an SDF file with a nested model.
   {
     std::string path = pathBase +"/nested_model.sdf";
@@ -282,9 +293,7 @@ TEST(check, SDF)
     // Check nested_model.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: Nested models are not yet supported by DOM "
-              "objects, skipping model [top_level_model]."),
-              std::string::npos) << output;
+    EXPECT_EQ("Valid.\n", output) << output;
   }
 
   // Check an invalid SDF file that uses reserved names.
@@ -353,6 +362,17 @@ TEST(check, SDF)
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
+  // Check an SDF file with model frames attached_to a nested model.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_frame_attached_to_nested_model.sdf";
+
+    // Check model_frame_attached_to_nested_model.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
   // Check an SDF file with model frames with invalid attached_to attributes.
   {
     std::string path = pathBase +"/model_frame_invalid_attached_to.sdf";
@@ -361,8 +381,8 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: attached_to name[A] specified by frame with "
-                          "name[F3] does not match a link, joint, or frame "
-                          "name in model with "
+                          "name[F3] does not match a nested model, link, "
+                          "joint, or frame name in model with "
                           "name[model_frame_invalid_attached_to]."),
               std::string::npos) << output;
     EXPECT_NE(output.find("Error: attached_to name[F4] is identical to frame "
@@ -435,13 +455,38 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: relative_to name[A] specified by link with "
-                          "name[L] does not match a link, joint, or frame "
-                          "name in model with "
+                          "name[L] does not match a nested model, link, "
+                          "joint, or frame name in model with "
                           "name[model_invalid_link_relative_to]."),
               std::string::npos) << output;
     EXPECT_NE(output.find("Error: relative_to name[self_cycle] is identical to "
                           "link name[self_cycle], causing a graph cycle in "
                           "model with name[model_invalid_link_relative_to]."),
+              std::string::npos) << output;
+  }
+
+  // Check an SDF file with nested_models using the relative_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_nested_model_relative_to.sdf";
+
+    // Check model_nested_model_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an invalid SDF file with a joint that specifies a child link
+  // within a sibling nested model using the unsupported :: syntax.
+  {
+    std::string path = pathBase +"/model_invalid_nested_joint_child.sdf";
+
+    // Check model_invalid_nested_joint_child.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: Child link with name[M::C] specified by "
+                          "joint with name[J] not found in model with "
+                          "name[model_invalid_nested_joint_child]."),
               std::string::npos) << output;
   }
 
@@ -464,8 +509,8 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: relative_to name[A] specified by joint with "
-                          "name[J] does not match a link, joint, or frame "
-                          "name in model with "
+                          "name[J] does not match a nested model, link, "
+                          "joint, or frame name in model with "
                           "name[model_invalid_joint_relative_to]."),
               std::string::npos) << output;
     EXPECT_NE(output.find("Error: relative_to name[Jcycle] is identical to "
@@ -504,8 +549,8 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: relative_to name[A] specified by frame with "
-                          "name[F] does not match a link, joint, or frame "
-                          "name in model with "
+                          "name[F] does not match a nested model, link, "
+                          "joint, or frame name in model with "
                           "name[model_invalid_frame_relative_to]."),
               std::string::npos) << output;
     EXPECT_NE(output.find("Error: relative_to name[cycle] is identical to "

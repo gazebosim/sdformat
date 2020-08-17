@@ -30,6 +30,11 @@
 
 ### libsdformat 9.X.X (202X-XX-XX)
 
+### SDFormat 9.3.0 (2020-XX-XX)
+
+1. Support nested models in DOM and frame semantics.
+    * [Pull request 316](https://github.com/osrf/sdformat/pull/316)
+
 1. Find python3 in cmake, fix cmake warning.
     * [Pull request 328](https://github.com/osrf/sdformat/pull/328)
 

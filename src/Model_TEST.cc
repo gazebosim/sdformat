@@ -47,21 +47,35 @@ TEST(DOMModel, Construction)
   model.SetEnableWind(true);
   EXPECT_TRUE(model.EnableWind());
 
+  EXPECT_EQ(0u, model.ModelCount());
+  EXPECT_EQ(nullptr, model.ModelByIndex(0));
+  EXPECT_EQ(nullptr, model.ModelByIndex(1));
+  EXPECT_EQ(nullptr, model.ModelByName(""));
+  EXPECT_EQ(nullptr, model.ModelByName("default"));
+  EXPECT_FALSE(model.ModelNameExists(""));
+  EXPECT_FALSE(model.ModelNameExists("default"));
+
   EXPECT_EQ(0u, model.LinkCount());
   EXPECT_EQ(nullptr, model.LinkByIndex(0));
   EXPECT_EQ(nullptr, model.LinkByIndex(1));
+  EXPECT_EQ(nullptr, model.LinkByName(""));
+  EXPECT_EQ(nullptr, model.LinkByName("default"));
   EXPECT_FALSE(model.LinkNameExists(""));
   EXPECT_FALSE(model.LinkNameExists("default"));
 
   EXPECT_EQ(0u, model.JointCount());
   EXPECT_EQ(nullptr, model.JointByIndex(0));
   EXPECT_EQ(nullptr, model.JointByIndex(1));
+  EXPECT_EQ(nullptr, model.JointByName(""));
+  EXPECT_EQ(nullptr, model.JointByName("default"));
   EXPECT_FALSE(model.JointNameExists(""));
   EXPECT_FALSE(model.JointNameExists("default"));
 
   EXPECT_EQ(0u, model.FrameCount());
   EXPECT_EQ(nullptr, model.FrameByIndex(0));
   EXPECT_EQ(nullptr, model.FrameByIndex(1));
+  EXPECT_EQ(nullptr, model.FrameByName(""));
+  EXPECT_EQ(nullptr, model.FrameByName("default"));
   EXPECT_FALSE(model.FrameNameExists(""));
   EXPECT_FALSE(model.FrameNameExists("default"));
 
