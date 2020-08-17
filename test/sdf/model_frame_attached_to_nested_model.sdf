@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="model_frame_attached_to_nested_model">
+    <link name="link"/>
+    <model name="nested_model">
+      <link name="nested_link"/>
+    </model>
+    <frame name="F1" attached_to="nested_model"/> <!-- VALID: Directly attached_to nested_model. -->
+    <frame name="F2" attached_to="F1"/>           <!-- VALID: Indirectly attached_to nested_model. -->
+  </model>
+</sdf>

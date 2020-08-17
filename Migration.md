@@ -45,6 +45,10 @@ but with improved human-readability..
     + const Frame \*FrameByIndex(const uint64\_t) const
     + const Frame \*FrameByName(const std::string &) const
     + bool FrameNameExists(const std::string &) const
+    + uint64\_t ModelCount() const
+    + const Model \*ModelByIndex(const uint64\_t) const
+    + const Model \*ModelByName(const std::string &) const
+    + bool ModelNameExists(const std::string &) const
     + sdf::SemanticPose SemanticPose() const
 
 1. **sdf/SDFImpl.hh**
@@ -194,7 +198,7 @@ but with improved human-readability..
 1. **frame.sdf** `//frame/@attached_to` attribute
     + description: Name of the link or frame to which this frame is attached.
       If a frame is specified, recursively following the attached\_to attributes
-      of the specified frames must lead to the name of a link or the world frame.
+      of the specified frames must lead to the name of a link, a model, or the world frame.
     + type: string
     + default: ""
     + required: *

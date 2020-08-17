@@ -343,7 +343,7 @@ TEST(DOMJoint, LoadInvalidJointPoseRelativeTo)
   EXPECT_NE(std::string::npos,
     errors[1].Message().find(
       "relative_to name[A] specified by joint with name[J] does not match a "
-      "link, joint, or frame name in model"));
+      "nested model, link, joint, or frame name in model"));
   // errors[2]
   // errors[3]
   // errors[4]

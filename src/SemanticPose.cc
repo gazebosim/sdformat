@@ -106,7 +106,7 @@ Errors SemanticPose::Resolve(
   auto graph = this->dataPtr->poseRelativeToGraph.lock();
   if (!graph)
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
         "SemanticPose has invalid pointer to PoseRelativeToGraph."});
     return errors;
   }
