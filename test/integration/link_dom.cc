@@ -672,7 +672,7 @@ TEST(DOMLink, LoadInvalidLinkPoseRelativeTo)
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
       "relative_to name[A] specified by link with name[L] does not match a "
-      "link, joint, or frame name in model"));
+      "nested model, link, joint, or frame name in model"));
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
   EXPECT_NE(std::string::npos,
     errors[1].Message().find(
