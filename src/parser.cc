@@ -1537,13 +1537,14 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
         modelResult = false;
       }
       else if (!_model->LinkNameExists(attachedTo) &&
+               !_model->ModelNameExists(attachedTo) &&
                !_model->JointNameExists(attachedTo) &&
                !_model->FrameNameExists(attachedTo))
       {
         std::cerr << "Error: attached_to name[" << attachedTo
                   << "] specified by frame with name[" << frame->Name()
-                  << "] does not match a link, joint, or frame name "
-                  << "in model with name[" << _model->Name()
+                  << "] does not match a nested model, link, joint, "
+                  << "or frame name in model with name[" << _model->Name()
                   << "]."
                   << std::endl;
         modelResult = false;

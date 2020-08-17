@@ -32,6 +32,11 @@
 /// The Frame Semantics Utilities construct and operate on graphs representing
 /// the kinematics, frame attached_to, and pose relative_to relationships
 /// defined within models and world.
+///
+/// Note that all graphs should only contain relative names (e.g. "my_link"),
+/// not absolute names ("top_model::nested_model::my_link").
+/// Graphs inside nested models (currently via directly nested models in
+/// //model or //world elements) will be explicitly separate graphs.
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.

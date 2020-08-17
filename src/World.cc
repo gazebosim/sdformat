@@ -372,7 +372,10 @@ Errors World::Load(sdf::ElementPtr _sdf)
   }
   for (auto &model : this->dataPtr->models)
   {
-    model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    Errors setPoseRelativeToGraphErrors =
+      model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
+                                setPoseRelativeToGraphErrors.end());
   }
   for (auto &light : this->dataPtr->lights)
   {
