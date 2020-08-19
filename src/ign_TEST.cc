@@ -318,6 +318,8 @@ TEST(check, SDF)
     EXPECT_NE(output.find("Error: canonical_link with name[nested::link] not "
                           "found in model with name[top]."),
               std::string::npos) << output;
+    EXPECT_NE(output.find("Error: A model must have at least one link."),
+              std::string::npos) << output;
   }
 
   // Check an invalid SDF file that uses reserved names.

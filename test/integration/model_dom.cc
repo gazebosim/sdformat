@@ -345,8 +345,8 @@ TEST(DOMRoot, LoadNestedCanonicalLink)
   EXPECT_TRUE(model->CanonicalLinkName().empty());
 
   ASSERT_NE(nullptr, model->CanonicalLink());
-  // this reports the local name, not the nested name "nested::link"
-  EXPECT_EQ("link", model->CanonicalLink()->Name());
+  // this reports the local name, not the nested name "nested::link2"
+  EXPECT_EQ("link2", model->CanonicalLink()->Name());
 
   EXPECT_EQ(0u, model->JointCount());
   EXPECT_EQ(nullptr, model->JointByIndex(0));
@@ -357,6 +357,20 @@ TEST(DOMRoot, LoadNestedCanonicalLink)
 
   std::string body;
   EXPECT_TRUE(model->FrameByName("F")->ResolveAttachedToBody(body).empty());
-  EXPECT_EQ("nested::link", body);
+  EXPECT_EQ("nested::link2", body);
+
+  EXPECT_EQ(2u, model->ModelCount());
+  EXPECT_NE(nullptr, model->ModelByIndex(0));
+  EXPECT_NE(nullptr, model->ModelByIndex(1));
+  EXPECT_EQ(nullptr, model->ModelByIndex(2));
+
+  EXPECT_TRUE(model->ModelNameExists("nested"));
+  EXPECT_TRUE(model->ModelNameExists("shallow"));
+
+  const sdf::Model *shallowModel = model->ModelByName("shallow");
+  EXPECT_EQ(1u, shallowModel->FrameCount());
+  EXPECT_TRUE(
+      shallowModel->FrameByName("F")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("deep::deeper::deepest::deepest_link", body);
 }
 

@@ -619,32 +619,42 @@ const Model *Model::ModelByName(const std::string &_name) const
 /////////////////////////////////////////////////
 const Link *Model::CanonicalLink() const
 {
+  return this->CanonicalLinkAndRelativeName().first;
+}
+
+/////////////////////////////////////////////////
+std::pair<const Link*, std::string> Model::CanonicalLinkAndRelativeName() const
+{
   if (this->CanonicalLinkName().empty())
   {
-    if (this->LinkCount() >= 1)
+    if (this->LinkCount() > 0)
     {
-      return this->LinkByIndex(0);
+      auto firstLink = this->LinkByIndex(0);
+      return std::make_pair(firstLink, firstLink->Name());
     }
-    else if (this->ModelCount() >= 1)
+    else if (this->ModelCount() > 0)
     {
-      // Choose the first link of the first nested model
-      // as the canonical link.
-      // This does not recurse past the first nested model.
-      auto firstNestedModel = this->ModelByIndex(0);
-      if (firstNestedModel->LinkCount() < 1)
+      // Recursively choose the canonical link of the first nested model
+      // (depth first search).
+      auto firstModel = this->ModelByIndex(0);
+      auto canonicalLinkAndName = firstModel->CanonicalLinkAndRelativeName();
+      // Prepend firstModelName if a valid link is found.
+      if (nullptr != canonicalLinkAndName.first)
       {
-        return nullptr;
+        canonicalLinkAndName.second =
+            firstModel->Name() + "::" + canonicalLinkAndName.second;
       }
-      return firstNestedModel->LinkByIndex(0);
+      return canonicalLinkAndName;
     }
     else
     {
-      return nullptr;
+      return std::make_pair(nullptr, "");
     }
   }
   else
   {
-    return this->LinkByName(this->CanonicalLinkName());
+    return std::make_pair(this->LinkByName(this->CanonicalLinkName()),
+                          this->CanonicalLinkName());
   }
 }
 

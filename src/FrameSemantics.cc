@@ -15,6 +15,8 @@
  *
 */
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
@@ -165,6 +167,17 @@ FindSinkVertex(
 }
 
 /////////////////////////////////////////////////
+std::pair<const Link *, std::string>
+    modelCanonicalLinkAndRelativeName(const Model *_model)
+{
+  if (nullptr == _model)
+  {
+    return std::make_pair(nullptr, "");
+  }
+  return _model->CanonicalLinkAndRelativeName();
+}
+
+/////////////////////////////////////////////////
 Errors buildFrameAttachedToGraph(
             FrameAttachedToGraph &_out, const Model *_model)
 {
@@ -197,48 +210,38 @@ Errors buildFrameAttachedToGraph(
     return errors;
   }
 
-  // identify canonical link
-  const sdf::Link *canonicalLink = nullptr;
-  if (_model->CanonicalLinkName().empty())
+  // identify canonical link, which may be nested
+  auto canonicalLinkAndName = modelCanonicalLinkAndRelativeName(_model);
+  const sdf::Link *canonicalLink = canonicalLinkAndName.first;
+  const std::string canonicalLinkName = canonicalLinkAndName.second;
+  if (nullptr == canonicalLink)
   {
-    if (_model->LinkCount() >= 1)
+    if (canonicalLinkName.empty())
     {
-      canonicalLink = _model->LinkByIndex(0);
+      errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
+                       "A model must have at least one link."});
     }
     else
     {
-      // Choose the first link of the first nested model
-      // as the canonical link.
-      // This does not recurse past the first nested model.
-      auto firstNestedModel = _model->ModelByIndex(0);
-      if (firstNestedModel->LinkCount() < 1)
-      {
-        errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
-                         "A model must have at least one link."});
-        return errors;
-      }
-      canonicalLink = firstNestedModel->LinkByIndex(0);
-
-      // Add vertex for this nested link with edge from __model__.
-      auto canonicalLinkName =
-          firstNestedModel->Name() + "::" + canonicalLink->Name();
-      auto linkId =
-          _out.graph.AddVertex(canonicalLinkName, sdf::FrameType::LINK).Id();
-      _out.map[canonicalLinkName] = linkId;
-      _out.graph.AddEdge({modelFrameId, linkId}, true);
+      errors.push_back({ErrorCode::MODEL_CANONICAL_LINK_INVALID,
+        "canonical_link with name[" + canonicalLinkName +
+        "] not found in model with name[" + _model->Name() + "]."});
     }
-  }
-  else
-  {
-    canonicalLink = _model->LinkByName(_model->CanonicalLinkName());
-  }
-  if (nullptr == canonicalLink)
-  {
     // return early
-    errors.push_back({ErrorCode::MODEL_CANONICAL_LINK_INVALID,
-      "canonical_link with name[" + _model->CanonicalLinkName() +
-      "] not found in model with name[" + _model->Name() + "]."});
     return errors;
+  }
+
+  // Identify if the canonical link is in a nested model.
+  if (_model->LinkByName(canonicalLink->Name()) != canonicalLink)
+  {
+    // The canonical link is nested, so its vertex should be added
+    // here with an edge from __model__.
+    // The nested canonical link name should be a nested name
+    // relative to _model, delimited by "::".
+    auto linkId =
+        _out.graph.AddVertex(canonicalLinkName, sdf::FrameType::LINK).Id();
+    _out.map[canonicalLinkName] = linkId;
+    _out.graph.AddEdge({modelFrameId, linkId}, true);
   }
 
   // add link vertices
