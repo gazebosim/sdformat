@@ -342,12 +342,6 @@ TEST(DOMRoot, LoadNestedCanonicalLink)
   EXPECT_EQ(0u, model->LinkCount());
   EXPECT_EQ(nullptr, model->LinkByIndex(0));
 
-  EXPECT_TRUE(model->CanonicalLinkName().empty());
-
-  ASSERT_NE(nullptr, model->CanonicalLink());
-  // this reports the local name, not the nested name "nested::link2"
-  EXPECT_EQ("link2", model->CanonicalLink()->Name());
-
   EXPECT_EQ(0u, model->JointCount());
   EXPECT_EQ(nullptr, model->JointByIndex(0));
 
@@ -355,17 +349,26 @@ TEST(DOMRoot, LoadNestedCanonicalLink)
   EXPECT_NE(nullptr, model->FrameByIndex(0));
   EXPECT_EQ(nullptr, model->FrameByIndex(1));
 
+  EXPECT_EQ(2u, model->ModelCount());
+  EXPECT_TRUE(model->ModelNameExists("nested"));
+  EXPECT_TRUE(model->ModelNameExists("shallow"));
+  EXPECT_EQ(model->ModelByName("nested"), model->ModelByIndex(0));
+  EXPECT_EQ(model->ModelByName("shallow"), model->ModelByIndex(1));
+  EXPECT_EQ(nullptr, model->ModelByIndex(2));
+
+  // expect implicit canonical link
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  // frame F is attached to __model__ and resolves to canonical link,
+  // which is "nested::link2"
   std::string body;
   EXPECT_TRUE(model->FrameByName("F")->ResolveAttachedToBody(body).empty());
   EXPECT_EQ("nested::link2", body);
 
-  EXPECT_EQ(2u, model->ModelCount());
-  EXPECT_NE(nullptr, model->ModelByIndex(0));
-  EXPECT_NE(nullptr, model->ModelByIndex(1));
-  EXPECT_EQ(nullptr, model->ModelByIndex(2));
-
-  EXPECT_TRUE(model->ModelNameExists("nested"));
-  EXPECT_TRUE(model->ModelNameExists("shallow"));
+  EXPECT_EQ(model->ModelByName("nested")->LinkByName("link2"),
+            model->CanonicalLink());
+  // this reports the local name, not the nested name "nested::link2"
+  EXPECT_EQ("link2", model->CanonicalLink()->Name());
 
   const sdf::Model *shallowModel = model->ModelByName("shallow");
   EXPECT_EQ(1u, shallowModel->FrameCount());
