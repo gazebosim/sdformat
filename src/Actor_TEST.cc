@@ -20,6 +20,127 @@
 #include "sdf/Actor.hh"
 
 /////////////////////////////////////////////////
+sdf::Animation CreateDummyAnimation()
+{
+  sdf::Animation animation;
+  animation.SetName("animation");
+  animation.SetFilename("animation_filename");
+  animation.SetFilePath("animation_filepath");
+  animation.SetScale(1.234);
+  animation.SetInterpolateX(true);
+  return animation;
+}
+
+/////////////////////////////////////////////////
+bool AnimationsEqual(const sdf::Animation &_anim1, const sdf::Animation &_anim2)
+{
+  constexpr double EPS = 1e-6;
+  return (_anim1.Name() == _anim2.Name()) &&
+    (_anim1.Filename() == _anim2.Filename()) &&
+    (_anim1.FilePath() == _anim2.FilePath()) &&
+    (std::abs(_anim1.Scale() - _anim2.Scale()) < EPS) &&
+    (_anim1.InterpolateX() == _anim2.InterpolateX());
+}
+
+/////////////////////////////////////////////////
+sdf::Trajectory CreateDummyTrajectory()
+{
+  sdf::Trajectory trajectory;
+  sdf::Waypoint waypoint;
+  waypoint.SetTime(0.12);
+  waypoint.SetPose({3, 2, 1, 0, IGN_PI, 0});
+  trajectory.SetId(1234);
+  trajectory.SetType("trajectory_type");
+  trajectory.SetTension(4.567);
+  trajectory.AddWaypoint(waypoint);
+  return trajectory;
+}
+
+/////////////////////////////////////////////////
+bool TrajectoriesEqual(const sdf::Trajectory &_traj1,
+    const sdf::Trajectory &_traj2)
+{
+  constexpr double EPS = 1e-6;
+  bool waypointsEqual = true;
+  if (_traj1.WaypointCount() != _traj2.WaypointCount())
+  {
+    return false;
+  }
+  for (uint64_t wp_idx = 0; wp_idx < _traj1.WaypointCount(); ++wp_idx)
+  {
+    auto wp1 = _traj1.WaypointByIndex(wp_idx);
+    auto wp2 = _traj2.WaypointByIndex(wp_idx);
+    waypointsEqual &= (std::abs(wp1->Time() - wp2->Time()) < EPS) &&
+      wp1->Pose() == wp2->Pose();
+  }
+  return waypointsEqual &&
+    (_traj1.Id() == _traj2.Id()) &&
+    (_traj1.Type() == _traj2.Type()) &&
+    (std::abs(_traj1.Tension() - _traj2.Tension()) < EPS);
+}
+
+/////////////////////////////////////////////////
+sdf::Actor CreateDummyActor()
+{
+  sdf::Actor actor;
+  actor.SetName("test_dummy_actor");
+  actor.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  actor.SetPoseRelativeTo("ground_plane");
+  actor.SetSkinFilename("walk.dae");
+  actor.SetSkinScale(2.0);
+  actor.SetScriptLoop(true);
+  actor.SetScriptDelayStart(2.8);
+  actor.SetScriptAutoStart(false);
+  actor.SetFilePath("/home/path/to/model.sdf");
+  // Add a dummy trajectory and animation as well
+  actor.AddTrajectory(CreateDummyTrajectory());
+  actor.AddAnimation(CreateDummyAnimation());
+  return actor;
+}
+
+/////////////////////////////////////////////////
+bool ActorsEqual(const sdf::Actor &_actor1, const sdf::Actor &_actor2)
+{
+  constexpr double EPS = 1e-6;
+  // Check animations, trajectories and properties
+  bool animationsEqual = true;
+  if (_actor1.AnimationCount() != _actor2.AnimationCount())
+  {
+    return false;
+  }
+  for (uint64_t anim_idx = 0; anim_idx < _actor1.AnimationCount(); ++anim_idx)
+  {
+    animationsEqual &= AnimationsEqual(
+        *_actor1.AnimationByIndex(anim_idx),
+        *_actor2.AnimationByIndex(anim_idx));
+  }
+  bool trajectoriesEqual = true;
+  if (_actor1.TrajectoryCount() != _actor2.TrajectoryCount())
+  {
+    return false;
+  }
+  for (uint64_t traj_idx = 0; traj_idx < _actor1.TrajectoryCount(); ++traj_idx)
+  {
+    trajectoriesEqual &= TrajectoriesEqual(
+        *_actor1.TrajectoryByIndex(traj_idx),
+        *_actor2.TrajectoryByIndex(traj_idx));
+  }
+  return animationsEqual && trajectoriesEqual &&
+    (_actor1.Name() == _actor2.Name()) &&
+    (_actor1.RawPose() == _actor2.RawPose()) &&
+    (_actor1.PoseRelativeTo() == _actor2.PoseRelativeTo()) &&
+    (_actor1.SkinFilename() == _actor2.SkinFilename()) &&
+    (std::abs(_actor1.SkinScale() - _actor2.SkinScale()) < EPS) &&
+    (_actor1.ScriptLoop() == _actor2.ScriptLoop()) &&
+    (std::abs(_actor1.ScriptDelayStart() - _actor2.ScriptDelayStart()) < EPS) &&
+    (_actor1.ScriptAutoStart() == _actor2.ScriptAutoStart()) &&
+    (_actor1.FilePath() == _actor2.FilePath()) &&
+    (_actor1.LinkCount() == _actor2.LinkCount()) &&
+    (_actor1.JointCount() == _actor2.JointCount()) &&
+    (_actor1.Element() == _actor2.Element());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMActor, DefaultConstruction)
 {
   sdf::Actor actor;
@@ -63,227 +184,42 @@ TEST(DOMActor, DefaultConstruction)
 /////////////////////////////////////////////////
 TEST(DOMActor, CopyConstructor)
 {
-  sdf::Actor actor;
-  actor.SetName("test_copy_actor");
-  actor.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
-  actor.SetPoseRelativeTo("ground_plane");
-  actor.SetSkinFilename("walk.dae");
-  actor.SetSkinScale(2.0);
-  actor.SetScriptLoop(true);
-  actor.SetScriptDelayStart(2.8);
-  actor.SetScriptAutoStart(false);
-  actor.SetFilePath("/home/path/to/model.sdf");
-
+  sdf::Actor actor = CreateDummyActor();
   sdf::Actor actor2(actor);
-  EXPECT_EQ("test_copy_actor", actor2.Name());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.RawPose());
-  EXPECT_EQ("ground_plane", actor2.PoseRelativeTo());
-  EXPECT_EQ("/home/path/to/model.sdf", actor2.FilePath());
-
-  EXPECT_EQ(0u, actor2.AnimationCount());
-  EXPECT_EQ(nullptr, actor2.AnimationByIndex(0));
-  EXPECT_EQ(nullptr, actor2.AnimationByIndex(1));
-  EXPECT_FALSE(actor2.AnimationNameExists(""));
-  EXPECT_FALSE(actor2.AnimationNameExists("default"));
-
-  EXPECT_EQ("walk.dae", actor2.SkinFilename());
-  EXPECT_DOUBLE_EQ(2.0, actor2.SkinScale());
-
-  EXPECT_EQ(0u, actor2.TrajectoryCount());
-  EXPECT_EQ(nullptr, actor2.TrajectoryByIndex(0));
-  EXPECT_EQ(nullptr, actor2.TrajectoryByIndex(1));
-  EXPECT_FALSE(actor2.TrajectoryIdExists(0));
-  EXPECT_FALSE(actor2.TrajectoryIdExists(1));
-
-  EXPECT_TRUE(actor2.ScriptLoop());
-  EXPECT_DOUBLE_EQ(2.8, actor2.ScriptDelayStart());
-  EXPECT_FALSE(actor2.ScriptAutoStart());
-
-  EXPECT_EQ(0u, actor2.LinkCount());
-  EXPECT_EQ(nullptr, actor2.LinkByIndex(0));
-  EXPECT_EQ(nullptr, actor2.LinkByIndex(1));
-  EXPECT_FALSE(actor2.LinkNameExists(""));
-
-  EXPECT_EQ(0u, actor2.JointCount());
-  EXPECT_EQ(nullptr, actor2.JointByIndex(0));
-  EXPECT_EQ(nullptr, actor2.JointByIndex(1));
-  EXPECT_FALSE(actor2.JointNameExists(""));
+  EXPECT_TRUE(ActorsEqual(actor, actor2));
 }
 
 /////////////////////////////////////////////////
 TEST(DOMActor, CopyAssignmentOperator)
 {
-  sdf::Actor actor;
-  actor.SetName("test_actor_assignment");
-  actor.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
-  actor.SetPoseRelativeTo("ground_plane");
-  actor.SetSkinFilename("walk.dae");
-  actor.SetSkinScale(2.0);
-  actor.SetScriptLoop(true);
-  actor.SetScriptDelayStart(2.8);
-  actor.SetScriptAutoStart(false);
-  actor.SetFilePath("/home/path/to/model.sdf");
-
+  sdf::Actor actor = CreateDummyActor();
   sdf::Actor actor2;
   actor2 = actor;
-  EXPECT_EQ("test_actor_assignment", actor2.Name());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.RawPose());
-  EXPECT_EQ("ground_plane", actor2.PoseRelativeTo());
-  EXPECT_EQ("/home/path/to/model.sdf", actor2.FilePath());
-
-  EXPECT_EQ(0u, actor2.AnimationCount());
-  EXPECT_EQ(nullptr, actor2.AnimationByIndex(0));
-  EXPECT_EQ(nullptr, actor2.AnimationByIndex(1));
-  EXPECT_FALSE(actor2.AnimationNameExists(""));
-  EXPECT_FALSE(actor2.AnimationNameExists("default"));
-
-  EXPECT_EQ("walk.dae", actor2.SkinFilename());
-  EXPECT_DOUBLE_EQ(2.0, actor2.SkinScale());
-
-  EXPECT_EQ(0u, actor2.TrajectoryCount());
-  EXPECT_EQ(nullptr, actor2.TrajectoryByIndex(0));
-  EXPECT_EQ(nullptr, actor2.TrajectoryByIndex(1));
-  EXPECT_FALSE(actor2.TrajectoryIdExists(0));
-  EXPECT_FALSE(actor2.TrajectoryIdExists(1));
-
-  EXPECT_TRUE(actor2.ScriptLoop());
-  EXPECT_DOUBLE_EQ(2.8, actor2.ScriptDelayStart());
-  EXPECT_FALSE(actor2.ScriptAutoStart());
-
-  EXPECT_EQ(0u, actor2.LinkCount());
-  EXPECT_EQ(nullptr, actor2.LinkByIndex(0));
-  EXPECT_EQ(nullptr, actor2.LinkByIndex(1));
-  EXPECT_FALSE(actor2.LinkNameExists(""));
-
-  EXPECT_EQ(0u, actor2.JointCount());
-  EXPECT_EQ(nullptr, actor2.JointByIndex(0));
-  EXPECT_EQ(nullptr, actor2.JointByIndex(1));
-  EXPECT_FALSE(actor2.JointNameExists(""));
+  EXPECT_TRUE(ActorsEqual(actor, actor2));
 }
 
 /////////////////////////////////////////////////
 TEST(DOMActor, MoveConstructor)
 {
-  sdf::Actor actor;
-  actor.SetName("test_actor_assignment");
-  actor.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
-  actor.SetPoseRelativeTo("ground_plane");
-  actor.SetSkinFilename("walk.dae");
-  actor.SetSkinScale(2.0);
-  actor.SetScriptLoop(true);
-  actor.SetScriptDelayStart(2.8);
-  actor.SetScriptAutoStart(false);
-  actor.SetFilePath("/home/path/to/model.sdf");
-
+  sdf::Actor actor = CreateDummyActor();
   sdf::Actor actor2(std::move(actor));
-  EXPECT_EQ("test_actor_assignment", actor2.Name());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.RawPose());
-  EXPECT_EQ("ground_plane", actor2.PoseRelativeTo());
-  EXPECT_EQ("/home/path/to/model.sdf", actor2.FilePath());
-
-  EXPECT_EQ(0u, actor2.AnimationCount());
-  EXPECT_EQ(nullptr, actor2.AnimationByIndex(0));
-  EXPECT_EQ(nullptr, actor2.AnimationByIndex(1));
-  EXPECT_FALSE(actor2.AnimationNameExists(""));
-  EXPECT_FALSE(actor2.AnimationNameExists("default"));
-
-  EXPECT_EQ("walk.dae", actor2.SkinFilename());
-  EXPECT_DOUBLE_EQ(2.0, actor2.SkinScale());
-
-  EXPECT_EQ(0u, actor2.TrajectoryCount());
-  EXPECT_EQ(nullptr, actor2.TrajectoryByIndex(0));
-  EXPECT_EQ(nullptr, actor2.TrajectoryByIndex(1));
-  EXPECT_FALSE(actor2.TrajectoryIdExists(0));
-  EXPECT_FALSE(actor2.TrajectoryIdExists(1));
-
-  EXPECT_TRUE(actor2.ScriptLoop());
-  EXPECT_DOUBLE_EQ(2.8, actor2.ScriptDelayStart());
-  EXPECT_FALSE(actor2.ScriptAutoStart());
-
-  EXPECT_EQ(0u, actor2.LinkCount());
-  EXPECT_EQ(nullptr, actor2.LinkByIndex(0));
-  EXPECT_EQ(nullptr, actor2.LinkByIndex(1));
-  EXPECT_FALSE(actor2.LinkNameExists(""));
-
-  EXPECT_EQ(0u, actor2.JointCount());
-  EXPECT_EQ(nullptr, actor2.JointByIndex(0));
-  EXPECT_EQ(nullptr, actor2.JointByIndex(1));
-  EXPECT_FALSE(actor2.JointNameExists(""));
+  EXPECT_TRUE(ActorsEqual(CreateDummyActor(), actor2));
 }
 
 /////////////////////////////////////////////////
 TEST(DOMActor, MoveAssignment)
 {
-  sdf::Actor actor;
-  actor.SetName("test_actor_assignment");
-  actor.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
-  actor.SetPoseRelativeTo("ground_plane");
-  actor.SetSkinFilename("walk.dae");
-  actor.SetSkinScale(2.0);
-  actor.SetScriptLoop(true);
-  actor.SetScriptDelayStart(2.8);
-  actor.SetScriptAutoStart(false);
-  actor.SetFilePath("/home/path/to/model.sdf");
-
+  sdf::Actor actor = CreateDummyActor();
   sdf::Actor actor2;
   actor2 = std::move(actor);
-  EXPECT_EQ("test_actor_assignment", actor2.Name());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.RawPose());
-  EXPECT_EQ("ground_plane", actor2.PoseRelativeTo());
-  EXPECT_EQ("/home/path/to/model.sdf", actor2.FilePath());
-
-  EXPECT_EQ(0u, actor2.AnimationCount());
-  EXPECT_EQ(nullptr, actor2.AnimationByIndex(0));
-  EXPECT_EQ(nullptr, actor2.AnimationByIndex(1));
-  EXPECT_FALSE(actor2.AnimationNameExists(""));
-  EXPECT_FALSE(actor2.AnimationNameExists("default"));
-
-  EXPECT_EQ("walk.dae", actor2.SkinFilename());
-  EXPECT_DOUBLE_EQ(2.0, actor2.SkinScale());
-
-  EXPECT_EQ(0u, actor2.TrajectoryCount());
-  EXPECT_EQ(nullptr, actor2.TrajectoryByIndex(0));
-  EXPECT_EQ(nullptr, actor2.TrajectoryByIndex(1));
-  EXPECT_FALSE(actor2.TrajectoryIdExists(0));
-  EXPECT_FALSE(actor2.TrajectoryIdExists(1));
-
-  EXPECT_TRUE(actor2.ScriptLoop());
-  EXPECT_DOUBLE_EQ(2.8, actor2.ScriptDelayStart());
-  EXPECT_FALSE(actor2.ScriptAutoStart());
-
-  EXPECT_EQ(0u, actor2.LinkCount());
-  EXPECT_EQ(nullptr, actor2.LinkByIndex(0));
-  EXPECT_EQ(nullptr, actor2.LinkByIndex(1));
-  EXPECT_FALSE(actor2.LinkNameExists(""));
-
-  EXPECT_EQ(0u, actor2.JointCount());
-  EXPECT_EQ(nullptr, actor2.JointByIndex(0));
-  EXPECT_EQ(nullptr, actor2.JointByIndex(1));
-  EXPECT_FALSE(actor2.JointNameExists(""));
+  EXPECT_TRUE(ActorsEqual(CreateDummyActor(), actor2));
 }
 
 /////////////////////////////////////////////////
 TEST(DOMActor, CopyAssignmentAfterMove)
 {
-  sdf::Actor actor1;
-  actor1.SetName("actor1");
-  actor1.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
-  actor1.SetPoseRelativeTo("ground_plane_1");
-  actor1.SetSkinFilename("walk.dae");
-  actor1.SetSkinScale(2.0);
-  actor1.SetScriptLoop(true);
-  actor1.SetScriptDelayStart(2.8);
-  actor1.SetScriptAutoStart(false);
-
+  sdf::Actor actor1 = CreateDummyActor();
   sdf::Actor actor2;
-  actor2.SetName("actor2");
-  actor2.SetRawPose({1, 2, 3, 0, IGN_PI, 0});
-  actor2.SetPoseRelativeTo("ground_plane_2");
-  actor2.SetSkinFilename("run.dae");
-  actor2.SetSkinScale(0.5);
-  actor2.SetScriptLoop(false);
-  actor2.SetScriptDelayStart(0.8);
-  actor2.SetScriptAutoStart(true);
 
   // This is similar to what std::swap does except it uses std::move for each
   // assignment
@@ -291,29 +227,8 @@ TEST(DOMActor, CopyAssignmentAfterMove)
   actor1 = actor2;
   actor2 = tmp;
 
-  EXPECT_EQ("actor2", actor1.Name());
-  EXPECT_EQ("actor1", actor2.Name());
-
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, IGN_PI, 0), actor1.RawPose());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), actor2.RawPose());
-
-  EXPECT_EQ("ground_plane_2", actor1.PoseRelativeTo());
-  EXPECT_EQ("ground_plane_1", actor2.PoseRelativeTo());
-
-  EXPECT_EQ("run.dae", actor1.SkinFilename());
-  EXPECT_EQ("walk.dae", actor2.SkinFilename());
-
-  EXPECT_DOUBLE_EQ(0.5, actor1.SkinScale());
-  EXPECT_DOUBLE_EQ(2.0, actor2.SkinScale());
-
-  EXPECT_FALSE(actor1.ScriptLoop());
-  EXPECT_TRUE(actor2.ScriptLoop());
-
-  EXPECT_DOUBLE_EQ(0.8, actor1.ScriptDelayStart());
-  EXPECT_DOUBLE_EQ(2.8, actor2.ScriptDelayStart());
-
-  EXPECT_TRUE(actor1.ScriptAutoStart());
-  EXPECT_FALSE(actor2.ScriptAutoStart());
+  EXPECT_TRUE(ActorsEqual(sdf::Actor(), actor1));
+  EXPECT_TRUE(ActorsEqual(CreateDummyActor(), actor2));
 }
 
 //////////////////////////////////////////////////
@@ -379,4 +294,211 @@ TEST(DOMActor, Add)
   EXPECT_EQ(2u, actor.TrajectoryCount());
   EXPECT_EQ(456u, actor.TrajectoryByIndex(1)->Id());
   EXPECT_EQ("trajectory2", actor.TrajectoryByIndex(1)->Type());
+}
+
+//////////////////////////////////////////////////
+TEST(DOMAnimation, DefaultConstruction)
+{
+  sdf::Animation anim;
+
+  EXPECT_EQ(anim.Name(), "__default__");
+  EXPECT_EQ(anim.Filename(), "__default__");
+  EXPECT_EQ(anim.FilePath(), "");
+  EXPECT_DOUBLE_EQ(anim.Scale(), 1.0);
+  EXPECT_EQ(anim.InterpolateX(), false);
+}
+
+//////////////////////////////////////////////////
+TEST(DOMAnimation, CopyConstructor)
+{
+  sdf::Animation anim1 = CreateDummyAnimation();
+  sdf::Animation anim2(anim1);
+  EXPECT_TRUE(AnimationsEqual(anim1, anim2));
+}
+
+//////////////////////////////////////////////////
+TEST(DOMAnimation, CopyAssignmentOperator)
+{
+  sdf::Animation anim1 = CreateDummyAnimation();
+  sdf::Animation anim2;
+  anim2 = anim1;
+  EXPECT_TRUE(AnimationsEqual(anim1, anim2));
+}
+
+//////////////////////////////////////////////////
+TEST(DOMAnimation, MoveConstructor)
+{
+  sdf::Animation anim1 = CreateDummyAnimation();
+  sdf::Animation anim2(std::move(anim1));
+  EXPECT_TRUE(AnimationsEqual(CreateDummyAnimation(), anim2));
+}
+
+//////////////////////////////////////////////////
+TEST(DOMAnimation, MoveAssignment)
+{
+  sdf::Animation anim1 = CreateDummyAnimation();
+  sdf::Animation anim2;
+  anim2 = std::move(anim1);
+  EXPECT_TRUE(AnimationsEqual(CreateDummyAnimation(), anim2));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMAnimation, CopyAssignmentAfterMove)
+{
+  sdf::Animation anim1 = CreateDummyAnimation();
+  sdf::Animation anim2;
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Animation tmp = std::move(anim1);
+  anim1 = anim2;
+  anim2 = tmp;
+
+  EXPECT_TRUE(AnimationsEqual(sdf::Animation(), anim1));
+  EXPECT_TRUE(AnimationsEqual(CreateDummyAnimation(), anim2));
+}
+
+//////////////////////////////////////////////////
+TEST(DOMWaypoint, DefaultConstruction)
+{
+  sdf::Waypoint waypoint;
+  EXPECT_DOUBLE_EQ(waypoint.Time(), 0.0);
+  EXPECT_EQ(waypoint.Pose(), ignition::math::Pose3d::Zero);
+}
+
+//////////////////////////////////////////////////
+TEST(DOMWaypoint, CopyConstructor)
+{
+  sdf::Waypoint waypoint1;
+  waypoint1.SetTime(1.23);
+  waypoint1.SetPose({3, 2, 1, 0, IGN_PI, 0});
+
+  sdf::Waypoint waypoint2(waypoint1);
+  EXPECT_DOUBLE_EQ(waypoint1.Time(), waypoint2.Time());
+  EXPECT_EQ(waypoint1.Pose(), waypoint2.Pose());
+}
+
+//////////////////////////////////////////////////
+TEST(DOMWaypoint, CopyAssignmentOperator)
+{
+  sdf::Waypoint waypoint1;
+  waypoint1.SetTime(1.23);
+  waypoint1.SetPose({3, 2, 1, 0, IGN_PI, 0});
+
+  sdf::Waypoint waypoint2;
+  waypoint2 = waypoint1;
+  EXPECT_DOUBLE_EQ(waypoint1.Time(), waypoint2.Time());
+  EXPECT_EQ(waypoint1.Pose(), waypoint2.Pose());
+}
+
+//////////////////////////////////////////////////
+TEST(DOMWaypoint, MoveConstructor)
+{
+  sdf::Waypoint waypoint1;
+  ignition::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
+  waypoint1.SetTime(1.23);
+  waypoint1.SetPose(pose1);
+
+  sdf::Waypoint waypoint2(std::move(waypoint1));
+  EXPECT_DOUBLE_EQ(1.23, waypoint2.Time());
+  EXPECT_EQ(pose1, waypoint2.Pose());
+}
+
+//////////////////////////////////////////////////
+TEST(DOMWaypoint, MoveAssignment)
+{
+  sdf::Waypoint waypoint1;
+  ignition::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
+  waypoint1.SetTime(1.23);
+  waypoint1.SetPose(pose1);
+
+  sdf::Waypoint waypoint2;
+  waypoint2 = std::move(waypoint1);
+  EXPECT_DOUBLE_EQ(1.23, waypoint2.Time());
+  EXPECT_EQ(pose1, waypoint2.Pose());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWaypoint, CopyAssignmentAfterMove)
+{
+  sdf::Waypoint waypoint1;
+  ignition::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
+  waypoint1.SetTime(1.23);
+  waypoint1.SetPose(pose1);
+  sdf::Waypoint waypoint2;
+  ignition::math::Pose3d pose2(1, 2, 3, 1, 2, IGN_PI);
+  waypoint2.SetTime(3.45);
+  waypoint2.SetPose(pose2);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Waypoint tmp = std::move(waypoint1);
+  waypoint1 = waypoint2;
+  waypoint2 = tmp;
+
+  EXPECT_DOUBLE_EQ(1.23, waypoint2.Time());
+  EXPECT_EQ(pose1, waypoint2.Pose());
+  EXPECT_DOUBLE_EQ(3.45, waypoint1.Time());
+  EXPECT_EQ(pose2, waypoint1.Pose());
+}
+
+//////////////////////////////////////////////////
+TEST(DOMTrajectory, DefaultConstruction)
+{
+  sdf::Trajectory trajectory;
+
+  EXPECT_EQ(trajectory.Id(), 0u);
+  EXPECT_EQ(trajectory.Type(), "__default__");
+  EXPECT_DOUBLE_EQ(trajectory.Tension(), 0.0);
+  EXPECT_EQ(trajectory.WaypointCount(), 0u);
+}
+
+//////////////////////////////////////////////////
+TEST(DOMTrajectory, CopyConstructor)
+{
+  sdf::Trajectory trajectory1 = CreateDummyTrajectory();
+  sdf::Trajectory trajectory2(trajectory1);
+  EXPECT_TRUE(TrajectoriesEqual(trajectory1, trajectory2));
+}
+
+//////////////////////////////////////////////////
+TEST(DOMTrajectory, CopyAssignmentOperator)
+{
+  sdf::Trajectory trajectory1 = CreateDummyTrajectory();
+  sdf::Trajectory trajectory2;
+  trajectory2 = trajectory1;
+  EXPECT_TRUE(TrajectoriesEqual(trajectory1, trajectory2));
+}
+
+//////////////////////////////////////////////////
+TEST(DOMTrajectory, MoveConstructor)
+{
+  sdf::Trajectory trajectory1 = CreateDummyTrajectory();
+  sdf::Trajectory trajectory2(std::move(trajectory1));
+  EXPECT_TRUE(TrajectoriesEqual(CreateDummyTrajectory(), trajectory2));
+}
+
+//////////////////////////////////////////////////
+TEST(DOMTrajectory, MoveAssignment)
+{
+  sdf::Trajectory trajectory1 = CreateDummyTrajectory();
+  sdf::Trajectory trajectory2;
+  trajectory2 = std::move(trajectory1);
+  EXPECT_TRUE(TrajectoriesEqual(CreateDummyTrajectory(), trajectory2));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMTrajectory, CopyAssignmentAfterMove)
+{
+  sdf::Trajectory trajectory1 = CreateDummyTrajectory();
+  sdf::Trajectory trajectory2;
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Trajectory tmp = std::move(trajectory1);
+  trajectory1 = trajectory2;
+  trajectory2 = tmp;
+
+  EXPECT_TRUE(TrajectoriesEqual(sdf::Trajectory(), trajectory1));
+  EXPECT_TRUE(TrajectoriesEqual(CreateDummyTrajectory(), trajectory2));
 }
