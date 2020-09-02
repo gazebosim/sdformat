@@ -276,10 +276,11 @@ Errors Model::Load(ElementPtr _sdf)
     frameNames.insert(linkName);
   }
 
-  // If the model is not static:
+  // If the model is not static and has no nested models:
   // Require at least one link so the implicit model frame can be attached to
   // something.
-  if (!this->Static() && this->dataPtr->links.empty())
+  if (!this->Static() && this->dataPtr->links.empty() &&
+      this->dataPtr->models.empty())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
                      "A model must have at least one link."});
@@ -711,13 +712,42 @@ const Model *Model::ModelByName(const std::string &_name) const
 /////////////////////////////////////////////////
 const Link *Model::CanonicalLink() const
 {
+  return this->CanonicalLinkAndRelativeName().first;
+}
+
+/////////////////////////////////////////////////
+std::pair<const Link*, std::string> Model::CanonicalLinkAndRelativeName() const
+{
   if (this->CanonicalLinkName().empty())
   {
-    return this->LinkByIndex(0);
+    if (this->LinkCount() > 0)
+    {
+      auto firstLink = this->LinkByIndex(0);
+      return std::make_pair(firstLink, firstLink->Name());
+    }
+    else if (this->ModelCount() > 0)
+    {
+      // Recursively choose the canonical link of the first nested model
+      // (depth first search).
+      auto firstModel = this->ModelByIndex(0);
+      auto canonicalLinkAndName = firstModel->CanonicalLinkAndRelativeName();
+      // Prepend firstModelName if a valid link is found.
+      if (nullptr != canonicalLinkAndName.first)
+      {
+        canonicalLinkAndName.second =
+            firstModel->Name() + "::" + canonicalLinkAndName.second;
+      }
+      return canonicalLinkAndName;
+    }
+    else
+    {
+      return std::make_pair(nullptr, "");
+    }
   }
   else
   {
-    return this->LinkByName(this->CanonicalLinkName());
+    return std::make_pair(this->LinkByName(this->CanonicalLinkName()),
+                          this->CanonicalLinkName());
   }
 }
 
