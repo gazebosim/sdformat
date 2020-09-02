@@ -377,3 +377,79 @@ TEST(DOMRoot, LoadNestedCanonicalLink)
   EXPECT_EQ("deep::deeper::deepest::deepest_link", body);
 }
 
+/////////////////////////////////////////////////
+TEST(DOMRoot, LoadNestedExplicitCanonicalLink)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "nested_explicit_canonical_link.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("top", model->Name());
+  EXPECT_EQ(0u, model->LinkCount());
+  EXPECT_EQ(nullptr, model->LinkByIndex(0));
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(1u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_EQ(nullptr, model->FrameByIndex(1));
+
+  EXPECT_EQ(1u, model->ModelCount());
+  EXPECT_TRUE(model->ModelNameExists("nested"));
+  EXPECT_EQ(model->ModelByName("nested"), model->ModelByIndex(0));
+  EXPECT_EQ(nullptr, model->ModelByIndex(1));
+
+  // expect implicit canonical link
+  EXPECT_EQ("nested::link2", model->CanonicalLinkName());
+
+  // frame F is attached to __model__ and resolves to canonical link,
+  // which is "nested::link2"
+  std::string body;
+  EXPECT_TRUE(model->FrameByName("F")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("nested::link2", body);
+
+  EXPECT_EQ(model->LinkByName("nested::link2"), model->CanonicalLink());
+  EXPECT_EQ(model->ModelByName("nested")->LinkByName("link2"),
+            model->CanonicalLink());
+  // this reports the local name, not the nested name "nested::link2"
+  EXPECT_EQ("link2", model->CanonicalLink()->Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, LoadInvalidNestedModelWithoutLinks)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "nested_without_links_invalid.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(10u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::MODEL_WITHOUT_LINK);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find("A model must have at least one link"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::MODEL_WITHOUT_LINK);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find("A model must have at least one link"));
+  // errors[2]
+  // errors[3]
+  // errors[4]
+  // errors[5]
+  // errors[6]
+  // errors[7]
+  // errors[8]
+  // errors[9]
+}
+

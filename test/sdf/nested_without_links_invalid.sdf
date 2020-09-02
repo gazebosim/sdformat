@@ -1,8 +1,6 @@
 <sdf version='1.7'>
-  <model name="top" canonical_link="nested::link">
-    <model name="nested">
-      <link name="link"/>
-    </model>
+  <model name="nested_without_links_invalid">
+    <link name="link"/>
     <model name="nested_without_links1">
       <model name="nested_without_links2">
         <model name="nested_without_links3">
