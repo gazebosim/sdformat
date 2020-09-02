@@ -1,0 +1,9 @@
+<sdf version='1.8'>
+  <model name="top" canonical_link="nested::link2">
+    <frame name="F"/>
+    <model name="nested">
+      <link name="link1"/>
+      <link name="link2"/>
+    </model>
+  </model>
+</sdf>
