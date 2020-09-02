@@ -46,6 +46,7 @@
 
 1. Support nested models in DOM and frame semantics.
     * [Pull request 316](https://github.com/osrf/sdformat/pull/316)
+    + [Pull request 341](https://github.com/osrf/sdformat/pull/341)
 
 1. Find python3 in cmake, fix cmake warning.
     * [Pull request 328](https://github.com/osrf/sdformat/pull/328)

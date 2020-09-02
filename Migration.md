@@ -59,6 +59,21 @@ but with improved human-readability..
     + std::optional<std::string> GetMaxValueAsString() const;
     + bool ValidateValue() const;
 
+## SDFormat 9.0 to 9.3
+
+### Additions
+
+1. **sdf/Model.hh**
+    + uint64\_t ModelCount() const
+    + const Model \*ModelByIndex(const uint64\_t) const
+    + const Model \*ModelByName(const std::string &) const
+    + bool ModelNameExists(const std::string &) const
+
+### Modifications
+
+1. Permit models without links if they contain a nested canonical link.
+    + [pull request 341](https://github.com/osrf/sdformat/pull/341)
+
 ## SDFormat 8.x to 9.0
 
 ### Additions
@@ -92,10 +107,6 @@ but with improved human-readability..
     + const Frame \*FrameByIndex(const uint64\_t) const
     + const Frame \*FrameByName(const std::string &) const
     + bool FrameNameExists(const std::string &) const
-    + uint64\_t ModelCount() const
-    + const Model \*ModelByIndex(const uint64\_t) const
-    + const Model \*ModelByName(const std::string &) const
-    + bool ModelNameExists(const std::string &) const
     + sdf::SemanticPose SemanticPose() const
 
 1. **sdf/SDFImpl.hh**

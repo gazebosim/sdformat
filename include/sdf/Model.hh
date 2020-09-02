@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
@@ -238,12 +239,14 @@ namespace sdf
     public: const Link *CanonicalLink() const;
 
     /// \brief Get the name of the model's canonical link. An empty value
-    /// indicates that the first link in the model is the canonical link.
+    /// indicates that the first link in the model or the first link found
+    /// in a depth first search of nested models is the canonical link.
     /// \return The name of the canonical link.
     public: const std::string &CanonicalLinkName() const;
 
     /// \brief Set the name of the model's canonical link. An empty value
-    /// indicates that the first link in the model is the canonical link.
+    /// indicates that the first link in the model or the first link found
+    /// in a depth first search of nested models is the canonical link.
     /// \param[in] _canonicalLink The name of the canonical link.
     public: void SetCanonicalLinkName(const std::string &_canonicalLink);
 
@@ -287,8 +290,20 @@ namespace sdf
     private: sdf::Errors SetPoseRelativeToGraph(
         std::weak_ptr<const PoseRelativeToGraph> _graph);
 
+    /// \brief Get the model's canonical link and the nested name of the link
+    /// relative to the current model, delimited by "::".
+    /// \return An immutable pointer to the canonical link and the nested
+    /// name of the link relative to the current model.
+    private: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
+        const;
+
     /// \brief Allow World::Load to call SetPoseRelativeToGraph.
     friend class World;
+
+    /// \brief Allow helper function in FrameSemantics.cc to call
+    /// CanonicalLinkAndRelativeName.
+    friend std::pair<const Link *, std::string>
+        modelCanonicalLinkAndRelativeName(const Model *);
 
     /// \brief Private data pointer.
     private: ModelPrivate *dataPtr = nullptr;
