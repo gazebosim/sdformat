@@ -145,11 +145,15 @@ namespace sdf
 
     /// \brief Get a link based on a name.
     /// \param[in] _name Name of the link.
+    /// To get a link in a nested model, prefix the link name with the
+    /// sequence of nested models containing this link, delimited by "::".
     /// \return Pointer to the link. Nullptr if the name does not exist.
     public: const Link *LinkByName(const std::string &_name) const;
 
     /// \brief Get whether a link name exists.
     /// \param[in] _name Name of the link to check.
+    /// To check for a link in a nested model, prefix the link name with
+    /// the sequence of nested models containing this link, delimited by "::".
     /// \return True if there exists a link with the given name.
     public: bool LinkNameExists(const std::string &_name) const;
 
@@ -166,11 +170,15 @@ namespace sdf
 
     /// \brief Get whether a joint name exists.
     /// \param[in] _name Name of the joint to check.
+    /// To check for a joint in a nested model, prefix the link name with
+    /// the sequence of nested models containing this joint, delimited by "::".
     /// \return True if there exists a joint with the given name.
     public: bool JointNameExists(const std::string &_name) const;
 
     /// \brief Get a joint based on a name.
     /// \param[in] _name Name of the joint.
+    /// To get a joint in a nested model, prefix the joint name with the
+    /// sequence of nested models containing this joint, delimited by "::".
     /// \return Pointer to the joint. Nullptr if a joint with the given name
     ///  does not exist.
     /// \sa bool JointNameExists(const std::string &_name) const
@@ -190,12 +198,16 @@ namespace sdf
 
     /// \brief Get an explicit frame based on a name.
     /// \param[in] _name Name of the explicit frame.
+    /// To get a frame in a nested model, prefix the frame name with the
+    /// sequence of nested models containing this frame, delimited by "::".
     /// \return Pointer to the explicit frame. Nullptr if the name does not
     /// exist.
     public: const Frame *FrameByName(const std::string &_name) const;
 
     /// \brief Get whether an explicit frame name exists.
     /// \param[in] _name Name of the explicit frame to check.
+    /// To check for a frame in a nested model, prefix the frame name with
+    /// the sequence of nested models containing this frame, delimited by "::".
     /// \return True if there exists an explicit frame with the given name.
     public: bool FrameNameExists(const std::string &_name) const;
 
@@ -212,11 +224,15 @@ namespace sdf
 
     /// \brief Get whether a nested model name exists.
     /// \param[in] _name Name of the nested model to check.
+    /// To check for a model nested in other models, prefix the model name
+    /// with the sequence of nested model names, delimited by "::".
     /// \return True if there exists a nested model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
 
     /// \brief Get a nested model based on a name.
     /// \param[in] _name Name of the nested model.
+    /// To get a model nested in other models, prefix the model name
+    /// with the sequence of nested model names, delimited by "::".
     /// \return Pointer to the model. Nullptr if a model with the given name
     ///  does not exist.
     /// \sa bool ModelNameExists(const std::string &_name) const
