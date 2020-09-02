@@ -1,0 +1,19 @@
+<sdf version='1.7'>
+  <model name="top">
+    <frame name="F"/>
+    <model name="nested" canonical_link="link2">
+      <link name="link1"/>
+      <link name="link2"/>
+    </model>
+    <model name="shallow">
+      <frame name="F"/>
+      <model name="deep">
+        <model name="deeper">
+          <model name="deepest">
+            <link name="deepest_link"/>
+          </model>
+        </model>
+      </model>
+    </model>
+  </model>
+</sdf>
