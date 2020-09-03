@@ -20,6 +20,18 @@ but with improved human-readability..
     + Errors ResolveChildLink(std::string&) const
     + Errors ResolveParentLink(std::string&) const
 
+### Modifications
+
+1. **sdf/Model.hh**: the following methods now accept nested names
+      that can begin with a sequence of nested model names separated
+      by `::` and may end with the name of an object of the specified type.
+    + const Frame \*FrameByName(const std::string &) const
+    + const Joint \*JointByName(const std::string &) const
+    + const Link \*LinkByName(const std::string &) const
+    + bool FrameNameExists(const std::string &) const
+    + bool JointNameExists(const std::string &) const
+    + bool LinkNameExists(const std::string &) const
+
 ## SDFormat 9.x to 10.0
 
 ### Modifications
