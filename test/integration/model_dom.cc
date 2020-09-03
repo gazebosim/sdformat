@@ -504,6 +504,7 @@ TEST(DOMRoot, LoadNestedExplicitCanonicalLink)
 
   EXPECT_EQ(1u, model->ModelCount());
   EXPECT_TRUE(model->ModelNameExists("nested"));
+  EXPECT_NE(nullptr, model->ModelByIndex(0));
   EXPECT_EQ(model->ModelByName("nested"), model->ModelByIndex(0));
   EXPECT_EQ(nullptr, model->ModelByIndex(1));
 
@@ -516,6 +517,7 @@ TEST(DOMRoot, LoadNestedExplicitCanonicalLink)
   EXPECT_TRUE(model->FrameByName("F")->ResolveAttachedToBody(body).empty());
   EXPECT_EQ("nested::link2", body);
 
+  EXPECT_NE(nullptr, model->CanonicalLink());
   EXPECT_EQ(model->LinkByName("nested::link2"), model->CanonicalLink());
   EXPECT_EQ(model->ModelByName("nested")->LinkByName("link2"),
             model->CanonicalLink());
