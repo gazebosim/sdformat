@@ -36,6 +36,7 @@ TEST(DOMMaterial, Construction)
   EXPECT_EQ(sdf::ShaderType::PIXEL, material.Shader());
   EXPECT_EQ("", material.NormalMap());
   EXPECT_EQ(nullptr, material.PbrMaterial());
+  EXPECT_EQ("", material.FilePath());
 }
 
 /////////////////////////////////////////////////
@@ -51,6 +52,7 @@ TEST(DOMMaterial, MoveConstructor)
   material.SetScriptName("orange");
   material.SetShader(sdf::ShaderType::VERTEX);
   material.SetNormalMap("blueberry");
+  material.SetFilePath("/tmp/path");
 
   sdf::Material material2(std::move(material));
   EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), material2.Ambient());
@@ -65,6 +67,7 @@ TEST(DOMMaterial, MoveConstructor)
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
   EXPECT_EQ("blueberry", material2.NormalMap());
   EXPECT_EQ(nullptr, material2.PbrMaterial());
+  EXPECT_EQ("/tmp/path", material2.FilePath());
 }
 
 /////////////////////////////////////////////////
@@ -80,6 +83,7 @@ TEST(DOMMaterial, CopyConstructor)
   material.SetScriptName("orange");
   material.SetShader(sdf::ShaderType::VERTEX);
   material.SetNormalMap("blueberry");
+  material.SetFilePath("/tmp/other");
 
   sdf::Material material2(material);
   EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), material2.Ambient());
@@ -94,6 +98,7 @@ TEST(DOMMaterial, CopyConstructor)
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
   EXPECT_EQ("blueberry", material2.NormalMap());
   EXPECT_EQ(nullptr, material2.PbrMaterial());
+  EXPECT_EQ("/tmp/other", material2.FilePath());
 }
 
 /////////////////////////////////////////////////
@@ -109,6 +114,7 @@ TEST(DOMMaterial, AssignmentOperator)
   material.SetScriptName("orange");
   material.SetShader(sdf::ShaderType::VERTEX);
   material.SetNormalMap("blueberry");
+  material.SetFilePath("/tmp/another");
 
   sdf::Material material2;
   material2 = material;
@@ -124,6 +130,7 @@ TEST(DOMMaterial, AssignmentOperator)
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
   EXPECT_EQ("blueberry", material2.NormalMap());
   EXPECT_EQ(nullptr, material2.PbrMaterial());
+  EXPECT_EQ("/tmp/another", material2.FilePath());
 }
 
 /////////////////////////////////////////////////
@@ -215,6 +222,10 @@ TEST(DOMMaterial, Set)
   material.SetNormalMap("map");
   EXPECT_EQ("map", material.NormalMap());
 
+  EXPECT_EQ("", material.FilePath());
+  material.SetFilePath("/my/path");
+  EXPECT_EQ("/my/path", material.FilePath());
+
   // set pbr material
   sdf::Pbr pbr;
   sdf::PbrWorkflow workflow;
@@ -238,6 +249,7 @@ TEST(DOMMaterial, Set)
   EXPECT_EQ("map", moved.NormalMap());
   EXPECT_EQ(workflow,
       *moved.PbrMaterial()->Workflow(sdf::PbrWorkflowType::METAL));
+  EXPECT_EQ("/my/path", moved.FilePath());
 }
 
 /////////////////////////////////////////////////

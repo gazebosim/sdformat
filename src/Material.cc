@@ -59,6 +59,9 @@ class sdf::MaterialPrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief The path to the file where this material was defined.
+  public: std::string filePath = "";
 };
 
 /////////////////////////////////////////////////
@@ -88,6 +91,7 @@ Material::Material(const Material &_material)
   this->dataPtr->specular = _material.dataPtr->specular;
   this->dataPtr->emissive = _material.dataPtr->emissive;
   this->dataPtr->sdf = _material.dataPtr->sdf;
+  this->dataPtr->filePath = _material.dataPtr->filePath;
   if (_material.dataPtr->pbr)
     this->dataPtr->pbr = std::make_unique<Pbr>(*_material.dataPtr->pbr);
 }
@@ -117,6 +121,8 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
+
+  this->dataPtr->filePath = _sdf->FilePath();
 
   // Check that the provided SDF element is a <material>
   // This is an error that cannot be recovered, so return an error.
@@ -340,4 +346,16 @@ void Material::SetPbrMaterial(const Pbr &_pbr)
 Pbr *Material::PbrMaterial() const
 {
   return this->dataPtr->pbr.get();
+}
+
+//////////////////////////////////////////////////
+const std::string &Material::FilePath() const
+{
+  return this->dataPtr->filePath;
+}
+
+//////////////////////////////////////////////////
+void Material::SetFilePath(const std::string &_filePath)
+{
+  this->dataPtr->filePath = _filePath;
 }
