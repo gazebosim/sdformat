@@ -915,7 +915,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
 
         if (elemXml->FirstChildElement("uri"))
         {
-          std::string uri = elemXml->FirstChildElement("uri")->GetText();
+          std::string uri =
+              sdf::trim(elemXml->FirstChildElement("uri")->GetText());
           modelPath = sdf::findFile(uri, true, true);
 
           // Test the model path

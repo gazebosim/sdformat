@@ -135,6 +135,7 @@ Errors Material::Load(sdf::ElementPtr _sdf)
     std::pair<std::string, bool> uriPair = elem->Get<std::string>("uri", "");
     if (uriPair.first == "__default__")
       uriPair.first = "";
+    uriPair.first = sdf::trim(uriPair.first);
 
     if (!uriPair.second || uriPair.first.empty())
     {
