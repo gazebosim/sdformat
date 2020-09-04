@@ -4,7 +4,7 @@
 
 
 :: Install dependencies
-call %win_lib% :install_ign_project ign-math jshep1/fix_windows_warnings
+call %win_lib% :install_ign_project ign-math chapulina/6.5.0
 
 :: Set configuration variables
 @set build_type=Release
