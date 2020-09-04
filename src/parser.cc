@@ -79,14 +79,14 @@ bool readStringInternal(
     Errors &_errors);
 
 //////////////////////////////////////////////////
-/// \brief Internal helper for creating XMLDocuments 
-/// 
+/// \brief Internal helper for creating XMLDocuments
+///
 /// This creates an XMLDocument with whitespace collapse
 /// on, which is not default behavior in tinyxml2.
 /// This function is to consolidate locations it is used.
 ///
 /// There is a performance impact associated with collapsing whitespace.
-/// 
+///
 /// For more information on the behavior and performance implications,
 /// consult the TinyXML2 documentation: https://leethomason.github.io/tinyxml2/
 inline auto makeSdfDoc()
@@ -537,7 +537,7 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 {
-  auto xmlDoc = makeSdfDoc(); 
+  auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
