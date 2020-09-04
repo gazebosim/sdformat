@@ -40,6 +40,7 @@ set(tests
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
   visual_dom.cc
+  whitespace.cc
   world_dom.cc
 )
 

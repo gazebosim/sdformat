@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+
+    <include>
+      <uri>test_model</uri>
+    </include>
+
+    <include>
+      <uri>
+          test_model
+      </uri>
+      <name>override_model_name</name>
+    </include>
+
+    <include>
+      <uri>test_light</uri>
+    </include>
+
+    <include>
+      <uri>
+          test_light
+      </uri>
+      <name>override_light_name</name>
+      <pose>4 5 6 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>test_actor</uri>
+    </include>
+
+    <include>
+      <uri>
+          test_actor
+      </uri>
+      <name>override_actor_name</name>
+    </include>
+
+  </world>
+</sdf>
