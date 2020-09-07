@@ -175,7 +175,7 @@ sdf_add_library(${sdf_target} ${sources})
 target_compile_features(${sdf_target} PUBLIC cxx_std_17)
 target_link_libraries(${sdf_target}
   PUBLIC
-    ${IGNITION-MATH_LIBRARIES}
+    ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
   PRIVATE
     ${TinyXML2_LIBRARIES})
 
@@ -185,7 +185,6 @@ endif()
 
 target_include_directories(${sdf_target}
   PUBLIC
-    ${IGNITION-MATH_INCLUDE_DIRS}
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/..>
 )
