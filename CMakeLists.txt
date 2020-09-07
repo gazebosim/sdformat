@@ -290,6 +290,7 @@ else (build_errors)
   set(sdf_version_output "cmake/${sdf_target}-config-version.cmake")
   set(sdf_config_install_dir "${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/")
 
+  include(CMakePackageConfigHelpers)
   #--------------------------------------
   # Configure and install the config file
   configure_package_config_file(
