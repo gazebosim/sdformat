@@ -32,6 +32,9 @@
 
 ### SDFormat 9.3.0 (2020-XX-XX)
 
+1. Store material file path information.
+    + [Pull request 349](https://github.com/osrf/sdformat/pull/349)
+
 1. Support nested models in DOM and frame semantics.
     * [Pull request 316](https://github.com/osrf/sdformat/pull/316)
     + [Pull request 341](https://github.com/osrf/sdformat/pull/341)
@@ -42,11 +45,18 @@
 1. Fix Actor copy operators and increase test coverage.
     * [Pull request 301](https://github.com/osrf/sdformat/pull/301)
 
+1. GitHub Actions CI, pull request labels.
+    * [Pull request 311](https://github.com/osrf/sdformat/pull/311)
+    * [Pull request 363](https://github.com/osrf/sdformat/pull/363)
+
 1. Change bitbucket links to GitHub.
     * [Pull request 240](https://github.com/osrf/sdformat/pull/240)
 
-1. Param_TEST: test parsing +Inf and -Inf.
+1. Param\_TEST: test parsing +Inf and -Inf.
     * [Pull request 277](https://github.com/osrf/sdformat/pull/277)
+
+1. SearchForStuff: add logic to find urdfdom without pkg-config.
+    * [Pull request 245](https://github.com/osrf/sdformat/pull/245)
 
 1. Observe the CMake variable `BUILD_TESTING` if it is defined.
     * [Pull request 269](https://github.com/osrf/sdformat/pull/269)
