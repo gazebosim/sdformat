@@ -230,8 +230,20 @@
 
 ### SDFormat 8.X.X (202X-XX-XX)
 
+### SDFormat 8.9.0 (2020-09-04)
+
+1. Find python3 in cmake, fix warning
+    * [Pull request 328](https://github.com/osrf/sdformat/pull/328)
+
+1. Store material file path information
+    * [Pull request 349](https://github.com/osrf/sdformat/pull/349)
+
 1. Fix Actor copy operators and increase test coverage.
     * [Pull request 301](https://github.com/osrf/sdformat/pull/301)
+
+1. Migration to GitHub: CI, links...
+    * [Pull request 239](https://github.com/osrf/sdformat/pull/239)
+    * [Pull request 310](https://github.com/osrf/sdformat/pull/310)
 
 1. Increase output precision of URDF to SDF conversion, output -0 as 0.
     * [BitBucket pull request 675](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/675)
