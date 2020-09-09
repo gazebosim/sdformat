@@ -186,6 +186,14 @@ namespace sdf
     /// \return Pointer to the PBR material. Null if it does not exist.
     public: Pbr *PbrMaterial() const;
 
+    /// \brief The path to the file where this element was loaded from.
+    /// \return Full path to the file on disk.
+    public: const std::string &FilePath() const;
+
+    /// \brief Set the path to the file where this element was loaded from.
+    /// \paramp[in] _filePath Full path to the file on disk.
+    public: void SetFilePath(const std::string &_filePath);
+
     /// \brief Private data pointer.
     private: MaterialPrivate *dataPtr = nullptr;
   };

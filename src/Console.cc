@@ -24,6 +24,7 @@
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 
 using namespace sdf;
 
@@ -45,6 +46,7 @@ static Console::ConsoleStream g_NullStream(nullptr);
 Console::Console()
   : dataPtr(new ConsolePrivate)
 {
+#ifndef SDFORMAT_DISABLE_CONSOLE_LOGFILE
   // Set up the file that we'll log to.
 #ifndef _WIN32
   const char *home = std::getenv("HOME");
@@ -72,6 +74,7 @@ Console::Console()
   }
   std::string logFile = sdf::filesystem::append(logDir, "sdformat.log");
   this->dataPtr->logFileStream.open(logFile.c_str(), std::ios::out);
+#endif
 }
 
 //////////////////////////////////////////////////
