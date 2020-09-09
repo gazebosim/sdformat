@@ -885,7 +885,7 @@ TEST(URDFParser, ParseWhitespace)
       1000
 
     </mu2>
-  </gazebo>"
+  </gazebo>
 </robot>)";
   tinyxml2::XMLDocument doc;
   doc.Parse(str.c_str());
