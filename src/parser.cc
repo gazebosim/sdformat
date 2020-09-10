@@ -79,10 +79,26 @@ bool readStringInternal(
     Errors &_errors);
 
 //////////////////////////////////////////////////
+/// \brief Internal helper for creating XMLDocuments
+///
+/// This creates an XMLDocument with whitespace collapse
+/// on, which is not default behavior in tinyxml2.
+/// This function is to consolidate locations it is used.
+///
+/// There is a performance impact associated with collapsing whitespace.
+///
+/// For more information on the behavior and performance implications,
+/// consult the TinyXML2 documentation: https://leethomason.github.io/tinyxml2/
+inline auto makeSdfDoc()
+{
+  return tinyxml2::XMLDocument(true, tinyxml2::COLLAPSE_WHITESPACE);
+}
+
+//////////////////////////////////////////////////
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
   {
     sdferr << "Unable to load file["
@@ -97,7 +113,7 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 bool init(SDFPtr _sdf)
 {
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(xmldata.c_str());
   return initDoc(&xmlDoc, _sdf);
 }
@@ -108,7 +124,7 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
-    tinyxml2::XMLDocument xmlDoc;
+    auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
     return initDoc(&xmlDoc, _sdf);
   }
@@ -121,7 +137,7 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
-    tinyxml2::XMLDocument xmlDoc;
+    auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
     return initDoc(&xmlDoc, _sdf);
   }
@@ -131,7 +147,7 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool initString(const std::string &_xmlString, SDFPtr _sdf)
 {
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   if (xmlDoc.Parse(_xmlString.c_str()))
   {
     sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorStr() << '\n';
@@ -390,7 +406,7 @@ bool readFileWithoutConversion(
 bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
       const bool _convert, Errors &_errors)
 {
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   std::string filename = sdf::findFile(_filename, true, true);
 
   if (filename.empty())
@@ -426,7 +442,7 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
   else if (URDF2SDF::IsURDF(filename))
   {
     URDF2SDF u2g;
-    tinyxml2::XMLDocument doc;
+    auto doc = makeSdfDoc();
     u2g.InitModelFile(filename, &doc);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
@@ -473,7 +489,7 @@ bool readStringWithoutConversion(
 bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
     const bool _convert, Errors &_errors)
 {
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
@@ -487,7 +503,7 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   else
   {
     URDF2SDF u2g;
-    tinyxml2::XMLDocument doc;
+    auto doc = makeSdfDoc();
     u2g.InitModelString(_xmlString, &doc);
 
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
@@ -521,7 +537,7 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 {
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
@@ -770,7 +786,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     }
   }
 
-  tinyxml2::XMLDocument configFileDoc;
+  auto configFileDoc = makeSdfDoc();
   if (tinyxml2::XML_SUCCESS != configFileDoc.LoadFile(configFilePath.c_str()))
   {
     sdferr << "Error parsing XML in file ["
@@ -1375,7 +1391,7 @@ bool convertFile(const std::string &_filename, const std::string &_version,
     return false;
   }
 
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   if (!xmlDoc.LoadFile(filename.c_str()))
   {
     // read initial sdf version
@@ -1420,7 +1436,7 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
     return false;
   }
 
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(_sdfString.c_str());
 
   if (!xmlDoc.Error())
