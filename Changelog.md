@@ -4,12 +4,28 @@
 
 ### libsdformat 10.0.0 (202X-XX-XX)
 
-1. Normalize joint axis xyz vector when parsing from SDFormat
+1. Return positive `INF` instead of `-1` in DOM API for unbounded symmetric joint limits.
+    * [Pull request 357](https://github.com/osrf/sdformat/pull/357)
+
+1. Add cmake option to disable console logfile.
+    * [Pull request 348](https://github.com/osrf/sdformat/pull/348)
+
+1. CMake fixes: include CMakePackageConfigHelpers and use modern cmake target for  ignition math.
+    * [Pull request 358](https://github.com/osrf/sdformat/pull/358)
+
+1. Cmake: add tinyxml2 to Config names.
+    * [Pull request 360](https://github.com/osrf/sdformat/pull/360)
+
+1. Define `PATH_MAX` for Debian Hurd system.
+    * [Pull request 369](https://github.com/osrf/sdformat/pull/369)
+
+1. Normalize joint axis xyz vector when parsing from SDFormat.
     * [Pull request 312](https://github.com/osrf/sdformat/pull/312)
 
 1. Migrate to using TinyXML2.
     * [Pull request 264](https://github.com/osrf/sdformat/pull/264)
     * [Pull request 321](https://github.com/osrf/sdformat/pull/321)
+    * [Pull request 359](https://github.com/osrf/sdformat/pull/359)
 
 1. Enforce minimum/maximum values specified in SDFormat description files.
     * [Pull request 303](https://github.com/osrf/sdformat/pull/303)
