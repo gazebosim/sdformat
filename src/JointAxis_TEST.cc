@@ -32,8 +32,8 @@ TEST(DOMJointAxis, Construction)
   EXPECT_DOUBLE_EQ(0.0, axis.SpringStiffness());
   EXPECT_DOUBLE_EQ(-1e16, axis.Lower());
   EXPECT_DOUBLE_EQ(1e16, axis.Upper());
-  EXPECT_DOUBLE_EQ(-1, axis.Effort());
-  EXPECT_DOUBLE_EQ(-1, axis.MaxVelocity());
+  EXPECT_DOUBLE_EQ(std::numeric_limits<double>::infinity(), axis.Effort());
+  EXPECT_DOUBLE_EQ(std::numeric_limits<double>::infinity(), axis.MaxVelocity());
   EXPECT_DOUBLE_EQ(1e8, axis.Stiffness());
   EXPECT_DOUBLE_EQ(1.0, axis.Dissipation());
 

@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="joint_axis_infinite_limits">
+    <link name="link1"/>
+    <link name="link2"/>
+    <link name="link3"/>
+    <link name="link4"/>
+    <link name="link5"/>
+
+    <joint name="default_joint_limits" type="revolute">
+      <child>link1</child>
+      <parent>link2</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+    <joint name="finite_joint_limits" type="revolute">
+      <child>link3</child>
+      <parent>link4</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-1.5</lower>
+          <upper>1.5</upper>
+          <velocity>2.5</velocity>
+          <effort>5.5</effort>
+        </limit>
+      </axis>
+    </joint>
+    <joint name="infinite_joint_limits_inf" type="revolute">
+      <child>link4</child>
+      <parent>link5</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-inf</lower>
+          <upper>inf</upper>
+          <velocity>inf</velocity>
+          <effort>inf</effort>
+        </limit>
+      </axis>
+    </joint>
+    <joint name="infinite_joint_limits_neg" type="revolute">
+      <child>link5</child>
+      <parent>link6</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-inf</lower>
+          <upper>inf</upper>
+          <velocity>-1</velocity>
+          <effort>-1</effort>
+        </limit>
+      </axis>
+    </joint>
+  </model>
+</sdf>
+

@@ -190,27 +190,31 @@ namespace sdf
     /// \sa double Upper() const
     public: void SetUpper(const double _upper) const;
 
-    /// \brief Get the value for enforcing the maximum joint effort applied.
-    /// Limit is not enforced if value is negative. The default value is -1.
-    /// \return Effort limit.
+    /// \brief Get the value for enforcing the maximum absolute joint effort
+    /// that can be applied.
+    /// The limit is not enforced if the value is infinity.
+    /// The default value is infinity.
+    /// \return Symmetric effort limit.
     /// \sa void SetEffort(double _effort)
     public: double Effort() const;
 
-    /// \brief Set the value for enforcing the maximum joint effort applied.
-    /// Limit is not enforced if value is negative.
-    /// \param[in] _effort Effort limit.
+    /// \brief Set the value for enforcing the maximum absolute joint effort
+    /// that can be applied.
+    /// The limit is not enforced if the value is infinity.
+    /// \param[in] _effort Symmetric effort limit.
     /// \sa double Effort() const
     public: void SetEffort(double _effort);
 
-    /// \brief Get the value for enforcing the maximum joint velocity. The
-    /// default value is -1.
-    /// \return The value for enforcing the maximum joint velocity.
+    /// \brief Get the value for enforcing the maximum absolute joint velocity.
+    /// The default value is infinity.
+    /// \return The value for enforcing the maximum absolute joint velocity.
     /// \sa void SetVelocity(const double _velocity) const
     public: double MaxVelocity() const;
 
-    /// \brief Set the value for enforcing the maximum joint velocity.
-    /// \param[in] _velocity The value for enforcing the maximum joint velocity.
-    /// \sa double Velocity() const
+    /// \brief Set the value for enforcing the maximum absolute joint velocity.
+    /// \param[in] _velocity The value for enforcing the maximum absolute
+    /// joint velocity.
+    /// \sa double MaxVelocity() const
     public: void SetMaxVelocity(const double _velocity) const;
 
     /// \brief Get the joint stop stiffness. The default value is 1e8.
