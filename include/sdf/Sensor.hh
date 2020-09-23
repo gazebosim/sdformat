@@ -40,6 +40,7 @@ namespace sdf
   class Magnetometer;
   class SensorPrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \enum SensorType
   /// \brief The set of sensor types.
@@ -320,7 +321,7 @@ namespace sdf
     /// Link::SetPoseRelativeToGraph.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is

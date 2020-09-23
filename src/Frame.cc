@@ -20,6 +20,7 @@
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -45,10 +46,11 @@ class sdf::FramePrivate
   std::string graphSourceName = "";
 
   /// \brief Weak pointer to model's or worlds's Frame Attached-To Graph.
-  public: std::weak_ptr<const sdf::FrameAttachedToGraph> frameAttachedToGraph;
+  public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
   /// \brief Weak pointer to model's or world's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  /// TODO (addisu) Make const sdf::PoseRelativeToGraph
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -195,20 +197,20 @@ void Frame::SetPoseRelativeTo(const std::string &_frame)
 
 /////////////////////////////////////////////////
 void Frame::SetFrameAttachedToGraph(
-    std::weak_ptr<const FrameAttachedToGraph> _graph)
+    sdf::ScopedGraph<FrameAttachedToGraph> _graph)
 {
   this->dataPtr->frameAttachedToGraph = _graph;
 }
 
 /////////////////////////////////////////////////
 void Frame::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
-  auto graph = this->dataPtr->poseRelativeToGraph.lock();
+  auto graph = this->dataPtr->poseRelativeToGraph;
   if (graph)
   {
-    this->dataPtr->graphSourceName = graph->sourceName;
+    this->dataPtr->graphSourceName = graph.ScopeName();
   }
 }
 
@@ -217,7 +219,7 @@ Errors Frame::ResolveAttachedToBody(std::string &_body) const
 {
   Errors errors;
 
-  auto graph = this->dataPtr->frameAttachedToGraph.lock();
+  auto graph = this->dataPtr->frameAttachedToGraph;
   if (!graph)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -226,7 +228,7 @@ Errors Frame::ResolveAttachedToBody(std::string &_body) const
   }
 
   std::string body;
-  errors = resolveFrameAttachedToBody(body, *graph, this->dataPtr->name);
+  errors = resolveFrameAttachedToBody(body, graph, this->dataPtr->name);
   if (errors.empty())
   {
     _body = body;

@@ -37,6 +37,7 @@ namespace sdf
   class JointPrivate;
   struct FrameAttachedToGraph;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \enum JointType
   /// \brief The set of joint types. INVALID indicates that joint type has
@@ -226,14 +227,14 @@ namespace sdf
     /// intended to be called by  Model::Load.
     /// \param[in] _graph Weak pointer to FrameAttachedToGraph.
     private: void SetFrameAttachedToGraph(
-        std::weak_ptr<const FrameAttachedToGraph> _graph);
+        sdf::ScopedGraph<FrameAttachedToGraph> _graph);
 
     /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Model::Load.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Model::Load to call SetPoseRelativeToGraph.
     friend class Model;

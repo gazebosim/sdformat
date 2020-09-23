@@ -38,6 +38,7 @@ namespace sdf
   class Link;
   class ModelPrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   class SDFORMAT_VISIBLE Model
   {
@@ -285,7 +286,7 @@ namespace sdf
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     /// \return Error if graph pointer is invalid.
     private: sdf::Errors SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow World::Load to call SetPoseRelativeToGraph.
     friend class World;

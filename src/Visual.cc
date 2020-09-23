@@ -21,6 +21,8 @@
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "sdf/Geometry.hh"
+#include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -65,7 +67,7 @@ class sdf::VisualPrivate
   public: std::string xmlParentName;
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief Visibility flags of a visual. Defaults to 0xFFFFFFFF
   public: uint32_t visibilityFlags = 4294967295u;
@@ -276,7 +278,7 @@ void Visual::SetXmlParentName(const std::string &_xmlParentName)
 
 /////////////////////////////////////////////////
 void Visual::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 }

@@ -40,6 +40,7 @@ namespace sdf
   class Visual;
   class LinkPrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   class SDFORMAT_VISIBLE Link
   {
@@ -230,7 +231,7 @@ namespace sdf
     /// Model::Load.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Model::Load to call SetPoseRelativeToGraph.
     friend class Model;

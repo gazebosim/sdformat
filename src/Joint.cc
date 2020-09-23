@@ -25,6 +25,7 @@
 #include "sdf/JointAxis.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -75,10 +76,10 @@ class sdf::JointPrivate
   public: sdf::ElementPtr sdf;
 
   /// \brief Weak pointer to model's Frame Attached-To Graph.
-  public: std::weak_ptr<const sdf::FrameAttachedToGraph> frameAttachedToGraph;
+  public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -361,14 +362,14 @@ void Joint::SetPoseRelativeTo(const std::string &_frame)
 
 /////////////////////////////////////////////////
 void Joint::SetFrameAttachedToGraph(
-    std::weak_ptr<const FrameAttachedToGraph> _graph)
+    sdf::ScopedGraph<FrameAttachedToGraph> _graph)
 {
   this->dataPtr->frameAttachedToGraph = _graph;
 }
 
 /////////////////////////////////////////////////
 void Joint::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 
@@ -387,7 +388,7 @@ Errors Joint::ResolveChildLink(std::string &_link) const
 {
   Errors errors;
 
-  auto graph = this->dataPtr->frameAttachedToGraph.lock();
+  auto graph = this->dataPtr->frameAttachedToGraph;
   if (!graph)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -396,7 +397,7 @@ Errors Joint::ResolveChildLink(std::string &_link) const
   }
 
   std::string link;
-  errors = resolveFrameAttachedToBody(link, *graph, this->ChildLinkName());
+  errors = resolveFrameAttachedToBody(link, graph, this->ChildLinkName());
   if (errors.empty())
   {
     _link = link;
@@ -417,7 +418,7 @@ Errors Joint::ResolveParentLink(std::string &_link) const
     return errors;
   }
 
-  auto graph = this->dataPtr->frameAttachedToGraph.lock();
+  auto graph = this->dataPtr->frameAttachedToGraph;
   if (!graph)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -426,7 +427,7 @@ Errors Joint::ResolveParentLink(std::string &_link) const
   }
 
   std::string link;
-  errors = resolveFrameAttachedToBody(link, *graph, this->ParentLinkName());
+  errors = resolveFrameAttachedToBody(link, graph, this->ParentLinkName());
   if (errors.empty())
   {
     _link = link;

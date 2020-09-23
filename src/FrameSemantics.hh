@@ -18,6 +18,7 @@
 #define SDF_FRAMESEMANTICS_HH_
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include <ignition/math/Pose3.hh>
@@ -45,6 +46,7 @@ namespace sdf
   // Forward declaration.
   class Model;
   class World;
+  template <typename T> class ScopedGraph;
 
   /// \enum FrameType
   /// \brief The set of frame types. INVALID indicates that frame type has
@@ -109,41 +111,43 @@ namespace sdf
   /// \param[in] _model Model from which to build attached_to graph.
   /// \return Errors.
   Errors buildFrameAttachedToGraph(
-              FrameAttachedToGraph &_out, const Model *_model);
+              ScopedGraph<FrameAttachedToGraph> &_out, const Model *_model);
 
   /// \brief Build a FrameAttachedToGraph for a world.
   /// \param[out] _out Graph object to write.
   /// \param[in] _world World from which to build attached_to graph.
   /// \return Errors.
   Errors buildFrameAttachedToGraph(
-              FrameAttachedToGraph &_out, const World *_world);
+              ScopedGraph<FrameAttachedToGraph> &_out, const World *_world);
 
   /// \brief Build a PoseRelativeToGraph for a model.
   /// \param[out] _out Graph object to write.
   /// \param[in] _model Model from which to build attached_to graph.
   /// \return Errors.
   Errors buildPoseRelativeToGraph(
-              PoseRelativeToGraph &_out, const Model *_model);
+              ScopedGraph<PoseRelativeToGraph> &_out, const Model *_model);
 
   /// \brief Build a PoseRelativeToGraph for a world.
   /// \param[out] _out Graph object to write.
   /// \param[in] _world World from which to build attached_to graph.
   /// \return Errors.
   Errors buildPoseRelativeToGraph(
-              PoseRelativeToGraph &_out, const World *_world);
+              ScopedGraph<PoseRelativeToGraph> &_out, const World *_world);
 
 
   /// \brief Confirm that FrameAttachedToGraph is valid by checking the number
   /// of outbound edges for each vertex and checking for graph cycles.
   /// \param[in] _in Graph object to validate.
   /// \return Errors.
-  Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in);
+  Errors validateFrameAttachedToGraph(
+      const ScopedGraph<FrameAttachedToGraph> &_in);
 
   /// \brief Confirm that PoseRelativeToGraph is valid by checking the number
   /// of outbound edges for each vertex and checking for graph cycles.
   /// \param[in] _in Graph object to validate.
   /// \return Errors.
-  Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in);
+  Errors validatePoseRelativeToGraph(
+      const ScopedGraph<PoseRelativeToGraph> &_in);
 
   /// \brief Resolve the attached-to body for a given frame. Following the
   /// edges of the frame attached-to graph from a given frame must lead
@@ -157,7 +161,7 @@ namespace sdf
   /// a link or world frame.
   Errors resolveFrameAttachedToBody(
       std::string &_attachedToBody,
-      const FrameAttachedToGraph &_in,
+      const ScopedGraph<FrameAttachedToGraph> &_in,
       const std::string &_vertexName);
 
   /// \brief Resolve pose of a vertex relative to its outgoing ancestor
@@ -168,7 +172,7 @@ namespace sdf
   /// \return Errors.
   Errors resolvePoseRelativeToRoot(
       ignition::math::Pose3d &_pose,
-      const PoseRelativeToGraph &_graph,
+      const ScopedGraph<PoseRelativeToGraph> &_graph,
       const std::string &_vertexName);
 
   /// \brief Resolve pose of a frame relative to named frame.
@@ -180,7 +184,7 @@ namespace sdf
   /// \return Errors.
   Errors resolvePose(
       ignition::math::Pose3d &_pose,
-      const PoseRelativeToGraph &_graph,
+      const ScopedGraph<PoseRelativeToGraph> &_graph,
       const std::string &_frameName,
       const std::string &_resolveTo);
 
@@ -192,7 +196,7 @@ namespace sdf
   /// \param[in] _pose New pose.
   /// \return Errors.
   Errors updateGraphPose(
-      PoseRelativeToGraph &_graph,
+      ScopedGraph<PoseRelativeToGraph> &_graph,
       const std::string &_frameName,
       const ignition::math::Pose3d &_pose);
   }

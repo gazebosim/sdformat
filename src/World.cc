@@ -27,6 +27,7 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -89,10 +90,14 @@ class sdf::WorldPrivate
            ignition::math::Vector3d::Zero;
 
   /// \brief Frame Attached-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
+  // public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
+  public: std::shared_ptr<sdf::FrameAttachedToGraph> ownedFrameAttachedToGraph;
+  public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
   /// \brief Pose Relative-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  // public: std::shared_ptr<sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: sdf::PoseRelativeToGraph ownedPoseRelativeToGraph;
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -118,16 +123,16 @@ WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
   {
     this->gui = std::make_unique<Gui>(*(_worldPrivate.gui));
   }
-  if (_worldPrivate.frameAttachedToGraph)
-  {
-    this->frameAttachedToGraph = std::make_shared<sdf::FrameAttachedToGraph>(
-        *(_worldPrivate.frameAttachedToGraph));
-  }
-  if (_worldPrivate.poseRelativeToGraph)
-  {
-    this->poseRelativeToGraph = std::make_shared<sdf::PoseRelativeToGraph>(
-        *(_worldPrivate.poseRelativeToGraph));
-  }
+  // if (_worldPrivate.frameAttachedToGraph)
+  // {
+  //   this->frameAttachedToGraph = std::make_shared<sdf::FrameAttachedToGraph>(
+  //       *(_worldPrivate.frameAttachedToGraph));
+  // }
+  // if (_worldPrivate.poseRelativeToGraph)
+  // {
+  //   this->poseRelativeToGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+  //       *(_worldPrivate.poseRelativeToGraph));
+  // }
   if (_worldPrivate.scene)
   {
     this->scene = std::make_unique<Scene>(*(_worldPrivate.scene));
@@ -152,20 +157,20 @@ World::~World()
 World::World(const World &_world)
   : dataPtr(new WorldPrivate(*_world.dataPtr))
 {
-  for (auto &frame : this->dataPtr->frames)
-  {
-    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-  }
-  for (auto &model : this->dataPtr->models)
-  {
-    model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-  }
-  for (auto &light : this->dataPtr->lights)
-  {
-    light.SetXmlParentName("world");
-    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-  }
+  // for (auto &frame : this->dataPtr->frames)
+  // {
+  //   frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  //   frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  // }
+  // for (auto &model : this->dataPtr->models)
+  // {
+  //   model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  // }
+  // for (auto &light : this->dataPtr->lights)
+  // {
+  //   light.SetXmlParentName("world");
+  //   light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  // }
 }
 
 /////////////////////////////////////////////////
@@ -342,34 +347,31 @@ Errors World::Load(sdf::ElementPtr _sdf)
   }
 
   // Build the graphs.
-  this->dataPtr->frameAttachedToGraph =
-      std::make_shared<FrameAttachedToGraph>();
   Errors frameAttachedToGraphErrors =
-  buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
+  buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
   errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
                               frameAttachedToGraphErrors.end());
   Errors validateFrameAttachedGraphErrors =
-    validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
+    validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
   errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
                               validateFrameAttachedGraphErrors.end());
-  for (auto &frame : this->dataPtr->frames)
-  {
-    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-  }
+  // for (auto &frame : this->dataPtr->frames)
+  // {
+  //   frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  // }
 
-  this->dataPtr->poseRelativeToGraph = std::make_shared<PoseRelativeToGraph>();
   Errors poseRelativeToGraphErrors =
-  buildPoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph, this);
+  buildPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph, this);
   errors.insert(errors.end(), poseRelativeToGraphErrors.begin(),
                               poseRelativeToGraphErrors.end());
   Errors validatePoseGraphErrors =
-    validatePoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph);
+    validatePoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   errors.insert(errors.end(), validatePoseGraphErrors.begin(),
                               validatePoseGraphErrors.end());
-  for (auto &frame : this->dataPtr->frames)
-  {
-    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-  }
+  // for (auto &frame : this->dataPtr->frames)
+  // {
+  //   frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  // }
   for (auto &model : this->dataPtr->models)
   {
     Errors setPoseRelativeToGraphErrors =
@@ -380,7 +382,7 @@ Errors World::Load(sdf::ElementPtr _sdf)
   for (auto &light : this->dataPtr->lights)
   {
     light.SetXmlParentName("world");
-    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    // light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
 
   return errors;

@@ -21,6 +21,7 @@
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 namespace sdf
@@ -40,7 +41,8 @@ class SemanticPosePrivate
   public: std::string defaultResolveTo = "";
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  /// TODO (addisu) Make this const
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -48,7 +50,7 @@ SemanticPose::SemanticPose(
         const ignition::math::Pose3d &_pose,
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
-        const std::weak_ptr<const sdf::PoseRelativeToGraph> _graph)
+        const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
   : dataPtr(std::make_unique<SemanticPosePrivate>())
 {
   this->dataPtr->rawPose = _pose;
@@ -103,7 +105,7 @@ Errors SemanticPose::Resolve(
 {
   Errors errors;
 
-  auto graph = this->dataPtr->poseRelativeToGraph.lock();
+  auto graph = this->dataPtr->poseRelativeToGraph;
   if (!graph)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
@@ -124,7 +126,7 @@ Errors SemanticPose::Resolve(
   }
 
   ignition::math::Pose3d pose;
-  errors = resolvePose(pose, *graph, relativeTo, resolveTo);
+  errors = resolvePose(pose, graph, relativeTo, resolveTo);
   pose *= this->RawPose();
 
   if (errors.empty())

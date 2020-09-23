@@ -26,6 +26,7 @@
 #include "sdf/World.hh"
 
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 
 namespace sdf
 {
@@ -47,21 +48,19 @@ inline namespace SDF_VERSION_NAMESPACE {
 /// \return A source vertex paired with a vector of the edges leading the
 /// source to the starting vertex, or a NullVertex paired with an empty
 /// vector if a cycle or vertex with multiple incoming edges are detected.
-template<typename V, typename E>
-std::pair<const ignition::math::graph::Vertex<V> &,
-          std::vector< ignition::math::graph::DirectedEdge<E> > >
-FindSourceVertex(
-    const ignition::math::graph::DirectedGraph<V, E> &_graph,
-    const ignition::math::graph::VertexId _id,
-    Errors &_errors)
+template <typename T>
+std::pair<const typename ScopedGraph<T>::Vertex &,
+    std::vector<typename ScopedGraph<T>::Edge>>
+FindSourceVertex(const ScopedGraph<T> &_graph,
+    const ignition::math::graph::VertexId _id, Errors &_errors)
 {
-  using DirectedEdge = ignition::math::graph::DirectedEdge<E>;
-  using Vertex = ignition::math::graph::Vertex<V>;
+  using DirectedEdge = typename ScopedGraph<T>::Edge;
+  using Vertex = typename ScopedGraph<T>::Vertex;
   using VertexId = ignition::math::graph::VertexId;
   using EdgesType = std::vector<DirectedEdge>;
   using PairType = std::pair<const Vertex &, EdgesType>;
   EdgesType edges;
-  std::reference_wrapper<const Vertex> vertex(_graph.VertexFromId(_id));
+  std::reference_wrapper<const Vertex> vertex(_graph.Graph().VertexFromId(_id));
   if (!vertex.get().Valid())
   {
     _errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
@@ -73,7 +72,7 @@ FindSourceVertex(
   std::set<VertexId> visited;
   visited.insert(vertex.get().Id());
 
-  auto incidentsTo = _graph.IncidentsTo(vertex);
+  auto incidentsTo = _graph.Graph().IncidentsTo(vertex);
   while (!incidentsTo.empty())
   {
     if (incidentsTo.size() != 1)
@@ -84,7 +83,7 @@ FindSourceVertex(
       return PairType(Vertex::NullVertex, EdgesType());
     }
     auto const &edge = incidentsTo.begin()->second;
-    vertex = _graph.VertexFromId(edge.get().Vertices().first);
+    vertex = _graph.Graph().VertexFromId(edge.get().Vertices().first);
     edges.push_back(edge);
     if (visited.count(vertex.get().Id()))
     {
@@ -93,8 +92,18 @@ FindSourceVertex(
           vertex.get().Name() + "]."});
       return PairType(Vertex::NullVertex, EdgesType());
     }
+    if (vertex.get().Id() == _graph.RootVertexId())
+    {
+      // This is the source.
+      break;
+    }
     visited.insert(vertex.get().Id());
-    incidentsTo = _graph.IncidentsTo(vertex);
+    incidentsTo = _graph.Graph().IncidentsTo(vertex);
+  }
+  if (vertex.get().Id() != _graph.RootVertexId())
+  {
+    // Error, the root vertex is not the same as the the source
+    return PairType(Vertex::NullVertex, EdgesType());
   }
 
   return PairType(vertex, edges);
@@ -111,21 +120,22 @@ FindSourceVertex(
 /// \return A sink vertex paired with a vector of the edges leading the
 /// sink to the starting vertex, or a NullVertex paired with an empty
 /// vector if a cycle or vertex with multiple outgoing edges are detected.
-template<typename V, typename E>
-std::pair<const ignition::math::graph::Vertex<V> &,
-          std::vector< ignition::math::graph::DirectedEdge<E> > >
+template<typename T>
+std::pair<const typename ScopedGraph<T>::Vertex &,
+    std::vector<typename ScopedGraph<T>::Edge>>
 FindSinkVertex(
-    const ignition::math::graph::DirectedGraph<V, E> &_graph,
+    const ScopedGraph<T> &_graph,
     const ignition::math::graph::VertexId _id,
     Errors &_errors)
 {
-  using DirectedEdge = ignition::math::graph::DirectedEdge<E>;
-  using Vertex = ignition::math::graph::Vertex<V>;
+
+  using DirectedEdge = typename ScopedGraph<T>::Edge;
+  using Vertex = typename ScopedGraph<T>::Vertex;
   using VertexId = ignition::math::graph::VertexId;
   using EdgesType = std::vector<DirectedEdge>;
   using PairType = std::pair<const Vertex &, EdgesType>;
   EdgesType edges;
-  std::reference_wrapper<const Vertex> vertex(_graph.VertexFromId(_id));
+  std::reference_wrapper<const Vertex> vertex(_graph.Graph().VertexFromId(_id));
   if (!vertex.get().Valid())
   {
     _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
@@ -137,7 +147,7 @@ FindSinkVertex(
   std::set<VertexId> visited;
   visited.insert(vertex.get().Id());
 
-  auto incidentsFrom = _graph.IncidentsFrom(vertex);
+  auto incidentsFrom = _graph.Graph().IncidentsFrom(vertex);
   while (!incidentsFrom.empty())
   {
     if (incidentsFrom.size() != 1)
@@ -148,7 +158,7 @@ FindSinkVertex(
       return PairType(Vertex::NullVertex, EdgesType());
     }
     auto const &edge = incidentsFrom.begin()->second;
-    vertex = _graph.VertexFromId(edge.get().Vertices().second);
+    vertex = _graph.Graph().VertexFromId(edge.get().Vertices().second);
     edges.push_back(edge);
     if (visited.count(vertex.get().Id()))
     {
@@ -158,7 +168,7 @@ FindSinkVertex(
       return PairType(Vertex::NullVertex, EdgesType());
     }
     visited.insert(vertex.get().Id());
-    incidentsFrom = _graph.IncidentsFrom(vertex);
+    incidentsFrom = _graph.Graph().IncidentsFrom(vertex);
   }
 
   return PairType(vertex, edges);
@@ -166,17 +176,15 @@ FindSinkVertex(
 
 /////////////////////////////////////////////////
 Errors buildFrameAttachedToGraph(
-            FrameAttachedToGraph &_out, const Model *_model)
+            ScopedGraph<FrameAttachedToGraph> &_out, const Model *_model)
 {
   Errors errors;
 
   // add implicit model frame vertex first
   const std::string scopeName = "__model__";
-  _out.scopeName = scopeName;
+  _out.SetScopeName(scopeName);
   auto modelFrameId =
-      _out.graph.AddVertex(scopeName, sdf::FrameType::MODEL).Id();
-  _out.map[scopeName] = modelFrameId;
-
+      _out.AddVertex(scopeName, sdf::FrameType::MODEL).Id();
 
   if (!_model)
   {
@@ -220,7 +228,7 @@ Errors buildFrameAttachedToGraph(
   for (uint64_t l = 0; l < _model->LinkCount(); ++l)
   {
     auto link = _model->LinkByIndex(l);
-    if (_out.map.count(link->Name()) > 0)
+    if (_out.Count(link->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Link with non-unique name [" + link->Name() +
@@ -229,13 +237,12 @@ Errors buildFrameAttachedToGraph(
       continue;
     }
     auto linkId =
-        _out.graph.AddVertex(link->Name(), sdf::FrameType::LINK).Id();
-    _out.map[link->Name()] = linkId;
+        _out.AddVertex(link->Name(), sdf::FrameType::LINK).Id();
 
     // add edge from implicit model frame vertex to canonical link
     if (link == canonicalLink)
     {
-      _out.graph.AddEdge({modelFrameId, linkId}, true);
+      _out.AddEdge({modelFrameId, linkId}, true);
     }
   }
 
@@ -243,7 +250,7 @@ Errors buildFrameAttachedToGraph(
   for (uint64_t j = 0; j < _model->JointCount(); ++j)
   {
     auto joint = _model->JointByIndex(j);
-    if (_out.map.count(joint->Name()) > 0)
+    if (_out.Count(joint->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Joint with non-unique name [" + joint->Name() +
@@ -251,16 +258,14 @@ Errors buildFrameAttachedToGraph(
           "]."});
       continue;
     }
-    auto jointId =
-        _out.graph.AddVertex(joint->Name(), sdf::FrameType::JOINT).Id();
-    _out.map[joint->Name()] = jointId;
+    _out.AddVertex(joint->Name(), sdf::FrameType::JOINT).Id();
   }
 
   // add frame vertices
   for (uint64_t f = 0; f < _model->FrameCount(); ++f)
   {
     auto frame = _model->FrameByIndex(f);
-    if (_out.map.count(frame->Name()) > 0)
+    if (_out.Count(frame->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Frame with non-unique name [" + frame->Name() +
@@ -268,16 +273,14 @@ Errors buildFrameAttachedToGraph(
           "]."});
       continue;
     }
-    auto frameId =
-        _out.graph.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
-    _out.map[frame->Name()] = frameId;
+    _out.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
   }
 
   // add nested model vertices
   for (uint64_t m = 0; m < _model->ModelCount(); ++m)
   {
     auto nestedModel = _model->ModelByIndex(m);
-    if (_out.map.count(nestedModel->Name()) > 0)
+    if (_out.Count(nestedModel->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Nested model with non-unique name [" + nestedModel->Name() +
@@ -285,18 +288,16 @@ Errors buildFrameAttachedToGraph(
           "]."});
       continue;
     }
-    auto nestedModelId =
-        _out.graph.AddVertex(nestedModel->Name(), sdf::FrameType::MODEL).Id();
-    _out.map[nestedModel->Name()] = nestedModelId;
+    _out.AddVertex(nestedModel->Name(), sdf::FrameType::MODEL).Id();
   }
 
   // add edges from joint to child frames
   for (uint64_t j = 0; j < _model->JointCount(); ++j)
   {
     auto joint = _model->JointByIndex(j);
-    auto jointId = _out.map.at(joint->Name());
+    auto jointId = _out.VertexIdByName(joint->Name());
     auto childFrameName = joint->ChildLinkName();
-    if (_out.map.count(childFrameName) != 1)
+    if (_out.Count(childFrameName) != 1)
     {
       errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
         "Child frame with name[" + childFrameName +
@@ -304,15 +305,15 @@ Errors buildFrameAttachedToGraph(
         "] not found in model with name[" + _model->Name() + "]."});
       continue;
     }
-    auto childFrameId = _out.map.at(childFrameName);
-    _out.graph.AddEdge({jointId, childFrameId}, true);
+    auto childFrameId = _out.VertexIdByName(childFrameName);
+    _out.AddEdge({jointId, childFrameId}, true);
   }
 
   // add frame edges
   for (uint64_t f = 0; f < _model->FrameCount(); ++f)
   {
     auto frame = _model->FrameByIndex(f);
-    auto frameId = _out.map.at(frame->Name());
+    auto frameId = _out.VertexIdByName(frame->Name());
     // look for vertex in graph that matches attached_to value
     std::string attachedTo = frame->AttachedTo();
     if (attachedTo.empty())
@@ -320,7 +321,7 @@ Errors buildFrameAttachedToGraph(
       // if the attached-to name is empty, use the scope name
       attachedTo = scopeName;
     }
-    if (_out.map.count(attachedTo) != 1)
+    if (_out.Count(attachedTo) != 1)
     {
       errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
           "attached_to name[" + attachedTo +
@@ -329,7 +330,7 @@ Errors buildFrameAttachedToGraph(
           "in model with name[" + _model->Name() + "]."});
       continue;
     }
-    auto attachedToId = _out.map[attachedTo];
+    auto attachedToId = _out.VertexIdByName(attachedTo);
     bool edgeData = true;
     if (frame->Name() == frame->AttachedTo())
     {
@@ -341,7 +342,7 @@ Errors buildFrameAttachedToGraph(
           "], causing a graph cycle "
           "in model with name[" + _model->Name() + "]."});
     }
-    _out.graph.AddEdge({frameId, attachedToId}, edgeData);
+    _out.AddEdge({frameId, attachedToId}, edgeData);
   }
 
   return errors;
@@ -349,17 +350,14 @@ Errors buildFrameAttachedToGraph(
 
 /////////////////////////////////////////////////
 Errors buildFrameAttachedToGraph(
-            FrameAttachedToGraph &_out, const World *_world)
+            ScopedGraph<FrameAttachedToGraph> &_out, const World *_world)
 {
   Errors errors;
 
   // add implicit world frame vertex first
   const std::string scopeName = "world";
-  _out.scopeName = scopeName;
-  auto worldFrameId =
-      _out.graph.AddVertex(scopeName, sdf::FrameType::WORLD).Id();
-  _out.map[scopeName] = worldFrameId;
-
+  _out.SetScopeName(scopeName);
+  _out.AddVertex(scopeName, sdf::FrameType::WORLD).Id();
 
   if (!_world)
   {
@@ -378,7 +376,7 @@ Errors buildFrameAttachedToGraph(
   for (uint64_t m = 0; m < _world->ModelCount(); ++m)
   {
     auto model = _world->ModelByIndex(m);
-    if (_out.map.count(model->Name()) > 0)
+    if (_out.Count(model->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Model with non-unique name [" + model->Name() +
@@ -386,16 +384,14 @@ Errors buildFrameAttachedToGraph(
           "]."});
       continue;
     }
-    auto modelId =
-        _out.graph.AddVertex(model->Name(), sdf::FrameType::MODEL).Id();
-    _out.map[model->Name()] = modelId;
+    _out.AddVertex(model->Name(), sdf::FrameType::MODEL).Id();
   }
 
   // add frame vertices
   for (uint64_t f = 0; f < _world->FrameCount(); ++f)
   {
     auto frame = _world->FrameByIndex(f);
-    if (_out.map.count(frame->Name()) > 0)
+    if (_out.Count(frame->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Frame with non-unique name [" + frame->Name() +
@@ -403,23 +399,21 @@ Errors buildFrameAttachedToGraph(
           "]."});
       continue;
     }
-    auto frameId =
-        _out.graph.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
-    _out.map[frame->Name()] = frameId;
+    _out.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
   }
 
   // add frame edges
   for (uint64_t f = 0; f < _world->FrameCount(); ++f)
   {
     auto frame = _world->FrameByIndex(f);
-    auto frameId = _out.map.at(frame->Name());
+    auto frameId = _out.VertexIdByName(frame->Name());
     // look for vertex in graph that matches attached_to value
     std::string attachedTo = frame->AttachedTo();
     if (attachedTo.empty())
     {
       // if the attached-to name is empty, use the scope name
       attachedTo = scopeName;
-      if (_out.map.count(scopeName) != 1)
+      if (_out.Count(scopeName) != 1)
       {
         errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
                          "FrameAttachedToGraph error: scope frame[" +
@@ -427,7 +421,7 @@ Errors buildFrameAttachedToGraph(
         continue;
       }
     }
-    if (_out.map.count(attachedTo) != 1)
+    if (_out.Count(attachedTo) != 1)
     {
       errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
           "attached_to name[" + attachedTo +
@@ -436,7 +430,7 @@ Errors buildFrameAttachedToGraph(
           "in world with name[" + _world->Name() + "]."});
       continue;
     }
-    auto attachedToId = _out.map[attachedTo];
+    auto attachedToId = _out.VertexIdByName(attachedTo);
     bool edgeData = true;
     if (frame->Name() == frame->AttachedTo())
     {
@@ -448,7 +442,7 @@ Errors buildFrameAttachedToGraph(
           "], causing a graph cycle "
           "in world with name[" + _world->Name() + "]."});
     }
-    _out.graph.AddEdge({frameId, attachedToId}, edgeData);
+    _out.AddEdge({frameId, attachedToId}, edgeData);
   }
 
   return errors;
@@ -456,7 +450,7 @@ Errors buildFrameAttachedToGraph(
 
 /////////////////////////////////////////////////
 Errors buildPoseRelativeToGraph(
-            PoseRelativeToGraph &_out, const Model *_model)
+            ScopedGraph<PoseRelativeToGraph> &_out, const Model *_model)
 {
   Errors errors;
 
@@ -474,17 +468,16 @@ Errors buildPoseRelativeToGraph(
   }
 
   // add implicit model frame vertex first
-  const std::string sourceName = "__model__";
-  _out.sourceName = sourceName;
+  const std::string scopeName = "__model__";
+  _out.SetScopeName(scopeName);
   auto modelFrameId =
-      _out.graph.AddVertex(sourceName, sdf::FrameType::MODEL).Id();
-  _out.map[sourceName] = modelFrameId;
+      _out.AddVertex(scopeName, sdf::FrameType::MODEL).Id();
 
   // add link vertices and default edge if relative_to is empty
   for (uint64_t l = 0; l < _model->LinkCount(); ++l)
   {
     auto link = _model->LinkByIndex(l);
-    if (_out.map.count(link->Name()) > 0)
+    if (_out.Count(link->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Link with non-unique name [" + link->Name() +
@@ -493,13 +486,12 @@ Errors buildPoseRelativeToGraph(
       continue;
     }
     auto linkId =
-        _out.graph.AddVertex(link->Name(), sdf::FrameType::LINK).Id();
-    _out.map[link->Name()] = linkId;
+        _out.AddVertex(link->Name(), sdf::FrameType::LINK).Id();
 
     if (link->PoseRelativeTo().empty())
     {
       // relative_to is empty, so add edge from implicit model frame to link
-      _out.graph.AddEdge({modelFrameId, linkId}, link->RawPose());
+      _out.AddEdge({modelFrameId, linkId}, link->RawPose());
     }
   }
 
@@ -507,7 +499,7 @@ Errors buildPoseRelativeToGraph(
   for (uint64_t j = 0; j < _model->JointCount(); ++j)
   {
     auto joint = _model->JointByIndex(j);
-    if (_out.map.count(joint->Name()) > 0)
+    if (_out.Count(joint->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Joint with non-unique name [" + joint->Name() +
@@ -515,9 +507,7 @@ Errors buildPoseRelativeToGraph(
           "]."});
       continue;
     }
-    auto jointId =
-        _out.graph.AddVertex(joint->Name(), sdf::FrameType::JOINT).Id();
-    _out.map[joint->Name()] = jointId;
+    _out.AddVertex(joint->Name(), sdf::FrameType::JOINT).Id();
   }
 
   // add frame vertices and default edge if both
@@ -525,7 +515,7 @@ Errors buildPoseRelativeToGraph(
   for (uint64_t f = 0; f < _model->FrameCount(); ++f)
   {
     auto frame = _model->FrameByIndex(f);
-    if (_out.map.count(frame->Name()) > 0)
+    if (_out.Count(frame->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Frame with non-unique name [" + frame->Name() +
@@ -534,13 +524,12 @@ Errors buildPoseRelativeToGraph(
       continue;
     }
     auto frameId =
-        _out.graph.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
-    _out.map[frame->Name()] = frameId;
+        _out.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
 
     if (frame->PoseRelativeTo().empty() && frame->AttachedTo().empty())
     {
       // add edge from implicit model frame to frame
-      _out.graph.AddEdge({modelFrameId, frameId}, frame->RawPose());
+      _out.AddEdge({modelFrameId, frameId}, frame->RawPose());
     }
   }
 
@@ -548,7 +537,7 @@ Errors buildPoseRelativeToGraph(
   for (uint64_t m = 0; m < _model->ModelCount(); ++m)
   {
     auto nestedModel = _model->ModelByIndex(m);
-    if (_out.map.count(nestedModel->Name()) > 0)
+    if (_out.Count(nestedModel->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Nested model with non-unique name [" + nestedModel->Name() +
@@ -557,14 +546,13 @@ Errors buildPoseRelativeToGraph(
       continue;
     }
     auto nestedModelId =
-        _out.graph.AddVertex(nestedModel->Name(), sdf::FrameType::MODEL).Id();
-    _out.map[nestedModel->Name()] = nestedModelId;
+        _out.AddVertex(nestedModel->Name(), sdf::FrameType::MODEL).Id();
 
     if (nestedModel->PoseRelativeTo().empty())
     {
       // relative_to is empty, so add edge from implicit model frame
       // to nestedModel
-      _out.graph.AddEdge({modelFrameId, nestedModelId}, nestedModel->RawPose());
+      _out.AddEdge({modelFrameId, nestedModelId}, nestedModel->RawPose());
     }
   }
 
@@ -582,10 +570,10 @@ Errors buildPoseRelativeToGraph(
       continue;
     }
 
-    auto linkId = _out.map.at(link->Name());
+    auto linkId = _out.VertexIdByName(link->Name());
 
     // look for vertex in graph that matches relative_to value
-    if (_out.map.count(relativeTo) != 1)
+    if (_out.Count(relativeTo) != 1)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
           "relative_to name[" + relativeTo +
@@ -594,7 +582,7 @@ Errors buildPoseRelativeToGraph(
           "in model with name[" + _model->Name() + "]."});
       continue;
     }
-    auto relativeToId = _out.map[relativeTo];
+    auto relativeToId = _out.VertexIdByName(relativeTo);
     if (link->Name() == relativeTo)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
@@ -603,7 +591,7 @@ Errors buildPoseRelativeToGraph(
           "], causing a graph cycle "
           "in model with name[" + _model->Name() + "]."});
     }
-    _out.graph.AddEdge({relativeToId, linkId}, link->RawPose());
+    _out.AddEdge({relativeToId, linkId}, link->RawPose());
   }
 
   for (uint64_t j = 0; j < _model->JointCount(); ++j)
@@ -617,10 +605,10 @@ Errors buildPoseRelativeToGraph(
       relativeTo = joint->ChildLinkName();
     }
 
-    auto jointId = _out.map.at(joint->Name());
+    auto jointId = _out.VertexIdByName(joint->Name());
 
     // look for vertex in graph that matches relative_to value
-    if (_out.map.count(relativeTo) != 1)
+    if (_out.Count(relativeTo) != 1)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
           "relative_to name[" + relativeTo +
@@ -629,7 +617,7 @@ Errors buildPoseRelativeToGraph(
           "in model with name[" + _model->Name() + "]."});
       continue;
     }
-    auto relativeToId = _out.map[relativeTo];
+    auto relativeToId = _out.VertexIdByName(relativeTo);
     if (joint->Name() == relativeTo)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
@@ -638,7 +626,7 @@ Errors buildPoseRelativeToGraph(
           "], causing a graph cycle "
           "in model with name[" + _model->Name() + "]."});
     }
-    _out.graph.AddEdge({relativeToId, jointId}, joint->RawPose());
+    _out.AddEdge({relativeToId, jointId}, joint->RawPose());
   }
 
   for (uint64_t f = 0; f < _model->FrameCount(); ++f)
@@ -651,7 +639,7 @@ Errors buildPoseRelativeToGraph(
       continue;
     }
 
-    auto frameId = _out.map.at(frame->Name());
+    auto frameId = _out.VertexIdByName(frame->Name());
     std::string relativeTo;
     std::string typeForErrorMsg;
     ErrorCode errorCode;
@@ -669,7 +657,7 @@ Errors buildPoseRelativeToGraph(
     }
 
     // look for vertex in graph that matches relative_to value
-    if (_out.map.count(relativeTo) != 1)
+    if (_out.Count(relativeTo) != 1)
     {
       errors.push_back({errorCode,
           typeForErrorMsg + " name[" + relativeTo +
@@ -678,7 +666,7 @@ Errors buildPoseRelativeToGraph(
           "in model with name[" + _model->Name() + "]."});
       continue;
     }
-    auto relativeToId = _out.map[relativeTo];
+    auto relativeToId = _out.VertexIdByName(relativeTo);
     if (frame->Name() == relativeTo)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
@@ -687,7 +675,7 @@ Errors buildPoseRelativeToGraph(
           "], causing a graph cycle "
           "in model with name[" + _model->Name() + "]."});
     }
-    _out.graph.AddEdge({relativeToId, frameId}, frame->RawPose());
+    _out.AddEdge({relativeToId, frameId}, frame->RawPose());
   }
 
   for (uint64_t m = 0; m < _model->ModelCount(); ++m)
@@ -701,10 +689,10 @@ Errors buildPoseRelativeToGraph(
       continue;
     }
 
-    auto nestedModelId = _out.map.at(nestedModel->Name());
+    auto nestedModelId = _out.VertexIdByName(nestedModel->Name());
 
     // look for vertex in graph that matches relative_to value
-    if (_out.map.count(relativeTo) != 1)
+    if (_out.Count(relativeTo) != 1)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
           "relative_to name[" + relativeTo +
@@ -713,7 +701,7 @@ Errors buildPoseRelativeToGraph(
           "in model with name[" + _model->Name() + "]."});
       continue;
     }
-    auto relativeToId = _out.map[relativeTo];
+    auto relativeToId = _out.VertexIdByName(relativeTo);
     if (nestedModel->Name() == relativeTo)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
@@ -722,15 +710,16 @@ Errors buildPoseRelativeToGraph(
           "], causing a graph cycle "
           "in model with name[" + _model->Name() + "]."});
     }
-    _out.graph.AddEdge({relativeToId, nestedModelId}, nestedModel->RawPose());
+    _out.AddEdge({relativeToId, nestedModelId}, nestedModel->RawPose());
   }
 
   return errors;
 }
 
 /////////////////////////////////////////////////
+/// TODO
 Errors buildPoseRelativeToGraph(
-            PoseRelativeToGraph &_out, const World *_world)
+            ScopedGraph<PoseRelativeToGraph> &_out, const World *_world)
 {
   Errors errors;
 
@@ -749,16 +738,14 @@ Errors buildPoseRelativeToGraph(
 
   // add implicit world frame vertex first
   const std::string sourceName = "world";
-  _out.sourceName = sourceName;
-  auto worldFrameId =
-      _out.graph.AddVertex(sourceName, sdf::FrameType::WORLD).Id();
-  _out.map[sourceName] = worldFrameId;
+  _out.SetScopeName(sourceName);
+  auto worldFrameId = _out.AddVertex(sourceName, sdf::FrameType::WORLD).Id();
 
   // add model vertices and default edge if relative_to is empty
   for (uint64_t m = 0; m < _world->ModelCount(); ++m)
   {
     auto model = _world->ModelByIndex(m);
-    if (_out.map.count(model->Name()) > 0)
+    if (_out.Count(model->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Model with non-unique name [" + model->Name() +
@@ -767,13 +754,12 @@ Errors buildPoseRelativeToGraph(
       continue;
     }
     auto modelId =
-        _out.graph.AddVertex(model->Name(), sdf::FrameType::MODEL).Id();
-    _out.map[model->Name()] = modelId;
+        _out.AddVertex(model->Name(), sdf::FrameType::MODEL).Id();
 
     if (model->PoseRelativeTo().empty())
     {
       // relative_to is empty, so add edge from implicit world frame to model
-      _out.graph.AddEdge({worldFrameId, modelId}, model->RawPose());
+      _out.AddEdge({worldFrameId, modelId}, model->RawPose());
     }
   }
 
@@ -782,7 +768,7 @@ Errors buildPoseRelativeToGraph(
   for (uint64_t f = 0; f < _world->FrameCount(); ++f)
   {
     auto frame = _world->FrameByIndex(f);
-    if (_out.map.count(frame->Name()) > 0)
+    if (_out.Count(frame->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Frame with non-unique name [" + frame->Name() +
@@ -791,13 +777,12 @@ Errors buildPoseRelativeToGraph(
       continue;
     }
     auto frameId =
-        _out.graph.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
-    _out.map[frame->Name()] = frameId;
+        _out.AddVertex(frame->Name(), sdf::FrameType::FRAME).Id();
 
     if (frame->PoseRelativeTo().empty() && frame->AttachedTo().empty())
     {
       // add edge from implicit world frame to frame
-      _out.graph.AddEdge({worldFrameId, frameId}, frame->RawPose());
+      _out.AddEdge({worldFrameId, frameId}, frame->RawPose());
     }
   }
 
@@ -815,10 +800,10 @@ Errors buildPoseRelativeToGraph(
       continue;
     }
 
-    auto modelId = _out.map.at(model->Name());
+    auto modelId = _out.VertexIdByName(model->Name());
 
     // look for vertex in graph that matches relative_to value
-    if (_out.map.count(relativeTo) != 1)
+    if (_out.Count(relativeTo) != 1)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
           "relative_to name[" + relativeTo +
@@ -827,7 +812,7 @@ Errors buildPoseRelativeToGraph(
           "in world with name[" + _world->Name() + "]."});
       continue;
     }
-    auto relativeToId = _out.map[relativeTo];
+    auto relativeToId = _out.VertexIdByName(relativeTo);
     if (model->Name() == relativeTo)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
@@ -836,7 +821,7 @@ Errors buildPoseRelativeToGraph(
           "], causing a graph cycle "
           "in world with name[" + _world->Name() + "]."});
     }
-    _out.graph.AddEdge({relativeToId, modelId}, model->RawPose());
+    _out.AddEdge({relativeToId, modelId}, model->RawPose());
   }
 
   for (uint64_t f = 0; f < _world->FrameCount(); ++f)
@@ -849,7 +834,7 @@ Errors buildPoseRelativeToGraph(
       continue;
     }
 
-    auto frameId = _out.map.at(frame->Name());
+    auto frameId = _out.VertexIdByName(frame->Name());
     std::string relativeTo;
     std::string typeForErrorMsg;
     ErrorCode errorCode;
@@ -867,7 +852,7 @@ Errors buildPoseRelativeToGraph(
     }
 
     // look for vertex in graph that matches relative_to value
-    if (_out.map.count(relativeTo) != 1)
+    if (_out.Count(relativeTo) != 1)
     {
       errors.push_back({errorCode,
           typeForErrorMsg + " name[" + relativeTo +
@@ -876,7 +861,7 @@ Errors buildPoseRelativeToGraph(
           "in world with name[" + _world->Name() + "]."});
       continue;
     }
-    auto relativeToId = _out.map[relativeTo];
+    auto relativeToId = _out.VertexIdByName(relativeTo);
     if (frame->Name() == relativeTo)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
@@ -885,54 +870,54 @@ Errors buildPoseRelativeToGraph(
           "], causing a graph cycle "
           "in world with name[" + _world->Name() + "]."});
     }
-    _out.graph.AddEdge({relativeToId, frameId}, frame->RawPose());
+    _out.AddEdge({relativeToId, frameId}, frame->RawPose());
   }
 
   return errors;
 }
 
 /////////////////////////////////////////////////
-Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
+Errors validateFrameAttachedToGraph(const ScopedGraph<FrameAttachedToGraph> &_in)
 {
   Errors errors;
 
   // Expect scopeName to be either "__model__" or "world"
-  if (_in.scopeName != "__model__" && _in.scopeName != "world")
+  if (_in.ScopeName() != "__model__" && _in.ScopeName() != "world")
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
-        "FrameAttachedToGraph error: scope frame[" + _in.scopeName + "] "
+        "FrameAttachedToGraph error: scope frame[" + _in.ScopeName() + "] "
         " does not match __model__ or world."});
     return errors;
   }
 
   // Expect one vertex with name "__model__" and FrameType MODEL
   // or with name "world" and FrameType WORLD
-  auto scopeVertices = _in.graph.Vertices(_in.scopeName);
+  auto scopeVertices = _in.Vertices(_in.ScopeName());
   if (scopeVertices.empty())
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
                      "FrameAttachedToGraph error: scope frame[" +
-                     _in.scopeName + "] not found in graph."});
+                     _in.ScopeName() + "] not found in graph."});
     return errors;
   }
   else if (scopeVertices.size() > 1)
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
         "FrameAttachedToGraph error, "
-        "more than one vertex with scope name " + _in.scopeName});
+        "more than one vertex with scope name " + _in.ScopeName()});
     return errors;
   }
 
   auto scopeVertex = scopeVertices.begin()->second.get();
   sdf::FrameType scopeFrameType = scopeVertex.Data();
-  if (_in.scopeName == "__model__" && scopeFrameType != sdf::FrameType::MODEL)
+  if (_in.ScopeName() == "__model__" && scopeFrameType != sdf::FrameType::MODEL)
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
         "FrameAttachedToGraph error, "
         "scope vertex with name __model__ should have FrameType MODEL."});
     return errors;
   }
-  else if (_in.scopeName == "world" &&
+  else if (_in.ScopeName() == "world" &&
            scopeFrameType != sdf::FrameType::WORLD)
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
@@ -942,7 +927,7 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
   }
 
   // Check number of outgoing edges for each vertex
-  auto vertices = _in.graph.Vertices();
+  auto vertices = _in.Vertices();
   for (auto vertexPair : vertices)
   {
     // Vertex names should not be empty
@@ -953,7 +938,7 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
           "vertex with empty name detected."});
     }
 
-    auto outDegree = _in.graph.OutDegree(vertexPair.first);
+    auto outDegree = _in.OutDegree(vertexPair.first);
     if (outDegree > 1)
     {
       errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
@@ -1056,7 +1041,7 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
   }
 
   // check graph for cycles by finding sink from each vertex
-  for (auto const &namePair : _in.map)
+  for (auto const &namePair : _in.Map())
   {
     std::string resolvedBody;
     Errors e = resolveFrameAttachedToBody(resolvedBody, _in, namePair.first);
@@ -1067,47 +1052,48 @@ Errors validateFrameAttachedToGraph(const FrameAttachedToGraph &_in)
 }
 
 /////////////////////////////////////////////////
-Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
+Errors validatePoseRelativeToGraph(
+    const ScopedGraph<PoseRelativeToGraph> &_in)
 {
   Errors errors;
 
-  // Expect sourceName to be either "__model__" or "world"
-  if (_in.sourceName != "__model__" && _in.sourceName != "world")
+  // Expect scopeName to be either "__model__" or "world"
+  if (_in.ScopeName() != "__model__" && _in.ScopeName() != "world")
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-        "PoseRelativeToGraph error: source vertex name " + _in.sourceName +
+        "PoseRelativeToGraph error: source vertex name " + _in.ScopeName() +
         " does not match __model__ or world."});
     return errors;
   }
 
   // Expect one vertex with name "__model__" and FrameType MODEL
   // or with name "world" and FrameType WORLD
-  auto sourceVertices = _in.graph.Vertices(_in.sourceName);
+  auto sourceVertices = _in.Vertices(_in.ScopeName());
   if (sourceVertices.empty())
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
                      "PoseRelativeToGraph error: source frame[" +
-                     _in.sourceName + "] not found in graph."});
+                     _in.ScopeName() + "] not found in graph."});
     return errors;
   }
   else if (sourceVertices.size() > 1)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
         "PoseRelativeToGraph error, "
-        "more than one vertex with source name " + _in.sourceName});
+        "more than one vertex with source name " + _in.ScopeName()});
     return errors;
   }
 
   auto sourceVertex = sourceVertices.begin()->second.get();
   sdf::FrameType sourceFrameType = sourceVertex.Data();
-  if (_in.sourceName == "__model__" && sourceFrameType != sdf::FrameType::MODEL)
+  if (_in.ScopeName() == "__model__" && sourceFrameType != sdf::FrameType::MODEL)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
         "PoseRelativeToGraph error, "
         "source vertex with name __model__ should have FrameType MODEL."});
     return errors;
   }
-  else if (_in.sourceName == "world" &&
+  else if (_in.ScopeName() == "world" &&
            sourceFrameType != sdf::FrameType::WORLD)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
@@ -1117,7 +1103,7 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
   }
 
   // Check number of incoming edges for each vertex
-  auto vertices = _in.graph.Vertices();
+  auto vertices = _in.Vertices();
   for (auto vertexPair : vertices)
   {
     // Vertex names should not be empty
@@ -1128,7 +1114,7 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
           "vertex with empty name detected."});
     }
 
-    auto inDegree = _in.graph.InDegree(vertexPair.first);
+    auto inDegree = _in.InDegree(vertexPair.first);
     if (inDegree > 1)
     {
       errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
@@ -1230,7 +1216,7 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
   }
 
   // check graph for cycles by resolving pose of each vertex relative to root
-  for (auto const &namePair : _in.map)
+  for (auto const &namePair : _in.Map())
   {
     ignition::math::Pose3d pose;
     Errors e = resolvePoseRelativeToRoot(pose, _in, namePair.first);
@@ -1243,29 +1229,29 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
 /////////////////////////////////////////////////
 Errors resolveFrameAttachedToBody(
     std::string &_attachedToBody,
-    const FrameAttachedToGraph &_in,
+    const ScopedGraph<FrameAttachedToGraph> &_in,
     const std::string &_vertexName)
 {
   Errors errors;
 
-  if (_in.scopeName != "__model__" && _in.scopeName != "world")
+  if (_in.ScopeName() != "__model__" && _in.ScopeName() != "world")
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
-        "FrameAttachedToGraph error: scope frame[" + _in.scopeName + "] "
+        "FrameAttachedToGraph error: scope frame[" + _in.ScopeName() + "] "
         " does not match __model__ or world."});
     return errors;
   }
 
-  if (_in.map.count(_vertexName) != 1)
+  if (_in.Count(_vertexName) != 1)
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
         "FrameAttachedToGraph unable to find unique frame with name [" +
         _vertexName + "] in graph."});
     return errors;
   }
-  auto vertexId = _in.map.at(_vertexName);
+  auto vertexId = _in.VertexIdByName(_vertexName);
 
-  auto sinkVertexEdges = FindSinkVertex(_in.graph, vertexId, errors);
+  auto sinkVertexEdges = FindSinkVertex(_in, vertexId, errors);
   auto sinkVertex = sinkVertexEdges.first;
 
   if (!errors.empty())
@@ -1281,7 +1267,7 @@ Errors resolveFrameAttachedToBody(
     return errors;
   }
 
-  if (_in.scopeName == "world" &&
+  if (_in.ScopeName() == "world" &&
       !(sinkVertex.Data() == FrameType::WORLD ||
         sinkVertex.Data() == FrameType::MODEL))
   {
@@ -1292,7 +1278,7 @@ Errors resolveFrameAttachedToBody(
     return errors;
   }
 
-  if (_in.scopeName == "__model__")
+  if (_in.ScopeName() == "__model__")
   {
     if (sinkVertex.Data() == FrameType::MODEL &&
         sinkVertex.Name() == "__model__")
@@ -1322,21 +1308,21 @@ Errors resolveFrameAttachedToBody(
 /////////////////////////////////////////////////
 Errors resolvePoseRelativeToRoot(
       ignition::math::Pose3d &_pose,
-      const PoseRelativeToGraph &_graph,
+      const ScopedGraph<PoseRelativeToGraph> &_graph,
       const std::string &_vertexName)
 {
   Errors errors;
 
-  if (_graph.map.count(_vertexName) != 1)
+  if (_graph.Count(_vertexName) != 1)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
         "PoseRelativeToGraph unable to find unique frame with name [" +
         _vertexName + "] in graph."});
     return errors;
   }
-  auto vertexId = _graph.map.at(_vertexName);
+  auto vertexId = _graph.VertexIdByName(_vertexName);
 
-  auto incomingVertexEdges = FindSourceVertex(_graph.graph, vertexId, errors);
+  auto incomingVertexEdges = FindSourceVertex(_graph, vertexId, errors);
 
   if (!errors.empty())
   {
@@ -1349,13 +1335,13 @@ Errors resolvePoseRelativeToRoot(
         "when starting from vertex with name [" + _vertexName + "]."});
     return errors;
   }
-  else if (incomingVertexEdges.first.Name() != _graph.sourceName)
+  else if (incomingVertexEdges.first.Name() != _graph.ScopeName())
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
         "PoseRelativeToGraph frame with name [" + _vertexName + "] "
         "is disconnected; its source vertex has name [" +
         incomingVertexEdges.first.Name() +
-        "], but its source name should be " + _graph.sourceName + "."});
+        "], but its source name should be " + _graph.ScopeName() + "."});
     return errors;
   }
 
@@ -1376,7 +1362,7 @@ Errors resolvePoseRelativeToRoot(
 /////////////////////////////////////////////////
 Errors resolvePose(
     ignition::math::Pose3d &_pose,
-    const PoseRelativeToGraph &_graph,
+    const ScopedGraph<PoseRelativeToGraph> &_graph,
     const std::string &_frameName,
     const std::string &_resolveTo)
 {
@@ -1396,30 +1382,31 @@ Errors resolvePose(
 
 /////////////////////////////////////////////////
 Errors updateGraphPose(
-    PoseRelativeToGraph &_graph,
+    ScopedGraph<PoseRelativeToGraph> &_graph,
     const std::string &_frameName,
     const ignition::math::Pose3d &_pose)
 {
   Errors errors;
 
-  if (_graph.map.count(_frameName) != 1)
+  if (_graph.Count(_frameName) != 1)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
         "PoseRelativeToGraph unable to find unique frame with name [" +
         _frameName+ "] in graph."});
     return errors;
   }
-  auto vertexId = _graph.map.at(_frameName);
-  auto incidentsTo = _graph.graph.IncidentsTo(vertexId);
+  auto vertexId = _graph.VertexIdByName(_frameName);
+  auto incidentsTo = _graph.Graph().IncidentsTo(vertexId);
   if (incidentsTo.size() == 1)
   {
     // There's no API to update the data of an edge, so we remove the edge and
     // insert a new one with the new pose.
-    auto &edge = incidentsTo.begin()->second;
-    auto tailVertexId = edge.get().Tail();
-    auto headVertexId = edge.get().Head();
-    _graph.graph.RemoveEdge(edge.get().Id());
-    _graph.graph.AddEdge({tailVertexId, headVertexId}, _pose);
+    // auto &edge = incidentsTo.begin()->second;
+    // auto tailVertexId = edge.get().Tail();
+    // auto headVertexId = edge.get().Head();
+    // _graph.graph.RemoveEdge(edge.get().Id());
+    // _graph.graph.AddEdge({tailVertexId, headVertexId}, _pose);
+    _graph.UpdateEdge(incidentsTo.begin()->second, _pose);
   }
   else if (incidentsTo.empty())
   {

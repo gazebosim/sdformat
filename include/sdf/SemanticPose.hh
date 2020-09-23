@@ -42,6 +42,7 @@ namespace sdf
   // Forward declare private data class.
   class SemanticPosePrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \brief SemanticPose is a data structure that can be used by different
   /// DOM objects to resolve poses on a PoseRelativeToGraph. This object holds
@@ -83,7 +84,7 @@ namespace sdf
         const ignition::math::Pose3d &_pose,
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
-        std::weak_ptr<const sdf::PoseRelativeToGraph> _graph);
+        const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
 
     /// \brief Destructor
     public: ~SemanticPose();

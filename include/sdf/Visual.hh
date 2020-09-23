@@ -41,6 +41,7 @@ namespace sdf
   class VisualPrivate;
   class Geometry;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   class SDFORMAT_VISIBLE Visual
   {
@@ -173,7 +174,7 @@ namespace sdf
     /// Link::SetPoseRelativeToGraph.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is

@@ -65,9 +65,10 @@ namespace sdf
   /// exists.
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
-  template<typename Class>
+  template <typename Class>
   sdf::Errors loadUniqueRepeated(sdf::ElementPtr _sdf,
-      const std::string &_sdfName, std::vector<Class> &_objs)
+      const std::string &_sdfName, std::vector<Class> &_objs,
+      const std::function<void(Class &)> &_beforeLoadFunc = {})
   {
     Errors errors;
 
@@ -81,6 +82,10 @@ namespace sdf
       while (elem)
       {
         Class obj;
+        if (_beforeLoadFunc)
+        {
+          _beforeLoadFunc(obj);
+        }
 
         // Load the model and capture the errors.
         Errors loadErrors = obj.Load(elem);
@@ -128,9 +133,10 @@ namespace sdf
   /// vector, unless an error is encountered during load.
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
-  template<typename Class>
-  sdf::Errors loadRepeated(sdf::ElementPtr _sdf,
-      const std::string &_sdfName, std::vector<Class> &_objs)
+  template <typename Class>
+  sdf::Errors loadRepeated(sdf::ElementPtr _sdf, const std::string &_sdfName,
+      std::vector<Class> &_objs,
+      const std::function<void(Class &)> &_beforeLoadFunc = {})
   {
     Errors errors;
 
@@ -142,6 +148,10 @@ namespace sdf
       while (elem)
       {
         Class obj;
+        if (_beforeLoadFunc)
+        {
+          _beforeLoadFunc(obj);
+        }
 
         // Load the model and capture the errors.
         Errors loadErrors = obj.Load(elem);

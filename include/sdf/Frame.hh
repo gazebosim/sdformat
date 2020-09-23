@@ -35,6 +35,7 @@ namespace sdf
   class FramePrivate;
   struct FrameAttachedToGraph;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \brief A Frame element descibes the properties associated with an
   /// explicit frame defined in a Model or World.
@@ -150,14 +151,14 @@ namespace sdf
     /// be called by Model::Load or World::Load.
     /// \param[in] _graph Weak pointer to FrameAttachedToGraph.
     private: void SetFrameAttachedToGraph(
-        std::weak_ptr<const FrameAttachedToGraph> _graph);
+        sdf::ScopedGraph<FrameAttachedToGraph> _graph);
 
     /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Model::Load or World::Load.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Model::Load and World::Load to call SetPoseRelativeToGraph.
     friend class Model;

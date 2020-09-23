@@ -37,6 +37,7 @@ namespace sdf
   // Forward declare private data class.
   class LightPrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \enum LightType
   /// \brief The set of light types. INVALID indicates that light type has
@@ -278,7 +279,7 @@ namespace sdf
     /// Link::SetPoseRelativeToGraph or World::Load.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Link::SetPoseRelativeToGraph or World::Load to call
     /// SetXmlParentName and SetPoseRelativeToGraph,

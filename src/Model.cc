@@ -27,6 +27,7 @@
 #include "sdf/Model.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -77,16 +78,15 @@ class sdf::ModelPrivate
   public: sdf::ElementPtr sdf;
 
   /// \brief Frame Attached-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
+  /// TODO (addisu) More documentation
+  public: std::shared_ptr<sdf::FrameAttachedToGraph> ownedFrameAttachedToGraph;
+
+  public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
   /// \brief Pose Relative-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseGraph;
-
-  /// \brief Pose Relative-To Graph in parent (world or __model__) scope.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> parentPoseGraph;
-
-  /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
-  public: std::string parentPoseGraphScopeName;
+  /// TODO (addisu) More documentation
+  public: std::shared_ptr<sdf::PoseRelativeToGraph> ownedPoseGraph;
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseGraph;
 };
 
 /////////////////////////////////////////////////
@@ -106,16 +106,24 @@ Model::~Model()
 Model::Model(const Model &_model)
   : dataPtr(new ModelPrivate(*_model.dataPtr))
 {
-  if (_model.dataPtr->frameAttachedToGraph)
+  if (_model.dataPtr->ownedFrameAttachedToGraph)
   {
-    this->dataPtr->frameAttachedToGraph =
+    // If the model owns the frameAttachedToGraph, we need to allocate a new
+    // sdf::FrameAttachedToGraph object and copy it. We also need to assign the
+    // ScopedGraph to this object
+    this->dataPtr->ownedFrameAttachedToGraph =
         std::make_shared<sdf::FrameAttachedToGraph>(
-            *_model.dataPtr->frameAttachedToGraph);
+            *_model.dataPtr->ownedFrameAttachedToGraph);
+    this->dataPtr->frameAttachedToGraph =
+        ScopedGraph<sdf::FrameAttachedToGraph>(
+            this->dataPtr->ownedFrameAttachedToGraph);
   }
-  if (_model.dataPtr->poseGraph)
+  if (_model.dataPtr->ownedPoseGraph)
   {
-    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
-        *_model.dataPtr->poseGraph);
+    this->dataPtr->ownedPoseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *_model.dataPtr->ownedPoseGraph);
+    this->dataPtr->poseGraph =
+        ScopedGraph<sdf::PoseRelativeToGraph>(this->dataPtr->ownedPoseGraph);
   }
   for (auto &link : this->dataPtr->links)
   {
@@ -223,10 +231,17 @@ Errors Model::Load(ElementPtr _sdf)
   // Set of implicit and explicit frame names in this model for tracking
   // name collisions
   std::unordered_set<std::string> frameNames;
+  // int *subtree;
+
+  std::function <void(Model &)> beforeLoad = [this](Model &_model)
+  {
+    // TODO (addisu)
+    _model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  };
 
   // Load nested models.
   Errors nestedModelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
-    this->dataPtr->models);
+    this->dataPtr->models, beforeLoad);
   errors.insert(errors.end(),
                 nestedModelLoadErrors.begin(),
                 nestedModelLoadErrors.end());
@@ -366,14 +381,19 @@ Errors Model::Load(ElementPtr _sdf)
   // static models.
   if (!this->Static())
   {
-    this->dataPtr->frameAttachedToGraph
-        = std::make_shared<FrameAttachedToGraph>();
+    if (!this->dataPtr->frameAttachedToGraph)
+    {
+      this->dataPtr->ownedFrameAttachedToGraph =
+          std::make_shared<FrameAttachedToGraph>();
+      this->dataPtr->frameAttachedToGraph = ScopedGraph<FrameAttachedToGraph>(
+          this->dataPtr->ownedFrameAttachedToGraph);
+    }
     Errors frameAttachedToGraphErrors =
-    buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
+    buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
     errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
                                 frameAttachedToGraphErrors.end());
     Errors validateFrameAttachedGraphErrors =
-      validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
+      validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
     errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
                                 validateFrameAttachedGraphErrors.end());
     for (auto &joint : this->dataPtr->joints)
@@ -387,15 +407,31 @@ Errors Model::Load(ElementPtr _sdf)
   }
 
   // Build the PoseRelativeToGraph
-  this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>();
   Errors poseGraphErrors =
-  buildPoseRelativeToGraph(*this->dataPtr->poseGraph, this);
+  buildPoseRelativeToGraph(this->dataPtr->poseGraph, this);
   errors.insert(errors.end(), poseGraphErrors.begin(),
                               poseGraphErrors.end());
-  Errors validatePoseGraphErrors =
-    validatePoseRelativeToGraph(*this->dataPtr->poseGraph);
-  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
-                              validatePoseGraphErrors.end());
+  // for (auto &model : this->dataPtr->models)
+  // {
+  //   std::string prefix = model.Name() + "::";
+  //   poseGraphErrors =
+  //     buildPoseRelativeToGraph(*this->dataPtr->poseGraph, &model, prefix);
+  //   errors.insert(errors.end(), poseGraphErrors.begin(), poseGraphErrors.end());
+  // }
+  // std::cout << "Model: " << this->Name() << " graph:" << std::endl;
+  // std::cout << this->dataPtr->poseGraph->graph << std::endl;
+
+  errors.insert(errors.end(), poseGraphErrors.begin(),
+                              poseGraphErrors.end());
+  // TODO(addisu) only do this if this is the top level entity? This would be to
+  // improve performance
+  if (this->dataPtr->poseGraph.PointsTo(this->dataPtr->ownedPoseGraph))
+  {
+    Errors validatePoseGraphErrors =
+      validatePoseRelativeToGraph(this->dataPtr->poseGraph);
+    errors.insert(errors.end(), validatePoseGraphErrors.begin(),
+        validatePoseGraphErrors.end());
+  }
   for (auto &link : this->dataPtr->links)
   {
     link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
@@ -422,7 +458,7 @@ Errors Model::Load(ElementPtr _sdf)
     ignition::math::Pose3d X_MPf;
 
     sdf::Errors resolveErrors =
-        sdf::resolvePose(X_MPf, *this->dataPtr->poseGraph,
+        sdf::resolvePose(X_MPf, this->dataPtr->poseGraph,
             this->dataPtr->placementFrameName, "__model__");
     if (resolveErrors.empty())
     {
@@ -486,7 +522,7 @@ Errors Model::Load(ElementPtr _sdf)
         auto X_RM = X_RPf * X_MPf.Inverse();
         frame.SetRawPose(X_RM);
         sdf::updateGraphPose(
-            *this->dataPtr->poseGraph, childModelFrame->Name(), X_RM);
+            this->dataPtr->poseGraph, childModelFrame->Name(), X_RM);
       }
       else
       {
@@ -771,20 +807,18 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 
 /////////////////////////////////////////////////
 Errors Model::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   Errors errors;
 
-  auto graph = _graph.lock();
-  if (!graph)
+  if (!_graph)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
         "Tried to set PoseRelativeToGraph with invalid pointer."});
     return errors;
   }
 
-  this->dataPtr->parentPoseGraphScopeName = graph->sourceName;
-  this->dataPtr->parentPoseGraph = _graph;
+  this->dataPtr->poseGraph = _graph;
 
   return errors;
 }
@@ -795,8 +829,8 @@ sdf::SemanticPose Model::SemanticPose() const
   return sdf::SemanticPose(
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
-      this->dataPtr->parentPoseGraphScopeName,
-      this->dataPtr->parentPoseGraph);
+      this->dataPtr->poseGraph.ScopeName(),
+      this->dataPtr->poseGraph);
 }
 
 /////////////////////////////////////////////////

@@ -22,6 +22,8 @@
 #include "sdf/Geometry.hh"
 #include "sdf/Surface.hh"
 #include "sdf/Types.hh"
+#include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -50,7 +52,7 @@ class sdf::CollisionPrivate
   public: std::string xmlParentName;
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -207,7 +209,7 @@ void Collision::SetXmlParentName(const std::string &_xmlParentName)
 
 /////////////////////////////////////////////////
 void Collision::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 }

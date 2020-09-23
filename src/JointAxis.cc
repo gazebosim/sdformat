@@ -24,6 +24,7 @@
 #include "sdf/Error.hh"
 #include "sdf/JointAxis.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 
 using namespace sdf;
 
@@ -86,7 +87,7 @@ class sdf::JointAxisPrivate
   public: std::string xmlParentName;
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -377,7 +378,7 @@ void JointAxis::SetXmlParentName(const std::string &_xmlParentName)
 
 /////////////////////////////////////////////////
 void JointAxis::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 }
@@ -388,7 +389,7 @@ Errors JointAxis::ResolveXyz(
     const std::string &_resolveTo) const
 {
   Errors errors;
-  auto graph = this->dataPtr->poseRelativeToGraph.lock();
+  auto graph = this->dataPtr->poseRelativeToGraph;
   if (!graph)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -417,7 +418,7 @@ Errors JointAxis::ResolveXyz(
   }
 
   ignition::math::Pose3d pose;
-  errors = resolvePose(pose, *graph, axisExpressedIn, resolveTo);
+  errors = resolvePose(pose, graph, axisExpressedIn, resolveTo);
 
   if (errors.empty())
   {

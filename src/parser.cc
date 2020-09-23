@@ -37,6 +37,7 @@
 
 #include "Converter.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "parser_private.hh"
 #include "parser_urdf.hh"
 
@@ -1711,7 +1712,8 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root)
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
-    sdf::FrameAttachedToGraph graph;
+    auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+    sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
     auto errors = sdf::buildFrameAttachedToGraph(graph, _model);
     if (!errors.empty())
     {
@@ -1739,7 +1741,8 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root)
       const sdf::World *_world) -> bool
   {
     bool worldResult = true;
-    sdf::FrameAttachedToGraph graph;
+    auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+    sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
     auto errors = sdf::buildFrameAttachedToGraph(graph, _world);
     if (!errors.empty())
     {
@@ -1792,7 +1795,8 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
-    sdf::PoseRelativeToGraph graph;
+    auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
+    sdf::ScopedGraph<PoseRelativeToGraph> graph(ownedGraph);
     auto errors = sdf::buildPoseRelativeToGraph(graph, _model);
     if (!errors.empty())
     {
@@ -1820,7 +1824,8 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
       const sdf::World *_world) -> bool
   {
     bool worldResult = true;
-    sdf::PoseRelativeToGraph graph;
+    auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
+    sdf::ScopedGraph<PoseRelativeToGraph> graph(ownedGraph);
     auto errors = sdf::buildPoseRelativeToGraph(graph, _world);
     if (!errors.empty())
     {

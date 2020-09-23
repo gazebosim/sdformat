@@ -688,6 +688,16 @@ TEST(check, SDF)
         std::string::npos)
         << output;
   }
+
+  // Check an SDF file with an valid nested model cross references
+  {
+    std::string path = pathBase + "/nested_model_cross_references.sdf";
+
+    // Check model_invalid_placement_frame.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
 }
 
 /////////////////////////////////////////////////

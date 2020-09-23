@@ -35,6 +35,7 @@ namespace sdf
   // Forward declare private data class.
   class JointAxisPrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \brief Parameters related to the axis of rotation for rotational joints,
   /// and the axis of translation for prismatic joints.
@@ -274,7 +275,7 @@ namespace sdf
     /// by Joint::SetPoseRelativeToGraph.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Joint::SetPoseRelativeToGraph to propagate.
     friend class Joint;
