@@ -207,9 +207,15 @@ std::string ScopedGraph<T>::VertexName(const VertexId &_id) const
 /////////////////////////////////////////////////
 template <typename T>
 void ScopedGraph<T>::UpdateEdge(
-std::reference_wrapper<const Edge> &, const EdgeType&)
+    std::reference_wrapper<const Edge> &_edge, const EdgeType &_data)
 {
-  // TODO (addisu)
+  // There's no API to update the data of an edge, so we remove the edge and
+  // insert a new one with the new pose.
+  auto tailVertexId = _edge.get().Tail();
+  auto headVertexId = _edge.get().Head();
+  auto &graph = this->graphWeak.lock()->graph;
+  graph.RemoveEdge(_edge.get().Id());
+  graph.AddEdge({tailVertexId, headVertexId}, _data);
 }
 
 /////////////////////////////////////////////////

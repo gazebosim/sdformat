@@ -227,14 +227,14 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   EXPECT_EQ(8u, graph.Graph().Vertices().size());
   EXPECT_EQ(7u, graph.Graph().Edges().size());
 
-  EXPECT_EQ(1u, graph.Map().count("__model__"));
-  EXPECT_EQ(1u, graph.Map().count("P"));
-  EXPECT_EQ(1u, graph.Map().count("C"));
-  EXPECT_EQ(1u, graph.Map().count("J"));
-  EXPECT_EQ(1u, graph.Map().count("F1"));
-  EXPECT_EQ(1u, graph.Map().count("F2"));
-  EXPECT_EQ(1u, graph.Map().count("F3"));
-  EXPECT_EQ(1u, graph.Map().count("F4"));
+  EXPECT_EQ(1u, graph.Count("__model__"));
+  EXPECT_EQ(1u, graph.Count("P"));
+  EXPECT_EQ(1u, graph.Count("C"));
+  EXPECT_EQ(1u, graph.Count("J"));
+  EXPECT_EQ(1u, graph.Count("F1"));
+  EXPECT_EQ(1u, graph.Count("F2"));
+  EXPECT_EQ(1u, graph.Count("F3"));
+  EXPECT_EQ(1u, graph.Count("F4"));
 
   // Test resolvePoseRelativeToRoot for each frame.
   ignition::math::Pose3d pose;

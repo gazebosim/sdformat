@@ -1464,15 +1464,21 @@ Errors updateGraphPose(
   }
   auto vertexId = _graph.VertexIdByName(_frameName);
   auto incidentsTo = _graph.Graph().IncidentsTo(vertexId);
+  std::vector<std::size_t> toRemove;
+  for (const auto &[id, edge] : incidentsTo)
+  {
+    if (edge.get().Data().aliasing)
+    {
+      toRemove.push_back(id);
+    }
+  }
+  for (const auto id : toRemove)
+  {
+    incidentsTo.erase(id);
+  }
+
   if (incidentsTo.size() == 1)
   {
-    // There's no API to update the data of an edge, so we remove the edge and
-    // insert a new one with the new pose.
-    // auto &edge = incidentsTo.begin()->second;
-    // auto tailVertexId = edge.get().Tail();
-    // auto headVertexId = edge.get().Head();
-    // _graph.graph.RemoveEdge(edge.get().Id());
-    // _graph.graph.AddEdge({tailVertexId, headVertexId}, _pose);
     _graph.UpdateEdge(incidentsTo.begin()->second, _pose);
   }
   else if (incidentsTo.empty())
