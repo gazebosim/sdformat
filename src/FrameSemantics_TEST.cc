@@ -32,6 +32,7 @@
 #include "sdf/sdf_config.h"
 
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "test_config.h"
 
 /////////////////////////////////////////////////
@@ -43,29 +44,31 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_Model)
 
   // Load the SDF file
   sdf::Root root;
-  EXPECT_TRUE(root.Load(testFile).empty());
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
 
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
 
-  sdf::FrameAttachedToGraph graph;
-  auto errors = sdf::buildFrameAttachedToGraph(graph, model);
-  EXPECT_TRUE(errors.empty());
+  auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+  sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
+  errors = sdf::buildFrameAttachedToGraph(graph, model);
+  EXPECT_TRUE(errors.empty()) << errors;
   EXPECT_TRUE(sdf::validateFrameAttachedToGraph(graph).empty());
   EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
   EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
-  EXPECT_EQ(6u, graph.map.size());
-  EXPECT_EQ(6u, graph.graph.Vertices().size());
-  EXPECT_EQ(5u, graph.graph.Edges().size());
+  EXPECT_EQ(6u, graph.Map().size());
+  EXPECT_EQ(6u, graph.Graph().Vertices().size());
+  EXPECT_EQ(5u, graph.Graph().Edges().size());
 
-  EXPECT_EQ(1u, graph.map.count("__model__"));
-  EXPECT_EQ(1u, graph.map.count("L"));
-  EXPECT_EQ(1u, graph.map.count("F00"));
-  EXPECT_EQ(1u, graph.map.count("F0"));
-  EXPECT_EQ(1u, graph.map.count("F1"));
-  EXPECT_EQ(1u, graph.map.count("F2"));
-  EXPECT_EQ(0u, graph.map.count("invalid"));
+  EXPECT_EQ(1u, graph.Count("__model__"));
+  EXPECT_EQ(1u, graph.Count("L"));
+  EXPECT_EQ(1u, graph.Count("F00"));
+  EXPECT_EQ(1u, graph.Count("F0"));
+  EXPECT_EQ(1u, graph.Count("F1"));
+  EXPECT_EQ(1u, graph.Count("F2"));
+  EXPECT_EQ(0u, graph.Count("invalid"));
 
   std::string resolvedBody;
   EXPECT_TRUE(
@@ -108,29 +111,34 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_World)
 
   // Load the SDF file
   sdf::Root root;
-  EXPECT_TRUE(root.Load(testFile).empty());
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
 
   // Get the first world
   const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_TRUE(world);
 
-  sdf::FrameAttachedToGraph graph;
-  auto errors = sdf::buildFrameAttachedToGraph(graph, world);
+  auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+  sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
+  errors = sdf::buildFrameAttachedToGraph(graph, world);
   EXPECT_TRUE(errors.empty());
-  EXPECT_TRUE(sdf::validateFrameAttachedToGraph(graph).empty());
+  std::cout << graph.Graph() << std::endl;
+  errors = sdf::validateFrameAttachedToGraph(graph);
+  EXPECT_TRUE(errors.empty()) << errors;
   EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
   EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
-  EXPECT_EQ(6u, graph.map.size());
-  EXPECT_EQ(6u, graph.graph.Vertices().size());
-  EXPECT_EQ(4u, graph.graph.Edges().size());
+  EXPECT_EQ(9u, graph.Map().size());
+  EXPECT_EQ(9u, graph.Graph().Vertices().size());
+  EXPECT_EQ(7u, graph.Graph().Edges().size());
 
-  EXPECT_EQ(1u, graph.map.count("world"));
-  EXPECT_EQ(1u, graph.map.count("world_frame"));
-  EXPECT_EQ(1u, graph.map.count("F0"));
-  EXPECT_EQ(1u, graph.map.count("F1"));
-  EXPECT_EQ(1u, graph.map.count("F2"));
-  EXPECT_EQ(1u, graph.map.count("M1"));
-  EXPECT_EQ(0u, graph.map.count("invalid"));
+  EXPECT_EQ(1u, graph.Count("world"));
+  EXPECT_EQ(1u, graph.Count("world_frame"));
+  EXPECT_EQ(1u, graph.Count("F0"));
+  EXPECT_EQ(1u, graph.Count("F1"));
+  EXPECT_EQ(1u, graph.Count("F2"));
+  EXPECT_EQ(1u, graph.Count("M1"));
+  EXPECT_EQ(0u, graph.Count("invalid"));
 
   std::string resolvedBody;
   EXPECT_TRUE(
@@ -148,10 +156,10 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_World)
   EXPECT_EQ("world", resolvedBody);
   EXPECT_TRUE(
     sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1").empty());
-  EXPECT_EQ("M1", resolvedBody);
+  EXPECT_EQ("M1::L", resolvedBody);
   EXPECT_TRUE(
     sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F2").empty());
-  EXPECT_EQ("M1", resolvedBody);
+  EXPECT_EQ("M1::L", resolvedBody);
 
   // Try to resolve invalid frame name
   errors = sdf::resolveFrameAttachedToBody(resolvedBody, graph, "invalid");
@@ -168,19 +176,20 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_World)
   ASSERT_NE(nullptr, world);
   const sdf::Model *model = world->ModelByIndex(0);
 
-  sdf::FrameAttachedToGraph modelGraph;
+  auto ownedModelGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+  sdf::ScopedGraph<sdf::FrameAttachedToGraph> modelGraph(ownedModelGraph);
   errors = sdf::buildFrameAttachedToGraph(modelGraph, model);
   EXPECT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::validateFrameAttachedToGraph(modelGraph).empty());
 
-  EXPECT_EQ(3u, modelGraph.map.size());
-  EXPECT_EQ(3u, modelGraph.graph.Vertices().size());
-  EXPECT_EQ(2u, modelGraph.graph.Edges().size());
+  EXPECT_EQ(3u, modelGraph.Map().size());
+  EXPECT_EQ(3u, modelGraph.Graph().Vertices().size());
+  EXPECT_EQ(2u, modelGraph.Graph().Edges().size());
 
-  EXPECT_EQ(1u, modelGraph.map.count("L"));
-  EXPECT_EQ(1u, modelGraph.map.count("__model__"));
-  EXPECT_EQ(1u, modelGraph.map.count("F0"));
-  EXPECT_EQ(0u, modelGraph.map.count("invalid"));
+  EXPECT_EQ(1u, modelGraph.Count("L"));
+  EXPECT_EQ(1u, modelGraph.Count("__model__"));
+  EXPECT_EQ(1u, modelGraph.Count("F0"));
+  EXPECT_EQ(0u, modelGraph.Count("invalid"));
 
   EXPECT_TRUE(
     sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "L").empty());
@@ -208,23 +217,24 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
 
-  sdf::PoseRelativeToGraph graph;
+  auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
+  sdf::ScopedGraph<sdf::PoseRelativeToGraph> graph(ownedGraph);
   auto errors = sdf::buildPoseRelativeToGraph(graph, model);
   EXPECT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::validatePoseRelativeToGraph(graph).empty());
 
-  EXPECT_EQ(8u, graph.map.size());
-  EXPECT_EQ(8u, graph.graph.Vertices().size());
-  EXPECT_EQ(7u, graph.graph.Edges().size());
+  EXPECT_EQ(8u, graph.Map().size());
+  EXPECT_EQ(8u, graph.Graph().Vertices().size());
+  EXPECT_EQ(7u, graph.Graph().Edges().size());
 
-  EXPECT_EQ(1u, graph.map.count("__model__"));
-  EXPECT_EQ(1u, graph.map.count("P"));
-  EXPECT_EQ(1u, graph.map.count("C"));
-  EXPECT_EQ(1u, graph.map.count("J"));
-  EXPECT_EQ(1u, graph.map.count("F1"));
-  EXPECT_EQ(1u, graph.map.count("F2"));
-  EXPECT_EQ(1u, graph.map.count("F3"));
-  EXPECT_EQ(1u, graph.map.count("F4"));
+  EXPECT_EQ(1u, graph.Map().count("__model__"));
+  EXPECT_EQ(1u, graph.Map().count("P"));
+  EXPECT_EQ(1u, graph.Map().count("C"));
+  EXPECT_EQ(1u, graph.Map().count("J"));
+  EXPECT_EQ(1u, graph.Map().count("F1"));
+  EXPECT_EQ(1u, graph.Map().count("F2"));
+  EXPECT_EQ(1u, graph.Map().count("F3"));
+  EXPECT_EQ(1u, graph.Map().count("F4"));
 
   // Test resolvePoseRelativeToRoot for each frame.
   ignition::math::Pose3d pose;
@@ -300,7 +310,8 @@ TEST(FrameSemantics, updateGraphPose)
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
 
-  sdf::PoseRelativeToGraph graph;
+  auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
+  sdf::ScopedGraph<sdf::PoseRelativeToGraph> graph(ownedGraph);
   {
     sdf::Errors errors = sdf::buildPoseRelativeToGraph(graph, model);
     EXPECT_TRUE(errors.empty());

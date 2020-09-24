@@ -161,10 +161,6 @@ Errors Root::Load(SDFPtr _sdf)
                 "World with name[" + world.Name() + "] already exists."
                 " Each world must have a unique name. Skipping this world."});
         }
-        else
-        {
-          this->dataPtr->worlds.push_back(std::move(world));
-        }
       }
       else
       {
@@ -173,6 +169,7 @@ Errors Root::Load(SDFPtr _sdf)
         errors.push_back({ErrorCode::ELEMENT_INVALID,
                           "Failed to load a world."});
       }
+      this->dataPtr->worlds.push_back(std::move(world));
       elem = elem->GetNextElement("world");
     }
   }

@@ -35,7 +35,7 @@ using namespace sdf;
 class sdf::WorldPrivate
 {
   /// \brief Default constructor
-  public: WorldPrivate() = default;
+  public: WorldPrivate();
 
   /// \brief Copy constructor
   /// \param[in] _worldPrivate Joint axis to move.
@@ -95,10 +95,18 @@ class sdf::WorldPrivate
   public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
   /// \brief Pose Relative-To Graph constructed during Load.
-  // public: std::shared_ptr<sdf::PoseRelativeToGraph> poseRelativeToGraph;
-  public: sdf::PoseRelativeToGraph ownedPoseRelativeToGraph;
+  public: std::shared_ptr<sdf::PoseRelativeToGraph> ownedPoseRelativeToGraph;
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
+
+/////////////////////////////////////////////////
+WorldPrivate::WorldPrivate()
+    : ownedFrameAttachedToGraph(std::make_shared<sdf::FrameAttachedToGraph>())
+    , frameAttachedToGraph(ownedFrameAttachedToGraph)
+    , ownedPoseRelativeToGraph(std::make_shared<sdf::PoseRelativeToGraph>())
+    , poseRelativeToGraph(ownedPoseRelativeToGraph)
+{
+}
 
 /////////////////////////////////////////////////
 WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
@@ -123,16 +131,19 @@ WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
   {
     this->gui = std::make_unique<Gui>(*(_worldPrivate.gui));
   }
-  // if (_worldPrivate.frameAttachedToGraph)
-  // {
-  //   this->frameAttachedToGraph = std::make_shared<sdf::FrameAttachedToGraph>(
-  //       *(_worldPrivate.frameAttachedToGraph));
-  // }
-  // if (_worldPrivate.poseRelativeToGraph)
-  // {
-  //   this->poseRelativeToGraph = std::make_shared<sdf::PoseRelativeToGraph>(
-  //       *(_worldPrivate.poseRelativeToGraph));
-  // }
+  if (_worldPrivate.ownedFrameAttachedToGraph)
+  {
+    this->ownedFrameAttachedToGraph =
+        std::make_shared<sdf::FrameAttachedToGraph>(
+            *(_worldPrivate.ownedFrameAttachedToGraph));
+    this->frameAttachedToGraph = this->ownedFrameAttachedToGraph;
+  }
+  if (_worldPrivate.ownedPoseRelativeToGraph)
+  {
+    this->ownedPoseRelativeToGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *(_worldPrivate.ownedPoseRelativeToGraph));
+    this->poseRelativeToGraph = this->ownedPoseRelativeToGraph;
+  }
   if (_worldPrivate.scene)
   {
     this->scene = std::make_unique<Scene>(*(_worldPrivate.scene));
@@ -157,20 +168,20 @@ World::~World()
 World::World(const World &_world)
   : dataPtr(new WorldPrivate(*_world.dataPtr))
 {
-  // for (auto &frame : this->dataPtr->frames)
-  // {
-  //   frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-  //   frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-  // }
-  // for (auto &model : this->dataPtr->models)
-  // {
-  //   model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-  // }
-  // for (auto &light : this->dataPtr->lights)
-  // {
-  //   light.SetXmlParentName("world");
-  //   light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-  // }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &light : this->dataPtr->lights)
+  {
+    light.SetXmlParentName("world");
+    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -270,9 +281,14 @@ Errors World::Load(sdf::ElementPtr _sdf)
   // name collisions
   std::unordered_set<std::string> frameNames;
 
+  std::function <void(Model &)> beforeLoad = [this](Model &_model)
+  {
+    _model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    _model.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  };
   // Load all the models.
   Errors modelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
-      this->dataPtr->models);
+      this->dataPtr->models, beforeLoad);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
   // Models are loaded first, and loadUniqueRepeated ensures there are no
@@ -355,10 +371,10 @@ Errors World::Load(sdf::ElementPtr _sdf)
     validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
   errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
                               validateFrameAttachedGraphErrors.end());
-  // for (auto &frame : this->dataPtr->frames)
-  // {
-  //   frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-  // }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  }
 
   Errors poseRelativeToGraphErrors =
   buildPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph, this);
@@ -368,21 +384,14 @@ Errors World::Load(sdf::ElementPtr _sdf)
     validatePoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   errors.insert(errors.end(), validatePoseGraphErrors.begin(),
                               validatePoseGraphErrors.end());
-  // for (auto &frame : this->dataPtr->frames)
-  // {
-  //   frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-  // }
-  for (auto &model : this->dataPtr->models)
+  for (auto &frame : this->dataPtr->frames)
   {
-    Errors setPoseRelativeToGraphErrors =
-      model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-    errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
-                                setPoseRelativeToGraphErrors.end());
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
   for (auto &light : this->dataPtr->lights)
   {
     light.SetXmlParentName("world");
-    // light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
 
   return errors;

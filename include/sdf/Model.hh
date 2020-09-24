@@ -38,6 +38,7 @@ namespace sdf
   class Link;
   class ModelPrivate;
   struct PoseRelativeToGraph;
+  struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;
 
   class SDFORMAT_VISIBLE Model
@@ -288,7 +289,11 @@ namespace sdf
     private: sdf::Errors SetPoseRelativeToGraph(
         sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
-    /// \brief Allow World::Load to call SetPoseRelativeToGraph.
+    private: void SetFrameAttachedToGraph(
+        sdf::ScopedGraph<FrameAttachedToGraph> _graph);
+
+    /// \brief Allow World::Load to call SetPoseRelativeToGraph and
+    /// SetFrameAttachedToGraph
     friend class World;
 
     /// \brief Private data pointer.

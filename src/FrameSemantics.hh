@@ -95,7 +95,20 @@ namespace sdf
     /// named __model__ or world. Each vertex stores its FrameType and each edge
     /// stores the Pose3 between those frames.
     using Pose3d = ignition::math::Pose3d;
-    using GraphType = ignition::math::graph::DirectedGraph<FrameType, Pose3d>;
+    struct Edge {
+      Edge() = default;
+      Edge(const Pose3d &_pose)
+          : pose(_pose)
+      {
+      }
+      Edge(const Pose3d &_pose, bool _aliasing)
+          : pose(_pose), aliasing(_aliasing)
+      {
+      }
+      Pose3d pose;
+      bool aliasing{false};
+    };
+    using GraphType = ignition::math::graph::DirectedGraph<FrameType, Edge>;
     GraphType graph;
 
     /// \brief A Map from Vertex names to Vertex Ids.
