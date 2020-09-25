@@ -859,7 +859,7 @@ class PlacementFrame: public ::testing::Test
     {
       std::cout << this->root.Element()->ToString("") << std::endl;
     }
-    EXPECT_TRUE(errors.empty());
+    EXPECT_TRUE(errors.empty()) << errors;
 
     this->world = this->root.WorldByIndex(0);
     ASSERT_NE(nullptr, world);

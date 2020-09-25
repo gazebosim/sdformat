@@ -62,6 +62,8 @@ class ScopedGraph
 
   public: ScopedGraph() = default;
   public: ScopedGraph(const std::shared_ptr<T> _graph);
+  public: ScopedGraph<T> ChildScope(const std::string &_name, const
+    std::string &_scopeName);
   public: explicit operator bool() const;
 
   public: const MathGraphType &Graph() const;
@@ -104,6 +106,18 @@ class ScopedGraph
 template <typename T>
 ScopedGraph<T>::ScopedGraph(const std::shared_ptr<T> _graph): graphWeak(_graph)
 {
+}
+
+/////////////////////////////////////////////////
+template <typename T>
+ScopedGraph<T> ScopedGraph<T>::ChildScope(
+    const std::string &_name, const std::string &_scopeName)
+{
+  auto newScopedGraph = *this;
+  newScopedGraph.scopeVertexId = newScopedGraph.VertexIdByName(_name);
+  newScopedGraph.prefix = this->AddPrefix(_name);
+  newScopedGraph.scopeName = _scopeName;
+  return newScopedGraph;
 }
 
 /////////////////////////////////////////////////

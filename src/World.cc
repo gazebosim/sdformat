@@ -281,14 +281,9 @@ Errors World::Load(sdf::ElementPtr _sdf)
   // name collisions
   std::unordered_set<std::string> frameNames;
 
-  std::function <void(Model &)> beforeLoad = [this](Model &_model)
-  {
-    _model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-    _model.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-  };
   // Load all the models.
-  Errors modelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
-      this->dataPtr->models, beforeLoad);
+  Errors modelLoadErrors =
+      loadUniqueRepeated<Model>(_sdf, "model", this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
   // Models are loaded first, and loadUniqueRepeated ensures there are no
@@ -387,6 +382,16 @@ Errors World::Load(sdf::ElementPtr _sdf)
   for (auto &frame : this->dataPtr->frames)
   {
     frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    Errors setPoseRelativeToGraphErrors =
+      model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
+                                setPoseRelativeToGraphErrors.end());
+    errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
+                                setPoseRelativeToGraphErrors.end());
+    model.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
   }
   for (auto &light : this->dataPtr->lights)
   {

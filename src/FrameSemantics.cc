@@ -33,6 +33,15 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
 
+void printGraph(const ScopedGraph<PoseRelativeToGraph> &_graph)
+{
+  std::cout << _graph.Graph() << std::endl;
+}
+void printGraph(const ScopedGraph<FrameAttachedToGraph> &_graph)
+{
+  std::cout << _graph.Graph() << std::endl;
+}
+
 // The following two functions were originally submitted to ign-math,
 // but were not accepted as they were not generic enough.
 // For now, they will be kept here.
@@ -181,6 +190,9 @@ Errors buildFrameAttachedToGraph(
 {
   Errors errors;
 
+  if (_model->Static())
+    return errors;
+
   // add implicit model frame vertex first
   const std::string scopeName = "__model__";
   _out.SetScopeName(scopeName);
@@ -207,6 +219,8 @@ Errors buildFrameAttachedToGraph(
     return errors;
   }
 
+  // TODO (addisu) Handle finding the canonical link in a nested model.
+  // TODO (addisu) Handle models with no links
   // identify canonical link
   const sdf::Link *canonicalLink = nullptr;
   if (_model->CanonicalLinkName().empty())
@@ -361,7 +375,7 @@ Errors buildFrameAttachedToGraph(
     _out.AddEdge({frameId, attachedToId}, edgeData);
   }
 
-  std::cout << "Model FrameAttachedToGraph\n" << _out.Graph() << std::endl;
+  // std::cout << "Model FrameAttachedToGraph\n" << _out.Graph() << std::endl;
   return errors;
 }
 
@@ -476,7 +490,7 @@ Errors buildFrameAttachedToGraph(
     _out.AddEdge({frameId, attachedToId}, edgeData);
   }
 
-  std::cout << "World FrameAttachedToGraph\n" << _out.Graph() << std::endl;
+  // std::cout << "World FrameAttachedToGraph\n" << _out.Graph() << std::endl;
   return errors;
 }
 
@@ -761,7 +775,7 @@ Errors buildPoseRelativeToGraph(
     _out.AddEdge({relativeToId, nestedModelId}, nestedModel->RawPose());
   }
 
-  std::cout << "Model PoseRelativeToGraph\n" << _out.Graph() << std::endl;
+  // std::cout << "Model PoseRelativeToGraph\n" << _out.Graph() << std::endl;
   return errors;
 }
 
@@ -938,7 +952,7 @@ Errors buildPoseRelativeToGraph(
     _out.AddEdge({relativeToId, frameId}, frame->RawPose());
   }
 
-  std::cout << "World PoseRelativeToGraph\n" << _out.Graph() << std::endl;
+  // std::cout << "World PoseRelativeToGraph\n" << _out.Graph() << std::endl;
   return errors;
 }
 
@@ -1026,22 +1040,6 @@ Errors validateFrameAttachedToGraph(const ScopedGraph<FrameAttachedToGraph> &_in
                 "in MODEL attached_to graph."});
           }
           break;
-        case sdf::FrameType::MODEL:
-          if (_in.ScopeVertexId() != vertexPair.second.get().Id())
-          {
-            if (outDegree != 0)
-            {
-              errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
-                  "FrameAttachedToGraph error, "
-                  "nested MODEL vertex with name [" +
-                  vertexName +
-                  "] should have no outgoing edges "
-                  "in MODEL attached_to graph."});
-            }
-            break;
-          }
-          // fall through to default case for __model__
-          [[fallthrough]];
         default:
           if (outDegree == 0)
           {
@@ -1075,7 +1073,7 @@ Errors validateFrameAttachedToGraph(const ScopedGraph<FrameAttachedToGraph> &_in
           {
             errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
                 "FrameAttachedToGraph error, "
-                "MODEL and WORLD vertices should have no outgoing edges "
+                "WORLD vertices should have no outgoing edges "
                 "in WORLD attached_to graph."});
           }
           break;
@@ -1206,7 +1204,7 @@ Errors validatePoseRelativeToGraph(
         case sdf::FrameType::MODEL:
           // TODO: What we have to check here is that if this is the scope
           // vertex any incoming edge is from outside this scope.
-          if (_in.ScopeVertexId() == vertexPair.second.get().Id())
+          if (sdf::endswith(vertexName, "__model__"))
           {
             if (inDegree != 0)
             {
@@ -1283,12 +1281,12 @@ Errors validatePoseRelativeToGraph(
   }
 
   // check graph for cycles by resolving pose of each vertex relative to root
-  // for (auto const &name : _in.VertexNames())
-  // {
-  //   ignition::math::Pose3d pose;
-  //   Errors e = resolvePoseRelativeToRoot(pose, _in, name);
-  //   errors.insert(errors.end(), e.begin(), e.end());
-  // }
+  for (auto const &name : _in.VertexNames())
+  {
+    ignition::math::Pose3d pose;
+    Errors e = resolvePoseRelativeToRoot(pose, _in, name);
+    errors.insert(errors.end(), e.begin(), e.end());
+  }
 
   return errors;
 }
@@ -1340,7 +1338,7 @@ Errors resolveFrameAttachedToBody(
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
         "Graph has world scope but sink vertex named [" +
-        sinkVertex.Name() + "] does not have FrameType WORLD or MODEL "
+        sinkVertex.Name() + "] does not have FrameType WORLD or LINK "
         "when starting from vertex with name [" + _vertexName + "]."});
     return errors;
   }
