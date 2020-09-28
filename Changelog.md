@@ -2,7 +2,7 @@
 
 ### libsdformat 10.X.X (202X-XX-XX)
 
-### libsdformat 10.0.0 (202X-XX-XX)
+### libsdformat 10.0.0 (2020-09-28)
 
 1. Return positive `INF` instead of `-1` in DOM API for unbounded symmetric joint limits.
     * [Pull request 357](https://github.com/osrf/sdformat/pull/357)
@@ -33,7 +33,7 @@
 1. Make parsing of values syntactically more strict with bad values generating an error.
     * [Pull request 244](https://github.com/osrf/sdformat/pull/244)
 
-1. Don't install deprecated parser_urdf.hh header file, fix cmake warning about newline file, fix cmake warning about newlines.
+1. Don't install deprecated parser\_urdf.hh header file, fix cmake warning about newline file, fix cmake warning about newlines.
     * [Pull request 276](https://github.com/osrf/sdformat/pull/276)
 
 1. Remove deprecated Pose(), PoseFrame() functions from DOM objects.
