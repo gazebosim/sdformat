@@ -229,17 +229,6 @@ sdf::Errors JointAxis::SetXyz(const ignition::math::Vector3d &_xyz)
 }
 
 /////////////////////////////////////////////////
-bool JointAxis::UseParentModelFrame() const
-{
-  return this->dataPtr->useParentModelFrame;
-}
-/////////////////////////////////////////////////
-void JointAxis::SetUseParentModelFrame(const bool _parentModelFrame)
-{
-  this->dataPtr->useParentModelFrame = _parentModelFrame;
-}
-
-/////////////////////////////////////////////////
 double JointAxis::Damping() const
 {
   return this->dataPtr->damping;
