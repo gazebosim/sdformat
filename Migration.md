@@ -34,11 +34,15 @@ but with improved human-readability..
 1. + Removed the `parser_urdf.hh` header file and its `URDF2SDF` class
    + [Pull request 276](https://github.com/osrf/sdformat/pull/276)
 
-1. + Removed the deprecated `Pose()`, `SetPose(), and `*PoseFrame()` API's in all DOM classes:
+1. + Removed the deprecated `Pose()`, `SetPose(), and `*PoseFrame()` APIs in all DOM classes:
    + const ignition::math::Pose3d &Pose()
    + void SetPose(const ignition::math::Pose3d &)
    + const std::string &PoseFrame()
    + void SetPoseFrame(const std::string &)
+
+1. + Removed deprecated functions from **sdf/JointAxis.hh**:
+   + bool UseParentModelFrame()
+   + void SetUseParentModelFrame(bool)
 
 ### Additions
 
