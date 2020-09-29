@@ -303,10 +303,11 @@ Errors Model::Load(ElementPtr _sdf)
     frameNames.insert(linkName);
   }
 
-  // If the model is not static:
+  // If the model is not static and has no nested models:
   // Require at least one link so the implicit model frame can be attached to
   // something.
-  if (!this->Static() && this->dataPtr->links.empty())
+  if (!this->Static() && this->dataPtr->links.empty() &&
+      this->dataPtr->models.empty())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
                      "A model must have at least one link."});
@@ -607,14 +608,7 @@ const Link *Model::LinkByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 bool Model::LinkNameExists(const std::string &_name) const
 {
-  for (auto const &l : this->dataPtr->links)
-  {
-    if (l.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return nullptr != this->LinkByName(_name);
 }
 
 /////////////////////////////////////////////////
@@ -634,19 +628,28 @@ const Joint *Model::JointByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 bool Model::JointNameExists(const std::string &_name) const
 {
-  for (auto const &j : this->dataPtr->joints)
-  {
-    if (j.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return nullptr != this->JointByName(_name);
 }
 
 /////////////////////////////////////////////////
 const Joint *Model::JointByName(const std::string &_name) const
 {
+  auto index = _name.rfind("::");
+  if (index != std::string::npos)
+  {
+    const Model *model = this->ModelByName(_name.substr(0, index));
+    if (nullptr != model)
+    {
+      return model->JointByName(_name.substr(index + 2));
+    }
+
+    // The nested model name preceding the last "::" could not be found.
+    // For now, try to find a link that matches _name exactly.
+    // When "::" are reserved and not allowed in names, then uncomment
+    // the following line to return a nullptr.
+    // return nullptr;
+  }
+
   for (auto const &j : this->dataPtr->joints)
   {
     if (j.Name() == _name)
@@ -674,19 +677,28 @@ const Frame *Model::FrameByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 bool Model::FrameNameExists(const std::string &_name) const
 {
-  for (auto const &f : this->dataPtr->frames)
-  {
-    if (f.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return nullptr != this->FrameByName(_name);
 }
 
 /////////////////////////////////////////////////
 const Frame *Model::FrameByName(const std::string &_name) const
 {
+  auto index = _name.rfind("::");
+  if (index != std::string::npos)
+  {
+    const Model *model = this->ModelByName(_name.substr(0, index));
+    if (nullptr != model)
+    {
+      return model->FrameByName(_name.substr(index + 2));
+    }
+
+    // The nested model name preceding the last "::" could not be found.
+    // For now, try to find a link that matches _name exactly.
+    // When "::" are reserved and not allowed in names, then uncomment
+    // the following line to return a nullptr.
+    // return nullptr;
+  }
+
   for (auto const &f : this->dataPtr->frames)
   {
     if (f.Name() == _name)
@@ -714,39 +726,71 @@ const Model *Model::ModelByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 bool Model::ModelNameExists(const std::string &_name) const
 {
-  for (auto const &m : this->dataPtr->models)
-  {
-    if (m.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return nullptr != this->ModelByName(_name);
 }
 
 /////////////////////////////////////////////////
 const Model *Model::ModelByName(const std::string &_name) const
 {
+  auto index = _name.find("::");
+  const std::string nextModelName = _name.substr(0, index);
+  const Model *nextModel = nullptr;
+
   for (auto const &m : this->dataPtr->models)
   {
-    if (m.Name() == _name)
+    if (m.Name() == nextModelName)
     {
-      return &m;
+      nextModel = &m;
+      break;
     }
   }
-  return nullptr;
+
+  if (nullptr != nextModel && index != std::string::npos)
+  {
+    return nextModel->ModelByName(_name.substr(index + 2));
+  }
+  return nextModel;
 }
 
 /////////////////////////////////////////////////
 const Link *Model::CanonicalLink() const
 {
+  return this->CanonicalLinkAndRelativeName().first;
+}
+
+/////////////////////////////////////////////////
+std::pair<const Link*, std::string> Model::CanonicalLinkAndRelativeName() const
+{
   if (this->CanonicalLinkName().empty())
   {
-    return this->LinkByIndex(0);
+    if (this->LinkCount() > 0)
+    {
+      auto firstLink = this->LinkByIndex(0);
+      return std::make_pair(firstLink, firstLink->Name());
+    }
+    else if (this->ModelCount() > 0)
+    {
+      // Recursively choose the canonical link of the first nested model
+      // (depth first search).
+      auto firstModel = this->ModelByIndex(0);
+      auto canonicalLinkAndName = firstModel->CanonicalLinkAndRelativeName();
+      // Prepend firstModelName if a valid link is found.
+      if (nullptr != canonicalLinkAndName.first)
+      {
+        canonicalLinkAndName.second =
+            firstModel->Name() + "::" + canonicalLinkAndName.second;
+      }
+      return canonicalLinkAndName;
+    }
+    else
+    {
+      return std::make_pair(nullptr, "");
+    }
   }
   else
   {
-    return this->LinkByName(this->CanonicalLinkName());
+    return std::make_pair(this->LinkByName(this->CanonicalLinkName()),
+                          this->CanonicalLinkName());
   }
 }
 
@@ -849,6 +893,22 @@ sdf::SemanticPose Model::SemanticPose() const
 /////////////////////////////////////////////////
 const Link *Model::LinkByName(const std::string &_name) const
 {
+  auto index = _name.rfind("::");
+  if (index != std::string::npos)
+  {
+    const Model *model = this->ModelByName(_name.substr(0, index));
+    if (nullptr != model)
+    {
+      return model->LinkByName(_name.substr(index + 2));
+    }
+
+    // The nested model name preceding the last "::" could not be found.
+    // For now, try to find a link that matches _name exactly.
+    // When "::" are reserved and not allowed in names, then uncomment
+    // the following line to return a nullptr.
+    // return nullptr;
+  }
+
   for (auto const &l : this->dataPtr->links)
   {
     if (l.Name() == _name)

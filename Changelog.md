@@ -7,6 +7,15 @@
 1. Initial version of SDFormat 1.8 specification.
     * [BitBucket pull request 682](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/682)
 
+1. SDFormat 1.8: Support specifying frames as joint child/parent.
+    * [Pull request 304](https://github.com/osrf/sdformat/pull/304)
+
+1. SDFormat 1.8: Add support for `//include/placement_frame` and `//model/@placement_frame`.
+    * [Pull request 324](https://github.com/osrf/sdformat/pull/324)
+
+1. SDFormat 1.8: Support explicit nested canonical links with :: syntax.
+    * [Pull request 353](https://github.com/osrf/sdformat/pull/353)
+
 1. SDFormat 1.8: Deprecate //joint/axis/initial_position.
     * [BitBucket pull request 683](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/683)
 
@@ -46,9 +55,13 @@
 
 1. Support nested models in DOM and frame semantics.
     * [Pull request 316](https://github.com/osrf/sdformat/pull/316)
+    + [Pull request 341](https://github.com/osrf/sdformat/pull/341)
 
 1. Find python3 in cmake, fix cmake warning.
     * [Pull request 328](https://github.com/osrf/sdformat/pull/328)
+
+1. Fix Actor copy operators and increase test coverage.
+    * [Pull request 301](https://github.com/osrf/sdformat/pull/301)
 
 1. Change bitbucket links to GitHub.
     * [Pull request 240](https://github.com/osrf/sdformat/pull/240)
@@ -258,6 +271,9 @@
 ## libsdformat 8.0
 
 ### libsdformat 8.X.X (202X-XX-XX)
+
+1. Fix Actor copy operators and increase test coverage.
+    * [Pull request 301](https://github.com/osrf/sdformat/pull/301)
 
 1. Increase output precision of URDF to SDF conversion, output -0 as 0.
     * [BitBucket pull request 675](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/675)

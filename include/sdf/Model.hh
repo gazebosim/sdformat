@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
@@ -146,11 +147,15 @@ namespace sdf
 
     /// \brief Get a link based on a name.
     /// \param[in] _name Name of the link.
+    /// To get a link in a nested model, prefix the link name with the
+    /// sequence of nested models containing this link, delimited by "::".
     /// \return Pointer to the link. Nullptr if the name does not exist.
     public: const Link *LinkByName(const std::string &_name) const;
 
     /// \brief Get whether a link name exists.
     /// \param[in] _name Name of the link to check.
+    /// To check for a link in a nested model, prefix the link name with
+    /// the sequence of nested models containing this link, delimited by "::".
     /// \return True if there exists a link with the given name.
     public: bool LinkNameExists(const std::string &_name) const;
 
@@ -167,11 +172,15 @@ namespace sdf
 
     /// \brief Get whether a joint name exists.
     /// \param[in] _name Name of the joint to check.
+    /// To check for a joint in a nested model, prefix the link name with
+    /// the sequence of nested models containing this joint, delimited by "::".
     /// \return True if there exists a joint with the given name.
     public: bool JointNameExists(const std::string &_name) const;
 
     /// \brief Get a joint based on a name.
     /// \param[in] _name Name of the joint.
+    /// To get a joint in a nested model, prefix the joint name with the
+    /// sequence of nested models containing this joint, delimited by "::".
     /// \return Pointer to the joint. Nullptr if a joint with the given name
     ///  does not exist.
     /// \sa bool JointNameExists(const std::string &_name) const
@@ -191,12 +200,16 @@ namespace sdf
 
     /// \brief Get an explicit frame based on a name.
     /// \param[in] _name Name of the explicit frame.
+    /// To get a frame in a nested model, prefix the frame name with the
+    /// sequence of nested models containing this frame, delimited by "::".
     /// \return Pointer to the explicit frame. Nullptr if the name does not
     /// exist.
     public: const Frame *FrameByName(const std::string &_name) const;
 
     /// \brief Get whether an explicit frame name exists.
     /// \param[in] _name Name of the explicit frame to check.
+    /// To check for a frame in a nested model, prefix the frame name with
+    /// the sequence of nested models containing this frame, delimited by "::".
     /// \return True if there exists an explicit frame with the given name.
     public: bool FrameNameExists(const std::string &_name) const;
 
@@ -213,11 +226,15 @@ namespace sdf
 
     /// \brief Get whether a nested model name exists.
     /// \param[in] _name Name of the nested model to check.
+    /// To check for a model nested in other models, prefix the model name
+    /// with the sequence of nested model names, delimited by "::".
     /// \return True if there exists a nested model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
 
     /// \brief Get a nested model based on a name.
     /// \param[in] _name Name of the nested model.
+    /// To get a model nested in other models, prefix the model name
+    /// with the sequence of nested model names, delimited by "::".
     /// \return Pointer to the model. Nullptr if a model with the given name
     ///  does not exist.
     /// \sa bool ModelNameExists(const std::string &_name) const
@@ -240,12 +257,14 @@ namespace sdf
     public: const Link *CanonicalLink() const;
 
     /// \brief Get the name of the model's canonical link. An empty value
-    /// indicates that the first link in the model is the canonical link.
+    /// indicates that the first link in the model or the first link found
+    /// in a depth first search of nested models is the canonical link.
     /// \return The name of the canonical link.
     public: const std::string &CanonicalLinkName() const;
 
     /// \brief Set the name of the model's canonical link. An empty value
-    /// indicates that the first link in the model is the canonical link.
+    /// indicates that the first link in the model or the first link found
+    /// in a depth first search of nested models is the canonical link.
     /// \param[in] _canonicalLink The name of the canonical link.
     public: void SetCanonicalLinkName(const std::string &_canonicalLink);
 
@@ -291,10 +310,21 @@ namespace sdf
 
     private: void SetFrameAttachedToGraph(
         sdf::ScopedGraph<FrameAttachedToGraph> _graph);
+    /// \brief Get the model's canonical link and the nested name of the link
+    /// relative to the current model, delimited by "::".
+    /// \return An immutable pointer to the canonical link and the nested
+    /// name of the link relative to the current model.
+    private: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
+        const;
 
     /// \brief Allow World::Load to call SetPoseRelativeToGraph and
     /// SetFrameAttachedToGraph
     friend class World;
+
+    /// \brief Allow helper function in FrameSemantics.cc to call
+    /// CanonicalLinkAndRelativeName.
+    friend std::pair<const Link *, std::string>
+        modelCanonicalLinkAndRelativeName(const Model *);
 
     /// \brief Private data pointer.
     private: ModelPrivate *dataPtr = nullptr;
