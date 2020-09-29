@@ -64,6 +64,10 @@ but with improved human-readability..
    + const std::string &PoseFrame()
    + void SetPoseFrame(const std::string &)
 
+1. + Removed deprecated functions from **sdf/JointAxis.hh**:
+   + bool UseParentModelFrame()
+   + void SetUseParentModelFrame(bool)
+
 ### Additions
 
 1. **sdf/Element.hh**

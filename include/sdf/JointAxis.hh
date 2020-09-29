@@ -85,8 +85,9 @@ namespace sdf
     public: void SetInitialPosition(const double _pos) SDF_DEPRECATED(10.0);
 
     /// \brief Get the x,y,z components of the axis unit vector.
-    /// The axis is expressed in the joint frame unless UseParentModelFrame
-    /// is true. The vector should be normalized.
+    /// The axis is expressed in the frame named in XyzExpressedIn() and
+    /// defaults to the joint frame if that method returns an empty string.
+    /// The vector should be normalized.
     /// The default value is ignition::math::Vector3d::UnitZ which equals
     /// (0, 0, 1).
     /// \return The x,y,z components of the axis unit vector.
@@ -99,22 +100,6 @@ namespace sdf
     /// \return Errors will have an entry if the norm of the xyz vector is 0.
     public: [[nodiscard]] sdf::Errors SetXyz(
                 const ignition::math::Vector3d &_xyz);
-
-    /// \brief Get whether to interpret the axis xyz value in the parent model
-    /// frame instead of joint frame. The default value is false.
-    /// \return True to interpret the axis xyz value in the parent model
-    /// frame, false to use the joint frame.
-    /// \sa void SetUseParentModelFrame(const bool _parentModelFrame)
-    public: bool UseParentModelFrame() const
-        SDF_DEPRECATED(9.0);
-
-    /// \brief Set whether to interpret the axis xyz value in the parent model
-    /// instead of the joint frame.
-    /// \param[in] _parentModelFrame True to interpret the axis xyz value in
-    /// the parent model frame, false to use the joint frame.
-    /// \sa bool UseParentModelFrame() const
-    public: void SetUseParentModelFrame(const bool _parentModelFrame)
-        SDF_DEPRECATED(9.0);
 
     /// \brief Get the physical velocity dependent viscous damping coefficient
     /// of the joint axis. The default value is zero (0.0).
