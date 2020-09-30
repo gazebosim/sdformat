@@ -39,6 +39,9 @@
 1. Remove deprecated Pose(), PoseFrame() functions from DOM objects.
     * [Pull request 308](https://github.com/osrf/sdformat/pull/308)
 
+1. Remove deprecated UseParentModelFrame methods from JointAxis DOM.
+    * [Pull request 379](https://github.com/osrf/sdformat/pull/379)
+
 1. Changed the default radius of a Cylinder from 1.0 to 0.5 meters.
     * [BitBucket pull request 643](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/643)
 
