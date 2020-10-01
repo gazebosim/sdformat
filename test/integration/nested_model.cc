@@ -1018,4 +1018,3 @@ TEST_F(PlacementFrame, ModelPlacementFrameAttribute)
       "model_with_placement_frame_and_pose_relative_to", "L4");
 }
 
-// TODO (addisu) Add NestedModelPlacementFrameAttribute tests

@@ -69,6 +69,8 @@ namespace sdf
     FRAME = 4,
 
     STATIC_MODEL = 5,
+
+    ROOT = 6,
   };
 
   /// \brief Data structure for frame attached_to graphs for Model or World.
@@ -140,7 +142,7 @@ namespace sdf
   /// \param[in] _model Model from which to build attached_to graph.
   /// \return Errors.
   Errors buildPoseRelativeToGraph(
-              ScopedGraph<PoseRelativeToGraph> &_out, const Model *_model);
+              ScopedGraph<PoseRelativeToGraph> &_out, const Model *_model, bool _root = true);
 
   /// \brief Build a PoseRelativeToGraph for a world.
   /// \param[out] _out Graph object to write.

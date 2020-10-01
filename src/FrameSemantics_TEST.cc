@@ -222,10 +222,11 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   auto errors = sdf::buildPoseRelativeToGraph(graph, model);
   EXPECT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::validatePoseRelativeToGraph(graph).empty());
+  graph = graph.ChildScope(model->Name(), "__model__");
 
-  EXPECT_EQ(8u, graph.Map().size());
-  EXPECT_EQ(8u, graph.Graph().Vertices().size());
-  EXPECT_EQ(7u, graph.Graph().Edges().size());
+  EXPECT_EQ(10u, graph.Map().size());
+  EXPECT_EQ(10u, graph.Graph().Vertices().size());
+  EXPECT_EQ(9u, graph.Graph().Edges().size());
 
   EXPECT_EQ(1u, graph.Count("__model__"));
   EXPECT_EQ(1u, graph.Count("P"));
@@ -322,6 +323,7 @@ TEST(FrameSemantics, updateGraphPose)
 
   EXPECT_EQ(Pose3d::Zero, model->RawPose());
 
+  graph = graph.ChildScope(model->Name(), "__model__");
   {
     Pose3d pose;
     EXPECT_TRUE(sdf::resolvePose(pose, graph, "L1", "__model__").empty());

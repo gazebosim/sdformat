@@ -433,24 +433,27 @@ Errors Model::Load(ElementPtr _sdf)
         validatePoseRelativeToGraph(this->dataPtr->poseGraph);
     errors.insert(errors.end(), validatePoseGraphErrors.begin(),
         validatePoseGraphErrors.end());
+
+    auto childPoseGraph =
+      this->dataPtr->poseGraph.ChildScope(this->Name(), "__model__");
     for (auto &link : this->dataPtr->links)
     {
-      link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+      link.SetPoseRelativeToGraph(childPoseGraph);
     }
     for (auto &model : this->dataPtr->models)
     {
       Errors setPoseRelativeToGraphErrors =
-          model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+          model.SetPoseRelativeToGraph(childPoseGraph);
       errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
           setPoseRelativeToGraphErrors.end());
     }
     for (auto &joint : this->dataPtr->joints)
     {
-      joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+      joint.SetPoseRelativeToGraph(childPoseGraph);
     }
     for (auto &frame : this->dataPtr->frames)
     {
-      frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+      frame.SetPoseRelativeToGraph(childPoseGraph);
     }
   }
 
