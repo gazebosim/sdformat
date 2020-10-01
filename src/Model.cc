@@ -237,23 +237,17 @@ Errors Model::Load(ElementPtr _sdf)
   {
     // std::cout << "Creating owned graphs for " << this->Name() << std::endl;
     this->dataPtr->ownedPoseGraph = std::make_shared<PoseRelativeToGraph>();
-    this->SetPoseRelativeToGraph(this->dataPtr->ownedPoseGraph);
+    this->dataPtr->poseGraph = this->dataPtr->ownedPoseGraph;
     this->dataPtr->ownedFrameAttachedToGraph =
         std::make_shared<FrameAttachedToGraph>();
-    this->SetFrameAttachedToGraph(this->dataPtr->ownedFrameAttachedToGraph);
+    this->dataPtr->frameAttachedToGraph =
+        this->dataPtr->ownedFrameAttachedToGraph;
     modelFile = true;
   }
 
   // Set of implicit and explicit frame names in this model for tracking
   // name collisions
   std::unordered_set<std::string> frameNames;
-
-  // std::function <void(Model &)> beforeLoad = [this](Model &_model)
-  // {
-  //   // TODO (addisu)
-  //   _model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  //   _model.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-  // };
 
   // Load nested models.
   Errors nestedModelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
@@ -408,18 +402,8 @@ Errors Model::Load(ElementPtr _sdf)
           validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
       errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
           validateFrameAttachedGraphErrors.end());
-      for (auto &joint : this->dataPtr->joints)
-      {
-        joint.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-      }
-      for (auto &frame : this->dataPtr->frames)
-      {
-        frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-      }
-      for (auto &model : this->dataPtr->models)
-      {
-        model.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-      }
+
+      this->SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
     }
   }
 
@@ -434,27 +418,7 @@ Errors Model::Load(ElementPtr _sdf)
     errors.insert(errors.end(), validatePoseGraphErrors.begin(),
         validatePoseGraphErrors.end());
 
-    auto childPoseGraph =
-      this->dataPtr->poseGraph.ChildScope(this->Name(), "__model__");
-    for (auto &link : this->dataPtr->links)
-    {
-      link.SetPoseRelativeToGraph(childPoseGraph);
-    }
-    for (auto &model : this->dataPtr->models)
-    {
-      Errors setPoseRelativeToGraphErrors =
-          model.SetPoseRelativeToGraph(childPoseGraph);
-      errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
-          setPoseRelativeToGraphErrors.end());
-    }
-    for (auto &joint : this->dataPtr->joints)
-    {
-      joint.SetPoseRelativeToGraph(childPoseGraph);
-    }
-    for (auto &frame : this->dataPtr->frames)
-    {
-      frame.SetPoseRelativeToGraph(childPoseGraph);
-    }
+    this->SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
 
 
@@ -799,22 +763,22 @@ Errors Model::SetPoseRelativeToGraph(
       this->dataPtr->poseGraph.ChildScope(this->Name(), "__model__");
   for (auto &link : this->dataPtr->links)
   {
-    link.SetPoseRelativeToGraph(childPoseGraph );
+    link.SetPoseRelativeToGraph(childPoseGraph);
   }
   for (auto &model : this->dataPtr->models)
   {
     Errors setPoseRelativeToGraphErrors =
-        model.SetPoseRelativeToGraph(childPoseGraph );
+        model.SetPoseRelativeToGraph(childPoseGraph);
     errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
         setPoseRelativeToGraphErrors.end());
   }
   for (auto &joint : this->dataPtr->joints)
   {
-    joint.SetPoseRelativeToGraph(childPoseGraph );
+    joint.SetPoseRelativeToGraph(childPoseGraph);
   }
   for (auto &frame : this->dataPtr->frames)
   {
-    frame.SetPoseRelativeToGraph(childPoseGraph );
+    frame.SetPoseRelativeToGraph(childPoseGraph);
   }
   return errors;
 }
@@ -851,11 +815,16 @@ void Model::SetFrameAttachedToGraph(
 /////////////////////////////////////////////////
 sdf::SemanticPose Model::SemanticPose() const
 {
+  std::string scopeName = "";
+  if (this->dataPtr->poseGraph)
+  {
+    scopeName = this->dataPtr->poseGraph.ScopeName();
+  }
   return sdf::SemanticPose(
       this->dataPtr->name,
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
-      this->dataPtr->poseGraph.ScopeName(),
+      scopeName,
       this->dataPtr->poseGraph);
 }
 

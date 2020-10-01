@@ -58,9 +58,10 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_Model)
   EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
   EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
-  EXPECT_EQ(6u, graph.Map().size());
-  EXPECT_EQ(6u, graph.Graph().Vertices().size());
-  EXPECT_EQ(5u, graph.Graph().Edges().size());
+  graph = graph.ChildScope(model->Name(), "__model__");
+  EXPECT_EQ(8u, graph.Map().size());
+  EXPECT_EQ(8u, graph.Graph().Vertices().size());
+  EXPECT_EQ(6u, graph.Graph().Edges().size());
 
   EXPECT_EQ(1u, graph.Count("__model__"));
   EXPECT_EQ(1u, graph.Count("L"));
@@ -182,9 +183,11 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_World)
   EXPECT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::validateFrameAttachedToGraph(modelGraph).empty());
 
-  EXPECT_EQ(3u, modelGraph.Map().size());
-  EXPECT_EQ(3u, modelGraph.Graph().Vertices().size());
-  EXPECT_EQ(2u, modelGraph.Graph().Edges().size());
+  modelGraph = modelGraph.ChildScope(model->Name(), "__model__");
+
+  EXPECT_EQ(5u, modelGraph.Map().size());
+  EXPECT_EQ(5u, modelGraph.Graph().Vertices().size());
+  EXPECT_EQ(3u, modelGraph.Graph().Edges().size());
 
   EXPECT_EQ(1u, modelGraph.Count("L"));
   EXPECT_EQ(1u, modelGraph.Count("__model__"));

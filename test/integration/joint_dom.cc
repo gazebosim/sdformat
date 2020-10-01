@@ -564,9 +564,9 @@ TEST(DOMJoint, LoadInvalidChild)
       "found"));
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
   EXPECT_NE(std::string::npos,
-    errors[1].Message().find(
-      "FrameAttachedToGraph error, Non-LINK vertex with name [joint] is "
-      "disconnected"));
+      errors[1].Message().find("FrameAttachedToGraph error, Non-LINK vertex "
+                               "with name [joint_invalid_child::joint] is "
+                               "disconnected"));
   // errors[2]
   // errors[3]
   // errors[4]

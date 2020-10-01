@@ -68,6 +68,7 @@ namespace sdf
     /// \brief An explicit frame.
     FRAME = 4,
 
+    /// \brief An implicit model frame.
     STATIC_MODEL = 5,
 
     ROOT = 6,
@@ -127,8 +128,8 @@ namespace sdf
   /// \param[out] _out Graph object to write.
   /// \param[in] _model Model from which to build attached_to graph.
   /// \return Errors.
-  Errors buildFrameAttachedToGraph(
-              ScopedGraph<FrameAttachedToGraph> &_out, const Model *_model);
+  Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
+      const Model *_model, bool _root = true);
 
   /// \brief Build a FrameAttachedToGraph for a world.
   /// \param[out] _out Graph object to write.
