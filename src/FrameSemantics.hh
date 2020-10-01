@@ -67,6 +67,8 @@ namespace sdf
 
     /// \brief An explicit frame.
     FRAME = 4,
+
+    STATIC_MODEL = 5,
   };
 
   /// \brief Data structure for frame attached_to graphs for Model or World.

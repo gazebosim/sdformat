@@ -203,15 +203,14 @@ Errors buildFrameAttachedToGraph(
 {
   Errors errors;
 
-  if (_model->Static())
-    return errors;
-
   // add implicit model frame vertex first
   const std::string scopeName = "__model__";
   _out.SetScopeName(scopeName);
+
+  auto frameType =
+      _model->Static() ? sdf::FrameType::STATIC_MODEL : sdf::FrameType::MODEL;
   auto modelFrameId =
-      _out.AddScopeVertex(_model->Name(), scopeName, sdf::FrameType::MODEL)
-          .Id();
+      _out.AddScopeVertex(_model->Name(), scopeName, frameType).Id();
 
   if (!_model)
   {
@@ -225,7 +224,8 @@ Errors buildFrameAttachedToGraph(
         "Invalid model element in sdf::Model."});
     return errors;
   }
-  else if (_model->LinkCount() < 1 && _model->ModelCount() < 1)
+  else if (_model->LinkCount() < 1 && _model->ModelCount() < 1 &&
+      !_model->Static())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
                      "A model must have at least one link."});
@@ -236,7 +236,7 @@ Errors buildFrameAttachedToGraph(
   auto canonicalLinkAndName = modelCanonicalLinkAndRelativeName(_model);
   const sdf::Link *canonicalLink = canonicalLinkAndName.first;
   const std::string canonicalLinkName = canonicalLinkAndName.second;
-  if (nullptr == canonicalLink)
+  if (nullptr == canonicalLink && !_model->Static())
   {
     if (canonicalLinkName.empty())
     {
@@ -252,20 +252,6 @@ Errors buildFrameAttachedToGraph(
     // return early
     return errors;
   }
-
-  // Identify if the canonical link is in a nested model.
-  if (_model->LinkByName(canonicalLink->Name()) != canonicalLink)
-  {
-    // The canonical link is nested, so its vertex should be added
-    // here with an edge from __model__.
-    // The nested canonical link name should be a nested name
-    // relative to _model, delimited by "::".
-    auto linkId =
-        _out.graph.AddVertex(canonicalLinkName, sdf::FrameType::LINK).Id();
-    _out.map[canonicalLinkName] = linkId;
-    _out.graph.AddEdge({modelFrameId, linkId}, true);
-  }
-
   // add link vertices
   for (uint64_t l = 0; l < _model->LinkCount(); ++l)
   {
@@ -278,14 +264,13 @@ Errors buildFrameAttachedToGraph(
           "]."});
       continue;
     }
-    auto linkId =
-        _out.AddVertex(link->Name(), sdf::FrameType::LINK).Id();
+    _out.AddVertex(link->Name(), sdf::FrameType::LINK);
 
-    // add edge from implicit model frame vertex to canonical link
-    if (link == canonicalLink)
-    {
-      _out.AddEdge({modelFrameId, linkId}, true);
-    }
+    // // add edge from implicit model frame vertex to canonical link
+    // if (!_model->Static() && link == canonicalLink)
+    // {
+    //   _out.AddEdge({modelFrameId, linkId}, true);
+    // }
   }
 
   // add joint vertices
@@ -330,9 +315,12 @@ Errors buildFrameAttachedToGraph(
           "]."});
       continue;
     }
-    _out.AddVertex(nestedModel->Name(), sdf::FrameType::MODEL).Id();
+    auto modelFrameType =
+        _model->Static() ? sdf::FrameType::STATIC_MODEL : sdf::FrameType::MODEL;
+    _out.AddVertex(nestedModel->Name(), modelFrameType).Id();
     ScopedGraph<sdf::FrameAttachedToGraph>childGraph = _out;
-    buildFrameAttachedToGraph(childGraph, nestedModel);
+    auto nestedErrors = buildFrameAttachedToGraph(childGraph, nestedModel);
+    errors.insert(errors.end(), nestedErrors.begin(), nestedErrors.end());
   }
 
   // add edges from joint to child frames
@@ -401,6 +389,42 @@ Errors buildFrameAttachedToGraph(
     _out.AddEdge({frameId, attachedToId}, edgeData);
   }
 
+
+  // Identify if the canonical link is in a nested model.
+  if (!_model->Static() && canonicalLink != nullptr)
+  {
+    // The canonical link is nested, so its vertex should be added
+    // here with an edge from __model__.
+    // The nested canonical link name should be a nested name
+    // relative to _model, delimited by "::".
+    auto linkId = _out.VertexIdByName(canonicalLinkName);
+    _out.AddEdge({modelFrameId, linkId}, true);
+  }
+
+  if (_model->Static())
+  {
+    // If the model is static, add an edge from the model frame to the global
+    // root vertex
+    // TODO (addisu) Ensure that the global root vertex has an ID of 0.
+    // _out.AddEdge({modelFrameId, 0}, true);
+  }
+    // add edge from implicit model frame vertex to canonical link
+  // if (!_model->Static() && canonicalLink == nullptr)
+  // {
+  //   for (uint64_t m = 0; m < _model->ModelCount(); ++m)
+  //   {
+  //     sdf::Errors sinkErrors;
+  //     auto vertexId = _out.VertexIdByName(_model->ModelByIndex(m)->Name());
+  //     auto sinkVertexEdges = FindSinkVertex(_out, vertexId, sinkErrors);
+  //     if (sinkErrors.empty())
+  //     {
+  //       auto sinkVertex = sinkVertexEdges.first;
+  //       _out.AddEdge({modelFrameId, vertexId}, true);
+  //       break;
+  //     }
+  //   }
+  // }
+
   // std::cout << "Model FrameAttachedToGraph\n" << _out.Graph() << std::endl;
   return errors;
 }
@@ -441,9 +465,12 @@ Errors buildFrameAttachedToGraph(
           "]."});
       continue;
     }
-    _out.AddVertex(model->Name(), sdf::FrameType::MODEL).Id();
+    auto modelFrameType =
+        model->Static() ? sdf::FrameType::STATIC_MODEL : sdf::FrameType::MODEL;
+    _out.AddVertex(model->Name(), modelFrameType).Id();
     ScopedGraph<sdf::FrameAttachedToGraph>childGraph = _out;
-    buildFrameAttachedToGraph(childGraph, model);
+    auto modelErrors = buildFrameAttachedToGraph(childGraph, model);
+    errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
   }
 
   // add frame vertices
@@ -621,14 +648,8 @@ Errors buildPoseRelativeToGraph(
         _out.AddVertex(nestedModel->Name(), sdf::FrameType::MODEL).Id();
 
     ScopedGraph<sdf::PoseRelativeToGraph> childGraph = _out;
-    buildPoseRelativeToGraph(childGraph , nestedModel);
-
-    if (nestedModel->PoseRelativeTo().empty())
-    {
-      // relative_to is empty, so add edge from implicit model frame
-      // to nestedModel
-      _out.AddEdge({modelFrameId, nestedModelId}, nestedModel->RawPose());
-    }
+    auto nestedErrors = buildPoseRelativeToGraph(childGraph , nestedModel);
+    errors.insert(errors.end(), nestedErrors.begin(), nestedErrors.end());
     // Add an aliasing edge from the nestedModel vertex to the
     // corresponding vertex in the PoseRelativeTo graph of the nested model,
     // i.e, to the <model_name>::__model__ vertex
@@ -640,7 +661,8 @@ Errors buildPoseRelativeToGraph(
     }
     else
     {
-      _out.AddEdge({nestedModelId, scopedNestedModelId}, {{}, true});
+      auto &edge = _out.AddEdge({nestedModelId, scopedNestedModelId}, {{}, false});
+      edge.SetWeight(0);
     }
   }
 
@@ -770,35 +792,67 @@ Errors buildPoseRelativeToGraph(
   {
     auto nestedModel = _model->ModelByIndex(m);
 
-    // check if we've already added a default edge
-    const std::string relativeTo = nestedModel->PoseRelativeTo();
-    if (relativeTo.empty())
-    {
-      continue;
-    }
-
     auto nestedModelId = _out.VertexIdByName(nestedModel->Name());
+    // relative_to is empty, so add edge from implicit model frame
+    // to nestedModel
+    auto relativeToId = modelFrameId;
 
-    // look for vertex in graph that matches relative_to value
-    if (_out.Count(relativeTo) != 1)
+    const std::string &relativeTo = nestedModel->PoseRelativeTo();
+    if (!relativeTo.empty())
     {
-      errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
-          "relative_to name[" + relativeTo +
-          "] specified by nested model with name[" + nestedModel->Name() +
-          "] does not match a nested model, link, joint, or frame name "
-          "in model with name[" + _model->Name() + "]."});
-      continue;
+      // look for vertex in graph that matches relative_to value
+      if (_out.Count(relativeTo) != 1)
+      {
+        errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+            "relative_to name[" + relativeTo +
+            "] specified by nested model with name[" + nestedModel->Name() +
+            "] does not match a nested model, link, joint, or frame name "
+            "in model with name[" + _model->Name() + "]."});
+        continue;
+      }
+
+      relativeToId = _out.VertexIdByName(relativeTo);
+      if (nestedModel->Name() == relativeTo)
+      {
+        errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
+            "relative_to name[" + relativeTo +
+            "] is identical to nested model name[" + nestedModel->Name() +
+            "], causing a graph cycle "
+            "in model with name[" + _model->Name() + "]."});
+      }
     }
-    auto relativeToId = _out.VertexIdByName(relativeTo);
-    if (nestedModel->Name() == relativeTo)
+
+    ignition::math::Pose3d X_RM = nestedModel->RawPose();
+    // If the model has a placement frame, calculate the necessary pose to use
+    // TODO (addisu) docs
+    if (!nestedModel->PlacementFrameName().empty())
     {
-      errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
-          "relative_to name[" + relativeTo +
-          "] is identical to nested model name[" + nestedModel->Name() +
-          "], causing a graph cycle "
-          "in model with name[" + _model->Name() + "]."});
+      ignition::math::Pose3d X_MPf;
+
+      sdf::Errors resolveErrors = sdf::resolvePoseRelativeToRoot(X_MPf,
+          _out.ChildScope(nestedModel->Name(), "__model__"),
+          nestedModel->PlacementFrameName());
+      if (resolveErrors.empty())
+      {
+        // Before this update, i.e, as specified in the SDFormat, the model pose
+        // (X_RPf) is the pose of the placement frame (Pf) relative to a frame
+        // (R) in the parent scope of the model. However, when this model (M) is
+        // inserted into a pose graph of the parent scope, only the pose (X_RM)
+        // of the __model__ frame can be used. Thus, the model pose has to be
+        // updated to X_RM.
+        //
+        // Note that X_RPf is the raw pose specified in //model/pose before this
+        // update.
+        const auto &X_RPf = nestedModel->RawPose();
+        X_RM = X_RPf * X_MPf.Inverse();
+      }
+      else
+      {
+        errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+      }
     }
-    _out.AddEdge({relativeToId, nestedModelId}, nestedModel->RawPose());
+
+    _out.AddEdge({relativeToId, nestedModelId}, X_RM);
   }
 
   // std::cout << "Model PoseRelativeToGraph\n" << _out.Graph() << std::endl;
@@ -846,14 +900,10 @@ Errors buildPoseRelativeToGraph(
         _out.AddVertex(model->Name(), sdf::FrameType::MODEL).Id();
 
     ScopedGraph<sdf::PoseRelativeToGraph> childGraph = _out;
-    buildPoseRelativeToGraph(childGraph , model);
+    auto modelErrors = buildPoseRelativeToGraph(childGraph , model);
+    errors.insert(errors.end(), modelErrors .begin(), modelErrors .end());
 
-    if (model->PoseRelativeTo().empty())
-    {
-      // relative_to is empty, so add edge from implicit world frame to model
-      _out.AddEdge({worldFrameId, modelId}, model->RawPose());
-    }
-    // Add a non-constraint edge from the model vertex to the
+    // Add an aliasing edge from the model vertex to the
     // corresponding vertex in the PoseRelativeTo graph of the child model,
     // i.e, to the <model_name>::__model__ vertex
     auto scopedModelId =
@@ -864,7 +914,8 @@ Errors buildPoseRelativeToGraph(
     }
     else
     {
-      _out.AddEdge({modelId, scopedModelId}, {{}, false});
+      auto &edge = _out.AddEdge({modelId, scopedModelId}, {{}, false});
+      edge.SetWeight(0);
     }
   }
 
@@ -898,35 +949,67 @@ Errors buildPoseRelativeToGraph(
   {
     auto model = _world->ModelByIndex(m);
 
-    // check if we've already added a default edge
-    const std::string relativeTo = model->PoseRelativeTo();
-    if (relativeTo.empty())
-    {
-      continue;
-    }
-
     auto modelId = _out.VertexIdByName(model->Name());
+    // relative_to is empty, so add edge from implicit model frame
+    // to world
+    auto relativeToId = worldFrameId;
 
-    // look for vertex in graph that matches relative_to value
-    if (_out.Count(relativeTo) != 1)
+    // check if we've already added a default edge
+    const std::string &relativeTo = model->PoseRelativeTo();
+    if (!relativeTo.empty())
     {
-      errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
-          "relative_to name[" + relativeTo +
-          "] specified by model with name[" + model->Name() +
-          "] does not match a model or frame name "
-          "in world with name[" + _world->Name() + "]."});
-      continue;
+      // look for vertex in graph that matches relative_to value
+      if (_out.Count(relativeTo) != 1)
+      {
+        errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+            "relative_to name[" + relativeTo +
+            "] specified by model with name[" + model->Name() +
+            "] does not match a model or frame name "
+            "in world with name[" + _world->Name() + "]."});
+        continue;
+      }
+
+      relativeToId = _out.VertexIdByName(relativeTo);
+      if (model->Name() == relativeTo)
+      {
+        errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
+            "relative_to name[" + relativeTo +
+            "] is identical to model name[" + model->Name() +
+            "], causing a graph cycle "
+            "in world with name[" + _world->Name() + "]."});
+      }
     }
-    auto relativeToId = _out.VertexIdByName(relativeTo);
-    if (model->Name() == relativeTo)
+
+    ignition::math::Pose3d X_RM = model->RawPose();
+    // If the model has a placement frame, calculate the necessary pose to use
+    // TODO (addisu) docs
+    if (!model->PlacementFrameName().empty())
     {
-      errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
-          "relative_to name[" + relativeTo +
-          "] is identical to model name[" + model->Name() +
-          "], causing a graph cycle "
-          "in world with name[" + _world->Name() + "]."});
+      ignition::math::Pose3d X_MPf;
+
+      sdf::Errors resolveErrors = sdf::resolvePoseRelativeToRoot(X_MPf,
+          _out.ChildScope(model->Name(), "__model__"),
+          model->PlacementFrameName());
+      if (resolveErrors.empty())
+      {
+        // Before this update, i.e, as specified in the SDFormat, the model pose
+        // (X_RPf) is the pose of the placement frame (Pf) relative to a frame
+        // (R) in the parent scope of the model. However, when this model (M) is
+        // inserted into a pose graph of the parent scope, only the pose (X_RM)
+        // of the __model__ frame can be used. Thus, the model pose has to be
+        // updated to X_RM.
+        //
+        // Note that X_RPf is the raw pose specified in //model/pose before this
+        // update.
+        const auto &X_RPf = model->RawPose();
+        X_RM = X_RPf * X_MPf.Inverse();
+      }
+      else
+      {
+        errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+      }
     }
-    _out.AddEdge({relativeToId, modelId}, model->RawPose());
+    _out.AddEdge({relativeToId, modelId}, X_RM);
   }
 
   for (uint64_t f = 0; f < _world->FrameCount(); ++f)
@@ -1008,11 +1091,14 @@ Errors validateFrameAttachedToGraph(const ScopedGraph<FrameAttachedToGraph> &_in
   }
 
   sdf::FrameType scopeFrameType = scopeVertex.Data();
-  if (_in.ScopeName() == "__model__" && scopeFrameType != sdf::FrameType::MODEL)
+  if (_in.ScopeName() == "__model__" &&
+      (scopeFrameType != sdf::FrameType::MODEL &&
+          scopeFrameType != sdf::FrameType::STATIC_MODEL))
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
         "FrameAttachedToGraph error, "
-        "scope vertex with name __model__ should have FrameType MODEL."});
+        "scope vertex with name __model__ should have FrameType MODEL or "
+        "STATIC_MODEL."});
     return errors;
   }
   else if (_in.ScopeName() == "world" &&
@@ -1108,11 +1194,13 @@ Errors validateFrameAttachedToGraph(const ScopedGraph<FrameAttachedToGraph> &_in
           {
             errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
                 "FrameAttachedToGraph error, "
-                "LINK vertex with name [" +
+                "LINK/STATIC_MODEL vertex with name [" +
                 vertexName +
                 "] should have no outgoing edges "
                 "in WORLD attached_to graph."});
           }
+          break;
+        case sdf::FrameType::STATIC_MODEL:
           break;
         default:
           if (outDegree != 1)
@@ -1230,7 +1318,8 @@ Errors validatePoseRelativeToGraph(
         case sdf::FrameType::MODEL:
           // TODO: What we have to check here is that if this is the scope
           // vertex any incoming edge is from outside this scope.
-          if (sdf::endswith(vertexName, "__model__"))
+          // if (sdf::endswith(vertexName, "__model__"))
+          if (_in.ScopeVertexId() == vertexPair.first)
           {
             if (inDegree != 0)
             {
@@ -1360,12 +1449,14 @@ Errors resolveFrameAttachedToBody(
 
   if (_in.ScopeName() == "world" &&
       !(sinkVertex.Data() == FrameType::WORLD ||
-        sinkVertex.Data() == FrameType::LINK))
+          sinkVertex.Data() == FrameType::STATIC_MODEL ||
+          sinkVertex.Data() == FrameType::LINK))
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
-        "Graph has world scope but sink vertex named [" +
-        sinkVertex.Name() + "] does not have FrameType WORLD or LINK "
-        "when starting from vertex with name [" + _vertexName + "]."});
+        "Graph has world scope but sink vertex named [" + sinkVertex.Name() +
+            "] does not have FrameType WORLD, LINK or STATIC_MODEL"
+            "when starting from vertex with name [" +
+            _vertexName + "]."});
     return errors;
   }
 
@@ -1381,11 +1472,11 @@ Errors resolveFrameAttachedToBody(
       return errors;
     }
     else if (sinkVertex.Data() != FrameType::LINK &&
-             sinkVertex.Data() != FrameType::MODEL)
+             sinkVertex.Data() != FrameType::STATIC_MODEL)
     {
       errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
           "Graph has __model__ scope but sink vertex named [" +
-          sinkVertex.Name() + "] does not have FrameType LINK OR MODEL "
+          sinkVertex.Name() + "] does not have FrameType LINK OR STATIC_MODEL "
           "when starting from vertex with name [" + _vertexName + "]."});
       return errors;
     }
