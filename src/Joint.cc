@@ -439,6 +439,7 @@ Errors Joint::ResolveParentLink(std::string &_link) const
 sdf::SemanticPose Joint::SemanticPose() const
 {
   return sdf::SemanticPose(
+      this->dataPtr->name,
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
       this->ChildLinkName(),

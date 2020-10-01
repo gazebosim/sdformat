@@ -884,6 +884,7 @@ void Model::SetFrameAttachedToGraph(
 sdf::SemanticPose Model::SemanticPose() const
 {
   return sdf::SemanticPose(
+      this->dataPtr->name,
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
       this->dataPtr->poseGraph.ScopeName(),

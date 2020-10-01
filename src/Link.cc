@@ -408,6 +408,7 @@ void Link::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 sdf::SemanticPose Link::SemanticPose() const
 {
   return sdf::SemanticPose(
+      this->dataPtr->name,
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
       "__model__",

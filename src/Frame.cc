@@ -245,6 +245,7 @@ sdf::SemanticPose Frame::SemanticPose() const
     relativeTo = this->dataPtr->attachedTo;
   }
   return sdf::SemanticPose(
+      this->dataPtr->name,
       this->dataPtr->pose,
       relativeTo,
       this->dataPtr->graphSourceName,

@@ -31,6 +31,8 @@ inline namespace SDF_VERSION_NAMESPACE {
 /// \brief Private data for the SemanticPose class.
 class SemanticPosePrivate
 {
+  public: std::string name = "";
+
   /// \brief Raw pose of the SemanticPose object.
   public: ignition::math::Pose3d rawPose = ignition::math::Pose3d::Zero;
 
@@ -47,6 +49,22 @@ class SemanticPosePrivate
 
 /////////////////////////////////////////////////
 SemanticPose::SemanticPose(
+        const std::string &_name,
+        const ignition::math::Pose3d &_pose,
+        const std::string &_relativeTo,
+        const std::string &_defaultResolveTo,
+        const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
+  : dataPtr(std::make_unique<SemanticPosePrivate>())
+{
+  this->dataPtr->name = _name;
+  this->dataPtr->rawPose = _pose;
+  this->dataPtr->relativeTo = _relativeTo;
+  this->dataPtr->defaultResolveTo = _defaultResolveTo;
+  this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+SemanticPose::SemanticPose(
         const ignition::math::Pose3d &_pose,
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
@@ -58,7 +76,6 @@ SemanticPose::SemanticPose(
   this->dataPtr->defaultResolveTo = _defaultResolveTo;
   this->dataPtr->poseRelativeToGraph = _graph;
 }
-
 /////////////////////////////////////////////////
 SemanticPose::~SemanticPose() = default;
 
@@ -126,8 +143,15 @@ Errors SemanticPose::Resolve(
   }
 
   ignition::math::Pose3d pose;
-  errors = resolvePose(pose, graph, relativeTo, resolveTo);
-  pose *= this->RawPose();
+  if (this->dataPtr->name.empty())
+  {
+    errors = resolvePose(pose, graph, relativeTo, resolveTo);
+    pose *= this->RawPose();
+  }
+  else
+  {
+    errors = resolvePose(pose, graph, this->dataPtr->name, resolveTo);
+  }
 
   if (errors.empty())
   {

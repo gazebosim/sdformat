@@ -86,6 +86,13 @@ namespace sdf
         const std::string &_defaultResolveTo,
         const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
 
+    private: SemanticPose(
+        const std::string &_name,
+        const ignition::math::Pose3d &_pose,
+        const std::string &_relativeTo,
+        const std::string &_defaultResolveTo,
+        const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
+
     /// \brief Destructor
     public: ~SemanticPose();
 
