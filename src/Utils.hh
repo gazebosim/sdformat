@@ -67,8 +67,7 @@ namespace sdf
   /// experienced.
   template <typename Class>
   sdf::Errors loadUniqueRepeated(sdf::ElementPtr _sdf,
-      const std::string &_sdfName, std::vector<Class> &_objs,
-      const std::function<void(Class &)> &_beforeLoadFunc = {})
+      const std::string &_sdfName, std::vector<Class> &_objs)
   {
     Errors errors;
 
@@ -82,10 +81,6 @@ namespace sdf
       while (elem)
       {
         Class obj;
-        if (_beforeLoadFunc)
-        {
-          _beforeLoadFunc(obj);
-        }
 
         // Load the model and capture the errors.
         Errors loadErrors = obj.Load(elem);
