@@ -41,6 +41,7 @@ COMMANDS = {  'sdf' =>
                        "  -k [ --check ] arg               Check if an SDFormat file is valid.\n" +
                        "  -d [ --describe ] [SPEC VERSION] Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
                        "  -p [ --print ] arg               Print converted arg.\n" +
+                       "  -g [ --graph ] <pose, frame> arg   Print the PoseRelativeTo or FrameAttachedTo graph.\n" +
                        COMMON_OPTIONS
             }
 
@@ -76,6 +77,10 @@ class Cmd
       opts.on('-p arg', '--print arg', String,
               'Print converted arg') do |arg|
         options['print'] = arg
+      end
+      opts.on('-g arg', '--graph type', String,
+              'Print PoseRelativeTo or FrameAttachedTo graph') do |graph_type|
+        options['graph'] = {:type => graph_type}
       end
     end
     begin
@@ -156,6 +161,9 @@ class Cmd
         elsif options.key?('print')
           Importer.extern 'int cmdPrint(const char *)'
           exit(Importer.cmdPrint(File.expand_path(options['print'])))
+        elsif options.key?('graph')
+          Importer.extern 'int cmdGraph(const char *, const char *)'
+          exit(Importer.cmdGraph(options['graph'][:type], File.expand_path(ARGV[1])))
         else
           puts 'Command error: I do not have an implementation '\
                'for this command.'
