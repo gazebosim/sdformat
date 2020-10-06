@@ -209,41 +209,6 @@ Errors buildFrameAttachedToGraph(
 {
   Errors errors;
 
-  auto frameType =
-      _model->Static() ? sdf::FrameType::STATIC_MODEL : sdf::FrameType::MODEL;
-
-  auto rootId = ignition::math::graph::kNullId;
-  auto modelId = ignition::math::graph::kNullId;
-  auto modelFrameId = ignition::math::graph::kNullId;
-  // TODO(addisu)
-  // ScopedGraph<PoseRelativeToGraph> outModel = _out;
-  ScopedGraph<FrameAttachedToGraph> outModel;
-  if (_root)
-  {
-    rootId =
-        _out.AddScopeVertex("", "__root__", sdf::FrameType::STATIC_MODEL).Id();
-    const std::string scopeName = "__model__";
-    _out.SetScopeName(scopeName);
-    modelId = _out.AddVertex(_model->Name(), frameType).Id();
-
-    outModel = _out.ChildScope(_model->Name(), "__model__");
-    // modelFrameId = outModel.AddScopeVertex(_model->Name(), "__model__", sdf::FrameType::MODEL).Id();
-    modelFrameId = outModel.AddVertex("__model__", frameType).Id();
-  }
-  else
-  {
-    outModel = _out;
-    const std::string scopeName = "__model__";
-    // TODO (addisu) May not need SetScopeName
-    outModel.SetScopeName(scopeName);
-    modelFrameId = _out.AddVertex(scopeName, frameType).Id();
-  }
-
-  if (_root)
-  {
-    outModel.AddEdge({modelId, modelFrameId}, true);
-  }
-  const std::string scopeName = "__model__";
   if (!_model)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -264,6 +229,26 @@ Errors buildFrameAttachedToGraph(
     return errors;
   }
 
+  auto frameType =
+      _model->Static() ? sdf::FrameType::STATIC_MODEL : sdf::FrameType::MODEL;
+
+  auto modelId = ignition::math::graph::kNullId;
+  ScopedGraph<FrameAttachedToGraph> outModel = _out;
+  if (_root)
+  {
+    _out.AddScopeVertex("", "__root__", sdf::FrameType::STATIC_MODEL);
+    _out.SetScopeName("__model__");
+    modelId = _out.AddVertex(_model->Name(), frameType).Id();
+    outModel = _out.ChildScope(_model->Name(), "__model__");
+  }
+
+  const std::string scopeName = "__model__";
+  const auto modelFrameId = outModel.AddVertex(scopeName, frameType).Id();
+
+  if (_root)
+  {
+    outModel.AddEdge({modelId, modelFrameId}, true);
+  }
   // identify canonical link, which may be nested
   auto canonicalLinkAndName = modelCanonicalLinkAndRelativeName(_model);
   const sdf::Link *canonicalLink = canonicalLinkAndName.first;
@@ -480,11 +465,6 @@ Errors buildFrameAttachedToGraph(
 {
   Errors errors;
 
-  // add implicit world frame vertex first
-  const std::string scopeName = "world";
-  _out.SetScopeName(scopeName);
-  _out.AddScopeVertex("", scopeName, sdf::FrameType::WORLD).Id();
-
   if (!_world)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -497,6 +477,11 @@ Errors buildFrameAttachedToGraph(
         "Invalid world element in sdf::World."});
     return errors;
   }
+
+  // add implicit world frame vertex first
+  const std::string scopeName = "world";
+  _out.SetScopeName(scopeName);
+  _out.AddScopeVertex("", scopeName, sdf::FrameType::WORLD).Id();
 
   // add model vertices
   for (uint64_t m = 0; m < _world->ModelCount(); ++m)
@@ -1545,7 +1530,8 @@ Errors resolveFrameAttachedToBody(
 {
   Errors errors;
 
-  if (_in.ScopeName() != "__model__" && _in.ScopeName() != "world" && _in.ScopeName() != "__root__")
+  if (_in.ScopeName() != "__model__" && _in.ScopeName() != "world" &&
+      _in.ScopeName() != "__root__")
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
         "FrameAttachedToGraph error: scope frame[" + _in.ScopeName() + "] "
