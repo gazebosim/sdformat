@@ -77,7 +77,8 @@ class ScopedGraph
   public: const MapType &Map() const;
   // May not be needed if they can be called via Graph()
   public: Vertex &AddScopeVertex(const std::string &_prefix,
-              const std::string &_name, const VertexType &_data);
+              const std::string &_name, const std::string &_scopeName,
+              const VertexType &_data);
   public: Vertex &AddVertex(const std::string &_name, const VertexType &);
   public: Edge &AddEdge(
               const ignition::math::graph::VertexId_P &, const EdgeType &);
@@ -146,11 +147,13 @@ auto ScopedGraph<T>::Map() const -> const MapType &
 /////////////////////////////////////////////////
 template <typename T>
 auto ScopedGraph<T>::AddScopeVertex(const std::string &_prefix,
-    const std::string &_name, const VertexType &_data) -> Vertex &
+    const std::string &_name, const std::string &_scopeName,
+    const VertexType &_data) -> Vertex &
 {
   this->dataPtr->prefix = this->AddPrefix(_prefix);
   Vertex &vert = this->AddVertex(_name, _data);
   this->dataPtr->scopeVertexId = vert.Id();
+  this->SetScopeName(_scopeName);
   return vert;
 }
 
@@ -159,7 +162,7 @@ template <typename T>
 auto ScopedGraph<T>::AddVertex(
     const std::string &_name, const VertexType &_data) -> Vertex &
 {
-  auto graph = graphWeak.lock();
+  auto graph = this->graphWeak.lock();
   const std::string newName = this->AddPrefix(_name);
   Vertex &vert = graph->graph.AddVertex(newName, _data);
   graph->map[newName] = vert.Id();

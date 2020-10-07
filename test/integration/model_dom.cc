@@ -155,7 +155,7 @@ TEST(DOMRoot, NestedModel)
   // Load the SDF file
   sdf::Root root;
   auto errors = root.Load(testFile);
-  EXPECT_TRUE(errors.empty());
+  EXPECT_TRUE(errors.empty()) << errors;
 
   EXPECT_EQ(1u, root.ModelCount());
 

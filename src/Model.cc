@@ -815,16 +815,14 @@ void Model::SetFrameAttachedToGraph(
 /////////////////////////////////////////////////
 sdf::SemanticPose Model::SemanticPose() const
 {
-  std::string scopeName = "";
-  if (this->dataPtr->poseGraph)
-  {
-    scopeName = this->dataPtr->poseGraph.ScopeName();
-  }
+  // Pass an empty string for the defaultResolveTo argument so that it can
+  // resolve to the scope vertex regardless of whether this model is a
+  // standalone model or part of a world.
   return sdf::SemanticPose(
       this->dataPtr->name,
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
-      scopeName,
+      "",
       this->dataPtr->poseGraph);
 }
 
