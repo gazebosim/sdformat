@@ -104,6 +104,13 @@ SemanticPose &SemanticPose::operator=(const SemanticPose &_semanticPose)
 }
 
 /////////////////////////////////////////////////
+const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &
+SemanticPose::PoseRelativeToGraph() const
+{
+  return this->dataPtr->poseRelativeToGraph;
+}
+
+/////////////////////////////////////////////////
 const ignition::math::Pose3d &SemanticPose::RawPose() const
 {
   return this->dataPtr->rawPose;
@@ -114,43 +121,60 @@ const std::string &SemanticPose::RelativeTo() const
 {
   return this->dataPtr->relativeTo;
 }
-
 /////////////////////////////////////////////////
 Errors SemanticPose::Resolve(
     ignition::math::Pose3d &_pose,
     const std::string &_resolveTo) const
 {
+  return this->Resolve(_pose, *this, _resolveTo);
+}
+
+/////////////////////////////////////////////////
+Errors SemanticPose::Resolve(
+    ignition::math::Pose3d &_pose,
+    const SemanticPose &_scope,
+    const std::string &_resolveTo) const
+{
   Errors errors;
 
   auto graph = this->dataPtr->poseRelativeToGraph;
-  if (!graph)
+  const auto &scopeGraph = _scope.PoseRelativeToGraph();
+  if (!graph || !scopeGraph)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
         "SemanticPose has invalid pointer to PoseRelativeToGraph."});
     return errors;
   }
 
-  std::string relativeTo = this->dataPtr->relativeTo;
-  if (relativeTo.empty())
+  const ignition::math::graph::VertexId resolveToVertexId = [&]
   {
-    relativeTo = this->dataPtr->defaultResolveTo;
-  }
-
-  std::string resolveTo = _resolveTo;
-  if (resolveTo.empty())
-  {
-    resolveTo = this->dataPtr->defaultResolveTo;
-  }
+    if (_resolveTo.empty())
+    {
+      if (this->dataPtr->defaultResolveTo.empty())
+        return graph.ScopeVertex().Id();
+      else
+        return graph.VertexIdByName(this->dataPtr->defaultResolveTo);
+    }
+    return scopeGraph.VertexIdByName(_resolveTo);
+  }();
 
   ignition::math::Pose3d pose;
   if (this->dataPtr->name.empty())
   {
-    errors = resolvePose(pose, graph, relativeTo, resolveTo);
+    std::string relativeTo = this->dataPtr->relativeTo;
+    if (relativeTo.empty())
+    {
+      relativeTo = this->dataPtr->defaultResolveTo;
+    }
+    auto relativeToVertexId = graph.VertexIdByName(relativeTo);
+    errors =
+        resolvePose(pose, scopeGraph, relativeToVertexId, resolveToVertexId);
     pose *= this->RawPose();
   }
   else
   {
-    errors = resolvePose(pose, graph, this->dataPtr->name, resolveTo);
+    const auto frameVertexId = graph.VertexIdByName(this->dataPtr->name);
+    errors = resolvePose(pose, scopeGraph, frameVertexId, resolveToVertexId);
   }
 
   if (errors.empty())

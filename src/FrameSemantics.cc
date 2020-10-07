@@ -1535,6 +1535,75 @@ Errors resolvePoseRelativeToRoot(
 
   return errors;
 }
+/////////////////////////////////////////////////
+Errors resolvePoseRelativeToRoot(
+      ignition::math::Pose3d &_pose,
+      const ScopedGraph<PoseRelativeToGraph> &_graph,
+      const ignition::math::graph::VertexId &_vertexId)
+{
+  Errors errors;
+
+  auto incomingVertexEdges = FindSourceVertex(_graph, _vertexId, errors);
+
+  if (!errors.empty())
+  {
+    return errors;
+  }
+  else if (!incomingVertexEdges.first.Valid())
+  {
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "PoseRelativeToGraph unable to find path to source vertex "
+        "when starting from vertex with id [" + std::to_string(_vertexId) + "]."});
+    return errors;
+  }
+  else if (incomingVertexEdges.first.Id() != _graph.ScopeVertex().Id())
+  {
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "PoseRelativeToGraph frame with name [" + std::to_string(_vertexId) + "] "
+        "is disconnected; its source vertex has name [" +
+        incomingVertexEdges.first.Name() +
+        "], but its source name should be " + _graph.ScopeName() + "."});
+    return errors;
+  }
+
+  ignition::math::Pose3d pose;
+  for (auto const &edge : incomingVertexEdges.second)
+  {
+    pose = edge.Data().pose * pose;
+  }
+
+  if (errors.empty())
+  {
+    _pose = pose;
+  }
+
+  return errors;
+}
+
+/////////////////////////////////////////////////
+Errors resolvePose(ignition::math::Pose3d &_pose,
+    const ScopedGraph<PoseRelativeToGraph> &_graph,
+    const ignition::math::graph::VertexId &_frameVertexId,
+    const ignition::math::graph::VertexId &_resolveToVertexId)
+{
+  Errors errors = resolvePoseRelativeToRoot(_pose, _graph, _frameVertexId);
+
+  // If the resolveTo is empty, we're resolving to the Root, so we're done
+  if (_resolveToVertexId != ignition::math::graph::kNullId)
+  {
+    ignition::math::Pose3d poseR;
+    Errors errorsR =
+        resolvePoseRelativeToRoot(poseR, _graph, _resolveToVertexId);
+    errors.insert(errors.end(), errorsR.begin(), errorsR.end());
+
+    if (errors.empty())
+    {
+      _pose = poseR.Inverse() * _pose;
+    }
+  }
+
+  return errors;
+}
 
 /////////////////////////////////////////////////
 Errors resolvePose(

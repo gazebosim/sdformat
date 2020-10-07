@@ -23,6 +23,8 @@
 #include "sdf/Assert.hh"
 #include "sdf/Error.hh"
 #include "sdf/JointAxis.hh"
+#include "sdf/SemanticPose.hh"
+
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
 
@@ -419,6 +421,59 @@ Errors JointAxis::ResolveXyz(
 
   ignition::math::Pose3d pose;
   errors = resolvePose(pose, graph, axisExpressedIn, resolveTo);
+
+  if (errors.empty())
+  {
+    _xyz = pose.Rot() * this->Xyz();
+  }
+
+  return errors;
+}
+
+/////////////////////////////////////////////////
+Errors JointAxis::ResolveXyz(
+    ignition::math::Vector3d &_xyz,
+    const sdf::SemanticPose &_scope,
+    const std::string &_resolveTo) const
+{
+  Errors errors;
+  const auto &graph = this->dataPtr->poseRelativeToGraph;
+  const auto &scopeGraph = _scope.PoseRelativeToGraph();
+  if (!graph || !scopeGraph)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "JointAxis has invalid pointer to PoseRelativeToGraph."});
+    return errors;
+  }
+  if (this->dataPtr->xmlParentName.empty())
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "JointAxis has invalid name of xml parent object."});
+    return errors;
+  }
+
+  // JointAxis is not in the graph, but its XyzExpressedIn() name should be.
+  // If XyzExpressedIn() is empty, use the name of the xml parent object.
+  std::string axisExpressedIn = this->XyzExpressedIn();
+  if (axisExpressedIn.empty())
+  {
+    axisExpressedIn = this->dataPtr->xmlParentName;
+  }
+
+  auto axisExpressedInVertexId = graph.VertexIdByName(axisExpressedIn);
+
+  const ignition::math::graph::VertexId resolveToVertexId = [&]
+  {
+    if (_resolveTo.empty())
+    {
+      return graph.VertexIdByName(this->dataPtr->xmlParentName);
+    }
+    return scopeGraph.VertexIdByName(_resolveTo);
+  }();
+
+  ignition::math::Pose3d pose;
+  errors =
+      resolvePose(pose, scopeGraph, axisExpressedInVertexId, resolveToVertexId);
 
   if (errors.empty())
   {

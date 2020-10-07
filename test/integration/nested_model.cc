@@ -15,6 +15,7 @@
  *
  */
 
+#include <iostream>
 #include <sstream>
 #include <fstream>
 #include <string>
@@ -427,7 +428,6 @@ TEST(NestedModel, NestedModelWithFrames)
     << "<sdf version='" << version << "'>"
     << "<world name='default'>"
     << "  <model name='ParentModel'>"
-    << "    <frame name='model'/>"
     << "    <include>"
     << "      <uri>" + modelPath + "</uri>"
     << "      <name>M1</name>"
@@ -453,8 +453,8 @@ TEST(NestedModel, NestedModelWithFrames)
   const sdf::Model *parentModel = world->ModelByIndex(0);
   ASSERT_NE(nullptr, parentModel);
 
-  const sdf::Frame *modelFrame = parentModel->FrameByIndex(0);
-  ASSERT_NE(nullptr, modelFrame );
+  const sdf::Model *childModel = parentModel->ModelByIndex(0);
+  ASSERT_NE(nullptr, childModel);
 
   using ignition::math::Pose3d;
   using ignition::math::Vector3d;
@@ -467,19 +467,31 @@ TEST(NestedModel, NestedModelWithFrames)
   Vector3d joint1AxisExpVector = frame2ExpPose.Rot() * Vector3d::UnitZ;
   Vector3d joint1Axis2ExpVector = frame2ExpPose.Rot() * Vector3d::UnitX;
 
+  const auto *frame1 = parentModel->FrameByName("M1::F1");
+  ASSERT_NE(nullptr, frame1);
   Pose3d frame1Pose;
-  EXPECT_TRUE(modelFrame->SemanticPose().Resolve(frame1Pose, "M1::F1").empty());
-  EXPECT_EQ(frame1ExpPose, frame1Pose.Inverse());
 
+  EXPECT_TRUE(
+      frame1->SemanticPose()
+          .Resolve(frame1Pose, parentModel->SemanticPose(), parentModel->Name())
+          .empty());
+  EXPECT_EQ(frame1ExpPose, frame1Pose);
+
+  const auto *frame2 = childModel->FrameByName("F2");
+  ASSERT_NE(nullptr, frame2);
   Pose3d frame2Pose;
-  EXPECT_TRUE(modelFrame->SemanticPose().Resolve(frame2Pose, "M1::F2").empty());
-  EXPECT_EQ(frame2ExpPose, frame2Pose.Inverse());
+  EXPECT_TRUE(frame2->SemanticPose()
+                  .Resolve(frame2Pose, childModel->SemanticPose(), "__model__")
+                  .empty());
+  EXPECT_EQ(frame2ExpPose, frame2Pose);
 
-  const auto *link1 = parentModel->LinkByName("M1::L1");
+  const auto *link1 = childModel->LinkByName("L1");
   ASSERT_NE(nullptr, link1);
   Pose3d link1Pose;
-  EXPECT_TRUE(modelFrame->SemanticPose().Resolve(link1Pose, "M1::L1").empty());
-  EXPECT_EQ(link1ExpPose, link1Pose.Inverse());
+  EXPECT_TRUE(link1->SemanticPose()
+                  .Resolve(link1Pose, childModel->SemanticPose(), "__model__")
+                  .empty());
+  EXPECT_EQ(link1ExpPose, link1Pose);
 
   const auto *visual1 = link1->VisualByName("V1");
   ASSERT_NE(nullptr, visual1);
@@ -490,26 +502,32 @@ TEST(NestedModel, NestedModelWithFrames)
   EXPECT_EQ("__model__", collision1->PoseRelativeTo());
 
   Pose3d link2Pose;
-  EXPECT_TRUE(modelFrame->SemanticPose().Resolve(link2Pose, "M1::L2").empty());
+  EXPECT_TRUE(parentModel->SemanticPose()
+                  .Resolve(link2Pose, "ParentModel::M1::L2")
+                  .empty());
   EXPECT_EQ(link2ExpPose, link2Pose.Inverse());
 
   const auto *joint1 = parentModel->JointByName("M1::J1");
   ASSERT_NE(nullptr, joint1);
   Pose3d joint1Pose;
-  EXPECT_TRUE(modelFrame->SemanticPose().Resolve(joint1Pose, "M1::J1").empty());
-  EXPECT_EQ(joint1ExpPose, joint1Pose.Inverse());
+  EXPECT_TRUE(joint1->SemanticPose()
+                  .Resolve(joint1Pose, childModel->SemanticPose(), "__model__")
+                  .empty());
+  EXPECT_EQ(joint1ExpPose, joint1Pose);
 
   const auto joint1Axis = joint1->Axis(0);
   ASSERT_NE(nullptr, joint1Axis);
   Vector3d joint1AxisVector;
-  EXPECT_TRUE(joint1Axis->ResolveXyz(joint1AxisVector, "__model__").empty());
-  EXPECT_EQ(joint1AxisExpVector, model1Pose.Rot() * joint1AxisVector);
-
+  EXPECT_TRUE(joint1Axis->ResolveXyz(
+        joint1AxisVector, childModel->SemanticPose(), "__model__").empty());
+  EXPECT_EQ(joint1AxisExpVector, joint1AxisVector);
   const auto joint1Axis2 = joint1->Axis(1);
   ASSERT_NE(nullptr, joint1Axis2);
   Vector3d joint1Axis2Vector;
-  EXPECT_TRUE(joint1Axis2->ResolveXyz(joint1Axis2Vector, "__model__").empty());
-  EXPECT_EQ(joint1Axis2ExpVector, model1Pose.Rot() * joint1Axis2Vector);
+  EXPECT_TRUE(joint1Axis2
+                  ->ResolveXyz(joint1Axis2Vector, parentModel->SemanticPose(),
+                      parentModel->Name()).empty());
+  EXPECT_EQ(joint1Axis2ExpVector, joint1Axis2Vector);
 }
 
 // Function to remove any element in //joint/axis that is not <xyz>

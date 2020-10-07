@@ -73,6 +73,10 @@ namespace sdf
     public: Errors Resolve(ignition::math::Pose3d &_pose,
                            const std::string &_resolveTo = "") const;
 
+    public: Errors Resolve(ignition::math::Pose3d &_pose,
+                const SemanticPose &_scope,
+                const std::string &_resolveTo) const;
+
     /// \brief Private constructor.
     /// \param[in] _pose Raw pose of object.
     /// \param[in] _relativeTo Name of frame in graph relative-to which the
@@ -93,6 +97,8 @@ namespace sdf
         const std::string &_defaultResolveTo,
         const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
 
+    private: const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &
+             PoseRelativeToGraph() const;
     /// \brief Destructor
     public: ~SemanticPose();
 
@@ -122,6 +128,7 @@ namespace sdf
     friend class Model;
     friend class Sensor;
     friend class Visual;
+    friend class JointAxis;
 
     /// \brief Private data pointer.
     private: std::unique_ptr<SemanticPosePrivate> dataPtr;

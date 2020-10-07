@@ -193,6 +193,11 @@ namespace sdf
       const ScopedGraph<PoseRelativeToGraph> &_graph,
       const std::string &_vertexName);
 
+  Errors resolvePoseRelativeToRoot(
+      ignition::math::Pose3d &_pose,
+      const ScopedGraph<PoseRelativeToGraph> &_graph,
+      const ignition::math::graph::VertexId &_vertexId);
+
   /// \brief Resolve pose of a frame relative to named frame.
   /// \param[out] _pose Pose object to write.
   /// \param[in] _graph PoseRelativeToGraph to read from.
@@ -205,6 +210,12 @@ namespace sdf
       const ScopedGraph<PoseRelativeToGraph> &_graph,
       const std::string &_frameName,
       const std::string &_resolveTo);
+
+  Errors resolvePose(
+      ignition::math::Pose3d &_pose,
+      const ScopedGraph<PoseRelativeToGraph> &_graph,
+      const ignition::math::graph::VertexId &_frameVertexId,
+      const ignition::math::graph::VertexId &_resolveToVertexId);
 
   /// \brief Update the pose of a frame in the pose graph. This updates the
   /// content of the edge incident to the vertex identified by the given
