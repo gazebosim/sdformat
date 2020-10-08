@@ -260,7 +260,7 @@ std::size_t ScopedGraph<T>::Count(const std::string &_name) const
 
 /////////////////////////////////////////////////
 template <typename T>
-std::size_t ScopedGraph<T>::VertexIdByName(const std::string &_name) const
+auto ScopedGraph<T>::VertexIdByName(const std::string &_name) const -> VertexId
 {
   auto &map = this->Map();
   auto it = map.find(this->AddPrefix(_name));
@@ -280,7 +280,7 @@ auto ScopedGraph<T>::ScopeVertex() const -> Vertex
 
 /////////////////////////////////////////////////
 template <typename T>
-std::size_t ScopedGraph<T>::ScopeVertexId() const
+auto ScopedGraph<T>::ScopeVertexId() const -> VertexId
 {
   return this->dataPtr->scopeVertexId;
 }
