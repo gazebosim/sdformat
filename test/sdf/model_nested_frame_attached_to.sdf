@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<sdf version='1.8'>
+  <model name="nested_model_frame_attached_to">
+    <link name="L"/>
+    <model name="M1">
+      <link name="L"/>
+      <model name="M2">
+        <link name="L"/>
+      </model>
+      <frame name="F" attached_to="M2"/>
+      <joint name="J1" type="fixed">
+        <parent>L</parent>
+        <child>F</child>
+      </joint>
+    </model>
+    <frame name="F0" attached_to="M1"/>     <!-- VALID: Indirectly attached_to canonical link M1:L via the model frame. -->
+    <frame name="F1" attached_to="M1::L"/>  <!-- VALID: Directly attached_to link M1::L. -->
+    <frame name="F2" attached_to="F1"/>     <!-- VALID: Indirectly attached_to link M1::L via frame F1. -->
+    <frame name="F3" attached_to="M1::F"/>  <!-- VALID: Indirectly attached_to link M1::M2::L via frame M1::F. -->
+    <frame name="F4" attached_to="M1::J1"/>  <!-- VALID: Indirectly attached_to link M1::M2::L via joint M1::J1. -->
+  </model>
+</sdf>

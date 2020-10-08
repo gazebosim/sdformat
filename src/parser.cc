@@ -1583,6 +1583,34 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
   auto checkWorldFrameAttachedToNames = [](
       const sdf::World *_world) -> bool
   {
+    auto findNameInWorld = [](const sdf::World *_inWorld,
+        const std::string &_name) -> bool {
+      if (_inWorld->ModelNameExists(_name) ||
+          _inWorld->FrameNameExists(_name))
+      {
+        return true;
+      }
+
+      for (uint64_t m = 0; m < _inWorld->ModelCount(); ++m)
+      {
+        const auto *model = _inWorld->ModelByIndex(m);
+        auto index = _name.find(model->Name() + "::");
+        std::string nameToCheck = _name;
+        if (index != std::string::npos)
+        {
+          nameToCheck = _name.substr(index + model->Name().size() + 2);
+        }
+        if (model->LinkNameExists(nameToCheck) ||
+            model->ModelNameExists(nameToCheck) ||
+            model->JointNameExists(nameToCheck) ||
+            model->FrameNameExists(nameToCheck))
+        {
+          return true;
+        }
+      }
+      return false;
+    };
+
     bool worldResult = true;
     for (uint64_t f = 0; f < _world->FrameCount(); ++f)
     {
@@ -1606,8 +1634,7 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
                   << std::endl;
         worldResult = false;
       }
-      else if (!_world->ModelNameExists(attachedTo) &&
-               !_world->FrameNameExists(attachedTo))
+      else if (!findNameInWorld(_world, attachedTo))
       {
         std::cerr << "Error: attached_to name[" << attachedTo
                   << "] specified by frame with name[" << frame->Name()

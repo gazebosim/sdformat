@@ -123,7 +123,6 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_World)
   sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
   errors = sdf::buildFrameAttachedToGraph(graph, world);
   EXPECT_TRUE(errors.empty());
-  std::cout << graph.Graph() << std::endl;
   errors = sdf::validateFrameAttachedToGraph(graph);
   EXPECT_TRUE(errors.empty()) << errors;
   EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
@@ -299,4 +298,246 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
       errors[0].Message().find(
         "PoseRelativeToGraph unable to find unique frame with name ["
         "invalid] in graph."));
+}
+
+/////////////////////////////////////////////////
+TEST(NestedFrameSemantics, buildFrameAttachedToGraph_Model)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_nested_frame_attached_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+
+  auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+  sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
+  errors = sdf::buildFrameAttachedToGraph(graph, model);
+  EXPECT_TRUE(errors.empty()) << errors;
+  EXPECT_TRUE(sdf::validateFrameAttachedToGraph(graph).empty());
+  EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
+  EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
+
+  graph = graph.ChildScope(model->Name(), "__model__");
+  EXPECT_EQ(1u, graph.Count("__model__"));
+  EXPECT_EQ(1u, graph.Count("L"));
+  EXPECT_EQ(1u, graph.Count("M1"));
+  EXPECT_EQ(1u, graph.Count("M1::__model__"));
+  EXPECT_EQ(1u, graph.Count("M1::L"));
+  EXPECT_EQ(1u, graph.Count("M1::M2"));
+  EXPECT_EQ(1u, graph.Count("M1::M2::L"));
+  EXPECT_EQ(1u, graph.Count("M1::F"));
+  EXPECT_EQ(1u, graph.Count("F0"));
+  EXPECT_EQ(1u, graph.Count("F1"));
+  EXPECT_EQ(1u, graph.Count("F2"));
+  EXPECT_EQ(1u, graph.Count("F3"));
+  EXPECT_EQ(1u, graph.Count("F4"));
+  EXPECT_EQ(0u, graph.Count("invalid"));
+
+  std::string resolvedBody;
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "__model__").empty());
+  EXPECT_EQ("L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "L").empty());
+  EXPECT_EQ("L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1").empty());
+  EXPECT_EQ("M1::L", resolvedBody);
+  EXPECT_TRUE(
+      sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1::__model__")
+          .empty());
+  EXPECT_EQ("M1::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1::L").empty());
+  EXPECT_EQ("M1::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1::M2").empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1::M2::L").empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1::F").empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F0").empty());
+  EXPECT_EQ("M1::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F1").empty());
+  EXPECT_EQ("M1::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F2").empty());
+  EXPECT_EQ("M1::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F3").empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F4").empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+
+  // Try to resolve invalid frame name
+  errors = sdf::resolveFrameAttachedToBody(resolvedBody, graph, "invalid");
+  for (auto &e : errors)
+    std::cerr << e.Message() << std::endl;
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+      errors[0].Message().find(
+        "FrameAttachedToGraph unable to find unique frame with name ["
+        "invalid] in graph."));
+}
+
+/////////////////////////////////////////////////
+TEST(NestedFrameSemantics, buildFrameAttachedToGraph_World)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_nested_frame_attached_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  // Get the first world
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_TRUE(world);
+
+  auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+  sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
+  errors = sdf::buildFrameAttachedToGraph(graph, world);
+  EXPECT_TRUE(errors.empty());
+  errors = sdf::validateFrameAttachedToGraph(graph);
+  EXPECT_TRUE(errors.empty()) << errors;
+  EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
+  EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
+
+  EXPECT_EQ(1u, graph.Count("world"));
+  EXPECT_EQ(1u, graph.Count("world_frame"));
+  EXPECT_EQ(1u, graph.Count("M1"));
+  EXPECT_EQ(1u, graph.Count("M1::__model__"));
+  EXPECT_EQ(1u, graph.Count("M1::L"));
+  EXPECT_EQ(1u, graph.Count("M1::M2"));
+  EXPECT_EQ(1u, graph.Count("M1::M2::__model__"));
+  EXPECT_EQ(1u, graph.Count("M1::M2::L"));
+  EXPECT_EQ(1u, graph.Count("M1::F0"));
+  EXPECT_EQ(1u, graph.Count("F0"));
+  EXPECT_EQ(1u, graph.Count("F1"));
+  EXPECT_EQ(1u, graph.Count("F2"));
+  EXPECT_EQ(1u, graph.Count("F3"));
+  EXPECT_EQ(1u, graph.Count("F4"));
+  EXPECT_EQ(1u, graph.Count("F5"));
+  EXPECT_EQ(1u, graph.Count("F6"));
+  EXPECT_EQ(0u, graph.Count("invalid"));
+
+  std::string resolvedBody;
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "world").empty());
+  EXPECT_EQ("world", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(
+      resolvedBody, graph, "world_frame").empty());
+  EXPECT_EQ("world", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1").empty());
+  EXPECT_EQ("M1::L", resolvedBody);
+  EXPECT_TRUE(
+      sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1::__model__")
+          .empty());
+  EXPECT_EQ("M1::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1::L").empty());
+  EXPECT_EQ("M1::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1::M2").empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+  EXPECT_TRUE(
+      sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1::M2::__model__")
+          .empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1::M2::L").empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "M1::F0").empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F0").empty());
+  EXPECT_EQ("world", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F1").empty());
+  EXPECT_EQ("M1::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F2").empty());
+  EXPECT_EQ("M1::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F3").empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F4").empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F5").empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, graph, "F6").empty());
+  EXPECT_EQ("M1::M2::L", resolvedBody);
+
+  // Try to resolve invalid frame name
+  errors = sdf::resolveFrameAttachedToBody(resolvedBody, graph, "invalid");
+  for (auto &e : errors)
+    std::cerr << e.Message() << std::endl;
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
+  EXPECT_NE(std::string::npos,
+      errors[0].Message().find(
+        "FrameAttachedToGraph unable to find unique frame with name ["
+        "invalid] in graph."));
+
+  // Create graph from embedded model
+  ASSERT_NE(nullptr, world);
+  const sdf::Model *model = world->ModelByIndex(0);
+
+  auto ownedModelGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+  sdf::ScopedGraph<sdf::FrameAttachedToGraph> modelGraph(ownedModelGraph);
+  errors = sdf::buildFrameAttachedToGraph(modelGraph, model);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_TRUE(sdf::validateFrameAttachedToGraph(modelGraph).empty());
+
+  modelGraph = modelGraph.ChildScope(model->Name(), "__model__");
+
+  EXPECT_EQ(1u, modelGraph.Count("__model__"));
+  EXPECT_EQ(1u, modelGraph.Count("L"));
+  EXPECT_EQ(1u, modelGraph.Count("M2"));
+  EXPECT_EQ(1u, modelGraph.Count("M2::__model__"));
+  EXPECT_EQ(1u, modelGraph.Count("M2::L"));
+  EXPECT_EQ(1u, modelGraph.Count("F0"));
+  EXPECT_EQ(0u, modelGraph.Count("invalid"));
+
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(
+      resolvedBody, modelGraph, "__model__").empty());
+  EXPECT_EQ("L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "L").empty());
+  EXPECT_EQ("L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "M2").empty());
+  EXPECT_EQ("M2::L", resolvedBody);
+  EXPECT_TRUE(
+      sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "M2::__model__")
+          .empty());
+  EXPECT_EQ("M2::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "M2::L").empty());
+  EXPECT_EQ("M2::L", resolvedBody);
+  EXPECT_TRUE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "F0").empty());
+  EXPECT_EQ("M2::L", resolvedBody);
 }
