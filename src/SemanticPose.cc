@@ -17,8 +17,12 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Assert.hh"
-#include "sdf/SemanticPose.hh"
 #include "sdf/Error.hh"
+#include "sdf/Frame.hh"
+#include "sdf/Joint.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
+#include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
@@ -127,6 +131,38 @@ Errors SemanticPose::Resolve(
     const std::string &_resolveTo) const
 {
   return this->Resolve(_pose, *this, _resolveTo);
+}
+
+/////////////////////////////////////////////////
+Errors SemanticPose::Resolve(
+    ignition::math::Pose3d &_pose,
+    const sdf::Frame &_resolveTo) const
+{
+  return this->Resolve(_pose, _resolveTo.SemanticPose(), _resolveTo.Name());
+}
+
+/////////////////////////////////////////////////
+Errors SemanticPose::Resolve(
+    ignition::math::Pose3d &_pose,
+    const sdf::Joint &_resolveTo) const
+{
+  return this->Resolve(_pose, _resolveTo.SemanticPose(), _resolveTo.Name());
+}
+
+/////////////////////////////////////////////////
+Errors SemanticPose::Resolve(
+    ignition::math::Pose3d &_pose,
+    const sdf::Link &_resolveTo) const
+{
+  return this->Resolve(_pose, _resolveTo.SemanticPose(), _resolveTo.Name());
+}
+
+/////////////////////////////////////////////////
+Errors SemanticPose::Resolve(
+    ignition::math::Pose3d &_pose,
+    const sdf::Model &_resolveTo) const
+{
+  return this->Resolve(_pose, _resolveTo.SemanticPose(), _resolveTo.Name());
 }
 
 /////////////////////////////////////////////////

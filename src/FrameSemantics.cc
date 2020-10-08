@@ -1045,7 +1045,8 @@ Errors buildPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
-Errors validateFrameAttachedToGraph(const ScopedGraph<FrameAttachedToGraph> &_in)
+Errors validateFrameAttachedToGraph(
+    const ScopedGraph<FrameAttachedToGraph> &_in)
 {
   Errors errors;
 

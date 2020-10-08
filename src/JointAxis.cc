@@ -22,7 +22,11 @@
 
 #include "sdf/Assert.hh"
 #include "sdf/Error.hh"
+#include "sdf/Frame.hh"
+#include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
 #include "sdf/SemanticPose.hh"
 
 #include "FrameSemantics.hh"
@@ -428,6 +432,38 @@ Errors JointAxis::ResolveXyz(
   }
 
   return errors;
+}
+
+/////////////////////////////////////////////////
+Errors JointAxis::ResolveXyz(
+    ignition::math::Vector3d &_xyz,
+    const sdf::Frame &_resolveTo) const
+{
+  return this->ResolveXyz(_xyz, _resolveTo.SemanticPose(), _resolveTo.Name());
+}
+
+/////////////////////////////////////////////////
+Errors JointAxis::ResolveXyz(
+    ignition::math::Vector3d &_xyz,
+    const sdf::Joint &_resolveTo) const
+{
+  return this->ResolveXyz(_xyz, _resolveTo.SemanticPose(), _resolveTo.Name());
+}
+
+/////////////////////////////////////////////////
+Errors JointAxis::ResolveXyz(
+    ignition::math::Vector3d &_xyz,
+    const sdf::Link &_resolveTo) const
+{
+  return this->ResolveXyz(_xyz, _resolveTo.SemanticPose(), _resolveTo.Name());
+}
+
+/////////////////////////////////////////////////
+Errors JointAxis::ResolveXyz(
+    ignition::math::Vector3d &_xyz,
+    const sdf::Model &_resolveTo) const
+{
+  return this->ResolveXyz(_xyz, _resolveTo.SemanticPose(), _resolveTo.Name());
 }
 
 /////////////////////////////////////////////////

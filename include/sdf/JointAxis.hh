@@ -35,6 +35,10 @@ namespace sdf
   // Forward declare private data class.
   class JointAxisPrivate;
   class SemanticPose;
+  class Frame;
+  class Joint;
+  class Link;
+  class Model;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
 
@@ -263,6 +267,23 @@ namespace sdf
         ignition::math::Vector3d &_xyz,
         const sdf::SemanticPose &_scope,
         const std::string &_resolveTo) const;
+
+
+    public: Errors ResolveXyz(
+        ignition::math::Vector3d &_xyz,
+        const sdf::Frame &_resolveTo) const;
+
+    public: Errors ResolveXyz(
+        ignition::math::Vector3d &_xyz,
+        const sdf::Joint &_resolveTo) const;
+
+    public: Errors ResolveXyz(
+        ignition::math::Vector3d &_xyz,
+        const sdf::Link &_resolveTo) const;
+
+    public: Errors ResolveXyz(
+        ignition::math::Vector3d &_xyz,
+        const sdf::Model &_resolveTo) const;
 
     // private: Errors ResolveXyzImpl(
     //     ignition::math::Vector3d &_xyz,

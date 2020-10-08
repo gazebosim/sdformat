@@ -40,6 +40,10 @@ namespace sdf
   //
 
   // Forward declare private data class.
+  class Model;
+  class Link;
+  class Frame;
+  class Joint;
   class SemanticPosePrivate;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
@@ -76,6 +80,15 @@ namespace sdf
     public: Errors Resolve(ignition::math::Pose3d &_pose,
                 const SemanticPose &_scope,
                 const std::string &_resolveTo) const;
+
+    public: Errors Resolve(ignition::math::Pose3d &_pose,
+                const sdf::Frame &_resolveTo) const;
+    public: Errors Resolve(ignition::math::Pose3d &_pose,
+                const sdf::Joint &_resolveTo) const;
+    public: Errors Resolve(ignition::math::Pose3d &_pose,
+                const sdf::Link &_resolveTo) const;
+    public: Errors Resolve(ignition::math::Pose3d &_pose,
+                const sdf::Model &_resolveTo) const;
 
     /// \brief Private constructor.
     /// \param[in] _pose Raw pose of object.
