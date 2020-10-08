@@ -1494,43 +1494,9 @@ Errors resolvePoseRelativeToRoot(
         _vertexName + "] in graph."});
     return errors;
   }
-  auto vertexId = _graph.VertexIdByName(_vertexName);
 
-  auto incomingVertexEdges = FindSourceVertex(_graph, vertexId, errors);
-
-  if (!errors.empty())
-  {
-    return errors;
-  }
-  else if (!incomingVertexEdges.first.Valid())
-  {
-    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-        "PoseRelativeToGraph unable to find path to source vertex "
-        "when starting from vertex with name [" + _vertexName + "]."});
-    return errors;
-  }
-  else if (incomingVertexEdges.first.Id() != _graph.ScopeVertex().Id())
-  {
-    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-        "PoseRelativeToGraph frame with name [" + _vertexName + "] "
-        "is disconnected; its source vertex has name [" +
-        incomingVertexEdges.first.Name() +
-        "], but its source name should be " + _graph.ScopeName() + "."});
-    return errors;
-  }
-
-  ignition::math::Pose3d pose;
-  for (auto const &edge : incomingVertexEdges.second)
-  {
-    pose = edge.Data() * pose;
-  }
-
-  if (errors.empty())
-  {
-    _pose = pose;
-  }
-
-  return errors;
+  return resolvePoseRelativeToRoot(
+      _pose, _graph, _graph.VertexIdByName(_vertexName));
 }
 /////////////////////////////////////////////////
 Errors resolvePoseRelativeToRoot(
@@ -1609,22 +1575,24 @@ Errors resolvePose(
     const std::string &_frameName,
     const std::string &_resolveTo)
 {
-  Errors errors = resolvePoseRelativeToRoot(_pose, _graph, _frameName);
-
-  // If the resolveTo is empty, we're resolving to the Root, so we're done
-  if (!_resolveTo.empty())
+  Errors errors;
+  if (_graph.Count(_frameName) != 1)
   {
-    ignition::math::Pose3d poseR;
-    Errors errorsR = resolvePoseRelativeToRoot(poseR, _graph, _resolveTo);
-    errors.insert(errors.end(), errorsR.begin(), errorsR.end());
-
-    if (errors.empty())
-    {
-      _pose = poseR.Inverse() * _pose;
-    }
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+        "PoseRelativeToGraph unable to find unique frame with name [" +
+        _frameName + "] in graph."});
+    return errors;
+  }
+  if (_graph.Count(_resolveTo) != 1)
+  {
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+        "PoseRelativeToGraph unable to find unique frame with name [" +
+        _resolveTo + "] in graph."});
+    return errors;
   }
 
-  return errors;
+  return resolvePose(_pose, _graph, _graph.VertexIdByName(_frameName),
+      _graph.VertexIdByName(_resolveTo));
 }
 
 }
