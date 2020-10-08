@@ -1031,3 +1031,65 @@ TEST_F(PlacementFrame, ModelPlacementFrameAttribute)
   this->TestExpectedWorldPose<sdf::Link>(
       "model_with_placement_frame_and_pose_relative_to", "L4");
 }
+
+//////////////////////////////////////////////////
+TEST(NestedReference, PoseRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_relative_to_nested_reference.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  using Pose = ignition::math::Pose3d;
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  // The child models starting from M2 all reference an entity inside M1. Check
+  // that resolving poses works when referencing such entities.
+  {
+    Pose pose;
+    const sdf::Model *testModel = model->ModelByName("M2");
+    ASSERT_NE(nullptr, testModel);
+    EXPECT_TRUE(testModel->SemanticPose().Resolve(pose, *model).empty());
+    EXPECT_EQ(Pose(1, 0, -2, 0, IGN_PI_2, 0), pose);
+  }
+  {
+    Pose pose;
+    const sdf::Model *testModel = model->ModelByName("M3");
+    ASSERT_NE(nullptr, testModel);
+    EXPECT_TRUE(testModel->SemanticPose().Resolve(pose, *model).empty());
+    EXPECT_EQ(Pose(1, 1, -3, 0, IGN_PI_2, 0), pose);
+  }
+  {
+    Pose pose;
+    const sdf::Model *testModel = model->ModelByName("M4");
+    ASSERT_NE(nullptr, testModel);
+    EXPECT_TRUE(testModel->SemanticPose().Resolve(pose, *model).empty());
+    EXPECT_EQ(Pose(2, 0, -4, 0, IGN_PI_2, 0), pose);
+  }
+  {
+    Pose pose;
+    const sdf::Model *testModel = model->ModelByName("M5");
+    ASSERT_NE(nullptr, testModel);
+    EXPECT_TRUE(testModel->SemanticPose().Resolve(pose, *model).empty());
+    EXPECT_EQ(Pose(2, 0, -6, 0, IGN_PI_2, 0), pose);
+  }
+  {
+    Pose pose;
+    const sdf::Model *testModel = model->ModelByName("M6");
+    ASSERT_NE(nullptr, testModel);
+    EXPECT_TRUE(testModel->SemanticPose().Resolve(pose, *model).empty());
+    EXPECT_EQ(Pose(1, 1, -6, IGN_PI_2, IGN_PI_2, 0), pose);
+  }
+  {
+    Pose pose;
+    const sdf::Model *testModel = model->ModelByName("M7");
+    ASSERT_NE(nullptr, testModel);
+    EXPECT_TRUE(testModel->SemanticPose().Resolve(pose, *model).empty());
+    EXPECT_EQ(Pose(1, -6, -1, 0, 0, -IGN_PI_2), pose);
+  }
+}
