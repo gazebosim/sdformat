@@ -549,8 +549,8 @@ Errors buildPoseRelativeToGraph(
   // Add an aliasing edge from the model vertex to the
   // corresponding vertex in the PoseRelativeTo graph of the child model,
   // i.e, to the <model_name>::__model__ vertex
-  auto &edge = _out.AddEdge({modelId, modelFrameId}, {{}, false});
-  edge.SetWeight(0);
+  // auto &edge = _out.AddEdge({modelId, modelFrameId}, {{}, false});
+  _out.AddEdge({modelId, modelFrameId}, {});
 
   // add link vertices and default edge if relative_to is empty
   for (uint64_t l = 0; l < _model->LinkCount(); ++l)
@@ -1286,10 +1286,7 @@ Errors validatePoseRelativeToGraph(
       continue;
     }
 
-    auto incomingEdges = _in.Graph().IncidentsTo(vertexPair.first);
-    std::size_t inDegree = std::count_if(incomingEdges.begin(),
-        incomingEdges.end(),
-        [](const auto &_edge) { return !_edge.second.get().Data().aliasing; });
+    std::size_t inDegree = _in.Graph().InDegree(vertexPair.first);
 
     if (inDegree > 1)
     {
@@ -1525,7 +1522,7 @@ Errors resolvePoseRelativeToRoot(
   ignition::math::Pose3d pose;
   for (auto const &edge : incomingVertexEdges.second)
   {
-    pose = edge.Data().pose * pose;
+    pose = edge.Data() * pose;
   }
 
   if (errors.empty())
@@ -1569,7 +1566,7 @@ Errors resolvePoseRelativeToRoot(
   ignition::math::Pose3d pose;
   for (auto const &edge : incomingVertexEdges.second)
   {
-    pose = edge.Data().pose * pose;
+    pose = edge.Data() * pose;
   }
 
   if (errors.empty())
@@ -1630,57 +1627,5 @@ Errors resolvePose(
   return errors;
 }
 
-/////////////////////////////////////////////////
-Errors updateGraphPose(
-    ScopedGraph<PoseRelativeToGraph> &_graph,
-    const std::string &_frameName,
-    const ignition::math::Pose3d &_pose)
-{
-  Errors errors;
-
-  if (_graph.Count(_frameName) != 1)
-  {
-    errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
-        "PoseRelativeToGraph unable to find unique frame with name [" +
-        _frameName+ "] in graph."});
-    return errors;
-  }
-  auto vertexId = _graph.VertexIdByName(_frameName);
-  auto incidentsTo = _graph.Graph().IncidentsTo(vertexId);
-  std::vector<std::size_t> toRemove;
-  for (const auto &[id, edge] : incidentsTo)
-  {
-    if (edge.get().Data().aliasing)
-    {
-      toRemove.push_back(id);
-    }
-  }
-  for (const auto id : toRemove)
-  {
-    incidentsTo.erase(id);
-  }
-
-  if (incidentsTo.size() == 1)
-  {
-    _graph.UpdateEdge(incidentsTo.begin()->second, _pose);
-  }
-  else if (incidentsTo.empty())
-  {
-    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-        "PoseRelativeToGraph error: no incoming edge to "
-        "vertex [" + _frameName + "]."});
-  }
-  else
-  {
-    // This is an error because there should be only one way to define the pose
-    // of a frame. This would be like a frame having two //pose elements with
-    // different //pose/@relative_to attributes.
-    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-        "PoseRelativeToGraph error: multiple incoming edges to "
-        "vertex [" + _frameName + "]."});
-  }
-
-  return errors;
-}
 }
 }

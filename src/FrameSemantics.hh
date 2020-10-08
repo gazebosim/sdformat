@@ -100,20 +100,7 @@ namespace sdf
     /// named __model__ or world. Each vertex stores its FrameType and each edge
     /// stores the Pose3 between those frames.
     using Pose3d = ignition::math::Pose3d;
-    struct Edge {
-      Edge() = default;
-      Edge(const Pose3d &_pose)
-          : pose(_pose)
-      {
-      }
-      Edge(const Pose3d &_pose, bool _aliasing)
-          : pose(_pose), aliasing(_aliasing)
-      {
-      }
-      Pose3d pose;
-      bool aliasing{false};
-    };
-    using GraphType = ignition::math::graph::DirectedGraph<FrameType, Edge>;
+    using GraphType = ignition::math::graph::DirectedGraph<FrameType, Pose3d>;
     GraphType graph;
 
     /// \brief A Map from Vertex names to Vertex Ids.
@@ -216,18 +203,6 @@ namespace sdf
       const ScopedGraph<PoseRelativeToGraph> &_graph,
       const ignition::math::graph::VertexId &_frameVertexId,
       const ignition::math::graph::VertexId &_resolveToVertexId);
-
-  /// \brief Update the pose of a frame in the pose graph. This updates the
-  /// content of the edge incident to the vertex identified by the given
-  /// _frameName.
-  /// \param[in] _graph PoseRelativeToGraph to update.
-  /// \param[in] _frameName Name of frame whose pose is to be updated.
-  /// \param[in] _pose New pose.
-  /// \return Errors.
-  Errors updateGraphPose(
-      ScopedGraph<PoseRelativeToGraph> &_graph,
-      const std::string &_frameName,
-      const ignition::math::Pose3d &_pose);
   }
 }
 #endif
