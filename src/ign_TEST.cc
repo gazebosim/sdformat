@@ -573,6 +573,17 @@ TEST(check, SDF)
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
+  // Check an SDF file with nested_models using nested links/frames as joint
+  // parent or child frames.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/joint_nested_parent_child.sdf";
+
+    // Check model_nested_model_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
   // Check an invalid SDF file with a joint that specifies a child link
   // within a sibling nested model using the unsupported :: syntax.
   // {

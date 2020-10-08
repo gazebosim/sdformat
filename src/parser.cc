@@ -1930,7 +1930,8 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
 
       if (!_model->LinkNameExists(childName) &&
           !_model->JointNameExists(childName) &&
-          !_model->FrameNameExists(childName))
+          !_model->FrameNameExists(childName) &&
+          !_model->ModelNameExists(childName))
       {
         std::cerr << "Error: child frame with name[" << childName
                   << "] specified by joint with name[" << joint->Name()

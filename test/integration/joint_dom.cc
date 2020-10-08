@@ -766,3 +766,68 @@ TEST(DOMJoint, LoadURDFJointPoseRelativeTo)
     model->JointByName("joint12")->Axis()->ResolveXyz(vec3, "joint12").empty());
   EXPECT_EQ(Vector3(0, 1.0, 0), vec3);
 }
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, LoadJointNestedParentChild)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "joint_nested_parent_child.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  using Pose = ignition::math::Pose3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  {
+    const sdf::Joint *j1 = model->JointByName("J1");
+    ASSERT_NE(nullptr, j1);
+    EXPECT_EQ("M1::L1", j1->ParentLinkName());
+    EXPECT_EQ("L1", j1->ChildLinkName());
+    Pose pose;
+    EXPECT_TRUE(j1->SemanticPose().Resolve(pose, "__model__").empty());
+    EXPECT_EQ(Pose(0, 0, 9, 0, IGN_PI_2, 0), pose);
+  }
+  {
+    const sdf::Joint *j2 = model->JointByName("J2");
+    ASSERT_NE(nullptr, j2);
+    EXPECT_EQ("F1", j2->ParentLinkName());
+    EXPECT_EQ("L1", j2->ChildLinkName());
+    Pose pose;
+    EXPECT_TRUE(j2->SemanticPose().Resolve(pose, "__model__").empty());
+    EXPECT_EQ(Pose(0, 1, 10, 0, IGN_PI_2, 0), pose);
+  }
+  {
+    const sdf::Joint *j3 = model->JointByName("J3");
+    ASSERT_NE(nullptr, j3);
+    EXPECT_EQ("L1", j3->ParentLinkName());
+    EXPECT_EQ("M1::L2", j3->ChildLinkName());
+    Pose pose;
+    EXPECT_TRUE(j3->SemanticPose().Resolve(pose, "__model__").empty());
+    EXPECT_EQ(Pose(1, 1, 1, 0, 0, 0), pose);
+  }
+  {
+    const sdf::Joint *j4 = model->JointByName("J4");
+    ASSERT_NE(nullptr, j4);
+    EXPECT_EQ("L1", j4->ParentLinkName());
+    EXPECT_EQ("M1::F1", j4->ChildLinkName());
+    Pose pose;
+    EXPECT_TRUE(j4->SemanticPose().Resolve(pose, "__model__").empty());
+    EXPECT_EQ(Pose(1, 0, 1, 0, 0, 0), pose);
+  }
+  {
+    const sdf::Joint *j5 = model->JointByName("J5");
+    ASSERT_NE(nullptr, j5);
+    EXPECT_EQ("L1", j5->ParentLinkName());
+    EXPECT_EQ("M1::M2", j5->ChildLinkName());
+    Pose pose;
+    EXPECT_TRUE(j5->SemanticPose().Resolve(pose, "__model__").empty());
+    EXPECT_EQ(Pose(0, -1, 1, IGN_PI_2, 0, 0), pose);
+  }
+}
