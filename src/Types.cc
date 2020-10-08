@@ -95,6 +95,5 @@ std::ostream &operator<<(std::ostream &_out, const sdf::Errors &_errs)
   }
   return _out;
 }
-
 }
 }

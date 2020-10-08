@@ -116,7 +116,7 @@ namespace sdf
   /// \param[in] _model Model from which to build attached_to graph.
   /// \return Errors.
   Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
-      const Model *_model, bool _root = true);
+              const Model *_model, bool _root = true);
 
   /// \brief Build a FrameAttachedToGraph for a world.
   /// \param[out] _out Graph object to write.
@@ -129,8 +129,8 @@ namespace sdf
   /// \param[out] _out Graph object to write.
   /// \param[in] _model Model from which to build attached_to graph.
   /// \return Errors.
-  Errors buildPoseRelativeToGraph(
-              ScopedGraph<PoseRelativeToGraph> &_out, const Model *_model, bool _root = true);
+  Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
+              const Model *_model, bool _root = true);
 
   /// \brief Build a PoseRelativeToGraph for a world.
   /// \param[out] _out Graph object to write.

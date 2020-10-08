@@ -146,7 +146,6 @@ FindSinkVertex(
     const ignition::math::graph::VertexId _id,
     Errors &_errors)
 {
-
   using DirectedEdge = typename ScopedGraph<T>::Edge;
   using Vertex = typename ScopedGraph<T>::Vertex;
   using VertexId = ignition::math::graph::VertexId;
@@ -1517,16 +1516,17 @@ Errors resolvePoseRelativeToRoot(
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
         "PoseRelativeToGraph unable to find path to source vertex "
-        "when starting from vertex with id [" + std::to_string(_vertexId) + "]."});
+        "when starting from vertex with id [" +
+            std::to_string(_vertexId) + "]."});
     return errors;
   }
   else if (incomingVertexEdges.first.Id() != _graph.ScopeVertex().Id())
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-        "PoseRelativeToGraph frame with name [" + std::to_string(_vertexId) + "] "
-        "is disconnected; its source vertex has name [" +
-        incomingVertexEdges.first.Name() +
-        "], but its source name should be " + _graph.ScopeName() + "."});
+        "PoseRelativeToGraph frame with name [" + std::to_string(_vertexId) +
+            "] is disconnected; its source vertex has name [" +
+            incomingVertexEdges.first.Name() +
+            "], but its source name should be " + _graph.ScopeName() + "."});
     return errors;
   }
 
@@ -1595,6 +1595,5 @@ Errors resolvePose(
   return resolvePose(_pose, _graph, _graph.VertexIdByName(_frameName),
       _graph.VertexIdByName(_resolveTo));
 }
-
 }
 }

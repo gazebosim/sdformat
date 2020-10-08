@@ -24,6 +24,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/graph/Graph.hh>
@@ -46,7 +47,6 @@ struct ScopedGraphData
 template <typename T>
 class ScopedGraph
 {
-
   public: template <typename G>
           struct GraphTypeExtracter
   {
@@ -320,7 +320,6 @@ std::string ScopedGraph<T>::RemovePrefix(const std::string &_name) const
   }
   return _name;
 }
-
 }
 }
 
