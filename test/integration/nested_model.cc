@@ -15,7 +15,6 @@
  *
  */
 
-#include <iostream>
 #include <sstream>
 #include <fstream>
 #include <string>
@@ -354,18 +353,6 @@ TEST(NestedModel, NestedInclude)
   EXPECT_EQ(lowerLink3->RawPose(), lowerLink1->RawPose());
   EXPECT_EQ(upperLink2->RawPose(), upperLink1->RawPose());
   EXPECT_EQ(upperLink3->RawPose(), upperLink1->RawPose());
-  // // expect //pose/@relative_to to contain the name of the nested model frame
-  // // injected during parsing. model1 is not nested, so it's links should have
-  // // empty //pose/@relative_to
-  // EXPECT_TRUE(baseLink1->PoseRelativeTo().empty());
-  // EXPECT_EQ(name + "::__model__", baseLink2->PoseRelativeTo());
-  // EXPECT_EQ(name + "_14::__model__", baseLink3->PoseRelativeTo());
-  // EXPECT_TRUE(lowerLink1->PoseRelativeTo().empty());
-  // EXPECT_EQ(name + "::__model__", lowerLink2->PoseRelativeTo());
-  // EXPECT_EQ(name + "_14::__model__", lowerLink3->PoseRelativeTo());
-  // EXPECT_TRUE(upperLink1->PoseRelativeTo().empty());
-  // EXPECT_EQ(name + "::__model__", upperLink2->PoseRelativeTo());
-  // EXPECT_EQ(name + "_14::__model__", upperLink3->PoseRelativeTo());
 
   // each model has 2 joints, and the joint names of the nested models have
   // been transformed
@@ -408,8 +395,6 @@ TEST(NestedModel, NestedInclude)
   // //axis/xyz/@expressed_in == "__model__" inside the nested model
   EXPECT_EQ(ignition::math::Vector3d::UnitX, lowerAxis3->Xyz());
   EXPECT_EQ(ignition::math::Vector3d::UnitX, upperAxis3->Xyz());
-  // EXPECT_EQ(name + "_14::__model__", lowerAxis3->XyzExpressedIn());
-  // EXPECT_EQ(name + "_14::__model__", upperAxis3->XyzExpressedIn());
 }
 
 //////////////////////////////////////////////////
@@ -477,15 +462,18 @@ TEST(NestedModel, NestedModelWithFrames)
           .empty());
   EXPECT_EQ(frame1ExpPose, frame1Pose);
 
-  const auto *frame2 = childModel->FrameByName("F2");
+  const auto *frame2 = parentModel->FrameByName("M1::F2");
   ASSERT_NE(nullptr, frame2);
+  // Use childModel's SemanticPose with the resolveTo argument of "__model__".
+  // This should have the same result as using parentModel's SemanticPose with
+  // the resolveTo argument of parentModel->Name()
   Pose3d frame2Pose;
   EXPECT_TRUE(frame2->SemanticPose()
                   .Resolve(frame2Pose, childModel->SemanticPose(), "__model__")
                   .empty());
   EXPECT_EQ(frame2ExpPose, frame2Pose);
 
-  const auto *link1 = childModel->LinkByName("L1");
+  const auto *link1 = parentModel->LinkByName("M1::L1");
   ASSERT_NE(nullptr, link1);
   Pose3d link1Pose;
   EXPECT_TRUE(link1->SemanticPose()
@@ -501,11 +489,13 @@ TEST(NestedModel, NestedModelWithFrames)
   ASSERT_NE(nullptr, collision1);
   EXPECT_EQ("__model__", collision1->PoseRelativeTo());
 
+  const auto *link2 = parentModel->LinkByName("M1::L2");
+  ASSERT_NE(nullptr, link2);
   Pose3d link2Pose;
-  EXPECT_TRUE(parentModel->SemanticPose()
-                  .Resolve(link2Pose, "ParentModel::M1::L2")
+  EXPECT_TRUE(link2->SemanticPose()
+                  .Resolve(link2Pose, childModel->SemanticPose(), "__model__")
                   .empty());
-  EXPECT_EQ(link2ExpPose, link2Pose.Inverse());
+  EXPECT_EQ(link2ExpPose, link2Pose);
 
   const auto *joint1 = parentModel->JointByName("M1::J1");
   ASSERT_NE(nullptr, joint1);
@@ -521,6 +511,7 @@ TEST(NestedModel, NestedModelWithFrames)
   EXPECT_TRUE(joint1Axis->ResolveXyz(
         joint1AxisVector, childModel->SemanticPose(), "__model__").empty());
   EXPECT_EQ(joint1AxisExpVector, joint1AxisVector);
+
   const auto joint1Axis2 = joint1->Axis(1);
   ASSERT_NE(nullptr, joint1Axis2);
   Vector3d joint1Axis2Vector;
@@ -752,7 +743,7 @@ TEST(NestedModel, NestedModelWithSiblingFrames)
   ASSERT_NE(nullptr, parentModelFrame);
 
   const sdf::Model *nestedModel1 = parentModel->ModelByName("M1");
-  ASSERT_NE(nullptr, nestedModel1 );
+  ASSERT_NE(nullptr, nestedModel1);
 
   EXPECT_EQ("testFrame", nestedModel1->PoseRelativeTo());
 
@@ -816,7 +807,6 @@ TEST(NestedModel, NestedFrameOnlyModel)
     << "<world name='default'>"
     << "  <model name='ParentModel'>"
     << "    <static>true</static>"
-    << "    <frame name='parentModelFrame'/>"
     << "    <include>"
     << "      <uri>" + MODEL_PATH + "</uri>"
     << "      <name>M1</name>"
@@ -840,24 +830,29 @@ TEST(NestedModel, NestedFrameOnlyModel)
   const sdf::Model *parentModel = world->ModelByIndex(0);
   ASSERT_NE(nullptr, parentModel);
 
-  const sdf::Frame *parentModelFrame = parentModel->FrameByIndex(0);
-  ASSERT_NE(nullptr, parentModelFrame);
-
   using ignition::math::Pose3d;
   using ignition::math::Vector3d;
   // Expected poses for frames after nesting.
   Pose3d frame1ExpPose = model1Pose * Pose3d(0, 0, 0, IGN_PI, 0, 0);
   Pose3d frame2ExpPose = frame1ExpPose * Pose3d(0, 0, 0, 0, IGN_PI, 0);
 
+  const auto *frame1 = parentModel->FrameByName("M1::F1");
+  ASSERT_NE(nullptr, frame1);
   Pose3d frame1Pose;
   EXPECT_TRUE(
-      parentModelFrame->SemanticPose().Resolve(frame1Pose, "M1::F1").empty());
-  EXPECT_EQ(frame1ExpPose, frame1Pose.Inverse());
+      frame1->SemanticPose()
+          .Resolve(frame1Pose, parentModel->SemanticPose(), parentModel->Name())
+          .empty());
+  EXPECT_EQ(frame1ExpPose, frame1Pose);
 
+  const auto *frame2 = parentModel->FrameByName("M1::F2");
+  ASSERT_NE(nullptr, frame2);
   Pose3d frame2Pose;
   EXPECT_TRUE(
-      parentModelFrame->SemanticPose().Resolve(frame2Pose, "M1::F2").empty());
-  EXPECT_EQ(frame2ExpPose, frame2Pose.Inverse());
+      frame2->SemanticPose()
+          .Resolve(frame2Pose, parentModel->SemanticPose(), parentModel->Name())
+          .empty());
+  EXPECT_EQ(frame2ExpPose, frame2Pose);
 }
 
 class PlacementFrame: public ::testing::Test
@@ -878,11 +873,15 @@ class PlacementFrame: public ::testing::Test
           return sdf::filesystem::append(modelRootPath, _file);
         });
     sdf::Errors errors = this->root.Load(testModelPath);
-    // if (!errors.empty())
-    // {
-    //   std::cout << this->root.Element()->ToString("") << std::endl;
-    // }
-    EXPECT_TRUE(errors.empty()) << errors;
+    for (const auto &e : errors)
+    {
+      std::cout << e.Message() << std::endl;
+    }
+    if (!errors.empty())
+    {
+      std::cout << this->root.Element()->ToString("") << std::endl;
+    }
+    EXPECT_TRUE(errors.empty());
 
     this->world = this->root.WorldByIndex(0);
     ASSERT_NE(nullptr, world);
@@ -963,13 +962,13 @@ class PlacementFrame: public ::testing::Test
 
     Pose3d testFramePose;
     {
-      sdf::Errors errors = parentModel->SemanticPose().Resolve(
-          testFramePose, _parentModelName + "::" + _testFrameName);
+      sdf::Errors errors = testFrame->SemanticPose().Resolve(
+          testFramePose, parentModel->SemanticPose(), _parentModelName);
       EXPECT_TRUE(errors.empty()) << errors;
     }
 
     // The expected pose of the test frame is precisely the placement pose
-    EXPECT_EQ(placementPose, testFramePose.Inverse());
+    EXPECT_EQ(placementPose, testFramePose);
   }
 
   protected: sdf::Root root;
@@ -1035,4 +1034,3 @@ TEST_F(PlacementFrame, ModelPlacementFrameAttribute)
   this->TestExpectedWorldPose<sdf::Link>(
       "model_with_placement_frame_and_pose_relative_to", "L4");
 }
-
