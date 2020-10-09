@@ -1093,3 +1093,156 @@ TEST(NestedReference, PoseRelativeTo)
     EXPECT_EQ(Pose(1, -6, -1, 0, 0, -IGN_PI_2), pose);
   }
 }
+
+/////////////////////////////////////////////////
+TEST(NestedReference, PlacementFrameAttribute)
+{
+  const std::string testFile =
+      sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+          "model", "model_with_nested_placement_frame_attribute", "model.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  auto *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  ignition::math::Pose3d pose;
+  errors = model->SemanticPose().Resolve(pose);
+  EXPECT_TRUE(errors.empty()) << errors;
+  EXPECT_EQ(ignition::math::Pose3d(0, -2, 10, 0, 0, 0), pose);
+}
+
+/////////////////////////////////////////////////
+TEST(NestedReference, PlacementFrameElement)
+{
+  const std::string modelRootPath = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "integration", "model");
+
+  sdf::setFindCallback([&](const std::string &_file)
+  {
+    return sdf::filesystem::append(modelRootPath, _file);
+  });
+
+  // Test with //world/include without overriding the placement_frame
+  {
+    std::ostringstream stream;
+    stream << R"(
+    <sdf version='1.8'>
+      <world name='default'>
+        <include>
+          <uri>model_with_nested_placement_frame_attribute</uri>
+        </include>
+      </world>
+    </sdf>)";
+    // Load the SDF file
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(stream.str());
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    auto *world = root.WorldByIndex(0);
+    ASSERT_NE(nullptr, world);
+    auto *model = world->ModelByIndex(0);
+    ASSERT_NE(nullptr, model);
+
+    ignition::math::Pose3d pose;
+    errors = model->SemanticPose().Resolve(pose);
+    EXPECT_TRUE(errors.empty()) << errors;
+    EXPECT_EQ(ignition::math::Pose3d(0, -2, 10, 0, 0, 0), pose);
+  }
+
+  // Test with //world/include overriding the placement_frame
+  {
+    const ignition::math::Pose3d placementPose(0, 10, 0, IGN_PI_2, 0, 0);
+    std::ostringstream stream;
+    stream << R"(
+    <sdf version='1.8'>
+      <world name='default'>
+        <include>
+          <uri>model_with_nested_placement_frame_attribute</uri>
+          <placement_frame>child_model::link3</placement_frame>
+          <pose>)" << placementPose << R"(</pose>"
+        </include>
+      </world>
+    </sdf>)";
+    // Load the SDF file
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(stream.str());
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    auto *world = root.WorldByIndex(0);
+    ASSERT_NE(nullptr, world);
+    auto *model = world->ModelByIndex(0);
+    ASSERT_NE(nullptr, model);
+
+    auto *link = model->LinkByName("child_model::link3");
+    ASSERT_NE(nullptr, link);
+    ignition::math::Pose3d pose;
+    errors = link->SemanticPose().Resolve(pose, model->SemanticPose(), "world");
+    EXPECT_TRUE(errors.empty()) << errors;
+    EXPECT_EQ(placementPose, pose);
+  }
+
+
+  // Test with //model/include without overriding the placement_frame
+  {
+    std::ostringstream stream;
+    stream << R"(
+    <sdf version='1.8'>
+      <model name='parent_model'>
+        <include>
+          <uri>model_with_nested_placement_frame_attribute</uri>
+        </include>
+      </model>
+    </sdf>)";
+    // Load the SDF file
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(stream.str());
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    auto *parentModel = root.ModelByIndex(0);
+    ASSERT_NE(nullptr, parentModel );
+    auto *model = parentModel ->ModelByIndex(0);
+    ASSERT_NE(nullptr, model);
+
+    ignition::math::Pose3d pose;
+    errors = model->SemanticPose().Resolve(pose);
+    EXPECT_TRUE(errors.empty()) << errors;
+    EXPECT_EQ(ignition::math::Pose3d(0, -2, 10, 0, 0, 0), pose);
+  }
+
+  // Test with //model/include overriding the placement_frame
+  {
+    const ignition::math::Pose3d placementPose(0, 10, 0, IGN_PI_2, 0, 0);
+    std::ostringstream stream;
+    stream << R"(
+    <sdf version='1.8'>
+      <model name='parent_model'>
+        <include>
+          <uri>model_with_nested_placement_frame_attribute</uri>
+          <placement_frame>child_model::link3</placement_frame>
+          <pose>)" << placementPose << R"(</pose>"
+        </include>
+      </model>
+    </sdf>)";
+    // Load the SDF file
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(stream.str());
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    auto *parentModel = root.ModelByIndex(0);
+    ASSERT_NE(nullptr, parentModel );
+    auto *model = parentModel ->ModelByIndex(0);
+    ASSERT_NE(nullptr, model);
+
+    auto *link = model->LinkByName("child_model::link3");
+    ASSERT_NE(nullptr, link);
+    ignition::math::Pose3d pose;
+    errors =
+        link->SemanticPose().Resolve(pose, model->SemanticPose(), "__model__");
+    EXPECT_TRUE(errors.empty()) << errors;
+    EXPECT_EQ(placementPose, pose);
+  }
+}

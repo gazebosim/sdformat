@@ -546,27 +546,6 @@ TEST(DOMRoot, ModelPlacementFrameAttribute)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, ModelNestedPlacementFrameAttribute)
-{
-  const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "model_with_nested_placement_frame_attribute.sdf");
-
-  // Load the SDF file
-  sdf::Root root;
-  sdf::Errors errors = root.Load(testFile);
-  EXPECT_TRUE(errors.empty()) << errors;
-
-  auto *model = root.ModelByIndex(0);
-  ASSERT_NE(nullptr, model);
-
-  ignition::math::Pose3d pose;
-  errors = model->SemanticPose().Resolve(pose);
-  EXPECT_TRUE(errors.empty()) << errors;
-  EXPECT_EQ(ignition::math::Pose3d(0, -2, 10, 0, 0, 0), pose);
-}
-
-/////////////////////////////////////////////////
 TEST(DOMJoint, LoadInvalidNestedModelWithoutLinks)
 {
   const std::string testFile =
