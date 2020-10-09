@@ -58,7 +58,7 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_Model)
   EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
   EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
-  graph = graph.ChildScope(model->Name(), "__model__");
+  graph = graph.ChildModelScope(model->Name());
   EXPECT_EQ(8u, graph.Map().size());
   EXPECT_EQ(8u, graph.Graph().Vertices().size());
   EXPECT_EQ(6u, graph.Graph().Edges().size());
@@ -182,7 +182,7 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_World)
   EXPECT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::validateFrameAttachedToGraph(modelGraph).empty());
 
-  modelGraph = modelGraph.ChildScope(model->Name(), "__model__");
+  modelGraph = modelGraph.ChildModelScope(model->Name());
 
   EXPECT_EQ(5u, modelGraph.Map().size());
   EXPECT_EQ(5u, modelGraph.Graph().Vertices().size());
@@ -224,7 +224,7 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   auto errors = sdf::buildPoseRelativeToGraph(graph, model);
   EXPECT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::validatePoseRelativeToGraph(graph).empty());
-  graph = graph.ChildScope(model->Name(), "__model__");
+  graph = graph.ChildModelScope(model->Name());
 
   EXPECT_EQ(10u, graph.Map().size());
   EXPECT_EQ(10u, graph.Graph().Vertices().size());
@@ -323,7 +323,7 @@ TEST(NestedFrameSemantics, buildFrameAttachedToGraph_Model)
   EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
   EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
-  graph = graph.ChildScope(model->Name(), "__model__");
+  graph = graph.ChildModelScope(model->Name());
   EXPECT_EQ(1u, graph.Count("__model__"));
   EXPECT_EQ(1u, graph.Count("L"));
   EXPECT_EQ(1u, graph.Count("M1"));
@@ -510,7 +510,7 @@ TEST(NestedFrameSemantics, buildFrameAttachedToGraph_World)
   EXPECT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::validateFrameAttachedToGraph(modelGraph).empty());
 
-  modelGraph = modelGraph.ChildScope(model->Name(), "__model__");
+  modelGraph = modelGraph.ChildModelScope(model->Name());
 
   EXPECT_EQ(1u, modelGraph.Count("__model__"));
   EXPECT_EQ(1u, modelGraph.Count("L"));

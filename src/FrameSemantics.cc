@@ -242,7 +242,7 @@ Errors buildFrameAttachedToGraph(
 
   const auto modelId = _out.AddVertex(_model->Name(), frameType).Id();
 
-  auto outModel = _out.ChildScope(_model->Name(), "__model__");
+  auto outModel = _out.ChildModelScope(_model->Name());
   const auto modelFrameId = outModel.AddVertex(scopeName, frameType).Id();
 
   auto &edge = outModel.AddEdge({modelId, modelFrameId}, true);
@@ -543,7 +543,7 @@ Errors buildPoseRelativeToGraph(
   }
   auto modelId = _out.AddVertex(_model->Name(), sdf::FrameType::MODEL).Id();
 
-  auto outModel = _out.ChildScope(_model->Name(), scopeName);
+  auto outModel = _out.ChildModelScope(_model->Name());
   auto modelFrameId = outModel.AddVertex(scopeName, sdf::FrameType::MODEL).Id();
   // Add an aliasing edge from the model vertex to the
   // corresponding vertex in the PoseRelativeTo graph of the child model,
@@ -792,7 +792,7 @@ Errors buildPoseRelativeToGraph(
       ignition::math::Pose3d X_MPf;
 
       sdf::Errors resolveErrors = sdf::resolvePoseRelativeToRoot(X_MPf,
-          outModel.ChildScope(nestedModel->Name(), "__model__"),
+          outModel.ChildModelScope(nestedModel->Name()),
           nestedModel->PlacementFrameName());
       if (resolveErrors.empty())
       {
@@ -819,6 +819,9 @@ Errors buildPoseRelativeToGraph(
 
   if (_root)
   {
+    // We have to add this edge now with an identity pose to be able to call
+    // sdf::resolvePoseRelativeToRoot. We will later update the edge after the
+    // pose is calculated.
     auto rootToModel = outModel.AddEdge({rootId, modelId}, {});
     ignition::math::Pose3d X_RM = _model->RawPose();
     // If the model has a placement frame, calculate the necessary pose to use
@@ -967,7 +970,7 @@ Errors buildPoseRelativeToGraph(
       ignition::math::Pose3d X_MPf;
 
       sdf::Errors resolveErrors = sdf::resolvePoseRelativeToRoot(X_MPf,
-          _out.ChildScope(model->Name(), "__model__"),
+          _out.ChildModelScope(model->Name()),
           model->PlacementFrameName());
       if (resolveErrors.empty())
       {
@@ -1090,10 +1093,10 @@ Errors validateFrameAttachedToGraph(
   }
 
   // Check number of outgoing edges for each vertex
-  auto vertices = _in.Vertices();
+  auto vertices = _in.Graph().Vertices();
   for (auto vertexPair : vertices)
   {
-    const std::string vertexName = _in.VertexName(vertexPair.second.get());
+    const std::string vertexName = _in.VertexLocalName(vertexPair.second.get());
     // Vertex names should not be empty
     if (vertexName.empty())
     {
@@ -1270,10 +1273,10 @@ Errors validatePoseRelativeToGraph(
   }
 
   // Check number of incoming edges for each vertex
-  auto vertices = _in.Vertices();
+  auto vertices = _in.Graph().Vertices();
   for (auto vertexPair : vertices)
   {
-    const std::string vertexName = _in.VertexName(vertexPair.second.get());
+    const std::string vertexName = _in.VertexLocalName(vertexPair.second.get());
     // Vertex names should not be empty
     if (vertexName.empty())
     {
@@ -1474,7 +1477,7 @@ Errors resolveFrameAttachedToBody(
     }
   }
 
-  _attachedToBody = _in.VertexName(sinkVertex);
+  _attachedToBody = _in.VertexLocalName(sinkVertex);
 
   return errors;
 }

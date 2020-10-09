@@ -237,11 +237,11 @@ Errors Model::Load(ElementPtr _sdf)
   {
     // std::cout << "Creating owned graphs for " << this->Name() << std::endl;
     this->dataPtr->ownedPoseGraph = std::make_shared<PoseRelativeToGraph>();
-    this->dataPtr->poseGraph = this->dataPtr->ownedPoseGraph;
+    this->dataPtr->poseGraph = ScopedGraph(this->dataPtr->ownedPoseGraph);
     this->dataPtr->ownedFrameAttachedToGraph =
         std::make_shared<FrameAttachedToGraph>();
     this->dataPtr->frameAttachedToGraph =
-        this->dataPtr->ownedFrameAttachedToGraph;
+        ScopedGraph(this->dataPtr->ownedFrameAttachedToGraph);
     modelFile = true;
   }
 
@@ -760,7 +760,7 @@ Errors Model::SetPoseRelativeToGraph(
   this->dataPtr->poseGraph = _graph;
 
   auto childPoseGraph =
-      this->dataPtr->poseGraph.ChildScope(this->Name(), "__model__");
+      this->dataPtr->poseGraph.ChildModelScope(this->Name());
   for (auto &link : this->dataPtr->links)
   {
     link.SetPoseRelativeToGraph(childPoseGraph);
@@ -797,7 +797,7 @@ void Model::SetFrameAttachedToGraph(
   this->dataPtr->frameAttachedToGraph = _graph;
 
   auto childFrameAttachedToGraph =
-      this->dataPtr->frameAttachedToGraph.ChildScope(this->Name(), "__model__");
+      this->dataPtr->frameAttachedToGraph.ChildModelScope(this->Name());
   for (auto &joint : this->dataPtr->joints)
   {
     joint.SetFrameAttachedToGraph(childFrameAttachedToGraph);

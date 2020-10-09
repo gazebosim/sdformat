@@ -136,13 +136,13 @@ WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
     this->ownedFrameAttachedToGraph =
         std::make_shared<sdf::FrameAttachedToGraph>(
             *(_worldPrivate.ownedFrameAttachedToGraph));
-    this->frameAttachedToGraph = this->ownedFrameAttachedToGraph;
+    this->frameAttachedToGraph = ScopedGraph(this->ownedFrameAttachedToGraph);
   }
   if (_worldPrivate.ownedPoseRelativeToGraph)
   {
     this->ownedPoseRelativeToGraph = std::make_shared<sdf::PoseRelativeToGraph>(
         *(_worldPrivate.ownedPoseRelativeToGraph));
-    this->poseRelativeToGraph = this->ownedPoseRelativeToGraph;
+    this->poseRelativeToGraph = ScopedGraph(this->ownedPoseRelativeToGraph);
   }
   if (_worldPrivate.scene)
   {

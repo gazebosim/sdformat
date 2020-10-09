@@ -43,10 +43,12 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
   // Forward declaration.
   class Model;
   class World;
   template <typename T> class ScopedGraph;
+#endif
 
   /// \enum FrameType
   /// \brief The set of frame types. INVALID indicates that frame type has
