@@ -546,7 +546,7 @@ TEST(DOMRoot, ModelPlacementFrameAttribute)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMJoint, LoadInvalidNestedModelWithoutLinks)
+TEST(DOMRoot, LoadInvalidNestedModelWithoutLinks)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -558,7 +558,7 @@ TEST(DOMJoint, LoadInvalidNestedModelWithoutLinks)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(5u, errors.size());
+  EXPECT_EQ(7u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::MODEL_WITHOUT_LINK);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find("A model must have at least one link"));
@@ -574,4 +574,3 @@ TEST(DOMJoint, LoadInvalidNestedModelWithoutLinks)
   // errors[8]
   // errors[9]
 }
-

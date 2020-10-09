@@ -541,3 +541,34 @@ TEST(NestedFrameSemantics, buildFrameAttachedToGraph_World)
     sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "F0").empty());
   EXPECT_EQ("M2::L", resolvedBody);
 }
+
+/////////////////////////////////////////////////
+TEST(NestedFrameSemantics, ModelWithoutLinksWithNestedStaticModel)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_nested_static_model.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  auto ownedModelGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+  sdf::ScopedGraph<sdf::FrameAttachedToGraph> modelGraph(ownedModelGraph);
+  errors = sdf::buildFrameAttachedToGraph(modelGraph, model);
+  EXPECT_TRUE(errors.empty()) << errors;
+  errors = sdf::validateFrameAttachedToGraph(modelGraph);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  std::string resolvedBody;
+  errors = sdf::resolveFrameAttachedToBody(
+      resolvedBody, modelGraph, "model_nested_static_model");
+  EXPECT_TRUE(errors.empty()) << errors;
+  EXPECT_EQ("model_nested_static_model::child_model::static_model::__model__",
+      resolvedBody);
+}
+

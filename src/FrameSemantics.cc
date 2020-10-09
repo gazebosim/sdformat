@@ -248,26 +248,6 @@ Errors buildFrameAttachedToGraph(
   auto &edge = outModel.AddEdge({modelId, modelFrameId}, true);
   edge.SetWeight(0);
 
-  // identify canonical link, which may be nested
-  auto canonicalLinkAndName = modelCanonicalLinkAndRelativeName(_model);
-  const sdf::Link *canonicalLink = canonicalLinkAndName.first;
-  const std::string canonicalLinkName = canonicalLinkAndName.second;
-  if (nullptr == canonicalLink && !_model->Static())
-  {
-    if (canonicalLinkName.empty())
-    {
-      errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
-                       "A model must have at least one link."});
-    }
-    else
-    {
-      errors.push_back({ErrorCode::MODEL_CANONICAL_LINK_INVALID,
-        "canonical_link with name[" + canonicalLinkName +
-        "] not found in model with name[" + _model->Name() + "]."});
-    }
-    // return early
-    return errors;
-  }
   // add link vertices
   for (uint64_t l = 0; l < _model->LinkCount(); ++l)
   {
@@ -383,31 +363,50 @@ Errors buildFrameAttachedToGraph(
     outModel.AddEdge({frameId, attachedToId}, edgeData);
   }
 
-
-  // Identify if the canonical link is in a nested model.
-  if (!_model->Static() && canonicalLink != nullptr)
+  // identify canonical link, which may be nested
+  auto canonicalLinkAndName = modelCanonicalLinkAndRelativeName(_model);
+  const sdf::Link *canonicalLink = canonicalLinkAndName.first;
+  const std::string canonicalLinkName = canonicalLinkAndName.second;
+  if (!_model->Static())
   {
-    // The canonical link is nested, so its vertex should be added
-    // here with an edge from __model__.
-    // The nested canonical link name should be a nested name
-    // relative to _model, delimited by "::".
-    auto linkId = outModel.VertexIdByName(canonicalLinkName);
-    outModel.AddEdge({modelFrameId, linkId}, true);
-  }
-
-  if (_model->Static())
-  {
-    // If the model is static, add an edge from the model frame to the global
-    // root vertex
-    // TODO (addisu) Ensure that the global root vertex has an ID of 0.
-    // if (_root)
-    // {
-    //   outModel.AddEdge({modelFrameId, rootId}, true);
-    // }
-    // else
-    // {
-    //   outModel.AddEdge({modelFrameId, 0}, true);
-    // }
+    if (nullptr == canonicalLink)
+    {
+      if (canonicalLinkName.empty())
+      {
+        if (_model->ModelCount() == 0)
+        {
+          errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
+              "A model must have at least one link."});
+        }
+        else
+        {
+          // The canonical link was not found, but the model could have a
+          // decendant that has a static model, so simply create an edge to the
+          // first model and let the attached_to frame resolution take care of
+          // finding the canonical link
+          auto firstChildModelId =
+              outModel.VertexIdByName(_model->ModelByIndex(0)->Name());
+          outModel.AddEdge({modelFrameId, firstChildModelId }, true);
+        }
+      }
+      else
+      {
+        errors.push_back({ErrorCode::MODEL_CANONICAL_LINK_INVALID,
+            "canonical_link with name[" + canonicalLinkName +
+            "] not found in model with name[" + _model->Name() + "]."});
+      }
+      // return early
+      return errors;
+    }
+    else
+    {
+      // The canonical link is nested, so its vertex should be added
+      // here with an edge from __model__.
+      // The nested canonical link name should be a nested name
+      // relative to _model, delimited by "::".
+      auto linkId = outModel.VertexIdByName(canonicalLinkName);
+      outModel.AddEdge({modelFrameId, linkId}, true);
+    }
   }
 
   return errors;

@@ -1203,8 +1203,8 @@ TEST(NestedReference, PlacementFrameElement)
     EXPECT_TRUE(errors.empty()) << errors;
 
     auto *parentModel = root.ModelByIndex(0);
-    ASSERT_NE(nullptr, parentModel );
-    auto *model = parentModel ->ModelByIndex(0);
+    ASSERT_NE(nullptr, parentModel);
+    auto *model = parentModel->ModelByIndex(0);
     ASSERT_NE(nullptr, model);
 
     ignition::math::Pose3d pose;
@@ -1233,7 +1233,7 @@ TEST(NestedReference, PlacementFrameElement)
     EXPECT_TRUE(errors.empty()) << errors;
 
     auto *parentModel = root.ModelByIndex(0);
-    ASSERT_NE(nullptr, parentModel );
+    ASSERT_NE(nullptr, parentModel);
     auto *model = parentModel ->ModelByIndex(0);
     ASSERT_NE(nullptr, model);
 
