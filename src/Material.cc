@@ -176,7 +176,11 @@ Errors Material::Load(sdf::ElementPtr _sdf)
       this->dataPtr->shader = ShaderType::VERTEX;
     else if (typePair.first == "normal_map_objectspace")
       this->dataPtr->shader = ShaderType::NORMAL_MAP_OBJECTSPACE;
+    else if (typePair.first == "normal_map_object_space")
+      this->dataPtr->shader = ShaderType::NORMAL_MAP_OBJECTSPACE;
     else if (typePair.first == "normal_map_tangentspace")
+      this->dataPtr->shader = ShaderType::NORMAL_MAP_TANGENTSPACE;
+    else if (typePair.first == "normal_map_tangent_space")
       this->dataPtr->shader = ShaderType::NORMAL_MAP_TANGENTSPACE;
     else
     {
