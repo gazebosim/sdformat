@@ -125,6 +125,13 @@ const std::string &SemanticPose::RelativeTo() const
 {
   return this->dataPtr->relativeTo;
 }
+
+/////////////////////////////////////////////////
+const std::string &SemanticPose::DefaultResolveTo() const
+{
+  return this->dataPtr->defaultResolveTo;
+}
+
 /////////////////////////////////////////////////
 Errors SemanticPose::Resolve(
     ignition::math::Pose3d &_pose,
@@ -133,48 +140,40 @@ Errors SemanticPose::Resolve(
   return this->Resolve(_pose, *this, _resolveTo);
 }
 
-/////////////////////////////////////////////////
 Errors SemanticPose::Resolve(
     ignition::math::Pose3d &_pose,
-    const sdf::Frame &_resolveTo) const
+    const SemanticPose &_semPose) const
 {
-  return this->Resolve(_pose, _resolveTo.SemanticPose(), _resolveTo.Name());
+  if (!_semPose.VertexName().empty())
+  {
+    return this->Resolve(_pose, _semPose, _semPose.VertexName());
+  }
+  else
+  {
+    std::string relativeTo = _semPose.RelativeTo();
+    if (relativeTo.empty())
+    {
+      relativeTo = _semPose.DefaultResolveTo();
+    }
+    sdf::Errors errors = this->Resolve(_pose, _semPose, relativeTo);
+    if (errors.empty())
+    {
+      _pose = _semPose.RawPose().Inverse() * _pose;
+    }
+    return errors;
+  }
 }
 
 /////////////////////////////////////////////////
 Errors SemanticPose::Resolve(
     ignition::math::Pose3d &_pose,
-    const sdf::Joint &_resolveTo) const
-{
-  return this->Resolve(_pose, _resolveTo.SemanticPose(), _resolveTo.Name());
-}
-
-/////////////////////////////////////////////////
-Errors SemanticPose::Resolve(
-    ignition::math::Pose3d &_pose,
-    const sdf::Link &_resolveTo) const
-{
-  return this->Resolve(_pose, _resolveTo.SemanticPose(), _resolveTo.Name());
-}
-
-/////////////////////////////////////////////////
-Errors SemanticPose::Resolve(
-    ignition::math::Pose3d &_pose,
-    const sdf::Model &_resolveTo) const
-{
-  return this->Resolve(_pose, _resolveTo.SemanticPose(), _resolveTo.Name());
-}
-
-/////////////////////////////////////////////////
-Errors SemanticPose::Resolve(
-    ignition::math::Pose3d &_pose,
-    const SemanticPose &_scope,
+    const SemanticPose &_semPose,
     const std::string &_resolveTo) const
 {
   Errors errors;
 
   auto graph = this->dataPtr->poseRelativeToGraph;
-  const auto &scopeGraph = _scope.PoseRelativeToGraph();
+  const auto &scopeGraph = _semPose.PoseRelativeToGraph();
   if (!graph || !scopeGraph)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
@@ -219,6 +218,12 @@ Errors SemanticPose::Resolve(
   }
 
   return errors;
+}
+
+/////////////////////////////////////////////////
+const std::string &SemanticPose::VertexName() const
+{
+  return this->dataPtr->name;
 }
 }  // inline namespace
 }  // namespace sdf

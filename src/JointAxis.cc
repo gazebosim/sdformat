@@ -437,44 +437,37 @@ Errors JointAxis::ResolveXyz(
 /////////////////////////////////////////////////
 Errors JointAxis::ResolveXyz(
     ignition::math::Vector3d &_xyz,
-    const sdf::Frame &_resolveTo) const
+    const sdf::SemanticPose &_semPose) const
 {
-  return this->ResolveXyz(_xyz, _resolveTo.SemanticPose(), _resolveTo.Name());
+  if (!_semPose.VertexName().empty())
+  {
+    return this->ResolveXyz(_xyz, _semPose, _semPose.VertexName());
+  }
+  else
+  {
+    std::string relativeTo = _semPose.RelativeTo();
+    if (relativeTo.empty())
+    {
+      relativeTo = _semPose.DefaultResolveTo();
+    }
+    sdf::Errors errors = this->ResolveXyz(_xyz, _semPose, relativeTo);
+    if (errors.empty())
+    {
+      _xyz = _semPose.RawPose().Rot().Inverse() * _xyz;
+    }
+    return errors;
+  }
 }
 
 /////////////////////////////////////////////////
 Errors JointAxis::ResolveXyz(
     ignition::math::Vector3d &_xyz,
-    const sdf::Joint &_resolveTo) const
-{
-  return this->ResolveXyz(_xyz, _resolveTo.SemanticPose(), _resolveTo.Name());
-}
-
-/////////////////////////////////////////////////
-Errors JointAxis::ResolveXyz(
-    ignition::math::Vector3d &_xyz,
-    const sdf::Link &_resolveTo) const
-{
-  return this->ResolveXyz(_xyz, _resolveTo.SemanticPose(), _resolveTo.Name());
-}
-
-/////////////////////////////////////////////////
-Errors JointAxis::ResolveXyz(
-    ignition::math::Vector3d &_xyz,
-    const sdf::Model &_resolveTo) const
-{
-  return this->ResolveXyz(_xyz, _resolveTo.SemanticPose(), _resolveTo.Name());
-}
-
-/////////////////////////////////////////////////
-Errors JointAxis::ResolveXyz(
-    ignition::math::Vector3d &_xyz,
-    const sdf::SemanticPose &_scope,
+    const sdf::SemanticPose &_semPose,
     const std::string &_resolveTo) const
 {
   Errors errors;
   const auto &graph = this->dataPtr->poseRelativeToGraph;
-  const auto &scopeGraph = _scope.PoseRelativeToGraph();
+  const auto &scopeGraph = _semPose.PoseRelativeToGraph();
   if (!graph || !scopeGraph)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,

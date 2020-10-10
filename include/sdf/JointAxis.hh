@@ -268,22 +268,9 @@ namespace sdf
         const sdf::SemanticPose &_scope,
         const std::string &_resolveTo) const;
 
-
     public: Errors ResolveXyz(
         ignition::math::Vector3d &_xyz,
-        const sdf::Frame &_resolveTo) const;
-
-    public: Errors ResolveXyz(
-        ignition::math::Vector3d &_xyz,
-        const sdf::Joint &_resolveTo) const;
-
-    public: Errors ResolveXyz(
-        ignition::math::Vector3d &_xyz,
-        const sdf::Link &_resolveTo) const;
-
-    public: Errors ResolveXyz(
-        ignition::math::Vector3d &_xyz,
-        const sdf::Model &_resolveTo) const;
+        const sdf::SemanticPose &_scope) const;
 
     // private: Errors ResolveXyzImpl(
     //     ignition::math::Vector3d &_xyz,
