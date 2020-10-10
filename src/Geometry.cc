@@ -16,6 +16,7 @@
 */
 #include "sdf/Geometry.hh"
 #include "sdf/Box.hh"
+#include "sdf/Capsule.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
@@ -31,6 +32,9 @@ class sdf::GeometryPrivate
 
   /// \brief Pointer to a box.
   public: std::unique_ptr<Box> box;
+
+  /// \brief Pointer to a capsule.
+  public: std::unique_ptr<Capsule> capsule;
 
   /// \brief Pointer to a cylinder.
   public: std::unique_ptr<Cylinder> cylinder;
@@ -70,6 +74,12 @@ Geometry::Geometry(const Geometry &_geometry)
   if (_geometry.dataPtr->box)
   {
     this->dataPtr->box = std::make_unique<sdf::Box>(*_geometry.dataPtr->box);
+  }
+
+  if (_geometry.dataPtr->capsule)
+  {
+    this->dataPtr->capsule = std::make_unique<sdf::Capsule>(
+        *_geometry.dataPtr->capsule);
   }
 
   if (_geometry.dataPtr->cylinder)
@@ -150,6 +160,13 @@ Errors Geometry::Load(ElementPtr _sdf)
     Errors err = this->dataPtr->box->Load(_sdf->GetElement("box"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
+  else if (_sdf->HasElement("capsule"))
+  {
+    this->dataPtr->type = GeometryType::CAPSULE;
+    this->dataPtr->capsule.reset(new Capsule());
+    Errors err = this->dataPtr->capsule->Load(_sdf->GetElement("capsule"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
   else if (_sdf->HasElement("cylinder"))
   {
     this->dataPtr->type = GeometryType::CYLINDER;
@@ -216,6 +233,18 @@ const Sphere *Geometry::SphereShape() const
 void Geometry::SetSphereShape(const Sphere &_sphere)
 {
   this->dataPtr->sphere = std::make_unique<Sphere>(_sphere);
+}
+
+/////////////////////////////////////////////////
+const Capsule *Geometry::CapsuleShape() const
+{
+  return this->dataPtr->capsule.get();
+}
+
+/////////////////////////////////////////////////
+void Geometry::SetCapsuleShape(const Capsule &_capsule)
+{
+  this->dataPtr->capsule = std::make_unique<Capsule>(_capsule);
 }
 
 /////////////////////////////////////////////////

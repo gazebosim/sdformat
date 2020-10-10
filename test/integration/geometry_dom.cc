@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 
 #include "sdf/Box.hh"
+#include "sdf/Capsule.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Collision.hh"
 #include "sdf/Element.hh"
@@ -70,6 +71,26 @@ TEST(DOMGeometry, Shapes)
   const sdf::Box *boxVisGeom = boxVis->Geom()->BoxShape();
   ASSERT_NE(nullptr, boxVisGeom);
   EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), boxVisGeom->Size());
+
+  // Test capsule collision
+  const sdf::Collision *capsuleCol = link->CollisionByName("capsule_col");
+  ASSERT_NE(nullptr, capsuleCol);
+  ASSERT_NE(nullptr, capsuleCol->Geom());
+  EXPECT_EQ(sdf::GeometryType::CAPSULE, capsuleCol->Geom()->Type());
+  const sdf::Capsule *capsuleColGeom = capsuleCol->Geom()->CapsuleShape();
+  ASSERT_NE(nullptr, capsuleColGeom);
+  EXPECT_DOUBLE_EQ(0.2, capsuleColGeom->Radius());
+  EXPECT_DOUBLE_EQ(0.1, capsuleColGeom->Length());
+
+  // Test capsule visual
+  const sdf::Visual *capsuleVis = link->VisualByName("capsule_vis");
+  ASSERT_NE(nullptr, capsuleVis);
+  ASSERT_NE(nullptr, capsuleVis->Geom());
+  EXPECT_EQ(sdf::GeometryType::CAPSULE, capsuleVis->Geom()->Type());
+  const sdf::Capsule *capsuleVisGeom = capsuleVis->Geom()->CapsuleShape();
+  ASSERT_NE(nullptr, capsuleVisGeom);
+  EXPECT_DOUBLE_EQ(2.1, capsuleVisGeom->Radius());
+  EXPECT_DOUBLE_EQ(10.2, capsuleVisGeom->Length());
 
   // Test cylinder collision
   const sdf::Collision *cylinderCol = link->CollisionByName("cylinder_col");

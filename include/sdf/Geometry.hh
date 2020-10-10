@@ -30,6 +30,7 @@ namespace sdf
   // Forward declare private data class.
   class GeometryPrivate;
   class Box;
+  class Capsule;
   class Cylinder;
   class Mesh;
   class Plane;
@@ -56,6 +57,9 @@ namespace sdf
 
     /// \brief A mesh geometry.
     MESH = 5,
+
+    /// \brief A capsule geometry.
+    CAPSULE = 6,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
@@ -114,6 +118,17 @@ namespace sdf
     /// \brief Set the box shape.
     /// \param[in] _box The box shape.
     public: void SetBoxShape(const Box &_box);
+
+    /// \brief Get the capsule geometry, or nullptr if the contained
+    /// geometry is not a capsule.
+    /// \return Pointer to the capsule geometry, or nullptr if the
+    /// geometry is not a capsule.
+    /// \sa GeometryType Type() const
+    public: const Capsule *CapsuleShape() const;
+
+    /// \brief Set the capsule shape.
+    /// \param[in] _capsule The capsule shape.
+    public: void SetCapsuleShape(const Capsule &_capsule);
 
     /// \brief Get the cylinder geometry, or nullptr if the contained
     /// geometry is not a cylinder.

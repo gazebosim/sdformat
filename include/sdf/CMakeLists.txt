@@ -8,6 +8,7 @@ set (headers
   Atmosphere.hh
   Box.hh
   Camera.hh
+  Capsule.hh
   Collision.hh
   Console.hh
   Cylinder.hh

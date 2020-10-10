@@ -15,6 +15,7 @@ set (sources
   Atmosphere.cc
   Box.cc
   Camera.cc
+  Capsule.cc
   Collision.cc
   Console.cc
   Converter.cc
@@ -85,6 +86,7 @@ if (BUILD_SDF_TEST)
     Atmosphere_TEST.cc
     Box_TEST.cc
     Camera_TEST.cc
+    Capsule_TEST.cc
     Collision_TEST.cc
     Console_TEST.cc
     Cylinder_TEST.cc
