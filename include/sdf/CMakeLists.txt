@@ -18,6 +18,7 @@ set (headers
   Frame.hh
   Geometry.hh
   Gui.hh
+  Heightmap.hh
   Imu.hh
   Joint.hh
   JointAxis.hh
