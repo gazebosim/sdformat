@@ -137,8 +137,8 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::MESH, meshCol->Geom()->Type());
   const sdf::Mesh *meshColGeom = meshCol->Geom()->MeshShape();
   ASSERT_NE(nullptr, meshColGeom);
-  EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/mesh/mesh.dae",
-      meshColGeom->Uri());
+  EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/mesh/"
+      "mesh.dae", meshColGeom->Uri());
   EXPECT_TRUE(ignition::math::Vector3d(0.1, 0.2, 0.3) ==
       meshColGeom->Scale());
   EXPECT_EQ("my_submesh", meshColGeom->Submesh());

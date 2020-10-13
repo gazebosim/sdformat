@@ -384,7 +384,9 @@ TEST(DOMHeightmap, LoadErrors)
   errors = heightmapBlend.Load(sdf);
   ASSERT_EQ(2u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
-  EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <min_height>"));
-  EXPECT_NE(std::string::npos, errors[1].Message().find("missing a <fade_dist>"));
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "missing a <min_height>"));
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+      "missing a <fade_dist>"));
   EXPECT_NE(nullptr, heightmapBlend.Element());
 }

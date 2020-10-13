@@ -391,7 +391,7 @@ Errors Heightmap::Load(ElementPtr _sdf)
   if (!_sdf)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Attempting to load a heightmap, but the provided SDF element is null."});
+      "Attempting to load a heightmap, but the provided SDF element is null."});
     return errors;
   }
 
