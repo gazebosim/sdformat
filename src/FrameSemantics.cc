@@ -248,7 +248,10 @@ Errors buildFrameAttachedToGraph(
       _out.AddScopeVertex(_model->Name(), scopeName, scopeName, frameType);
   const auto modelFrameId = outModel.ScopeVertexId();
 
+  // Add an aliasing edge from the model vertex to the
+  // corresponding vertex in the FrameAttachedTo graph of the child model,
   auto &edge = outModel.AddEdge({modelId, modelFrameId}, true);
+  // Set the edge weight to 0 to indicate that this is an aliasing edge.
   edge.SetWeight(0);
 
   // add link vertices
@@ -550,9 +553,10 @@ Errors buildPoseRelativeToGraph(
 
   // Add an aliasing edge from the model vertex to the
   // corresponding vertex in the PoseRelativeTo graph of the child model,
-  // i.e, to the <model_name>::__model__ vertex
-  // auto &edge = _out.AddEdge({modelId, modelFrameId}, {{}, false});
-  _out.AddEdge({modelId, modelFrameId}, {});
+  // i.e, to the <model_name>::__model__ vertex.
+  auto &edge = _out.AddEdge({modelId, modelFrameId}, {});
+  // Set the edge weight to 0 to indicate that this is an aliasing edge.
+  edge.SetWeight(0);
 
   // add link vertices and default edge if relative_to is empty
   for (uint64_t l = 0; l < _model->LinkCount(); ++l)
@@ -1105,17 +1109,26 @@ Errors validateFrameAttachedToGraph(
           "FrameAttachedToGraph error, "
           "vertex with empty name detected."});
     }
-    // TODO (addisu) Handle root vertices properly
-    if (vertexName == "__root__")
-      continue;
-
     auto outDegree = _in.Graph().OutDegree(vertexPair.first);
+
     if (outDegree > 1)
     {
       errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
           "FrameAttachedToGraph error, "
           "too many outgoing edges at a vertex with name [" +
           vertexName + "]."});
+    }
+    else if (vertexName == "__root__" )
+    {
+      if (outDegree != 0)
+      {
+        std::string graphType =
+            scopeFrameType == sdf::FrameType::MODEL ? "MODEL" : "WORLD";
+        errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+            "FrameAttachedToGraph error,"
+            " __root__ should have no outgoing edged in " +
+                graphType + " relative_to graph."});
+      }
     }
     else if (sdf::FrameType::MODEL == scopeFrameType ||
         sdf::FrameType::STATIC_MODEL == scopeFrameType)
@@ -1140,15 +1153,25 @@ Errors validateFrameAttachedToGraph(
           }
           break;
         case sdf::FrameType::STATIC_MODEL:
-          // if (outDegree != 0)
-          // {
-          //   errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
-          //       "FrameAttachedToGraph error, "
-          //       "LINK vertex with name [" +
-          //       vertexName +
-          //       "] should have no outgoing edges "
-          //       "in MODEL attached_to graph."});
-          // }
+          if (outDegree != 0)
+          {
+            auto edges = _in.Graph().IncidentsFrom(vertexPair.first);
+            // Filter out alias edges (edge with a weight of 0)
+            auto outDegreeNoAliases = std::count_if(
+                edges.begin(), edges.end(), [](const auto &_edge)
+                {
+                  return _edge.second.get().Weight() >= 1.0;
+                });
+            if (outDegreeNoAliases)
+            {
+              errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+                  "FrameAttachedToGraph error, "
+                  "STATIC_MODEL vertex with name [" +
+                  vertexName +
+                  "] should have no outgoing edges "
+                  "in MODEL attached_to graph."});
+            }
+          }
           break;
         default:
           if (outDegree == 0)
@@ -1285,10 +1308,6 @@ Errors validatePoseRelativeToGraph(
           "PoseRelativeToGraph error, "
           "vertex with empty name detected."});
     }
-    if (vertexName == "__root__")
-    {
-      continue;
-    }
 
     std::size_t inDegree = _in.Graph().InDegree(vertexPair.first);
 
@@ -1298,6 +1317,18 @@ Errors validatePoseRelativeToGraph(
           "PoseRelativeToGraph error, "
           "too many incoming edges at a vertex with name [" +
           vertexName + "]."});
+    }
+    else if (vertexName == "__root__" )
+    {
+      if (inDegree != 0)
+      {
+        std::string graphType =
+            sourceFrameType == sdf::FrameType::MODEL ? "MODEL" : "WORLD";
+        errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+            "PoseRelativeToGraph error,"
+            " __root__ vertex should have no incoming edges in " +
+                graphType + " relative_to graph."});
+      }
     }
     else if (sdf::FrameType::MODEL == sourceFrameType)
     {
@@ -1310,9 +1341,6 @@ Errors validatePoseRelativeToGraph(
               "should not have type WORLD in MODEL relative_to graph."});
           break;
         case sdf::FrameType::MODEL:
-          // TODO: What we have to check here is that if this is the scope
-          // vertex any incoming edge is from outside this scope.
-          // if (sdf::endswith(vertexName, "__model__"))
           if (_in.ScopeVertexId() == vertexPair.first)
           {
             if (inDegree != 0)
