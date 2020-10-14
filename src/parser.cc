@@ -861,6 +861,12 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
       ParamPtr p = _sdf->GetAttribute(i);
       if (p->GetKey() == attribute->Name())
       {
+        if (attribute->Value() == std::string("__root__"))
+        {
+          _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+              "'__root__' is reserved; it cannot be used as a value of "
+              "attribute [" + p->GetKey() + "]"});
+        }
         // Set the value of the SDF attribute
         if (!p->SetFromString(attribute->Value()))
         {

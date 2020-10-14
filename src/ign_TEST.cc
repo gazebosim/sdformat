@@ -733,6 +733,43 @@ TEST(check, SDF)
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;
   }
+
+  // Check an SDF model file with an invalid usage of __root__
+  {
+    std::string path = pathBase + "/model_invalid_root_reference.sdf";
+
+    // Check model_invalid_placement_frame.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(
+        output.find("Error: '__root__' is reserved; it cannot be used as a "
+                    "value of attribute [relative_to]"),
+        std::string::npos)
+        << output;
+    EXPECT_NE(
+        output.find("Error: '__root__' is reserved; it cannot be used as a"
+                    " value of attribute [attached_to]"),
+        std::string::npos)
+        << output;
+  }
+  // Check an SDF world file with an invalid usage of __root__
+  {
+    std::string path = pathBase + "/world_invalid_root_reference.sdf";
+
+    // Check model_invalid_placement_frame.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(
+        output.find("Error: '__root__' is reserved; it cannot be used as a "
+                    "value of attribute [relative_to]"),
+        std::string::npos)
+        << output;
+    EXPECT_NE(
+        output.find("Error: '__root__' is reserved; it cannot be used as a "
+                    "value of attribute [attached_to]"),
+        std::string::npos)
+        << output;
+  }
 }
 
 /////////////////////////////////////////////////
