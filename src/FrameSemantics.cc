@@ -789,7 +789,6 @@ Errors buildPoseRelativeToGraph(
 
     ignition::math::Pose3d X_RM = nestedModel->RawPose();
     // If the model has a placement frame, calculate the necessary pose to use
-    // TODO (addisu) docs
     if (!nestedModel->PlacementFrameName().empty())
     {
       ignition::math::Pose3d X_MPf;
@@ -828,7 +827,6 @@ Errors buildPoseRelativeToGraph(
     auto rootToModel = outModel.AddEdge({rootId, modelId}, {});
     ignition::math::Pose3d X_RM = _model->RawPose();
     // If the model has a placement frame, calculate the necessary pose to use
-    // TODO (addisu) docs
     if (!_model->PlacementFrameName().empty())
     {
       ignition::math::Pose3d X_MPf;
@@ -968,7 +966,6 @@ Errors buildPoseRelativeToGraph(
 
     ignition::math::Pose3d X_RM = model->RawPose();
     // If the model has a placement frame, calculate the necessary pose to use
-    // TODO (addisu) docs
     if (!model->PlacementFrameName().empty())
     {
       ignition::math::Pose3d X_MPf;

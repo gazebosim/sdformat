@@ -90,12 +90,17 @@ class sdf::WorldPrivate
            ignition::math::Vector3d::Zero;
 
   /// \brief Frame Attached-To Graph constructed during Load.
-  // public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
   public: std::shared_ptr<sdf::FrameAttachedToGraph> ownedFrameAttachedToGraph;
+
+  /// \brief Scoped Frame Attached-To graph that points to a graph owned
+  /// by this world.
   public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
   /// \brief Pose Relative-To Graph constructed during Load.
   public: std::shared_ptr<sdf::PoseRelativeToGraph> ownedPoseRelativeToGraph;
+
+  /// \brief Scoped Pose Relative-To graph that points to a graph owned by this
+  /// world.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 

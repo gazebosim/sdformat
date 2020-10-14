@@ -75,10 +75,10 @@ class sdf::JointPrivate
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
-  /// \brief Weak pointer to model's Frame Attached-To Graph.
+  /// \brief Scoped Frame Attached-To graph at the parent model scope
   public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  /// \brief Scoped Pose Relative-To graph at the parent model scope.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 

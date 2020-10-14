@@ -42,7 +42,7 @@ class SemanticPosePrivate
   /// \brief Name of the default frame to resolve to.
   public: std::string defaultResolveTo = "";
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  /// \brief Scoped Pose Relative-To graph at the parent model or world scope.
   /// TODO (addisu) Make this const
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };

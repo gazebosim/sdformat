@@ -69,7 +69,7 @@ class sdf::LinkPrivate
   /// \brief True if this link should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  /// \brief Scoped Pose Relative-To graph at the parent model scope.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 

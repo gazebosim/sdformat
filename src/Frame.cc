@@ -45,10 +45,10 @@ class sdf::FramePrivate
   /// \brief Name of graph source.
   std::string graphSourceName = "";
 
-  /// \brief Weak pointer to model's or worlds's Frame Attached-To Graph.
+  /// \brief Scoped Frame Attached-To graph at the parent model or world scope.
   public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
-  /// \brief Weak pointer to model's or world's Pose Relative-To Graph.
+  /// \brief Scoped Pose Relative-To graph at the parent model or world scope.
   /// TODO (addisu) Make const sdf::PoseRelativeToGraph
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };

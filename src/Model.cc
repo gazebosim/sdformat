@@ -79,15 +79,23 @@ class sdf::ModelPrivate
   public: sdf::ElementPtr sdf;
 
   /// \brief Frame Attached-To Graph constructed during Load.
-  /// TODO (addisu) More documentation
+  /// This would only be allocated if this model is a top level model, i.e, a
+  /// model file.
   public: std::shared_ptr<sdf::FrameAttachedToGraph> ownedFrameAttachedToGraph;
 
+  /// \brief Scoped Frame Attached-To graph that can either point to a graph
+  /// owned by this model or a subgraph of a parent entity.
   public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
   /// \brief Pose Relative-To Graph constructed during Load.
-  /// TODO (addisu) More documentation
+  /// This would only be allocated if this model is a top level model, i.e, a
+  /// model file.
   public: std::shared_ptr<sdf::PoseRelativeToGraph> ownedPoseGraph;
+
+  /// \brief Scoped Pose Relative-To graph that can either point to a graph
+  /// owned by this model or a subgraph of a parent entity.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseGraph;
+
   /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
   public: std::string poseGraphScopeVertexName;
 };
@@ -754,7 +762,6 @@ Errors Model::SetPoseRelativeToGraph(
   // If the scoped graph doesn't point to the graph owned by this model, we
   // clear the owned graph to maintain the invariant that if
   // ownedPoseGraph is valid poseGraph points to it.
-  // TODO (addisu) This may not be needed
   if (!_graph.PointsTo(this->dataPtr->ownedPoseGraph))
   {
     this->dataPtr->ownedPoseGraph.reset();

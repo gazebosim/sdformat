@@ -45,7 +45,7 @@ class sdf::LightPrivate
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
+  /// \brief Scoped Pose Relative-To graph at the parent model or world scope.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief True if the light should cast shadows.
