@@ -584,19 +584,6 @@ TEST(check, SDF)
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;
   }
-  // Check an invalid SDF file with a joint that specifies a child link
-  // within a sibling nested model using the unsupported :: syntax.
-  // {
-  //   std::string path = pathBase +"/model_invalid_nested_joint_child.sdf";
-
-  //   // Check model_invalid_nested_joint_child.sdf
-  //   std::string output =
-  //     custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-  //   EXPECT_NE(output.find("Error: Child frame with name[M::C] specified by "
-  //                         "joint with name[J] not found in model with "
-  //                         "name[model_invalid_nested_joint_child]."),
-  //             std::string::npos) << output;
-  // }
 
   // Check an SDF file with joints using the relative_to attribute.
   // This is a valid file.
