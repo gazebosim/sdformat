@@ -70,10 +70,8 @@ namespace sdf
     /// \brief An explicit frame.
     FRAME = 4,
 
-    /// \brief An implicit model frame.
+    /// \brief An implicit static model frame.
     STATIC_MODEL = 5,
-
-    ROOT = 6,
   };
 
   /// \brief Data structure for frame attached_to graphs for Model or World.
