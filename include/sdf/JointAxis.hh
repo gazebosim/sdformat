@@ -34,11 +34,6 @@ namespace sdf
 
   // Forward declare private data class.
   class JointAxisPrivate;
-  class SemanticPose;
-  class Frame;
-  class Joint;
-  class Link;
-  class Model;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
 
@@ -262,21 +257,6 @@ namespace sdf
     public: Errors ResolveXyz(
         ignition::math::Vector3d &_xyz,
         const std::string &_resolveTo = "") const;
-
-    public: Errors ResolveXyz(
-        ignition::math::Vector3d &_xyz,
-        const sdf::SemanticPose &_scope,
-        const std::string &_resolveTo) const;
-
-    public: Errors ResolveXyz(
-        ignition::math::Vector3d &_xyz,
-        const sdf::SemanticPose &_scope) const;
-
-    // private: Errors ResolveXyzImpl(
-    //     ignition::math::Vector3d &_xyz,
-    //     sdf::ScopedGraph<PoseRelativeToGraph> _graph,
-    //     const std::string &_expressedIn,
-    //     const std::string &_resolveTo) const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

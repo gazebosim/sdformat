@@ -89,7 +89,7 @@ class sdf::ModelPrivate
   public: std::shared_ptr<sdf::PoseRelativeToGraph> ownedPoseGraph;
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseGraph;
   /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
-  public: std::string parentPoseGraphScopeName;
+  public: std::string poseGraphScopeVertexName;
 };
 
 /////////////////////////////////////////////////
@@ -760,7 +760,8 @@ Errors Model::SetPoseRelativeToGraph(
     this->dataPtr->ownedPoseGraph.reset();
   }
   this->dataPtr->poseGraph = _graph;
-  this->dataPtr->parentPoseGraphScopeName = _graph.ScopeName();
+  this->dataPtr->poseGraphScopeVertexName =
+      _graph.VertexLocalName(_graph.ScopeVertexId());
 
   auto childPoseGraph =
       this->dataPtr->poseGraph.ChildModelScope(this->Name());
@@ -825,7 +826,7 @@ sdf::SemanticPose Model::SemanticPose() const
       this->dataPtr->name,
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
-      this->dataPtr->parentPoseGraphScopeName,
+      this->dataPtr->poseGraphScopeVertexName,
       this->dataPtr->poseGraph);
 }
 

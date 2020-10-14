@@ -152,7 +152,7 @@ class ScopedGraph
   /// \param[in] _name The Name of the scope vertex to be added. The full name
   /// of the vertex will be newPrefix::_name, where newPrefix is the prefix
   /// obtained by adding _prefix to the existing prefix of the scope.
-  public: Vertex &AddScopeVertex(const std::string &_prefix,
+  public: ScopedGraph<T> AddScopeVertex(const std::string &_prefix,
               const std::string &_name, const std::string &_scopeName,
               const VertexType &_data);
 
@@ -210,7 +210,7 @@ class ScopedGraph
   public: const Vertex &ScopeVertex() const;
 
   /// \brief Get the scope vertex ID.
-  /// \return Immutable reference to the scope vertex of this scope.
+  /// \return  The ID of the scope vertex of this scope.
   public: VertexId ScopeVertexId() const;
 
   /// \brief Check if the graph on which this scope is based is the same as the
@@ -263,8 +263,9 @@ ScopedGraph<T> ScopedGraph<T>::ChildModelScope(const std::string &_name)
 {
   auto newScopedGraph = *this;
   newScopedGraph.dataPtr = std::make_shared<ScopedGraphData>();
-  newScopedGraph.dataPtr->scopeVertexId = this->VertexIdByName(_name);
   newScopedGraph.dataPtr->prefix = this->AddPrefix(_name);
+  newScopedGraph.dataPtr->scopeVertexId =
+      newScopedGraph.VertexIdByName("__model__");
   newScopedGraph.dataPtr->scopeName = "__model__";
   return newScopedGraph;
 }
@@ -292,15 +293,17 @@ auto ScopedGraph<T>::Map() const -> const MapType &
 
 /////////////////////////////////////////////////
 template <typename T>
-auto ScopedGraph<T>::AddScopeVertex(const std::string &_prefix,
+ScopedGraph<T> ScopedGraph<T>::AddScopeVertex(const std::string &_prefix,
     const std::string &_name, const std::string &_scopeName,
-    const VertexType &_data) -> Vertex &
+    const VertexType &_data)
 {
-  this->dataPtr->prefix = this->AddPrefix(_prefix);
-  Vertex &vert = this->AddVertex(_name, _data);
-  this->dataPtr->scopeVertexId = vert.Id();
-  this->SetScopeName(_scopeName);
-  return vert;
+  auto newScopedGraph = *this;
+  newScopedGraph.dataPtr = std::make_shared<ScopedGraphData>();
+  newScopedGraph.dataPtr->prefix = this->AddPrefix(_prefix);
+  Vertex &vert = newScopedGraph.AddVertex(_name, _data);
+  newScopedGraph.dataPtr->scopeVertexId = vert.Id();
+  newScopedGraph.SetScopeName(_scopeName);
+  return newScopedGraph;
 }
 
 /////////////////////////////////////////////////
@@ -448,10 +451,12 @@ ScopedGraph<T>::FindAndRemovePrefix(const std::string &_name) const
     return std::make_pair(_name, true);
   }
 
-  if (0 ==
-      _name.compare(0, this->dataPtr->prefix.size(), this->dataPtr->prefix))
+  // Convenient alias
+  const std::string &prefix = this->dataPtr->prefix;
+  if (_name.size() > prefix.size() + 2 &&
+      (0 == _name.compare(0, prefix.size(), prefix)))
   {
-    return std::make_pair(_name.substr(this->dataPtr->prefix.size() + 2), true);
+    return std::make_pair(_name.substr(prefix.size() + 2), true);
   }
   return std::make_pair(_name, false);
 }

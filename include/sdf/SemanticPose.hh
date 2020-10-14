@@ -67,20 +67,6 @@ namespace sdf
     /// \return The name of the pose relative-to frame.
     public: const std::string &RelativeTo() const;
 
-    /// \brief Get the name of the coordinate frame to which this object's pose
-    /// will be resolved when the _resolveTo argument is empty.  An empty value
-    /// indicates that the pose will be resolved to to the default parent
-    /// object.
-    /// \return The name of the default resolve-to frame.
-    public: const std::string &DefaultResolveTo() const;
-
-    /// \brief Get the name of the vertex in the PoseRelativeToGraph associated
-    /// with this object. An empty value indicates that this object is not
-    /// directly mapped to a vertex, as would be the case for sdf::Collection
-    /// objects, for example.
-    /// \return The name of the the vertex assocated with this object.
-    public: const std::string &VertexName() const;
-
     /// \brief Resolve pose of this object with respect to another named frame.
     /// If there are any errors resolving the pose, the output will not be
     /// modified.
@@ -90,13 +76,6 @@ namespace sdf
     /// \return Errors in resolving pose.
     public: Errors Resolve(ignition::math::Pose3d &_pose,
                            const std::string &_resolveTo = "") const;
-
-    public: Errors Resolve(ignition::math::Pose3d &_pose,
-                const SemanticPose &_semPose,
-                const std::string &_resolveTo) const;
-
-    public: Errors Resolve(ignition::math::Pose3d &_pose,
-                const SemanticPose &_semPose) const;
 
     /// \brief Private constructor.
     /// \param[in] _pose Raw pose of object.
@@ -118,8 +97,6 @@ namespace sdf
         const std::string &_defaultResolveTo,
         const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
 
-    private: const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &
-             PoseRelativeToGraph() const;
     /// \brief Destructor
     public: ~SemanticPose();
 
@@ -149,7 +126,6 @@ namespace sdf
     friend class Model;
     friend class Sensor;
     friend class Visual;
-    friend class JointAxis;
 
     /// \brief Private data pointer.
     private: std::unique_ptr<SemanticPosePrivate> dataPtr;

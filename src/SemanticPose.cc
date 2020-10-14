@@ -17,12 +17,8 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Assert.hh"
-#include "sdf/Error.hh"
-#include "sdf/Frame.hh"
-#include "sdf/Joint.hh"
-#include "sdf/Link.hh"
-#include "sdf/Model.hh"
 #include "sdf/SemanticPose.hh"
+#include "sdf/Error.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
@@ -108,13 +104,6 @@ SemanticPose &SemanticPose::operator=(const SemanticPose &_semanticPose)
 }
 
 /////////////////////////////////////////////////
-const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &
-SemanticPose::PoseRelativeToGraph() const
-{
-  return this->dataPtr->poseRelativeToGraph;
-}
-
-/////////////////////////////////////////////////
 const ignition::math::Pose3d &SemanticPose::RawPose() const
 {
   return this->dataPtr->rawPose;
@@ -127,89 +116,41 @@ const std::string &SemanticPose::RelativeTo() const
 }
 
 /////////////////////////////////////////////////
-const std::string &SemanticPose::DefaultResolveTo() const
-{
-  return this->dataPtr->defaultResolveTo;
-}
-
-/////////////////////////////////////////////////
 Errors SemanticPose::Resolve(
     ignition::math::Pose3d &_pose,
-    const std::string &_resolveTo) const
-{
-  return this->Resolve(_pose, *this, _resolveTo);
-}
-
-Errors SemanticPose::Resolve(
-    ignition::math::Pose3d &_pose,
-    const SemanticPose &_semPose) const
-{
-  if (!_semPose.VertexName().empty())
-  {
-    return this->Resolve(_pose, _semPose, _semPose.VertexName());
-  }
-  else
-  {
-    std::string relativeTo = _semPose.RelativeTo();
-    if (relativeTo.empty())
-    {
-      relativeTo = _semPose.DefaultResolveTo();
-    }
-    sdf::Errors errors = this->Resolve(_pose, _semPose, relativeTo);
-    if (errors.empty())
-    {
-      _pose = _semPose.RawPose().Inverse() * _pose;
-    }
-    return errors;
-  }
-}
-
-/////////////////////////////////////////////////
-Errors SemanticPose::Resolve(
-    ignition::math::Pose3d &_pose,
-    const SemanticPose &_semPose,
     const std::string &_resolveTo) const
 {
   Errors errors;
 
   auto graph = this->dataPtr->poseRelativeToGraph;
-  const auto &scopeGraph = _semPose.PoseRelativeToGraph();
-  if (!graph || !scopeGraph)
+  if (!graph)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
         "SemanticPose has invalid pointer to PoseRelativeToGraph."});
     return errors;
   }
 
-  const ignition::math::graph::VertexId resolveToVertexId = [&]
+  std::string relativeTo = this->dataPtr->relativeTo;
+  if (relativeTo.empty())
   {
-    if (_resolveTo.empty())
-    {
-      if (this->dataPtr->defaultResolveTo.empty())
-        return graph.ScopeVertex().Id();
-      else
-        return graph.VertexIdByName(this->dataPtr->defaultResolveTo);
-    }
-    return scopeGraph.VertexIdByName(_resolveTo);
-  }();
+    relativeTo = this->dataPtr->defaultResolveTo;
+  }
+
+  std::string resolveTo = _resolveTo;
+  if (resolveTo.empty())
+  {
+    resolveTo = this->dataPtr->defaultResolveTo;
+  }
 
   ignition::math::Pose3d pose;
   if (this->dataPtr->name.empty())
   {
-    std::string relativeTo = this->dataPtr->relativeTo;
-    if (relativeTo.empty())
-    {
-      relativeTo = this->dataPtr->defaultResolveTo;
-    }
-    auto relativeToVertexId = graph.VertexIdByName(relativeTo);
-    errors =
-        resolvePose(pose, scopeGraph, relativeToVertexId, resolveToVertexId);
+    errors = resolvePose(pose, graph, relativeTo, resolveTo);
     pose *= this->RawPose();
   }
   else
   {
-    const auto frameVertexId = graph.VertexIdByName(this->dataPtr->name);
-    errors = resolvePose(pose, scopeGraph, frameVertexId, resolveToVertexId);
+    errors = resolvePose(pose, graph, this->dataPtr->name, resolveTo);
   }
 
   if (errors.empty())
@@ -218,12 +159,6 @@ Errors SemanticPose::Resolve(
   }
 
   return errors;
-}
-
-/////////////////////////////////////////////////
-const std::string &SemanticPose::VertexName() const
-{
-  return this->dataPtr->name;
 }
 }  // inline namespace
 }  // namespace sdf

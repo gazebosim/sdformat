@@ -37,6 +37,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 
 void printGraph(const ScopedGraph<PoseRelativeToGraph> &_graph)
 {
+  std::stringstream ss;
   std::cout << _graph.Graph() << std::endl;
 }
 void printGraph(const ScopedGraph<FrameAttachedToGraph> &_graph)
@@ -236,14 +237,16 @@ Errors buildFrameAttachedToGraph(
   auto rootId = ignition::math::graph::kNullId;
   if (_root)
   {
-    rootId = _out.AddScopeVertex(
-        "", "__root__", scopeName, sdf::FrameType::STATIC_MODEL).Id();
+    _out = _out.AddScopeVertex(
+        "", "__root__", scopeName, sdf::FrameType::STATIC_MODEL);
+    rootId = _out.ScopeVertexId();
   }
 
   const auto modelId = _out.AddVertex(_model->Name(), frameType).Id();
 
-  auto outModel = _out.ChildModelScope(_model->Name());
-  const auto modelFrameId = outModel.AddVertex(scopeName, frameType).Id();
+  auto outModel =
+      _out.AddScopeVertex(_model->Name(), scopeName, scopeName, frameType);
+  const auto modelFrameId = outModel.ScopeVertexId();
 
   auto &edge = outModel.AddEdge({modelId, modelFrameId}, true);
   edge.SetWeight(0);
@@ -433,7 +436,7 @@ Errors buildFrameAttachedToGraph(
 
   // add implicit world frame vertex first
   const std::string scopeName = "world";
-  _out.AddScopeVertex("", scopeName, scopeName, sdf::FrameType::WORLD);
+  _out = _out.AddScopeVertex("", scopeName, scopeName, sdf::FrameType::WORLD);
 
   // add model vertices
   for (uint64_t m = 0; m < _world->ModelCount(); ++m)
@@ -536,14 +539,15 @@ Errors buildPoseRelativeToGraph(
   // add the model frame vertex first
   if (_root)
   {
-    rootId = _out.AddScopeVertex(
-                     "", "__root__", scopeName, sdf::FrameType::STATIC_MODEL)
-                 .Id();
+    _out = _out.AddScopeVertex(
+        "", "__root__", scopeName, sdf::FrameType::STATIC_MODEL);
+    rootId = _out.ScopeVertexId();
   }
   auto modelId = _out.AddVertex(_model->Name(), sdf::FrameType::MODEL).Id();
+  auto outModel = _out.AddScopeVertex(
+      _model->Name(), scopeName, scopeName, sdf::FrameType::MODEL);
+  auto modelFrameId = outModel.ScopeVertexId();
 
-  auto outModel = _out.ChildModelScope(_model->Name());
-  auto modelFrameId = outModel.AddVertex(scopeName, sdf::FrameType::MODEL).Id();
   // Add an aliasing edge from the model vertex to the
   // corresponding vertex in the PoseRelativeTo graph of the child model,
   // i.e, to the <model_name>::__model__ vertex
@@ -874,13 +878,14 @@ Errors buildPoseRelativeToGraph(
         "Invalid world element in sdf::World."});
     return errors;
   }
-
-  auto rootId = _out.AddVertex("__root__", sdf::FrameType::WORLD).Id();
   // add implicit world frame vertex first
   const std::string sourceName = "world";
-  auto worldFrameId =
-      _out.AddScopeVertex("", sourceName, sourceName, sdf::FrameType::WORLD)
-          .Id();
+
+  _out = _out.AddScopeVertex("", "__root__", sourceName, sdf::FrameType::WORLD);
+  auto rootId = _out.ScopeVertexId();
+
+  _out = _out.AddScopeVertex("", sourceName, sourceName, sdf::FrameType::WORLD);
+  auto worldFrameId = _out.ScopeVertexId();
 
   _out.AddEdge({rootId, worldFrameId}, {});
   // add model vertices and default edge if relative_to is empty
@@ -1448,7 +1453,7 @@ Errors resolveFrameAttachedToBody(
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
         "Graph has world scope but sink vertex named [" + sinkVertex.Name() +
-            "] does not have FrameType WORLD, LINK or STATIC_MODEL"
+            "] does not have FrameType WORLD, LINK or STATIC_MODEL "
             "when starting from vertex with name [" +
             _vertexName + "]."});
     return errors;
