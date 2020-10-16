@@ -1,0 +1,8 @@
+libignition-cmake2-dev
+libignition-math6-dev
+libignition-tools-dev
+libtinyxml-dev
+liburdfdom-dev
+libxml2-utils
+python-psutil
+ruby-dev
