@@ -790,6 +790,13 @@ TEST(DOMJoint, LoadJointNestedParentChild)
     ASSERT_NE(nullptr, j1);
     EXPECT_EQ("M1::L1", j1->ParentLinkName());
     EXPECT_EQ("L1", j1->ChildLinkName());
+
+    std::string resolvedLinkName;
+    EXPECT_TRUE(j1->ResolveParentLink(resolvedLinkName).empty());
+    EXPECT_EQ("M1::L1", resolvedLinkName);
+    EXPECT_TRUE(j1->ResolveChildLink(resolvedLinkName).empty());
+    EXPECT_EQ("L1", resolvedLinkName);
+
     Pose pose;
     EXPECT_TRUE(j1->SemanticPose().Resolve(pose, "__model__").empty());
     EXPECT_EQ(Pose(0, 0, 9, 0, IGN_PI_2, 0), pose);
@@ -799,6 +806,13 @@ TEST(DOMJoint, LoadJointNestedParentChild)
     ASSERT_NE(nullptr, j2);
     EXPECT_EQ("F1", j2->ParentLinkName());
     EXPECT_EQ("L1", j2->ChildLinkName());
+
+    std::string resolvedLinkName;
+    EXPECT_TRUE(j2->ResolveParentLink(resolvedLinkName).empty());
+    EXPECT_EQ("M1::L1", resolvedLinkName);
+    EXPECT_TRUE(j2->ResolveChildLink(resolvedLinkName).empty());
+    EXPECT_EQ("L1", resolvedLinkName);
+
     Pose pose;
     EXPECT_TRUE(j2->SemanticPose().Resolve(pose, "__model__").empty());
     EXPECT_EQ(Pose(0, 1, 10, 0, IGN_PI_2, 0), pose);
@@ -808,6 +822,13 @@ TEST(DOMJoint, LoadJointNestedParentChild)
     ASSERT_NE(nullptr, j3);
     EXPECT_EQ("L1", j3->ParentLinkName());
     EXPECT_EQ("M1::L2", j3->ChildLinkName());
+
+    std::string resolvedLinkName;
+    EXPECT_TRUE(j3->ResolveParentLink(resolvedLinkName).empty());
+    EXPECT_EQ("L1", resolvedLinkName);
+    EXPECT_TRUE(j3->ResolveChildLink(resolvedLinkName).empty());
+    EXPECT_EQ("M1::L2", resolvedLinkName);
+
     Pose pose;
     EXPECT_TRUE(j3->SemanticPose().Resolve(pose, "__model__").empty());
     EXPECT_EQ(Pose(1, 1, 1, 0, 0, 0), pose);
@@ -817,6 +838,13 @@ TEST(DOMJoint, LoadJointNestedParentChild)
     ASSERT_NE(nullptr, j4);
     EXPECT_EQ("L1", j4->ParentLinkName());
     EXPECT_EQ("M1::F1", j4->ChildLinkName());
+
+    std::string resolvedLinkName;
+    EXPECT_TRUE(j4->ResolveParentLink(resolvedLinkName).empty());
+    EXPECT_EQ("L1", resolvedLinkName);
+    EXPECT_TRUE(j4->ResolveChildLink(resolvedLinkName).empty());
+    EXPECT_EQ("M1::L1", resolvedLinkName);
+
     Pose pose;
     EXPECT_TRUE(j4->SemanticPose().Resolve(pose, "__model__").empty());
     EXPECT_EQ(Pose(1, 0, 1, 0, 0, 0), pose);
@@ -826,6 +854,13 @@ TEST(DOMJoint, LoadJointNestedParentChild)
     ASSERT_NE(nullptr, j5);
     EXPECT_EQ("L1", j5->ParentLinkName());
     EXPECT_EQ("M1::M2", j5->ChildLinkName());
+
+    std::string resolvedLinkName;
+    EXPECT_TRUE(j5->ResolveParentLink(resolvedLinkName).empty());
+    EXPECT_EQ("L1", resolvedLinkName);
+    EXPECT_TRUE(j5->ResolveChildLink(resolvedLinkName).empty());
+    EXPECT_EQ("M1::M2::L1", resolvedLinkName);
+
     Pose pose;
     EXPECT_TRUE(j5->SemanticPose().Resolve(pose, "__model__").empty());
     EXPECT_EQ(Pose(0, -1, 1, IGN_PI_2, 0, 0), pose);
