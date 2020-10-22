@@ -134,9 +134,8 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Resolve the attached-to body of this frame from the
-    /// FrameAttachedToGraph. If this is in a __model__ scope, it returns
-    /// the name of a link. In the world scope, it returns the name of a
-    /// model or the world.
+    /// FrameAttachedToGraph. Generally, it resolves to the name of a link, but
+    /// if it is in the world scope, it can resolve to "world".
     /// \param[out] _body Name of body to which this frame is attached.
     /// \return Errors.
     public: Errors ResolveAttachedToBody(std::string &_body) const;

@@ -1,12 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.8">
   <model name="joint_nested_parent_child">
-    <!--
-      For ease of unittesting unique values,
-      each link's pose is displaced along the z-axis,
-      frames are displaced along the y-axis,
-      and joints are displaced along the x-axis.
-    -->
     <model name="M1">
       <link name="L1">
         <pose>0 0 1 0 0 0</pose>
