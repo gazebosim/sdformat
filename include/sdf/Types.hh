@@ -68,9 +68,6 @@ namespace sdf
   std::vector<std::string> split(const std::string &_str,
                                  const std::string &_splitter);
 
-  SDFORMAT_VISIBLE
-  bool endswith(const std::string &_a, const std::string &_b);
-
   /// \brief Trim leading and trailing whitespace from a string.
   /// \param[in] _in The string to trim.
   /// \return A string containing the trimmed value.

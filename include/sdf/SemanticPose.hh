@@ -40,10 +40,6 @@ namespace sdf
   //
 
   // Forward declare private data class.
-  class Model;
-  class Link;
-  class Frame;
-  class Joint;
   class SemanticPosePrivate;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;

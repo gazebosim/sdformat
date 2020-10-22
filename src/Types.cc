@@ -70,13 +70,6 @@ std::string trim(const std::string &_in)
   return _in.substr(strBegin, strRange);
 }
 
-//////////////////////////////////////////////////
-bool endswith(const std::string& _a, const std::string& _b)
-{
-  return (_a.size() >= _b.size()) &&
-      (_a.compare(_a.size() - _b.size(), _b.size(), _b) == 0);
-}
-
 /////////////////////////////////////////////////
 std::string lowercase(const std::string &_in)
 {
