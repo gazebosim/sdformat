@@ -145,17 +145,17 @@ namespace sdf
     /// \return SemanticPose object for this link.
     public: sdf::SemanticPose SemanticPose() const;
 
-    /// \brief Give a weak pointer to the FrameAttachedToGraph to be used
-    /// for resolving attached bodies. This is private and is intended to
-    /// be called by Model::Load or World::Load.
-    /// \param[in] _graph Weak pointer to FrameAttachedToGraph.
+    /// \brief Give a Scoped FrameAttachedToGraph to be used for resolving
+    /// attached bodies. This is private and is intended to be called by
+    /// Model::Load or World::Load.
+    /// \param[in] _graph Scoped FrameAttachedToGraph object.
     private: void SetFrameAttachedToGraph(
         sdf::ScopedGraph<FrameAttachedToGraph> _graph);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
-    /// Model::Load or World::Load.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \brief Give the Scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by Model::Load or
+    /// World::Load.
+    /// \param[in] _graph Scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
         sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 

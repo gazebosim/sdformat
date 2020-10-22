@@ -300,16 +300,21 @@ namespace sdf
     /// \param[in] _name Name of the placement frame.
     public: void SetPlacementFrameName(const std::string &_name);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
-    /// World::Load and Model::Load if this is a nested model.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
-    /// \return Error if graph pointer is invalid.
+    /// \brief Give the Scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by World::Load and
+    /// Model::Load if this is a nested model.
+    /// \param[in] _graph Scoped PoseRelativeToGraph object.
+    /// \return Error if the scoped graph is invalid.
     private: sdf::Errors SetPoseRelativeToGraph(
         sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
+    /// \brief Give the Scoped FrameAttachedToGraph to be used for resolving
+    /// attached bodies. This is private and is intended to be called by
+    /// World::Load and Model::Load if this is a nested model.
+    /// \param[in] _graph Scoped FrameAttachedToGraph object.
     private: void SetFrameAttachedToGraph(
         sdf::ScopedGraph<FrameAttachedToGraph> _graph);
+
     /// \brief Get the model's canonical link and the nested name of the link
     /// relative to the current model, delimited by "::".
     /// \return An immutable pointer to the canonical link and the nested

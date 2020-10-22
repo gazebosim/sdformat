@@ -270,10 +270,10 @@ namespace sdf
     /// \param[in] _xmlParentName Name of xml parent object.
     private: void SetXmlParentName(const std::string &_xmlParentName);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called
-    /// by Joint::SetPoseRelativeToGraph.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \brief Give the Scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by
+    /// Joint::SetPoseRelativeToGraph.
+    /// \param[in] _graph Scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
         sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 

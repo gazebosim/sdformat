@@ -755,7 +755,7 @@ Errors Model::SetPoseRelativeToGraph(
   if (!_graph)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-        "Tried to set PoseRelativeToGraph with invalid pointer."});
+        "Tried to set an invalid Scoped PoseRelativeToGraph object."});
     return errors;
   }
 
