@@ -90,6 +90,17 @@ namespace sdf
         const std::string &_defaultResolveTo,
         const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
 
+    /// \brief Private constructor that is used by object that represent a frame
+    /// in the PoseRelativeTo graph. Examples are Model, Frame, Link and not
+    /// Collision or Visual.
+    /// \param[in] _name Name of object. This should also be the name of the
+    /// frame represented by this object in the PoseRelativeTo graph.
+    /// \param[in] _pose Raw pose of object.
+    /// \param[in] _relativeTo Name of frame in graph relative-to which the
+    /// raw pose is applied.
+    /// \param[in] _defaultResolveTo Default frame to resolve-to in Resolve()
+    /// if no frame is specified.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: SemanticPose(
         const std::string &_name,
         const ignition::math::Pose3d &_pose,
