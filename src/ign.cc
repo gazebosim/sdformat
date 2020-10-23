@@ -217,6 +217,11 @@ extern "C" SDFORMAT_VISIBLE int cmdGraph(
     }
     std::cout << graph.Graph() << std::endl;
   }
+  else
+  {
+    std::cerr << R"(Only "pose" and "frame" graph types are supported)"
+              << std::endl;
+  }
 
   return 0;
 }

@@ -49,8 +49,8 @@ struct ScopedGraphData
 };
 
 // Forward declarations for static_assert
-class PoseRelativeToGraph;
-class FrameAttachedToGraph;
+struct PoseRelativeToGraph;
+struct FrameAttachedToGraph;
 
 /// \brief The ScopedGraph allows manipulating FrameAttachedTo and
 /// PoseRelativeTo graphs within a smaller scope such as the scope of a model

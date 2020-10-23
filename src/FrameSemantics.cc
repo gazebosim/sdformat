@@ -440,9 +440,8 @@ Errors buildFrameAttachedToGraph(
   }
 
   // identify canonical link, which may be nested
-  auto canonicalLinkAndName = modelCanonicalLinkAndRelativeName(_model);
-  const sdf::Link *canonicalLink = canonicalLinkAndName.first;
-  const std::string canonicalLinkName = canonicalLinkAndName.second;
+  const auto[canonicalLink, canonicalLinkName] =
+      modelCanonicalLinkAndRelativeName(_model);
   if (!_model->Static())
   {
     if (nullptr == canonicalLink)
@@ -457,7 +456,7 @@ Errors buildFrameAttachedToGraph(
         else
         {
           // The canonical link was not found, but the model could have a
-          // decendant that has a static model, so simply create an edge to the
+          // descendant that has a static model, so simply create an edge to the
           // first model and let the attached_to frame resolution take care of
           // finding the canonical link
           auto firstChildModelId =

@@ -239,20 +239,20 @@ Errors Model::Load(ElementPtr _sdf)
             << this->Name() << "].\n";
   }
 
-  bool modelFile = false;
+  // Whether this model is defined at the root level of an SDFormat file (i.e
+  // in XPath "/sdf/model")
+  bool isModelAtRootOfXmlFile = false;
 
-  // if (!this->dataPtr->poseGraph)
   auto parentElem = this->dataPtr->sdf->GetParent();
   if (parentElem && parentElem->GetName() == "sdf")
   {
-    // std::cout << "Creating owned graphs for " << this->Name() << std::endl;
     this->dataPtr->ownedPoseGraph = std::make_shared<PoseRelativeToGraph>();
     this->dataPtr->poseGraph = ScopedGraph(this->dataPtr->ownedPoseGraph);
     this->dataPtr->ownedFrameAttachedToGraph =
         std::make_shared<FrameAttachedToGraph>();
     this->dataPtr->frameAttachedToGraph =
         ScopedGraph(this->dataPtr->ownedFrameAttachedToGraph);
-    modelFile = true;
+    isModelAtRootOfXmlFile = true;
   }
 
   // Set of implicit and explicit frame names in this model for tracking
@@ -402,7 +402,7 @@ Errors Model::Load(ElementPtr _sdf)
   // static models.
   if (!this->Static())
   {
-    if (modelFile)
+    if (isModelAtRootOfXmlFile)
     {
       Errors frameAttachedToGraphErrors =
         buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
@@ -418,7 +418,7 @@ Errors Model::Load(ElementPtr _sdf)
   }
 
   // Build the PoseRelativeToGraph
-  if (modelFile)
+  if (isModelAtRootOfXmlFile)
   {
     Errors poseGraphErrors =
         buildPoseRelativeToGraph(this->dataPtr->poseGraph, this);
@@ -826,9 +826,6 @@ void Model::SetFrameAttachedToGraph(
 /////////////////////////////////////////////////
 sdf::SemanticPose Model::SemanticPose() const
 {
-  // Pass an empty string for the defaultResolveTo argument so that it can
-  // resolve to the scope vertex regardless of whether this model is a
-  // standalone model or part of a world.
   return sdf::SemanticPose(
       this->dataPtr->name,
       this->dataPtr->pose,

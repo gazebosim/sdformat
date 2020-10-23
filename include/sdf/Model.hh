@@ -172,7 +172,7 @@ namespace sdf
 
     /// \brief Get whether a joint name exists.
     /// \param[in] _name Name of the joint to check.
-    /// To check for a joint in a nested model, prefix the link name with
+    /// To check for a joint in a nested model, prefix the joint name with
     /// the sequence of nested models containing this joint, delimited by "::".
     /// \return True if there exists a joint with the given name.
     public: bool JointNameExists(const std::string &_name) const;

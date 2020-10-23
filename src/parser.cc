@@ -1664,7 +1664,6 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
                   << error.Message()
                   << std::endl;
       }
-      std::cout << graph.Graph() << std::endl;
       modelResult = false;
     }
     return modelResult;
@@ -1694,7 +1693,6 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
                   << error.Message()
                   << std::endl;
       }
-      std::cout << graph.Graph() << std::endl;
       worldResult = false;
     }
     return worldResult;
