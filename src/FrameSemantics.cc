@@ -204,6 +204,76 @@ std::pair<const Link *, std::string>
 }
 
 /////////////////////////////////////////////////
+/// \brief Resolve the pose of a model taking into account the placement frame
+/// attribute. This function is used to calculate the pose of the edge between a
+/// model and its parent.
+///
+/// Since this function calls sdf::resolvePoseRelativeToRoot to initially
+/// resolve the pose of the placement frame, the passed in graph must already
+/// have an edge between the input model and its parent frame. This edge will
+/// later be updated with the pose calculated by this function.
+///
+/// Notation used in this function:
+/// Pf - The placement frame inside the model
+/// R - Relative to frame of the placement frame's pose. This frame is in the
+/// parent scope of the input model.
+/// M - The input model's implicit frame (__model__)
+/// X_RPf - The pose of frame Pf relative to frame R
+/// X_RM - The pose of the frame M relative to frame R
+/// X_MPf - The pose of the frame Pf relative to frame M
+///
+/// Example:
+/// <sdf version="1.8">
+///   <world name="W">
+///     <frame name="R" />
+///     <model name="M" placement_frame="Pf">
+///       <pose relative_to="R">{X_RPf}</pose>
+///       <link name="Pf"/>
+///     </model>
+///   </world>
+/// </sdf>
+///
+/// When the placement_frame is specified in an SDFormat file, //model/pose
+/// becomes the pose of the placement frame (X_RPf) instead of the pose of the
+/// model frame (X_RM). However, when the model inserted into a pose graph of
+/// the parent scope, only the pose (X_RM) of the __model__ frame can be used.
+/// i.e, X_RPf cannot be represented in the PoseRelativeTo graph.
+/// Thus, the X_RM has to be calculated such that X_RPf = X_RM * X_MPf.
+//
+/// \param[in] _model Model whose pose to resolve relative to its parent
+/// \param[in] _graph The scoped PoseRelativeTo graph used to resolve the model.
+/// The scope must contain the frame referenced by the placement frame attribute
+/// of the input model.
+/// \param[out] _resolvedPose The resolved pose (X_RM). If an error was
+/// encountered during `sdf::resolvePoseRelativeToRoot`, _resolvedPose will not
+/// be modified.
+static Errors resolveModelPoseWithPlacementFrame(const sdf::Model &_model,
+    const sdf::ScopedGraph<PoseRelativeToGraph> &_graph,
+    ignition::math::Pose3d &_resolvedPose)
+{
+  sdf::Errors errors;
+
+  // Alias for better pose notation
+  ignition::math::Pose3d &X_RM = _resolvedPose;
+  const ignition::math::Pose3d &X_RPf = _model.RawPose();
+
+  // If the model has a placement frame, calculate the necessary pose to use
+  if (!_model.PlacementFrameName().empty())
+  {
+    ignition::math::Pose3d X_MPf;
+
+    errors = sdf::resolvePoseRelativeToRoot(
+        X_MPf, _graph, _model.PlacementFrameName());
+    if (errors.empty())
+    {
+      X_RM = X_RPf * X_MPf.Inverse();
+    }
+  }
+
+  return errors;
+}
+
+/////////////////////////////////////////////////
 Errors buildFrameAttachedToGraph(
     ScopedGraph<FrameAttachedToGraph> &_out, const Model *_model, bool _root)
 {
@@ -791,73 +861,27 @@ Errors buildPoseRelativeToGraph(
       }
     }
 
-    ignition::math::Pose3d X_RM = nestedModel->RawPose();
-    // If the model has a placement frame, calculate the necessary pose to use
-    if (!nestedModel->PlacementFrameName().empty())
-    {
-      ignition::math::Pose3d X_MPf;
+    ignition::math::Pose3d resolvedModelPose = nestedModel->RawPose();
+    sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(*nestedModel,
+        outModel.ChildModelScope(nestedModel->Name()), resolvedModelPose);
+    errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
-      sdf::Errors resolveErrors = sdf::resolvePoseRelativeToRoot(X_MPf,
-          outModel.ChildModelScope(nestedModel->Name()),
-          nestedModel->PlacementFrameName());
-      if (resolveErrors.empty())
-      {
-        // Before this update, i.e, as specified in the SDFormat, the model pose
-        // (X_RPf) is the pose of the placement frame (Pf) relative to a frame
-        // (R) in the parent scope of the model. However, when this model (M) is
-        // inserted into a pose graph of the parent scope, only the pose (X_RM)
-        // of the __model__ frame can be used. Thus, the model pose has to be
-        // updated to X_RM.
-        //
-        // Note that X_RPf is the raw pose specified in //model/pose before this
-        // update.
-        const auto &X_RPf = nestedModel->RawPose();
-        X_RM = X_RPf * X_MPf.Inverse();
-      }
-      else
-      {
-        errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
-      }
-    }
-
-    outModel.AddEdge({relativeToId, nestedModelId}, X_RM);
+    outModel.AddEdge({relativeToId, nestedModelId}, resolvedModelPose);
   }
 
   if (_root)
   {
     // We have to add this edge now with an identity pose to be able to call
+    // resolveModelPoseWithPlacementFrame, which in turn calls
     // sdf::resolvePoseRelativeToRoot. We will later update the edge after the
     // pose is calculated.
     auto rootToModel = outModel.AddEdge({rootId, modelId}, {});
-    ignition::math::Pose3d X_RM = _model->RawPose();
-    // If the model has a placement frame, calculate the necessary pose to use
-    if (!_model->PlacementFrameName().empty())
-    {
-      ignition::math::Pose3d X_MPf;
+    ignition::math::Pose3d resolvedModelPose = _model->RawPose();
+    sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
+        *_model, outModel, resolvedModelPose);
+    errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
-      sdf::Errors resolveErrors = sdf::resolvePoseRelativeToRoot(
-          X_MPf, outModel, _model->PlacementFrameName());
-      if (resolveErrors.empty())
-      {
-        // Before this update, i.e, as specified in the SDFormat, the model pose
-        // (X_RPf) is the pose of the placement frame (Pf) relative to a frame
-        // (R) in the parent scope of the model. However, when this model (M) is
-        // inserted into a pose graph of the parent scope, only the pose (X_RM)
-        // of the __model__ frame can be used. Thus, the model pose has to be
-        // updated to X_RM.
-        //
-        // Note that X_RPf is the raw pose specified in //model/pose before this
-        // update.
-        const auto &X_RPf = _model->RawPose();
-        X_RM = X_RPf * X_MPf.Inverse();
-      }
-      else
-      {
-        errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
-      }
-    }
-
-    outModel.UpdateEdge(rootToModel, X_RM);
+    outModel.UpdateEdge(rootToModel, resolvedModelPose);
   }
   return errors;
 }
@@ -968,35 +992,12 @@ Errors buildPoseRelativeToGraph(
       }
     }
 
-    ignition::math::Pose3d X_RM = model->RawPose();
-    // If the model has a placement frame, calculate the necessary pose to use
-    if (!model->PlacementFrameName().empty())
-    {
-      ignition::math::Pose3d X_MPf;
+    ignition::math::Pose3d resolvedModelPose = model->RawPose();
+    sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(*model,
+        _out.ChildModelScope(model->Name()), resolvedModelPose);
+    errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
-      sdf::Errors resolveErrors = sdf::resolvePoseRelativeToRoot(X_MPf,
-          _out.ChildModelScope(model->Name()),
-          model->PlacementFrameName());
-      if (resolveErrors.empty())
-      {
-        // Before this update, i.e, as specified in the SDFormat, the model pose
-        // (X_RPf) is the pose of the placement frame (Pf) relative to a frame
-        // (R) in the parent scope of the model. However, when this model (M) is
-        // inserted into a pose graph of the parent scope, only the pose (X_RM)
-        // of the __model__ frame can be used. Thus, the model pose has to be
-        // updated to X_RM.
-        //
-        // Note that X_RPf is the raw pose specified in //model/pose before this
-        // update.
-        const auto &X_RPf = model->RawPose();
-        X_RM = X_RPf * X_MPf.Inverse();
-      }
-      else
-      {
-        errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
-      }
-    }
-    _out.AddEdge({relativeToId, modelId}, X_RM);
+    _out.AddEdge({relativeToId, modelId}, resolvedModelPose);
   }
 
   for (uint64_t f = 0; f < _world->FrameCount(); ++f)

@@ -131,7 +131,7 @@ class ScopedGraph
   /// matches the name. The new scope will have a new prefix formed by appending
   /// _name to the existing prefix of the current scope.
   /// \return A new child scope.
-  public: ScopedGraph<T> ChildModelScope(const std::string &_name);
+  public: ScopedGraph<T> ChildModelScope(const std::string &_name) const;
 
   /// \brief Checks if the scope points to a valid graph.
   /// \return True if the scope points to a valid graph.
@@ -259,7 +259,7 @@ ScopedGraph<T>::ScopedGraph(const std::shared_ptr<T> &_graph)
 
 /////////////////////////////////////////////////
 template <typename T>
-ScopedGraph<T> ScopedGraph<T>::ChildModelScope(const std::string &_name)
+ScopedGraph<T> ScopedGraph<T>::ChildModelScope(const std::string &_name) const
 {
   auto newScopedGraph = *this;
   newScopedGraph.dataPtr = std::make_shared<ScopedGraphData>();
