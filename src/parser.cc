@@ -1420,15 +1420,17 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
         return true;
       }
 
-      for (uint64_t m = 0; m < _inWorld->ModelCount(); ++m)
+      const auto delimIndex = _name.find("::");
+      if (delimIndex != std::string::npos && delimIndex + 2 < _name.size())
       {
-        const auto *model = _inWorld->ModelByIndex(m);
-        auto index = _name.find(model->Name() + "::");
-        std::string nameToCheck = _name;
-        if (index != std::string::npos)
+        std::string modelName = _name.substr(0, delimIndex);
+        std::string nameToCheck = _name.substr(delimIndex + 2);
+        const auto *model = _inWorld->ModelByName(modelName);
+        if (nullptr == model)
         {
-          nameToCheck = _name.substr(index + model->Name().size() + 2);
+          return false;
         }
+
         if (model->LinkNameExists(nameToCheck) ||
             model->ModelNameExists(nameToCheck) ||
             model->JointNameExists(nameToCheck) ||
