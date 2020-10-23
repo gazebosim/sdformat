@@ -572,3 +572,23 @@ TEST(NestedFrameSemantics, ModelWithoutLinksWithNestedStaticModel)
       resolvedBody);
 }
 
+/////////////////////////////////////////////////
+TEST(NestedFrameSemantics, InvalidAttachedToScope)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_frame_invalid_attached_to_scope.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  ASSERT_FALSE(errors.empty());
+  const std::string expectedMsg =
+      "attached_to name[M2::M1::L1] specified by frame with name[F] "
+      "does not match a model or frame name in world with "
+      "name[world_frame_invalid_attached_to_scope].";
+  EXPECT_EQ(expectedMsg, errors[0].Message());
+
+  EXPECT_FALSE(sdf::checkFrameAttachedToGraph(&root));
+  EXPECT_FALSE(sdf::checkFrameAttachedToNames(&root));
+}
