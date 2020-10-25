@@ -26,20 +26,22 @@
  */
 
 #if defined _WIN32 || defined __CYGWIN__
-  #ifdef BUILDING_SDFORMAT
+  #ifdef BUILDING_SDFORMAT_SHARED
     #ifdef __GNUC__
       #define SDFORMAT_VISIBLE __attribute__ ((dllexport))
     #else
       #define SDFORMAT_VISIBLE __declspec(dllexport)
     #endif
-  #else
+  #elif !defined SDFORMAT_STATIC_DEFINE
     #ifdef __GNUC__
       #define SDFORMAT_VISIBLE __attribute__ ((dllimport))
     #else
       #define SDFORMAT_VISIBLE __declspec(dllimport)
     #endif
+  #else
+    #define SDFORMAT_VISIBLE
+    #define SDFORMAT_HIDDEN
   #endif
-  #define SDFORMAT_HIDDEN
 #else
   #if __GNUC__ >= 4 && !defined SDFORMAT_STATIC_DEFINE
     #define SDFORMAT_VISIBLE __attribute__ ((visibility ("default")))
