@@ -288,14 +288,20 @@ TEST(DOMRoot, MultiNestedModel)
 
   const std::string innerLinkNestedName = innerModelNestedName + "::inner_link";
   EXPECT_TRUE(outerModel->LinkNameExists(innerLinkNestedName));
+  EXPECT_EQ(outerModel->LinkByIndex(0),
+            outerModel->LinkByName(innerLinkNestedName));
   EXPECT_NE(nullptr, outerModel->LinkByName(innerLinkNestedName));
 
   std::string innerJointNestedName = innerModelNestedName + "::inner_joint";
   EXPECT_TRUE(outerModel->JointNameExists(innerJointNestedName));
+  EXPECT_EQ(outerModel->JointByIndex(0),
+            outerModel->JointByName(innerJointNestedName));
   EXPECT_NE(nullptr, outerModel->JointByName(innerJointNestedName));
 
   std::string innerFrameNestedName = innerModelNestedName + "::inner_frame";
   EXPECT_TRUE(outerModel->FrameNameExists(innerFrameNestedName));
+  EXPECT_EQ(outerModel->FrameByIndex(0),
+            outerModel->FrameByName(innerFrameNestedName));
   EXPECT_NE(nullptr, outerModel->FrameByName(innerFrameNestedName));
 }
 
