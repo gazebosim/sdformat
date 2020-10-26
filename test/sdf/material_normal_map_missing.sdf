@@ -4,7 +4,7 @@
     <link name="link">
       <visual name="visual1">
         <material>
-          <shader type="normal_map_tangentspace">
+          <shader type="normal_map_tangent_space">
           </shader>
         </material>
       </visual>

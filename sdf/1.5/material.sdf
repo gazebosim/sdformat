@@ -17,7 +17,7 @@
   <element name="shader" required="0">
 
     <attribute name="type" type="string" default="pixel" required="1">
-      <description>vertex, pixel, normal_map_objectspace, normal_map_tangentspace</description>
+      <description>vertex, pixel, normal_map_object_space, normal_map_tangent_space</description>
     </attribute>
 
     <element name="normal_map" type="string" default="__default__" required="0">
