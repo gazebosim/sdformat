@@ -1076,6 +1076,67 @@ TEST(NestedReference, PoseRelativeTo)
   }
 }
 
+//////////////////////////////////////////////////
+TEST(NestedReference, PoseRelativeToInWorld)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "world_relative_to_nested_reference.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  using Pose = ignition::math::Pose3d;
+
+  // The //world/frame elements reference an entity inside M1. Check
+  // that resolving poses works when referencing such entities.
+  {
+    Pose pose;
+    const sdf::Frame *testFrame = world->FrameByName("F2");
+    ASSERT_NE(nullptr, testFrame);
+    EXPECT_TRUE(testFrame->SemanticPose().Resolve(pose).empty());
+    EXPECT_EQ(Pose(1, 0, -2, 0, IGN_PI_2, 0), pose);
+  }
+  {
+    Pose pose;
+    const sdf::Frame *testFrame = world->FrameByName("F3");
+    ASSERT_NE(nullptr, testFrame);
+    EXPECT_TRUE(testFrame->SemanticPose().Resolve(pose).empty());
+    EXPECT_EQ(Pose(1, 1, -3, 0, IGN_PI_2, 0), pose);
+  }
+  {
+    Pose pose;
+    const sdf::Frame *testFrame = world->FrameByName("F4");
+    ASSERT_NE(nullptr, testFrame);
+    EXPECT_TRUE(testFrame->SemanticPose().Resolve(pose).empty());
+    EXPECT_EQ(Pose(2, 0, -4, 0, IGN_PI_2, 0), pose);
+  }
+  {
+    Pose pose;
+    const sdf::Frame *testFrame = world->FrameByName("F5");
+    ASSERT_NE(nullptr, testFrame);
+    EXPECT_TRUE(testFrame->SemanticPose().Resolve(pose).empty());
+    EXPECT_EQ(Pose(2, 0, -6, 0, IGN_PI_2, 0), pose);
+  }
+  {
+    Pose pose;
+    const sdf::Frame *testFrame = world->FrameByName("F6");
+    ASSERT_NE(nullptr, testFrame);
+    EXPECT_TRUE(testFrame->SemanticPose().Resolve(pose).empty());
+    EXPECT_EQ(Pose(1, 1, -6, IGN_PI_2, IGN_PI_2, 0), pose);
+  }
+  {
+    Pose pose;
+    const sdf::Frame *testFrame = world->FrameByName("F7");
+    ASSERT_NE(nullptr, testFrame);
+    EXPECT_TRUE(testFrame->SemanticPose().Resolve(pose).empty());
+    EXPECT_EQ(Pose(1, -6, -1, 0, 0, -IGN_PI_2), pose);
+  }
+}
+
 /////////////////////////////////////////////////
 TEST(NestedReference, PlacementFrameAttribute)
 {
