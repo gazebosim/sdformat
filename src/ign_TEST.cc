@@ -728,7 +728,6 @@ TEST(check, SDF)
   {
     std::string path = pathBase + "/nested_model_cross_references.sdf";
 
-    // Check model_invalid_placement_frame.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;
@@ -738,7 +737,6 @@ TEST(check, SDF)
   {
     std::string path = pathBase + "/model_invalid_root_reference.sdf";
 
-    // Check model_invalid_placement_frame.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(
@@ -754,9 +752,10 @@ TEST(check, SDF)
   }
   // Check an SDF world file with an invalid usage of __root__
   {
+    // Set SDF_PATH so that included models can be found
+    setenv("SDF_PATH", PROJECT_SOURCE_PATH "/test/integration/model", 1);
     std::string path = pathBase + "/world_invalid_root_reference.sdf";
 
-    // Check model_invalid_placement_frame.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(
@@ -769,6 +768,44 @@ TEST(check, SDF)
                     "value of attribute [attached_to]"),
         std::string::npos)
         << output;
+    EXPECT_NE(
+        output.find("Error: '__root__' is reserved; it cannot be used as a "
+                    "value of attribute [placement_frame]"),
+        std::string::npos)
+        << output;
+    EXPECT_NE(
+        output.find("Error: '__root__' is reserved; it cannot be used as a "
+                    "value of attribute [canonical_link]"),
+        std::string::npos)
+        << output;
+    EXPECT_NE(
+        output.find("Error: '__root__' is reserved; it cannot be used as a "
+                    "value of attribute [parent_frame]"),
+        std::string::npos)
+        << output;
+    EXPECT_NE(
+        output.find("Error: '__root__' is reserved; it cannot be used as a "
+                    "value of element [placement_frame]"),
+        std::string::npos)
+        << output;
+    EXPECT_NE(
+        output.find(
+            "Error: The supplied joint child name [__root__] is not valid"),
+        std::string::npos)
+        << output;
+    EXPECT_NE(
+        output.find(
+            "Error: The supplied joint parent name [__root__] is not valid"),
+        std::string::npos)
+        << output;
+  }
+  // Check an SDF world file with an valid usage of __root__
+  {
+    std::string path = pathBase + "/world_valid_root_reference.sdf";
+
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
   }
 }
 

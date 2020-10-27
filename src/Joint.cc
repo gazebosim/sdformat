@@ -183,6 +183,12 @@ Errors Joint::Load(ElementPtr _sdf)
   if (parentPair.second)
   {
     this->dataPtr->parentLinkName = parentPair.first;
+    if (!isValidFrameReference(this->dataPtr->parentLinkName))
+    {
+      errors.push_back({ErrorCode::RESERVED_NAME,
+          "The supplied joint parent name [" + this->dataPtr->parentLinkName +
+              "] is not valid."});
+    }
   }
   else
   {
@@ -195,6 +201,12 @@ Errors Joint::Load(ElementPtr _sdf)
   if (childPair.second)
   {
     this->dataPtr->childLinkName = childPair.first;
+    if (!isValidFrameReference(this->dataPtr->childLinkName))
+    {
+      errors.push_back({ErrorCode::RESERVED_NAME,
+          "The supplied joint child name [" + this->dataPtr->childLinkName +
+              "] is not valid."});
+    }
   }
   else
   {

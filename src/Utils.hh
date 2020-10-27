@@ -37,6 +37,12 @@ namespace sdf
   /// \returns True if the name is a reserved name and thus invalid.
   bool isReservedName(const std::string &_name);
 
+  /// \brief Check if the passed string is a valid frame reference.
+  /// Currently it's only invalid if the name is __root__
+  /// \param[in] _name Name to check.
+  /// \returns True if the name is a valid frame reference.
+  bool isValidFrameReference(const std::string &_name);
+
   /// \brief Read the "name" attribute from an element.
   /// \param[in] _sdf SDF element pointer which contains the name.
   /// \param[out] _name String to hold the name value.

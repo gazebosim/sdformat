@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <map>
 #include <string>
+#include <unordered_set>
 
 #include <ignition/math/SemanticVersion.hh>
 
@@ -38,6 +39,7 @@
 #include "Converter.hh"
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
+#include "Utils.hh"
 #include "parser_private.hh"
 #include "parser_urdf.hh"
 
@@ -838,6 +840,21 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
     _sdf->Copy(refSDF);
   }
 
+  // A list of attributes where a frame name is referenced. This is used to
+  // check if the reference is is invalid.
+  std::unordered_set<std::string> frameReferenceAttributes {
+      // //frame/[@attached_to]
+      "attached_to",
+      // //pose/[@relative_to]
+      "relative_to",
+      // //model/[@placement_frame]
+      "placement_frame",
+      // //model/[@canonical_link]
+      "canonical_link",
+      // //sensor/imu/orientation_reference_frame/custom_rpy/[@parent_frame]
+      "parent_frame",
+  };
+
   const tinyxml2::XMLAttribute *attribute = _xml->FirstAttribute();
 
   unsigned int i = 0;
@@ -861,11 +878,16 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
       ParamPtr p = _sdf->GetAttribute(i);
       if (p->GetKey() == attribute->Name())
       {
-        if (attribute->Value() == std::string("__root__"))
+        if (frameReferenceAttributes.count(attribute->Name()) != 0)
         {
-          _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
-              "'__root__' is reserved; it cannot be used as a value of "
-              "attribute [" + p->GetKey() + "]"});
+          if (!isValidFrameReference(attribute->Value()))
+          {
+            _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+                "'" + std::string(attribute->Value()) +
+                    "' is reserved; it cannot be used as a value of "
+                    "attribute [" +
+                    p->GetKey() + "]"});
+            }
         }
         // Set the value of the SDF attribute
         if (!p->SetFromString(attribute->Value()))
@@ -1049,8 +1071,19 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
                 "element"});
             return false;
           }
-          topLevelElem->GetAttribute("placement_frame")->SetFromString(
-                elemXml->FirstChildElement("placement_frame")->GetText());
+
+          const std::string placementFrameVal =
+              elemXml->FirstChildElement("placement_frame")->GetText();
+
+          if (!isValidFrameReference(placementFrameVal))
+          {
+            _errors.push_back({ErrorCode::RESERVED_NAME,
+                "'" + placementFrameVal +
+                    "' is reserved; it cannot be used as a value of "
+                    "element [placement_frame]"});
+          }
+          topLevelElem->GetAttribute("placement_frame")
+              ->SetFromString(placementFrameVal);
         }
 
         if (isModel || isActor)
