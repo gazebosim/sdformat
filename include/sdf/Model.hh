@@ -304,8 +304,7 @@ namespace sdf
     /// poses. This is private and is intended to be called by World::Load and
     /// Model::Load if this is a nested model.
     /// \param[in] _graph Scoped PoseRelativeToGraph object.
-    /// \return Error if the scoped graph is invalid.
-    private: sdf::Errors SetPoseRelativeToGraph(
+    private: void SetPoseRelativeToGraph(
         sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Give the Scoped FrameAttachedToGraph to be used for resolving

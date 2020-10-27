@@ -747,18 +747,8 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
-Errors Model::SetPoseRelativeToGraph(
-    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
+void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
-  Errors errors;
-
-  if (!_graph)
-  {
-    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-        "Tried to set an invalid Scoped PoseRelativeToGraph object."});
-    return errors;
-  }
-
   // If the scoped graph doesn't point to the graph owned by this model, we
   // clear the owned graph to maintain the invariant that if
   // ownedPoseGraph is valid poseGraph points to it.
@@ -778,10 +768,7 @@ Errors Model::SetPoseRelativeToGraph(
   }
   for (auto &model : this->dataPtr->models)
   {
-    Errors setPoseRelativeToGraphErrors =
-        model.SetPoseRelativeToGraph(childPoseGraph);
-    errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
-        setPoseRelativeToGraphErrors.end());
+    model.SetPoseRelativeToGraph(childPoseGraph);
   }
   for (auto &joint : this->dataPtr->joints)
   {
@@ -791,8 +778,8 @@ Errors Model::SetPoseRelativeToGraph(
   {
     frame.SetPoseRelativeToGraph(childPoseGraph);
   }
-  return errors;
 }
+
 /////////////////////////////////////////////////
 void Model::SetFrameAttachedToGraph(
     sdf::ScopedGraph<FrameAttachedToGraph> _graph)
