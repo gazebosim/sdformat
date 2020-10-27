@@ -841,6 +841,228 @@ TEST(print, SDF)
 }
 
 /////////////////////////////////////////////////
+TEST(GraphCmd, WorldPoseRelativeTo)
+{
+  const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
+
+  // world pose relative_to graph
+  const std::string path =
+    pathBase + "/world_relative_to_nested_reference.sdf";
+
+  const std::string output =
+    custom_exec_str(g_ignCommand + " sdf -g pose " + path + g_sdfVersion);
+
+  std::stringstream expected;
+  expected << "digraph {\n"
+    << "  0 [label=\"__root__ (0)\"];\n"
+    << "  1 [label=\"world (1)\"];\n"
+    << "  2 [label=\"M1 (2)\"];\n"
+    << "  3 [label=\"M1::__model__ (3)\"];\n"
+    << "  4 [label=\"M1::L1 (4)\"];\n"
+    << "  5 [label=\"M1::L2 (5)\"];\n"
+    << "  6 [label=\"M1::J1 (6)\"];\n"
+    << "  7 [label=\"M1::F1 (7)\"];\n"
+    << "  8 [label=\"M1::CM1 (8)\"];\n"
+    << "  9 [label=\"M1::CM1::__model__ (9)\"];\n"
+    << "  10 [label=\"M1::CM1::L (10)\"];\n"
+    << "  11 [label=\"F2 (11)\"];\n"
+    << "  12 [label=\"F3 (12)\"];\n"
+    << "  13 [label=\"F4 (13)\"];\n"
+    << "  14 [label=\"F5 (14)\"];\n"
+    << "  15 [label=\"F6 (15)\"];\n"
+    << "  16 [label=\"F7 (16)\"];\n"
+    << "  0 -> 1 [label=1];\n"
+    << "  2 -> 3 [label=0];\n"
+    << "  3 -> 4 [label=1];\n"
+    << "  3 -> 5 [label=1];\n"
+    << "  8 -> 9 [label=0];\n"
+    << "  9 -> 10 [label=1];\n"
+    << "  5 -> 6 [label=1];\n"
+    << "  5 -> 7 [label=1];\n"
+    << "  3 -> 8 [label=1];\n"
+    << "  1 -> 2 [label=1];\n"
+    << "  2 -> 11 [label=1];\n"
+    << "  4 -> 12 [label=1];\n"
+    << "  6 -> 13 [label=1];\n"
+    << "  7 -> 14 [label=1];\n"
+    << "  8 -> 15 [label=1];\n"
+    << "  10 -> 16 [label=1];\n"
+    << "}";
+  EXPECT_EQ(sdf::trim(expected.str()), sdf::trim(output));
+}
+
+/////////////////////////////////////////////////
+TEST(GraphCmd, ModelPoseRelativeTo)
+{
+  const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
+  const std::string path = pathBase + "/model_relative_to_nested_reference.sdf";
+  const std::string output =
+    custom_exec_str(g_ignCommand + " sdf -g pose " + path + g_sdfVersion);
+
+  std::stringstream expected;
+  expected << "digraph {\n"
+    << "  0 [label=\"__root__ (0)\"];\n"
+    << "  1 [label=\"parent_model (1)\"];\n"
+    << "  2 [label=\"parent_model::__model__ (2)\"];\n"
+    << "  3 [label=\"parent_model::L (3)\"];\n"
+    << "  4 [label=\"parent_model::M1 (4)\"];\n"
+    << "  5 [label=\"parent_model::M1::__model__ (5)\"];\n"
+    << "  6 [label=\"parent_model::M1::L1 (6)\"];\n"
+    << "  7 [label=\"parent_model::M1::L2 (7)\"];\n"
+    << "  8 [label=\"parent_model::M1::J1 (8)\"];\n"
+    << "  9 [label=\"parent_model::M1::F1 (9)\"];\n"
+    << "  10 [label=\"parent_model::M1::CM1 (10)\"];\n"
+    << "  11 [label=\"parent_model::M1::CM1::__model__ (11)\"];\n"
+    << "  12 [label=\"parent_model::M1::CM1::L (12)\"];\n"
+    << "  13 [label=\"parent_model::M2 (13)\"];\n"
+    << "  14 [label=\"parent_model::M2::__model__ (14)\"];\n"
+    << "  15 [label=\"parent_model::M2::L (15)\"];\n"
+    << "  16 [label=\"parent_model::M3 (16)\"];\n"
+    << "  17 [label=\"parent_model::M3::__model__ (17)\"];\n"
+    << "  18 [label=\"parent_model::M3::L (18)\"];\n"
+    << "  19 [label=\"parent_model::M4 (19)\"];\n"
+    << "  20 [label=\"parent_model::M4::__model__ (20)\"];\n"
+    << "  21 [label=\"parent_model::M4::L (21)\"];\n"
+    << "  22 [label=\"parent_model::M5 (22)\"];\n"
+    << "  23 [label=\"parent_model::M5::__model__ (23)\"];\n"
+    << "  24 [label=\"parent_model::M5::L (24)\"];\n"
+    << "  25 [label=\"parent_model::M6 (25)\"];\n"
+    << "  26 [label=\"parent_model::M6::__model__ (26)\"];\n"
+    << "  27 [label=\"parent_model::M6::L (27)\"];\n"
+    << "  28 [label=\"parent_model::M7 (28)\"];\n"
+    << "  29 [label=\"parent_model::M7::__model__ (29)\"];\n"
+    << "  30 [label=\"parent_model::M7::L (30)\"];\n"
+    << "  1 -> 2 [label=0];\n"
+    << "  2 -> 3 [label=1];\n"
+    << "  4 -> 5 [label=0];\n"
+    << "  5 -> 6 [label=1];\n"
+    << "  5 -> 7 [label=1];\n"
+    << "  10 -> 11 [label=0];\n"
+    << "  11 -> 12 [label=1];\n"
+    << "  7 -> 8 [label=1];\n"
+    << "  7 -> 9 [label=1];\n"
+    << "  5 -> 10 [label=1];\n"
+    << "  13 -> 14 [label=0];\n"
+    << "  14 -> 15 [label=1];\n"
+    << "  16 -> 17 [label=0];\n"
+    << "  17 -> 18 [label=1];\n"
+    << "  19 -> 20 [label=0];\n"
+    << "  20 -> 21 [label=1];\n"
+    << "  22 -> 23 [label=0];\n"
+    << "  23 -> 24 [label=1];\n"
+    << "  25 -> 26 [label=0];\n"
+    << "  26 -> 27 [label=1];\n"
+    << "  28 -> 29 [label=0];\n"
+    << "  29 -> 30 [label=1];\n"
+    << "  2 -> 4 [label=1];\n"
+    << "  4 -> 13 [label=1];\n"
+    << "  6 -> 16 [label=1];\n"
+    << "  8 -> 19 [label=1];\n"
+    << "  9 -> 22 [label=1];\n"
+    << "  10 -> 25 [label=1];\n"
+    << "  12 -> 28 [label=1];\n"
+    << "  0 -> 1 [label=1];\n"
+    << "}";
+
+  EXPECT_EQ(sdf::trim(expected.str()), sdf::trim(output));
+}
+
+/////////////////////////////////////////////////
+TEST(GraphCmd, WorldFrameAttachedTo)
+{
+  const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
+  const std::string path = pathBase + "/world_nested_frame_attached_to.sdf";
+  const std::string output =
+      custom_exec_str(g_ignCommand + " sdf -g frame " + path + g_sdfVersion);
+
+  std::stringstream expected;
+
+  expected << "digraph {\n"
+           << "  0 [label=\"world (0)\"];\n"
+           << "  1 [label=\"M1 (1)\"];\n"
+           << "  2 [label=\"M1::__model__ (2)\"];\n"
+           << "  3 [label=\"M1::L (3)\"];\n"
+           << "  4 [label=\"M1::J1 (4)\"];\n"
+           << "  5 [label=\"M1::F0 (5)\"];\n"
+           << "  6 [label=\"M1::M2 (6)\"];\n"
+           << "  7 [label=\"M1::M2::__model__ (7)\"];\n"
+           << "  8 [label=\"M1::M2::L (8)\"];\n"
+           << "  9 [label=\"world_frame (9)\"];\n"
+           << "  10 [label=\"F0 (10)\"];\n"
+           << "  11 [label=\"F1 (11)\"];\n"
+           << "  12 [label=\"F2 (12)\"];\n"
+           << "  13 [label=\"F3 (13)\"];\n"
+           << "  14 [label=\"F4 (14)\"];\n"
+           << "  15 [label=\"F5 (15)\"];\n"
+           << "  16 [label=\"F6 (16)\"];\n"
+           << "  1 -> 2 [label=0];\n"
+           << "  6 -> 7 [label=0];\n"
+           << "  7 -> 8 [label=1];\n"
+           << "  4 -> 5 [label=1];\n"
+           << "  5 -> 8 [label=1];\n"
+           << "  2 -> 3 [label=1];\n"
+           << "  9 -> 0 [label=1];\n"
+           << "  10 -> 0 [label=1];\n"
+           << "  11 -> 1 [label=1];\n"
+           << "  12 -> 3 [label=1];\n"
+           << "  13 -> 6 [label=1];\n"
+           << "  14 -> 8 [label=1];\n"
+           << "  15 -> 5 [label=1];\n"
+           << "  16 -> 4 [label=1];\n"
+           << "}";
+  EXPECT_EQ(sdf::trim(expected.str()), sdf::trim(output));
+}
+
+/////////////////////////////////////////////////
+TEST(GraphCmd, ModelFrameAttachedTo)
+{
+  const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
+  const std::string path = pathBase + "/model_nested_frame_attached_to.sdf";
+  const std::string output =
+      custom_exec_str(g_ignCommand + " sdf -g frame " + path + g_sdfVersion);
+
+  std::stringstream expected;
+
+  expected
+      << "digraph {\n"
+      << "  0 [label=\"__root__ (0)\"];\n"
+      << "  1 [label=\"nested_model_frame_attached_to (1)\"];\n"
+      << "  2 [label=\"nested_model_frame_attached_to::__model__ (2)\"];\n"
+      << "  3 [label=\"nested_model_frame_attached_to::L (3)\"];\n"
+      << "  4 [label=\"nested_model_frame_attached_to::F0 (4)\"];\n"
+      << "  5 [label=\"nested_model_frame_attached_to::F1 (5)\"];\n"
+      << "  6 [label=\"nested_model_frame_attached_to::F2 (6)\"];\n"
+      << "  7 [label=\"nested_model_frame_attached_to::F3 (7)\"];\n"
+      << "  8 [label=\"nested_model_frame_attached_to::F4 (8)\"];\n"
+      << "  9 [label=\"nested_model_frame_attached_to::M1 (9)\"];\n"
+      << "  10 [label=\"nested_model_frame_attached_to::M1::__model__ "
+         "(10)\"];\n"
+      << "  11 [label=\"nested_model_frame_attached_to::M1::L (11)\"];\n"
+      << "  12 [label=\"nested_model_frame_attached_to::M1::J1 (12)\"];\n"
+      << "  13 [label=\"nested_model_frame_attached_to::M1::F (13)\"];\n"
+      << "  14 [label=\"nested_model_frame_attached_to::M1::M2 (14)\"];\n"
+      << "  15 [label=\"nested_model_frame_attached_to::M1::M2::__model__ "
+         "(15)\"];\n"
+      << "  16 [label=\"nested_model_frame_attached_to::M1::M2::L (16)\"];\n"
+      << "  1 -> 2 [label=0];\n"
+      << "  9 -> 10 [label=0];\n"
+      << "  14 -> 15 [label=0];\n"
+      << "  15 -> 16 [label=1];\n"
+      << "  12 -> 13 [label=1];\n"
+      << "  13 -> 14 [label=1];\n"
+      << "  10 -> 11 [label=1];\n"
+      << "  4 -> 9 [label=1];\n"
+      << "  5 -> 11 [label=1];\n"
+      << "  6 -> 5 [label=1];\n"
+      << "  7 -> 13 [label=1];\n"
+      << "  8 -> 12 [label=1];\n"
+      << "  2 -> 3 [label=1];\n"
+      << "}";
+
+  EXPECT_EQ(sdf::trim(expected.str()), sdf::trim(output));
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {
