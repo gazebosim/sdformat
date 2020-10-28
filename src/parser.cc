@@ -18,8 +18,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <map>
+#include <set>
 #include <string>
-#include <unordered_set>
 
 #include <ignition/math/SemanticVersion.hh>
 
@@ -840,20 +840,19 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
     _sdf->Copy(refSDF);
   }
 
-  // A list of attributes where a frame name is referenced. This is used to
-  // check if the reference is is invalid.
-  std::unordered_set<std::string> frameReferenceAttributes {
+  // A list of parent element-attributes pairs where a frame name is referenced
+  // in the attribute. This is used to check if the reference is invalid.
+  std::set<std::pair<std::string, std::string>> frameReferenceAttributes {
       // //frame/[@attached_to]
-      "attached_to",
+      {"frame", "attached_to"},
       // //pose/[@relative_to]
-      "relative_to",
+      {"pose", "relative_to"},
       // //model/[@placement_frame]
-      "placement_frame",
+      {"model", "placement_frame"},
       // //model/[@canonical_link]
-      "canonical_link",
+      {"model", "canonical_link"},
       // //sensor/imu/orientation_reference_frame/custom_rpy/[@parent_frame]
-      "parent_frame",
-  };
+      {"custom_rpy", "parent_frame"}};
 
   const tinyxml2::XMLAttribute *attribute = _xml->FirstAttribute();
 
@@ -878,7 +877,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
       ParamPtr p = _sdf->GetAttribute(i);
       if (p->GetKey() == attribute->Name())
       {
-        if (frameReferenceAttributes.count(attribute->Name()) != 0)
+        if (frameReferenceAttributes.count(
+                std::make_pair(_sdf->GetName(), attribute->Name())) != 0)
         {
           if (!isValidFrameReference(attribute->Value()))
           {

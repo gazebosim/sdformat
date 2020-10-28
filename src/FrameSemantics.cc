@@ -291,7 +291,7 @@ Errors buildFrameAttachedToGraph(
         "Invalid model element in sdf::Model."});
     return errors;
   }
-  else if (_model->LinkCount() < 1 && _model->ModelCount() < 1 &&
+  else if (_model->LinkCount() == 0 && _model->ModelCount() == 0 &&
       !_model->Static())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,

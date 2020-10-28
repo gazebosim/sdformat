@@ -79,7 +79,7 @@ namespace sdf
     /// raw pose is applied.
     /// \param[in] _defaultResolveTo Default frame to resolve-to in Resolve()
     /// if no frame is specified.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph A scoped PoseRelativeToGraph object.
     private: SemanticPose(
         const ignition::math::Pose3d &_pose,
         const std::string &_relativeTo,
@@ -96,7 +96,7 @@ namespace sdf
     /// raw pose is applied.
     /// \param[in] _defaultResolveTo Default frame to resolve-to in Resolve()
     /// if no frame is specified.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph A scoped PoseRelativeToGraph object.
     private: SemanticPose(
         const std::string &_name,
         const ignition::math::Pose3d &_pose,
