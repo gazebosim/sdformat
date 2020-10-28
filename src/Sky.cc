@@ -192,6 +192,16 @@ Errors Sky::Load(ElementPtr _sdf)
 
   this->dataPtr->sdf = _sdf;
 
+  // Check that the provided SDF element is a <sky> element.
+  // This is an error that cannot be recovered, so return an error.
+  if (_sdf->GetName() != "sky")
+  {
+    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
+        "Attempting to load a Sky, but the provided SDF element is not a "
+        "<sky>."});
+    return errors;
+  }
+
   this->dataPtr->time = _sdf->Get<double>("time", this->dataPtr->time).first;
   this->dataPtr->sunrise =
       _sdf->Get<double>("sunrise", this->dataPtr->sunrise).first;
@@ -213,16 +223,6 @@ Errors Sky::Load(ElementPtr _sdf)
     this->dataPtr->cloudAmbient =
         cloudElem->Get<ignition::math::Color>("ambient",
         this->dataPtr->cloudAmbient).first;
-  }
-
-  // Check that the provided SDF element is a <sky> element.
-  // This is an error that cannot be recovered, so return an error.
-  if (_sdf->GetName() != "sky")
-  {
-    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a Sky, but the provided SDF element is not a "
-        "<sky>."});
-    return errors;
   }
 
   return errors;
