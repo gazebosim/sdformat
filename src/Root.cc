@@ -26,6 +26,8 @@
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
 #include "sdf/sdf_config.h"
+#include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -33,6 +35,13 @@ using namespace sdf;
 /// \brief Private data for sdf::Root
 class sdf::RootPrivate
 {
+  public: template <typename T>
+          ScopedGraph<FrameAttachedToGraph>
+          AddFrameAttachedToGraph(const T &_domObj, Errors &_errors);
+  public: template <typename T>
+          ScopedGraph<PoseRelativeToGraph>
+          AddPoseRealtiveToGraph(const T &_domObj, Errors &_errors);
+
   /// \brief Version string
   public: std::string version = "";
 
@@ -48,9 +57,53 @@ class sdf::RootPrivate
   /// \brief The actors specified under the root SDF element
   public: std::vector<Actor> actors;
 
+  /// \brief Frame Attached-To Graphs constructed during Load.
+  public: std::vector<std::shared_ptr<FrameAttachedToGraph>>
+              frameAttachedToGraphs;
+
+  /// \brief Pose Relative-To Graphs constructed during Load.
+  public: std::vector<std::shared_ptr<PoseRelativeToGraph>>
+              poseRelativeToGraphs;
+
   /// \brief The SDF element pointer generated during load.
   public: sdf::ElementPtr sdf;
 };
+
+/////////////////////////////////////////////////
+template <typename T>
+ScopedGraph<FrameAttachedToGraph> RootPrivate::AddFrameAttachedToGraph(
+    const T &_domObj, Errors &_errors)
+{
+  auto &ownedGraph = this->frameAttachedToGraphs.emplace_back(
+      std::make_shared<FrameAttachedToGraph>());
+  ScopedGraph<sdf::FrameAttachedToGraph> frameGraph(ownedGraph);
+
+  Errors buildErrors = buildFrameAttachedToGraph(frameGraph, &_domObj);
+  _errors.insert(_errors.end(), buildErrors.begin(), buildErrors.end());
+
+  Errors validateErrors = validateFrameAttachedToGraph(frameGraph);
+  _errors.insert(_errors.end(), validateErrors.begin(), validateErrors.end());
+
+  return frameGraph;
+}
+
+/////////////////////////////////////////////////
+template <typename T>
+ScopedGraph<PoseRelativeToGraph> RootPrivate::AddPoseRealtiveToGraph(
+    const T &_domObj, Errors &_errors)
+{
+  auto &ownedGraph = this->poseRelativeToGraphs.emplace_back(
+      std::make_shared<sdf::PoseRelativeToGraph>());
+  ScopedGraph<sdf::PoseRelativeToGraph> poseGraph(ownedGraph);
+
+  Errors buildErrors = buildPoseRelativeToGraph(poseGraph, &_domObj);
+  _errors.insert(_errors.end(), buildErrors.begin(), buildErrors.end());
+
+  Errors validateErrors = validatePoseRelativeToGraph(poseGraph);
+  _errors.insert(_errors.end(), validateErrors.begin(), validateErrors.end());
+
+  return poseGraph;
+}
 
 /////////////////////////////////////////////////
 Root::Root()
@@ -151,6 +204,17 @@ Errors Root::Load(SDFPtr _sdf)
       World world;
 
       Errors worldErrors = world.Load(elem);
+
+      // Build the graphs.
+      auto frameAttachedToGraph =
+          this->dataPtr->AddFrameAttachedToGraph(world, worldErrors);
+
+      world.SetFrameAttachedToGraph(frameAttachedToGraph);
+
+      auto poseRelativeToGraph =
+          this->dataPtr->AddPoseRealtiveToGraph(world, worldErrors);
+      world.SetPoseRelativeToGraph(poseRelativeToGraph);
+
       // Attempt to load the world
       if (worldErrors.empty())
       {
@@ -169,15 +233,29 @@ Errors Root::Load(SDFPtr _sdf)
         errors.push_back({ErrorCode::ELEMENT_INVALID,
                           "Failed to load a world."});
       }
+
       this->dataPtr->worlds.push_back(std::move(world));
       elem = elem->GetNextElement("world");
     }
   }
 
   // Load all the models.
-  Errors modelLoadErrors = loadUniqueRepeated<Model>(this->dataPtr->sdf,
-      "model", this->dataPtr->models);
+  Errors modelLoadErrors = loadUniqueRepeated<Model>(
+      this->dataPtr->sdf, "model", this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
+
+  // Build the graphs.
+  for (sdf::Model &model : this->dataPtr->models)
+  {
+    auto frameAttachedToGraph =
+        this->dataPtr->AddFrameAttachedToGraph(model, errors);
+
+    model.SetFrameAttachedToGraph(frameAttachedToGraph);
+
+    auto poseRelativeToGraph =
+        this->dataPtr->AddPoseRealtiveToGraph(model, errors);
+    model.SetPoseRelativeToGraph(poseRelativeToGraph);
+  }
 
   // Load all the lights.
   Errors lightLoadErrors = loadUniqueRepeated<Light>(this->dataPtr->sdf,

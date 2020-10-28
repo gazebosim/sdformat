@@ -41,6 +41,9 @@ namespace sdf
   class Model;
   class Physics;
   class WorldPrivate;
+  struct PoseRelativeToGraph;
+  struct FrameAttachedToGraph;
+  template <typename T> class ScopedGraph;
 
   class SDFORMAT_VISIBLE World
   {
@@ -268,6 +271,24 @@ namespace sdf
     /// \param[in] _name Name of the physics profile to check.
     /// \return True if there exists a physics profile with the given name.
     public: bool PhysicsNameExists(const std::string &_name) const;
+
+    /// \brief Give the Scoped PoseRelativeToGraph to be passed on to child
+    /// entities for resolving poses. This is private and is intended to be
+    /// called by Root::Load.
+    /// \param[in] _graph Scoped PoseRelativeToGraph object.
+    private: void SetPoseRelativeToGraph(
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
+
+    /// \brief Give the Scoped FrameAttachedToGraph to be passed on to child
+    /// entities for attached bodes. This is private and is intended to be
+    /// called by Root::Load.
+    /// \param[in] _graph Scoped FrameAttachedToGraph object.
+    private: void SetFrameAttachedToGraph(
+        sdf::ScopedGraph<FrameAttachedToGraph> _graph);
+
+    /// \brief Allow Root::Load to call SetPoseRelativeToGraph and
+    /// SetFrameAttachedToGraph
+    friend class Root;
 
     /// \brief Private data pointer.
     private: WorldPrivate *dataPtr = nullptr;
