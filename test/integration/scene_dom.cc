@@ -53,8 +53,8 @@ TEST(DOMScene, LoadScene)
   const sdf::Scene *scene = world->Scene();
   ASSERT_NE(nullptr, scene);
 
-  EXPECT_EQ(ignition::math::Color(0.3, 0.4, 0.5), scene->Ambient());
-  EXPECT_EQ(ignition::math::Color(0.6, 0.7, 0.8), scene->Background());
+  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f), scene->Ambient());
+  EXPECT_EQ(ignition::math::Color(0.6f, 0.7f, 0.8f), scene->Background());
   EXPECT_TRUE(scene->Grid());
   EXPECT_TRUE(scene->Shadows());
   EXPECT_TRUE(scene->OriginVisual());

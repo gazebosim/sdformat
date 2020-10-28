@@ -150,7 +150,7 @@ Errors Scene::Load(ElementPtr _sdf)
   // load sky
   if (_sdf->HasElement("sky"))
   {
-    this->dataPtr->sky.reset(new sdf::Sky());
+    this->dataPtr->sky = std::make_unique<sdf::Sky>();
     Errors err = this->dataPtr->sky->Load(_sdf->GetElement("sky"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
@@ -220,11 +220,11 @@ void Scene::SetOriginVisual(const bool _enabled)
 /////////////////////////////////////////////////
 void Scene::SetSky(const sdf::Sky &_sky)
 {
-  this->dataPtr->sky.reset(new sdf::Sky(_sky));
+  this->dataPtr->sky = std::make_unique<sdf::Sky>(_sky);
 }
 
 /////////////////////////////////////////////////
-sdf::Sky *Scene::Sky() const
+const sdf::Sky *Scene::Sky() const
 {
   return this->dataPtr->sky.get();
 }

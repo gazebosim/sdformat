@@ -85,19 +85,19 @@ namespace sdf
     public: void SetSunset(double _time);
 
     /// \brief Get cloud speed
-    /// \return cloud speed
+    /// \return cloud speed in meters per second
     public: double CloudSpeed() const;
 
     /// \brief Set cloud speed
-    /// \param[in] _speed cloud speed.
+    /// \param[in] _speed cloud speed in meters per second.
     public: void SetCloudSpeed(double _speed);
 
-    /// \brief Get cloud direction angle
-    /// \return cloud direction angle
+    /// \brief Get cloud direction angle (angle around up axis)
+    /// \return cloud direction angle in world frame
     public: ignition::math::Angle CloudDirection() const;
 
-    /// \brief Set cloud direction angle
-    /// \param[in] _angle Cloud direction angle.
+    /// \brief Set cloud direction angle (angle around up axis)
+    /// \param[in] _angle Cloud direction angle in world frame.
     public: void SetCloudDirection(const ignition::math::Angle &_angle);
 
     /// \brief Get cloud humidity

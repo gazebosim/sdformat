@@ -34,7 +34,7 @@ class sdf::SkyPrivate
   /// \brief Cloud speed
   public: double cloudSpeed = 0.6;
 
-  /// \brief Cloud speed
+  /// \brief Cloud direction.
   public: ignition::math::Angle cloudDirection;
 
   /// \brief Cloud humidity

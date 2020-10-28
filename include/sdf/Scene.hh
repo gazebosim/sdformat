@@ -114,7 +114,7 @@ namespace sdf
 
     /// \brief Get sky
     /// \return Sky
-    public: sdf::Sky *Sky() const;
+    public: const sdf::Sky *Sky() const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
