@@ -35,13 +35,6 @@ using namespace sdf;
 /// \brief Private data for sdf::Root
 class sdf::RootPrivate
 {
-  public: template <typename T>
-          ScopedGraph<FrameAttachedToGraph>
-          AddFrameAttachedToGraph(const T &_domObj, Errors &_errors);
-  public: template <typename T>
-          ScopedGraph<PoseRelativeToGraph>
-          AddPoseRealtiveToGraph(const T &_domObj, Errors &_errors);
-
   /// \brief Version string
   public: std::string version = "";
 
@@ -57,13 +50,21 @@ class sdf::RootPrivate
   /// \brief The actors specified under the root SDF element
   public: std::vector<Actor> actors;
 
-  /// \brief Frame Attached-To Graphs constructed during Load.
-  public: std::vector<std::shared_ptr<FrameAttachedToGraph>>
-              frameAttachedToGraphs;
+  /// \brief Frame Attached-To Graphs constructed when loading Worlds.
+  public: std::vector<sdf::ScopedGraph<FrameAttachedToGraph>>
+              worldFrameAttachedToGraphs;
 
-  /// \brief Pose Relative-To Graphs constructed during Load.
-  public: std::vector<std::shared_ptr<PoseRelativeToGraph>>
-              poseRelativeToGraphs;
+  /// \brief Frame Attached-To Graphs constructed when loading Models.
+  public: std::vector<sdf::ScopedGraph<FrameAttachedToGraph>>
+              modelFrameAttachedToGraphs;
+
+  /// \brief Pose Relative-To Graphs constructed when loading Worlds.
+  public: std::vector<sdf::ScopedGraph<PoseRelativeToGraph>>
+              worldPoseRelativeToGraphs;
+
+  /// \brief Pose Relative-To Graphs constructed when loading Models.
+  public: std::vector<sdf::ScopedGraph<PoseRelativeToGraph>>
+              modelPoseRelativeToGraphs;
 
   /// \brief The SDF element pointer generated during load.
   public: sdf::ElementPtr sdf;
@@ -71,17 +72,18 @@ class sdf::RootPrivate
 
 /////////////////////////////////////////////////
 template <typename T>
-ScopedGraph<FrameAttachedToGraph> RootPrivate::AddFrameAttachedToGraph(
-    const T &_domObj, Errors &_errors)
+sdf::ScopedGraph<FrameAttachedToGraph> addFrameAttachedToGraph(
+    std::vector<sdf::ScopedGraph<sdf::FrameAttachedToGraph>> &_graphList,
+    const T &_domObj, sdf::Errors &_errors)
 {
-  auto &ownedGraph = this->frameAttachedToGraphs.emplace_back(
-      std::make_shared<FrameAttachedToGraph>());
-  ScopedGraph<sdf::FrameAttachedToGraph> frameGraph(ownedGraph);
+  auto &frameGraph =
+      _graphList.emplace_back(std::make_shared<FrameAttachedToGraph>());
 
-  Errors buildErrors = buildFrameAttachedToGraph(frameGraph, &_domObj);
+  sdf::Errors buildErrors =
+      sdf::buildFrameAttachedToGraph(frameGraph, &_domObj);
   _errors.insert(_errors.end(), buildErrors.begin(), buildErrors.end());
 
-  Errors validateErrors = validateFrameAttachedToGraph(frameGraph);
+  sdf::Errors validateErrors = sdf::validateFrameAttachedToGraph(frameGraph);
   _errors.insert(_errors.end(), validateErrors.begin(), validateErrors.end());
 
   return frameGraph;
@@ -89,12 +91,12 @@ ScopedGraph<FrameAttachedToGraph> RootPrivate::AddFrameAttachedToGraph(
 
 /////////////////////////////////////////////////
 template <typename T>
-ScopedGraph<PoseRelativeToGraph> RootPrivate::AddPoseRealtiveToGraph(
+ScopedGraph<PoseRelativeToGraph> addPoseRealtiveToGraph(
+    std::vector<sdf::ScopedGraph<sdf::PoseRelativeToGraph>> &_graphList,
     const T &_domObj, Errors &_errors)
 {
-  auto &ownedGraph = this->poseRelativeToGraphs.emplace_back(
-      std::make_shared<sdf::PoseRelativeToGraph>());
-  ScopedGraph<sdf::PoseRelativeToGraph> poseGraph(ownedGraph);
+  auto &poseGraph =
+      _graphList.emplace_back(std::make_shared<sdf::PoseRelativeToGraph>());
 
   Errors buildErrors = buildPoseRelativeToGraph(poseGraph, &_domObj);
   _errors.insert(_errors.end(), buildErrors.begin(), buildErrors.end());
@@ -109,6 +111,54 @@ ScopedGraph<PoseRelativeToGraph> RootPrivate::AddPoseRealtiveToGraph(
 Root::Root()
   : dataPtr(new RootPrivate)
 {
+}
+
+/////////////////////////////////////////////////
+Root::Root(const Root &_root)
+  : dataPtr(new RootPrivate(*_root.dataPtr))
+{
+  // TODO(addisu) Do we need to make deep copies of the graphs?
+  //
+  // By construction the sizes of the worlds vector, the
+  // worldFrameAttachedToGraphs vector and the worldPoseRelativeToGraphs vector
+  // should be the same.
+  for (std::size_t i = 0; i < this->dataPtr->worlds.size(); ++i)
+  {
+    this->dataPtr->worlds[i].SetFrameAttachedToGraph(
+        this->dataPtr->worldFrameAttachedToGraphs[i]);
+    this->dataPtr->worlds[i].SetPoseRelativeToGraph(
+        this->dataPtr->worldPoseRelativeToGraphs[i]);
+  }
+
+  // By construction the sizes of the models vector, the
+  // modelFrameAttachedToGraphs vector and the modelPoseRelativeToGraphs vector
+  // should be the same.
+  for (std::size_t i = 0; i < this->dataPtr->models.size(); ++i)
+  {
+    this->dataPtr->models[i].SetFrameAttachedToGraph(
+        this->dataPtr->modelFrameAttachedToGraphs[i]);
+    this->dataPtr->models[i].SetPoseRelativeToGraph(
+        this->dataPtr->modelPoseRelativeToGraphs[i]);
+  }
+}
+
+/////////////////////////////////////////////////
+Root::Root(Root &&_root) noexcept
+  : dataPtr(std::exchange(_root.dataPtr, nullptr))
+{
+}
+
+/////////////////////////////////////////////////
+Root &Root::operator=(const Root &_root)
+{
+  return *this = Root(_root);
+}
+
+/////////////////////////////////////////////////
+Root &Root::operator=(Root &&_root) noexcept
+{
+  std::swap(this->dataPtr, _root.dataPtr);
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -206,13 +256,12 @@ Errors Root::Load(SDFPtr _sdf)
       Errors worldErrors = world.Load(elem);
 
       // Build the graphs.
-      auto frameAttachedToGraph =
-          this->dataPtr->AddFrameAttachedToGraph(world, worldErrors);
-
+      auto frameAttachedToGraph = addFrameAttachedToGraph(
+          this->dataPtr->worldFrameAttachedToGraphs, world, worldErrors);
       world.SetFrameAttachedToGraph(frameAttachedToGraph);
 
-      auto poseRelativeToGraph =
-          this->dataPtr->AddPoseRealtiveToGraph(world, worldErrors);
+      auto poseRelativeToGraph = addPoseRealtiveToGraph(
+          this->dataPtr->worldPoseRelativeToGraphs, world, worldErrors);
       world.SetPoseRelativeToGraph(poseRelativeToGraph);
 
       // Attempt to load the world
@@ -247,13 +296,13 @@ Errors Root::Load(SDFPtr _sdf)
   // Build the graphs.
   for (sdf::Model &model : this->dataPtr->models)
   {
-    auto frameAttachedToGraph =
-        this->dataPtr->AddFrameAttachedToGraph(model, errors);
+    auto frameAttachedToGraph = addFrameAttachedToGraph(
+        this->dataPtr->modelFrameAttachedToGraphs, model, errors);
 
     model.SetFrameAttachedToGraph(frameAttachedToGraph);
 
-    auto poseRelativeToGraph =
-        this->dataPtr->AddPoseRealtiveToGraph(model, errors);
+    auto poseRelativeToGraph = addPoseRealtiveToGraph(
+        this->dataPtr->modelPoseRelativeToGraphs, model, errors);
     model.SetPoseRelativeToGraph(poseRelativeToGraph);
   }
 

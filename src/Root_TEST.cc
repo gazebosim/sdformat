@@ -23,6 +23,8 @@
 #include "sdf/Link.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
+#include "sdf/World.hh"
+#include "sdf/Frame.hh"
 #include "sdf/Root.hh"
 
 /////////////////////////////////////////////////
@@ -54,6 +56,67 @@ TEST(DOMRoot, Construction)
   EXPECT_EQ(0u, root.ActorCount());
   EXPECT_TRUE(root.ActorByIndex(0) == nullptr);
   EXPECT_TRUE(root.ActorByIndex(1) == nullptr);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, CopyConstructor)
+{
+  sdf::Root root;
+  root.SetVersion("test_root");
+
+  sdf::Root root2(root);
+  EXPECT_EQ("test_root", root2.Version());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, CopyAssignmentOperator)
+{
+  sdf::Root root;
+  root.SetVersion("test_root");
+
+  sdf::Root root2;
+  root2 = root;
+  EXPECT_EQ("test_root", root2.Version());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, MoveConstructor)
+{
+  sdf::Root root;
+  root.SetVersion("test_root");
+
+  sdf::Root root2(root);
+  EXPECT_EQ("test_root", root2.Version());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, MoveAssignmentOperator)
+{
+  sdf::Root root;
+  root.SetVersion("test_root");
+
+  sdf::Root root2;
+  root2 = std::move(root);
+  EXPECT_EQ("test_root", root2.Version());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, CopyAssignmentAfterMove)
+{
+  sdf::Root root1;
+  root1.SetVersion("root1");
+
+  sdf::Root root2;
+  root2.SetVersion("root2");
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  sdf::Root tmp = std::move(root1);
+  root1 = root2;
+  root2 = tmp;
+
+  EXPECT_EQ("root2", root1.Version());
+  EXPECT_EQ("root1", root2.Version());
 }
 
 /////////////////////////////////////////////////
@@ -139,4 +202,113 @@ TEST(DOMRoot, Set)
   EXPECT_STREQ("", root.Version().c_str());
   root.SetVersion(SDF_PROTOCOL_VERSION);
   EXPECT_STREQ(SDF_PROTOCOL_VERSION, root.Version().c_str());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, FrameSemanticsOnCopyAndMove)
+{
+  const std::string sdfString1 = R"(
+    <sdf version="1.8">
+      <world name="default">
+        <frame name="frame1">
+          <pose>0 1 0 0 0 0</pose>
+        </frame>
+      </world>
+    </sdf>)";
+
+  const std::string sdfString2 = R"(
+    <sdf version="1.8">
+      <world name="default">
+        <frame name="frame2">
+          <pose>1 1 0 0 0 0</pose>
+        </frame>
+      </world>
+    </sdf>)";
+
+  auto testFrame1 = [](const sdf::Root &_root)
+  {
+    auto *world = _root.WorldByIndex(0);
+    ASSERT_NE(nullptr, world);
+    auto *frame = world->FrameByIndex(0);
+    ASSERT_NE(nullptr, frame);
+    EXPECT_EQ("frame1", frame->Name());
+    ignition::math::Pose3d pose;
+    sdf::Errors errors = frame->SemanticPose().Resolve(pose);
+    EXPECT_TRUE(errors.empty()) << errors;
+    EXPECT_EQ(ignition::math::Pose3d(0, 1, 0, 0, 0, 0), pose);
+  };
+
+  auto testFrame2 = [](const sdf::Root &_root)
+  {
+    auto *world = _root.WorldByIndex(0);
+    ASSERT_NE(nullptr, world);
+    auto *frame = world->FrameByIndex(0);
+    ASSERT_NE(nullptr, frame);
+    EXPECT_EQ("frame2", frame->Name());
+    ignition::math::Pose3d pose;
+    sdf::Errors errors = frame->SemanticPose().Resolve(pose);
+    EXPECT_TRUE(errors.empty()) << errors;
+    EXPECT_EQ(ignition::math::Pose3d(1, 1, 0, 0, 0, 0), pose);
+  };
+
+  {
+    sdf::Root root1;
+    sdf::Errors errors = root1.LoadSdfString(sdfString1);
+    EXPECT_TRUE(errors.empty()) << errors;
+    testFrame1(root1);
+  }
+
+  {
+    sdf::Root root2;
+    sdf::Errors errors = root2.LoadSdfString(sdfString2);
+    EXPECT_TRUE(errors.empty()) << errors;
+    testFrame2(root2);
+  }
+
+  {
+    sdf::Root root1;
+    sdf::Errors errors = root1.LoadSdfString(sdfString1);
+    EXPECT_TRUE(errors.empty()) << errors;
+    // root2 is copy constructed from root1
+    sdf::Root root2(root1);
+    testFrame1(root1);
+    testFrame1(root2);
+  }
+
+  {
+    sdf::Root root1;
+    sdf::Errors errors = root1.LoadSdfString(sdfString1);
+    EXPECT_TRUE(errors.empty()) << errors;
+    sdf::Root root2;
+    errors = root2.LoadSdfString(sdfString2);
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    // root1 is copied into root2 via the assignment operator
+    root2 = root1;
+    testFrame1(root1);
+    testFrame1(root2);
+  }
+
+  {
+    sdf::Root root1;
+    sdf::Errors errors = root1.LoadSdfString(sdfString1);
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    // then root1 is moved into root2 via the move constructor
+    sdf::Root root2(std::move(root1));
+    testFrame1(root2);
+  }
+
+  {
+    sdf::Root root1;
+    sdf::Errors errors = root1.LoadSdfString(sdfString1);
+    EXPECT_TRUE(errors.empty()) << errors;
+    sdf::Root root2;
+    errors = root2.LoadSdfString(sdfString2);
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    // root1 is moved into root2 via the move assignment operator.
+    root2 = std::move(root1);
+    testFrame1(root2);
+  }
 }

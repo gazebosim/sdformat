@@ -123,6 +123,11 @@ class ScopedGraph
   /// passed in graph.
   /// \param[in] _graph A shared pointer to PoseRelativeTo or FrameAttachedTo
   /// graph.
+  /// \remark The state of the ScopedGraph after construction is invalid because
+  /// member variables such as "ScopedGraphData::prefix" and
+  /// "ScopedGraphData::scopeName" will be empty. Therefore, it is imperative
+  /// that this constructor should only be used right before calling either
+  /// buildPoseRelativeToGraph or buildFrameAttachedToGraph.
   public: explicit ScopedGraph(const std::shared_ptr<T> &_graph);
 
   /// \brief Creates a scope anchored at an existing child model vertex.

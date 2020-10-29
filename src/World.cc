@@ -110,7 +110,9 @@ WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
       name(_worldPrivate.name),
       physics(_worldPrivate.physics),
       sdf(_worldPrivate.sdf),
-      windLinearVelocity(_worldPrivate.windLinearVelocity)
+      windLinearVelocity(_worldPrivate.windLinearVelocity),
+      frameAttachedToGraph(_worldPrivate.frameAttachedToGraph),
+      poseRelativeToGraph(_worldPrivate.poseRelativeToGraph)
 {
   if (_worldPrivate.atmosphere)
   {
@@ -145,20 +147,6 @@ World::~World()
 World::World(const World &_world)
   : dataPtr(new WorldPrivate(*_world.dataPtr))
 {
-  for (auto &frame : this->dataPtr->frames)
-  {
-    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-  }
-  for (auto &model : this->dataPtr->models)
-  {
-    model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-  }
-  for (auto &light : this->dataPtr->lights)
-  {
-    light.SetXmlParentName("world");
-    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
-  }
 }
 
 /////////////////////////////////////////////////

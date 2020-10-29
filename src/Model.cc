@@ -105,24 +105,6 @@ Model::~Model()
 Model::Model(const Model &_model)
   : dataPtr(new ModelPrivate(*_model.dataPtr))
 {
-  for (auto &link : this->dataPtr->links)
-  {
-    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &model : this->dataPtr->models)
-  {
-    model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &joint : this->dataPtr->joints)
-  {
-    joint.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &frame : this->dataPtr->frames)
-  {
-    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
 }
 
 /////////////////////////////////////////////////
