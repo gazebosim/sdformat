@@ -240,9 +240,9 @@ class ScopedGraph
   public: std::pair<std::string, bool> FindAndRemovePrefix(
               const std::string &_name) const;
 
-  /// \brief Weak pointer to either a FrameAttachedToGraph or
+  /// \brief Shared pointer to either a FrameAttachedToGraph or
   /// PoseRelativeToGraph.
-  private: std::weak_ptr<T> graphWeak;
+  private: std::shared_ptr<T> graphPtr;
 
   /// \brief Shared pointer to the scope's data. A shared_ptr is used because
   /// this data has to be shared among many DOM objects.
@@ -252,7 +252,7 @@ class ScopedGraph
 /////////////////////////////////////////////////
 template <typename T>
 ScopedGraph<T>::ScopedGraph(const std::shared_ptr<T> &_graph)
-    : graphWeak(_graph)
+    : graphPtr(_graph)
     , dataPtr(std::make_shared<ScopedGraphData>())
 {
 }
@@ -274,21 +274,21 @@ ScopedGraph<T> ScopedGraph<T>::ChildModelScope(const std::string &_name) const
 template <typename T>
 ScopedGraph<T>::operator bool() const
 {
-  return !this->graphWeak.expired() && (this->dataPtr != nullptr);
+  return (this->graphPtr != nullptr) && (this->dataPtr != nullptr);
 }
 
 /////////////////////////////////////////////////
 template <typename T>
 auto ScopedGraph<T>::Graph() const -> const MathGraphType &
 {
-  return this->graphWeak.lock()->graph;
+  return this->graphPtr->graph;
 }
 
 /////////////////////////////////////////////////
 template <typename T>
 auto ScopedGraph<T>::Map() const -> const MapType &
 {
-  return this->graphWeak.lock()->map;
+  return this->graphPtr->map;
 }
 
 /////////////////////////////////////////////////
@@ -311,10 +311,9 @@ template <typename T>
 auto ScopedGraph<T>::AddVertex(
     const std::string &_name, const VertexType &_data) -> Vertex &
 {
-  auto graph = this->graphWeak.lock();
   const std::string newName = this->AddPrefix(_name);
-  Vertex &vert = graph->graph.AddVertex(newName, _data);
-  graph->map[newName] = vert.Id();
+  Vertex &vert = this->graphPtr->graph.AddVertex(newName, _data);
+  this->graphPtr->map[newName] = vert.Id();
   return vert;
 }
 
@@ -324,8 +323,7 @@ auto ScopedGraph<T>::AddEdge(
     const ignition::math::graph::VertexId_P &_vertexPair, const EdgeType &_data)
     -> Edge &
 {
-  auto graph = graphWeak.lock();
-  Edge &edge = graph->graph.AddEdge(_vertexPair, _data);
+  Edge &edge = this->graphPtr->graph.AddEdge(_vertexPair, _data);
   return edge;
 }
 
@@ -367,7 +365,7 @@ void ScopedGraph<T>::UpdateEdge(Edge &_edge, const EdgeType &_data)
   // insert a new one with the new pose.
   auto tailVertexId = _edge.Tail();
   auto headVertexId = _edge.Head();
-  auto &graph = this->graphWeak.lock()->graph;
+  auto &graph = this->graphPtr->graph;
   graph.RemoveEdge(_edge.Id());
   _edge = graph.AddEdge({tailVertexId, headVertexId}, _data);
 }
@@ -390,7 +388,7 @@ void ScopedGraph<T>::SetScopeName(const std::string &_name)
 template <typename T>
 std::size_t ScopedGraph<T>::Count(const std::string &_name) const
 {
-  return this->graphWeak.lock()->map.count(this->AddPrefix(_name));
+  return this->graphPtr->map.count(this->AddPrefix(_name));
 }
 
 /////////////////////////////////////////////////
@@ -409,7 +407,7 @@ auto ScopedGraph<T>::VertexIdByName(const std::string &_name) const -> VertexId
 template <typename T>
 auto ScopedGraph<T>::ScopeVertex() const -> const Vertex &
 {
-  return this->graphWeak.lock()->graph.VertexFromId(
+  return this->graphPtr->graph.VertexFromId(
       this->dataPtr->scopeVertexId);
 }
 
@@ -424,7 +422,7 @@ auto ScopedGraph<T>::ScopeVertexId() const -> VertexId
 template <typename T>
 bool ScopedGraph<T>::PointsTo(const std::shared_ptr<T> &_graph) const
 {
-  return this->graphWeak.lock() == _graph;
+  return this->graphPtr == _graph;
 }
 
 /////////////////////////////////////////////////
