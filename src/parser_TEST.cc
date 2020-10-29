@@ -20,6 +20,9 @@
 #include "sdf/Element.hh"
 #include "test_config.h"
 
+#include <fstream>
+#include <stdlib.h>
+
 /////////////////////////////////////////////////
 TEST(Parser, initStringTrim)
 {
@@ -57,6 +60,30 @@ sdf::SDFPtr InitSDF()
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
   return sdf;
+}
+
+/////////////////////////////////////////////////
+/// Checks emitted warnings for custom/unknown elements in log file
+TEST(Parser, CustomUnknownElements)
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+  const std::string path = pathBase +"/custom_and_unknown_elements.sdf";
+
+  sdf::SDFPtr sdf = InitSDF();
+  EXPECT_TRUE(sdf::readFile(path, sdf));
+
+  std::string line;
+  std::string pathHome = getenv("HOME");
+  std::ifstream file(pathHome + "/.sdformat/sdformat.log");
+
+  if (file.is_open())
+  {
+    std::getline(file, line);
+    file.close();
+  }
+
+  EXPECT_NE(line.find("XML Element[test_unknown]"), std::string::npos);
 }
 
 /////////////////////////////////////////////////

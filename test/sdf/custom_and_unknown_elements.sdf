@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <model name='my_model'>
+    <link name="base">
+      <pose>1 0 0 0 0 0</pose>
+      <test:custom/>
+    </link>
+    <test_unknown/>
+  </model>
+</sdf>
