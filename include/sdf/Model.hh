@@ -300,17 +300,17 @@ namespace sdf
     /// \param[in] _name Name of the placement frame.
     public: void SetPlacementFrameName(const std::string &_name);
 
-    /// \brief Give the Scoped PoseRelativeToGraph to be used for resolving
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by World::Load and
     /// Model::Load if this is a nested model.
-    /// \param[in] _graph Scoped PoseRelativeToGraph object.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
         sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
-    /// \brief Give the Scoped FrameAttachedToGraph to be used for resolving
+    /// \brief Give the scoped FrameAttachedToGraph to be used for resolving
     /// attached bodies. This is private and is intended to be called by
     /// World::Load and Model::Load if this is a nested model.
-    /// \param[in] _graph Scoped FrameAttachedToGraph object.
+    /// \param[in] _graph scoped FrameAttachedToGraph object.
     private: void SetFrameAttachedToGraph(
         sdf::ScopedGraph<FrameAttachedToGraph> _graph);
 

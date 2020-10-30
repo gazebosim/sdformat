@@ -145,17 +145,17 @@ namespace sdf
     /// \return SemanticPose object for this link.
     public: sdf::SemanticPose SemanticPose() const;
 
-    /// \brief Give a Scoped FrameAttachedToGraph to be used for resolving
+    /// \brief Give a scoped FrameAttachedToGraph to be used for resolving
     /// attached bodies. This is private and is intended to be called by
     /// Model::Load or World::Load.
-    /// \param[in] _graph Scoped FrameAttachedToGraph object.
+    /// \param[in] _graph scoped FrameAttachedToGraph object.
     private: void SetFrameAttachedToGraph(
         sdf::ScopedGraph<FrameAttachedToGraph> _graph);
 
-    /// \brief Give the Scoped PoseRelativeToGraph to be used for resolving
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Model::Load or
     /// World::Load.
-    /// \param[in] _graph Scoped PoseRelativeToGraph object.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
         sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
