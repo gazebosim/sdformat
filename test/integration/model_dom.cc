@@ -570,7 +570,4 @@ TEST(DOMRoot, LoadInvalidNestedModelWithoutLinks)
   // errors[4]
   // errors[5]
   // errors[6]
-  // errors[7]
-  // errors[8]
-  // errors[9]
 }
