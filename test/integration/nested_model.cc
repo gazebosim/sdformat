@@ -622,7 +622,7 @@ TEST(NestedModel, PartiallyFlattened)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-      "nested_model_with_frames_expected.sdf");
+      "partially_flattened.sdf");
 
   // Load the SDF file
   sdf::Root root;

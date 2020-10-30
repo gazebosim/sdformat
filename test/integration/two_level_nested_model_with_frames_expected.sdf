@@ -62,8 +62,8 @@
             <parent>L3</parent>
             <child>L4</child>
           </joint>
-          <model name='M1::test_model_with_frames::M2'>
-            <pose relative_to='M1::test_model_with_frames::F1'>1 0 0 0 -0 0</pose>
+          <model name='M2'>
+            <pose relative_to='F1'>1 0 0 0 -0 0</pose>
             <link name='L5'>
               <pose>1 0 0 0 -0 0</pose>
             </link>
