@@ -305,68 +305,6 @@ TEST(DOMRoot, MultiNestedModel)
   EXPECT_NE(nullptr, outerModel->FrameByName(innerFrameNestedName));
 }
 
-////////////////////////////////////////////////
-TEST(DOMRoot, PartiallyFlattenedModel)
-{
-  const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "partially_flattened.sdf");
-
-  // Load the SDF file
-  sdf::Root root;
-  auto errors = root.Load(testFile);
-  EXPECT_TRUE(errors.empty());
-
-  EXPECT_EQ(1u, root.ModelCount());
-
-  // Get the outer model
-  const sdf::Model *outerModel = root.ModelByIndex(0);
-  ASSERT_NE(nullptr, outerModel);
-  EXPECT_EQ("MP", outerModel->Name());
-  EXPECT_EQ(1u, outerModel->LinkCount());
-  EXPECT_NE(nullptr, outerModel->LinkByIndex(0));
-  EXPECT_EQ(nullptr, outerModel->LinkByIndex(1));
-
-  EXPECT_TRUE(outerModel->LinkNameExists("M1::L1"));
-
-  EXPECT_EQ(0u, outerModel->JointCount());
-
-  EXPECT_EQ(1u, outerModel->FrameCount());
-  EXPECT_TRUE(outerModel->FrameNameExists("M1::__model__"));
-
-  EXPECT_EQ(1u, outerModel->ModelCount());
-  EXPECT_NE(nullptr, outerModel->ModelByIndex(0));
-  EXPECT_EQ(nullptr, outerModel->ModelByIndex(1));
-
-  // Get the middle model
-  const sdf::Model *midModel = outerModel->ModelByIndex(0);
-  ASSERT_NE(nullptr, midModel);
-  EXPECT_EQ("M1::M2", midModel->Name());
-  // TODO: the following expectations should be true, but ModelNameExists
-  // and ModelByName do not support names containing "::".
-  // EXPECT_TRUE(outerModel->ModelNameExists("M1::M2"));
-  // EXPECT_EQ(midModel, outerModel->ModelByName("M1::M2"));
-
-  EXPECT_EQ(1u, midModel->LinkCount());
-  EXPECT_NE(nullptr, midModel->LinkByIndex(0));
-  EXPECT_EQ(nullptr, midModel->LinkByIndex(1));
-
-  EXPECT_TRUE(midModel->LinkNameExists("L2"));
-
-  EXPECT_EQ(0u, midModel->JointCount());
-
-  EXPECT_EQ(0u, midModel->FrameCount());
-
-  EXPECT_EQ(0u, midModel->ModelCount());
-
-  // test nested names from outer model
-  // TODO: the following expectations also fail due to the limitations of
-  // ModelNameExists and ModelByName not supporting names containing "::".
-  // const std::string midLinkNestedName = "M1::M2::L2";
-  // EXPECT_TRUE(outerModel->LinkNameExists(midLinkNestedName));
-  // EXPECT_NE(nullptr, outerModel->LinkByName(midLinkNestedName));
-}
-
 /////////////////////////////////////////////////
 TEST(DOMLink, NestedModelPoseRelativeTo)
 {
