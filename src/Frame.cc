@@ -42,8 +42,8 @@ class sdf::FramePrivate
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
-  /// \brief Name of graph source.
-  std::string graphSourceName = "";
+  /// \brief The context name of the scoped Pose Relative-To graph
+  std::string graphScopeContextName = "";
 
   /// \brief Scoped Frame Attached-To graph at the parent model or world scope.
   public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
@@ -210,7 +210,7 @@ void Frame::SetPoseRelativeToGraph(
   auto graph = this->dataPtr->poseRelativeToGraph;
   if (graph)
   {
-    this->dataPtr->graphSourceName = graph.ScopeName();
+    this->dataPtr->graphScopeContextName = graph.ScopeContextName();
   }
 }
 
@@ -248,7 +248,7 @@ sdf::SemanticPose Frame::SemanticPose() const
       this->dataPtr->name,
       this->dataPtr->pose,
       relativeTo,
-      this->dataPtr->graphSourceName,
+      this->dataPtr->graphScopeContextName,
       this->dataPtr->poseRelativeToGraph);
 }
 

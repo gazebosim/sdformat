@@ -302,20 +302,20 @@ Errors buildFrameAttachedToGraph(
   auto frameType =
       _model->Static() ? sdf::FrameType::STATIC_MODEL : sdf::FrameType::MODEL;
 
-  const std::string scopeName = "__model__";
+  const std::string scopeContextName = "__model__";
 
   auto rootId = ignition::math::graph::kNullId;
   if (_root)
   {
     _out = _out.AddScopeVertex(
-        "", "__root__", scopeName, sdf::FrameType::STATIC_MODEL);
+        "", "__root__", scopeContextName, sdf::FrameType::STATIC_MODEL);
     rootId = _out.ScopeVertexId();
   }
 
   const auto modelId = _out.AddVertex(_model->Name(), frameType).Id();
 
-  auto outModel =
-      _out.AddScopeVertex(_model->Name(), scopeName, scopeName, frameType);
+  auto outModel = _out.AddScopeVertex(
+      _model->Name(), scopeContextName, scopeContextName, frameType);
   const auto modelFrameId = outModel.ScopeVertexId();
 
   // Add an aliasing edge from the model vertex to the
@@ -412,8 +412,8 @@ Errors buildFrameAttachedToGraph(
     std::string attachedTo = frame->AttachedTo();
     if (attachedTo.empty())
     {
-      // if the attached-to name is empty, use the scope name
-      attachedTo = scopeName;
+      // if the attached-to name is empty, use the scope context name
+      attachedTo = scopeContextName;
     }
     if (outModel.Count(attachedTo) != 1)
     {
@@ -507,8 +507,9 @@ Errors buildFrameAttachedToGraph(
   }
 
   // add implicit world frame vertex first
-  const std::string scopeName = "world";
-  _out = _out.AddScopeVertex("", scopeName, scopeName, sdf::FrameType::WORLD);
+  const std::string scopeContextName = "world";
+  _out = _out.AddScopeVertex(
+      "", scopeContextName, scopeContextName, sdf::FrameType::WORLD);
 
   // add model vertices
   for (uint64_t m = 0; m < _world->ModelCount(); ++m)
@@ -550,13 +551,13 @@ Errors buildFrameAttachedToGraph(
     std::string attachedTo = frame->AttachedTo();
     if (attachedTo.empty())
     {
-      // if the attached-to name is empty, use the scope name
-      attachedTo = scopeName;
-      if (_out.Count(scopeName) != 1)
+      // if the attached-to name is empty, use the scope context name
+      attachedTo = scopeContextName;
+      if (_out.Count(scopeContextName) != 1)
       {
         errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
                          "FrameAttachedToGraph error: scope frame[" +
-                         scopeName + "] not found in map."});
+                         scopeContextName + "] not found in map."});
         continue;
       }
     }
@@ -606,18 +607,18 @@ Errors buildPoseRelativeToGraph(
     return errors;
   }
 
-  const std::string scopeName = "__model__";
+  const std::string scopeContextName = "__model__";
   auto rootId = ignition::math::graph::kNullId;
   // add the model frame vertex first
   if (_root)
   {
     _out = _out.AddScopeVertex(
-        "", "__root__", scopeName, sdf::FrameType::MODEL);
+        "", "__root__", scopeContextName, sdf::FrameType::MODEL);
     rootId = _out.ScopeVertexId();
   }
   auto modelId = _out.AddVertex(_model->Name(), sdf::FrameType::MODEL).Id();
-  auto outModel = _out.AddScopeVertex(
-      _model->Name(), scopeName, scopeName, sdf::FrameType::MODEL);
+  auto outModel = _out.AddScopeVertex(_model->Name(), scopeContextName,
+      scopeContextName, sdf::FrameType::MODEL);
   auto modelFrameId = outModel.ScopeVertexId();
 
   // Add an aliasing edge from the model vertex to the
@@ -904,12 +905,14 @@ Errors buildPoseRelativeToGraph(
     return errors;
   }
   // add implicit world frame vertex first
-  const std::string sourceName = "world";
+  const std::string scopeContextName = "world";
 
-  _out = _out.AddScopeVertex("", "__root__", sourceName, sdf::FrameType::WORLD);
+  _out = _out.AddScopeVertex(
+      "", "__root__", scopeContextName, sdf::FrameType::WORLD);
   auto rootId = _out.ScopeVertexId();
 
-  _out = _out.AddScopeVertex("", sourceName, sourceName, sdf::FrameType::WORLD);
+  _out = _out.AddScopeVertex(
+      "", scopeContextName, scopeContextName, sdf::FrameType::WORLD);
   auto worldFrameId = _out.ScopeVertexId();
 
   _out.AddEdge({rootId, worldFrameId}, {});
@@ -1057,28 +1060,29 @@ Errors validateFrameAttachedToGraph(
 {
   Errors errors;
 
-  // Expect scopeName to be either "__model__" or "world"
-  if (_in.ScopeName() != "__model__" && _in.ScopeName() != "world")
+  // Expect ScopeContextName to be either "__model__" or "world"
+  if (_in.ScopeContextName() != "__model__" &&
+      _in.ScopeContextName() != "world")
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
-        "FrameAttachedToGraph error: scope frame[" + _in.ScopeName() + "] "
-        " does not match __model__ or world."});
+        "FrameAttachedToGraph error: scope context name[" +
+            _in.ScopeContextName() + "] does not match __model__ or world."});
     return errors;
   }
 
-  // Expect the scope vertex  to be valid and check that the scope name matches
-  // the frame type.
+  // Expect the scope vertex to be valid and check that the scope context
+  // matches the frame type.
   auto scopeVertex = _in.ScopeVertex();
   if (!scopeVertex.Valid())
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
                      "FrameAttachedToGraph error: scope frame[" +
-                     _in.ScopeName() + "] not found in graph."});
+                     _in.ScopeContextName() + "] not found in graph."});
     return errors;
   }
 
   sdf::FrameType scopeFrameType = scopeVertex.Data();
-  if (_in.ScopeName() == "__model__" &&
+  if (_in.ScopeContextName() == "__model__" &&
       scopeFrameType != sdf::FrameType::MODEL &&
       scopeFrameType != sdf::FrameType::STATIC_MODEL)
   {
@@ -1088,7 +1092,7 @@ Errors validateFrameAttachedToGraph(
         "STATIC_MODEL."});
     return errors;
   }
-  else if (_in.ScopeName() == "world" &&
+  else if (_in.ScopeContextName() == "world" &&
            scopeFrameType != sdf::FrameType::WORLD)
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
@@ -1275,28 +1279,29 @@ Errors validatePoseRelativeToGraph(
 {
   Errors errors;
 
-  // Expect scopeName to be either "__model__" or "world"
-  if (_in.ScopeName() != "__model__" && _in.ScopeName() != "world")
+  // Expect scopeContextName to be either "__model__" or "world"
+  if (_in.ScopeContextName() != "__model__" &&
+      _in.ScopeContextName() != "world")
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-        "PoseRelativeToGraph error: source vertex name " + _in.ScopeName() +
-        " does not match __model__ or world."});
+        "PoseRelativeToGraph error: scope context name " +
+            _in.ScopeContextName() + " does not match __model__ or world."});
     return errors;
   }
 
   // Expect the scope vertex (which is the source vertex for this graph) to be
-  // valid and check that the scope name matches the frame type.
+  // valid and check that the scope context matches the frame type.
   auto sourceVertex = _in.ScopeVertex();
   if (!sourceVertex.Valid())
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
                      "PoseRelativeToGraph error: source frame[" +
-                     _in.ScopeName() + "] not found in graph."});
+                     _in.ScopeContextName() + "] not found in graph."});
     return errors;
   }
 
   sdf::FrameType sourceFrameType = sourceVertex.Data();
-  if (_in.ScopeName() == "__model__" &&
+  if (_in.ScopeContextName() == "__model__" &&
       sourceFrameType != sdf::FrameType::MODEL)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
@@ -1304,7 +1309,7 @@ Errors validatePoseRelativeToGraph(
         "source vertex with name __model__ should have FrameType MODEL."});
     return errors;
   }
-  else if (_in.ScopeName() == "world" &&
+  else if (_in.ScopeContextName() == "world" &&
            sourceFrameType != sdf::FrameType::WORLD)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
@@ -1455,11 +1460,12 @@ Errors resolveFrameAttachedToBody(
 {
   Errors errors;
 
-  if (_in.ScopeName() != "__model__" && _in.ScopeName() != "world")
+  if (_in.ScopeContextName() != "__model__" &&
+      _in.ScopeContextName() != "world")
   {
     errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
-        "FrameAttachedToGraph error: scope frame[" + _in.ScopeName() + "] "
-        " does not match __model__ or world."});
+        "FrameAttachedToGraph error: scope context name[" +
+            _in.ScopeContextName() + "] does not match __model__ or world."});
     return errors;
   }
 
@@ -1488,7 +1494,7 @@ Errors resolveFrameAttachedToBody(
     return errors;
   }
 
-  if (_in.ScopeName() == "world" &&
+  if (_in.ScopeContextName() == "world" &&
       !(sinkVertex.Data() == FrameType::WORLD ||
           sinkVertex.Data() == FrameType::STATIC_MODEL ||
           sinkVertex.Data() == FrameType::LINK))
@@ -1501,7 +1507,7 @@ Errors resolveFrameAttachedToBody(
     return errors;
   }
 
-  if (_in.ScopeName() == "__model__")
+  if (_in.ScopeContextName() == "__model__")
   {
     if (sinkVertex.Data() == FrameType::MODEL &&
         sinkVertex.Name() == "__model__")
@@ -1574,8 +1580,8 @@ Errors resolvePoseRelativeToRoot(
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
         "PoseRelativeToGraph frame with name [" + std::to_string(_vertexId) +
             "] is disconnected; its source vertex has name [" +
-            incomingVertexEdges.first.Name() +
-            "], but its source name should be " + _graph.ScopeName() + "."});
+            incomingVertexEdges.first.Name() + "], but its source name should "
+            "be " + _graph.ScopeContextName() + "."});
     return errors;
   }
 

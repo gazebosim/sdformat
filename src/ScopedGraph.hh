@@ -44,8 +44,8 @@ struct ScopedGraphData
   /// \brief The prefix for all names under this scope
   std::string prefix {};
 
-  /// \brief The name of this scope. Either world or __model__
-  std::string scopeName {};
+  /// \brief The context name of this scope. Either world or __model__
+  std::string scopeContextName {};
 };
 
 // Forward declarations for static_assert
@@ -61,7 +61,7 @@ struct FrameAttachedToGraph;
 /// contains the following:
 /// - The prefix of the scope, which is empty for a world scope and the
 /// name of a model for a model scope.
-/// - The scope name of the scope, which can be either "world" or "__model__".
+/// - The context name of the scope, which can be either "world" or "__model__".
 /// - ID of the vertex on which the scope is anchored. For
 /// PoseRelativeToGraph's, this vertex is the root of the sub tree represented
 /// by the ScopedGraph instance. For FrameAttachedToGraph, this vertex only
@@ -146,14 +146,16 @@ class ScopedGraph
   public: const MapType &Map() const;
 
   /// \brief Adds a scope vertex to the graph. This creates a new
-  /// scope by updating the prefix of the current scope, adding a new scope
-  /// vertex to the graph, and setting a new scope name.
+  /// scope by making a copy of the current scope with a new prefix and scope
+  /// type name. A new scope vertex then added to the graph.
   /// \param[in] _prefix The new prefix of the scope.
   /// \param[in] _name The Name of the scope vertex to be added. The full name
   /// of the vertex will be newPrefix::_name, where newPrefix is the prefix
-  /// obtained by adding _prefix to the existing prefix of the scope.
+  /// obtained by adding _prefix to the prefix of the current scope.
+  /// \param[in] _scopeTypeName Name of scope type (either __model__ or world)
+  /// \param[in] _data Vertex data
   public: ScopedGraph<T> AddScopeVertex(const std::string &_prefix,
-              const std::string &_name, const std::string &_scopeName,
+              const std::string &_name, const std::string &_scopeTypeName,
               const VertexType &_data);
 
   /// \brief Adds a vertex to the graph.
@@ -219,13 +221,13 @@ class ScopedGraph
   /// \return True if this scope points to the same graph as the input.
   public: bool PointsTo(const std::shared_ptr<T> &_graph) const;
 
-  /// \brief Set the scope name.
-  /// \param[in] _name New scope name.
-  public: void SetScopeName(const std::string &_name);
+  /// \brief Set the context name of the scope.
+  /// \param[in] _name New context name.
+  public: void SetScopeContextName(const std::string &_name);
 
-  /// \brief Get the current scope name.
-  /// \return The current scope name.
-  public: const std::string &ScopeName() const;
+  /// \brief Get the current context name.
+  /// \return The current context name.
+  public: const std::string &ScopeContextName() const;
 
   /// \brief Add the current prefix to the given name.
   /// \param[in] _name Input name.
@@ -266,7 +268,7 @@ ScopedGraph<T> ScopedGraph<T>::ChildModelScope(const std::string &_name) const
   newScopedGraph.dataPtr->prefix = this->AddPrefix(_name);
   newScopedGraph.dataPtr->scopeVertexId =
       newScopedGraph.VertexIdByName("__model__");
-  newScopedGraph.dataPtr->scopeName = "__model__";
+  newScopedGraph.dataPtr->scopeContextName = "__model__";
   return newScopedGraph;
 }
 
@@ -294,7 +296,7 @@ auto ScopedGraph<T>::Map() const -> const MapType &
 /////////////////////////////////////////////////
 template <typename T>
 ScopedGraph<T> ScopedGraph<T>::AddScopeVertex(const std::string &_prefix,
-    const std::string &_name, const std::string &_scopeName,
+    const std::string &_name, const std::string &_scopeTypeName,
     const VertexType &_data)
 {
   auto newScopedGraph = *this;
@@ -302,7 +304,7 @@ ScopedGraph<T> ScopedGraph<T>::AddScopeVertex(const std::string &_prefix,
   newScopedGraph.dataPtr->prefix = this->AddPrefix(_prefix);
   Vertex &vert = newScopedGraph.AddVertex(_name, _data);
   newScopedGraph.dataPtr->scopeVertexId = vert.Id();
-  newScopedGraph.SetScopeName(_scopeName);
+  newScopedGraph.SetScopeContextName(_scopeTypeName);
   return newScopedGraph;
 }
 
@@ -374,16 +376,16 @@ void ScopedGraph<T>::UpdateEdge(Edge &_edge, const EdgeType &_data)
 
 /////////////////////////////////////////////////
 template <typename T>
-const std::string &ScopedGraph<T>::ScopeName() const
+const std::string &ScopedGraph<T>::ScopeContextName() const
 {
-  return this->dataPtr->scopeName;
+  return this->dataPtr->scopeContextName;
 }
 
 /////////////////////////////////////////////////
 template <typename T>
-void ScopedGraph<T>::SetScopeName(const std::string &_name)
+void ScopedGraph<T>::SetScopeContextName(const std::string &_name)
 {
-  this->dataPtr->scopeName = _name;
+  this->dataPtr->scopeContextName = _name;
 }
 
 /////////////////////////////////////////////////
