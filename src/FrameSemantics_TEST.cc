@@ -519,6 +519,15 @@ TEST(NestedFrameSemantics, buildFrameAttachedToGraph_World)
   EXPECT_EQ(1u, modelGraph.Count("M2::L"));
   EXPECT_EQ(1u, modelGraph.Count("F0"));
   EXPECT_EQ(0u, modelGraph.Count("invalid"));
+  // The following Count expectations are 0 because the frames are out of scope.
+  EXPECT_EQ(0u, modelGraph.Count("world"));
+  EXPECT_EQ(0u, modelGraph.Count("world_frame"));
+  EXPECT_EQ(0u, modelGraph.Count("F1"));
+  EXPECT_EQ(0u, modelGraph.Count("F2"));
+  EXPECT_EQ(0u, modelGraph.Count("F3"));
+  EXPECT_EQ(0u, modelGraph.Count("F4"));
+  EXPECT_EQ(0u, modelGraph.Count("F5"));
+  EXPECT_EQ(0u, modelGraph.Count("F6"));
 
   EXPECT_TRUE(
     sdf::resolveFrameAttachedToBody(
@@ -540,6 +549,35 @@ TEST(NestedFrameSemantics, buildFrameAttachedToGraph_World)
   EXPECT_TRUE(
     sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "F0").empty());
   EXPECT_EQ("M2::L", resolvedBody);
+
+  errors = sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "world");
+  ASSERT_FALSE(errors.empty());
+
+  EXPECT_EQ(
+      "FrameAttachedToGraph unable to find unique frame with name "
+      "[world] in graph.",
+      errors[0].Message());
+
+  errors =
+      sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "world_frame");
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(
+      "FrameAttachedToGraph unable to find unique frame with name "
+      "[world_frame] in graph.",
+      errors[0].Message());
+
+  EXPECT_FALSE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "F1").empty());
+  EXPECT_FALSE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "F2").empty());
+  EXPECT_FALSE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "F3").empty());
+  EXPECT_FALSE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "F4").empty());
+  EXPECT_FALSE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "F5").empty());
+  EXPECT_FALSE(
+    sdf::resolveFrameAttachedToBody(resolvedBody, modelGraph, "F6").empty());
 }
 
 /////////////////////////////////////////////////

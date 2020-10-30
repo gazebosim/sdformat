@@ -235,15 +235,15 @@ std::pair<const Link *, std::string>
 ///
 /// When the placement_frame is specified in an SDFormat file, //model/pose
 /// becomes the pose of the placement frame (X_RPf) instead of the pose of the
-/// model frame (X_RM). However, when the model inserted into a pose graph of
+/// model frame (X_RM). However, when the model is inserted into a pose graph of
 /// the parent scope, only the pose (X_RM) of the __model__ frame can be used.
 /// i.e, X_RPf cannot be represented in the PoseRelativeTo graph.
 /// Thus, the X_RM has to be calculated such that X_RPf = X_RM * X_MPf.
 //
-/// \param[in] _model Model whose pose to resolve relative to its parent
-/// \param[in] _graph The scoped PoseRelativeTo graph used to resolve the model.
-/// The scope must contain the frame referenced by the placement frame attribute
-/// of the input model.
+/// \param[in] _model Input model whose pose to resolve relative to its parent
+/// \param[in] _graph The PoseRelativeTo graph with the same scope as the
+/// frame referenced by the placement frame attribute of the input model. i.e,
+/// the input model's graph.
 /// \param[out] _resolvedPose The resolved pose (X_RM). If an error was
 /// encountered during `sdf::resolvePoseRelativeToRoot`, _resolvedPose will not
 /// be modified.
