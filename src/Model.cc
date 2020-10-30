@@ -762,13 +762,13 @@ void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 
   auto childPoseGraph =
       this->dataPtr->poseGraph.ChildModelScope(this->Name());
-  for (auto &link : this->dataPtr->links)
-  {
-    link.SetPoseRelativeToGraph(childPoseGraph);
-  }
   for (auto &model : this->dataPtr->models)
   {
     model.SetPoseRelativeToGraph(childPoseGraph);
+  }
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(childPoseGraph);
   }
   for (auto &joint : this->dataPtr->joints)
   {

@@ -215,8 +215,7 @@ std::pair<const Link *, std::string>
 ///
 /// Notation used in this function:
 /// Pf - The placement frame inside the model
-/// R - Relative to frame of the placement frame's pose. This frame is in the
-/// parent scope of the input model.
+/// R - The `relative_to` frame of the placement frame's //pose element.
 /// M - The input model's implicit frame (__model__)
 /// X_RPf - The pose of frame Pf relative to frame R
 /// X_RM - The pose of the frame M relative to frame R
