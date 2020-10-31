@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -199,7 +199,7 @@ ModelInterfaceSharedPtr  parseURDF(const std::string &xml_string)
   parent_link_tree.clear();
 
   // building tree: name mapping
-  try 
+  try
   {
     model->initTree(parent_link_tree);
   }
@@ -219,7 +219,7 @@ ModelInterfaceSharedPtr  parseURDF(const std::string &xml_string)
     model.reset();
     return model;
   }
-  
+
   return model;
 }
 
@@ -229,9 +229,9 @@ bool exportJoint(Joint &joint, tinyxml2::XMLElement *config);
 tinyxml2::XMLDocument*  exportURDF(const ModelInterface &model)
 {
   tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument();
+  tinyxml2::XMLElement *robot = doc->NewElement("robot");
 
-  tinyxml2::XMLElement *robot = new tinyxml2::XMLElement("robot");
-  robot->SetAttribute("name", model.name_);
+  robot->SetAttribute("name", model.name_.c_str());
   doc->LinkEndChild(robot);
 
 
@@ -240,19 +240,19 @@ tinyxml2::XMLDocument*  exportURDF(const ModelInterface &model)
     exportMaterial(*(m->second), robot);
   }
 
-  for (std::map<std::string, LinkSharedPtr>::const_iterator l=model.links_.begin(); l!=model.links_.end(); l++)  
+  for (std::map<std::string, LinkSharedPtr>::const_iterator l=model.links_.begin(); l!=model.links_.end(); l++)
   {
     exportLink(*(l->second), robot);
   }
-  	
-  for (std::map<std::string, JointSharedPtr>::const_iterator j=model.joints_.begin(); j!=model.joints_.end(); j++)  
+
+  for (std::map<std::string, JointSharedPtr>::const_iterator j=model.joints_.begin(); j!=model.joints_.end(); j++)
   {
     exportJoint(*(j->second), robot);
   }
 
   return doc;
 }
-    
+
 tinyxml2::XMLDocument*  exportURDF(ModelInterfaceSharedPtr &model)
 {
   return exportURDF(*model);

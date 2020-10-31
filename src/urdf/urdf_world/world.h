@@ -73,7 +73,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 
 #include "urdf_model/model.h"
 #include "urdf_model/pose.h"

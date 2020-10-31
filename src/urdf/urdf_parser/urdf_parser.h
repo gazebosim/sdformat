@@ -39,7 +39,7 @@
 
 #include <string>
 #include <map>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 #include <urdf_model/model.h>
 #include <urdf_model/color.h>
 #include <urdf_world/types.h>

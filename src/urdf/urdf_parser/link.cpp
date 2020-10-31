@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -60,7 +60,7 @@ bool parseMaterial(Material &material, tinyxml2::XMLElement *config, bool only_n
   {
     return false;
   }
-  
+
   material.name = config->Attribute("name");
 
   // texture
@@ -84,7 +84,7 @@ bool parseMaterial(Material &material, tinyxml2::XMLElement *config, bool only_n
         material.color.init(c->Attribute("rgba"));
         has_rgb = true;
       }
-      catch (ParseError &e) {  
+      catch (ParseError &e) {
         material.color.clear();
       }
     }
@@ -126,14 +126,14 @@ bool parseSphere(Sphere &s, tinyxml2::XMLElement *c)
     stm << "radius [" << c->Attribute("radius") << "] is out of range: " << e.what();
     return false;
   }
-  
+
   return true;
 }
 
 bool parseBox(Box &b, tinyxml2::XMLElement *c)
 {
   b.clear();
-  
+
   b.type = Geometry::BOX;
   if (!c->Attribute("size"))
   {
@@ -237,7 +237,7 @@ GeometrySharedPtr parseGeometry(tinyxml2::XMLElement *g)
     return geom;
   }
 
-  std::string type_name = shape->ValueStr();
+  std::string type_name = shape->Name();
   if (type_name == "sphere")
   {
     Sphere *s = new Sphere();
@@ -264,13 +264,13 @@ GeometrySharedPtr parseGeometry(tinyxml2::XMLElement *g)
     Mesh *m = new Mesh();
     geom.reset(m);
     if (parseMesh(*m, shape))
-      return geom;    
+      return geom;
   }
   else
   {
     return geom;
   }
-  
+
   return GeometrySharedPtr();
 }
 
@@ -391,19 +391,19 @@ bool parseVisual(Visual &vis, tinyxml2::XMLElement *config)
       return false;
     }
     vis.material_name = mat->Attribute("name");
-    
+
     // try to parse material element in place
     vis.material.reset(new Material());
     if (!parseMaterial(*vis.material, mat, true))
     {
     }
   }
-  
+
   return true;
 }
 
 bool parseCollision(Collision &col, tinyxml2::XMLElement* config)
-{  
+{
   col.clear();
 
   // Origin
@@ -412,7 +412,7 @@ bool parseCollision(Collision &col, tinyxml2::XMLElement* config)
     if (!parsePose(col.origin, o))
       return false;
   }
-  
+
   // Geometry
   tinyxml2::XMLElement *geom = config->FirstChildElement("geometry");
   col.geometry = parseGeometry(geom);
@@ -428,7 +428,7 @@ bool parseCollision(Collision &col, tinyxml2::XMLElement* config)
 
 bool parseLink(Link &link, tinyxml2::XMLElement* config)
 {
-  
+
   link.clear();
 
   const char *name_char = config->Attribute("name");
@@ -470,14 +470,14 @@ bool parseLink(Link &link, tinyxml2::XMLElement* config)
   // Assign the first visual to the .visual ptr, if it exists
   if (!link.visual_array.empty())
     link.visual = link.visual_array[0];
-  
+
   // Multiple Collisions (optional)
   for (tinyxml2::XMLElement* col_xml = config->FirstChildElement("collision"); col_xml; col_xml = col_xml->NextSiblingElement("collision"))
   {
     CollisionSharedPtr col;
     col.reset(new Collision());
     if (parseCollision(*col, col_xml))
-    {      
+    {
       link.collision_array.push_back(col);
     }
     else
@@ -486,8 +486,8 @@ bool parseLink(Link &link, tinyxml2::XMLElement* config)
       return false;
     }
   }
-  
-  // Collision (optional)  
+
+  // Collision (optional)
   // Assign the first collision to the .collision ptr, if it exists
   if (!link.collision_array.empty())
     link.collision = link.collision_array[0];
@@ -500,16 +500,16 @@ bool exportPose(Pose &pose, tinyxml2::XMLElement* xml);
 
 bool exportMaterial(Material &material, tinyxml2::XMLElement *xml)
 {
-  tinyxml2::XMLElement *material_xml = new tinyxml2::XMLElement("material");
-  material_xml->SetAttribute("name", material.name);
+  auto *material_xml = xml->GetDocument()->NewElement("material");
+  material_xml->SetAttribute("name", material.name.c_str());
 
-  tinyxml2::XMLElement* texture = new tinyxml2::XMLElement("texture");
+  auto *texture= xml->GetDocument()->NewElement("texture");
   if (!material.texture_filename.empty())
-    texture->SetAttribute("filename", material.texture_filename);
+    texture->SetAttribute("filename", material.texture_filename.c_str());
   material_xml->LinkEndChild(texture);
 
-  tinyxml2::XMLElement* color = new tinyxml2::XMLElement("color");
-  color->SetAttribute("rgba", urdf_export_helpers::values2str(material.color));
+  auto *color = xml->GetDocument()->NewElement("color");
+  color->SetAttribute("rgba", urdf_export_helpers::values2str(material.color).c_str());
   material_xml->LinkEndChild(color);
   xml->LinkEndChild(material_xml);
   return true;
@@ -518,8 +518,8 @@ bool exportMaterial(Material &material, tinyxml2::XMLElement *xml)
 bool exportSphere(Sphere &s, tinyxml2::XMLElement *xml)
 {
   // e.g. add <sphere radius="1"/>
-  tinyxml2::XMLElement *sphere_xml = new tinyxml2::XMLElement("sphere");
-  sphere_xml->SetAttribute("radius", urdf_export_helpers::values2str(s.radius));
+  auto *sphere_xml = xml->GetDocument()->NewElement("sphere");
+  sphere_xml->SetAttribute("radius", urdf_export_helpers::values2str(s.radius).c_str());
   xml->LinkEndChild(sphere_xml);
   return true;
 }
@@ -527,8 +527,8 @@ bool exportSphere(Sphere &s, tinyxml2::XMLElement *xml)
 bool exportBox(Box &b, tinyxml2::XMLElement *xml)
 {
   // e.g. add <box size="1 1 1"/>
-  tinyxml2::XMLElement *box_xml = new tinyxml2::XMLElement("box");
-  box_xml->SetAttribute("size", urdf_export_helpers::values2str(b.dim));
+  auto *box_xml = xml->GetDocument()->NewElement("box");
+  box_xml->SetAttribute("size", urdf_export_helpers::values2str(b.dim).c_str());
   xml->LinkEndChild(box_xml);
   return true;
 }
@@ -536,9 +536,9 @@ bool exportBox(Box &b, tinyxml2::XMLElement *xml)
 bool exportCylinder(Cylinder &y, tinyxml2::XMLElement *xml)
 {
   // e.g. add <cylinder radius="1"/>
-  tinyxml2::XMLElement *cylinder_xml = new tinyxml2::XMLElement("cylinder");
-  cylinder_xml->SetAttribute("radius", urdf_export_helpers::values2str(y.radius));
-  cylinder_xml->SetAttribute("length", urdf_export_helpers::values2str(y.length));
+  auto *cylinder_xml = xml->GetDocument()->NewElement("cylinder");
+  cylinder_xml->SetAttribute("radius", urdf_export_helpers::values2str(y.radius).c_str());
+  cylinder_xml->SetAttribute("length", urdf_export_helpers::values2str(y.length).c_str());
   xml->LinkEndChild(cylinder_xml);
   return true;
 }
@@ -546,17 +546,17 @@ bool exportCylinder(Cylinder &y, tinyxml2::XMLElement *xml)
 bool exportMesh(Mesh &m, tinyxml2::XMLElement *xml)
 {
   // e.g. add <mesh filename="my_file" scale="1 1 1"/>
-  tinyxml2::XMLElement *mesh_xml = new tinyxml2::XMLElement("mesh");
+  auto *mesh_xml = xml->GetDocument()->NewElement("mesh");
   if (!m.filename.empty())
-    mesh_xml->SetAttribute("filename", m.filename);
-  mesh_xml->SetAttribute("scale", urdf_export_helpers::values2str(m.scale));
+    mesh_xml->SetAttribute("filename", m.filename.c_str());
+  mesh_xml->SetAttribute("scale", urdf_export_helpers::values2str(m.scale).c_str());
   xml->LinkEndChild(mesh_xml);
   return true;
 }
 
 bool exportGeometry(GeometrySharedPtr &geom, tinyxml2::XMLElement *xml)
 {
-  tinyxml2::XMLElement *geometry_xml = new tinyxml2::XMLElement("geometry");
+  auto *geometry_xml= xml->GetDocument()->NewElement("geometry");
   if (urdf::dynamic_pointer_cast<Sphere>(geom))
   {
     exportSphere((*(urdf::dynamic_pointer_cast<Sphere>(geom).get())), geometry_xml);
@@ -592,25 +592,25 @@ bool exportInertial(Inertial &i, tinyxml2::XMLElement *xml)
   //        <pose xyz="0 0 0" rpy="0 0 0"/>
   //        <inertia ixx="1" ixy="0" />
   //      </inertial>
-  tinyxml2::XMLElement *inertial_xml = new tinyxml2::XMLElement("inertial");
+  auto *inertial_xml = xml->GetDocument()->NewElement("inertial");
+  auto *mass_xml = xml->GetDocument()->NewElement("mass");
 
-  tinyxml2::XMLElement *mass_xml = new tinyxml2::XMLElement("mass");
-  mass_xml->SetAttribute("value", urdf_export_helpers::values2str(i.mass));
+  mass_xml->SetAttribute("value", urdf_export_helpers::values2str(i.mass).c_str());
   inertial_xml->LinkEndChild(mass_xml);
 
   exportPose(i.origin, inertial_xml);
 
-  tinyxml2::XMLElement *inertia_xml = new tinyxml2::XMLElement("inertia");
-  inertia_xml->SetAttribute("ixx", urdf_export_helpers::values2str(i.ixx));
-  inertia_xml->SetAttribute("ixy", urdf_export_helpers::values2str(i.ixy));
-  inertia_xml->SetAttribute("ixz", urdf_export_helpers::values2str(i.ixz));
-  inertia_xml->SetAttribute("iyy", urdf_export_helpers::values2str(i.iyy));
-  inertia_xml->SetAttribute("iyz", urdf_export_helpers::values2str(i.iyz));
-  inertia_xml->SetAttribute("izz", urdf_export_helpers::values2str(i.izz));
+  auto *inertia_xml = xml->GetDocument()->NewElement("inertia");
+  inertia_xml->SetAttribute("ixx", urdf_export_helpers::values2str(i.ixx).c_str());
+  inertia_xml->SetAttribute("ixy", urdf_export_helpers::values2str(i.ixy).c_str());
+  inertia_xml->SetAttribute("ixz", urdf_export_helpers::values2str(i.ixz).c_str());
+  inertia_xml->SetAttribute("iyy", urdf_export_helpers::values2str(i.iyy).c_str());
+  inertia_xml->SetAttribute("iyz", urdf_export_helpers::values2str(i.iyz).c_str());
+  inertia_xml->SetAttribute("izz", urdf_export_helpers::values2str(i.izz).c_str());
   inertial_xml->LinkEndChild(inertia_xml);
 
   xml->LinkEndChild(inertial_xml);
-  
+
   return true;
 }
 
@@ -623,7 +623,7 @@ bool exportVisual(Visual &vis, tinyxml2::XMLElement *xml)
   //   </geometry>
   //   <material name="Grey"/>
   // </visual>
-  tinyxml2::XMLElement * visual_xml = new tinyxml2::XMLElement("visual");
+  auto *visual_xml = xml->GetDocument()->NewElement("visual");
 
   exportPose(vis.origin, visual_xml);
 
@@ -638,7 +638,7 @@ bool exportVisual(Visual &vis, tinyxml2::XMLElement *xml)
 }
 
 bool exportCollision(Collision &col, tinyxml2::XMLElement* xml)
-{  
+{
   // <collision group="default">
   //   <origin rpy="0 0 0" xyz="0 0 0"/>
   //   <geometry>
@@ -646,7 +646,7 @@ bool exportCollision(Collision &col, tinyxml2::XMLElement* xml)
   //   </geometry>
   //   <material name="Grey"/>
   // </collision>
-  tinyxml2::XMLElement * collision_xml = new tinyxml2::XMLElement("collision");
+  auto *collision_xml = xml->GetDocument()->NewElement("collision");
 
   exportPose(col.origin, collision_xml);
 
@@ -659,8 +659,8 @@ bool exportCollision(Collision &col, tinyxml2::XMLElement* xml)
 
 bool exportLink(Link &link, tinyxml2::XMLElement* xml)
 {
-  tinyxml2::XMLElement * link_xml = new tinyxml2::XMLElement("link");
-  link_xml->SetAttribute("name", link.name);
+  auto *link_xml = xml->GetDocument()->NewElement("link");
+  link_xml->SetAttribute("name", link.name.c_str());
 
   if (link.inertial)
     exportInertial(*link.inertial, link_xml);
