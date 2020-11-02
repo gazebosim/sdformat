@@ -18,8 +18,9 @@
 #include <gtest/gtest.h>
 #include "sdf/parser.hh"
 #include "sdf/Element.hh"
+#include "sdf/Console.hh"
 #include "test_config.h"
-
+#include <sstream>
 #include <fstream>
 #include <stdlib.h>
 
@@ -73,17 +74,18 @@ TEST(Parser, CustomUnknownElements)
   sdf::SDFPtr sdf = InitSDF();
   EXPECT_TRUE(sdf::readFile(path, sdf));
 
-  std::string line;
-  std::string pathHome = getenv("HOME");
-  std::ifstream file(pathHome + "/.sdformat/sdformat.log");
+  std::string pathLog = getenv("HOME");
+  pathLog += "/.sdformat/sdformat.log";
 
-  if (file.is_open())
-  {
-    std::getline(file, line);
-    file.close();
-  }
+  std::fstream fs;
+  fs.open(pathLog);
+  ASSERT_TRUE(fs.is_open());
 
-  EXPECT_NE(line.find("XML Element[test_unknown]"), std::string::npos);
+  std::stringstream fileStr;
+  fs >> fileStr.rdbuf();
+
+  EXPECT_NE(fileStr.str().find("XML Element[test_unknown]"), std::string::npos);
+  EXPECT_EQ(fileStr.str().find("XML Element[test:custom]"), std::string::npos);
 }
 
 /////////////////////////////////////////////////
@@ -666,6 +668,10 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
 /// Main
 int main(int argc, char **argv)
 {
+  // temporarily set HOME to build directory
+  setenv("HOME", PROJECT_BINARY_DIR, 1);
+  sdf::Console::Clear();
+
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
