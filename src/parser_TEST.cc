@@ -15,14 +15,14 @@
  *
  */
 
+#include <sstream>
+#include <fstream>
+#include <stdlib.h>
 #include <gtest/gtest.h>
 #include "sdf/parser.hh"
 #include "sdf/Element.hh"
 #include "sdf/Console.hh"
 #include "test_config.h"
-#include <sstream>
-#include <fstream>
-#include <stdlib.h>
 
 /////////////////////////////////////////////////
 TEST(Parser, initStringTrim)
