@@ -4,11 +4,17 @@ load(
 )
 
 BINARY_DIR = "/tmp"
+
 SOURCE_DIR = "./sdformat"
+
 CMAKE_BINARY_DIR = "./ign_tools"
+
 IGN_TOOLS_BINARY_DIR = "./ign_tools"
+
 IGN_MSGS_BINARY_DIR = "/tmp"
+
 IGN_MSGS_LIBRARY_DIR = "/tmp"
+
 SDF_PROTOCOL_VERSION = 10
 
 # Generates config.hh based on the version numbers in CMake code.
@@ -18,48 +24,56 @@ cmake_configure_file(
     out = "test_config.h",
     cmakelists = ["CMakeLists.txt"],
     defines = [
-        "PROJECT_BINARY_DIR=%s" % (BINARY_DIR),
-        "PROJECT_SOURCE_DIR=%s" % (SOURCE_DIR),
-        "CMAKE_BINARY_DIR=%s" % (CMAKE_BINARY_DIR),
-        "IGNITION-TOOLS_BINARY_DIRS=%s" % (IGN_TOOLS_BINARY_DIR),
-        "IGNITION-MSGS_BINARY_DIRS=%s" % (IGN_MSGS_BINARY_DIR),
-        "IGNITION-MSGS_LIBRARY_DIRS=%s" % (IGN_MSGS_LIBRARY_DIR),
-        "SDF_PROTOCOL_VERSION=%d" % (SDF_PROTOCOL_VERSION),
+        "PROJECT_BINARY_DIR=%s" % BINARY_DIR,
+        "PROJECT_SOURCE_DIR=%s" % SOURCE_DIR,
+        "CMAKE_BINARY_DIR=%s" % CMAKE_BINARY_DIR,
+        "IGNITION-TOOLS_BINARY_DIRS=%s" % IGN_TOOLS_BINARY_DIR,
+        "IGNITION-MSGS_BINARY_DIRS=%s" % IGN_MSGS_BINARY_DIR,
+        "IGNITION-MSGS_LIBRARY_DIRS=%s" % IGN_MSGS_LIBRARY_DIR,
+        "SDF_PROTOCOL_VERSION=%d" % SDF_PROTOCOL_VERSION,
     ],
     visibility = ["//visibility:private"],
 )
 
 cc_library(
     name = "test_utils",
-    srcs = ["test_config.h", "test_util.hh"],
+    srcs = [
+        "test_config.h",
+        "test_util.hh",
+    ],
     includes = ["."],
     visibility = ["//visibility:public"],
 )
 
 [
     cc_test(
-        name = "INTEGRATION_" + test.split('/')[1].replace('.cc', ''),
-        srcs = [ test ],
+        name = "INTEGRATION_" + test.split("/")[1].replace(".cc", ""),
+        srcs = [test],
+        data = [
+            ":integration",
+            ":sdf",
+            "//sdformat:tools",
+        ],
+        includes = [
+            ".",
+            "integration",
+        ],
         deps = [
             ":test_utils",
             "//sdformat",
-            "@gtest//:gtest",
+            "@gtest",
             "@gtest//:gtest_main",
         ],
-        data = [
-            ":sdf",
-            ":integration",
-            "//sdformat:tools",
-        ],
-        includes = [".", "integration"],
-    ) for test in glob(
+    )
+    for test in glob(
         ["integration/*.cc"],
         exclude = [
             "integration/nested_model.cc",
             "integration/schema_test.cc",
-        ]
+        ],
     )
 ]
 
 exports_files(["sdf"])
+
 exports_files(["integration"])
