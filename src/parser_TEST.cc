@@ -74,7 +74,7 @@ TEST(Parser, CustomUnknownElements)
   sdf::SDFPtr sdf = InitSDF();
   EXPECT_TRUE(sdf::readFile(path, sdf));
 
-  std::string pathLog = getenv("HOME");
+  std::string pathLog = PROJECT_BINARY_DIR;
   pathLog += "/.sdformat/sdformat.log";
 
   std::fstream fs;
