@@ -133,6 +133,15 @@ namespace sdf
     /// \param[in] _lighting False disables dynamic lighting.
     public: void SetLighting(const bool _lighting);
 
+    /// \brief Get whether double sided material is enabled. The default
+    /// value is false.
+    /// \return False if double sided material should be disabled.
+    public: bool DoubleSided() const;
+
+    /// \brief Set whether double sided material is enabled.
+    /// \param[in] _lighting False disables double sided material.
+    public: void SetDoubleSided(bool _doubleSided);
+
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
