@@ -76,7 +76,7 @@ TEST(Parser, CustomUnknownElements)
   EXPECT_TRUE(sdf::readFile(path, sdf));
 
   std::string pathLog =
-    sdf::filesystem::append(PROJECT_BINARY_DIR, "/.sdformat/sdformat.log");
+    sdf::filesystem::append(PROJECT_BINARY_DIR, ".sdformat", "sdformat.log");
 
   std::fstream fs;
   fs.open(pathLog);
