@@ -1905,7 +1905,8 @@ TEST(Converter, IMU_15_to_16)
 {
   std::string convert_doc_15_16;
   ASSERT_TRUE(sdf::testing::TestDataPath(convert_doc_15_16));
-  convert_doc_15_16 = sdf::filesystem::append(convert_doc_15_16, "sdf", "1.6", "1_5.convert");
+  convert_doc_15_16 =
+    sdf::filesystem::append(convert_doc_15_16, "sdf", "1.6", "1_5.convert");
 
   // The imu noise in 1.5 format
   std::string xmlString = R"(
@@ -2020,9 +2021,10 @@ TEST(Converter, IMU_15_to_16)
 /// Test conversion of gravity, magnetic_field in 1.5 to 1.6
 TEST(Converter, World_15_to_16)
 {
-	std::string convert_doc_15_16;
+  std::string convert_doc_15_16;
   ASSERT_TRUE(sdf::testing::TestDataPath(convert_doc_15_16));
-  convert_doc_15_16 = sdf::filesystem::append(convert_doc_15_16, "sdf", "1.6", "1_5.convert");
+  convert_doc_15_16 =
+    sdf::filesystem::append(convert_doc_15_16, "sdf", "1.6", "1_5.convert");
 
   // The gravity and magnetic_field in 1.5 format
   std::string xmlString = R"(
@@ -2074,7 +2076,8 @@ TEST(Converter, Pose_16_to_17)
 {
   std::string convert_doc_16_17;
   ASSERT_TRUE(sdf::testing::TestDataPath(convert_doc_16_17));
-  convert_doc_16_17 = sdf::filesystem::append(convert_doc_16_17, "sdf", "1.7", "1_6.convert");
+  convert_doc_16_17 =
+    sdf::filesystem::append(convert_doc_16_17, "sdf", "1.7", "1_6.convert");
 
   // A world file with pose elements in 1.5 format
   std::string xmlString = R"(
