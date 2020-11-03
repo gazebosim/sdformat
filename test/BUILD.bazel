@@ -1,6 +1,10 @@
 load(
-    "//ign_bazel:cmake_configure_file.bzl",
+    "//ign_bazel:build_defs.bzl",
+    "IGNITION_ROOT",
+    "IGNITION_VISIBILITY",
     "cmake_configure_file",
+    "generate_include_header",
+    "generate_yaml",
 )
 
 BINARY_DIR = "/tmp"
@@ -8,12 +12,6 @@ BINARY_DIR = "/tmp"
 SOURCE_DIR = "./sdformat"
 
 CMAKE_BINARY_DIR = "./ign_tools"
-
-IGN_TOOLS_BINARY_DIR = "./ign_tools"
-
-IGN_MSGS_BINARY_DIR = "/tmp"
-
-IGN_MSGS_LIBRARY_DIR = "/tmp"
 
 SDF_PROTOCOL_VERSION = 10
 
@@ -27,9 +25,9 @@ cmake_configure_file(
         "PROJECT_BINARY_DIR=%s" % BINARY_DIR,
         "PROJECT_SOURCE_DIR=%s" % SOURCE_DIR,
         "CMAKE_BINARY_DIR=%s" % CMAKE_BINARY_DIR,
-        "IGNITION-TOOLS_BINARY_DIRS=%s" % IGN_TOOLS_BINARY_DIR,
-        "IGNITION-MSGS_BINARY_DIRS=%s" % IGN_MSGS_BINARY_DIR,
-        "IGNITION-MSGS_LIBRARY_DIRS=%s" % IGN_MSGS_LIBRARY_DIR,
+        "IGNITION-TOOLS_BINARY_DIRS=0",
+        "IGNITION-MSGS_BINARY_DIRS=0",
+        "IGNITION-MSGS_LIBRARY_DIRS=0",
         "SDF_PROTOCOL_VERSION=%d" % SDF_PROTOCOL_VERSION,
     ],
     visibility = ["//visibility:private"],
@@ -52,7 +50,7 @@ cc_library(
         data = [
             ":integration",
             ":sdf",
-            "//sdformat:tools",
+            IGNITION_ROOT + "sdformat:tools",
         ],
         includes = [
             ".",
@@ -60,7 +58,7 @@ cc_library(
         ],
         deps = [
             ":test_utils",
-            "//sdformat",
+            IGNITION_ROOT + "sdformat",
             "@gtest",
             "@gtest//:gtest_main",
         ],
