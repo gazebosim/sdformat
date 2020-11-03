@@ -17,11 +17,12 @@
 
 #include <sstream>
 #include <fstream>
-#include <stdlib.h>
+#include <cstdlib>
 #include <gtest/gtest.h>
 #include "sdf/parser.hh"
 #include "sdf/Element.hh"
 #include "sdf/Console.hh"
+#include "sdf/Filesystem.hh"
 #include "test_config.h"
 
 /////////////////////////////////////////////////
@@ -74,8 +75,8 @@ TEST(Parser, CustomUnknownElements)
   sdf::SDFPtr sdf = InitSDF();
   EXPECT_TRUE(sdf::readFile(path, sdf));
 
-  std::string pathLog = PROJECT_BINARY_DIR;
-  pathLog += "/.sdformat/sdformat.log";
+  std::string pathLog =
+    sdf::filesystem::append(PROJECT_BINARY_DIR, "/.sdformat/sdformat.log");
 
   std::fstream fs;
   fs.open(pathLog);
