@@ -147,7 +147,7 @@ class ScopedGraph
 
   /// \brief Adds a scope vertex to the graph. This creates a new
   /// scope by making a copy of the current scope with a new prefix and scope
-  /// type name. A new scope vertex then added to the graph.
+  /// type name. A new scope vertex is then added to the graph.
   /// \param[in] _prefix The new prefix of the scope.
   /// \param[in] _name The Name of the scope vertex to be added. The full name
   /// of the vertex will be newPrefix::_name, where newPrefix is the prefix

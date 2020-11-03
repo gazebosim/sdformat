@@ -475,10 +475,7 @@ Errors buildFrameAttachedToGraph(
     }
     else
     {
-      // The canonical link is nested, so its vertex should be added
-      // here with an edge from __model__.
-      // The nested canonical link name should be a nested name
-      // relative to _model, delimited by "::".
+      // Add an edge from the implicit model frame to the canonical link found.
       auto linkId = outModel.VertexIdByName(canonicalLinkName);
       outModel.AddEdge({modelFrameId, linkId}, true);
     }
@@ -832,8 +829,8 @@ Errors buildPoseRelativeToGraph(
     auto nestedModel = _model->ModelByIndex(m);
 
     auto nestedModelId = outModel.VertexIdByName(nestedModel->Name());
-    // relative_to is empty, so add edge from implicit model frame
-    // to nestedModel
+    // if relative_to is empty, add edge from implicit model frame to
+    // nestedModel
     auto relativeToId = modelFrameId;
 
     const std::string &relativeTo = nestedModel->PoseRelativeTo();
@@ -964,8 +961,8 @@ Errors buildPoseRelativeToGraph(
     auto model = _world->ModelByIndex(m);
 
     auto modelId = _out.VertexIdByName(model->Name());
-    // relative_to is empty, so add edge from implicit model frame
-    // to world
+    // if relative_to is empty, add edge from implicit model frame to
+    // world
     auto relativeToId = worldFrameId;
 
     // check if we've already added a default edge
@@ -1124,14 +1121,21 @@ Errors validateFrameAttachedToGraph(
     }
     else if (vertexName == "__root__" )
     {
-      if (outDegree != 0)
+      if (sdf::FrameType::STATIC_MODEL != scopeFrameType &&
+          sdf::FrameType::WORLD != scopeFrameType)
+      {
+        errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+            "FrameAttachedToGraph error,"
+            " __root__ should have FrameType STATIC_MODEL or WORLD."});
+      }
+      else if (outDegree != 0)
       {
         std::string graphType =
             scopeFrameType == sdf::FrameType::WORLD ? "WORLD" : "MODEL";
         errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
             "FrameAttachedToGraph error,"
             " __root__ should have no outgoing edges in " +
-                graphType + " relative_to graph."});
+                graphType + " attached_to graph."});
       }
     }
     else if (sdf::FrameType::MODEL == scopeFrameType ||
@@ -1219,7 +1223,7 @@ Errors validateFrameAttachedToGraph(
           {
             errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
                 "FrameAttachedToGraph error, "
-                "LINK/STATIC_MODEL vertex with name [" +
+                "LINK vertex with name [" +
                 vertexName +
                 "] should have no outgoing edges "
                 "in WORLD attached_to graph."});
