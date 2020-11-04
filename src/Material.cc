@@ -222,7 +222,7 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   this->dataPtr->lighting = _sdf->Get<bool>("lighting",
       this->dataPtr->lighting).first;
 
-  this->dataPtr->doubleSided = _sdf->Get<bool>("doubleSided",
+  this->dataPtr->doubleSided = _sdf->Get<bool>("double_sided",
       this->dataPtr->doubleSided).first;
 
   // load pbr param
