@@ -75,8 +75,16 @@ TEST(Parser, CustomUnknownElements)
   sdf::SDFPtr sdf = InitSDF();
   EXPECT_TRUE(sdf::readFile(path, sdf));
 
+#ifndef _WIN32
+  char *homeDir = getenv("HOME");
+#else
+  char *homeDir;
+  size_t sz = 0;
+  _dupenv_s(&homeDir, &sz, "HOMEPATH");
+#endif
+
   std::string pathLog =
-    sdf::filesystem::append(PROJECT_BINARY_DIR, ".sdformat", "sdformat.log");
+    sdf::filesystem::append(homeDir, ".sdformat", "sdformat.log");
 
   std::fstream fs;
   fs.open(pathLog);
@@ -670,7 +678,11 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
 int main(int argc, char **argv)
 {
   // temporarily set HOME to build directory
+#ifndef _WIN32
   setenv("HOME", PROJECT_BINARY_DIR, 1);
+#else
+  setenv("HOMEPATH", PROJECT_BINARY_DIR, 1);
+#endif
   sdf::Console::Clear();
 
   ::testing::InitGoogleTest(&argc, argv);
