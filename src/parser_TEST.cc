@@ -681,7 +681,14 @@ int main(int argc, char **argv)
 #ifndef _WIN32
   setenv("HOME", PROJECT_BINARY_DIR, 1);
 #else
-  setenv("HOMEPATH", PROJECT_BINARY_DIR, 1);
+  std::string buildDir = PROJECT_BINARY_DIR;
+  for (int i = 0; i < buildDir.size(); ++i)
+  {
+    if (buildDir[i] == '/')
+      buildDir[i] = '\\';
+  }
+  std::string homePath = "HOMEPATH=" + buildDir;
+  _putenv(homePath.c_str());
 #endif
   sdf::Console::Clear();
 
