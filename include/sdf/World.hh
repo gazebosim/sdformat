@@ -136,11 +136,14 @@ namespace sdf
     /// \sa SphericalCoordinates
     public: void SetMagneticField(const ignition::math::Vector3d &_mag);
 
-    /// \brief Get the number of models.
+    /// \brief Get the number of models that are immediate (not nested) children
+    /// of this World object.
+    /// \remark ModelByName() and ModelNameExists() can find nested models that
+    /// are not immediate children of this World object.
     /// \return Number of models contained in this World object.
     public: uint64_t ModelCount() const;
 
-    /// \brief Get a model based on an index.
+    /// \brief Get an immediate (not nested) child model based on an index.
     /// \param[in] _index Index of the model. The index should be in the
     /// range [0..ModelCount()).
     /// \return Pointer to the model. Nullptr if the index does not exist.
@@ -149,6 +152,8 @@ namespace sdf
 
     /// \brief Get a model based on a name.
     /// \param[in] _name Name of the model.
+    /// To get a model nested in other models, prefix the model name
+    /// with the sequence of nested model names, delimited by "::".
     /// \return Pointer to the model. Nullptr if the name does not exist.
     public: const Model *ModelByName(const std::string &_name) const;
 
@@ -173,11 +178,15 @@ namespace sdf
     /// \return True if there exists an actor with the given name.
     public: bool ActorNameExists(const std::string &_name) const;
 
-    /// \brief Get the number of explicit frames.
+    /// \brief Get the number of explicit frames that are immediate (not nested)
+    /// children of this World object.
+    /// \remark FrameByName() can find explicit frames that are not immediate
+    /// children of this World object.
     /// \return Number of explicit frames contained in this World object.
     public: uint64_t FrameCount() const;
 
-    /// \brief Get an explicit frame based on an index.
+    /// \brief Get an immediate (not nested) child explicit frame based on an
+    /// index.
     /// \param[in] _index Index of the explicit frame. The index should be in
     /// the range [0..FrameCount()).
     /// \return Pointer to the explicit frame. Nullptr if the index does not
@@ -187,6 +196,8 @@ namespace sdf
 
     /// \brief Get an explicit frame based on a name.
     /// \param[in] _name Name of the explicit frame.
+    /// To get a frame in a nested model, prefix the frame name with the
+    /// sequence of nested models containing this frame, delimited by "::".
     /// \return Pointer to the explicit frame. Nullptr if the name does not
     /// exist.
     public: const Frame *FrameByName(const std::string &_name) const;

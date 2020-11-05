@@ -134,11 +134,14 @@ namespace sdf
     /// should be subject to wind.
     public: void SetEnableWind(bool _enableWind);
 
-    /// \brief Get the number of links.
+    /// \brief Get the number of links that are immediate (not nested) children
+    /// of this Model object.
+    /// \remark LinkByName() can find links that are not immediate children of
+    /// this Model object.
     /// \return Number of links contained in this Model object.
     public: uint64_t LinkCount() const;
 
-    /// \brief Get a link based on an index.
+    /// \brief Get an immediate (not nested) child link based on an index.
     /// \param[in] _index Index of the link. The index should be in the
     /// range [0..LinkCount()).
     /// \return Pointer to the link. Nullptr if the index does not exist.
@@ -159,11 +162,14 @@ namespace sdf
     /// \return True if there exists a link with the given name.
     public: bool LinkNameExists(const std::string &_name) const;
 
-    /// \brief Get the number of joints.
+    /// \brief Get the number of joints that are immediate (not nested) children
+    /// of this Model object.
+    /// \remark JointByName() can find joints that are not immediate children of
+    /// this Model object.
     /// \return Number of joints contained in this Model object.
     public: uint64_t JointCount() const;
 
-    /// \brief Get a joint based on an index.
+    /// \brief Get an immediate (not nested) child joint based on an index.
     /// \param[in] _index Index of the joint. The index should be in the
     /// range [0..JointCount()).
     /// \return Pointer to the joint. Nullptr if the index does not exist.
@@ -186,11 +192,15 @@ namespace sdf
     /// \sa bool JointNameExists(const std::string &_name) const
     public: const Joint *JointByName(const std::string &_name) const;
 
-    /// \brief Get the number of explicit frames.
+    /// \brief Get the number of explicit frames that are immediate (not nested)
+    /// children of this Model object.
+    /// \remark FrameByName() can find explicit frames that are not immediate
+    /// children of this Model object.
     /// \return Number of explicit frames contained in this Model object.
     public: uint64_t FrameCount() const;
 
-    /// \brief Get an explicit frame based on an index.
+    /// \brief Get an immediate (not nested) child explicit frame based on an
+    /// index.
     /// \param[in] _index Index of the explicit frame. The index should be in
     /// the range [0..FrameCount()).
     /// \return Pointer to the explicit frame. Nullptr if the index does not
@@ -213,11 +223,15 @@ namespace sdf
     /// \return True if there exists an explicit frame with the given name.
     public: bool FrameNameExists(const std::string &_name) const;
 
-    /// \brief Get the number of nested models.
+    /// \brief Get the number of nested models that are immediate (not
+    /// recursively nested) children of this Model object.
+    /// \remark ModelByName() can find nested models that are not immediate
+    /// children of this Model object.
     /// \return Number of nested models contained in this Model object.
     public: uint64_t ModelCount() const;
 
-    /// \brief Get a nested model based on an index.
+    /// \brief Get an immediate (not recursively nested) child model based on an
+    /// index.
     /// \param[in] _index Index of the nested model. The index should be in the
     /// range [0..ModelCount()).
     /// \return Pointer to the model. Nullptr if the index does not exist.
