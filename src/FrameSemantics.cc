@@ -307,6 +307,14 @@ Errors buildFrameAttachedToGraph(
   auto rootId = ignition::math::graph::kNullId;
   if (_root)
   {
+    // The __root__ vertex identifies the scope that contains a root level
+    // model. In the PoseRelativeTo graph, this vertex is connected to the model
+    // with an edge that holds the value of //model/pose. However, in the
+    // FrameAttachedTo graph, the vertex is disconnected because nothing is
+    // attached to it. Since only links and static models are allowed to be
+    // disconnected in this graph, the STATIC_MODEL was chosen as its frame
+    // type. A different frame type could potentially be used, but that adds
+    // more complexity to the validateFrameAttachedToGraph code.
     _out = _out.AddScopeVertex(
         "", "__root__", scopeContextName, sdf::FrameType::STATIC_MODEL);
     rootId = _out.ScopeVertexId();
@@ -1346,7 +1354,15 @@ Errors validatePoseRelativeToGraph(
     }
     else if (vertexName == "__root__" )
     {
-      if (inDegree != 0)
+      if (sdf::FrameType::MODEL != sourceFrameType &&
+          sdf::FrameType::STATIC_MODEL != sourceFrameType &&
+          sdf::FrameType::WORLD != sourceFrameType)
+      {
+        errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+            "PoseRelativeToGraph error,"
+            " __root__ should have FrameType MODEL, STATIC_MODEL or WORLD."});
+      }
+      else if (inDegree != 0)
       {
         std::string graphType =
             sourceFrameType == sdf::FrameType::WORLD ? "WORLD" : "MODEL";
