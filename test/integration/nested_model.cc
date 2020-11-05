@@ -324,8 +324,8 @@ TEST(NestedModel, NestedInclude)
   // each model has 3 links, and the link names of the nested models have
   // been transformed
   EXPECT_EQ(3u, model1->LinkCount());
-  // TODO (addisu): Update the following two xpectations to account for the fact
-  // that included models are no longer flattened.
+  // TODO (addisu): Update the following two expectations to account for the
+  // fact that included models are no longer flattened.
   // EXPECT_EQ(3u, model2->LinkCount());
   // EXPECT_EQ(3u, model3->LinkCount());
   const sdf::Link *baseLink1 = model1->LinkByName("base");
@@ -359,8 +359,8 @@ TEST(NestedModel, NestedInclude)
   // each model has 2 joints, and the joint names of the nested models have
   // been transformed
   EXPECT_EQ(2u, model1->JointCount());
-  // TODO (addisu): Update the following two xpectations to account for the fact
-  // that included models are no longer flattened.
+  // TODO (addisu): Update the following two expectations to account for the
+  // fact that included models are no longer flattened.
   // EXPECT_EQ(2u, model2->JointCount());
   // EXPECT_EQ(2u, model3->JointCount());
   auto *lowerJoint1 = model1->JointByName("lower_joint");
