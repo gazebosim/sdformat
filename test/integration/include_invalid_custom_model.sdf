@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <world name="world_invalid_custom_model">
+    <model name="robot">
+      <include>
+        <uri>robot</uri>
+        <experimental:params>
+          <foo/>
+        </experimental:params>
+      </include>
+    </model>
+  </world>
+</sdf>
