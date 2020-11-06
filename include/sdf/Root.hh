@@ -107,10 +107,7 @@ namespace sdf
     /// \return True if there exists a world with the given name.
     public: bool WorldNameExists(const std::string &_name) const;
 
-    /// \brief Get the number of models that are immediate (not nested) children
-    /// of this Root object.
-    /// \remark ModelNameExists() can find nested models that are not immediate
-    /// children of this Root object.
+    /// \brief Get the number of models.
     /// \return Number of models contained in this Root object.
     public: uint64_t ModelCount() const;
 
