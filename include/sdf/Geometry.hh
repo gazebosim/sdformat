@@ -59,7 +59,7 @@ namespace sdf
     MESH = 5,
 
     /// \brief A capsule geometry.
-    CAPSULE = 6,
+    CAPSULE = 7,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
