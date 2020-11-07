@@ -132,7 +132,11 @@ TEST(SDF, UpdateElement)
     staticParam->Get(flagCheck);
     EXPECT_EQ(flagCheck, fixture.flag);
     poseParam->Get(poseCheck);
+    // test fails on homebrew with Xcode 11 and earlier, see issue 202
+    // https://github.com/osrf/sdformat/issues/202
+#if !(defined(__APPLE__) && defined(__clang_major__) && __clang_major__ < 12)
     EXPECT_EQ(poseCheck, fixture.pose);
+#endif
   }
 }
 
@@ -415,7 +419,11 @@ TEST(SDF, GetAny)
     }
     catch(std::bad_any_cast &/*_e*/)
     {
+    // test fails on homebrew with Xcode 11 and earlier, see issue 202
+    // https://github.com/osrf/sdformat/issues/202
+#if !(defined(__APPLE__) && defined(__clang_major__) && __clang_major__ < 12)
       FAIL();
+#endif
     }
   }
 
@@ -429,7 +437,11 @@ TEST(SDF, GetAny)
     }
     catch(std::bad_any_cast &/*_e*/)
     {
+    // test fails on homebrew with Xcode 11 and earlier, see issue 202
+    // https://github.com/osrf/sdformat/issues/202
+#if !(defined(__APPLE__) && defined(__clang_major__) && __clang_major__ < 12)
       FAIL();
+#endif
     }
   }
 
@@ -469,7 +481,11 @@ TEST(SDF, GetAny)
     }
     catch(std::bad_any_cast &/*_e*/)
     {
+    // test fails on homebrew with Xcode 11 and earlier, see issue 202
+    // https://github.com/osrf/sdformat/issues/202
+#if !(defined(__APPLE__) && defined(__clang_major__) && __clang_major__ < 12)
       FAIL();
+#endif
     }
   }
 
