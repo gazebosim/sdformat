@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <model name="outer_model">
+    <link name="outer_link"/>
+    <joint name="outer_joint" type="fixed">
+      <parent>world</parent>
+      <child>outer_link</child>
+    </joint>
+    <frame name="outer_frame"/>
+    <model name="mid_model">
+      <pose>1 0 0 0 1.5707963267948966 0</pose>
+      <link name="mid_link"/>
+      <joint name="mid_joint" type="fixed">
+        <parent>world</parent>
+        <child>mid_link</child>
+      </joint>
+      <frame name="mid_frame"/>
+      <model name="inner_model">
+        <link name="inner_link"/>
+        <joint name="inner_joint" type="fixed">
+          <parent>world</parent>
+          <child>inner_link</child>
+        </joint>
+        <frame name="inner_frame"/>
+      </model>
+    </model>
+  </model>
+</sdf>

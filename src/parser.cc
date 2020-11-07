@@ -1322,6 +1322,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
   while (elem)
   {
     if ((elem->GetName() == "link") ||
+        (elem->GetName() == "model") ||
         (elem->GetName() == "joint") ||
         (elem->GetName() == "frame"))
     {
@@ -1330,7 +1331,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
       replace[elemName] = newName;
     }
 
-    if ((elem->GetName() == "link"))
+    if ((elem->GetName() == "link") || (elem->GetName() == "model"))
     {
       // Add a pose element even if the element doesn't originally have one
       auto elemPose = elem->GetElement("pose");

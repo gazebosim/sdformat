@@ -372,14 +372,21 @@ TEST(check, SDF)
   // that is explicitly specified by //model/@canonical_link using ::
   // syntax.
   {
-    std::string path = pathBase +"/nested_invalid_explicit_canonical_link.sdf";
+    std::string path = pathBase +"/nested_explicit_canonical_link.sdf";
 
-    // Check nested_invalid_explicit_canonical_link.sdf
+    // Check nested_explicit_canonical_link.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: canonical_link with name[nested::link] not "
-                          "found in model with name[top]."),
-              std::string::npos) << output;
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with a model that a nested model without a link.
+  {
+    std::string path = pathBase +"/nested_without_links_invalid.sdf";
+
+    // Check nested_without_links_invalid.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: A model must have at least one link."),
               std::string::npos) << output;
   }
