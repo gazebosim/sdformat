@@ -1,0 +1,45 @@
+name: macOS latest
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    env:
+      PACKAGE: sdformat8
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Homebrew
+      id: set-up-homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+    - run: brew config
+
+    - name: Install base dependencies
+      run: |
+        brew tap osrf/simulation;
+        brew install --only-dependencies ${PACKAGE};
+
+    - run: mkdir build
+    - name: cmake
+      working-directory: build
+      run: cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local/Cellar/${PACKAGE}/HEAD
+    - run: make
+      working-directory: build
+    - run: make test
+      working-directory: build
+      env:
+        CTEST_OUTPUT_ON_FAILURE: 1
+    - name: make install
+      working-directory: build
+      run: |
+        make install;
+        brew link ${PACKAGE};
+    - name: Compile example code
+      working-directory: examples
+      run: |
+        mkdir build;
+        cd build;
+        cmake ..;
+        make;
+        ./simple ../simple.sdf;
