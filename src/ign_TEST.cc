@@ -24,7 +24,6 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
 #include "test_config.h"
-#include "test_util.hh"
 
 #ifdef _WIN32
   #define popen  _popen
@@ -33,6 +32,7 @@
 
 static const std::string g_sdfVersion(" --force-version " +
   std::string(SDF_VERSION_FULL));
+static const std::string g_ignCommand(std::string(IGN_PATH) + "/ign");
 
 /////////////////////////////////////////////////
 std::string custom_exec_str(std::string _cmd)
@@ -61,10 +61,6 @@ TEST(check, SDF)
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
-
-  std::string datapath;
-  sdf::testing::TestDataPath(datapath);
-  std::string g_ignCommand = datapath + "/../ign_tools/ign";
 
   // Check a good SDF file
   {
@@ -651,10 +647,6 @@ TEST(check_model_sdf, SDF)
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/integration/model/box";
 
-  std::string datapath;
-  sdf::testing::TestDataPath(datapath);
-  std::string g_ignCommand = datapath + "/../ign_tools";
-
   // Check a good SDF file by passing the absolute path
   {
     std::string path = pathBase +"/model.sdf";
@@ -678,10 +670,6 @@ TEST(check_model_sdf, SDF)
 /////////////////////////////////////////////////
 TEST(describe, SDF)
 {
-  std::string datapath;
-  sdf::testing::TestDataPath(datapath);
-  std::string g_ignCommand = datapath + "/../ign_tools";
-
   // Get the description
   std::string output =
     custom_exec_str(g_ignCommand + " sdf -d " + g_sdfVersion);
@@ -696,10 +684,6 @@ TEST(print, SDF)
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
-
-  std::string datapath;
-  sdf::testing::TestDataPath(datapath);
-  std::string g_ignCommand = datapath + "/../ign_tools";
 
   // Check a good SDF file
   {
