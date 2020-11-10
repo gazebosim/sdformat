@@ -11,8 +11,6 @@ BINARY_DIR = "/tmp"
 
 SOURCE_DIR = "./sdformat"
 
-CMAKE_BINARY_DIR = "./ign_tools"
-
 SDF_PROTOCOL_VERSION = 10
 
 # Generates config.hh based on the version numbers in CMake code.
@@ -24,7 +22,7 @@ cmake_configure_file(
     defines = [
         "PROJECT_BINARY_DIR=%s" % BINARY_DIR,
         "PROJECT_SOURCE_DIR=%s" % SOURCE_DIR,
-        "CMAKE_BINARY_DIR=%s" % CMAKE_BINARY_DIR,
+        "CMAKE_BINARY_DIR=%s" % BINARY_DIR,
         "IGNITION-TOOLS_BINARY_DIRS=0",
         "IGNITION-MSGS_BINARY_DIRS=0",
         "IGNITION-MSGS_LIBRARY_DIRS=0",
@@ -40,7 +38,7 @@ cc_library(
         "test_util.hh",
     ],
     includes = ["."],
-    visibility = ["//visibility:public"],
+    visibility = IGNITION_VISIBILITY,
 )
 
 [

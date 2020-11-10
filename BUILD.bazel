@@ -1,25 +1,16 @@
 load(
     "//ign_bazel:build_defs.bzl",
+    "IGNITION_FEATURES",
     "IGNITION_ROOT",
     "IGNITION_VISIBILITY",
     "cmake_configure_file",
     "generate_include_header",
     "generate_yaml",
 )
-load(
-    "@bazelruby_rules_ruby//ruby:defs.bzl",
-    "ruby_binary",
-    "ruby_library",
-    "ruby_rspec",
-    "ruby_test",
-)
 
 package(
     default_visibility = IGNITION_VISIBILITY,
-    features = [
-        "-parse_headers",
-        "-layering_check",
-    ],
+    features = IGNITION_FEATURES,
 )
 
 licenses(["notice"])
@@ -256,6 +247,9 @@ cc_library(
         ["src/urdf/**/*.h"],
     ),
     includes = ["src/urdf"],
+    deps = [
+        "@tinyxml2",
+    ],
 )
 
 cc_library(
