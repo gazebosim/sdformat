@@ -15,9 +15,14 @@
  *
  */
 
+#include <sstream>
+#include <fstream>
+#include <cstdlib>
 #include <gtest/gtest.h>
 #include "sdf/parser.hh"
 #include "sdf/Element.hh"
+#include "sdf/Console.hh"
+#include "sdf/Filesystem.hh"
 #include "test_config.h"
 
 /////////////////////////////////////////////////
@@ -57,6 +62,39 @@ sdf::SDFPtr InitSDF()
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
   return sdf;
+}
+
+/////////////////////////////////////////////////
+/// Checks emitted warnings for custom/unknown elements in log file
+TEST(Parser, CustomUnknownElements)
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+  const std::string path = pathBase +"/custom_and_unknown_elements.sdf";
+
+  sdf::SDFPtr sdf = InitSDF();
+  EXPECT_TRUE(sdf::readFile(path, sdf));
+
+#ifndef _WIN32
+  char *homeDir = getenv("HOME");
+#else
+  char *homeDir;
+  size_t sz = 0;
+  _dupenv_s(&homeDir, &sz, "HOMEPATH");
+#endif
+
+  std::string pathLog =
+    sdf::filesystem::append(homeDir, ".sdformat", "sdformat.log");
+
+  std::fstream fs;
+  fs.open(pathLog);
+  ASSERT_TRUE(fs.is_open());
+
+  std::stringstream fileStr;
+  fs >> fileStr.rdbuf();
+
+  EXPECT_NE(fileStr.str().find("XML Element[test_unknown]"), std::string::npos);
+  EXPECT_EQ(fileStr.str().find("XML Element[test:custom]"), std::string::npos);
 }
 
 /////////////////////////////////////////////////
@@ -639,6 +677,21 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
 /// Main
 int main(int argc, char **argv)
 {
+  // temporarily set HOME to build directory
+#ifndef _WIN32
+  setenv("HOME", PROJECT_BINARY_DIR, 1);
+#else
+  std::string buildDir = PROJECT_BINARY_DIR;
+  for (int i = 0; i < buildDir.size(); ++i)
+  {
+    if (buildDir[i] == '/')
+      buildDir[i] = '\\';
+  }
+  std::string homePath = "HOMEPATH=" + buildDir;
+  _putenv(homePath.c_str());
+#endif
+  sdf::Console::Clear();
+
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
