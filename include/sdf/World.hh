@@ -136,11 +136,12 @@ namespace sdf
     /// \sa SphericalCoordinates
     public: void SetMagneticField(const ignition::math::Vector3d &_mag);
 
-    /// \brief Get the number of models.
+    /// \brief Get the number of models that are immediate (not nested) children
+    /// of this World object.
     /// \return Number of models contained in this World object.
     public: uint64_t ModelCount() const;
 
-    /// \brief Get a model based on an index.
+    /// \brief Get an immediate (not nested) child model based on an index.
     /// \param[in] _index Index of the model. The index should be in the
     /// range [0..ModelCount()).
     /// \return Pointer to the model. Nullptr if the index does not exist.
@@ -173,11 +174,13 @@ namespace sdf
     /// \return True if there exists an actor with the given name.
     public: bool ActorNameExists(const std::string &_name) const;
 
-    /// \brief Get the number of explicit frames.
+    /// \brief Get the number of explicit frames that are immediate (not nested)
+    /// children of this World object.
     /// \return Number of explicit frames contained in this World object.
     public: uint64_t FrameCount() const;
 
-    /// \brief Get an explicit frame based on an index.
+    /// \brief Get an immediate (not nested) child explicit frame based on an
+    /// index.
     /// \param[in] _index Index of the explicit frame. The index should be in
     /// the range [0..FrameCount()).
     /// \return Pointer to the explicit frame. Nullptr if the index does not
