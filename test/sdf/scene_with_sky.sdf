@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <world name="default">
+
+    <scene>
+      <ambient>0.3 0.4 0.5</ambient>
+      <background>0.6 0.7 0.8</background>
+      <grid>true</grid>
+      <shadows>true</shadows>
+      <origin_visual>true</origin_visual>
+      <sky>
+        <time>3</time>
+        <sunrise>4</sunrise>
+        <sunset>21</sunset>
+        <clouds>
+          <speed>1.2</speed>
+          <direction>1.5</direction>
+          <mean_size>0.2</mean_size>
+          <humidity>0.9</humidity>
+          <ambient>0.1 0.2 0.3</ambient>
+        </clouds>
+      </sky>
+    </scene>
+
+  </world>
+</sdf>
