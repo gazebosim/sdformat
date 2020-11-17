@@ -42,6 +42,9 @@ class sdf::MaterialPrivate
   /// \brief Lighting enabled?
   public: bool lighting = true;
 
+  /// \brief Double sided material
+  public: bool doubleSided = false;
+
   /// \brief Ambient color
   public: ignition::math::Color ambient {0, 0, 0, 1};
 
@@ -86,6 +89,7 @@ Material::Material(const Material &_material)
   this->dataPtr->shader = _material.dataPtr->shader;
   this->dataPtr->normalMap = _material.dataPtr->normalMap;
   this->dataPtr->lighting = _material.dataPtr->lighting;
+  this->dataPtr->doubleSided = _material.dataPtr->doubleSided;
   this->dataPtr->ambient = _material.dataPtr->ambient;
   this->dataPtr->diffuse = _material.dataPtr->diffuse;
   this->dataPtr->specular = _material.dataPtr->specular;
@@ -215,6 +219,12 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   this->dataPtr->emissive = _sdf->Get<ignition::math::Color>("emissive",
       this->dataPtr->emissive).first;
 
+  this->dataPtr->lighting = _sdf->Get<bool>("lighting",
+      this->dataPtr->lighting).first;
+
+  this->dataPtr->doubleSided = _sdf->Get<bool>("double_sided",
+      this->dataPtr->doubleSided).first;
+
   // load pbr param
   if (_sdf->HasElement("pbr"))
   {
@@ -284,6 +294,18 @@ bool Material::Lighting() const
 void Material::SetLighting(const bool _lighting)
 {
   this->dataPtr->lighting = _lighting;
+}
+
+//////////////////////////////////////////////////
+bool Material::DoubleSided() const
+{
+  return this->dataPtr->doubleSided;
+}
+
+//////////////////////////////////////////////////
+void Material::SetDoubleSided(const bool _doubleSided)
+{
+  this->dataPtr->doubleSided = _doubleSided;
 }
 
 //////////////////////////////////////////////////
