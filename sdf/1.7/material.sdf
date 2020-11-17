@@ -45,6 +45,11 @@
     <description>The emissive color of a material specified by set of four numbers representing red/green/blue, each in the range of [0,1].</description>
   </element>
 
+  <element name="double_sided" type="bool" default="false" required="0">
+    <description>If true, the mesh that this material is applied to will be rendered as double sided</description>
+  </element>
+
+
   <element name="pbr" required="0">
     <description>Physically Based Rendering (PBR) material. There are two PBR workflows: metal and specular. While both workflows and their parameters can be specified at the same time, typically only one of them will be used (depending on the underlying renderer capability). It is also recommended to use the same workflow for all materials in the world.</description>
 
