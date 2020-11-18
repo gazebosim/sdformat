@@ -56,6 +56,23 @@ namespace sdf
     /// \brief Default constructor
     public: Root();
 
+    /// \brief Copy constructor is explicitly deleted to avoid copying the
+    /// FrameAttachedToGraph and PoseRelativeToGraphs contained in Root.
+    public: Root(const Root &_root) = delete;
+
+    /// \brief Move constructor
+    /// \param[in] _root Root to move.
+    public: Root(Root &&_root) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _root Root to move.
+    /// \return Reference to this.
+    public: Root &operator=(Root &&_root) noexcept;
+
+    /// \brief Copy assignment operator is explicitly deleted to avoid copying
+    /// the FrameAttachedToGraph and PoseRelativeToGraphs contained in Root.
+    public: Root &operator=(const Root &_root) = delete;
+
     /// \brief Destructor
     public: ~Root();
 

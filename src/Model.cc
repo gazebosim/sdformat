@@ -77,22 +77,10 @@ class sdf::ModelPrivate
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
-  /// \brief Frame Attached-To Graph constructed during Load.
-  /// This would only be allocated if this model is a top level model, i.e, a
-  /// model file.
-  public: std::shared_ptr<sdf::FrameAttachedToGraph> ownedFrameAttachedToGraph;
-
-  /// \brief Scoped Frame Attached-To graph that can either point to a graph
-  /// owned by this model or a subgraph of a parent entity.
+  /// \brief Scoped Frame Attached-To graph at the parent model or world scope.
   public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
-  /// \brief Pose Relative-To Graph constructed during Load.
-  /// This would only be allocated if this model is a top level model, i.e, a
-  /// model file.
-  public: std::shared_ptr<sdf::PoseRelativeToGraph> ownedPoseGraph;
-
-  /// \brief Scoped Pose Relative-To graph that can either point to a graph
-  /// owned by this model or a subgraph of a parent entity.
+  /// \brief Scoped Pose Relative-To graph at the parent model or world scope.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseGraph;
 
   /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
@@ -116,43 +104,6 @@ Model::~Model()
 Model::Model(const Model &_model)
   : dataPtr(new ModelPrivate(*_model.dataPtr))
 {
-  if (_model.dataPtr->ownedFrameAttachedToGraph)
-  {
-    // If the model owns the frameAttachedToGraph, we need to allocate a new
-    // sdf::FrameAttachedToGraph object and copy it. We also need to assign the
-    // ScopedGraph to this object
-    this->dataPtr->ownedFrameAttachedToGraph =
-        std::make_shared<sdf::FrameAttachedToGraph>(
-            *_model.dataPtr->ownedFrameAttachedToGraph);
-    this->dataPtr->frameAttachedToGraph =
-        ScopedGraph<sdf::FrameAttachedToGraph>(
-            this->dataPtr->ownedFrameAttachedToGraph);
-  }
-  if (_model.dataPtr->ownedPoseGraph)
-  {
-    this->dataPtr->ownedPoseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
-        *_model.dataPtr->ownedPoseGraph);
-    this->dataPtr->poseGraph =
-        ScopedGraph<sdf::PoseRelativeToGraph>(this->dataPtr->ownedPoseGraph);
-  }
-  for (auto &link : this->dataPtr->links)
-  {
-    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &model : this->dataPtr->models)
-  {
-    model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &joint : this->dataPtr->joints)
-  {
-    joint.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &frame : this->dataPtr->frames)
-  {
-    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
 }
 
 /////////////////////////////////////////////////
@@ -236,22 +187,6 @@ Errors Model::Load(ElementPtr _sdf)
   {
     sdfwarn << "Non-unique names detected in XML children of model with name["
             << this->Name() << "].\n";
-  }
-
-  // Whether this model is defined at the root level of an SDFormat file (i.e
-  // in XPath "/sdf/model")
-  bool isModelAtRootOfXmlFile = false;
-
-  auto parentElem = this->dataPtr->sdf->GetParent();
-  if (parentElem && parentElem->GetName() == "sdf")
-  {
-    this->dataPtr->ownedPoseGraph = std::make_shared<PoseRelativeToGraph>();
-    this->dataPtr->poseGraph = ScopedGraph(this->dataPtr->ownedPoseGraph);
-    this->dataPtr->ownedFrameAttachedToGraph =
-        std::make_shared<FrameAttachedToGraph>();
-    this->dataPtr->frameAttachedToGraph =
-        ScopedGraph(this->dataPtr->ownedFrameAttachedToGraph);
-    isModelAtRootOfXmlFile = true;
   }
 
   // Set of implicit and explicit frame names in this model for tracking
@@ -392,42 +327,6 @@ Errors Model::Load(ElementPtr _sdf)
       }
     }
     frameNames.insert(frameName);
-  }
-
-  // Build the graphs.
-
-  // Build the FrameAttachedToGraph if the model is not static.
-  // Re-enable this when the buildFrameAttachedToGraph implementation handles
-  // static models.
-  if (!this->Static())
-  {
-    if (isModelAtRootOfXmlFile)
-    {
-      Errors frameAttachedToGraphErrors =
-        buildFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph, this);
-      errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
-          frameAttachedToGraphErrors.end());
-      Errors validateFrameAttachedGraphErrors =
-          validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-      errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
-          validateFrameAttachedGraphErrors.end());
-
-      this->SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    }
-  }
-
-  // Build the PoseRelativeToGraph
-  if (isModelAtRootOfXmlFile)
-  {
-    Errors poseGraphErrors =
-        buildPoseRelativeToGraph(this->dataPtr->poseGraph, this);
-    errors.insert(errors.end(), poseGraphErrors.begin(), poseGraphErrors.end());
-    Errors validatePoseGraphErrors =
-        validatePoseRelativeToGraph(this->dataPtr->poseGraph);
-    errors.insert(errors.end(), validatePoseGraphErrors.begin(),
-        validatePoseGraphErrors.end());
-
-    this->SetPoseRelativeToGraph(this->dataPtr->poseGraph);
   }
 
 
@@ -748,13 +647,6 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 /////////////////////////////////////////////////
 void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
-  // If the scoped graph doesn't point to the graph owned by this model, we
-  // clear the owned graph to maintain the invariant that if
-  // ownedPoseGraph is valid poseGraph points to it.
-  if (!_graph.PointsTo(this->dataPtr->ownedPoseGraph))
-  {
-    this->dataPtr->ownedPoseGraph.reset();
-  }
   this->dataPtr->poseGraph = _graph;
   this->dataPtr->poseGraphScopeVertexName =
       _graph.VertexLocalName(_graph.ScopeVertexId());
@@ -783,14 +675,6 @@ void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 void Model::SetFrameAttachedToGraph(
     sdf::ScopedGraph<FrameAttachedToGraph> _graph)
 {
-  // If the scoped graph doesn't point to the graph owned by this model, we
-  // clear the owned graph to maintain the invariant that if
-  // ownedFrameAttachedToGraph is valid frameAttachedToGraph points to it.
-  if (!_graph.PointsTo(this->dataPtr->ownedFrameAttachedToGraph))
-  {
-    this->dataPtr->ownedFrameAttachedToGraph.reset();
-  }
-
   this->dataPtr->frameAttachedToGraph = _graph;
 
   auto childFrameAttachedToGraph =

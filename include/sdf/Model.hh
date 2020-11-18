@@ -315,15 +315,17 @@ namespace sdf
     public: void SetPlacementFrameName(const std::string &_name);
 
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
-    /// poses. This is private and is intended to be called by World::Load and
-    /// Model::Load if this is a nested model.
+    /// poses. This is private and is intended to be called by Root::Load or
+    /// World::SetPoseRelativeToGraph if this is a standalone model and
+    /// Model::SetPoseRelativeToGraph if this is a nested model.
     /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
         sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Give the scoped FrameAttachedToGraph to be used for resolving
     /// attached bodies. This is private and is intended to be called by
-    /// World::Load and Model::Load if this is a nested model.
+    /// Root::Load or World::SetFrameAttachedToGraph if this is a standalone
+    /// model and Model::SetFrameAttachedToGraph if this is a nested model.
     /// \param[in] _graph scoped FrameAttachedToGraph object.
     private: void SetFrameAttachedToGraph(
         sdf::ScopedGraph<FrameAttachedToGraph> _graph);
@@ -335,8 +337,10 @@ namespace sdf
     private: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
         const;
 
-    /// \brief Allow World::Load to call SetPoseRelativeToGraph and
+    /// \brief Allow Root::Load, World::SetPoseRelativeToGraph, or
+    /// World::SetFrameAttachedToGraph to call SetPoseRelativeToGraph and
     /// SetFrameAttachedToGraph
+    friend class Root;
     friend class World;
 
     /// \brief Allow helper function in FrameSemantics.cc to call
