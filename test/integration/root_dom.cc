@@ -61,7 +61,8 @@ TEST(DOMRoot, Load)
 
   sdf::Root root;
   EXPECT_EQ(0u, root.WorldCount());
-  EXPECT_TRUE(root.Load(testFile).empty());
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
   EXPECT_EQ(SDF_PROTOCOL_VERSION, root.Version());
   EXPECT_EQ(1u, root.WorldCount());
   EXPECT_TRUE(root.WorldByIndex(0) != nullptr);
@@ -83,7 +84,8 @@ TEST(DOMRoot, LoadMultipleModels)
         "root_multiple_models.sdf");
 
   sdf::Root root;
-  EXPECT_TRUE(root.Load(testFile).empty());
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
   EXPECT_EQ(3u, root.ModelCount());
 
   EXPECT_EQ("robot1", root.ModelByIndex(0)->Name());

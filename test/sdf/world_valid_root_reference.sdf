@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<sdf version="1.8" xmlns:custom_ns="custom_ns_uri">
+  <world name="world_invalid_root_reference"> 
+    <model name="model1">
+      <pose>1 0 0 0 0 0</pose>
+      <link name="link1">
+        <sensor name="sensor1" type="imu">
+          <topic>__root__</topic> <!-- VALID __root__ is being used in a context where frame semantics does not apply -->
+        </sensor>
+      </link>
+    </model>
+    <frame name="frame1" custom_ns:attr1="__root__"/> <!-- VALID __root__ is being used in a custom attribute -->
+    <custom_ns:elem1 name="__root__" /> <!-- VALID __root__ is being used in a custom element -->
+  </world>
+</sdf>

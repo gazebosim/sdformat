@@ -2,72 +2,72 @@
 <sdf version='1.7'>
   <world name='default'>
     <model name='ParentModel'>
-      <frame name='M1::__model__' attached_to='M1::L1'>
-        <pose relative_to='__model__'>10 0 0 0 -0 1.5708</pose>
-      </frame>
-      <frame name='M1::F1' attached_to='M1::__model__'>
-        <pose>0 0 0 1.5708 -0 0</pose>
-      </frame>
-      <frame name='M1::F2' attached_to='M1::__model__'>
-        <pose relative_to='M1::F1'>0 0 0 0 0.785398 0</pose>
-      </frame>
-      <link name='M1::L1'>
-        <pose relative_to='M1::F1'>0 0 0 0 -0 0</pose>
-        <visual name='V1'>
-          <pose relative_to='M1::F2'>0 0 0 0 -0 0</pose>
-          <geometry>
-            <sphere>
-              <radius>1</radius>
-            </sphere>
-          </geometry>
-        </visual>
-        <collision name='C1'>
-          <pose relative_to='M1::__model__'>0 0 0 0 -0 0</pose>
-          <geometry>
-            <sphere>
-              <radius>1</radius>
-            </sphere>
-          </geometry>
-        </collision>
-      </link>
-      <link name='M1::L2'>
-        <pose relative_to='M1::F1'>1 0 0 0 -0 0</pose>
-      </link>
-      <link name='M1::L3'>
-        <pose relative_to='M1::L2'>0 1 0 0 -0 0</pose>
-      </link>
-      <link name='M1::L4'>
-        <pose relative_to='M1::__model__'>0 0 1 0 -0 0</pose>
-      </link>
-      <joint name='M1::J1' type='universal'>
-        <pose relative_to='M1::L1'>0 0 0 0 -0 0</pose>
-        <parent>M1::L1</parent>
-        <child>M1::L2</child>
-        <axis>
-          <xyz expressed_in='M1::F2'>0 0 1</xyz>
-        </axis>
-        <axis2>
-          <xyz expressed_in='M1::F2'>1 0 0</xyz>
-        </axis2>
-      </joint>
-      <joint name='M1::J2' type='revolute'>
-        <pose>0 0 1 0 -0 0</pose>
-        <parent>M1::L2</parent>
-        <child>M1::L3</child>
-        <axis>
-          <xyz expressed_in='M1::__model__'>0 0 1</xyz>
-        </axis>
-      </joint>
-      <joint name='M1::J3' type='fixed'>
-        <pose relative_to='M1::__model__'>1 0 1 0 -0 0</pose>
-        <parent>M1::L3</parent>
-        <child>M1::L4</child>
-      </joint>
-      <model name='M1::M2'>
-        <pose relative_to='M1::F1'>1 0 0 0 -0 0</pose>
-        <link name='L5'>
-          <pose>1 0 0 0 -0 0</pose>
+      <model name='M1'>
+        <frame name='F1'>
+          <pose>0 0 0 1.5708 -0 0</pose>
+        </frame>
+        <frame name='F2'>
+          <pose relative_to='F1'>0 0 0 0 0.785398 0</pose>
+        </frame>
+        <link name='L1'>
+          <pose relative_to='F1'>0 0 0 0 -0 0</pose>
+          <visual name='V1'>
+            <pose relative_to='F2'>0 0 0 0 -0 0</pose>
+            <geometry>
+              <sphere>
+                <radius>1</radius>
+              </sphere>
+            </geometry>
+          </visual>
+          <collision name='C1'>
+            <pose relative_to='__model__'>0 0 0 0 -0 0</pose>
+            <geometry>
+              <sphere>
+                <radius>1</radius>
+              </sphere>
+            </geometry>
+          </collision>
         </link>
+        <link name='L2'>
+          <pose relative_to='F1'>1 0 0 0 -0 0</pose>
+        </link>
+        <link name='L3'>
+          <pose relative_to='L2'>0 1 0 0 -0 0</pose>
+        </link>
+        <link name='L4'>
+          <pose relative_to='__model__'>0 0 1 0 -0 0</pose>
+        </link>
+        <joint name='J1' type='universal'>
+          <pose relative_to='L1'>0 0 0 0 -0 0</pose>
+          <parent>L1</parent>
+          <child>L2</child>
+          <axis>
+            <xyz expressed_in='F2'>0 0 1</xyz>
+          </axis>
+          <axis2>
+            <xyz expressed_in='F2'>1 0 0</xyz>
+          </axis2>
+        </joint>
+        <joint name='J2' type='revolute'>
+          <pose>0 0 1 0 -0 0</pose>
+          <parent>L2</parent>
+          <child>L3</child>
+          <axis>
+            <xyz expressed_in='__model__'>0 0 1</xyz>
+          </axis>
+        </joint>
+        <joint name='J3' type='fixed'>
+          <pose relative_to='__model__'>1 0 1 0 -0 0</pose>
+          <parent>L3</parent>
+          <child>L4</child>
+        </joint>
+        <model name='M2'>
+          <pose relative_to='F1'>1 0 0 0 -0 0</pose>
+          <link name='L5'>
+            <pose>1 0 0 0 -0 0</pose>
+          </link>
+        </model>
+        <pose>10 0 0 0 -0 1.5708</pose>
       </model>
     </model>
   </world>

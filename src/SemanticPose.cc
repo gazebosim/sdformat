@@ -21,6 +21,7 @@
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 namespace sdf
@@ -30,6 +31,8 @@ inline namespace SDF_VERSION_NAMESPACE {
 /// \brief Private data for the SemanticPose class.
 class SemanticPosePrivate
 {
+  public: std::string name = "";
+
   /// \brief Raw pose of the SemanticPose object.
   public: ignition::math::Pose3d rawPose = ignition::math::Pose3d::Zero;
 
@@ -39,16 +42,33 @@ class SemanticPosePrivate
   /// \brief Name of the default frame to resolve to.
   public: std::string defaultResolveTo = "";
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  /// \brief Scoped Pose Relative-To graph at the parent model or world scope.
+  /// TODO (addisu) Make this const
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
+
+/////////////////////////////////////////////////
+SemanticPose::SemanticPose(
+        const std::string &_name,
+        const ignition::math::Pose3d &_pose,
+        const std::string &_relativeTo,
+        const std::string &_defaultResolveTo,
+        const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
+  : dataPtr(std::make_unique<SemanticPosePrivate>())
+{
+  this->dataPtr->name = _name;
+  this->dataPtr->rawPose = _pose;
+  this->dataPtr->relativeTo = _relativeTo;
+  this->dataPtr->defaultResolveTo = _defaultResolveTo;
+  this->dataPtr->poseRelativeToGraph = _graph;
+}
 
 /////////////////////////////////////////////////
 SemanticPose::SemanticPose(
         const ignition::math::Pose3d &_pose,
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
-        const std::weak_ptr<const sdf::PoseRelativeToGraph> _graph)
+        const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
   : dataPtr(std::make_unique<SemanticPosePrivate>())
 {
   this->dataPtr->rawPose = _pose;
@@ -56,7 +76,6 @@ SemanticPose::SemanticPose(
   this->dataPtr->defaultResolveTo = _defaultResolveTo;
   this->dataPtr->poseRelativeToGraph = _graph;
 }
-
 /////////////////////////////////////////////////
 SemanticPose::~SemanticPose() = default;
 
@@ -103,7 +122,7 @@ Errors SemanticPose::Resolve(
 {
   Errors errors;
 
-  auto graph = this->dataPtr->poseRelativeToGraph.lock();
+  auto graph = this->dataPtr->poseRelativeToGraph;
   if (!graph)
   {
     errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
@@ -124,8 +143,15 @@ Errors SemanticPose::Resolve(
   }
 
   ignition::math::Pose3d pose;
-  errors = resolvePose(pose, *graph, relativeTo, resolveTo);
-  pose *= this->RawPose();
+  if (this->dataPtr->name.empty())
+  {
+    errors = resolvePose(pose, graph, relativeTo, resolveTo);
+    pose *= this->RawPose();
+  }
+  else
+  {
+    errors = resolvePose(pose, graph, this->dataPtr->name, resolveTo);
+  }
 
   if (errors.empty())
   {

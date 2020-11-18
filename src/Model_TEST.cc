@@ -22,6 +22,7 @@
 #include "sdf/Model.hh"
 
 /////////////////////////////////////////////////
+/// Test default construction of sdf::Model.
 TEST(DOMModel, Construction)
 {
   sdf::Model model;
