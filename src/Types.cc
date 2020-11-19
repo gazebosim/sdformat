@@ -78,5 +78,15 @@ std::string lowercase(const std::string &_in)
     out[i] = std::tolower(out[i], std::locale());
   return out;
 }
+
+/////////////////////////////////////////////////
+std::ostream &operator<<(std::ostream &_out, const sdf::Errors &_errs)
+{
+  for (const auto &e : _errs)
+  {
+    _out << e << std::endl;
+  }
+  return _out;
+}
 }
 }

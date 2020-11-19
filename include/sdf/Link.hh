@@ -40,6 +40,7 @@ namespace sdf
   class Visual;
   class LinkPrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   class SDFORMAT_VISIBLE Link
   {
@@ -225,12 +226,11 @@ namespace sdf
     /// \return SemanticPose object for this link.
     public: sdf::SemanticPose SemanticPose() const;
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
-    /// Model::Load.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by Model::Load.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Model::Load to call SetPoseRelativeToGraph.
     friend class Model;

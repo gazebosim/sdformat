@@ -16,7 +16,7 @@ jobs:
         sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list';
         sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D2486D2DD83DB69272AFE98867170598AF249743;
         sudo apt-get update;
-        sudo apt -y install cmake build-essential curl g++-8 git mercurial libtinyxml2-dev libxml2-utils ruby-dev python-psutil cppcheck;
+        sudo apt -y install cmake build-essential curl g++-8 git cppcheck;
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8;
         # workaround for https://github.com/rubygems/rubygems/issues/3068
         # suggested in https://github.com/rubygems/rubygems/issues/3068#issuecomment-574775885
@@ -32,10 +32,7 @@ jobs:
     - name: Install ignition dependencies
       run: |
         sudo apt -y install \
-            libignition-cmake2-dev \
-            libignition-math6-dev \
-            libignition-tools-dev \
-            liburdfdom-dev;
+            $(sort -u $(find .github -iname 'packages-'`lsb_release -cs`'.apt' -o -iname 'packages.apt') | tr '\n' ' ')
     - name: cmake
       run: |
         mkdir build;

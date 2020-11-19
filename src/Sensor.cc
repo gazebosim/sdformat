@@ -28,6 +28,8 @@
 #include "sdf/Lidar.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
+#include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -134,8 +136,8 @@ class sdf::SensorPrivate
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  /// \brief Scoped Pose Relative-To graph at the parent model scope.
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief Pointer to a magnetometer.
   public: std::unique_ptr<Magnetometer> magnetometer;
@@ -488,7 +490,7 @@ void Sensor::SetXmlParentName(const std::string &_xmlParentName)
 
 /////////////////////////////////////////////////
 void Sensor::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 }

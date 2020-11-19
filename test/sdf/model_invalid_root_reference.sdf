@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <model name="model_invalid_root_reference"> 
+    <link name="link1">
+      <pose relative_to="__root__">1 0 0 0 0 0</pose> <!-- INVALID: __root__ cannot be used as a relative_to reference -->
+    </link>
+    <frame name="frame1" attached_to="__root__"/> <!-- INVALID: __root__ cannot be used as a attached_to reference -->
+  </model>
+</sdf>

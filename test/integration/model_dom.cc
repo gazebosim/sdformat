@@ -70,7 +70,7 @@ TEST(DOMModel, NoLinks)
   sdf::Root root;
   auto errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(4u, errors.size());
+  ASSERT_EQ(3u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::MODEL_WITHOUT_LINK, errors[0].Code());
   EXPECT_TRUE(errors[0].Message().find("model must have at least one link") !=
                std::string::npos);
@@ -78,7 +78,6 @@ TEST(DOMModel, NoLinks)
   EXPECT_TRUE(errors[1].Message().find("model must have at least one link") !=
                std::string::npos);
   // errors[2]
-  // errors[3]
 }
 
 /////////////////////////////////////////////////
@@ -156,7 +155,7 @@ TEST(DOMRoot, NestedModel)
   // Load the SDF file
   sdf::Root root;
   auto errors = root.Load(testFile);
-  EXPECT_TRUE(errors.empty());
+  EXPECT_TRUE(errors.empty()) << errors;
 
   EXPECT_EQ(1u, root.ModelCount());
 
@@ -197,6 +196,112 @@ TEST(DOMRoot, NestedModel)
 
   EXPECT_EQ(0u, nestedModel->JointCount());
   EXPECT_EQ(0u, nestedModel->FrameCount());
+
+  // get nested link from parent model
+  const std::string linkNestedName = "nested_model::nested_link01";
+  EXPECT_TRUE(model->LinkNameExists(linkNestedName));
+  const sdf::Link *nestedLink01 = model->LinkByName(linkNestedName);
+  EXPECT_NE(nullptr, nestedLink01);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, MultiNestedModel)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_multi_nested_model.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(1u, root.ModelCount());
+
+  // Get the outer model
+  const sdf::Model *outerModel = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, outerModel);
+  EXPECT_EQ("outer_model", outerModel->Name());
+  EXPECT_EQ(1u, outerModel->LinkCount());
+  EXPECT_NE(nullptr, outerModel->LinkByIndex(0));
+  EXPECT_EQ(nullptr, outerModel->LinkByIndex(1));
+
+  EXPECT_TRUE(outerModel->LinkNameExists("outer_link"));
+
+  EXPECT_EQ(1u, outerModel->JointCount());
+  EXPECT_TRUE(outerModel->JointNameExists("outer_joint"));
+
+  EXPECT_EQ(1u, outerModel->FrameCount());
+  EXPECT_TRUE(outerModel->FrameNameExists("outer_frame"));
+
+  EXPECT_EQ(1u, outerModel->ModelCount());
+  EXPECT_NE(nullptr, outerModel->ModelByIndex(0));
+  EXPECT_EQ(nullptr, outerModel->ModelByIndex(1));
+
+  EXPECT_TRUE(outerModel->ModelNameExists("mid_model"));
+
+  // Get the middle model
+  const sdf::Model *midModel = outerModel->ModelByIndex(0);
+  ASSERT_NE(nullptr, midModel);
+  EXPECT_EQ("mid_model", midModel->Name());
+  EXPECT_EQ(1u, midModel->LinkCount());
+  EXPECT_NE(nullptr, midModel->LinkByIndex(0));
+  EXPECT_EQ(nullptr, midModel->LinkByIndex(1));
+
+  EXPECT_TRUE(midModel->LinkNameExists("mid_link"));
+
+  EXPECT_EQ(1u, midModel->JointCount());
+  EXPECT_TRUE(midModel->JointNameExists("mid_joint"));
+
+  EXPECT_EQ(1u, midModel->FrameCount());
+  EXPECT_TRUE(midModel->FrameNameExists("mid_frame"));
+
+  EXPECT_EQ(1u, midModel->ModelCount());
+  EXPECT_NE(nullptr, midModel->ModelByIndex(0));
+  EXPECT_EQ(nullptr, midModel->ModelByIndex(1));
+
+  EXPECT_TRUE(midModel->ModelNameExists("inner_model"));
+
+  // Get the inner model
+  const sdf::Model *innerModel = midModel->ModelByIndex(0);
+  ASSERT_NE(nullptr, innerModel);
+  EXPECT_EQ("inner_model", innerModel->Name());
+  EXPECT_EQ(1u, innerModel->LinkCount());
+  EXPECT_NE(nullptr, innerModel->LinkByIndex(0));
+  EXPECT_EQ(nullptr, innerModel->LinkByIndex(1));
+
+  EXPECT_TRUE(innerModel->LinkNameExists("inner_link"));
+
+  EXPECT_EQ(1u, innerModel->JointCount());
+  EXPECT_TRUE(innerModel->JointNameExists("inner_joint"));
+
+  EXPECT_EQ(1u, innerModel->FrameCount());
+  EXPECT_TRUE(innerModel->FrameNameExists("inner_frame"));
+
+  EXPECT_EQ(0u, innerModel->ModelCount());
+
+  // test nested names from outer model
+  const std::string innerModelNestedName = "mid_model::inner_model";
+  EXPECT_TRUE(outerModel->ModelNameExists(innerModelNestedName));
+  EXPECT_EQ(innerModel, outerModel->ModelByName(innerModelNestedName));
+
+  const std::string innerLinkNestedName = innerModelNestedName + "::inner_link";
+  EXPECT_TRUE(outerModel->LinkNameExists(innerLinkNestedName));
+  EXPECT_EQ(innerModel->LinkByIndex(0),
+            outerModel->LinkByName(innerLinkNestedName));
+  EXPECT_NE(nullptr, outerModel->LinkByName(innerLinkNestedName));
+
+  std::string innerJointNestedName = innerModelNestedName + "::inner_joint";
+  EXPECT_TRUE(outerModel->JointNameExists(innerJointNestedName));
+  EXPECT_EQ(innerModel->JointByIndex(0),
+            outerModel->JointByName(innerJointNestedName));
+  EXPECT_NE(nullptr, outerModel->JointByName(innerJointNestedName));
+
+  std::string innerFrameNestedName = innerModelNestedName + "::inner_frame";
+  EXPECT_TRUE(outerModel->FrameNameExists(innerFrameNestedName));
+  EXPECT_EQ(innerModel->FrameByIndex(0),
+            outerModel->FrameByName(innerFrameNestedName));
+  EXPECT_NE(nullptr, outerModel->FrameByName(innerFrameNestedName));
 }
 
 /////////////////////////////////////////////////
@@ -377,3 +482,98 @@ TEST(DOMRoot, LoadNestedCanonicalLink)
   EXPECT_EQ("deep::deeper::deepest::deepest_link", body);
 }
 
+/////////////////////////////////////////////////
+TEST(DOMRoot, LoadNestedExplicitCanonicalLink)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "nested_explicit_canonical_link.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("top", model->Name());
+  EXPECT_EQ(0u, model->LinkCount());
+  EXPECT_EQ(nullptr, model->LinkByIndex(0));
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(1u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_EQ(nullptr, model->FrameByIndex(1));
+
+  EXPECT_EQ(1u, model->ModelCount());
+  EXPECT_TRUE(model->ModelNameExists("nested"));
+  EXPECT_NE(nullptr, model->ModelByIndex(0));
+  EXPECT_EQ(model->ModelByName("nested"), model->ModelByIndex(0));
+  EXPECT_EQ(nullptr, model->ModelByIndex(1));
+
+  // expect implicit canonical link
+  EXPECT_EQ("nested::link2", model->CanonicalLinkName());
+
+  // frame F is attached to __model__ and resolves to canonical link,
+  // which is "nested::link2"
+  std::string body;
+  EXPECT_TRUE(model->FrameByName("F")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("nested::link2", body);
+
+  EXPECT_NE(nullptr, model->CanonicalLink());
+  EXPECT_EQ(model->LinkByName("nested::link2"), model->CanonicalLink());
+  EXPECT_EQ(model->ModelByName("nested")->LinkByName("link2"),
+            model->CanonicalLink());
+  // this reports the local name, not the nested name "nested::link2"
+  EXPECT_EQ("link2", model->CanonicalLink()->Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, ModelPlacementFrameAttribute)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_with_placement_frame_attribute.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  auto *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  ignition::math::Pose3d pose;
+  errors = model->SemanticPose().Resolve(pose);
+  EXPECT_TRUE(errors.empty()) << errors;
+  EXPECT_EQ(ignition::math::Pose3d(0, -2, 10, 0, 0, 0), pose);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, LoadInvalidNestedModelWithoutLinks)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "nested_without_links_invalid.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(7u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::MODEL_WITHOUT_LINK);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find("A model must have at least one link"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::MODEL_WITHOUT_LINK);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find("A model must have at least one link"));
+  // errors[2]
+  // errors[3]
+  // errors[4]
+  // errors[5]
+  // errors[6]
+}

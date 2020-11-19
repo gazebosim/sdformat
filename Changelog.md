@@ -7,6 +7,15 @@
 1. Initial version of SDFormat 1.8 specification.
     * [BitBucket pull request 682](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/682)
 
+1. SDFormat 1.8: Support specifying frames as joint child/parent.
+    * [Pull request 304](https://github.com/osrf/sdformat/pull/304)
+
+1. SDFormat 1.8: Add support for `//include/placement_frame` and `//model/@placement_frame`.
+    * [Pull request 324](https://github.com/osrf/sdformat/pull/324)
+
+1. SDFormat 1.8: Support explicit nested canonical links with :: syntax.
+    * [Pull request 353](https://github.com/osrf/sdformat/pull/353)
+
 1. SDFormat 1.8: Deprecate //joint/axis/initial_position.
     * [BitBucket pull request 683](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/683)
 

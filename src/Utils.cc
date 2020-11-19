@@ -74,5 +74,11 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
   // on the pose element value.
   return posePair.second;
 }
+
+/////////////////////////////////////////////////
+bool isValidFrameReference(const std::string &_name)
+{
+  return "__root__" != _name;
+}
 }
 }

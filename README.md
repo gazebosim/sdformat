@@ -35,6 +35,10 @@ TODO(eric.cousineau): Move terminology section to sdf_tutorials?
 
 ## Installation
 
+**Note:** the `master` branch is under development for `libsdformat11` and is
+currently unstable. A release branch (`sdf10`, `sdf9`, etc.) is recommended
+for most users.
+
 Standard installation can be performed in UNIX systems using the following
 steps:
 

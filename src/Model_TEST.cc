@@ -22,6 +22,7 @@
 #include "sdf/Model.hh"
 
 /////////////////////////////////////////////////
+/// Test default construction of sdf::Model.
 TEST(DOMModel, Construction)
 {
   sdf::Model model;
@@ -52,32 +53,56 @@ TEST(DOMModel, Construction)
   EXPECT_EQ(nullptr, model.ModelByIndex(1));
   EXPECT_EQ(nullptr, model.ModelByName(""));
   EXPECT_EQ(nullptr, model.ModelByName("default"));
+  EXPECT_EQ(nullptr, model.ModelByName("a::b"));
+  EXPECT_EQ(nullptr, model.ModelByName("a::b::c"));
+  EXPECT_EQ(nullptr, model.ModelByName("::::"));
   EXPECT_FALSE(model.ModelNameExists(""));
   EXPECT_FALSE(model.ModelNameExists("default"));
+  EXPECT_FALSE(model.ModelNameExists("a::b"));
+  EXPECT_FALSE(model.ModelNameExists("a::b::c"));
+  EXPECT_FALSE(model.ModelNameExists("::::"));
 
   EXPECT_EQ(0u, model.LinkCount());
   EXPECT_EQ(nullptr, model.LinkByIndex(0));
   EXPECT_EQ(nullptr, model.LinkByIndex(1));
   EXPECT_EQ(nullptr, model.LinkByName(""));
   EXPECT_EQ(nullptr, model.LinkByName("default"));
+  EXPECT_EQ(nullptr, model.LinkByName("a::b"));
+  EXPECT_EQ(nullptr, model.LinkByName("a::b::c"));
+  EXPECT_EQ(nullptr, model.LinkByName("::::"));
   EXPECT_FALSE(model.LinkNameExists(""));
   EXPECT_FALSE(model.LinkNameExists("default"));
+  EXPECT_FALSE(model.LinkNameExists("a::b"));
+  EXPECT_FALSE(model.LinkNameExists("a::b::c"));
+  EXPECT_FALSE(model.LinkNameExists("::::"));
 
   EXPECT_EQ(0u, model.JointCount());
   EXPECT_EQ(nullptr, model.JointByIndex(0));
   EXPECT_EQ(nullptr, model.JointByIndex(1));
   EXPECT_EQ(nullptr, model.JointByName(""));
   EXPECT_EQ(nullptr, model.JointByName("default"));
+  EXPECT_EQ(nullptr, model.JointByName("a::b"));
+  EXPECT_EQ(nullptr, model.JointByName("a::b::c"));
+  EXPECT_EQ(nullptr, model.JointByName("::::"));
   EXPECT_FALSE(model.JointNameExists(""));
   EXPECT_FALSE(model.JointNameExists("default"));
+  EXPECT_FALSE(model.JointNameExists("a::b"));
+  EXPECT_FALSE(model.JointNameExists("a::b::c"));
+  EXPECT_FALSE(model.JointNameExists("::::"));
 
   EXPECT_EQ(0u, model.FrameCount());
   EXPECT_EQ(nullptr, model.FrameByIndex(0));
   EXPECT_EQ(nullptr, model.FrameByIndex(1));
   EXPECT_EQ(nullptr, model.FrameByName(""));
   EXPECT_EQ(nullptr, model.FrameByName("default"));
+  EXPECT_EQ(nullptr, model.FrameByName("a::b"));
+  EXPECT_EQ(nullptr, model.FrameByName("a::b::c"));
+  EXPECT_EQ(nullptr, model.FrameByName("::::"));
   EXPECT_FALSE(model.FrameNameExists(""));
   EXPECT_FALSE(model.FrameNameExists("default"));
+  EXPECT_FALSE(model.FrameNameExists("a::b"));
+  EXPECT_FALSE(model.FrameNameExists("a::b::c"));
+  EXPECT_FALSE(model.FrameNameExists("::::"));
 
   EXPECT_TRUE(model.CanonicalLinkName().empty());
   EXPECT_EQ(nullptr, model.CanonicalLink());
