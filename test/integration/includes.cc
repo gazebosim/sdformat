@@ -334,10 +334,18 @@ TEST(IncludesTest, IncludeModelMissingConfig)
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
   sdf::init(sdfParsed);
-  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
+  sdf::Errors errors;
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::URI_LOOKUP);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Unable to resolve uri[box_missing_config] to model path")) << errors[0];
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "box_missing_config] since it does not contain a model.config file"))
+    << errors[0];
 
   sdf::Root root;
-  sdf::Errors errors = root.Load(sdfParsed);
+  errors = root.Load(sdfParsed);
   for (auto e : errors)
     std::cout << e.Message() << std::endl;
   EXPECT_TRUE(errors.empty());
