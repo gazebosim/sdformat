@@ -336,7 +336,10 @@ TEST(IncludesTest, IncludeModelMissingConfig)
   sdf::init(sdfParsed);
   sdf::Errors errors;
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
+
+  ASSERT_GE(1u, errors.size());
   EXPECT_EQ(1u, errors.size());
+  std::cout << errors[0] << std::endl;
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::URI_LOOKUP);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
       "Unable to resolve uri[box_missing_config] to model path")) << errors[0];
