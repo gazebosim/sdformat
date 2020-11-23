@@ -26,6 +26,8 @@
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
 #include "sdf/sdf_config.h"
+#include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -48,14 +50,80 @@ class sdf::RootPrivate
   /// \brief The actors specified under the root SDF element
   public: std::vector<Actor> actors;
 
+  /// \brief Frame Attached-To Graphs constructed when loading Worlds.
+  public: std::vector<sdf::ScopedGraph<FrameAttachedToGraph>>
+              worldFrameAttachedToGraphs;
+
+  /// \brief Frame Attached-To Graphs constructed when loading Models.
+  public: std::vector<sdf::ScopedGraph<FrameAttachedToGraph>>
+              modelFrameAttachedToGraphs;
+
+  /// \brief Pose Relative-To Graphs constructed when loading Worlds.
+  public: std::vector<sdf::ScopedGraph<PoseRelativeToGraph>>
+              worldPoseRelativeToGraphs;
+
+  /// \brief Pose Relative-To Graphs constructed when loading Models.
+  public: std::vector<sdf::ScopedGraph<PoseRelativeToGraph>>
+              modelPoseRelativeToGraphs;
+
   /// \brief The SDF element pointer generated during load.
   public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
+template <typename T>
+sdf::ScopedGraph<FrameAttachedToGraph> addFrameAttachedToGraph(
+    std::vector<sdf::ScopedGraph<sdf::FrameAttachedToGraph>> &_graphList,
+    const T &_domObj, sdf::Errors &_errors)
+{
+  auto &frameGraph =
+      _graphList.emplace_back(std::make_shared<FrameAttachedToGraph>());
+
+  sdf::Errors buildErrors =
+      sdf::buildFrameAttachedToGraph(frameGraph, &_domObj);
+  _errors.insert(_errors.end(), buildErrors.begin(), buildErrors.end());
+
+  sdf::Errors validateErrors = sdf::validateFrameAttachedToGraph(frameGraph);
+  _errors.insert(_errors.end(), validateErrors.begin(), validateErrors.end());
+
+  return frameGraph;
+}
+
+/////////////////////////////////////////////////
+template <typename T>
+ScopedGraph<PoseRelativeToGraph> addPoseRelativeToGraph(
+    std::vector<sdf::ScopedGraph<sdf::PoseRelativeToGraph>> &_graphList,
+    const T &_domObj, Errors &_errors)
+{
+  auto &poseGraph =
+      _graphList.emplace_back(std::make_shared<sdf::PoseRelativeToGraph>());
+
+  Errors buildErrors = buildPoseRelativeToGraph(poseGraph, &_domObj);
+  _errors.insert(_errors.end(), buildErrors.begin(), buildErrors.end());
+
+  Errors validateErrors = validatePoseRelativeToGraph(poseGraph);
+  _errors.insert(_errors.end(), validateErrors.begin(), validateErrors.end());
+
+  return poseGraph;
+}
+
+/////////////////////////////////////////////////
 Root::Root()
   : dataPtr(new RootPrivate)
 {
+}
+
+/////////////////////////////////////////////////
+Root::Root(Root &&_root) noexcept
+  : dataPtr(std::exchange(_root.dataPtr, nullptr))
+{
+}
+
+/////////////////////////////////////////////////
+Root &Root::operator=(Root &&_root) noexcept
+{
+  std::swap(this->dataPtr, _root.dataPtr);
+  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -151,6 +219,16 @@ Errors Root::Load(SDFPtr _sdf)
       World world;
 
       Errors worldErrors = world.Load(elem);
+
+      // Build the graphs.
+      auto frameAttachedToGraph = addFrameAttachedToGraph(
+          this->dataPtr->worldFrameAttachedToGraphs, world, worldErrors);
+      world.SetFrameAttachedToGraph(frameAttachedToGraph);
+
+      auto poseRelativeToGraph = addPoseRelativeToGraph(
+          this->dataPtr->worldPoseRelativeToGraphs, world, worldErrors);
+      world.SetPoseRelativeToGraph(poseRelativeToGraph);
+
       // Attempt to load the world
       if (worldErrors.empty())
       {
@@ -161,10 +239,6 @@ Errors Root::Load(SDFPtr _sdf)
                 "World with name[" + world.Name() + "] already exists."
                 " Each world must have a unique name. Skipping this world."});
         }
-        else
-        {
-          this->dataPtr->worlds.push_back(std::move(world));
-        }
       }
       else
       {
@@ -173,14 +247,29 @@ Errors Root::Load(SDFPtr _sdf)
         errors.push_back({ErrorCode::ELEMENT_INVALID,
                           "Failed to load a world."});
       }
+
+      this->dataPtr->worlds.push_back(std::move(world));
       elem = elem->GetNextElement("world");
     }
   }
 
   // Load all the models.
-  Errors modelLoadErrors = loadUniqueRepeated<Model>(this->dataPtr->sdf,
-      "model", this->dataPtr->models);
+  Errors modelLoadErrors = loadUniqueRepeated<Model>(
+      this->dataPtr->sdf, "model", this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
+
+  // Build the graphs.
+  for (sdf::Model &model : this->dataPtr->models)
+  {
+    auto frameAttachedToGraph = addFrameAttachedToGraph(
+        this->dataPtr->modelFrameAttachedToGraphs, model, errors);
+
+    model.SetFrameAttachedToGraph(frameAttachedToGraph);
+
+    auto poseRelativeToGraph = addPoseRelativeToGraph(
+        this->dataPtr->modelPoseRelativeToGraphs, model, errors);
+    model.SetPoseRelativeToGraph(poseRelativeToGraph);
+  }
 
   // Load all the lights.
   Errors lightLoadErrors = loadUniqueRepeated<Light>(this->dataPtr->sdf,

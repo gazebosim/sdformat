@@ -36,6 +36,7 @@ namespace sdf
   class Geometry;
   class Surface;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \brief A collision element descibes the collision properties associated
   /// with a link. This can be different from the visual properties of a link.
@@ -141,12 +142,12 @@ namespace sdf
     /// \param[in] _xmlParentName Name of xml parent object.
     private: void SetXmlParentName(const std::string &_xmlParentName);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is

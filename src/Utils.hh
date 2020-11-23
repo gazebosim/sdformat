@@ -37,6 +37,12 @@ namespace sdf
   /// \returns True if the name is a reserved name and thus invalid.
   bool isReservedName(const std::string &_name);
 
+  /// \brief Check if the passed string is a valid frame reference.
+  /// Currently it's only invalid if the name is __root__
+  /// \param[in] _name Name to check.
+  /// \returns True if the name is a valid frame reference.
+  bool isValidFrameReference(const std::string &_name);
+
   /// \brief Read the "name" attribute from an element.
   /// \param[in] _sdf SDF element pointer which contains the name.
   /// \param[out] _name String to hold the name value.
@@ -65,7 +71,7 @@ namespace sdf
   /// exists.
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
-  template<typename Class>
+  template <typename Class>
   sdf::Errors loadUniqueRepeated(sdf::ElementPtr _sdf,
       const std::string &_sdfName, std::vector<Class> &_objs)
   {
@@ -128,9 +134,10 @@ namespace sdf
   /// vector, unless an error is encountered during load.
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
-  template<typename Class>
-  sdf::Errors loadRepeated(sdf::ElementPtr _sdf,
-      const std::string &_sdfName, std::vector<Class> &_objs)
+  template <typename Class>
+  sdf::Errors loadRepeated(sdf::ElementPtr _sdf, const std::string &_sdfName,
+      std::vector<Class> &_objs,
+      const std::function<void(Class &)> &_beforeLoadFunc = {})
   {
     Errors errors;
 
@@ -142,6 +149,10 @@ namespace sdf
       while (elem)
       {
         Class obj;
+        if (_beforeLoadFunc)
+        {
+          _beforeLoadFunc(obj);
+        }
 
         // Load the model and capture the errors.
         Errors loadErrors = obj.Load(elem);

@@ -37,6 +37,7 @@ namespace sdf
   // Forward declare private data class.
   class LightPrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \enum LightType
   /// \brief The set of light types. INVALID indicates that light type has
@@ -273,12 +274,12 @@ namespace sdf
     /// \param[in] _xmlParentName Name of xml parent object.
     private: void SetXmlParentName(const std::string &_xmlParentName);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph or World::Load.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Link::SetPoseRelativeToGraph or World::Load to call
     /// SetXmlParentName and SetPoseRelativeToGraph,

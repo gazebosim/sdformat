@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!--This is a valid file-->
+<sdf version="1.8">
+  <model name="top_model">
+    <frame name="top_frame"/>
+
+    <link name="top_link">
+      <pose relative_to="top_frame"/>
+    </link>
+
+    <model name="mid_model">
+      <pose relative_to="top_link"/>
+
+      <link name="mid_link"/>
+
+      <model name="bottom_model">
+        <pose relative_to="mid_link"/>
+        <link name="bottom_link"/>
+      </model>
+
+      <model name="bottom_model_2">
+        <model name="mid_model">
+          <link name="mid_link"/>
+        </model>
+
+        <link name="bottom_link">
+          <pose relative_to="mid_model::mid_link"/>
+        </link>
+      </model>
+
+      <frame name="mid_to_bottom" attached_to="bottom_model::bottom_link"/>
+    </model>
+  </model>
+</sdf>

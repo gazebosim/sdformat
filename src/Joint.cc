@@ -25,6 +25,7 @@
 #include "sdf/JointAxis.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -74,11 +75,11 @@ class sdf::JointPrivate
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
-  /// \brief Weak pointer to model's Frame Attached-To Graph.
-  public: std::weak_ptr<const sdf::FrameAttachedToGraph> frameAttachedToGraph;
+  /// \brief Scoped Frame Attached-To graph at the parent model scope
+  public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  /// \brief Scoped Pose Relative-To graph at the parent model scope.
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -182,6 +183,12 @@ Errors Joint::Load(ElementPtr _sdf)
   if (parentPair.second)
   {
     this->dataPtr->parentLinkName = parentPair.first;
+    if (!isValidFrameReference(this->dataPtr->parentLinkName))
+    {
+      errors.push_back({ErrorCode::RESERVED_NAME,
+          "The supplied joint parent name [" + this->dataPtr->parentLinkName +
+              "] is not valid."});
+    }
   }
   else
   {
@@ -194,6 +201,12 @@ Errors Joint::Load(ElementPtr _sdf)
   if (childPair.second)
   {
     this->dataPtr->childLinkName = childPair.first;
+    if (!isValidFrameReference(this->dataPtr->childLinkName))
+    {
+      errors.push_back({ErrorCode::RESERVED_NAME,
+          "The supplied joint child name [" + this->dataPtr->childLinkName +
+              "] is not valid."});
+    }
   }
   else
   {
@@ -361,14 +374,14 @@ void Joint::SetPoseRelativeTo(const std::string &_frame)
 
 /////////////////////////////////////////////////
 void Joint::SetFrameAttachedToGraph(
-    std::weak_ptr<const FrameAttachedToGraph> _graph)
+    sdf::ScopedGraph<FrameAttachedToGraph> _graph)
 {
   this->dataPtr->frameAttachedToGraph = _graph;
 }
 
 /////////////////////////////////////////////////
 void Joint::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 
@@ -387,7 +400,7 @@ Errors Joint::ResolveChildLink(std::string &_link) const
 {
   Errors errors;
 
-  auto graph = this->dataPtr->frameAttachedToGraph.lock();
+  auto graph = this->dataPtr->frameAttachedToGraph;
   if (!graph)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -396,7 +409,7 @@ Errors Joint::ResolveChildLink(std::string &_link) const
   }
 
   std::string link;
-  errors = resolveFrameAttachedToBody(link, *graph, this->ChildLinkName());
+  errors = resolveFrameAttachedToBody(link, graph, this->ChildLinkName());
   if (errors.empty())
   {
     _link = link;
@@ -417,7 +430,7 @@ Errors Joint::ResolveParentLink(std::string &_link) const
     return errors;
   }
 
-  auto graph = this->dataPtr->frameAttachedToGraph.lock();
+  auto graph = this->dataPtr->frameAttachedToGraph;
   if (!graph)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -426,7 +439,7 @@ Errors Joint::ResolveParentLink(std::string &_link) const
   }
 
   std::string link;
-  errors = resolveFrameAttachedToBody(link, *graph, this->ParentLinkName());
+  errors = resolveFrameAttachedToBody(link, graph, this->ParentLinkName());
   if (errors.empty())
   {
     _link = link;
@@ -438,6 +451,7 @@ Errors Joint::ResolveParentLink(std::string &_link) const
 sdf::SemanticPose Joint::SemanticPose() const
 {
   return sdf::SemanticPose(
+      this->dataPtr->name,
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
       this->ChildLinkName(),

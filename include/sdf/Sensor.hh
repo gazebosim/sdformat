@@ -23,6 +23,7 @@
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
@@ -40,6 +41,7 @@ namespace sdf
   class Magnetometer;
   class SensorPrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \enum SensorType
   /// \brief The set of sensor types.
@@ -315,12 +317,12 @@ namespace sdf
     /// \param[in] _xmlParentName Name of xml parent object.
     private: void SetXmlParentName(const std::string &_xmlParentName);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is

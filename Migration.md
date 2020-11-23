@@ -22,9 +22,10 @@ but with improved human-readability..
 
 ### Modifications
 
-1. **sdf/Model.hh**: the following methods now accept nested names
-      that can begin with a sequence of nested model names separated
-      by `::` and may end with the name of an object of the specified type.
+1. **sdf/Model.hh**: the following methods now accept nested names relative to
+      the model's scope that can begin with a sequence of nested model names
+      separated by `::` and may end with the name of an object of the specified
+      type.
     + const Frame \*FrameByName(const std::string &) const
     + const Joint \*JointByName(const std::string &) const
     + const Link \*LinkByName(const std::string &) const
