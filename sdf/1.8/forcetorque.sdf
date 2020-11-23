@@ -13,7 +13,7 @@
   <element name="measure_direction" type="string" default="child_to_parent" required="0">
     <description>
       Direction of the wrench measured by the sensor. The supported options are:
-        "parent_to_child" if the measured wrench is the one applied by parent link on the child link,
+        "parent_to_child" if the measured wrench is the one applied by the parent link on the child link,
         "child_to_parent" if the measured wrench is the one applied by the child link on the parent link.
     </description>
   </element>

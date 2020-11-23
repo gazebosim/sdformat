@@ -36,6 +36,7 @@ namespace sdf
   class AirPressure;
   class Altimeter;
   class Camera;
+  class ForceTorque;
   class Imu;
   class Lidar;
   class Magnetometer;
@@ -288,6 +289,17 @@ namespace sdf
     /// is not a camera.
     /// \sa SensorType Type() const
     public: const Camera *CameraSensor() const;
+
+    /// \brief Set the force torque sensor.
+    /// \param[in] _ft The force torque sensor.
+    public: void SetForceTorqueSensor(const ForceTorque &_ft);
+
+    /// \brief Get a pointer to a force torque sensor, or nullptr if the sensor
+    /// does not contain a force torque sensor.
+    /// \return Pointer to the force torque sensor, or nullptr if the sensor
+    /// is not a force torque sensor.
+    /// \sa SensorType Type() const
+    public: const ForceTorque *ForceTorqueSensor() const;
 
     /// \brief Set the IMU sensor.
     /// \param[in] _imu The IMU sensor.
