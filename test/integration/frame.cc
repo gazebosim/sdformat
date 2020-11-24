@@ -587,7 +587,8 @@ TEST(DOMFrame, LoadModelFramesAttachedToNestedModel)
 
   // Load the SDF file
   sdf::Root root;
-  EXPECT_TRUE(root.Load(testFile).empty());
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
 
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);
@@ -622,9 +623,9 @@ TEST(DOMFrame, LoadModelFramesAttachedToNestedModel)
 
   std::string body;
   EXPECT_TRUE(model->FrameByName("F1")->ResolveAttachedToBody(body).empty());
-  EXPECT_EQ("nested_model", body);
+  EXPECT_EQ("nested_model::nested_link", body);
   EXPECT_TRUE(model->FrameByName("F2")->ResolveAttachedToBody(body).empty());
-  EXPECT_EQ("nested_model", body);
+  EXPECT_EQ("nested_model::nested_link", body);
 }
 
 /////////////////////////////////////////////////
@@ -691,7 +692,7 @@ TEST(DOMFrame, LoadWorldFramesAttachedTo)
   EXPECT_TRUE(world->FrameByName("F1")->ResolveAttachedToBody(body).empty());
   EXPECT_EQ("world", body);
   EXPECT_TRUE(world->FrameByName("F2")->ResolveAttachedToBody(body).empty());
-  EXPECT_EQ("M1", body);
+  EXPECT_EQ("M1::L", body);
 }
 
 /////////////////////////////////////////////////
@@ -1109,7 +1110,7 @@ TEST(DOMFrame, LoadWorldFramesInvalidRelativeTo)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(11u, errors.size());
+  EXPECT_EQ(15u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -1175,7 +1176,7 @@ TEST(DOMFrame, WorldIncludeModel)
     ASSERT_NE(nullptr, model);
     ignition::math::Pose3d modelPose;
     sdf::Errors resolveErrors = model->SemanticPose().Resolve(modelPose);
-    EXPECT_TRUE(resolveErrors.empty());
+    EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
     EXPECT_EQ(expectedPoses[i], modelPose);
   }
 }

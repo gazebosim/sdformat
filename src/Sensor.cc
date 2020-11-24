@@ -22,11 +22,14 @@
 #include "sdf/Altimeter.hh"
 #include "sdf/Camera.hh"
 #include "sdf/Error.hh"
+#include "sdf/ForceTorque.hh"
 #include "sdf/Imu.hh"
 #include "sdf/Magnetometer.hh"
 #include "sdf/Lidar.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
+#include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -92,6 +95,11 @@ class sdf::SensorPrivate
     {
       this->camera = std::make_unique<sdf::Camera>(*_sensor.camera);
     }
+    if (_sensor.forceTorque)
+    {
+      this->forceTorque = std::make_unique<sdf::ForceTorque>(
+          *_sensor.forceTorque);
+    }
     if (_sensor.imu)
     {
       this->imu = std::make_unique<sdf::Imu>(*_sensor.imu);
@@ -128,8 +136,8 @@ class sdf::SensorPrivate
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  /// \brief Scoped Pose Relative-To graph at the parent model scope.
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief Pointer to a magnetometer.
   public: std::unique_ptr<Magnetometer> magnetometer;
@@ -142,6 +150,9 @@ class sdf::SensorPrivate
 
   /// \brief Pointer to a camera.
   public: std::unique_ptr<Camera> camera;
+
+  /// \brief Pointer to a force torque sensor.
+  public: std::unique_ptr<ForceTorque> forceTorque;
 
   /// \brief Pointer to an IMU.
   public: std::unique_ptr<Imu> imu;
@@ -219,6 +230,8 @@ bool Sensor::operator==(const Sensor &_sensor) const
       return *(this->dataPtr->magnetometer) == *(_sensor.dataPtr->magnetometer);
     case SensorType::AIR_PRESSURE:
       return *(this->dataPtr->airPressure) == *(_sensor.dataPtr->airPressure);
+    case SensorType::FORCE_TORQUE:
+      return *(this->dataPtr->forceTorque) == *(_sensor.dataPtr->forceTorque);
     case SensorType::IMU:
       return *(this->dataPtr->imu) == *(_sensor.dataPtr->imu);
     case SensorType::CAMERA:
@@ -339,6 +352,10 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "force_torque")
   {
     this->dataPtr->type = SensorType::FORCE_TORQUE;
+    this->dataPtr->forceTorque.reset(new ForceTorque());
+    Errors err = this->dataPtr->forceTorque->Load(
+        _sdf->GetElement("force_torque"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "gps")
   {
@@ -354,7 +371,6 @@ Errors Sensor::Load(ElementPtr _sdf)
   }
   else if (type == "imu")
   {
-    this->dataPtr->type = SensorType::IMU;
     this->dataPtr->type = SensorType::IMU;
     this->dataPtr->imu.reset(new Imu());
     Errors err = this->dataPtr->imu->Load(_sdf->GetElement("imu"));
@@ -474,7 +490,7 @@ void Sensor::SetXmlParentName(const std::string &_xmlParentName)
 
 /////////////////////////////////////////////////
 void Sensor::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 }
@@ -600,6 +616,18 @@ void Sensor::SetCameraSensor(const Camera &_cam)
 const Camera *Sensor::CameraSensor() const
 {
   return this->dataPtr->camera.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetForceTorqueSensor(const ForceTorque &_ft)
+{
+  this->dataPtr->forceTorque = std::make_unique<ForceTorque>(_ft);
+}
+
+/////////////////////////////////////////////////
+const ForceTorque *Sensor::ForceTorqueSensor() const
+{
+  return this->dataPtr->forceTorque.get();
 }
 
 /////////////////////////////////////////////////

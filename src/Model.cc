@@ -27,6 +27,7 @@
 #include "sdf/Model.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -76,17 +77,14 @@ class sdf::ModelPrivate
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
-  /// \brief Frame Attached-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
+  /// \brief Scoped Frame Attached-To graph at the parent model or world scope.
+  public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
-  /// \brief Pose Relative-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseGraph;
-
-  /// \brief Pose Relative-To Graph in parent (world or __model__) scope.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> parentPoseGraph;
+  /// \brief Scoped Pose Relative-To graph at the parent model or world scope.
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseGraph;
 
   /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
-  public: std::string parentPoseGraphScopeName;
+  public: std::string poseGraphScopeVertexName;
 };
 
 /////////////////////////////////////////////////
@@ -106,35 +104,6 @@ Model::~Model()
 Model::Model(const Model &_model)
   : dataPtr(new ModelPrivate(*_model.dataPtr))
 {
-  if (_model.dataPtr->frameAttachedToGraph)
-  {
-    this->dataPtr->frameAttachedToGraph =
-        std::make_shared<sdf::FrameAttachedToGraph>(
-            *_model.dataPtr->frameAttachedToGraph);
-  }
-  if (_model.dataPtr->poseGraph)
-  {
-    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
-        *_model.dataPtr->poseGraph);
-  }
-  for (auto &link : this->dataPtr->links)
-  {
-    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &model : this->dataPtr->models)
-  {
-    model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &joint : this->dataPtr->joints)
-  {
-    joint.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &frame : this->dataPtr->frames)
-  {
-    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
 }
 
 /////////////////////////////////////////////////
@@ -360,144 +329,6 @@ Errors Model::Load(ElementPtr _sdf)
     frameNames.insert(frameName);
   }
 
-  // Build the graphs.
-
-  // Build the FrameAttachedToGraph if the model is not static.
-  // Re-enable this when the buildFrameAttachedToGraph implementation handles
-  // static models.
-  if (!this->Static())
-  {
-    this->dataPtr->frameAttachedToGraph
-        = std::make_shared<FrameAttachedToGraph>();
-    Errors frameAttachedToGraphErrors =
-    buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
-    errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
-                                frameAttachedToGraphErrors.end());
-    Errors validateFrameAttachedGraphErrors =
-      validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
-    errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
-                                validateFrameAttachedGraphErrors.end());
-    for (auto &joint : this->dataPtr->joints)
-    {
-      joint.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    }
-    for (auto &frame : this->dataPtr->frames)
-    {
-      frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    }
-  }
-
-  // Build the PoseRelativeToGraph
-  this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>();
-  Errors poseGraphErrors =
-  buildPoseRelativeToGraph(*this->dataPtr->poseGraph, this);
-  errors.insert(errors.end(), poseGraphErrors.begin(),
-                              poseGraphErrors.end());
-  Errors validatePoseGraphErrors =
-    validatePoseRelativeToGraph(*this->dataPtr->poseGraph);
-  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
-                              validatePoseGraphErrors.end());
-  for (auto &link : this->dataPtr->links)
-  {
-    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &model : this->dataPtr->models)
-  {
-    Errors setPoseRelativeToGraphErrors =
-      model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-    errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
-                                setPoseRelativeToGraphErrors.end());
-  }
-  for (auto &joint : this->dataPtr->joints)
-  {
-    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &frame : this->dataPtr->frames)
-  {
-    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-
-  // Update the model pose to account for the placement frame.
-  if (!this->dataPtr->placementFrameName.empty())
-  {
-    ignition::math::Pose3d X_MPf;
-
-    sdf::Errors resolveErrors =
-        sdf::resolvePose(X_MPf, *this->dataPtr->poseGraph,
-            this->dataPtr->placementFrameName, "__model__");
-    if (resolveErrors.empty())
-    {
-      // Before this update, i.e, as specified in the SDFormat, the model pose
-      // (X_RPf) is the pose of the placement frame (Pf) relative to a frame (R)
-      // in the parent scope of the model. However, when this model (M) is
-      // inserted into a pose graph of the parent scope, only the pose (X_RM)
-      // of the __model__ frame can be used. Thus, the model pose has to be
-      // updated to X_RM.
-      //
-      // Note that X_RPf is the raw pose specified in //model/pose before this
-      // update.
-      const auto &X_RPf = this->dataPtr->pose;
-      auto &X_RM = this->dataPtr->pose;
-      X_RM = X_RPf * X_MPf.Inverse();
-    }
-    else
-    {
-      errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
-    }
-  }
-
-  // The placement_frame attributes of included child models are currently lost
-  // during parsing because the parser expands the included models into the
-  // parent model. As a temporary workardound to preserve this information, the
-  // parser injects <model name>::__placement_frame__ for every included child
-  // model. This serves as an identifier that the model frame of the child model
-  // should be treated as if it has its placement_frame attribute set.
-  // This will not be necessary when included nested models work as directly
-  // nested models. See
-  // https://github.com/osrf/sdformat/issues/319#issuecomment-665214004
-  // TODO (addisu) Remove placementFrameIdentifier once PR addressing
-  // https://github.com/osrf/sdformat/issues/284 lands
-  for (auto &frame : this->dataPtr->frames)
-  {
-    auto placementSubstrInd = frame.Name().rfind("::__placement_frame__");
-    if (placementSubstrInd != std::string::npos)
-    {
-      const std::string childModelName =
-          frame.Name().substr(0, placementSubstrInd);
-      // Find the model frame associated with this placement frame
-      const Frame *childModelFrame =
-          this->FrameByName(childModelName + "::__model__");
-      if (nullptr != childModelFrame)
-      {
-        // The RawPose of the child model frame is the desired pose of the
-        // placement frame relative to a frame (R) in the scope of the parent
-        // model. We don't need to resolve the pose because the relative_to
-        // frame remains unchanged after the pose update here. i.e, the updated
-        // pose of the child model frame will still be relative to R.
-        const auto &X_RPf = childModelFrame->RawPose();
-
-        ignition::math::Pose3d X_MPf;
-        sdf::Errors resolveErrors =
-            frame.SemanticPose().Resolve(X_MPf, childModelFrame->Name());
-        errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
-
-        // We need to update childModelFrame's pose relative to the parent
-        // frame as well as the corresponding edge in the pose graph because
-        // just updating childModelFrame doesn't update the pose graph.
-        auto X_RM = X_RPf * X_MPf.Inverse();
-        frame.SetRawPose(X_RM);
-        sdf::updateGraphPose(
-            *this->dataPtr->poseGraph, childModelFrame->Name(), X_RM);
-      }
-      else
-      {
-        errors.push_back({ErrorCode::MODEL_PLACEMENT_FRAME_INVALID,
-            "Found a __placement_frame__ for child model with name [" +
-            childModelName + "], but the model does not exist in the" +
-            " parent model with name [" + this->Name() + "]"});
-      }
-    }
-  }
 
   return errors;
 }
@@ -814,33 +645,63 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
-Errors Model::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
-  Errors errors;
+  this->dataPtr->poseGraph = _graph;
+  this->dataPtr->poseGraphScopeVertexName =
+      _graph.VertexLocalName(_graph.ScopeVertexId());
 
-  auto graph = _graph.lock();
-  if (!graph)
+  auto childPoseGraph =
+      this->dataPtr->poseGraph.ChildModelScope(this->Name());
+  for (auto &model : this->dataPtr->models)
   {
-    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-        "Tried to set PoseRelativeToGraph with invalid pointer."});
-    return errors;
+    model.SetPoseRelativeToGraph(childPoseGraph);
   }
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(childPoseGraph);
+  }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(childPoseGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(childPoseGraph);
+  }
+}
 
-  this->dataPtr->parentPoseGraphScopeName = graph->sourceName;
-  this->dataPtr->parentPoseGraph = _graph;
+/////////////////////////////////////////////////
+void Model::SetFrameAttachedToGraph(
+    sdf::ScopedGraph<FrameAttachedToGraph> _graph)
+{
+  this->dataPtr->frameAttachedToGraph = _graph;
 
-  return errors;
+  auto childFrameAttachedToGraph =
+      this->dataPtr->frameAttachedToGraph.ChildModelScope(this->Name());
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetFrameAttachedToGraph(childFrameAttachedToGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(childFrameAttachedToGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetFrameAttachedToGraph(childFrameAttachedToGraph);
+  }
 }
 
 /////////////////////////////////////////////////
 sdf::SemanticPose Model::SemanticPose() const
 {
   return sdf::SemanticPose(
+      this->dataPtr->name,
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
-      this->dataPtr->parentPoseGraphScopeName,
-      this->dataPtr->parentPoseGraph);
+      this->dataPtr->poseGraphScopeVertexName,
+      this->dataPtr->poseGraph);
 }
 
 /////////////////////////////////////////////////

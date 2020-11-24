@@ -18,6 +18,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <map>
+#include <set>
 #include <string>
 
 #include <ignition/math/SemanticVersion.hh>
@@ -37,6 +38,8 @@
 
 #include "Converter.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
+#include "Utils.hh"
 #include "parser_private.hh"
 #include "parser_urdf.hh"
 
@@ -837,6 +840,20 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
     _sdf->Copy(refSDF);
   }
 
+  // A list of parent element-attributes pairs where a frame name is referenced
+  // in the attribute. This is used to check if the reference is invalid.
+  std::set<std::pair<std::string, std::string>> frameReferenceAttributes {
+      // //frame/[@attached_to]
+      {"frame", "attached_to"},
+      // //pose/[@relative_to]
+      {"pose", "relative_to"},
+      // //model/[@placement_frame]
+      {"model", "placement_frame"},
+      // //model/[@canonical_link]
+      {"model", "canonical_link"},
+      // //sensor/imu/orientation_reference_frame/custom_rpy/[@parent_frame]
+      {"custom_rpy", "parent_frame"}};
+
   const tinyxml2::XMLAttribute *attribute = _xml->FirstAttribute();
 
   unsigned int i = 0;
@@ -860,6 +877,18 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
       ParamPtr p = _sdf->GetAttribute(i);
       if (p->GetKey() == attribute->Name())
       {
+        if (frameReferenceAttributes.count(
+                std::make_pair(_sdf->GetName(), attribute->Name())) != 0)
+        {
+          if (!isValidFrameReference(attribute->Value()))
+          {
+            _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+                "'" + std::string(attribute->Value()) +
+                    "' is reserved; it cannot be used as a value of "
+                    "attribute [" +
+                    p->GetKey() + "]"});
+            }
+        }
         // Set the value of the SDF attribute
         if (!p->SetFromString(attribute->Value()))
         {
@@ -1042,8 +1071,19 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
                 "element"});
             return false;
           }
-          topLevelElem->GetAttribute("placement_frame")->SetFromString(
-                elemXml->FirstChildElement("placement_frame")->GetText());
+
+          const std::string placementFrameVal =
+              elemXml->FirstChildElement("placement_frame")->GetText();
+
+          if (!isValidFrameReference(placementFrameVal))
+          {
+            _errors.push_back({ErrorCode::RESERVED_NAME,
+                "'" + placementFrameVal +
+                    "' is reserved; it cannot be used as a value of "
+                    "element [placement_frame]"});
+          }
+          topLevelElem->GetAttribute("placement_frame")
+              ->SetFromString(placementFrameVal);
         }
 
         if (isModel || isActor)
@@ -1066,21 +1106,14 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
           }
         }
 
-        if (_sdf->GetName() == "model")
-        {
-          addNestedModel(_sdf, includeSDF->Root(), _errors);
-        }
-        else
-        {
-          includeSDF->Root()->GetFirstElement()->SetParent(_sdf);
-          _sdf->InsertElement(includeSDF->Root()->GetFirstElement());
-          // TODO: This was used to store the included filename so that when
-          // a world is saved, the included model's SDF is not stored in the
-          // world file. This highlights the need to make model inclusion
-          // a core feature of SDF, and not a hack that that parser handles
-          // includeSDF->Root()->GetFirstElement()->SetInclude(
-          // elemXml->Attribute("filename"));
-        }
+        includeSDF->Root()->GetFirstElement()->SetParent(_sdf);
+        _sdf->InsertElement(includeSDF->Root()->GetFirstElement());
+        // TODO: This was used to store the included filename so that when
+        // a world is saved, the included model's SDF is not stored in the
+        // world file. This highlights the need to make model inclusion
+        // a core feature of SDF, and not a hack that that parser handles
+        // includeSDF->Root()->GetFirstElement()->SetInclude(
+        // elemXml->Attribute("filename"));
 
         continue;
       }
@@ -1155,26 +1188,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
 }
 
 /////////////////////////////////////////////////
-static void replace_all(std::string &_str,
-                        const std::string &_from,
-                        const std::string &_to)
-{
-  if (_from.empty())
-  {
-    return;
-  }
-  size_t start_pos = 0;
-  while ((start_pos = _str.find(_from, start_pos)) != std::string::npos)
-  {
-    _str.replace(start_pos, _from.length(), _to);
-    // We need to advance our starting position beyond what we
-    // just replaced to deal with the case where the '_to' string
-    // happens to contain a piece of '_from'.
-    start_pos += _to.length();
-  }
-}
-
-/////////////////////////////////////////////////
 void copyChildren(ElementPtr _sdf,
                   tinyxml2::XMLElement *_xml,
                   const bool _onlyUnknown)
@@ -1230,164 +1243,6 @@ void copyChildren(ElementPtr _sdf,
       copyChildren(element, elemXml, _onlyUnknown);
       _sdf->InsertElement(element);
     }
-  }
-}
-
-/////////////////////////////////////////////////
-void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
-{
-  Errors errors;
-  addNestedModel(_sdf, _includeSDF, errors);
-  for (const auto &e : errors)
-  {
-    sdferr << e << '\n';
-  }
-}
-
-/////////////////////////////////////////////////
-void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
-{
-  ElementPtr modelPtr = _includeSDF->GetElement("model");
-  ElementPtr elem = modelPtr->GetFirstElement();
-  std::map<std::string, std::string> replace;
-
-  ignition::math::Pose3d modelPose =
-    modelPtr->Get<ignition::math::Pose3d>("pose");
-
-  std::string modelName = modelPtr->Get<std::string>("name");
-
-  // Inject a frame to represent the nested __model__ frame.
-  ElementPtr nestedModelFrame = _sdf->AddElement("frame");
-  const std::string nestedModelFrameName = modelName + "::__model__";
-  nestedModelFrame->GetAttribute("name")->Set(nestedModelFrameName);
-
-  replace["__model__"] = nestedModelFrameName;
-
-  if (modelPtr->GetAttribute("placement_frame")->GetSet())
-  {
-    const std::string placementFrameName =
-        modelPtr->GetAttribute("placement_frame")->GetAsString();
-
-    if (!placementFrameName.empty())
-    {
-      // The placementFrameShimElement frame is added as a way to inject the
-      // placement frame information into expanded nested models. This will not
-      // be necessary when included nested models work as directly nested
-      // models. See
-      // https://github.com/osrf/sdformat/issues/319#issuecomment-665214004
-      // TODO (addisu) Remove placementFrameIdentifier once PR addressing
-      // https://github.com/osrf/sdformat/issues/284 lands
-      ElementPtr placementFrameShimElement = _sdf->AddElement("frame");
-      placementFrameShimElement->GetAttribute("name")->Set(
-          modelName + "::__placement_frame__");
-      placementFrameShimElement->GetAttribute("attached_to")
-          ->Set(modelName + "::" + placementFrameName);
-    }
-  }
-
-  std::string canonicalLinkName = "";
-  if (modelPtr->GetAttribute("canonical_link")->GetSet())
-  {
-    canonicalLinkName = modelPtr->GetAttribute("canonical_link")->GetAsString();
-  }
-  else if (modelPtr->HasElement("link"))
-  {
-    canonicalLinkName =
-      modelPtr->GetElement("link")->GetAttribute("name")->GetAsString();
-  }
-  nestedModelFrame->GetAttribute("attached_to")
-      ->Set(modelName + "::" + canonicalLinkName);
-
-  ElementPtr nestedModelFramePose = nestedModelFrame->AddElement("pose");
-  nestedModelFramePose->Set(modelPose);
-
-  // Set the nestedModelFrame's //pose/@relative_to to the frame used in
-  // //include/pose/@relative_to.
-  std::string modelPoseRelativeTo = "";
-  if (modelPtr->HasElement("pose"))
-  {
-    modelPoseRelativeTo =
-        modelPtr->GetElement("pose")->Get<std::string>("relative_to");
-  }
-
-  // If empty, use "__model__", since leaving it empty would make it
-  // relative_to the canonical link frame specified in //frame/@attached_to.
-  if (modelPoseRelativeTo.empty())
-  {
-    modelPoseRelativeTo = "__model__";
-  }
-
-  nestedModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
-
-  while (elem)
-  {
-    if ((elem->GetName() == "link") ||
-        (elem->GetName() == "model") ||
-        (elem->GetName() == "joint") ||
-        (elem->GetName() == "frame"))
-    {
-      std::string elemName = elem->Get<std::string>("name");
-      std::string newName =  modelName + "::" + elemName;
-      replace[elemName] = newName;
-    }
-
-    if ((elem->GetName() == "link") || (elem->GetName() == "model"))
-    {
-      // Add a pose element even if the element doesn't originally have one
-      auto elemPose = elem->GetElement("pose");
-
-      // If //pose/@relative_to is empty, explicitly set it to the name
-      // of the nested model frame.
-      auto relativeTo = elemPose->GetAttribute("relative_to");
-      if (relativeTo->GetAsString().empty())
-      {
-        relativeTo->Set(nestedModelFrameName);
-      }
-
-      // If //pose/@relative_to is set, let the replacement step handle it.
-    }
-    else if (elem->GetName() == "frame")
-    {
-      // If //frame/@attached_to is empty, explicitly set it to the name
-      // of the nested model frame.
-      auto attachedTo = elem->GetAttribute("attached_to");
-      if (attachedTo->GetAsString().empty())
-      {
-        attachedTo->Set(nestedModelFrameName);
-      }
-
-      // If //frame/@attached_to is set, let the replacement step handle it.
-    }
-    elem = elem->GetNextElement();
-  }
-
-  std::string str = _includeSDF->ToString("");
-  for (std::map<std::string, std::string>::iterator iter = replace.begin();
-       iter != replace.end(); ++iter)
-  {
-    replace_all(str, std::string("\"") + iter->first + "\"",
-                std::string("\"") + iter->second + "\"");
-    replace_all(str, std::string("'") + iter->first + "'",
-                std::string("'") + iter->second + "'");
-    replace_all(str, std::string(">") + iter->first + "<",
-                std::string(">") + iter->second + "<");
-  }
-
-  _includeSDF->ClearElements();
-  readString(str, _includeSDF, _errors);
-
-  elem = _includeSDF->GetElement("model")->GetFirstElement();
-  ElementPtr nextElem;
-  while (elem)
-  {
-    nextElem = elem->GetNextElement();
-
-    if (elem->GetName() != "pose")
-    {
-      elem->SetParent(_sdf);
-      _sdf->InsertElement(elem);
-    }
-    elem = nextElem;
   }
 }
 
@@ -1590,6 +1445,36 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
   auto checkWorldFrameAttachedToNames = [](
       const sdf::World *_world) -> bool
   {
+    auto findNameInWorld = [](const sdf::World *_inWorld,
+        const std::string &_name) -> bool {
+      if (_inWorld->ModelNameExists(_name) ||
+          _inWorld->FrameNameExists(_name))
+      {
+        return true;
+      }
+
+      const auto delimIndex = _name.find("::");
+      if (delimIndex != std::string::npos && delimIndex + 2 < _name.size())
+      {
+        std::string modelName = _name.substr(0, delimIndex);
+        std::string nameToCheck = _name.substr(delimIndex + 2);
+        const auto *model = _inWorld->ModelByName(modelName);
+        if (nullptr == model)
+        {
+          return false;
+        }
+
+        if (model->LinkNameExists(nameToCheck) ||
+            model->ModelNameExists(nameToCheck) ||
+            model->JointNameExists(nameToCheck) ||
+            model->FrameNameExists(nameToCheck))
+        {
+          return true;
+        }
+      }
+      return false;
+    };
+
     bool worldResult = true;
     for (uint64_t f = 0; f < _world->FrameCount(); ++f)
     {
@@ -1613,8 +1498,7 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
                   << std::endl;
         worldResult = false;
       }
-      else if (!_world->ModelNameExists(attachedTo) &&
-               !_world->FrameNameExists(attachedTo))
+      else if (!findNameInWorld(_world, attachedTo))
       {
         std::cerr << "Error: attached_to name[" << attachedTo
                   << "] specified by frame with name[" << frame->Name()
@@ -1712,7 +1596,8 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root)
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
-    sdf::FrameAttachedToGraph graph;
+    auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+    sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
     auto errors = sdf::buildFrameAttachedToGraph(graph, _model);
     if (!errors.empty())
     {
@@ -1740,7 +1625,8 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root)
       const sdf::World *_world) -> bool
   {
     bool worldResult = true;
-    sdf::FrameAttachedToGraph graph;
+    auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+    sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
     auto errors = sdf::buildFrameAttachedToGraph(graph, _world);
     if (!errors.empty())
     {
@@ -1793,7 +1679,8 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
-    sdf::PoseRelativeToGraph graph;
+    auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
+    sdf::ScopedGraph<PoseRelativeToGraph> graph(ownedGraph);
     auto errors = sdf::buildPoseRelativeToGraph(graph, _model);
     if (!errors.empty())
     {
@@ -1821,7 +1708,8 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
       const sdf::World *_world) -> bool
   {
     bool worldResult = true;
-    sdf::PoseRelativeToGraph graph;
+    auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
+    sdf::ScopedGraph<PoseRelativeToGraph> graph(ownedGraph);
     auto errors = sdf::buildPoseRelativeToGraph(graph, _world);
     if (!errors.empty())
     {
@@ -1904,7 +1792,8 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
 
       if (!_model->LinkNameExists(childName) &&
           !_model->JointNameExists(childName) &&
-          !_model->FrameNameExists(childName))
+          !_model->FrameNameExists(childName) &&
+          !_model->ModelNameExists(childName))
       {
         std::cerr << "Error: child frame with name[" << childName
                   << "] specified by joint with name[" << joint->Name()

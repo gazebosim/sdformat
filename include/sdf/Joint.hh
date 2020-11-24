@@ -37,6 +37,7 @@ namespace sdf
   class JointPrivate;
   struct FrameAttachedToGraph;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \enum JointType
   /// \brief The set of joint types. INVALID indicates that joint type has
@@ -221,19 +222,18 @@ namespace sdf
     /// \return SemanticPose object for this link.
     public: sdf::SemanticPose SemanticPose() const;
 
-    /// \brief Give a weak pointer to the FrameAttachedToGraph to be used
-    /// for resolving parent and child link names. This is private and is
-    /// intended to be called by  Model::Load.
-    /// \param[in] _graph Weak pointer to FrameAttachedToGraph.
+    /// \brief Give the scoped FrameAttachedToGraph to be used for resolving
+    /// parent and child link names. This is private and is intended to be
+    /// called by Model::Load.
+    /// \param[in] _graph scoped FrameAttachedToGraph object.
     private: void SetFrameAttachedToGraph(
-        std::weak_ptr<const FrameAttachedToGraph> _graph);
+        sdf::ScopedGraph<FrameAttachedToGraph> _graph);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
-    /// Model::Load.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by Model::Load.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Model::Load to call SetPoseRelativeToGraph.
     friend class Model;

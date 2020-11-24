@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<sdf version='1.8'>
+  <world name="world_nested_frame_attached_to">
+
+    <frame name="world_frame"/>          <!-- VALID: Directly attached_to implicit world frame. -->
+
+    <model name="M1">
+      <link name="L"/>
+      <model name="M2">
+        <link name="L"/>
+      </model>
+      <frame name="F0" attached_to="M2::L"/> <!-- VALID: Directly attached_to link M2::L. -->
+      <joint name="J1" type="fixed">
+        <parent>L</parent>
+        <child>F0</child>
+      </joint>
+    </model>
+
+    <frame name="F0" attached_to=""/>    <!-- VALID: Directly attached_to implicit world frame by default. -->
+    <frame name="F1" attached_to="M1"/>  <!-- VALID: Indirectly attached_to implicit to canonical link M1::L-->
+    <frame name="F2" attached_to="M1::L"/>  <!-- VALID: Directly attached_to link L of model M1. -->
+    <frame name="F3" attached_to="M1::M2"/>  <!-- VALID: Indirectly attached to link M1::M2::L. -->
+    <frame name="F4" attached_to="M1::M2::L"/>  <!-- VALID: Directly attached to link M1::M2::L. -->
+    <frame name="F5" attached_to="M1::F0"/>  <!-- VALID: Indirectly attached to to link M1::M2::L. -->
+    <frame name="F6" attached_to="M1::J1"/>  <!-- VALID: Indirectly attached to to link M1::M2::L. -->
+  </world>
+</sdf>

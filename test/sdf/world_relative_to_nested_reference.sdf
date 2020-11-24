@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<sdf version='1.8'>
+  <world name="world_relative_to_nested_reference">
+    <model name="M1">
+      <pose>1 0 0 0 1.5707963267948966 0</pose>
+      <link name="L1">
+        <pose>0 1 0 0 0 0</pose>
+      </link>
+      <joint name="J1" type="fixed">
+        <parent>L1</parent>
+        <child>L2</child>
+      </joint>
+      <link name="L2">
+        <pose>0 0 1 0 0 0</pose>
+      </link>
+      <frame name="F1">
+        <pose relative_to="L2">1 0 0 0 0 0</pose>
+      </frame>
+      <model name="CM1">
+        <pose>0 1 0 1.5707963267948966 0 0</pose>
+        <link name="L">
+          <pose>1 0 0 0 -1.5707963267948966 0</pose>
+        </link>
+      </model>
+    </model>
+    <frame name="F2">
+      <pose relative_to="M1">2 0 0 0 0 0</pose>
+    </frame>
+    <frame name="F3">
+      <pose relative_to="M1::L1">3 0 0 0 0 0</pose>
+    </frame>
+    <frame name="F4">
+      <pose relative_to="M1::J1">4 0 0 0 0 0</pose>
+    </frame>
+    <frame name="F5">
+      <pose relative_to="M1::F1">5 0 0 0 0 0</pose>
+    </frame>
+    <frame name="F6">
+      <pose relative_to="M1::CM1">6 0 0 0 0 0</pose>
+    </frame>
+    <frame name="F7">
+      <pose relative_to="M1::CM1::L">7 0 0 0 0 0</pose>
+    </frame>
+  </world>
+</sdf>

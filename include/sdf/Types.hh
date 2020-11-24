@@ -94,6 +94,13 @@ namespace sdf
   /// \brief A vector of Error.
   using Errors = std::vector<Error>;
 
+  /// \brief Output operator for a collection of errors.
+  /// \param[in,out] _out The output stream.
+  /// \param[in] _err The errors to output.
+  /// \return Reference to the given output stream
+  SDFORMAT_VISIBLE std::ostream &operator<<(
+      std::ostream &_out, const sdf::Errors &_errs);
+
   /// \brief Defines a color
   class SDFORMAT_VISIBLE Color
   {

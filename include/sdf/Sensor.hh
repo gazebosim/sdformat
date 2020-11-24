@@ -23,6 +23,7 @@
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
@@ -35,11 +36,13 @@ namespace sdf
   class AirPressure;
   class Altimeter;
   class Camera;
+  class ForceTorque;
   class Imu;
   class Lidar;
   class Magnetometer;
   class SensorPrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \enum SensorType
   /// \brief The set of sensor types.
@@ -287,6 +290,17 @@ namespace sdf
     /// \sa SensorType Type() const
     public: const Camera *CameraSensor() const;
 
+    /// \brief Set the force torque sensor.
+    /// \param[in] _ft The force torque sensor.
+    public: void SetForceTorqueSensor(const ForceTorque &_ft);
+
+    /// \brief Get a pointer to a force torque sensor, or nullptr if the sensor
+    /// does not contain a force torque sensor.
+    /// \return Pointer to the force torque sensor, or nullptr if the sensor
+    /// is not a force torque sensor.
+    /// \sa SensorType Type() const
+    public: const ForceTorque *ForceTorqueSensor() const;
+
     /// \brief Set the IMU sensor.
     /// \param[in] _imu The IMU sensor.
     public: void SetImuSensor(const Imu &_imu);
@@ -315,12 +329,12 @@ namespace sdf
     /// \param[in] _xmlParentName Name of xml parent object.
     private: void SetXmlParentName(const std::string &_xmlParentName);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is
