@@ -102,7 +102,7 @@ Errors Capsule::Load(ElementPtr _sdf)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Invalid <radius> data for a <capsule> geometry. "
-          "Using a radius of 1."});
+          "Using a radius of 0.5."});
     }
     this->dataPtr->capsule.SetRadius(pair.first);
   }
@@ -110,7 +110,7 @@ Errors Capsule::Load(ElementPtr _sdf)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
         "Capsule geometry is missing a <radius> child element. "
-        "Using a radius of 1."});
+        "Using a radius of 0.5."});
   }
 
   if (_sdf->HasElement("length"))

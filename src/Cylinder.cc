@@ -102,7 +102,7 @@ Errors Cylinder::Load(ElementPtr _sdf)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Invalid <radius> data for a <cylinder> geometry. "
-          "Using a radius of 1."});
+          "Using a radius of 0.5."});
     }
     this->dataPtr->cylinder.SetRadius(pair.first);
   }
@@ -110,7 +110,7 @@ Errors Cylinder::Load(ElementPtr _sdf)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
         "Cylinder geometry is missing a <radius> child element. "
-        "Using a radius of 1."});
+        "Using a radius of 0.5."});
   }
 
   if (_sdf->HasElement("length"))
