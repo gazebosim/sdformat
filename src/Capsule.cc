@@ -45,8 +45,7 @@ Capsule::~Capsule()
 Capsule::Capsule(const Capsule &_capsule)
   : dataPtr(new CapsulePrivate)
 {
-  this->dataPtr->capsule = _capsule.dataPtr->capsule;
-  this->dataPtr->sdf = _capsule.dataPtr->sdf;
+  *this->dataPtr = *_capsule.dataPtr;
 }
 
 //////////////////////////////////////////////////
