@@ -264,6 +264,13 @@ but with improved human-readability..
 
 ## SDF protocol 1.7 to 1.8
 
+### Additions
+
+1. **capsule.sdf** new shape type included in `//geometry`
+    + description: A shape consisting of a cylinder capped by hemispheres
+      with parameters for the `radius` and `length` of cylindrical section.
+    * [Pull request 389](https://github.com/osrf/sdformat/pull/389)
+
 ### Modifications
 
 1. **joint.sdf** `child` and `parent` elements accept frame names instead of only link names
