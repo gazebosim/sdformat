@@ -810,6 +810,29 @@ TEST(check, SDF)
 }
 
 /////////////////////////////////////////////////
+TEST(check_shapes_sdf, SDF)
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+
+  {
+    std::string path = pathBase +"/shapes.sdf";
+
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output);
+  }
+
+  {
+    std::string path = pathBase +"/shapes_world.sdf";
+
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output);
+  }
+}
+
+/////////////////////////////////////////////////
 TEST(check_model_sdf, SDF)
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
