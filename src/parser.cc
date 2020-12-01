@@ -29,6 +29,7 @@
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Param.hh"
+#include "sdf/ParamPassing.hh"
 #include "sdf/Root.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/World.hh"
@@ -968,22 +969,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
           continue;
         }
 
-        // TODO(jenn) prototyping parameter passing
-        // ref: sdformat.org > Documentation > Proposal for parameter passing
-        if (elemXml->FirstChildElement("experimental:params"))
-        {
-          tinyxml2::XMLNode *firstChild =
-            elemXml->FirstChildElement("experimental:params")->FirstChild();
-          std::string firstChildVal = firstChild->Value();
-
-          // TODO(jenn) update in future
-          if (firstChildVal != "test")
-          {
-            _errors.push_back({ErrorCode::ELEMENT_INVALID,
-              "Invalid element <" + firstChildVal + "> for parameter passing"});
-          }
-        }
-
         // NOTE: sdf::init is an expensive call. For performance reason,
         // a new sdf pointer is created here by cloning a fresh sdf template
         // pointer instead of calling init every iteration.
@@ -1101,6 +1086,15 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
           // a core feature of SDF, and not a hack that that parser handles
           // includeSDF->Root()->GetFirstElement()->SetInclude(
           // elemXml->Attribute("filename"));
+        }
+
+        // TODO(jenn) prototyping parameter passing
+        // ref: sdformat.org > Documentation > Proposal for parameter passing
+        if (elemXml->FirstChildElement("experimental:params"))
+        {
+          updateParams(elemXml->FirstChildElement("experimental:params"),
+                       includeSDF,
+                       _errors);
         }
 
         continue;

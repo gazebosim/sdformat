@@ -27,7 +27,7 @@ void print_errors(sdf::Errors &_errors)
 }
 
 /////////////////////////////////////////////////
-TEST(ParamPassingTest, ExperimentalParamsElement)
+TEST(ParamPassingTest, ExperimentalParamsTag)
 {
   const std::string modelRootPath =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
@@ -61,8 +61,8 @@ TEST(ParamPassingTest, ExperimentalParamsElement)
   errors = root.Load(testFile);
   print_errors(errors);
 
-  // TODO(jenn) update in future
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(errors.size(), 1u);
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  ASSERT_EQ(errors.size(), 2u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::ELEMENT_MISSING);
 }

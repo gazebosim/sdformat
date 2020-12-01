@@ -4,9 +4,39 @@
     <model name="robot">
       <include>
         <uri>robot</uri>
+
         <experimental:params>
-          <test/>
+          <visual name="chassis::lidar_visual" action="remove"/>
+          <sensor name="chassis::lidar" action="remove"/>
+
+          <visual name="chassis::camera_visual" action="add">
+            <pose>-1.06 0 0 0 0 3.14</pose>
+            <geometry>
+              <box>
+                <size>0.1 0.1 0.1</size>
+              </box>
+            </geometry>
+          </visual>
+
+          <sensor name="top::camera" action="modify">
+            <pose>-0.2 0 0.3 0 0.0 3.14</pose>
+            <update_rate>60</update_rate>
+          </sensor>
+
+          <visual name="top::camera_visual">
+            <geometry action="replace">
+              <sphere>
+                <radius>0.05</radius>
+              </sphere>
+            </geometry>
+            <material action="modify">
+              <!-- blue -->
+              <ambient>0 0 1 1</ambient>
+              <diffuse>0 0 1 1</diffuse>
+            </material>
+          </visual>
         </experimental:params>
+
       </include>
     </model>
   </world>

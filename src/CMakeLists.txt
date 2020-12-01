@@ -43,6 +43,7 @@ set (sources
   parser.cc
   parser_urdf.cc
   Param.cc
+  ParamPassing.cc
   Pbr.cc
   Physics.cc
   Plane.cc

@@ -30,6 +30,7 @@ set (headers
   Model.hh
   Noise.hh
   Param.hh
+  ParamPassing.hh
   parser.hh
   Pbr.hh
   Physics.hh
