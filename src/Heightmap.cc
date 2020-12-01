@@ -533,6 +533,12 @@ const HeightmapTexture *Heightmap::TextureByIndex(uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+void Heightmap::AddTexture(const HeightmapTexture &_texture)
+{
+  this->dataPtr->textures.push_back(_texture);
+}
+
+/////////////////////////////////////////////////
 uint64_t Heightmap::BlendCount() const
 {
   return this->dataPtr->blends.size();
@@ -544,4 +550,10 @@ const HeightmapBlend *Heightmap::BlendByIndex(uint64_t _index) const
   if (_index < this->dataPtr->blends.size())
     return &this->dataPtr->blends[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+void Heightmap::AddBlend(const HeightmapBlend &_blend)
+{
+  this->dataPtr->blends.push_back(_blend);
 }

@@ -258,6 +258,10 @@ namespace sdf
     /// \sa uint64_t TextureCount() const
     public: const HeightmapTexture *TextureByIndex(uint64_t _index) const;
 
+    /// \brief Add a heightmap texture.
+    /// \param[in] _texture Texture to add.
+    public: void AddTexture(const HeightmapTexture &_texture);
+
     /// \brief Get the number of heightmap blends.
     /// \return Number of heightmap blends contained in this Heightmap object.
     public: uint64_t BlendCount() const;
@@ -269,6 +273,10 @@ namespace sdf
     /// exist.
     /// \sa uint64_t BlendCount() const
     public: const HeightmapBlend *BlendByIndex(uint64_t _index) const;
+
+    /// \brief Add a heightmap blend.
+    /// \param[in] _blend Blend to add.
+    public: void AddBlend(const HeightmapBlend &_blend);
 
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has

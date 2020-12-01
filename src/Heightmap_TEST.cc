@@ -255,6 +255,32 @@ TEST(DOMHeightmap, CopyAssignmentAfterMove)
 /////////////////////////////////////////////////
 TEST(DOMHeightmap, Set)
 {
+  sdf::HeightmapTexture heightmapTexture;
+  EXPECT_EQ(nullptr, heightmapTexture.Element());
+
+  EXPECT_DOUBLE_EQ(10.0, heightmapTexture.Size());
+  heightmapTexture.SetSize(21.05);
+  EXPECT_DOUBLE_EQ(21.05, heightmapTexture.Size());
+
+  EXPECT_TRUE(heightmapTexture.Diffuse().empty());
+  heightmapTexture.SetDiffuse("diffuse");
+  EXPECT_EQ("diffuse", heightmapTexture.Diffuse());
+
+  EXPECT_TRUE(heightmapTexture.Normal().empty());
+  heightmapTexture.SetNormal("normal");
+  EXPECT_EQ("normal", heightmapTexture.Normal());
+
+  sdf::HeightmapBlend heightmapBlend;
+  EXPECT_EQ(nullptr, heightmapBlend.Element());
+
+  EXPECT_DOUBLE_EQ(0.0, heightmapBlend.MinHeight());
+  heightmapBlend.SetMinHeight(21.05);
+  EXPECT_DOUBLE_EQ(21.05, heightmapBlend.MinHeight());
+
+  EXPECT_DOUBLE_EQ(0.0, heightmapBlend.FadeDistance());
+  heightmapBlend.SetFadeDistance(21.05);
+  EXPECT_DOUBLE_EQ(21.05, heightmapBlend.FadeDistance());
+
   sdf::Heightmap heightmap;
   EXPECT_EQ(nullptr, heightmap.Element());
 
@@ -282,31 +308,21 @@ TEST(DOMHeightmap, Set)
   heightmap.SetSampling(12u);
   EXPECT_EQ(12u, heightmap.Sampling());
 
-  sdf::HeightmapTexture heightmapTexture;
-  EXPECT_EQ(nullptr, heightmapTexture.Element());
+  EXPECT_EQ(0u, heightmap.TextureCount());
+  heightmap.AddTexture(heightmapTexture);
+  EXPECT_EQ(1u, heightmap.TextureCount());
+  auto heightmapTexture2 = heightmap.TextureByIndex(0);
+  EXPECT_DOUBLE_EQ(heightmapTexture2->Size(), heightmapTexture.Size());
+  EXPECT_EQ(heightmapTexture2->Diffuse(), heightmapTexture.Diffuse());
+  EXPECT_EQ(heightmapTexture2->Normal(), heightmapTexture.Normal());
 
-  EXPECT_DOUBLE_EQ(10.0, heightmapTexture.Size());
-  heightmapTexture.SetSize(21.05);
-  EXPECT_DOUBLE_EQ(21.05, heightmapTexture.Size());
-
-  EXPECT_TRUE(heightmapTexture.Diffuse().empty());
-  heightmapTexture.SetDiffuse("diffuse");
-  EXPECT_EQ("diffuse", heightmapTexture.Diffuse());
-
-  EXPECT_TRUE(heightmapTexture.Normal().empty());
-  heightmapTexture.SetNormal("normal");
-  EXPECT_EQ("normal", heightmapTexture.Normal());
-
-  sdf::HeightmapBlend heightmapBlend;
-  EXPECT_EQ(nullptr, heightmapBlend.Element());
-
-  EXPECT_DOUBLE_EQ(0.0, heightmapBlend.MinHeight());
-  heightmapBlend.SetMinHeight(21.05);
-  EXPECT_DOUBLE_EQ(21.05, heightmapBlend.MinHeight());
-
-  EXPECT_DOUBLE_EQ(0.0, heightmapBlend.FadeDistance());
-  heightmapBlend.SetFadeDistance(21.05);
-  EXPECT_DOUBLE_EQ(21.05, heightmapBlend.FadeDistance());
+  EXPECT_EQ(0u, heightmap.BlendCount());
+  heightmap.AddBlend(heightmapBlend);
+  EXPECT_EQ(1u, heightmap.BlendCount());
+  auto heightmapBlend2 = heightmap.BlendByIndex(0);
+  EXPECT_DOUBLE_EQ(heightmapBlend2->MinHeight(), heightmapBlend.MinHeight());
+  EXPECT_DOUBLE_EQ(heightmapBlend2->FadeDistance(),
+      heightmapBlend.FadeDistance());
 }
 
 /////////////////////////////////////////////////
