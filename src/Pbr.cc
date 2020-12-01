@@ -55,6 +55,12 @@ class sdf::PbrWorkflowPrivate
   /// \brief Emissive map
   public: std::string emissiveMap = "";
 
+  /// \brief Light map
+  public: std::string lightMap;
+
+  /// \brief Light map texture coordinate set
+  public: unsigned int lightMapUvSet = 0u;
+
   /// \brief Roughness value (metal workflow only)
   public: double roughness = 0.5;
 
@@ -140,6 +146,7 @@ bool PbrWorkflow::operator==(const PbrWorkflow &_workflow) const
     && (this->dataPtr->glossinessMap == _workflow.dataPtr->glossinessMap)
     && (this->dataPtr->environmentMap == _workflow.dataPtr->environmentMap)
     && (this->dataPtr->emissiveMap == _workflow.dataPtr->emissiveMap)
+    && (this->dataPtr->lightMap == _workflow.dataPtr->lightMap)
     && (this->dataPtr->ambientOcclusionMap ==
         _workflow.dataPtr->ambientOcclusionMap)
     && (ignition::math::equal(
@@ -211,6 +218,13 @@ Errors PbrWorkflow::Load(sdf::ElementPtr _sdf)
 
   this->dataPtr->emissiveMap = _sdf->Get<std::string>("emissive_map",
       this->dataPtr->emissiveMap).first;
+
+  if (_sdf->HasElement("light_map"))
+  {
+    sdf::ElementPtr lightMapElem = _sdf->GetElement("light_map");
+    this->dataPtr->lightMap = lightMapElem->Get<std::string>();
+    this->dataPtr->lightMapUvSet = lightMapElem->Get<unsigned int>("uv_set");
+  }
 
   return errors;
 }
@@ -364,6 +378,25 @@ std::string PbrWorkflow::EmissiveMap() const
 void PbrWorkflow::SetEmissiveMap(const std::string &_map)
 {
   this->dataPtr->emissiveMap = _map;
+}
+
+//////////////////////////////////////////////////
+std::string PbrWorkflow::LightMap() const
+{
+  return this->dataPtr->lightMap;
+}
+
+//////////////////////////////////////////////////
+void PbrWorkflow::SetLightMap(const std::string &_map, unsigned int _uvSet)
+{
+  this->dataPtr->lightMap = _map;
+  this->dataPtr->lightMapUvSet = _uvSet;
+}
+
+//////////////////////////////////////////////////
+unsigned int PbrWorkflow::LightMapTexCoordSet() const
+{
+  return this->dataPtr->lightMapUvSet;
 }
 
 //////////////////////////////////////////////////
