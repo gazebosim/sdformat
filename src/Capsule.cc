@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <sstream>
 #include "sdf/Capsule.hh"
 
 using namespace sdf;
@@ -92,44 +93,34 @@ Errors Capsule::Load(ElementPtr _sdf)
     return errors;
   }
 
-  if (_sdf->HasElement("radius"))
   {
     std::pair<double, bool> pair = _sdf->Get<double>("radius",
         this->dataPtr->capsule.Radius());
 
     if (!pair.second)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Invalid <radius> data for a <capsule> geometry. "
-          "Using a radius of 0.5."});
+      std::stringstream ss;
+      ss << "Invalid <radius> data for a <capsule> geometry. "
+         << "Using a radius of "
+         << this->dataPtr->capsule.Radius() << ".";
+      errors.push_back({ErrorCode::ELEMENT_INVALID, ss.str()});
     }
     this->dataPtr->capsule.SetRadius(pair.first);
   }
-  else
-  {
-    errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Capsule geometry is missing a <radius> child element. "
-        "Using a radius of 0.5."});
-  }
 
-  if (_sdf->HasElement("length"))
   {
     std::pair<double, bool> pair = _sdf->Get<double>("length",
         this->dataPtr->capsule.Length());
 
     if (!pair.second)
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Invalid <length> data for a <capsule> geometry. "
-          "Using a length of 1."});
+      std::stringstream ss;
+      ss << "Invalid <length> data for a <capsule> geometry. "
+         << "Using a length of "
+         << this->dataPtr->capsule.Length() << ".";
+      errors.push_back({ErrorCode::ELEMENT_INVALID, ss.str()});
     }
     this->dataPtr->capsule.SetLength(pair.first);
-  }
-  else
-  {
-    errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Capsule geometry is missing a <length> child element. "
-        "Using a length of 1."});
   }
 
   return errors;
