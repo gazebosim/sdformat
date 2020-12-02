@@ -47,7 +47,7 @@ namespace sdf
     public: Capsule(Capsule &&_capsule) noexcept;
 
     /// \brief Destructor
-    public: virtual ~Capsule();
+    public: ~Capsule();
 
     /// \brief Move assignment operator.
     /// \param[in] _capsule Capsule to move.
