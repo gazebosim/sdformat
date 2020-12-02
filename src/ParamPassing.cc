@@ -17,7 +17,7 @@
 #include <cstring>
 #include <vector>
 
-#include "sdf/ParamPassing.hh"
+#include "ParamPassing.hh"
 
 namespace sdf
 {
@@ -33,7 +33,6 @@ void updateParams(const tinyxml2::XMLElement *_childXmlParams,
        childElemXml;
        childElemXml = childElemXml->NextSiblingElement())
   {
-
     // element identifier
     const char *childElemId = childElemXml->Attribute("name");
     if (!childElemId)
@@ -136,6 +135,5 @@ ElementPtr getElementById(const SDFPtr _sdf, const char *_elemId,
 
   return childElem;
 }
-
 }
 }

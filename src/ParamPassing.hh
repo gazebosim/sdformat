@@ -35,7 +35,6 @@ namespace sdf
     /// \param[in,out] _includeSDF The loaded (from include) SDF pointer to
     // parse and update data into
     /// \param[out] _errors Captures errors found during parsing
-    SDFORMAT_VISIBLE
     void updateParams(const tinyxml2::XMLElement *_childXmlParams,
                       SDFPtr _includeSDF, Errors &_errors);
 
@@ -45,8 +44,7 @@ namespace sdf
     /// \param[in] _elemId The element identifier
     /// \param[in] _elemName The element name
     /// \return ElementPtr to the specified element, nullptr if element could
-    /// not found 
-    SDFORMAT_VISIBLE
+    /// not found
     ElementPtr getElementById(const SDFPtr _sdf, const char *_elemId,
                               const char *_elemName);
   }

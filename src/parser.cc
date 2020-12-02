@@ -29,7 +29,6 @@
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Param.hh"
-#include "sdf/ParamPassing.hh"
 #include "sdf/Root.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/World.hh"
@@ -38,6 +37,7 @@
 
 #include "Converter.hh"
 #include "FrameSemantics.hh"
+#include "ParamPassing.hh"
 #include "parser_private.hh"
 #include "parser_urdf.hh"
 
