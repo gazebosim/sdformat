@@ -36,7 +36,7 @@
               <environment_map>environment_map.png</environment_map>
               <ambient_occlusion_map>ambient_occlusion_map.png</ambient_occlusion_map>
               <emissive_map>emissive_map.png</emissive_map>
-              <light_map uv_set="2u">light_map.png</light_map>
+              <light_map uv_set="2">light_map.png</light_map>
             </specular>
           </pbr>
         </material>
@@ -70,7 +70,7 @@
               <environment_map>environment_map.png</environment_map>
               <ambient_occlusion_map>ambient_occlusion_map.png</ambient_occlusion_map>
               <emissive_map>emissive_map.png</emissive_map>
-              <light_map uv_set="4u">light_map.png</light_map>
+              <light_map>light_map.png</light_map>
             </metal>
           </pbr>
         </material>

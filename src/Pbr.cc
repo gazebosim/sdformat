@@ -223,7 +223,8 @@ Errors PbrWorkflow::Load(sdf::ElementPtr _sdf)
   {
     sdf::ElementPtr lightMapElem = _sdf->GetElement("light_map");
     this->dataPtr->lightMap = lightMapElem->Get<std::string>();
-    this->dataPtr->lightMapUvSet = lightMapElem->Get<unsigned int>("uv_set");
+    this->dataPtr->lightMapUvSet = lightMapElem->Get<unsigned int>("uv_set",
+        this->dataPtr->lightMapUvSet).first;
   }
 
   return errors;

@@ -252,7 +252,7 @@ TEST(Material, PbrDOM)
 
       // light map
       EXPECT_EQ("light_map.png", workflow->LightMap());
-      EXPECT_EQ(4u, workflow->LightMapTexCoordSet());
+      EXPECT_EQ(0u, workflow->LightMapTexCoordSet());
     }
   }
 }
@@ -578,7 +578,7 @@ TEST(Material, MaterialPBR)
       EXPECT_TRUE(metalElem->HasElement("light_map"));
       sdf::ElementPtr lightMapElem = metalElem->GetElement("light_map");
       EXPECT_EQ("light_map.png", lightMapElem->Get<std::string>());
-      EXPECT_EQ(4u, lightMapElem->Get<unsigned int>("uv_set"));
+      EXPECT_EQ(0u, lightMapElem->Get<unsigned int>("uv_set"));
     }
   }
 }
