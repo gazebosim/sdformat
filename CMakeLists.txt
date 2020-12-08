@@ -251,6 +251,7 @@ else (build_errors)
     include_directories(include
       ${PROJECT_BINARY_DIR}
       ${PROJECT_BINARY_DIR}/include
+      ${PROJECT_SOURCE_DIR}/test
       )
 
     link_directories(${PROJECT_BINARY_DIR}/src)

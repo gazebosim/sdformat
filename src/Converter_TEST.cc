@@ -24,7 +24,6 @@
 #include "Converter.hh"
 #include "XmlUtils.hh"
 
-#include "test_config.h"
 #include "test_util.hh"
 
 ////////////////////////////////////////////////////
