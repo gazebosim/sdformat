@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <light name="multiple_lights1" type="directional">
+    <pose>0 0 0 0 0 0</pose>
+  </light>
+
+  <light name="multiple_lights2" type="spot">
+    <pose>1 0 0 1.57 0 0</pose>
+  </light>
+
+  <light name="multiple_lights3" type="directional">
+    <pose>2 0 0 3.14 0 0</pose>
+  </light>
+
+</sdf>

@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+
+  <model name="nested_multiple_models_error">
+    <include>
+      <!-- This search path for this model must be added by the test code -->
+      <uri>multiple_models</uri>
+      <pose>1 1 1 1.570796326794895 0 0</pose>
+    </include>
+  </model>
+
+</sdf>

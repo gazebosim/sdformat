@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <actor name="multiple_actors1">
+    <pose>0 0 0 0 0 0</pose>
+  </actor>
+
+  <actor name="multiple_actors2">
+    <pose>1 0 0 1.57 0 0</pose>
+  </actor>
+
+  <actor name="multiple_actors3">
+    <pose>2 0 0 3.14 0 0</pose>
+  </actor>
+</sdf>
