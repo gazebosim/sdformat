@@ -179,7 +179,6 @@ sources = [
     "src/FrameSemantics.cc",
     "src/Geometry.cc",
     "src/Gui.cc",
-    "src/ign.cc",
     "src/Imu.cc",
     "src/JointAxis.cc",
     "src/Joint.cc",
