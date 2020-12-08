@@ -8,6 +8,8 @@
           <diffuse>0.2 0.5 0.1 1.0</diffuse>
           <specular>0.7 0.3 0.5 0.9</specular>
           <emissive>1.0 0.0 0.2 1.0</emissive>
+          <lighting>false</lighting>
+          <double_sided>true</double_sided>
           <shader type="vertex">
           </shader>
           <script>
