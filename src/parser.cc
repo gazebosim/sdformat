@@ -1001,29 +1001,46 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
         }
 
         sdf::ElementPtr topLevelElem;
-        bool isModel{false};
-        bool isActor{false};
-        if (includeSDF->Root()->HasElement("model"))
+        int countTopLevelElements = 0;
+        for (const auto & elementType : {"model", "actor", "light"})
         {
-          topLevelElem = includeSDF->Root()->GetElement("model");
-          isModel = true;
+          if (includeSDF->Root()->HasElement(elementType))
+          {
+            countTopLevelElements++;
+            topLevelElem = includeSDF->Root()->GetElement(elementType);
+          }
         }
-        else if (includeSDF->Root()->HasElement("actor"))
+
+        if (nullptr == topLevelElem)
         {
-          topLevelElem = includeSDF->Root()->GetElement("actor");
-          isActor = true;
-        }
-        else if (includeSDF->Root()->HasElement("light"))
-        {
-          topLevelElem = includeSDF->Root()->GetElement("light");
-        }
-        else
-        {
-          _errors.push_back({ErrorCode::ELEMENT_MISSING,
+          _errors.push_back({ErrorCode::ELEMENT_INVALID,
               "Failed to find top level <model> / <actor> / <light> for "
               "<include>\n"});
           continue;
         }
+
+        // Check if more than one type of top-level element
+        if (countTopLevelElements > 1)
+        {
+          _errors.push_back({ErrorCode::ELEMENT_INVALID,
+              "Found more than one of <model> / <actor> / <light> for "
+              "<include>\n"});
+          continue;
+        }
+
+        const auto topLevelElementType = topLevelElem->GetName();
+
+        // Check for more than one of the discovered top-level element type
+        if (nullptr != topLevelElem->GetNextElement(topLevelElementType))
+        {
+          _errors.push_back({ErrorCode::ELEMENT_INVALID,
+              "Found more than one of " + topLevelElem->GetName() + " for "
+              "<include>\n"});
+          continue;
+        }
+
+        bool isModel = topLevelElementType == "model";
+        bool isActor = topLevelElementType == "actor";
 
         if (elemXml->FirstChildElement("name"))
         {
