@@ -45,8 +45,17 @@ namespace sdf
     /// \param[in] _elemName The element name
     /// \return ElementPtr to the specified element, nullptr if element could
     /// not found
-    ElementPtr getElementById(const SDFPtr _sdf, const char *_elemId,
-                              const char *_elemName);
+    ElementPtr getElementById(const SDFPtr _sdf, const std::string &_elemId,
+                              const std::string &_elemName);
+
+    /// \brief Finds the last index of a matching substring in _elemId from _ref
+    /// \param[in] _elemId The element identifier
+    /// \param[in] _startIdx The starting index for the substring in _elemId
+    /// \param[in] _ref The reference to look for in _elemId
+    /// \return int64_t the last index of the matching prefix in _elemId
+    int64_t findPrefixLastIndex(const std::string &_elemId,
+                                const int64_t &_startIdx,
+                                const std::string &_ref);
   }
 }
 #endif

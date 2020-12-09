@@ -66,3 +66,25 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::ELEMENT_MISSING);
 }
+
+/////////////////////////////////////////////////
+TEST(ParamPassingTest, NestedInclude)
+{
+  const std::string modelRootPath =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                            "model", "nested_include") + "/";
+  sdf::setFindCallback(
+      [&](const std::string &_file)
+      {
+        return modelRootPath + _file;
+      });
+
+  std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
+                            "nested_include", "test_nested_include.sdf");
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  print_errors(errors);
+
+  EXPECT_TRUE(errors.empty());
+}

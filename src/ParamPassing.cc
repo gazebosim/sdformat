@@ -81,59 +81,83 @@ void updateParams(const tinyxml2::XMLElement *_childXmlParams,
 }
 
 //////////////////////////////////////////////////
-ElementPtr getElementById(const SDFPtr _sdf, const char *_elemId,
-                          const char *_elemName)
+ElementPtr getElementById(const SDFPtr _sdf, const std::string &_elemId,
+                          const std::string &_elemName)
 {
-  // make a copy of _elemId so std::strtok doesn't change original
-  auto elemIdName = std::make_unique<char[]>(std::strlen(_elemId) + 1);
-  std::strcpy(elemIdName.get(), _elemId);
-  char *idToken = std::strtok(elemIdName.get(), "::");
+  std::string modelName
+    = _sdf->Root()->GetFirstElement()->GetAttribute("name")->GetAsString();
 
-  ParamPtr modelNameAttr
-    = _sdf->Root()->GetFirstElement()->GetAttribute("name");
-  std::string modelName = modelNameAttr->GetAsString();
-  // TODO(jenn) error check if modelName.empty()?
-  modelName += "::";
-
+  // TODO(jenn) add requirement model name in element identifier?
   // child element of includeSDF
   ElementPtr childElem = _sdf->Root()->GetFirstElement()->GetFirstElement();
 
-  // look for element using element identifier tokens
-  bool foundElement = false;
-  while (idToken)
+  // start and stop idx of elemId for finding longest substring
+  int64_t startIdx = 0, stopIdx = 0, longestIdx = 0;
+  ElementPtr matchingChild = nullptr;
+
+  // iterate through included model
+  while (childElem)
   {
     std::string childName;
-    // iterate through included model
-    while (childElem)
+    if (childElem->HasAttribute("name"))
     {
-      if (childElem->HasAttribute("name"))
+      childName = childElem->GetAttribute("name")->GetAsString();
+
+      if (startIdx == 0)
       {
-        childName = childElem->GetAttribute("name")->GetAsString();
-
-        if (childElem->GetName() == _elemName &&
-            childName == modelName + idToken)
+        stopIdx = findPrefixLastIndex(modelName + "::" + _elemId,
+                                      startIdx,
+                                      childName);
+        if (stopIdx != -1)
         {
-          foundElement = true;
-          break;
-        }
-
-        if (childName == modelName + idToken)
-        {
-          childElem = childElem->GetFirstElement();
-          modelName = "";
-          break;
+          // removing added model name
+          stopIdx = stopIdx - (modelName.size()-1);
         }
       }
+      else
+        stopIdx = findPrefixLastIndex(_elemId, startIdx, childName);
 
-      childElem = childElem->GetNextElement();
+      if (stopIdx > longestIdx)
+      {
+        matchingChild = childElem;
+
+        // found matching element break out of included model iteration
+        if (childElem->GetName() == _elemName
+              && _elemId.substr(startIdx) == childName)
+          break;
+
+        longestIdx = stopIdx;
+      }
     }
 
-    idToken = std::strtok(NULL, "::");
+    childElem = childElem->GetNextElement();
+
+    // when no more children & found potential match,
+    // set next iteration to first element of match
+    if (!childElem && matchingChild)
+    {
+      childElem = matchingChild->GetFirstElement();
+      matchingChild = nullptr;
+      startIdx = longestIdx;
+    }
   }
 
-  if (!foundElement) childElem = nullptr;
+  // found no element match
+  if (!matchingChild)
+    childElem = nullptr;
 
   return childElem;
+}
+
+//////////////////////////////////////////////////
+int64_t findPrefixLastIndex(const std::string &_elemId,
+                               const int64_t &_startIdx,
+                               const std::string &_ref)
+{
+  if (_elemId.substr(_startIdx, _ref.size()) == _ref)
+    return _startIdx + (_ref.size()-1);
+
+  return -1;
 }
 }
 }
