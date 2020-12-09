@@ -60,7 +60,8 @@ void updateParams(const tinyxml2::XMLElement *_childXmlParams,
     }
     else
     {
-      elem = getElementById(_includeSDF, childElemId, childElemXml->Name());
+      elem = getElementById(_includeSDF, childElemId,
+                            childElemXml->Name(), true);
     }
 
     if (elem == nullptr)
@@ -81,8 +82,10 @@ void updateParams(const tinyxml2::XMLElement *_childXmlParams,
 }
 
 //////////////////////////////////////////////////
-ElementPtr getElementById(const SDFPtr _sdf, const std::string &_elemId,
-                          const std::string &_elemName)
+ElementPtr getElementById(const SDFPtr _sdf,
+                          const std::string &_elemId,
+                          const std::string &_elemName,
+                          const bool &_prefixModelName)
 {
   std::string modelName
     = _sdf->Root()->GetFirstElement()->GetAttribute("name")->GetAsString();
@@ -103,7 +106,7 @@ ElementPtr getElementById(const SDFPtr _sdf, const std::string &_elemId,
     {
       childName = childElem->GetAttribute("name")->GetAsString();
 
-      if (startIdx == 0)
+      if (startIdx == 0 && _prefixModelName)
       {
         stopIdx = findPrefixLastIndex(modelName + "::" + _elemId,
                                       startIdx,
@@ -115,7 +118,12 @@ ElementPtr getElementById(const SDFPtr _sdf, const std::string &_elemId,
         }
       }
       else
+      {
         stopIdx = findPrefixLastIndex(_elemId, startIdx, childName);
+
+        if (!_prefixModelName)
+          stopIdx += 3;  // past "::"
+      }
 
       if (stopIdx > longestIdx)
       {

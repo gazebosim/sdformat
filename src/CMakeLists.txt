@@ -170,6 +170,13 @@ if (BUILD_SDF_TEST)
     target_link_libraries(UNIT_parser_urdf_TEST PRIVATE
       ${TinyXML2_LIBRARIES})
   endif()
+
+  if (NOT WIN32)
+    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS ParamPassing.cc)
+    sdf_build_tests(ParamPassing_TEST.cc)
+    target_link_libraries(UNIT_ParamPassing_TEST PRIVATE
+      ${TinyXML2_LIBRARIES})
+  endif()
 endif()
 
 sdf_add_library(${sdf_target} ${sources})
