@@ -60,6 +60,8 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
+  const std::string kSdfScopeDelimiter = "::";
+
   /// \brief Split a string using the delimiter in splitter.
   /// \param[in] str       The string to split.
   /// \param[in] splitter  The delimiter to use.
@@ -228,6 +230,14 @@ namespace sdf
   /// \param[in] _in String to convert to lowercase
   /// \return Lowercase equilvalent of _in.
   std::string SDFORMAT_VISIBLE lowercase(const std::string &_in);
+
+  SDFORMAT_VISIBLE
+  std::pair<std::string, std::string> SplitName(
+      const std::string &_absoluteName);
+
+  SDFORMAT_VISIBLE
+  std::string JoinName(
+      const std::string &_scopeName, const std::string &_localName);
   }
 }
 #endif

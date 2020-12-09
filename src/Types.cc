@@ -88,5 +88,31 @@ std::ostream &operator<<(std::ostream &_out, const sdf::Errors &_errs)
   }
   return _out;
 }
+
+// Split a given absolute name into the parent model name and the local name.
+// If the give name is not scoped, this will return an empty string for the
+// parent model name and the given name as the local name.
+std::pair<std::string, std::string> SplitName(
+    const std::string &_absoluteName)
+{
+  const auto pos = _absoluteName.rfind(kSdfScopeDelimiter);
+  if (pos != std::string::npos)
+  {
+    const std::string first = _absoluteName.substr(0, pos);
+    const std::string second =
+        _absoluteName.substr(pos + kSdfScopeDelimiter.size());
+    return {first, second};
+  }
+  return {"", _absoluteName};
+}
+
+// Join an scope name prefix with a local name using the scope delimeter
+std::string JoinName(
+    const std::string &_scopeName, const std::string &_localName)
+{
+  if (_scopeName.empty())
+    return _localName;
+  return _scopeName + kSdfScopeDelimiter + _localName;
+}
 }
 }
