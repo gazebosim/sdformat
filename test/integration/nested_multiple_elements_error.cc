@@ -27,6 +27,7 @@
 const auto g_testPath = sdf::filesystem::append(PROJECT_SOURCE_PATH, "test");
 const auto g_modelsPath =
     sdf::filesystem::append(g_testPath, "integration", "model");
+const auto g_sdfPath = sdf::filesystem::append(g_testPath, "sdf");
 
 /////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
@@ -106,7 +107,7 @@ TEST(IncludesTest, NestedMultipleElementsErrorWorld)
 
   const auto sdfFile =
     sdf::filesystem::append(
-      g_modelsPath, "nested_multiple_elements_error_world");
+      g_sdfPath, "nested_multiple_elements_error_world.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);

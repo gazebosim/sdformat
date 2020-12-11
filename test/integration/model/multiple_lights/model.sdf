@@ -1,7 +1,8 @@
 <?xml version="1.0" ?>
 <sdf version="1.8">
-  <!-- While this file itself is valid, it cannot be included into another file
-  with the <include> element -->
+  <!-- This file is not valid because it contains multiple lights which is not
+  allowed -->
+
   <light name="multiple_lights1" type="directional">
     <pose>0 0 0 0 0 0</pose>
   </light>
