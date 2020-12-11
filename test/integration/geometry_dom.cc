@@ -23,6 +23,7 @@
 #include "sdf/Cylinder.hh"
 #include "sdf/Collision.hh"
 #include "sdf/Element.hh"
+#include "sdf/Ellipsoid.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Link.hh"
@@ -111,6 +112,26 @@ TEST(DOMGeometry, Shapes)
   ASSERT_NE(nullptr, cylinderVisGeom);
   EXPECT_DOUBLE_EQ(2.1, cylinderVisGeom->Radius());
   EXPECT_DOUBLE_EQ(10.2, cylinderVisGeom->Length());
+
+  // Test ellipsoid collision
+  const sdf::Collision *ellipsoidCol = link->CollisionByName("ellipsoid_col");
+  ASSERT_NE(nullptr, ellipsoidCol);
+  ASSERT_NE(nullptr, ellipsoidCol->Geom());
+  EXPECT_EQ(sdf::GeometryType::ELLIPSOID, ellipsoidCol->Geom()->Type());
+  const sdf::Ellipsoid *ellipsoidColGeom =
+    ellipsoidCol->Geom()->EllipsoidShape();
+  ASSERT_NE(nullptr, ellipsoidColGeom);
+  EXPECT_EQ(ignition::math::Vector3d(1.0, 2.0, 3.0), ellipsoidColGeom->Radii());
+
+  // Test ellipsoid visual
+  const sdf::Visual *ellipsoidVis = link->VisualByName("ellipsoid_vis");
+  ASSERT_NE(nullptr, ellipsoidVis);
+  ASSERT_NE(nullptr, ellipsoidVis->Geom());
+  EXPECT_EQ(sdf::GeometryType::ELLIPSOID, ellipsoidVis->Geom()->Type());
+  const sdf::Ellipsoid *ellipsoidVisGeom =
+    ellipsoidVis->Geom()->EllipsoidShape();
+  ASSERT_NE(nullptr, ellipsoidVisGeom);
+  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), ellipsoidVisGeom->Radii());
 
   // Test plane collision
   const sdf::Collision *planeCol = link->CollisionByName("plane_col");

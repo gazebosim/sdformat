@@ -32,6 +32,7 @@ namespace sdf
   class Box;
   class Capsule;
   class Cylinder;
+  class Ellipsoid;
   class Mesh;
   class Plane;
   class Sphere;
@@ -60,6 +61,9 @@ namespace sdf
 
     /// \brief A capsule geometry.
     CAPSULE = 7,
+
+    /// \brief An ellipsoid geometry
+    ELLIPSOID = 6,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
@@ -140,6 +144,17 @@ namespace sdf
     /// \brief Set the cylinder shape.
     /// \param[in] _cylinder The cylinder shape.
     public: void SetCylinderShape(const Cylinder &_cylinder);
+
+    /// \brief Get the ellipsoid geometry, or nullptr if the contained
+    /// geometry is not an ellipsoid.
+    /// \return Pointer to the visual's ellipsoid geometry, or nullptr if the
+    /// geometry is not an ellipsoid.
+    /// \sa GeometryType Type() const
+    public: const Ellipsoid *EllipsoidShape() const;
+
+    /// \brief Set the ellipsoid shape.
+    /// \param[in] _ellipsoid The ellipsoid shape.
+    public: void SetEllipsoidShape(const Ellipsoid &_ellipsoid);
 
     /// \brief Get the sphere geometry, or nullptr if the contained geometry is
     /// not a sphere.

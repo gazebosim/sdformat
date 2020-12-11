@@ -21,6 +21,7 @@ set (sources
   Converter.cc
   Cylinder.cc
   Element.cc
+  Ellipsoid.cc
   EmbeddedSdf.cc
   Error.cc
   Exception.cc
@@ -92,6 +93,7 @@ if (BUILD_SDF_TEST)
     Console_TEST.cc
     Cylinder_TEST.cc
     Element_TEST.cc
+    Ellipsoid_TEST.cc
     Error_TEST.cc
     Exception_TEST.cc
     Frame_TEST.cc

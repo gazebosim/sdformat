@@ -18,6 +18,7 @@
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
 #include "sdf/Cylinder.hh"
+#include "sdf/Ellipsoid.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
@@ -38,6 +39,9 @@ class sdf::GeometryPrivate
 
   /// \brief Pointer to a cylinder.
   public: std::unique_ptr<Cylinder> cylinder;
+
+  /// \brief Pointer to an ellipsoid
+  public: std::unique_ptr<Ellipsoid> ellipsoid;
 
   /// \brief Pointer to a plane.
   public: std::unique_ptr<Plane> plane;
@@ -86,6 +90,12 @@ Geometry::Geometry(const Geometry &_geometry)
   {
     this->dataPtr->cylinder = std::make_unique<sdf::Cylinder>(
         *_geometry.dataPtr->cylinder);
+  }
+
+  if (_geometry.dataPtr->ellipsoid)
+  {
+    this->dataPtr->ellipsoid = std::make_unique<sdf::Ellipsoid>(
+        *_geometry.dataPtr->ellipsoid);
   }
 
   if (_geometry.dataPtr->plane)
@@ -174,6 +184,13 @@ Errors Geometry::Load(ElementPtr _sdf)
     Errors err = this->dataPtr->cylinder->Load(_sdf->GetElement("cylinder"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
+  else if (_sdf->HasElement("ellipsoid"))
+  {
+    this->dataPtr->type = GeometryType::ELLIPSOID;
+    this->dataPtr->ellipsoid.reset(new Ellipsoid());
+    Errors err = this->dataPtr->ellipsoid->Load(_sdf->GetElement("ellipsoid"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
   else if (_sdf->HasElement("plane"))
   {
     this->dataPtr->type = GeometryType::PLANE;
@@ -257,6 +274,18 @@ const Cylinder *Geometry::CylinderShape() const
 void Geometry::SetCylinderShape(const Cylinder &_cylinder)
 {
   this->dataPtr->cylinder = std::make_unique<Cylinder>(_cylinder);
+}
+
+/////////////////////////////////////////////////
+const Ellipsoid *Geometry::EllipsoidShape() const
+{
+  return this->dataPtr->ellipsoid.get();
+}
+
+/////////////////////////////////////////////////
+void Geometry::SetEllipsoidShape(const Ellipsoid &_ellipsoid)
+{
+  this->dataPtr->ellipsoid = std::make_unique<Ellipsoid>(_ellipsoid);
 }
 
 /////////////////////////////////////////////////

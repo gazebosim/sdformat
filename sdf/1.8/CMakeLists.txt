@@ -11,6 +11,7 @@ set (sdfs
   collision.sdf
   contact.sdf
   cylinder_shape.sdf
+  ellipsoid_shape.sdf
   frame.sdf
   forcetorque.sdf
   geometry.sdf
