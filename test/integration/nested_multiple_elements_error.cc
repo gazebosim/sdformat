@@ -19,19 +19,9 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include "sdf/Actor.hh"
-#include "sdf/Collision.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Geometry.hh"
-#include "sdf/Light.hh"
-#include "sdf/Link.hh"
-#include "sdf/Mesh.hh"
-#include "sdf/Model.hh"
-#include "sdf/parser.hh"
 #include "sdf/Root.hh"
-#include "sdf/SDFImpl.hh"
-#include "sdf/Visual.hh"
-#include "sdf/World.hh"
 #include "test_config.h"
 
 const auto g_testPath = sdf::filesystem::append(PROJECT_SOURCE_PATH, "test");
@@ -45,15 +35,15 @@ std::string findFileCb(const std::string &_input)
 }
 
 //////////////////////////////////////////////////
-TEST(IncludesTest, nested_multiple_models_error)
+TEST(IncludesTest, NestedMultipleModelsError)
 {
   sdf::setFindCallback(findFileCb);
 
-  const auto worldFile =
+  const auto sdfFile =
     sdf::filesystem::append(g_modelsPath, "nested_multiple_models_error");
 
   sdf::Root root;
-  sdf::Errors errors = root.Load(worldFile);
+  sdf::Errors errors = root.Load(sdfFile);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(
     std::string("Found more than one of model for <include>\n"),
@@ -61,15 +51,15 @@ TEST(IncludesTest, nested_multiple_models_error)
 }
 
 //////////////////////////////////////////////////
-TEST(IncludesTest, nested_multiple_actors_error)
+TEST(IncludesTest, NestedMultipleActorsError)
 {
   sdf::setFindCallback(findFileCb);
 
-  const auto worldFile =
+  const auto sdfFile =
     sdf::filesystem::append(g_modelsPath, "nested_multiple_actors_error");
 
   sdf::Root root;
-  sdf::Errors errors = root.Load(worldFile);
+  sdf::Errors errors = root.Load(sdfFile);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(
     std::string("Found more than one of actor for <include>\n"),
@@ -77,15 +67,15 @@ TEST(IncludesTest, nested_multiple_actors_error)
 }
 
 //////////////////////////////////////////////////
-TEST(IncludesTest, nested_multiple_lights_error)
+TEST(IncludesTest, NestedMultipleLightsError)
 {
   sdf::setFindCallback(findFileCb);
 
-  const auto worldFile =
+  const auto sdfFile =
     sdf::filesystem::append(g_modelsPath, "nested_multiple_lights_error");
 
   sdf::Root root;
-  sdf::Errors errors = root.Load(worldFile);
+  sdf::Errors errors = root.Load(sdfFile);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(
     std::string("Found more than one of light for <include>\n"),
@@ -93,15 +83,33 @@ TEST(IncludesTest, nested_multiple_lights_error)
 }
 
 //////////////////////////////////////////////////
-TEST(IncludesTest, nested_multiple_elements_error)
+TEST(IncludesTest, NestedMultipleElementsError)
 {
   sdf::setFindCallback(findFileCb);
 
-  const auto worldFile =
+  const auto sdfFile =
     sdf::filesystem::append(g_modelsPath, "nested_multiple_elements_error");
 
   sdf::Root root;
-  sdf::Errors errors = root.Load(worldFile);
+  sdf::Errors errors = root.Load(sdfFile);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(
+    std::string(
+      "Found more than one of <model> / <actor> / <light> for <include>\n"),
+    errors[0].Message());
+}
+
+//////////////////////////////////////////////////
+TEST(IncludesTest, NestedMultipleElementsErrorWorld)
+{
+  sdf::setFindCallback(findFileCb);
+
+  const auto sdfFile =
+    sdf::filesystem::append(
+      g_modelsPath, "nested_multiple_elements_error_world");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(sdfFile);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(
     std::string(

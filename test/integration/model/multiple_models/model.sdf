@@ -1,102 +1,22 @@
 <?xml version="1.0" ?>
 <sdf version="1.8">
+  <!-- While this file itself is valid, it cannot be included into another file
+  with the <include> element -->
 
   <model name="multiple_models1">
     <pose>0 0 0 0 0 0</pose>
-    <link name="link">
-
-      <collision name="mesh_col">
-        <geometry>
-          <mesh>
-            <uri>meshes/mesh.dae</uri>
-            <submesh>
-              <name>my_submesh</name>
-              <center>true</center>
-            </submesh>
-            <scale>0.1 0.2 0.3</scale>
-          </mesh>
-        </geometry>
-      </collision>
-
-      <visual name="mesh_vis">
-        <geometry>
-          <mesh>
-            <uri>meshes/mesh.dae</uri>
-            <submesh>
-              <name>another_submesh</name>
-              <center>false</center>
-            </submesh>
-            <scale>1.2 2.3 3.4</scale>
-          </mesh>
-        </geometry>
-      </visual>
-    </link>
+    <link name="link"/>
   </model>
 
   <model name="multiple_models2">
     <pose>1 0 0 1.570796326794895 0 0</pose>
-    <link name="link">
-
-      <collision name="mesh_col">
-        <geometry>
-          <mesh>
-            <uri>meshes/mesh.dae</uri>
-            <submesh>
-              <name>my_submesh</name>
-              <center>true</center>
-            </submesh>
-            <scale>0.1 0.2 0.3</scale>
-          </mesh>
-        </geometry>
-      </collision>
-
-      <visual name="mesh_vis">
-        <geometry>
-          <mesh>
-            <uri>meshes/mesh.dae</uri>
-            <submesh>
-              <name>another_submesh</name>
-              <center>false</center>
-            </submesh>
-            <scale>1.2 2.3 3.4</scale>
-          </mesh>
-        </geometry>
-      </visual>
-    </link>
+    <link name="link"/>
   </model>
 
 
   <model name="multiple_models3">
     <pose>2 0 0 3.141592653589793 0 0</pose>
-
-    <link name="link">
-
-      <collision name="mesh_col">
-        <geometry>
-          <mesh>
-            <uri>meshes/mesh.dae</uri>
-            <submesh>
-              <name>my_submesh</name>
-              <center>true</center>
-            </submesh>
-            <scale>0.1 0.2 0.3</scale>
-          </mesh>
-        </geometry>
-      </collision>
-
-      <visual name="mesh_vis">
-        <geometry>
-          <mesh>
-            <uri>meshes/mesh.dae</uri>
-            <submesh>
-              <name>another_submesh</name>
-              <center>false</center>
-            </submesh>
-            <scale>1.2 2.3 3.4</scale>
-          </mesh>
-        </geometry>
-      </visual>
-    </link>
+    <link name="link"/>
   </model>
 
 </sdf>
