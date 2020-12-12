@@ -34,6 +34,7 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
+#include "sdf/ParserConfig.hh"
 #include "sdf/sdf_config.h"
 
 #include "Converter.hh"
@@ -54,14 +55,16 @@ inline namespace SDF_VERSION_NAMESPACE {
 /// file it is converted to SDF first. Conversion to the latest
 /// SDF version is controlled by a function parameter.
 /// \param[in] _filename Name of the SDF file
-/// \param[in] _sdf Pointer to an SDF object.
 /// \param[in] _convert Convert to the latest version if true.
+/// \param[in] _config Custom parser configuration
+/// \param[out] _sdf Pointer to an SDF object.
 /// \param[out] _errors Parsing errors will be appended to this variable.
 /// \return True if successful.
 bool readFileInternal(
     const std::string &_filename,
-    SDFPtr _sdf,
     const bool _convert,
+    const ParserConfig &_config,
+    SDFPtr _sdf,
     Errors &_errors);
 
 /// \brief Internal helper for readString, which populates the SDF values
@@ -71,14 +74,16 @@ bool readFileInternal(
 /// file it is converted to SDF first. Conversion to the latest
 /// SDF version is controlled by a function parameter.
 /// \param[in] _xmlString XML string to be parsed.
-/// \param[in] _sdf Pointer to an SDF object.
 /// \param[in] _convert Convert to the latest version if true.
+/// \param[in] _config Custom parser configuration
+/// \param[out] _sdf Pointer to an SDF object.
 /// \param[out] _errors Parsing errors will be appended to this variable.
 /// \return True if successful.
 bool readStringInternal(
     const std::string &_xmlString,
-    SDFPtr _sdf,
     const bool _convert,
+    const ParserConfig &_config,
+    SDFPtr _sdf,
     Errors &_errors);
 
 //////////////////////////////////////////////////
@@ -108,18 +113,12 @@ bool init(SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, SDFPtr _sdf)
 {
-  std::string xmldata = SDF::EmbeddedSpec(_filename, true);
-  if (!xmldata.empty())
-  {
-    tinyxml2::XMLDocument xmlDoc;
-    xmlDoc.Parse(xmldata.c_str());
-    return initDoc(&xmlDoc, _sdf);
-  }
-  return _initFile(sdf::findFile(_filename), _sdf);
+  return initFile(_filename, ParserConfig::DefaultConfig(), _sdf);
 }
 
 //////////////////////////////////////////////////
-bool initFile(const std::string &_filename, ElementPtr _sdf)
+bool initFile(
+    const std::string &_filename, const ParserConfig &_config, SDFPtr _sdf)
 {
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
@@ -128,7 +127,27 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
     xmlDoc.Parse(xmldata.c_str());
     return initDoc(&xmlDoc, _sdf);
   }
-  return _initFile(sdf::findFile(_filename), _sdf);
+  return _initFile(sdf::findFile(_filename, true, false, _config), _sdf);
+}
+
+//////////////////////////////////////////////////
+bool initFile(const std::string &_filename, ElementPtr _sdf)
+{
+  return initFile(_filename, ParserConfig::DefaultConfig(), _sdf);
+}
+
+//////////////////////////////////////////////////
+bool initFile(
+    const std::string &_filename, const ParserConfig &_config, ElementPtr _sdf)
+{
+  std::string xmldata = SDF::EmbeddedSpec(_filename, true);
+  if (!xmldata.empty())
+  {
+    tinyxml2::XMLDocument xmlDoc;
+    xmlDoc.Parse(xmldata.c_str());
+    return initDoc(&xmlDoc, _sdf);
+  }
+  return _initFile(sdf::findFile(_filename, true, false, _config), _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -337,12 +356,19 @@ bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
 //////////////////////////////////////////////////
 SDFPtr readFile(const std::string &_filename, Errors &_errors)
 {
+  return readFile(_filename, ParserConfig::DefaultConfig(), _errors);
+}
+
+//////////////////////////////////////////////////
+SDFPtr readFile(
+    const std::string &_filename, const ParserConfig &_config, Errors &_errors)
+{
   // Create and initialize the data structure that will hold the parsed SDF data
   sdf::SDFPtr sdfParsed(new sdf::SDF());
   sdf::init(sdfParsed);
 
   // Read an SDF file, and store the result in sdfParsed.
-  if (!sdf::readFile(_filename, sdfParsed, _errors))
+  if (!sdf::readFile(_filename, _config, sdfParsed, _errors))
   {
     return SDFPtr();
   }
@@ -379,22 +405,37 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
-  return readFileInternal(_filename, _sdf, true, _errors);
+  return readFile(_filename, ParserConfig::DefaultConfig(), _sdf, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readFile(const std::string &_filename, const ParserConfig &_config,
+    SDFPtr _sdf, Errors &_errors)
+{
+  return readFileInternal(_filename, true, _config, _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
 bool readFileWithoutConversion(
     const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
-  return readFileInternal(_filename, _sdf, false, _errors);
+  return readFileWithoutConversion(
+      _filename, ParserConfig::DefaultConfig(), _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
-bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
-      const bool _convert, Errors &_errors)
+bool readFileWithoutConversion(const std::string &_filename,
+    const ParserConfig &_config, SDFPtr _sdf, Errors &_errors)
+{
+  return readFileInternal(_filename, false, _config, _sdf, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readFileInternal(const std::string &_filename, const bool _convert,
+    const ParserConfig &_config, SDFPtr _sdf, Errors &_errors)
 {
   tinyxml2::XMLDocument xmlDoc;
-  std::string filename = sdf::findFile(_filename, true, true);
+  std::string filename = sdf::findFile(_filename, true, true, _config);
 
   if (filename.empty())
   {
@@ -422,7 +463,7 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
   }
 
   // Suppress deprecation for sdf::URDF2SDF
-  if (readDoc(&xmlDoc, _sdf, filename, _convert, _errors))
+  if (readDoc(&xmlDoc, _sdf, filename, _convert, _config, _errors))
   {
     return true;
   }
@@ -431,7 +472,7 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
     URDF2SDF u2g;
     tinyxml2::XMLDocument doc;
     u2g.InitModelFile(filename, &doc);
-    if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
+    if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _config, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
       return true;
@@ -462,19 +503,34 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
 {
-  return readStringInternal(_xmlString, _sdf, true, _errors);
+  return readString(_xmlString, ParserConfig::DefaultConfig(), _sdf, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readString(const std::string &_xmlString, const ParserConfig &_config,
+    SDFPtr _sdf, Errors &_errors)
+{
+  return readStringInternal(_xmlString, true, _config, _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
 bool readStringWithoutConversion(
     const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
-  return readStringInternal(_filename, _sdf, false, _errors);
+  return readStringWithoutConversion(
+      _filename, ParserConfig::DefaultConfig(), _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
-bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
-    const bool _convert, Errors &_errors)
+bool readStringWithoutConversion(const std::string &_filename,
+    const ParserConfig &_config, SDFPtr _sdf, Errors &_errors)
+{
+  return readStringInternal(_filename, false, _config, _sdf, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readStringInternal(const std::string &_xmlString, const bool _convert,
+    const ParserConfig &_config, SDFPtr _sdf, Errors &_errors)
 {
   tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
@@ -483,7 +539,7 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, "data-string", _convert, _errors))
+  if (readDoc(&xmlDoc, _sdf, "data-string", _convert, _config, _errors))
   {
     return true;
   }
@@ -493,7 +549,7 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
     tinyxml2::XMLDocument doc;
     u2g.InitModelString(_xmlString, &doc);
 
-    if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
+    if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _config, _errors))
     {
       sdfdbg << "Parsing from urdf.\n";
       return true;
@@ -524,6 +580,13 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 {
+  return readString(_xmlString, ParserConfig::DefaultConfig(), _sdf, _errors);
+}
+
+//////////////////////////////////////////////////
+bool readString(const std::string &_xmlString, const ParserConfig &_config,
+    ElementPtr _sdf, Errors &_errors)
+{
   tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
@@ -531,7 +594,7 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, "data-string", true, _errors))
+  if (readDoc(&xmlDoc, _sdf, "data-string", true, _config, _errors))
   {
     return true;
   }
@@ -545,7 +608,8 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 
 //////////////////////////////////////////////////
 bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
-    const std::string &_source, bool _convert, Errors &_errors)
+    const std::string &_source, bool _convert, const ParserConfig &_config,
+    Errors &_errors)
 {
   if (!_xmlDoc)
   {
@@ -592,7 +656,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
 
     // parse new sdf xml
     auto *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
-    if (!readXml(elemXml, _sdf->Root(), _errors))
+    if (!readXml(elemXml, _sdf->Root(), _config, _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Error reading element <" + _sdf->Root()->GetName() + ">"});
@@ -618,7 +682,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
 
 //////////////////////////////////////////////////
 bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
-             const std::string &_source, bool _convert, Errors &_errors)
+    const std::string &_source, bool _convert, const ParserConfig &_config,
+    Errors &_errors)
 {
   if (!_xmlDoc)
   {
@@ -660,7 +725,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     }
 
     // parse new sdf xml
-    if (!readXml(elemXml, _sdf, _errors))
+    if (!readXml(elemXml, _sdf, _config, _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Unable to parse sdf element["+ _sdf->GetName() + "]"});
@@ -800,7 +865,8 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 }
 
 //////////////////////////////////////////////////
-bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
+bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
+    const ParserConfig &_config, Errors &_errors)
 {
   // Check if the element pointer is deprecated.
   if (_sdf->GetRequired() == "-1")
@@ -943,7 +1009,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
         if (elemXml->FirstChildElement("uri"))
         {
           std::string uri = elemXml->FirstChildElement("uri")->GetText();
-          modelPath = sdf::findFile(uri, true, true);
+          modelPath = sdf::findFile(uri, true, true, _config);
 
           // Test the model path
           if (modelPath.empty())
@@ -1089,7 +1155,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
               sdf::ElementPtr pluginElem;
               pluginElem = topLevelElem->AddElement("plugin");
 
-              if (!readXml(childElemXml, pluginElem, _errors))
+              if (!readXml(childElemXml, pluginElem, _config, _errors))
               {
                 _errors.push_back({ErrorCode::ELEMENT_INVALID,
                                    "Error reading plugin element"});
@@ -1121,7 +1187,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
         {
           ElementPtr element = elemDesc->Clone();
           element->SetParent(_sdf);
-          if (readXml(elemXml, element, _errors))
+          if (readXml(elemXml, element, _config, _errors))
           {
             _sdf->InsertElement(element);
           }
@@ -1243,7 +1309,14 @@ void copyChildren(ElementPtr _sdf,
 bool convertFile(const std::string &_filename, const std::string &_version,
                  SDFPtr _sdf)
 {
-  std::string filename = sdf::findFile(_filename);
+  return convertFile(_filename, _version, ParserConfig::DefaultConfig(), _sdf);
+}
+
+/////////////////////////////////////////////////
+bool convertFile(const std::string &_filename, const std::string &_version,
+                 const ParserConfig &_config, SDFPtr _sdf)
+{
+  std::string filename = sdf::findFile(_filename, true, false, _config);
 
   if (filename.empty())
   {
@@ -1275,7 +1348,8 @@ bool convertFile(const std::string &_filename, const std::string &_version,
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
       Errors errors;
-      bool result = sdf::readDoc(&xmlDoc, _sdf, filename, false, errors);
+      bool result =
+          sdf::readDoc(&xmlDoc, _sdf, filename, false, _config, errors);
 
       // Output errors
       for (auto const &e : errors)
@@ -1295,6 +1369,14 @@ bool convertFile(const std::string &_filename, const std::string &_version,
 /////////////////////////////////////////////////
 bool convertString(const std::string &_sdfString, const std::string &_version,
                    SDFPtr _sdf)
+{
+  return convertString(
+      _sdfString, _version, ParserConfig::DefaultConfig(), _sdf);
+}
+
+/////////////////////////////////////////////////
+bool convertString(const std::string &_sdfString, const std::string &_version,
+    const ParserConfig &_config, SDFPtr _sdf)
 {
   if (_sdfString.empty())
   {
@@ -1322,7 +1404,8 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
       Errors errors;
-      bool result = sdf::readDoc(&xmlDoc, _sdf, "data-string", false, errors);
+      bool result =
+          sdf::readDoc(&xmlDoc, _sdf, "data-string", false, _config, errors);
 
       // Output errors
       for (auto const &e : errors)

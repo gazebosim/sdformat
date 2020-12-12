@@ -40,21 +40,59 @@ namespace sdf
   //
   class Root;
 
-  /// \brief Init based on the installed sdf_format.xml file
+  /// \brief Initialize the SDF interface from the embedded root spec file
+  /// \param[out] _sdf Pointer to an SDF object.
+  /// \return True if successful.
   SDFORMAT_VISIBLE
   bool init(SDFPtr _sdf);
 
   /// \brief Initialize the SDF interface using a file
+  /// \param[in] _filename Name of the SDF file
+  /// \param[out] _sdf Pointer to an SDF object.
+  /// \return True if successful.
   SDFORMAT_VISIBLE
   bool initFile(const std::string &_filename, SDFPtr _sdf);
 
+  /// \brief Initialize the SDF interface using a file
+  /// \param[in] _filename Name of the SDF file
+  /// \param[in] _config Custom parser configuration
+  /// \param[out] _sdf Pointer to an SDF object.
+  /// \return True if successful.
+  SDFORMAT_VISIBLE
+  bool initFile(
+      const std::string &_filename, const ParserConfig &_config, SDFPtr _sdf);
+
   /// \brief Initialize an SDFElement interface using a file
+  /// \param[in] _filename Name of the SDF file
+  /// \param[in] _sdf Pointer to an sdf Element object.
+  /// \return True if successful.
   SDFORMAT_VISIBLE
   bool initFile(const std::string &_filename, ElementPtr _sdf);
 
+  /// \brief Initialize an SDFElement interface using a file
+  /// \param[in] _filename Name of the SDF file
+  /// \param[in] _config Custom parser configuration
+  /// \param[out] _sdf Pointer to an sdf Element object.
+  /// \return True if successful.
+  SDFORMAT_VISIBLE
+  bool initFile(const std::string &_filename, const ParserConfig &_config,
+      ElementPtr _sdf);
+
   /// \brief Initialize the SDF interface using a string
+  /// \param[in] _xmlString XML string to be parsed.
+  /// \param[out] _sdf Pointer to an SDF object.
+  /// \return True if successful.
   SDFORMAT_VISIBLE
   bool initString(const std::string &_xmlString, SDFPtr _sdf);
+
+  /// \brief Initialize the SDF interface using a string
+  /// \param[in] _xmlString XML string to be parsed.
+  /// \param[in] _config Custom parser configuration
+  /// \param[out] _sdf Pointer to an SDF object.
+  /// \return True if successful.
+  SDFORMAT_VISIBLE
+  bool initString(
+      const std::string &_xmlString, SDFPtr _sdf, const ParserConfig &_config);
 
   /// \brief Populate the SDF values from a file
   ///
@@ -83,11 +121,38 @@ namespace sdf
   /// file it is converted to SDF first. All files are converted to the latest
   /// SDF version
   /// \param[in] _filename Name of the SDF file
-  /// \param[in] _sdf Pointer to an SDF object.
+  /// \param[in] _config Custom parser configuration
+  /// \param[out] _errors Parsing errors will be appended to this variable.
+  /// \return Populated SDF pointer.
+  SDFORMAT_VISIBLE
+  sdf::SDFPtr readFile(const std::string &_filename,
+      const ParserConfig &_config, Errors &_errors);
+
+  /// \brief Populate the SDF values from a file
+  ///
+  /// This populates the given sdf pointer from a file. If the file is a URDF
+  /// file it is converted to SDF first. All files are converted to the latest
+  /// SDF version
+  /// \param[in] _filename Name of the SDF file
+  /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
   SDFORMAT_VISIBLE
   bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors);
+
+  /// \brief Populate the SDF values from a file
+  ///
+  /// This populates the given sdf pointer from a file. If the file is a URDF
+  /// file it is converted to SDF first. All files are converted to the latest
+  /// SDF version
+  /// \param[in] _filename Name of the SDF file
+  /// \param[in] _config Custom parser configuration
+  /// \param[out] _sdf Pointer to an SDF object.
+  /// \param[out] _errors Parsing errors will be appended to this variable.
+  /// \return True if successful.
+  SDFORMAT_VISIBLE
+  bool readFile(const std::string &_filename, const ParserConfig &_config,
+      SDFPtr _sdf, Errors &_errors);
 
   /// \brief Populate the SDF values from a file without converting to the
   /// latest SDF version
@@ -97,12 +162,27 @@ namespace sdf
   /// loaded SDF to the latest version. Use this function with care, as it may
   /// prevent loading of DOM objects from this SDF object.
   /// \param[in] _filename Name of the SDF file
-  /// \param[in] _sdf Pointer to an SDF object.
+  /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
   SDFORMAT_VISIBLE
   bool readFileWithoutConversion(
       const std::string &_filename, SDFPtr _sdf, Errors &_errors);
+
+  /// \brief Populate the SDF values from a file without converting to the
+  /// latest SDF version
+  ///
+  /// This populates the given sdf pointer from a file. If the file is a URDF
+  /// file it is converted to SDF first. This function does not convert the
+  /// loaded SDF to the latest version. Use this function with care, as it may
+  /// prevent loading of DOM objects from this SDF object.
+  /// \param[in] _filename Name of the SDF file
+  /// \param[in] _config Custom parser configuration
+  /// \param[out] _sdf Pointer to an SDF object.
+  /// \param[out] _errors Parsing errors will be appended to this variable.
+  /// \return True if successful.
+  bool readFileWithoutConversion(const std::string &_filename,
+      const ParserConfig &_config, SDFPtr _sdf, Errors &_errors);
 
   /// \brief Populate the SDF values from a file
   ///
@@ -110,7 +190,7 @@ namespace sdf
   /// file it is converted to SDF first. All files are converted to the latest
   /// SDF version
   /// \param[in] _filename Name of the SDF file
-  /// \param[in] _sdf Pointer to an SDF object.
+  /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
   SDFORMAT_VISIBLE
   bool readFile(const std::string &_filename, SDFPtr _sdf);
@@ -121,7 +201,7 @@ namespace sdf
   /// string it is converted to SDF first. All string are converted to the
   /// latest SDF version
   /// \param[in] _xmlString XML string to be parsed.
-  /// \param[in] _sdf Pointer to an SDF object.
+  /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
   SDFORMAT_VISIBLE
@@ -133,7 +213,21 @@ namespace sdf
   /// string it is converted to SDF first. All string are converted to the
   /// latest SDF version
   /// \param[in] _xmlString XML string to be parsed.
-  /// \param[in] _sdf Pointer to an SDF object.
+  /// \param[in] _config Custom parser configuration
+  /// \param[out] _sdf Pointer to an SDF object.
+  /// \param[out] _errors Parsing errors will be appended to this variable.
+  /// \return True if successful.
+  SDFORMAT_VISIBLE
+  bool readString(const std::string &_xmlString, const ParserConfig &_config,
+      SDFPtr _sdf, Errors &_errors);
+
+  /// \brief Populate the SDF values from a string
+  ///
+  /// This populates the sdf pointer from a string. If the string is a URDF
+  /// string it is converted to SDF first. All string are converted to the
+  /// latest SDF version
+  /// \param[in] _xmlString XML string to be parsed.
+  /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
   SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, SDFPtr _sdf);
@@ -144,12 +238,26 @@ namespace sdf
   /// string it is converted to SDF first. All strings are converted to the
   /// latest SDF version
   /// \param[in] _xmlString XML string to be parsed.
-  /// \param[in] _sdf Pointer to an SDF object.
+  /// \param[out] _sdf Pointer to an sdf Element object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
   SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, ElementPtr _sdf,
       Errors &_errors);
+
+  /// \brief Populate the SDF values from a string
+  ///
+  /// This populates the sdf pointer from a string. If the string is a URDF
+  /// string it is converted to SDF first. All strings are converted to the
+  /// latest SDF version
+  /// \param[in] _xmlString XML string to be parsed.
+  /// \param[in] _config Custom parser configuration
+  /// \param[out] _sdf Pointer to an sdf Element object.
+  /// \param[out] _errors Parsing errors will be appended to this variable.
+  /// \return True if successful.
+  SDFORMAT_VISIBLE
+  bool readString(const std::string &_xmlString, const ParserConfig &_config,
+      ElementPtr _sdf, Errors &_errors);
 
   /// \brief Populate the SDF values from a string without converting to the
   /// latest SDF version
@@ -159,12 +267,26 @@ namespace sdf
   /// loaded SDF to the latest version. Use this function with care, as it may
   /// prevent loading of DOM objects from this SDF object.
   /// \param[in] _xmlString XML string to be parsed.
-  /// \param[in] _sdf Pointer to an SDF object.
+  /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
   SDFORMAT_VISIBLE
   bool readStringWithoutConversion(
       const std::string &_xmlString, SDFPtr _sdf, Errors &_errors);
+
+  /// \brief Populate the SDF values from a string
+  ///
+  /// This populates the sdf pointer from a string. If the string is a URDF
+  /// string it is converted to SDF first. All strings are converted to the
+  /// latest SDF version
+  /// \param[in] _xmlString XML string to be parsed.
+  /// \param[in] _config Custom parser configuration
+  /// \param[out] _sdf Pointer to an SDF object.
+  /// \param[out] _errors Parsing errors will be appended to this variable.
+  /// \return True if successful.
+  SDFORMAT_VISIBLE
+  bool readStringWithoutConversion(const std::string &_xmlString,
+      const ParserConfig &_config, SDFPtr _sdf, Errors &_errors);
 
   /// \brief Populate the SDF values from a string
   ///
@@ -194,6 +316,16 @@ namespace sdf
   bool convertFile(const std::string &_filename, const std::string &_version,
                    SDFPtr _sdf);
 
+  /// \brief Convert an SDF file to a specific SDF version.
+  /// \param[in] _filename Name of the SDF file to convert.
+  /// \param[in] _version Version to convert _filename to.
+  /// \param[in] _config Custom parser configuration
+  /// \param[out] _sdf Pointer to the converted SDF document.
+  /// \return True on success.
+  SDFORMAT_VISIBLE
+  bool convertFile(const std::string &_filename, const std::string &_version,
+                   const ParserConfig &_config, SDFPtr _sdf);
+
   /// \brief Convert an SDF string to a specific SDF version.
   /// \param[in] _sdfString The SDF string to convert.
   /// \param[in] _version Version to convert _filename to.
@@ -202,6 +334,16 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool convertString(const std::string &_sdfString,
                      const std::string &_version, SDFPtr _sdf);
+
+  /// \brief Convert an SDF string to a specific SDF version.
+  /// \param[in] _sdfString The SDF string to convert.
+  /// \param[in] _version Version to convert _filename to.
+  /// \param[in] _config Custom parser configuration
+  /// \param[out] _sdf Pointer to the converted SDF document.
+  /// \return True on success.
+  SDFORMAT_VISIBLE
+  bool convertString(const std::string &_sdfString, const std::string &_version,
+                     const ParserConfig &_config, SDFPtr _sdf);
 
   /// \brief Check that for each model, the canonical_link attribute value
   /// matches the name of a link in the model if the attribute is set and

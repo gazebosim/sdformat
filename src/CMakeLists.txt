@@ -43,6 +43,7 @@ set (sources
   Noise.cc
   parser.cc
   parser_urdf.cc
+  ParserConfig.cc
   Param.cc
   Pbr.cc
   Physics.cc
@@ -110,6 +111,7 @@ if (BUILD_SDF_TEST)
     Noise_TEST.cc
     Param_TEST.cc
     parser_TEST.cc
+    ParserConfig_TEST.cc
     Pbr_TEST.cc
     Physics_TEST.cc
     Plane_TEST.cc
