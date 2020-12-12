@@ -150,10 +150,16 @@ Root::~Root()
 /////////////////////////////////////////////////
 Errors Root::Load(const std::string &_filename)
 {
+  return this->Load(_filename, ParserConfig::DefaultConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Root::Load(const std::string &_filename, const ParserConfig &_config)
+{
   Errors errors;
 
   // Read an SDF file, and store the result in sdfParsed.
-  SDFPtr sdfParsed = readFile(_filename, errors);
+  SDFPtr sdfParsed = readFile(_filename, _config, errors);
 
   // Return if we were not able to read the file.
   if (!sdfParsed)
@@ -172,12 +178,18 @@ Errors Root::Load(const std::string &_filename)
 /////////////////////////////////////////////////
 Errors Root::LoadSdfString(const std::string &_sdf)
 {
+  return this->LoadSdfString(_sdf, ParserConfig::DefaultConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Root::LoadSdfString(const std::string &_sdf, const ParserConfig &_config)
+{
   Errors errors;
   SDFPtr sdfParsed(new SDF());
   init(sdfParsed);
 
   // Read an SDF string, and store the result in sdfParsed.
-  if (!readString(_sdf, sdfParsed, errors))
+  if (!readString(_sdf, _config, sdfParsed, errors))
   {
     errors.push_back(
         {ErrorCode::STRING_READ, "Unable to SDF string: " + _sdf});

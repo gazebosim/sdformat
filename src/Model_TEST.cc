@@ -167,7 +167,7 @@ TEST(DOMModel, MoveConstructor)
   sdf::Model model;
   model.SetName("test_model");
 
-  sdf::Model model2(model);
+  sdf::Model model2(std::move(model));
   EXPECT_EQ("test_model", model2.Name());
 }
 

@@ -21,11 +21,12 @@
 #include <memory>
 #include <string>
 
-#include "sdf/Param.hh"
 #include "sdf/Element.hh"
+#include "sdf/Param.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
-#include "sdf/Types.hh"
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -64,6 +65,21 @@ namespace sdf
                        bool _searchLocalPath = true,
                        bool _useCallback = false);
 
+  /// \brief Find the absolute path of a file.
+  /// \param[in] _filename Name of the file to find.
+  /// \param[in] _searchLocalPath True to search for the file in the current
+  /// working directory.
+  /// \param[in] _useCallback True to find a file based on a registered
+  /// callback if the file is not found via the normal mechanism.
+  /// \param[in] _config Custom parser configuration
+  /// \return File's full path.
+  SDFORMAT_VISIBLE
+  std::string findFile(const std::string &_filename,
+                       bool _searchLocalPath,
+                       bool _useCallback,
+                       const ParserConfig &_config);
+
+
   /// \brief Associate paths to a URI.
   /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
   /// \param[in] _uri URI that will be mapped to _path
@@ -77,7 +93,6 @@ namespace sdf
   /// \param[in] _cb The callback function.
   SDFORMAT_VISIBLE
   void setFindCallback(std::function<std::string (const std::string &)> _cb);
-
 
   /// \brief Base SDF class
   class SDFORMAT_VISIBLE SDF

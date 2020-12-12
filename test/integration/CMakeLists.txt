@@ -29,6 +29,7 @@ set(tests
   nested_model.cc
   nested_multiple_elements_error.cc
   parser_error_detection.cc
+  parser_config.cc
   plugin_attribute.cc
   plugin_bool.cc
   plugin_include.cc
