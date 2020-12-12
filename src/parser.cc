@@ -967,13 +967,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
           {
             _errors.push_back({ErrorCode::URI_LOOKUP,
                 "Unable to find uri[" + uri + "]"});
-
-            size_t modelFound = uri.find("model://");
-            if (modelFound != 0u)
-            {
-              _errors.push_back({ErrorCode::URI_INVALID,
-                  "Invalid uri[" + uri + "]. Should be model://" + uri});
-            }
             continue;
           }
           else
