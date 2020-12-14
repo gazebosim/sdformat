@@ -63,7 +63,7 @@ namespace sdf
     CAPSULE = 7,
 
     /// \brief An ellipsoid geometry
-    ELLIPSOID = 6,
+    ELLIPSOID = 8,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
