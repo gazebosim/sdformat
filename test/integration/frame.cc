@@ -423,7 +423,7 @@ TEST(DOMFrame, LoadModelFramesAttachedTo)
   EXPECT_TRUE(root.Load(testFile).empty());
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_frame_attached_to", model->Name());
   EXPECT_EQ(1u, model->LinkCount());
@@ -525,7 +525,7 @@ TEST(DOMFrame, LoadModelFramesAttachedToJoint)
   EXPECT_TRUE(root.Load(testFile).empty());
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_frame_attached_to_joint", model->Name());
   EXPECT_EQ(2u, model->LinkCount());
@@ -591,7 +591,7 @@ TEST(DOMFrame, LoadModelFramesAttachedToNestedModel)
   EXPECT_TRUE(errors.empty()) << errors;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_frame_attached_to_nested_model", model->Name());
   EXPECT_EQ(1u, model->LinkCount());
@@ -750,7 +750,7 @@ TEST(DOMFrame, LoadModelFramesRelativeTo)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_frame_relative_to", model->Name());
   EXPECT_EQ(1u, model->LinkCount());
@@ -911,7 +911,7 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_frame_relative_to_joint", model->Name());
   EXPECT_EQ(2u, model->LinkCount());

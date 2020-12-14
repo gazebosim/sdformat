@@ -42,7 +42,7 @@ TEST(DOMJointAxis, Complete)
   EXPECT_TRUE(errors.empty());
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   // The model should have nine joints.
@@ -132,7 +132,7 @@ TEST(DOMJointAxis, XyzExpressedIn)
   using Vector3 = ignition::math::Vector3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_joint_axis_expressed_in", model->Name());
   EXPECT_EQ(4u, model->LinkCount());
@@ -244,7 +244,7 @@ TEST(DOMJointAxis, XyzNormalization)
   using ignition::math::Vector3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   {

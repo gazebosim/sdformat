@@ -60,16 +60,15 @@ TEST(IncludesTest, NestedMultipleModelsError)
     ASSERT_TRUE(errors.empty());
   }
 
-  ASSERT_EQ(1u, root.ModelCount());
-  const auto * model = root.ModelByIndex(0);
+  const auto * model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("nested_model", model->Name());
 
   ASSERT_EQ(1u, model->LinkCount());
   EXPECT_EQ("link1", model->LinkByIndex(0)->Name());
 
-  EXPECT_EQ(0u, root.ActorCount());
-  EXPECT_EQ(0u, root.LightCount());
+  EXPECT_EQ(nullptr, root.Actor());
+  EXPECT_EQ(nullptr, root.Light());
 }
 
 //////////////////////////////////////////////////
@@ -93,11 +92,10 @@ TEST(IncludesTest, NestedMultipleActorsError)
     ASSERT_TRUE(errors.empty());
   }
 
-  EXPECT_EQ(0u, root.ModelCount());
-  EXPECT_EQ(0u, root.LightCount());
+  EXPECT_EQ(nullptr, root.Model());
+  EXPECT_EQ(nullptr, root.Light());
 
-  ASSERT_EQ(1u, root.ActorCount());
-  const auto * actor = root.ActorByIndex(0);
+  const auto * actor = root.Actor();
   ASSERT_NE(nullptr, actor);
   EXPECT_EQ("nested_actor", actor->Name());
   ASSERT_EQ(1u, actor->LinkCount());
@@ -125,11 +123,10 @@ TEST(IncludesTest, NestedMultipleLightsError)
     ASSERT_TRUE(errors.empty());
   }
 
-  EXPECT_EQ(0u, root.ModelCount());
-  EXPECT_EQ(0u, root.ActorCount());
+  EXPECT_EQ(nullptr, root.Model());
+  EXPECT_EQ(nullptr, root.Actor());
 
-  ASSERT_EQ(1u, root.LightCount());
-  const auto * light = root.LightByIndex(0);
+  const auto * light = root.Light();
   ASSERT_NE(nullptr, light);
   EXPECT_EQ("nested_light", light->Name());
   EXPECT_EQ(ignition::math::Vector3d(1, 0, 0), light->Direction());
@@ -156,11 +153,10 @@ TEST(IncludesTest, NestedMultipleElementsError)
     ASSERT_TRUE(errors.empty());
   }
 
-  EXPECT_EQ(0u, root.LightCount());
-  EXPECT_EQ(0u, root.ActorCount());
+  EXPECT_EQ(nullptr, root.Light());
+  EXPECT_EQ(nullptr, root.Actor());
 
-  ASSERT_EQ(1u, root.ModelCount());
-  const auto * model = root.ModelByIndex(0);
+  const auto * model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("nested_model", model->Name());
 }
@@ -185,9 +181,9 @@ TEST(IncludesTest, NestedMultipleElementsErrorWorld)
     ASSERT_TRUE(errors.empty());
   }
 
-  EXPECT_EQ(0u, root.LightCount());
-  EXPECT_EQ(0u, root.ActorCount());
-  EXPECT_EQ(0u, root.ModelCount());
+  EXPECT_EQ(nullptr, root.Light());
+  EXPECT_EQ(nullptr, root.Actor());
+  EXPECT_EQ(nullptr, root.Model());
 
   ASSERT_EQ(1u, root.WorldCount());
   const auto * world = root.WorldByIndex(0);

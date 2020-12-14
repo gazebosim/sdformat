@@ -42,29 +42,27 @@ class sdf::RootPrivate
   public: std::vector<World> worlds;
 
   /// \brief The models specified under the root SDF element
-  public: std::vector<Model> models;
+  public: std::unique_ptr<Model> model;
 
   /// \brief The lights specified under the root SDF element
-  public: std::vector<Light> lights;
+  public: std::unique_ptr<Light> light;
 
   /// \brief The actors specified under the root SDF element
-  public: std::vector<Actor> actors;
+  public: std::unique_ptr<Actor> actor;
 
   /// \brief Frame Attached-To Graphs constructed when loading Worlds.
   public: std::vector<sdf::ScopedGraph<FrameAttachedToGraph>>
               worldFrameAttachedToGraphs;
 
-  /// \brief Frame Attached-To Graphs constructed when loading Models.
-  public: std::vector<sdf::ScopedGraph<FrameAttachedToGraph>>
-              modelFrameAttachedToGraphs;
+  /// \brief Frame Attached-To Graph constructed when loading Models.
+  public: sdf::ScopedGraph<FrameAttachedToGraph> modelFrameAttachedToGraph;
 
   /// \brief Pose Relative-To Graphs constructed when loading Worlds.
   public: std::vector<sdf::ScopedGraph<PoseRelativeToGraph>>
               worldPoseRelativeToGraphs;
 
-  /// \brief Pose Relative-To Graphs constructed when loading Models.
-  public: std::vector<sdf::ScopedGraph<PoseRelativeToGraph>>
-              modelPoseRelativeToGraphs;
+  /// \brief Pose Relative-To Graph constructed when loading Models.
+  public: sdf::ScopedGraph<PoseRelativeToGraph> modelPoseRelativeToGraph;
 
   /// \brief The SDF element pointer generated during load.
   public: sdf::ElementPtr sdf;
@@ -253,33 +251,66 @@ Errors Root::Load(SDFPtr _sdf)
     }
   }
 
-  // Load all the models.
-  Errors modelLoadErrors = loadUniqueRepeated<Model>(
-      this->dataPtr->sdf, "model", this->dataPtr->models);
-  errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
-
-  // Build the graphs.
-  for (sdf::Model &model : this->dataPtr->models)
+  if (this->dataPtr->sdf->HasElement("model"))
   {
-    auto frameAttachedToGraph = addFrameAttachedToGraph(
-        this->dataPtr->modelFrameAttachedToGraphs, model, errors);
+    sdf::ElementPtr model = this->dataPtr->sdf->GetElement("model");
+    this->dataPtr->model = std::make_unique<sdf::Model>();
+    sdf::Errors loadErrors = this->dataPtr->model->Load(model);
+    errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
 
-    model.SetFrameAttachedToGraph(frameAttachedToGraph);
+    this->dataPtr->modelFrameAttachedToGraph =
+      sdf::ScopedGraph(std::make_shared<FrameAttachedToGraph>());
 
-    auto poseRelativeToGraph = addPoseRelativeToGraph(
-        this->dataPtr->modelPoseRelativeToGraphs, model, errors);
-    model.SetPoseRelativeToGraph(poseRelativeToGraph);
+    sdf::Errors buildErrors =
+        sdf::buildFrameAttachedToGraph(
+          this->dataPtr->modelFrameAttachedToGraph,
+          this->dataPtr->model.get());
+    errors.insert(errors.end(), buildErrors.begin(), buildErrors.end());
+
+    sdf::Errors validateErrors =
+      sdf::validateFrameAttachedToGraph(
+        this->dataPtr->modelFrameAttachedToGraph);
+    errors.insert(errors.end(), validateErrors.begin(), validateErrors.end());
+
+    this->dataPtr->model->SetFrameAttachedToGraph(
+      this->dataPtr->modelFrameAttachedToGraph);
+
+    this->dataPtr->modelPoseRelativeToGraph =
+      sdf::ScopedGraph(std::make_shared<PoseRelativeToGraph>());
+
+    Errors buildPoseErrors =
+      buildPoseRelativeToGraph(
+        this->dataPtr->modelPoseRelativeToGraph,
+        this->dataPtr->model.get());
+    errors.insert(
+      errors.end(), buildPoseErrors.begin(), buildPoseErrors.end());
+
+    Errors validatePoseErrors =
+      validatePoseRelativeToGraph(
+        this->dataPtr->modelPoseRelativeToGraph);
+    errors.insert(
+      errors.end(), validatePoseErrors.begin(), validatePoseErrors.end());
+
+    this->dataPtr->model->SetPoseRelativeToGraph(
+      this->dataPtr->modelPoseRelativeToGraph);
   }
 
   // Load all the lights.
-  Errors lightLoadErrors = loadUniqueRepeated<Light>(this->dataPtr->sdf,
-      "light", this->dataPtr->lights);
-  errors.insert(errors.end(), lightLoadErrors.begin(), lightLoadErrors.end());
+  if (this->dataPtr->sdf->HasElement("light"))
+  {
+    sdf::ElementPtr lightPtr = this->dataPtr->sdf->GetElement("light");
+    this->dataPtr->light = std::make_unique<sdf::Light>();
+    sdf::Errors buildErrors = this->dataPtr->light->Load(lightPtr);
+    errors.insert(errors.end(), buildErrors.begin(), buildErrors.end());
+  }
 
-  // Load all the actors.
-  Errors actorLoadErrors = loadUniqueRepeated<Actor>(this->dataPtr->sdf,
-      "actor", this->dataPtr->actors);
-  errors.insert(errors.end(), actorLoadErrors.begin(), actorLoadErrors.end());
+  if (this->dataPtr->sdf->HasElement("actor"))
+  {
+    sdf::ElementPtr actorPtr = this->dataPtr->sdf->GetElement("actor");
+    this->dataPtr->actor = std::make_unique<sdf::Actor>();
+    sdf::Errors buildErrors = this->dataPtr->actor->Load(actorPtr);
+    errors.insert(errors.end(), buildErrors.begin(), buildErrors.end());
+  }
 
   return errors;
 }
@@ -324,84 +355,21 @@ bool Root::WorldNameExists(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-uint64_t Root::ModelCount() const
+const Model *Root::Model() const
 {
-  return this->dataPtr->models.size();
+  return this->dataPtr->model.get();
 }
 
 /////////////////////////////////////////////////
-const Model *Root::ModelByIndex(const uint64_t _index) const
+const Light *Root::Light() const
 {
-  if (_index < this->dataPtr->models.size())
-    return &this->dataPtr->models[_index];
-  return nullptr;
+  return this->dataPtr->light.get();
 }
 
 /////////////////////////////////////////////////
-bool Root::ModelNameExists(const std::string &_name) const
+const Actor *Root::Actor() const
 {
-  for (auto const &m : this->dataPtr->models)
-  {
-    if (m.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
-/////////////////////////////////////////////////
-uint64_t Root::LightCount() const
-{
-  return this->dataPtr->lights.size();
-}
-
-/////////////////////////////////////////////////
-const Light *Root::LightByIndex(const uint64_t _index) const
-{
-  if (_index < this->dataPtr->lights.size())
-    return &this->dataPtr->lights[_index];
-  return nullptr;
-}
-
-/////////////////////////////////////////////////
-bool Root::LightNameExists(const std::string &_name) const
-{
-  for (auto const &m : this->dataPtr->lights)
-  {
-    if (m.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
-/////////////////////////////////////////////////
-uint64_t Root::ActorCount() const
-{
-  return this->dataPtr->actors.size();
-}
-
-/////////////////////////////////////////////////
-const Actor *Root::ActorByIndex(const uint64_t _index) const
-{
-  if (_index < this->dataPtr->actors.size())
-    return &this->dataPtr->actors[_index];
-  return nullptr;
-}
-
-/////////////////////////////////////////////////
-bool Root::ActorNameExists(const std::string &_name) const
-{
-  for (auto const &m : this->dataPtr->actors)
-  {
-    if (m.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return this->dataPtr->actor.get();
 }
 
 /////////////////////////////////////////////////

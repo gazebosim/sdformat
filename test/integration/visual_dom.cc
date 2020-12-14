@@ -71,7 +71,7 @@ TEST(DOMVisual, DoublePendulum)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_TRUE(model != nullptr);
 
   const sdf::Link *baseLink = model->LinkByIndex(0);
@@ -104,7 +104,7 @@ TEST(DOMVisual, Material)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   const sdf::Link *link = model->LinkByIndex(0);
@@ -189,7 +189,7 @@ TEST(DOMVisual, Transparency)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   const sdf::Link *link = model->LinkByIndex(0);
@@ -215,7 +215,7 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_frame_relative_to_joint", model->Name());
   EXPECT_EQ(2u, model->LinkCount());
@@ -406,7 +406,7 @@ TEST(DOMVisual, VisibilityFlags)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   const sdf::Link *link = model->LinkByIndex(0);
