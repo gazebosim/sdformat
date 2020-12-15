@@ -100,7 +100,13 @@ void ParserConfig::AddURIPath(const std::string &_uri, const std::string &_path)
 {
   // Split _path on colons.
   // Add each part of the colon separated path to the global URI map.
-  for (const auto &part : sdf::split(_path, ":"))
+#ifdef _WIN32
+  const char *multiplePathSeparator = ";";
+#else
+  const char *multiplePathSeparator = ":";
+#endif
+
+  for (const auto &part : sdf::split(_path, multiplePathSeparator))
   {
     // Only add valid paths
     if (!part.empty() && sdf::filesystem::is_directory(part))
