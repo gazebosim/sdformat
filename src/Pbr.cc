@@ -56,7 +56,7 @@ class sdf::PbrWorkflowPrivate
   public: std::string emissiveMap = "";
 
   /// \brief Light map
-  public: std::string lightMap;
+  public: std::string lightMapFilename;
 
   /// \brief Light map texture coordinate set
   public: unsigned int lightMapUvSet = 0u;
@@ -146,7 +146,7 @@ bool PbrWorkflow::operator==(const PbrWorkflow &_workflow) const
     && (this->dataPtr->glossinessMap == _workflow.dataPtr->glossinessMap)
     && (this->dataPtr->environmentMap == _workflow.dataPtr->environmentMap)
     && (this->dataPtr->emissiveMap == _workflow.dataPtr->emissiveMap)
-    && (this->dataPtr->lightMap == _workflow.dataPtr->lightMap)
+    && (this->dataPtr->lightMapFilename == _workflow.dataPtr->lightMapFilename)
     && (this->dataPtr->ambientOcclusionMap ==
         _workflow.dataPtr->ambientOcclusionMap)
     && (ignition::math::equal(
@@ -222,7 +222,7 @@ Errors PbrWorkflow::Load(sdf::ElementPtr _sdf)
   if (_sdf->HasElement("light_map"))
   {
     sdf::ElementPtr lightMapElem = _sdf->GetElement("light_map");
-    this->dataPtr->lightMap = lightMapElem->Get<std::string>();
+    this->dataPtr->lightMapFilename = lightMapElem->Get<std::string>();
     this->dataPtr->lightMapUvSet = lightMapElem->Get<unsigned int>("uv_set",
         this->dataPtr->lightMapUvSet).first;
   }
@@ -384,13 +384,13 @@ void PbrWorkflow::SetEmissiveMap(const std::string &_map)
 //////////////////////////////////////////////////
 std::string PbrWorkflow::LightMap() const
 {
-  return this->dataPtr->lightMap;
+  return this->dataPtr->lightMapFilename;
 }
 
 //////////////////////////////////////////////////
 void PbrWorkflow::SetLightMap(const std::string &_map, unsigned int _uvSet)
 {
-  this->dataPtr->lightMap = _map;
+  this->dataPtr->lightMapFilename = _map;
   this->dataPtr->lightMapUvSet = _uvSet;
 }
 
