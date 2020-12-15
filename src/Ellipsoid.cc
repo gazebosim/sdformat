@@ -96,7 +96,8 @@ Errors Ellipsoid::Load(ElementPtr _sdf)
   if (_sdf->HasElement("radii"))
   {
     std::pair<ignition::math::Vector3d, bool> pair =
-      _sdf->Get<ignition::math::Vector3d>("radii", this->dataPtr->ellipsoid.Radii());
+      _sdf->Get<ignition::math::Vector3d>(
+        "radii", this->dataPtr->ellipsoid.Radii());
 
     if (!pair.second)
     {
