@@ -23,6 +23,24 @@
         </geometry>
       </visual>
 
+      <collision name="capsule_col">
+        <geometry>
+          <capsule>
+            <radius>0.2</radius>
+            <length>0.1</length>
+          </capsule>
+        </geometry>
+      </collision>
+
+      <visual name="capsule_vis">
+        <geometry>
+          <capsule>
+            <radius>2.1</radius>
+            <length>10.2</length>
+          </capsule>
+        </geometry>
+      </visual>
+
       <collision name="cylinder_col">
         <geometry>
           <cylinder>
