@@ -1,18 +1,21 @@
 <?xml version="1.0" ?>
 <sdf version="1.8">
-  <!-- This file is not valid because it contains multiple lights which is not
-  allowed -->
+  <!-- This file is not valid because it contains multiple light elements which
+  is not supported -->
 
   <light name="multiple_lights1" type="directional">
     <pose>0 0 0 0 0 0</pose>
+    <direction>1 0 0</direction>
   </light>
 
   <light name="multiple_lights2" type="spot">
     <pose>1 0 0 1.57 0 0</pose>
+    <direction>0 1 0</direction>
   </light>
 
   <light name="multiple_lights3" type="directional">
     <pose>2 0 0 3.14 0 0</pose>
+    <direction>0 0 1</direction>
   </light>
 
 </sdf>

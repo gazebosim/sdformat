@@ -1,22 +1,22 @@
 <?xml version="1.0" ?>
 <sdf version="1.8">
-  <!-- This file is not valid because it contains multiple models which is not
-  allowed -->
+  <!-- This file is not valid because it contains multiple model elements which
+  is not supported -->
 
   <model name="multiple_models1">
     <pose>0 0 0 0 0 0</pose>
-    <link name="link"/>
+    <link name="link1"/>
   </model>
 
   <model name="multiple_models2">
     <pose>1 0 0 1.570796326794895 0 0</pose>
-    <link name="link"/>
+    <link name="link2"/>
   </model>
 
 
   <model name="multiple_models3">
     <pose>2 0 0 3.141592653589793 0 0</pose>
-    <link name="link"/>
+    <link name="link3"/>
   </model>
 
 </sdf>

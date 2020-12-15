@@ -19,9 +19,13 @@
 #include <string>
 #include <gtest/gtest.h>
 
+#include "sdf/Actor.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/Light.hh"
+#include "sdf/Model.hh"
 #include "sdf/Root.hh"
+#include "sdf/World.hh"
 #include "test_config.h"
 
 const auto g_testPath = sdf::filesystem::append(PROJECT_SOURCE_PATH, "test");
@@ -36,6 +40,8 @@ std::string findFileCb(const std::string &_input)
 }
 
 //////////////////////////////////////////////////
+// Currently this only issues a parsing warning and should take the first model
+// element
 TEST(IncludesTest, NestedMultipleModelsError)
 {
   sdf::setFindCallback(findFileCb);
@@ -45,13 +51,29 @@ TEST(IncludesTest, NestedMultipleModelsError)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  ASSERT_FALSE(errors.empty());
-  EXPECT_EQ(
-    std::string("Found more than one of model for <include>\n"),
-    errors[0].Message());
+  if (!errors.empty()) {
+    for (const auto &error : errors)
+    {
+      std::cout << error << std::endl;
+    }
+    ASSERT_TRUE(errors.empty());
+  }
+
+  ASSERT_EQ(1u, root.ModelCount());
+  const auto * model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("nested_model", model->Name());
+
+  ASSERT_EQ(1u, model->LinkCount());
+  EXPECT_EQ("link1", model->LinkByIndex(0)->Name());
+
+  EXPECT_EQ(0u, root.ActorCount());
+  EXPECT_EQ(0u, root.LightCount());
 }
 
 //////////////////////////////////////////////////
+// Currently this only issues a parsing warning and should take the first actor
+// element
 TEST(IncludesTest, NestedMultipleActorsError)
 {
   sdf::setFindCallback(findFileCb);
@@ -61,13 +83,28 @@ TEST(IncludesTest, NestedMultipleActorsError)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  ASSERT_FALSE(errors.empty());
-  EXPECT_EQ(
-    std::string("Found more than one of actor for <include>\n"),
-    errors[0].Message());
+  if (!errors.empty()) {
+    for (const auto &error : errors)
+    {
+      std::cout << error << std::endl;
+    }
+    ASSERT_TRUE(errors.empty());
+  }
+
+  EXPECT_EQ(0u, root.ModelCount());
+  EXPECT_EQ(0u, root.LightCount());
+
+  ASSERT_EQ(1u, root.ActorCount());
+  const auto * actor = root.ActorByIndex(0);
+  ASSERT_NE(nullptr, actor);
+  EXPECT_EQ("nested_actor", actor->Name());
+  ASSERT_EQ(1u, actor->LinkCount());
+  EXPECT_EQ("link1", actor->LinkByIndex(0)->Name());
 }
 
 //////////////////////////////////////////////////
+// Currently this only issues a parsing warning and should take the first light
+// element
 TEST(IncludesTest, NestedMultipleLightsError)
 {
   sdf::setFindCallback(findFileCb);
@@ -77,13 +114,27 @@ TEST(IncludesTest, NestedMultipleLightsError)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  ASSERT_FALSE(errors.empty());
-  EXPECT_EQ(
-    std::string("Found more than one of light for <include>\n"),
-    errors[0].Message());
+  if (!errors.empty()) {
+    for (const auto &error : errors)
+    {
+      std::cout << error << std::endl;
+    }
+    ASSERT_TRUE(errors.empty());
+  }
+
+  EXPECT_EQ(0u, root.ModelCount());
+  EXPECT_EQ(0u, root.ActorCount());
+
+  ASSERT_EQ(1u, root.LightCount());
+  const auto * light = root.LightByIndex(0);
+  ASSERT_NE(nullptr, light);
+  EXPECT_EQ("nested_light", light->Name());
+  EXPECT_EQ(ignition::math::Vector3d(1, 0, 0), light->Direction());
 }
 
 //////////////////////////////////////////////////
+// Currently this only issues a parsing warning and should take the first
+// model, actor, light in that order
 TEST(IncludesTest, NestedMultipleElementsError)
 {
   sdf::setFindCallback(findFileCb);
@@ -93,11 +144,21 @@ TEST(IncludesTest, NestedMultipleElementsError)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  ASSERT_FALSE(errors.empty());
-  EXPECT_EQ(
-    std::string(
-      "Found more than one of <model> / <actor> / <light> for <include>\n"),
-    errors[0].Message());
+  if (!errors.empty()) {
+    for (const auto &error : errors)
+    {
+      std::cout << error << std::endl;
+    }
+    ASSERT_TRUE(errors.empty());
+  }
+
+  EXPECT_EQ(0u, root.LightCount());
+  EXPECT_EQ(0u, root.ActorCount());
+
+  ASSERT_EQ(1u, root.ModelCount());
+  const auto * model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("nested_model", model->Name());
 }
 
 //////////////////////////////////////////////////
@@ -111,9 +172,25 @@ TEST(IncludesTest, NestedMultipleElementsErrorWorld)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  ASSERT_FALSE(errors.empty());
-  EXPECT_EQ(
-    std::string(
-      "Found more than one of <model> / <actor> / <light> for <include>\n"),
-    errors[0].Message());
+  if (!errors.empty()) {
+    for (const auto &error : errors)
+    {
+      std::cout << error << std::endl;
+    }
+    ASSERT_TRUE(errors.empty());
+  }
+
+  EXPECT_EQ(0u, root.LightCount());
+  EXPECT_EQ(0u, root.ActorCount());
+  EXPECT_EQ(0u, root.ModelCount());
+
+  ASSERT_EQ(1u, root.WorldCount());
+  const auto * world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  ASSERT_EQ(1u, world->ModelCount());
+
+  const auto model = world->ModelByIndex(0);
+  EXPECT_EQ("nested_model", model->Name());
+  ASSERT_EQ(1u, model->LinkCount());
+  EXPECT_EQ("link", model->LinkByIndex(0)->Name());
 }

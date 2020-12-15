@@ -1,14 +1,13 @@
 <?xml version="1.0" ?>
 <sdf version="1.8">
+  <!-- The included sdf model contain actor, light and actor elements, and is an
+  example of poorly formed file. Currently this is unsupported and will
+  eventually become a parsing error -->
 
-  <!-- The included sdf model contains model, actor and light elements, and
-  should cause tests to fail because the name resolution is ambiguous -->
-  <model name="nested_multiple_elements_error">
-    <include>
-      <!-- This search path for this model must be added by the test code -->
-      <uri>model_actor_light</uri>
-      <pose>1 1 1 1.570796326794895 0 0</pose>
-    </include>
-  </model>
-
+  <include>
+    <!-- This search path for this model must be added by the test code -->
+    <uri>model_actor_light</uri>
+    <pose>1 1 1 1.570796326794895 0 0</pose>
+    <name>nested_model</name>
+  </include>
 </sdf>

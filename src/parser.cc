@@ -1000,14 +1000,25 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
           return false;
         }
 
+        // For now there is only a warning if there is more than one model,
+        // actor or light element, or two different types of those elements. For
+        // compatibility with old behavior, this chooses the first element
+        // in the preference order: model->actor->light
         sdf::ElementPtr topLevelElem;
-        int countTopLevelElements = 0;
         for (const auto & elementType : {"model", "actor", "light"})
         {
           if (includeSDF->Root()->HasElement(elementType))
           {
-            countTopLevelElements++;
-            topLevelElem = includeSDF->Root()->GetElement(elementType);
+            if (nullptr == topLevelElem)
+            {
+              topLevelElem = includeSDF->Root()->GetElement(elementType);
+            } else
+            {
+              sdfwarn << "Found other top level element <" << elementType
+                      << "> in addition to <" << topLevelElem->GetName()
+                      << "> in include file. This is unsupported and in future "
+                      << "versions of libsdformat will become an error";
+            }
           }
         }
 
@@ -1019,24 +1030,14 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
           continue;
         }
 
-        // Check if more than one type of top-level element
-        if (countTopLevelElements > 1)
-        {
-          _errors.push_back({ErrorCode::ELEMENT_INVALID,
-              "Found more than one of <model> / <actor> / <light> for "
-              "<include>\n"});
-          continue;
-        }
-
         const auto topLevelElementType = topLevelElem->GetName();
-
+        printf("Top level element type: %s\n", topLevelElementType.c_str());
         // Check for more than one of the discovered top-level element type
         if (nullptr != topLevelElem->GetNextElement(topLevelElementType))
         {
-          _errors.push_back({ErrorCode::ELEMENT_INVALID,
-              "Found more than one of " + topLevelElem->GetName() + " for "
-              "<include>\n"});
-          continue;
+          sdfwarn << "Found more than one of " << topLevelElem->GetName()
+                  << " for <include>. This is unsupported and in future "
+                  << "versions of libsdformat will become an error";
         }
 
         bool isModel = topLevelElementType == "model";
