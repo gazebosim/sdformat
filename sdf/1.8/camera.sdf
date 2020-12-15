@@ -29,7 +29,7 @@
       <description>Near clipping plane</description>
     </element>
 
-    <element name="far" type="double" default="100" min="10.0" required="1">
+    <element name="far" type="double" default="100" min="0.1" required="1">
       <description>Far clipping plane</description>
     </element>
   </element> <!-- End Clip -->
