@@ -31,7 +31,7 @@
     * [Pull request 435](https://github.com/osrf/sdformat/pull/435)
 
 1. material.sdf: add `double_sided` parameter
-    * [Pull request 435](https://github.com/osrf/sdformat/pull/435)
+    * [Pull request 410](https://github.com/osrf/sdformat/pull/410)
 
 ### libsdformat 9.3.0 (2020-XX-XX)
 
