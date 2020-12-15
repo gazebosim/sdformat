@@ -268,6 +268,14 @@ but with improved human-readability..
     + required: 0
     + [BitBucket pull request 589](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/589)
 
+1. **material.sdf** `//material/double_sided` element
+    + description: Flag to indicate whether the mesh that this material is applied to
+      will be rendered as double sided.
+    + type: bool
+    + default: false
+    + required: 0
+    + [pull request 418](https://github.com/osrf/sdformat/pull/418)
+
 1. **model.sdf** `//model/@canonical_link` attribute
     + description: The name of the canonical link in this model to which the
       model's implicit frame is attached. This implies that a model must have
