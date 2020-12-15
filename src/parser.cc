@@ -1012,7 +1012,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
             if (nullptr == topLevelElem)
             {
               topLevelElem = includeSDF->Root()->GetElement(elementType);
-            } else
+            }
+            else
             {
               sdfwarn << "Found other top level element <" << elementType
                       << "> in addition to <" << topLevelElem->GetName()

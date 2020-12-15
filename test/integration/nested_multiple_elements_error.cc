@@ -51,7 +51,8 @@ TEST(IncludesTest, NestedMultipleModelsError)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  if (!errors.empty()) {
+  if (!errors.empty())
+  {
     for (const auto &error : errors)
     {
       std::cout << error << std::endl;
@@ -83,7 +84,8 @@ TEST(IncludesTest, NestedMultipleActorsError)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  if (!errors.empty()) {
+  if (!errors.empty())
+  {
     for (const auto &error : errors)
     {
       std::cout << error << std::endl;
@@ -114,7 +116,8 @@ TEST(IncludesTest, NestedMultipleLightsError)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  if (!errors.empty()) {
+  if (!errors.empty())
+  {
     for (const auto &error : errors)
     {
       std::cout << error << std::endl;
@@ -144,7 +147,8 @@ TEST(IncludesTest, NestedMultipleElementsError)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  if (!errors.empty()) {
+  if (!errors.empty())
+  {
     for (const auto &error : errors)
     {
       std::cout << error << std::endl;
@@ -172,7 +176,8 @@ TEST(IncludesTest, NestedMultipleElementsErrorWorld)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  if (!errors.empty()) {
+  if (!errors.empty())
+  {
     for (const auto &error : errors)
     {
       std::cout << error << std::endl;
