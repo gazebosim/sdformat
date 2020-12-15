@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Box.hh"
+#include "sdf/Capsule.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Mesh.hh"
@@ -32,6 +33,9 @@ TEST(DOMGeometry, Construction)
 
   geom.SetType(sdf::GeometryType::BOX);
   EXPECT_EQ(sdf::GeometryType::BOX, geom.Type());
+
+  geom.SetType(sdf::GeometryType::CAPSULE);
+  EXPECT_EQ(sdf::GeometryType::CAPSULE, geom.Type());
 
   geom.SetType(sdf::GeometryType::CYLINDER);
   EXPECT_EQ(sdf::GeometryType::CYLINDER, geom.Type());
@@ -162,6 +166,23 @@ TEST(DOMGeometry, Sphere)
   EXPECT_EQ(sdf::GeometryType::SPHERE, geom.Type());
   EXPECT_NE(nullptr, geom.SphereShape());
   EXPECT_DOUBLE_EQ(0.123, geom.SphereShape()->Radius());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGeometry, Capsule)
+{
+  sdf::Geometry geom;
+  geom.SetType(sdf::GeometryType::CAPSULE);
+
+  sdf::Capsule capsuleShape;
+  capsuleShape.SetRadius(0.123);
+  capsuleShape.SetLength(4.56);
+  geom.SetCapsuleShape(capsuleShape);
+
+  EXPECT_EQ(sdf::GeometryType::CAPSULE, geom.Type());
+  EXPECT_NE(nullptr, geom.CapsuleShape());
+  EXPECT_DOUBLE_EQ(0.123, geom.CapsuleShape()->Radius());
+  EXPECT_DOUBLE_EQ(4.56, geom.CapsuleShape()->Length());
 }
 
 /////////////////////////////////////////////////

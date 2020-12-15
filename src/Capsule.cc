@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Open Source Robotics Foundation
+ * Copyright 2020 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,62 +15,61 @@
  *
 */
 #include <sstream>
-#include "sdf/Cylinder.hh"
+#include "sdf/Capsule.hh"
 
 using namespace sdf;
 
 // Private data class
-class sdf::CylinderPrivate
+class sdf::CapsulePrivate
 {
-  // A cylinder with a length of 1 meter and radius if 0.5 meters.
-  public: ignition::math::Cylinderd cylinder{1.0, 0.5};
+  // A capsule with a length of 1 meter and radius if 0.5 meters.
+  public: ignition::math::Capsuled capsule{1.0, 0.5};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
-Cylinder::Cylinder()
-  : dataPtr(new CylinderPrivate)
+Capsule::Capsule()
+  : dataPtr(new CapsulePrivate)
 {
 }
 
 /////////////////////////////////////////////////
-Cylinder::~Cylinder()
+Capsule::~Capsule()
 {
   delete this->dataPtr;
   this->dataPtr = nullptr;
 }
 
 //////////////////////////////////////////////////
-Cylinder::Cylinder(const Cylinder &_cylinder)
-  : dataPtr(new CylinderPrivate)
+Capsule::Capsule(const Capsule &_capsule)
+  : dataPtr(new CapsulePrivate)
 {
-  this->dataPtr->cylinder = _cylinder.dataPtr->cylinder;
-  this->dataPtr->sdf = _cylinder.dataPtr->sdf;
+  *this->dataPtr = *_capsule.dataPtr;
 }
 
 //////////////////////////////////////////////////
-Cylinder::Cylinder(Cylinder &&_cylinder) noexcept
-  : dataPtr(std::exchange(_cylinder.dataPtr, nullptr))
+Capsule::Capsule(Capsule &&_capsule) noexcept
+  : dataPtr(std::exchange(_capsule.dataPtr, nullptr))
 {
 }
 
 /////////////////////////////////////////////////
-Cylinder &Cylinder::operator=(const Cylinder &_cylinder)
+Capsule &Capsule::operator=(const Capsule &_capsule)
 {
-  return *this = Cylinder(_cylinder);
+  return *this = Capsule(_capsule);
 }
 
 /////////////////////////////////////////////////
-Cylinder &Cylinder::operator=(Cylinder &&_cylinder)
+Capsule &Capsule::operator=(Capsule &&_capsule)
 {
-  std::swap(this->dataPtr, _cylinder.dataPtr);
+  std::swap(this->dataPtr, _capsule.dataPtr);
   return *this;
 }
 
 /////////////////////////////////////////////////
-Errors Cylinder::Load(ElementPtr _sdf)
+Errors Capsule::Load(ElementPtr _sdf)
 {
   Errors errors;
 
@@ -80,91 +79,91 @@ Errors Cylinder::Load(ElementPtr _sdf)
   if (!_sdf)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Attempting to load a cylinder, but the provided SDF "
+        "Attempting to load a capsule, but the provided SDF "
         "element is null."});
     return errors;
   }
 
-  // We need a cylinder child element
-  if (_sdf->GetName() != "cylinder")
+  // We need a capsule child element
+  if (_sdf->GetName() != "capsule")
   {
     errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a cylinder geometry, but the provided SDF "
-        "element is not a <cylinder>."});
+        "Attempting to load a capsule geometry, but the provided SDF "
+        "element is not a <capsule>."});
     return errors;
   }
 
   {
     std::pair<double, bool> pair = _sdf->Get<double>("radius",
-        this->dataPtr->cylinder.Radius());
+        this->dataPtr->capsule.Radius());
 
     if (!pair.second)
     {
       std::stringstream ss;
-      ss << "Invalid <radius> data for a <cylinder> geometry. "
+      ss << "Invalid <radius> data for a <capsule> geometry. "
          << "Using a radius of "
-         << this->dataPtr->cylinder.Radius() << ".";
+         << this->dataPtr->capsule.Radius() << ".";
       errors.push_back({ErrorCode::ELEMENT_INVALID, ss.str()});
     }
-    this->dataPtr->cylinder.SetRadius(pair.first);
+    this->dataPtr->capsule.SetRadius(pair.first);
   }
 
   {
     std::pair<double, bool> pair = _sdf->Get<double>("length",
-        this->dataPtr->cylinder.Length());
+        this->dataPtr->capsule.Length());
 
     if (!pair.second)
     {
       std::stringstream ss;
-      ss << "Invalid <length> data for a <cylinder> geometry. "
+      ss << "Invalid <length> data for a <capsule> geometry. "
          << "Using a length of "
-         << this->dataPtr->cylinder.Length() << ".";
+         << this->dataPtr->capsule.Length() << ".";
       errors.push_back({ErrorCode::ELEMENT_INVALID, ss.str()});
     }
-    this->dataPtr->cylinder.SetLength(pair.first);
+    this->dataPtr->capsule.SetLength(pair.first);
   }
 
   return errors;
 }
 
 //////////////////////////////////////////////////
-double Cylinder::Radius() const
+double Capsule::Radius() const
 {
-  return this->dataPtr->cylinder.Radius();
+  return this->dataPtr->capsule.Radius();
 }
 
 //////////////////////////////////////////////////
-void Cylinder::SetRadius(const double _radius)
+void Capsule::SetRadius(const double _radius)
 {
-  this->dataPtr->cylinder.SetRadius(_radius);
+  this->dataPtr->capsule.SetRadius(_radius);
 }
 
 //////////////////////////////////////////////////
-double Cylinder::Length() const
+double Capsule::Length() const
 {
-  return this->dataPtr->cylinder.Length();
+  return this->dataPtr->capsule.Length();
 }
 
 //////////////////////////////////////////////////
-void Cylinder::SetLength(const double _length)
+void Capsule::SetLength(const double _length)
 {
-  this->dataPtr->cylinder.SetLength(_length);
+  this->dataPtr->capsule.SetLength(_length);
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Cylinder::Element() const
+sdf::ElementPtr Capsule::Element() const
 {
   return this->dataPtr->sdf;
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Cylinderd &Cylinder::Shape() const
+const ignition::math::Capsuled &Capsule::Shape() const
 {
-  return this->dataPtr->cylinder;
+  return this->dataPtr->capsule;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Cylinderd &Cylinder::Shape()
+ignition::math::Capsuled &Capsule::Shape()
 {
-  return this->dataPtr->cylinder;
+  return this->dataPtr->capsule;
 }
