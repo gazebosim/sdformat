@@ -66,6 +66,12 @@
         <parent>M1::test_model_with_frames::L3</parent>
         <child>M1::test_model_with_frames::L4</child>
       </joint>
+      <model name='M1::test_model_with_frames::M2'>
+        <pose relative_to='M1::test_model_with_frames::F1'>1 0 0 0 -0 0</pose>
+        <link name='L5'>
+          <pose>1 0 0 0 -0 0</pose>
+        </link>
+      </model>
     </model>
   </world>
 </sdf>

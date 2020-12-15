@@ -746,7 +746,8 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     if (!sdf::filesystem::exists(configFilePath))
     {
       // We didn't find manifest.xml either, output an error and get out.
-      sdferr << "Could not find model.config or manifest.xml for the model\n";
+      sdferr << "Could not find model.config or manifest.xml in ["
+             << _modelDirPath << "]\n";
       return std::string();
     }
     else
@@ -932,6 +933,15 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 
           // Get the config.xml filename
           filename = getModelFilePath(modelPath);
+
+          if (filename.empty())
+          {
+            _errors.push_back({ErrorCode::URI_LOOKUP,
+                "Unable to resolve uri[" + uri + "] to model path [" +
+                modelPath + "] since it does not contain a model.config " +
+                "file."});
+            continue;
+          }
         }
         else
         {
@@ -1275,6 +1285,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
   while (elem)
   {
     if ((elem->GetName() == "link") ||
+        (elem->GetName() == "model") ||
         (elem->GetName() == "joint") ||
         (elem->GetName() == "frame"))
     {
@@ -1283,7 +1294,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
       replace[elemName] = newName;
     }
 
-    if ((elem->GetName() == "link"))
+    if ((elem->GetName() == "link") || (elem->GetName() == "model"))
     {
       // Add a pose element even if the element doesn't originally have one
       auto elemPose = elem->GetElement("pose");
