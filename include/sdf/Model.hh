@@ -314,6 +314,13 @@ namespace sdf
     /// \param[in] _name Name of the placement frame.
     public: void SetPlacementFrameName(const std::string &_name);
 
+    /// \brief Get the model's canonical link and the nested name of the link
+    /// relative to the current model, delimited by "::".
+    /// \return An immutable pointer to the canonical link and the nested
+    /// name of the link relative to the current model.
+    public: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
+        const;
+
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or
     /// World::SetPoseRelativeToGraph if this is a standalone model and
@@ -330,23 +337,11 @@ namespace sdf
     private: void SetFrameAttachedToGraph(
         sdf::ScopedGraph<FrameAttachedToGraph> _graph);
 
-    /// \brief Get the model's canonical link and the nested name of the link
-    /// relative to the current model, delimited by "::".
-    /// \return An immutable pointer to the canonical link and the nested
-    /// name of the link relative to the current model.
-    private: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
-        const;
-
     /// \brief Allow Root::Load, World::SetPoseRelativeToGraph, or
     /// World::SetFrameAttachedToGraph to call SetPoseRelativeToGraph and
     /// SetFrameAttachedToGraph
     friend class Root;
     friend class World;
-
-    /// \brief Allow helper function in FrameSemantics.cc to call
-    /// CanonicalLinkAndRelativeName.
-    friend std::pair<const Link *, std::string>
-        modelCanonicalLinkAndRelativeName(const Model *);
 
     /// \brief Private data pointer.
     private: ModelPrivate *dataPtr = nullptr;

@@ -20,6 +20,9 @@ but with improved human-readability..
     + Errors ResolveChildLink(std::string&) const
     + Errors ResolveParentLink(std::string&) const
 
+1. **sdf/Model.hh**:
+    + std::pair<const Link *, std::string> CanonicalLinkAndRelativeName() const;
+
 ### Modifications
 
 1. **sdf/Model.hh**: the following methods now accept nested names relative to
