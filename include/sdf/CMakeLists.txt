@@ -39,6 +39,7 @@ set (headers
   SDFImpl.hh
   SemanticPose.hh
   Sensor.hh
+  Sky.hh
   Sphere.hh
   Surface.hh
   Types.hh

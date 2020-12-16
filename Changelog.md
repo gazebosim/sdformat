@@ -2,6 +2,43 @@
 
 ### libsdformat 10.X.X (202X-XX-XX)
 
+### libsdformat 10.1.0 (2020-12-15)
+
+1. Fix supported shader types (`normal_map_X_space`)
+    * [Pull request 383](https://github.com/osrf/sdformat/pull/383)
+
+1. Prefix nested model names when flattening
+    * [Pull request 399](https://github.com/osrf/sdformat/pull/399)
+
+1. Move list of debian dependencies to packages.apt
+    * [Pull request 392](https://github.com/osrf/sdformat/pull/392)
+
+1. Remove custom element warning/error.
+    * [Pull request 402](https://github.com/osrf/sdformat/pull/402)
+
+1. Add Sky DOM.
+    * [Pull request 397](https://github.com/osrf/sdformat/pull/397)
+
+1. Add `<double_sided>` to material spec.
+    * [Pull request 410](https://github.com/osrf/sdformat/pull/410)
+
+1. Decrease far clip lower bound.
+    * [Pull request 437](https://github.com/osrf/sdformat/pull/437)
+
+1. Enable/disable tests for issue #202, add macOS workflow.
+    * [Pull request 414](https://github.com/osrf/sdformat/pull/414)
+    * [Pull request 438](https://github.com/osrf/sdformat/pull/438)
+    * [Issue 202](https://github.com/osrf/sdformat/issues/202)
+
+1. Make labeler work with PRs from forks.
+    * [Pull request 390](https://github.com/osrf/sdformat/pull/390)
+
+1. Test included model folder missing model.config
+    * [Pull request 422](https://github.com/osrf/sdformat/pull/422)
+
+1. Add lightmap to 1.7 spec and PBR material DOM
+    * [Pull request 429](https://github.com/osrf/sdformat/pull/429)
+
 ### libsdformat 10.0.0 (2020-09-28)
 
 1. Return positive `INF` instead of `-1` in DOM API for unbounded symmetric joint limits.
