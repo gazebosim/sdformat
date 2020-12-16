@@ -20,7 +20,7 @@
 #include "sdf/Root.hh"
 #include "test_config.h"
 
-void print_errors(sdf::Errors &_errors)
+void PrintErrors(sdf::Errors &_errors)
 {
   for (sdf::Error e : _errors)
     std::cout << e.Message() << std::endl;
@@ -31,11 +31,11 @@ TEST(ParamPassingTest, ExperimentalParamsElement)
 {
   const std::string modelRootPath =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "model") + "/";
+                            "model");
   sdf::setFindCallback(
       [&](const std::string &_file)
       {
-        return modelRootPath + _file;
+        return sdf::filesystem::append(modelRootPath, _file);
       });
 
   std::string testFile =
@@ -43,7 +43,7 @@ TEST(ParamPassingTest, ExperimentalParamsElement)
                             "include_model.sdf");
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
-  print_errors(errors);
+  PrintErrors(errors);
 
   EXPECT_TRUE(errors.empty());
 
@@ -51,7 +51,7 @@ TEST(ParamPassingTest, ExperimentalParamsElement)
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
                             "include_custom_model.sdf");
   errors = root.Load(testFile);
-  print_errors(errors);
+  PrintErrors(errors);
 
   EXPECT_TRUE(errors.empty());
 
@@ -59,7 +59,7 @@ TEST(ParamPassingTest, ExperimentalParamsElement)
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
                             "include_invalid_custom_model.sdf");
   errors = root.Load(testFile);
-  print_errors(errors);
+  PrintErrors(errors);
 
   // TODO(jenn) update in future
   EXPECT_FALSE(errors.empty());

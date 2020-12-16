@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
-<sdf version="1.7">
+<sdf version="1.7"
+     xmlns:experimental="http://sdformat.org/schemas/experimental">
   <world name="world_invalid_custom_model">
     <model name="robot">
       <include>
