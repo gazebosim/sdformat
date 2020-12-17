@@ -30,6 +30,7 @@ TEST(DOMMaterial, Construction)
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Specular());
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Emissive());
   EXPECT_TRUE(material.Lighting());
+  EXPECT_FALSE(material.DoubleSided());
   EXPECT_EQ(nullptr, material.Element());
   EXPECT_EQ("", material.ScriptUri());
   EXPECT_EQ("", material.ScriptName());
@@ -48,6 +49,7 @@ TEST(DOMMaterial, MoveConstructor)
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
   material.SetLighting(false);
+  material.SetDoubleSided(true);
   material.SetScriptUri("banana");
   material.SetScriptName("orange");
   material.SetShader(sdf::ShaderType::VERTEX);
@@ -62,6 +64,7 @@ TEST(DOMMaterial, MoveConstructor)
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
+  EXPECT_TRUE(material2.DoubleSided());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
@@ -79,6 +82,7 @@ TEST(DOMMaterial, CopyConstructor)
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
   material.SetLighting(false);
+  material.SetDoubleSided(true);
   material.SetScriptUri("banana");
   material.SetScriptName("orange");
   material.SetShader(sdf::ShaderType::VERTEX);
@@ -93,6 +97,7 @@ TEST(DOMMaterial, CopyConstructor)
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
+  EXPECT_TRUE(material2.DoubleSided());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
@@ -110,6 +115,7 @@ TEST(DOMMaterial, AssignmentOperator)
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
   material.SetLighting(false);
+  material.SetDoubleSided(true);
   material.SetScriptUri("banana");
   material.SetScriptName("orange");
   material.SetShader(sdf::ShaderType::VERTEX);
@@ -125,6 +131,7 @@ TEST(DOMMaterial, AssignmentOperator)
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
+  EXPECT_TRUE(material2.DoubleSided());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
@@ -142,6 +149,7 @@ TEST(DOMMaterial, MoveAssignmentOperator)
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
   material.SetLighting(false);
+  material.SetDoubleSided(true);
   material.SetScriptUri("banana");
   material.SetScriptName("orange");
   material.SetShader(sdf::ShaderType::VERTEX);
@@ -156,6 +164,7 @@ TEST(DOMMaterial, MoveAssignmentOperator)
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
+  EXPECT_TRUE(material2.DoubleSided());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
@@ -206,6 +215,10 @@ TEST(DOMMaterial, Set)
   material.SetLighting(false);
   EXPECT_FALSE(material.Lighting());
 
+  EXPECT_FALSE(material.DoubleSided());
+  material.SetDoubleSided(true);
+  EXPECT_TRUE(material.DoubleSided());
+
   EXPECT_EQ("", material.ScriptUri());
   material.SetScriptUri("uri");
   EXPECT_EQ("uri", material.ScriptUri());
@@ -243,6 +256,7 @@ TEST(DOMMaterial, Set)
   EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f), moved.Specular());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f), moved.Emissive());
   EXPECT_FALSE(moved.Lighting());
+  EXPECT_TRUE(moved.DoubleSided());
   EXPECT_EQ("uri", moved.ScriptUri());
   EXPECT_EQ("name", moved.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, moved.Shader());
