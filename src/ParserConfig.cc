@@ -68,7 +68,7 @@ ParserConfig::~ParserConfig()
 }
 
 /////////////////////////////////////////////////
-ParserConfig &ParserConfig::DefaultConfig()
+ParserConfig &ParserConfig::GlobalConfig()
 {
   static auto *defaultConfig = new ParserConfig;
   return *defaultConfig;
