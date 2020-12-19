@@ -68,7 +68,7 @@ class SDFORMAT_VISIBLE ParserConfig
 {
   /// type alias for the map from URI scheme to search directories
   public: using SchemeToPathMap =
-          std::map<std::string, std::list<std::string> >;
+          std::map<std::string, std::vector<std::string> >;
 
   /// \brief Default constructor
   public: ParserConfig();
