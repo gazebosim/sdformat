@@ -19,9 +19,9 @@
 #define SDF_PARSER_CONFIG_HH_
 
 #include <functional>
-#include <list>
 #include <map>
 #include <string>
+#include <vector>
 
 #include <sdf/Error.hh>
 #include "sdf/sdf_config.h"
