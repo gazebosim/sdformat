@@ -42,7 +42,7 @@ class ParserConfigPrivate;
 ///
 /// For backward compatibility, the functions sdf::setFindCallback() and
 /// sdf::addURIPath() update a singleton ParserConfig object, which can be
-/// retrieved by ParserConfig::DefaultConfig().
+/// retrieved by ParserConfig::GlobalConfig().
 ///
 /// The functions sdf::readFile(), sdf::readString(), and \ref Root::Load
 /// "sdf::Root::Load()" have overloads that take a ParserConfig object. If
@@ -51,11 +51,11 @@ class ParserConfigPrivate;
 ///
 /// Example:
 /// To set an additional URI scheme search directory without affecting the
-/// default config,
+/// global config,
 ///
 /// \code{.cpp}
-///   // Copy the default config
-///   sdf::ParserConfig config = ParserConfig::Default();
+///   // Copy the global config
+///   sdf::ParserConfig config = ParserConfig::GlobalConfig();
 ///
 ///   // Add the new scheme to the config
 ///   config.AddURIPath("newScheme://", "path/to/directory");
@@ -94,10 +94,10 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Destructor
   public: ~ParserConfig();
 
-  /// Mutable access to a singleton ParserConfig that serves as the default
+  /// Mutable access to a singleton ParserConfig that serves as the global
   /// ParserConfig object for all parsing operations
   /// \return A mutable reference to the singleton ParserConfig object
-  public: static ParserConfig &DefaultConfig();
+  public: static ParserConfig &GlobalConfig();
 
   /// \brief Get the find file callback function
   /// \return Immutable reference to the find file callback function

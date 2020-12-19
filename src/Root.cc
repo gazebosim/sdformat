@@ -150,7 +150,7 @@ Root::~Root()
 /////////////////////////////////////////////////
 Errors Root::Load(const std::string &_filename)
 {
-  return this->Load(_filename, ParserConfig::DefaultConfig());
+  return this->Load(_filename, ParserConfig::GlobalConfig());
 }
 
 /////////////////////////////////////////////////
@@ -178,7 +178,7 @@ Errors Root::Load(const std::string &_filename, const ParserConfig &_config)
 /////////////////////////////////////////////////
 Errors Root::LoadSdfString(const std::string &_sdf)
 {
-  return this->LoadSdfString(_sdf, ParserConfig::DefaultConfig());
+  return this->LoadSdfString(_sdf, ParserConfig::GlobalConfig());
 }
 
 /////////////////////////////////////////////////

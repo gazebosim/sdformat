@@ -129,7 +129,7 @@ bool init(SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, SDFPtr _sdf)
 {
-  return initFile(_filename, ParserConfig::DefaultConfig(), _sdf);
+  return initFile(_filename, ParserConfig::GlobalConfig(), _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -149,7 +149,7 @@ bool initFile(
 //////////////////////////////////////////////////
 bool initFile(const std::string &_filename, ElementPtr _sdf)
 {
-  return initFile(_filename, ParserConfig::DefaultConfig(), _sdf);
+  return initFile(_filename, ParserConfig::GlobalConfig(), _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -372,7 +372,7 @@ bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
 //////////////////////////////////////////////////
 SDFPtr readFile(const std::string &_filename, Errors &_errors)
 {
-  return readFile(_filename, ParserConfig::DefaultConfig(), _errors);
+  return readFile(_filename, ParserConfig::GlobalConfig(), _errors);
 }
 
 //////////////////////////////////////////////////
@@ -421,7 +421,7 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
-  return readFile(_filename, ParserConfig::DefaultConfig(), _sdf, _errors);
+  return readFile(_filename, ParserConfig::GlobalConfig(), _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
@@ -436,7 +436,7 @@ bool readFileWithoutConversion(
     const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
   return readFileWithoutConversion(
-      _filename, ParserConfig::DefaultConfig(), _sdf, _errors);
+      _filename, ParserConfig::GlobalConfig(), _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
@@ -519,7 +519,7 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
 {
-  return readString(_xmlString, ParserConfig::DefaultConfig(), _sdf, _errors);
+  return readString(_xmlString, ParserConfig::GlobalConfig(), _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
@@ -534,7 +534,7 @@ bool readStringWithoutConversion(
     const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
   return readStringWithoutConversion(
-      _filename, ParserConfig::DefaultConfig(), _sdf, _errors);
+      _filename, ParserConfig::GlobalConfig(), _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
@@ -596,7 +596,7 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 {
-  return readString(_xmlString, ParserConfig::DefaultConfig(), _sdf, _errors);
+  return readString(_xmlString, ParserConfig::GlobalConfig(), _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
@@ -1354,7 +1354,7 @@ void copyChildren(ElementPtr _sdf,
 bool convertFile(const std::string &_filename, const std::string &_version,
                  SDFPtr _sdf)
 {
-  return convertFile(_filename, _version, ParserConfig::DefaultConfig(), _sdf);
+  return convertFile(_filename, _version, ParserConfig::GlobalConfig(), _sdf);
 }
 
 /////////////////////////////////////////////////
@@ -1416,7 +1416,7 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
                    SDFPtr _sdf)
 {
   return convertString(
-      _sdfString, _version, ParserConfig::DefaultConfig(), _sdf);
+      _sdfString, _version, ParserConfig::GlobalConfig(), _sdf);
 }
 
 /////////////////////////////////////////////////

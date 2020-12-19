@@ -28,8 +28,8 @@
 #include "test_config.h"
 
 /////////////////////////////////////////////////
-/// Test default config
-TEST(ParserConfig, DefaultConfig)
+/// Test global config
+TEST(ParserConfig, GlobalConfig)
 {
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
   // PROJECT_SOURCE_PATH
@@ -42,24 +42,24 @@ TEST(ParserConfig, DefaultConfig)
         return "test/dir2";
       });
 
-  const auto &config =sdf::ParserConfig::DefaultConfig();
+  const auto &config = sdf::ParserConfig::GlobalConfig();
   auto it = config.URIPathMap().find("file://");
   ASSERT_NE(config.URIPathMap().end(), it);
   ASSERT_EQ(1u, it->second.size());
   EXPECT_EQ(it->second.front(), testDir);
 
-  ASSERT_TRUE(sdf::ParserConfig::DefaultConfig().FindFileCallback());
+  ASSERT_TRUE(sdf::ParserConfig::GlobalConfig().FindFileCallback());
   EXPECT_EQ("test/dir2",
-      sdf::ParserConfig::DefaultConfig().FindFileCallback()("empty"));
+      sdf::ParserConfig::GlobalConfig().FindFileCallback()("empty"));
 }
 
 /////////////////////////////////////////////////
-/// Test using a non default config with functions like sdf::addURIPath and
+/// Test using a non global config with functions like sdf::addURIPath and
 /// sdf::setFindCallback
-TEST(ParserConfig, NonDefaultConfig)
+TEST(ParserConfig, NonGlobalConfig)
 {
-  // Reset default config
-  sdf::ParserConfig::DefaultConfig() = sdf::ParserConfig();
+  // Reset global config
+  sdf::ParserConfig::GlobalConfig() = sdf::ParserConfig();
 
   sdf::ParserConfig config;
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
@@ -80,15 +80,15 @@ TEST(ParserConfig, NonDefaultConfig)
   ASSERT_TRUE(config.FindFileCallback());
   EXPECT_EQ("test/dir2", config.FindFileCallback()("empty"));
 
-  EXPECT_TRUE(sdf::ParserConfig::DefaultConfig().URIPathMap().empty());
-  EXPECT_FALSE(sdf::ParserConfig::DefaultConfig().FindFileCallback());
+  EXPECT_TRUE(sdf::ParserConfig::GlobalConfig().URIPathMap().empty());
+  EXPECT_FALSE(sdf::ParserConfig::GlobalConfig().FindFileCallback());
 }
 
 /////////////////////////////////////////////////
-TEST(ParserConfig, ParseWithNonDefaultConfig)
+TEST(ParserConfig, ParseWithNonGlobalConfig)
 {
-  // Reset default config
-  sdf::ParserConfig::DefaultConfig() = sdf::ParserConfig();
+  // Reset global config
+  sdf::ParserConfig::GlobalConfig() = sdf::ParserConfig();
 
   // Case 1: Use of sdf::setFindCallback
   {
@@ -105,7 +105,7 @@ TEST(ParserConfig, ParseWithNonDefaultConfig)
     sdf::ParserConfig config;
     config.SetFindCallback(findFileCb);
 
-    // Parsing testFile without setting FindFileCallback on the default
+    // Parsing testFile without setting FindFileCallback on the global
     // ParserConfig should fail
     {
       sdf::Errors errors;
@@ -179,7 +179,7 @@ TEST(ParserConfig, ParseWithNonDefaultConfig)
         sdf::filesystem::append(
             PROJECT_SOURCE_PATH, "test", "integration", "model"));
 
-    // Parsing testSdfString without setting addURIPath on the default
+    // Parsing testSdfString without setting addURIPath on the global
     // ParserConfig should fail
     {
       sdf::Errors errors;

@@ -42,7 +42,7 @@ std::string SDF::version = SDF_VERSION;
 /////////////////////////////////////////////////
 void setFindCallback(std::function<std::string(const std::string &)> _cb)
 {
-  ParserConfig::DefaultConfig().SetFindCallback(_cb);
+  ParserConfig::GlobalConfig().SetFindCallback(_cb);
 }
 
 /////////////////////////////////////////////////
@@ -50,7 +50,7 @@ std::string findFile(
     const std::string &_filename, bool _searchLocalPath, bool _useCallback)
 {
   return findFile(
-      _filename, _searchLocalPath, _useCallback, ParserConfig::DefaultConfig());
+      _filename, _searchLocalPath, _useCallback, ParserConfig::GlobalConfig());
 }
 
 /////////////////////////////////////////////////
@@ -172,7 +172,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
 /////////////////////////////////////////////////
 void addURIPath(const std::string &_uri, const std::string &_path)
 {
-  ParserConfig::DefaultConfig().AddURIPath(_uri, _path);
+  ParserConfig::GlobalConfig().AddURIPath(_uri, _path);
 }
 
 /////////////////////////////////////////////////
