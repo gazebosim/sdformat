@@ -1025,14 +1025,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
 
         if (nullptr == topLevelElem)
         {
-          _errors.push_back({ErrorCode::ELEMENT_INVALID,
+          _errors.push_back({ErrorCode::ELEMENT_MISSING,
               "Failed to find top level <model> / <actor> / <light> for "
               "<include>\n"});
           continue;
         }
 
         const auto topLevelElementType = topLevelElem->GetName();
-        printf("Top level element type: %s\n", topLevelElementType.c_str());
         // Check for more than one of the discovered top-level element type
         if (nullptr != topLevelElem->GetNextElement(topLevelElementType))
         {
