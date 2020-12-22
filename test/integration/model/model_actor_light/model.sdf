@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <!-- This is an example of an invalid file and should only contain one of
+  model, actor or light-->
+
+  <model name="model">
+    <pose>0 0 0 0 0 0</pose>
+    <link name="link"/>
+  </model>
+
+  <actor name="actor">
+    <pose>0 0 0 0 0 0</pose>
+  </actor>
+
+  <light name="light" type="spot">
+    <pose>2 0 0 3.14 0 0</pose>
+  </light>
+</sdf>
