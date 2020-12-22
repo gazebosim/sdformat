@@ -25,7 +25,7 @@
     </element>
   </element>
 
-  <element name="render_order" type="double" default="0.0" required="0">
+  <element name="render_order" type="float" default="0.0" required="0">
     <description>Set render order for coplanar polygons. The higher value will be rendered on top of the other coplanar polygons</description>
   </element>
 
