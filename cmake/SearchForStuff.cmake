@@ -111,3 +111,16 @@ else()
   set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
   message(STATUS "Looking for ignition-math${IGN_MATH_VER}-config.cmake - found")
 endif()
+
+########################################
+# Find ignition utils
+# Set a variable for generating ProjectConfig.cmake
+find_package(ignition-utils0 QUIET)
+if (NOT ignition-utils0_FOUND)
+  message(STATUS "Looking for ignition-utils0-config.cmake - not found")
+  BUILD_ERROR ("Missing: Ignition utils(libignition-utils0-dev)")
+else()
+  set(IGN_UTILS_VER ${ignition-utils0_VERSION_MAJOR})
+  message(STATUS "Looking for ignition-utils${IGN_UTILS_VER}-config.cmake - found")
+endif()
+
