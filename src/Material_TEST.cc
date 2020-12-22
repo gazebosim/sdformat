@@ -30,7 +30,7 @@ TEST(DOMMaterial, Construction)
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Specular());
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Emissive());
   EXPECT_TRUE(material.Lighting());
-  EXPECT_EQ(0, material.RenderOrder());
+  EXPECT_FLOAT_EQ(0, material.RenderOrder());
   EXPECT_FALSE(material.DoubleSided());
   EXPECT_EQ(nullptr, material.Element());
   EXPECT_EQ("", material.ScriptUri());
@@ -67,7 +67,7 @@ TEST(DOMMaterial, MoveConstructor)
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
   EXPECT_TRUE(material2.DoubleSided());
-  EXPECT_EQ(2, material2.RenderOrder());
+  EXPECT_FLOAT_EQ(2.0, material2.RenderOrder());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
@@ -102,7 +102,7 @@ TEST(DOMMaterial, CopyConstructor)
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
   EXPECT_TRUE(material2.DoubleSided());
-  EXPECT_EQ(4, material2.RenderOrder());
+  EXPECT_FLOAT_EQ(4, material2.RenderOrder());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
@@ -138,7 +138,7 @@ TEST(DOMMaterial, AssignmentOperator)
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
   EXPECT_TRUE(material2.DoubleSided());
-  EXPECT_EQ(4, material2.RenderOrder());
+  EXPECT_FLOAT_EQ(4, material2.RenderOrder());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
@@ -173,7 +173,7 @@ TEST(DOMMaterial, MoveAssignmentOperator)
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
   EXPECT_TRUE(material2.DoubleSided());
-  EXPECT_EQ(4, material2.RenderOrder());
+  EXPECT_FLOAT_EQ(4, material2.RenderOrder());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
@@ -224,9 +224,9 @@ TEST(DOMMaterial, Set)
   material.SetLighting(false);
   EXPECT_FALSE(material.Lighting());
 
-  EXPECT_EQ(0, material.RenderOrder());
+  EXPECT_FLOAT_EQ(0, material.RenderOrder());
   material.SetRenderOrder(5);
-  EXPECT_EQ(5, material.RenderOrder());
+  EXPECT_FLOAT_EQ(5, material.RenderOrder());
 
   EXPECT_FALSE(material.DoubleSided());
   material.SetDoubleSided(true);
@@ -269,7 +269,7 @@ TEST(DOMMaterial, Set)
   EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f), moved.Specular());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f), moved.Emissive());
   EXPECT_FALSE(moved.Lighting());
-  EXPECT_EQ(5, moved.RenderOrder());
+  EXPECT_FLOAT_EQ(5, moved.RenderOrder());
   EXPECT_TRUE(moved.DoubleSided());
   EXPECT_EQ("uri", moved.ScriptUri());
   EXPECT_EQ("name", moved.ScriptName());
