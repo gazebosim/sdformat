@@ -23,6 +23,8 @@
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
+#include <ignition/utils/ImplPtr.hh>
+
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
@@ -36,9 +38,6 @@ namespace sdf
     ADIABATIC = 0,
   };
 
-  // Forward declarations.
-  class AtmospherePrivate;
-
   /// \brief The Atmosphere class contains information about
   /// an atmospheric model and related parameters such as temperature
   /// and pressure at sea level. An Atmosphere instance is optionally part of
@@ -47,27 +46,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Atmosphere();
-
-    /// \brief Copy constructor
-    /// \param[in] _atmosphere Atmosphere to copy.
-    public: Atmosphere(const Atmosphere &_atmosphere);
-
-    /// \brief Move constructor
-    /// \param[in] _atmosphere Atmosphere to move.
-    public: Atmosphere(Atmosphere &&_atmosphere) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _atmosphere Atmosphere to move.
-    /// \return Reference to this.
-    public: Atmosphere &operator=(Atmosphere &&_atmosphere);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _atmosphere Atmosphere to copy.
-    /// \return Reference to this.
-    public: Atmosphere &operator=(const Atmosphere &_atmosphere);
-
-    /// \brief Destructor
-    public: ~Atmosphere();
 
     /// \brief Load the atmosphere based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -118,7 +96,7 @@ namespace sdf
     public: bool operator==(const Atmosphere &_atmosphere);
 
     /// \brief Private data pointer.
-    private: AtmospherePrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }
