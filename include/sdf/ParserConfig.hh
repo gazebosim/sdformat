@@ -33,6 +33,7 @@ inline namespace SDF_VERSION_NAMESPACE
 {
 // Forward declare private data class.
 class ParserConfigPrivate;
+class CustomModelParser;
 
 /// This class contains configuration options for the libsdformat parser.
 ///
@@ -120,6 +121,10 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \param[in] _uri URI that will be mapped to _path
   /// \param[in] _path Colon separated set of paths.
   public: void AddURIPath(const std::string &_uri, const std::string &_path);
+
+  /// \brief Registers a custom model parser.
+  /// \param[in] _modelParser Callback as described above.
+  public: void RegisterCustomModelParser(CustomModelParser _modelParser);
 
   /// \brief Private data pointer.
   private: ParserConfigPrivate *dataPtr;
