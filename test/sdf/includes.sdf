@@ -15,6 +15,11 @@
     </include>
 
     <include>
+      <uri>test_model/model.sdf</uri>
+      <name>test_model_with_file</name>
+    </include>
+
+    <include>
       <uri>test_light</uri>
     </include>
 
