@@ -42,6 +42,13 @@ sdformat supported cmake parameters at configuring time:
 
 ### Windows
 
+Create if necessary, and activate a Conda environment:
+
+```
+conda create -n ign-ws
+conda activate ign-ws
+```
+
 Install prerequisites:
 
 ```
