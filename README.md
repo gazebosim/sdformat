@@ -20,13 +20,17 @@ Test coverage:
 
 ## Installation ##
 
+### UNIX
+
 Standard installation can be performed in UNIX systems using the following
 steps:
 
- - mkdir build/
- - cd build/
- - cmake ..
- - sudo make install
+```
+mkdir build/
+cd build/
+cmake ..
+sudo make install
+```
 
 sdformat supported cmake parameters at configuring time:
  - USE_INTERNAL_URDF (bool) [default False]
@@ -36,8 +40,42 @@ sdformat supported cmake parameters at configuring time:
    Use the sdformat team compilation flags instead of the common set defined
    by cmake.
 
+### Windows
+
+Install prerequisites:
+
+```
+conda install urdfdom --channel conda-forge
+```
+
+Install Ignition dependencies:
+
+```
+conda install libignition-tools1 --channel conda-forge
+```
+
+Configure and build:
+
+```
+mkdir build
+cd build
+cmake .. -DBUILD_TESTING=OFF  # Optionally, -DCMAKE_INSTALL_PREFIX=path\to\install
+cmake --build . --config Release
+```
+
+Install:
+
+```
+cmake --install . --config Release
+```
+
 ## Uninstallation ##
 
+### UNIX
+
 To uninstall the software installed with the previous steps:
- - cd build/
- - sudo make uninstall
+
+```
+cd build/
+sudo make uninstall
+```
