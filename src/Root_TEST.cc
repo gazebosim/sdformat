@@ -42,6 +42,26 @@ TEST(DOMRoot, Construction)
   EXPECT_EQ(nullptr, root.Model());
   EXPECT_EQ(nullptr, root.Light());
   EXPECT_EQ(nullptr, root.Actor());
+
+  SDF_SUPPRESS_DEPRECATED_BEGIN
+  EXPECT_FALSE(root.ModelNameExists("default"));
+  EXPECT_FALSE(root.ModelNameExists(""));
+  EXPECT_EQ(0u, root.ModelCount());
+  EXPECT_TRUE(root.ModelByIndex(0) == nullptr);
+  EXPECT_TRUE(root.ModelByIndex(1) == nullptr);
+
+  EXPECT_FALSE(root.LightNameExists("default"));
+  EXPECT_FALSE(root.LightNameExists(""));
+  EXPECT_EQ(0u, root.LightCount());
+  EXPECT_TRUE(root.LightByIndex(0) == nullptr);
+  EXPECT_TRUE(root.LightByIndex(1) == nullptr);
+
+  EXPECT_FALSE(root.ActorNameExists("default"));
+  EXPECT_FALSE(root.ActorNameExists(""));
+  EXPECT_EQ(0u, root.ActorCount());
+  EXPECT_TRUE(root.ActorByIndex(0) == nullptr);
+  EXPECT_TRUE(root.ActorByIndex(1) == nullptr);
+  SDF_SUPPRESS_DEPRECATED_END
 }
 
 /////////////////////////////////////////////////

@@ -355,15 +355,80 @@ bool Root::WorldNameExists(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+uint64_t Root::ModelCount() const
+{
+  return static_cast<uint64_t>(nullptr != this->Model());
+}
+
+/////////////////////////////////////////////////
+const Model *Root::ModelByIndex(const uint64_t _index) const
+{
+  if (0u == _index)
+  {
+    return this->Model();
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Root::ModelNameExists(const std::string &_name) const
+{
+  return nullptr != this->Model() && this->Model()->Name() == _name;
+}
+
+/////////////////////////////////////////////////
 const Model *Root::Model() const
 {
   return this->dataPtr->model.get();
+}
+
+uint64_t Root::LightCount() const
+{
+  return static_cast<uint64_t>(nullptr != this->Light());
+}
+
+/////////////////////////////////////////////////
+const Light *Root::LightByIndex(const uint64_t _index) const
+{
+  if (0u == _index)
+  {
+    return this->Light();
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Root::LightNameExists(const std::string &_name) const
+{
+  return nullptr != this->Light() && this->Light()->Name() == _name;
 }
 
 /////////////////////////////////////////////////
 const Light *Root::Light() const
 {
   return this->dataPtr->light.get();
+}
+
+/////////////////////////////////////////////////
+uint64_t Root::ActorCount() const
+{
+  return static_cast<uint64_t>(nullptr != this->Actor());
+}
+
+/////////////////////////////////////////////////
+const Actor *Root::ActorByIndex(const uint64_t _index) const
+{
+  if (0u == _index)
+  {
+    return this->Actor();
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Root::ActorNameExists(const std::string &_name) const
+{
+  return nullptr != this->Actor() && this->Actor()->Name() == _name;
 }
 
 /////////////////////////////////////////////////
