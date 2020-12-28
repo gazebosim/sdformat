@@ -15,6 +15,7 @@
  *
 */
 #include <string>
+#include <variant>
 #include <vector>
 #include <utility>
 
@@ -41,14 +42,9 @@ class sdf::RootPrivate
   /// \brief The worlds specified under the root SDF element
   public: std::vector<World> worlds;
 
-  /// \brief The models specified under the root SDF element
-  public: std::unique_ptr<Model> model;
-
-  /// \brief The lights specified under the root SDF element
-  public: std::unique_ptr<Light> light;
-
-  /// \brief The actors specified under the root SDF element
-  public: std::unique_ptr<Actor> actor;
+  /// \brief A model, light or actor under the root SDF element
+  public: std::variant<std::monostate, sdf::Model, sdf::Light, sdf::Actor>
+              modelLightOrActor;
 
   /// \brief Frame Attached-To Graphs constructed when loading Worlds.
   public: std::vector<sdf::ScopedGraph<FrameAttachedToGraph>>
@@ -254,8 +250,11 @@ Errors Root::Load(SDFPtr _sdf)
   if (this->dataPtr->sdf->HasElement("model"))
   {
     sdf::ElementPtr model = this->dataPtr->sdf->GetElement("model");
-    this->dataPtr->model = std::make_unique<sdf::Model>();
-    sdf::Errors loadErrors = this->dataPtr->model->Load(model);
+    this->dataPtr->modelLightOrActor = sdf::Model();
+    sdf::Model & modelObject =
+      std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
+
+    sdf::Errors loadErrors = modelObject.Load(model);
     errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
 
     this->dataPtr->modelFrameAttachedToGraph =
@@ -264,7 +263,7 @@ Errors Root::Load(SDFPtr _sdf)
     sdf::Errors buildErrors =
         sdf::buildFrameAttachedToGraph(
           this->dataPtr->modelFrameAttachedToGraph,
-          this->dataPtr->model.get());
+          &modelObject);
     errors.insert(errors.end(), buildErrors.begin(), buildErrors.end());
 
     sdf::Errors validateErrors =
@@ -272,7 +271,7 @@ Errors Root::Load(SDFPtr _sdf)
         this->dataPtr->modelFrameAttachedToGraph);
     errors.insert(errors.end(), validateErrors.begin(), validateErrors.end());
 
-    this->dataPtr->model->SetFrameAttachedToGraph(
+    modelObject.SetFrameAttachedToGraph(
       this->dataPtr->modelFrameAttachedToGraph);
 
     this->dataPtr->modelPoseRelativeToGraph =
@@ -281,7 +280,7 @@ Errors Root::Load(SDFPtr _sdf)
     Errors buildPoseErrors =
       buildPoseRelativeToGraph(
         this->dataPtr->modelPoseRelativeToGraph,
-        this->dataPtr->model.get());
+        &modelObject);
     errors.insert(
       errors.end(), buildPoseErrors.begin(), buildPoseErrors.end());
 
@@ -291,25 +290,45 @@ Errors Root::Load(SDFPtr _sdf)
     errors.insert(
       errors.end(), validatePoseErrors.begin(), validatePoseErrors.end());
 
-    this->dataPtr->model->SetPoseRelativeToGraph(
+    modelObject.SetPoseRelativeToGraph(
       this->dataPtr->modelPoseRelativeToGraph);
   }
 
   // Load all the lights.
   if (this->dataPtr->sdf->HasElement("light"))
   {
-    sdf::ElementPtr lightPtr = this->dataPtr->sdf->GetElement("light");
-    this->dataPtr->light = std::make_unique<sdf::Light>();
-    sdf::Errors buildErrors = this->dataPtr->light->Load(lightPtr);
-    errors.insert(errors.end(), buildErrors.begin(), buildErrors.end());
+    if (!std::holds_alternative<std::monostate>(
+      this->dataPtr->modelLightOrActor))
+    {
+      sdfwarn << "Root object can only contain one of model, light or actor";
+    }
+    else
+    {
+      sdf::ElementPtr lightPtr = this->dataPtr->sdf->GetElement("light");
+      this->dataPtr->modelLightOrActor = sdf::Light();
+      sdf::Light & lightObject =
+        std::get<sdf::Light>(this->dataPtr->modelLightOrActor);
+      sdf::Errors buildErrors = lightObject.Load(lightPtr);
+      errors.insert(errors.end(), buildErrors.begin(), buildErrors.end());
+    }
   }
 
   if (this->dataPtr->sdf->HasElement("actor"))
   {
-    sdf::ElementPtr actorPtr = this->dataPtr->sdf->GetElement("actor");
-    this->dataPtr->actor = std::make_unique<sdf::Actor>();
-    sdf::Errors buildErrors = this->dataPtr->actor->Load(actorPtr);
-    errors.insert(errors.end(), buildErrors.begin(), buildErrors.end());
+    if (!std::holds_alternative<std::monostate>(
+      this->dataPtr->modelLightOrActor))
+    {
+      sdfwarn << "Root object can only contain one of model, light or actor";
+    }
+    else
+    {
+      sdf::ElementPtr actorPtr = this->dataPtr->sdf->GetElement("actor");
+      this->dataPtr->modelLightOrActor = sdf::Actor();
+      sdf::Actor & actorObject =
+        std::get<sdf::Actor>(this->dataPtr->modelLightOrActor);
+      sdf::Errors buildErrors = actorObject.Load(actorPtr);
+      errors.insert(errors.end(), buildErrors.begin(), buildErrors.end());
+    }
   }
 
   return errors;
@@ -379,7 +398,11 @@ bool Root::ModelNameExists(const std::string &_name) const
 /////////////////////////////////////////////////
 const Model *Root::Model() const
 {
-  return this->dataPtr->model.get();
+  if (std::holds_alternative<sdf::Model>(this->dataPtr->modelLightOrActor))
+  {
+    return &std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
+  }
+  return nullptr;
 }
 
 uint64_t Root::LightCount() const
@@ -406,7 +429,11 @@ bool Root::LightNameExists(const std::string &_name) const
 /////////////////////////////////////////////////
 const Light *Root::Light() const
 {
-  return this->dataPtr->light.get();
+  if (std::holds_alternative<sdf::Light>(this->dataPtr->modelLightOrActor))
+  {
+    return &std::get<sdf::Light>(this->dataPtr->modelLightOrActor);
+  }
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -434,7 +461,11 @@ bool Root::ActorNameExists(const std::string &_name) const
 /////////////////////////////////////////////////
 const Actor *Root::Actor() const
 {
-  return this->dataPtr->actor.get();
+  if (std::holds_alternative<sdf::Actor>(this->dataPtr->modelLightOrActor))
+  {
+    return &std::get<sdf::Actor>(this->dataPtr->modelLightOrActor);
+  }
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
