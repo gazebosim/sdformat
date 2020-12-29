@@ -22,7 +22,7 @@ using namespace sdf;
 // Private data class
 class sdf::EllipsoidPrivate
 {
-  // An ellipsoid with a three radiuses of 1 meter
+  /// \brief An ellipsoid with all three radii of 1 meter
   public: ignition::math::Ellipsoidd ellipsoid{ignition::math::Vector3d::One};
 
   /// \brief The SDF element pointer used during load.

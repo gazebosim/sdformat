@@ -147,8 +147,8 @@ namespace sdf
 
     /// \brief Get the ellipsoid geometry, or nullptr if the contained
     /// geometry is not an ellipsoid.
-    /// \return Pointer to the visual's ellipsoid geometry, or nullptr if the
-    /// geometry is not an ellipsoid.
+    /// \return Pointer to the ellipsoid geometry, or nullptr if the geometry is
+    /// not an ellipsoid.
     /// \sa GeometryType Type() const
     public: const Ellipsoid *EllipsoidShape() const;
 

@@ -67,7 +67,7 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
 
-    /// \brief Get the ellipsoid's radius in meters.
+    /// \brief Get the ellipsoid's radii in meters.
     /// \return The radius of the ellipsoid in meters.
     public: ignition::math::Vector3d Radii() const;
 
