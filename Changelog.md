@@ -1,6 +1,14 @@
 ## SDFormat 8.0
 
-### SDFormat 8.X.X (202X-XX-XX)
+### SDFormat 8.9.1 (2020-12-23)
+
+1. Fix suported shader types (normal_map_X_space)
+    * [Pull request 383](https://github.com/osrf/sdformat/pull/383)
+
+1. CI updates
+    * [Pull request 392](https://github.com/osrf/sdformat/pull/392)
+    * [Pull request 414](https://github.com/osrf/sdformat/pull/414)
+    * [Pull request 438](https://github.com/osrf/sdformat/pull/438)
 
 ### SDFormat 8.9.0 (2020-09-04)
 
