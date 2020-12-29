@@ -13,6 +13,7 @@ set (headers
   Console.hh
   Cylinder.hh
   Element.hh
+  Ellipsoid.hh
   Error.hh
   Exception.hh
   Filesystem.hh

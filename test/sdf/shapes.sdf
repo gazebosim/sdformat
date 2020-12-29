@@ -59,6 +59,22 @@
         </geometry>
       </visual>
 
+      <collision name="ellipsoid_col">
+        <geometry>
+          <ellipsoid>
+            <radii>1.0 2.0 3.0</radii>
+          </ellipsoid>
+        </geometry>
+      </collision>
+
+      <visual name="ellipsoid_vis">
+        <geometry>
+          <ellipsoid>
+            <radii>0.1 0.2 0.3</radii>
+          </ellipsoid>
+        </geometry>
+      </visual>
+
       <collision name="plane_col">
         <geometry>
           <plane>

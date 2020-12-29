@@ -1,0 +1,6 @@
+<element name="ellipsoid" required="0">
+  <description>Ellipsoid shape</description>
+  <element name="radii" type="vector3" default="1 1 1" required="1">
+    <description>The three radii of the ellipsoid. The origin of the ellipsoid is in its geometric center (inside the center of the ellipsoid).</description>
+  </element>
+</element>

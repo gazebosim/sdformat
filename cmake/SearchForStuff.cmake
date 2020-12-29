@@ -97,7 +97,7 @@ endmacro()
 ########################################
 # Find ignition math
 # Set a variable for generating ProjectConfig.cmake
-find_package(ignition-math6 6.7 QUIET)
+find_package(ignition-math6 6.8 QUIET)
 if (NOT ignition-math6_FOUND)
   message(STATUS "Looking for ignition-math6-config.cmake - not found")
   BUILD_ERROR ("Missing: Ignition math (libignition-math6-dev)")

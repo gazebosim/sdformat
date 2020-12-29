@@ -269,10 +269,13 @@ but with improved human-readability..
 
 ### Additions
 
-1. **capsule.sdf** new shape type included in `//geometry`
-    + description: A shape consisting of a cylinder capped by hemispheres
+1. **capsule.sdf and ellipsoid.sdf** new shape types included in `//geometry`
+    + `capsule.sdf`: A shape consisting of a cylinder capped by hemispheres
       with parameters for the `radius` and `length` of cylindrical section.
+    + `ellipsoid.sdf`: A convex shape with up to three radii defining its
+      shape in of the form (x^2/a^2 + y^2/b^2 + z^2/c^2 = 1).
     * [Pull request 389](https://github.com/osrf/sdformat/pull/389)
+    * [Pull request 434](https://github.com/osrf/sdformat/pull/434)
 
 ### Modifications
 
