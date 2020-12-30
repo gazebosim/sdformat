@@ -1,4 +1,4 @@
-name: Ubuntu Bionic CI
+name: Ubuntu
 
 on: [push, pull_request]
 
@@ -9,9 +9,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Bionic CI
+      - name: Compile and test
         id: ci
         uses: ignition-tooling/action-ignition-ci@master
         with:
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
+  focal-ci:
+    runs-on: ubuntu-latest
+    name: Ubuntu Focal CI
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Compile and test
+        id: ci
+        uses: ignition-tooling/action-ignition-ci@focal
 
