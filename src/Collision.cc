@@ -51,6 +51,9 @@ class sdf::CollisionPrivate
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
   public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+
+  /// \brief Lidar reflective intensity
+  public: double laserRetro;
 };
 
 /////////////////////////////////////////////////
@@ -134,6 +137,13 @@ Errors Collision::Load(ElementPtr _sdf)
   if (_sdf->HasElement("surface"))
   {
     this->dataPtr->surface.Load(_sdf->GetElement("surface"));
+  }
+
+  // Load the lidar reflective intensity if it is given
+  if (_sdf->HasElement("laser_retro"))
+  {
+    this->dataPtr->laserRetro = _sdf->Get<double>("laser_retro");
+    std::cerr << "laser_retro: " << this->dataPtr->laserRetro << std::endl;
   }
 
   return errors;
