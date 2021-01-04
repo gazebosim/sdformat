@@ -43,22 +43,42 @@ class sdf::RootPrivate
   public: std::vector<World> worlds;
 
   /// \brief A model, light or actor under the root SDF element
-  public: std::variant<std::monostate, sdf::Model, sdf::Light, sdf::Actor>
+  /// This variant does not currently retain ownership, and instead points to
+  /// the first model/light/actor if they exist. When the vectors below are
+  /// removed this should be changed from a variant of pointers to a variant of
+  /// objects
+  public: std::variant<std::monostate, sdf::Model*, sdf::Light*, sdf::Actor*>
               modelLightOrActor;
+
+  /// \brief The models specified under the root SDF element
+  /// Deprecated: to be removed in libsdformat12
+  public: std::vector<sdf::Model> models;
+
+  /// \brief The lights specified under the root SDF element
+  /// Deprecated: to be removed in libsdformat12
+  public: std::vector<sdf::Light> lights;
+
+  /// \brief The actors specified under the root SDF element
+  /// Deprecated: to be removed in libsdformat12
+  public: std::vector<sdf::Actor> actors;
 
   /// \brief Frame Attached-To Graphs constructed when loading Worlds.
   public: std::vector<sdf::ScopedGraph<FrameAttachedToGraph>>
               worldFrameAttachedToGraphs;
 
-  /// \brief Frame Attached-To Graph constructed when loading Models.
-  public: sdf::ScopedGraph<FrameAttachedToGraph> modelFrameAttachedToGraph;
+  /// \brief Frame Attached-To Graphs constructed when loading Models.
+  /// Deprecated: to be removed in libsdformat12 and converted to a single graph
+  public: std::vector<sdf::ScopedGraph<FrameAttachedToGraph>>
+              modelFrameAttachedToGraphs;
 
   /// \brief Pose Relative-To Graphs constructed when loading Worlds.
   public: std::vector<sdf::ScopedGraph<PoseRelativeToGraph>>
               worldPoseRelativeToGraphs;
 
-  /// \brief Pose Relative-To Graph constructed when loading Models.
-  public: sdf::ScopedGraph<PoseRelativeToGraph> modelPoseRelativeToGraph;
+  /// \brief Pose Relative-To Graphs constructed when loading Models.
+  /// Deprecated: to be removed in libsdformat12 and converted to a single graph
+  public: std::vector<sdf::ScopedGraph<PoseRelativeToGraph>>
+              modelPoseRelativeToGraphs;
 
   /// \brief The SDF element pointer generated during load.
   public: sdf::ElementPtr sdf;
@@ -247,87 +267,63 @@ Errors Root::Load(SDFPtr _sdf)
     }
   }
 
-  if (this->dataPtr->sdf->HasElement("model"))
+  // Load all the models.
+  Errors modelLoadErrors = loadUniqueRepeated<sdf::Model>(
+      this->dataPtr->sdf, "model", this->dataPtr->models);
+  errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
+  if (!this->dataPtr->models.empty())
   {
-    sdf::ElementPtr model = this->dataPtr->sdf->GetElement("model");
-    this->dataPtr->modelLightOrActor = sdf::Model();
-    sdf::Model & modelObject =
-      std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
+    this->dataPtr->modelLightOrActor = &this->dataPtr->models.front();
+  }
 
-    sdf::Errors loadErrors = modelObject.Load(model);
-    errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
+  // Build the graphs.
+  for (sdf::Model &model : this->dataPtr->models)
+  {
+    auto frameAttachedToGraph = addFrameAttachedToGraph(
+        this->dataPtr->modelFrameAttachedToGraphs, model, errors);
 
-    this->dataPtr->modelFrameAttachedToGraph =
-      sdf::ScopedGraph(std::make_shared<FrameAttachedToGraph>());
+    model.SetFrameAttachedToGraph(frameAttachedToGraph);
 
-    sdf::Errors buildErrors =
-        sdf::buildFrameAttachedToGraph(
-          this->dataPtr->modelFrameAttachedToGraph,
-          &modelObject);
-    errors.insert(errors.end(), buildErrors.begin(), buildErrors.end());
-
-    sdf::Errors validateErrors =
-      sdf::validateFrameAttachedToGraph(
-        this->dataPtr->modelFrameAttachedToGraph);
-    errors.insert(errors.end(), validateErrors.begin(), validateErrors.end());
-
-    modelObject.SetFrameAttachedToGraph(
-      this->dataPtr->modelFrameAttachedToGraph);
-
-    this->dataPtr->modelPoseRelativeToGraph =
-      sdf::ScopedGraph(std::make_shared<PoseRelativeToGraph>());
-
-    Errors buildPoseErrors =
-      buildPoseRelativeToGraph(
-        this->dataPtr->modelPoseRelativeToGraph,
-        &modelObject);
-    errors.insert(
-      errors.end(), buildPoseErrors.begin(), buildPoseErrors.end());
-
-    Errors validatePoseErrors =
-      validatePoseRelativeToGraph(
-        this->dataPtr->modelPoseRelativeToGraph);
-    errors.insert(
-      errors.end(), validatePoseErrors.begin(), validatePoseErrors.end());
-
-    modelObject.SetPoseRelativeToGraph(
-      this->dataPtr->modelPoseRelativeToGraph);
+    auto poseRelativeToGraph = addPoseRelativeToGraph(
+        this->dataPtr->modelPoseRelativeToGraphs, model, errors);
+    model.SetPoseRelativeToGraph(poseRelativeToGraph);
   }
 
   // Load all the lights.
-  if (this->dataPtr->sdf->HasElement("light"))
+  Errors lightLoadErrors = loadUniqueRepeated<sdf::Light>(this->dataPtr->sdf,
+      "light", this->dataPtr->lights);
+  errors.insert(errors.end(), lightLoadErrors.begin(), lightLoadErrors.end());
+  if (!this->dataPtr->lights.empty())
   {
-    if (!std::holds_alternative<std::monostate>(
+    if (std::holds_alternative<std::monostate>(
       this->dataPtr->modelLightOrActor))
     {
-      sdfwarn << "Root object can only contain one of model, light or actor";
+      this->dataPtr->modelLightOrActor = &this->dataPtr->lights.front();
     }
     else
     {
-      sdf::ElementPtr lightPtr = this->dataPtr->sdf->GetElement("light");
-      this->dataPtr->modelLightOrActor = sdf::Light();
-      sdf::Light & lightObject =
-        std::get<sdf::Light>(this->dataPtr->modelLightOrActor);
-      sdf::Errors buildErrors = lightObject.Load(lightPtr);
-      errors.insert(errors.end(), buildErrors.begin(), buildErrors.end());
+      sdfwarn << "Root object can only contain one of model, light or actor. "
+              << "This behavior was deprecated in libsdformat11 and will soon "
+              << "be removed";
     }
   }
 
-  if (this->dataPtr->sdf->HasElement("actor"))
+  // Load all the actors.
+  Errors actorLoadErrors = loadUniqueRepeated<sdf::Actor>(this->dataPtr->sdf,
+      "actor", this->dataPtr->actors);
+  errors.insert(errors.end(), actorLoadErrors.begin(), actorLoadErrors.end());
+  if (!this->dataPtr->actors.empty())
   {
-    if (!std::holds_alternative<std::monostate>(
+    if (std::holds_alternative<std::monostate>(
       this->dataPtr->modelLightOrActor))
     {
-      sdfwarn << "Root object can only contain one of model, light or actor";
+      this->dataPtr->modelLightOrActor = &this->dataPtr->actors.front();
     }
     else
     {
-      sdf::ElementPtr actorPtr = this->dataPtr->sdf->GetElement("actor");
-      this->dataPtr->modelLightOrActor = sdf::Actor();
-      sdf::Actor & actorObject =
-        std::get<sdf::Actor>(this->dataPtr->modelLightOrActor);
-      sdf::Errors buildErrors = actorObject.Load(actorPtr);
-      errors.insert(errors.end(), buildErrors.begin(), buildErrors.end());
+      sdfwarn << "Root object can only contain one of model, light or actor. "
+              << "This behavior was deprecated in libsdformat11 and will soon "
+              << "be removed";
     }
   }
 
@@ -372,66 +368,77 @@ bool Root::WorldNameExists(const std::string &_name) const
   }
   return false;
 }
-
 /////////////////////////////////////////////////
 uint64_t Root::ModelCount() const
 {
-  return static_cast<uint64_t>(nullptr != this->Model());
+  return this->dataPtr->models.size();
 }
 
 /////////////////////////////////////////////////
 const Model *Root::ModelByIndex(const uint64_t _index) const
 {
-  if (0u == _index)
-  {
-    return this->Model();
-  }
+  if (_index < this->dataPtr->models.size())
+    return &this->dataPtr->models[_index];
   return nullptr;
 }
 
 /////////////////////////////////////////////////
 bool Root::ModelNameExists(const std::string &_name) const
 {
-  return nullptr != this->Model() && this->Model()->Name() == _name;
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 /////////////////////////////////////////////////
 const Model *Root::Model() const
 {
-  if (std::holds_alternative<sdf::Model>(this->dataPtr->modelLightOrActor))
+  if (std::holds_alternative<sdf::Model*>(this->dataPtr->modelLightOrActor))
   {
-    return &std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
+    return std::get<sdf::Model*>(this->dataPtr->modelLightOrActor);
   }
   return nullptr;
 }
 
+
+/////////////////////////////////////////////////
 uint64_t Root::LightCount() const
 {
-  return static_cast<uint64_t>(nullptr != this->Light());
+  return this->dataPtr->lights.size();
 }
 
 /////////////////////////////////////////////////
 const Light *Root::LightByIndex(const uint64_t _index) const
 {
-  if (0u == _index)
-  {
-    return this->Light();
-  }
+  if (_index < this->dataPtr->lights.size())
+    return &this->dataPtr->lights[_index];
   return nullptr;
 }
 
 /////////////////////////////////////////////////
 bool Root::LightNameExists(const std::string &_name) const
 {
-  return nullptr != this->Light() && this->Light()->Name() == _name;
+  for (auto const &m : this->dataPtr->lights)
+  {
+    if (m.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 /////////////////////////////////////////////////
 const Light *Root::Light() const
 {
-  if (std::holds_alternative<sdf::Light>(this->dataPtr->modelLightOrActor))
+  if (std::holds_alternative<sdf::Light*>(this->dataPtr->modelLightOrActor))
   {
-    return &std::get<sdf::Light>(this->dataPtr->modelLightOrActor);
+    return std::get<sdf::Light*>(this->dataPtr->modelLightOrActor);
   }
   return nullptr;
 }
@@ -439,31 +446,36 @@ const Light *Root::Light() const
 /////////////////////////////////////////////////
 uint64_t Root::ActorCount() const
 {
-  return static_cast<uint64_t>(nullptr != this->Actor());
+  return this->dataPtr->actors.size();
 }
 
 /////////////////////////////////////////////////
 const Actor *Root::ActorByIndex(const uint64_t _index) const
 {
-  if (0u == _index)
-  {
-    return this->Actor();
-  }
+  if (_index < this->dataPtr->actors.size())
+    return &this->dataPtr->actors[_index];
   return nullptr;
 }
 
 /////////////////////////////////////////////////
 bool Root::ActorNameExists(const std::string &_name) const
 {
-  return nullptr != this->Actor() && this->Actor()->Name() == _name;
+  for (auto const &m : this->dataPtr->actors)
+  {
+    if (m.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 /////////////////////////////////////////////////
 const Actor *Root::Actor() const
 {
-  if (std::holds_alternative<sdf::Actor>(this->dataPtr->modelLightOrActor))
+  if (std::holds_alternative<sdf::Actor*>(this->dataPtr->modelLightOrActor))
   {
-    return &std::get<sdf::Actor>(this->dataPtr->modelLightOrActor);
+    return std::get<sdf::Actor*>(this->dataPtr->modelLightOrActor);
   }
   return nullptr;
 }

@@ -144,6 +144,13 @@ namespace sdf
         SDF_DEPRECATED(11.0);
 
     /// \brief Get a pointer to the model object if it exists.
+    ///
+    /// If there is more than one model, this will return the first element.
+    /// This method is preferred to ModelByIndex, as its behavior is
+    /// consistent with the planned future API. Having more than one Model, or
+    /// more than one of Model/Actor/Light is now considered deprecated and
+    /// should not be relied upon going forward.
+    ///
     /// \return A pointer to the model, nullptr if it doesn't exist
     public: const sdf::Model *Model() const;
 
@@ -166,6 +173,14 @@ namespace sdf
         SDF_DEPRECATED(11.0);
 
     /// \brief Get a pointer to the light object if it exists.
+    ///
+    /// If there is more than one light, this will return the first element. If
+    /// there is already a model element, this will return null.
+    /// This method is preferred to LightByIndex, as its behavior is
+    /// consistent with the planned future API. Having more than one Light, or
+    /// more than one of Model/Actor/Light is now considered deprecated and
+    /// should not be relied upon going forward.
+    ///
     /// \return A pointer to the light, nullptr if it doesn't exist
     public: const sdf::Light *Light() const;
 
@@ -188,6 +203,14 @@ namespace sdf
         SDF_DEPRECATED(11.0);
 
     /// \brief Get a pointer to the actor object if it exists.
+    ///
+    /// If there is more than one actor, this will return the first element. If
+    /// there is already a model or light element, this will return null.
+    /// This method is preferred to ActorByIndex, as its behavior is
+    /// consistent with the planned future API. Having more than one Actor, or
+    /// more than one of Model/Actor/Light is now considered deprecated and
+    /// should not be relied upon going forward.
+    ///
     /// \return A pointer to the actor, nullptr if it doesn't exist
     public: const sdf::Actor *Actor() const;
 

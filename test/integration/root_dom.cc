@@ -102,7 +102,7 @@ TEST(DOMRoot, LoadDuplicateModels)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
-  EXPECT_TRUE(errors.empty()) << errors;
+  EXPECT_FALSE(errors.empty());
   EXPECT_NE(nullptr, root.Model());
   EXPECT_EQ("robot1", root.Model()->Name());
 }
