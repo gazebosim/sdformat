@@ -56,7 +56,7 @@ class sdf::CollisionPrivate
   public: bool hasLaserRetro{false};
 
   /// \brief Lidar reflective intensity
-  public: double laserRetro;
+  public: double laserRetro = 0;
 };
 
 /////////////////////////////////////////////////

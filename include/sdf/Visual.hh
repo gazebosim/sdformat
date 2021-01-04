@@ -213,6 +213,24 @@ namespace sdf
 
     /// \brief Private data pointer.
     private: VisualPrivate *dataPtr = nullptr;
+
+    /// \brief Set whether the lidar reflective intensity
+    /// has been specified.
+    /// \param[in] _laserRetro True if the lidar reflective intensity
+    /// has been set in the sdf.
+    public: void SetHasLaserRetro(bool _laserRetro);
+
+    /// \brief Get whether the lidar reflective intensity was set was set.
+    /// \return True if the lidar reflective intensity was set was set.
+    public: bool HasLaserRetro() const;
+
+    /// \brief Get the flidar reflective intensity.
+    /// \return The lidar reflective intensity.
+    public: double LaserRetro() const;
+
+    /// \brief Set the lidar reflective intensity.
+    /// \param[in] _laserRetro The lidar reflective intensity.
+    public: void SetLaserRetro(double _laserRetro);
   };
   }
 }
