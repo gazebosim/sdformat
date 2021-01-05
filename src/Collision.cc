@@ -51,12 +51,6 @@ class sdf::CollisionPrivate
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
   public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
-
-  /// \brief True indicates the lidar reflective intensity was set.
-  public: bool hasLaserRetro{false};
-
-  /// \brief Lidar reflective intensity
-  public: double laserRetro = 0;
 };
 
 /////////////////////////////////////////////////
@@ -140,14 +134,6 @@ Errors Collision::Load(ElementPtr _sdf)
   if (_sdf->HasElement("surface"))
   {
     this->dataPtr->surface.Load(_sdf->GetElement("surface"));
-  }
-
-  // Load the lidar reflective intensity if it is given
-  if (_sdf->HasElement("laser_retro"))
-  {
-    this->SetHasLaserRetro(true);
-    this->SetLaserRetro(_sdf->Get<double>("laser_retro"));
-    std::cerr << "laser_retro: " << this->LaserRetro() << std::endl;
   }
 
   return errors;
@@ -264,28 +250,4 @@ sdf::SemanticPose Collision::SemanticPose() const
 sdf::ElementPtr Collision::Element() const
 {
   return this->dataPtr->sdf;
-}
-
-//////////////////////////////////////////////////
-void Collision::SetHasLaserRetro(bool _laserRetro)
-{
-  this->dataPtr->hasLaserRetro = _laserRetro;
-}
-
-//////////////////////////////////////////////////
-bool Collision::HasLaserRetro() const
-{
-  return this->dataPtr->hasLaserRetro;
-}
-
-//////////////////////////////////////////////////
-double Collision::LaserRetro() const
-{
-  return this->dataPtr->laserRetro;
-}
-
-//////////////////////////////////////////////////
-void Collision::SetLaserRetro(double _laserRetro)
-{
-  this->dataPtr->laserRetro = _laserRetro;
 }

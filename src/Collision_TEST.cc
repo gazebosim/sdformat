@@ -166,16 +166,3 @@ TEST(DOMcollision, SetSurface)
   ASSERT_NE(nullptr, collision.Surface()->Contact());
   EXPECT_EQ(collision.Surface()->Contact()->CollideBitmask(), 0x2);
 }
-
-/////////////////////////////////////////////////
-TEST(DOMcollision, SetLaserRetro)
-{
-  sdf::Collision collision;
-  EXPECT_EQ(nullptr, collision.Element());
-  EXPECT_TRUE(collision.Name().empty());
-
-  collision.SetLaserRetro(150);
-
-  EXPECT_TRUE(collision.HasLaserRetro());
-  EXPECT_DOUBLE_EQ(150, collision.LaserRetro());
-}
