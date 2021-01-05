@@ -86,7 +86,9 @@ VisualPrivate::VisualPrivate(const VisualPrivate &_visualPrivate)
       poseRelativeTo(_visualPrivate.poseRelativeTo),
       geom(_visualPrivate.geom),
       sdf(_visualPrivate.sdf),
-      visibilityFlags(_visualPrivate.visibilityFlags)
+      visibilityFlags(_visualPrivate.visibilityFlags),
+      hasLaserRetro(_visualPrivate.hasLaserRetro),
+      laserRetro(_visualPrivate.laserRetro)
 {
   if (_visualPrivate.material)
   {
@@ -204,7 +206,6 @@ Errors Visual::Load(ElementPtr _sdf)
   {
     this->SetHasLaserRetro(true);
     this->SetLaserRetro(_sdf->Get<double>("laser_retro"));
-    std::cerr << "Visual laser_retro: " << this->LaserRetro() << std::endl;
   }
 
   return errors;
@@ -380,5 +381,6 @@ double Visual::LaserRetro() const
 //////////////////////////////////////////////////
 void Visual::SetLaserRetro(double _laserRetro)
 {
+  this->dataPtr->hasLaserRetro = true;
   this->dataPtr->laserRetro = _laserRetro;
 }
