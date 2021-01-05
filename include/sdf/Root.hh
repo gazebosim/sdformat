@@ -56,6 +56,23 @@ namespace sdf
     /// \brief Default constructor
     public: Root();
 
+    /// \brief Copy constructor is explicitly deleted to avoid copying the
+    /// FrameAttachedToGraph and PoseRelativeToGraphs contained in Root.
+    public: Root(const Root &_root) = delete;
+
+    /// \brief Move constructor
+    /// \param[in] _root Root to move.
+    public: Root(Root &&_root) noexcept;
+
+    /// \brief Move assignment operator.
+    /// \param[in] _root Root to move.
+    /// \return Reference to this.
+    public: Root &operator=(Root &&_root) noexcept;
+
+    /// \brief Copy assignment operator is explicitly deleted to avoid copying
+    /// the FrameAttachedToGraph and PoseRelativeToGraphs contained in Root.
+    public: Root &operator=(const Root &_root) = delete;
+
     /// \brief Destructor
     public: ~Root();
 
@@ -107,7 +124,8 @@ namespace sdf
     /// \return True if there exists a world with the given name.
     public: bool WorldNameExists(const std::string &_name) const;
 
-    /// \brief Get the number of models.
+    /// \brief Get the number of models that are immediate (not nested) children
+    /// of this Root object.
     /// \return Number of models contained in this Root object.
     public: uint64_t ModelCount() const;
 

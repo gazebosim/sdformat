@@ -146,6 +146,10 @@ else()
   endif()
 endif()
 
+#============================================================================
+# Ask whether we should make a shared or static library.
+option(BUILD_SHARED_LIBS "Set this to true to generate shared libraries (recommended), or false for static libraries" ON)
+
 #####################################
 # Handle CFlags
 unset (CMAKE_C_FLAGS_ALL CACHE)

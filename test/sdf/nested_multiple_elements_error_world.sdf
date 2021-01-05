@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+
+  <!-- The included sdf model contains model, actor and light elements, and
+  is an example of an unsupported file because the name resolution is ambiguous
+  -->
+  <world name="nested_multiple_elements_error_world">
+    <include>
+      <!-- This search path for this model must be added by the test code -->
+      <uri>model_actor_light</uri>
+      <pose>1 1 1 1.570796326794895 0 0</pose>
+      <name>nested_model</name>
+    </include>
+  </world>
+</sdf>
+
+</sdf>

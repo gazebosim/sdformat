@@ -18,8 +18,10 @@
 #include <gtest/gtest.h>
 
 #include <string>
+#include <sstream>
 #include <vector>
 
+#include "sdf/Error.hh"
 #include "sdf/Types.hh"
 
 /////////////////////////////////////////////////
@@ -97,6 +99,25 @@ TEST(Types, trim_nothing)
 
   out = sdf::trim("\n    xyz    \n");
   EXPECT_EQ(out, "xyz");
+}
+
+/////////////////////////////////////////////////
+TEST(Types, ErrorsOutputStream)
+{
+  sdf::Errors errors;
+  errors.emplace_back(sdf::ErrorCode::FILE_READ, "Error reading file");
+  errors.emplace_back(sdf::ErrorCode::DUPLICATE_NAME, "Found duplicate name");
+  std::string expected = "Error Code ";
+  expected +=
+      std::to_string(static_cast<std::size_t>(sdf::ErrorCode::FILE_READ));
+  expected += " Msg: Error reading file\nError Code ";
+  expected +=
+      std::to_string(static_cast<std::size_t>(sdf::ErrorCode::DUPLICATE_NAME));
+  expected += " Msg: Found duplicate name\n";
+
+  std::stringstream output;
+  output << errors;
+  EXPECT_EQ(expected, output.str());
 }
 
 /////////////////////////////////////////////////

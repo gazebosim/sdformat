@@ -70,7 +70,7 @@ TEST(DOMModel, NoLinks)
   sdf::Root root;
   auto errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(4u, errors.size());
+  ASSERT_EQ(3u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::MODEL_WITHOUT_LINK, errors[0].Code());
   EXPECT_TRUE(errors[0].Message().find("model must have at least one link") !=
                std::string::npos);
@@ -78,7 +78,6 @@ TEST(DOMModel, NoLinks)
   EXPECT_TRUE(errors[1].Message().find("model must have at least one link") !=
                std::string::npos);
   // errors[2]
-  // errors[3]
 }
 
 /////////////////////////////////////////////////
@@ -156,7 +155,7 @@ TEST(DOMRoot, NestedModel)
   // Load the SDF file
   sdf::Root root;
   auto errors = root.Load(testFile);
-  EXPECT_TRUE(errors.empty());
+  EXPECT_TRUE(errors.empty()) << errors;
 
   EXPECT_EQ(1u, root.ModelCount());
 
@@ -532,7 +531,28 @@ TEST(DOMRoot, LoadNestedExplicitCanonicalLink)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMJoint, LoadInvalidNestedModelWithoutLinks)
+TEST(DOMRoot, ModelPlacementFrameAttribute)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_with_placement_frame_attribute.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  auto *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  ignition::math::Pose3d pose;
+  errors = model->SemanticPose().Resolve(pose);
+  EXPECT_TRUE(errors.empty()) << errors;
+  EXPECT_EQ(ignition::math::Pose3d(0, -2, 10, 0, 0, 0), pose);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, LoadInvalidNestedModelWithoutLinks)
 {
   const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -544,7 +564,7 @@ TEST(DOMJoint, LoadInvalidNestedModelWithoutLinks)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(10u, errors.size());
+  EXPECT_EQ(7u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::MODEL_WITHOUT_LINK);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find("A model must have at least one link"));
@@ -556,8 +576,4 @@ TEST(DOMJoint, LoadInvalidNestedModelWithoutLinks)
   // errors[4]
   // errors[5]
   // errors[6]
-  // errors[7]
-  // errors[8]
-  // errors[9]
 }
-

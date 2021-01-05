@@ -8,13 +8,16 @@ set (headers
   Atmosphere.hh
   Box.hh
   Camera.hh
+  Capsule.hh
   Collision.hh
   Console.hh
   Cylinder.hh
   Element.hh
+  Ellipsoid.hh
   Error.hh
   Exception.hh
   Filesystem.hh
+  ForceTorque.hh
   Frame.hh
   Geometry.hh
   Gui.hh

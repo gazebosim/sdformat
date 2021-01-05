@@ -185,31 +185,6 @@ namespace sdf
   SDFORMAT_VISIBLE
   std::string getModelFilePath(const std::string &_modelDirPath);
 
-  /// \brief Copy the contents of the first model element from one ElementPtr
-  /// to another ElementPtr, prepending the copied model name with `::` to
-  /// link and joint names, and apply the model pose to the copied link poses.
-  /// If //xyz/@expressed_in == "__model__" for the axes of any copied joints,
-  /// then apply the model pose rotation to those joint axes.
-  /// \param[in] _sdf ElementPtr for model into which the elements will be
-  /// copied.
-  /// \param[in] _includeSDF The first model element from this ElementPtr will
-  /// be copied to _sdf with the mentioned name and pose transformations.
-  SDFORMAT_VISIBLE
-  void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF);
-
-  /// \brief Copy the contents of the first model element from one ElementPtr
-  /// to another ElementPtr, prepending the copied model name with `::` to
-  /// link and joint names, and apply the model pose to the copied link poses.
-  /// If //xyz/@expressed_in == "__model__" for the axes of any copied joints,
-  /// then apply the model pose rotation to those joint axes.
-  /// \param[in] _sdf ElementPtr for model into which the elements will be
-  /// copied.
-  /// \param[in] _includeSDF The first model element from this ElementPtr will
-  /// be copied to _sdf with the mentioned name and pose transformations.
-  /// \param[out] _errors Any errors will be appended to this variable.
-  SDFORMAT_VISIBLE
-  void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors);
-
   /// \brief Convert an SDF file to a specific SDF version.
   /// \param[in] _filename Name of the SDF file to convert.
   /// \param[in] _version Version to convert _filename to.

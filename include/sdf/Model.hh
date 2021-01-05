@@ -39,6 +39,8 @@ namespace sdf
   class Link;
   class ModelPrivate;
   struct PoseRelativeToGraph;
+  struct FrameAttachedToGraph;
+  template <typename T> class ScopedGraph;
 
   class SDFORMAT_VISIBLE Model
   {
@@ -132,11 +134,14 @@ namespace sdf
     /// should be subject to wind.
     public: void SetEnableWind(bool _enableWind);
 
-    /// \brief Get the number of links.
+    /// \brief Get the number of links that are immediate (not nested) children
+    /// of this Model object.
+    /// \remark LinkByName() can find links that are not immediate children of
+    /// this Model object.
     /// \return Number of links contained in this Model object.
     public: uint64_t LinkCount() const;
 
-    /// \brief Get a link based on an index.
+    /// \brief Get an immediate (not nested) child link based on an index.
     /// \param[in] _index Index of the link. The index should be in the
     /// range [0..LinkCount()).
     /// \return Pointer to the link. Nullptr if the index does not exist.
@@ -157,11 +162,14 @@ namespace sdf
     /// \return True if there exists a link with the given name.
     public: bool LinkNameExists(const std::string &_name) const;
 
-    /// \brief Get the number of joints.
+    /// \brief Get the number of joints that are immediate (not nested) children
+    /// of this Model object.
+    /// \remark JointByName() can find joints that are not immediate children of
+    /// this Model object.
     /// \return Number of joints contained in this Model object.
     public: uint64_t JointCount() const;
 
-    /// \brief Get a joint based on an index.
+    /// \brief Get an immediate (not nested) child joint based on an index.
     /// \param[in] _index Index of the joint. The index should be in the
     /// range [0..JointCount()).
     /// \return Pointer to the joint. Nullptr if the index does not exist.
@@ -170,7 +178,7 @@ namespace sdf
 
     /// \brief Get whether a joint name exists.
     /// \param[in] _name Name of the joint to check.
-    /// To check for a joint in a nested model, prefix the link name with
+    /// To check for a joint in a nested model, prefix the joint name with
     /// the sequence of nested models containing this joint, delimited by "::".
     /// \return True if there exists a joint with the given name.
     public: bool JointNameExists(const std::string &_name) const;
@@ -184,11 +192,15 @@ namespace sdf
     /// \sa bool JointNameExists(const std::string &_name) const
     public: const Joint *JointByName(const std::string &_name) const;
 
-    /// \brief Get the number of explicit frames.
+    /// \brief Get the number of explicit frames that are immediate (not nested)
+    /// children of this Model object.
+    /// \remark FrameByName() can find explicit frames that are not immediate
+    /// children of this Model object.
     /// \return Number of explicit frames contained in this Model object.
     public: uint64_t FrameCount() const;
 
-    /// \brief Get an explicit frame based on an index.
+    /// \brief Get an immediate (not nested) child explicit frame based on an
+    /// index.
     /// \param[in] _index Index of the explicit frame. The index should be in
     /// the range [0..FrameCount()).
     /// \return Pointer to the explicit frame. Nullptr if the index does not
@@ -211,11 +223,15 @@ namespace sdf
     /// \return True if there exists an explicit frame with the given name.
     public: bool FrameNameExists(const std::string &_name) const;
 
-    /// \brief Get the number of nested models.
+    /// \brief Get the number of nested models that are immediate (not
+    /// recursively nested) children of this Model object.
+    /// \remark ModelByName() can find nested models that are not immediate
+    /// children of this Model object.
     /// \return Number of nested models contained in this Model object.
     public: uint64_t ModelCount() const;
 
-    /// \brief Get a nested model based on an index.
+    /// \brief Get an immediate (not recursively nested) child model based on an
+    /// index.
     /// \param[in] _index Index of the nested model. The index should be in the
     /// range [0..ModelCount()).
     /// \return Pointer to the model. Nullptr if the index does not exist.
@@ -298,28 +314,34 @@ namespace sdf
     /// \param[in] _name Name of the placement frame.
     public: void SetPlacementFrameName(const std::string &_name);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
-    /// World::Load and Model::Load if this is a nested model.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
-    /// \return Error if graph pointer is invalid.
-    private: sdf::Errors SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
-
     /// \brief Get the model's canonical link and the nested name of the link
     /// relative to the current model, delimited by "::".
     /// \return An immutable pointer to the canonical link and the nested
     /// name of the link relative to the current model.
-    private: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
+    public: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
         const;
 
-    /// \brief Allow World::Load to call SetPoseRelativeToGraph.
-    friend class World;
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by Root::Load or
+    /// World::SetPoseRelativeToGraph if this is a standalone model and
+    /// Model::SetPoseRelativeToGraph if this is a nested model.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
+    private: void SetPoseRelativeToGraph(
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
-    /// \brief Allow helper function in FrameSemantics.cc to call
-    /// CanonicalLinkAndRelativeName.
-    friend std::pair<const Link *, std::string>
-        modelCanonicalLinkAndRelativeName(const Model *);
+    /// \brief Give the scoped FrameAttachedToGraph to be used for resolving
+    /// attached bodies. This is private and is intended to be called by
+    /// Root::Load or World::SetFrameAttachedToGraph if this is a standalone
+    /// model and Model::SetFrameAttachedToGraph if this is a nested model.
+    /// \param[in] _graph scoped FrameAttachedToGraph object.
+    private: void SetFrameAttachedToGraph(
+        sdf::ScopedGraph<FrameAttachedToGraph> _graph);
+
+    /// \brief Allow Root::Load, World::SetPoseRelativeToGraph, or
+    /// World::SetFrameAttachedToGraph to call SetPoseRelativeToGraph and
+    /// SetFrameAttachedToGraph
+    friend class Root;
+    friend class World;
 
     /// \brief Private data pointer.
     private: ModelPrivate *dataPtr = nullptr;

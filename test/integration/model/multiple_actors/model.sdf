@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <!-- This file is not valid because it contains multiple actor elements which
+  is not supported -->
+
+  <actor name="multiple_actors1">
+    <pose>0 0 0 0 0 0</pose>
+    <link name="link1"/>
+  </actor>
+
+  <actor name="multiple_actors2">
+    <pose>1 0 0 1.57 0 0</pose>
+    <link name="link2"/>
+  </actor>
+
+  <actor name="multiple_actors3">
+    <pose>2 0 0 3.14 0 0</pose>
+    <link name="link3"/>
+  </actor>
+</sdf>

@@ -30,7 +30,9 @@ namespace sdf
   // Forward declare private data class.
   class GeometryPrivate;
   class Box;
+  class Capsule;
   class Cylinder;
+  class Ellipsoid;
   class Mesh;
   class Plane;
   class Sphere;
@@ -56,6 +58,12 @@ namespace sdf
 
     /// \brief A mesh geometry.
     MESH = 5,
+
+    /// \brief A capsule geometry.
+    CAPSULE = 7,
+
+    /// \brief An ellipsoid geometry
+    ELLIPSOID = 8,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
@@ -115,6 +123,17 @@ namespace sdf
     /// \param[in] _box The box shape.
     public: void SetBoxShape(const Box &_box);
 
+    /// \brief Get the capsule geometry, or nullptr if the contained
+    /// geometry is not a capsule.
+    /// \return Pointer to the capsule geometry, or nullptr if the
+    /// geometry is not a capsule.
+    /// \sa GeometryType Type() const
+    public: const Capsule *CapsuleShape() const;
+
+    /// \brief Set the capsule shape.
+    /// \param[in] _capsule The capsule shape.
+    public: void SetCapsuleShape(const Capsule &_capsule);
+
     /// \brief Get the cylinder geometry, or nullptr if the contained
     /// geometry is not a cylinder.
     /// \return Pointer to the visual's cylinder geometry, or nullptr if the
@@ -125,6 +144,17 @@ namespace sdf
     /// \brief Set the cylinder shape.
     /// \param[in] _cylinder The cylinder shape.
     public: void SetCylinderShape(const Cylinder &_cylinder);
+
+    /// \brief Get the ellipsoid geometry, or nullptr if the contained
+    /// geometry is not an ellipsoid.
+    /// \return Pointer to the ellipsoid geometry, or nullptr if the geometry is
+    /// not an ellipsoid.
+    /// \sa GeometryType Type() const
+    public: const Ellipsoid *EllipsoidShape() const;
+
+    /// \brief Set the ellipsoid shape.
+    /// \param[in] _ellipsoid The ellipsoid shape.
+    public: void SetEllipsoidShape(const Ellipsoid &_ellipsoid);
 
     /// \brief Get the sphere geometry, or nullptr if the contained geometry is
     /// not a sphere.

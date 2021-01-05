@@ -20,11 +20,15 @@ but with improved human-readability..
     + Errors ResolveChildLink(std::string&) const
     + Errors ResolveParentLink(std::string&) const
 
+1. **sdf/Model.hh**:
+    + std::pair<const Link *, std::string> CanonicalLinkAndRelativeName() const;
+
 ### Modifications
 
-1. **sdf/Model.hh**: the following methods now accept nested names
-      that can begin with a sequence of nested model names separated
-      by `::` and may end with the name of an object of the specified type.
+1. **sdf/Model.hh**: the following methods now accept nested names relative to
+      the model's scope that can begin with a sequence of nested model names
+      separated by `::` and may end with the name of an object of the specified
+      type.
     + const Frame \*FrameByName(const std::string &) const
     + const Joint \*JointByName(const std::string &) const
     + const Link \*LinkByName(const std::string &) const
@@ -262,6 +266,16 @@ but with improved human-readability..
     + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
 
 ## SDF protocol 1.7 to 1.8
+
+### Additions
+
+1. **capsule.sdf and ellipsoid.sdf** new shape types included in `//geometry`
+    + `capsule.sdf`: A shape consisting of a cylinder capped by hemispheres
+      with parameters for the `radius` and `length` of cylindrical section.
+    + `ellipsoid.sdf`: A convex shape with up to three radii defining its
+      shape in of the form (x^2/a^2 + y^2/b^2 + z^2/c^2 = 1).
+    * [Pull request 389](https://github.com/osrf/sdformat/pull/389)
+    * [Pull request 434](https://github.com/osrf/sdformat/pull/434)
 
 ### Modifications
 

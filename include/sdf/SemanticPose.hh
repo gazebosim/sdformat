@@ -42,6 +42,7 @@ namespace sdf
   // Forward declare private data class.
   class SemanticPosePrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \brief SemanticPose is a data structure that can be used by different
   /// DOM objects to resolve poses on a PoseRelativeToGraph. This object holds
@@ -78,12 +79,30 @@ namespace sdf
     /// raw pose is applied.
     /// \param[in] _defaultResolveTo Default frame to resolve-to in Resolve()
     /// if no frame is specified.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph A scoped PoseRelativeToGraph object.
     private: SemanticPose(
         const ignition::math::Pose3d &_pose,
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
-        std::weak_ptr<const sdf::PoseRelativeToGraph> _graph);
+        const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
+
+    /// \brief Private constructor that is used by object that represent a frame
+    /// in the PoseRelativeTo graph. Examples are Model, Frame, Link and not
+    /// Collision or Visual.
+    /// \param[in] _name Name of object. This should also be the name of the
+    /// frame represented by this object in the PoseRelativeTo graph.
+    /// \param[in] _pose Raw pose of object.
+    /// \param[in] _relativeTo Name of frame in graph relative-to which the
+    /// raw pose is applied.
+    /// \param[in] _defaultResolveTo Default frame to resolve-to in Resolve()
+    /// if no frame is specified.
+    /// \param[in] _graph A scoped PoseRelativeToGraph object.
+    private: SemanticPose(
+        const std::string &_name,
+        const ignition::math::Pose3d &_pose,
+        const std::string &_relativeTo,
+        const std::string &_defaultResolveTo,
+        const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
 
     /// \brief Destructor
     public: ~SemanticPose();

@@ -17,7 +17,9 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Box.hh"
+#include "sdf/Capsule.hh"
 #include "sdf/Cylinder.hh"
+#include "sdf/Ellipsoid.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
@@ -33,8 +35,14 @@ TEST(DOMGeometry, Construction)
   geom.SetType(sdf::GeometryType::BOX);
   EXPECT_EQ(sdf::GeometryType::BOX, geom.Type());
 
+  geom.SetType(sdf::GeometryType::CAPSULE);
+  EXPECT_EQ(sdf::GeometryType::CAPSULE, geom.Type());
+
   geom.SetType(sdf::GeometryType::CYLINDER);
   EXPECT_EQ(sdf::GeometryType::CYLINDER, geom.Type());
+
+  geom.SetType(sdf::GeometryType::ELLIPSOID);
+  EXPECT_EQ(sdf::GeometryType::ELLIPSOID, geom.Type());
 
   geom.SetType(sdf::GeometryType::PLANE);
   EXPECT_EQ(sdf::GeometryType::PLANE, geom.Type());
@@ -165,6 +173,23 @@ TEST(DOMGeometry, Sphere)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMGeometry, Capsule)
+{
+  sdf::Geometry geom;
+  geom.SetType(sdf::GeometryType::CAPSULE);
+
+  sdf::Capsule capsuleShape;
+  capsuleShape.SetRadius(0.123);
+  capsuleShape.SetLength(4.56);
+  geom.SetCapsuleShape(capsuleShape);
+
+  EXPECT_EQ(sdf::GeometryType::CAPSULE, geom.Type());
+  EXPECT_NE(nullptr, geom.CapsuleShape());
+  EXPECT_DOUBLE_EQ(0.123, geom.CapsuleShape()->Radius());
+  EXPECT_DOUBLE_EQ(4.56, geom.CapsuleShape()->Length());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMGeometry, Cylinder)
 {
   sdf::Geometry geom;
@@ -179,6 +204,22 @@ TEST(DOMGeometry, Cylinder)
   EXPECT_NE(nullptr, geom.CylinderShape());
   EXPECT_DOUBLE_EQ(0.123, geom.CylinderShape()->Radius());
   EXPECT_DOUBLE_EQ(4.56, geom.CylinderShape()->Length());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGeometry, Ellipsoid)
+{
+  sdf::Geometry geom;
+  geom.SetType(sdf::GeometryType::ELLIPSOID);
+
+  sdf::Ellipsoid ellipsoidShape;
+  const ignition::math::Vector3d expectedRadii(1, 2, 3);
+  ellipsoidShape.SetRadii(expectedRadii);
+  geom.SetEllipsoidShape(ellipsoidShape);
+
+  EXPECT_EQ(sdf::GeometryType::ELLIPSOID, geom.Type());
+  EXPECT_NE(nullptr, geom.EllipsoidShape());
+  EXPECT_EQ(expectedRadii, geom.EllipsoidShape()->Radii());
 }
 
 /////////////////////////////////////////////////

@@ -15,17 +15,20 @@ set (sources
   Atmosphere.cc
   Box.cc
   Camera.cc
+  Capsule.cc
   Collision.cc
   Console.cc
   Converter.cc
   Cylinder.cc
   Element.cc
+  Ellipsoid.cc
   EmbeddedSdf.cc
   Error.cc
   Exception.cc
   Frame.cc
   FrameSemantics.cc
   Filesystem.cc
+  ForceTorque.cc
   Geometry.cc
   Gui.cc
   ign.cc
@@ -85,14 +88,17 @@ if (BUILD_SDF_TEST)
     Atmosphere_TEST.cc
     Box_TEST.cc
     Camera_TEST.cc
+    Capsule_TEST.cc
     Collision_TEST.cc
     Console_TEST.cc
     Cylinder_TEST.cc
     Element_TEST.cc
+    Ellipsoid_TEST.cc
     Error_TEST.cc
     Exception_TEST.cc
     Frame_TEST.cc
     Filesystem_TEST.cc
+    ForceTorque_TEST.cc
     Geometry_TEST.cc
     Gui_TEST.cc
     Imu_TEST.cc
