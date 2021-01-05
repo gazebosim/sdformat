@@ -91,6 +91,19 @@ TEST(DOMRoot, LoadMultipleModels)
   EXPECT_TRUE(errors.empty()) << errors;
   ASSERT_NE(nullptr, root.Model());
   EXPECT_EQ("robot1", root.Model()->Name());
+
+  SDF_SUPPRESS_DEPRECATED_BEGIN
+  EXPECT_EQ(3u, root.ModelCount());
+
+  EXPECT_EQ("robot1", root.ModelByIndex(0)->Name());
+  EXPECT_EQ("robot2", root.ModelByIndex(1)->Name());
+  EXPECT_EQ("last_robot", root.ModelByIndex(2)->Name());
+
+  EXPECT_FALSE(root.ModelNameExists("robot"));
+  EXPECT_TRUE(root.ModelNameExists("robot1"));
+  EXPECT_TRUE(root.ModelNameExists("robot2"));
+  EXPECT_TRUE(root.ModelNameExists("last_robot"));
+  SDF_SUPPRESS_DEPRECATED_END
 }
 
 /////////////////////////////////////////////////
@@ -105,4 +118,9 @@ TEST(DOMRoot, LoadDuplicateModels)
   EXPECT_FALSE(errors.empty());
   EXPECT_NE(nullptr, root.Model());
   EXPECT_EQ("robot1", root.Model()->Name());
+
+  SDF_SUPPRESS_DEPRECATED_BEGIN
+  EXPECT_EQ(1u, root.ModelCount());
+  EXPECT_EQ("robot1", root.ModelByIndex(0)->Name());
+  SDF_SUPPRESS_DEPRECATED_END
 }

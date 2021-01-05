@@ -52,15 +52,15 @@ class sdf::RootPrivate
 
   /// \brief The models specified under the root SDF element
   /// Deprecated: to be removed in libsdformat12
-  public: std::vector<sdf::Model> models SDF_DEPRECATED(11.0);
+  public: std::vector<sdf::Model> models;
 
   /// \brief The lights specified under the root SDF element
   /// Deprecated: to be removed in libsdformat12
-  public: std::vector<sdf::Light> lights SDF_DEPRECATED(11.0);
+  public: std::vector<sdf::Light> lights;
 
   /// \brief The actors specified under the root SDF element
   /// Deprecated: to be removed in libsdformat12
-  public: std::vector<sdf::Actor> actors SDF_DEPRECATED(11.0);
+  public: std::vector<sdf::Actor> actors;
 
   /// \brief Frame Attached-To Graphs constructed when loading Worlds.
   public: std::vector<sdf::ScopedGraph<FrameAttachedToGraph>>
