@@ -74,11 +74,11 @@ TEST(ParamPassingTest, NestedInclude)
 {
   const std::string modelRootPath =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "model", "nested_include") + "/";
+                            "model", "nested_include");
   sdf::setFindCallback(
       [&](const std::string &_file)
       {
-        return modelRootPath + _file;
+        return sdf::filesystem::append(modelRootPath, _file);
       });
 
   // checks correctly specified elements in <experimental:params>
