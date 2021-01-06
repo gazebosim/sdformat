@@ -204,7 +204,6 @@ Errors Visual::Load(ElementPtr _sdf)
   // Load the lidar reflective intensity if it is given
   if (_sdf->HasElement("laser_retro"))
   {
-    this->SetHasLaserRetro(true);
     this->SetLaserRetro(_sdf->Get<double>("laser_retro"));
   }
 
