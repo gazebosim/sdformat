@@ -53,6 +53,7 @@ set (sources
   SDFExtension.cc
   SemanticPose.cc
   Sensor.cc
+  Sky.cc
   Sphere.cc
   Surface.cc
   Types.cc
@@ -117,6 +118,7 @@ if (BUILD_SDF_TEST)
     SemanticPose_TEST.cc
     SDF_TEST.cc
     Sensor_TEST.cc
+    Sky_TEST.cc
     Sphere_TEST.cc
     Surface_TEST.cc
     Types_TEST.cc

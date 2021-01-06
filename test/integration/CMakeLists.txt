@@ -34,6 +34,7 @@ set(tests
   plugin_include.cc
   provide_feedback.cc
   root_dom.cc
+  scene_dom.cc
   sdf_basic.cc
   sdf_custom.cc
   surface_dom.cc

@@ -16,6 +16,7 @@
               <environment_map>environment_map.png</environment_map>
               <ambient_occlusion_map>ambient_occlusion_map.png</ambient_occlusion_map>
               <emissive_map>emissive_map.png</emissive_map>
+              <light_map uv_set="1u">light_map.png</light_map>
             </metal>
           </pbr>
         </material>
@@ -35,6 +36,7 @@
               <environment_map>environment_map.png</environment_map>
               <ambient_occlusion_map>ambient_occlusion_map.png</ambient_occlusion_map>
               <emissive_map>emissive_map.png</emissive_map>
+              <light_map uv_set="2">light_map.png</light_map>
             </specular>
           </pbr>
         </material>
@@ -56,6 +58,7 @@
               <environment_map>environment_map.png</environment_map>
               <ambient_occlusion_map>ambient_occlusion_map.png</ambient_occlusion_map>
               <emissive_map>emissive_map.png</emissive_map>
+              <light_map uv_set="3u">light_map.png</light_map>
             </specular>
             <metal>
               <albedo_map>albedo_map.png</albedo_map>
@@ -67,6 +70,7 @@
               <environment_map>environment_map.png</environment_map>
               <ambient_occlusion_map>ambient_occlusion_map.png</ambient_occlusion_map>
               <emissive_map>emissive_map.png</emissive_map>
+              <light_map>light_map.png</light_map>
             </metal>
           </pbr>
         </material>
