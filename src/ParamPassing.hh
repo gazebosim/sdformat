@@ -41,15 +41,16 @@ namespace sdf
     /// \brief Retrieves the specified element by the element identifier
     /// and element name
     /// \param[in] _sdf The loaded (from include) SDF pointer
+    /// \param[in] _elemName The element name, such as "model", "link",
+    /// "collision", "visual".
     /// \param[in] _elemId The element identifier
-    /// \param[in] _elemName The element name
     /// \param[in] _prefixModelName True to add prefix of model name when
     /// looking for element
     /// \return ElementPtr to the specified element, nullptr if element could
     /// not found
     ElementPtr getElementById(const SDFPtr _sdf,
-                              const std::string &_elemId,
                               const std::string &_elemName,
+                              const std::string &_elemId,
                               const bool &_prefixModelName);
 
     /// \brief Finds the last index of a matching substring in _elemId from _ref

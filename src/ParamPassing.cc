@@ -41,7 +41,8 @@ void updateParams(const tinyxml2::XMLElement *_childXmlParams,
       childElemXml->Accept(&printer);
 
       _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
-        "Missing element identifier. Skipping element modification:\n"
+        "Element identifier requires a name, but the name is not set. "
+        "Skipping element modification:\n"
         + std::string(printer.CStr())
       });
       continue;
@@ -60,8 +61,8 @@ void updateParams(const tinyxml2::XMLElement *_childXmlParams,
     }
     else
     {
-      elem = getElementById(_includeSDF, childElemId,
-                            childElemXml->Name(), true);
+      elem = getElementById(_includeSDF, childElemXml->Name(),
+                            childElemId, true);
     }
 
     if (elem == nullptr)
@@ -83,8 +84,8 @@ void updateParams(const tinyxml2::XMLElement *_childXmlParams,
 
 //////////////////////////////////////////////////
 ElementPtr getElementById(const SDFPtr _sdf,
-                          const std::string &_elemId,
                           const std::string &_elemName,
+                          const std::string &_elemId,
                           const bool &_prefixModelName)
 {
   std::string modelName

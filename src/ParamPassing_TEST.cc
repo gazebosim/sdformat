@@ -29,7 +29,24 @@ TEST(ParamPassing, GetElement)
          << "<sdf version='1.7'>"
          << "  <model name='test'>"
          << "    <model name='test_model'>"
-         << "      <link name='test_link'/>"
+         << "      <link name='test_link'>"
+         << "        <collision name='test_visual'>"
+         << "          <geometry>"
+         << "            <box>"
+         << "              <size>0.1 0.1 0.1</size>"
+         << "            </box>"
+         << "          </geometry>"
+         << "        </collision>"
+         << "      </link>"
+         << "      <link name='test_link2'>"
+         << "        <visual name='test_visual'>"
+         << "          <geometry>"
+         << "            <box>"
+         << "              <size>0.5 0.5 0.5</size>"
+         << "            </box>"
+         << "          </geometry>"
+         << "        </visual>"
+         << "      </link>"
          << "    </model>"
          << "  </model>"
          << "</sdf>";
@@ -38,15 +55,43 @@ TEST(ParamPassing, GetElement)
   sdf::init(sdf);
   ASSERT_TRUE(sdf::readString(stream.str(), sdf));
 
-  sdf::ElementPtr elemLink = sdf->Root()->GetFirstElement()
+  // checking element ptrs to <link name='test_link'> are equal
+  sdf::ElementPtr elem = sdf->Root()->GetFirstElement()
                                         ->GetElement("model")
                                         ->GetElement("link");
-  EXPECT_NE(nullptr, elemLink);
-
-  sdf::ElementPtr paramPassLink = getElementById(sdf,
-                                                 "test_model::test_link",
+  sdf::ElementPtr paramPassElem = getElementById(sdf,
                                                  "link",
+                                                 "test_model::test_link",
                                                  false);
-  EXPECT_NE(nullptr, paramPassLink);
-  EXPECT_EQ(elemLink, paramPassLink);
+  EXPECT_NE(nullptr, elem);
+  EXPECT_NE(nullptr, paramPassElem);
+  EXPECT_EQ(elem, paramPassElem);
+
+  // checking element ptrs to <visual name='test_visual'> are equal
+  elem = sdf->Root()->GetFirstElement()
+                        ->GetElement("model")
+                        ->GetElement("link")
+                        ->GetNextElement()
+                        ->GetElement("visual");
+  paramPassElem = getElementById(sdf,
+                                 "visual",
+                                 "test_model::test_link2::test_visual",
+                                 false);
+  EXPECT_NE(nullptr, elem);
+  EXPECT_NE(nullptr, paramPassElem);
+  EXPECT_EQ(elem, paramPassElem);
+
+  // No element <visual name='test_visual'> (element is a collision)
+  paramPassElem = getElementById(sdf,
+                                 "visual",
+                                 "test_model::test_link::test_visual",
+                                 false);
+  EXPECT_EQ(nullptr, paramPassElem);
+
+  // incorrect element identifier (model::test_link::test_visual)
+  paramPassElem = getElementById(sdf,
+                                 "collision",
+                                 "model::test_link::test_visual",
+                                 false);
+  EXPECT_EQ(nullptr, paramPassElem);
 }
