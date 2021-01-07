@@ -1,10 +1,9 @@
 <?xml version="1.0" ?>
-<sdf version="1.7"
-     xmlns:experimental="http://sdformat.org/schemas/experimental">
+<sdf version="1.7">
   <world name="world_custom_model">
     <model name="robot">
       <include>
-        <uri>robot</uri>
+        <uri>base</uri>
 
         <experimental:params>
           <visual name="chassis::lidar_visual" action="remove"/>
@@ -19,12 +18,12 @@
             </geometry>
           </visual>
 
-          <sensor name="top::camera" action="modify">
+          <sensor name="top_model::top_camera::top_camera_link::camera" action="modify">
             <pose>-0.2 0 0.3 0 0.0 3.14</pose>
             <update_rate>60</update_rate>
           </sensor>
 
-          <visual name="top::camera_visual">
+          <visual name="top_model::top_camera::top_camera_link::camera_visual">
             <geometry action="replace">
               <sphere>
                 <radius>0.05</radius>
@@ -37,8 +36,8 @@
             </material>
           </visual>
         </experimental:params>
-
       </include>
     </model>
+
   </world>
 </sdf>
