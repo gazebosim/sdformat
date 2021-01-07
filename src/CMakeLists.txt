@@ -134,7 +134,7 @@ if (BUILD_SDF_TEST)
 
   sdf_build_tests(${gtest_sources})
 
-  if (IGNITION-TOOLS_BINARY_DIRS)
+  if (TARGET UNIT_ign_TEST)
     # Link the libraries that we always need.
     target_link_libraries("UNIT_ign_TEST"
       PUBLIC
