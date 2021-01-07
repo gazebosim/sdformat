@@ -111,3 +111,10 @@ else()
   set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
   message(STATUS "Looking for ignition-math${IGN_MATH_VER}-config.cmake - found")
 endif()
+
+########################################
+# Find ignition cmake2
+# Only for using the testing macros, not really
+# being use to configure the whole project
+find_package(ignition-cmake2 2.3 REQUIRED)
+set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
