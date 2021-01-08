@@ -23,6 +23,13 @@ but with improved human-readability..
 1. **sdf/Model.hh**:
     + std::pair<const Link *, std::string> CanonicalLinkAndRelativeName() const;
 
+1. **sdf/Root.hh** sdf::Root elements can now only contain one of either Model,
+      Light or Actor since multiple items would conflict with overrides
+      specified in an <include> tag.
+    + const sdf::Model \*Model();
+    + const sdf::Light \*Light();
+    + const sdf::Actor \*Actor();
+
 ### Modifications
 
 1. **sdf/Model.hh**: the following methods now accept nested names relative to
@@ -35,6 +42,21 @@ but with improved human-readability..
     + bool FrameNameExists(const std::string &) const
     + bool JointNameExists(const std::string &) const
     + bool LinkNameExists(const std::string &) const
+
+### Deprecations
+
+1. **src/Root.hh**: The following methods have been deprecated in favor of the
+      new methods. For now the behavior is unchanged, but Root elements should
+      only contain one or none of Model/Light/Actor.
+    + const sdf::Model \*ModelByIndex();
+    + uint64_t ModelCount();
+    + bool ModelNameExists(const std::string &\_name) const;
+    + const sdf::Light \*LightByIndex();
+    + uint64_t LightCount();
+    + bool LightNameExists(const std::string &\_name) const;
+    + const sdf::Actor \*ActorByIndex();
+    + uint64_t ActorCount();
+    + bool ActorNameExists(const std::string &\_name) const;
 
 ## SDFormat 9.x to 10.0
 
