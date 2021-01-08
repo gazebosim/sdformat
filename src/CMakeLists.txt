@@ -134,6 +134,14 @@ if (BUILD_SDF_TEST)
 
   sdf_build_tests(${gtest_sources})
 
+  if (TARGET UNIT_ign_TEST)
+    # Link the libraries that we always need.
+    target_link_libraries("UNIT_ign_TEST"
+      PUBLIC
+        ignition-cmake${IGN_CMAKE_VER}::utilities
+    )
+  endif()
+
   if (NOT WIN32)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
     sdf_build_tests(Utils_TEST.cc)
