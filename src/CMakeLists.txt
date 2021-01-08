@@ -31,6 +31,7 @@ set (sources
   Filesystem.cc
   Geometry.cc
   Gui.cc
+  Heightmap.cc
   ign.cc
   Imu.cc
   Joint.cc
@@ -110,6 +111,7 @@ if (BUILD_SDF_TEST)
     Filesystem_TEST.cc
     Geometry_TEST.cc
     Gui_TEST.cc
+    Heightmap_TEST.cc
     Imu_TEST.cc
     Joint_TEST.cc
     JointAxis_TEST.cc
@@ -139,26 +141,26 @@ if (BUILD_SDF_TEST)
     Visual_TEST.cc
     World_TEST.cc
   )
-  
+
   # Build this test file only if Ignition Tools is installed.
   if (IGNITION-TOOLS_BINARY_DIRS)
     set (gtest_sources ${gtest_sources}
       ign_TEST.cc
     )
   endif()
-  
+
   sdf_build_tests(${gtest_sources})
-  
+
   if (NOT WIN32)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
     sdf_build_tests(Utils_TEST.cc)
   endif()
-  
+
   if (NOT WIN32)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS FrameSemantics.cc)
     sdf_build_tests(FrameSemantics_TEST.cc)
   endif()
-  
+
   if (NOT WIN32)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc)
     sdf_build_tests(Converter_TEST.cc)
