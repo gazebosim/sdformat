@@ -2,7 +2,7 @@
 
 ### libsdformat 9.X.X (202X-XX-XX)
 
-### libsdformat 9.4.0 (2020-12-XX)
+### libsdformat 9.4.0 (2021-01-08)
 
 1. Define `PATH_MAX` for Debian Hurd system
     * [Pull request 369](https://github.com/osrf/sdformat/pull/369)
@@ -26,12 +26,24 @@
 
 1. Add Sky DOM
     * [Pull request 417](https://github.com/osrf/sdformat/pull/417)
+    * [Pull request 397](https://github.com/osrf/sdformat/pull/397)
 
 1. camera.sdf: decrease far clip lower bound
     * [Pull request 435](https://github.com/osrf/sdformat/pull/435)
 
 1. material.sdf: add `double_sided` parameter
     * [Pull request 410](https://github.com/osrf/sdformat/pull/410)
+
+1. Migration to GitHub: CI, links...
+    * [Pull request 239](https://github.com/osrf/sdformat/pull/239)
+    * [Pull request 310](https://github.com/osrf/sdformat/pull/310)
+    * [Pull request 390](https://github.com/osrf/sdformat/pull/390)
+
+1. Fix Actor copy operators and increase test coverage.
+    * [Pull request 301](https://github.com/osrf/sdformat/pull/301)
+
+1. Add Heightmap class
+    * [Pull request 388](https://github.com/osrf/sdformat/pull/388)
 
 ### libsdformat 9.3.0 (2020-XX-XX)
 
