@@ -72,7 +72,7 @@ TEST(DOMJoint, DoublePendulum)
   EXPECT_TRUE(root.Load(testFile).empty());
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   // The double pendulum should have two joints.
@@ -127,7 +127,7 @@ TEST(DOMJoint, Complete)
   EXPECT_TRUE(errors.empty());
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   std::vector<ignition::math::Pose3d> jointPoses =
@@ -171,7 +171,7 @@ TEST(DOMJoint, LoadJointParentWorld)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("joint_parent_world", model->Name());
   EXPECT_EQ(1u, model->LinkCount());
@@ -220,8 +220,7 @@ TEST(DOMJoint, LoadInvalidJointChildWorld)
   auto errors = root.Load(testFile);
   for (auto e : errors)
     std::cout << e << std::endl;
-  EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(7u, errors.size());
+  ASSERT_EQ(7u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -247,7 +246,7 @@ TEST(DOMJoint, LoadJointParentFrame)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("joint_parent_frame", model->Name());
   EXPECT_EQ(2u, model->LinkCount());
@@ -340,7 +339,7 @@ TEST(DOMJoint, LoadJointChildFrame)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("joint_child_frame", model->Name());
   EXPECT_EQ(2u, model->LinkCount());
@@ -433,7 +432,7 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_joint_relative_to", model->Name());
   EXPECT_EQ(4u, model->LinkCount());
@@ -621,7 +620,7 @@ TEST(DOMJoint, LoadLinkJointSameName16Valid)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("link_joint_same_name", model->Name());
   EXPECT_EQ(2u, model->LinkCount());
@@ -701,7 +700,7 @@ TEST(DOMJoint, LoadURDFJointPoseRelativeTo)
   using Vector3 = ignition::math::Vector3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("provide_feedback_test", model->Name());
   EXPECT_EQ(3u, model->LinkCount());
@@ -782,7 +781,7 @@ TEST(DOMJoint, LoadJointNestedParentChild)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   {
