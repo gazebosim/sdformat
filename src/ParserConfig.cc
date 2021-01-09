@@ -26,6 +26,7 @@ class sdf::ParserConfigPrivate
 {
   public: ParserConfig::SchemeToPathMap uriPathMap;
   public: std::function<std::string(const std::string &)> findFileCB;
+  public: std::vector<CustomModelParser> customParsers;
 };
 
 
@@ -114,4 +115,16 @@ void ParserConfig::AddURIPath(const std::string &_uri, const std::string &_path)
       this->dataPtr->uriPathMap[_uri].push_back(part);
     }
   }
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::RegisterCustomModelParser(CustomModelParser _modelParser)
+{
+  this->dataPtr->customParsers.push_back(_modelParser);
+}
+
+/////////////////////////////////////////////////
+const std::vector<CustomModelParser> &ParserConfig::CustomModelParsers() const
+{
+  return this->dataPtr->customParsers;
 }

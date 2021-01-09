@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Open Source Robotics Foundation
+ * Copyright 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,26 @@
  * limitations under the License.
  *
  */
+#ifndef SDF_INTERFACE_ELEMENTS_HH_
+#define SDF_INTERFACE_ELEMENTS_HH_
 
-#ifndef SDF_CUSTOM_MODEL_PARSER_HH_
-#define SDF_CUSTOM_MODEL_PARSER_HH_
+#include <string>
+#include <memory>
 
-#include <sdf/Element.hh>
-#include <sdf/Error.hh>
-#include <sdf/InterfaceModel.hh>
+#include <ignition/math/Pose3.hh>
+
+#include "sdf/Element.hh"
+#include "sdf/InterfaceModel.hh"
+#include "sdf/Types.hh"
+
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
+// TODO (addisu) docs
 // This can be used in both //model elements as well as /world.
 struct NestedInclude {
   /// Provides the URI as specified in `//include/uri`. This may or may not end
@@ -49,6 +57,8 @@ struct NestedInclude {
 
   /// As defined by `//include/static`.
   bool isStatic{false};
+
+  // TODO(addisu) Don't we need to pass //include/pose?
 
   /// This is a "virtual" XML element that will contain all custom (*unparsed*)
   /// elements and attributes within `//include`.
@@ -84,9 +94,10 @@ struct NestedInclude {
 ///     schemas).
 ///
 /// If an exception is raised by this callback, libsdformat will *not* try to
-///intercept the exception.
+/// intercept the exception.
 using CustomModelParser =
-    std::function<sdf::InterfaceModelPtr(sdf::NestedInclude, Errors &)>;
+    std::function<sdf::InterfaceModelPtr(const sdf::NestedInclude &, Errors &)>;
+}
 }
 
 #endif

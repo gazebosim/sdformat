@@ -30,7 +30,6 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
-
 // Forward declare private data class.
 class InterfaceFramePrivate;
 

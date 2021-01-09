@@ -23,7 +23,8 @@
 #include <string>
 #include <vector>
 
-#include <sdf/Error.hh>
+#include "sdf/Error.hh"
+#include "sdf/InterfaceElements.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
@@ -33,7 +34,6 @@ inline namespace SDF_VERSION_NAMESPACE
 {
 // Forward declare private data class.
 class ParserConfigPrivate;
-class CustomModelParser;
 
 /// This class contains configuration options for the libsdformat parser.
 ///
@@ -125,6 +125,9 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Registers a custom model parser.
   /// \param[in] _modelParser Callback as described above.
   public: void RegisterCustomModelParser(CustomModelParser _modelParser);
+
+  /// \brief Get the registered custom model parsers
+  public: const std::vector<CustomModelParser> &CustomModelParsers() const;
 
   /// \brief Private data pointer.
   private: ParserConfigPrivate *dataPtr;

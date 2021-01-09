@@ -37,8 +37,10 @@ namespace sdf
   // Forward declare private data class.
   class Actor;
   class Frame;
+  class InterfaceModel;
   class Light;
   class Model;
+  class ParserConfig;
   class Physics;
   class WorldPrivate;
   struct PoseRelativeToGraph;
@@ -78,6 +80,8 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
+
+    public: Errors Load(sdf::ElementPtr _sdf, const ParserConfig &_config);
 
     /// \brief Get the name of the world.
     /// \return Name of the world.
@@ -143,6 +147,7 @@ namespace sdf
     /// of this World object.
     /// \return Number of models contained in this World object.
     public: uint64_t ModelCount() const;
+
 
     /// \brief Get an immediate (not nested) child model based on an index.
     /// \param[in] _index Index of the model. The index should be in the
@@ -274,6 +279,11 @@ namespace sdf
     /// \param[in] _name Name of the physics profile to check.
     /// \return True if there exists a physics profile with the given name.
     public: bool PhysicsNameExists(const std::string &_name) const;
+
+    public: uint64_t InterfaceModelCount() const;
+
+    public: std::shared_ptr<const InterfaceModel> InterfaceModelByIndex(
+                const uint64_t _index) const;
 
     /// \brief Give the Scoped PoseRelativeToGraph to be passed on to child
     /// entities for resolving poses. This is private and is intended to be

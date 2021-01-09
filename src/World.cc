@@ -21,12 +21,15 @@
 
 #include "sdf/Actor.hh"
 #include "sdf/Frame.hh"
+#include "sdf/InterfaceModel.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
+#include "sdf/ParserConfig.hh"
 #include "sdf/Physics.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "FrameSemantics.hh"
+#include "InterfaceElementsImpl.hh"
 #include "ScopedGraph.hh"
 #include "Utils.hh"
 
@@ -75,6 +78,9 @@ class sdf::WorldPrivate
 
   /// \brief The models specified in this world.
   public: std::vector<Model> models;
+
+  /// \brief The models specified in this world.
+  public: std::vector<InterfaceModelPtr> interfaceModels;
 
   /// \brief Name of the world.
   public: std::string name = "";
@@ -171,6 +177,12 @@ World &World::operator=(World &&_world)
 /////////////////////////////////////////////////
 Errors World::Load(sdf::ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -250,6 +262,17 @@ Errors World::Load(sdf::ElementPtr _sdf)
   Errors modelLoadErrors =
       loadUniqueRepeated<Model>(_sdf, "model", this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
+
+  // Load included models via the interface API
+  Errors interfaceModelLoadErrors =
+      loadInterfaceElements(_sdf, _config, this->dataPtr->interfaceModels);
+  errors.insert(errors.end(), interfaceModelLoadErrors.begin(),
+      interfaceModelLoadErrors.end());
+
+  // for (const auto &imodel : this->dataPtr->interfaceModels)
+  // {
+  //   frameNames.insert(imodel->Name());
+  // }
 
   // Models are loaded first, and loadUniqueRepeated ensures there are no
   // duplicate names, so these names can be added to frameNames without
@@ -390,7 +413,6 @@ uint64_t World::ModelCount() const
 {
   return this->dataPtr->models.size();
 }
-
 /////////////////////////////////////////////////
 const Model *World::ModelByIndex(const uint64_t _index) const
 {
@@ -604,6 +626,21 @@ bool World::PhysicsNameExists(const std::string &_name) const
   }
 
   return false;
+}
+
+/////////////////////////////////////////////////
+uint64_t World::InterfaceModelCount() const
+{
+  return this->dataPtr->interfaceModels.size();
+}
+
+/////////////////////////////////////////////////
+std::shared_ptr<const InterfaceModel> World::InterfaceModelByIndex(
+    const uint64_t _index) const
+{
+  if (_index < this->dataPtr->interfaceModels.size())
+    return this->dataPtr->interfaceModels[_index];
+  return nullptr;
 }
 
 /////////////////////////////////////////////////

@@ -114,6 +114,7 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(const SDFPtr _sdf);
+    public: Errors Load(const SDFPtr _sdf, const ParserConfig &_config);
 
     /// \brief Get the SDF version specified in the parsed file or SDF
     /// pointer.

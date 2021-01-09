@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2020 Open Source Robotics Foundation
  *
@@ -21,8 +20,10 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/InterfaceFrame.hh"
 #include "sdf/InterfaceLink.hh"
@@ -34,16 +35,12 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
-
-// Forward declare private data class.
-class InterfaceModelPrivate;
-
 class InterfaceModel;
 
 using InterfaceModelPtr = std::shared_ptr<InterfaceModel>;
 using InterfaceModelConstPtr = std::shared_ptr<const InterfaceModel>;
 
-class InterfaceModel
+class SDFORMAT_VISIBLE InterfaceModel
 {
   /// \brief Constructor
   /// \param[in] name The *local* name (no nesting, e.g. "::").
@@ -58,35 +55,42 @@ class InterfaceModel
   public: InterfaceModel(const std::string &_name,
               const std::string &_canonicalLinkName,
               const ignition::math::Pose3d &_poseInCanonicalLinkFrame = {},
-              const ignition::math::Pose3d &_poseInParentModelFrame = {});
+              const ignition::math::Pose3d &_poseInParentFrame = {});
+
   /// \brief Get the name of the model.
   /// \return Local name of the model.
-  public: std::string Name() const;
+  public: const std::string &Name() const;
 
   /// \brief Get the pose of this model in the parent model frame.
   /// \return Pose of this model in the parent model frame.
-  public: ignition::math::Pose3d PoseInModelFrame() const;
-
-  public: std::string GetCanonicalLinkName() const;
-  public: ignition::math::Pose3d GetModelFramePoseInCanonicalLinkFrame() const;
-  public: ignition::math::Pose3d GetModelFramePoseInParentModelFrame() const;
+  // public: const ignition::math::Pose3d &PoseInModelFrame() const;
+  // TODO: (addisu) The CanonicalLinkName function mirrores
+  // Model::CanonicalLinkName, which is only a getter function. If the
+  // canonical_link attribute is not set, this will return an empty string. We
+  // need another function that resolves the canonical link.
+  public: const std::string &CanonicalLinkName() const;
+  public: const ignition::math::Pose3d &
+          ModelFramePoseInCanonicalLinkFrame() const;
+  public: const ignition::math::Pose3d &
+          ModelFramePoseInParentFrame() const;
+  // TODO: Why is this nested_model a shared_ptr?
   /// Provided so that hierarchy can still be leveraged from SDFormat.
   public: void AddNestedModel(sdf::InterfaceModelPtr nested_model);
   /// Gets registered nested models.
-  public: std::vector<sdf::InterfaceModelConstPtr> GetNestedModels() const;
+  public: const std::vector<sdf::InterfaceModelConstPtr> &NestedModels() const;
   /// Provided so that the including SDFormat model can still interface with
   /// the declared frames.
   public: void AddFrame(sdf::InterfaceFrame frame);
   /// Gets registered frames.
-  public: std::vector<sdf::InterfaceFrame> GetFrames() const;
+  public: const std::vector<sdf::InterfaceFrame> &Frames() const;
   /// Provided so that the including SDFormat model can still interface with
   /// the declared links.
   public: void AddLink(sdf::InterfaceLink link);
   /// Gets registered links.
-  public: std::vector<sdf::InterfaceLink> GetLinks() const;
+  public: const std::vector<sdf::InterfaceLink> &Links() const;
 
   /// \brief Private data pointer.
-  private: InterfaceModelPrivate *dataPtr;
+  IGN_UTILS_IMPL_PTR(dataPtr)
 };
 }
 }

@@ -15,6 +15,7 @@ set(tests
   geometry_dom.cc
   include.cc
   includes.cc
+  interface_api.cc
   joint_axis_frame.cc
   joint_axis_dom.cc
   joint_dom.cc

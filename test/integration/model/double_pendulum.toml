@@ -1,0 +1,25 @@
+# This file is part of the interface_api integration test. The test contains a
+# very limited toml parser that is not capable of parsing the full toml syntax.
+# Specifically, arrays are not supported.
+name = "double_pendulum"
+pose = "1 0 0 0 0 0"
+canonical_link = "base"
+
+[links.base]
+pose = "1 0 0.5 0 0 0"
+
+[links.upper_link]
+pose = "0 0 2.1 -1.5708 0 0"
+
+[links.lower_link]
+pose = "0.25 1.0 2.1 -2 0 0"
+
+[joints.upper_joint]
+parent = "base"
+child = "upper_link"
+type = "revolute"
+
+[joints.lower_joint]
+parent = "upper_link"
+child = "lower_link"
+type = "revolute"

@@ -103,6 +103,18 @@ inline auto makeSdfDoc()
 }
 
 //////////////////////////////////////////////////
+static bool isSdfFile(const std::string &_fileName)
+{
+  std::size_t periodIndex = _fileName.rfind('.');
+  if (periodIndex != std::string::npos)
+  {
+    const std::string ext = _fileName.substr(periodIndex);
+    return ext == ".sdf" || ext == ".world";
+  }
+  return false;
+}
+
+//////////////////////////////////////////////////
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
@@ -1067,161 +1079,170 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           continue;
         }
 
-        // NOTE: sdf::init is an expensive call. For performance reason,
-        // a new sdf pointer is created here by cloning a fresh sdf template
-        // pointer instead of calling init every iteration.
-        // SDFPtr includeSDF(new SDF);
-        // init(includeSDF);
-        static SDFPtr includeSDFTemplate;
-        if (!includeSDFTemplate)
+        // If the file is not an SDFormat file, it is assumed that it will
+        // handled by a custom parser, so fall through and add the include
+        // element into _sdf.
+        if (sdf::isSdfFile(filename))
         {
-          includeSDFTemplate.reset(new SDF);
-          init(includeSDFTemplate);
-        }
-        SDFPtr includeSDF(new SDF);
-        includeSDF->Root(includeSDFTemplate->Root()->Clone());
-
-        if (!readFile(filename, includeSDF))
-        {
-          _errors.push_back({ErrorCode::FILE_READ,
-              "Unable to read file[" + filename + "]"});
-          return false;
-        }
-
-        // For now there is only a warning if there is more than one model,
-        // actor or light element, or two different types of those elements. For
-        // compatibility with old behavior, this chooses the first element
-        // in the preference order: model->actor->light
-        sdf::ElementPtr topLevelElem;
-        for (const auto & elementType : {"model", "actor", "light"})
-        {
-          if (includeSDF->Root()->HasElement(elementType))
+          // NOTE: sdf::init is an expensive call. For performance reason,
+          // a new sdf pointer is created here by cloning a fresh sdf template
+          // pointer instead of calling init every iteration.
+          // SDFPtr includeSDF(new SDF);
+          // init(includeSDF);
+          static SDFPtr includeSDFTemplate;
+          if (!includeSDFTemplate)
           {
-            if (nullptr == topLevelElem)
-            {
-              topLevelElem = includeSDF->Root()->GetElement(elementType);
-            }
-            else
-            {
-              sdfwarn << "Found other top level element <" << elementType
-                      << "> in addition to <" << topLevelElem->GetName()
-                      << "> in include file. This is unsupported and in future "
-                      << "versions of libsdformat will become an error";
-            }
+            includeSDFTemplate.reset(new SDF);
+            init(includeSDFTemplate);
           }
-        }
+          SDFPtr includeSDF(new SDF);
+          includeSDF->Root(includeSDFTemplate->Root()->Clone());
 
-        if (nullptr == topLevelElem)
-        {
-          _errors.push_back({ErrorCode::ELEMENT_MISSING,
-              "Failed to find top level <model> / <actor> / <light> for "
-              "<include>\n"});
-          continue;
-        }
-
-        const auto topLevelElementType = topLevelElem->GetName();
-        // Check for more than one of the discovered top-level element type
-        if (nullptr != topLevelElem->GetNextElement(topLevelElementType))
-        {
-          sdfwarn << "Found more than one of " << topLevelElem->GetName()
-                  << " for <include>. This is unsupported and in future "
-                  << "versions of libsdformat will become an error";
-        }
-
-        bool isModel = topLevelElementType == "model";
-        bool isActor = topLevelElementType == "actor";
-
-        if (elemXml->FirstChildElement("name"))
-        {
-          topLevelElem->GetAttribute("name")->SetFromString(
-                elemXml->FirstChildElement("name")->GetText());
-        }
-
-        tinyxml2::XMLElement *poseElemXml = elemXml->FirstChildElement("pose");
-        if (poseElemXml)
-        {
-          sdf::ElementPtr poseElem = topLevelElem->GetElement("pose");
-
-          if (poseElemXml->GetText())
+          if (!readFile(filename, includeSDF))
           {
-            poseElem->GetValue()->SetFromString(poseElemXml->GetText());
-          }
-          else
-          {
-            poseElem->GetValue()->Reset();
-          }
-
-          const char *relativeTo = poseElemXml->Attribute("relative_to");
-          if (relativeTo)
-          {
-            poseElem->GetAttribute("relative_to")->SetFromString(relativeTo);
-          }
-          else
-          {
-            poseElem->GetAttribute("relative_to")->Reset();
-          }
-        }
-
-        if (isModel && elemXml->FirstChildElement("static"))
-        {
-          topLevelElem->GetElement("static")->GetValue()->SetFromString(
-                elemXml->FirstChildElement("static")->GetText());
-        }
-
-        if (isModel && elemXml->FirstChildElement("placement_frame"))
-        {
-          if (nullptr == elemXml->FirstChildElement("pose"))
-          {
-            _errors.push_back({ErrorCode::MODEL_PLACEMENT_FRAME_INVALID,
-                "<pose> is required when specifying the placement_frame "
-                "element"});
+            _errors.push_back({ErrorCode::FILE_READ,
+                "Unable to read file[" + filename + "]"});
             return false;
           }
 
-          const std::string placementFrameVal =
-              elemXml->FirstChildElement("placement_frame")->GetText();
-
-          if (!isValidFrameReference(placementFrameVal))
+          // For now there is only a warning if there is more than one model,
+          // actor or light element, or two different types of those elements.
+          // For compatibility with old behavior, this chooses the first element
+          // in the preference order: model->actor->light
+          sdf::ElementPtr topLevelElem;
+          for (const auto &elementType : {"model", "actor", "light"})
           {
-            _errors.push_back({ErrorCode::RESERVED_NAME,
-                "'" + placementFrameVal +
-                    "' is reserved; it cannot be used as a value of "
-                    "element [placement_frame]"});
-          }
-          topLevelElem->GetAttribute("placement_frame")
-              ->SetFromString(placementFrameVal);
-        }
-
-        if (isModel || isActor)
-        {
-          for (auto *childElemXml = elemXml->FirstChildElement();
-               childElemXml; childElemXml = childElemXml->NextSiblingElement())
-          {
-            if (std::string("plugin") == childElemXml->Value())
+            if (includeSDF->Root()->HasElement(elementType))
             {
-              sdf::ElementPtr pluginElem;
-              pluginElem = topLevelElem->AddElement("plugin");
-
-              if (!readXml(childElemXml, pluginElem, _config, _errors))
+              if (nullptr == topLevelElem)
               {
-                _errors.push_back({ErrorCode::ELEMENT_INVALID,
-                                   "Error reading plugin element"});
-                return false;
+                topLevelElem = includeSDF->Root()->GetElement(elementType);
+              }
+              else
+              {
+                sdfwarn
+                    << "Found other top level element <" << elementType
+                    << "> in addition to <" << topLevelElem->GetName()
+                    << "> in include file. This is unsupported and in future "
+                    << "versions of libsdformat will become an error";
               }
             }
           }
+
+          if (nullptr == topLevelElem)
+          {
+            _errors.push_back({ErrorCode::ELEMENT_MISSING,
+                "Failed to find top level <model> / <actor> / <light> for "
+                "<include>\n"});
+            continue;
+          }
+
+          const auto topLevelElementType = topLevelElem->GetName();
+          // Check for more than one of the discovered top-level element type
+          if (nullptr != topLevelElem->GetNextElement(topLevelElementType))
+          {
+            sdfwarn << "Found more than one of " << topLevelElem->GetName()
+                    << " for <include>. This is unsupported and in future "
+                    << "versions of libsdformat will become an error";
+          }
+
+          bool isModel = topLevelElementType == "model";
+          bool isActor = topLevelElementType == "actor";
+
+          if (elemXml->FirstChildElement("name"))
+          {
+            topLevelElem->GetAttribute("name")->SetFromString(
+                elemXml->FirstChildElement("name")->GetText());
+          }
+
+          tinyxml2::XMLElement *poseElemXml =
+              elemXml->FirstChildElement("pose");
+          if (poseElemXml)
+          {
+            sdf::ElementPtr poseElem = topLevelElem->GetElement("pose");
+
+            if (poseElemXml->GetText())
+            {
+              poseElem->GetValue()->SetFromString(poseElemXml->GetText());
+            }
+            else
+            {
+              poseElem->GetValue()->Reset();
+            }
+
+            const char *relativeTo = poseElemXml->Attribute("relative_to");
+            if (relativeTo)
+            {
+              poseElem->GetAttribute("relative_to")->SetFromString(relativeTo);
+            }
+            else
+            {
+              poseElem->GetAttribute("relative_to")->Reset();
+            }
+          }
+
+          if (isModel && elemXml->FirstChildElement("static"))
+          {
+            topLevelElem->GetElement("static")->GetValue()->SetFromString(
+                elemXml->FirstChildElement("static")->GetText());
+          }
+
+          if (isModel && elemXml->FirstChildElement("placement_frame"))
+          {
+            if (nullptr == elemXml->FirstChildElement("pose"))
+            {
+              _errors.push_back({ErrorCode::MODEL_PLACEMENT_FRAME_INVALID,
+                  "<pose> is required when specifying the placement_frame "
+                  "element"});
+              return false;
+            }
+
+            const std::string placementFrameVal =
+                elemXml->FirstChildElement("placement_frame")->GetText();
+
+            if (!isValidFrameReference(placementFrameVal))
+            {
+              _errors.push_back({ErrorCode::RESERVED_NAME,
+                  "'" + placementFrameVal +
+                      "' is reserved; it cannot be used as a value of "
+                      "element [placement_frame]"});
+            }
+            topLevelElem->GetAttribute("placement_frame")
+                ->SetFromString(placementFrameVal);
+          }
+
+          if (isModel || isActor)
+          {
+            for (auto *childElemXml = elemXml->FirstChildElement();
+                 childElemXml;
+                 childElemXml = childElemXml->NextSiblingElement())
+            {
+              if (std::string("plugin") == childElemXml->Value())
+              {
+                sdf::ElementPtr pluginElem;
+                pluginElem = topLevelElem->AddElement("plugin");
+
+                if (!readXml(childElemXml, pluginElem, _config, _errors))
+                {
+                  _errors.push_back({ErrorCode::ELEMENT_INVALID,
+                      "Error reading plugin element"});
+                  return false;
+                }
+              }
+            }
+          }
+
+          includeSDF->Root()->GetFirstElement()->SetParent(_sdf);
+          _sdf->InsertElement(includeSDF->Root()->GetFirstElement());
+          // TODO: This was used to store the included filename so that when
+          // a world is saved, the included model's SDF is not stored in the
+          // world file. This highlights the need to make model inclusion
+          // a core feature of SDF, and not a hack that that parser handles
+          // includeSDF->Root()->GetFirstElement()->SetInclude(
+          // elemXml->Attribute("filename"));
+
+          continue;
         }
-
-        includeSDF->Root()->GetFirstElement()->SetParent(_sdf);
-        _sdf->InsertElement(includeSDF->Root()->GetFirstElement());
-        // TODO: This was used to store the included filename so that when
-        // a world is saved, the included model's SDF is not stored in the
-        // world file. This highlights the need to make model inclusion
-        // a core feature of SDF, and not a hack that that parser handles
-        // includeSDF->Root()->GetFirstElement()->SetInclude(
-        // elemXml->Attribute("filename"));
-
-        continue;
       }
 
       // Find the matching element in SDF

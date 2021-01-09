@@ -32,7 +32,7 @@
 #include "sdf/World.hh"
 
 // Debugging
-#include "json.hpp"
+// #include "json.hpp"
 
 #include "test_config.h"
 
@@ -119,10 +119,11 @@ struct Value
   //     return {};
   // }
 
- public: void PrintValue(std::ostream& os, const std::string &_key) const
+  public: void PrintValue(std::ostream &os, const std::string &_key) const
   {
     std::visit(
-        [&](auto &&arg) {
+        [&](auto &&arg)
+        {
           using T = std::decay_t<decltype(arg)>;
           if constexpr (std::is_same_v<T, sdf::Param>)
           {
@@ -232,29 +233,26 @@ Document parseToml(const std::string &_filePath, sdf::Errors &_errors)
 sdf::InterfaceModelPtr customTomlParser(
     const sdf::NestedInclude &_include, sdf::Errors &_errors)
 {
-  std::cout << "Parsing..." << std::endl;
-  std::cout << "uri: " << _include.uri << std::endl;
-  std::cout << "resolvedFileName: " << _include.resolvedFileName << std::endl;
-  std::cout << "localModelName: " << _include.localModelName << std::endl;
-  std::cout << "isStatic: " << _include.isStatic << std::endl;
-  std::cout << "virtualCustomElements: "
-            << _include.virtualCustomElements->ToString("") << std::endl;
-
   toml::Document doc = toml::parseToml(_include.resolvedFileName, _errors);
   if (_errors.empty())
   {
+    const std::string modelName = _include.localModelName.empty()
+        ? doc["name"].Param()->GetAsString()
+        : _include.localModelName;
+
     const std::string canonicalLink =
         doc["canonical_link"].Param()->GetAsString();
 
-    ignition::math::Pose3d poseInParentModelFrame;
-    doc["pose"].Param()->Get(poseInParentModelFrame);
+    // Pose of model (M) in parent (P) frame
+    ignition::math::Pose3d X_PM;
+    doc["pose"].Param()->Get(X_PM);
 
-    ignition::math::Pose3d poseInCanonicalLinkFrame;
-    doc[toml::appendPrefix("links", canonicalLink, "pose")].Param()->Get(
-        poseInParentModelFrame);
+    // Pose of canonical link (C) in model (M) frame
+    ignition::math::Pose3d X_MC;
+    doc[toml::appendPrefix("links", canonicalLink, "pose")].Param()->Get(X_MC);
 
-    auto model = std::make_shared<sdf::InterfaceModel>(_include.localModelName,
-        canonicalLink, poseInCanonicalLinkFrame, poseInParentModelFrame);
+    auto model = std::make_shared<sdf::InterfaceModel>(
+        modelName, canonicalLink, X_MC.Inverse(), X_PM);
     for (auto &[name, link] : *doc["links"].Map())
     {
       ignition::math::Pose3d pose;
@@ -274,11 +272,99 @@ sdf::InterfaceModelPtr customTomlParser(
     }
     return model;
   }
-  else
-  {
-    std::cout << _errors << std::endl;
-  }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+TEST(InterfaceAPI, NestedIncludeData)
+{
+  const std::string modelDir = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "integration", "model");
+
+  const std::string testSdf = R"(
+<sdf version="1.8">
+  <world name="default">
+    <include>
+      <uri>test_file.yaml</uri>
+      <name>box</name>
+      <pose>1 0 0 0 0 0</pose>
+      <extra>
+        <info1>value1</info1>
+        <info2>value2</info2>
+      </extra>
+      <static>1</static>
+    </include>
+    <include>
+      <uri>test_file.toml</uri>
+    </include>
+  </world>
+</sdf>)";
+
+  sdf::ParserConfig config;
+  config.SetFindCallback(
+      [&](const std::string &_file)
+      {
+        return sdf::filesystem::append(modelDir, _file);
+      });
+
+  auto testYamlParser =
+      [&](const sdf::NestedInclude &_include, sdf::Errors &_errors)
+  {
+    if (_include.uri.find(".yaml") == std::string::npos)
+      return nullptr;
+
+    const std::string fileName = "test_file.yaml";
+    EXPECT_EQ(fileName, _include.uri);
+    EXPECT_EQ(
+        sdf::filesystem::append(modelDir, fileName), _include.resolvedFileName);
+    EXPECT_EQ("box", _include.localModelName);
+    EXPECT_TRUE(_include.isStatic);
+    EXPECT_TRUE(_include.virtualCustomElements->HasElement("extra"));
+
+    auto extra = _include.virtualCustomElements->GetElement("extra");
+    EXPECT_TRUE(extra->HasElement("info1"));
+    EXPECT_TRUE(extra->HasElement("info2"));
+    EXPECT_EQ("value1", extra->Get<std::string>("info1"));
+    EXPECT_EQ("value2", extra->Get<std::string>("info2"));
+
+    // Add error for test expectation later on.
+    _errors.emplace_back(
+        sdf::ErrorCode::URI_INVALID, "Test YAML error message");
+    return nullptr;
+  };
+
+  auto testTomlParser =
+      [&](const sdf::NestedInclude &_include, sdf::Errors &_errors)
+  {
+    if (_include.uri.find(".toml") == std::string::npos)
+      return nullptr;
+    const std::string fileName = "test_file.toml";
+    EXPECT_EQ(fileName, _include.uri);
+    EXPECT_EQ(
+        sdf::filesystem::append(modelDir, fileName), _include.resolvedFileName);
+    EXPECT_EQ("", _include.localModelName);
+    EXPECT_FALSE(_include.isStatic);
+    EXPECT_EQ(nullptr, _include.virtualCustomElements->GetFirstElement());
+
+    // Add error for test expectation later on.
+    _errors.emplace_back(
+        sdf::ErrorCode::URI_INVALID, "Test TOML error message");
+    return nullptr;
+  };
+
+  config.RegisterCustomModelParser(testYamlParser);
+  config.RegisterCustomModelParser(testTomlParser);
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, config);
+  ASSERT_EQ(3u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::URI_INVALID, errors[0].Code());
+  EXPECT_EQ("Test YAML error message", errors[0].Message());
+  EXPECT_EQ(sdf::ErrorCode::URI_INVALID, errors[1].Code());
+  EXPECT_EQ("Test TOML error message", errors[1].Message());
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  auto interfaceModel = world->InterfaceModelByIndex(0);
+  EXPECT_EQ(nullptr, interfaceModel);
 }
 
 /////////////////////////////////////////////////
@@ -307,5 +393,11 @@ TEST(InterfaceAPI, IncludeTOMLFile)
   EXPECT_EQ(1u, world->InterfaceModelCount());
   auto interfaceModel = world->InterfaceModelByIndex(0);
   ASSERT_NE(nullptr, interfaceModel);
-  EXPECT_EQ("box", interfaceModel->Name());
+  EXPECT_EQ("double_pendulum", interfaceModel->Name());
+  EXPECT_EQ("base", interfaceModel->CanonicalLinkName());
+  using ignition::math::Pose3d;
+  EXPECT_EQ(
+      Pose3d(1, 0, 0, 0, 0, 0), interfaceModel->ModelFramePoseInParentFrame());
+  EXPECT_EQ(Pose3d(-1, 0, -0.5, 0, 0, 0),
+      interfaceModel->ModelFramePoseInCanonicalLinkFrame());
 }

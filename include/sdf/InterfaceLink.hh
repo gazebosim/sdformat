@@ -22,6 +22,7 @@
 #include <string>
 
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -30,10 +31,6 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
-
-// Forward declare private data class.
-class InterfaceLinkPrivate;
-
 class InterfaceLink
 {
   /// Constructor
@@ -44,14 +41,14 @@ class InterfaceLink
 
   /// \brief Get the name of the link.
   /// \return Local name of the link.
-  public: std::string Name() const;
+  public: const std::string &Name() const;
 
   /// \brief Get the pose of this link in the parent model frame.
   /// \return The pose of this link in the parent model frame.
-  public: ignition::math::Pose3d PoseInModelFrame() const;
+  public: const ignition::math::Pose3d &PoseInModelFrame() const;
 
   /// \brief Private data pointer.
-  private: InterfaceLinkPrivate *dataPtr;
+  IGN_UTILS_IMPL_PTR(dataPtr)
 };
 }
 }
