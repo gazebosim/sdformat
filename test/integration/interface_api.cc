@@ -17,11 +17,13 @@
 
 #include <gtest/gtest.h>
 
+#include <stdexcept>
 #include <string>
 #include <variant>
 
 #include "sdf/Filesystem.hh"
 #include "sdf/InterfaceElements.hh"
+#include "sdf/InterfaceLink.hh"
 #include "sdf/InterfaceModel.hh"
 #include "sdf/Model.hh"
 #include "sdf/Param.hh"
@@ -29,51 +31,132 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 
+// Debugging
+#include "json.hpp"
+
 #include "test_config.h"
 
 
-// A struct is needed to create a recursive std::variant based data structure
-struct TomlValue
+namespace toml
 {
-  using KeyValue = std::map<std::string, TomlValue>;
-  std::variant<std::monostate, sdf::Param, std::vector<TomlValue>, KeyValue>
-      data;
-};
-
-using TomlDocument = std::map<std::string, TomlValue>;
-
-void PrintTomlValue(const std::string &_key, const TomlValue &_value)
+std::string appendPrefix(const std::string &_input)
 {
-  std::visit(
-      [&](auto &&arg) {
-        using T = std::decay_t<decltype(arg)>;
-        if constexpr (std::is_same_v<T, sdf::Param>)
-        {
-          std::cout << _key  << " = " << arg << std::endl;
-        }
-        else if constexpr (std::is_same_v<T, std::vector<TomlValue>>)
-        {
-          for (size_t i = 0; i < arg.size(); ++i)
-          {
-            // std::cout << "\t param: " << param.GetKey() << " = " << param
-            //           << std::endl;
-            PrintTomlValue(_key + "[" + std::to_string(i) + "]", arg[i]);
-          }
-        }
-        else if constexpr (std::is_same_v<T, std::map<std::string, TomlValue>>)
-        {
-          for (const auto &[key, val] : arg)
-          {
-            // std::cout << "\t param: " << param.GetKey() << " = " << param
-            //           << std::endl;
-            PrintTomlValue(_key, val);
-          }
-        }
-      },
-      _value.data);
+  return _input;
 }
 
-TomlDocument parseToml(const std::string &_filePath, sdf::Errors &_errors)
+template <typename T, typename... Args>
+std::string appendPrefix(
+    const std::string &_prefix, const T &_key, Args... others)
+{
+  if (_prefix.empty())
+    return appendPrefix(_key, others...);
+  return appendPrefix(_prefix + '.' + _key, others...);
+}
+
+std::string keyType(const std::string &_key)
+{
+  static std::unordered_map<std::string, std::string> keyTypes {
+      {"pose", "pose"},
+  };
+
+  if (auto it = keyTypes.find(_key); it != keyTypes.end())
+  {
+    return it->second;
+  }
+  return "string";
+}
+
+// A struct is needed to create a recursive std::variant based data structure
+struct Value
+{
+  using KeyValue = std::map<std::string, Value>;
+  // using VariantType = std::variant<std::monostate, sdf::Param, KeyValue>;
+  using VariantType = std::variant<KeyValue, sdf::Param>;
+  VariantType data;
+
+  public: KeyValue *Map()
+  {
+    return std::get_if<KeyValue>(&data);
+  }
+
+  public: sdf::Param *Param()
+  {
+    return std::get_if<sdf::Param>(&data);
+  }
+
+  public: Value &operator[](const std::string &_key)
+  {
+    auto keys = sdf::split(_key, ".");
+    Value *curValue = &(this->Map()->operator[](keys[0]));
+
+    for (std::size_t i = 1; i < keys.size(); ++i)
+    {
+      if (auto kval = std::get_if<KeyValue>(&curValue->data))
+      {
+        curValue = &kval->operator[](keys[i]);
+      }
+      else
+      {
+        throw std::runtime_error("Unable to find key [" + _key + "]");
+      }
+    }
+    return *curValue;
+  }
+
+  // DEBUG
+  // using json = nlohmann::json;
+
+  // public: operator nlohmann::json() const
+  // {
+  //     if (auto param = std::get_if<sdf::Param>(&data))
+  //     {
+  //       return json(param->GetAsString());
+  //     }
+  //     else if (auto kval = std::get_if<Value::KeyValue>(&data))
+  //     {
+  //       return json(*kval);
+  //     }
+  //     return {};
+  // }
+
+ public: void PrintValue(std::ostream& os, const std::string &_key) const
+  {
+    std::visit(
+        [&](auto &&arg) {
+          using T = std::decay_t<decltype(arg)>;
+          if constexpr (std::is_same_v<T, sdf::Param>)
+          {
+            os << _key << " = " << arg << std::endl;
+          }
+          else if constexpr (std::is_same_v<T, Value::KeyValue>)
+          {
+            for (const auto &[key, val] : arg)
+            {
+              val.PrintValue(os, appendPrefix(_key, key));
+            }
+          }
+        },
+        data);
+  }
+
+  friend std::ostream& operator<<(std::ostream& os, const Value &_value)
+  {
+    _value.PrintValue(os, "");
+    // nlohmann::json jmap(_doc);
+    // os << jmap.dump(2) << std::endl;
+    return os;
+  }
+};
+
+struct Document: public Value
+{
+  Document()
+      : Value({Value::KeyValue()})
+  {
+  }
+};
+
+Document parseToml(const std::string &_filePath, sdf::Errors &_errors)
 {
   std::fstream fs;
   fs.open(_filePath);
@@ -84,16 +167,7 @@ TomlDocument parseToml(const std::string &_filePath, sdf::Errors &_errors)
     return {};
   }
 
-  std::map<std::string, TomlValue> doc;
-  TomlValue curValue;
-  curValue.data = std::map<std::string, TomlValue>();
-
-  std::unordered_map<std::string, std::string> keyType {
-    {"name", "string"},
-    {"pose", "pose"},
-    {"parent", "string"},
-    {"child", "string"},
-  };
+  Document doc;
 
   auto readValue = [](const std::string &_inp)
   {
@@ -103,20 +177,19 @@ TomlDocument parseToml(const std::string &_filePath, sdf::Errors &_errors)
     auto endInd = trimmed.rfind('"');
     return trimmed.substr(begInd + 1, endInd - 1);
   };
-  auto readArrayName = [](const std::string &_inp)
+  auto readTableName = [](const std::string &_inp)
   {
     const std::string trimmed = sdf::trim(_inp);
     // Find the quotes
-    auto begInd = trimmed.find("[[");
-    auto endInd = trimmed.rfind("]]");
-    return trimmed.substr(begInd + 2, endInd - 2);
+    auto begInd = trimmed.find('[');
+    auto endInd = trimmed.rfind(']');
+    return trimmed.substr(begInd + 1, endInd - 1);
   };
 
-  std::string curArrayName = "";
-  while (fs.good())
+  std::string curPrefix = "";
+  std::string line;
+  while (std::getline(fs, line))
   {
-    std::string line;
-    std::getline(fs, line);
     sdf::trim(line);
     if (line.empty() || line[0] == '#' )
     {
@@ -129,66 +202,31 @@ TomlDocument parseToml(const std::string &_filePath, sdf::Errors &_errors)
       {
         const std::string key = sdf::trim(line.substr(0, eqInd));
         const std::string value = readValue(line.substr(eqInd + 1));
-        sdf::Param param(key, keyType[key], "", true);
+
+        sdf::Param param(key, keyType(key), "", true);
         param.SetFromString(value);
-        if (curArrayName.empty())
-        {
-          doc[key] = {param};
-        }
-        else
-        {
-          auto &entry = doc[curArrayName].data;
-          if (auto array = std::get_if<std::vector<TomlValue>>(&entry))
-          {
-            auto &data = std::get<TomlValue::KeyValue>(array->back().data);
-            data[key] = {param};
-          }
-        }
+
+        doc[appendPrefix(curPrefix, key)] = {param};
       }
-      else if (line.find("[[") != std::string::npos)
+      else if (line.find('[') != std::string::npos)
       {
-        const std::string arrayName = readArrayName(line);
-        if (arrayName.empty())
+        const std::string tableName = readTableName(line);
+        if (tableName.empty())
         {
           // ERROR
         }
         else
         {
-          auto &entry = doc[arrayName].data;
-          if (std::holds_alternative<std::vector<TomlValue>>(entry))
-          {
-            auto &array = std::get<std::vector<TomlValue>>(entry);
-            // array.emplace_back(curValue);
-            array.push_back({});
-            array.back().data = std::map<std::string, TomlValue>();
-          }
-          else
-          {
-            std::vector<TomlValue> array;
-            array.push_back({});
-            array.back().data = std::map<std::string, TomlValue>();
-            entry = array;
-          }
-          // if there was an array being built, add it to the map
-          curArrayName = arrayName;
+          curPrefix = tableName;
         }
       }
     }
   }
 
-  // if (!curArrayName.empty())
-  // {
-  //   doc.emplace(curArrayName, curArray);
-  // }
-
   fs.close();
-  std::cout << "Parsed toml:" << std::endl;
-  for (const auto &entry : doc)
-  {
-    PrintTomlValue(entry.first, entry.second);
-  }
-
+  std::cout << "Parsed toml:" << "\n" << doc << std::endl;
   return doc;
+}
 }
 
 sdf::InterfaceModelPtr customTomlParser(
@@ -202,25 +240,49 @@ sdf::InterfaceModelPtr customTomlParser(
   std::cout << "virtualCustomElements: "
             << _include.virtualCustomElements->ToString("") << std::endl;
 
-  TomlDocument doc = parseToml(_include.resolvedFileName, _errors);
+  toml::Document doc = toml::parseToml(_include.resolvedFileName, _errors);
   if (_errors.empty())
   {
     const std::string canonicalLink =
-        std::get<sdf::Param>(doc["canonical_link"].data).GetAsString();
+        doc["canonical_link"].Param()->GetAsString();
 
     ignition::math::Pose3d poseInParentModelFrame;
-    std::get<sdf::Param>(doc["pose"].data).Get(poseInParentModelFrame);
+    doc["pose"].Param()->Get(poseInParentModelFrame);
 
     ignition::math::Pose3d poseInCanonicalLinkFrame;
-    auto model = std::make_shared<sdf::InterfaceModel>(
-        _include.localModelName, canonicalLink, pose, poseInParentModelFrame);
+    doc[toml::appendPrefix("links", canonicalLink, "pose")].Param()->Get(
+        poseInParentModelFrame);
 
+    auto model = std::make_shared<sdf::InterfaceModel>(_include.localModelName,
+        canonicalLink, poseInCanonicalLinkFrame, poseInParentModelFrame);
+    for (auto &[name, link] : *doc["links"].Map())
+    {
+      ignition::math::Pose3d pose;
+      link["pose"].Param()->Get(pose);
+      // model->AddLink({name, pose});
+    }
+    for (auto &[name, joint] : *doc["joints"].Map())
+    {
+      ignition::math::Pose3d pose;
+      if (auto poseParam = joint["pose"].Param())
+        poseParam->Get(pose);
+      const std::string parent =
+          joint["parent"].Param()->GetAsString();
+      const std::string child =
+          joint["child"].Param()->GetAsString();
+      // model->AddJoint({name, pose, parent, child});
+    }
+    return model;
+  }
+  else
+  {
+    std::cout << _errors << std::endl;
   }
   return nullptr;
 }
 
 /////////////////////////////////////////////////
-TEST(InterfaceAPI, IncludeYAMLFile)
+TEST(InterfaceAPI, IncludeTOMLFile)
 {
   const std::string modelDir = sdf::filesystem::append(
       PROJECT_SOURCE_PATH, "test", "integration", "model");
