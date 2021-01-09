@@ -112,6 +112,9 @@ std::string JoinName(
 {
   if (_scopeName.empty())
     return _localName;
+  if (_localName.empty()) {
+    return _scopeName;
+  }
   return _scopeName + kSdfScopeDelimiter + _localName;
 }
 }
