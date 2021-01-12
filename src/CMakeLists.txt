@@ -28,6 +28,7 @@ set (sources
   Filesystem.cc
   Geometry.cc
   Gui.cc
+  Heightmap.cc
   ign.cc
   Imu.cc
   Joint.cc
@@ -96,6 +97,7 @@ if (BUILD_SDF_TEST)
     Filesystem_TEST.cc
     Geometry_TEST.cc
     Gui_TEST.cc
+    Heightmap_TEST.cc
     Imu_TEST.cc
     Joint_TEST.cc
     JointAxis_TEST.cc
@@ -133,6 +135,14 @@ if (BUILD_SDF_TEST)
   endif()
 
   sdf_build_tests(${gtest_sources})
+
+  if (TARGET UNIT_ign_TEST)
+    # Link the libraries that we always need.
+    target_link_libraries("UNIT_ign_TEST"
+      PUBLIC
+        ignition-cmake${IGN_CMAKE_VER}::utilities
+    )
+  endif()
 
   if (NOT WIN32)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
