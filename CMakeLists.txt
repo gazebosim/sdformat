@@ -27,11 +27,11 @@ project (sdformat11)
 set (SDF_PROTOCOL_VERSION 1.8)
 
 set (SDF_MAJOR_VERSION 11)
-set (SDF_MINOR_VERSION 0)
+set (SDF_MINOR_VERSION 1)
 set (SDF_PATCH_VERSION 0)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
-set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION}~pre1)
+set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION})
 
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 string(REGEX REPLACE "[0-9]+" "" PROJECT_NAME_NO_VERSION ${PROJECT_NAME})
@@ -80,6 +80,8 @@ set(sdf_config_install_dir "${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/")
 set(sdf_import_target_name ${PROJECT_EXPORT_NAME}::${sdf_target})
 set(sdf_target_output_filename "${sdf_target}-targets.cmake")
 
+
+OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" OFF)
 
 if (USE_FULL_RPATH)
   # use, i.e. don't skip the full RPATH for the build tree

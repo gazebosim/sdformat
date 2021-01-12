@@ -853,6 +853,82 @@ TEST(URDFParser, OutputPrecision)
 }
 
 /////////////////////////////////////////////////
+TEST(URDFParser, ParseWhitespace)
+{
+  std::string str = R"(<robot name="test">
+  <link name="link">
+    <inertial>
+      <mass value="0.1" />
+      <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+    </inertial>
+    <visual>
+      <geometry>
+        <sphere radius="1.0"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <sphere radius="1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="link">
+    <material>
+      Gazebo/Orange
+    </material>
+    <mu1>
+      100
+    </mu1>
+    <mu2>
+
+      1000
+
+    </mu2>
+  </gazebo>
+</robot>)";
+  tinyxml2::XMLDocument doc;
+  doc.Parse(str.c_str());
+
+  sdf::URDF2SDF parser;
+  tinyxml2::XMLDocument sdfXml;
+  parser.InitModelDoc(&doc, &sdfXml);
+
+  auto root = sdfXml.RootElement();
+  ASSERT_NE(nullptr, root);
+  auto modelElem = root->FirstChildElement("model");
+  ASSERT_NE(nullptr, modelElem);
+  auto linkElem = modelElem->FirstChildElement("link");
+  ASSERT_NE(nullptr, linkElem);
+  auto visualElem = linkElem->FirstChildElement("visual");
+  ASSERT_NE(nullptr, visualElem);
+  auto collisionElem = linkElem->FirstChildElement("collision");
+  ASSERT_NE(nullptr, collisionElem);
+
+  auto materialElem = visualElem->FirstChildElement("material");
+  ASSERT_NE(nullptr, materialElem);
+  auto scriptElem = materialElem->FirstChildElement("script");
+  ASSERT_NE(nullptr, scriptElem);
+  auto nameElem = scriptElem->FirstChildElement("name");
+  ASSERT_NE(nullptr, nameElem);
+  EXPECT_EQ("Gazebo/Orange", std::string(nameElem->GetText()));
+
+  auto surfaceElem = collisionElem->FirstChildElement("surface");
+  ASSERT_NE(nullptr, surfaceElem);
+  auto frictionElem = surfaceElem->FirstChildElement("friction");
+  ASSERT_NE(nullptr, frictionElem);
+  auto odeElem = frictionElem->FirstChildElement("ode");
+  ASSERT_NE(nullptr, odeElem);
+  auto muElem = odeElem->FirstChildElement("mu");
+  ASSERT_NE(nullptr, muElem);
+  auto mu2Elem = odeElem->FirstChildElement("mu2");
+  ASSERT_NE(nullptr, mu2Elem);
+
+  EXPECT_EQ("100", std::string(muElem->GetText()));
+  EXPECT_EQ("1000", std::string(mu2Elem->GetText()));
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {
