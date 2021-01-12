@@ -24,7 +24,7 @@
 #include "Converter.hh"
 #include "XmlUtils.hh"
 
-#include "test_util.hh"
+#include "test_config.h"
 
 ////////////////////////////////////////////////////
 /// Set up an xml string for testing
@@ -1898,15 +1898,15 @@ TEST(Converter, MuchNewerVersion)
   ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6"));
 }
 
+const std::string CONVERT_DOC_15_16 =
+  sdf::testing::SourceFile("sdf", "1.6", "1_5.convert");
+const std::string CONVERT_DOC_16_17 =
+  sdf::testing::SourceFile("sdf", "1.7", "1_6.convert");
+
 /////////////////////////////////////////////////
 /// Test conversion of imu in 1.5 to 1.6
 TEST(Converter, IMU_15_to_16)
 {
-  std::string convert_doc_15_16;
-  ASSERT_TRUE(sdf::testing::TestDataPath(convert_doc_15_16));
-  convert_doc_15_16 =
-    sdf::filesystem::append(convert_doc_15_16, "sdf", "1.6", "1_5.convert");
-
   // The imu noise in 1.5 format
   std::string xmlString = R"(
 <?xml version="1.0" ?>
@@ -1943,7 +1943,7 @@ TEST(Converter, IMU_15_to_16)
 
   // Convert
   tinyxml2::XMLDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(convert_doc_15_16.c_str());
+  convertXmlDoc.LoadFile(CONVERT_DOC_15_16.c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements
@@ -2020,11 +2020,6 @@ TEST(Converter, IMU_15_to_16)
 /// Test conversion of gravity, magnetic_field in 1.5 to 1.6
 TEST(Converter, World_15_to_16)
 {
-  std::string convert_doc_15_16;
-  ASSERT_TRUE(sdf::testing::TestDataPath(convert_doc_15_16));
-  convert_doc_15_16 =
-    sdf::filesystem::append(convert_doc_15_16, "sdf", "1.6", "1_5.convert");
-
   // The gravity and magnetic_field in 1.5 format
   std::string xmlString = R"(
 <?xml version="1.0" ?>
@@ -2042,7 +2037,7 @@ TEST(Converter, World_15_to_16)
 
   // Convert
   tinyxml2::XMLDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(convert_doc_15_16.c_str());
+  convertXmlDoc.LoadFile(CONVERT_DOC_15_16.c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements
@@ -2073,11 +2068,6 @@ TEST(Converter, World_15_to_16)
 /// Test conversion of pose attributes in 1.6 to 1.7
 TEST(Converter, Pose_16_to_17)
 {
-  std::string convert_doc_16_17;
-  ASSERT_TRUE(sdf::testing::TestDataPath(convert_doc_16_17));
-  convert_doc_16_17 =
-    sdf::filesystem::append(convert_doc_16_17, "sdf", "1.7", "1_6.convert");
-
   // A world file with pose elements in 1.5 format
   std::string xmlString = R"(
 <?xml version="1.0" ?>
@@ -2103,7 +2093,7 @@ TEST(Converter, Pose_16_to_17)
 
   // Convert
   tinyxml2::XMLDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(convert_doc_16_17.c_str());
+  convertXmlDoc.LoadFile(CONVERT_DOC_16_17.c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements

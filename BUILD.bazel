@@ -27,7 +27,7 @@ SDF_PATCH_VERSION = 0
 
 # Generates config.hh based on the version numbers in CMake code.
 cmake_configure_file(
-    name = "test_config",
+    name = "sdf_config",
     src = "cmake/sdf_config.h.in",
     out = "include/sdf/sdf_config.h",
     cmakelists = ["CMakeLists.txt"],
