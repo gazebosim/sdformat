@@ -25,6 +25,9 @@
 #define PROJECT_SOURCE_PATH "${PROJECT_SOURCE_DIR}"
 #define PROJECT_BINARY_DIR  "${CMAKE_BINARY_DIR}"
 #define SDF_PROTOCOL_VERSION "${SDF_PROTOCOL_VERSION}"
+#define SDF_TMP_DIR "tmp-sdf/"
+
+#include <sdf/Filesystem.hh>
 
 /*
  * setenv/unstenv are not present in Windows. Define them to make the code
@@ -48,4 +51,110 @@ void unsetenv(const char * name)
   return;
 }
 #endif
+
+namespace sdf
+{
+  namespace testing
+  {
+    /// \brief Method to retrive root directory of project source
+    ///
+    /// This is used to get various test files
+    /// \param[inout] _dataDir Full path to the source directory
+    /// \return True if directory is set correctly, false otherwise
+    bool ProjectSourcePath(std::string &_sourceDir)
+    {
+      // Bazel builds set TEST_SRCDIR
+      if(char* dataDir = std::getenv("TEST_SRCDIR"))
+      {
+        _sourceDir = sdf::filesystem::append(dataDir, "__main__/sdformat");
+        return true;
+      }
+      else
+      {
+        // CMake builds set PROJECT_SOURCE_PATH
+        _sourceDir = PROJECT_SOURCE_PATH;
+        return true;
+      }
+
+      return false;
+    }
+
+    /// \brief Method to retrive temporary directory for test outputs
+    ///
+    /// \param[inout] _tmpDir Full path to the temp directory
+    /// \return True if directory is set correctly, false otherwise
+    bool TestTmpPath(std::string &_tmpDir)
+    {
+      // Bazel builds set TEST_UNDECLARED_OUTPUTS_DIR
+      if (const char* tmpDir = std::getenv("TEST_UNDECLARED_OUTPUTS_DIR"))
+      {
+        _tmpDir = tmpDir;
+        return true;
+      }
+
+      // Otherwise use a temporary dir relative to home
+      if (char* homeDir = std::getenv("HOME"))
+      {
+        _tmpDir = sdf::filesystem::append(homeDir, SDF_TMP_DIR);
+        return true;
+      }
+
+      return false;
+    }
+
+    /// \brief Method to retrive temporary home directory for tests
+    ///
+    /// \param[inout] _homeDir Full path to the home directory
+    /// \return True if directory is set correctly, false otherwise
+    bool TestHomePath(std::string &_homeDir)
+    {
+#ifndef _WIN32
+      if (const char* tmpDir = std::getenv("TEST_UNDECLARED_OUTPUTS_DIR"))
+      {
+        _homeDir = tmpDir;
+      }
+      else
+      {
+        _homeDir = PROJECT_BINARY_DIR;
+      }
+      setenv("HOME", _homeDir.c_str(), 1);
+#else
+  std::string buildDir = PROJECT_BINARY_DIR;
+  for (int i = 0; i < buildDir.size(); ++i)
+  {
+    if (buildDir[i] == '/')
+      buildDir[i] = '\\';
+  }
+  _homeDir = "HOMEPATH=" + buildDir;
+  _putenv(_homeDir.c_str());
 #endif
+      return true;
+    }
+
+    /// \brief Retrieve a file from the project source directory
+    /// \param[in] variable length of arguments relative to the
+    ///   repository source directory
+    /// \return Full path to requested file
+    template <typename... Args>
+    std::string SourceFile(Args const &... args)
+    {
+      std::string dataDir;
+      ProjectSourcePath(dataDir);
+      return sdf::filesystem::append(dataDir, args...);
+    }
+
+    /// \brief Retrieve a file from the test directory
+    /// \param[in] variable length of arguments relative to the
+    ///   repository test directory
+    /// \return Full path to requested test file
+    template <typename... Args>
+    std::string TestFile(Args const &... args)
+    {
+      return SourceFile("test", args...);
+    }
+
+  }  // namespace testing
+}  // namespace sdf
+
+#endif
+

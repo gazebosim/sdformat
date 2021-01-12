@@ -34,14 +34,13 @@
 #include "sdf/World.hh"
 #include "test_config.h"
 
-const auto g_testPath = sdf::filesystem::append(PROJECT_SOURCE_PATH, "test");
-const auto g_modelsPath =
-    sdf::filesystem::append(g_testPath, "integration", "model");
+const auto g_testPath = sdf::testing::TestFile();
+const auto g_modelsPath = sdf::testing::TestFile("integration", "model");
 
 /////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
 {
-  return sdf::filesystem::append(g_testPath, "integration", "model", _input);
+  return sdf::testing::TestFile("integration", "model", _input);
 }
 
 //////////////////////////////////////////////////
@@ -49,8 +48,7 @@ TEST(IncludesTest, Includes)
 {
   sdf::setFindCallback(findFileCb);
 
-  const auto worldFile =
-    sdf::filesystem::append(g_testPath, "sdf", "includes.sdf");
+  const auto worldFile = sdf::testing::TestFile("sdf", "includes.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(worldFile);
