@@ -6,10 +6,10 @@
         <uri>base</uri>
 
         <experimental:params>
-          <visual name="chassis::lidar_visual" action="remove"/>
-          <sensor name="chassis::lidar" action="remove"/>
+          <visual element_id="chassis::lidar_visual" action="remove"/>
+          <sensor element_id="chassis::lidar" action="remove"/>
 
-          <visual name="chassis::camera_visual" action="add">
+          <visual element_id="chassis::camera_visual" action="add">
             <pose>-1.06 0 0 0 0 3.14</pose>
             <geometry>
               <box>
@@ -18,12 +18,12 @@
             </geometry>
           </visual>
 
-          <sensor name="top_model::top_camera::top_camera_link::camera" action="modify">
+          <sensor element_id="top_model::top_camera::top_camera_link::camera" action="modify">
             <pose>-0.2 0 0.3 0 0.0 3.14</pose>
             <update_rate>60</update_rate>
           </sensor>
 
-          <visual name="top_model::top_camera::top_camera_link::camera_visual">
+          <visual element_id="top_model::top_camera::top_camera_link::camera_visual">
             <geometry action="replace">
               <sphere>
                 <radius>0.05</radius>
@@ -36,7 +36,7 @@
             </material>
           </visual>
 
-          <link name="top_model::top_camera::top_camera_link::new_link" action="add"/>
+          <link element_id="top_model::top_camera::top_camera_link::new_link" action="add"/>
         </experimental:params>
       </include>
     </model>

@@ -9,7 +9,7 @@
           <!-- missing name attribute (i.e., element identifier) -->
           <foo/>
           <!-- element does not exist -->
-          <visual name="chassis::camera_visual" action="modify">
+          <visual element_id="chassis::camera_visual" action="modify">
             <pose>-1.06 0 0 0 0 3.14</pose>
             <geometry>
               <box>
@@ -18,7 +18,7 @@
             </geometry>
           </visual>
           <!-- element already exists -->
-          <visual name="chassis::visual" action="add">
+          <visual element_id="chassis::visual" action="add">
             <geometry>
               <box>
                 <size>0.1 0.1 0.1</size>
@@ -26,7 +26,7 @@
             </geometry>
           </visual>
           <!-- parent of new element does not exist -->
-          <visual name="chassis::test::visual" action="add">
+          <visual element_id="chassis::test::visual" action="add">
             <geometry>
               <box>
                 <size>0.1 0.1 0.1</size>

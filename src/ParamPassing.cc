@@ -34,15 +34,15 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
        childElemXml = childElemXml->NextSiblingElement())
   {
     // element identifier
-    const char *childElemId = childElemXml->Attribute("name");
+    const char *childElemId = childElemXml->Attribute("element_id");
     if (!childElemId)
     {
       tinyxml2::XMLPrinter printer;
       childElemXml->Accept(&printer);
 
       _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
-        "Element identifier requires a name, but the name is not set. "
-        "Skipping element modification:\n"
+        "Element identifier requires an element_id attribute, but the "
+        "element_id is not set. Skipping element modification:\n"
         + std::string(printer.CStr())
       });
       continue;
@@ -70,8 +70,9 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
 
         _errors.push_back({ErrorCode::DUPLICATE_ELEMENT,
           "Could not add element <" + std::string(childElemXml->Name())
-          + " name='" + childElemXml->Attribute("name") + "'> because element "
-          + "already exists in included model. Skipping element addition:\n"
+          + " element_id='" + childElemXml->Attribute("element_id")
+          + "'> because element already exists in included model. "
+          + "Skipping element addition:\n"
           + printer.CStr()
         });
         continue;
@@ -90,12 +91,10 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
         }
       }
 
-      // if equal add new element as direct child of included model
       if (!elemNameAttr.compare(childElemId))
       {
+        // if equal add new element as direct child of included model
         elem = _includeSDF->Root()->GetFirstElement();  // model element
-        elemNameAttr =
-          elem->GetAttribute("name")->GetAsString() + "::" + childElemId;
       }
       else
       {
@@ -112,7 +111,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
 
       _errors.push_back({ErrorCode::ELEMENT_MISSING,
         "Could not find element <" + std::string(childElemXml->Name())
-        + " name='" + childElemXml->Attribute("name") + "'>. " +
+        + " element_id='" + childElemXml->Attribute("element_id") + "'>. " +
         "Skipping element modification:\n" + printer.CStr()
       });
       continue;
