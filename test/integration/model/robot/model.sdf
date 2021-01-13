@@ -302,5 +302,12 @@
       <parent>chassis</parent>
       <child>caster</child>
     </joint>
+
+    <link name="nested_links">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link1">
+        <link name="link2"/>
+      </link>
+    </link>
   </model>
 </sdf>

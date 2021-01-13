@@ -24,11 +24,11 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 
 //////////////////////////////////////////////////
-void updateParams(const tinyxml2::XMLElement *_childXmlParams,
+void updateParams(tinyxml2::XMLElement *_childXmlParams,
                   SDFPtr _includeSDF, Errors &_errors)
 {
   // loop through <experimental:params> children
-  const tinyxml2::XMLElement *childElemXml = nullptr;
+  tinyxml2::XMLElement *childElemXml = nullptr;
   for (childElemXml = _childXmlParams->FirstChildElement();
        childElemXml;
        childElemXml = childElemXml->NextSiblingElement())
@@ -48,21 +48,61 @@ void updateParams(const tinyxml2::XMLElement *_childXmlParams,
       continue;
     }
 
+    // *** Retrieve specified element using element identifier ***
+
     std::string actionStr;
     if (childElemXml->Attribute("action"))
       actionStr = std::string(childElemXml->Attribute("action"));
 
     // get element pointer to specified element using element identifier
-    ElementPtr  elem;
+    ElementPtr elem = getElementById(_includeSDF, childElemXml->Name(),
+                          childElemId, true);
+
+    std::string elemNameAttr(childElemId);
+
     if (actionStr == "add")
     {
-      // TODO(jenn) implement this, skipping for now
-      continue;
-    }
-    else
-    {
-      elem = getElementById(_includeSDF, childElemXml->Name(),
-                            childElemId, true);
+      if (elem != nullptr)
+      {
+        // TODO(jenn) make test for this
+        tinyxml2::XMLPrinter printer;
+        childElemXml->Accept(&printer);
+
+        _errors.push_back({ErrorCode::DUPLICATE_ELEMENT,
+          "Could not add element <" + std::string(childElemXml->Name())
+          + " name='" + childElemXml->Attribute("name") + "'> because element "
+          + "already exists in included model. Skipping element addition:\n"
+          + printer.CStr()
+        });
+        continue;
+      }
+
+      size_t found = elemNameAttr.find_last_of("::");
+      if (found != std::string::npos)
+      {
+        elemNameAttr = elemNameAttr.substr(found+1);  // +1 past last colon
+
+        // TODO(jenn) add test for this (e.g., elemChildId='test::')
+        if (elemNameAttr.empty())
+        {
+          std::cout << "ADD error" << std::endl;
+          continue;
+        }
+      }
+
+      // if equal add new element as direct child of included model
+      if (!elemNameAttr.compare(childElemId))
+      {
+        elem = _includeSDF->Root()->GetFirstElement();  // model element
+        elemNameAttr =
+          elem->GetAttribute("name")->GetAsString() + "::" + childElemId;
+      }
+      else
+      {
+        elem = getElementById(_includeSDF, "",
+                              std::string(childElemId).substr(0, found-1),
+                              true, true);
+      }
     }
 
     if (elem == nullptr)
@@ -86,7 +126,8 @@ void updateParams(const tinyxml2::XMLElement *_childXmlParams,
 ElementPtr getElementById(const SDFPtr _sdf,
                           const std::string &_elemName,
                           const std::string &_elemId,
-                          const bool &_prefixModelName)
+                          const bool &_prefixModelName,
+                          const bool &_isParentElement)
 {
   std::string modelName
     = _sdf->Root()->GetFirstElement()->GetAttribute("name")->GetAsString();
@@ -109,9 +150,15 @@ ElementPtr getElementById(const SDFPtr _sdf,
 
       if (startIdx == 0 && _prefixModelName)
       {
-        stopIdx = findPrefixLastIndex(modelName + "::" + _elemId,
+        std::string prefixedId = modelName + "::" + _elemId;
+
+        if (_isParentElement && prefixedId == childName)
+          return childElem;
+
+        stopIdx = findPrefixLastIndex(prefixedId,
                                       startIdx,
                                       childName);
+
         if (stopIdx != -1)
         {
           // removing added model name
@@ -122,7 +169,10 @@ ElementPtr getElementById(const SDFPtr _sdf,
       {
         stopIdx = findPrefixLastIndex(_elemId, startIdx, childName);
 
-        if (!_prefixModelName)
+        size_t found = _elemId.substr(startIdx).find_first_of(":");
+
+        if (!_prefixModelName ||
+            (found != std::string::npos && stopIdx < startIdx + (int64_t)found))
           stopIdx += 3;  // past "::"
       }
 
@@ -131,8 +181,10 @@ ElementPtr getElementById(const SDFPtr _sdf,
         matchingChild = childElem;
 
         // found matching element break out of included model iteration
-        if (childElem->GetName() == _elemName
+        if (!_isParentElement && childElem->GetName() == _elemName
               && _elemId.substr(startIdx) == childName)
+          break;
+        else if (_isParentElement && _elemId.substr(startIdx) == childName)
           break;
 
         longestIdx = stopIdx;

@@ -35,6 +35,8 @@
               <diffuse>0 0 1 1</diffuse>
             </material>
           </visual>
+
+          <link name="top_model::top_camera::top_camera_link::new_link" action="add"/>
         </experimental:params>
       </include>
     </model>

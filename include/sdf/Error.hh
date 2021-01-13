@@ -53,6 +53,10 @@ namespace sdf
     /// are required.
     DUPLICATE_NAME,
 
+    /// \brief A duplicate element with specified name already exists
+    /// (used for parameter passing).
+    DUPLICATE_ELEMENT,
+
     /// \brief A reserved name was used in an entity name attribute.
     RESERVED_NAME,
 
