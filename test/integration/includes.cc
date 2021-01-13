@@ -353,5 +353,5 @@ TEST(IncludesTest, IncludeModelMissingConfig)
     std::cout << e.Message() << std::endl;
   EXPECT_TRUE(errors.empty());
 
-  EXPECT_EQ(0u, root.ModelCount());
+  EXPECT_EQ(nullptr, root.Model());
 }

@@ -242,7 +242,7 @@ TEST(DOMJointAxis, InfiniteLimits)
     std::cout << e << std::endl;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("joint_axis_infinite_limits", model->Name());
 
