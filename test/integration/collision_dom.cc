@@ -71,7 +71,7 @@ TEST(DOMCollision, DoublePendulum)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_TRUE(model != nullptr);
 
   const sdf::Link *baseLink = model->LinkByIndex(0);
@@ -105,7 +105,7 @@ TEST(DOMCollision, LoadModelFramesRelativeToJoint)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_frame_relative_to_joint", model->Name());
   EXPECT_EQ(2u, model->LinkCount());
@@ -284,4 +284,3 @@ TEST(DOMCollision, LoadModelFramesRelativeToJoint)
     linkC->CollisionByName("F4")->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(Pose(-18, 3, 4, 0, -IGN_PI/2, 0), pose);
 }
-

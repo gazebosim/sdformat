@@ -32,6 +32,8 @@ namespace sdf
   class Box;
   class Capsule;
   class Cylinder;
+  class Ellipsoid;
+  class Heightmap;
   class Mesh;
   class Plane;
   class Sphere;
@@ -58,8 +60,14 @@ namespace sdf
     /// \brief A mesh geometry.
     MESH = 5,
 
+    /// \brief A heightmap geometry.
+    HEIGHTMAP = 6,
+
     /// \brief A capsule geometry.
     CAPSULE = 7,
+
+    /// \brief An ellipsoid geometry
+    ELLIPSOID = 8,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
@@ -141,6 +149,17 @@ namespace sdf
     /// \param[in] _cylinder The cylinder shape.
     public: void SetCylinderShape(const Cylinder &_cylinder);
 
+    /// \brief Get the ellipsoid geometry, or nullptr if the contained
+    /// geometry is not an ellipsoid.
+    /// \return Pointer to the ellipsoid geometry, or nullptr if the geometry is
+    /// not an ellipsoid.
+    /// \sa GeometryType Type() const
+    public: const Ellipsoid *EllipsoidShape() const;
+
+    /// \brief Set the ellipsoid shape.
+    /// \param[in] _ellipsoid The ellipsoid shape.
+    public: void SetEllipsoidShape(const Ellipsoid &_ellipsoid);
+
     /// \brief Get the sphere geometry, or nullptr if the contained geometry is
     /// not a sphere.
     /// \return Pointer to the visual's sphere geometry, or nullptr if the
@@ -173,6 +192,17 @@ namespace sdf
     /// \brief Set the mesh shape.
     /// \param[in] _mesh The mesh shape.
     public: void SetMeshShape(const Mesh &_mesh);
+
+    /// \brief Get the heightmap geometry, or nullptr if the contained geometry
+    /// is not a heightmap.
+    /// \return Pointer to the heightmap geometry, or nullptr if the geometry is
+    /// not a heightmap.
+    /// \sa GeometryType Type() const
+    public: const Heightmap *HeightmapShape() const;
+
+    /// \brief Set the heightmap shape.
+    /// \param[in] _heightmap The heightmap shape.
+    public: void SetHeightmapShape(const Heightmap &_heightmap);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

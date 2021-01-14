@@ -179,6 +179,21 @@ namespace sdf
     /// \param[in] _map Filename of the emissive map.
     public: void SetEmissiveMap(const std::string &_map);
 
+    /// \brief Get the light map filename. This will be an empty string
+    /// if an light map has not been set.
+    /// \return Filename of the light map, or empty string if a light
+    /// map has not been specified.
+    public: std::string LightMap() const;
+
+    /// \brief Set the light map filename.
+    /// \param[in] _map Filename of the light map.
+    /// \param[in] _uvSet Index of the light map texture coordinate set
+    public: void SetLightMap(const std::string &_map, unsigned int _uvSet = 0u);
+
+    /// \brief Get the light map texture coordinate set.
+    /// \return Index of the texture coordinate set
+    public: unsigned int LightMapTexCoordSet() const;
+
     /// \brief Get the metalness value of the material for metal workflow
     /// \return metalness value of the material
     public: double Metalness() const;

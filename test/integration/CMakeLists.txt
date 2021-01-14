@@ -27,6 +27,7 @@ set(tests
   model_dom.cc
   model_versions.cc
   nested_model.cc
+  nested_multiple_elements_error.cc
   parser_error_detection.cc
   parser_config.cc
   plugin_attribute.cc
@@ -34,6 +35,7 @@ set(tests
   plugin_include.cc
   provide_feedback.cc
   root_dom.cc
+  scene_dom.cc
   sdf_basic.cc
   sdf_custom.cc
   surface_dom.cc
@@ -41,6 +43,7 @@ set(tests
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
   visual_dom.cc
+  whitespace.cc
   world_dom.cc
 )
 
@@ -70,5 +73,3 @@ if (UNIX AND NOT APPLE)
   add_test(NAME INTEGRATION_versioned_symbols
     COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash ${CMAKE_BINARY_DIR}/src/libsdformat${SDF_MAJOR_VERSION}.so)
 endif()
-
-

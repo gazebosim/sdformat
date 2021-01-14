@@ -13,6 +13,7 @@ set (headers
   Console.hh
   Cylinder.hh
   Element.hh
+  Ellipsoid.hh
   Error.hh
   Exception.hh
   Filesystem.hh
@@ -20,6 +21,7 @@ set (headers
   Frame.hh
   Geometry.hh
   Gui.hh
+  Heightmap.hh
   Imu.hh
   Joint.hh
   JointAxis.hh
@@ -42,6 +44,7 @@ set (headers
   SDFImpl.hh
   SemanticPose.hh
   Sensor.hh
+  Sky.hh
   Sphere.hh
   Surface.hh
   Types.hh
