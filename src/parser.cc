@@ -978,24 +978,27 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
           }
           else
           {
-            if (!sdf::filesystem::is_directory(modelPath))
+            if (sdf::filesystem::is_directory(modelPath))
             {
-              _errors.push_back({ErrorCode::DIRECTORY_NONEXISTANT,
-                  "Directory doesn't exist[" + modelPath + "]"});
-              continue;
+              // Get the model.config filename
+              filename = getModelFilePath(modelPath);
+
+              if (filename.empty())
+              {
+                _errors.push_back({ErrorCode::URI_LOOKUP,
+                    "Unable to resolve uri[" + uri + "] to model path [" +
+                    modelPath + "] since it does not contain a model.config " +
+                    "file."});
+                continue;
+              }
             }
-          }
-
-          // Get the config.xml filename
-          filename = getModelFilePath(modelPath);
-
-          if (filename.empty())
-          {
-            _errors.push_back({ErrorCode::URI_LOOKUP,
-                "Unable to resolve uri[" + uri + "] to model path [" +
-                modelPath + "] since it does not contain a model.config " +
-                "file."});
-            continue;
+            else
+            {
+              // This is a file path and since sdf::findFile returns an empty
+              // string if the file doesn't exist, we don't have to check for
+              // existence again here.
+              filename = modelPath;
+            }
           }
         }
         else
