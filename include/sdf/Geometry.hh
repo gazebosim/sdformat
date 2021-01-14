@@ -33,6 +33,7 @@ namespace sdf
   class Capsule;
   class Cylinder;
   class Ellipsoid;
+  class Heightmap;
   class Mesh;
   class Plane;
   class Sphere;
@@ -58,6 +59,9 @@ namespace sdf
 
     /// \brief A mesh geometry.
     MESH = 5,
+
+    /// \brief A heightmap geometry.
+    HEIGHTMAP = 6,
 
     /// \brief A capsule geometry.
     CAPSULE = 7,
@@ -188,6 +192,17 @@ namespace sdf
     /// \brief Set the mesh shape.
     /// \param[in] _mesh The mesh shape.
     public: void SetMeshShape(const Mesh &_mesh);
+
+    /// \brief Get the heightmap geometry, or nullptr if the contained geometry
+    /// is not a heightmap.
+    /// \return Pointer to the heightmap geometry, or nullptr if the geometry is
+    /// not a heightmap.
+    /// \sa GeometryType Type() const
+    public: const Heightmap *HeightmapShape() const;
+
+    /// \brief Set the heightmap shape.
+    /// \param[in] _heightmap The heightmap shape.
+    public: void SetHeightmapShape(const Heightmap &_heightmap);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

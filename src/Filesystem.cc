@@ -55,6 +55,11 @@
 
 #include "sdf/Filesystem.hh"
 
+/* PATH_MAX is undefined on GNU Hurd */
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {

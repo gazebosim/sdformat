@@ -30,12 +30,15 @@ TEST(DOMMaterial, Construction)
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Specular());
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Emissive());
   EXPECT_TRUE(material.Lighting());
+  EXPECT_FLOAT_EQ(0, material.RenderOrder());
+  EXPECT_FALSE(material.DoubleSided());
   EXPECT_EQ(nullptr, material.Element());
   EXPECT_EQ("", material.ScriptUri());
   EXPECT_EQ("", material.ScriptName());
   EXPECT_EQ(sdf::ShaderType::PIXEL, material.Shader());
   EXPECT_EQ("", material.NormalMap());
   EXPECT_EQ(nullptr, material.PbrMaterial());
+  EXPECT_EQ("", material.FilePath());
 }
 
 /////////////////////////////////////////////////
@@ -47,10 +50,13 @@ TEST(DOMMaterial, MoveConstructor)
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
   material.SetLighting(false);
+  material.SetRenderOrder(2);
+  material.SetDoubleSided(true);
   material.SetScriptUri("banana");
   material.SetScriptName("orange");
   material.SetShader(sdf::ShaderType::VERTEX);
   material.SetNormalMap("blueberry");
+  material.SetFilePath("/tmp/path");
 
   sdf::Material material2(std::move(material));
   EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), material2.Ambient());
@@ -60,11 +66,14 @@ TEST(DOMMaterial, MoveConstructor)
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
+  EXPECT_TRUE(material2.DoubleSided());
+  EXPECT_FLOAT_EQ(2.0, material2.RenderOrder());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
   EXPECT_EQ("blueberry", material2.NormalMap());
   EXPECT_EQ(nullptr, material2.PbrMaterial());
+  EXPECT_EQ("/tmp/path", material2.FilePath());
 }
 
 /////////////////////////////////////////////////
@@ -76,10 +85,13 @@ TEST(DOMMaterial, CopyConstructor)
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
   material.SetLighting(false);
+  material.SetRenderOrder(4);
+  material.SetDoubleSided(true);
   material.SetScriptUri("banana");
   material.SetScriptName("orange");
   material.SetShader(sdf::ShaderType::VERTEX);
   material.SetNormalMap("blueberry");
+  material.SetFilePath("/tmp/other");
 
   sdf::Material material2(material);
   EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f), material2.Ambient());
@@ -89,11 +101,14 @@ TEST(DOMMaterial, CopyConstructor)
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
+  EXPECT_TRUE(material2.DoubleSided());
+  EXPECT_FLOAT_EQ(4, material2.RenderOrder());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
   EXPECT_EQ("blueberry", material2.NormalMap());
   EXPECT_EQ(nullptr, material2.PbrMaterial());
+  EXPECT_EQ("/tmp/other", material2.FilePath());
 }
 
 /////////////////////////////////////////////////
@@ -105,10 +120,13 @@ TEST(DOMMaterial, AssignmentOperator)
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
   material.SetLighting(false);
+  material.SetRenderOrder(4);
+  material.SetDoubleSided(true);
   material.SetScriptUri("banana");
   material.SetScriptName("orange");
   material.SetShader(sdf::ShaderType::VERTEX);
   material.SetNormalMap("blueberry");
+  material.SetFilePath("/tmp/another");
 
   sdf::Material material2;
   material2 = material;
@@ -119,11 +137,14 @@ TEST(DOMMaterial, AssignmentOperator)
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
+  EXPECT_TRUE(material2.DoubleSided());
+  EXPECT_FLOAT_EQ(4, material2.RenderOrder());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
   EXPECT_EQ("blueberry", material2.NormalMap());
   EXPECT_EQ(nullptr, material2.PbrMaterial());
+  EXPECT_EQ("/tmp/another", material2.FilePath());
 }
 
 /////////////////////////////////////////////////
@@ -135,6 +156,8 @@ TEST(DOMMaterial, MoveAssignmentOperator)
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
   material.SetLighting(false);
+  material.SetRenderOrder(4);
+  material.SetDoubleSided(true);
   material.SetScriptUri("banana");
   material.SetScriptName("orange");
   material.SetShader(sdf::ShaderType::VERTEX);
@@ -149,6 +172,8 @@ TEST(DOMMaterial, MoveAssignmentOperator)
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
+  EXPECT_TRUE(material2.DoubleSided());
+  EXPECT_FLOAT_EQ(4, material2.RenderOrder());
   EXPECT_EQ("banana", material2.ScriptUri());
   EXPECT_EQ("orange", material2.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, material2.Shader());
@@ -199,6 +224,14 @@ TEST(DOMMaterial, Set)
   material.SetLighting(false);
   EXPECT_FALSE(material.Lighting());
 
+  EXPECT_FLOAT_EQ(0, material.RenderOrder());
+  material.SetRenderOrder(5);
+  EXPECT_FLOAT_EQ(5, material.RenderOrder());
+
+  EXPECT_FALSE(material.DoubleSided());
+  material.SetDoubleSided(true);
+  EXPECT_TRUE(material.DoubleSided());
+
   EXPECT_EQ("", material.ScriptUri());
   material.SetScriptUri("uri");
   EXPECT_EQ("uri", material.ScriptUri());
@@ -214,6 +247,10 @@ TEST(DOMMaterial, Set)
   EXPECT_EQ("", material.NormalMap());
   material.SetNormalMap("map");
   EXPECT_EQ("map", material.NormalMap());
+
+  EXPECT_EQ("", material.FilePath());
+  material.SetFilePath("/my/path");
+  EXPECT_EQ("/my/path", material.FilePath());
 
   // set pbr material
   sdf::Pbr pbr;
@@ -232,12 +269,15 @@ TEST(DOMMaterial, Set)
   EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f), moved.Specular());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f), moved.Emissive());
   EXPECT_FALSE(moved.Lighting());
+  EXPECT_FLOAT_EQ(5, moved.RenderOrder());
+  EXPECT_TRUE(moved.DoubleSided());
   EXPECT_EQ("uri", moved.ScriptUri());
   EXPECT_EQ("name", moved.ScriptName());
   EXPECT_EQ(sdf::ShaderType::VERTEX, moved.Shader());
   EXPECT_EQ("map", moved.NormalMap());
   EXPECT_EQ(workflow,
       *moved.PbrMaterial()->Workflow(sdf::PbrWorkflowType::METAL));
+  EXPECT_EQ("/my/path", moved.FilePath());
 }
 
 /////////////////////////////////////////////////

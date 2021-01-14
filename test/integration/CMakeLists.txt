@@ -34,6 +34,7 @@ set(tests
   plugin_include.cc
   provide_feedback.cc
   root_dom.cc
+  scene_dom.cc
   sdf_basic.cc
   sdf_custom.cc
   surface_dom.cc
@@ -41,6 +42,7 @@ set(tests
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
   visual_dom.cc
+  whitespace.cc
   world_dom.cc
 )
 
