@@ -29,16 +29,6 @@ using namespace sdf;
 
 class sdf::VisualPrivate
 {
-  /// \brief Default constructor
-  public: VisualPrivate() = default;
-
-  /// \brief Copy constructor
-  /// \param[in] _visualPrivate Joint axis to move.
-  public: explicit VisualPrivate(const VisualPrivate &_visualPrivate);
-
-  // Delete copy assignment so it is not accidentally used
-  public: VisualPrivate &operator=(const VisualPrivate &) = delete;
-
   /// \brief Name of the visual.
   public: std::string name = "";
 
@@ -60,8 +50,8 @@ class sdf::VisualPrivate
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
-  /// \brief Pointer to the visual's material properties.
-  public: std::unique_ptr<Material> material;
+  /// \brief The visual's material properties.
+  public: std::optional<Material> material;
 
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
@@ -72,23 +62,6 @@ class sdf::VisualPrivate
   /// \brief Visibility flags of a visual. Defaults to 0xFFFFFFFF
   public: uint32_t visibilityFlags = 4294967295u;
 };
-
-/////////////////////////////////////////////////
-VisualPrivate::VisualPrivate(const VisualPrivate &_visualPrivate)
-    : name(_visualPrivate.name),
-      castShadows(_visualPrivate.castShadows),
-      transparency(_visualPrivate.transparency),
-      pose(_visualPrivate.pose),
-      poseRelativeTo(_visualPrivate.poseRelativeTo),
-      geom(_visualPrivate.geom),
-      sdf(_visualPrivate.sdf),
-      visibilityFlags(_visualPrivate.visibilityFlags)
-{
-  if (_visualPrivate.material)
-  {
-    this->material = std::make_unique<Material>(*(_visualPrivate.material));
-  }
-}
 
 /////////////////////////////////////////////////
 Visual::Visual()
@@ -175,7 +148,7 @@ Errors Visual::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("material"))
   {
-    this->dataPtr->material.reset(new sdf::Material());
+    this->dataPtr->material.emplace();
     Errors err = this->dataPtr->material->Load(_sdf->GetElement("material"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
@@ -302,13 +275,13 @@ sdf::ElementPtr Visual::Element() const
 /////////////////////////////////////////////////
 sdf::Material *Visual::Material() const
 {
-  return this->dataPtr->material.get();
+  return optionalToPointer(this->dataPtr->material);
 }
 
 /////////////////////////////////////////////////
 void Visual::SetMaterial(const sdf::Material &_material)
 {
-  this->dataPtr->material.reset(new sdf::Material(_material));
+  this->dataPtr->material = _material;
 }
 
 /////////////////////////////////////////////////

@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <string>
+#include <optional>
 #include <vector>
 #include "sdf/Error.hh"
 #include "sdf/Element.hh"
@@ -180,6 +181,14 @@ namespace sdf
     // exists. This is a bit of safe code reduction.
 
     return errors;
+  }
+
+  template <typename T>
+  T *optionalToPointer(std::optional<T> &_shape)
+  {
+    if (_shape)
+      return &_shape.value();
+    return nullptr;
   }
   }
 }
