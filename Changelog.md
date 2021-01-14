@@ -23,14 +23,67 @@
 
 ### libsdformat 10.X.X (202X-XX-XX)
 
-### libsdformat 10.0.0 (202X-XX-XX)
+### libsdformat 10.1.0 (2020-12-15)
 
-1. Normalize joint axis xyz vector when parsing from SDFormat
+1. Fix supported shader types (`normal_map_X_space`)
+    * [Pull request 383](https://github.com/osrf/sdformat/pull/383)
+
+1. Prefix nested model names when flattening
+    * [Pull request 399](https://github.com/osrf/sdformat/pull/399)
+
+1. Move list of debian dependencies to packages.apt
+    * [Pull request 392](https://github.com/osrf/sdformat/pull/392)
+
+1. Remove custom element warning/error.
+    * [Pull request 402](https://github.com/osrf/sdformat/pull/402)
+
+1. Add Sky DOM.
+    * [Pull request 397](https://github.com/osrf/sdformat/pull/397)
+
+1. Add `<double_sided>` to material spec.
+    * [Pull request 410](https://github.com/osrf/sdformat/pull/410)
+
+1. Decrease far clip lower bound.
+    * [Pull request 437](https://github.com/osrf/sdformat/pull/437)
+
+1. Enable/disable tests for issue #202, add macOS workflow.
+    * [Pull request 414](https://github.com/osrf/sdformat/pull/414)
+    * [Pull request 438](https://github.com/osrf/sdformat/pull/438)
+    * [Issue 202](https://github.com/osrf/sdformat/issues/202)
+
+1. Make labeler work with PRs from forks.
+    * [Pull request 390](https://github.com/osrf/sdformat/pull/390)
+
+1. Test included model folder missing model.config
+    * [Pull request 422](https://github.com/osrf/sdformat/pull/422)
+
+1. Add lightmap to 1.7 spec and PBR material DOM
+    * [Pull request 429](https://github.com/osrf/sdformat/pull/429)
+
+### libsdformat 10.0.0 (2020-09-28)
+
+1. Return positive `INF` instead of `-1` in DOM API for unbounded symmetric joint limits.
+    * [Pull request 357](https://github.com/osrf/sdformat/pull/357)
+
+1. Add cmake option to disable console logfile.
+    * [Pull request 348](https://github.com/osrf/sdformat/pull/348)
+
+1. CMake fixes: include CMakePackageConfigHelpers and use modern cmake target for  ignition math.
+    * [Pull request 358](https://github.com/osrf/sdformat/pull/358)
+
+1. Cmake: add tinyxml2 to Config names.
+    * [Pull request 360](https://github.com/osrf/sdformat/pull/360)
+
+1. Define `PATH_MAX` for Debian Hurd system.
+    * [Pull request 369](https://github.com/osrf/sdformat/pull/369)
+
+1. Normalize joint axis xyz vector when parsing from SDFormat.
     * [Pull request 312](https://github.com/osrf/sdformat/pull/312)
 
 1. Migrate to using TinyXML2.
     * [Pull request 264](https://github.com/osrf/sdformat/pull/264)
     * [Pull request 321](https://github.com/osrf/sdformat/pull/321)
+    * [Pull request 359](https://github.com/osrf/sdformat/pull/359)
 
 1. Enforce minimum/maximum values specified in SDFormat description files.
     * [Pull request 303](https://github.com/osrf/sdformat/pull/303)
@@ -38,11 +91,14 @@
 1. Make parsing of values syntactically more strict with bad values generating an error.
     * [Pull request 244](https://github.com/osrf/sdformat/pull/244)
 
-1. Don't install deprecated parser_urdf.hh header file, fix cmake warning about newline file, fix cmake warning about newlines.
+1. Don't install deprecated parser\_urdf.hh header file, fix cmake warning about newline file, fix cmake warning about newlines.
     * [Pull request 276](https://github.com/osrf/sdformat/pull/276)
 
 1. Remove deprecated Pose(), PoseFrame() functions from DOM objects.
     * [Pull request 308](https://github.com/osrf/sdformat/pull/308)
+
+1. Remove deprecated UseParentModelFrame methods from JointAxis DOM.
+    * [Pull request 379](https://github.com/osrf/sdformat/pull/379)
 
 1. Changed the default radius of a Cylinder from 1.0 to 0.5 meters.
     * [BitBucket pull request 643](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/643)
@@ -52,6 +108,9 @@
 ### libsdformat 9.X.X (202X-XX-XX)
 
 ### SDFormat 9.3.0 (2020-XX-XX)
+
+1. Store material file path information.
+    + [Pull request 349](https://github.com/osrf/sdformat/pull/349)
 
 1. Support nested models in DOM and frame semantics.
     * [Pull request 316](https://github.com/osrf/sdformat/pull/316)
@@ -63,11 +122,18 @@
 1. Fix Actor copy operators and increase test coverage.
     * [Pull request 301](https://github.com/osrf/sdformat/pull/301)
 
+1. GitHub Actions CI, pull request labels.
+    * [Pull request 311](https://github.com/osrf/sdformat/pull/311)
+    * [Pull request 363](https://github.com/osrf/sdformat/pull/363)
+
 1. Change bitbucket links to GitHub.
     * [Pull request 240](https://github.com/osrf/sdformat/pull/240)
 
-1. Param_TEST: test parsing +Inf and -Inf.
+1. Param\_TEST: test parsing +Inf and -Inf.
     * [Pull request 277](https://github.com/osrf/sdformat/pull/277)
+
+1. SearchForStuff: add logic to find urdfdom without pkg-config.
+    * [Pull request 245](https://github.com/osrf/sdformat/pull/245)
 
 1. Observe the CMake variable `BUILD_TESTING` if it is defined.
     * [Pull request 269](https://github.com/osrf/sdformat/pull/269)
@@ -272,8 +338,20 @@
 
 ### libsdformat 8.X.X (202X-XX-XX)
 
+### SDFormat 8.9.0 (2020-09-04)
+
+1. Find python3 in cmake, fix warning
+    * [Pull request 328](https://github.com/osrf/sdformat/pull/328)
+
+1. Store material file path information
+    * [Pull request 349](https://github.com/osrf/sdformat/pull/349)
+
 1. Fix Actor copy operators and increase test coverage.
     * [Pull request 301](https://github.com/osrf/sdformat/pull/301)
+
+1. Migration to GitHub: CI, links...
+    * [Pull request 239](https://github.com/osrf/sdformat/pull/239)
+    * [Pull request 310](https://github.com/osrf/sdformat/pull/310)
 
 1. Increase output precision of URDF to SDF conversion, output -0 as 0.
     * [BitBucket pull request 675](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/675)

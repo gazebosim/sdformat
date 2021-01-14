@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <string>
 
+#include <ignition/utilities/ExtraTestMacros.hh>
+
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
@@ -57,7 +59,7 @@ std::string custom_exec_str(std::string _cmd)
 }
 
 /////////////////////////////////////////////////
-TEST(check, SDF)
+TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -833,7 +835,7 @@ TEST(check_shapes_sdf, SDF)
 }
 
 /////////////////////////////////////////////////
-TEST(check_model_sdf, SDF)
+TEST(check_model_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/integration/model/box";
@@ -859,7 +861,7 @@ TEST(check_model_sdf, SDF)
 }
 
 /////////////////////////////////////////////////
-TEST(describe, SDF)
+TEST(describe, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Get the description
   std::string output =
@@ -871,7 +873,7 @@ TEST(describe, SDF)
 }
 
 /////////////////////////////////////////////////
-TEST(print, SDF)
+TEST(print, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";

@@ -122,7 +122,10 @@ namespace sdf
                                     const std::string &file,
                                     unsigned int line, int color);
 
-    /// \brief Use this to output a message to a log file
+    /// \brief Use this to output a message to a log file at
+    /// `$HOME/.sdformat/sdformat.log`.
+    /// To disable this log file, define the following symbol when
+    /// compiling: SDFORMAT_DISABLE_CONSOLE_LOGFILE
     /// \return Reference to output stream
     public: ConsoleStream &Log(const std::string &lbl,
                                const std::string &file,

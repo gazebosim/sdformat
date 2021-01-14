@@ -88,6 +88,10 @@ but with improved human-readability..
    + const std::string &PoseFrame()
    + void SetPoseFrame(const std::string &)
 
+1. + Removed deprecated functions from **sdf/JointAxis.hh**:
+   + bool UseParentModelFrame()
+   + void SetUseParentModelFrame(bool)
+
 ### Additions
 
 1. **sdf/Element.hh**
@@ -334,6 +338,14 @@ but with improved human-readability..
     + default: ""
     + required: 0
     + [BitBucket pull request 589](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/589)
+
+1. **material.sdf** `//material/double_sided` element
+    + description: Flag to indicate whether the mesh that this material is applied to
+      will be rendered as double sided.
+    + type: bool
+    + default: false
+    + required: 0
+    + [pull request 418](https://github.com/osrf/sdformat/pull/418)
 
 1. **model.sdf** `//model/@canonical_link` attribute
     + description: The name of the canonical link in this model to which the
