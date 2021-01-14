@@ -27,6 +27,8 @@ class InterfaceModel::Implementation
   public: std::string canonicalLinkName;
   public: ignition::math::Pose3d poseInCanonicalLinkFrame;
   public: ignition::math::Pose3d poseInParentFrame;
+  public: std::vector<sdf::InterfaceFrame> frames;
+  public: std::vector<sdf::InterfaceLink> links;
 };
 
 InterfaceModel::InterfaceModel(const std::string &_name,
@@ -65,6 +67,30 @@ const ignition::math::Pose3d &
 InterfaceModel::ModelFramePoseInParentFrame() const
 {
   return this->dataPtr->poseInParentFrame;
+}
+
+/////////////////////////////////////////////////
+void InterfaceModel::AddFrame(sdf::InterfaceFrame frame)
+{
+  this->dataPtr->frames.push_back(std::move(frame));
+}
+
+/////////////////////////////////////////////////
+const std::vector<sdf::InterfaceFrame> &InterfaceModel::Frames() const
+{
+  return this->dataPtr->frames;
+}
+
+/////////////////////////////////////////////////
+void InterfaceModel::AddLink(sdf::InterfaceLink link)
+{
+  this->dataPtr->links.push_back(std::move(link));
+}
+
+/////////////////////////////////////////////////
+const std::vector<sdf::InterfaceLink> &InterfaceModel::Links() const
+{
+  return this->dataPtr->links;
 }
 }
 }

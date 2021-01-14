@@ -22,6 +22,7 @@
 #include <string>
 
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -30,27 +31,31 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
-// Forward declare private data class.
-class InterfaceFramePrivate;
-
-class InterfaceFrame
+class SDFORMAT_VISIBLE InterfaceFrame
 {
   /// Constructor
-  /// \param[in] name The *local* name.
+  /// \param[in] _name The *local* name.
+  /// \param[in] _attachedTo Name of the attached-to frame. Must be "__model__"
+  /// if attached to model. TODO (addisu) Can it be ""
   /// \param[in] _pose The pose of the frame relative to model frame.
-  public: InterfaceFrame(
-              const std::string &_name, const ignition::math::Pose3d &_pose);
+  public: InterfaceFrame(const std::string &_name,
+      const std::string &_attachedTo, const ignition::math::Pose3d &_pose);
 
   /// Get the name of the frame.
   /// \return Local name of the frame.
-  public: std::string Name() const;
+  public: const std::string &Name() const;
 
-  /// \brief Get the pose of this frame in the parent model frame.
-  /// \return The pose of this frame in the parent model frame.
-  public: ignition::math::Pose3d PoseInModelFrame() const;
+  /// \brief Get the name of the coordinate frame to which this frame is
+  /// attached.
+  /// \return The name of the attached-to frame.
+  public: const std::string &AttachedTo() const;
+
+  /// \brief Get the pose of this frame relative to the attached-to frame.
+  /// \return The pose of this frame in the attached-to frame.
+  public: const ignition::math::Pose3d &PoseInAttachedToFrame() const;
 
   /// \brief Private data pointer.
-  private: InterfaceFramePrivate *dataPtr;
+  IGN_UTILS_IMPL_PTR(dataPtr)
 };
 }
 }

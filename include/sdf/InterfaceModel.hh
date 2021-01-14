@@ -69,23 +69,31 @@ class SDFORMAT_VISIBLE InterfaceModel
   // canonical_link attribute is not set, this will return an empty string. We
   // need another function that resolves the canonical link.
   public: const std::string &CanonicalLinkName() const;
+
   public: const ignition::math::Pose3d &
           ModelFramePoseInCanonicalLinkFrame() const;
+
   public: const ignition::math::Pose3d &
           ModelFramePoseInParentFrame() const;
+
   // TODO: Why is this nested_model a shared_ptr?
   /// Provided so that hierarchy can still be leveraged from SDFormat.
   public: void AddNestedModel(sdf::InterfaceModelPtr nested_model);
+
   /// Gets registered nested models.
   public: const std::vector<sdf::InterfaceModelConstPtr> &NestedModels() const;
+
   /// Provided so that the including SDFormat model can still interface with
   /// the declared frames.
   public: void AddFrame(sdf::InterfaceFrame frame);
+
   /// Gets registered frames.
   public: const std::vector<sdf::InterfaceFrame> &Frames() const;
+
   /// Provided so that the including SDFormat model can still interface with
   /// the declared links.
   public: void AddLink(sdf::InterfaceLink link);
+
   /// Gets registered links.
   public: const std::vector<sdf::InterfaceLink> &Links() const;
 

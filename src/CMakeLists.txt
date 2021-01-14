@@ -35,6 +35,8 @@ set (sources
   ign.cc
   InterfaceElements.cc
   InterfaceElementsImpl.cc
+  InterfaceFrame.cc
+  InterfaceLink.cc
   InterfaceModel.cc
   Imu.cc
   Joint.cc

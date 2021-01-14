@@ -31,7 +31,7 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
-class InterfaceLink
+class SDFORMAT_VISIBLE InterfaceLink
 {
   /// Constructor
   /// \param[in] name The *local* name.

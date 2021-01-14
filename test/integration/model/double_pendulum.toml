@@ -23,3 +23,10 @@ type = "revolute"
 parent = "upper_link"
 child = "lower_link"
 type = "revolute"
+
+[frames.frame_1]
+pose = "0 1 0 0 0 0"
+
+[frames.frame_2]
+attached_to = "lower_link"
+pose = "0 0 1 0 0 0"

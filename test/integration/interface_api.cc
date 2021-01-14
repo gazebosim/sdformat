@@ -23,7 +23,6 @@
 
 #include "sdf/Filesystem.hh"
 #include "sdf/InterfaceElements.hh"
-#include "sdf/InterfaceLink.hh"
 #include "sdf/InterfaceModel.hh"
 #include "sdf/Model.hh"
 #include "sdf/Param.hh"
@@ -31,11 +30,7 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 
-// Debugging
-// #include "json.hpp"
-
 #include "test_config.h"
-
 
 namespace toml
 {
@@ -70,24 +65,28 @@ std::string keyType(const std::string &_key)
 struct Value
 {
   using KeyValue = std::map<std::string, Value>;
-  // using VariantType = std::variant<std::monostate, sdf::Param, KeyValue>;
   using VariantType = std::variant<KeyValue, sdf::Param>;
   VariantType data;
 
-  public: KeyValue *Map()
+  public: KeyValue &Map()
   {
-    return std::get_if<KeyValue>(&data);
+    return std::get<KeyValue>(this->data);
   }
 
-  public: sdf::Param *Param()
+  public: template <typename T> T ParamGet()
   {
-    return std::get_if<sdf::Param>(&data);
+    T out;
+    if (auto param = std::get_if<sdf::Param>(&this->data))
+    {
+      param->Get(out);
+    }
+    return out;
   }
 
   public: Value &operator[](const std::string &_key)
   {
     auto keys = sdf::split(_key, ".");
-    Value *curValue = &(this->Map()->operator[](keys[0]));
+    Value *curValue = &(this->Map()[keys[0]]);
 
     for (std::size_t i = 1; i < keys.size(); ++i)
     {
@@ -102,22 +101,6 @@ struct Value
     }
     return *curValue;
   }
-
-  // DEBUG
-  // using json = nlohmann::json;
-
-  // public: operator nlohmann::json() const
-  // {
-  //     if (auto param = std::get_if<sdf::Param>(&data))
-  //     {
-  //       return json(param->GetAsString());
-  //     }
-  //     else if (auto kval = std::get_if<Value::KeyValue>(&data))
-  //     {
-  //       return json(*kval);
-  //     }
-  //     return {};
-  // }
 
   public: void PrintValue(std::ostream &os, const std::string &_key) const
   {
@@ -143,8 +126,6 @@ struct Value
   friend std::ostream& operator<<(std::ostream& os, const Value &_value)
   {
     _value.PrintValue(os, "");
-    // nlohmann::json jmap(_doc);
-    // os << jmap.dump(2) << std::endl;
     return os;
   }
 };
@@ -214,7 +195,7 @@ Document parseToml(const std::string &_filePath, sdf::Errors &_errors)
         const std::string tableName = readTableName(line);
         if (tableName.empty())
         {
-          // ERROR
+          throw std::runtime_error("Empty table name encountered");
         }
         else
         {
@@ -237,37 +218,38 @@ sdf::InterfaceModelPtr customTomlParser(
   if (_errors.empty())
   {
     const std::string modelName = _include.localModelName.empty()
-        ? doc["name"].Param()->GetAsString()
+        ? doc["name"].ParamGet<std::string>()
         : _include.localModelName;
 
-    const std::string canonicalLink =
-        doc["canonical_link"].Param()->GetAsString();
+    const auto canonicalLink = doc["canonical_link"].ParamGet<std::string>();
 
     // Pose of model (M) in parent (P) frame
-    ignition::math::Pose3d X_PM;
-    doc["pose"].Param()->Get(X_PM);
+    const auto X_PM = doc["pose"].ParamGet<ignition::math::Pose3d>();
 
     // Pose of canonical link (C) in model (M) frame
-    ignition::math::Pose3d X_MC;
-    doc[toml::appendPrefix("links", canonicalLink, "pose")].Param()->Get(X_MC);
+    const auto X_MC = doc[toml::appendPrefix("links", canonicalLink, "pose")]
+                          .ParamGet<ignition::math::Pose3d>();
 
     auto model = std::make_shared<sdf::InterfaceModel>(
         modelName, canonicalLink, X_MC.Inverse(), X_PM);
-    for (auto &[name, link] : *doc["links"].Map())
+    for (auto &[name, link] : doc["links"].Map())
     {
-      ignition::math::Pose3d pose;
-      link["pose"].Param()->Get(pose);
-      // model->AddLink({name, pose});
+      const auto pose = link["pose"].ParamGet<ignition::math::Pose3d>();
+      model->AddLink({name, pose});
     }
-    for (auto &[name, joint] : *doc["joints"].Map())
+
+    for (auto &[name, frame] : doc["frames"].Map())
     {
-      ignition::math::Pose3d pose;
-      if (auto poseParam = joint["pose"].Param())
-        poseParam->Get(pose);
-      const std::string parent =
-          joint["parent"].Param()->GetAsString();
-      const std::string child =
-          joint["child"].Param()->GetAsString();
+      const auto attachedTo = frame["attached_to"].ParamGet<std::string>();
+      const auto pose = frame["pose"].ParamGet<ignition::math::Pose3d>();
+      model->AddFrame({name, attachedTo, pose});
+    }
+
+    for (auto &[name, joint] : doc["joints"].Map())
+    {
+      const auto pose = joint["pose"].ParamGet<ignition::math::Pose3d>();
+      const auto parent = joint["parent"].ParamGet<std::string>();
+      const auto child = joint["child"].ParamGet<std::string>();
       // model->AddJoint({name, pose, parent, child});
     }
     return model;
@@ -400,4 +382,29 @@ TEST(InterfaceAPI, IncludeTOMLFile)
       Pose3d(1, 0, 0, 0, 0, 0), interfaceModel->ModelFramePoseInParentFrame());
   EXPECT_EQ(Pose3d(-1, 0, -0.5, 0, 0, 0),
       interfaceModel->ModelFramePoseInCanonicalLinkFrame());
+
+  EXPECT_EQ(3u, interfaceModel->Links().size());
+  std::map <std::string, Pose3d> expLinks = {
+      {"base", Pose3d(1, 0, 0.5, 0, 0, 0)},
+      {"upper_link", Pose3d(0, 0, 2.1, -1.5708, 0, 0)},
+      {"lower_link", Pose3d(0.25, 1.0, 2.1, -2, 0, 0)},
+  };
+
+  for (const auto &link : interfaceModel->Links())
+  {
+    ASSERT_EQ(1u, expLinks.count(link.Name()));
+    EXPECT_EQ(expLinks[link.Name()], link.PoseInModelFrame());
+  }
+  std::map <std::string, std::pair<std::string, Pose3d>> expFrames = {
+      {"frame_1", {"", Pose3d(0, 1, 0.0, 0, 0, 0)}},
+      {"frame_2", {"lower_link", Pose3d(0, 0, 1, 0, 0, 0)}},
+  };
+
+  EXPECT_EQ(2u, interfaceModel->Frames().size());
+  for (const auto &frame : interfaceModel->Frames())
+  {
+    ASSERT_EQ(1u, expFrames.count(frame.Name()));
+    EXPECT_EQ(expFrames[frame.Name()].first, frame.AttachedTo());
+    EXPECT_EQ(expFrames[frame.Name()].second, frame.PoseInAttachedToFrame());
+  }
 }
