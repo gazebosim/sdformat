@@ -124,6 +124,14 @@ namespace sdf
     /// \param[in] _color Emissive color.
     public: void SetEmissive(const ignition::math::Color &_color) const;
 
+    /// \brief Get render order
+    /// \return Render order
+    public: float RenderOrder() const;
+
+    /// \brief Set render order
+    /// \param[in] _renderOrder render order
+    public: void SetRenderOrder(const float _renderOrder);
+
     /// \brief Get whether dynamic lighting is enabled. The default
     /// value is true.
     /// \return False if dynamic lighting should be disabled.
@@ -132,6 +140,15 @@ namespace sdf
     /// \brief Set whether dynamic lighting is enabled.
     /// \param[in] _lighting False disables dynamic lighting.
     public: void SetLighting(const bool _lighting);
+
+    /// \brief Get whether double sided material is enabled. The default
+    /// value is false.
+    /// \return False if double sided material should be disabled.
+    public: bool DoubleSided() const;
+
+    /// \brief Set whether double sided material is enabled.
+    /// \param[in] _lighting False disables double sided material.
+    public: void SetDoubleSided(bool _doubleSided);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
@@ -185,6 +202,14 @@ namespace sdf
     /// \brief Get the Physically Based Rendering (PBR) material
     /// \return Pointer to the PBR material. Null if it does not exist.
     public: Pbr *PbrMaterial() const;
+
+    /// \brief The path to the file where this element was loaded from.
+    /// \return Full path to the file on disk.
+    public: const std::string &FilePath() const;
+
+    /// \brief Set the path to the file where this element was loaded from.
+    /// \paramp[in] _filePath Full path to the file on disk.
+    public: void SetFilePath(const std::string &_filePath);
 
     /// \brief Private data pointer.
     private: MaterialPrivate *dataPtr = nullptr;

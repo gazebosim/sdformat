@@ -25,6 +25,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+/* PATH_MAX is undefined on GNU Hurd */
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 /////////////////////////////////////////////////
 bool create_and_switch_to_temp_dir(std::string &_new_temp_path)
 {

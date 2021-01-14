@@ -48,7 +48,7 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_Model)
   EXPECT_TRUE(errors.empty()) << errors;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
 
   auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
   sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
@@ -217,7 +217,7 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   EXPECT_TRUE(root.Load(testFile).empty());
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
 
   auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
   sdf::ScopedGraph<sdf::PoseRelativeToGraph> graph(ownedGraph);
@@ -313,7 +313,7 @@ TEST(NestedFrameSemantics, buildFrameAttachedToGraph_Model)
   EXPECT_TRUE(errors.empty()) << errors;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
 
   auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
   sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
@@ -592,7 +592,7 @@ TEST(NestedFrameSemantics, ModelWithoutLinksWithNestedStaticModel)
   auto errors = root.Load(testFile);
   EXPECT_TRUE(errors.empty()) << errors;
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   auto ownedModelGraph = std::make_shared<sdf::FrameAttachedToGraph>();

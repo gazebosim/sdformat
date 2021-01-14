@@ -15,6 +15,7 @@
  *
  */
 
+#include <limits>
 #include <string>
 #include <vector>
 #include <gtest/gtest.h>
@@ -42,7 +43,7 @@ TEST(DOMJointAxis, Complete)
   EXPECT_TRUE(errors.empty());
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   // The model should have nine joints.
@@ -132,7 +133,7 @@ TEST(DOMJointAxis, XyzExpressedIn)
   using Vector3 = ignition::math::Vector3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_joint_axis_expressed_in", model->Name());
   EXPECT_EQ(4u, model->LinkCount());
@@ -226,6 +227,72 @@ TEST(DOMJointAxis, XyzExpressedIn)
 }
 
 //////////////////////////////////////////////////
+TEST(DOMJointAxis, InfiniteLimits)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "joint_axis_infinite_limits.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+
+  EXPECT_TRUE(errors.empty());
+  for (auto e : errors)
+    std::cout << e << std::endl;
+
+  // Get the first model
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("joint_axis_infinite_limits", model->Name());
+
+  const double kInf = std::numeric_limits<double>::infinity();
+  {
+    auto joint = model->JointByName("default_joint_limits");
+    ASSERT_NE(nullptr, joint);
+    auto axis = joint->Axis(0);
+    ASSERT_NE(nullptr, axis);
+    EXPECT_DOUBLE_EQ(-1e16, axis->Lower());
+    EXPECT_DOUBLE_EQ(1e16, axis->Upper());
+    EXPECT_DOUBLE_EQ(kInf, axis->Effort());
+    EXPECT_DOUBLE_EQ(kInf, axis->MaxVelocity());
+  }
+
+  {
+    auto joint = model->JointByName("finite_joint_limits");
+    ASSERT_NE(nullptr, joint);
+    auto axis = joint->Axis(0);
+    ASSERT_NE(nullptr, axis);
+    EXPECT_DOUBLE_EQ(-1.5, axis->Lower());
+    EXPECT_DOUBLE_EQ(1.5, axis->Upper());
+    EXPECT_DOUBLE_EQ(2.5, axis->MaxVelocity());
+    EXPECT_DOUBLE_EQ(5.5, axis->Effort());
+  }
+
+  {
+    auto joint = model->JointByName("infinite_joint_limits_inf");
+    ASSERT_NE(nullptr, joint);
+    auto axis = joint->Axis(0);
+    ASSERT_NE(nullptr, axis);
+    EXPECT_DOUBLE_EQ(-kInf, axis->Lower());
+    EXPECT_DOUBLE_EQ(kInf, axis->Upper());
+    EXPECT_DOUBLE_EQ(kInf, axis->Effort());
+    EXPECT_DOUBLE_EQ(kInf, axis->MaxVelocity());
+  }
+
+  {
+    auto joint = model->JointByName("infinite_joint_limits_neg");
+    ASSERT_NE(nullptr, joint);
+    auto axis = joint->Axis(0);
+    ASSERT_NE(nullptr, axis);
+    EXPECT_DOUBLE_EQ(-kInf, axis->Lower());
+    EXPECT_DOUBLE_EQ(kInf, axis->Upper());
+    EXPECT_DOUBLE_EQ(kInf, axis->Effort());
+    EXPECT_DOUBLE_EQ(kInf, axis->MaxVelocity());
+  }
+}
+
+//////////////////////////////////////////////////
 TEST(DOMJointAxis, XyzNormalization)
 {
   const std::string testFile =
@@ -244,7 +311,7 @@ TEST(DOMJointAxis, XyzNormalization)
   using ignition::math::Vector3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   {

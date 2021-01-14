@@ -71,7 +71,7 @@ TEST(DOMVisual, DoublePendulum)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_TRUE(model != nullptr);
 
   const sdf::Link *baseLink = model->LinkByIndex(0);
@@ -104,7 +104,7 @@ TEST(DOMVisual, Material)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   const sdf::Link *link = model->LinkByIndex(0);
@@ -120,6 +120,9 @@ TEST(DOMVisual, Material)
   EXPECT_EQ(ignition::math::Color(0.2f, 0.5f, 0.1f, 1.0f), mat->Diffuse());
   EXPECT_EQ(ignition::math::Color(0.7f, 0.3f, 0.5f, 0.9f), mat->Specular());
   EXPECT_EQ(ignition::math::Color(1.0f, 0.0f, 0.2f, 1.0f), mat->Emissive());
+  EXPECT_FALSE(mat->Lighting());
+  EXPECT_TRUE(mat->DoubleSided());
+  EXPECT_FLOAT_EQ(5.1f, mat->RenderOrder());
   EXPECT_EQ(sdf::ShaderType::VERTEX, mat->Shader());
   EXPECT_EQ("myuri", mat->ScriptUri());
   EXPECT_EQ("myname", mat->ScriptName());
@@ -189,7 +192,7 @@ TEST(DOMVisual, Transparency)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   const sdf::Link *link = model->LinkByIndex(0);
@@ -215,7 +218,7 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_frame_relative_to_joint", model->Name());
   EXPECT_EQ(2u, model->LinkCount());
@@ -406,7 +409,7 @@ TEST(DOMVisual, VisibilityFlags)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   const sdf::Link *link = model->LinkByIndex(0);

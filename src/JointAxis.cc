@@ -25,6 +25,7 @@
 #include "sdf/JointAxis.hh"
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -229,17 +230,6 @@ sdf::Errors JointAxis::SetXyz(const ignition::math::Vector3d &_xyz)
 }
 
 /////////////////////////////////////////////////
-bool JointAxis::UseParentModelFrame() const
-{
-  return this->dataPtr->useParentModelFrame;
-}
-/////////////////////////////////////////////////
-void JointAxis::SetUseParentModelFrame(const bool _parentModelFrame)
-{
-  this->dataPtr->useParentModelFrame = _parentModelFrame;
-}
-
-/////////////////////////////////////////////////
 double JointAxis::Damping() const
 {
   return this->dataPtr->damping;
@@ -313,7 +303,7 @@ void JointAxis::SetUpper(const double _upper) const
 /////////////////////////////////////////////////
 double JointAxis::Effort() const
 {
-  return this->dataPtr->effort;
+  return infiniteIfNegative(this->dataPtr->effort);
 }
 
 /////////////////////////////////////////////////
@@ -325,7 +315,7 @@ void JointAxis::SetEffort(double _effort)
 /////////////////////////////////////////////////
 double JointAxis::MaxVelocity() const
 {
-  return this->dataPtr->maxVelocity;
+  return infiniteIfNegative(this->dataPtr->maxVelocity);
 }
 
 /////////////////////////////////////////////////

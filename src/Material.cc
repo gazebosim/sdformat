@@ -42,6 +42,9 @@ class sdf::MaterialPrivate
   /// \brief Lighting enabled?
   public: bool lighting = true;
 
+  /// \brief Double sided material
+  public: bool doubleSided = false;
+
   /// \brief Ambient color
   public: ignition::math::Color ambient {0, 0, 0, 1};
 
@@ -54,11 +57,17 @@ class sdf::MaterialPrivate
   /// \brief Emissive color
   public: ignition::math::Color emissive {0, 0, 0, 1};
 
+  /// \brief Render order
+  public: float renderOrder = 0;
+
   /// \brief Physically Based Rendering (PBR) properties
   public: std::unique_ptr<Pbr> pbr;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief The path to the file where this material was defined.
+  public: std::string filePath = "";
 };
 
 /////////////////////////////////////////////////
@@ -83,11 +92,14 @@ Material::Material(const Material &_material)
   this->dataPtr->shader = _material.dataPtr->shader;
   this->dataPtr->normalMap = _material.dataPtr->normalMap;
   this->dataPtr->lighting = _material.dataPtr->lighting;
+  this->dataPtr->renderOrder = _material.dataPtr->renderOrder;
+  this->dataPtr->doubleSided = _material.dataPtr->doubleSided;
   this->dataPtr->ambient = _material.dataPtr->ambient;
   this->dataPtr->diffuse = _material.dataPtr->diffuse;
   this->dataPtr->specular = _material.dataPtr->specular;
   this->dataPtr->emissive = _material.dataPtr->emissive;
   this->dataPtr->sdf = _material.dataPtr->sdf;
+  this->dataPtr->filePath = _material.dataPtr->filePath;
   if (_material.dataPtr->pbr)
     this->dataPtr->pbr = std::make_unique<Pbr>(*_material.dataPtr->pbr);
 }
@@ -117,6 +129,8 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
+
+  this->dataPtr->filePath = _sdf->FilePath();
 
   // Check that the provided SDF element is a <material>
   // This is an error that cannot be recovered, so return an error.
@@ -197,6 +211,9 @@ Errors Material::Load(sdf::ElementPtr _sdf)
     }
   }
 
+  this->dataPtr->renderOrder = _sdf->Get<float>("render_order",
+      this->dataPtr->renderOrder).first;
+
   this->dataPtr->ambient = _sdf->Get<ignition::math::Color>("ambient",
       this->dataPtr->ambient).first;
 
@@ -208,6 +225,12 @@ Errors Material::Load(sdf::ElementPtr _sdf)
 
   this->dataPtr->emissive = _sdf->Get<ignition::math::Color>("emissive",
       this->dataPtr->emissive).first;
+
+  this->dataPtr->lighting = _sdf->Get<bool>("lighting",
+      this->dataPtr->lighting).first;
+
+  this->dataPtr->doubleSided = _sdf->Get<bool>("double_sided",
+      this->dataPtr->doubleSided).first;
 
   // load pbr param
   if (_sdf->HasElement("pbr"))
@@ -269,6 +292,18 @@ void Material::SetEmissive(const ignition::math::Color &_color) const
 }
 
 //////////////////////////////////////////////////
+float Material::RenderOrder() const
+{
+  return this->dataPtr->renderOrder;
+}
+
+//////////////////////////////////////////////////
+void Material::SetRenderOrder(const float _renderOrder)
+{
+  this->dataPtr->renderOrder = _renderOrder;
+}
+
+//////////////////////////////////////////////////
 bool Material::Lighting() const
 {
   return this->dataPtr->lighting;
@@ -278,6 +313,18 @@ bool Material::Lighting() const
 void Material::SetLighting(const bool _lighting)
 {
   this->dataPtr->lighting = _lighting;
+}
+
+//////////////////////////////////////////////////
+bool Material::DoubleSided() const
+{
+  return this->dataPtr->doubleSided;
+}
+
+//////////////////////////////////////////////////
+void Material::SetDoubleSided(const bool _doubleSided)
+{
+  this->dataPtr->doubleSided = _doubleSided;
 }
 
 //////////////////////////////////////////////////
@@ -344,4 +391,16 @@ void Material::SetPbrMaterial(const Pbr &_pbr)
 Pbr *Material::PbrMaterial() const
 {
   return this->dataPtr->pbr.get();
+}
+
+//////////////////////////////////////////////////
+const std::string &Material::FilePath() const
+{
+  return this->dataPtr->filePath;
+}
+
+//////////////////////////////////////////////////
+void Material::SetFilePath(const std::string &_filePath)
+{
+  this->dataPtr->filePath = _filePath;
 }

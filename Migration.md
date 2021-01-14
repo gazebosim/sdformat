@@ -23,6 +23,13 @@ but with improved human-readability..
 1. **sdf/Model.hh**:
     + std::pair<const Link *, std::string> CanonicalLinkAndRelativeName() const;
 
+1. **sdf/Root.hh** sdf::Root elements can now only contain one of either Model,
+      Light or Actor since multiple items would conflict with overrides
+      specified in an <include> tag.
+    + const sdf::Model \*Model();
+    + const sdf::Light \*Light();
+    + const sdf::Actor \*Actor();
+
 ### Modifications
 
 1. **sdf/Model.hh**: the following methods now accept nested names relative to
@@ -35,6 +42,21 @@ but with improved human-readability..
     + bool FrameNameExists(const std::string &) const
     + bool JointNameExists(const std::string &) const
     + bool LinkNameExists(const std::string &) const
+
+### Deprecations
+
+1. **src/Root.hh**: The following methods have been deprecated in favor of the
+      new methods. For now the behavior is unchanged, but Root elements should
+      only contain one or none of Model/Light/Actor.
+    + const sdf::Model \*ModelByIndex();
+    + uint64_t ModelCount();
+    + bool ModelNameExists(const std::string &\_name) const;
+    + const sdf::Light \*LightByIndex();
+    + uint64_t LightCount();
+    + bool LightNameExists(const std::string &\_name) const;
+    + const sdf::Actor \*ActorByIndex();
+    + uint64_t ActorCount();
+    + bool ActorNameExists(const std::string &\_name) const;
 
 ## SDFormat 9.x to 10.0
 
@@ -63,6 +85,10 @@ but with improved human-readability..
    + void SetPose(const ignition::math::Pose3d &)
    + const std::string &PoseFrame()
    + void SetPoseFrame(const std::string &)
+
+1. + Removed deprecated functions from **sdf/JointAxis.hh**:
+   + bool UseParentModelFrame()
+   + void SetUseParentModelFrame(bool)
 
 ### Additions
 
@@ -269,10 +295,13 @@ but with improved human-readability..
 
 ### Additions
 
-1. **capsule.sdf** new shape type included in `//geometry`
-    + description: A shape consisting of a cylinder capped by hemispheres
+1. **capsule.sdf and ellipsoid.sdf** new shape types included in `//geometry`
+    + `capsule.sdf`: A shape consisting of a cylinder capped by hemispheres
       with parameters for the `radius` and `length` of cylindrical section.
+    + `ellipsoid.sdf`: A convex shape with up to three radii defining its
+      shape in of the form (x^2/a^2 + y^2/b^2 + z^2/c^2 = 1).
     * [Pull request 389](https://github.com/osrf/sdformat/pull/389)
+    * [Pull request 434](https://github.com/osrf/sdformat/pull/434)
 
 ### Modifications
 
@@ -305,6 +334,14 @@ but with improved human-readability..
     + default: ""
     + required: 0
     + [BitBucket pull request 589](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/589)
+
+1. **material.sdf** `//material/double_sided` element
+    + description: Flag to indicate whether the mesh that this material is applied to
+      will be rendered as double sided.
+    + type: bool
+    + default: false
+    + required: 0
+    + [pull request 418](https://github.com/osrf/sdformat/pull/418)
 
 1. **model.sdf** `//model/@canonical_link` attribute
     + description: The name of the canonical link in this model to which the

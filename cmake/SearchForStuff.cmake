@@ -31,7 +31,13 @@ if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
   pkg_check_modules(URDF urdfdom>=1.0)
 
   if (NOT URDF_FOUND)
-    if (NOT DEFINED USE_INTERNAL_URDF)
+    find_package(urdfdom)
+    if (urdfdom_FOUND)
+      set(URDF_INCLUDE_DIRS ${urdfdom_INCLUDE_DIRS})
+      # ${urdfdom_LIBRARIES} already contains absolute library filenames
+      set(URDF_LIBRARY_DIRS "")
+      set(URDF_LIBRARIES ${urdfdom_LIBRARIES})
+    elseif (NOT DEFINED USE_INTERNAL_URDF)
       message(STATUS "Couldn't find urdfdom >= 1.0, using internal copy")
       set(USE_INTERNAL_URDF true)
     else()
@@ -95,9 +101,16 @@ macro (check_gcc_visibility)
 endmacro()
 
 ########################################
+# Find ignition cmake2
+# Only for using the testing macros, not really
+# being use to configure the whole project
+find_package(ignition-cmake2 2.3 REQUIRED)
+set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
+
+########################################
 # Find ignition math
 # Set a variable for generating ProjectConfig.cmake
-find_package(ignition-math6 6.7 QUIET)
+find_package(ignition-math6 6.8 QUIET)
 if (NOT ignition-math6_FOUND)
   message(STATUS "Looking for ignition-math6-config.cmake - not found")
   BUILD_ERROR ("Missing: Ignition math (libignition-math6-dev)")
