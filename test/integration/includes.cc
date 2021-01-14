@@ -60,11 +60,11 @@ TEST(IncludesTest, Includes)
 
   ASSERT_NE(nullptr, root.Element());
   EXPECT_EQ(worldFile, root.Element()->FilePath());
-  EXPECT_EQ("1.6", root.Element()->OriginalVersion());
+  EXPECT_EQ("1.8", root.Element()->OriginalVersion());
 
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
-  EXPECT_EQ("1.6", world->Element()->OriginalVersion());
+  EXPECT_EQ("1.8", world->Element()->OriginalVersion());
 
   // Actors
   EXPECT_EQ(2u, world->ActorCount());
@@ -215,10 +215,10 @@ TEST(IncludesTest, Includes)
   EXPECT_EQ("test_model_with_file", model2->Name());
   EXPECT_FALSE(model2->Static());
   EXPECT_EQ(1u, model2->LinkCount());
-  ASSERT_FALSE(nullptr == model2->LinkByIndex(0));
-  ASSERT_FALSE(nullptr == model2->LinkByName("link"));
+  ASSERT_NE(nullptr, model2->LinkByIndex(0));
+  ASSERT_NE(nullptr, model2->LinkByName("link"));
   EXPECT_EQ(model2->LinkByName("link")->Name(), model2->LinkByIndex(0)->Name());
-  EXPECT_TRUE(nullptr == model2->LinkByIndex(1));
+  EXPECT_EQ(nullptr, model2->LinkByIndex(1));
   EXPECT_TRUE(model2->LinkNameExists("link"));
   EXPECT_FALSE(model2->LinkNameExists("coconut"));
   EXPECT_EQ("1.6", model2->Element()->OriginalVersion());
