@@ -15,11 +15,18 @@
  *
  */
 
-// Note: this is a direct copy from ignition::common, 
-// and can be removed when sdformat has common as a dependency 
+// Note: this is a direct copy from ignition::common,
+// and can be removed when sdformat has common as a dependency
 
 #ifndef SDF_TEST_ENV_HH
 #define SDF_TEST_ENV_HH
+
+#include <cstdlib>
+#include <string>
+
+#ifdef _WIN32
+#include "winbase.h"
+#endif
 
 namespace sdf
 {
