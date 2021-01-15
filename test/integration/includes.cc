@@ -34,9 +34,6 @@
 #include "sdf/World.hh"
 #include "test_config.h"
 
-const auto g_testPath = sdf::testing::TestFile();
-const auto g_modelsPath = sdf::testing::TestFile("integration", "model");
-
 /////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
 {
@@ -75,8 +72,8 @@ TEST(IncludesTest, Includes)
   const auto *actor = world->ActorByIndex(0);
   EXPECT_EQ("1.6", actor->Element()->OriginalVersion());
 
-  const auto actorFile = sdf::filesystem::append(g_modelsPath, "test_actor",
-      "model.sdf");
+  const auto actorFile = sdf::testing::TestFile(
+      "integration", "model", "test_actor", "model.sdf");
   EXPECT_EQ(actorFile, actor->FilePath());
 
   EXPECT_EQ("actor", actor->Name());
@@ -164,8 +161,8 @@ TEST(IncludesTest, Includes)
   EXPECT_FALSE(model->LinkNameExists("coconut"));
   EXPECT_EQ("1.6", model->Element()->OriginalVersion());
 
-  const auto modelFile = sdf::filesystem::append(g_modelsPath, "test_model",
-      "model.sdf");
+  const auto modelFile = sdf::testing::TestFile(
+      "integration", "model", "test_model", "model.sdf");
 
   const auto *link = model->LinkByName("link");
   ASSERT_NE(nullptr, link);
@@ -214,8 +211,7 @@ TEST(IncludesTest, Includes_15)
 {
   sdf::setFindCallback(findFileCb);
 
-  const auto worldFile =
-    sdf::filesystem::append(g_testPath, "sdf", "includes_1.5.sdf");
+  const auto worldFile = sdf::testing::TestFile("sdf", "includes_1.5.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(worldFile);
@@ -271,8 +267,7 @@ TEST(IncludesTest, Includes_15_convert)
 {
   sdf::setFindCallback(findFileCb);
 
-  const auto worldFile =
-    sdf::filesystem::append(g_testPath, "sdf", "includes_1.5.sdf");
+  const auto worldFile = sdf::testing::TestFile("sdf", "includes_1.5.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);

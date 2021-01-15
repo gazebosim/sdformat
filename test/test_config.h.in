@@ -27,46 +27,25 @@
 #define SDF_PROTOCOL_VERSION "${SDF_PROTOCOL_VERSION}"
 #define SDF_TMP_DIR "tmp-sdf/"
 
+#include "env.hh"
+
 #include <sdf/Filesystem.hh>
-
-/*
- * setenv/unstenv are not present in Windows. Define them to make the code
- * portable
- */
-#if (_MSC_VER >= 1400) // Visual Studio 2005
-#include <sstream>
-
-int setenv(const char * name, const char * value, int /*rewrite*/)
-{
-  std::stringstream sstr;
-  sstr << *name << '=' << value;
-  return _putenv(sstr.str().c_str());
-}
-
-void unsetenv(const char * name)
-{
-  std::stringstream sstr;
-  sstr << *name << '=';
-  _putenv(sstr.str().c_str());
-  return;
-}
-#endif
-
 namespace sdf
 {
   namespace testing
   {
-    /// \brief Method to retrive root directory of project source
+    /// \brief Method to retrieve root directory of project source
     ///
     /// This is used to get various test files
-    /// \param[inout] _dataDir Full path to the source directory
+    /// \param[inout] _sourceDir Full path to the source directory
     /// \return True if directory is set correctly, false otherwise
     bool ProjectSourcePath(std::string &_sourceDir)
     {
       // Bazel builds set TEST_SRCDIR
-      if(char* dataDir = std::getenv("TEST_SRCDIR"))
+      if(env("TEST_SRCDIR", _sourceDir))
       {
-        _sourceDir = sdf::filesystem::append(dataDir, "__main__/sdformat");
+        _sourceDir = sdf::filesystem::append(
+            _sourceDir, "__main__", "sdformat");
         return true;
       }
       else
@@ -79,56 +58,45 @@ namespace sdf
       return false;
     }
 
-    /// \brief Method to retrive temporary directory for test outputs
+    /// \brief Method to retrieve temporary directory for test outputs
     ///
     /// \param[inout] _tmpDir Full path to the temp directory
     /// \return True if directory is set correctly, false otherwise
     bool TestTmpPath(std::string &_tmpDir)
     {
       // Bazel builds set TEST_UNDECLARED_OUTPUTS_DIR
-      if (const char* tmpDir = std::getenv("TEST_UNDECLARED_OUTPUTS_DIR"))
+      if (env("TEST_UNDECLARED_OUTPUTS_DIR", _tmpDir))
       {
-        _tmpDir = tmpDir;
         return true;
-      }
-
-      // Otherwise use a temporary dir relative to home
-      if (char* homeDir = std::getenv("HOME"))
-      {
-        _tmpDir = sdf::filesystem::append(homeDir, SDF_TMP_DIR);
-        return true;
-      }
-
-      return false;
-    }
-
-    /// \brief Method to retrive temporary home directory for tests
-    ///
-    /// \param[inout] _homeDir Full path to the home directory
-    /// \return True if directory is set correctly, false otherwise
-    bool TestHomePath(std::string &_homeDir)
-    {
-#ifndef _WIN32
-      if (const char* tmpDir = std::getenv("TEST_UNDECLARED_OUTPUTS_DIR"))
-      {
-        _homeDir = tmpDir;
       }
       else
       {
-        _homeDir = PROJECT_BINARY_DIR;
+        _tmpDir = sdf::filesystem::append(PROJECT_BINARY_DIR, SDF_TMP_DIR);
+        return true;
       }
-      setenv("HOME", _homeDir.c_str(), 1);
-#else
-  std::string buildDir = PROJECT_BINARY_DIR;
-  for (int i = 0; i < buildDir.size(); ++i)
-  {
-    if (buildDir[i] == '/')
-      buildDir[i] = '\\';
-  }
-  _homeDir = "HOMEPATH=" + buildDir;
-  _putenv(_homeDir.c_str());
-#endif
-      return true;
+    }
+
+    /// \brief Method to retrieve temporary home directory for tests
+    ///
+    /// This will update the contents of the home directory path variable
+    /// (HOME on Linux/MacOS, HOMEPATH on Windows) to this newly-set
+    /// directory
+    /// This additionally sets the HOME and HOMEPATH environment variables
+    ///
+    /// \param[inout] _homeDir Full path to the home directory
+    /// \return True if directory is set correctly, false otherwise
+    bool TestSetHomePath(std::string &_homeDir)
+    {
+      if (env("TEST_UNDECLARED_OUTPUTS_DIR", _homeDir)) 
+      {
+        return true;
+      } 
+      else
+      {
+        _homeDir = PROJECT_BINARY_DIR;
+        // Set both for linux and windows
+        return setenv("HOME", _homeDir) && setenv("HOMEPATH", _homeDir);
+      }
     }
 
     /// \brief Retrieve a file from the project source directory

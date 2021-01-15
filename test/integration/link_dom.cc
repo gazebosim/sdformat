@@ -129,6 +129,7 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_EQ("", baseLink->PoseRelativeTo());
 
   const ignition::math::Inertiald inertial = baseLink->Inertial();
+  EXPECT_DOUBLE_EQ(100.0, inertial.MassMatrix().Mass());
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().X());
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().Y());
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().Z());
