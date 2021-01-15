@@ -10,40 +10,8 @@
 1. Add Heightmap class
     + [Pull request 388](https://github.com/osrf/sdformat/pull/388)
 
-1. Added render\_order to materisl
+1. Added `render_order` to material
     + [Pull request 446](https://github.com/osrf/sdformat/pull/446)
-
-1. Store material file path information.
-    + [Pull request 349](https://github.com/osrf/sdformat/pull/349)
-
-1. Support nested models in DOM and frame semantics.
-    * [Pull request 316](https://github.com/osrf/sdformat/pull/316)
-    + [Pull request 341](https://github.com/osrf/sdformat/pull/341)
-
-1. Find python3 in cmake, fix cmake warning.
-    * [Pull request 328](https://github.com/osrf/sdformat/pull/328)
-
-1. Fix Actor copy operators and increase test coverage.
-    * [Pull request 301](https://github.com/osrf/sdformat/pull/301)
-
-1. GitHub Actions CI, pull request labels.
-    * [Pull request 311](https://github.com/osrf/sdformat/pull/311)
-    * [Pull request 363](https://github.com/osrf/sdformat/pull/363)
-
-1. Param\_TEST: test parsing +Inf and -Inf.
-    * [Pull request 277](https://github.com/osrf/sdformat/pull/277)
-
-1. SearchForStuff: add logic to find urdfdom without pkg-config.
-    * [Pull request 245](https://github.com/osrf/sdformat/pull/245)
-
-1. Observe the CMake variable `BUILD_TESTING` if it is defined.
-    * [Pull request 269](https://github.com/osrf/sdformat/pull/269)
-
-1. Collision: don't load Surface without `<surface>`.
-    * [Pull request 268](https://github.com/osrf/sdformat/pull/268)
-
-1. Properly handle the requirement of C++17 at the CMake exported target level.
-    * [Pull request 251](https://github.com/osrf/sdformat/pull/251)
 
 ### libsdformat 10.1.0 (2020-12-15)
 
@@ -129,7 +97,7 @@
 
 ### libsdformat 9.X.X (202X-XX-XX)
 
-### SDFormat 9.3.0 (2020-XX-XX)
+### libsdformat 9.3.0 (2020-09-07)
 
 1. Store material file path information.
     + [Pull request 349](https://github.com/osrf/sdformat/pull/349)
@@ -360,7 +328,7 @@
 
 ### libsdformat 8.X.X (202X-XX-XX)
 
-### SDFormat 8.9.0 (2020-09-04)
+### libsdformat 8.9.0 (2020-09-04)
 
 1. Find python3 in cmake, fix warning
     * [Pull request 328](https://github.com/osrf/sdformat/pull/328)
