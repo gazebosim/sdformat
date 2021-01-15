@@ -29,7 +29,7 @@ TEST(DOMHeightmap, Construction)
   EXPECT_EQ(ignition::math::Vector3d(1, 1, 1), heightmap.Size());
   EXPECT_EQ(ignition::math::Vector3d::Zero, heightmap.Position());
   EXPECT_FALSE(heightmap.UseTerrainPaging());
-  EXPECT_EQ(2u, heightmap.Sampling());
+  EXPECT_EQ(1u, heightmap.Sampling());
   EXPECT_EQ(0u, heightmap.TextureCount());
   EXPECT_EQ(0u, heightmap.BlendCount());
   EXPECT_EQ(nullptr, heightmap.TextureByIndex(0u));
@@ -304,7 +304,7 @@ TEST(DOMHeightmap, Set)
   heightmap.SetUseTerrainPaging(true);
   EXPECT_TRUE(heightmap.UseTerrainPaging());
 
-  EXPECT_EQ(2u, heightmap.Sampling());
+  EXPECT_EQ(1u, heightmap.Sampling());
   heightmap.SetSampling(12u);
   EXPECT_EQ(12u, heightmap.Sampling());
 
