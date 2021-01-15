@@ -25,7 +25,7 @@
 #include <string>
 
 #ifdef _WIN32
-#include "winbase.h"
+#include <windows.h>
 #endif
 
 namespace sdf
