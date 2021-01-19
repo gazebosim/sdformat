@@ -677,7 +677,7 @@ int main(int argc, char **argv)
 {
   // temporarily set HOME
   std::string homeDir;
-  sdf::testing::TestHomePath(homeDir);
+  sdf::testing::TestSetHomePath(homeDir);
   sdf::Console::Clear();
 
   ::testing::InitGoogleTest(&argc, argv);

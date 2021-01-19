@@ -68,8 +68,9 @@ const std::string sdfString(
   "    </model>\n"
   "</sdf>");
 
-const auto getMemInfoPath = sdf::testing::SourceFile("tools", "get_mem_info.py");
-const auto pythonMeminfo("python3 " + getMemInfoPath);
+const std::string getMemInfoPath =
+  sdf::testing::SourceFile("tools", "get_mem_info.py");
+const std::string pythonMeminfo("python3 " + getMemInfoPath);
 
 int getMemoryUsage()
 {
