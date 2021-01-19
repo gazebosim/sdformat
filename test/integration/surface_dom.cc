@@ -39,7 +39,7 @@ TEST(DOMSurface, Shapes)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const auto model = root.ModelByIndex(0);
+  const auto model = root.Model();
   ASSERT_NE(nullptr, model);
 
   const auto link = model->LinkByIndex(0);

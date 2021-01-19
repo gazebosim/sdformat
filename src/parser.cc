@@ -82,10 +82,26 @@ bool readStringInternal(
     Errors &_errors);
 
 //////////////////////////////////////////////////
+/// \brief Internal helper for creating XMLDocuments
+///
+/// This creates an XMLDocument with whitespace collapse
+/// on, which is not default behavior in tinyxml2.
+/// This function is to consolidate locations it is used.
+///
+/// There is a performance impact associated with collapsing whitespace.
+///
+/// For more information on the behavior and performance implications,
+/// consult the TinyXML2 documentation: https://leethomason.github.io/tinyxml2/
+inline auto makeSdfDoc()
+{
+  return tinyxml2::XMLDocument(true, tinyxml2::COLLAPSE_WHITESPACE);
+}
+
+//////////////////////////////////////////////////
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
   {
     sdferr << "Unable to load file["
@@ -100,7 +116,7 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 bool init(SDFPtr _sdf)
 {
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(xmldata.c_str());
   return initDoc(&xmlDoc, _sdf);
 }
@@ -111,7 +127,7 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
-    tinyxml2::XMLDocument xmlDoc;
+    auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
     return initDoc(&xmlDoc, _sdf);
   }
@@ -124,7 +140,7 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
-    tinyxml2::XMLDocument xmlDoc;
+    auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
     return initDoc(&xmlDoc, _sdf);
   }
@@ -134,7 +150,7 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool initString(const std::string &_xmlString, SDFPtr _sdf)
 {
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   if (xmlDoc.Parse(_xmlString.c_str()))
   {
     sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorStr() << '\n';
@@ -393,7 +409,7 @@ bool readFileWithoutConversion(
 bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
       const bool _convert, Errors &_errors)
 {
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   std::string filename = sdf::findFile(_filename, true, true);
 
   if (filename.empty())
@@ -429,7 +445,7 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
   else if (URDF2SDF::IsURDF(filename))
   {
     URDF2SDF u2g;
-    tinyxml2::XMLDocument doc;
+    auto doc = makeSdfDoc();
     u2g.InitModelFile(filename, &doc);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
@@ -476,7 +492,7 @@ bool readStringWithoutConversion(
 bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
     const bool _convert, Errors &_errors)
 {
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
@@ -490,7 +506,7 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   else
   {
     URDF2SDF u2g;
-    tinyxml2::XMLDocument doc;
+    auto doc = makeSdfDoc();
     u2g.InitModelString(_xmlString, &doc);
 
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
@@ -524,7 +540,7 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 {
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
@@ -761,7 +777,8 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     if (!sdf::filesystem::exists(configFilePath))
     {
       // We didn't find manifest.xml either, output an error and get out.
-      sdferr << "Could not find model.config or manifest.xml for the model\n";
+      sdferr << "Could not find model.config or manifest.xml in ["
+             << _modelDirPath << "]\n";
       return std::string();
     }
     else
@@ -773,7 +790,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     }
   }
 
-  tinyxml2::XMLDocument configFileDoc;
+  auto configFileDoc = makeSdfDoc();
   if (tinyxml2::XML_SUCCESS != configFileDoc.LoadFile(configFilePath.c_str()))
   {
     sdferr << "Error parsing XML in file ["
@@ -863,7 +880,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
   {
     // Avoid printing a warning message for missing attributes if a namespaced
     // attribute is found
-    if (std::strchr(attribute->Name(), ':') != NULL)
+    if (std::strchr(attribute->Name(), ':') != nullptr)
     {
       _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
       _sdf->GetAttribute(attribute->Name())->SetFromString(
@@ -961,16 +978,28 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
           }
           else
           {
-            if (!sdf::filesystem::is_directory(modelPath))
+            if (sdf::filesystem::is_directory(modelPath))
             {
-              _errors.push_back({ErrorCode::DIRECTORY_NONEXISTANT,
-                  "Directory doesn't exist[" + modelPath + "]"});
-              continue;
+              // Get the model.config filename
+              filename = getModelFilePath(modelPath);
+
+              if (filename.empty())
+              {
+                _errors.push_back({ErrorCode::URI_LOOKUP,
+                    "Unable to resolve uri[" + uri + "] to model path [" +
+                    modelPath + "] since it does not contain a model.config " +
+                    "file."});
+                continue;
+              }
+            }
+            else
+            {
+              // This is a file path and since sdf::findFile returns an empty
+              // string if the file doesn't exist, we don't have to check for
+              // existence again here.
+              filename = modelPath;
             }
           }
-
-          // Get the config.xml filename
-          filename = getModelFilePath(modelPath);
         }
         else
         {
@@ -1161,7 +1190,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
         }
       }
 
-      if (descCounter == _sdf->GetElementDescriptionCount())
+      if (descCounter == _sdf->GetElementDescriptionCount()
+            && std::strchr(elemXml->Value(), ':') == nullptr)
       {
         sdfdbg << "XML Element[" << elemXml->Value()
                << "], child of element[" << _xml->Value()
@@ -1282,7 +1312,7 @@ bool convertFile(const std::string &_filename, const std::string &_version,
     return false;
   }
 
-  tinyxml2::XMLDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   if (!xmlDoc.LoadFile(filename.c_str()))
   {
     // read initial sdf version
@@ -1393,10 +1423,9 @@ bool checkCanonicalLinkNames(const sdf::Root *_root)
     return modelResult;
   };
 
-  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  if (_root->Model())
   {
-    auto model = _root->ModelByIndex(m);
-    result = checkModelCanonicalLinkName(model) && result;
+    result = checkModelCanonicalLinkName(_root->Model()) && result;
   }
 
   for (uint64_t w = 0; w < _root->WorldCount(); ++w)
@@ -1530,10 +1559,9 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
     return worldResult;
   };
 
-  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  if (_root->Model())
   {
-    auto model = _root->ModelByIndex(m);
-    result = checkModelFrameAttachedToNames(model) && result;
+    result = checkModelFrameAttachedToNames(_root->Model()) && result;
   }
 
   for (uint64_t w = 0; w < _root->WorldCount(); ++w)
@@ -1668,10 +1696,9 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root)
     return worldResult;
   };
 
-  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  if (_root->Model())
   {
-    auto model = _root->ModelByIndex(m);
-    result = checkModelFrameAttachedToGraph(model) && result;
+    result = checkModelFrameAttachedToGraph(_root->Model()) && result;
   }
 
   for (uint64_t w = 0; w < _root->WorldCount(); ++w)
@@ -1751,10 +1778,9 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
     return worldResult;
   };
 
-  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  if (_root->Model())
   {
-    auto model = _root->ModelByIndex(m);
-    result = checkModelPoseRelativeToGraph(model) && result;
+    result = checkModelPoseRelativeToGraph(_root->Model()) && result;
   }
 
   for (uint64_t w = 0; w < _root->WorldCount(); ++w)
@@ -1879,10 +1905,9 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
     return modelResult;
   };
 
-  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  if (_root->Model())
   {
-    auto model = _root->ModelByIndex(m);
-    result = checkModelJointParentChildNames(model) && result;
+    result = checkModelJointParentChildNames(_root->Model()) && result;
   }
 
   for (uint64_t w = 0; w < _root->WorldCount(); ++w)

@@ -1106,7 +1106,7 @@ TEST(NestedReference, PoseRelativeTo)
 
   using Pose = ignition::math::Pose3d;
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   auto parentSemPose = model->SemanticPose();
@@ -1229,7 +1229,7 @@ TEST(NestedReference, PlacementFrameAttribute)
   sdf::Errors errors = root.Load(testFile);
   EXPECT_TRUE(errors.empty()) << errors;
 
-  auto *model = root.ModelByIndex(0);
+  auto *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   ignition::math::Pose3d pose;
@@ -1325,7 +1325,7 @@ TEST(NestedReference, PlacementFrameElement)
     sdf::Errors errors = root.LoadSdfString(stream.str());
     EXPECT_TRUE(errors.empty()) << errors;
 
-    auto *parentModel = root.ModelByIndex(0);
+    auto *parentModel = root.Model();
     ASSERT_NE(nullptr, parentModel);
     auto *model = parentModel->ModelByIndex(0);
     ASSERT_NE(nullptr, model);
@@ -1356,7 +1356,7 @@ TEST(NestedReference, PlacementFrameElement)
     sdf::Errors errors = root.LoadSdfString(stream.str());
     EXPECT_TRUE(errors.empty()) << errors;
 
-    auto *parentModel = root.ModelByIndex(0);
+    auto *parentModel = root.Model();
     ASSERT_NE(nullptr, parentModel);
     auto *model = parentModel ->ModelByIndex(0);
     ASSERT_NE(nullptr, model);

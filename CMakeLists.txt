@@ -81,6 +81,8 @@ set(sdf_import_target_name ${PROJECT_EXPORT_NAME}::${sdf_target})
 set(sdf_target_output_filename "${sdf_target}-targets.cmake")
 
 
+OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" OFF)
+
 if (USE_FULL_RPATH)
   # use, i.e. don't skip the full RPATH for the build tree
   set(CMAKE_SKIP_BUILD_RPATH  FALSE)
