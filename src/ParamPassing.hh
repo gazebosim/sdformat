@@ -44,14 +44,14 @@ namespace sdf
     /// \param[in] _elemName The element name, such as "model", "link",
     /// "collision", "visual".
     /// \param[in] _elemId The element identifier
-    /// \param[in] _isParentElement if _elemId is the parent. Is true and only
-    /// used for the add action
+    /// \param[in] _isParentElement Is true if _elemId is the parent. Is true
+    /// and only used for the add action
     /// \return ElementPtr to the specified element, nullptr if element could
     /// not found
     ElementPtr getElementById(const SDFPtr _sdf,
                               const std::string &_elemName,
                               const std::string &_elemId,
-                              const bool &_isParentElement = false);
+                              const bool _isParentElement = false);
 
     /// \brief Finds the last index of a matching substring in _elemId from _ref
     /// \param[in] _elemId The element identifier

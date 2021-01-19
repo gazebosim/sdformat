@@ -68,7 +68,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
         tinyxml2::XMLPrinter printer;
         childElemXml->Accept(&printer);
 
-        _errors.push_back({ErrorCode::DUPLICATE_ELEMENT,
+        _errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Could not add element <" + std::string(childElemXml->Name())
           + " element_id='" + childElemXml->Attribute("element_id")
           + "'> because element already exists in included model. "
@@ -78,10 +78,11 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
         continue;
       }
 
-      size_t found = elemIdAttr.find_last_of("::");
+      size_t found = elemIdAttr.rfind("::");
       if (found != std::string::npos)
       {
-        elemIdAttr = elemIdAttr.substr(found+1);  // +1 past last colon
+        // +2 past double colons
+        elemIdAttr = elemIdAttr.substr(found+2);
 
         // TODO(jenn) add test for this (e.g., elemChildId='test::')
         if (elemIdAttr.empty())
@@ -98,10 +99,12 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
       }
       else
       {
-        // get parent element of childElemId.substr(found+1)
+        // get parent element of childElemId.substr(found+2)
         elem = getElementById(_includeSDF, "",
-                              std::string(childElemId).substr(0, found-1),
+                              std::string(childElemId).substr(0, found),
                               true);
+
+        // TODO(jenn) add error case for DUPLICATE_ELEMENT
       }
     }
 
@@ -126,7 +129,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
 ElementPtr getElementById(const SDFPtr _sdf,
                           const std::string &_elemName,
                           const std::string &_elemId,
-                          const bool &_isParentElement)
+                          const bool _isParentElement)
 {
   // child element of includeSDF
   ElementPtr childElem = _sdf->Root()->GetFirstElement()->GetFirstElement();
@@ -174,9 +177,12 @@ ElementPtr getElementById(const SDFPtr _sdf,
       matchingChild = nullptr;
       startIdx = longestIdx;
 
-      size_t found = _elemId.substr(startIdx).find_first_of(":");
-      if (found != std::string::npos && (int64_t)found == 1)
-        startIdx += 3;  // past "::"
+      size_t found = _elemId.substr(startIdx).find("::");
+      if (found != std::string::npos && found == 1u)
+      {
+        // past double colons
+        startIdx += 3;
+      }
     }
   }
 
