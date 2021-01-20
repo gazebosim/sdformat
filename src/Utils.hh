@@ -183,11 +183,26 @@ namespace sdf
     return errors;
   }
 
+  /// \brief Convenience function that returns a pointer to the value contained
+  /// in a std::optional.
+  /// \tparam T type of object contained in the std::optional
+  /// \param[in] _opt Input optional object.
+  /// \return A pointer to the value contained in the optional. A nullptr is
+  /// returned if the optional does not contain a value.
   template <typename T>
-  T *optionalToPointer(std::optional<T> &_shape)
+  T *optionalToPointer(std::optional<T> &_opt)
   {
-    if (_shape)
-      return &_shape.value();
+    if (_opt)
+      return &_opt.value();
+    return nullptr;
+  }
+
+  /// \brief const overload of optionalToPointer(std::optional<T> &_opt)
+  template <typename T>
+  const T *optionalToPointer(const std::optional<T> &_opt)
+  {
+    if (_opt)
+      return &_opt.value();
     return nullptr;
   }
   }
