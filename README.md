@@ -29,7 +29,7 @@ The Source Installation instructions should be used if you need the very latest 
 
 ### Ubuntu
 
-On Ubuntu systems, `apt-get` can be used to install `ignition-tools`:
+On Ubuntu systems, `apt-get` can be used to install `sdformat`:
 ```
 sudo apt install libsdformat<#>-dev libsdformat<#>
 ```
@@ -102,7 +102,7 @@ Install prerequisites:
 conda install urdfdom --channel conda-forge
 ```
 
-Install Ignition dependencies:
+Install Ignition dependencies (optional):
 ```
 conda install libignition-tools1 --channel conda-forge
 ```
