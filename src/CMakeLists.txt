@@ -36,6 +36,7 @@ set (sources
   InterfaceElements.cc
   InterfaceElementsImpl.cc
   InterfaceFrame.cc
+  InterfaceJoint.cc
   InterfaceLink.cc
   InterfaceModel.cc
   Imu.cc

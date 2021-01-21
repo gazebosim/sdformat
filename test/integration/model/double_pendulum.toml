@@ -18,11 +18,13 @@ pose = "0.25 1.0 2.1 -2 0 0"
 parent = "base"
 child = "upper_link"
 type = "revolute"
+pose = "0.001 0.0 0.0 0 0 0"
 
 [joints.lower_joint]
 parent = "upper_link"
 child = "lower_link"
 type = "revolute"
+pose = "0.0 0.001 0.0 0 0 0"
 
 [frames.frame_1]
 pose = "0 1 0 0 0 0"

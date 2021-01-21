@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Open Source Robotics Foundation
+ * Copyright (C) 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -248,9 +248,8 @@ sdf::InterfaceModelPtr customTomlParser(
     for (auto &[name, joint] : doc["joints"].Map())
     {
       const auto pose = joint["pose"].ParamGet<ignition::math::Pose3d>();
-      const auto parent = joint["parent"].ParamGet<std::string>();
       const auto child = joint["child"].ParamGet<std::string>();
-      // model->AddJoint({name, pose, parent, child});
+      model->AddJoint({name, child, pose});
     }
     return model;
   }
@@ -406,5 +405,17 @@ TEST(InterfaceAPI, IncludeTOMLFile)
     ASSERT_EQ(1u, expFrames.count(frame.Name()));
     EXPECT_EQ(expFrames[frame.Name()].first, frame.AttachedTo());
     EXPECT_EQ(expFrames[frame.Name()].second, frame.PoseInAttachedToFrame());
+  }
+
+  std::map <std::string, std::pair<std::string, Pose3d>> expJoints = {
+      {"upper_joint", {"upper_link", Pose3d(0.001, 0, 0, 0, 0, 0)}},
+      {"lower_joint", {"lower_link", Pose3d(0, 0.001, 0, 0, 0, 0)}},
+  };
+  EXPECT_EQ(2u, interfaceModel->Joints().size());
+  for (const auto &joint : interfaceModel->Joints())
+  {
+    ASSERT_EQ(1u, expJoints.count(joint.Name()));
+    EXPECT_EQ(expJoints[joint.Name()].first, joint.ChildName());
+    EXPECT_EQ(expJoints[joint.Name()].second, joint.PoseInChildFrame());
   }
 }

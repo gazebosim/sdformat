@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef SDF_INTERFACE_FRAME_HH_
-#define SDF_INTERFACE_FRAME_HH_
+#ifndef SDF_INTERFACE_JOINT_HH_
+#define SDF_INTERFACE_JOINT_HH_
 
 #include <string>
 
@@ -30,28 +30,26 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
-class SDFORMAT_VISIBLE InterfaceFrame
+class SDFORMAT_VISIBLE InterfaceJoint
 {
   /// Constructor
-  /// \param[in] _name The *local* name.
-  /// \param[in] _attachedTo Name of the attached-to frame. Must be "__model__"
-  /// if attached to model. TODO (addisu) Can it be ""
-  /// \param[in] _pose The pose of the frame relative to the attached-to frame.
-  public: InterfaceFrame(const std::string &_name,
-      const std::string &_attachedTo, const ignition::math::Pose3d &_pose);
+  /// \param[in] name The *local* name.
+  /// \param[in] _childName Name of the child link or frame.
+  /// \param[in] _pose The pose of the joint relative to the child frame.
+  public: InterfaceJoint(const std::string &_name,
+      const std::string &_childName, const ignition::math::Pose3d &_pose);
 
-  /// Get the name of the frame.
-  /// \return Local name of the frame.
+  /// \brief Get the name of the joint.
+  /// \return Local name of the joint.
   public: const std::string &Name() const;
 
-  /// \brief Get the name of the coordinate frame to which this frame is
-  /// attached.
-  /// \return The name of the attached-to frame.
-  public: const std::string &AttachedTo() const;
+  /// \brief Get the name of the joint's child.
+  /// \return The name of the joint's child link or frame.
+  public: const std::string &ChildName() const;
 
-  /// \brief Get the pose of this frame relative to the attached-to frame.
-  /// \return The pose of this frame in the attached-to frame.
-  public: const ignition::math::Pose3d &PoseInAttachedToFrame() const;
+  /// \brief Get the pose of this joint in the child frame.
+  /// \return The pose of this joint in the child frame.
+  public: const ignition::math::Pose3d &PoseInChildFrame() const;
 
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)

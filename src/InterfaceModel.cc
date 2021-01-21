@@ -28,6 +28,7 @@ class InterfaceModel::Implementation
   public: ignition::math::Pose3d poseInCanonicalLinkFrame;
   public: ignition::math::Pose3d poseInParentFrame;
   public: std::vector<sdf::InterfaceFrame> frames;
+  public: std::vector<sdf::InterfaceJoint> joints;
   public: std::vector<sdf::InterfaceLink> links;
 };
 
@@ -70,9 +71,9 @@ InterfaceModel::ModelFramePoseInParentFrame() const
 }
 
 /////////////////////////////////////////////////
-void InterfaceModel::AddFrame(sdf::InterfaceFrame frame)
+void InterfaceModel::AddFrame(sdf::InterfaceFrame _frame)
 {
-  this->dataPtr->frames.push_back(std::move(frame));
+  this->dataPtr->frames.push_back(std::move(_frame));
 }
 
 /////////////////////////////////////////////////
@@ -82,9 +83,21 @@ const std::vector<sdf::InterfaceFrame> &InterfaceModel::Frames() const
 }
 
 /////////////////////////////////////////////////
-void InterfaceModel::AddLink(sdf::InterfaceLink link)
+void InterfaceModel::AddJoint(sdf::InterfaceJoint _joint)
 {
-  this->dataPtr->links.push_back(std::move(link));
+  this->dataPtr->joints.push_back(std::move(_joint));
+}
+
+/////////////////////////////////////////////////
+const std::vector<sdf::InterfaceJoint> &InterfaceModel::Joints() const
+{
+  return this->dataPtr->joints;
+}
+
+/////////////////////////////////////////////////
+void InterfaceModel::AddLink(sdf::InterfaceLink _link)
+{
+  this->dataPtr->links.push_back(std::move(_link));
 }
 
 /////////////////////////////////////////////////

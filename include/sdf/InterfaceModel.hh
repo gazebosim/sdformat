@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Open Source Robotics Foundation
+ * Copyright 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 #include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/InterfaceFrame.hh"
+#include "sdf/InterfaceJoint.hh"
 #include "sdf/InterfaceLink.hh"
 
 #include "sdf/sdf_config.h"
@@ -78,21 +79,28 @@ class SDFORMAT_VISIBLE InterfaceModel
 
   // TODO: Why is this nested_model a shared_ptr?
   /// Provided so that hierarchy can still be leveraged from SDFormat.
-  public: void AddNestedModel(sdf::InterfaceModelPtr nested_model);
+  public: void AddNestedModel(sdf::InterfaceModelPtr _nestedModel);
 
   /// Gets registered nested models.
   public: const std::vector<sdf::InterfaceModelConstPtr> &NestedModels() const;
 
   /// Provided so that the including SDFormat model can still interface with
   /// the declared frames.
-  public: void AddFrame(sdf::InterfaceFrame frame);
+  public: void AddFrame(sdf::InterfaceFrame _frame);
 
   /// Gets registered frames.
   public: const std::vector<sdf::InterfaceFrame> &Frames() const;
 
   /// Provided so that the including SDFormat model can still interface with
+  /// the declared joints.
+  public: void AddJoint(sdf::InterfaceJoint _joint);
+
+  /// Gets registered joints.
+  public: const std::vector<sdf::InterfaceJoint> &Joints() const;
+
+  /// Provided so that the including SDFormat model can still interface with
   /// the declared links.
-  public: void AddLink(sdf::InterfaceLink link);
+  public: void AddLink(sdf::InterfaceLink _link);
 
   /// Gets registered links.
   public: const std::vector<sdf::InterfaceLink> &Links() const;
