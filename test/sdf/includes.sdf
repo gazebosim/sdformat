@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.6">
+<sdf version="1.8">
   <world name="default">
 
     <include>
@@ -12,6 +12,11 @@
       <pose>1 2 3 0 0 0</pose>
       <static>true</static>
       <plugin name="plugin_name" filename="file.so"/>
+    </include>
+
+    <include>
+      <uri>test_model/model.sdf</uri>
+      <name>test_model_with_file</name>
     </include>
 
     <include>
