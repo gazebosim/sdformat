@@ -50,6 +50,8 @@ namespace sdf
       std::string v;
       bool valid = false;
 #ifdef _WIN32
+      // Unused on Windows, suppress warning
+      (void) _allowEmpty;
       const DWORD buffSize = 32767;
       static char buffer[buffSize];
       if (GetEnvironmentVariable(_name.c_str(), buffer, buffSize))
