@@ -17,6 +17,7 @@
 #ifndef SDF_GEOMETRY_HH_
 #define SDF_GEOMETRY_HH_
 
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -28,7 +29,6 @@ namespace sdf
   //
 
   // Forward declare private data class.
-  class GeometryPrivate;
   class Box;
   class Capsule;
   class Cylinder;
@@ -78,27 +78,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Geometry();
-
-    /// \brief Copy constructor
-    /// \param[in] _geometry Geometry to copy.
-    public: Geometry(const Geometry &_geometry);
-
-    /// \brief Move constructor
-    /// \param[in] _geometry Geometry to move.
-    public: Geometry(Geometry &&_geometry) noexcept;
-
-    /// \brief Destructor
-    public: virtual ~Geometry();
-
-    /// \brief Assignment operator.
-    /// \param[in] _geometry The geometry to set values from.
-    /// \return *this
-    public: Geometry &operator=(const Geometry &_geometry);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _geometry The geometry to move from.
-    /// \return *this
-    public: Geometry &operator=(Geometry &&_geometry);
 
     /// \brief Load the geometry based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -211,7 +190,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    private: GeometryPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

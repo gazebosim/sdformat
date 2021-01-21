@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
@@ -40,7 +41,6 @@ namespace sdf
   class Imu;
   class Lidar;
   class Magnetometer;
-  class SensorPrivate;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
 
@@ -120,17 +120,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Sensor();
-
-    /// \brief Copy constructor
-    /// \param[in] _sensor Sensor to copy.
-    public: Sensor(const Sensor &_sensor);
-
-    /// \brief Move constructor
-    /// \param[in] _sensor Sensor to move.
-    public: Sensor(Sensor &&_sensor) noexcept;
-
-    /// \brief Destructor
-    public: ~Sensor();
 
     /// \brief Load the sensor based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -224,16 +213,6 @@ namespace sdf
     /// If left unspecified (0.0), the sensor will generate data every cycle.
     /// \param[in] _rate The update rate in Hz.
     public: void SetUpdateRate(double _hz);
-
-    /// \brief Assignment operator.
-    /// \param[in] _sensor The sensor to set values from.
-    /// \return *this
-    public: Sensor &operator=(const Sensor &_sensor);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _sensor The sensor to set values from.
-    /// \return *this
-    public: Sensor &operator=(Sensor &&_sensor);
 
     /// \brief Return true if both Sensor objects contain the same values.
     /// \param[_in] _sensor Sensor object to compare.
@@ -342,7 +321,7 @@ namespace sdf
     friend class Link;
 
     /// \brief Private data pointer.
-    private: SensorPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

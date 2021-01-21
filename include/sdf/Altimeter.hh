@@ -17,18 +17,17 @@
 #ifndef SDF_ALTIMETER_HH_
 #define SDF_ALTIMETER_HH_
 
+#include <ignition/utils/ImplPtr.hh>
+
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
 #include <sdf/sdf_config.h>
 
-#include <ignition/utils/ImplPtr.hh>
-
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-
   /// \brief Altimeter contains information about an altimeter sensor.
   /// This sensor can be attached to a link.
   class SDFORMAT_VISIBLE Altimeter

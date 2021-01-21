@@ -28,7 +28,7 @@
 
 using namespace sdf;
 
-class sdf::CollisionPrivate
+class sdf::Collision::Implementation
 {
   /// \brief Name of the collision.
   public: std::string name = "";
@@ -43,7 +43,7 @@ class sdf::CollisionPrivate
   public: Geometry geom;
 
   /// \brief The collision's surface parameters.
-  public: Surface surface;
+  public: sdf::Surface surface;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -57,40 +57,8 @@ class sdf::CollisionPrivate
 
 /////////////////////////////////////////////////
 Collision::Collision()
-  : dataPtr(new CollisionPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Collision::~Collision()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Collision::Collision(const Collision &_collision)
-  : dataPtr(new CollisionPrivate(*_collision.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Collision::Collision(Collision &&_collision) noexcept
-  : dataPtr(std::exchange(_collision.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Collision &Collision::operator=(const Collision &_collision)
-{
-  return *this = Collision(_collision);
-}
-
-/////////////////////////////////////////////////
-Collision &Collision::operator=(Collision &&_collision)
-{
-  std::swap(this->dataPtr, _collision.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -148,7 +116,7 @@ std::string Collision::Name() const
 }
 
 /////////////////////////////////////////////////
-void Collision::SetName(const std::string &_name) const
+void Collision::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
 }
@@ -166,7 +134,7 @@ void Collision::SetGeom(const Geometry &_geom)
 }
 
 /////////////////////////////////////////////////
-sdf::Surface *Collision::Surface() const
+const sdf::Surface *Collision::Surface() const
 {
   return &this->dataPtr->surface;
 }

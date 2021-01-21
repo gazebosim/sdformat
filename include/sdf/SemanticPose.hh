@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -40,7 +41,6 @@ namespace sdf
   //
 
   // Forward declare private data class.
-  class SemanticPosePrivate;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
 
@@ -104,27 +104,6 @@ namespace sdf
         const std::string &_defaultResolveTo,
         const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
 
-    /// \brief Destructor
-    public: ~SemanticPose();
-
-    /// \brief Copy constructor
-    /// \param[in] _semanticpose SemanticPose to copy.
-    public: SemanticPose(const SemanticPose &_semanticPose);
-
-    /// \brief Move constructor
-    /// \param[in] _semanticpose SemanticPose to move.
-    public: SemanticPose(SemanticPose &&_semanticPose) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _semanticpose SemanticPose to move.
-    /// \return Reference to this.
-    public: SemanticPose &operator=(SemanticPose &&_semanticPose);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _semanticpose SemanticPose to copy.
-    /// \return Reference to this.
-    public: SemanticPose &operator=(const SemanticPose &_semanticPose);
-
     friend class Collision;
     friend class Frame;
     friend class Joint;
@@ -135,7 +114,7 @@ namespace sdf
     friend class Visual;
 
     /// \brief Private data pointer.
-    private: std::unique_ptr<SemanticPosePrivate> dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

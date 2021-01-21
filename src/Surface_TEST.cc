@@ -31,7 +31,9 @@ TEST(DOMsurface, DefaultConstruction)
 TEST(DOMsurface, CopyOperator)
 {
   sdf::Surface surface1;
-  surface1.Contact()->SetCollideBitmask(0x12);
+  sdf::Contact contact;
+  contact.SetCollideBitmask(0x12);
+  surface1.SetContact(contact);
 
   sdf::Surface surface2(surface1);
   EXPECT_EQ(surface2.Contact()->CollideBitmask(), 0x12);
@@ -41,7 +43,9 @@ TEST(DOMsurface, CopyOperator)
 TEST(DOMsurface, CopyAssignmentOperator)
 {
   sdf::Surface surface1;
-  surface1.Contact()->SetCollideBitmask(0x12);
+  sdf::Contact contact;
+  contact.SetCollideBitmask(0x12);
+  surface1.SetContact(contact);
 
   sdf::Surface surface2 = surface1;
   EXPECT_EQ(surface2.Contact()->CollideBitmask(), 0x12);
@@ -53,8 +57,12 @@ TEST(DOMsurface, CopyAssignmentAfterMove)
   sdf::Surface surface1;
   sdf::Surface surface2;
 
-  surface1.Contact()->SetCollideBitmask(0x12);
-  surface2.Contact()->SetCollideBitmask(0x34);
+  sdf::Contact contact1;
+  contact1.SetCollideBitmask(0x12);
+  surface1.SetContact(contact1);
+  sdf::Contact contact2;
+  contact2.SetCollideBitmask(0x34);
+  surface2.SetContact(contact2);
 
   sdf::Surface tmp = std::move(surface1);
   surface1 = surface2;

@@ -18,18 +18,18 @@
 #define SDF_ATMOSPHERE_HH_
 
 #include <ignition/math/Temperature.hh>
+#include <ignition/utils/ImplPtr.hh>
+
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
-#include <ignition/utils/ImplPtr.hh>
 
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
   /// \enum AtmosphereType
   /// \brief The set of atmosphere model types.
   enum class AtmosphereType
