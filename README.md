@@ -102,9 +102,16 @@ Install prerequisites:
 conda install urdfdom --channel conda-forge
 ```
 
-Install Ignition dependencies (optional):
+Install Ignition dependencies:
+
+You can view lists of dependencies:
 ```
-conda install libignition-tools1 --channel conda-forge
+conda search libsdformat --channel conda-forge --info
+```
+
+Install dependencies, replacing `<#>` with the desired versions:
+```
+conda install libignition-math<#> libignition-tools<#> --channel conda-forge
 ```
 
 ### Build from Source
