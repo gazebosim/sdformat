@@ -53,6 +53,16 @@ Install `sdformat`:
 conda install libsdformat --channel conda-forge
 ```
 
+You can view all the versions with
+```
+conda search libsdformat --channel conda-forge
+```
+
+and install a specific minor version with
+```
+conda install libsdformat=9.3.0 --channel conda-forge
+```
+
 ## Source Installation
 
 ## UNIX
