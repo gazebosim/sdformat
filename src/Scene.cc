@@ -22,16 +22,6 @@ using namespace sdf;
 /// \brief Scene private data.
 class sdf::ScenePrivate
 {
-  /// \brief Default constructor
-  public: ScenePrivate() = default;
-
-  /// \brief Copy constructor
-  /// \param[in] _scenePrivate private data to copy
-  public: explicit ScenePrivate(const ScenePrivate &_scenePrivate);
-
-  // Delete copy assignment so it is not accidentally used
-  public: ScenePrivate &operator=(const ScenePrivate &) = delete;
-
   /// \brief True if grid should be enabled
   public: bool grid = true;
 
@@ -50,27 +40,11 @@ class sdf::ScenePrivate
       ignition::math::Color(0.7f, 0.7f, .7f);
 
   /// \brief Pointer to the sky properties.
-  public: std::unique_ptr<Sky> sky;
+  public: std::optional<Sky> sky;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 };
-
-/////////////////////////////////////////////////
-ScenePrivate::ScenePrivate(const ScenePrivate &_scenePrivate)
-    : grid(_scenePrivate.grid),
-      shadows(_scenePrivate.shadows),
-      originVisual(_scenePrivate.originVisual),
-      ambient(_scenePrivate.ambient),
-      background(_scenePrivate.background),
-      sdf(_scenePrivate.sdf)
-{
-  if (_scenePrivate.sky)
-  {
-    this->sky =
-        std::make_unique<Sky>(*(_scenePrivate.sky));
-  }
-}
 
 /////////////////////////////////////////////////
 Scene::Scene()
@@ -150,7 +124,7 @@ Errors Scene::Load(ElementPtr _sdf)
   // load sky
   if (_sdf->HasElement("sky"))
   {
-    this->dataPtr->sky = std::make_unique<sdf::Sky>();
+    this->dataPtr->sky.emplace();
     Errors err = this->dataPtr->sky->Load(_sdf->GetElement("sky"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
@@ -220,13 +194,13 @@ void Scene::SetOriginVisual(const bool _enabled)
 /////////////////////////////////////////////////
 void Scene::SetSky(const sdf::Sky &_sky)
 {
-  this->dataPtr->sky = std::make_unique<sdf::Sky>(_sky);
+  this->dataPtr->sky = _sky;
 }
 
 /////////////////////////////////////////////////
 const sdf::Sky *Scene::Sky() const
 {
-  return this->dataPtr->sky.get();
+  return optionalToPointer(this->dataPtr->sky);
 }
 
 /////////////////////////////////////////////////

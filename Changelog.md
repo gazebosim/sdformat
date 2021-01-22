@@ -4,17 +4,53 @@
 
 ### libsdformat 11.0.0 (202X-XX-XX)
 
-1. Initial version of SDFormat 1.8 specification.
-    * [BitBucket pull request 682](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/682)
+1. Allow files paths for include URIs
+    * [Pull request 448](https://github.com/osrf/sdformat/pull/448)
 
-1. SDFormat 1.8: Support specifying frames as joint child/parent.
+1. SDFormat 1.8: Add ellipsoid geometry type.
+    * [Pull request 434](https://github.com/osrf/sdformat/pull/434)
+
+1. SDFormat 1.8: Add capsule geometry type.
+    * [Pull request 389](https://github.com/osrf/sdformat/pull/389)
+
+1. Allow only one of actor/light/model for <include> tags.
+    * [Pull request 433](https://github.com/osrf/sdformat/pull/433)
+    * [Pull request 444](https://github.com/osrf/sdformat/pull/444)
+
+1. Add support for building static library.
+    * [Pull request 394](https://github.com/osrf/sdformat/pull/394)
+
+1. Add force torque sensor.
+    * [Pull request 393](https://github.com/osrf/sdformat/pull/393)
+
+1. Simplify data embedding.
+    * [Pull request 270](https://github.com/osrf/sdformat/pull/270)
+
+1. Properly handle the requirement of C++17 at the CMake exported target level.
+    * [Pull request 251](https://github.com/osrf/sdformat/pull/251)
+
+1. Update documentation for Cylinder length.
+    * [Pull request 318](https://github.com/osrf/sdformat/pull/318)
+
+1. Update CI.
+    * [Pull request 452](https://github.com/osrf/sdformat/pull/452)
+    * [Pull request 255](https://github.com/osrf/sdformat/pull/255)
+
+1. Update README, Changelog, Contributing Guide, and Code of Conduct.
+    * [Pull request 431](https://github.com/osrf/sdformat/pull/431)
+    * [Pull request 275](https://github.com/osrf/sdformat/pull/275)
+    * [Pull request 250](https://github.com/osrf/sdformat/pull/250)
+    * [Pull request 243](https://github.com/osrf/sdformat/pull/243)
+
+1. Implement SDFormat 1.8 Model Composition.
+    * [Pull request 426](https://github.com/osrf/sdformat/pull/426)
+    * [Pull request 381](https://github.com/osrf/sdformat/pull/381)
+    * [Pull request 355](https://github.com/osrf/sdformat/pull/355)
+    * [Pull request 324](https://github.com/osrf/sdformat/pull/324)
     * [Pull request 304](https://github.com/osrf/sdformat/pull/304)
 
-1. SDFormat 1.8: Add support for `//include/placement_frame` and `//model/@placement_frame`.
-    * [Pull request 324](https://github.com/osrf/sdformat/pull/324)
-
-1. SDFormat 1.8: Support explicit nested canonical links with :: syntax.
-    * [Pull request 353](https://github.com/osrf/sdformat/pull/353)
+1. Initial version of SDFormat 1.8 specification.
+    * [BitBucket pull request 682](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/682)
 
 1. SDFormat 1.8: Deprecate //joint/axis/initial_position.
     * [BitBucket pull request 683](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/683)
@@ -22,6 +58,17 @@
 ## libsdformat 10.X
 
 ### libsdformat 10.X.X (202X-XX-XX)
+
+### libsdformat 10.2.0 (2021-01-12)
+
+1. Disable ign test on Windows
+    + [Pull request 456](https://github.com/osrf/sdformat/pull/456)
+
+1. Add Heightmap class
+    + [Pull request 388](https://github.com/osrf/sdformat/pull/388)
+
+1. Added `render_order` to material
+    + [Pull request 446](https://github.com/osrf/sdformat/pull/446)
 
 ### libsdformat 10.1.0 (2020-12-15)
 
@@ -107,7 +154,7 @@
 
 ### libsdformat 9.X.X (202X-XX-XX)
 
-### SDFormat 9.3.0 (2020-XX-XX)
+### libsdformat 9.3.0 (2020-09-07)
 
 1. Store material file path information.
     + [Pull request 349](https://github.com/osrf/sdformat/pull/349)
@@ -338,7 +385,7 @@
 
 ### libsdformat 8.X.X (202X-XX-XX)
 
-### SDFormat 8.9.0 (2020-09-04)
+### libsdformat 8.9.0 (2020-09-04)
 
 1. Find python3 in cmake, fix warning
     * [Pull request 328](https://github.com/osrf/sdformat/pull/328)

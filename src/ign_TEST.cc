@@ -812,7 +812,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(check_shapes_sdf, SDF)
+TEST(check_shapes_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -903,7 +903,7 @@ TEST(print, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, WorldPoseRelativeTo)
+TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
 
@@ -954,7 +954,7 @@ TEST(GraphCmd, WorldPoseRelativeTo)
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, ModelPoseRelativeTo)
+TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelPoseRelativeTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
   const std::string path = pathBase + "/model_relative_to_nested_reference.sdf";
@@ -1030,7 +1030,7 @@ TEST(GraphCmd, ModelPoseRelativeTo)
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, WorldFrameAttachedTo)
+TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldFrameAttachedTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
   const std::string path = pathBase + "/world_nested_frame_attached_to.sdf";
@@ -1076,7 +1076,7 @@ TEST(GraphCmd, WorldFrameAttachedTo)
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, ModelFrameAttachedTo)
+TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
   const std::string path = pathBase + "/model_nested_frame_attached_to.sdf";

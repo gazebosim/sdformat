@@ -17,6 +17,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+#include <optional>
 #include <ignition/math/Vector3.hh>
 
 #include "sdf/Actor.hh"
@@ -37,18 +38,8 @@ using namespace sdf;
 
 class sdf::WorldPrivate
 {
-  /// \brief Default constructor
-  public: WorldPrivate() = default;
-
-  /// \brief Copy constructor
-  /// \param[in] _worldPrivate Joint axis to move.
-  public: explicit WorldPrivate(const WorldPrivate &_worldPrivate);
-
-  // Delete copy assignment so it is not accidentally used
-  public: WorldPrivate &operator=(const WorldPrivate &) = delete;
-
-  /// \brief Pointer to an atmosphere model.
-  public: std::unique_ptr<Atmosphere> atmosphere;
+  /// \brief Optional atmosphere model.
+  public: std::optional<Atmosphere> atmosphere;
 
   /// \brief Audio device name
   public: std::string audioDevice = "default";
@@ -57,11 +48,11 @@ class sdf::WorldPrivate
   public: ignition::math::Vector3d gravity =
            ignition::math::Vector3d(0, 0, -9.80665);
 
-  /// \brief Pointer to Gui parameters.
-  public: std::unique_ptr<Gui> gui;
+  /// \brief Optional Gui parameters.
+  public: std::optional<Gui> gui;
 
-  /// \brief Pointer to Sene parameters.
-  public: std::unique_ptr<Scene> scene;
+  /// \brief Optional Scene parameters.
+  public: std::optional<Scene> scene;
 
   /// \brief The frames specified in this world.
   public: std::vector<Frame> frames;
@@ -104,36 +95,6 @@ class sdf::WorldPrivate
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
-/////////////////////////////////////////////////
-WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
-    : audioDevice(_worldPrivate.audioDevice),
-      gravity(_worldPrivate.gravity),
-      frames(_worldPrivate.frames),
-      lights(_worldPrivate.lights),
-      actors(_worldPrivate.actors),
-      magneticField(_worldPrivate.magneticField),
-      models(_worldPrivate.models),
-      name(_worldPrivate.name),
-      physics(_worldPrivate.physics),
-      sdf(_worldPrivate.sdf),
-      windLinearVelocity(_worldPrivate.windLinearVelocity),
-      frameAttachedToGraph(_worldPrivate.frameAttachedToGraph),
-      poseRelativeToGraph(_worldPrivate.poseRelativeToGraph)
-{
-  if (_worldPrivate.atmosphere)
-  {
-    this->atmosphere =
-        std::make_unique<Atmosphere>(*(_worldPrivate.atmosphere));
-  }
-  if (_worldPrivate.gui)
-  {
-    this->gui = std::make_unique<Gui>(*(_worldPrivate.gui));
-  }
-  if (_worldPrivate.scene)
-  {
-    this->scene = std::make_unique<Scene>(*(_worldPrivate.scene));
-  }
-}
 
 /////////////////////////////////////////////////
 World::World()
@@ -232,7 +193,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   // Read the atmosphere element
   if (_sdf->HasElement("atmosphere"))
   {
-    this->dataPtr->atmosphere.reset(new sdf::Atmosphere());
+    this->dataPtr->atmosphere.emplace();
     Errors atmosphereLoadErrors =
       this->dataPtr->atmosphere->Load(_sdf->GetElement("atmosphere"));
     errors.insert(errors.end(), atmosphereLoadErrors.begin(),
@@ -331,7 +292,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   // Load the Gui
   if (_sdf->HasElement("gui"))
   {
-    this->dataPtr->gui.reset(new sdf::Gui());
+    this->dataPtr->gui.emplace();
     Errors guiLoadErrors = this->dataPtr->gui->Load(_sdf->GetElement("gui"));
     errors.insert(errors.end(), guiLoadErrors.begin(), guiLoadErrors.end());
   }
@@ -339,7 +300,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   // Load the Scene
   if (_sdf->HasElement("scene"))
   {
-    this->dataPtr->scene.reset(new sdf::Scene());
+    this->dataPtr->scene.emplace();
     Errors sceneLoadErrors =
         this->dataPtr->scene->Load(_sdf->GetElement("scene"));
     errors.insert(errors.end(), sceneLoadErrors.begin(), sceneLoadErrors.end());
@@ -450,37 +411,37 @@ const Model *World::ModelByName(const std::string &_name) const
 /////////////////////////////////////////////////
 const sdf::Atmosphere *World::Atmosphere() const
 {
-  return this->dataPtr->atmosphere.get();
+  return optionalToPointer(this->dataPtr->atmosphere);
 }
 
 /////////////////////////////////////////////////
 void World::SetAtmosphere(const sdf::Atmosphere &_atmosphere) const
 {
-  this->dataPtr->atmosphere.reset(new sdf::Atmosphere(_atmosphere));
+  this->dataPtr->atmosphere = _atmosphere;
 }
 
 /////////////////////////////////////////////////
 sdf::Gui *World::Gui() const
 {
-  return this->dataPtr->gui.get();
+  return optionalToPointer(this->dataPtr->gui);
 }
 
 /////////////////////////////////////////////////
 void World::SetGui(const sdf::Gui &_gui)
 {
-  return this->dataPtr->gui.reset(new sdf::Gui(_gui));
+  this->dataPtr->gui = _gui;
 }
 
 /////////////////////////////////////////////////
 const sdf::Scene *World::Scene() const
 {
-  return this->dataPtr->scene.get();
+  return optionalToPointer(this->dataPtr->scene);
 }
 
 /////////////////////////////////////////////////
 void World::SetScene(const sdf::Scene &_scene)
 {
-  return this->dataPtr->scene.reset(new sdf::Scene(_scene));
+  this->dataPtr->scene = _scene;
 }
 
 /////////////////////////////////////////////////
