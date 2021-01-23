@@ -1,8 +1,51 @@
-## SDFormat 9.X
+## libsdformat 9.X
 
-### SDFormat 9.X.X (202X-XX-XX)
+### libsdformat 9.X.X (202X-XX-XX)
 
-### SDFormat 9.3.0 (2020-XX-XX)
+### libsdformat 9.4.0 (2021-01-08)
+
+1. Define `PATH_MAX` for Debian Hurd system
+    * [Pull request 369](https://github.com/osrf/sdformat/pull/369)
+
+1. Fix supported shader types (`normal_map_X_space`)
+    * [Pull request 383](https://github.com/osrf/sdformat/pull/383)
+
+1. Move list of debian dependencies to packages.apt
+    * [Pull request 392](https://github.com/osrf/sdformat/pull/392)
+
+1. Enable/disable tests for issue #202, add macOS workflow
+    * [Pull request 414](https://github.com/osrf/sdformat/pull/414)
+    * [Pull request 438](https://github.com/osrf/sdformat/pull/438)
+    * [Issue 202](https://github.com/osrf/sdformat/issues/202)
+
+1. Test included model folder missing model.config
+    * [Pull request 422](https://github.com/osrf/sdformat/pull/422)
+
+1. Prefix nested model names when flattening
+    * [Pull request 399](https://github.com/osrf/sdformat/pull/399)
+
+1. Add Sky DOM
+    * [Pull request 417](https://github.com/osrf/sdformat/pull/417)
+    * [Pull request 397](https://github.com/osrf/sdformat/pull/397)
+
+1. camera.sdf: decrease far clip lower bound
+    * [Pull request 435](https://github.com/osrf/sdformat/pull/435)
+
+1. material.sdf: add `double_sided` parameter
+    * [Pull request 410](https://github.com/osrf/sdformat/pull/410)
+
+1. Migration to GitHub: CI, links...
+    * [Pull request 239](https://github.com/osrf/sdformat/pull/239)
+    * [Pull request 310](https://github.com/osrf/sdformat/pull/310)
+    * [Pull request 390](https://github.com/osrf/sdformat/pull/390)
+
+1. Fix Actor copy operators and increase test coverage.
+    * [Pull request 301](https://github.com/osrf/sdformat/pull/301)
+
+1. Add Heightmap class
+    * [Pull request 388](https://github.com/osrf/sdformat/pull/388)
+
+### libsdformat 9.3.0 (2020-XX-XX)
 
 1. Store material file path information.
     + [Pull request 349](https://github.com/osrf/sdformat/pull/349)
@@ -43,7 +86,7 @@
     * [BitBucket pull request 677](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/677)
     * [BitBucket pull request 686](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/686)
 
-### SDFormat 9.2.0 (2020-04-02)
+### libsdformat 9.2.0 (2020-04-02)
 
 1. Remove URI scheme, if present, when finding files.
     * [BitBucket pull request 650](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/650)
@@ -101,7 +144,7 @@
 1. Rename SDF to SDFormat / libsdformat on documentation
     * [BitBucket pull request 666](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/666)
 
-### SDFormat 9.1.0 (2020-01-29)
+### libsdformat 9.1.0 (2020-01-29)
 
 1. Remove URI scheme, if present, when finding files.
     * [BitBucket pull request 653](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/653)
@@ -148,7 +191,7 @@
 1. Keep DOM objects even if they were loaded with errors.
     * [BitBucket pull request 655](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/655)
 
-### SDFormat 9.0.0 (2019-12-10)
+### libsdformat 9.0.0 (2019-12-10)
 
 1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
     * [BitBucket pull request 606](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/606)
