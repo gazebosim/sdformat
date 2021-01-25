@@ -48,6 +48,24 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
       continue;
     }
 
+    std::string elemIdAttr(childElemId);
+
+    // checks for name after last set of double colons
+    size_t found = elemIdAttr.rfind("::");
+    if (found != std::string::npos
+        && (elemIdAttr.substr(found+2)).empty())
+    {
+      tinyxml2::XMLPrinter printer;
+      childElemXml->Accept(&printer);
+
+      _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+        "Missing name after double colons in element identifier. "
+        "Skipping element modification:\n"
+        + std::string(printer.CStr())
+      });
+      continue;
+    }
+
     // *** Retrieve specified element using element identifier ***
 
     std::string actionStr;
@@ -57,8 +75,6 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     // get element pointer to specified element using element identifier
     ElementPtr elem = getElementById(_includeSDF, childElemXml->Name(),
                           childElemId);
-
-    std::string elemIdAttr(childElemId);
 
     if (actionStr == "add")
     {
@@ -78,18 +94,10 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
         continue;
       }
 
-      size_t found = elemIdAttr.rfind("::");
       if (found != std::string::npos)
       {
         // +2 past double colons
         elemIdAttr = elemIdAttr.substr(found+2);
-
-        // TODO(jenn) add test for this (e.g., elemChildId='test::')
-        if (elemIdAttr.empty())
-        {
-          std::cout << "ADD error" << std::endl;
-          continue;
-        }
       }
 
       if (!elemIdAttr.compare(childElemId))

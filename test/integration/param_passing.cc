@@ -56,21 +56,24 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   PrintErrors(errors);
   EXPECT_TRUE(errors.empty());
 
-  // first child of <experimental:params> is missing element_id attribute,
-  // specified second child does not exist in included model,
-  // third element already exists in included model,
-  // and fourth (for add action) parent of specified element does not exist
+  // Expected errors
   testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
                             "include_invalid_custom_model.sdf");
   errors = root.Load(testFile);
   PrintErrors(errors);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(errors.size(), 4u);
+  ASSERT_EQ(errors.size(), 5u);
+  // missing element_id attribute
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  // element does not exist in included model
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  // element already exists in included model
   EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  // for add action, parent of specified element does not exist
   EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  // missing name after double colons
+  EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
 }
 
 /////////////////////////////////////////////////

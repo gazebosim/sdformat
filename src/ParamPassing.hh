@@ -44,8 +44,9 @@ namespace sdf
     /// \param[in] _elemName The element name, such as "model", "link",
     /// "collision", "visual".
     /// \param[in] _elemId The element identifier
-    /// \param[in] _isParentElement Is true if _elemId is the parent. Is true
-    /// and only used for the add action
+    /// \param[in] _isParentElement Is true if _elemId is the parent and does
+    /// not use _elemName to verify the correct element is found. Only used for
+    /// the add action
     /// \return ElementPtr to the specified element, nullptr if element could
     /// not found
     ElementPtr getElementById(const SDFPtr _sdf,

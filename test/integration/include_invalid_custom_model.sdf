@@ -6,7 +6,7 @@
       <include>
         <uri>robot</uri>
         <experimental:params>
-          <!-- missing name attribute (i.e., element identifier) -->
+          <!-- missing element_id attribute (i.e., element identifier) -->
           <foo/>
           <!-- element does not exist -->
           <visual element_id="chassis::camera_visual" action="modify">
@@ -33,6 +33,8 @@
               </box>
             </geometry>
           </visual>
+          <!-- missing name after :: -->
+          <link element_id="chassis::test::" action="add"/>
         </experimental:params>
       </include>
     </model>
