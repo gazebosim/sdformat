@@ -307,19 +307,6 @@ void Visual::SetGeom(const Geometry &_geom)
 }
 
 /////////////////////////////////////////////////
-void Visual::SetXmlParentName(const std::string &_xmlParentName)
-{
-  this->dataPtr->xmlParentName = _xmlParentName;
-}
-
-/////////////////////////////////////////////////
-void Visual::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
-{
-  this->dataPtr->poseRelativeToGraph = _graph;
-}
-
-/////////////////////////////////////////////////
 sdf::SemanticPose Visual::SemanticPose() const
 {
   return sdf::SemanticPose(
@@ -382,4 +369,17 @@ void Visual::SetLaserRetro(double _laserRetro)
 {
   this->dataPtr->hasLaserRetro = true;
   this->dataPtr->laserRetro = _laserRetro;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetXmlParentName(const std::string &_xmlParentName)
+{
+  this->dataPtr->xmlParentName = _xmlParentName;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
 }
