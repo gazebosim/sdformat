@@ -43,6 +43,8 @@ but with improved human-readability..
     + bool JointNameExists(const std::string &) const
     + bool LinkNameExists(const std::string &) const
 
+1. **sdf/Heightmap.hh**: sampling now defaults to 1 instead of 2.
+
 ### Deprecations
 
 1. **src/Root.hh**: The following methods have been deprecated in favor of the
@@ -307,6 +309,8 @@ but with improved human-readability..
 
 1. **joint.sdf** `child` and `parent` elements accept frame names instead of only link names
     * [Issue 204](https://github.com/osrf/sdformat/issues/204)
+
+1. **heightmap.sdf**: sampling now defaults to 1 instead of 2.
 
 ### Deprecations
 
