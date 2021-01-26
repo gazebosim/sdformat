@@ -35,6 +35,7 @@ cc_library(
     name = "test_utils",
     srcs = [
         "test_config.h",
+        "env.hh",
     ],
     includes = ["."],
     visibility = IGNITION_VISIBILITY,
