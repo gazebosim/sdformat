@@ -185,8 +185,8 @@ ElementPtr getElementById(const SDFPtr _sdf,
       matchingChild = nullptr;
       startIdx = longestIdx;
 
-      size_t found = _elemId.substr(startIdx).find("::");
-      if (found != std::string::npos && found == 1u)
+      size_t found = _elemId.find("::", startIdx);
+      if (found != std::string::npos && (found - startIdx) == 1ul)
       {
         // past double colons
         startIdx += 3;
