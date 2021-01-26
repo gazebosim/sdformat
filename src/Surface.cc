@@ -35,7 +35,7 @@ class sdf::Contact::Implementation
 class sdf::Surface::Implementation
 {
   /// \brief The object storing contact parameters
- public: sdf::Contact contact;
+  public: sdf::Contact contact;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf{nullptr};
