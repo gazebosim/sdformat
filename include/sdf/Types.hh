@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <sdf/sdf_config.h>

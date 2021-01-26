@@ -106,16 +106,41 @@ std::pair<std::string, std::string> SplitName(
   return {"", _absoluteName};
 }
 
+static bool EndsWithDelimiter(const std::string &_s)
+{
+  if (_s.size() < kSdfScopeDelimiter.size())
+    return false;
+
+  const size_t findStartPosition = _s.size() - kSdfScopeDelimiter.size();
+  return _s.substr(findStartPosition) == kSdfScopeDelimiter;
+}
+
+static bool StartsWithDelimiter(const std::string &_s)
+{
+  if (_s.size() < kSdfScopeDelimiter.size())
+    return false;
+
+  return _s.substr(0, kSdfScopeDelimiter.size()) == kSdfScopeDelimiter;
+}
+
 // Join an scope name prefix with a local name using the scope delimeter
 std::string JoinName(
     const std::string &_scopeName, const std::string &_localName)
 {
   if (_scopeName.empty())
     return _localName;
-  if (_localName.empty()) {
+  if (_localName.empty())
     return _scopeName;
-  }
-  return _scopeName + kSdfScopeDelimiter + _localName;
+
+  const bool scopeNameEndsWithDelimiter = EndsWithDelimiter(_scopeName);
+  const bool localNameStartsWithDelimiter = StartsWithDelimiter(_localName);
+
+  if (scopeNameEndsWithDelimiter && localNameStartsWithDelimiter)
+    return _scopeName + _localName.substr(kSdfScopeDelimiter.size());
+  else if (scopeNameEndsWithDelimiter || localNameStartsWithDelimiter)
+    return _scopeName + _localName;
+  else
+    return _scopeName + kSdfScopeDelimiter + _localName;
 }
 }
 }

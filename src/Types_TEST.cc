@@ -120,6 +120,85 @@ TEST(Types, ErrorsOutputStream)
   EXPECT_EQ(expected, output.str());
 }
 
+TEST(Types, SplitName)
+{
+  {
+    const auto[basePath, tipName] = sdf::SplitName("a::b");
+    EXPECT_EQ(basePath, "a");
+    EXPECT_EQ(tipName, "b");
+  }
+  {
+    const auto[basePath, tipName] = sdf::SplitName("a::b::c");
+    EXPECT_EQ(basePath, "a::b");
+    EXPECT_EQ(tipName, "c");
+  }
+  {
+    const auto[basePath, tipName] = sdf::SplitName("b");
+    EXPECT_EQ(basePath, "");
+    EXPECT_EQ(tipName, "b");
+  }
+  {
+    const auto[basePath, tipName] = sdf::SplitName("a::b::");
+    EXPECT_EQ(basePath, "a::b");
+    EXPECT_EQ(tipName, "");
+  }
+  {
+    const auto[basePath, tipName] = sdf::SplitName("::b");
+    EXPECT_EQ(basePath, "");
+    EXPECT_EQ(tipName, "b");
+  }
+  {
+    const auto[basePath, tipName] = sdf::SplitName("");
+    EXPECT_EQ(basePath, "");
+    EXPECT_EQ(tipName, "");
+  }
+  {
+    const auto[basePath, tipName] = sdf::SplitName("a::b::c::d");
+    EXPECT_EQ(basePath, "a::b::c");
+    EXPECT_EQ(tipName, "d");
+  }
+}
+
+TEST(Types, JoinName)
+{
+  {
+    const auto joinedName = sdf::JoinName("a", "b");
+    EXPECT_EQ(joinedName, "a::b");
+  }
+  {
+    const auto joinedName = sdf::JoinName("a::b", "c");
+    EXPECT_EQ(joinedName, "a::b::c");
+  }
+  {
+    const auto joinedName = sdf::JoinName("a", "b::c");
+    EXPECT_EQ(joinedName, "a::b::c");
+  }
+  {
+    const auto joinedName = sdf::JoinName("a::", "b");
+    EXPECT_EQ(joinedName, "a::b");
+  }
+  {
+    const auto joinedName = sdf::JoinName("a", "::b");
+    EXPECT_EQ(joinedName, "a::b");
+  }
+  {
+    const auto joinedName = sdf::JoinName("a::", "::b");
+    EXPECT_EQ(joinedName, "a::b");
+  }
+  {
+    const auto joinedName = sdf::JoinName("", "b");
+    EXPECT_EQ(joinedName, "b");
+  }
+  {
+    const auto joinedName = sdf::JoinName("a", "");
+    EXPECT_EQ(joinedName, "a");
+  }
+  {
+    const auto joinedName = sdf::JoinName("", "");
+    EXPECT_EQ(joinedName, "");
+  }
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
