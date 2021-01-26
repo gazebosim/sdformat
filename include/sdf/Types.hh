@@ -232,10 +232,19 @@ namespace sdf
   /// \return Lowercase equilvalent of _in.
   std::string SDFORMAT_VISIBLE lowercase(const std::string &_in);
 
+  /// \brief Split a name into a two strings based on the '::' delimeter
+  /// \param[in] _absoluteName The fully qualified absolute name
+  /// \return A pair with the absolute name minus the leaf node name, and the
+  /// leaf name
   SDFORMAT_VISIBLE
   std::pair<std::string, std::string> SplitName(
       const std::string &_absoluteName);
 
+  /// \brief Join two strings with the '::' delimiter.
+  /// This checks for edge cases and is safe to use with any valid names
+  /// \param[in] _scopeName the left-hand-side component
+  /// \param[in] _localName the right-hand-side component
+  /// \return A full string with the names joined by the '::' delimeter.
   SDFORMAT_VISIBLE
   std::string JoinName(
       const std::string &_scopeName, const std::string &_localName);

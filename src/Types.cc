@@ -111,8 +111,9 @@ static bool EndsWithDelimiter(const std::string &_s)
   if (_s.size() < kSdfScopeDelimiter.size())
     return false;
 
-  const size_t findStartPosition = _s.size() - kSdfScopeDelimiter.size();
-  return _s.substr(findStartPosition) == kSdfScopeDelimiter;
+  const size_t startPosition = _s.size() - kSdfScopeDelimiter.size();
+  return _s.compare(
+    startPosition, kSdfScopeDelimiter.size(), kSdfScopeDelimiter) == 0;
 }
 
 static bool StartsWithDelimiter(const std::string &_s)
@@ -120,7 +121,7 @@ static bool StartsWithDelimiter(const std::string &_s)
   if (_s.size() < kSdfScopeDelimiter.size())
     return false;
 
-  return _s.substr(0, kSdfScopeDelimiter.size()) == kSdfScopeDelimiter;
+  return _s.compare(0, kSdfScopeDelimiter.size(), kSdfScopeDelimiter) == 0;
 }
 
 // Join an scope name prefix with a local name using the scope delimeter
