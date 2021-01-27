@@ -124,7 +124,7 @@ static bool StartsWithDelimiter(const std::string &_s)
   return _s.compare(0, kSdfScopeDelimiter.size(), kSdfScopeDelimiter) == 0;
 }
 
-// Join an scope name prefix with a local name using the scope delimeter
+// Join a scope name prefix with a local name using the scope delimeter
 std::string JoinName(
     const std::string &_scopeName, const std::string &_localName)
 {
