@@ -177,7 +177,19 @@ Errors Link::Load(ElementPtr _sdf)
     sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
 
     if (inertialElem->HasElement("pose"))
-      loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
+    {
+      sdf::ElementPtr inertialPoseElem = inertialElem->GetElement("pose");
+      std::pair<std::string, bool> framePair =
+          inertialPoseElem->Get<std::string>("relative_to", "");
+
+      if (!(framePair.first).empty())
+      {
+        errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+            "Can not set relative_to attribute of //inertial/pose."});
+      }
+
+      loadPose(inertialPoseElem, inertiaPose, inertiaFrame);
+    }
 
     // Get the mass.
     mass = inertialElem->Get<double>("mass", 1.0).first;
