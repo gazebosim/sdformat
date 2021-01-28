@@ -145,7 +145,7 @@
     </element>
 
     <element name="category_bitmask" type="unsigned int" default="65535" required="0">
-      <description><![CDATA[Bitmask for category of collision filtering. Collision happens if ((category1 & collision2) | (category2 & collision1)) is not zero. If not specified, the category_bitmask should be interpreted as being the same as collide_bitmask.]]></description>
+      <description><![CDATA[Bitmask for category of collision filtering. Collision happens if ((category1 &amp; collision2) | (category2 &amp; collision1)) is not zero. If not specified, the category_bitmask should be interpreted as being the same as collide_bitmask.]]></description>
     </element>
 
     <element name="poissons_ratio" type="double" default="0.3" required="0">
