@@ -15,6 +15,7 @@
  *
  */
 
+#include <sstream>
 #include <string>
 #include <gtest/gtest.h>
 
@@ -681,4 +682,70 @@ TEST(DOMLink, LoadInvalidLinkPoseRelativeTo)
   // errors[2]
   // errors[3]
   // errors[4]
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, ValidInertialPoseRelTo)
+{
+  std::ostringstream stream;
+  stream << "<?xml version=\"1.0\"?>"
+         << "<sdf version='1.7'>"
+         << "  <model name='A'>"
+         << "    <link name='B'>"
+         << "      <inertial>"
+         << "        <pose relative_to=''>0.1 1 0.2 0 0 -0.52</pose>"
+         << "      </inertial>"
+         << "    </link>"
+         << "  </model>"
+         << "</sdf>";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(stream.str());
+  EXPECT_TRUE(errors.empty());
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(model, nullptr);
+
+  const sdf::Link *link = model->LinkByName("B");
+  ASSERT_NE(link, nullptr);
+
+  EXPECT_EQ(link->Inertial().Pose(),
+      ignition::math::Pose3d(0.1, 1, 0.2, 0, 0, -0.52));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, InvalidInertialPoseRelTo)
+{
+  std::ostringstream stream;
+  stream << "<?xml version=\"1.0\"?>"
+         << "<sdf version='1.7'>"
+         << "  <model name='A'>"
+         << "    <frame name='C'>"
+         << "      <pose>0 0 1 0 0 0</pose>"
+         << "    </frame>"
+         << "    <link name='B'>"
+         << "      <inertial>"
+         << "        <pose relative_to='C'>0.1 1 0.2 0 0 -0.52</pose>"
+         << "      </inertial>"
+         << "    </link>"
+         << "  </model>"
+         << "</sdf>";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(stream.str());
+  ASSERT_FALSE(errors.empty());
+
+  for (sdf::Error e : errors)
+    std::cout << e << std::endl;
+
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(model, nullptr);
+
+  const sdf::Link *link = model->LinkByName("B");
+  ASSERT_NE(link, nullptr);
+
+  EXPECT_EQ(link->Inertial().Pose(),
+      ignition::math::Pose3d(0.1, 1, 0.2, 0, 0, -0.52));
 }

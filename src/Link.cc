@@ -185,7 +185,9 @@ Errors Link::Load(ElementPtr _sdf)
       if (!(framePair.first).empty())
       {
         errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
-            "Can not set relative_to attribute of //inertial/pose."});
+            "A non-empty value in the 'relative_to' attribute is not permitted "
+            "in the inertial pose element for link [" + this->dataPtr->name
+            + "]."});
       }
 
       loadPose(inertialPoseElem, inertiaPose, inertiaFrame);

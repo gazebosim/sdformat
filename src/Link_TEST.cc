@@ -15,7 +15,6 @@
  *
 */
 
-#include <sstream>
 #include <gtest/gtest.h>
 #include <ignition/math/Inertial.hh>
 #include <ignition/math/Pose3.hh>
@@ -23,7 +22,6 @@
 #include "sdf/Collision.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
-#include "sdf/parser.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Visual.hh"
 
@@ -204,62 +202,4 @@ TEST(DOMLink, InvalidInertia)
   EXPECT_DOUBLE_EQ(2.3, link.Inertial().MassMatrix().OffDiagonalMoments().Y());
   EXPECT_DOUBLE_EQ(3.4, link.Inertial().MassMatrix().OffDiagonalMoments().Z());
   EXPECT_FALSE(link.Inertial().MassMatrix().IsValid());
-}
-
-/////////////////////////////////////////////////
-TEST(DOMLink, ValidInertialPoseRelTo)
-{
-  std::ostringstream stream;
-  stream << "<?xml version=\"1.0\"?>"
-         << "<sdf version='1.7'>"
-         << "  <model name='A'>"
-         << "    <link name='B'>"
-         << "      <inertial>"
-         << "        <pose relative_to=''>0 0 0 0 0 0</pose>"
-         << "      </inertial>"
-         << "    </link>"
-         << "  </model>"
-         << "</sdf>";
-
-  sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
-  ASSERT_TRUE(sdf::readString(stream.str(), sdf));
-
-  sdf::Link link;
-  sdf::Errors errors =
-      link.Load(sdf->Root()->GetElement("model")->GetElement("link"));
-
-  EXPECT_TRUE(errors.empty());
-  EXPECT_EQ(link.RawPose(), ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
-}
-
-/////////////////////////////////////////////////
-TEST(DOMLink, InvalidInertialPoseRelTo)
-{
-  std::ostringstream stream;
-  stream << "<?xml version=\"1.0\"?>"
-         << "<sdf version='1.7'>"
-         << "  <model name='A'>"
-         << "    <frame name='C'>"
-         << "      <pose>0 0 1 0 0 0</pose>"
-         << "    </frame>"
-         << "    <link name='B'>"
-         << "      <inertial>"
-         << "        <pose relative_to='C'>0 0 0 0 0 0</pose>"
-         << "      </inertial>"
-         << "    </link>"
-         << "  </model>"
-         << "</sdf>";
-
-  sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
-  ASSERT_TRUE(sdf::readString(stream.str(), sdf));
-
-  sdf::Link link;
-  sdf::Errors errors =
-      link.Load(sdf->Root()->GetElement("model")->GetElement("link"));
-
-  ASSERT_FALSE(errors.empty());
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
-  EXPECT_EQ(link.RawPose(), ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
 }
