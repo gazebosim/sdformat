@@ -22,6 +22,7 @@
 #include <variant>
 
 #include "sdf/Filesystem.hh"
+#include "sdf/Frame.hh"
 #include "sdf/InterfaceElements.hh"
 #include "sdf/InterfaceModel.hh"
 #include "sdf/Model.hh"
@@ -52,6 +53,7 @@ std::string keyType(const std::string &_key)
 {
   static std::unordered_map<std::string, std::string> keyTypes {
       {"pose", "pose"},
+      {"bool", "bool"},
   };
 
   if (auto it = keyTypes.find(_key); it != keyTypes.end())
@@ -73,9 +75,10 @@ struct Value
     return std::get<KeyValue>(this->data);
   }
 
-  public: template <typename T> T ParamGet()
+  public: template <typename T>
+  T ParamGet(const T &_defaultVal = T {})
   {
-    T out;
+    T out{_defaultVal};
     if (auto param = std::get_if<sdf::Param>(&this->data))
     {
       param->Get(out);
@@ -211,6 +214,52 @@ Document parseToml(const std::string &_filePath, sdf::Errors &_errors)
 }
 }
 
+sdf::InterfaceModelPtr parseModel(toml::Value &_doc,
+    const std::string &_modelName, const std::optional<bool> &_isStatic)
+{
+  const auto canonicalLink = _doc["canonical_link"].ParamGet<std::string>();
+
+  // Pose of model (M) in parent (P) frame
+  const auto X_PM = _doc["pose"].ParamGet<ignition::math::Pose3d>();
+
+  // Pose of canonical link (C) in model (M) frame
+  const auto X_MC = _doc[toml::appendPrefix("links", canonicalLink, "pose")]
+                        .ParamGet<ignition::math::Pose3d>();
+
+  bool isStaticActual = _isStatic.has_value()
+      ? *_isStatic
+      : _doc["static"].ParamGet<bool>(false);
+
+  auto model = std::make_shared<sdf::InterfaceModel>(
+      _modelName, isStaticActual, canonicalLink, X_MC.Inverse(), X_PM);
+
+  for (auto &[name, link] : _doc["links"].Map())
+  {
+    const auto pose = link["pose"].ParamGet<ignition::math::Pose3d>();
+    model->AddLink({name, pose});
+  }
+
+  for (auto &[name, frame] : _doc["frames"].Map())
+  {
+    const auto attachedTo = frame["attached_to"].ParamGet<std::string>();
+    const auto pose = frame["pose"].ParamGet<ignition::math::Pose3d>();
+    model->AddFrame({name, attachedTo, pose});
+  }
+
+  for (auto &[name, joint] : _doc["joints"].Map())
+  {
+    const auto pose = joint["pose"].ParamGet<ignition::math::Pose3d>();
+    const auto child = joint["child"].ParamGet<std::string>();
+    model->AddJoint({name, child, pose});
+  }
+  for (auto &[name, nestedModel] : _doc["models"].Map())
+  {
+    model->AddNestedModel(parseModel(nestedModel, name, std::nullopt));
+  }
+
+  return model;
+}
+
 sdf::InterfaceModelPtr customTomlParser(
     const sdf::NestedInclude &_include, sdf::Errors &_errors)
 {
@@ -221,47 +270,33 @@ sdf::InterfaceModelPtr customTomlParser(
         ? doc["name"].ParamGet<std::string>()
         : _include.localModelName;
 
-    const auto canonicalLink = doc["canonical_link"].ParamGet<std::string>();
-
-    // Pose of model (M) in parent (P) frame
-    const auto X_PM = doc["pose"].ParamGet<ignition::math::Pose3d>();
-
-    // Pose of canonical link (C) in model (M) frame
-    const auto X_MC = doc[toml::appendPrefix("links", canonicalLink, "pose")]
-                          .ParamGet<ignition::math::Pose3d>();
-
-    auto model = std::make_shared<sdf::InterfaceModel>(
-        modelName, canonicalLink, X_MC.Inverse(), X_PM);
-    for (auto &[name, link] : doc["links"].Map())
-    {
-      const auto pose = link["pose"].ParamGet<ignition::math::Pose3d>();
-      model->AddLink({name, pose});
-    }
-
-    for (auto &[name, frame] : doc["frames"].Map())
-    {
-      const auto attachedTo = frame["attached_to"].ParamGet<std::string>();
-      const auto pose = frame["pose"].ParamGet<ignition::math::Pose3d>();
-      model->AddFrame({name, attachedTo, pose});
-    }
-
-    for (auto &[name, joint] : doc["joints"].Map())
-    {
-      const auto pose = joint["pose"].ParamGet<ignition::math::Pose3d>();
-      const auto child = joint["child"].ParamGet<std::string>();
-      model->AddJoint({name, child, pose});
-    }
-    return model;
+    return parseModel(doc, modelName, _include.isStatic);
   }
   return nullptr;
 }
 
-/////////////////////////////////////////////////
-TEST(InterfaceAPI, NestedIncludeData)
+class InterfaceAPI : public ::testing::Test
 {
-  const std::string modelDir = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "integration", "model");
+  // cppcheck-suppress unusedFunction
+  protected: void SetUp() override
+  {
+    this->modelDir = sdf::filesystem::append(
+        PROJECT_SOURCE_PATH, "test", "integration", "model");
 
+    this->config.SetFindCallback(
+        [=](const std::string &_file)
+        {
+          return sdf::filesystem::append(modelDir, _file);
+        });
+  }
+
+  public: std::string modelDir;
+  public: sdf::ParserConfig config;
+};
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPI, NestedIncludeData)
+{
   const std::string testSdf = R"(
 <sdf version="1.8">
   <world name="default">
@@ -281,13 +316,6 @@ TEST(InterfaceAPI, NestedIncludeData)
   </world>
 </sdf>)";
 
-  sdf::ParserConfig config;
-  config.SetFindCallback(
-      [&](const std::string &_file)
-      {
-        return sdf::filesystem::append(modelDir, _file);
-      });
-
   auto testYamlParser =
       [&](const sdf::NestedInclude &_include, sdf::Errors &_errors)
   {
@@ -296,8 +324,8 @@ TEST(InterfaceAPI, NestedIncludeData)
 
     const std::string fileName = "test_file.yaml";
     EXPECT_EQ(fileName, _include.uri);
-    EXPECT_EQ(
-        sdf::filesystem::append(modelDir, fileName), _include.resolvedFileName);
+    EXPECT_EQ(sdf::filesystem::append(this->modelDir, fileName),
+        _include.resolvedFileName);
     EXPECT_EQ("box", _include.localModelName);
     EXPECT_TRUE(_include.isStatic);
     EXPECT_TRUE(_include.virtualCustomElements->HasElement("extra"));
@@ -333,10 +361,10 @@ TEST(InterfaceAPI, NestedIncludeData)
     return nullptr;
   };
 
-  config.RegisterCustomModelParser(testYamlParser);
-  config.RegisterCustomModelParser(testTomlParser);
+  this->config.RegisterCustomModelParser(testYamlParser);
+  this->config.RegisterCustomModelParser(testTomlParser);
   sdf::Root root;
-  sdf::Errors errors = root.LoadSdfString(testSdf, config);
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
   ASSERT_EQ(3u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::URI_INVALID, errors[0].Code());
   EXPECT_EQ("Test YAML error message", errors[0].Message());
@@ -349,25 +377,15 @@ TEST(InterfaceAPI, NestedIncludeData)
 }
 
 /////////////////////////////////////////////////
-TEST(InterfaceAPI, IncludeTOMLFile)
+TEST_F(InterfaceAPI, TomlParser)
 {
-  const std::string modelDir = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "integration", "model");
-
+  using ignition::math::Pose3d;
   const std::string testFile = sdf::filesystem::append(
       PROJECT_SOURCE_PATH, "test", "sdf", "include_with_interface_api.sdf");
 
-  sdf::ParserConfig config;
-  config.SetFindCallback(
-      [&](const std::string &_file)
-      {
-        std::cout << "Find: " << _file << std::endl;
-        return sdf::filesystem::append(modelDir, _file);
-      });
-
-  config.RegisterCustomModelParser(customTomlParser);
+  this->config.RegisterCustomModelParser(customTomlParser);
   sdf::Root root;
-  sdf::Errors errors = root.Load(testFile, config);
+  sdf::Errors errors = root.Load(testFile, this->config);
   EXPECT_TRUE(errors.empty()) << errors;
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
@@ -376,7 +394,6 @@ TEST(InterfaceAPI, IncludeTOMLFile)
   ASSERT_NE(nullptr, interfaceModel);
   EXPECT_EQ("double_pendulum", interfaceModel->Name());
   EXPECT_EQ("base", interfaceModel->CanonicalLinkName());
-  using ignition::math::Pose3d;
   EXPECT_EQ(
       Pose3d(1, 0, 0, 0, 0, 0), interfaceModel->ModelFramePoseInParentFrame());
   EXPECT_EQ(Pose3d(-1, 0, -0.5, 0, 0, 0),
@@ -417,5 +434,170 @@ TEST(InterfaceAPI, IncludeTOMLFile)
     ASSERT_EQ(1u, expJoints.count(joint.Name()));
     EXPECT_EQ(expJoints[joint.Name()].first, joint.ChildName());
     EXPECT_EQ(expJoints[joint.Name()].second, joint.PoseInChildFrame());
+  }
+
+  EXPECT_EQ(2u, interfaceModel->NestedModels().size());
+  std::map <std::string, Pose3d> expNestedModels = {
+      {"child_model", Pose3d(2, 0, 0, 0, 0, 0)},
+      {"child_dp", Pose3d(3, 0, 0, 0, 0, 0)},
+  };
+  for (const auto &nestedModel : interfaceModel->NestedModels())
+  {
+    ASSERT_EQ(1u, expNestedModels.count(nestedModel->Name()));
+    EXPECT_EQ(expNestedModels[nestedModel->Name()],
+        nestedModel->ModelFramePoseInParentFrame());
+  }
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPI, FrameSemantics)
+{
+  using ignition::math::Pose3d;
+  const std::string testFile = sdf::filesystem::append(PROJECT_SOURCE_PATH,
+      "test", "sdf", "include_with_interface_api_frame_semantics.sdf");
+
+  this->config.RegisterCustomModelParser(customTomlParser);
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile, config);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  // std::cout << root.PoseGraph() << std::endl;
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  EXPECT_EQ(1u, world->InterfaceModelCount());
+
+  auto resolvePoseNoErrors =
+      [](const sdf::SemanticPose &_semPose, const std::string _relativeTo = "")
+  {
+    Pose3d pose;
+    sdf::Errors resolveErrors = _semPose.Resolve(pose, _relativeTo);
+    EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
+    return pose;
+  };
+  auto resolveAttachedToNoErrors = [](const sdf::Frame &_frame)
+  {
+    std::string resolvedBody;
+    sdf::Errors resolveErrors = _frame.ResolveAttachedToBody(resolvedBody);
+    EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
+    return resolvedBody;
+  };
+
+  const Pose3d dpPose(1, 0, 0, 0, 0, 0);
+  {
+    const sdf::Frame *frame = world->FrameByName("F1");
+    const sdf::Frame *frameAttach = world->FrameByName("F1_attach");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frameAttach);
+    const Pose3d expPose = dpPose;
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    EXPECT_EQ("double_pendulum::base", resolveAttachedToNoErrors(*frameAttach));
+  }
+  {
+    const sdf::Frame *frame = world->FrameByName("F2");
+    const sdf::Frame *frameAttach = world->FrameByName("F2_attach");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frameAttach);
+    const Pose3d upperLinkPose = Pose3d(0, 0, 2.1, -1.5708, 0, 0);
+    const Pose3d expPose = dpPose * upperLinkPose;
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    EXPECT_EQ(
+        "double_pendulum::upper_link", resolveAttachedToNoErrors(*frameAttach));
+  }
+  {
+    const sdf::Frame *frame = world->FrameByName("F3");
+    const sdf::Frame *frameAttach = world->FrameByName("F3_attach");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frameAttach);
+    const Pose3d upperLinkPose = Pose3d(0, 0, 2.1, -1.5708, 0, 0);
+    const Pose3d upperJointPose = Pose3d(0.001, 0, 0, 0, 0, 0);
+    const Pose3d expPose = dpPose * upperLinkPose * upperJointPose;
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    EXPECT_EQ(
+        "double_pendulum::upper_link", resolveAttachedToNoErrors(*frameAttach));
+  }
+  {
+    const sdf::Frame *frame = world->FrameByName("F4");
+    const sdf::Frame *frameAttach = world->FrameByName("F4_attach");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frameAttach);
+    const Pose3d frame1Pose = Pose3d(0, 1, 0.0, 0, 0, 0);
+    const Pose3d expPose = dpPose * frame1Pose;
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    EXPECT_EQ(
+        "double_pendulum::base", resolveAttachedToNoErrors(*frameAttach));
+  }
+  {
+    const sdf::Frame *frame = world->FrameByName("F5");
+    const sdf::Frame *frameAttach = world->FrameByName("F5_attach");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frameAttach);
+    const Pose3d childModel = Pose3d(2, 0, 0, 0, 0, 0);
+    const Pose3d expPose = dpPose * childModel;
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    EXPECT_EQ("double_pendulum::child_model::base_link",
+        resolveAttachedToNoErrors(*frameAttach));
+  }
+  {
+    const sdf::Frame *frame = world->FrameByName("F6");
+    const sdf::Frame *frameAttach = world->FrameByName("F6_attach");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frameAttach);
+    const Pose3d childModel = Pose3d(2, 0, 0, 0, 0, 0);
+    const Pose3d childModelBaseLink = Pose3d(1, 0, 0, 0, 0, 0);
+    const Pose3d expPose = dpPose * childModel * childModelBaseLink;
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    EXPECT_EQ("double_pendulum::child_model::base_link",
+        resolveAttachedToNoErrors(*frameAttach));
+  }
+  {
+    const sdf::Frame *frame = world->FrameByName("F7");
+    const sdf::Frame *frameAttach = world->FrameByName("F7_attach");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frameAttach);
+    const Pose3d childDp = Pose3d(3, 0, 0, 0, 0, 0);
+    const Pose3d childDpModel1 = Pose3d(0, 0, 0, 0, 0, 0);
+    const Pose3d expPose = dpPose * childDp * childDpModel1;
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    EXPECT_EQ("double_pendulum::child_dp::model_1::lower_link",
+        resolveAttachedToNoErrors(*frameAttach));
+  }
+  {
+    const sdf::Frame *frame = world->FrameByName("F8");
+    const sdf::Frame *frameAttach = world->FrameByName("F8_attach");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frameAttach);
+    const Pose3d childDp = Pose3d(3, 0, 0, 0, 0, 0);
+    const Pose3d childDpModel1 = Pose3d(0, 0, 0, 0, 0, 0);
+    const Pose3d childDpModel1LowerLink = Pose3d(0.25, 1.0, 2.1, -2, 0, 0);
+    const Pose3d expPose =
+        dpPose * childDp * childDpModel1 * childDpModel1LowerLink;
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    EXPECT_EQ("double_pendulum::child_dp::model_1::lower_link",
+        resolveAttachedToNoErrors(*frameAttach));
+  }
+  {
+    const sdf::Frame *frame = world->FrameByName("F9");
+    const sdf::Frame *frameAttach = world->FrameByName("F9_attach");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frameAttach);
+    const Pose3d childDp = Pose3d(3, 0, 0, 0, 0, 0);
+    const Pose3d childDpModel1 = Pose3d(0, 0, 0, 0, 0, 0);
+    const Pose3d childDpModel1LowerLink = Pose3d(0.25, 1.0, 2.1, -2, 0, 0);
+    // childDpLowerJoint is relative to childDpModel1LowerLink
+    const Pose3d childDpLowerJoint = Pose3d(0, 0.001, 0, 0, 0, 0);
+    const Pose3d expPose = dpPose * childDp * childDpModel1 *
+        childDpModel1LowerLink * childDpLowerJoint;
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    EXPECT_EQ("double_pendulum::child_dp::model_1::lower_link",
+        resolveAttachedToNoErrors(*frameAttach));
   }
 }

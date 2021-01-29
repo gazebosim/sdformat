@@ -10,9 +10,5 @@
         <info2>value2</info2>
       </extra>
     </include>
-
-    <!-- <frame name="F1"> -->
-    <!--   <pose relative_to="box"/> -->
-    <!-- </frame> -->
   </world>
 </sdf>

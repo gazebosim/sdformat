@@ -56,7 +56,7 @@ struct NestedInclude {
   std::string localModelName;
 
   /// As defined by `//include/static`.
-  bool isStatic{false};
+  std::optional<bool> isStatic;
 
   // TODO(addisu) Don't we need to pass //include/pose?
 

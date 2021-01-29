@@ -30,10 +30,14 @@ sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
   for (auto includeElem = _sdf->GetElementImpl("include"); includeElem;
        includeElem = includeElem->GetNextElement("include"))
   {
-    const auto uri = includeElem->Get<std::string>("uri");
-    const auto localName = includeElem->Get<std::string>("name", "").first;
-    const auto isStatic = includeElem->Get<bool>("static", false).first;
-    const std::string modelPath = sdf::findFile(uri, true, true, _config);
+    sdf::NestedInclude include;
+    include.uri = includeElem->Get<std::string>("uri");
+    include.localModelName = includeElem->Get<std::string>("name", "").first;
+    if (includeElem->HasElement("static"))
+    {
+      include.isStatic = includeElem->Get<bool>("static");
+    }
+    include.resolvedFileName = sdf::findFile(include.uri, true, true, _config);
 
     sdf::ElementPtr virtualCustomElements = includeElem->Clone();
     for (std::size_t i = 0; i < includeElem->GetElementDescriptionCount(); ++i)
@@ -47,12 +51,8 @@ sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
       }
     }
 
-    sdf::NestedInclude include;
-    include.uri = uri;
-    include.resolvedFileName = modelPath;
-    include.localModelName = localName;
-    include.isStatic = isStatic;
     include.virtualCustomElements = virtualCustomElements;
+
     for (const auto &parser : _config.CustomModelParsers())
     {
       sdf::Errors errors;
@@ -66,6 +66,7 @@ sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
       }
       else if (nullptr != model)
       {
+        // TODO: (addisu) Check for model name uniqueness
         _models.push_back(std::move(model));
         break;
       }

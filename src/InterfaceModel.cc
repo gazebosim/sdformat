@@ -24,21 +24,25 @@ inline namespace SDF_VERSION_NAMESPACE
 class InterfaceModel::Implementation
 {
   public: std::string name;
+  public: bool isStatic;
   public: std::string canonicalLinkName;
   public: ignition::math::Pose3d poseInCanonicalLinkFrame;
   public: ignition::math::Pose3d poseInParentFrame;
+  public: std::vector<sdf::InterfaceModelConstPtr> nestedModels;
   public: std::vector<sdf::InterfaceFrame> frames;
   public: std::vector<sdf::InterfaceJoint> joints;
   public: std::vector<sdf::InterfaceLink> links;
 };
 
 InterfaceModel::InterfaceModel(const std::string &_name,
+    bool _static,
     const std::string &_canonicalLinkName,
     const ignition::math::Pose3d &_poseInCanonicalLinkFrame,
     const ignition::math::Pose3d &_poseInParentFrame)
     : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->name = _name;
+  this->dataPtr->isStatic = _static;
   this->dataPtr->canonicalLinkName = _canonicalLinkName;
   this->dataPtr->poseInCanonicalLinkFrame = _poseInCanonicalLinkFrame;
   this->dataPtr->poseInParentFrame = _poseInParentFrame;
@@ -51,11 +55,23 @@ const std::string &InterfaceModel::Name() const
 }
 
 /////////////////////////////////////////////////
+bool InterfaceModel::Static() const
+{
+  return this->dataPtr->isStatic;
+}
+
+/////////////////////////////////////////////////
 const std::string &InterfaceModel::CanonicalLinkName() const
 {
   return this->dataPtr->canonicalLinkName;
 }
 
+/////////////////////////////////////////////////
+const std::string InterfaceModel::ResolvedCanonicalLinkName() const
+{
+  // TODO: This is not correct.
+  return this->dataPtr->canonicalLinkName;
+}
 /////////////////////////////////////////////////
 const ignition::math::Pose3d &
 InterfaceModel::ModelFramePoseInCanonicalLinkFrame() const
@@ -68,6 +84,19 @@ const ignition::math::Pose3d &
 InterfaceModel::ModelFramePoseInParentFrame() const
 {
   return this->dataPtr->poseInParentFrame;
+}
+
+///////////////////////////////////////////////
+void InterfaceModel::AddNestedModel(sdf::InterfaceModelConstPtr _nestedmodel)
+{
+  this->dataPtr->nestedModels.push_back(std::move(_nestedmodel));
+}
+
+/////////////////////////////////////////////////
+const std::vector<sdf::InterfaceModelConstPtr> &
+InterfaceModel::NestedModels() const
+{
+  return this->dataPtr->nestedModels;
 }
 
 /////////////////////////////////////////////////

@@ -22,6 +22,10 @@
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
+#include "sdf/InterfaceFrame.hh"
+#include "sdf/InterfaceJoint.hh"
+#include "sdf/InterfaceLink.hh"
+#include "sdf/InterfaceModel.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -493,6 +497,213 @@ Errors buildFrameAttachedToGraph(
 }
 
 /////////////////////////////////////////////////
+Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
+    InterfaceModelConstPtr _model, bool _root)
+{
+  Errors errors;
+
+  if (!_model)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Invalid sdf::Model pointer."});
+    return errors;
+  }
+  else if (_model->Links().size() == 0u && _model->NestedModels().size() == 0 &&
+      !_model->Static())
+  {
+    errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
+                     "A model must have at least one link."});
+    return errors;
+  }
+
+  auto frameType =
+      _model->Static() ? sdf::FrameType::STATIC_MODEL : sdf::FrameType::MODEL;
+
+  const std::string scopeContextName = "__model__";
+
+  auto rootId = ignition::math::graph::kNullId;
+  if (_root)
+  {
+    // The __root__ vertex identifies the scope that contains a root level
+    // model. In the PoseRelativeTo graph, this vertex is connected to the model
+    // with an edge that holds the value of //model/pose. However, in the
+    // FrameAttachedTo graph, the vertex is disconnected because nothing is
+    // attached to it. Since only links and static models are allowed to be
+    // disconnected in this graph, the STATIC_MODEL was chosen as its frame
+    // type. A different frame type could potentially be used, but that adds
+    // more complexity to the validateFrameAttachedToGraph code.
+    _out = _out.AddScopeVertex(
+        "", "__root__", scopeContextName, sdf::FrameType::STATIC_MODEL);
+    rootId = _out.ScopeVertexId();
+  }
+
+  const auto modelId = _out.AddVertex(_model->Name(), frameType).Id();
+
+  auto outModel = _out.AddScopeVertex(
+      _model->Name(), scopeContextName, scopeContextName, frameType);
+  const auto modelFrameId = outModel.ScopeVertexId();
+
+  // Add an aliasing edge from the model vertex to the
+  // corresponding vertex in the FrameAttachedTo graph of the child model,
+  auto &edge = outModel.AddEdge({modelId, modelFrameId}, true);
+  // Set the edge weight to 0 to indicate that this is an aliasing edge.
+  edge.SetWeight(0);
+
+  // add link vertices
+  for (const auto &link : _model->Links())
+  {
+    if (outModel.Count(link.Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Link with non-unique name [" + link.Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
+    outModel.AddVertex(link.Name(), sdf::FrameType::LINK);
+  }
+
+  // add joint vertices
+  for (const auto &joint : _model->Joints())
+  {
+    if (outModel.Count(joint.Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Joint with non-unique name [" + joint.Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
+    outModel.AddVertex(joint.Name(), sdf::FrameType::JOINT).Id();
+  }
+
+  // add frame vertices
+  for (const auto &frame : _model->Frames())
+  {
+    if (outModel.Count(frame.Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Frame with non-unique name [" + frame.Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
+    outModel.AddVertex(frame.Name(), sdf::FrameType::FRAME).Id();
+  }
+
+  // add nested model vertices
+  for (const auto &nestedModel : _model->NestedModels())
+  {
+    if (outModel.Count(nestedModel->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Nested model with non-unique name [" + nestedModel->Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
+    auto nestedErrors = buildFrameAttachedToGraph(outModel, nestedModel, false);
+    errors.insert(errors.end(), nestedErrors.begin(), nestedErrors.end());
+  }
+
+  // add edges from joint to child frames
+  for (const auto &joint : _model->Joints())
+  {
+    auto jointId = outModel.VertexIdByName(joint.Name());
+    const auto &childFrameName = joint.ChildName();
+    if (outModel.Count(childFrameName) != 1)
+    {
+      errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+        "Child frame with name[" + childFrameName +
+        "] specified by joint with name[" + joint.Name() +
+        "] not found in model with name[" + _model->Name() + "]."});
+      continue;
+    }
+    auto childFrameId = outModel.VertexIdByName(childFrameName);
+    outModel.AddEdge({jointId, childFrameId}, true);
+  }
+
+  // add frame edges
+  for (const auto &frame : _model->Frames())
+  {
+    auto frameId = outModel.VertexIdByName(frame.Name());
+    // look for vertex in graph that matches attached_to value
+    std::string attachedTo = frame.AttachedTo();
+    if (attachedTo.empty())
+    {
+      // if the attached-to name is empty, use the scope context name
+      attachedTo = scopeContextName;
+    }
+    if (outModel.Count(attachedTo) != 1)
+    {
+      errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
+          "attached_to name[" + attachedTo +
+          "] specified by frame with name[" + frame.Name() +
+          "] does not match a nested model, link, joint, or frame name "
+          "in model with name[" + _model->Name() + "]."});
+      continue;
+    }
+    auto attachedToId = outModel.VertexIdByName(attachedTo);
+    bool edgeData = true;
+    if (frame.Name() == frame.AttachedTo())
+    {
+      // set edgeData to false if attaches to itself, since this is invalid
+      edgeData = false;
+      errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
+          "attached_to name[" + attachedTo +
+          "] is identical to frame name[" + frame.Name() +
+          "], causing a graph cycle "
+          "in model with name[" + _model->Name() + "]."});
+    }
+    outModel.AddEdge({frameId, attachedToId}, edgeData);
+  }
+
+  // identify canonical link, which may be nested
+  const std::string canonicalLinkName = _model->ResolvedCanonicalLinkName();
+  // TODO (addisu) Resolve canonical link
+  const auto canonicalLinkId = outModel.VertexIdByName(canonicalLinkName);
+  if (!_model->Static())
+  {
+    if (ignition::math::graph::kNullId == canonicalLinkId)
+    {
+      if (canonicalLinkName.empty())
+      {
+        if (_model->NestedModels().size() == 0u)
+        {
+          errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
+              "A model must have at least one link."});
+        }
+        else
+        {
+          // The canonical link was not found, but the model could have a
+          // descendant that has a static model, so simply create an edge to the
+          // first model and let the attached_to frame resolution take care of
+          // finding the canonical link
+          auto firstChildModelId =
+              outModel.VertexIdByName(_model->NestedModels().front()->Name());
+          outModel.AddEdge({modelFrameId, firstChildModelId }, true);
+        }
+      }
+      else
+      {
+        errors.push_back({ErrorCode::MODEL_CANONICAL_LINK_INVALID,
+            "canonical_link with name[" + canonicalLinkName +
+            "] not found in model with name[" + _model->Name() + "]."});
+      }
+      // return early
+      return errors;
+    }
+    else
+    {
+      // Add an edge from the implicit model frame to the canonical link found.
+      outModel.AddEdge({modelFrameId, canonicalLinkId}, true);
+    }
+  }
+
+  return errors;
+}
+
+/////////////////////////////////////////////////
 Errors buildFrameAttachedToGraph(
             ScopedGraph<FrameAttachedToGraph> &_out, const World *_world)
 {
@@ -529,6 +740,22 @@ Errors buildFrameAttachedToGraph(
       continue;
     }
     auto modelErrors = buildFrameAttachedToGraph(_out, model, false);
+    errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
+  }
+
+  // add interface model vertices
+  for (uint64_t im = 0; im < _world->InterfaceModelCount(); ++im)
+  {
+    auto ifaceModel = _world->InterfaceModelByIndex(im);
+    if (_out.Count(ifaceModel->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Interface Model with non-unique name [" + ifaceModel->Name() +
+          "] detected in world with name [" + _world->Name() +
+          "]."});
+      continue;
+    }
+    auto modelErrors = buildFrameAttachedToGraph(_out, ifaceModel, false);
     errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
   }
 
@@ -892,6 +1119,192 @@ Errors buildPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
+Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
+    InterfaceModelConstPtr _model, bool _root)
+{
+  Errors errors;
+
+  if (!_model)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Invalid sdf::Model pointer."});
+    return errors;
+  }
+
+  const std::string scopeContextName = "__model__";
+  auto rootId = ignition::math::graph::kNullId;
+  // add the model frame vertex first
+  if (_root)
+  {
+    _out = _out.AddScopeVertex(
+        "", "__root__", scopeContextName, sdf::FrameType::MODEL);
+    rootId = _out.ScopeVertexId();
+  }
+  auto modelId = _out.AddVertex(_model->Name(), sdf::FrameType::MODEL).Id();
+  auto outModel = _out.AddScopeVertex(_model->Name(), scopeContextName,
+      scopeContextName, sdf::FrameType::MODEL);
+  auto modelFrameId = outModel.ScopeVertexId();
+
+  // Add an aliasing edge from the model vertex to the
+  // corresponding vertex in the PoseRelativeTo graph of the child model,
+  // i.e, to the <model_name>::__model__ vertex.
+  auto &edge = _out.AddEdge({modelId, modelFrameId}, {});
+  // Set the edge weight to 0 to indicate that this is an aliasing edge.
+  edge.SetWeight(0);
+
+  // add link vertices and default edge if relative_to is empty
+  for (const auto &link : _model->Links())
+  {
+    if (outModel.Count(link.Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Link with non-unique name [" + link.Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
+    auto linkId =
+        outModel.AddVertex(link.Name(), sdf::FrameType::LINK).Id();
+
+    // relative_to is empty, so add edge from implicit model frame to link
+    outModel.AddEdge({modelFrameId, linkId}, link.PoseInModelFrame());
+  }
+
+  // add joint vertices
+  for (const auto &joint : _model->Joints())
+  {
+    if (outModel.Count(joint.Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Joint with non-unique name [" + joint.Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
+    outModel.AddVertex(joint.Name(), sdf::FrameType::JOINT).Id();
+  }
+
+  // add frame vertices and default edge if both
+  // relative_to and attached_to are empty
+  for (const auto &frame: _model->Frames())
+  {
+    if (outModel.Count(frame.Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Frame with non-unique name [" + frame.Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
+    auto frameId = outModel.AddVertex(frame.Name(), sdf::FrameType::FRAME).Id();
+    if (frame.AttachedTo().empty())
+    {
+      // add edge from implicit model frame to frame
+      outModel.AddEdge({modelFrameId, frameId}, frame.PoseInAttachedToFrame());
+    }
+  }
+
+  // add nested model vertices and default edge if relative_to is empty
+  for (const auto &nestedModel : _model->NestedModels())
+  {
+    if (outModel.Count(nestedModel->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Nested model with non-unique name [" + nestedModel->Name() +
+          "] detected in model with name [" + _model->Name() +
+          "]."});
+      continue;
+    }
+
+    auto nestedErrors = buildPoseRelativeToGraph(outModel, nestedModel, false);
+    errors.insert(errors.end(), nestedErrors.begin(), nestedErrors.end());
+    auto nestedModelId = outModel.VertexIdByName(nestedModel->Name());
+    outModel.AddEdge({modelFrameId, nestedModelId},
+        nestedModel->ModelFramePoseInParentFrame());
+  }
+
+  for (const auto &joint : _model->Joints())
+  {
+    const std::string &relativeTo = joint.ChildName();
+    auto jointId = outModel.VertexIdByName(joint.Name());
+
+    // look for vertex in graph that matches relative_to value
+    if (outModel.Count(relativeTo) != 1)
+    {
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+          "relative_to name[" + relativeTo +
+          "] specified by joint with name[" + joint.Name() +
+          "] does not match a nested model, link, joint, or frame name "
+          "in model with name[" + _model->Name() + "]."});
+      continue;
+    }
+    auto relativeToId = outModel.VertexIdByName(relativeTo);
+    if (joint.Name() == relativeTo)
+    {
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
+          "relative_to name[" + relativeTo +
+          "] is identical to joint name[" + joint.Name() +
+          "], causing a graph cycle "
+          "in model with name[" + _model->Name() + "]."});
+    }
+    outModel.AddEdge({relativeToId, jointId}, joint.PoseInChildFrame());
+  }
+
+  for (const auto &frame: _model->Frames())
+  {
+    if (frame.AttachedTo().empty())
+    {
+      continue;
+    }
+    auto frameId = outModel.VertexIdByName(frame.Name());
+    std::string relativeTo;
+    std::string typeForErrorMsg;
+    ErrorCode errorCode;
+    relativeTo = frame.AttachedTo();
+    typeForErrorMsg = "attached_to";
+    errorCode = ErrorCode::FRAME_ATTACHED_TO_INVALID;
+
+    // look for vertex in graph that matches relative_to value
+    if (outModel.Count(relativeTo) != 1)
+    {
+      errors.push_back({errorCode,
+          "attached_to name[" + relativeTo +
+          "] specified by frame with name[" + frame.Name() +
+          "] does not match a nested model, link, joint, or frame name "
+          "in model with name[" + _model->Name() + "]."});
+      continue;
+    }
+    auto relativeToId = outModel.VertexIdByName(relativeTo);
+    if (frame.Name() == relativeTo)
+    {
+      errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
+          "relative_to name[" + relativeTo +
+          "] is identical to frame name[" + frame.Name() +
+          "], causing a graph cycle "
+          "in model with name[" + _model->Name() + "]."});
+    }
+    outModel.AddEdge({relativeToId, frameId}, frame.PoseInAttachedToFrame());
+  }
+
+
+  if (_root)
+  {
+    // We have to add this edge now with an identity pose to be able to call
+    // resolveModelPoseWithPlacementFrame, which in turn calls
+    // sdf::resolvePoseRelativeToRoot. We will later update the edge after the
+    // pose is calculated.
+    // auto rootToModel = outModel.AddEdge({rootId, modelId}, {});
+    // ignition::math::Pose3d resolvedModelPose = _model->ModelFramePoseInParentFrame();
+    // sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
+    //     *_model, outModel, resolvedModelPose);
+    // errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+
+    // outModel.UpdateEdge(rootToModel, resolvedModelPose);
+  }
+  return errors;
+}
+
+/////////////////////////////////////////////////
 Errors buildPoseRelativeToGraph(
     ScopedGraph<PoseRelativeToGraph> &_out, const World *_world)
 {
@@ -935,7 +1348,23 @@ Errors buildPoseRelativeToGraph(
     }
 
     auto modelErrors = buildPoseRelativeToGraph(_out , model, false);
-    errors.insert(errors.end(), modelErrors .begin(), modelErrors .end());
+    errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
+  }
+
+  for (uint64_t m = 0; m < _world->InterfaceModelCount(); ++m)
+  {
+    auto ifaceModel = _world->InterfaceModelByIndex(m);
+    if (_out.Count(ifaceModel->Name()) > 0)
+    {
+      errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Model with non-unique name [" + ifaceModel->Name() +
+          "] detected in world with name [" + _world->Name() +
+          "]."});
+      continue;
+    }
+
+    auto modelErrors = buildPoseRelativeToGraph(_out , ifaceModel , false);
+    errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
   }
 
   // add frame vertices and default edge if both
@@ -1007,6 +1436,48 @@ Errors buildPoseRelativeToGraph(
     _out.AddEdge({relativeToId, modelId}, resolvedModelPose);
   }
 
+  for (uint64_t m = 0; m < _world->InterfaceModelCount(); ++m)
+  {
+    auto ifaceModel = _world->InterfaceModelByIndex(m);
+
+    auto modelId = _out.VertexIdByName(ifaceModel->Name());
+    // if relative_to is empty, add edge from implicit model frame to
+    // world
+    auto relativeToId = worldFrameId;
+
+    // check if we've already added a default edge
+    // const std::string &relativeTo = ifaceModel->PoseRelativeTo();
+    // if (!relativeTo.empty())
+    // {
+    //   // look for vertex in graph that matches relative_to value
+    //   if (_out.Count(relativeTo) != 1)
+    //   {
+    //     errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
+    //         "relative_to name[" + relativeTo +
+    //         "] specified by model with name[" + ifaceModel->Name() +
+    //         "] does not match a model or frame name "
+    //         "in world with name[" + _world->Name() + "]."});
+    //     continue;
+    //   }
+
+    //   relativeToId = _out.VertexIdByName(relativeTo);
+    //   if (ifaceModel->Name() == relativeTo)
+    //   {
+    //     errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
+    //         "relative_to name[" + relativeTo +
+    //         "] is identical to model name[" + ifaceModel->Name() +
+    //         "], causing a graph cycle "
+    //         "in world with name[" + _world->Name() + "]."});
+    //   }
+    // }
+
+    ignition::math::Pose3d resolvedModelPose = ifaceModel->ModelFramePoseInParentFrame();
+    // sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(*ifaceModel,
+    //     _out.ChildModelScope(ifaceModel->Name()), resolvedModelPose);
+    // errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+
+    _out.AddEdge({relativeToId, modelId}, resolvedModelPose);
+  }
   for (uint64_t f = 0; f < _world->FrameCount(); ++f)
   {
     auto frame = _world->FrameByIndex(f);

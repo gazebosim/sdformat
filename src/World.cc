@@ -224,23 +224,25 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
       loadUniqueRepeated<Model>(_sdf, "model", this->dataPtr->models);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
-  // Load included models via the interface API
-  Errors interfaceModelLoadErrors =
-      loadInterfaceElements(_sdf, _config, this->dataPtr->interfaceModels);
-  errors.insert(errors.end(), interfaceModelLoadErrors.begin(),
-      interfaceModelLoadErrors.end());
-
-  // for (const auto &imodel : this->dataPtr->interfaceModels)
-  // {
-  //   frameNames.insert(imodel->Name());
-  // }
-
   // Models are loaded first, and loadUniqueRepeated ensures there are no
   // duplicate names, so these names can be added to frameNames without
   // checking uniqueness.
   for (const auto &model : this->dataPtr->models)
   {
     frameNames.insert(model.Name());
+  }
+
+  // Load included models via the interface API
+  Errors interfaceModelLoadErrors =
+      loadInterfaceElements(_sdf, _config, this->dataPtr->interfaceModels);
+  errors.insert(errors.end(), interfaceModelLoadErrors.begin(),
+      interfaceModelLoadErrors.end());
+
+  // TODO: Check that the interface model names don't collide with the regular
+  // model names
+  for (const auto &ifaceModel : this->dataPtr->interfaceModels)
+  {
+    frameNames.insert(ifaceModel->Name());
   }
 
   // Load all the physics.
@@ -596,7 +598,7 @@ uint64_t World::InterfaceModelCount() const
 }
 
 /////////////////////////////////////////////////
-std::shared_ptr<const InterfaceModel> World::InterfaceModelByIndex(
+InterfaceModelConstPtr World::InterfaceModelByIndex(
     const uint64_t _index) const
 {
   if (_index < this->dataPtr->interfaceModels.size())
