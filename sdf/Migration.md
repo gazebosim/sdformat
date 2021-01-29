@@ -14,6 +14,11 @@ but with improved human-readability.
 
 ## SDFormat specification 1.7 to 1.8
 
+### Modifications
+
+1. `//inertial/pose/@relative_to` attribute does not accept a non-empty value.
+    + [Pull request 480](https://github.com/osrf/sdformat/pull/480)
+
 ## SDFormat specification 1.6 to 1.7
 
 ## SDFormat specification 1.5 to 1.6
@@ -94,4 +99,3 @@ but with improved human-readability.
     + [Bitbucket pull request 199](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/199)
     + [Bitbucket pull request 243](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/243)
     + [Bitbucket pull request 244](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/244)
-
