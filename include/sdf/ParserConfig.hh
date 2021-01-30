@@ -35,6 +35,7 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE
 {
 
+// Policy to describe how sdf parser warnings should be treated
 enum class WarningsPolicy
 {
   /// \brief Warnings are treated as errors and added to the cumulative errors
