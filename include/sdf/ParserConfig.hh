@@ -34,6 +34,19 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
+
+enum class WarningsPolicy
+{
+  /// \brief Warnings are treated as errors and added to the cumulative errors
+  PEDANTIC,
+
+  /// \brief Warnings are streamed to sdfwarn
+  WARNED,
+
+  /// \brief Warnings are streamed to sdfdbg
+  IGNORED
+};
+
 // Forward declare private data class.
 class ParserConfigPrivate;
 
@@ -113,6 +126,14 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \param[in] _path Colon separated set of paths.
   /// \sa sdf::findFile() for the order of search operations
   public: void AddURIPath(const std::string &_uri, const std::string &_path);
+
+  /// \brief Set the warning enforcment policy.
+  /// \param[in] _policy policy enum value to set
+  public: void SetWarningsPolicy(sdf::WarningsPolicy _policy);
+
+  /// \brief Get the current warning enforcement policy
+  /// \return The warning enforcement policy enum value
+  public: sdf::WarningsPolicy WarningsPolicy() const;
 
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)

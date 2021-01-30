@@ -89,5 +89,27 @@ bool isValidFrameReference(const std::string &_name)
 {
   return "__root__" != _name;
 }
+
+void addRecoverableWarning(
+  const sdf::WarningsPolicy _policy,
+  const std::string &_message,
+  const ErrorCode _error,
+  sdf::Errors &_errors)
+{
+  switch (_policy)
+  {
+    case WarningsPolicy::PEDANTIC:
+      _errors.push_back({_error, _message});
+      break;
+    case WarningsPolicy::WARNED:
+      sdfwarn << _message;
+      break;
+    case WarningsPolicy::IGNORED:
+      sdfdbg << _message;
+      break;
+    default:
+      throw std::runtime_error("Unhandled warning policy enum value");
+  }
+}
 }
 }

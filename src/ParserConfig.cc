@@ -26,6 +26,11 @@ class sdf::ParserConfig::Implementation
 {
   public: ParserConfig::SchemeToPathMap uriPathMap;
   public: std::function<std::string(const std::string &)> findFileCB;
+
+  /// \brief Indicates how warnings and errors are tolerated. Default is for
+  /// warnings to be streamed via sdfwarn
+  public: WarningsPolicy warningsPolicy =
+    WarningsPolicy::WARNED;
 };
 
 
@@ -82,4 +87,14 @@ void ParserConfig::AddURIPath(const std::string &_uri, const std::string &_path)
       this->dataPtr->uriPathMap[_uri].push_back(part);
     }
   }
+}
+
+void ParserConfig::SetWarningsPolicy(sdf::WarningsPolicy policy)
+{
+  this->dataPtr->warningsPolicy = policy;
+}
+
+WarningsPolicy ParserConfig::WarningsPolicy() const
+{
+  return this->dataPtr->warningsPolicy;
 }

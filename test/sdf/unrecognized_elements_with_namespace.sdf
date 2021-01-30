@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="joint_incorrect_tags" some_attribute="staheousth">
+    <link name="link">
+      <pose>0 0 1 0 0 0</pose>
+      <third_party_software:not_a_link_element>This should be ignored because it's namespaced</third_party_software:not_a_link_element>
+    </link>
+    <third_party_software:not_a_model_element>This should also be ignored</third_party_software:not_a_model_element>
+  </model>
+  <third_party_software:not_an_sdf_element>Ignore this one tooo</third_party_software:not_an_sdf_element>
+</sdf>
