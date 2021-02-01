@@ -16,7 +16,7 @@ but with improved human-readability..
 
 ### Modifications
 
-1. Fixed Atmosphere DOM class's temperature default value. Changed it from from -0.065 to -0.0065.
+1. Fixed Atmosphere DOM class's temperature default value. Changed from -0.065 to -0.0065.
     * [Pull request 482](https://github.com/osrf/sdformat/pull/482)
 
 ## SDFormat 9.x to 10.0
