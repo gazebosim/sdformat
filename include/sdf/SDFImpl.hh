@@ -54,6 +54,20 @@ namespace sdf
   /// \{
 
   /// \brief Find the absolute path of a file.
+  ///
+  /// The search order in the function is as follows:
+  /// 1. Using the global URI path map, search in paths associated with the URI
+  ///    scheme of the input.
+  /// 2. Seach in the path defined by the macro SDF_SHARE_PATH.
+  /// 3. Search in the the libsdformat install path. The path is formed by
+  ///    has the pattern SDF_SHARE_PATH/sdformat<major version>/<version>/
+  /// 4. Directly check if the input path exists in the filesystem.
+  /// 5. Seach in the path defined by the environment variable SDF_PATH.
+  /// 6. If enabled via _searchLocalPath, prepend the input with the current
+  ///    working directory and check if the result path exists.
+  /// 7. If enabled via _useCallback and the global callback function is set,
+  ///    invoke the function and return its result.
+  ///
   /// \param[in] _filename Name of the file to find.
   /// \param[in] _searchLocalPath True to search for the file in the current
   /// working directory.
@@ -66,6 +80,11 @@ namespace sdf
                        bool _useCallback = false);
 
   /// \brief Find the absolute path of a file.
+  ///
+  /// This overload uses the URI path map and and the callback function
+  /// configured in the input ParserConfig object instead of their global
+  /// counterparts.
+  ///
   /// \param[in] _filename Name of the file to find.
   /// \param[in] _searchLocalPath True to search for the file in the current
   /// working directory.
