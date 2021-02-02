@@ -58,11 +58,11 @@ namespace sdf
   /// The search order in the function is as follows:
   /// 1. Using the global URI path map, search in paths associated with the URI
   ///    scheme of the input.
-  /// 2. Seach in the path defined by the macro SDF_SHARE_PATH.
+  /// 2. Seach in the path defined by the macro `SDF_SHARE_PATH`.
   /// 3. Search in the the libsdformat install path. The path is formed by
-  ///    has the pattern SDF_SHARE_PATH/sdformat<major version>/<version>/
+  ///    has the pattern `SDF_SHARE_PATH/sdformat<major version>/<version>/`
   /// 4. Directly check if the input path exists in the filesystem.
-  /// 5. Seach in the path defined by the environment variable SDF_PATH.
+  /// 5. Seach in the path defined by the environment variable `SDF_PATH`.
   /// 6. If enabled via _searchLocalPath, prepend the input with the current
   ///    working directory and check if the result path exists.
   /// 7. If enabled via _useCallback and the global callback function is set,

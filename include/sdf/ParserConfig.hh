@@ -91,6 +91,7 @@ class SDFORMAT_VISIBLE ParserConfig
   /// The callback should return a complete path to the requested file, or
   /// an empty string if the file was not found in the callback.
   /// \param[in] _cb The callback function.
+  /// \sa sdf::findFile() for the order of search operations
   public: void SetFindCallback(
               std::function<std::string(const std::string &)> _cb);
 
@@ -102,6 +103,7 @@ class SDFORMAT_VISIBLE ParserConfig
   /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
   /// \param[in] _uri URI that will be mapped to _path
   /// \param[in] _path Colon separated set of paths.
+  /// \sa sdf::findFile() for the order of search operations
   public: void AddURIPath(const std::string &_uri, const std::string &_path);
 
   /// \brief Private data pointer.
