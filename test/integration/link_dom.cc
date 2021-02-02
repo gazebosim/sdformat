@@ -689,7 +689,7 @@ TEST(DOMLink, ValidInertialPoseRelTo)
 {
   std::ostringstream stream;
   stream << "<?xml version=\"1.0\"?>"
-         << "<sdf version='1.7'>"
+         << "<sdf version='1.8'>"
          << "  <model name='A'>"
          << "    <link name='B'>"
          << "      <inertial>"
@@ -718,7 +718,7 @@ TEST(DOMLink, InvalidInertialPoseRelTo)
 {
   std::ostringstream stream;
   stream << "<?xml version=\"1.0\"?>"
-         << "<sdf version='1.7'>"
+         << "<sdf version='1.8'>"
          << "  <model name='A'>"
          << "    <frame name='C'>"
          << "      <pose>0 0 1 0 0 0</pose>"
@@ -733,12 +733,8 @@ TEST(DOMLink, InvalidInertialPoseRelTo)
 
   sdf::Root root;
   sdf::Errors errors = root.LoadSdfString(stream.str());
-  ASSERT_FALSE(errors.empty());
 
-  for (sdf::Error e : errors)
-    std::cout << e << std::endl;
-
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  // TODO(anyone) add test for warnings once it's implemented
 
   const sdf::Model *model = root.Model();
   ASSERT_NE(model, nullptr);

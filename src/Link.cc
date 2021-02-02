@@ -177,21 +177,7 @@ Errors Link::Load(ElementPtr _sdf)
     sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
 
     if (inertialElem->HasElement("pose"))
-    {
-      sdf::ElementPtr inertialPoseElem = inertialElem->GetElement("pose");
-      std::pair<std::string, bool> framePair =
-          inertialPoseElem->Get<std::string>("relative_to", "");
-
-      if (!(framePair.first).empty())
-      {
-        errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
-            "A non-empty value in the 'relative_to' attribute is not permitted "
-            "in the inertial pose element for link [" + this->dataPtr->name
-            + "]."});
-      }
-
-      loadPose(inertialPoseElem, inertiaPose, inertiaFrame);
-    }
+      loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
 
     // Get the mass.
     mass = inertialElem->Get<double>("mass", 1.0).first;
