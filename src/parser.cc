@@ -167,7 +167,8 @@ bool initFile(
 }
 
 //////////////////////////////////////////////////
-bool initString(const std::string &_xmlString, SDFPtr _sdf)
+bool initString(
+    const std::string &_xmlString, const ParserConfig &, SDFPtr _sdf)
 {
   auto xmlDoc = makeSdfDoc();
   if (xmlDoc.Parse(_xmlString.c_str()))
@@ -177,6 +178,12 @@ bool initString(const std::string &_xmlString, SDFPtr _sdf)
   }
 
   return initDoc(&xmlDoc, _sdf);
+}
+
+//////////////////////////////////////////////////
+bool initString(const std::string &_xmlString, SDFPtr _sdf)
+{
+  return initString(_xmlString, ParserConfig::GlobalConfig(), _sdf);
 }
 
 //////////////////////////////////////////////////

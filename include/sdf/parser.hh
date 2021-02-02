@@ -92,11 +92,11 @@ namespace sdf
   /// \return True if successful.
   SDFORMAT_VISIBLE
   bool initString(
-      const std::string &_xmlString, SDFPtr _sdf, const ParserConfig &_config);
+      const std::string &_xmlString, const ParserConfig &_config, SDFPtr _sdf);
 
   /// \brief Populate the SDF values from a file
   ///
-  /// This populates the given SDF pointer from a file. If the file is a URDF
+  /// This populates a new SDF pointer from a file. If the file is a URDF
   /// file it is converted to SDF first. All files are converted to the latest
   /// SDF version
   /// \param[in] _filename Name of the SDF file
@@ -106,7 +106,7 @@ namespace sdf
 
   /// \brief Populate the SDF values from a file
   ///
-  /// This populates the given SDF pointer from a file. If the file is a URDF
+  /// This populates a new SDF pointer from a file. If the file is a URDF
   /// file it is converted to SDF first. All files are converted to the latest
   /// SDF version
   /// \param[in] _filename Name of the SDF file
@@ -117,7 +117,7 @@ namespace sdf
 
   /// \brief Populate the SDF values from a file
   ///
-  /// This populates the given SDF pointer from a file. If the file is a URDF
+  /// This populates a new SDF pointer from a file. If the file is a URDF
   /// file it is converted to SDF first. All files are converted to the latest
   /// SDF version
   /// \param[in] _filename Name of the SDF file
@@ -181,6 +181,7 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
+  SDFORMAT_VISIBLE
   bool readFileWithoutConversion(const std::string &_filename,
       const ParserConfig &_config, SDFPtr _sdf, Errors &_errors);
 

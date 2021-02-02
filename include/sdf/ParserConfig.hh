@@ -76,7 +76,8 @@ class SDFORMAT_VISIBLE ParserConfig
   public: ParserConfig();
 
   /// Mutable access to a singleton ParserConfig that serves as the global
-  /// ParserConfig object for all parsing operations
+  /// ParserConfig object for all parsing operations that do not specify their
+  /// own ParserConfig.
   /// \return A mutable reference to the singleton ParserConfig object
   public: static ParserConfig &GlobalConfig();
 
@@ -87,7 +88,7 @@ class SDFORMAT_VISIBLE ParserConfig
 
   /// \brief Set the callback to use when libsdformat can't find a file.
   /// The callback should return a complete path to the requested file, or
-  /// and empty string if the file was not found in the callback.
+  /// an empty string if the file was not found in the callback.
   /// \param[in] _cb The callback function.
   public: void SetFindCallback(
               std::function<std::string(const std::string &)> _cb);
