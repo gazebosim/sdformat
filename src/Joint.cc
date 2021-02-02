@@ -30,7 +30,7 @@
 
 using namespace sdf;
 
-class sdf::JointPrivate
+class sdf::Joint::Implementation
 {
   /// \brief Name of the joint.
   public: std::string name = "";
@@ -69,40 +69,8 @@ class sdf::JointPrivate
 
 /////////////////////////////////////////////////
 Joint::Joint()
-  : dataPtr(new JointPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Joint::~Joint()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Joint::Joint(const Joint &_joint)
-  : dataPtr(new JointPrivate(*_joint.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Joint::Joint(Joint &&_joint) noexcept
-  : dataPtr(std::exchange(_joint.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Joint &Joint::operator=(const Joint &_joint)
-{
-  return *this = Joint(_joint);
-}
-
-/////////////////////////////////////////////////
-Joint &Joint::operator=(Joint &&_joint)
-{
-  std::swap(this->dataPtr, _joint.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////

@@ -19,6 +19,7 @@
 
 #include <string>
 #include <ignition/math/Vector3.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/Atmosphere.hh"
 #include "sdf/Element.hh"
@@ -40,7 +41,6 @@ namespace sdf
   class Light;
   class Model;
   class Physics;
-  class WorldPrivate;
   struct PoseRelativeToGraph;
   struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;
@@ -49,27 +49,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: World();
-
-    /// \brief Copy constructor
-    /// \param[in] _world World to copy.
-    public: World(const World &_world);
-
-    /// \brief Move constructor
-    /// \param[in] _world World to move.
-    public: World(World &&_world) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _world World to move.
-    /// \return Reference to this.
-    public: World &operator=(World &&_world);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _world World to copy.
-    /// \return Reference to this.
-    public: World &operator=(const World &_world);
-
-    /// \brief Destructor
-    public: ~World();
 
     /// \brief Load the world based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -85,7 +64,7 @@ namespace sdf
 
     /// \brief Set the name of the world.
     /// \param[in] _name Name of the world.
-    public: void SetName(const std::string &_name) const;
+    public: void SetName(const std::string &_name);
 
     /// \brief Get the audio device name. The audio device can be used to
     /// playback audio files. A value of "default" or an empty string
@@ -226,13 +205,13 @@ namespace sdf
 
     /// \brief Set the atmosphere model associated with this world.
     /// \param[in] _atmosphere The new atmosphere model for this world.
-    public: void SetAtmosphere(const sdf::Atmosphere &_atmosphere) const;
+    public: void SetAtmosphere(const sdf::Atmosphere &_atmosphere);
 
     /// \brief Get a pointer to the Gui associated with this
     /// world. A nullptr indicates that a Gui element has not been specified.
     /// \return Pointer to this world's Gui parameters. Nullptr inidicates
     /// that there are no Gui parameters.
-    public: sdf::Gui *Gui() const;
+    public: const sdf::Gui *Gui() const;
 
     /// \brief Set the Gui parameters associated with this world.
     /// \param[in] _gui The new Gui parameter for this world
@@ -294,7 +273,7 @@ namespace sdf
     friend class Root;
 
     /// \brief Private data pointer.
-    private: WorldPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

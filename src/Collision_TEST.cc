@@ -158,7 +158,9 @@ TEST(DOMcollision, SetSurface)
 
   sdf::Surface surface;
   ASSERT_NE(nullptr, surface.Contact());
-  surface.Contact()->SetCollideBitmask(0x2);
+  sdf::Contact contact;
+  contact.SetCollideBitmask(0x2);
+  surface.SetContact(contact);
 
   collision.SetSurface(surface);
 

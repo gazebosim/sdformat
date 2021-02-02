@@ -67,7 +67,7 @@ namespace filesystem
 {
 /// \internal
 /// \brief Private data for the DirIter class.
-class DirIterPrivate
+class DirIter::Implementation
 {
   /// \def current
   /// \brief The current directory item.
@@ -149,7 +149,7 @@ std::string current_path()
 }
 
 //////////////////////////////////////////////////
-DirIter::DirIter(const std::string &_in) : dataPtr(new DirIterPrivate)
+DirIter::DirIter(const std::string &_in) : DirIter()
 {
   this->dataPtr->dirname = _in;
 
@@ -433,7 +433,7 @@ std::string current_path()
 }
 
 //////////////////////////////////////////////////
-DirIter::DirIter(const std::string &_in) : dataPtr(new DirIterPrivate)
+DirIter::DirIter(const std::string &_in) : DirIter()
 {
   // use a form of search Sebastian Martel reports will work with Win98
   this->dataPtr->dirname = _in;
@@ -541,7 +541,7 @@ std::string basename(const std::string &_path)
 }
 
 //////////////////////////////////////////////////
-DirIter::DirIter() : dataPtr(new DirIterPrivate)
+DirIter::DirIter() : dataPtr(ignition::utils::MakeUniqueImpl<Implementation>())
 {
   this->dataPtr->current = "";
 

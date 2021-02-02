@@ -21,7 +21,7 @@
 using namespace sdf;
 
 // Private data class
-class sdf::PlanePrivate
+class sdf::Plane::Implementation
 {
   /// \brief A plane with a unit Z normal vector, size of 1x1 meters, and
   /// a zero offest.
@@ -34,42 +34,8 @@ class sdf::PlanePrivate
 
 /////////////////////////////////////////////////
 Plane::Plane()
-  : dataPtr(new PlanePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Plane::~Plane()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Plane::Plane(const Plane &_plane)
-  : dataPtr(new PlanePrivate)
-{
-  this->dataPtr->plane = _plane.dataPtr->plane;
-  this->dataPtr->sdf = _plane.dataPtr->sdf;
-}
-
-//////////////////////////////////////////////////
-Plane::Plane(Plane &&_plane) noexcept
-  : dataPtr(std::exchange(_plane.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Plane &Plane::operator=(const Plane &_plane)
-{
-  return *this = Plane(_plane);
-}
-
-/////////////////////////////////////////////////
-Plane &Plane::operator=(Plane &&_plane)
-{
-  std::swap(this->dataPtr, _plane.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////

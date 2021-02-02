@@ -21,6 +21,7 @@
 #include <string>
 
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
@@ -34,45 +35,11 @@ namespace sdf
   // Inline bracke to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
-
-  // Forward declare private data class.
-  class AnimationPrivate;
-
-  // Forward declare private data class.
-  class WaypointPrivate;
-
-  // Forward declare private data class.
-  class TrajectoryPrivate;
-
-  // Forward declare private data class.
-  class ActorPrivate;
-
   /// \brief Animation in Actor.
   class SDFORMAT_VISIBLE Animation
   {
     /// \brief Default constructor
     public: Animation();
-
-    /// \brief Copy constructor
-    /// \param[in] _animation Animation to copy.
-    public: Animation(const Animation &_animation);
-
-    /// \brief Move constructor
-    /// \param[in] _animation Animation to move.
-    public: Animation(Animation &&_animation) noexcept;
-
-    /// \brief Destructor
-    public: ~Animation();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _animation Animation to move.
-    /// \return Reference to this.
-    public: Animation &operator=(Animation &&_animation);
-
-    /// \brief Assignment operator.
-    /// \param[in] _animation The animation to set values from.
-    /// \return *this
-    public: Animation &operator=(const Animation &_animation);
 
     /// \brief Load the animation based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -122,12 +89,8 @@ namespace sdf
     /// \param[in] _interpolateX True to indicate interpolation on X.
     public: void SetInterpolateX(bool _interpolateX);
 
-    /// \brief Copy animation from an Animation instance.
-    /// \param[in] _animation The animation to set values from.
-    public: void CopyFrom(const Animation &_animation);
-
     /// \brief Private data pointer.
-    private: AnimationPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Waypoint for Trajectory.
@@ -135,27 +98,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Waypoint();
-
-    /// \brief Copy constructor
-    /// \param[in] _waypoint Waypoint to copy.
-    public: Waypoint(const Waypoint &_waypoint);
-
-    /// \brief Move constructor
-    /// \param[in] _waypoint Waypoint to move.
-    public: Waypoint(Waypoint &&_waypoint) noexcept;
-
-    /// \brief Destructor
-    public: ~Waypoint();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _waypoint Waypoint to move.
-    /// \return Reference to this.
-    public: Waypoint &operator=(Waypoint &&_waypoint);
-
-    /// \brief Assignment operator.
-    /// \param[in] _waypoint The waypoint to set values from.
-    /// \return *this
-    public: Waypoint &operator=(const Waypoint &_waypoint);
 
     /// \brief Load the waypoint based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -181,12 +123,8 @@ namespace sdf
     /// \param[in] _pose Pose to be reached.
     public: void SetPose(const ignition::math::Pose3d &_pose);
 
-    /// \brief Copy waypoint from an Waypoint instance.
-    /// \param[in] _waypoint The waypoint to set values from.
-    public: void CopyFrom(const Waypoint &_waypoint);
-
     /// \brief Private data pointer.
-    private: WaypointPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Trajectory for Animation.
@@ -194,27 +132,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Trajectory();
-
-    /// \brief Copy constructor
-    /// \param[in] _trajectory Trajectory to copy.
-    public: Trajectory(const Trajectory &_trajectory);
-
-    /// \brief Move constructor
-    /// \param[in] _trajectory Trajectory to move.
-    public: Trajectory(Trajectory &&_trajectory) noexcept;
-
-    /// \brief Destructor
-    public: ~Trajectory();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _trajectory Trajectory to move.
-    /// \return Reference to this.
-    public: Trajectory &operator=(Trajectory &&_trajectory);
-
-    /// \brief Assignment operator.
-    /// \param[in] _trajectory The trajectory to set values from.
-    /// \return *this
-    public: Trajectory &operator=(const Trajectory &_trajectory);
 
     /// \brief Load the trajectory based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -264,12 +181,8 @@ namespace sdf
     /// \param[in] _waypoint Waypoint to be added.
     public: void AddWaypoint(const Waypoint &_waypoint);
 
-    /// \brief Copy trajectory from a trajectory instance.
-    /// \param[in] _trajectory The trajectory to set values from.
-    public: void CopyFrom(const Trajectory &_trajectory);
-
     /// \brief Private data pointer.
-    private: TrajectoryPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
 
 
@@ -278,31 +191,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Actor();
-
-    /// \brief Copy constructor
-    /// \param[in] _actor Actor to copy.
-    public: Actor(const Actor &_actor);
-
-    /// \brief Move constructor
-    /// \param[in] _actor Actor to move.
-    public: Actor(Actor &&_actor) noexcept;
-
-    /// \brief Destructor
-    public: ~Actor();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _actor Actor to move.
-    /// \return Reference to this.
-    public: Actor &operator=(Actor &&_actor);
-
-    /// \brief Assignment operator.
-    /// \param[in] _actor The actor to set values from.
-    /// \return *this
-    public: Actor &operator=(const Actor &_actor);
-
-    /// \brief Copy dataPtr from an actor instance.
-    /// \param[in] _actor The actor to set values from.
-    public: void CopyFrom(const Actor &_actor);
 
     /// \brief Load the actor based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -314,7 +202,7 @@ namespace sdf
 
     /// \brief Get the name of the actor.
     /// \return Name of the actor.
-    public: std::string &Name() const;
+    public: const std::string &Name() const;
 
     /// \brief Set the name of the actor.
     /// \param[in] _name Name of the actor.
@@ -473,7 +361,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    private: ActorPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

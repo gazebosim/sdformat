@@ -20,7 +20,7 @@
 using namespace sdf;
 
 // Private data class
-class sdf::CylinderPrivate
+class sdf::Cylinder::Implementation
 {
   // A cylinder with a length of 1 meter and radius if 0.5 meters.
   public: ignition::math::Cylinderd cylinder{1.0, 0.5};
@@ -31,42 +31,8 @@ class sdf::CylinderPrivate
 
 /////////////////////////////////////////////////
 Cylinder::Cylinder()
-  : dataPtr(new CylinderPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Cylinder::~Cylinder()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Cylinder::Cylinder(const Cylinder &_cylinder)
-  : dataPtr(new CylinderPrivate)
-{
-  this->dataPtr->cylinder = _cylinder.dataPtr->cylinder;
-  this->dataPtr->sdf = _cylinder.dataPtr->sdf;
-}
-
-//////////////////////////////////////////////////
-Cylinder::Cylinder(Cylinder &&_cylinder) noexcept
-  : dataPtr(std::exchange(_cylinder.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Cylinder &Cylinder::operator=(const Cylinder &_cylinder)
-{
-  return *this = Cylinder(_cylinder);
-}
-
-/////////////////////////////////////////////////
-Cylinder &Cylinder::operator=(Cylinder &&_cylinder)
-{
-  std::swap(this->dataPtr, _cylinder.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////

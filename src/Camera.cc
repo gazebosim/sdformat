@@ -46,7 +46,7 @@ static std::array<std::string, 19> kPixelFormatNames =
 };
 
 // Private data class
-class sdf::CameraPrivate
+class sdf::Camera::Implementation
 {
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -168,40 +168,8 @@ class sdf::CameraPrivate
 
 /////////////////////////////////////////////////
 Camera::Camera()
-  : dataPtr(new CameraPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Camera::~Camera()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Camera::Camera(const Camera &_camera)
-  : dataPtr(new CameraPrivate(*_camera.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Camera::Camera(Camera &&_camera) noexcept
-  : dataPtr(std::exchange(_camera.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-Camera &Camera::operator=(const Camera &_camera)
-{
-  return *this = Camera(_camera);
-}
-
-//////////////////////////////////////////////////
-Camera &Camera::operator=(Camera &&_camera) noexcept
-{
-  std::swap(this->dataPtr, _camera.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -678,8 +646,7 @@ const ignition::math::Vector2d &Camera::DistortionCenter() const
 }
 
 //////////////////////////////////////////////////
-void Camera::SetDistortionCenter(
-                const ignition::math::Vector2d &_center) const
+void Camera::SetDistortionCenter(const ignition::math::Vector2d &_center)
 {
   this->dataPtr->distortionCenter = _center;
 }

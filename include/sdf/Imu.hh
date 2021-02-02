@@ -18,6 +18,7 @@
 #define SDF_IMU_HH_
 
 #include <string>
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
@@ -27,36 +28,12 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-  class ImuPrivate;
-
   /// \brief Imu contains information about an imu sensor.
   /// This sensor can be attached to a link.
   class SDFORMAT_VISIBLE Imu
   {
     /// \brief Default constructor
     public: Imu();
-
-    /// \brief Copy constructor
-    /// \param[in] _imu Imu to copy.
-    public: Imu(const Imu &_imu);
-
-    /// \brief Move constructor
-    /// \param[in] _imu Imu to move.
-    public: Imu(Imu &&_imu) noexcept;
-
-    /// \brief Destructor
-    public: ~Imu();
-
-    /// \brief Assignment operator.
-    /// \param[in] _imu The IMU to set values from.
-    /// \return *this
-    public: Imu &operator=(const Imu &_imu);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _imu The IMU to set values from.
-    /// \return *this
-    public: Imu &operator=(Imu &&_imu) noexcept;
 
     /// \brief Load the IMU based on an element pointer. This is *not*
     /// the usual entry point. Typical usage of the SDF DOM is through the Root
@@ -138,7 +115,7 @@ namespace sdf
     /// X-axis.  grav_dir_x is  defined in the coordinate frame as defined by
     /// the parent_frame element.
     /// \return The gravity direction.
-    public: ignition::math::Vector3d &GravityDirX() const;
+    public: const ignition::math::Vector3d &GravityDirX() const;
 
     /// \brief Used when localization is set to GRAV_UP or GRAV_DOWN, a
     /// projection of this vector into a plane that is orthogonal to the
@@ -146,7 +123,7 @@ namespace sdf
     /// X-axis.  grav_dir_x is  defined in the coordinate frame as defined by
     /// the parent_frame element.
     /// \param[in] _grav The gravity direction.
-    public: void SetGravityDirX(const ignition::math::Vector3d  &_grav) const;
+    public: void SetGravityDirX(const ignition::math::Vector3d  &_grav);
 
     /// \brief Get the name of parent frame which the GravityDirX vector is
     /// defined relative to. It can be any valid fully scoped link name or the
@@ -160,7 +137,7 @@ namespace sdf
     /// special reserved "world" frame. If left empty, use the sensor's own
     /// local frame.
     /// \return The name of the parent frame.
-    public: void SetGravityDirXParentFrame(const std::string &_frame) const;
+    public: void SetGravityDirXParentFrame(const std::string &_frame);
 
     /// \brief This string represents special hardcoded use cases that are
     /// commonly seen with typical robot IMU's:
@@ -239,7 +216,7 @@ namespace sdf
 
     /// \brief See CustomRpy() const.
     /// \param[in] Custom RPY vectory
-    public: void SetCustomRpy(const ignition::math::Vector3d &_rpy) const;
+    public: void SetCustomRpy(const ignition::math::Vector3d &_rpy);
 
     /// \brief Get the name of parent frame which the custom_rpy transform is
     /// defined relative to. It can be any valid fully scoped link name or the
@@ -253,7 +230,7 @@ namespace sdf
     /// special reserved "world" frame. If left empty, use the sensor's own
     /// local frame.
     /// \param[in] _frame The name of the parent frame.
-    public: void SetCustomRpyParentFrame(const std::string &_frame) const;
+    public: void SetCustomRpyParentFrame(const std::string &_frame);
 
     /// \brief Return true if both Imu objects contain the same values.
     /// \param[_in] _imu Imu value to compare.
@@ -267,7 +244,7 @@ namespace sdf
     public: bool operator!=(const Imu &_imu) const;
 
     /// \brief Private data pointer.
-    private: ImuPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

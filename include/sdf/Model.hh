@@ -21,6 +21,7 @@
 #include <string>
 #include <utility>
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
@@ -37,7 +38,6 @@ namespace sdf
   class Frame;
   class Joint;
   class Link;
-  class ModelPrivate;
   struct PoseRelativeToGraph;
   struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;
@@ -46,27 +46,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Model();
-
-    /// \brief Copy constructor
-    /// \param[in] _model Model to copy.
-    public: Model(const Model &_model);
-
-    /// \brief Move constructor
-    /// \param[in] _model Model to move.
-    public: Model(Model &&_model) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _model Model to move.
-    /// \return Reference to this.
-    public: Model &operator=(Model &&_model);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _model Model to copy.
-    /// \return Reference to this.
-    public: Model &operator=(const Model &_model);
-
-    /// \brief Destructor
-    public: ~Model();
 
     /// \brief Load the model based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -344,7 +323,7 @@ namespace sdf
     friend class World;
 
     /// \brief Private data pointer.
-    private: ModelPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

@@ -18,6 +18,7 @@
 #define SDF_PHYSICS_HH_
 
 #include <string>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
@@ -30,36 +31,12 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
-  // Forward declare private data class.
-  class PhysicsPrivate;
-
   /// \brief The physics element specifies the type and properties of a
   /// dynamics engine.
   class SDFORMAT_VISIBLE Physics
   {
     /// \brief Default constructor
     public: Physics();
-
-    /// \brief Copy constructor
-    /// \param[in] _physics Physics to copy.
-    public: Physics(const Physics &_physics);
-
-    /// \brief Move constructor
-    /// \param[in] _physics Physics to move.
-    public: Physics(Physics &&_physics) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _physics Physics to move.
-    /// \return Reference to this.
-    public: Physics &operator=(Physics &&_physics);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _physics Physics to copy.
-    /// \return Reference to this.
-    public: Physics &operator=(const Physics &_physics);
-
-    /// \brief Destructor
-    public: ~Physics();
 
     /// \brief Load the physics based on an element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -75,7 +52,7 @@ namespace sdf
 
     /// \brief Set the name of this set of physics parameters.
     /// \param[in] _name Name of the physics profile.
-    public: void SetName(const std::string &_name) const;
+    public: void SetName(const std::string &_name);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
@@ -93,7 +70,7 @@ namespace sdf
 
     /// \brief Set whether this physics profile is the default.
     /// \param[in] _default True to make this profile default.
-    public: void SetDefault(const bool _default) const;
+    public: void SetDefault(const bool _default);
 
     /// \brief Get the physics profile dynamics engine type.
     /// Current options are ode, bullet, simbody and dart. Defaults to ode if
@@ -126,7 +103,7 @@ namespace sdf
     public: void SetRealTimeFactor(const double _factor);
 
     /// \brief Private data pointer.
-    private: PhysicsPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

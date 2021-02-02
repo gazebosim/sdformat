@@ -17,19 +17,20 @@
 #ifndef SDF_LIDAR_HH_
 #define SDF_LIDAR_HH_
 
+#include <ignition/math/Angle.hh>
+#include <ignition/utils/ImplPtr.hh>
+
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
 #include <sdf/sdf_config.h>
 
-#include <ignition/math/Angle.hh>
 
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
-  class LidarPrivate;
 
   /// \brief Lidar contains information about a Lidar sensor.
   /// This sensor can be attached to a link. The Lidar sensor can be defined
@@ -105,27 +106,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Lidar();
-
-    /// \brief Copy constructor
-    /// \param[in] _lidar Lidar to copy.
-    public: Lidar(const Lidar &_lidar);
-
-    /// \brief Move constructor
-    /// \param[in] _lidar Lidar to move.
-    public: Lidar(Lidar &&_lidar) noexcept;
-
-    /// \brief Destructor
-    public: ~Lidar();
-
-    /// \brief Assignment operator
-    /// \param[in] _lidar The lidar to set values from.
-    /// \return *this
-    public: Lidar &operator=(const Lidar &_lidar);
-
-    /// \brief Move assignment operator
-    /// \param[in] _lidar The lidar to set values from.
-    /// \return *this
-    public: Lidar &operator=(Lidar &&_lidar) noexcept;
 
     /// \brief Load the lidar based on an element pointer. This is *not*
     /// the usual entry point. Typical usage of the SDF DOM is through the Root
@@ -253,7 +233,7 @@ namespace sdf
     public: bool operator!=(const Lidar &_lidar) const;
 
     /// \brief Private data pointer.
-    private: LidarPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

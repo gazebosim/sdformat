@@ -27,7 +27,7 @@
 
 using namespace sdf;
 
-class sdf::VisualPrivate
+class sdf::Visual::Implementation
 {
   /// \brief Name of the visual.
   public: std::string name = "";
@@ -51,7 +51,7 @@ class sdf::VisualPrivate
   public: sdf::ElementPtr sdf;
 
   /// \brief The visual's material properties.
-  public: std::optional<Material> material;
+  public: std::optional<sdf::Material> material;
 
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
@@ -65,40 +65,8 @@ class sdf::VisualPrivate
 
 /////////////////////////////////////////////////
 Visual::Visual()
-  : dataPtr(new VisualPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Visual::~Visual()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Visual::Visual(const Visual &_visual)
-  : dataPtr(new VisualPrivate(*_visual.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Visual::Visual(Visual &&_visual) noexcept
-  : dataPtr(std::exchange(_visual.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Visual &Visual::operator=(const Visual &_visual)
-{
-  return *this = Visual(_visual);
-}
-
-/////////////////////////////////////////////////
-Visual &Visual::operator=(Visual &&_visual)
-{
-  std::swap(this->dataPtr, _visual.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -178,7 +146,7 @@ std::string Visual::Name() const
 }
 
 /////////////////////////////////////////////////
-void Visual::SetName(const std::string &_name) const
+void Visual::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
 }
@@ -273,7 +241,7 @@ sdf::ElementPtr Visual::Element() const
 }
 
 /////////////////////////////////////////////////
-sdf::Material *Visual::Material() const
+const sdf::Material *Visual::Material() const
 {
   return optionalToPointer(this->dataPtr->material);
 }

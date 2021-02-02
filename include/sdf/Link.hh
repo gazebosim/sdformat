@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
@@ -35,10 +36,8 @@ namespace sdf
   // Forward declarations.
   class Collision;
   class Light;
-  class LinkPrivate;
   class Sensor;
   class Visual;
-  class LinkPrivate;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
 
@@ -46,27 +45,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Link();
-
-    /// \brief Copy constructor
-    /// \param[in] _link Link to copy.
-    public: Link(const Link &_link);
-
-    /// \brief Move constructor
-    /// \param[in] _link Link to move.
-    public: Link(Link &&_link) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _link Link to move.
-    /// \return Reference to this.
-    public: Link &operator=(Link &&_link);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _link Link to copy.
-    /// \return Reference to this.
-    public: Link &operator=(const Link &_link);
-
-    /// \brief Destructor
-    public: ~Link();
 
     /// \brief Load the link based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -84,7 +62,7 @@ namespace sdf
     /// \brief Set the name of the link.
     /// The name of a link must be unique within the scope of a Model.
     /// \param[in] _name Name of the link.
-    public: void SetName(const std::string &_name) const;
+    public: void SetName(const std::string &_name);
 
     /// \brief Get the number of visuals.
     /// \return Number of visuals contained in this Link object.
@@ -248,7 +226,7 @@ namespace sdf
     public: void SetEnableWind(bool _enableWind);
 
     /// \brief Private data pointer.
-    private: LinkPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

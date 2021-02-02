@@ -32,7 +32,7 @@
 
 using namespace sdf;
 
-class sdf::ModelPrivate
+class sdf::Model::Implementation
 {
   /// \brief Name of the model.
   public: std::string name = "";
@@ -89,40 +89,8 @@ class sdf::ModelPrivate
 
 /////////////////////////////////////////////////
 Model::Model()
-  : dataPtr(new ModelPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Model::~Model()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Model::Model(const Model &_model)
-  : dataPtr(new ModelPrivate(*_model.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Model::Model(Model &&_model) noexcept
-  : dataPtr(std::exchange(_model.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Model &Model::operator=(const Model &_model)
-{
-  return *this = Model(_model);
-}
-
-/////////////////////////////////////////////////
-Model &Model::operator=(Model &&_model)
-{
-  std::swap(this->dataPtr, _model.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////

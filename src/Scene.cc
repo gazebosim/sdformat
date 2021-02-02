@@ -20,7 +20,7 @@
 using namespace sdf;
 
 /// \brief Scene private data.
-class sdf::ScenePrivate
+class sdf::Scene::Implementation
 {
   /// \brief True if grid should be enabled
   public: bool grid = true;
@@ -40,7 +40,7 @@ class sdf::ScenePrivate
       ignition::math::Color(0.7f, 0.7f, .7f);
 
   /// \brief Pointer to the sky properties.
-  public: std::optional<Sky> sky;
+  public: std::optional<sdf::Sky> sky;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -48,40 +48,8 @@ class sdf::ScenePrivate
 
 /////////////////////////////////////////////////
 Scene::Scene()
-  : dataPtr(new ScenePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Scene::~Scene()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Scene::Scene(const Scene &_scene)
-  : dataPtr(new ScenePrivate(*_scene.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Scene::Scene(Scene &&_scene) noexcept
-  : dataPtr(std::exchange(_scene.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Scene &Scene::operator=(const Scene &_scene)
-{
-  return *this = Scene(_scene);
-}
-
-/////////////////////////////////////////////////
-Scene &Scene::operator=(Scene &&_scene)
-{
-  std::swap(this->dataPtr, _scene.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
