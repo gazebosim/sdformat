@@ -23,9 +23,11 @@
 #include <string>
 #include <vector>
 
-#include <sdf/Error.hh>
+#include "sdf/Error.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
+
+#include <ignition/utils/ImplPtr.hh>
 
 namespace sdf
 {
@@ -73,27 +75,6 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Default constructor
   public: ParserConfig();
 
-  /// \brief Copy constructor
-  /// \param[in] _config ParserConfig to copy.
-  public: ParserConfig(const ParserConfig &_config);
-
-  /// \brief Move constructor
-  /// \param[in] _config ParserConfig to move.
-  public: ParserConfig(ParserConfig &&_config) noexcept;
-
-  /// \brief Move assignment operator.
-  /// \param[in] _config ParserConfig to move.
-  /// \return Reference to this.
-  public: ParserConfig &operator=(ParserConfig &&_config) noexcept;
-
-  /// \brief Copy assignment operator.
-  /// \param[in] _config ParserConfig to copy.
-  /// \return Reference to this.
-  public: ParserConfig &operator=(const ParserConfig &_config);
-
-  /// \brief Destructor
-  public: ~ParserConfig();
-
   /// Mutable access to a singleton ParserConfig that serves as the global
   /// ParserConfig object for all parsing operations
   /// \return A mutable reference to the singleton ParserConfig object
@@ -122,7 +103,7 @@ class SDFORMAT_VISIBLE ParserConfig
   public: void AddURIPath(const std::string &_uri, const std::string &_path);
 
   /// \brief Private data pointer.
-  private: ParserConfigPrivate *dataPtr;
+  IGN_UTILS_IMPL_PTR(dataPtr)
 };
 }
 }

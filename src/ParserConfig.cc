@@ -22,7 +22,7 @@
 
 using namespace sdf;
 
-class sdf::ParserConfigPrivate
+class sdf::ParserConfig::Implementation
 {
   public: ParserConfig::SchemeToPathMap uriPathMap;
   public: std::function<std::string(const std::string &)> findFileCB;
@@ -31,40 +31,8 @@ class sdf::ParserConfigPrivate
 
 /////////////////////////////////////////////////
 ParserConfig::ParserConfig()
-    : dataPtr(new ParserConfigPrivate)
+    : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-ParserConfig::ParserConfig(const ParserConfig &_config)
-  : dataPtr(new ParserConfigPrivate(*_config.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-ParserConfig::ParserConfig(ParserConfig &&_config) noexcept
-  : dataPtr(std::exchange(_config.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-ParserConfig &ParserConfig::operator=(const ParserConfig &_config)
-{
-  return *this = ParserConfig(_config);
-}
-
-/////////////////////////////////////////////////
-ParserConfig &ParserConfig::operator=(ParserConfig &&_config) noexcept
-{
-  std::swap(this->dataPtr, _config.dataPtr);
-  return *this;
-}
-
-/////////////////////////////////////////////////
-ParserConfig::~ParserConfig()
-{
-  delete dataPtr;
-  dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
