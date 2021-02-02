@@ -23,11 +23,12 @@
 #include <string>
 #include <vector>
 
+#include <ignition/utils/ImplPtr.hh>
+
 #include "sdf/Error.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
-#include <ignition/utils/ImplPtr.hh>
 
 namespace sdf
 {
