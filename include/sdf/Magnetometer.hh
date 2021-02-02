@@ -17,6 +17,7 @@
 #ifndef SDF_MAGNETOMETER_HH_
 #define SDF_MAGNETOMETER_HH_
 
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
@@ -27,7 +28,6 @@ namespace sdf
   // Inline bracke to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
-  class MagnetometerPrivate;
 
   /// \brief Magnetometer contains information about a magnetometer sensor.
   /// This sensor can be attached to a link.
@@ -35,27 +35,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Magnetometer();
-
-    /// \brief Copy constructor
-    /// \param[in] _magnetometer Magnetometer to copy.
-    public: Magnetometer(const Magnetometer &_magnetometer);
-
-    /// \brief Move constructor
-    /// \param[in] _magnetometer Magnetometer to move.
-    public: Magnetometer(Magnetometer &&_magnetometer) noexcept;
-
-    /// \brief Destructor
-    public: ~Magnetometer();
-
-    /// \brief Assignment operator.
-    /// \param[in] _magnetometer The magnetometer to set values from.
-    /// \return *this
-    public: Magnetometer &operator=(const Magnetometer &_magnetometer);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _magnetometer The magnetometer to set values from.
-    /// \return *this
-    public: Magnetometer &operator=(Magnetometer &&_magnetometer);
 
     /// \brief Load the magnetometer based on an element pointer. This is *not*
     /// the usual entry point. Typical usage of the SDF DOM is through the Root
@@ -107,7 +86,7 @@ namespace sdf
     public: bool operator!=(const Magnetometer &_mag) const;
 
     /// \brief Private data pointer.
-    private: MagnetometerPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

@@ -21,7 +21,7 @@
 using namespace sdf;
 
 /// \brief Private imu data.
-class sdf::ImuPrivate
+class sdf::Imu::Implementation
 {
   /// \brief Noise values related to the body-frame linear acceleration on the
   /// X-axis.
@@ -68,40 +68,8 @@ class sdf::ImuPrivate
 
 //////////////////////////////////////////////////
 Imu::Imu()
-  : dataPtr(new ImuPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-//////////////////////////////////////////////////
-Imu::~Imu()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Imu::Imu(const Imu &_imu)
-  : dataPtr(new ImuPrivate(*_imu.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-Imu::Imu(Imu &&_imu) noexcept
-  : dataPtr(std::exchange(_imu.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-Imu &Imu::operator=(const Imu &_imu)
-{
-  return *this = Imu(_imu);
-}
-
-//////////////////////////////////////////////////
-Imu &Imu::operator=(Imu &&_imu) noexcept
-{
-  std::swap(this->dataPtr, _imu.dataPtr);
-  return *this;
 }
 
 //////////////////////////////////////////////////
@@ -318,7 +286,7 @@ void Imu::SetAngularVelocityZNoise(const Noise &_noise)
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector3d &Imu::GravityDirX() const
+const ignition::math::Vector3d &Imu::GravityDirX() const
 {
   return this->dataPtr->gravityDirX;
 }
@@ -330,13 +298,13 @@ const std::string &Imu::GravityDirXParentFrame() const
 }
 
 //////////////////////////////////////////////////
-void Imu::SetGravityDirXParentFrame(const std::string &_frame) const
+void Imu::SetGravityDirXParentFrame(const std::string &_frame)
 {
   this->dataPtr->gravityDirXParentFrame = _frame;
 }
 
 //////////////////////////////////////////////////
-void Imu::SetGravityDirX(const ignition::math::Vector3d &_grav) const
+void Imu::SetGravityDirX(const ignition::math::Vector3d &_grav)
 {
   this->dataPtr->gravityDirX = _grav;
 }
@@ -360,8 +328,7 @@ const ignition::math::Vector3d &Imu::CustomRpy() const
 }
 
 //////////////////////////////////////////////////
-void Imu::SetCustomRpy(
-    const ignition::math::Vector3d &_rpy) const
+void Imu::SetCustomRpy(const ignition::math::Vector3d &_rpy)
 {
   this->dataPtr->customRpy = _rpy;
 }
@@ -373,7 +340,7 @@ const std::string &Imu::CustomRpyParentFrame() const
 }
 
 //////////////////////////////////////////////////
-void Imu::SetCustomRpyParentFrame(const std::string &_frame) const
+void Imu::SetCustomRpyParentFrame(const std::string &_frame)
 {
   this->dataPtr->customRpyParentFrame = _frame;
 }

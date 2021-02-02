@@ -16,6 +16,9 @@ but with improved human-readability..
 
 ### Additions
 
+1. + Depend on ignition-utils1 for the ImplPtr and UniqueImplPtr.
+   + [Pull request 474](https://github.com/osrf/sdformat/pull/474)
+
 1. **sdf/Joint.hh**
     + Errors ResolveChildLink(std::string&) const
     + Errors ResolveParentLink(std::string&) const

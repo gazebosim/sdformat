@@ -18,6 +18,7 @@
 #define SDF_ROOT_HH_
 
 #include <string>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
@@ -34,7 +35,6 @@ namespace sdf
   class Actor;
   class Light;
   class Model;
-  class RootPrivate;
   class World;
 
   /// \brief Root class that acts as an entry point to the SDF document
@@ -55,26 +55,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Root();
-
-    /// \brief Copy constructor is explicitly deleted to avoid copying the
-    /// FrameAttachedToGraph and PoseRelativeToGraphs contained in Root.
-    public: Root(const Root &_root) = delete;
-
-    /// \brief Move constructor
-    /// \param[in] _root Root to move.
-    public: Root(Root &&_root) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _root Root to move.
-    /// \return Reference to this.
-    public: Root &operator=(Root &&_root) noexcept;
-
-    /// \brief Copy assignment operator is explicitly deleted to avoid copying
-    /// the FrameAttachedToGraph and PoseRelativeToGraphs contained in Root.
-    public: Root &operator=(const Root &_root) = delete;
-
-    /// \brief Destructor
-    public: ~Root();
 
     /// \brief Parse the given SDF file, and generate objects based on types
     /// specified in the SDF file.
@@ -221,7 +201,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer
-    private: RootPrivate *dataPtr = nullptr;
+    IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
   };
   }
 }

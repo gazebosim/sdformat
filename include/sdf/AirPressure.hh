@@ -17,6 +17,8 @@
 #ifndef SDF_AIRPRESSURE_HH_
 #define SDF_AIRPRESSURE_HH_
 
+#include <ignition/utils/ImplPtr.hh>
+
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
@@ -26,9 +28,6 @@ namespace sdf
 {
   // Inline bracke to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-  class AirPressurePrivate;
-
   /// \brief AirPressure contains information about a general
   /// purpose fluid pressure sensor.
   /// This sensor can be attached to a link.
@@ -36,29 +35,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: AirPressure();
-
-    /// \brief Copy constructor
-    /// \param[in] _airPressure AirPressure to copy.
-    public: AirPressure(const AirPressure &_sensor);
-
-    /// \brief Move constructor
-    /// \param[in] _airPressure AirPressure to move.
-    public: AirPressure(AirPressure &&_sensor);
-
-    /// \brief Destructor
-    public: ~AirPressure();
-
-    /// \brief Assignment operator.
-    /// \param[in] _airPressure The airPressure to set values
-    /// from.
-    /// \return *this
-    public: AirPressure &operator=(const AirPressure &_sensor);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _airPressure The airPressure to set values
-    /// from.
-    /// \return *this
-    public: AirPressure &operator=(AirPressure &&_sensor);
 
     /// \brief Load the airPressure based on an element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -109,7 +85,7 @@ namespace sdf
     public: bool operator!=(const AirPressure &_air) const;
 
     /// \brief Private data pointer.
-    private: AirPressurePrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

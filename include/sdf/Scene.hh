@@ -18,6 +18,7 @@
 #define SDF_SCENE_HH_
 
 #include <ignition/math/Color.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Sky.hh"
@@ -29,36 +30,10 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-
-  // Forward declarations.
-  class ScenePrivate;
-
   class SDFORMAT_VISIBLE Scene
   {
     /// \brief Default constructor
     public: Scene();
-
-    /// \brief Copy constructor
-    /// \param[in] _scene Scene element to copy.
-    public: Scene(const Scene &_scene);
-
-    /// \brief Move constructor
-    /// \param[in] _scene Scene to move.
-    public: Scene(Scene &&_scene) noexcept;
-
-    /// \brief Destructor
-    public: ~Scene();
-
-    /// \brief Assignment operator.
-    /// \param[in] _scene The scene to set values from.
-    /// \return *this
-    public: Scene &operator=(const Scene &_scene);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _workflow The scene to move from.
-    /// \return *this
-    public: Scene &operator=(Scene &&_scene);
 
     /// \brief Load the scene based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -123,7 +98,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    private: ScenePrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

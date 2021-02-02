@@ -21,7 +21,7 @@
 using namespace sdf;
 
 /// \brief Private airPressure data.
-class sdf::AirPressurePrivate
+class sdf::AirPressure::Implementation
 {
   /// \brief The pressure noise.
   public: Noise noise;
@@ -35,42 +35,8 @@ class sdf::AirPressurePrivate
 
 //////////////////////////////////////////////////
 AirPressure::AirPressure()
-  : dataPtr(new AirPressurePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-//////////////////////////////////////////////////
-AirPressure::~AirPressure()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-AirPressure::AirPressure(const AirPressure &_sensor)
-  : dataPtr(new AirPressurePrivate(*_sensor.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-AirPressure::AirPressure(AirPressure &&_sensor)
-  : dataPtr(std::exchange(_sensor.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-AirPressure &AirPressure::operator=(
-    const AirPressure &_sensor)
-{
-  return *this = AirPressure(_sensor);
-}
-
-//////////////////////////////////////////////////
-AirPressure &AirPressure::operator=(
-    AirPressure &&_sensor)
-{
-  std::swap(this->dataPtr, _sensor.dataPtr);
-  return *this;
 }
 
 //////////////////////////////////////////////////

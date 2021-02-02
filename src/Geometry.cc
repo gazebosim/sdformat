@@ -32,7 +32,7 @@
 using namespace sdf;
 
 // Private data class
-class sdf::GeometryPrivate
+class sdf::Geometry::Implementation
 {
   // \brief The geometry type.
   public: GeometryType type = GeometryType::EMPTY;
@@ -67,40 +67,8 @@ class sdf::GeometryPrivate
 
 /////////////////////////////////////////////////
 Geometry::Geometry()
-  : dataPtr(new GeometryPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Geometry::~Geometry()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Geometry::Geometry(const Geometry &_geometry)
-  : dataPtr(new GeometryPrivate(*_geometry.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-Geometry::Geometry(Geometry &&_geometry) noexcept
-  : dataPtr(std::exchange(_geometry.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Geometry &Geometry::operator=(const Geometry &_geometry)
-{
-  return *this = Geometry(_geometry);
-}
-
-//////////////////////////////////////////////////
-Geometry &Geometry::operator=(Geometry &&_geometry)
-{
-  std::swap(this->dataPtr, _geometry.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
