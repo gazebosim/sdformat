@@ -160,7 +160,7 @@ Errors Root::LoadSdfString(const std::string &_sdf)
   if (!readString(_sdf, sdfParsed, errors))
   {
     errors.push_back(
-        {ErrorCode::STRING_READ, "Unable to SDF string: " + _sdf});
+        {ErrorCode::STRING_READ, "Unable to read SDF string: " + _sdf});
     return errors;
   }
 
