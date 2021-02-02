@@ -70,7 +70,7 @@ class sdf::HeightmapPrivate
   public: bool useTerrainPaging{false};
 
   /// \brief Sampling per datum.
-  public: unsigned int sampling{2u};
+  public: unsigned int sampling{1u};
 
   /// \brief Textures in order
   public: std::vector<HeightmapTexture> textures;

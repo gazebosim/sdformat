@@ -37,8 +37,8 @@
   <element name="use_terrain_paging" type="bool" default="false" required="0">
     <description>Set if the rendering engine will use terrain paging</description>
   </element>
-  <element name="sampling" type="unsigned int" default="2" required="0">
-    <description>Samples per heightmap datum. For rasterized heightmaps, this indicates the number of samples to take per pixel. Using a lower value, e.g. 1, will generally improve the performance of the heightmap but lower the heightmap quality.
+  <element name="sampling" type="unsigned int" default="1" required="0">
+    <description>Samples per heightmap datum. For rasterized heightmaps, this indicates the number of samples to take per pixel. Using a higher value, e.g. 2, will generally improve the quality of the heightmap but lower performance.
     </description>
   </element>
 </element>
