@@ -898,7 +898,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
   {
     std::stringstream ss;
     ss << "SDF Element[" + _sdf->GetName() + "] is deprecated\n";
-    addRecoverableWarning(
+    enforceConfigurablePolicyCondition(
       _config.WarningsPolicy(), ss.str(),
       ErrorCode::ELEMENT_DEPRECATED, _errors);
   }
@@ -1000,8 +1000,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       std::stringstream ss;
       ss << "XML Attribute[" << attribute->Name()
               << "] in element[" << _xml->Value()
-              << "] not defined in SDF, ignoring.\n";
-      addRecoverableWarning(
+              << "] not defined in SDF.\n";
+      enforceConfigurablePolicyCondition(
         _config.WarningsPolicy(), ss.str(),
         ErrorCode::ATTRIBUTE_INCORRECT_TYPE, _errors);
     }
@@ -1124,7 +1124,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
                  << "> in addition to <" << topLevelElem->GetName()
                  << "> in include file. This is unsupported and in future "
                  << "versions of libsdformat will become an error";
-              addRecoverableWarning(
+              enforceConfigurablePolicyCondition(
                 _config.WarningsPolicy(), ss.str(),
                 ErrorCode::ELEMENT_INCORRECT_TYPE, _errors);
             }
@@ -1147,7 +1147,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           ss << "Found more than one of " << topLevelElem->GetName()
              << " for <include>. This is unsupported and in future "
              << "versions of libsdformat will become an error";
-          addRecoverableWarning(
+          enforceConfigurablePolicyCondition(
             _config.WarningsPolicy(), ss.str(),
             ErrorCode::ELEMENT_INCORRECT_TYPE, _errors);
         }
@@ -1276,10 +1276,15 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       if (descCounter == _sdf->GetElementDescriptionCount()
             && std::strchr(elemXml->Value(), ':') == nullptr)
       {
-        sdfdbg << "XML Element[" << elemXml->Value()
-               << "], child of element[" << _xml->Value()
-               << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
-               << "as children of [" << _xml->Value() << "].\n";
+        std::stringstream ss;
+        ss << "XML Element[" << elemXml->Value()
+           << "], child of element[" << _xml->Value()
+           << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
+           << "as children of [" << _xml->Value() << "].\n";
+
+        enforceConfigurablePolicyCondition(
+          _config.UnrecognizedElementsPolicy(), ss.str(),
+          ErrorCode::ELEMENT_INCORRECT_TYPE, _errors);
 
         continue;
       }

@@ -27,10 +27,15 @@ class sdf::ParserConfig::Implementation
   public: ParserConfig::SchemeToPathMap uriPathMap;
   public: std::function<std::string(const std::string &)> findFileCB;
 
-  /// \brief Indicates how warnings and errors are tolerated. Default is for
-  /// warnings to be streamed via sdfwarn
-  public: WarningsPolicy warningsPolicy =
-    WarningsPolicy::WARNED;
+  /// \brief Indicates how warnings and errors are tolerated.
+  /// Default is for warnings to be streamed via sdfwarn
+  public: EnforcementPolicy warningsPolicy = EnforcementPolicy::WARN;
+
+  /// \brief Policy indicating how unrecognized elements without an xmlns are
+  /// treated.
+  /// Default is to ignore them for compatibility with legacy behavior
+  public: EnforcementPolicy unrecognizedElementsPolicy =
+    EnforcementPolicy::IGNORE;
 };
 
 
@@ -89,12 +94,22 @@ void ParserConfig::AddURIPath(const std::string &_uri, const std::string &_path)
   }
 }
 
-void ParserConfig::SetWarningsPolicy(sdf::WarningsPolicy policy)
+void ParserConfig::SetWarningsPolicy(EnforcementPolicy policy)
 {
   this->dataPtr->warningsPolicy = policy;
 }
 
-WarningsPolicy ParserConfig::WarningsPolicy() const
+EnforcementPolicy ParserConfig::WarningsPolicy() const
 {
   return this->dataPtr->warningsPolicy;
+}
+
+void ParserConfig::SetUnrecognizedElementsPolicy(EnforcementPolicy _policy)
+{
+  this->dataPtr->unrecognizedElementsPolicy = _policy;
+}
+
+EnforcementPolicy ParserConfig::UnrecognizedElementsPolicy() const
+{
+  return this->dataPtr->unrecognizedElementsPolicy;
 }

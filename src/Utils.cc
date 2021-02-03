@@ -90,21 +90,21 @@ bool isValidFrameReference(const std::string &_name)
   return "__root__" != _name;
 }
 
-void addRecoverableWarning(
-  const sdf::WarningsPolicy _policy,
+void enforceConfigurablePolicyCondition(
+  const sdf::EnforcementPolicy _policy,
   const std::string &_message,
   const ErrorCode _error,
   sdf::Errors &_errors)
 {
   switch (_policy)
   {
-    case WarningsPolicy::PEDANTIC:
+    case EnforcementPolicy::ERR:
       _errors.push_back({_error, _message});
       break;
-    case WarningsPolicy::WARNED:
+    case EnforcementPolicy::WARN:
       sdfwarn << _message;
       break;
-    case WarningsPolicy::IGNORED:
+    case EnforcementPolicy::IGNORE:
       sdfdbg << _message;
       break;
     default:

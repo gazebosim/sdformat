@@ -83,3 +83,51 @@ TEST(Unknown, CopyUnknownElement)
   EXPECT_EQ("my nested xml", nestedElem->Get<std::string>("attr"));
   EXPECT_EQ("AString", nestedElem->Get<std::string>("string"));
 }
+
+/////////////////////////////////////////////////
+/// Test that elements that aren't part of the spec are flagged with when
+/// UnrecognizedElementsPolicy is set to err
+TEST(UnrecognizedElements, UnrecognizedElementsWithWarningsPolicies)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "unrecognized_elements.sdf");
+
+  sdf::ParserConfig config;
+
+  {
+    config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::ERR);
+    sdf::Root root;
+    const auto errors = root.Load(testFile, config);
+    EXPECT_FALSE(errors.empty());
+  }
+  {
+    config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::WARN);
+    sdf::Root root;
+    const auto errors = root.Load(testFile, config);
+    EXPECT_TRUE(errors.empty());
+  }
+  {
+    config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::IGNORE);
+    sdf::Root root;
+    const auto errors = root.Load(testFile, config);
+    EXPECT_TRUE(errors.empty());
+  }
+}
+
+/////////////////////////////////////////////////
+/// Test that elements that aren't part of the spec but have the namespace
+/// separator ":" don't cause errors even with EnforcementPolicy::ERR
+TEST(UnrecognizedElements, UnrecognizedElementsWithNamespaces)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "unrecognized_elements_with_namespace.sdf");
+
+  sdf::ParserConfig config;
+  config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::ERR);
+
+  sdf::Root root;
+  const auto errors = root.Load(testFile, config);
+  EXPECT_TRUE(errors.empty());
+}

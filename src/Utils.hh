@@ -70,16 +70,16 @@ namespace sdf
   /// value.
   double infiniteIfNegative(double _value);
 
-
-  /// \brief Either stream the warning or add to _errors
-  /// Based on the ParserConfig warnings policy, this will either stream the
-  /// warnings to sdfwarn, sdfdbg or add the warnings to _errors.
-  /// \param[in] _policy The warnings enforcement policy to follow
+  /// \brief Handle a condition which can be treated as an error, warning or
+  /// ignored entirely.
+  /// Based on the policy, this will either add it to an errors vector, stream
+  /// it to sdfwarn, or sdfdbg.
+  /// \param[in] _policy The enforcement policy to follow
   /// \param[in] _message The message to add for this warning
   /// \param[in] _error An error code to use if the policy is PEDANTIC
   /// \param[in] _errors The errors to append to if the policy is PEDANTIC
-  void addRecoverableWarning(
-    const sdf::WarningsPolicy _policy,
+  void enforceConfigurablePolicyCondition(
+    const sdf::EnforcementPolicy _policy,
     const std::string &_message,
     const ErrorCode _error,
     sdf::Errors &_errors);

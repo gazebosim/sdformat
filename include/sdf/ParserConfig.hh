@@ -35,17 +35,17 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE
 {
 
-// Policy to describe how sdf parser warnings should be treated
-enum class WarningsPolicy
+/// \brief Policy to describe how to treat certain conditions when parsing
+enum class EnforcementPolicy
 {
-  /// \brief Warnings are treated as errors and added to the cumulative errors
-  PEDANTIC,
+  /// \brief Policy is to treat condition as an error and fail parsing
+  ERR,
 
-  /// \brief Warnings are streamed to sdfwarn
-  WARNED,
+  /// \brief Treat condition as a warning and issue to user
+  WARN,
 
-  /// \brief Warnings are streamed to sdfdbg
-  IGNORED
+  /// \brief Ignore condition in favor of best effort parsing
+  IGNORE
 };
 
 // Forward declare private data class.
@@ -130,11 +130,19 @@ class SDFORMAT_VISIBLE ParserConfig
 
   /// \brief Set the warning enforcment policy.
   /// \param[in] _policy policy enum value to set
-  public: void SetWarningsPolicy(sdf::WarningsPolicy _policy);
+  public: void SetWarningsPolicy(EnforcementPolicy _policy);
 
   /// \brief Get the current warning enforcement policy
   /// \return The warning enforcement policy enum value
-  public: sdf::WarningsPolicy WarningsPolicy() const;
+  public: EnforcementPolicy WarningsPolicy() const;
+
+  /// \brief Set the policy for unrecogonized elements without an xmlns
+  /// \param[in] _policy The unrecognized elements enforcement policy
+  public: void SetUnrecognizedElementsPolicy(EnforcementPolicy _policy);
+
+  /// \brief Get the current unrecognized elements policy
+  /// \return The unrecognized elements policy enum value
+  public: EnforcementPolicy UnrecognizedElementsPolicy() const;
 
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)
