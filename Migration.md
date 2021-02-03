@@ -301,7 +301,7 @@ but with improved human-readability..
 
 ### Deprecations
 
-1. **inerial.sdf** `//inertial/pose/@relative_to` attribute is deprecated
+1. **inerial.sdf** `//inertial/pose/@relative_to` attribute is removed
     + [Pull request 480](https://github.com/osrf/sdformat/pull/480)
 
 1. **joint.sdf** `initial_position` element in `<joint><axis>` and `<joint><axis2>` is deprecated
