@@ -89,7 +89,15 @@ class SDFORMAT_VISIBLE ParserConfig
 
   /// \brief Set the callback to use when libsdformat can't find a file.
   /// The callback should return a complete path to the requested file, or
-  /// an empty string if the file was not found in the callback.
+  /// an empty string if the file was not found in the callback. Generally, the
+  /// input argument is a URI or a file path (absolute or relative) obtained
+  /// from a `//include/uri` element. For example, if the value
+  /// `custom://model_name` is given in a `//include/uri`, sdf::findFile() may
+  /// invoke the callback with the argument `custom://model_name` if it is
+  /// unable to find a file using the steps listed in sdf::findfile().
+  ///
+  /// Note, however, the input is not limited to URIs and file paths, and it is
+  /// left up to the callback to interpret the contents of the input string.
   /// \param[in] _cb The callback function.
   /// \sa sdf::findFile() for the order of search operations
   public: void SetFindCallback(
