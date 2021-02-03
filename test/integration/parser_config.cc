@@ -51,6 +51,9 @@ TEST(ParserConfig, GlobalConfig)
   ASSERT_TRUE(sdf::ParserConfig::GlobalConfig().FindFileCallback());
   EXPECT_EQ("test/dir2",
       sdf::ParserConfig::GlobalConfig().FindFileCallback()("empty"));
+  // sdf::findFile requires explicitly enabling callbacks
+  EXPECT_EQ("test/dir2", sdf::findFile("empty", false, true));
+  EXPECT_EQ("test/dir2", sdf::findFile("empty", true, true));
 }
 
 /////////////////////////////////////////////////
@@ -79,6 +82,8 @@ TEST(ParserConfig, NonGlobalConfig)
 
   ASSERT_TRUE(config.FindFileCallback());
   EXPECT_EQ("test/dir2", config.FindFileCallback()("empty"));
+  EXPECT_EQ("test/dir2", sdf::findFile("empty", false, true, config));
+  EXPECT_EQ("test/dir2", sdf::findFile("empty", true, true, config));
 
   EXPECT_TRUE(sdf::ParserConfig::GlobalConfig().URIPathMap().empty());
   EXPECT_FALSE(sdf::ParserConfig::GlobalConfig().FindFileCallback());
