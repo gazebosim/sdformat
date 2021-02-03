@@ -736,11 +736,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
-      std::stringstream ss;
-      ss << "Converting a deprecated SDF source[" << _source << "].\n";
-      addRecoverableWarning(
-        _config.WarningsPolicy(), ss.str(),
-        ErrorCode::VERSION_DEPRECATED, _errors);
+      sdfdbg << "Converting a deprecated SDF source[" << _source << "].\n";
 
       Converter::Convert(_xmlDoc, SDF::Version());
     }
@@ -1280,15 +1276,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       if (descCounter == _sdf->GetElementDescriptionCount()
             && std::strchr(elemXml->Value(), ':') == nullptr)
       {
-        std::stringstream ss;
-        ss << "XML Element[" << elemXml->Value()
+        sdfdbg << "XML Element[" << elemXml->Value()
                << "], child of element[" << _xml->Value()
                << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
                << "as children of [" << _xml->Value() << "].\n";
 
-        addRecoverableWarning(
-          _config.WarningsPolicy(), ss.str(),
-          ErrorCode::ELEMENT_INCORRECT_TYPE, _errors);
         continue;
       }
     }

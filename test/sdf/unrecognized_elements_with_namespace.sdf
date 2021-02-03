@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
-<sdf version="1.6">
-  <model name="joint_incorrect_tags" some_attribute="staheousth">
+<sdf version="1.8" xmlns:third_party_software="custom_ns_uri">
+  <model name="joint_incorrect_tags" some_attribute="some value">
     <link name="link">
       <pose>0 0 1 0 0 0</pose>
       <third_party_software:not_a_link_element>This should be ignored because it's namespaced</third_party_software:not_a_link_element>

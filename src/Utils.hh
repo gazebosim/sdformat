@@ -21,7 +21,6 @@
 #include <string>
 #include <optional>
 #include <vector>
-#include "sdf/Console.hh"
 #include "sdf/Error.hh"
 #include "sdf/Element.hh"
 #include "sdf/ParserConfig.hh"
