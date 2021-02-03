@@ -15,6 +15,7 @@
  *
 */
 #include <string>
+#include <optional>
 #include <vector>
 #include <ignition/math/Vector3.hh>
 
@@ -25,7 +26,7 @@
 
 using namespace sdf;
 
-class sdf::MaterialPrivate
+class sdf::Material::Implementation
 {
   /// \brief Script URI
   public: std::string scriptUri = "";
@@ -42,6 +43,9 @@ class sdf::MaterialPrivate
   /// \brief Lighting enabled?
   public: bool lighting = true;
 
+  /// \brief Double sided material
+  public: bool doubleSided = false;
+
   /// \brief Ambient color
   public: ignition::math::Color ambient {0, 0, 0, 1};
 
@@ -54,61 +58,23 @@ class sdf::MaterialPrivate
   /// \brief Emissive color
   public: ignition::math::Color emissive {0, 0, 0, 1};
 
+  /// \brief Render order
+  public: float renderOrder = 0;
+
   /// \brief Physically Based Rendering (PBR) properties
-  public: std::unique_ptr<Pbr> pbr;
+  public: std::optional<Pbr> pbr;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief The path to the file where this material was defined.
+  public: std::string filePath = "";
 };
 
 /////////////////////////////////////////////////
 Material::Material()
-  : dataPtr(new MaterialPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Material::~Material()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Material::Material(const Material &_material)
-  : dataPtr(new MaterialPrivate)
-{
-  this->dataPtr->scriptUri = _material.dataPtr->scriptUri;
-  this->dataPtr->scriptName = _material.dataPtr->scriptName;
-  this->dataPtr->shader = _material.dataPtr->shader;
-  this->dataPtr->normalMap = _material.dataPtr->normalMap;
-  this->dataPtr->lighting = _material.dataPtr->lighting;
-  this->dataPtr->ambient = _material.dataPtr->ambient;
-  this->dataPtr->diffuse = _material.dataPtr->diffuse;
-  this->dataPtr->specular = _material.dataPtr->specular;
-  this->dataPtr->emissive = _material.dataPtr->emissive;
-  this->dataPtr->sdf = _material.dataPtr->sdf;
-  if (_material.dataPtr->pbr)
-    this->dataPtr->pbr = std::make_unique<Pbr>(*_material.dataPtr->pbr);
-}
-
-/////////////////////////////////////////////////
-Material::Material(Material &&_material) noexcept
-  : dataPtr(std::exchange(_material.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Material &Material::operator=(const Material &_material)
-{
-  return *this = Material(_material);
-}
-
-/////////////////////////////////////////////////
-Material &Material::operator=(Material &&_material)
-{
-  std::swap(this->dataPtr, _material.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -117,6 +83,8 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
+
+  this->dataPtr->filePath = _sdf->FilePath();
 
   // Check that the provided SDF element is a <material>
   // This is an error that cannot be recovered, so return an error.
@@ -170,7 +138,11 @@ Errors Material::Load(sdf::ElementPtr _sdf)
       this->dataPtr->shader = ShaderType::VERTEX;
     else if (typePair.first == "normal_map_objectspace")
       this->dataPtr->shader = ShaderType::NORMAL_MAP_OBJECTSPACE;
+    else if (typePair.first == "normal_map_object_space")
+      this->dataPtr->shader = ShaderType::NORMAL_MAP_OBJECTSPACE;
     else if (typePair.first == "normal_map_tangentspace")
+      this->dataPtr->shader = ShaderType::NORMAL_MAP_TANGENTSPACE;
+    else if (typePair.first == "normal_map_tangent_space")
       this->dataPtr->shader = ShaderType::NORMAL_MAP_TANGENTSPACE;
     else
     {
@@ -193,6 +165,9 @@ Errors Material::Load(sdf::ElementPtr _sdf)
     }
   }
 
+  this->dataPtr->renderOrder = _sdf->Get<float>("render_order",
+      this->dataPtr->renderOrder).first;
+
   this->dataPtr->ambient = _sdf->Get<ignition::math::Color>("ambient",
       this->dataPtr->ambient).first;
 
@@ -205,10 +180,16 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   this->dataPtr->emissive = _sdf->Get<ignition::math::Color>("emissive",
       this->dataPtr->emissive).first;
 
+  this->dataPtr->lighting = _sdf->Get<bool>("lighting",
+      this->dataPtr->lighting).first;
+
+  this->dataPtr->doubleSided = _sdf->Get<bool>("double_sided",
+      this->dataPtr->doubleSided).first;
+
   // load pbr param
   if (_sdf->HasElement("pbr"))
   {
-    this->dataPtr->pbr.reset(new sdf::Pbr());
+    this->dataPtr->pbr.emplace();
     Errors pbrErrors = this->dataPtr->pbr->Load(_sdf->GetElement("pbr"));
     errors.insert(errors.end(), pbrErrors.begin(), pbrErrors.end());
   }
@@ -223,7 +204,7 @@ ignition::math::Color Material::Ambient() const
 }
 
 //////////////////////////////////////////////////
-void Material::SetAmbient(const ignition::math::Color &_color) const
+void Material::SetAmbient(const ignition::math::Color &_color)
 {
   this->dataPtr->ambient = _color;
 }
@@ -235,7 +216,7 @@ ignition::math::Color Material::Diffuse() const
 }
 
 //////////////////////////////////////////////////
-void Material::SetDiffuse(const ignition::math::Color &_color) const
+void Material::SetDiffuse(const ignition::math::Color &_color)
 {
   this->dataPtr->diffuse = _color;
 }
@@ -247,7 +228,7 @@ ignition::math::Color Material::Specular() const
 }
 
 //////////////////////////////////////////////////
-void Material::SetSpecular(const ignition::math::Color &_color) const
+void Material::SetSpecular(const ignition::math::Color &_color)
 {
   this->dataPtr->specular = _color;
 }
@@ -259,9 +240,21 @@ ignition::math::Color Material::Emissive() const
 }
 
 //////////////////////////////////////////////////
-void Material::SetEmissive(const ignition::math::Color &_color) const
+void Material::SetEmissive(const ignition::math::Color &_color)
 {
   this->dataPtr->emissive = _color;
+}
+
+//////////////////////////////////////////////////
+float Material::RenderOrder() const
+{
+  return this->dataPtr->renderOrder;
+}
+
+//////////////////////////////////////////////////
+void Material::SetRenderOrder(const float _renderOrder)
+{
+  this->dataPtr->renderOrder = _renderOrder;
 }
 
 //////////////////////////////////////////////////
@@ -274,6 +267,18 @@ bool Material::Lighting() const
 void Material::SetLighting(const bool _lighting)
 {
   this->dataPtr->lighting = _lighting;
+}
+
+//////////////////////////////////////////////////
+bool Material::DoubleSided() const
+{
+  return this->dataPtr->doubleSided;
+}
+
+//////////////////////////////////////////////////
+void Material::SetDoubleSided(const bool _doubleSided)
+{
+  this->dataPtr->doubleSided = _doubleSided;
 }
 
 //////////////////////////////////////////////////
@@ -333,11 +338,23 @@ void Material::SetNormalMap(const std::string &_map)
 //////////////////////////////////////////////////
 void Material::SetPbrMaterial(const Pbr &_pbr)
 {
-  this->dataPtr->pbr.reset(new Pbr(_pbr));
+  this->dataPtr->pbr = _pbr;
 }
 
 //////////////////////////////////////////////////
-Pbr *Material::PbrMaterial() const
+const Pbr *Material::PbrMaterial() const
 {
-  return this->dataPtr->pbr.get();
+  return optionalToPointer(this->dataPtr->pbr);
+}
+
+//////////////////////////////////////////////////
+const std::string &Material::FilePath() const
+{
+  return this->dataPtr->filePath;
+}
+
+//////////////////////////////////////////////////
+void Material::SetFilePath(const std::string &_filePath)
+{
+  this->dataPtr->filePath = _filePath;
 }

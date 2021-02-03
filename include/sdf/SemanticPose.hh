@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -40,8 +41,8 @@ namespace sdf
   //
 
   // Forward declare private data class.
-  class SemanticPosePrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \brief SemanticPose is a data structure that can be used by different
   /// DOM objects to resolve poses on a PoseRelativeToGraph. This object holds
@@ -78,33 +79,30 @@ namespace sdf
     /// raw pose is applied.
     /// \param[in] _defaultResolveTo Default frame to resolve-to in Resolve()
     /// if no frame is specified.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph A scoped PoseRelativeToGraph object.
     private: SemanticPose(
         const ignition::math::Pose3d &_pose,
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
-        std::weak_ptr<const sdf::PoseRelativeToGraph> _graph);
+        const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
 
-    /// \brief Destructor
-    public: ~SemanticPose();
-
-    /// \brief Copy constructor
-    /// \param[in] _semanticpose SemanticPose to copy.
-    public: SemanticPose(const SemanticPose &_semanticPose);
-
-    /// \brief Move constructor
-    /// \param[in] _semanticpose SemanticPose to move.
-    public: SemanticPose(SemanticPose &&_semanticPose) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _semanticpose SemanticPose to move.
-    /// \return Reference to this.
-    public: SemanticPose &operator=(SemanticPose &&_semanticPose);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _semanticpose SemanticPose to copy.
-    /// \return Reference to this.
-    public: SemanticPose &operator=(const SemanticPose &_semanticPose);
+    /// \brief Private constructor that is used by object that represent a frame
+    /// in the PoseRelativeTo graph. Examples are Model, Frame, Link and not
+    /// Collision or Visual.
+    /// \param[in] _name Name of object. This should also be the name of the
+    /// frame represented by this object in the PoseRelativeTo graph.
+    /// \param[in] _pose Raw pose of object.
+    /// \param[in] _relativeTo Name of frame in graph relative-to which the
+    /// raw pose is applied.
+    /// \param[in] _defaultResolveTo Default frame to resolve-to in Resolve()
+    /// if no frame is specified.
+    /// \param[in] _graph A scoped PoseRelativeToGraph object.
+    private: SemanticPose(
+        const std::string &_name,
+        const ignition::math::Pose3d &_pose,
+        const std::string &_relativeTo,
+        const std::string &_defaultResolveTo,
+        const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
 
     friend class Collision;
     friend class Frame;
@@ -116,7 +114,7 @@ namespace sdf
     friend class Visual;
 
     /// \brief Private data pointer.
-    private: std::unique_ptr<SemanticPosePrivate> dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

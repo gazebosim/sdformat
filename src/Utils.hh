@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <string>
+#include <optional>
 #include <vector>
 #include "sdf/Error.hh"
 #include "sdf/Element.hh"
@@ -36,6 +37,12 @@ namespace sdf
   /// \param[in] _name Name to check.
   /// \returns True if the name is a reserved name and thus invalid.
   bool isReservedName(const std::string &_name);
+
+  /// \brief Check if the passed string is a valid frame reference.
+  /// Currently it's only invalid if the name is __root__
+  /// \param[in] _name Name to check.
+  /// \returns True if the name is a valid frame reference.
+  bool isValidFrameReference(const std::string &_name);
 
   /// \brief Read the "name" attribute from an element.
   /// \param[in] _sdf SDF element pointer which contains the name.
@@ -55,6 +62,13 @@ namespace sdf
   bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
                 std::string &_frame);
 
+  /// \brief If the value is negative, convert it to positive infinity.
+  /// Otherwise, return the original value.
+  /// \param[in] _value The value to convert, if necessary.
+  /// \return Infinity if the input value is negative, otherwise the original
+  /// value.
+  double infiniteIfNegative(double _value);
+
   /// \brief Load all objects of a specific sdf element type. No error
   /// is returned if an element is not present. This function assumes that
   /// an element has a "name" attribute that must be unique.
@@ -65,7 +79,7 @@ namespace sdf
   /// exists.
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
-  template<typename Class>
+  template <typename Class>
   sdf::Errors loadUniqueRepeated(sdf::ElementPtr _sdf,
       const std::string &_sdfName, std::vector<Class> &_objs)
   {
@@ -128,9 +142,10 @@ namespace sdf
   /// vector, unless an error is encountered during load.
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
-  template<typename Class>
-  sdf::Errors loadRepeated(sdf::ElementPtr _sdf,
-      const std::string &_sdfName, std::vector<Class> &_objs)
+  template <typename Class>
+  sdf::Errors loadRepeated(sdf::ElementPtr _sdf, const std::string &_sdfName,
+      std::vector<Class> &_objs,
+      const std::function<void(Class &)> &_beforeLoadFunc = {})
   {
     Errors errors;
 
@@ -142,6 +157,10 @@ namespace sdf
       while (elem)
       {
         Class obj;
+        if (_beforeLoadFunc)
+        {
+          _beforeLoadFunc(obj);
+        }
 
         // Load the model and capture the errors.
         Errors loadErrors = obj.Load(elem);
@@ -162,6 +181,29 @@ namespace sdf
     // exists. This is a bit of safe code reduction.
 
     return errors;
+  }
+
+  /// \brief Convenience function that returns a pointer to the value contained
+  /// in a std::optional.
+  /// \tparam T type of object contained in the std::optional
+  /// \param[in] _opt Input optional object.
+  /// \return A pointer to the value contained in the optional. A nullptr is
+  /// returned if the optional does not contain a value.
+  template <typename T>
+  T *optionalToPointer(std::optional<T> &_opt)
+  {
+    if (_opt)
+      return &_opt.value();
+    return nullptr;
+  }
+
+  /// \brief const overload of optionalToPointer(std::optional<T> &_opt)
+  template <typename T>
+  const T *optionalToPointer(const std::optional<T> &_opt)
+  {
+    if (_opt)
+      return &_opt.value();
+    return nullptr;
   }
   }
 }

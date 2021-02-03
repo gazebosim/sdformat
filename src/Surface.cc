@@ -23,7 +23,7 @@
 
 using namespace sdf;
 
-class sdf::ContactPrivate
+class sdf::Contact::Implementation
 {
   // \brief The bitmask used to filter collisions.
   public: uint16_t collideBitmask = 0xff;
@@ -32,10 +32,10 @@ class sdf::ContactPrivate
   public: sdf::ElementPtr sdf{nullptr};
 };
 
-class sdf::SurfacePrivate
+class sdf::Surface::Implementation
 {
   /// \brief The object storing contact parameters
-  public: Contact contact;
+  public: sdf::Contact contact;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf{nullptr};
@@ -43,40 +43,8 @@ class sdf::SurfacePrivate
 
 /////////////////////////////////////////////////
 Contact::Contact()
-  : dataPtr(new ContactPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Contact::~Contact()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Contact::Contact(const Contact &_contact)
-  : dataPtr(new ContactPrivate(*_contact.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Contact::Contact(Contact &&_contact) noexcept
-  : dataPtr(std::exchange(_contact.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Contact &Contact::operator=(const Contact &_contact)
-{
-  return *this = Contact(_contact);
-}
-
-/////////////////////////////////////////////////
-Contact &Contact::operator=(Contact &&_contact)
-{
-  std::swap(this->dataPtr, _contact.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -133,40 +101,8 @@ void Contact::SetCollideBitmask(const uint16_t _bitmask)
 
 /////////////////////////////////////////////////
 Surface::Surface()
-  : dataPtr(new SurfacePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Surface::~Surface()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Surface::Surface(const Surface &_surface)
-  : dataPtr(new SurfacePrivate(*_surface.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Surface::Surface(Surface &&_surface) noexcept
-  : dataPtr(std::exchange(_surface.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Surface &Surface::operator=(const Surface &_surface)
-{
-  return *this = Surface(_surface);
-}
-
-/////////////////////////////////////////////////
-Surface &Surface::operator=(Surface &&_surface)
-{
-  std::swap(this->dataPtr, _surface.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -210,7 +146,7 @@ sdf::ElementPtr Surface::Element() const
 }
 
 /////////////////////////////////////////////////
-sdf::Contact *Surface::Contact() const
+const sdf::Contact *Surface::Contact() const
 {
   return &this->dataPtr->contact;
 }

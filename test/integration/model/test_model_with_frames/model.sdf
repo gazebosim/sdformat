@@ -59,5 +59,11 @@
       <parent>L3</parent>
       <child>L4</child>
     </joint>
+    <model name="M2">
+      <pose relative_to="F1">1 0 0 0 0 0</pose>
+      <link name="L5">
+        <pose>1 0 0 0 0 0</pose>
+      </link>
+    </model>
   </model>
 </sdf>

@@ -21,11 +21,11 @@
   </attribute>
 
   <element name="parent" type="string" default="__default__" required="1">
-    <description>Name of the parent link or "world".</description>
+    <description>Name of the parent frame or "world".</description>
   </element> <!-- End Parent -->
 
   <element name="child" type="string" default="__default__" required="1">
-    <description>Name of the child link. The value "world" may not be specified.</description>
+    <description>Name of the child frame. The value "world" may not be specified.</description>
   </element> <!-- End Child -->
 
   <element name="gearbox_ratio" type="double" default="1.0" required="0">

@@ -14,15 +14,22 @@
  * limitations under the License.
  *
  */
+#include <algorithm>
+#include <iterator>
+
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
+
+#include "sdf/Assert.hh"
 #include "sdf/Error.hh"
 #include "sdf/JointAxis.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
-class sdf::JointAxisPrivate
+class sdf::JointAxis::Implementation
 {
   /// \brief Default joint position for this joint axis.
   public: double initialPosition = 0.0;
@@ -80,46 +87,14 @@ class sdf::JointAxisPrivate
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  /// \brief Scoped Pose Relative-To graph at the parent model scope.
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
 JointAxis::JointAxis()
-  : dataPtr(new JointAxisPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-JointAxis::~JointAxis()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-JointAxis::JointAxis(const JointAxis &_jointAxis)
-  : dataPtr(new JointAxisPrivate(*_jointAxis.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-JointAxis::JointAxis(JointAxis &&_jointAxis) noexcept
-  : dataPtr(std::exchange(_jointAxis.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-JointAxis &JointAxis::operator=(const JointAxis &_jointAxis)
-{
-  return *this = JointAxis(_jointAxis);
-}
-
-/////////////////////////////////////////////////
-JointAxis &JointAxis::operator=(JointAxis &&_jointAxis)
-{
-  std::swap(this->dataPtr, _jointAxis.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -136,8 +111,9 @@ Errors JointAxis::Load(ElementPtr _sdf)
   // Read the xyz values.
   if (_sdf->HasElement("xyz"))
   {
-    this->dataPtr->xyz = _sdf->Get<ignition::math::Vector3d>("xyz",
-        ignition::math::Vector3d::UnitZ).first;
+    using ignition::math::Vector3d;
+    auto errs = this->SetXyz(_sdf->Get<Vector3d>("xyz", Vector3d::UnitZ).first);
+    std::copy(errs.begin(), errs.end(), std::back_inserter(errors));
     auto e = _sdf->GetElement("xyz");
     if (e->HasAttribute("expressed_in"))
     {
@@ -209,20 +185,16 @@ ignition::math::Vector3d JointAxis::Xyz() const
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetXyz(const ignition::math::Vector3d &_xyz)
+sdf::Errors JointAxis::SetXyz(const ignition::math::Vector3d &_xyz)
 {
+  if (sdf::equal(_xyz.Length(), 0.0))
+  {
+    return {Error(ErrorCode::ELEMENT_INVALID,
+                  "The norm of the xyz vector cannot be zero")};
+  }
   this->dataPtr->xyz = _xyz;
-}
-
-/////////////////////////////////////////////////
-bool JointAxis::UseParentModelFrame() const
-{
-  return this->dataPtr->useParentModelFrame;
-}
-/////////////////////////////////////////////////
-void JointAxis::SetUseParentModelFrame(const bool _parentModelFrame)
-{
-  this->dataPtr->useParentModelFrame = _parentModelFrame;
+  this->dataPtr->xyz.Normalize();
+  return sdf::Errors();
 }
 
 /////////////////////////////////////////////////
@@ -291,7 +263,7 @@ double JointAxis::Upper() const
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetUpper(const double _upper) const
+void JointAxis::SetUpper(const double _upper)
 {
   this->dataPtr->upper = _upper;
 }
@@ -299,7 +271,7 @@ void JointAxis::SetUpper(const double _upper) const
 /////////////////////////////////////////////////
 double JointAxis::Effort() const
 {
-  return this->dataPtr->effort;
+  return infiniteIfNegative(this->dataPtr->effort);
 }
 
 /////////////////////////////////////////////////
@@ -311,11 +283,11 @@ void JointAxis::SetEffort(double _effort)
 /////////////////////////////////////////////////
 double JointAxis::MaxVelocity() const
 {
-  return this->dataPtr->maxVelocity;
+  return infiniteIfNegative(this->dataPtr->maxVelocity);
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetMaxVelocity(const double _velocity) const
+void JointAxis::SetMaxVelocity(const double _velocity)
 {
   this->dataPtr->maxVelocity = _velocity;
 }
@@ -327,7 +299,7 @@ double JointAxis::Stiffness() const
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetStiffness(const double _stiffness) const
+void JointAxis::SetStiffness(const double _stiffness)
 {
   this->dataPtr->stiffness = _stiffness;
 }
@@ -339,7 +311,7 @@ double JointAxis::Dissipation() const
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetDissipation(const double _dissipation) const
+void JointAxis::SetDissipation(const double _dissipation)
 {
   this->dataPtr->dissipation = _dissipation;
 }
@@ -364,7 +336,7 @@ void JointAxis::SetXmlParentName(const std::string &_xmlParentName)
 
 /////////////////////////////////////////////////
 void JointAxis::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 }
@@ -375,7 +347,7 @@ Errors JointAxis::ResolveXyz(
     const std::string &_resolveTo) const
 {
   Errors errors;
-  auto graph = this->dataPtr->poseRelativeToGraph.lock();
+  auto graph = this->dataPtr->poseRelativeToGraph;
   if (!graph)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -404,7 +376,7 @@ Errors JointAxis::ResolveXyz(
   }
 
   ignition::math::Pose3d pose;
-  errors = resolvePose(pose, *graph, axisExpressedIn, resolveTo);
+  errors = resolvePose(pose, graph, axisExpressedIn, resolveTo);
 
   if (errors.empty())
   {

@@ -20,7 +20,7 @@
 using namespace sdf;
 
 /// \brief Scene private data.
-class sdf::ScenePrivate
+class sdf::Scene::Implementation
 {
   /// \brief True if grid should be enabled
   public: bool grid = true;
@@ -39,46 +39,17 @@ class sdf::ScenePrivate
   public: ignition::math::Color background =
       ignition::math::Color(0.7f, 0.7f, .7f);
 
+  /// \brief Pointer to the sky properties.
+  public: std::optional<sdf::Sky> sky;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
 Scene::Scene()
-  : dataPtr(new ScenePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Scene::~Scene()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Scene::Scene(const Scene &_scene)
-  : dataPtr(new ScenePrivate(*_scene.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Scene::Scene(Scene &&_scene) noexcept
-  : dataPtr(std::exchange(_scene.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Scene &Scene::operator=(const Scene &_scene)
-{
-  return *this = Scene(_scene);
-}
-
-/////////////////////////////////////////////////
-Scene &Scene::operator=(Scene &&_scene)
-{
-  std::swap(this->dataPtr, _scene.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -117,6 +88,14 @@ Errors Scene::Load(ElementPtr _sdf)
   // Get the origin_visual property
   this->dataPtr->originVisual = _sdf->Get<bool>("origin_visual",
       this->dataPtr->originVisual).first;
+
+  // load sky
+  if (_sdf->HasElement("sky"))
+  {
+    this->dataPtr->sky.emplace();
+    Errors err = this->dataPtr->sky->Load(_sdf->GetElement("sky"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
 
   return errors;
 }
@@ -178,6 +157,18 @@ bool Scene::OriginVisual() const
 void Scene::SetOriginVisual(const bool _enabled)
 {
   this->dataPtr->originVisual = _enabled;
+}
+
+/////////////////////////////////////////////////
+void Scene::SetSky(const sdf::Sky &_sky)
+{
+  this->dataPtr->sky = _sky;
+}
+
+/////////////////////////////////////////////////
+const sdf::Sky *Scene::Sky() const
+{
+  return optionalToPointer(this->dataPtr->sky);
 }
 
 /////////////////////////////////////////////////

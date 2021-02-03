@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
@@ -32,10 +33,10 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
   // Forward declaration.
-  class CollisionPrivate;
   class Geometry;
   class Surface;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \brief A collision element descibes the collision properties associated
   /// with a link. This can be different from the visual properties of a link.
@@ -45,27 +46,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Collision();
-
-    /// \brief Copy constructor
-    /// \param[in] _collision Collision to copy.
-    public: Collision(const Collision &_collision);
-
-    /// \brief Move constructor
-    /// \param[in] _collision Collision to move.
-    public: Collision(Collision &&_collision) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _collision Collision to move.
-    /// \return Reference to this.
-    public: Collision &operator=(Collision &&_collision);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _collision Collision to copy.
-    /// \return Reference to this.
-    public: Collision &operator=(const Collision &_collision);
-
-    /// \brief Destructor
-    public: ~Collision();
 
     /// \brief Load the collision based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -83,7 +63,7 @@ namespace sdf
     /// \brief Set the name of the collision.
     /// The name of the collision must be unique within the scope of a Link.
     /// \param[in] _name Name of the collision.
-    public: void SetName(const std::string &_name) const;
+    public: void SetName(const std::string &_name);
 
     /// \brief Get a pointer to the collisions's geometry.
     /// \return The collision's geometry.
@@ -95,7 +75,7 @@ namespace sdf
 
     /// \brief Get a pointer to the collisions's surface parameters.
     /// \return The collision's surface parameters.
-    public: sdf::Surface *Surface() const;
+    public: const sdf::Surface *Surface() const;
 
     /// \brief Set the collision's surface parameters
     /// \param[in] _surface The surface parameters of the collision object
@@ -141,12 +121,12 @@ namespace sdf
     /// \param[in] _xmlParentName Name of xml parent object.
     private: void SetXmlParentName(const std::string &_xmlParentName);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is
@@ -154,7 +134,7 @@ namespace sdf
     friend class Link;
 
     /// \brief Private data pointer.
-    private: CollisionPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

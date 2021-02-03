@@ -22,11 +22,13 @@
 #include "sdf/Geometry.hh"
 #include "sdf/Surface.hh"
 #include "sdf/Types.hh"
+#include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
 
-class sdf::CollisionPrivate
+class sdf::Collision::Implementation
 {
   /// \brief Name of the collision.
   public: std::string name = "";
@@ -41,7 +43,7 @@ class sdf::CollisionPrivate
   public: Geometry geom;
 
   /// \brief The collision's surface parameters.
-  public: Surface surface;
+  public: sdf::Surface surface;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -49,46 +51,14 @@ class sdf::CollisionPrivate
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  /// \brief Scoped Pose Relative-To graph at the parent model scope.
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
 Collision::Collision()
-  : dataPtr(new CollisionPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Collision::~Collision()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Collision::Collision(const Collision &_collision)
-  : dataPtr(new CollisionPrivate(*_collision.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Collision::Collision(Collision &&_collision) noexcept
-  : dataPtr(std::exchange(_collision.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Collision &Collision::operator=(const Collision &_collision)
-{
-  return *this = Collision(_collision);
-}
-
-/////////////////////////////////////////////////
-Collision &Collision::operator=(Collision &&_collision)
-{
-  std::swap(this->dataPtr, _collision.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -146,7 +116,7 @@ std::string Collision::Name() const
 }
 
 /////////////////////////////////////////////////
-void Collision::SetName(const std::string &_name) const
+void Collision::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
 }
@@ -164,7 +134,7 @@ void Collision::SetGeom(const Geometry &_geom)
 }
 
 /////////////////////////////////////////////////
-sdf::Surface *Collision::Surface() const
+const sdf::Surface *Collision::Surface() const
 {
   return &this->dataPtr->surface;
 }
@@ -207,7 +177,7 @@ void Collision::SetXmlParentName(const std::string &_xmlParentName)
 
 /////////////////////////////////////////////////
 void Collision::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 }

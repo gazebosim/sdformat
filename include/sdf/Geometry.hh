@@ -17,6 +17,7 @@
 #ifndef SDF_GEOMETRY_HH_
 #define SDF_GEOMETRY_HH_
 
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -28,9 +29,11 @@ namespace sdf
   //
 
   // Forward declare private data class.
-  class GeometryPrivate;
   class Box;
+  class Capsule;
   class Cylinder;
+  class Ellipsoid;
+  class Heightmap;
   class Mesh;
   class Plane;
   class Sphere;
@@ -56,6 +59,15 @@ namespace sdf
 
     /// \brief A mesh geometry.
     MESH = 5,
+
+    /// \brief A heightmap geometry.
+    HEIGHTMAP = 6,
+
+    /// \brief A capsule geometry.
+    CAPSULE = 7,
+
+    /// \brief An ellipsoid geometry
+    ELLIPSOID = 8,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
@@ -66,27 +78,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Geometry();
-
-    /// \brief Copy constructor
-    /// \param[in] _geometry Geometry to copy.
-    public: Geometry(const Geometry &_geometry);
-
-    /// \brief Move constructor
-    /// \param[in] _geometry Geometry to move.
-    public: Geometry(Geometry &&_geometry) noexcept;
-
-    /// \brief Destructor
-    public: virtual ~Geometry();
-
-    /// \brief Assignment operator.
-    /// \param[in] _geometry The geometry to set values from.
-    /// \return *this
-    public: Geometry &operator=(const Geometry &_geometry);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _geometry The geometry to move from.
-    /// \return *this
-    public: Geometry &operator=(Geometry &&_geometry);
 
     /// \brief Load the geometry based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -115,6 +106,17 @@ namespace sdf
     /// \param[in] _box The box shape.
     public: void SetBoxShape(const Box &_box);
 
+    /// \brief Get the capsule geometry, or nullptr if the contained
+    /// geometry is not a capsule.
+    /// \return Pointer to the capsule geometry, or nullptr if the
+    /// geometry is not a capsule.
+    /// \sa GeometryType Type() const
+    public: const Capsule *CapsuleShape() const;
+
+    /// \brief Set the capsule shape.
+    /// \param[in] _capsule The capsule shape.
+    public: void SetCapsuleShape(const Capsule &_capsule);
+
     /// \brief Get the cylinder geometry, or nullptr if the contained
     /// geometry is not a cylinder.
     /// \return Pointer to the visual's cylinder geometry, or nullptr if the
@@ -125,6 +127,17 @@ namespace sdf
     /// \brief Set the cylinder shape.
     /// \param[in] _cylinder The cylinder shape.
     public: void SetCylinderShape(const Cylinder &_cylinder);
+
+    /// \brief Get the ellipsoid geometry, or nullptr if the contained
+    /// geometry is not an ellipsoid.
+    /// \return Pointer to the ellipsoid geometry, or nullptr if the geometry is
+    /// not an ellipsoid.
+    /// \sa GeometryType Type() const
+    public: const Ellipsoid *EllipsoidShape() const;
+
+    /// \brief Set the ellipsoid shape.
+    /// \param[in] _ellipsoid The ellipsoid shape.
+    public: void SetEllipsoidShape(const Ellipsoid &_ellipsoid);
 
     /// \brief Get the sphere geometry, or nullptr if the contained geometry is
     /// not a sphere.
@@ -159,6 +172,17 @@ namespace sdf
     /// \param[in] _mesh The mesh shape.
     public: void SetMeshShape(const Mesh &_mesh);
 
+    /// \brief Get the heightmap geometry, or nullptr if the contained geometry
+    /// is not a heightmap.
+    /// \return Pointer to the heightmap geometry, or nullptr if the geometry is
+    /// not a heightmap.
+    /// \sa GeometryType Type() const
+    public: const Heightmap *HeightmapShape() const;
+
+    /// \brief Set the heightmap shape.
+    /// \param[in] _heightmap The heightmap shape.
+    public: void SetHeightmapShape(const Heightmap &_heightmap);
+
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
@@ -166,7 +190,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    private: GeometryPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

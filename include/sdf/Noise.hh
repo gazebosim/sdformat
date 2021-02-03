@@ -17,6 +17,7 @@
 #ifndef SDF_NOISE_HH_
 #define SDF_NOISE_HH_
 
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -25,9 +26,6 @@ namespace sdf
 {
   // Inline bracke to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  // Forward declare private data class.
-  class NoisePrivate;
-
   /// \enum NoiseType
   /// \brief The set of noise types.
   enum class NoiseType
@@ -50,27 +48,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Noise();
-
-    /// \brief Copy constructor
-    /// \param[in] _noise Noise to copy.
-    public: Noise(const Noise &_noise);
-
-    /// \brief Move constructor
-    /// \param[in] _noise Noise to move.
-    public: Noise(Noise &&_noise) noexcept;
-
-    /// \brief Destructor
-    public: ~Noise();
-
-    /// \brief Assignment operator.
-    /// \param[in] _noise The noise to set values from.
-    /// \return *this
-    public: Noise &operator=(const Noise &_noise);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _noise The noise to set values from.
-    /// \return *this
-    public: Noise &operator=(Noise &&_noise);
 
     /// \brief Return true if both Noise objects contain the same values.
     /// \param[_in] _noise Noise value to compare.
@@ -186,7 +163,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    private: NoisePrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

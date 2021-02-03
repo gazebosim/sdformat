@@ -423,7 +423,7 @@ TEST(DOMFrame, LoadModelFramesAttachedTo)
   EXPECT_TRUE(root.Load(testFile).empty());
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_frame_attached_to", model->Name());
   EXPECT_EQ(1u, model->LinkCount());
@@ -489,7 +489,7 @@ TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
       "attached_to name[A] specified by frame with name[F3] does not match a "
-      "link, joint, or frame name in model"));
+      "nested model, link, joint, or frame name in model"));
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_CYCLE);
   EXPECT_NE(std::string::npos,
     errors[1].Message().find(
@@ -502,7 +502,7 @@ TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
   EXPECT_NE(std::string::npos,
     errors[5].Message().find(
       "attached_to name[A] specified by frame with name[F3] does not match a "
-      "link, joint, or frame name in model"));
+      "nested model, link, joint, or frame name in model"));
   EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
   EXPECT_NE(std::string::npos,
     errors[6].Message().find(
@@ -525,7 +525,7 @@ TEST(DOMFrame, LoadModelFramesAttachedToJoint)
   EXPECT_TRUE(root.Load(testFile).empty());
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_frame_attached_to_joint", model->Name());
   EXPECT_EQ(2u, model->LinkCount());
@@ -576,6 +576,56 @@ TEST(DOMFrame, LoadModelFramesAttachedToJoint)
   EXPECT_EQ("C", body);
   EXPECT_TRUE(model->FrameByName("F4")->ResolveAttachedToBody(body).empty());
   EXPECT_EQ("C", body);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMFrame, LoadModelFramesAttachedToNestedModel)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_frame_attached_to_nested_model.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  // Get the first model
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_frame_attached_to_nested_model", model->Name());
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_EQ(nullptr, model->LinkByIndex(1));
+
+  EXPECT_TRUE(model->LinkNameExists("link"));
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(1u, model->ModelCount());
+  EXPECT_NE(nullptr, model->ModelByIndex(0));
+  EXPECT_EQ(nullptr, model->ModelByIndex(1));
+
+  EXPECT_TRUE(model->ModelNameExists("nested_model"));
+
+  EXPECT_EQ(2u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_NE(nullptr, model->FrameByIndex(1));
+  EXPECT_EQ(nullptr, model->FrameByIndex(2));
+  ASSERT_TRUE(model->FrameNameExists("F1"));
+  ASSERT_TRUE(model->FrameNameExists("F2"));
+
+  EXPECT_EQ("nested_model", model->FrameByName("F1")->AttachedTo());
+  EXPECT_EQ("F1", model->FrameByName("F2")->AttachedTo());
+
+  std::string body;
+  EXPECT_TRUE(model->FrameByName("F1")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("nested_model::nested_link", body);
+  EXPECT_TRUE(model->FrameByName("F2")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("nested_model::nested_link", body);
 }
 
 /////////////////////////////////////////////////
@@ -642,7 +692,7 @@ TEST(DOMFrame, LoadWorldFramesAttachedTo)
   EXPECT_TRUE(world->FrameByName("F1")->ResolveAttachedToBody(body).empty());
   EXPECT_EQ("world", body);
   EXPECT_TRUE(world->FrameByName("F2")->ResolveAttachedToBody(body).empty());
-  EXPECT_EQ("M1", body);
+  EXPECT_EQ("M1::L", body);
 }
 
 /////////////////////////////////////////////////
@@ -700,7 +750,7 @@ TEST(DOMFrame, LoadModelFramesRelativeTo)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_frame_relative_to", model->Name());
   EXPECT_EQ(1u, model->LinkCount());
@@ -837,7 +887,7 @@ TEST(DOMFrame, LoadModelFramesInvalidRelativeTo)
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
       "relative_to name[A] specified by frame with name[F] does not match a "
-      "link, joint, or frame name in model"));
+      "nested model, link, joint, or frame name in model"));
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
   EXPECT_NE(std::string::npos,
     errors[1].Message().find(
@@ -861,7 +911,7 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_frame_relative_to_joint", model->Name());
   EXPECT_EQ(2u, model->LinkCount());
@@ -1060,7 +1110,7 @@ TEST(DOMFrame, LoadWorldFramesInvalidRelativeTo)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(11u, errors.size());
+  EXPECT_EQ(15u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -1126,7 +1176,7 @@ TEST(DOMFrame, WorldIncludeModel)
     ASSERT_NE(nullptr, model);
     ignition::math::Pose3d modelPose;
     sdf::Errors resolveErrors = model->SemanticPose().Resolve(modelPose);
-    EXPECT_TRUE(resolveErrors.empty());
+    EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
     EXPECT_EQ(expectedPoses[i], modelPose);
   }
 }

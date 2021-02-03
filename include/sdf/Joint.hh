@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
@@ -34,8 +35,9 @@ namespace sdf
 
   // Forward declarations.
   class JointAxis;
-  class JointPrivate;
+  struct FrameAttachedToGraph;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \enum JointType
   /// \brief The set of joint types. INVALID indicates that joint type has
@@ -84,27 +86,6 @@ namespace sdf
     /// \brief Default constructor
     public: Joint();
 
-    /// \brief Copy constructor
-    /// \param[in] _joint Joint to copy.
-    public: Joint(const Joint &_joint);
-
-    /// \brief Move constructor
-    /// \param[in] _joint Joint to move.
-    public: Joint(Joint &&_joint) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _joint Joint to move.
-    /// \return Reference to this.
-    public: Joint &operator=(Joint &&_joint);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _joint Joint to copy.
-    /// \return Reference to this.
-    public: Joint &operator=(const Joint &_joint);
-
-    /// \brief Destructor
-    public: ~Joint();
-
     /// \brief Load the joint based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
@@ -146,6 +127,18 @@ namespace sdf
     /// \brief Set the name of the child link.
     /// \param[in] _name Name of the child link.
     public: void SetChildLinkName(const std::string &_name);
+
+    /// \brief Resolve the name of the child link from the
+    /// FrameAttachedToGraph.
+    /// \param[out] _body Name of child link of this joint.
+    /// \return Errors.
+    public: Errors ResolveChildLink(std::string &_link) const;
+
+    /// \brief Resolve the name of the parent link from the
+    /// FrameAttachedToGraph. It will return the name of a link or "world".
+    /// \param[out] _body Name of parent link of this joint.
+    /// \return Errors.
+    public: Errors ResolveParentLink(std::string &_link) const;
 
     /// \brief Get a joint axis.
     /// \param[in] _index This value specifies which axis to get. A value of
@@ -208,18 +201,24 @@ namespace sdf
     /// \return SemanticPose object for this link.
     public: sdf::SemanticPose SemanticPose() const;
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
-    /// Model::Load.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \brief Give the scoped FrameAttachedToGraph to be used for resolving
+    /// parent and child link names. This is private and is intended to be
+    /// called by Model::Load.
+    /// \param[in] _graph scoped FrameAttachedToGraph object.
+    private: void SetFrameAttachedToGraph(
+        sdf::ScopedGraph<FrameAttachedToGraph> _graph);
+
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by Model::Load.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Model::Load to call SetPoseRelativeToGraph.
     friend class Model;
 
     /// \brief Private data pointer.
-    private: JointPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

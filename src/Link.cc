@@ -28,11 +28,14 @@
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
+
+#include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
 
-class sdf::LinkPrivate
+class sdf::Link::Implementation
 {
   /// \brief Name of the link.
   public: std::string name = "";
@@ -66,46 +69,14 @@ class sdf::LinkPrivate
   /// \brief True if this link should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  /// \brief Scoped Pose Relative-To graph at the parent model scope.
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
 Link::Link()
-  : dataPtr(new LinkPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Link::~Link()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Link::Link(const Link &_link)
-  : dataPtr(new LinkPrivate(*_link.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Link::Link(Link &&_link) noexcept
-  : dataPtr(std::exchange(_link.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Link &Link::operator=(const Link &_link)
-{
-  return *this = Link(_link);
-}
-
-/////////////////////////////////////////////////
-Link &Link::operator=(Link &&_link)
-{
-  std::swap(this->dataPtr, _link.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -217,7 +188,7 @@ std::string Link::Name() const
 }
 
 /////////////////////////////////////////////////
-void Link::SetName(const std::string &_name) const
+void Link::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
 }
@@ -374,8 +345,7 @@ void Link::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
-void Link::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+void Link::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 
@@ -406,6 +376,7 @@ void Link::SetPoseRelativeToGraph(
 sdf::SemanticPose Link::SemanticPose() const
 {
   return sdf::SemanticPose(
+      this->dataPtr->name,
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
       "__model__",

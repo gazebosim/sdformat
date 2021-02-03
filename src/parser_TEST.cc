@@ -15,9 +15,14 @@
  *
  */
 
+#include <sstream>
+#include <fstream>
+#include <cstdlib>
 #include <gtest/gtest.h>
 #include "sdf/parser.hh"
 #include "sdf/Element.hh"
+#include "sdf/Console.hh"
+#include "sdf/Filesystem.hh"
 #include "test_config.h"
 
 /////////////////////////////////////////////////
@@ -57,6 +62,39 @@ sdf::SDFPtr InitSDF()
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
   return sdf;
+}
+
+/////////////////////////////////////////////////
+/// Checks emitted warnings for custom/unknown elements in log file
+TEST(Parser, CustomUnknownElements)
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+  const std::string path = pathBase +"/custom_and_unknown_elements.sdf";
+
+  sdf::SDFPtr sdf = InitSDF();
+  EXPECT_TRUE(sdf::readFile(path, sdf));
+
+#ifndef _WIN32
+  char *homeDir = getenv("HOME");
+#else
+  char *homeDir;
+  size_t sz = 0;
+  _dupenv_s(&homeDir, &sz, "HOMEPATH");
+#endif
+
+  std::string pathLog =
+    sdf::filesystem::append(homeDir, ".sdformat", "sdformat.log");
+
+  std::fstream fs;
+  fs.open(pathLog);
+  ASSERT_TRUE(fs.is_open());
+
+  std::stringstream fileStr;
+  fs >> fileStr.rdbuf();
+
+  EXPECT_NE(fileStr.str().find("XML Element[test_unknown]"), std::string::npos);
+  EXPECT_EQ(fileStr.str().find("XML Element[test:custom]"), std::string::npos);
 }
 
 /////////////////////////////////////////////////
@@ -106,240 +144,6 @@ TEST(Parser, readFileConversions)
     EXPECT_EQ("1.6", sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ("1.6", sdf->OriginalVersion());
     EXPECT_EQ("1.6", sdf->Root()->OriginalVersion());
-  }
-}
-
-/////////////////////////////////////////////////
-TEST(Parser, addNestedModel)
-{
-  auto getIncludedModelSdfString = [](
-      const std::string &_version,
-      const std::string &_expressedIn = "",
-      const std::string &_canonicalLink = "") -> std::string
-  {
-    std::string modelAttributeString = "";
-    if (!_canonicalLink.empty())
-    {
-      modelAttributeString = " canonical_link='" + _canonicalLink + "'";
-    }
-    std::ostringstream stream;
-    stream
-      << "<sdf version='" << _version << "'>"
-      << "<model name='included'" << modelAttributeString << ">"
-      << "  <pose>0 0 10 0 0 1.57</pose>"
-      << "  <link name='parent'/>"
-      << "  <link name='child'/>"
-      << "  <joint name='joint' type='revolute'>"
-      << "    <parent>parent</parent>"
-      << "    <child>child</child>"
-      << "    <axis>";
-    if (_expressedIn.empty())
-    {
-      stream << "<xyz>1 0 0</xyz>";
-    }
-    else
-    {
-      stream << "<xyz expressed_in='" << _expressedIn << "'>1 0 0</xyz>";
-    }
-    stream
-      << "    </axis>"
-      << "  </joint>"
-      << "</model>"
-      << "</sdf>";
-    return stream.str();
-  };
-
-  auto checkNestedModel = [](
-      sdf::ElementPtr _elem, const std::string &_expressedIn = "",
-      const std::string &_canonicalLink = "included::parent")
-  {
-    EXPECT_TRUE(_elem->HasElement("frame"));
-    sdf::ElementPtr nestedModelFrame = _elem->GetElement("frame");
-    EXPECT_EQ(nullptr, nestedModelFrame->GetNextElement("frame"));
-
-    sdf::ElementPtr link1 = _elem->GetElement("link");
-    sdf::ElementPtr link2 = link1->GetNextElement("link");
-    EXPECT_EQ(nullptr, link2->GetNextElement("link"));
-
-    EXPECT_TRUE(_elem->HasElement("joint"));
-    sdf::ElementPtr joint = _elem->GetElement("joint");
-    EXPECT_EQ(nullptr, joint->GetNextElement("joint"));
-
-    EXPECT_EQ(
-        "included::__model__", nestedModelFrame->Get<std::string>("name"));
-    EXPECT_EQ("included::parent", link1->Get<std::string>("name"));
-    EXPECT_EQ("included::child", link2->Get<std::string>("name"));
-    EXPECT_EQ("included::joint", joint->Get<std::string>("name"));
-    EXPECT_EQ("included::parent", joint->Get<std::string>("parent"));
-    EXPECT_EQ("included::child", joint->Get<std::string>("child"));
-
-    EXPECT_EQ(_canonicalLink,
-              nestedModelFrame->Get<std::string>("attached_to"));
-    using ignition::math::Pose3d;
-    const Pose3d pose(0, 0, 10, 0, 0, 1.57);
-    EXPECT_EQ(pose, nestedModelFrame->Get<Pose3d>("pose"));
-
-    EXPECT_FALSE(_elem->HasElement("pose"));
-    EXPECT_EQ("included::__model__",
-              link1->GetElement("pose")->Get<std::string>("relative_to"));
-    EXPECT_EQ("included::__model__",
-              link2->GetElement("pose")->Get<std::string>("relative_to"));
-    EXPECT_EQ(Pose3d::Zero, link1->Get<Pose3d>("pose"));
-    EXPECT_EQ(Pose3d::Zero, link2->Get<Pose3d>("pose"));
-    EXPECT_EQ(Pose3d::Zero, joint->Get<Pose3d>("pose"));
-
-    EXPECT_TRUE(joint->HasElement("axis"));
-    sdf::ElementPtr axis = joint->GetElement("axis");
-    EXPECT_TRUE(axis->HasElement("xyz"));
-    sdf::ElementPtr xyz = axis->GetElement("xyz");
-
-    EXPECT_EQ(_expressedIn, xyz->Get<std::string>("expressed_in"));
-    EXPECT_EQ(
-        ignition::math::Vector3d::UnitX, xyz->Get<ignition::math::Vector3d>());
-  };
-
-  // insert as 1.4, expect rotation of //joint/axis/xyz
-  {
-    const std::string version = "1.4";
-    sdf::Errors errors;
-    sdf::SDFPtr sdf = InitSDF();
-    EXPECT_TRUE(
-        sdf::readString(getIncludedModelSdfString(version), sdf, errors));
-    EXPECT_TRUE(errors.empty());
-    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
-    EXPECT_EQ(version, sdf->OriginalVersion());
-    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
-
-    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
-    sdf::initFile("model.sdf", elem);
-
-    sdf::addNestedModel(elem, sdf->Root(), errors);
-    EXPECT_TRUE(errors.empty());
-
-    // Expect //joint/axis/xyz[@expressed_in] = "included::__model__" because
-    // it is the default behavior 1.4
-    checkNestedModel(elem, "included::__model__");
-  }
-
-  // insert as 1.5, expect no change to //joint/axis/xyz
-  {
-    const std::string version = "1.5";
-    sdf::Errors errors;
-    sdf::SDFPtr sdf = InitSDF();
-    EXPECT_TRUE(
-        sdf::readString(getIncludedModelSdfString(version), sdf, errors));
-    EXPECT_TRUE(errors.empty());
-    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
-    EXPECT_EQ(version, sdf->OriginalVersion());
-    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
-
-    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
-    sdf::initFile("model.sdf", elem);
-
-    sdf::addNestedModel(elem, sdf->Root(), errors);
-    EXPECT_TRUE(errors.empty());
-
-    checkNestedModel(elem);
-  }
-
-  // insert as 1.7, expressed_in=__model__
-  // expect rotation of //joint/axis/xyz
-  {
-    const std::string version = "1.7";
-    sdf::Errors errors;
-    sdf::SDFPtr sdf = InitSDF();
-    EXPECT_TRUE(
-        sdf::readString(getIncludedModelSdfString(version, "__model__"),
-            sdf, errors));
-    EXPECT_TRUE(errors.empty());
-    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
-    EXPECT_EQ(version, sdf->OriginalVersion());
-    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
-
-    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
-    sdf::initFile("model.sdf", elem);
-
-    sdf::addNestedModel(elem, sdf->Root(), errors);
-    EXPECT_TRUE(errors.empty());
-
-    checkNestedModel(elem, "included::__model__");
-  }
-
-  // insert as 1.7, expressed_in=child
-  // expect no change to //joint/axis/xyz
-  {
-    const std::string version = "1.7";
-    sdf::Errors errors;
-    sdf::SDFPtr sdf = InitSDF();
-    EXPECT_TRUE(
-        sdf::readString(getIncludedModelSdfString(version, "child"),
-            sdf, errors));
-    EXPECT_TRUE(errors.empty());
-    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
-    EXPECT_EQ(version, sdf->OriginalVersion());
-    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
-
-    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
-    sdf::initFile("model.sdf", elem);
-
-    sdf::addNestedModel(elem, sdf->Root(), errors);
-    EXPECT_TRUE(errors.empty());
-
-    checkNestedModel(elem, "included::child");
-
-    // test coverage for addNestedModel without returning Errors
-    sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
-    sdf::initFile("model.sdf", elem2);
-    sdf::addNestedModel(elem2, sdf->Root());
-  }
-
-  // insert as 1.7, expressed_in=parent
-  {
-    const std::string version = "1.7";
-    sdf::Errors errors;
-    sdf::SDFPtr sdf = InitSDF();
-    EXPECT_TRUE(
-        sdf::readString(getIncludedModelSdfString(version, "parent"),
-            sdf, errors));
-    EXPECT_TRUE(errors.empty());
-    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
-    EXPECT_EQ(version, sdf->OriginalVersion());
-    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
-
-    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
-    sdf::initFile("model.sdf", elem);
-
-    sdf::addNestedModel(elem, sdf->Root(), errors);
-    EXPECT_EQ(0u, errors.size());
-
-    checkNestedModel(elem, "included::parent");
-
-    // test coverage for addNestedModel without returning Errors
-    sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
-    sdf::initFile("model.sdf", elem2);
-    sdf::addNestedModel(elem2, sdf->Root());
-  }
-
-  // insert as 1.7, canonicalLink = child
-  {
-    const std::string version = "1.7";
-    sdf::Errors errors;
-    sdf::SDFPtr sdf = InitSDF();
-    EXPECT_TRUE(
-        sdf::readString(getIncludedModelSdfString(version, "parent", "child"),
-            sdf, errors));
-    EXPECT_TRUE(errors.empty());
-    EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
-    EXPECT_EQ(version, sdf->OriginalVersion());
-    EXPECT_EQ(version, sdf->Root()->OriginalVersion());
-
-    sdf::ElementPtr elem = std::make_shared<sdf::Element>();
-    sdf::initFile("model.sdf", elem);
-
-    sdf::addNestedModel(elem, sdf->Root(), errors);
-    EXPECT_EQ(0u, errors.size());
-
-    checkNestedModel(elem, "included::parent", "included::child");
   }
 }
 
@@ -532,6 +336,25 @@ TEST(Parser, SyntaxErrorInValues)
 #endif
 }
 
+TEST(Parser, PlacementFrameMissingPose)
+{
+  const std::string modelRootPath = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "integration", "model");
+
+  const std::string testModelPath = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "sdf", "placement_frame_missing_pose.sdf");
+
+  sdf::setFindCallback([&](const std::string &_file)
+      {
+        return sdf::filesystem::append(modelRootPath, _file);
+      });
+  sdf::SDFPtr sdf = InitSDF();
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::readFile(testModelPath, sdf, errors));
+  ASSERT_GE(errors.size(), 0u);
+  EXPECT_EQ(sdf::ErrorCode::MODEL_PLACEMENT_FRAME_INVALID, errors[0].Code());
+}
+
 /////////////////////////////////////////////////
 /// Fixture for setting up stream redirection
 class ValueConstraintsFixture : public ::testing::Test
@@ -639,6 +462,21 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
 /// Main
 int main(int argc, char **argv)
 {
+  // temporarily set HOME to build directory
+#ifndef _WIN32
+  setenv("HOME", PROJECT_BINARY_DIR, 1);
+#else
+  std::string buildDir = PROJECT_BINARY_DIR;
+  for (int i = 0; i < buildDir.size(); ++i)
+  {
+    if (buildDir[i] == '/')
+      buildDir[i] = '\\';
+  }
+  std::string homePath = "HOMEPATH=" + buildDir;
+  _putenv(homePath.c_str());
+#endif
+  sdf::Console::Clear();
+
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

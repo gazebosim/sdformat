@@ -19,7 +19,7 @@
 using namespace sdf;
 
 // Private data class
-class sdf::MeshPrivate
+class sdf::Mesh::Implementation
 {
   /// \brief The mesh's URI.
   public: std::string uri = "";
@@ -42,46 +42,8 @@ class sdf::MeshPrivate
 
 /////////////////////////////////////////////////
 Mesh::Mesh()
-  : dataPtr(new MeshPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Mesh::~Mesh()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Mesh::Mesh(const Mesh &_mesh)
-  : dataPtr(new MeshPrivate)
-{
-  this->dataPtr->uri = _mesh.dataPtr->uri;
-  this->dataPtr->scale = _mesh.dataPtr->scale;
-  this->dataPtr->submesh = _mesh.dataPtr->submesh;
-  this->dataPtr->centerSubmesh = _mesh.dataPtr->centerSubmesh;
-  this->dataPtr->sdf = _mesh.dataPtr->sdf;
-  this->dataPtr->filePath = _mesh.dataPtr->filePath;
-}
-
-//////////////////////////////////////////////////
-Mesh::Mesh(Mesh &&_mesh) noexcept
-  : dataPtr(std::exchange(_mesh.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Mesh &Mesh::operator=(const Mesh &_mesh)
-{
-  return *this = Mesh(_mesh);
-}
-
-/////////////////////////////////////////////////
-Mesh &Mesh::operator=(Mesh &&_mesh)
-{
-  std::swap(this->dataPtr, _mesh.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////

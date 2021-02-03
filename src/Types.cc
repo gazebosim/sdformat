@@ -59,13 +59,13 @@ std::string trim(const char *_in)
 //////////////////////////////////////////////////
 std::string trim(const std::string &_in)
 {
-  const size_t strBegin = _in.find_first_not_of(" \t");
+  const size_t strBegin = _in.find_first_not_of(" \t\n");
   if (strBegin == std::string::npos)
   {
     return "";
   }
 
-  const size_t strRange = _in.find_last_not_of(" \t") - strBegin + 1;
+  const size_t strRange = _in.find_last_not_of(" \t\n") - strBegin + 1;
 
   return _in.substr(strBegin, strRange);
 }
@@ -77,6 +77,71 @@ std::string lowercase(const std::string &_in)
   for (size_t i = 0; i < out.size(); ++i)
     out[i] = std::tolower(out[i], std::locale());
   return out;
+}
+
+/////////////////////////////////////////////////
+std::ostream &operator<<(std::ostream &_out, const sdf::Errors &_errs)
+{
+  for (const auto &e : _errs)
+  {
+    _out << e << std::endl;
+  }
+  return _out;
+}
+
+// Split a given absolute name into the parent model name and the local name.
+// If the give name is not scoped, this will return an empty string for the
+// parent model name and the given name as the local name.
+std::pair<std::string, std::string> SplitName(
+    const std::string &_absoluteName)
+{
+  const auto pos = _absoluteName.rfind(kSdfScopeDelimiter);
+  if (pos != std::string::npos)
+  {
+    const std::string first = _absoluteName.substr(0, pos);
+    const std::string second =
+        _absoluteName.substr(pos + kSdfScopeDelimiter.size());
+    return {first, second};
+  }
+  return {"", _absoluteName};
+}
+
+static bool EndsWithDelimiter(const std::string &_s)
+{
+  if (_s.size() < kSdfScopeDelimiter.size())
+    return false;
+
+  const size_t startPosition = _s.size() - kSdfScopeDelimiter.size();
+  return _s.compare(
+    startPosition, kSdfScopeDelimiter.size(), kSdfScopeDelimiter) == 0;
+}
+
+static bool StartsWithDelimiter(const std::string &_s)
+{
+  if (_s.size() < kSdfScopeDelimiter.size())
+    return false;
+
+  return _s.compare(0, kSdfScopeDelimiter.size(), kSdfScopeDelimiter) == 0;
+}
+
+// Join a scope name prefix with a local name using the scope delimeter
+std::string JoinName(
+    const std::string &_scopeName, const std::string &_localName)
+{
+  if (_scopeName.empty())
+    return _localName;
+  if (_localName.empty())
+    return _scopeName;
+
+  const bool scopeNameEndsWithDelimiter = EndsWithDelimiter(_scopeName);
+  const bool localNameStartsWithDelimiter = StartsWithDelimiter(_localName);
+
+  if (scopeNameEndsWithDelimiter && localNameStartsWithDelimiter)
+    return _scopeName + _localName.substr(kSdfScopeDelimiter.size());
+  else if (scopeNameEndsWithDelimiter || localNameStartsWithDelimiter)
+    return _scopeName + _localName;
+  else
+    return _scopeName + kSdfScopeDelimiter + _localName;
 }
 }
 }

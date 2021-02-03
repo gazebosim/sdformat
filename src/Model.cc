@@ -27,11 +27,12 @@
 #include "sdf/Model.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
 
-class sdf::ModelPrivate
+class sdf::Model::Implementation
 {
   /// \brief Name of the model.
   public: std::string name = "";
@@ -52,6 +53,9 @@ class sdf::ModelPrivate
   /// \brief Name of the canonical link.
   public: std::string canonicalLink = "";
 
+  /// \brief Name of the placement frame
+  public: std::string placementFrameName = "";
+
   /// \brief Pose of the model
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
@@ -67,79 +71,26 @@ class sdf::ModelPrivate
   /// \brief The frames specified in this model.
   public: std::vector<Frame> frames;
 
+  /// \brief The nested models specified in this model.
+  public: std::vector<Model> models;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
-  /// \brief Frame Attached-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
+  /// \brief Scoped Frame Attached-To graph at the parent model or world scope.
+  public: sdf::ScopedGraph<sdf::FrameAttachedToGraph> frameAttachedToGraph;
 
-  /// \brief Pose Relative-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseGraph;
+  /// \brief Scoped Pose Relative-To graph at the parent model or world scope.
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseGraph;
 
-  /// \brief Pose Relative-To Graph in parent (world) scope.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> parentPoseGraph;
+  /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
+  public: std::string poseGraphScopeVertexName;
 };
 
 /////////////////////////////////////////////////
 Model::Model()
-  : dataPtr(new ModelPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Model::~Model()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Model::Model(const Model &_model)
-  : dataPtr(new ModelPrivate(*_model.dataPtr))
-{
-  if (_model.dataPtr->frameAttachedToGraph)
-  {
-    this->dataPtr->frameAttachedToGraph =
-        std::make_shared<sdf::FrameAttachedToGraph>(
-            *_model.dataPtr->frameAttachedToGraph);
-  }
-  if (_model.dataPtr->poseGraph)
-  {
-    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
-        *_model.dataPtr->poseGraph);
-  }
-  for (auto &link : this->dataPtr->links)
-  {
-    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &joint : this->dataPtr->joints)
-  {
-    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &frame : this->dataPtr->frames)
-  {
-    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-}
-
-/////////////////////////////////////////////////
-Model::Model(Model &&_model) noexcept
-  : dataPtr(std::exchange(_model.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Model &Model::operator=(const Model &_model)
-{
-  return *this = Model(_model);
-}
-
-/////////////////////////////////////////////////
-Model &Model::operator=(Model &&_model)
-{
-  std::swap(this->dataPtr, _model.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -185,6 +136,9 @@ Errors Model::Load(ElementPtr _sdf)
     }
   }
 
+  this->dataPtr->placementFrameName = _sdf->Get<std::string>("placement_frame",
+                             this->dataPtr->placementFrameName).first;
+
   this->dataPtr->isStatic = _sdf->Get<bool>("static", false).first;
 
   this->dataPtr->selfCollide = _sdf->Get<bool>("self_collide", false).first;
@@ -197,14 +151,6 @@ Errors Model::Load(ElementPtr _sdf)
   // Load the pose. Ignore the return value since the model pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
-  // Nested models are not yet supported.
-  if (_sdf->HasElement("model"))
-  {
-    errors.push_back({ErrorCode::NESTED_MODELS_UNSUPPORTED,
-                     "Nested models are not yet supported by DOM objects, "
-                     "skipping model [" + this->dataPtr->name + "]."});
-  }
-
   if (!_sdf->HasUniqueChildNames())
   {
     sdfwarn << "Non-unique names detected in XML children of model with name["
@@ -215,23 +161,63 @@ Errors Model::Load(ElementPtr _sdf)
   // name collisions
   std::unordered_set<std::string> frameNames;
 
+  // Load nested models.
+  Errors nestedModelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
+    this->dataPtr->models);
+  errors.insert(errors.end(),
+                nestedModelLoadErrors.begin(),
+                nestedModelLoadErrors.end());
+
+  // Nested models are loaded first, and loadUniqueRepeated ensures there are no
+  // duplicate names, so these names can be added to frameNames without
+  // checking uniqueness.
+  for (const auto &model : this->dataPtr->models)
+  {
+    frameNames.insert(model.Name());
+  }
+
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
     this->dataPtr->links);
   errors.insert(errors.end(), linkLoadErrors.begin(), linkLoadErrors.end());
 
-  // Links are loaded first, and loadUniqueRepeated ensures there are no
-  // duplicate names, so these names can be added to frameNames without
-  // checking uniqueness.
-  for (const auto &link : this->dataPtr->links)
+  // Check links for name collisions and modify and warn if so.
+  for (auto &link : this->dataPtr->links)
   {
-    frameNames.insert(link.Name());
+    std::string linkName = link.Name();
+    if (frameNames.count(linkName) > 0)
+    {
+      // This link has a name collision
+      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
+      {
+        // This came from an old file, so try to workaround by renaming link
+        linkName += "_link";
+        int i = 0;
+        while (frameNames.count(linkName) > 0)
+        {
+          linkName = link.Name() + "_link" + std::to_string(i++);
+        }
+        sdfwarn << "Link with name [" << link.Name() << "] "
+                << "in model with name [" << this->Name() << "] "
+                << "has a name collision, changing link name to ["
+                << linkName << "].\n";
+        link.SetName(linkName);
+      }
+      else
+      {
+        sdferr << "Link with name [" << link.Name() << "] "
+               << "in model with name [" << this->Name() << "] "
+               << "has a name collision. Please rename this link.\n";
+      }
+    }
+    frameNames.insert(linkName);
   }
 
-  // If the model is not static:
+  // If the model is not static and has no nested models:
   // Require at least one link so the implicit model frame can be attached to
   // something.
-  if (!this->Static() && this->dataPtr->links.empty())
+  if (!this->Static() && this->dataPtr->links.empty() &&
+      this->dataPtr->models.empty())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
                      "A model must have at least one link."});
@@ -311,51 +297,6 @@ Errors Model::Load(ElementPtr _sdf)
     frameNames.insert(frameName);
   }
 
-  // Build the graphs.
-
-  // Build the FrameAttachedToGraph if the model is not static.
-  // Re-enable this when the buildFrameAttachedToGraph implementation handles
-  // static models.
-  if (!this->Static())
-  {
-    this->dataPtr->frameAttachedToGraph
-        = std::make_shared<FrameAttachedToGraph>();
-    Errors frameAttachedToGraphErrors =
-    buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
-    errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
-                                frameAttachedToGraphErrors.end());
-    Errors validateFrameAttachedGraphErrors =
-      validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
-    errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
-                                validateFrameAttachedGraphErrors.end());
-    for (auto &frame : this->dataPtr->frames)
-    {
-      frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
-    }
-  }
-
-  // Build the PoseRelativeToGraph
-  this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>();
-  Errors poseGraphErrors =
-  buildPoseRelativeToGraph(*this->dataPtr->poseGraph, this);
-  errors.insert(errors.end(), poseGraphErrors.begin(),
-                              poseGraphErrors.end());
-  Errors validatePoseGraphErrors =
-    validatePoseRelativeToGraph(*this->dataPtr->poseGraph);
-  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
-                              validatePoseGraphErrors.end());
-  for (auto &link : this->dataPtr->links)
-  {
-    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &joint : this->dataPtr->joints)
-  {
-    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
-  for (auto &frame : this->dataPtr->frames)
-  {
-    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
-  }
 
   return errors;
 }
@@ -437,14 +378,7 @@ const Link *Model::LinkByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 bool Model::LinkNameExists(const std::string &_name) const
 {
-  for (auto const &l : this->dataPtr->links)
-  {
-    if (l.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return nullptr != this->LinkByName(_name);
 }
 
 /////////////////////////////////////////////////
@@ -464,19 +398,28 @@ const Joint *Model::JointByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 bool Model::JointNameExists(const std::string &_name) const
 {
-  for (auto const &j : this->dataPtr->joints)
-  {
-    if (j.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return nullptr != this->JointByName(_name);
 }
 
 /////////////////////////////////////////////////
 const Joint *Model::JointByName(const std::string &_name) const
 {
+  auto index = _name.rfind("::");
+  if (index != std::string::npos)
+  {
+    const Model *model = this->ModelByName(_name.substr(0, index));
+    if (nullptr != model)
+    {
+      return model->JointByName(_name.substr(index + 2));
+    }
+
+    // The nested model name preceding the last "::" could not be found.
+    // For now, try to find a link that matches _name exactly.
+    // When "::" are reserved and not allowed in names, then uncomment
+    // the following line to return a nullptr.
+    // return nullptr;
+  }
+
   for (auto const &j : this->dataPtr->joints)
   {
     if (j.Name() == _name)
@@ -504,19 +447,28 @@ const Frame *Model::FrameByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 bool Model::FrameNameExists(const std::string &_name) const
 {
-  for (auto const &f : this->dataPtr->frames)
-  {
-    if (f.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return nullptr != this->FrameByName(_name);
 }
 
 /////////////////////////////////////////////////
 const Frame *Model::FrameByName(const std::string &_name) const
 {
+  auto index = _name.rfind("::");
+  if (index != std::string::npos)
+  {
+    const Model *model = this->ModelByName(_name.substr(0, index));
+    if (nullptr != model)
+    {
+      return model->FrameByName(_name.substr(index + 2));
+    }
+
+    // The nested model name preceding the last "::" could not be found.
+    // For now, try to find a link that matches _name exactly.
+    // When "::" are reserved and not allowed in names, then uncomment
+    // the following line to return a nullptr.
+    // return nullptr;
+  }
+
   for (auto const &f : this->dataPtr->frames)
   {
     if (f.Name() == _name)
@@ -528,15 +480,87 @@ const Frame *Model::FrameByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+uint64_t Model::ModelCount() const
+{
+  return this->dataPtr->models.size();
+}
+
+/////////////////////////////////////////////////
+const Model *Model::ModelByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->models.size())
+    return &this->dataPtr->models[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Model::ModelNameExists(const std::string &_name) const
+{
+  return nullptr != this->ModelByName(_name);
+}
+
+/////////////////////////////////////////////////
+const Model *Model::ModelByName(const std::string &_name) const
+{
+  auto index = _name.find("::");
+  const std::string nextModelName = _name.substr(0, index);
+  const Model *nextModel = nullptr;
+
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == nextModelName)
+    {
+      nextModel = &m;
+      break;
+    }
+  }
+
+  if (nullptr != nextModel && index != std::string::npos)
+  {
+    return nextModel->ModelByName(_name.substr(index + 2));
+  }
+  return nextModel;
+}
+
+/////////////////////////////////////////////////
 const Link *Model::CanonicalLink() const
+{
+  return this->CanonicalLinkAndRelativeName().first;
+}
+
+/////////////////////////////////////////////////
+std::pair<const Link*, std::string> Model::CanonicalLinkAndRelativeName() const
 {
   if (this->CanonicalLinkName().empty())
   {
-    return this->LinkByIndex(0);
+    if (this->LinkCount() > 0)
+    {
+      auto firstLink = this->LinkByIndex(0);
+      return std::make_pair(firstLink, firstLink->Name());
+    }
+    else if (this->ModelCount() > 0)
+    {
+      // Recursively choose the canonical link of the first nested model
+      // (depth first search).
+      auto firstModel = this->ModelByIndex(0);
+      auto canonicalLinkAndName = firstModel->CanonicalLinkAndRelativeName();
+      // Prepend firstModelName if a valid link is found.
+      if (nullptr != canonicalLinkAndName.first)
+      {
+        canonicalLinkAndName.second =
+            firstModel->Name() + "::" + canonicalLinkAndName.second;
+      }
+      return canonicalLinkAndName;
+    }
+    else
+    {
+      return std::make_pair(nullptr, "");
+    }
   }
   else
   {
-    return this->LinkByName(this->CanonicalLinkName());
+    return std::make_pair(this->LinkByName(this->CanonicalLinkName()),
+                          this->CanonicalLinkName());
   }
 }
 
@@ -550,6 +574,18 @@ const std::string &Model::CanonicalLinkName() const
 void Model::SetCanonicalLinkName(const std::string &_canonicalLink)
 {
   this->dataPtr->canonicalLink = _canonicalLink;
+}
+
+/////////////////////////////////////////////////
+const std::string &Model::PlacementFrameName() const
+{
+  return this->dataPtr->placementFrameName;
+}
+
+/////////////////////////////////////////////////
+void Model::SetPlacementFrameName(const std::string &_placementFrame)
+{
+  this->dataPtr->placementFrameName = _placementFrame;
 }
 
 /////////////////////////////////////////////////
@@ -577,25 +613,84 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
-void Model::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
-  this->dataPtr->parentPoseGraph = _graph;
+  this->dataPtr->poseGraph = _graph;
+  this->dataPtr->poseGraphScopeVertexName =
+      _graph.VertexLocalName(_graph.ScopeVertexId());
+
+  auto childPoseGraph =
+      this->dataPtr->poseGraph.ChildModelScope(this->Name());
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(childPoseGraph);
+  }
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(childPoseGraph);
+  }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(childPoseGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(childPoseGraph);
+  }
+}
+
+/////////////////////////////////////////////////
+void Model::SetFrameAttachedToGraph(
+    sdf::ScopedGraph<FrameAttachedToGraph> _graph)
+{
+  this->dataPtr->frameAttachedToGraph = _graph;
+
+  auto childFrameAttachedToGraph =
+      this->dataPtr->frameAttachedToGraph.ChildModelScope(this->Name());
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetFrameAttachedToGraph(childFrameAttachedToGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(childFrameAttachedToGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetFrameAttachedToGraph(childFrameAttachedToGraph);
+  }
 }
 
 /////////////////////////////////////////////////
 sdf::SemanticPose Model::SemanticPose() const
 {
   return sdf::SemanticPose(
+      this->dataPtr->name,
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
-      "world",
-      this->dataPtr->parentPoseGraph);
+      this->dataPtr->poseGraphScopeVertexName,
+      this->dataPtr->poseGraph);
 }
 
 /////////////////////////////////////////////////
 const Link *Model::LinkByName(const std::string &_name) const
 {
+  auto index = _name.rfind("::");
+  if (index != std::string::npos)
+  {
+    const Model *model = this->ModelByName(_name.substr(0, index));
+    if (nullptr != model)
+    {
+      return model->LinkByName(_name.substr(index + 2));
+    }
+
+    // The nested model name preceding the last "::" could not be found.
+    // For now, try to find a link that matches _name exactly.
+    // When "::" are reserved and not allowed in names, then uncomment
+    // the following line to return a nullptr.
+    // return nullptr;
+  }
+
   for (auto const &l : this->dataPtr->links)
   {
     if (l.Name() == _name)

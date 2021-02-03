@@ -34,8 +34,8 @@ TEST(DOMJointAxis, Construction)
   EXPECT_DOUBLE_EQ(0.0, axis.SpringStiffness());
   EXPECT_DOUBLE_EQ(-1e16, axis.Lower());
   EXPECT_DOUBLE_EQ(1e16, axis.Upper());
-  EXPECT_DOUBLE_EQ(-1, axis.Effort());
-  EXPECT_DOUBLE_EQ(-1, axis.MaxVelocity());
+  EXPECT_DOUBLE_EQ(std::numeric_limits<double>::infinity(), axis.Effort());
+  EXPECT_DOUBLE_EQ(std::numeric_limits<double>::infinity(), axis.MaxVelocity());
   EXPECT_DOUBLE_EQ(1e8, axis.Stiffness());
   EXPECT_DOUBLE_EQ(1.0, axis.Dissipation());
 
@@ -44,8 +44,11 @@ TEST(DOMJointAxis, Construction)
   EXPECT_DOUBLE_EQ(1.2, axis.InitialPosition());
   SDF_SUPPRESS_DEPRECATED_END
 
-  axis.SetXyz(ignition::math::Vector3d(0, 1, 0));
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, axis.Xyz());
+  {
+    sdf::Errors errors = axis.SetXyz(ignition::math::Vector3d(0, 1, 0));
+    EXPECT_TRUE(errors.empty());
+    EXPECT_EQ(ignition::math::Vector3d::UnitY, axis.Xyz());
+  }
 
   axis.SetXyzExpressedIn("__model__");
   EXPECT_EQ("__model__", axis.XyzExpressedIn());
@@ -89,7 +92,7 @@ TEST(DOMJointAxis, Construction)
 TEST(DOMJointAxis, CopyConstructor)
 {
   sdf::JointAxis jointAxis;
-  jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0));
+  EXPECT_TRUE(jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0)).empty());
 
   sdf::JointAxis jointAxisCopy(jointAxis);
   EXPECT_EQ(jointAxis.Xyz(), jointAxisCopy.Xyz());
@@ -99,7 +102,7 @@ TEST(DOMJointAxis, CopyConstructor)
 TEST(DOMJointAxis, AssignmentOperator)
 {
   sdf::JointAxis jointAxis;
-  jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0));
+  EXPECT_TRUE(jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0)).empty());
 
   sdf::JointAxis jointAxisCopy;
   jointAxisCopy = jointAxis;
@@ -111,7 +114,7 @@ TEST(DOMJointAxis, MoveConstructor)
 {
   ignition::math::Vector3d axis{0, 1, 0};
   sdf::JointAxis jointAxis;
-  jointAxis.SetXyz(axis);
+  EXPECT_TRUE(jointAxis.SetXyz(axis).empty());
 
   sdf::JointAxis jointAxisMoved(std::move(jointAxis));
   EXPECT_EQ(axis, jointAxisMoved.Xyz());
@@ -122,7 +125,7 @@ TEST(DOMJointAxis, MoveAssignmentOperator)
 {
   ignition::math::Vector3d axis{0, 1, 0};
   sdf::JointAxis jointAxis;
-  jointAxis.SetXyz(axis);
+  EXPECT_TRUE(jointAxis.SetXyz(axis).empty());
 
   sdf::JointAxis jointAxisMoved;
   jointAxisMoved = std::move(jointAxis);
@@ -134,11 +137,11 @@ TEST(DOMJointAxis, CopyAssignmentAfterMove)
 {
   ignition::math::Vector3d axis1{0, 1, 0};
   sdf::JointAxis jointAxis1;
-  jointAxis1.SetXyz(axis1);
+  EXPECT_TRUE(jointAxis1.SetXyz(axis1).empty());
 
   ignition::math::Vector3d axis2{1, 0, 0};
   sdf::JointAxis jointAxis2;
-  jointAxis2.SetXyz(axis2);
+  EXPECT_TRUE(jointAxis2.SetXyz(axis2).empty());
 
   // This is similar to what std::swap does except it uses std::move for each
   // assignment
@@ -148,4 +151,15 @@ TEST(DOMJointAxis, CopyAssignmentAfterMove)
 
   EXPECT_EQ(axis2, jointAxis1.Xyz());
   EXPECT_EQ(axis1, jointAxis2.Xyz());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, ZeroNormVectorReturnsError)
+{
+  sdf::JointAxis axis;
+  EXPECT_TRUE(axis.SetXyz({1.0, 0, 0}).empty());
+
+  sdf::Errors errors = axis.SetXyz(ignition::math::Vector3d::Zero);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(errors[0].Message(), "The norm of the xyz vector cannot be zero");
 }

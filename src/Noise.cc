@@ -22,7 +22,7 @@
 using namespace sdf;
 
 /// \brief Private noise data.
-class sdf::NoisePrivate
+class sdf::Noise::Implementation
 {
   /// \brief The noise type.
   public: NoiseType type = NoiseType::NONE;
@@ -56,40 +56,8 @@ class sdf::NoisePrivate
 
 //////////////////////////////////////////////////
 Noise::Noise()
-  : dataPtr(new NoisePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-//////////////////////////////////////////////////
-Noise::~Noise()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Noise::Noise(const Noise &_noise)
-  : dataPtr(new NoisePrivate(*_noise.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-Noise::Noise(Noise &&_noise) noexcept
-  : dataPtr(std::exchange(_noise.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-Noise &Noise::operator=(const Noise &_noise)
-{
-  return *this = Noise(_noise);
-}
-
-//////////////////////////////////////////////////
-Noise &Noise::operator=(Noise &&_noise)
-{
-  std::swap(this->dataPtr, _noise.dataPtr);
-  return *this;
 }
 
 //////////////////////////////////////////////////

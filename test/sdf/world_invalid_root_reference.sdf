@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="world_invalid_root_reference"> 
+    <model name="model1" placement_frame="__root__">
+      <pose relative_to="__root__">1 0 0 0 0 0</pose> <!-- INVALID: __root__ cannot be used as a relative_to reference -->
+      <link name="link1"/>
+      <link name="link2"/>
+      <joint name="joint1" type="fixed">
+        <pose relative_to="link2"/>
+        <parent>__root__</parent> <!-- INVALID: __root__ cannot be used as a parent frame -->
+        <child>link2</child>
+      </joint>
+      <joint name="joint2" type="fixed">
+        <pose relative_to="link1"/>
+        <parent>link1</parent>
+        <child>__root__</child> <!-- INVALID: __root__ cannot be used as a child frame -->
+      </joint>
+    </model>
+    <model name="model2" canonical_link="__root__">
+      <link name="link1">
+        <sensor name="sensor1" type="imu">
+          <imu>
+            <orientation_reference_frame>
+              <custom_rpy parent_frame="__root__"/>
+            </orientation_reference_frame>
+          </imu>
+        </sensor>
+      </link>
+    </model>
+    <frame name="frame1" attached_to="__root__"/> <!-- INVALID: __root__ cannot be used as a attached_to reference -->
+    <frame name="frame2">
+      <pose relative_to="__root__">1 0 0 0 0 0</pose> <!-- INVALID: __root__ cannot be used as a relative_to reference -->
+    </frame>
+
+    <include>
+      <uri>test_model_with_frames</uri>
+      <placement_frame>__root__</placement_frame> <!-- INVALID: __root__ cannot be used as placement_frame reference -->
+      <pose>1 0 0 0 0 0</pose>
+    </include>
+  </world>
+</sdf>

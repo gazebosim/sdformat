@@ -21,7 +21,7 @@
 
 using namespace sdf;
 
-class sdf::AtmospherePrivate
+class sdf::Atmosphere::Implementation
 {
   /// \brief The type of the atmosphere engine.
   /// Current options are adiabatic. Defaults to adiabatic if left unspecified.
@@ -40,44 +40,8 @@ class sdf::AtmospherePrivate
 
 //////////////////////////////////////////////////
 Atmosphere::Atmosphere()
-  : dataPtr(new AtmospherePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-//////////////////////////////////////////////////
-Atmosphere::~Atmosphere()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Atmosphere::Atmosphere(const Atmosphere &_atmosphere)
-  : dataPtr(new AtmospherePrivate)
-{
-  this->dataPtr->type = _atmosphere.dataPtr->type;
-  this->dataPtr->temperature = _atmosphere.dataPtr->temperature;
-  this->dataPtr->temperatureGradient = _atmosphere.dataPtr->temperatureGradient;
-  this->dataPtr->pressure = _atmosphere.dataPtr->pressure;
-}
-
-//////////////////////////////////////////////////
-Atmosphere::Atmosphere(Atmosphere &&_atmosphere) noexcept
-  : dataPtr(std::exchange(_atmosphere.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Atmosphere &Atmosphere::operator=(const Atmosphere &_atmosphere)
-{
-  return *this = Atmosphere(_atmosphere);
-}
-
-/////////////////////////////////////////////////
-Atmosphere &Atmosphere::operator=(Atmosphere &&_atmosphere)
-{
-  std::swap(this->dataPtr, _atmosphere.dataPtr);
-  return *this;
 }
 
 //////////////////////////////////////////////////

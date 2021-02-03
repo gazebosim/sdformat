@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<sdf version='1.8'>
+  <model name="model_nested_static_model">
+    <model name="child_model">
+      <model name="static_model">
+        <static>true</static>
+      </model>
+    </model>
+  </model>
+</sdf>
+

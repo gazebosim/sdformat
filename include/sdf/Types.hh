@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <sdf/sdf_config.h>
@@ -60,6 +61,8 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
+  const std::string kSdfScopeDelimiter = "::";
+
   /// \brief Split a string using the delimiter in splitter.
   /// \param[in] str       The string to split.
   /// \param[in] splitter  The delimiter to use.
@@ -93,6 +96,13 @@ namespace sdf
 
   /// \brief A vector of Error.
   using Errors = std::vector<Error>;
+
+  /// \brief Output operator for a collection of errors.
+  /// \param[in,out] _out The output stream.
+  /// \param[in] _err The errors to output.
+  /// \return Reference to the given output stream
+  SDFORMAT_VISIBLE std::ostream &operator<<(
+      std::ostream &_out, const sdf::Errors &_errs);
 
   /// \brief Defines a color
   class SDFORMAT_VISIBLE Color
@@ -221,6 +231,23 @@ namespace sdf
   /// \param[in] _in String to convert to lowercase
   /// \return Lowercase equilvalent of _in.
   std::string SDFORMAT_VISIBLE lowercase(const std::string &_in);
+
+  /// \brief Split a name into a two strings based on the '::' delimeter
+  /// \param[in] _absoluteName The fully qualified absolute name
+  /// \return A pair with the absolute name minus the leaf node name, and the
+  /// leaf name
+  SDFORMAT_VISIBLE
+  std::pair<std::string, std::string> SplitName(
+      const std::string &_absoluteName);
+
+  /// \brief Join two strings with the '::' delimiter.
+  /// This checks for edge cases and is safe to use with any valid names
+  /// \param[in] _scopeName the left-hand-side component
+  /// \param[in] _localName the right-hand-side component
+  /// \return A full string with the names joined by the '::' delimeter.
+  SDFORMAT_VISIBLE
+  std::string JoinName(
+      const std::string &_scopeName, const std::string &_localName);
   }
 }
 #endif

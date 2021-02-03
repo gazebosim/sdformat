@@ -20,9 +20,11 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
 namespace sdf
@@ -35,11 +37,12 @@ namespace sdf
   class AirPressure;
   class Altimeter;
   class Camera;
+  class ForceTorque;
   class Imu;
   class Lidar;
   class Magnetometer;
-  class SensorPrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \enum SensorType
   /// \brief The set of sensor types.
@@ -117,17 +120,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Sensor();
-
-    /// \brief Copy constructor
-    /// \param[in] _sensor Sensor to copy.
-    public: Sensor(const Sensor &_sensor);
-
-    /// \brief Move constructor
-    /// \param[in] _sensor Sensor to move.
-    public: Sensor(Sensor &&_sensor) noexcept;
-
-    /// \brief Destructor
-    public: ~Sensor();
 
     /// \brief Load the sensor based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -222,16 +214,6 @@ namespace sdf
     /// \param[in] _rate The update rate in Hz.
     public: void SetUpdateRate(double _hz);
 
-    /// \brief Assignment operator.
-    /// \param[in] _sensor The sensor to set values from.
-    /// \return *this
-    public: Sensor &operator=(const Sensor &_sensor);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _sensor The sensor to set values from.
-    /// \return *this
-    public: Sensor &operator=(Sensor &&_sensor);
-
     /// \brief Return true if both Sensor objects contain the same values.
     /// \param[_in] _sensor Sensor object to compare.
     /// \returen True if 'this' == _sensor.
@@ -287,6 +269,17 @@ namespace sdf
     /// \sa SensorType Type() const
     public: const Camera *CameraSensor() const;
 
+    /// \brief Set the force torque sensor.
+    /// \param[in] _ft The force torque sensor.
+    public: void SetForceTorqueSensor(const ForceTorque &_ft);
+
+    /// \brief Get a pointer to a force torque sensor, or nullptr if the sensor
+    /// does not contain a force torque sensor.
+    /// \return Pointer to the force torque sensor, or nullptr if the sensor
+    /// is not a force torque sensor.
+    /// \sa SensorType Type() const
+    public: const ForceTorque *ForceTorqueSensor() const;
+
     /// \brief Set the IMU sensor.
     /// \param[in] _imu The IMU sensor.
     public: void SetImuSensor(const Imu &_imu);
@@ -315,12 +308,12 @@ namespace sdf
     /// \param[in] _xmlParentName Name of xml parent object.
     private: void SetXmlParentName(const std::string &_xmlParentName);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is
@@ -328,7 +321,7 @@ namespace sdf
     friend class Link;
 
     /// \brief Private data pointer.
-    private: SensorPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

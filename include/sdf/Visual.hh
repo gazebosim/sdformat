@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Box.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
@@ -38,35 +39,14 @@ namespace sdf
   //
 
   // Forward declarations.
-  class VisualPrivate;
   class Geometry;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   class SDFORMAT_VISIBLE Visual
   {
     /// \brief Default constructor
     public: Visual();
-
-    /// \brief Copy constructor
-    /// \param[in] _visual Visual to copy.
-    public: Visual(const Visual &_visual);
-
-    /// \brief Move constructor
-    /// \param[in] _visual Visual to move.
-    public: Visual(Visual &&_visual) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _visual Visual to move.
-    /// \return Reference to this.
-    public: Visual &operator=(Visual &&_visual);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _visual Visual to copy.
-    /// \return Reference to this.
-    public: Visual &operator=(const Visual &_visual);
-
-    /// \brief Destructor
-    public: ~Visual();
 
     /// \brief Load the visual based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -84,7 +64,7 @@ namespace sdf
     /// \brief Set the name of the visual.
     /// The name of the visual must be unique within the scope of a Link.
     /// \param[in] _name Name of the visual.
-    public: void SetName(const std::string &_name) const;
+    public: void SetName(const std::string &_name);
 
     /// \brief Get whether the visual casts shadows
     /// \return True if the visual casts shadows, false otherwise
@@ -148,7 +128,7 @@ namespace sdf
     /// be a nullptr if material properties have not been set.
     /// \return Pointer to the visual's material properties. Nullptr
     /// indicates that material properties have not been set.
-    public: sdf::Material *Material() const;
+    public: const sdf::Material *Material() const;
 
     /// \brief Set the visual's material
     /// \param[in] _material The material of the visual object
@@ -168,12 +148,12 @@ namespace sdf
     /// \param[in] _xmlParentName Name of xml parent object.
     private: void SetXmlParentName(const std::string &_xmlParentName);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is
@@ -181,7 +161,7 @@ namespace sdf
     friend class Link;
 
     /// \brief Private data pointer.
-    private: VisualPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

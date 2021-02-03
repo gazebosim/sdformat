@@ -18,6 +18,7 @@
 #define SDF_PBR_HH_
 
 #include <string>
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -28,9 +29,6 @@ namespace sdf
   // Inline bracke to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
-  // Forward declarations.
-  class PbrPrivate;
-  class PbrWorkflowPrivate;
 
   /// \brief Type of PBR workflow.
   enum class PbrWorkflowType : int
@@ -62,17 +60,6 @@ namespace sdf
     /// \brief Default constructor
     public: PbrWorkflow();
 
-    /// \brief Copy constructor
-    /// \param[in] _workflow Workflow to copy.
-    public: PbrWorkflow(const PbrWorkflow &_workflow);
-
-    /// \brief Move constructor
-    /// \param[in] _workflow to move.
-    public: PbrWorkflow(PbrWorkflow &&_workflow) noexcept;
-
-    /// \brief Destructor
-    public: ~PbrWorkflow();
-
     /// \brief Load the pbr workflow based on an element pointer. This is *not*
     /// the usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
@@ -80,16 +67,6 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
-
-    /// \brief Assignment operator.
-    /// \param[in] _workflow The workflow to set values from.
-    /// \return *this
-    public: PbrWorkflow &operator=(const PbrWorkflow &_workflow);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _workflow The workflow to move from.
-    /// \return *this
-    public: PbrWorkflow &operator=(PbrWorkflow &&_workflow);
 
     /// \brief Return true if both PbrWorkflow objects contain the same values.
     /// \param[_in] _workflow PbrWorkflow value to compare.
@@ -179,6 +156,21 @@ namespace sdf
     /// \param[in] _map Filename of the emissive map.
     public: void SetEmissiveMap(const std::string &_map);
 
+    /// \brief Get the light map filename. This will be an empty string
+    /// if an light map has not been set.
+    /// \return Filename of the light map, or empty string if a light
+    /// map has not been specified.
+    public: std::string LightMap() const;
+
+    /// \brief Set the light map filename.
+    /// \param[in] _map Filename of the light map.
+    /// \param[in] _uvSet Index of the light map texture coordinate set
+    public: void SetLightMap(const std::string &_map, unsigned int _uvSet = 0u);
+
+    /// \brief Get the light map texture coordinate set.
+    /// \return Index of the texture coordinate set
+    public: unsigned int LightMapTexCoordSet() const;
+
     /// \brief Get the metalness value of the material for metal workflow
     /// \return metalness value of the material
     public: double Metalness() const;
@@ -238,7 +230,7 @@ namespace sdf
     public: void SetType(PbrWorkflowType _type);
 
     /// \brief Private data pointer.
-    private: PbrWorkflowPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief This class provides access to Physically-Based-Rendering (PBR)
@@ -247,27 +239,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Pbr();
-
-    /// \brief Copy constructor
-    /// \param[in] _pbr Pbr to copy.
-    public: Pbr(const Pbr &_pbr);
-
-    /// \brief Move constructor
-    /// \param[in] _pbr Pbr to move.
-    public: Pbr(Pbr &&_pbr) noexcept;
-
-    /// \brief Destructor
-    public: ~Pbr();
-
-    /// \brief Assignment operator.
-    /// \param[in] _pbr The pbr to set values from.
-    /// \return *this
-    public: Pbr &operator=(const Pbr &_pbr);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _pbr The pbr to move values from.
-    /// \return *this
-    public: Pbr &operator=(Pbr &&_pbr);
 
     /// \brief Load the pbr based on an element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -288,10 +259,10 @@ namespace sdf
     /// \param[in] _type Type of PBR workflow
     /// \return Workflow of the specified type.
     /// \sa PbrWorkflowType
-    public: PbrWorkflow *Workflow(PbrWorkflowType _type) const;
+    public: const PbrWorkflow *Workflow(PbrWorkflowType _type) const;
 
     /// \brief Private data pointer.
-    private: PbrPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

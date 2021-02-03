@@ -26,7 +26,7 @@
 using namespace sdf;
 
 /// \brief Private data for PbrWorkflow class
-class sdf::PbrWorkflowPrivate
+class sdf::PbrWorkflow::Implementation
 {
   /// \brief Workflow type
   public: PbrWorkflowType type = PbrWorkflowType::NONE;
@@ -55,6 +55,12 @@ class sdf::PbrWorkflowPrivate
   /// \brief Emissive map
   public: std::string emissiveMap = "";
 
+  /// \brief Light map
+  public: std::string lightMapFilename;
+
+  /// \brief Light map texture coordinate set
+  public: unsigned int lightMapUvSet = 0u;
+
   /// \brief Roughness value (metal workflow only)
   public: double roughness = 0.5;
 
@@ -76,7 +82,7 @@ class sdf::PbrWorkflowPrivate
 
 
 /// \brief Private data for Pbr class
-class sdf::PbrPrivate
+class sdf::Pbr::Implementation
 {
   /// \brief PBR workflows
   public: std::map<PbrWorkflowType, PbrWorkflow> workflows;
@@ -87,41 +93,8 @@ class sdf::PbrPrivate
 
 /////////////////////////////////////////////////
 PbrWorkflow::PbrWorkflow()
-  : dataPtr(new PbrWorkflowPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-PbrWorkflow::~PbrWorkflow()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-PbrWorkflow::PbrWorkflow(const PbrWorkflow &_pbr)
-  : dataPtr(new PbrWorkflowPrivate)
-{
-  *this->dataPtr = *_pbr.dataPtr;
-}
-
-/////////////////////////////////////////////////
-PbrWorkflow::PbrWorkflow(PbrWorkflow &&_pbr) noexcept
-  : dataPtr(std::exchange(_pbr.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-PbrWorkflow &PbrWorkflow::operator=(const PbrWorkflow &_pbr)
-{
-  return *this = PbrWorkflow(_pbr);
-}
-
-/////////////////////////////////////////////////
-PbrWorkflow &PbrWorkflow::operator=(PbrWorkflow &&_pbr)
-{
-  std::swap(this->dataPtr, _pbr.dataPtr);
-  return *this;
 }
 
 //////////////////////////////////////////////////
@@ -140,6 +113,7 @@ bool PbrWorkflow::operator==(const PbrWorkflow &_workflow) const
     && (this->dataPtr->glossinessMap == _workflow.dataPtr->glossinessMap)
     && (this->dataPtr->environmentMap == _workflow.dataPtr->environmentMap)
     && (this->dataPtr->emissiveMap == _workflow.dataPtr->emissiveMap)
+    && (this->dataPtr->lightMapFilename == _workflow.dataPtr->lightMapFilename)
     && (this->dataPtr->ambientOcclusionMap ==
         _workflow.dataPtr->ambientOcclusionMap)
     && (ignition::math::equal(
@@ -211,6 +185,14 @@ Errors PbrWorkflow::Load(sdf::ElementPtr _sdf)
 
   this->dataPtr->emissiveMap = _sdf->Get<std::string>("emissive_map",
       this->dataPtr->emissiveMap).first;
+
+  if (_sdf->HasElement("light_map"))
+  {
+    sdf::ElementPtr lightMapElem = _sdf->GetElement("light_map");
+    this->dataPtr->lightMapFilename = lightMapElem->Get<std::string>();
+    this->dataPtr->lightMapUvSet = lightMapElem->Get<unsigned int>("uv_set",
+        this->dataPtr->lightMapUvSet).first;
+  }
 
   return errors;
 }
@@ -367,6 +349,25 @@ void PbrWorkflow::SetEmissiveMap(const std::string &_map)
 }
 
 //////////////////////////////////////////////////
+std::string PbrWorkflow::LightMap() const
+{
+  return this->dataPtr->lightMapFilename;
+}
+
+//////////////////////////////////////////////////
+void PbrWorkflow::SetLightMap(const std::string &_map, unsigned int _uvSet)
+{
+  this->dataPtr->lightMapFilename = _map;
+  this->dataPtr->lightMapUvSet = _uvSet;
+}
+
+//////////////////////////////////////////////////
+unsigned int PbrWorkflow::LightMapTexCoordSet() const
+{
+  return this->dataPtr->lightMapUvSet;
+}
+
+//////////////////////////////////////////////////
 sdf::ElementPtr PbrWorkflow::Element() const
 {
   return this->dataPtr->sdf;
@@ -386,41 +387,8 @@ void PbrWorkflow::SetType(PbrWorkflowType _type)
 
 /////////////////////////////////////////////////
 Pbr::Pbr()
-  : dataPtr(new PbrPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Pbr::~Pbr()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Pbr::Pbr(const Pbr &_pbr)
-  : dataPtr(new PbrPrivate)
-{
-  *this->dataPtr = *_pbr.dataPtr;
-}
-
-/////////////////////////////////////////////////
-Pbr::Pbr(Pbr &&_pbr) noexcept
-  : dataPtr(std::exchange(_pbr.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Pbr &Pbr::operator=(const Pbr &_pbr)
-{
-  return *this = Pbr(_pbr);
-}
-
-/////////////////////////////////////////////////
-Pbr &Pbr::operator=(Pbr &&_pbr)
-{
-  std::swap(this->dataPtr, _pbr.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -457,7 +425,7 @@ Errors Pbr::Load(sdf::ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-PbrWorkflow *Pbr::Workflow(PbrWorkflowType _type) const
+const PbrWorkflow *Pbr::Workflow(PbrWorkflowType _type) const
 {
   auto it = this->dataPtr->workflows.find(_type);
   if (it != this->dataPtr->workflows.end())

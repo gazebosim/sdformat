@@ -18,6 +18,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <map>
+#include <set>
 #include <string>
 
 #include <ignition/math/SemanticVersion.hh>
@@ -37,6 +38,8 @@
 
 #include "Converter.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
+#include "Utils.hh"
 #include "parser_private.hh"
 #include "parser_urdf.hh"
 
@@ -79,27 +82,41 @@ bool readStringInternal(
     Errors &_errors);
 
 //////////////////////////////////////////////////
+/// \brief Internal helper for creating XMLDocuments
+///
+/// This creates an XMLDocument with whitespace collapse
+/// on, which is not default behavior in tinyxml2.
+/// This function is to consolidate locations it is used.
+///
+/// There is a performance impact associated with collapsing whitespace.
+///
+/// For more information on the behavior and performance implications,
+/// consult the TinyXML2 documentation: https://leethomason.github.io/tinyxml2/
+inline auto makeSdfDoc()
+{
+  return tinyxml2::XMLDocument(true, tinyxml2::COLLAPSE_WHITESPACE);
+}
+
+//////////////////////////////////////////////////
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
-  TiXmlDocument xmlDoc;
-  if (xmlDoc.LoadFile(_filename))
+  auto xmlDoc = makeSdfDoc();
+  if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
   {
-    return initDoc(&xmlDoc, _sdf);
-  }
-  else
-  {
-    sdferr << "Unable to load file[" << _filename << "]\n";
+    sdferr << "Unable to load file["
+           << _filename << "]: " << xmlDoc.ErrorStr() << "\n";
+    return false;
   }
 
-  return false;
+  return initDoc(&xmlDoc, _sdf);
 }
 
 //////////////////////////////////////////////////
 bool init(SDFPtr _sdf)
 {
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
-  TiXmlDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(xmldata.c_str());
   return initDoc(&xmlDoc, _sdf);
 }
@@ -110,7 +127,7 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
-    TiXmlDocument xmlDoc;
+    auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
     return initDoc(&xmlDoc, _sdf);
   }
@@ -123,7 +140,7 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
-    TiXmlDocument xmlDoc;
+    auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
     return initDoc(&xmlDoc, _sdf);
   }
@@ -133,11 +150,10 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool initString(const std::string &_xmlString, SDFPtr _sdf)
 {
-  TiXmlDocument xmlDoc;
-  xmlDoc.Parse(_xmlString.c_str());
-  if (xmlDoc.Error())
+  auto xmlDoc = makeSdfDoc();
+  if (xmlDoc.Parse(_xmlString.c_str()))
   {
-    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorDesc() << '\n';
+    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
 
@@ -145,7 +161,7 @@ bool initString(const std::string &_xmlString, SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-inline TiXmlElement *_initDocGetElement(TiXmlDocument *_xmlDoc)
+inline tinyxml2::XMLElement *_initDocGetElement(tinyxml2::XMLDocument *_xmlDoc)
 {
   if (!_xmlDoc)
   {
@@ -153,7 +169,7 @@ inline TiXmlElement *_initDocGetElement(TiXmlDocument *_xmlDoc)
     return nullptr;
   }
 
-  TiXmlElement *element = _xmlDoc->FirstChildElement("element");
+  tinyxml2::XMLElement *element = _xmlDoc->FirstChildElement("element");
   if (!element)
   {
     sdferr << "Could not find the 'element' element in the xml file\n";
@@ -164,7 +180,7 @@ inline TiXmlElement *_initDocGetElement(TiXmlDocument *_xmlDoc)
 }
 
 //////////////////////////////////////////////////
-bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf)
+bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf)
 {
   auto element = _initDocGetElement(_xmlDoc);
   if (!element)
@@ -176,7 +192,7 @@ bool initDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf)
+bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf)
 {
   auto element = _initDocGetElement(_xmlDoc);
   if (!element)
@@ -188,7 +204,7 @@ bool initDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
+bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
 {
   const char *refString = _xml->Attribute("ref");
   if (refString)
@@ -218,7 +234,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
     bool required = std::string(requiredString) == "1" ? true : false;
     const char *elemDefaultValue = _xml->Attribute("default");
     std::string description;
-    TiXmlElement *descChild = _xml->FirstChildElement("description");
+    tinyxml2::XMLElement *descChild = _xml->FirstChildElement("description");
     if (descChild && descChild->GetText())
     {
       description = descChild->GetText();
@@ -243,10 +259,10 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
   }
 
   // Get all attributes
-  for (TiXmlElement *child = _xml->FirstChildElement("attribute");
+  for (tinyxml2::XMLElement *child = _xml->FirstChildElement("attribute");
        child; child = child->NextSiblingElement("attribute"))
   {
-    TiXmlElement *descriptionChild = child->FirstChildElement("description");
+    auto *descriptionChild = child->FirstChildElement("description");
     const char *name = child->Attribute("name");
     const char *type = child->Attribute("type");
     const char *defaultValue = child->Attribute("default");
@@ -286,14 +302,14 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
   }
 
   // Read the element description
-  TiXmlElement *descChild = _xml->FirstChildElement("description");
+  tinyxml2::XMLElement *descChild = _xml->FirstChildElement("description");
   if (descChild && descChild->GetText())
   {
     _sdf->SetDescription(descChild->GetText());
   }
 
   // Get all child elements
-  for (TiXmlElement *child = _xml->FirstChildElement("element");
+  for (tinyxml2::XMLElement *child = _xml->FirstChildElement("element");
        child; child = child->NextSiblingElement("element"))
   {
     const char *copyDataString = child->Attribute("copy_data");
@@ -312,7 +328,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
   }
 
   // Get all include elements
-  for (TiXmlElement *child = _xml->FirstChildElement("include");
+  for (tinyxml2::XMLElement *child = _xml->FirstChildElement("include");
        child; child = child->NextSiblingElement("include"))
   {
     std::string filename = child->Attribute("filename");
@@ -322,7 +338,7 @@ bool initXml(TiXmlElement *_xml, ElementPtr _sdf)
     initFile(filename, element);
 
     // override description for include elements
-    TiXmlElement *description = child->FirstChildElement("description");
+    tinyxml2::XMLElement *description = child->FirstChildElement("description");
     if (description)
     {
       element->SetDescription(description->GetText());
@@ -393,7 +409,7 @@ bool readFileWithoutConversion(
 bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
       const bool _convert, Errors &_errors)
 {
-  TiXmlDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   std::string filename = sdf::findFile(_filename, true, true);
 
   if (filename.empty())
@@ -413,10 +429,11 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
     return false;
   }
 
-  if (!xmlDoc.LoadFile(filename))
+  auto error_code = xmlDoc.LoadFile(filename.c_str());
+  if (error_code)
   {
     sdferr << "Error parsing XML in file [" << filename << "]: "
-           << xmlDoc.ErrorDesc() << '\n';
+           << xmlDoc.ErrorStr() << '\n';
     return false;
   }
 
@@ -428,7 +445,8 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
   else if (URDF2SDF::IsURDF(filename))
   {
     URDF2SDF u2g;
-    TiXmlDocument doc = u2g.InitModelFile(filename);
+    auto doc = makeSdfDoc();
+    u2g.InitModelFile(filename, &doc);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
@@ -474,11 +492,11 @@ bool readStringWithoutConversion(
 bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
     const bool _convert, Errors &_errors)
 {
-  TiXmlDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
-    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
   if (readDoc(&xmlDoc, _sdf, "data-string", _convert, _errors))
@@ -488,7 +506,9 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   else
   {
     URDF2SDF u2g;
-    TiXmlDocument doc = u2g.InitModelString(_xmlString);
+    auto doc = makeSdfDoc();
+    u2g.InitModelString(_xmlString, &doc);
+
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {
       sdfdbg << "Parsing from urdf.\n";
@@ -520,11 +540,11 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 {
-  TiXmlDocument xmlDoc;
+  auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
-    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorDesc() << '\n';
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
   if (readDoc(&xmlDoc, _sdf, "data-string", true, _errors))
@@ -540,7 +560,7 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 }
 
 //////////////////////////////////////////////////
-bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
+bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     const std::string &_source, bool _convert, Errors &_errors)
 {
   if (!_xmlDoc)
@@ -550,7 +570,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
   }
 
   // check sdf version
-  TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
+  tinyxml2::XMLElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
     return false;
@@ -587,7 +607,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
     }
 
     // parse new sdf xml
-    TiXmlElement *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName());
+    auto *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
     if (!readXml(elemXml, _sdf->Root(), _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -613,7 +633,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, SDFPtr _sdf,
 }
 
 //////////////////////////////////////////////////
-bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
+bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
              const std::string &_source, bool _convert, Errors &_errors)
 {
   if (!_xmlDoc)
@@ -623,7 +643,7 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
   }
 
   // check sdf version
-  TiXmlElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
+  tinyxml2::XMLElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
     return false;
@@ -648,11 +668,11 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
       Converter::Convert(_xmlDoc, SDF::Version());
     }
 
-    TiXmlElement *elemXml = sdfNode;
+    tinyxml2::XMLElement *elemXml = sdfNode;
     if (sdfNode->Value() != _sdf->GetName() &&
-        sdfNode->FirstChildElement(_sdf->GetName()))
+        sdfNode->FirstChildElement(_sdf->GetName().c_str()))
     {
-      elemXml = sdfNode->FirstChildElement(_sdf->GetName());
+      elemXml = sdfNode->FirstChildElement(_sdf->GetName().c_str());
     }
 
     // parse new sdf xml
@@ -680,18 +700,18 @@ bool readDoc(TiXmlDocument *_xmlDoc, ElementPtr _sdf,
 }
 
 //////////////////////////////////////////////////
-std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
+std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
                                          std::string &_modelFileName)
 {
-  TiXmlElement *sdfXML = _modelXML->FirstChildElement("sdf");
-  TiXmlElement *nameSearch = _modelXML->FirstChildElement("name");
+  tinyxml2::XMLElement *sdfXML = _modelXML->FirstChildElement("sdf");
+  tinyxml2::XMLElement *nameSearch = _modelXML->FirstChildElement("name");
 
   // If a match is not found, use the latest version of the element
   // that is not older than the SDF parser.
   ignition::math::SemanticVersion sdfParserVersion(SDF_VERSION);
   std::string bestVersionStr = "0.0";
 
-  TiXmlElement *sdfSearch = sdfXML;
+  tinyxml2::XMLElement *sdfSearch = sdfXML;
   while (sdfSearch)
   {
     if (sdfSearch->Attribute("version"))
@@ -757,7 +777,8 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     if (!sdf::filesystem::exists(configFilePath))
     {
       // We didn't find manifest.xml either, output an error and get out.
-      sdferr << "Could not find model.config or manifest.xml for the model\n";
+      sdferr << "Could not find model.config or manifest.xml in ["
+             << _modelDirPath << "]\n";
       return std::string();
     }
     else
@@ -769,16 +790,16 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     }
   }
 
-  TiXmlDocument configFileDoc;
-  if (!configFileDoc.LoadFile(configFilePath))
+  auto configFileDoc = makeSdfDoc();
+  if (tinyxml2::XML_SUCCESS != configFileDoc.LoadFile(configFilePath.c_str()))
   {
     sdferr << "Error parsing XML in file ["
            << configFilePath << "]: "
-           << configFileDoc.ErrorDesc() << '\n';
+           << configFileDoc.ErrorStr() << '\n';
     return std::string();
   }
 
-  TiXmlElement *modelXML = configFileDoc.FirstChildElement("model");
+  tinyxml2::XMLElement *modelXML = configFileDoc.FirstChildElement("model");
 
   if (!modelXML)
   {
@@ -796,7 +817,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 }
 
 //////////////////////////////////////////////////
-bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
+bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
 {
   // Check if the element pointer is deprecated.
   if (_sdf->GetRequired() == "-1")
@@ -836,7 +857,21 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
     _sdf->Copy(refSDF);
   }
 
-  TiXmlAttribute *attribute = _xml->FirstAttribute();
+  // A list of parent element-attributes pairs where a frame name is referenced
+  // in the attribute. This is used to check if the reference is invalid.
+  std::set<std::pair<std::string, std::string>> frameReferenceAttributes {
+      // //frame/[@attached_to]
+      {"frame", "attached_to"},
+      // //pose/[@relative_to]
+      {"pose", "relative_to"},
+      // //model/[@placement_frame]
+      {"model", "placement_frame"},
+      // //model/[@canonical_link]
+      {"model", "canonical_link"},
+      // //sensor/imu/orientation_reference_frame/custom_rpy/[@parent_frame]
+      {"custom_rpy", "parent_frame"}};
+
+  const tinyxml2::XMLAttribute *attribute = _xml->FirstAttribute();
 
   unsigned int i = 0;
 
@@ -845,11 +880,11 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
   {
     // Avoid printing a warning message for missing attributes if a namespaced
     // attribute is found
-    if (std::strchr(attribute->Name(), ':') != NULL)
+    if (std::strchr(attribute->Name(), ':') != nullptr)
     {
       _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
       _sdf->GetAttribute(attribute->Name())->SetFromString(
-          attribute->ValueStr());
+          attribute->Value());
       attribute = attribute->Next();
       continue;
     }
@@ -859,8 +894,20 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
       ParamPtr p = _sdf->GetAttribute(i);
       if (p->GetKey() == attribute->Name())
       {
+        if (frameReferenceAttributes.count(
+                std::make_pair(_sdf->GetName(), attribute->Name())) != 0)
+        {
+          if (!isValidFrameReference(attribute->Value()))
+          {
+            _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+                "'" + std::string(attribute->Value()) +
+                    "' is reserved; it cannot be used as a value of "
+                    "attribute [" +
+                    p->GetKey() + "]"});
+            }
+        }
         // Set the value of the SDF attribute
-        if (!p->SetFromString(attribute->ValueStr()))
+        if (!p->SetFromString(attribute->Value()))
         {
           _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
               "Unable to read attribute[" + p->GetKey() + "]"});
@@ -902,7 +949,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
     std::string filename;
 
     // Iterate over all the child elements
-    TiXmlElement *elemXml = nullptr;
+    tinyxml2::XMLElement *elemXml = nullptr;
     for (elemXml = _xml->FirstChildElement(); elemXml;
          elemXml = elemXml->NextSiblingElement())
     {
@@ -931,16 +978,28 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           }
           else
           {
-            if (!sdf::filesystem::is_directory(modelPath))
+            if (sdf::filesystem::is_directory(modelPath))
             {
-              _errors.push_back({ErrorCode::DIRECTORY_NONEXISTANT,
-                  "Directory doesn't exist[" + modelPath + "]"});
-              continue;
+              // Get the model.config filename
+              filename = getModelFilePath(modelPath);
+
+              if (filename.empty())
+              {
+                _errors.push_back({ErrorCode::URI_LOOKUP,
+                    "Unable to resolve uri[" + uri + "] to model path [" +
+                    modelPath + "] since it does not contain a model.config " +
+                    "file."});
+                continue;
+              }
+            }
+            else
+            {
+              // This is a file path and since sdf::findFile returns an empty
+              // string if the file doesn't exist, we don't have to check for
+              // existence again here.
+              filename = modelPath;
             }
           }
-
-          // Get the config.xml filename
-          filename = getModelFilePath(modelPath);
         }
         else
         {
@@ -970,24 +1029,30 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           return false;
         }
 
+        // For now there is only a warning if there is more than one model,
+        // actor or light element, or two different types of those elements. For
+        // compatibility with old behavior, this chooses the first element
+        // in the preference order: model->actor->light
         sdf::ElementPtr topLevelElem;
-        bool isModel{false};
-        bool isActor{false};
-        if (includeSDF->Root()->HasElement("model"))
+        for (const auto & elementType : {"model", "actor", "light"})
         {
-          topLevelElem = includeSDF->Root()->GetElement("model");
-          isModel = true;
+          if (includeSDF->Root()->HasElement(elementType))
+          {
+            if (nullptr == topLevelElem)
+            {
+              topLevelElem = includeSDF->Root()->GetElement(elementType);
+            }
+            else
+            {
+              sdfwarn << "Found other top level element <" << elementType
+                      << "> in addition to <" << topLevelElem->GetName()
+                      << "> in include file. This is unsupported and in future "
+                      << "versions of libsdformat will become an error";
+            }
+          }
         }
-        else if (includeSDF->Root()->HasElement("actor"))
-        {
-          topLevelElem = includeSDF->Root()->GetElement("actor");
-          isActor = true;
-        }
-        else if (includeSDF->Root()->HasElement("light"))
-        {
-          topLevelElem = includeSDF->Root()->GetElement("light");
-        }
-        else
+
+        if (nullptr == topLevelElem)
         {
           _errors.push_back({ErrorCode::ELEMENT_MISSING,
               "Failed to find top level <model> / <actor> / <light> for "
@@ -995,13 +1060,25 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           continue;
         }
 
+        const auto topLevelElementType = topLevelElem->GetName();
+        // Check for more than one of the discovered top-level element type
+        if (nullptr != topLevelElem->GetNextElement(topLevelElementType))
+        {
+          sdfwarn << "Found more than one of " << topLevelElem->GetName()
+                  << " for <include>. This is unsupported and in future "
+                  << "versions of libsdformat will become an error";
+        }
+
+        bool isModel = topLevelElementType == "model";
+        bool isActor = topLevelElementType == "actor";
+
         if (elemXml->FirstChildElement("name"))
         {
           topLevelElem->GetAttribute("name")->SetFromString(
                 elemXml->FirstChildElement("name")->GetText());
         }
 
-        TiXmlElement *poseElemXml = elemXml->FirstChildElement("pose");
+        tinyxml2::XMLElement *poseElemXml = elemXml->FirstChildElement("pose");
         if (poseElemXml)
         {
           sdf::ElementPtr poseElem = topLevelElem->GetElement("pose");
@@ -1032,9 +1109,33 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
                 elemXml->FirstChildElement("static")->GetText());
         }
 
+        if (isModel && elemXml->FirstChildElement("placement_frame"))
+        {
+          if (nullptr == elemXml->FirstChildElement("pose"))
+          {
+            _errors.push_back({ErrorCode::MODEL_PLACEMENT_FRAME_INVALID,
+                "<pose> is required when specifying the placement_frame "
+                "element"});
+            return false;
+          }
+
+          const std::string placementFrameVal =
+              elemXml->FirstChildElement("placement_frame")->GetText();
+
+          if (!isValidFrameReference(placementFrameVal))
+          {
+            _errors.push_back({ErrorCode::RESERVED_NAME,
+                "'" + placementFrameVal +
+                    "' is reserved; it cannot be used as a value of "
+                    "element [placement_frame]"});
+          }
+          topLevelElem->GetAttribute("placement_frame")
+              ->SetFromString(placementFrameVal);
+        }
+
         if (isModel || isActor)
         {
-          for (TiXmlElement *childElemXml = elemXml->FirstChildElement();
+          for (auto *childElemXml = elemXml->FirstChildElement();
                childElemXml; childElemXml = childElemXml->NextSiblingElement())
           {
             if (std::string("plugin") == childElemXml->Value())
@@ -1052,21 +1153,14 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           }
         }
 
-        if (_sdf->GetName() == "model")
-        {
-          addNestedModel(_sdf, includeSDF->Root(), _errors);
-        }
-        else
-        {
-          includeSDF->Root()->GetFirstElement()->SetParent(_sdf);
-          _sdf->InsertElement(includeSDF->Root()->GetFirstElement());
-          // TODO: This was used to store the included filename so that when
-          // a world is saved, the included model's SDF is not stored in the
-          // world file. This highlights the need to make model inclusion
-          // a core feature of SDF, and not a hack that that parser handles
-          // includeSDF->Root()->GetFirstElement()->SetInclude(
-          // elemXml->Attribute("filename"));
-        }
+        includeSDF->Root()->GetFirstElement()->SetParent(_sdf);
+        _sdf->InsertElement(includeSDF->Root()->GetFirstElement());
+        // TODO: This was used to store the included filename so that when
+        // a world is saved, the included model's SDF is not stored in the
+        // world file. This highlights the need to make model inclusion
+        // a core feature of SDF, and not a hack that that parser handles
+        // includeSDF->Root()->GetFirstElement()->SetInclude(
+        // elemXml->Attribute("filename"));
 
         continue;
       }
@@ -1096,7 +1190,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
         }
       }
 
-      if (descCounter == _sdf->GetElementDescriptionCount())
+      if (descCounter == _sdf->GetElementDescriptionCount()
+            && std::strchr(elemXml->Value(), ':') == nullptr)
       {
         sdfdbg << "XML Element[" << elemXml->Value()
                << "], child of element[" << _xml->Value()
@@ -1141,34 +1236,16 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 }
 
 /////////////////////////////////////////////////
-static void replace_all(std::string &_str,
-                        const std::string &_from,
-                        const std::string &_to)
-{
-  if (_from.empty())
-  {
-    return;
-  }
-  size_t start_pos = 0;
-  while ((start_pos = _str.find(_from, start_pos)) != std::string::npos)
-  {
-    _str.replace(start_pos, _from.length(), _to);
-    // We need to advance our starting position beyond what we
-    // just replaced to deal with the case where the '_to' string
-    // happens to contain a piece of '_from'.
-    start_pos += _to.length();
-  }
-}
-
-/////////////////////////////////////////////////
-void copyChildren(ElementPtr _sdf, TiXmlElement *_xml, const bool _onlyUnknown)
+void copyChildren(ElementPtr _sdf,
+                  tinyxml2::XMLElement *_xml,
+                  const bool _onlyUnknown)
 {
   // Iterate over all the child elements
-  TiXmlElement *elemXml = nullptr;
+  tinyxml2::XMLElement *elemXml = nullptr;
   for (elemXml = _xml->FirstChildElement(); elemXml;
        elemXml = elemXml->NextSiblingElement())
   {
-    std::string elem_name = elemXml->ValueStr();
+    std::string elem_name = elemXml->Name();
 
     if (_sdf->HasElementDescription(elem_name))
     {
@@ -1177,11 +1254,11 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml, const bool _onlyUnknown)
         sdf::ElementPtr element = _sdf->AddElement(elem_name);
 
         // FIXME: copy attributes
-        for (TiXmlAttribute *attribute = elemXml->FirstAttribute();
+        for (const auto *attribute = elemXml->FirstAttribute();
              attribute; attribute = attribute->Next())
         {
           element->GetAttribute(attribute->Name())->SetFromString(
-            attribute->ValueStr());
+            attribute->Value());
         }
 
         // copy value
@@ -1203,152 +1280,17 @@ void copyChildren(ElementPtr _sdf, TiXmlElement *_xml, const bool _onlyUnknown)
         element->AddValue("string", elemXml->GetText(), "1");
       }
 
-      for (TiXmlAttribute *attribute = elemXml->FirstAttribute();
+      for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
            attribute; attribute = attribute->Next())
       {
         element->AddAttribute(attribute->Name(), "string", "", 1, "");
         element->GetAttribute(attribute->Name())->SetFromString(
-          attribute->ValueStr());
+          attribute->Value());
       }
 
       copyChildren(element, elemXml, _onlyUnknown);
       _sdf->InsertElement(element);
     }
-  }
-}
-
-/////////////////////////////////////////////////
-void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
-{
-  Errors errors;
-  addNestedModel(_sdf, _includeSDF, errors);
-  for (const auto &e : errors)
-  {
-    sdferr << e << '\n';
-  }
-}
-
-/////////////////////////////////////////////////
-void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
-{
-  ElementPtr modelPtr = _includeSDF->GetElement("model");
-  ElementPtr elem = modelPtr->GetFirstElement();
-  std::map<std::string, std::string> replace;
-
-  ignition::math::Pose3d modelPose =
-    modelPtr->Get<ignition::math::Pose3d>("pose");
-
-  std::string modelName = modelPtr->Get<std::string>("name");
-
-  // Inject a frame to represent the nested __model__ frame.
-  ElementPtr nestedModelFrame = _sdf->AddElement("frame");
-  const std::string nestedModelFrameName = modelName + "::__model__";
-  nestedModelFrame->GetAttribute("name")->Set(nestedModelFrameName);
-
-  replace["__model__"] = nestedModelFrameName;
-
-  std::string canonicalLinkName = "";
-  if (modelPtr->GetAttribute("canonical_link")->GetSet())
-  {
-    canonicalLinkName = modelPtr->GetAttribute("canonical_link")->GetAsString();
-  }
-  else if (modelPtr->HasElement("link"))
-  {
-    canonicalLinkName =
-      modelPtr->GetElement("link")->GetAttribute("name")->GetAsString();
-  }
-  nestedModelFrame->GetAttribute("attached_to")
-      ->Set(modelName + "::" + canonicalLinkName);
-
-  ElementPtr nestedModelFramePose = nestedModelFrame->AddElement("pose");
-  nestedModelFramePose->Set(modelPose);
-
-  // Set the nestedModelFrame's //pose/@relative_to to the frame used in
-  // //include/pose/@relative_to.
-  std::string modelPoseRelativeTo = "";
-  if (modelPtr->HasElement("pose"))
-  {
-    modelPoseRelativeTo =
-        modelPtr->GetElement("pose")->Get<std::string>("relative_to");
-  }
-
-  // If empty, use "__model__", since leaving it empty would make it
-  // relative_to the canonical link frame specified in //frame/@attached_to.
-  if (modelPoseRelativeTo.empty())
-  {
-    modelPoseRelativeTo = "__model__";
-  }
-
-  nestedModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
-
-  while (elem)
-  {
-    if ((elem->GetName() == "link") ||
-        (elem->GetName() == "joint") ||
-        (elem->GetName() == "frame"))
-    {
-      std::string elemName = elem->Get<std::string>("name");
-      std::string newName =  modelName + "::" + elemName;
-      replace[elemName] = newName;
-    }
-
-    if ((elem->GetName() == "link"))
-    {
-      // Add a pose element even if the element doesn't originally have one
-      auto elemPose = elem->GetElement("pose");
-
-      // If //pose/@relative_to is empty, explicitly set it to the name
-      // of the nested model frame.
-      auto relativeTo = elemPose->GetAttribute("relative_to");
-      if (relativeTo->GetAsString().empty())
-      {
-        relativeTo->Set(nestedModelFrameName);
-      }
-
-      // If //pose/@relative_to is set, let the replacement step handle it.
-    }
-    else if (elem->GetName() == "frame")
-    {
-      // If //frame/@attached_to is empty, explicitly set it to the name
-      // of the nested model frame.
-      auto attachedTo = elem->GetAttribute("attached_to");
-      if (attachedTo->GetAsString().empty())
-      {
-        attachedTo->Set(nestedModelFrameName);
-      }
-
-      // If //frame/@attached_to is set, let the replacement step handle it.
-    }
-    elem = elem->GetNextElement();
-  }
-
-  std::string str = _includeSDF->ToString("");
-  for (std::map<std::string, std::string>::iterator iter = replace.begin();
-       iter != replace.end(); ++iter)
-  {
-    replace_all(str, std::string("\"") + iter->first + "\"",
-                std::string("\"") + iter->second + "\"");
-    replace_all(str, std::string("'") + iter->first + "'",
-                std::string("'") + iter->second + "'");
-    replace_all(str, std::string(">") + iter->first + "<",
-                std::string(">") + iter->second + "<");
-  }
-
-  _includeSDF->ClearElements();
-  readString(str, _includeSDF, _errors);
-
-  elem = _includeSDF->GetElement("model")->GetFirstElement();
-  ElementPtr nextElem;
-  while (elem)
-  {
-    nextElem = elem->GetNextElement();
-
-    if (elem->GetName() != "pose")
-    {
-      elem->SetParent(_sdf);
-      _sdf->InsertElement(elem);
-    }
-    elem = nextElem;
   }
 }
 
@@ -1370,13 +1312,13 @@ bool convertFile(const std::string &_filename, const std::string &_version,
     return false;
   }
 
-  TiXmlDocument xmlDoc;
-  if (xmlDoc.LoadFile(filename))
+  auto xmlDoc = makeSdfDoc();
+  if (!xmlDoc.LoadFile(filename.c_str()))
   {
     // read initial sdf version
     std::string originalVersion;
     {
-      TiXmlElement *sdfNode = xmlDoc.FirstChildElement("sdf");
+      tinyxml2::XMLElement *sdfNode = xmlDoc.FirstChildElement("sdf");
       if (sdfNode && sdfNode->Attribute("version"))
       {
         originalVersion = sdfNode->Attribute("version");
@@ -1415,7 +1357,7 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
     return false;
   }
 
-  TiXmlDocument xmlDoc;
+  tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(_sdfString.c_str());
 
   if (!xmlDoc.Error())
@@ -1423,7 +1365,7 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
     // read initial sdf version
     std::string originalVersion;
     {
-      TiXmlElement *sdfNode = xmlDoc.FirstChildElement("sdf");
+      tinyxml2::XMLElement *sdfNode = xmlDoc.FirstChildElement("sdf");
       if (sdfNode && sdfNode->Attribute("version"))
       {
         originalVersion = sdfNode->Attribute("version");
@@ -1481,10 +1423,9 @@ bool checkCanonicalLinkNames(const sdf::Root *_root)
     return modelResult;
   };
 
-  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  if (_root->Model())
   {
-    auto model = _root->ModelByIndex(m);
-    result = checkModelCanonicalLinkName(model) && result;
+    result = checkModelCanonicalLinkName(_root->Model()) && result;
   }
 
   for (uint64_t w = 0; w < _root->WorldCount(); ++w)
@@ -1532,13 +1473,14 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
         modelResult = false;
       }
       else if (!_model->LinkNameExists(attachedTo) &&
+               !_model->ModelNameExists(attachedTo) &&
                !_model->JointNameExists(attachedTo) &&
                !_model->FrameNameExists(attachedTo))
       {
         std::cerr << "Error: attached_to name[" << attachedTo
                   << "] specified by frame with name[" << frame->Name()
-                  << "] does not match a link, joint, or frame name "
-                  << "in model with name[" << _model->Name()
+                  << "] does not match a nested model, link, joint, "
+                  << "or frame name in model with name[" << _model->Name()
                   << "]."
                   << std::endl;
         modelResult = false;
@@ -1550,6 +1492,36 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
   auto checkWorldFrameAttachedToNames = [](
       const sdf::World *_world) -> bool
   {
+    auto findNameInWorld = [](const sdf::World *_inWorld,
+        const std::string &_name) -> bool {
+      if (_inWorld->ModelNameExists(_name) ||
+          _inWorld->FrameNameExists(_name))
+      {
+        return true;
+      }
+
+      const auto delimIndex = _name.find("::");
+      if (delimIndex != std::string::npos && delimIndex + 2 < _name.size())
+      {
+        std::string modelName = _name.substr(0, delimIndex);
+        std::string nameToCheck = _name.substr(delimIndex + 2);
+        const auto *model = _inWorld->ModelByName(modelName);
+        if (nullptr == model)
+        {
+          return false;
+        }
+
+        if (model->LinkNameExists(nameToCheck) ||
+            model->ModelNameExists(nameToCheck) ||
+            model->JointNameExists(nameToCheck) ||
+            model->FrameNameExists(nameToCheck))
+        {
+          return true;
+        }
+      }
+      return false;
+    };
+
     bool worldResult = true;
     for (uint64_t f = 0; f < _world->FrameCount(); ++f)
     {
@@ -1573,8 +1545,7 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
                   << std::endl;
         worldResult = false;
       }
-      else if (!_world->ModelNameExists(attachedTo) &&
-               !_world->FrameNameExists(attachedTo))
+      else if (!findNameInWorld(_world, attachedTo))
       {
         std::cerr << "Error: attached_to name[" << attachedTo
                   << "] specified by frame with name[" << frame->Name()
@@ -1588,10 +1559,9 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
     return worldResult;
   };
 
-  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  if (_root->Model())
   {
-    auto model = _root->ModelByIndex(m);
-    result = checkModelFrameAttachedToNames(model) && result;
+    result = checkModelFrameAttachedToNames(_root->Model()) && result;
   }
 
   for (uint64_t w = 0; w < _root->WorldCount(); ++w)
@@ -1672,7 +1642,8 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root)
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
-    sdf::FrameAttachedToGraph graph;
+    auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+    sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
     auto errors = sdf::buildFrameAttachedToGraph(graph, _model);
     if (!errors.empty())
     {
@@ -1700,7 +1671,8 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root)
       const sdf::World *_world) -> bool
   {
     bool worldResult = true;
-    sdf::FrameAttachedToGraph graph;
+    auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+    sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
     auto errors = sdf::buildFrameAttachedToGraph(graph, _world);
     if (!errors.empty())
     {
@@ -1724,10 +1696,9 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root)
     return worldResult;
   };
 
-  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  if (_root->Model())
   {
-    auto model = _root->ModelByIndex(m);
-    result = checkModelFrameAttachedToGraph(model) && result;
+    result = checkModelFrameAttachedToGraph(_root->Model()) && result;
   }
 
   for (uint64_t w = 0; w < _root->WorldCount(); ++w)
@@ -1753,7 +1724,8 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
-    sdf::PoseRelativeToGraph graph;
+    auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
+    sdf::ScopedGraph<PoseRelativeToGraph> graph(ownedGraph);
     auto errors = sdf::buildPoseRelativeToGraph(graph, _model);
     if (!errors.empty())
     {
@@ -1781,7 +1753,8 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
       const sdf::World *_world) -> bool
   {
     bool worldResult = true;
-    sdf::PoseRelativeToGraph graph;
+    auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
+    sdf::ScopedGraph<PoseRelativeToGraph> graph(ownedGraph);
     auto errors = sdf::buildPoseRelativeToGraph(graph, _world);
     if (!errors.empty())
     {
@@ -1805,10 +1778,9 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
     return worldResult;
   };
 
-  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  if (_root->Model())
   {
-    auto model = _root->ModelByIndex(m);
-    result = checkModelPoseRelativeToGraph(model) && result;
+    result = checkModelPoseRelativeToGraph(_root->Model()) && result;
   }
 
   for (uint64_t w = 0; w < _root->WorldCount(); ++w)
@@ -1839,9 +1811,11 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
       auto joint = _model->JointByIndex(j);
 
       const std::string &parentName = joint->ParentLinkName();
-      if (parentName != "world" && !_model->LinkNameExists(parentName))
+      if (parentName != "world" && !_model->LinkNameExists(parentName) &&
+          !_model->JointNameExists(parentName) &&
+          !_model->FrameNameExists(parentName))
       {
-        std::cerr << "Error: parent link with name[" << parentName
+        std::cerr << "Error: parent frame with name[" << parentName
                   << "] specified by joint with name[" << joint->Name()
                   << "] not found in model with name[" << _model->Name()
                   << "]."
@@ -1850,9 +1824,22 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
       }
 
       const std::string &childName = joint->ChildLinkName();
-      if (childName != "world" && !_model->LinkNameExists(childName))
+      if (childName == "world")
       {
-        std::cerr << "Error: child link with name[" << childName
+        std::cerr << "Error: invalid child name[world"
+                  << "] specified by joint with name[" << joint->Name()
+                  << "] in model with name[" << _model->Name()
+                  << "]."
+                  << std::endl;
+        modelResult = false;
+      }
+
+      if (!_model->LinkNameExists(childName) &&
+          !_model->JointNameExists(childName) &&
+          !_model->FrameNameExists(childName) &&
+          !_model->ModelNameExists(childName))
+      {
+        std::cerr << "Error: child frame with name[" << childName
                   << "] specified by joint with name[" << joint->Name()
                   << "] not found in model with name[" << _model->Name()
                   << "]."
@@ -1860,13 +1847,57 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
         modelResult = false;
       }
 
-      if (childName == parentName)
+      if (childName == joint->Name())
       {
         std::cerr << "Error: joint with name[" << joint->Name()
                   << "] in model with name[" << _model->Name()
-                  << "] must specify different link names for "
-                  << "parent and child, while [" << childName
-                  << "] was specified for both."
+                  << "] must not specify its own name as the child frame."
+                  << std::endl;
+        modelResult = false;
+      }
+
+      if (parentName == joint->Name())
+      {
+        std::cerr << "Error: joint with name[" << joint->Name()
+                  << "] in model with name[" << _model->Name()
+                  << "] must not specify its own name as the parent frame."
+                  << std::endl;
+        modelResult = false;
+      }
+
+      // Check that parent and child frames resolve to different links
+      std::string resolvedChildName;
+      std::string resolvedParentName;
+      auto errors = joint->ResolveChildLink(resolvedChildName);
+      if (!errors.empty())
+      {
+        std::cerr << "Error when attempting to resolve child link name:"
+                  << std::endl;
+        for (auto error : errors)
+        {
+          std::cerr << error.Message() << std::endl;
+        }
+        modelResult = false;
+      }
+      errors = joint->ResolveParentLink(resolvedParentName);
+      if (!errors.empty())
+      {
+        std::cerr << "Error when attempting to resolve parent link name:"
+                  << std::endl;
+        for (auto error : errors)
+        {
+          std::cerr << error.Message() << std::endl;
+        }
+        modelResult = false;
+      }
+      if (resolvedChildName == resolvedParentName)
+      {
+        std::cerr << "Error: joint with name[" << joint->Name()
+                  << "] in model with name[" << _model->Name()
+                  << "] specified parent frame [" << parentName
+                  << "] and child frame [" << childName
+                  << "] that both resolve to [" << resolvedChildName
+                  << "], but they should resolve to different values."
                   << std::endl;
         modelResult = false;
       }
@@ -1874,10 +1905,9 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
     return modelResult;
   };
 
-  for (uint64_t m = 0; m < _root->ModelCount(); ++m)
+  if (_root->Model())
   {
-    auto model = _root->ModelByIndex(m);
-    result = checkModelJointParentChildNames(model) && result;
+    result = checkModelJointParentChildNames(_root->Model()) && result;
   }
 
   for (uint64_t w = 0; w < _root->WorldCount(); ++w)

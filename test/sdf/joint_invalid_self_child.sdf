@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <model name="joint_invalid_self_child">
+    <link name="link">
+      <pose>0 0 1 0 0 0</pose>
+    </link>
+    <joint name="self" type="fixed">
+      <pose>0 0 3 0 0 0</pose>
+      <parent>link</parent>
+      <child>self</child>
+    </joint>
+  </model>
+</sdf>

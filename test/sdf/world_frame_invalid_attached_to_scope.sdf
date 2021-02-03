@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<sdf version='1.8'>
+  <world name="world_frame_invalid_attached_to_scope">
+
+    <model name="M1">
+      <link name="L1"/>
+    </model>
+
+    <model name="M2">
+      <model name="M1">
+        <link name="L2"/>
+      </model>
+    </model>
+
+    <frame name="F" attached_to="M2::M1::L1"/>   <!-- INVALID: There is no link L1 inside "M2::M1" -->
+
+  </world>
+</sdf>

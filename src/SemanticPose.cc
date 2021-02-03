@@ -21,6 +21,7 @@
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 namespace sdf
@@ -28,8 +29,10 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 /// \internal
 /// \brief Private data for the SemanticPose class.
-class SemanticPosePrivate
+class SemanticPose::Implementation
 {
+  public: std::string name = "";
+
   /// \brief Raw pose of the SemanticPose object.
   public: ignition::math::Pose3d rawPose = ignition::math::Pose3d::Zero;
 
@@ -39,18 +42,21 @@ class SemanticPosePrivate
   /// \brief Name of the default frame to resolve to.
   public: std::string defaultResolveTo = "";
 
-  /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  /// \brief Scoped Pose Relative-To graph at the parent model or world scope.
+  /// TODO (addisu) Make this const
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
 SemanticPose::SemanticPose(
+        const std::string &_name,
         const ignition::math::Pose3d &_pose,
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
-        const std::weak_ptr<const sdf::PoseRelativeToGraph> _graph)
-  : dataPtr(std::make_unique<SemanticPosePrivate>())
+        const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
+  this->dataPtr->name = _name;
   this->dataPtr->rawPose = _pose;
   this->dataPtr->relativeTo = _relativeTo;
   this->dataPtr->defaultResolveTo = _defaultResolveTo;
@@ -58,30 +64,17 @@ SemanticPose::SemanticPose(
 }
 
 /////////////////////////////////////////////////
-SemanticPose::~SemanticPose() = default;
-
-/////////////////////////////////////////////////
-SemanticPose::SemanticPose(const SemanticPose &_semanticPose)
-  : dataPtr(std::make_unique<SemanticPosePrivate>(*_semanticPose.dataPtr))
+SemanticPose::SemanticPose(
+        const ignition::math::Pose3d &_pose,
+        const std::string &_relativeTo,
+        const std::string &_defaultResolveTo,
+        const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-SemanticPose::SemanticPose(SemanticPose &&_semanticPose) noexcept = default;
-
-/////////////////////////////////////////////////
-SemanticPose &SemanticPose::operator=(SemanticPose &&_semanticPose) = default;
-
-/////////////////////////////////////////////////
-SemanticPose &SemanticPose::operator=(const SemanticPose &_semanticPose)
-{
-  if (!this->dataPtr)
-  {
-    // This would happen if this object is moved from.
-    this->dataPtr = std::make_unique<SemanticPosePrivate>();
-  }
-  *this->dataPtr =  *_semanticPose.dataPtr;
-  return *this;
+  this->dataPtr->rawPose = _pose;
+  this->dataPtr->relativeTo = _relativeTo;
+  this->dataPtr->defaultResolveTo = _defaultResolveTo;
+  this->dataPtr->poseRelativeToGraph = _graph;
 }
 
 /////////////////////////////////////////////////
@@ -103,10 +96,10 @@ Errors SemanticPose::Resolve(
 {
   Errors errors;
 
-  auto graph = this->dataPtr->poseRelativeToGraph.lock();
+  auto graph = this->dataPtr->poseRelativeToGraph;
   if (!graph)
   {
-    errors.push_back({ErrorCode::ELEMENT_INVALID,
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
         "SemanticPose has invalid pointer to PoseRelativeToGraph."});
     return errors;
   }
@@ -124,8 +117,15 @@ Errors SemanticPose::Resolve(
   }
 
   ignition::math::Pose3d pose;
-  errors = resolvePose(pose, *graph, relativeTo, resolveTo);
-  pose *= this->RawPose();
+  if (this->dataPtr->name.empty())
+  {
+    errors = resolvePose(pose, graph, relativeTo, resolveTo);
+    pose *= this->RawPose();
+  }
+  else
+  {
+    errors = resolvePose(pose, graph, this->dataPtr->name, resolveTo);
+  }
 
   if (errors.empty())
   {

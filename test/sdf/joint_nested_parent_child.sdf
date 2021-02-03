@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <model name="joint_nested_parent_child">
+    <model name="M1">
+      <link name="L1">
+        <pose>0 0 1 0 0 0</pose>
+      </link>
+      <link name="L2">
+        <pose>1 1 0 0 0 0</pose>
+      </link>
+      <frame name="F1">
+        <pose>1 0 0 0 0 0</pose>
+      </frame>
+      <model name="M2">
+        <pose>0 0 1 1.570796326790 0 0</pose>
+        <link name="L1"/>
+      </model>
+    </model>
+
+    <link name="L1">
+      <pose>0 0 10 0 1.57079632679 0</pose>
+    </link>
+
+    <frame name="F1" attached_to="M1::L1">
+      <pose>1 0 0 0 0 0</pose>
+    </frame>
+
+    <!-- Joint with a parent link in a nested model -->
+    <joint name="J1" type="fixed">
+      <pose>1 0 0 0 0 0</pose>
+      <parent>M1::L1</parent>
+      <child>L1</child>
+    </joint>
+    <!-- Joint with a sibling parent frame which is attached to a link in a nested model -->
+    <joint name="J2" type="fixed">
+      <pose>0 1 0 0 0 0</pose>
+      <parent>F1</parent>
+      <child>L1</child>
+    </joint>
+    <!-- Joint with a child link in a nested model -->
+    <joint name="J3" type="fixed">
+      <pose>0 0 1 0 0 0</pose>
+      <parent>L1</parent>
+      <child>M1::L2</child>
+    </joint>
+
+    <!-- Joint with a child frame in a nested model -->
+    <joint name="J4" type="fixed">
+      <pose>0 0 1 0 0 0</pose>
+      <parent>L1</parent>
+      <child>M1::F1</child>
+    </joint>
+
+    <!-- Joint with a child model in a nested model -->
+    <joint name="J5" type="fixed">
+      <pose>0 0 1 0 0 0</pose>
+      <parent>L1</parent>
+      <child>M1::M2</child>
+    </joint>
+  </model>
+</sdf>

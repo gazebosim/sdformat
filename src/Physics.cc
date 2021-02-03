@@ -22,7 +22,7 @@
 using namespace sdf;
 
 /// \brief Private data
-class sdf::PhysicsPrivate
+class sdf::Physics::Implementation
 {
   /// \brief Profile name
   public: std::string name {""};
@@ -45,40 +45,8 @@ class sdf::PhysicsPrivate
 
 /////////////////////////////////////////////////
 Physics::Physics()
-  : dataPtr(new PhysicsPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Physics::~Physics()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Physics::Physics(const Physics &_physics)
-  : dataPtr(new PhysicsPrivate(*_physics.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Physics::Physics(Physics &&_physics) noexcept
-  : dataPtr(std::exchange(_physics.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Physics &Physics::operator=(const Physics &_physics)
-{
-  return *this = Physics(_physics);
-}
-
-/////////////////////////////////////////////////
-Physics &Physics::operator=(Physics &&_physics)
-{
-  std::swap(this->dataPtr, _physics.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -155,7 +123,7 @@ std::string Physics::Name() const
 }
 
 /////////////////////////////////////////////////
-void Physics::SetName(const std::string &_name) const
+void Physics::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
 }
@@ -173,7 +141,7 @@ bool Physics::IsDefault() const
 }
 
 /////////////////////////////////////////////////
-void Physics::SetDefault(const bool _default) const
+void Physics::SetDefault(const bool _default)
 {
   this->dataPtr->isDefault = _default;
 }

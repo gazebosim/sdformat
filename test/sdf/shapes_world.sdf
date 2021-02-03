@@ -1,0 +1,151 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="shapes_world">
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>1 0 0</normal>
+              <size>1.4 6.3</size>
+            </plane>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 1 0</normal>
+              <size>2 4</size>
+            </plane>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="box">
+      <pose relative_to="ground_plane">0 0 2.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1 2 3</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact>
+              <collide_bitmask>0xAB</collide_bitmask>
+            </contact>
+          </surface>
+        </collision>
+
+        <visual name="box_vis">
+          <geometry>
+            <box>
+              <size>1 2 3</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="cylinder">
+      <pose relative_to="box">2 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius>0.2</radius>
+              <length>0.1</length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.2</radius>
+              <length>0.1</length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="sphere">
+      <pose relative_to="cylinder">2 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <sphere>
+              <radius>1.23</radius>
+            </sphere>
+          </geometry>
+        </collision>
+
+        <visual name="sphere_vis">
+          <geometry>
+            <sphere>
+              <radius>1.23</radius>
+            </sphere>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="capsule">
+      <pose relative_to="sphere">2 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius>0.2</radius>
+              <length>0.1</length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.2</radius>
+              <length>0.1</length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="mesh">
+      <pose relative_to="capsule">2 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>https://ignitionfuel.org/an_org/models/a_model/mesh/mesh.dae</uri>
+              <submesh>
+                <name>my_submesh</name>
+                <center>true</center>
+              </submesh>
+              <scale>0.1 0.2 0.3</scale>
+            </mesh>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>https://ignitionfuel.org/an_org/models/a_model/mesh/mesh.dae</uri>
+              <submesh>
+                <name>another_submesh</name>
+                <center>false</center>
+              </submesh>
+              <scale>1.2 2.3 3.4</scale>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+  </world>
+</sdf>

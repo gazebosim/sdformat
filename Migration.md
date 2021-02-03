@@ -1,8 +1,8 @@
-# Migration Guide for SDF Protocol
+# Migration Guide for SDFormat Specification
 This document contains information about migrating
-between different versions of the SDF protocol.
-The SDF protocol version number is specified in the `version` attribute
-of the `sdf` element (1.4, 1.5, 1.6, etc.)
+between different versions of the SDFormat specification.
+The SDFormat specification version number is specified in the `version`
+attribute of the `sdf` element (1.4, 1.5, 1.6, etc.)
 and is distinct from sdformat library version
 (2.3, 3.0, 4.0, etc.).
 
@@ -12,9 +12,67 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## SDFormat 10.x to 11.0
+
+### Additions
+
+1. + Depend on ignition-utils1 for the ImplPtr and UniqueImplPtr.
+   + [Pull request 474](https://github.com/osrf/sdformat/pull/474)
+
+1. **sdf/Joint.hh**
+    + Errors ResolveChildLink(std::string&) const
+    + Errors ResolveParentLink(std::string&) const
+
+1. **sdf/Model.hh**:
+    + std::pair<const Link *, std::string> CanonicalLinkAndRelativeName() const;
+
+1. **sdf/Root.hh** sdf::Root elements can now only contain one of either Model,
+      Light or Actor since multiple items would conflict with overrides
+      specified in an <include> tag.
+    + const sdf::Model \*Model();
+    + const sdf::Light \*Light();
+    + const sdf::Actor \*Actor();
+
+### Modifications
+
+1. **sdf/Model.hh**: the following methods now accept nested names relative to
+      the model's scope that can begin with a sequence of nested model names
+      separated by `::` and may end with the name of an object of the specified
+      type.
+    + const Frame \*FrameByName(const std::string &) const
+    + const Joint \*JointByName(const std::string &) const
+    + const Link \*LinkByName(const std::string &) const
+    + bool FrameNameExists(const std::string &) const
+    + bool JointNameExists(const std::string &) const
+    + bool LinkNameExists(const std::string &) const
+
+1. **sdf/Heightmap.hh**: sampling now defaults to 1 instead of 2.
+
+### Deprecations
+
+1. **src/Root.hh**: The following methods have been deprecated in favor of the
+      new methods. For now the behavior is unchanged, but Root elements should
+      only contain one or none of Model/Light/Actor.
+    + const sdf::Model \*ModelByIndex();
+    + uint64_t ModelCount();
+    + bool ModelNameExists(const std::string &\_name) const;
+    + const sdf::Light \*LightByIndex();
+    + uint64_t LightCount();
+    + bool LightNameExists(const std::string &\_name) const;
+    + const sdf::Actor \*ActorByIndex();
+    + uint64_t ActorCount();
+    + bool ActorNameExists(const std::string &\_name) const;
+
 ## SDFormat 9.x to 10.0
 
 ### Modifications
+
+1. Axis vectors specified in <joint><axis><xyz> are normalized if their norm is
+   greater than 0. A vector with 0 norm generates an error
+    * [Pull request 312](https://github.com/osrf/sdformat/pull/312)
+
+1. + Depend on tinyxml2 instead of tinyxml for XML parsing.
+   + [Pull request 264](https://github.com/osrf/sdformat/pull/264)
 
 1. + Minimum/maximum values specified in SDFormat description files are now enforced
    + [Pull request 303](https://github.com/osrf/sdformat/pull/303)
@@ -27,11 +85,15 @@ but with improved human-readability..
 1. + Removed the `parser_urdf.hh` header file and its `URDF2SDF` class
    + [Pull request 276](https://github.com/osrf/sdformat/pull/276)
 
-1. + Removed the deprecated `Pose()`, `SetPose(), and `*PoseFrame()` API's in all DOM classes:
+1. + Removed the deprecated `Pose()`, `SetPose()`, and `*PoseFrame()` API's in all DOM classes:
    + const ignition::math::Pose3d &Pose()
    + void SetPose(const ignition::math::Pose3d &)
    + const std::string &PoseFrame()
    + void SetPoseFrame(const std::string &)
+
+1. + Removed deprecated functions from **sdf/JointAxis.hh**:
+   + bool UseParentModelFrame()
+   + void SetUseParentModelFrame(bool)
 
 ### Additions
 
@@ -43,6 +105,21 @@ but with improved human-readability..
     + std::optional<std::string> GetMinValueAsString() const;
     + std::optional<std::string> GetMaxValueAsString() const;
     + bool ValidateValue() const;
+
+## SDFormat 9.0 to 9.3
+
+### Additions
+
+1. **sdf/Model.hh**
+    + uint64\_t ModelCount() const
+    + const Model \*ModelByIndex(const uint64\_t) const
+    + const Model \*ModelByName(const std::string &) const
+    + bool ModelNameExists(const std::string &) const
+
+### Modifications
+
+1. Permit models without links if they contain a nested canonical link.
+    + [pull request 341](https://github.com/osrf/sdformat/pull/341)
 
 ## SDFormat 8.x to 9.0
 
@@ -189,7 +266,7 @@ but with improved human-readability..
 
 ### Additions
 
-1. **New SDF protocol version 1.6**
+1. **New SDFormat specification version 1.6**
     + Details about the 1.5 to 1.6 transition are explained below in this same
       document
 
@@ -199,40 +276,44 @@ but with improved human-readability..
     + All boost pointers, boost::function in the public API have been replaced
       by their std:: equivalents (C++11 standard)
 
-1. **`gravity` and `magnetic_field` elements are moved  from `physics` to `world`**
-    + In physics element: gravity and `magnetic_field` tags have been moved
-      from Physics to World element.
-    + [BitBucket pull request 247](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/247)
-    + [BitBucket gazebo pull request 2090](https://osrf-migration.github.io/gazebo-gh-pages/#!/osrf/gazebo/pull-requests/2090)
-
-1. **New noise for IMU**
-    + A new style for representing the noise properties of an `imu` was implemented
-      in [BitBucket pull request 199](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/199)
-      for sdf 1.5 and the old style was declared as deprecated.
-      The old style has been removed from sdf 1.6 with the conversion script
-      updating to the new style.
-    + [BitBucket pull request 199](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/199)
-    + [BitBucket pull request 243](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/243)
-    + [BitBucket pull request 244](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/244)
-
 1. **Lump:: prefix in link names**
     + Changed to `_fixed_joint_lump__` to avoid confusion with scoped names
     + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
 
-## SDF protocol 1.7 to 1.8
+## SDFormat specification 1.7 to 1.8
+
+### Additions
+
+1. **capsule.sdf and ellipsoid.sdf** new shape types included in `//geometry`
+    + `capsule.sdf`: A shape consisting of a cylinder capped by hemispheres
+      with parameters for the `radius` and `length` of cylindrical section.
+    + `ellipsoid.sdf`: A convex shape with up to three radii defining its
+      shape in of the form (x^2/a^2 + y^2/b^2 + z^2/c^2 = 1).
+    * [Pull request 389](https://github.com/osrf/sdformat/pull/389)
+    * [Pull request 434](https://github.com/osrf/sdformat/pull/434)
+
+### Modifications
+
+1. **joint.sdf** `child` and `parent` elements accept frame names instead of only link names
+    * [Issue 204](https://github.com/osrf/sdformat/issues/204)
+
+1. **heightmap.sdf**: sampling now defaults to 1 instead of 2.
 
 ### Deprecations
 
+1. **inerial.sdf** `//inertial/pose/@relative_to` attribute is removed
+    + [Pull request 480](https://github.com/osrf/sdformat/pull/480)
+
 1. **joint.sdf** `initial_position` element in `<joint><axis>` and `<joint><axis2>` is deprecated
 
-## SDF protocol 1.6 to 1.7
+## SDFormat specification 1.6 to 1.7
 
 ### Additions
 
 1. **frame.sdf** `//frame/@attached_to` attribute
     + description: Name of the link or frame to which this frame is attached.
       If a frame is specified, recursively following the attached\_to attributes
-      of the specified frames must lead to the name of a link or the world frame.
+      of the specified frames must lead to the name of a link, a model, or the world frame.
     + type: string
     + default: ""
     + required: *
@@ -247,6 +328,14 @@ but with improved human-readability..
     + default: ""
     + required: 0
     + [BitBucket pull request 589](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/589)
+
+1. **material.sdf** `//material/double_sided` element
+    + description: Flag to indicate whether the mesh that this material is applied to
+      will be rendered as double sided.
+    + type: bool
+    + default: false
+    + required: 0
+    + [pull request 418](https://github.com/osrf/sdformat/pull/418)
 
 1. **model.sdf** `//model/@canonical_link` attribute
     + description: The name of the canonical link in this model to which the
@@ -344,7 +433,7 @@ but with improved human-readability..
 1. **world.sdf** `//world/joint` was removed as it has never been used.
     + [BitBucket pull request 637](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/637)
 
-## SDF protocol 1.5 to 1.6
+## SDFormat specification 1.5 to 1.6
 
 ### Additions
 
@@ -367,6 +456,16 @@ but with improved human-readability..
 1. **camera.sdf** `intrinsics` sub-elements: `fx`, `fy`, `cx`, `cy`, `s`
     + description: Camera intrinsic parameters for setting a custom perspective projection matrix.
     + [BitBucket pull request 496](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/496)
+
+1. **heightmap_shape.sdf** `sampling` element
+    + description: Samples per heightmap datum.
+      For rasterized heightmaps, this indicates the number of samples to take per pixel.
+      Using a lower value, e.g. 1, will generally improve the performance
+      of the heightmap but lower the heightmap quality.
+    + type: unsigned int
+    + default: 2
+    + required: 0
+    + [Bitbucket pull request 293](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/293)
 
 1. **link.sdf** `enable_wind` element
     + description: If true, the link is affected by the wind
@@ -410,6 +509,20 @@ but with improved human-readability..
     + default: dantzig
     + required: 0
     + [BitBucket pull request 369](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/369)
+
+1. **physics.sdf** `friction_model` element
+    + description: Name of ODE friction model to use. Valid values include:
+        + pyramid_model: (default) friction forces limited in two directions
+          in proportion to normal force.
+        + box_model: friction forces limited to constant in two directions.
+        + cone_model: friction force magnitude limited in proportion to normal force.
+          See [gazebo pull request 1522](https://osrf-migration.github.io/gazebo-gh-pages/#!/osrf/gazebo/pull-request/1522)
+          (merged in [gazebo 8c05ad64967c](https://github.com/osrf/gazebo/commit/968dccafdfbfca09c9b3326f855612076fed7e6f))
+          for the implementation of this feature.
+    + type: string
+    + default: "pyramid_model"
+    + required: 0
+    + [Bitbucket pull request 294](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/294)
 
 1. **physics.sdf** `island_threads` element under `ode::solver`
     + description: Number of threads to use for "islands" of disconnected models.
@@ -455,3 +568,21 @@ but with improved human-readability..
     + default: "0 0 0"
     + required: 0
     + [BitBucket pull request 240](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/240)
+
+### Modifications
+
+1. **`gravity` and `magnetic_field` elements are moved  from `physics` to `world`**
+    + In physics element: gravity and `magnetic_field` tags have been moved
+      from Physics to World element.
+    + [BitBucket pull request 247](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/247)
+    + [BitBucket gazebo pull request 2090](https://osrf-migration.github.io/gazebo-gh-pages/#!/osrf/gazebo/pull-requests/2090)
+
+1. **New noise for IMU**
+    + A new style for representing the noise properties of an `imu` was implemented
+      in [BitBucket pull request 199](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/199)
+      for sdf 1.5 and the old style was declared as deprecated.
+      The old style has been removed from sdf 1.6 with the conversion script
+      updating to the new style.
+    + [BitBucket pull request 199](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/199)
+    + [BitBucket pull request 243](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/243)
+    + [BitBucket pull request 244](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/244)

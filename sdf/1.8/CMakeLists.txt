@@ -7,9 +7,11 @@ set (sdfs
   battery.sdf
   box_shape.sdf
   camera.sdf
+  capsule_shape.sdf
   collision.sdf
   contact.sdf
   cylinder_shape.sdf
+  ellipsoid_shape.sdf
   frame.sdf
   forcetorque.sdf
   geometry.sdf

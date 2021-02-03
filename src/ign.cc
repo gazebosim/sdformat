@@ -15,6 +15,7 @@
  *
 */
 
+#include <cstring>
 #include <iostream>
 #include <string.h>
 
@@ -24,6 +25,8 @@
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
 
+#include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "ign.hh"
 
 //////////////////////////////////////////////////
@@ -154,6 +157,73 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path)
   }
 
   sdf->PrintValues();
+
+  return 0;
+}
+
+//////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
+extern "C" SDFORMAT_VISIBLE int cmdGraph(
+    const char *_graphType, const char *_path)
+{
+  if (!sdf::filesystem::exists(_path))
+  {
+    std::cerr << "Error: File [" << _path << "] does not exist.\n";
+    return -1;
+  }
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(_path);
+  if (!errors.empty())
+  {
+    std::cerr << errors << std::endl;
+  }
+
+  if (std::strcmp(_graphType, "pose") == 0)
+  {
+    auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
+    sdf::ScopedGraph<sdf::PoseRelativeToGraph> graph(ownedGraph);
+    if (root.WorldCount() > 0)
+    {
+      errors = sdf::buildPoseRelativeToGraph(graph, root.WorldByIndex(0));
+    }
+    else if (root.Model() != nullptr)
+    {
+      errors =
+        sdf::buildPoseRelativeToGraph(graph, root.Model());
+    }
+
+    if (!errors.empty())
+    {
+      std::cerr << errors << std::endl;
+    }
+    std::cout << graph.Graph() << std::endl;
+  }
+  else if (std::strcmp(_graphType, "frame") == 0)
+  {
+    auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+    sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
+    if (root.WorldCount() > 0)
+    {
+      errors = sdf::buildFrameAttachedToGraph(graph, root.WorldByIndex(0));
+    }
+    else if (root.Model() != nullptr)
+    {
+      errors =
+        sdf::buildFrameAttachedToGraph(graph, root.Model());
+    }
+
+    if (!errors.empty())
+    {
+      std::cerr << errors << std::endl;
+    }
+    std::cout << graph.Graph() << std::endl;
+  }
+  else
+  {
+    std::cerr << R"(Only "pose" and "frame" graph types are supported)"
+              << std::endl;
+  }
 
   return 0;
 }

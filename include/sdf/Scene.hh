@@ -18,8 +18,10 @@
 #define SDF_SCENE_HH_
 
 #include <ignition/math/Color.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/Element.hh"
+#include "sdf/Sky.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -28,36 +30,10 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-
-  // Forward declarations.
-  class ScenePrivate;
-
   class SDFORMAT_VISIBLE Scene
   {
     /// \brief Default constructor
     public: Scene();
-
-    /// \brief Copy constructor
-    /// \param[in] _scene Scene element to copy.
-    public: Scene(const Scene &_scene);
-
-    /// \brief Move constructor
-    /// \param[in] _scene Scene to move.
-    public: Scene(Scene &&_scene) noexcept;
-
-    /// \brief Destructor
-    public: ~Scene();
-
-    /// \brief Assignment operator.
-    /// \param[in] _scene The scene to set values from.
-    /// \return *this
-    public: Scene &operator=(const Scene &_scene);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _workflow The scene to move from.
-    /// \return *this
-    public: Scene &operator=(Scene &&_scene);
 
     /// \brief Load the scene based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -107,6 +83,14 @@ namespace sdf
     /// \param[in] enabled True to enable shadows
     public: void SetShadows(const bool _shadows);
 
+    /// \brief Set sky
+    /// \param[in] _sky Sky to set to
+    public: void SetSky(const Sky &_sky);
+
+    /// \brief Get sky
+    /// \return Sky
+    public: const sdf::Sky *Sky() const;
+
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
@@ -114,7 +98,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    private: ScenePrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

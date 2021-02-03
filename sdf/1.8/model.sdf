@@ -14,6 +14,9 @@
       as the canonical link.
     </description>
   </attribute>
+  <attribute name="placement_frame" type="string" default="" required="0">
+    <description>The frame inside this model whose pose will be set by the pose element of the model. i.e, the pose element specifies the pose of this frame instead of the model frame.</description>
+  </attribute>
 
   <element name="static" type="bool" default="false" required="0">
     <description>If set to true, the model is immovable. Otherwise the model is simulated in the dynamics engine.</description>
@@ -35,7 +38,9 @@
   <include filename="gripper.sdf" required="*"/>
 
   <element name="include" required="*">
-    <description>Include resources from a URI. This can be used to nest models.</description>
+    <description>
+      Include resources from a URI. This can be used to nest models. Included resources can only contain one 'model', 'light' or 'actor' element. The URI can point to a directory or a file. If the URI is a directory, it must conform to the model database structure (see /tutorials?tut=composition&amp;cat=specification&amp;#defining-models-in-separate-files).
+    </description>
     <element name="uri" type="string" default="__default__" required="1">
       <description>URI to a resource, such as a model</description>
     </element>
@@ -48,6 +53,10 @@
 
     <element name="static" type="bool" default="false" required="0">
       <description>Override the static value of the included model.</description>
+    </element>
+
+    <element name="placement_frame" type="string" default="" required="0">
+      <description>The frame inside the included model whose pose will be set by the specified pose element. If this element is specified, the pose must be specified.</description>
     </element>
   </element>
 

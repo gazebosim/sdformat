@@ -21,6 +21,7 @@
 #include <string>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Angle.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
@@ -35,8 +36,8 @@ namespace sdf
   //
 
   // Forward declare private data class.
-  class LightPrivate;
   struct PoseRelativeToGraph;
+  template <typename T> class ScopedGraph;
 
   /// \enum LightType
   /// \brief The set of light types. INVALID indicates that light type has
@@ -64,27 +65,6 @@ namespace sdf
     /// \brief Default constructor
     public: Light();
 
-    /// \brief Copy constructor
-    /// \param[in] _light Light to copy.
-    public: Light(const Light &_light);
-
-    /// \brief Move constructor
-    /// \param[in] _light Light to move.
-    public: Light(Light &&_light) noexcept;
-
-    /// \brief Destructor
-    public: ~Light();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _light Light to move.
-    /// \return Reference to this.
-    public: Light &operator=(Light &&_light);
-
-    /// \brief Assignment operator.
-    /// \param[in] _light The light to set values from.
-    /// \return *this
-    public: Light &operator=(const Light &_light);
-
     /// \brief Load the light based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
@@ -107,7 +87,7 @@ namespace sdf
 
     /// \brief Set the name of the light.
     /// \param[in] _name Name of the light.
-    public: void SetName(const std::string &_name) const;
+    public: void SetName(const std::string &_name);
 
     /// \brief Get the pose of the light. This is the pose of the light
     /// as specified in SDF (<light> <pose> ... </pose></light>), and is
@@ -156,7 +136,7 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Diffuse color.
-    public: void SetDiffuse(const ignition::math::Color &_color) const;
+    public: void SetDiffuse(const ignition::math::Color &_color);
 
     /// \brief Get the specular color. The specular color is
     /// specified by a set of three numbers representing red/green/blue,
@@ -168,7 +148,7 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Specular color.
-    public: void SetSpecular(const ignition::math::Color &_color) const;
+    public: void SetSpecular(const ignition::math::Color &_color);
 
     /// \brief Get the range of the light source in meters.
     /// \return Range of the light source in meters.
@@ -273,12 +253,12 @@ namespace sdf
     /// \param[in] _xmlParentName Name of xml parent object.
     private: void SetXmlParentName(const std::string &_xmlParentName);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
-    /// for resolving poses. This is private and is intended to be called by
+    /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
+    /// poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph or World::Load.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Link::SetPoseRelativeToGraph or World::Load to call
     /// SetXmlParentName and SetPoseRelativeToGraph,
@@ -288,7 +268,7 @@ namespace sdf
     friend class World;
 
     /// \brief Private data pointer.
-    private: LightPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

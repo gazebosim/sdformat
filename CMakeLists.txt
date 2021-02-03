@@ -81,6 +81,8 @@ set(sdf_import_target_name ${PROJECT_EXPORT_NAME}::${sdf_target})
 set(sdf_target_output_filename "${sdf_target}-targets.cmake")
 
 
+OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" OFF)
+
 if (USE_FULL_RPATH)
   # use, i.e. don't skip the full RPATH for the build tree
   set(CMAKE_SKIP_BUILD_RPATH  FALSE)
@@ -109,24 +111,8 @@ set (build_warnings "" CACHE INTERNAL "build warnings" FORCE)
 set (sdf_cmake_dir ${PROJECT_SOURCE_DIR}/cmake CACHE PATH
      "Location of CMake scripts")
 
-include (${sdf_cmake_dir}/SDFUtils.cmake)
-
-if (UNIX)
-  option (USE_EXTERNAL_TINYXML "Use external TinyXML" ON)
-elseif(WIN32)
-  option (USE_EXTERNAL_TINYXML "Use external TinyXML" OFF)
-else()
-  message (STATUS "Unknown platform")
-  BUILD_ERROR("Unknown platform")
-endif()
-
 message (STATUS "\n\n====== Finding 3rd Party Packages ======")
- # Use of tinyxml. System installation on UNIX. Internal copy on WIN
-if (USE_EXTERNAL_TINYXML)
-  message (STATUS "Using system tinyxml")
-else()
-  message (STATUS "Using internal tinyxml code")
-endif()
+include (${sdf_cmake_dir}/SDFUtils.cmake)
 include (${sdf_cmake_dir}/SearchForStuff.cmake)
 message (STATUS "----------------------------------------\n")
 
@@ -161,6 +147,10 @@ else()
     build_error("CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} unknown. Valid options are: Debug Release RelWithDebInfo Profile Coverage None")
   endif()
 endif()
+
+#============================================================================
+# Ask whether we should make a shared or static library.
+option(BUILD_SHARED_LIBS "Set this to true to generate shared libraries (recommended), or false for static libraries" ON)
 
 #####################################
 # Handle CFlags
@@ -269,7 +259,15 @@ else (build_errors)
 
     link_directories(${PROJECT_BINARY_DIR}/src)
 
-    add_subdirectory(test)
+    if (NOT DEFINED BUILD_TESTING OR BUILD_TESTING)
+      set(BUILD_SDF_TEST TRUE)
+    else()
+      set(BUILD_SDF_TEST FALSE)
+    endif()
+
+    if (BUILD_SDF_TEST)
+      add_subdirectory(test)
+    endif()
     add_subdirectory(src)
     add_subdirectory(include/sdf)
     add_subdirectory(sdf)
@@ -296,6 +294,7 @@ else (build_errors)
   set(sdf_version_output "cmake/${sdf_target}-config-version.cmake")
   set(sdf_config_install_dir "${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/")
 
+  include(CMakePackageConfigHelpers)
   #--------------------------------------
   # Configure and install the config file
   configure_package_config_file(

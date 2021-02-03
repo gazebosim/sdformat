@@ -19,6 +19,7 @@
 
 #include <string>
 #include <ignition/math/Vector3.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/Atmosphere.hh"
 #include "sdf/Element.hh"
@@ -40,33 +41,14 @@ namespace sdf
   class Light;
   class Model;
   class Physics;
-  class WorldPrivate;
+  struct PoseRelativeToGraph;
+  struct FrameAttachedToGraph;
+  template <typename T> class ScopedGraph;
 
   class SDFORMAT_VISIBLE World
   {
     /// \brief Default constructor
     public: World();
-
-    /// \brief Copy constructor
-    /// \param[in] _world World to copy.
-    public: World(const World &_world);
-
-    /// \brief Move constructor
-    /// \param[in] _world World to move.
-    public: World(World &&_world) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _world World to move.
-    /// \return Reference to this.
-    public: World &operator=(World &&_world);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _world World to copy.
-    /// \return Reference to this.
-    public: World &operator=(const World &_world);
-
-    /// \brief Destructor
-    public: ~World();
 
     /// \brief Load the world based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -82,7 +64,7 @@ namespace sdf
 
     /// \brief Set the name of the world.
     /// \param[in] _name Name of the world.
-    public: void SetName(const std::string &_name) const;
+    public: void SetName(const std::string &_name);
 
     /// \brief Get the audio device name. The audio device can be used to
     /// playback audio files. A value of "default" or an empty string
@@ -136,11 +118,12 @@ namespace sdf
     /// \sa SphericalCoordinates
     public: void SetMagneticField(const ignition::math::Vector3d &_mag);
 
-    /// \brief Get the number of models.
+    /// \brief Get the number of models that are immediate (not nested) children
+    /// of this World object.
     /// \return Number of models contained in this World object.
     public: uint64_t ModelCount() const;
 
-    /// \brief Get a model based on an index.
+    /// \brief Get an immediate (not nested) child model based on an index.
     /// \param[in] _index Index of the model. The index should be in the
     /// range [0..ModelCount()).
     /// \return Pointer to the model. Nullptr if the index does not exist.
@@ -173,11 +156,13 @@ namespace sdf
     /// \return True if there exists an actor with the given name.
     public: bool ActorNameExists(const std::string &_name) const;
 
-    /// \brief Get the number of explicit frames.
+    /// \brief Get the number of explicit frames that are immediate (not nested)
+    /// children of this World object.
     /// \return Number of explicit frames contained in this World object.
     public: uint64_t FrameCount() const;
 
-    /// \brief Get an explicit frame based on an index.
+    /// \brief Get an immediate (not nested) child explicit frame based on an
+    /// index.
     /// \param[in] _index Index of the explicit frame. The index should be in
     /// the range [0..FrameCount()).
     /// \return Pointer to the explicit frame. Nullptr if the index does not
@@ -220,13 +205,13 @@ namespace sdf
 
     /// \brief Set the atmosphere model associated with this world.
     /// \param[in] _atmosphere The new atmosphere model for this world.
-    public: void SetAtmosphere(const sdf::Atmosphere &_atmosphere) const;
+    public: void SetAtmosphere(const sdf::Atmosphere &_atmosphere);
 
     /// \brief Get a pointer to the Gui associated with this
     /// world. A nullptr indicates that a Gui element has not been specified.
     /// \return Pointer to this world's Gui parameters. Nullptr inidicates
     /// that there are no Gui parameters.
-    public: sdf::Gui *Gui() const;
+    public: const sdf::Gui *Gui() const;
 
     /// \brief Set the Gui parameters associated with this world.
     /// \param[in] _gui The new Gui parameter for this world
@@ -269,8 +254,26 @@ namespace sdf
     /// \return True if there exists a physics profile with the given name.
     public: bool PhysicsNameExists(const std::string &_name) const;
 
+    /// \brief Give the Scoped PoseRelativeToGraph to be passed on to child
+    /// entities for resolving poses. This is private and is intended to be
+    /// called by Root::Load.
+    /// \param[in] _graph Scoped PoseRelativeToGraph object.
+    private: void SetPoseRelativeToGraph(
+        sdf::ScopedGraph<PoseRelativeToGraph> _graph);
+
+    /// \brief Give the Scoped FrameAttachedToGraph to be passed on to child
+    /// entities for attached bodes. This is private and is intended to be
+    /// called by Root::Load.
+    /// \param[in] _graph Scoped FrameAttachedToGraph object.
+    private: void SetFrameAttachedToGraph(
+        sdf::ScopedGraph<FrameAttachedToGraph> _graph);
+
+    /// \brief Allow Root::Load to call SetPoseRelativeToGraph and
+    /// SetFrameAttachedToGraph
+    friend class Root;
+
     /// \brief Private data pointer.
-    private: WorldPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

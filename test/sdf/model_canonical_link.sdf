@@ -7,5 +7,6 @@
     <link name="link2">
       <pose>0 2 0 0 0 0</pose>
     </link>
+    <frame name="F" attached_to="__model__"/>
   </model>
 </sdf>

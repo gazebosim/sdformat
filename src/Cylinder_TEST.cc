@@ -138,10 +138,12 @@ TEST(DOMCylinder, Load)
   sdf->SetName("cylinder");
   errors = cylinder.Load(sdf);
   ASSERT_EQ(2u, errors.size());
-  EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
-  EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <radius>"));
-  EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[1].Code());
-  EXPECT_NE(std::string::npos, errors[1].Message().find("missing a <length>"));
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find("Invalid <radius>"))
+      << errors[0].Message();
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[1].Code());
+  EXPECT_NE(std::string::npos, errors[1].Message().find("Invalid <length>"))
+      << errors[1].Message();
   EXPECT_NE(nullptr, cylinder.Element());
 
   // Add a radius element
@@ -156,8 +158,9 @@ TEST(DOMCylinder, Load)
   sdf->SetName("cylinder");
   errors = cylinder.Load(sdf);
   ASSERT_EQ(1u, errors.size());
-  EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
-  EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <length>"));
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find("Invalid <length>"))
+      << errors[0].Message();
 }
 
 /////////////////////////////////////////////////

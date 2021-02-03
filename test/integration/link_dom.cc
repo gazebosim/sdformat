@@ -15,6 +15,7 @@
  *
  */
 
+#include <sstream>
 #include <string>
 #include <gtest/gtest.h>
 
@@ -122,7 +123,7 @@ TEST(DOMLink, InertialDoublePendulum)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   const sdf::Link *baseLink = model->LinkByIndex(0);
@@ -177,7 +178,7 @@ TEST(DOMLink, InertialComplete)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   const sdf::Link *link = model->LinkByIndex(0);
@@ -215,7 +216,7 @@ TEST(DOMLink, InertialInvalid)
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::LINK_INERTIA_INVALID);
   EXPECT_EQ(errors[0].Message(), "A link named link has invalid inertia.");
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   ASSERT_EQ(1u, model->LinkCount());
@@ -239,7 +240,7 @@ TEST(DOMLink, Sensors)
   EXPECT_TRUE(errors.empty());
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model", model->Name());
 
@@ -591,7 +592,7 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   using Pose = ignition::math::Pose3d;
 
   // Get the first model
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_link_relative_to", model->Name());
   EXPECT_EQ(3u, model->LinkCount());
@@ -672,7 +673,7 @@ TEST(DOMLink, LoadInvalidLinkPoseRelativeTo)
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
       "relative_to name[A] specified by link with name[L] does not match a "
-      "link, joint, or frame name in model"));
+      "nested model, link, joint, or frame name in model"));
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
   EXPECT_NE(std::string::npos,
     errors[1].Message().find(
@@ -681,4 +682,66 @@ TEST(DOMLink, LoadInvalidLinkPoseRelativeTo)
   // errors[2]
   // errors[3]
   // errors[4]
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, ValidInertialPoseRelTo)
+{
+  std::ostringstream stream;
+  stream << "<?xml version=\"1.0\"?>"
+         << "<sdf version='1.8'>"
+         << "  <model name='A'>"
+         << "    <link name='B'>"
+         << "      <inertial>"
+         << "        <pose relative_to=''>0.1 1 0.2 0 0 -0.52</pose>"
+         << "      </inertial>"
+         << "    </link>"
+         << "  </model>"
+         << "</sdf>";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(stream.str());
+  EXPECT_TRUE(errors.empty());
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(model, nullptr);
+
+  const sdf::Link *link = model->LinkByName("B");
+  ASSERT_NE(link, nullptr);
+
+  EXPECT_EQ(link->Inertial().Pose(),
+      ignition::math::Pose3d(0.1, 1, 0.2, 0, 0, -0.52));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, InvalidInertialPoseRelTo)
+{
+  std::ostringstream stream;
+  stream << "<?xml version=\"1.0\"?>"
+         << "<sdf version='1.8'>"
+         << "  <model name='A'>"
+         << "    <frame name='C'>"
+         << "      <pose>0 0 1 0 0 0</pose>"
+         << "    </frame>"
+         << "    <link name='B'>"
+         << "      <inertial>"
+         << "        <pose relative_to='C'>0.1 1 0.2 0 0 -0.52</pose>"
+         << "      </inertial>"
+         << "    </link>"
+         << "  </model>"
+         << "</sdf>";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(stream.str());
+
+  // TODO(anyone) add test for warnings once it's implemented
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(model, nullptr);
+
+  const sdf::Link *link = model->LinkByName("B");
+  ASSERT_NE(link, nullptr);
+
+  EXPECT_EQ(link->Inertial().Pose(),
+      ignition::math::Pose3d(0.1, 1, 0.2, 0, 0, -0.52));
 }

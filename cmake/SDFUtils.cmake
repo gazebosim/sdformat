@@ -52,8 +52,11 @@ endmacro (BUILD_WARNING)
 #################################################
 macro (sdf_add_library _name)
   set(LIBS_DESTINATION ${PROJECT_BINARY_DIR}/src)
-  set_source_files_properties(${ARGN} PROPERTIES COMPILE_DEFINITIONS "BUILDING_DLL")
-  add_library(${_name} SHARED ${ARGN})
+  add_library(${_name} ${ARGN})
+  set_target_properties(${_name} PROPERTIES DEFINE_SYMBOL "BUILDING_SDFORMAT_SHARED")
+  if(NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(${_name} PUBLIC SDFORMAT_STATIC_DEFINE)
+  endif()
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIBS_DESTINATION})
   if (MSVC)
     set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${LIBS_DESTINATION})
@@ -135,18 +138,9 @@ macro (sdf_build_tests)
     string(REGEX REPLACE ".cc" "" BINARY_NAME ${GTEST_SOURCE_file})
     set(BINARY_NAME ${TEST_TYPE}_${BINARY_NAME})
 
-    if (NOT USE_EXTERNAL_TINYXML)
-      set(tinyxml_SRC
-        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinystr.cpp
-        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlerror.cpp
-        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxml.cpp
-        ${PROJECT_SOURCE_DIR}/src/win/tinyxml/tinyxmlparser.cpp)
-    endif()
-
     add_executable(${BINARY_NAME}
       ${GTEST_SOURCE_file}
       ${SDF_BUILD_TESTS_EXTRA_EXE_SRCS}
-      ${tinyxml_SRC}
     )
 
     add_dependencies(${BINARY_NAME}
@@ -154,11 +148,7 @@ macro (sdf_build_tests)
       )
 
     link_directories(${IGNITION-MATH_LIBRARY_DIRS})
-
-    if (USE_EXTERNAL_TINYXML)
-      target_link_libraries(${BINARY_NAME} PRIVATE
-        ${tinyxml_LIBRARIES})
-    endif()
+    target_link_libraries(${BINARY_NAME} ${tinyxml2_LIBRARIES})
 
     if (UNIX)
       target_link_libraries(${BINARY_NAME} PRIVATE

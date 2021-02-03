@@ -4,6 +4,6 @@
     <description>Radius of the cylinder</description>
   </element>
   <element name="length" type="double" default="1" required="1">
-    <description>Length of the cylinder</description>
+    <description>Length of the cylinder along the z axis</description>
   </element>
 </element>
