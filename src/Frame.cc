@@ -25,7 +25,7 @@
 
 using namespace sdf;
 
-class sdf::FramePrivate
+class sdf::Frame::Implementation
 {
   /// \brief Name of the frame.
   public: std::string name = "";
@@ -55,48 +55,8 @@ class sdf::FramePrivate
 
 /////////////////////////////////////////////////
 Frame::Frame()
-  : dataPtr(new FramePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Frame::Frame(Frame &&_frame)
-{
-  this->dataPtr = _frame.dataPtr;
-  _frame.dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Frame::~Frame()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Frame::Frame(const Frame &_frame)
-  : dataPtr(new FramePrivate)
-{
-  *this->dataPtr = *_frame.dataPtr;
-}
-
-//////////////////////////////////////////////////
-Frame &Frame::operator=(const Frame &_frame)
-{
-  if (!this->dataPtr)
-  {
-    this->dataPtr = new FramePrivate;
-  }
-  *this->dataPtr = *_frame.dataPtr;
-  return *this;
-}
-
-//////////////////////////////////////////////////
-Frame &Frame::operator=(Frame &&_frame)
-{
-  this->dataPtr = _frame.dataPtr;
-  _frame.dataPtr = nullptr;
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -154,7 +114,7 @@ const std::string &Frame::Name() const
 }
 
 /////////////////////////////////////////////////
-void Frame::SetName(const std::string &_name) const
+void Frame::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
 }

@@ -19,6 +19,7 @@
 
 #include <ignition/math/Box.hh>
 #include <ignition/math/Vector3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -27,37 +28,12 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-  // Forward declare private data class.
-  class BoxPrivate;
-
   /// \brief Box represents a box shape, and is usually accessed through a
   /// Geometry.
   class SDFORMAT_VISIBLE Box
   {
     /// \brief Constructor
     public: Box();
-
-    /// \brief Copy constructor
-    /// \param[in] _box Box to copy.
-    public: Box(const Box &_box);
-
-    /// \brief Move constructor
-    /// \param[in] _box Box to move.
-    public: Box(Box &&_box) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _box Box to move.
-    /// \return Reference to this.
-    public: Box &operator=(Box &&_box);
-
-    /// \brief Destructor
-    public: virtual ~Box();
-
-    /// \brief Assignment operator.
-    /// \param[in] _box The box to set values from.
-    /// \return *this
-    public: Box &operator=(const Box &_box);
 
     /// \brief Load the box geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -90,7 +66,7 @@ namespace sdf
     public: ignition::math::Boxd &Shape();
 
     /// \brief Private data pointer.
-    private: BoxPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

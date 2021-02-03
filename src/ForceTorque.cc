@@ -20,7 +20,7 @@
 using namespace sdf;
 
 /// \brief Private force torque data.
-class sdf::ForceTorquePrivate
+class sdf::ForceTorque::Implementation
 {
   /// \brief Name of the reference frame for the wrench values.
   public: ForceTorqueFrame frame = ForceTorqueFrame::CHILD;
@@ -35,40 +35,8 @@ class sdf::ForceTorquePrivate
 
 //////////////////////////////////////////////////
 ForceTorque::ForceTorque()
-  : dataPtr(new ForceTorquePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-//////////////////////////////////////////////////
-ForceTorque::~ForceTorque()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-ForceTorque::ForceTorque(const ForceTorque &_ft)
-  : dataPtr(new ForceTorquePrivate(*_ft.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-ForceTorque::ForceTorque(ForceTorque &&_ft) noexcept
-  : dataPtr(std::exchange(_ft.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-ForceTorque &ForceTorque::operator=(const ForceTorque &_ft)
-{
-  return *this = ForceTorque(_ft);
-}
-
-//////////////////////////////////////////////////
-ForceTorque &ForceTorque::operator=(ForceTorque &&_ft) noexcept
-{
-  std::swap(this->dataPtr, _ft.dataPtr);
-  return *this;
 }
 
 //////////////////////////////////////////////////
@@ -167,7 +135,7 @@ ForceTorqueFrame ForceTorque::Frame() const
 }
 
 //////////////////////////////////////////////////
-void ForceTorque::SetFrame(ForceTorqueFrame _frame) const
+void ForceTorque::SetFrame(ForceTorqueFrame _frame)
 {
   this->dataPtr->frame = _frame;
 }
@@ -180,7 +148,7 @@ ForceTorqueMeasureDirection ForceTorque::MeasureDirection() const
 
 //////////////////////////////////////////////////
 void ForceTorque::SetMeasureDirection(
-    ForceTorqueMeasureDirection _direction) const
+    ForceTorqueMeasureDirection _direction)
 {
   this->dataPtr->measure_direction = _direction;
 }

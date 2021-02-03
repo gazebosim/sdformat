@@ -18,6 +18,7 @@
 #define SDF_ELLIPSOID_HH_
 
 #include <ignition/math/Ellipsoid.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -26,38 +27,12 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-
-  // Forward declare private data class.
-  class EllipsoidPrivate;
-
   /// \brief Ellipsoid represents a ellipsoid shape, and is usually accessed
   /// through a Geometry.
   class SDFORMAT_VISIBLE Ellipsoid
   {
     /// \brief Constructor
     public: Ellipsoid();
-
-    /// \brief Copy constructor
-    /// \param[in] _ellipsoid Ellipsoid to copy.
-    public: Ellipsoid(const Ellipsoid &_ellipsoid);
-
-    /// \brief Move constructor
-    /// \param[in] _ellipsoid Ellipsoid to move.
-    public: Ellipsoid(Ellipsoid &&_ellipsoid) noexcept;
-
-    /// \brief Destructor
-    public: virtual ~Ellipsoid();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _ellipsoid Ellipsoid to move.
-    /// \return Reference to this.
-    public: Ellipsoid &operator=(Ellipsoid &&_ellipsoid);
-
-    /// \brief Assignment operator.
-    /// \param[in] _ellipsoid The ellipsoid to set values from.
-    /// \return *this
-    public: Ellipsoid &operator=(const Ellipsoid &_ellipsoid);
 
     /// \brief Load the ellipsoid geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -90,7 +65,7 @@ namespace sdf
     public: ignition::math::Ellipsoidd &Shape();
 
     /// \brief Private data pointer.
-    private: EllipsoidPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

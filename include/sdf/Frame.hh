@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
@@ -32,7 +33,6 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
   // Forward declaration.
-  class FramePrivate;
   struct FrameAttachedToGraph;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
@@ -43,27 +43,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Frame();
-
-    /// \brief Copy constructor
-    /// \param[in] _frame Frame to copy.
-    public: Frame(const Frame &_frame);
-
-    /// \brief Move constructor
-    /// \param[in] _frame Frame to move.
-    public: Frame(Frame &&_frame);
-
-    /// \brief Destructor
-    public: ~Frame();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _frame Frame to move.
-    /// \return Reference to this.
-    public: Frame &operator=(Frame &&_frame);
-
-    /// \brief Assignment operator.
-    /// \param[in] _frame The frame to set values from.
-    /// \return *this
-    public: Frame &operator=(const Frame &_frame);
 
     /// \brief Load the frame based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -81,7 +60,7 @@ namespace sdf
     /// \brief Set the name of the frame.
     /// The name of the frame must be unique within the scope of its siblings.
     /// \param[in] _name Name of the frame.
-    public: void SetName(const std::string &_name) const;
+    public: void SetName(const std::string &_name);
 
     /// \brief Get the name of the coordinate frame to which this
     /// frame is attached. The interpretation of an empty value depends
@@ -164,7 +143,7 @@ namespace sdf
     friend class World;
 
     /// \brief Private data pointer.
-    private: FramePrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

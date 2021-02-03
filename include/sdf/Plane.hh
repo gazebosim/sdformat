@@ -20,6 +20,7 @@
 #include <ignition/math/Plane.hh>
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Vector2.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -30,36 +31,12 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
-  // Forward declare private data class.
-  class PlanePrivate;
-
   /// \brief Plane represents a plane shape, and is usually accessed through a
   /// Geometry.
   class SDFORMAT_VISIBLE Plane
   {
     /// \brief Constructor
     public: Plane();
-
-    /// \brief Copy constructor
-    /// \param[in] _plane Plane to copy.
-    public: Plane(const Plane &_plane);
-
-    /// \brief Move constructor
-    /// \param[in] _plane Plane to move.
-    public: Plane(Plane &&_plane) noexcept;
-
-    /// \brief Destructor
-    public: virtual ~Plane();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _plane Plane to move.
-    /// \return Reference to this.
-    public: Plane &operator=(Plane &&_plane);
-
-    /// \brief Assignment operator.
-    /// \param[in] _plane The plane to set values from.
-    /// \return *this
-    public: Plane &operator=(const Plane &_plane);
 
     /// \brief Load the plane geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -104,7 +81,7 @@ namespace sdf
     public: ignition::math::Planed &Shape();
 
     /// \brief Private data pointer.
-    private: PlanePrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

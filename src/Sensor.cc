@@ -62,7 +62,7 @@ const std::vector<std::string> sensorTypeStrs =
   "thermal_camera"
 };
 
-class sdf::SensorPrivate
+class sdf::Sensor::Implementation
 {
   // \brief The sensor type.
   public: SensorType type = SensorType::NONE;
@@ -120,40 +120,8 @@ class sdf::SensorPrivate
 
 /////////////////////////////////////////////////
 Sensor::Sensor()
-  : dataPtr(new SensorPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Sensor::~Sensor()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Sensor::Sensor(const Sensor &_sensor)
-  : dataPtr(new SensorPrivate(*_sensor.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Sensor::Sensor(Sensor &&_sensor) noexcept
-  : dataPtr(std::exchange(_sensor.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Sensor &Sensor::operator=(const Sensor &_sensor)
-{
-  return *this = Sensor(_sensor);
-}
-
-/////////////////////////////////////////////////
-Sensor &Sensor::operator=(Sensor &&_sensor)
-{
-  std::swap(this->dataPtr, _sensor.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////

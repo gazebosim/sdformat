@@ -20,7 +20,7 @@
 using namespace sdf;
 
 // Private data class
-class sdf::BoxPrivate
+class sdf::Box::Implementation
 {
   // Size of the box
   public: ignition::math::Boxd box{ignition::math::Vector3d::One};
@@ -31,43 +31,8 @@ class sdf::BoxPrivate
 
 /////////////////////////////////////////////////
 Box::Box()
-  : dataPtr(new BoxPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Box::~Box()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Box::Box(const Box &_box)
-  : dataPtr(new BoxPrivate)
-{
-  this->dataPtr->box = _box.dataPtr->box;
-  this->dataPtr->sdf = _box.dataPtr->sdf;
-}
-
-
-//////////////////////////////////////////////////
-Box::Box(Box &&_box) noexcept
-  : dataPtr(std::exchange(_box.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Box &Box::operator=(const Box &_box)
-{
-  return *this = Box(_box);
-}
-
-/////////////////////////////////////////////////
-Box &Box::operator=(Box &&_box)
-{
-  std::swap(this->dataPtr, _box.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
