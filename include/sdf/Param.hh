@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <functional>
 #include <iomanip>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <sstream>
@@ -78,7 +79,7 @@ namespace sdf
   {
     os << s.val;
     return os;
-  }  
+  }
 
   template<>
   inline std::ostream& operator<<(std::ostream &os, ParamStreamer<double> s)
@@ -93,7 +94,7 @@ namespace sdf
     os << std::setprecision(std::numeric_limits<float>::max_digits10) << s.val;
     return os;
   }
-  
+
   template<class... Ts>
   std::ostream& operator<<(std::ostream& os,
                            ParamStreamer<std::variant<Ts...>> sv)
