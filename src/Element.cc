@@ -255,7 +255,8 @@ void Element::PrintDescription(const std::string &_prefix) const
 
   std::cout << ">\n";
 
-  std::cout << _prefix << "  <description><![CDATA[" << this->dataPtr->description
+  std::cout << _prefix << "  <description><![CDATA["
+            << this->dataPtr->description
             << "]]></description>\n";
 
   Param_V::iterator aiter;
@@ -266,7 +267,8 @@ void Element::PrintDescription(const std::string &_prefix) const
               << (*aiter)->GetKey() << "' type ='" << (*aiter)->GetTypeName()
               << "' default ='" << (*aiter)->GetDefaultAsString()
               << "' required ='" << (*aiter)->GetRequired() << "'>\n";
-    std::cout << _prefix << "    <description><![CDATA[" << (*aiter)->GetDescription()
+    std::cout << _prefix << "    <description><![CDATA["
+              << (*aiter)->GetDescription()
               << "]]></description>\n";
     std::cout << _prefix << "  </attribute>\n";
   }
