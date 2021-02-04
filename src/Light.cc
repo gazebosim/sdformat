@@ -51,6 +51,9 @@ class sdf::LightPrivate
   /// \brief True if the light should cast shadows.
   public: bool castShadows = false;
 
+  /// \brief Spot light falloff.
+  public: double intensity = 1.0;
+
   /// \brief The attenation range.
   public: double attenuationRange = 10.0;
 
@@ -140,6 +143,7 @@ void Light::CopyFrom(const Light &_light)
   this->dataPtr->spotInnerAngle = _light.dataPtr->spotInnerAngle;
   this->dataPtr->spotOuterAngle = _light.dataPtr->spotOuterAngle;
   this->dataPtr->spotFalloff = _light.dataPtr->spotFalloff;
+  this->dataPtr->intensity = _light.dataPtr->intensity;
 }
 
 /////////////////////////////////////////////////
@@ -194,6 +198,9 @@ Errors Light::Load(ElementPtr _sdf)
 
   this->dataPtr->castShadows = _sdf->Get<bool>("cast_shadows",
       this->dataPtr->castShadows).first;
+
+  this->dataPtr->intensity = _sdf->Get<double>("intensity",
+      this->dataPtr->intensity).first;
 
   this->dataPtr->diffuse = _sdf->Get<ignition::math::Color>("diffuse",
       this->dataPtr->diffuse).first;
@@ -338,6 +345,18 @@ sdf::SemanticPose Light::SemanticPose() const
 sdf::ElementPtr Light::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+double Light::Intensity() const
+{
+  return this->dataPtr->intensity;
+}
+
+/////////////////////////////////////////////////
+void Light::SetIntensity(const double _intensity)
+{
+  this->dataPtr->intensity = _intensity;
 }
 
 /////////////////////////////////////////////////

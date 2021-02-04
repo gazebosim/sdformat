@@ -147,6 +147,14 @@ namespace sdf
     /// \param[in] _cast True to indicate that the light casts shadows.
     public: void SetCastShadows(const bool _cast);
 
+    /// \brief Get the light intensity
+    /// \return The light intensity
+    public: double Intensity() const;
+
+    /// \brief Set the light intensity
+    /// \param[in] _intensity New light intensity
+    public: void SetIntensity(const double _intensity);
+
     /// \brief Get the diffuse color. The diffuse color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
