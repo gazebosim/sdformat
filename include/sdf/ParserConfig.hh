@@ -45,7 +45,7 @@ enum class EnforcementPolicy
   WARN,
 
   /// \brief Ignore condition in favor of best effort parsing
-  IGNORE
+  LOG,
 };
 
 // Forward declare private data class.

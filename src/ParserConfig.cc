@@ -35,7 +35,7 @@ class sdf::ParserConfig::Implementation
   /// treated.
   /// Default is to ignore them for compatibility with legacy behavior
   public: EnforcementPolicy unrecognizedElementsPolicy =
-    EnforcementPolicy::IGNORE;
+    EnforcementPolicy::LOG;
 };
 
 

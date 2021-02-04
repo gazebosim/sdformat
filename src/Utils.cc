@@ -104,7 +104,7 @@ void enforceConfigurablePolicyCondition(
     case EnforcementPolicy::WARN:
       sdfwarn << _message;
       break;
-    case EnforcementPolicy::IGNORE:
+    case EnforcementPolicy::LOG:
       sdfdbg << _message;
       break;
     default:

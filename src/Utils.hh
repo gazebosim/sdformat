@@ -76,8 +76,8 @@ namespace sdf
   /// it to sdfwarn, or sdfdbg.
   /// \param[in] _policy The enforcement policy to follow
   /// \param[in] _message The message to add for this warning
-  /// \param[in] _error An error code to use if the policy is PEDANTIC
-  /// \param[in] _errors The errors to append to if the policy is PEDANTIC
+  /// \param[in] _error An error code to use if the policy is ERR
+  /// \param[in] _errors The errors to append to if the policy is ERR
   void enforceConfigurablePolicyCondition(
     const sdf::EnforcementPolicy _policy,
     const std::string &_message,

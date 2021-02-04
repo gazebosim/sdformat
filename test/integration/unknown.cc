@@ -99,7 +99,11 @@ TEST(UnrecognizedElements, UnrecognizedElementsWithWarningsPolicies)
     config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::ERR);
     sdf::Root root;
     const auto errors = root.Load(testFile, config);
-    EXPECT_FALSE(errors.empty());
+    ASSERT_FALSE(errors.empty());
+    constexpr char expectedMessage[] =
+      "XML Element[not_a_link_element], child of element[link], not defined in"
+      " SDF. Copying[not_a_link_element] as children of [link].\n";
+    EXPECT_EQ(errors[0].Message(), expectedMessage);
   }
   {
     config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::WARN);
@@ -108,7 +112,7 @@ TEST(UnrecognizedElements, UnrecognizedElementsWithWarningsPolicies)
     EXPECT_TRUE(errors.empty());
   }
   {
-    config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::IGNORE);
+    config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::LOG);
     sdf::Root root;
     const auto errors = root.Load(testFile, config);
     EXPECT_TRUE(errors.empty());
