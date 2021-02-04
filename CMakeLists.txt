@@ -277,10 +277,16 @@ else (build_errors)
 
   ########################################
   # Make the package config file
+  set(PC_CONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/pkgconfig)
+  file(RELATIVE_PATH
+    PC_CONFIG_RELATIVE_PATH_TO_PREFIX
+    "${CMAKE_INSTALL_PREFIX}/${PC_CONFIG_INSTALL_DIR}"
+    "${CMAKE_INSTALL_PREFIX}"
+  )
   configure_file(${CMAKE_SOURCE_DIR}/cmake/sdformat_pc.in
     ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME_LOWER}.pc @ONLY)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME_LOWER}.pc DESTINATION
-    ${LIB_INSTALL_DIR}/pkgconfig COMPONENT pkgconfig)
+    ${PC_CONFIG_INSTALL_DIR} COMPONENT pkgconfig)
 
   ########################################
   # Configure documentation uploader
