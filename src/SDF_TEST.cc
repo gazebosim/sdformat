@@ -706,6 +706,11 @@ TEST(SDF, WriteURIPath)
   // Check callback was called
   EXPECT_TRUE(g_findFileCbCalled);
 
+  // Check that URI paths have precedence over findFile callbacks
+  g_findFileCbCalled = false;
+  EXPECT_EQ(sdf::findFile("test://test.sdf", false, true), tempFile);
+  EXPECT_FALSE(g_findFileCbCalled);
+
   // Cleanup
   ASSERT_EQ(std::remove(tempFile.c_str()), 0);
   ASSERT_EQ(rmdir(tempDir.c_str()), 0);

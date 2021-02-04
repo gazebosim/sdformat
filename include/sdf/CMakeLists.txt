@@ -35,6 +35,7 @@ set (headers
   Noise.hh
   Param.hh
   parser.hh
+  ParserConfig.hh
   Pbr.hh
   Physics.hh
   Plane.hh
