@@ -76,6 +76,7 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
 }
 
 /////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
 double infiniteIfNegative(const double _value)
 {
   if (_value < 0.0)
@@ -85,6 +86,7 @@ double infiniteIfNegative(const double _value)
 }
 
 /////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
 bool isValidFrameReference(const std::string &_name)
 {
   return "__root__" != _name;

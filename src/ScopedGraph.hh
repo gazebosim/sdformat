@@ -82,6 +82,7 @@ template <typename T>
 class ScopedGraph
 {
   static_assert(
+      // cppcheck-suppress syntaxError
       std::is_same_v<T, sdf::PoseRelativeToGraph> ||
       std::is_same_v<T, sdf::FrameAttachedToGraph>,
       "Template parameter has to be either sdf::PoseRelativeToGraph or "

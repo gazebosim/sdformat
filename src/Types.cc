@@ -80,6 +80,7 @@ std::string lowercase(const std::string &_in)
 }
 
 /////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
 std::ostream &operator<<(std::ostream &_out, const sdf::Errors &_errs)
 {
   for (const auto &e : _errs)

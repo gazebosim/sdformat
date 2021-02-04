@@ -1193,7 +1193,8 @@ Errors buildPoseRelativeToGraph(
     ignition::math::Pose3d resolvedModelPose =
         ifaceModel->ModelFramePoseInRelativeToFrame();
     // TODO (addisu) Handle placement frames for interface models
-    // sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(*ifaceModel,
+    // sdf::Errors resolveErrors =
+    // resolveModelPoseWithPlacementFrame(*ifaceModel,
     //     _out.ChildModelScope(ifaceModel->Name()), resolvedModelPose);
     // errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
@@ -1393,8 +1394,9 @@ Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
     // sdf::resolvePoseRelativeToRoot. We will later update the edge after the
     // pose is calculated.
     // auto rootToModel = outModel.AddEdge({rootId, modelId}, {});
-    // ignition::math::Pose3d resolvedModelPose = _model->ModelFramePoseInParentFrame();
-    // sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
+    // ignition::math::Pose3d resolvedModelPose =
+    // _model->ModelFramePoseInParentFrame(); sdf::Errors resolveErrors =
+    // resolveModelPoseWithPlacementFrame(
     //     *_model, outModel, resolvedModelPose);
     // errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
@@ -1571,7 +1573,8 @@ Errors buildPoseRelativeToGraph(
     ignition::math::Pose3d resolvedModelPose =
         ifaceModel->ModelFramePoseInRelativeToFrame();
     // TODO (addisu) Handle placement frames for interface models
-    // sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(*ifaceModel,
+    // sdf::Errors resolveErrors =
+    // resolveModelPoseWithPlacementFrame(*ifaceModel,
     //     _out.ChildModelScope(ifaceModel->Name()), resolvedModelPose);
     // errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 

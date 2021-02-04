@@ -111,6 +111,7 @@ struct Value
         [&](auto &&arg)
         {
           using T = std::decay_t<decltype(arg)>;
+          // cppcheck-suppress syntaxError
           if constexpr (std::is_same_v<T, sdf::Param>)
           {
             os << _key << " = " << arg << std::endl;
@@ -265,14 +266,14 @@ sdf::InterfaceModelPtr customTomlParser(
         ? doc["name"].ParamGet<std::string>()
         : _include.localModelName;
 
-    if(_include.isStatic.has_value())
+    if (_include.isStatic.has_value())
     {
       // if //include/static is set, override the value in the inluded model
       sdf::Param param("static", "bool", "false", false);
       param.Set(*_include.isStatic);
       doc["static"] = {param};
     }
-    if(_include.includeRawPose.has_value())
+    if (_include.includeRawPose.has_value())
     {
       // if //include/static is set, override the value in the inluded model
       sdf::Param poseParam("pose", "pose", "", false);
@@ -280,7 +281,7 @@ sdf::InterfaceModelPtr customTomlParser(
       doc["pose"] = {poseParam};
     }
 
-    if(_include.includePoseRelativeTo.has_value())
+    if (_include.includePoseRelativeTo.has_value())
     {
       sdf::Param relativeToParam("relative_to", "string", "", false);
       relativeToParam.Set(*_include.includePoseRelativeTo);
@@ -465,8 +466,8 @@ void TomlParserTest(const sdf::InterfaceModelConstPtr &_interfaceModel)
 TEST_F(InterfaceAPI, TomlParserWorldInclude)
 {
   using ignition::math::Pose3d;
-  const std::string testFile = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "sdf", "world_include_with_interface_api.sdf");
+  const std::string testFile = sdf::filesystem::append(PROJECT_SOURCE_PATH,
+      "test", "sdf", "world_include_with_interface_api.sdf");
 
   this->config.RegisterCustomModelParser(customTomlParser);
   sdf::Root root;
@@ -484,8 +485,8 @@ TEST_F(InterfaceAPI, TomlParserWorldInclude)
 TEST_F(InterfaceAPI, TomlParserModelInclude)
 {
   using ignition::math::Pose3d;
-  const std::string testFile = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "sdf", "model_include_with_interface_api.sdf");
+  const std::string testFile = sdf::filesystem::append(PROJECT_SOURCE_PATH,
+      "test", "sdf", "model_include_with_interface_api.sdf");
 
   this->config.RegisterCustomModelParser(customTomlParser);
   sdf::Root root;
@@ -677,7 +678,8 @@ TEST_F(InterfaceAPI, Reposturing)
     std::string modelName = sdf::JoinName(_include.absoluteParentName,
                               _include.localModelName);
     auto repostureFunc = [modelName = modelName, &modelPosesAfterReposture](
-                             const sdf::InterfaceModelPoseGraph &_graph) {
+                             const sdf::InterfaceModelPoseGraph &_graph)
+    {
       ignition::math::Pose3d pose;
       sdf::Errors errors = _graph.ResolveNestedModelFramePoseInWorldFrame(pose);
       EXPECT_TRUE(errors.empty()) << errors;

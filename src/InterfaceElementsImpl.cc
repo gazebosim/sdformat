@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
+#include <optional>
 
 #include "InterfaceElementsImpl.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
-#include <optional>
 
 namespace sdf
 {
@@ -61,6 +61,7 @@ static std::optional<std::string> computeAbsoluteName(
 }
 
 /////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
 sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
     const sdf::ParserConfig &_config, std::vector<InterfaceModelPtr> &_models)
 {
