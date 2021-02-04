@@ -37,50 +37,46 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
-typedef std::list<std::string> PathList;
-typedef std::map<std::string, PathList> URIPathMap;
-
-static URIPathMap g_uriPathMap;
-
-static std::function<std::string(const std::string &)> g_findFileCB;
-
 std::string SDF::version = SDF_VERSION;
 
 /////////////////////////////////////////////////
-// cppcheck-suppress passedByValue
 void setFindCallback(std::function<std::string(const std::string &)> _cb)
 {
-  g_findFileCB = _cb;
+  ParserConfig::GlobalConfig().SetFindCallback(_cb);
+}
+
+/////////////////////////////////////////////////
+std::string findFile(
+    const std::string &_filename, bool _searchLocalPath, bool _useCallback)
+{
+  return findFile(
+      _filename, _searchLocalPath, _useCallback, ParserConfig::GlobalConfig());
 }
 
 /////////////////////////////////////////////////
 std::string findFile(const std::string &_filename, bool _searchLocalPath,
-                          bool _useCallback)
+                          bool _useCallback, const ParserConfig &_config)
 {
-  std::string path = _filename;
-
   // Check to see if _filename is URI. If so, resolve the URI path.
-  for (URIPathMap::iterator iter = g_uriPathMap.begin();
-       iter != g_uriPathMap.end(); ++iter)
+  for (const auto &[uriScheme, paths] : _config.URIPathMap())
   {
     // Check to see if the URI in the global map is the first part of the
     // given filename
     // cppcheck-suppress stlIfStrFind
-    if (_filename.find(iter->first) == 0)
+    if (_filename.find(uriScheme) == 0)
     {
       std::string suffix = _filename;
-      size_t index = suffix.find(iter->first);
+      size_t index = suffix.find(uriScheme);
       if (index != std::string::npos)
       {
-        suffix.replace(index, iter->first.length(), "");
+        suffix.replace(index, uriScheme.length(), "");
       }
 
       // Check each path in the list.
-      for (PathList::iterator pathIter = iter->second.begin();
-           pathIter != iter->second.end(); ++pathIter)
+      for (const auto &path : paths)
       {
         // Return the path string if the path + suffix exists.
-        std::string pathSuffix = sdf::filesystem::append(*pathIter, suffix);
+        std::string pathSuffix = sdf::filesystem::append(path, suffix);
         if (sdf::filesystem::exists(pathSuffix))
         {
           return pathSuffix;
@@ -99,7 +95,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   }
 
   // Next check the install path.
-  path = sdf::filesystem::append(SDF_SHARE_PATH, filename);
+  std::string path = sdf::filesystem::append(SDF_SHARE_PATH, filename);
   if (sdf::filesystem::exists(path))
   {
     return path;
@@ -158,15 +154,15 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   // flag has been set
   if (_useCallback)
   {
-    if (!g_findFileCB)
+    if (!_config.FindFileCallback())
     {
       sdferr << "Tried to use callback in sdf::findFile(), but the callback "
-        "is empty.  Did you call sdf::setFindCallback()?";
+        "is empty.  Did you call sdf::setFindCallback()?\n";
       return std::string();
     }
     else
     {
-      return g_findFileCB(_filename);
+      return _config.FindFileCallback()(_filename);
     }
   }
 
@@ -176,19 +172,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
 /////////////////////////////////////////////////
 void addURIPath(const std::string &_uri, const std::string &_path)
 {
-  // Split _path on colons.
-  std::vector<std::string> parts = sdf::split(_path, ":");
-
-  // Add each part of the colon separated path to the global URI map.
-  for (std::vector<std::string>::iterator iter = parts.begin();
-       iter != parts.end(); ++iter)
-  {
-    // Only add valid paths
-    if (!(*iter).empty() && sdf::filesystem::is_directory(*iter))
-    {
-      g_uriPathMap[_uri].push_back(*iter);
-    }
-  }
+  ParserConfig::GlobalConfig().AddURIPath(_uri, _path);
 }
 
 /////////////////////////////////////////////////
