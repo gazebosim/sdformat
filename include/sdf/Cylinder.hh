@@ -18,6 +18,7 @@
 #define SDF_CYLINDER_HH_
 
 #include <ignition/math/Cylinder.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -26,38 +27,12 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-
-  // Forward declare private data class.
-  class CylinderPrivate;
-
   /// \brief Cylinder represents a cylinder shape, and is usually accessed
   /// through a Geometry.
   class SDFORMAT_VISIBLE Cylinder
   {
     /// \brief Constructor
     public: Cylinder();
-
-    /// \brief Copy constructor
-    /// \param[in] _cylinder Cylinder to copy.
-    public: Cylinder(const Cylinder &_cylinder);
-
-    /// \brief Move constructor
-    /// \param[in] _cylinder Cylinder to move.
-    public: Cylinder(Cylinder &&_cylinder) noexcept;
-
-    /// \brief Destructor
-    public: virtual ~Cylinder();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _cylinder Cylinder to move.
-    /// \return Reference to this.
-    public: Cylinder &operator=(Cylinder &&_cylinder);
-
-    /// \brief Assignment operator.
-    /// \param[in] _cylinder The cylinder to set values from.
-    /// \return *this
-    public: Cylinder &operator=(const Cylinder &_cylinder);
 
     /// \brief Load the cylinder geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -98,7 +73,7 @@ namespace sdf
     public: ignition::math::Cylinderd &Shape();
 
     /// \brief Private data pointer.
-    private: CylinderPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

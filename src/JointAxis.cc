@@ -29,7 +29,7 @@
 
 using namespace sdf;
 
-class sdf::JointAxisPrivate
+class sdf::JointAxis::Implementation
 {
   /// \brief Default joint position for this joint axis.
   public: double initialPosition = 0.0;
@@ -93,40 +93,8 @@ class sdf::JointAxisPrivate
 
 /////////////////////////////////////////////////
 JointAxis::JointAxis()
-  : dataPtr(new JointAxisPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-JointAxis::~JointAxis()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-JointAxis::JointAxis(const JointAxis &_jointAxis)
-  : dataPtr(new JointAxisPrivate(*_jointAxis.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-JointAxis::JointAxis(JointAxis &&_jointAxis) noexcept
-  : dataPtr(std::exchange(_jointAxis.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-JointAxis &JointAxis::operator=(const JointAxis &_jointAxis)
-{
-  return *this = JointAxis(_jointAxis);
-}
-
-/////////////////////////////////////////////////
-JointAxis &JointAxis::operator=(JointAxis &&_jointAxis)
-{
-  std::swap(this->dataPtr, _jointAxis.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -295,7 +263,7 @@ double JointAxis::Upper() const
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetUpper(const double _upper) const
+void JointAxis::SetUpper(const double _upper)
 {
   this->dataPtr->upper = _upper;
 }
@@ -319,7 +287,7 @@ double JointAxis::MaxVelocity() const
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetMaxVelocity(const double _velocity) const
+void JointAxis::SetMaxVelocity(const double _velocity)
 {
   this->dataPtr->maxVelocity = _velocity;
 }
@@ -331,7 +299,7 @@ double JointAxis::Stiffness() const
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetStiffness(const double _stiffness) const
+void JointAxis::SetStiffness(const double _stiffness)
 {
   this->dataPtr->stiffness = _stiffness;
 }
@@ -343,7 +311,7 @@ double JointAxis::Dissipation() const
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetDissipation(const double _dissipation) const
+void JointAxis::SetDissipation(const double _dissipation)
 {
   this->dataPtr->dissipation = _dissipation;
 }

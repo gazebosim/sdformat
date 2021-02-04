@@ -34,7 +34,7 @@
 using namespace sdf;
 
 /// \brief Private data for sdf::Root
-class sdf::RootPrivate
+class sdf::Root::Implementation
 {
   /// \brief Version string
   public: std::string version = "";
@@ -123,37 +123,23 @@ ScopedGraph<PoseRelativeToGraph> addPoseRelativeToGraph(
 
 /////////////////////////////////////////////////
 Root::Root()
-  : dataPtr(new RootPrivate)
+  : dataPtr(ignition::utils::MakeUniqueImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Root::Root(Root &&_root) noexcept
-  : dataPtr(std::exchange(_root.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Root &Root::operator=(Root &&_root) noexcept
-{
-  std::swap(this->dataPtr, _root.dataPtr);
-  return *this;
-}
-
-/////////////////////////////////////////////////
-Root::~Root()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
 Errors Root::Load(const std::string &_filename)
 {
+  return this->Load(_filename, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Root::Load(const std::string &_filename, const ParserConfig &_config)
+{
   Errors errors;
 
   // Read an SDF file, and store the result in sdfParsed.
-  SDFPtr sdfParsed = readFile(_filename, errors);
+  SDFPtr sdfParsed = readFile(_filename, _config, errors);
 
   // Return if we were not able to read the file.
   if (!sdfParsed)
@@ -172,15 +158,21 @@ Errors Root::Load(const std::string &_filename)
 /////////////////////////////////////////////////
 Errors Root::LoadSdfString(const std::string &_sdf)
 {
+  return this->LoadSdfString(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Root::LoadSdfString(const std::string &_sdf, const ParserConfig &_config)
+{
   Errors errors;
   SDFPtr sdfParsed(new SDF());
   init(sdfParsed);
 
   // Read an SDF string, and store the result in sdfParsed.
-  if (!readString(_sdf, sdfParsed, errors))
+  if (!readString(_sdf, _config, sdfParsed, errors))
   {
     errors.push_back(
-        {ErrorCode::STRING_READ, "Unable to SDF string: " + _sdf});
+        {ErrorCode::STRING_READ, "Unable to read SDF string: " + _sdf});
     return errors;
   }
 

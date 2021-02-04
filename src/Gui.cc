@@ -20,7 +20,7 @@
 using namespace sdf;
 
 /// \brief Gui private data.
-class sdf::GuiPrivate
+class sdf::Gui::Implementation
 {
   /// \brief True if the GUI should be fullscreen.
   public: bool fullscreen = false;
@@ -31,40 +31,8 @@ class sdf::GuiPrivate
 
 /////////////////////////////////////////////////
 Gui::Gui()
-  : dataPtr(new GuiPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Gui::~Gui()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Gui::Gui(const Gui &_gui)
-  : dataPtr(new GuiPrivate(*_gui.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Gui::Gui(Gui &&_gui) noexcept
-  : dataPtr(std::exchange(_gui.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Gui &Gui::operator=(const Gui &_gui)
-{
-  return *this = Gui(_gui);
-}
-
-/////////////////////////////////////////////////
-Gui &Gui::operator=(Gui &&_gui)
-{
-  std::swap(this->dataPtr, _gui.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -98,7 +66,7 @@ bool Gui::Fullscreen() const
 }
 
 /////////////////////////////////////////////////
-void Gui::SetFullscreen(const bool _fullscreen) const
+void Gui::SetFullscreen(const bool _fullscreen)
 {
   this->dataPtr->fullscreen = _fullscreen;
 }

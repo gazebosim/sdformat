@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
@@ -34,7 +35,6 @@ namespace sdf
 
   // Forward declarations.
   class JointAxis;
-  class JointPrivate;
   struct FrameAttachedToGraph;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
@@ -85,27 +85,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Joint();
-
-    /// \brief Copy constructor
-    /// \param[in] _joint Joint to copy.
-    public: Joint(const Joint &_joint);
-
-    /// \brief Move constructor
-    /// \param[in] _joint Joint to move.
-    public: Joint(Joint &&_joint) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _joint Joint to move.
-    /// \return Reference to this.
-    public: Joint &operator=(Joint &&_joint);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _joint Joint to copy.
-    /// \return Reference to this.
-    public: Joint &operator=(const Joint &_joint);
-
-    /// \brief Destructor
-    public: ~Joint();
 
     /// \brief Load the joint based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -239,7 +218,7 @@ namespace sdf
     friend class Model;
 
     /// \brief Private data pointer.
-    private: JointPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

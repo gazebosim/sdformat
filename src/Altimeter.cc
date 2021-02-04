@@ -21,7 +21,7 @@
 using namespace sdf;
 
 /// \brief Private altimeter data.
-class sdf::AltimeterPrivate
+class sdf::Altimeter::Implementation
 {
   /// \brief The vertical position noise value.
   public: Noise verticalPositionNoise;
@@ -35,40 +35,8 @@ class sdf::AltimeterPrivate
 
 //////////////////////////////////////////////////
 Altimeter::Altimeter()
-  : dataPtr(new AltimeterPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-//////////////////////////////////////////////////
-Altimeter::~Altimeter()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Altimeter::Altimeter(const Altimeter &_altimeter)
-  : dataPtr(new AltimeterPrivate(*_altimeter.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-Altimeter::Altimeter(Altimeter &&_altimeter) noexcept
-  : dataPtr(std::exchange(_altimeter.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-Altimeter &Altimeter::operator=(const Altimeter &_altimeter)
-{
-  return *this = Altimeter(_altimeter);
-}
-
-//////////////////////////////////////////////////
-Altimeter &Altimeter::operator=(Altimeter &&_altimeter) noexcept
-{
-  std::swap(this->dataPtr, _altimeter.dataPtr);
-  return *this;
 }
 
 //////////////////////////////////////////////////

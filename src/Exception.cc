@@ -18,51 +18,38 @@
 #include <cstdint>
 #include <string>
 
-#include "ExceptionPrivate.hh"
 #include "sdf/Console.hh"
 #include "sdf/Exception.hh"
 
 using namespace sdf;
 
+class sdf::Exception::Implementation
+{
+  /// \brief The error function
+  public: std::string file;
+
+  /// \brief Line the error occured on
+  public: std::int64_t line;
+
+  /// \brief The error string
+  public: std::string str;
+};
+
 //////////////////////////////////////////////////
 Exception::Exception()
-  : dataPtr(new ExceptionPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
 }
 
 //////////////////////////////////////////////////
 Exception::Exception(const char *_file, std::int64_t _line, std::string _msg)
-  : dataPtr(new ExceptionPrivate)
+  : Exception()
 {
   this->dataPtr->file = _file;
   this->dataPtr->line = _line;
   this->dataPtr->str = _msg;
   this->Print();
 }
-
-//////////////////////////////////////////////////
-Exception::~Exception() = default;
-
-//////////////////////////////////////////////////
-Exception::Exception(const Exception &_e)
-  : dataPtr(new ExceptionPrivate)
-{
-  this->dataPtr->file = _e.dataPtr->file;
-  this->dataPtr->line = _e.dataPtr->line;
-  this->dataPtr->str = _e.dataPtr->str;
-}
-
-//////////////////////////////////////////////////
-Exception::Exception(Exception &&_exception) noexcept = default;
-
-//////////////////////////////////////////////////
-Exception &Exception::operator=(const Exception &_exception)
-{
-  return *this = Exception(_exception);
-}
-
-/////////////////////////////////////////////////
-Exception &Exception::operator=(Exception &&_exception) = default;
 
 //////////////////////////////////////////////////
 void Exception::Print() const

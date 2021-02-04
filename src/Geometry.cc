@@ -14,6 +14,9 @@
  * limitations under the License.
  *
 */
+
+#include <optional>
+
 #include "sdf/Geometry.hh"
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
@@ -24,37 +27,39 @@
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
 
+#include "Utils.hh"
+
 using namespace sdf;
 
 // Private data class
-class sdf::GeometryPrivate
+class sdf::Geometry::Implementation
 {
   // \brief The geometry type.
   public: GeometryType type = GeometryType::EMPTY;
 
-  /// \brief Pointer to a box.
-  public: std::unique_ptr<Box> box;
+  /// \brief Optional box.
+  public: std::optional<Box> box;
 
-  /// \brief Pointer to a capsule.
-  public: std::unique_ptr<Capsule> capsule;
+  /// \brief Optional capsule.
+  public: std::optional<Capsule> capsule;
 
-  /// \brief Pointer to a cylinder.
-  public: std::unique_ptr<Cylinder> cylinder;
+  /// \brief Optional cylinder.
+  public: std::optional<Cylinder> cylinder;
 
-  /// \brief Pointer to an ellipsoid
-  public: std::unique_ptr<Ellipsoid> ellipsoid;
+  /// \brief Optional ellipsoid
+  public: std::optional<Ellipsoid> ellipsoid;
 
-  /// \brief Pointer to a plane.
-  public: std::unique_ptr<Plane> plane;
+  /// \brief Optional plane.
+  public: std::optional<Plane> plane;
 
-  /// \brief Pointer to a sphere.
-  public: std::unique_ptr<Sphere> sphere;
+  /// \brief Optional sphere.
+  public: std::optional<Sphere> sphere;
 
-  /// \brief Pointer to a mesh.
-  public: std::unique_ptr<Mesh> mesh;
+  /// \brief Optional mesh.
+  public: std::optional<Mesh> mesh;
 
-  /// \brief Pointer to a heightmap.
-  public: std::unique_ptr<Heightmap> heightmap;
+  /// \brief Optional heightmap.
+  public: std::optional<Heightmap> heightmap;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -62,89 +67,8 @@ class sdf::GeometryPrivate
 
 /////////////////////////////////////////////////
 Geometry::Geometry()
-  : dataPtr(new GeometryPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Geometry::~Geometry()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Geometry::Geometry(const Geometry &_geometry)
-  : dataPtr(new GeometryPrivate)
-{
-  this->dataPtr->type = _geometry.dataPtr->type;
-
-  if (_geometry.dataPtr->box)
-  {
-    this->dataPtr->box = std::make_unique<sdf::Box>(*_geometry.dataPtr->box);
-  }
-
-  if (_geometry.dataPtr->capsule)
-  {
-    this->dataPtr->capsule = std::make_unique<sdf::Capsule>(
-        *_geometry.dataPtr->capsule);
-  }
-
-  if (_geometry.dataPtr->cylinder)
-  {
-    this->dataPtr->cylinder = std::make_unique<sdf::Cylinder>(
-        *_geometry.dataPtr->cylinder);
-  }
-
-  if (_geometry.dataPtr->ellipsoid)
-  {
-    this->dataPtr->ellipsoid = std::make_unique<sdf::Ellipsoid>(
-        *_geometry.dataPtr->ellipsoid);
-  }
-
-  if (_geometry.dataPtr->plane)
-  {
-    this->dataPtr->plane = std::make_unique<sdf::Plane>(
-        *_geometry.dataPtr->plane);
-  }
-
-  if (_geometry.dataPtr->sphere)
-  {
-    this->dataPtr->sphere = std::make_unique<sdf::Sphere>(
-        *_geometry.dataPtr->sphere);
-  }
-
-  if (_geometry.dataPtr->mesh)
-  {
-    this->dataPtr->mesh = std::make_unique<sdf::Mesh>(*_geometry.dataPtr->mesh);
-  }
-
-  if (_geometry.dataPtr->heightmap)
-  {
-    this->dataPtr->heightmap =
-        std::make_unique<sdf::Heightmap>(*_geometry.dataPtr->heightmap);
-  }
-
-  this->dataPtr->sdf = _geometry.dataPtr->sdf;
-}
-
-//////////////////////////////////////////////////
-Geometry::Geometry(Geometry &&_geometry) noexcept
-  : dataPtr(std::exchange(_geometry.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Geometry &Geometry::operator=(const Geometry &_geometry)
-{
-  return *this = Geometry(_geometry);
-}
-
-//////////////////////////////////////////////////
-Geometry &Geometry::operator=(Geometry &&_geometry)
-{
-  std::swap(this->dataPtr, _geometry.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -176,56 +100,56 @@ Errors Geometry::Load(ElementPtr _sdf)
   if (_sdf->HasElement("box"))
   {
     this->dataPtr->type = GeometryType::BOX;
-    this->dataPtr->box.reset(new Box());
+    this->dataPtr->box.emplace();
     Errors err = this->dataPtr->box->Load(_sdf->GetElement("box"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("capsule"))
   {
     this->dataPtr->type = GeometryType::CAPSULE;
-    this->dataPtr->capsule.reset(new Capsule());
+    this->dataPtr->capsule.emplace();
     Errors err = this->dataPtr->capsule->Load(_sdf->GetElement("capsule"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("cylinder"))
   {
     this->dataPtr->type = GeometryType::CYLINDER;
-    this->dataPtr->cylinder.reset(new Cylinder());
+    this->dataPtr->cylinder.emplace();
     Errors err = this->dataPtr->cylinder->Load(_sdf->GetElement("cylinder"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("ellipsoid"))
   {
     this->dataPtr->type = GeometryType::ELLIPSOID;
-    this->dataPtr->ellipsoid.reset(new Ellipsoid());
+    this->dataPtr->ellipsoid.emplace();
     Errors err = this->dataPtr->ellipsoid->Load(_sdf->GetElement("ellipsoid"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("plane"))
   {
     this->dataPtr->type = GeometryType::PLANE;
-    this->dataPtr->plane.reset(new Plane());
+    this->dataPtr->plane.emplace();
     Errors err = this->dataPtr->plane->Load(_sdf->GetElement("plane"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("sphere"))
   {
     this->dataPtr->type = GeometryType::SPHERE;
-    this->dataPtr->sphere.reset(new Sphere());
+    this->dataPtr->sphere.emplace();
     Errors err = this->dataPtr->sphere->Load(_sdf->GetElement("sphere"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("mesh"))
   {
     this->dataPtr->type = GeometryType::MESH;
-    this->dataPtr->mesh.reset(new Mesh());
+    this->dataPtr->mesh.emplace();
     Errors err = this->dataPtr->mesh->Load(_sdf->GetElement("mesh"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("heightmap"))
   {
     this->dataPtr->type = GeometryType::HEIGHTMAP;
-    this->dataPtr->heightmap.reset(new Heightmap());
+    this->dataPtr->heightmap.emplace();
     Errors err = this->dataPtr->heightmap->Load(_sdf->GetElement("heightmap"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
@@ -248,97 +172,97 @@ void Geometry::SetType(const GeometryType _type)
 /////////////////////////////////////////////////
 const Box *Geometry::BoxShape() const
 {
-  return this->dataPtr->box.get();
+  return optionalToPointer(this->dataPtr->box);
 }
 
 /////////////////////////////////////////////////
 void Geometry::SetBoxShape(const Box &_box)
 {
-  this->dataPtr->box = std::make_unique<Box>(_box);
+  this->dataPtr->box = _box;
 }
 
 /////////////////////////////////////////////////
 const Sphere *Geometry::SphereShape() const
 {
-  return this->dataPtr->sphere.get();
+  return optionalToPointer(this->dataPtr->sphere);
 }
 
 /////////////////////////////////////////////////
 void Geometry::SetSphereShape(const Sphere &_sphere)
 {
-  this->dataPtr->sphere = std::make_unique<Sphere>(_sphere);
+  this->dataPtr->sphere = _sphere;
 }
 
 /////////////////////////////////////////////////
 const Capsule *Geometry::CapsuleShape() const
 {
-  return this->dataPtr->capsule.get();
+  return optionalToPointer(this->dataPtr->capsule);
 }
 
 /////////////////////////////////////////////////
 void Geometry::SetCapsuleShape(const Capsule &_capsule)
 {
-  this->dataPtr->capsule = std::make_unique<Capsule>(_capsule);
+  this->dataPtr->capsule = _capsule;
 }
 
 /////////////////////////////////////////////////
 const Cylinder *Geometry::CylinderShape() const
 {
-  return this->dataPtr->cylinder.get();
+  return optionalToPointer(this->dataPtr->cylinder);
 }
 
 /////////////////////////////////////////////////
 void Geometry::SetCylinderShape(const Cylinder &_cylinder)
 {
-  this->dataPtr->cylinder = std::make_unique<Cylinder>(_cylinder);
+  this->dataPtr->cylinder = _cylinder;
 }
 
 /////////////////////////////////////////////////
 const Ellipsoid *Geometry::EllipsoidShape() const
 {
-  return this->dataPtr->ellipsoid.get();
+  return optionalToPointer(this->dataPtr->ellipsoid);
 }
 
 /////////////////////////////////////////////////
 void Geometry::SetEllipsoidShape(const Ellipsoid &_ellipsoid)
 {
-  this->dataPtr->ellipsoid = std::make_unique<Ellipsoid>(_ellipsoid);
+  this->dataPtr->ellipsoid = _ellipsoid;
 }
 
 /////////////////////////////////////////////////
 const Plane *Geometry::PlaneShape() const
 {
-  return this->dataPtr->plane.get();
+  return optionalToPointer(this->dataPtr->plane);
 }
 
 /////////////////////////////////////////////////
 void Geometry::SetPlaneShape(const Plane &_plane)
 {
-  this->dataPtr->plane = std::make_unique<Plane>(_plane);
+  this->dataPtr->plane = _plane;
 }
 
 /////////////////////////////////////////////////
 const Mesh *Geometry::MeshShape() const
 {
-  return this->dataPtr->mesh.get();
+  return optionalToPointer(this->dataPtr->mesh);
 }
 
 /////////////////////////////////////////////////
 void Geometry::SetMeshShape(const Mesh &_mesh)
 {
-  this->dataPtr->mesh = std::make_unique<Mesh>(_mesh);
+  this->dataPtr->mesh = _mesh;
 }
 
 /////////////////////////////////////////////////
 const Heightmap *Geometry::HeightmapShape() const
 {
-  return this->dataPtr->heightmap.get();
+  return optionalToPointer(this->dataPtr->heightmap);
 }
 
 /////////////////////////////////////////////////
 void Geometry::SetHeightmapShape(const Heightmap &_heightmap)
 {
-  this->dataPtr->heightmap = std::make_unique<Heightmap>(_heightmap);
+  this->dataPtr->heightmap = _heightmap;
 }
 
 /////////////////////////////////////////////////

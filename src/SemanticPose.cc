@@ -29,7 +29,7 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 /// \internal
 /// \brief Private data for the SemanticPose class.
-class SemanticPosePrivate
+class SemanticPose::Implementation
 {
   public: std::string name = "";
 
@@ -54,7 +54,7 @@ SemanticPose::SemanticPose(
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
         const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
-  : dataPtr(std::make_unique<SemanticPosePrivate>())
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->name = _name;
   this->dataPtr->rawPose = _pose;
@@ -69,38 +69,12 @@ SemanticPose::SemanticPose(
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
         const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
-  : dataPtr(std::make_unique<SemanticPosePrivate>())
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->rawPose = _pose;
   this->dataPtr->relativeTo = _relativeTo;
   this->dataPtr->defaultResolveTo = _defaultResolveTo;
   this->dataPtr->poseRelativeToGraph = _graph;
-}
-/////////////////////////////////////////////////
-SemanticPose::~SemanticPose() = default;
-
-/////////////////////////////////////////////////
-SemanticPose::SemanticPose(const SemanticPose &_semanticPose)
-  : dataPtr(std::make_unique<SemanticPosePrivate>(*_semanticPose.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-SemanticPose::SemanticPose(SemanticPose &&_semanticPose) noexcept = default;
-
-/////////////////////////////////////////////////
-SemanticPose &SemanticPose::operator=(SemanticPose &&_semanticPose) = default;
-
-/////////////////////////////////////////////////
-SemanticPose &SemanticPose::operator=(const SemanticPose &_semanticPose)
-{
-  if (!this->dataPtr)
-  {
-    // This would happen if this object is moved from.
-    this->dataPtr = std::make_unique<SemanticPosePrivate>();
-  }
-  *this->dataPtr =  *_semanticPose.dataPtr;
-  return *this;
 }
 
 /////////////////////////////////////////////////

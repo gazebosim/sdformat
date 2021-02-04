@@ -17,6 +17,8 @@
 #ifndef SDF_ALTIMETER_HH_
 #define SDF_ALTIMETER_HH_
 
+#include <ignition/utils/ImplPtr.hh>
+
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
@@ -26,36 +28,12 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-  class AltimeterPrivate;
-
   /// \brief Altimeter contains information about an altimeter sensor.
   /// This sensor can be attached to a link.
   class SDFORMAT_VISIBLE Altimeter
   {
     /// \brief Default constructor
     public: Altimeter();
-
-    /// \brief Copy constructor
-    /// \param[in] _altimeter Altimeter to copy.
-    public: Altimeter(const Altimeter &_altimeter);
-
-    /// \brief Move constructor
-    /// \param[in] _altimeter Altimeter to move.
-    public: Altimeter(Altimeter &&_altimeter) noexcept;
-
-    /// \brief Destructor
-    public: ~Altimeter();
-
-    /// \brief Assignment operator.
-    /// \param[in] _altimeter The altimeter to set values from.
-    /// \return *this
-    public: Altimeter &operator=(const Altimeter &_altimeter);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _altimeter The altimeter to set values from.
-    /// \return *this
-    public: Altimeter &operator=(Altimeter &&_altimeter) noexcept;
 
     /// \brief Load the altimeter based on an element pointer. This is *not*
     /// the usual entry point. Typical usage of the SDF DOM is through the Root
@@ -99,7 +77,7 @@ namespace sdf
     public: bool operator!=(const Altimeter &_alt) const;
 
     /// \brief Private data pointer.
-    private: AltimeterPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

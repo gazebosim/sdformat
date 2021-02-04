@@ -19,6 +19,7 @@
 
 #include <string>
 #include <ignition/math/Vector3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Element.hh>
 #include <sdf/Error.hh>
 #include <sdf/sdf_config.h>
@@ -29,36 +30,12 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
-  // Forward declare private data class.
-  class MeshPrivate;
-
   /// \brief Mesh represents a mesh shape, and is usually accessed through a
   /// Geometry.
   class SDFORMAT_VISIBLE Mesh
   {
     /// \brief Constructor
     public: Mesh();
-
-    /// \brief Copy constructor
-    /// \param[in] _mesh Mesh to copy.
-    public: Mesh(const Mesh &_mesh);
-
-    /// \brief Move constructor
-    /// \param[in] _mesh Mesh to move.
-    public: Mesh(Mesh &&_mesh) noexcept;
-
-    /// \brief Destructor
-    public: virtual ~Mesh();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _mesh Mesh to move.
-    /// \return Reference to this.
-    public: Mesh &operator=(Mesh &&_mesh);
-
-    /// \brief Copy Assignment operator.
-    /// \param[in] _mesh The mesh to set values from.
-    /// \return *this
-    public: Mesh &operator=(const Mesh &_mesh);
 
     /// \brief Load the mesh geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -121,7 +98,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    private: MeshPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

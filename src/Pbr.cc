@@ -26,7 +26,7 @@
 using namespace sdf;
 
 /// \brief Private data for PbrWorkflow class
-class sdf::PbrWorkflowPrivate
+class sdf::PbrWorkflow::Implementation
 {
   /// \brief Workflow type
   public: PbrWorkflowType type = PbrWorkflowType::NONE;
@@ -82,7 +82,7 @@ class sdf::PbrWorkflowPrivate
 
 
 /// \brief Private data for Pbr class
-class sdf::PbrPrivate
+class sdf::Pbr::Implementation
 {
   /// \brief PBR workflows
   public: std::map<PbrWorkflowType, PbrWorkflow> workflows;
@@ -93,41 +93,8 @@ class sdf::PbrPrivate
 
 /////////////////////////////////////////////////
 PbrWorkflow::PbrWorkflow()
-  : dataPtr(new PbrWorkflowPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-PbrWorkflow::~PbrWorkflow()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-PbrWorkflow::PbrWorkflow(const PbrWorkflow &_pbr)
-  : dataPtr(new PbrWorkflowPrivate)
-{
-  *this->dataPtr = *_pbr.dataPtr;
-}
-
-/////////////////////////////////////////////////
-PbrWorkflow::PbrWorkflow(PbrWorkflow &&_pbr) noexcept
-  : dataPtr(std::exchange(_pbr.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-PbrWorkflow &PbrWorkflow::operator=(const PbrWorkflow &_pbr)
-{
-  return *this = PbrWorkflow(_pbr);
-}
-
-/////////////////////////////////////////////////
-PbrWorkflow &PbrWorkflow::operator=(PbrWorkflow &&_pbr)
-{
-  std::swap(this->dataPtr, _pbr.dataPtr);
-  return *this;
 }
 
 //////////////////////////////////////////////////
@@ -420,41 +387,8 @@ void PbrWorkflow::SetType(PbrWorkflowType _type)
 
 /////////////////////////////////////////////////
 Pbr::Pbr()
-  : dataPtr(new PbrPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Pbr::~Pbr()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Pbr::Pbr(const Pbr &_pbr)
-  : dataPtr(new PbrPrivate)
-{
-  *this->dataPtr = *_pbr.dataPtr;
-}
-
-/////////////////////////////////////////////////
-Pbr::Pbr(Pbr &&_pbr) noexcept
-  : dataPtr(std::exchange(_pbr.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Pbr &Pbr::operator=(const Pbr &_pbr)
-{
-  return *this = Pbr(_pbr);
-}
-
-/////////////////////////////////////////////////
-Pbr &Pbr::operator=(Pbr &&_pbr)
-{
-  std::swap(this->dataPtr, _pbr.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -491,7 +425,7 @@ Errors Pbr::Load(sdf::ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-PbrWorkflow *Pbr::Workflow(PbrWorkflowType _type) const
+const PbrWorkflow *Pbr::Workflow(PbrWorkflowType _type) const
 {
   auto it = this->dataPtr->workflows.find(_type);
   if (it != this->dataPtr->workflows.end())

@@ -15,6 +15,7 @@
  *
 */
 #include <string>
+#include <optional>
 #include <vector>
 #include <ignition/math/Vector3.hh>
 
@@ -25,7 +26,7 @@
 
 using namespace sdf;
 
-class sdf::MaterialPrivate
+class sdf::Material::Implementation
 {
   /// \brief Script URI
   public: std::string scriptUri = "";
@@ -61,7 +62,7 @@ class sdf::MaterialPrivate
   public: float renderOrder = 0;
 
   /// \brief Physically Based Rendering (PBR) properties
-  public: std::unique_ptr<Pbr> pbr;
+  public: std::optional<Pbr> pbr;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -72,55 +73,8 @@ class sdf::MaterialPrivate
 
 /////////////////////////////////////////////////
 Material::Material()
-  : dataPtr(new MaterialPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Material::~Material()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Material::Material(const Material &_material)
-  : dataPtr(new MaterialPrivate)
-{
-  this->dataPtr->scriptUri = _material.dataPtr->scriptUri;
-  this->dataPtr->scriptName = _material.dataPtr->scriptName;
-  this->dataPtr->shader = _material.dataPtr->shader;
-  this->dataPtr->normalMap = _material.dataPtr->normalMap;
-  this->dataPtr->lighting = _material.dataPtr->lighting;
-  this->dataPtr->renderOrder = _material.dataPtr->renderOrder;
-  this->dataPtr->doubleSided = _material.dataPtr->doubleSided;
-  this->dataPtr->ambient = _material.dataPtr->ambient;
-  this->dataPtr->diffuse = _material.dataPtr->diffuse;
-  this->dataPtr->specular = _material.dataPtr->specular;
-  this->dataPtr->emissive = _material.dataPtr->emissive;
-  this->dataPtr->sdf = _material.dataPtr->sdf;
-  this->dataPtr->filePath = _material.dataPtr->filePath;
-  if (_material.dataPtr->pbr)
-    this->dataPtr->pbr = std::make_unique<Pbr>(*_material.dataPtr->pbr);
-}
-
-/////////////////////////////////////////////////
-Material::Material(Material &&_material) noexcept
-  : dataPtr(std::exchange(_material.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Material &Material::operator=(const Material &_material)
-{
-  return *this = Material(_material);
-}
-
-/////////////////////////////////////////////////
-Material &Material::operator=(Material &&_material)
-{
-  std::swap(this->dataPtr, _material.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -235,7 +189,7 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   // load pbr param
   if (_sdf->HasElement("pbr"))
   {
-    this->dataPtr->pbr.reset(new sdf::Pbr());
+    this->dataPtr->pbr.emplace();
     Errors pbrErrors = this->dataPtr->pbr->Load(_sdf->GetElement("pbr"));
     errors.insert(errors.end(), pbrErrors.begin(), pbrErrors.end());
   }
@@ -250,7 +204,7 @@ ignition::math::Color Material::Ambient() const
 }
 
 //////////////////////////////////////////////////
-void Material::SetAmbient(const ignition::math::Color &_color) const
+void Material::SetAmbient(const ignition::math::Color &_color)
 {
   this->dataPtr->ambient = _color;
 }
@@ -262,7 +216,7 @@ ignition::math::Color Material::Diffuse() const
 }
 
 //////////////////////////////////////////////////
-void Material::SetDiffuse(const ignition::math::Color &_color) const
+void Material::SetDiffuse(const ignition::math::Color &_color)
 {
   this->dataPtr->diffuse = _color;
 }
@@ -274,7 +228,7 @@ ignition::math::Color Material::Specular() const
 }
 
 //////////////////////////////////////////////////
-void Material::SetSpecular(const ignition::math::Color &_color) const
+void Material::SetSpecular(const ignition::math::Color &_color)
 {
   this->dataPtr->specular = _color;
 }
@@ -286,7 +240,7 @@ ignition::math::Color Material::Emissive() const
 }
 
 //////////////////////////////////////////////////
-void Material::SetEmissive(const ignition::math::Color &_color) const
+void Material::SetEmissive(const ignition::math::Color &_color)
 {
   this->dataPtr->emissive = _color;
 }
@@ -384,13 +338,13 @@ void Material::SetNormalMap(const std::string &_map)
 //////////////////////////////////////////////////
 void Material::SetPbrMaterial(const Pbr &_pbr)
 {
-  this->dataPtr->pbr.reset(new Pbr(_pbr));
+  this->dataPtr->pbr = _pbr;
 }
 
 //////////////////////////////////////////////////
-Pbr *Material::PbrMaterial() const
+const Pbr *Material::PbrMaterial() const
 {
-  return this->dataPtr->pbr.get();
+  return optionalToPointer(this->dataPtr->pbr);
 }
 
 //////////////////////////////////////////////////

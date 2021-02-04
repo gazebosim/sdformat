@@ -18,6 +18,7 @@
 #define SDF_MATERIAL_HH_
 
 #include <string>
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -30,7 +31,6 @@ namespace sdf
   //
 
   // Forward declarations.
-  class MaterialPrivate;
   class Pbr;
 
   enum class ShaderType : int
@@ -46,27 +46,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Material();
-
-    /// \brief Copy constructor
-    /// \param[in] _material Material to copy.
-    public: Material(const Material &_material);
-
-    /// \brief Move constructor
-    /// \param[in] _material Material to move.
-    public: Material(Material &&_material) noexcept;
-
-    /// \brief Destructor
-    public: ~Material();
-
-    /// \brief Assignment operator.
-    /// \param[in] _material The material to set values from.
-    /// \return *this
-    public: Material &operator=(const Material &_material);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _material The material to move from.
-    /// \return *this
-    public: Material &operator=(Material &&_material);
 
     /// \brief Load the material based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -86,7 +65,7 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Ambient color.
-    public: void SetAmbient(const ignition::math::Color &_color) const;
+    public: void SetAmbient(const ignition::math::Color &_color);
 
     /// \brief Get the diffuse color. The diffuse color is
     /// specified by a set of three numbers representing red/green/blue,
@@ -98,7 +77,7 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Diffuse color.
-    public: void SetDiffuse(const ignition::math::Color &_color) const;
+    public: void SetDiffuse(const ignition::math::Color &_color);
 
     /// \brief Get the specular color. The specular color is
     /// specified by a set of three numbers representing red/green/blue,
@@ -110,7 +89,7 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Specular color.
-    public: void SetSpecular(const ignition::math::Color &_color) const;
+    public: void SetSpecular(const ignition::math::Color &_color);
 
     /// \brief Get the emissive color. The emissive color is
     /// specified by a set of three numbers representing red/green/blue,
@@ -122,7 +101,7 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Emissive color.
-    public: void SetEmissive(const ignition::math::Color &_color) const;
+    public: void SetEmissive(const ignition::math::Color &_color);
 
     /// \brief Get render order
     /// \return Render order
@@ -201,7 +180,7 @@ namespace sdf
 
     /// \brief Get the Physically Based Rendering (PBR) material
     /// \return Pointer to the PBR material. Null if it does not exist.
-    public: Pbr *PbrMaterial() const;
+    public: const Pbr *PbrMaterial() const;
 
     /// \brief The path to the file where this element was loaded from.
     /// \return Full path to the file on disk.
@@ -212,7 +191,7 @@ namespace sdf
     public: void SetFilePath(const std::string &_filePath);
 
     /// \brief Private data pointer.
-    private: MaterialPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

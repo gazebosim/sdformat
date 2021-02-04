@@ -19,6 +19,7 @@
 
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -29,10 +30,6 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-  // Forward declare private data class.
-  class CameraPrivate;
-
   /// \enum PixelFormatType
   /// \brief The set of pixel formats. This list should match
   /// ignition::common::Image::PixelFormatType.
@@ -64,27 +61,6 @@ namespace sdf
   {
     /// \brief Constructor
     public: Camera();
-
-    /// \brief Copy constructor
-    /// \param[in] _camera Camera to copy.
-    public: Camera(const Camera &_camera);
-
-    /// \brief Move constructor
-    /// \param[in] _camera Camera to move.
-    public: Camera(Camera &&_camera) noexcept;
-
-    /// \brief Destructor
-    public: virtual ~Camera();
-
-    /// \brief Assignment operator.
-    /// \param[in] _camera The camera to set values from.
-    /// \return *this
-    public: Camera &operator=(const Camera &_camera);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _camera The camera to set values from.
-    /// \return *this
-    public: Camera &operator=(Camera &&_camera) noexcept;
 
     /// \brief Return true if both Camera objects contain the same values.
     /// \param[_in] _alt Camera value to compare.
@@ -290,8 +266,7 @@ namespace sdf
 
     /// \brief Set the distortion center or principal point.
     /// \param[in] _center Distortion center or principal point.
-    public: void SetDistortionCenter(
-                const ignition::math::Vector2d &_center) const;
+    public: void SetDistortionCenter(const ignition::math::Vector2d &_center);
 
     /// \brief Get the pose of the camer. This is the pose of the camera
     /// as specified in SDF (<camera> <pose> ... </pose></camera>).
@@ -460,7 +435,7 @@ namespace sdf
     public: void SetVisibilityMask(uint32_t _mask);
 
     /// \brief Private data pointer.
-    private: CameraPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

@@ -30,23 +30,8 @@
 
 using namespace sdf;
 
-class sdf::JointPrivate
+class sdf::Joint::Implementation
 {
-  public: JointPrivate()
-  {
-    // Initialize here because windows does not support list initialization
-    // at member initialization (ie ... axis = {{nullptr, nullpter}};).
-    this->axis[0] = nullptr;
-    this->axis[1] = nullptr;
-  }
-
-  /// \brief Copy constructor
-  /// \param[in] _jointPrivate JointPrivate to copy.
-  public: explicit JointPrivate(const JointPrivate &_jointPrivate);
-
-  // Delete copy assignment so it is not accidentally used
-  public: JointPrivate &operator=(const JointPrivate &_) = delete;
-
   /// \brief Name of the joint.
   public: std::string name = "";
 
@@ -70,7 +55,7 @@ class sdf::JointPrivate
 
   /// \brief Joint axis
   // cppcheck-suppress
-  public: std::array<std::unique_ptr<JointAxis>, 2> axis;
+  public: std::array<std::optional<JointAxis>, 2> axis;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -83,63 +68,9 @@ class sdf::JointPrivate
 };
 
 /////////////////////////////////////////////////
-JointPrivate::JointPrivate(const JointPrivate &_jointPrivate)
-    : name(_jointPrivate.name),
-      parentLinkName(_jointPrivate.parentLinkName),
-      childLinkName(_jointPrivate.childLinkName),
-      type(_jointPrivate.type),
-      pose(_jointPrivate.pose),
-      poseRelativeTo(_jointPrivate.poseRelativeTo),
-      threadPitch(_jointPrivate.threadPitch),
-      sdf(_jointPrivate.sdf),
-      frameAttachedToGraph(_jointPrivate.frameAttachedToGraph),
-      poseRelativeToGraph(_jointPrivate.poseRelativeToGraph)
-{
-  for (std::size_t i = 0; i < _jointPrivate.axis.size(); ++i)
-  {
-    if (_jointPrivate.axis[i])
-    {
-      this->axis[i] = std::make_unique<JointAxis>(*_jointPrivate.axis[i]);
-    }
-  }
-}
-
-/////////////////////////////////////////////////
 Joint::Joint()
-  : dataPtr(new JointPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Joint::~Joint()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Joint::Joint(const Joint &_joint)
-  : dataPtr(new JointPrivate(*_joint.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Joint::Joint(Joint &&_joint) noexcept
-  : dataPtr(std::exchange(_joint.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Joint &Joint::operator=(const Joint &_joint)
-{
-  return *this = Joint(_joint);
-}
-
-/////////////////////////////////////////////////
-Joint &Joint::operator=(Joint &&_joint)
-{
-  std::swap(this->dataPtr, _joint.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -232,14 +163,14 @@ Errors Joint::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("axis"))
   {
-    this->dataPtr->axis[0].reset(new JointAxis());
+    this->dataPtr->axis[0].emplace();
     Errors axisErrors = this->dataPtr->axis[0]->Load(_sdf->GetElement("axis"));
     errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
   }
 
   if (_sdf->HasElement("axis2"))
   {
-    this->dataPtr->axis[1].reset(new JointAxis());
+    this->dataPtr->axis[1].emplace();
     Errors axisErrors = this->dataPtr->axis[1]->Load(_sdf->GetElement("axis2"));
     errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
   }
@@ -338,14 +269,13 @@ void Joint::SetChildLinkName(const std::string &_name)
 /////////////////////////////////////////////////
 const JointAxis *Joint::Axis(const unsigned int _index) const
 {
-  return this->dataPtr->axis[std::min(_index, 1u)].get();
+  return optionalToPointer(this->dataPtr->axis[std::min(_index, 1u)]);
 }
 
 /////////////////////////////////////////////////
 void Joint::SetAxis(const unsigned int _index, const JointAxis &_axis)
 {
-  this->dataPtr->axis[std::min(_index, 1u)] =
-      std::make_unique<JointAxis>(_axis);
+  this->dataPtr->axis[std::min(_index, 1u)] = _axis;
 }
 
 /////////////////////////////////////////////////
