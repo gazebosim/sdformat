@@ -299,8 +299,7 @@ Errors buildFrameAttachedToGraph(
       _model->InterfaceModelCount() == 0 && !_model->Static())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
-        "Model with name[" + _model->Name() +
-            "] must have at least one link."});
+                     "A model must have at least one link."});
     return errors;
   }
 
@@ -483,8 +482,7 @@ Errors buildFrameAttachedToGraph(
         if (_model->ModelCount() == 0 && _model->InterfaceModelCount() == 0)
         {
           errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
-              "Model with name[" + _model->Name() +
-                  "] must have at least one link."});
+              "A model must have at least one link."});
         }
         else
         {

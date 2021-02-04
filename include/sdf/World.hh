@@ -127,7 +127,6 @@ namespace sdf
     /// \return Number of models contained in this World object.
     public: uint64_t ModelCount() const;
 
-
     /// \brief Get an immediate (not nested) child model based on an index.
     /// \param[in] _index Index of the model. The index should be in the
     /// range [0..ModelCount()).

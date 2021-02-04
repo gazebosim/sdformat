@@ -246,7 +246,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
       this->dataPtr->models.empty() && this->dataPtr->interfaceModels.empty())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
-                     std::string(__func__) + "A model must have at least one link."});
+                     "A model must have at least one link."});
   }
 
   // Load all the joints.
