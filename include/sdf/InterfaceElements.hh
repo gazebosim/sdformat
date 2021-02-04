@@ -47,9 +47,12 @@ struct NestedInclude {
   /// check the file extension.
   std::string resolvedFileName;
 
-  /// Name of the model in absolute hierarchy.
-  /// Example: `top_model::middle_model::my_new_model`
-  std::string absoluteModelName;
+  /// Name of the parent entity in absolute hierarchy.
+  /// Example: if the interface model's name is
+  /// `top_model::middle_model::my_new_model`, the absoluteParentName would be
+  /// `top_model::middle_model`. If the parent entity is the world, this would
+  /// be an empty string.
+  std::string absoluteParentName;
 
   /// Name relative to immediate parent as specified in `//include/@name`.
   /// Example: `my_new_model`

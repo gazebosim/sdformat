@@ -44,7 +44,6 @@ class SDFORMAT_VISIBLE InterfaceModelPoseGraph
   public: sdf::Errors ResolveNestedModelFramePoseInWorldFrame(
               ignition::math::Pose3d &_pose) const;
   private: InterfaceModelPoseGraph(const std::string &_name,
-               const std::string &_relativeTo,
                const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
   // /// \param[in] relative_to Can be "world", or any frame within the nested
   // ///   model's frame graph. (It cannot reach outside of this model).

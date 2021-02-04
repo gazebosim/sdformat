@@ -119,7 +119,7 @@ class ScopedGraph
   /// doesn't point to any graph.
   public: ScopedGraph() = default;
 
-  /// \brief Constructor. The constructed object holds a weak pointer to the
+  /// \brief Constructor. The constructed object holds a pointer to the
   /// passed in graph.
   /// \param[in] _graph A shared pointer to PoseRelativeTo or FrameAttachedTo
   /// graph.
@@ -137,6 +137,9 @@ class ScopedGraph
   /// _name to the existing prefix of the current scope.
   /// \return A new child scope.
   public: ScopedGraph<T> ChildModelScope(const std::string &_name) const;
+
+  // TODO (addisu): docs
+  public: ScopedGraph<T> RootScope() const;
 
   /// \brief Checks if the scope points to a valid graph.
   /// \return True if the scope points to a valid graph.
@@ -274,6 +277,19 @@ ScopedGraph<T> ScopedGraph<T>::ChildModelScope(const std::string &_name) const
   newScopedGraph.dataPtr->scopeVertexId =
       newScopedGraph.VertexIdByName("__model__");
   newScopedGraph.dataPtr->scopeContextName = "__model__";
+  return newScopedGraph;
+}
+
+/////////////////////////////////////////////////
+template <typename T>
+ScopedGraph<T> ScopedGraph<T>::RootScope() const
+{
+  auto newScopedGraph = *this;
+  newScopedGraph.dataPtr = std::make_shared<ScopedGraphData>();
+  newScopedGraph.dataPtr->prefix = "";
+  newScopedGraph.dataPtr->scopeVertexId =
+      newScopedGraph.VertexIdByName("__root__");
+  newScopedGraph.dataPtr->scopeContextName = "__root__";
   return newScopedGraph;
 }
 

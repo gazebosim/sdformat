@@ -664,46 +664,47 @@ TEST_F(InterfaceAPI, FrameSemantics)
 }
 
 /////////////////////////////////////////////////
-// TEST_F(InterfaceAPI, Reposturing)
-// {
-//   using ignition::math::Pose3d;
-//   const std::string testFile = sdf::filesystem::append(PROJECT_SOURCE_PATH,
-//       "test", "sdf", "include_with_interface_api_reposture.sdf");
+TEST_F(InterfaceAPI, Reposturing)
+{
+  using ignition::math::Pose3d;
+  const std::string testFile = sdf::filesystem::append(PROJECT_SOURCE_PATH,
+      "test", "sdf", "include_with_interface_api_reposture.sdf");
 
-//   std::unordered_map<std::string, Pose3d> modelPosesAfterReposture;
-//   auto repostureTestParser =
-//       [&](const sdf::NestedInclude &_include, sdf::Errors &)
-//   {
-//     auto repostureFunc =
-//         [modelName = _include.absoluteModelName, &modelPosesAfterReposture](
-//             const sdf::InterfaceModelPoseGraph &_graph)
-//     {
-//       ignition::math::Pose3d pose;
-//       sdf::Errors errors = _graph.ResolveNestedModelFramePoseInWorldFrame(pose);
-//       EXPECT_TRUE(errors.empty()) << errors;
-//       modelPosesAfterReposture[modelName] = pose;
-//     };
+  std::unordered_map<std::string, Pose3d> modelPosesAfterReposture;
+  auto repostureTestParser =
+      [&](const sdf::NestedInclude &_include, sdf::Errors &)
+  {
+    std::string modelName = sdf::JoinName(_include.absoluteParentName,
+                              _include.localModelName);
+    auto repostureFunc = [modelName = modelName, &modelPosesAfterReposture](
+                             const sdf::InterfaceModelPoseGraph &_graph) {
+      ignition::math::Pose3d pose;
+      sdf::Errors errors = _graph.ResolveNestedModelFramePoseInWorldFrame(pose);
+      EXPECT_TRUE(errors.empty()) << errors;
+      modelPosesAfterReposture[modelName] = pose;
+    };
 
-//     auto model = std::make_shared<sdf::InterfaceModel>(_include.localModelName,
-//         repostureFunc, false, "base_link",
-//         _include.includeRawPose.value_or(Pose3d {}),
-//         _include.includePoseRelativeTo.value_or(""));
-//     model->AddLink({"base_link", {}});
-//     return model;
-//   };
+    auto model = std::make_shared<sdf::InterfaceModel>(_include.localModelName,
+        repostureFunc, false, "base_link",
+        _include.includeRawPose.value_or(Pose3d {}),
+        _include.includePoseRelativeTo.value_or(""));
+    model->AddLink({"base_link", {}});
+    return model;
+  };
 
-//   this->config.RegisterCustomModelParser(repostureTestParser);
-//   this->config.SetFindCallback(
-//       [](const auto &_fileName)
-//       {
-//         return _fileName;
-//       });
-//   sdf::Root root;
-//   sdf::Errors errors = root.Load(testFile, config);
-//   EXPECT_TRUE(errors.empty()) << errors;
-//   ASSERT_EQ(1u, modelPosesAfterReposture.count("M0"));
-//   ASSERT_EQ(1u, modelPosesAfterReposture.count("parent_model::M0"));
-//   EXPECT_EQ(Pose3d(1, 2, 0, 0, 0, 0), modelPosesAfterReposture["M0"]);
-//   EXPECT_EQ(
-//       Pose3d(1, 2, 3, 0.1, 0, 0), modelPosesAfterReposture["parent_model::M1"]);
-// }
+  this->config.RegisterCustomModelParser(repostureTestParser);
+  this->config.SetFindCallback(
+      [](const auto &_fileName)
+      {
+        return _fileName;
+      });
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+  EXPECT_EQ(2u, modelPosesAfterReposture.size());
+  ASSERT_EQ(1u, modelPosesAfterReposture.count("M0"));
+  ASSERT_EQ(1u, modelPosesAfterReposture.count("parent_model::M1"));
+  EXPECT_EQ(Pose3d(1, 2, 0, 0, 0, 0), modelPosesAfterReposture["M0"]);
+  EXPECT_EQ(
+      Pose3d(1, 2, 3, 0.1, 0, 0), modelPosesAfterReposture["parent_model::M1"]);
+}

@@ -190,7 +190,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
 
   // Load all the models.
   Errors modelLoadErrors =
-      loadUniqueRepeated<Model>(_sdf, "model", this->dataPtr->models);
+      loadUniqueRepeated<Model>(_sdf, "model", this->dataPtr->models, _config);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
   // Models are loaded first, and loadUniqueRepeated ensures there are no
@@ -589,8 +589,8 @@ void World::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
     const auto &repostureFunc = ifaceModel->RepostureFunction();
     if (repostureFunc)
     {
-      repostureFunc(sdf::InterfaceModelPoseGraph(ifaceModel->Name(),
-          ifaceModel->PoseRelativeTo(), this->dataPtr->poseRelativeToGraph));
+      repostureFunc(sdf::InterfaceModelPoseGraph(
+          ifaceModel->Name(), this->dataPtr->poseRelativeToGraph));
     }
   }
   for (auto &frame : this->dataPtr->frames)

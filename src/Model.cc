@@ -670,8 +670,8 @@ void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
     const auto &repostureFunc = ifaceModel->RepostureFunction();
     if (repostureFunc)
     {
-      repostureFunc(sdf::InterfaceModelPoseGraph(ifaceModel->Name(),
-          ifaceModel->PoseRelativeTo(), this->dataPtr->poseGraph));
+      repostureFunc(sdf::InterfaceModelPoseGraph(
+          ifaceModel->Name(), childPoseGraph));
     }
   }
   for (auto &link : this->dataPtr->links)

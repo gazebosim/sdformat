@@ -17,11 +17,49 @@
 
 #include "InterfaceElementsImpl.hh"
 #include "sdf/SDFImpl.hh"
+#include "sdf/Types.hh"
+#include <optional>
 
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
+static std::optional<std::string> computeAbsoluteName(
+    const sdf::ElementPtr &_sdf, sdf::Errors &_errors)
+{
+  std::vector<std::string> names;
+  for (auto parent = _sdf;
+       parent->GetName() != "world" && parent->GetName() != "sdf";
+       parent = parent->GetParent())
+  {
+    if (parent->HasAttribute("name"))
+    {
+      names.push_back(parent->GetAttribute("name")->GetAsString());
+    }
+    else
+    {
+      _errors.emplace_back(sdf::ErrorCode::ATTRIBUTE_MISSING,
+          "Name attribute missing from " + parent->GetName() + ".");
+      return std::nullopt;
+    }
+  }
+  if (names.size() > 0)
+  {
+    std::string absoluteParentName = names.back();
+    auto it = names.rbegin();
+    std::advance(it, 1);
+    for (; it != names.rend(); ++it)
+    {
+      absoluteParentName.append(kSdfScopeDelimiter);
+      absoluteParentName.append(*it);
+    }
+
+    return absoluteParentName;
+  }
+
+  return std::nullopt;
+}
+
 /////////////////////////////////////////////////
 sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
     const sdf::ParserConfig &_config, std::vector<InterfaceModelPtr> &_models)
@@ -32,6 +70,13 @@ sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
   {
     sdf::NestedInclude include;
     include.uri = includeElem->Get<std::string>("uri");
+    auto absoluteParentName = computeAbsoluteName(_sdf, allErrors);
+
+    if (absoluteParentName.has_value())
+    {
+      include.absoluteParentName = *absoluteParentName;
+    }
+
     include.localModelName = includeElem->Get<std::string>("name", "").first;
     if (includeElem->HasElement("static"))
     {
