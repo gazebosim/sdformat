@@ -20,7 +20,7 @@ using namespace sdf;
 using namespace ignition;
 
 /// \brief Private lidar data.
-class sdf::LidarPrivate
+class sdf::Lidar::Implementation
 {
   /// \brief Number of rays horizontally per laser sweep
   public: unsigned int horizontalScanSamples{640};
@@ -64,40 +64,8 @@ class sdf::LidarPrivate
 
 //////////////////////////////////////////////////
 Lidar::Lidar()
-  : dataPtr(new LidarPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-//////////////////////////////////////////////////
-Lidar::~Lidar()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Lidar::Lidar(const Lidar &_lidar)
-  : dataPtr(new LidarPrivate(*_lidar.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-Lidar::Lidar(Lidar &&_lidar) noexcept
-  : dataPtr(std::exchange(_lidar.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-Lidar &Lidar::operator=(const Lidar &_lidar)
-{
-  return *this = Lidar(_lidar);
-}
-
-//////////////////////////////////////////////////
-Lidar &Lidar::operator=(Lidar &&_lidar) noexcept
-{
-  std::swap(this->dataPtr, _lidar.dataPtr);
-  return * this;
 }
 
 //////////////////////////////////////////////////

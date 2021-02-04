@@ -19,7 +19,7 @@
 using namespace sdf;
 
 // Private data class
-class sdf::SpherePrivate
+class sdf::Sphere::Implementation
 {
   /// \brief Representation of the sphere
   public: ignition::math::Sphered sphere{1.0};
@@ -30,42 +30,8 @@ class sdf::SpherePrivate
 
 /////////////////////////////////////////////////
 Sphere::Sphere()
-  : dataPtr(new SpherePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Sphere::~Sphere()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Sphere::Sphere(const Sphere &_sphere)
-  : dataPtr(new SpherePrivate)
-{
-  this->dataPtr->sphere = _sphere.dataPtr->sphere;
-  this->dataPtr->sdf = _sphere.dataPtr->sdf;
-}
-
-//////////////////////////////////////////////////
-Sphere::Sphere(Sphere &&_sphere) noexcept
-  : dataPtr(std::exchange(_sphere.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Sphere &Sphere::operator=(const Sphere &_sphere)
-{
-  return *this = Sphere(_sphere);
-}
-
-/////////////////////////////////////////////////
-Sphere &Sphere::operator=(Sphere &&_sphere)
-{
-  std::swap(this->dataPtr, _sphere.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////

@@ -20,7 +20,7 @@
 using namespace sdf;
 
 // Private data class
-class sdf::CapsulePrivate
+class sdf::Capsule::Implementation
 {
   // A capsule with a length of 1 meter and radius if 0.5 meters.
   public: ignition::math::Capsuled capsule{1.0, 0.5};
@@ -31,41 +31,8 @@ class sdf::CapsulePrivate
 
 /////////////////////////////////////////////////
 Capsule::Capsule()
-  : dataPtr(new CapsulePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Capsule::~Capsule()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Capsule::Capsule(const Capsule &_capsule)
-  : dataPtr(new CapsulePrivate)
-{
-  *this->dataPtr = *_capsule.dataPtr;
-}
-
-//////////////////////////////////////////////////
-Capsule::Capsule(Capsule &&_capsule) noexcept
-  : dataPtr(std::exchange(_capsule.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Capsule &Capsule::operator=(const Capsule &_capsule)
-{
-  return *this = Capsule(_capsule);
-}
-
-/////////////////////////////////////////////////
-Capsule &Capsule::operator=(Capsule &&_capsule)
-{
-  std::swap(this->dataPtr, _capsule.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////

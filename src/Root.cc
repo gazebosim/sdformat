@@ -34,7 +34,7 @@
 using namespace sdf;
 
 /// \brief Private data for sdf::Root
-class sdf::RootPrivate
+class sdf::Root::Implementation
 {
   /// \brief Version string
   public: std::string version = "";
@@ -123,28 +123,8 @@ ScopedGraph<PoseRelativeToGraph> addPoseRelativeToGraph(
 
 /////////////////////////////////////////////////
 Root::Root()
-  : dataPtr(new RootPrivate)
+  : dataPtr(ignition::utils::MakeUniqueImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Root::Root(Root &&_root) noexcept
-  : dataPtr(std::exchange(_root.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Root &Root::operator=(Root &&_root) noexcept
-{
-  std::swap(this->dataPtr, _root.dataPtr);
-  return *this;
-}
-
-/////////////////////////////////////////////////
-Root::~Root()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -192,7 +172,7 @@ Errors Root::LoadSdfString(const std::string &_sdf, const ParserConfig &_config)
   if (!readString(_sdf, _config, sdfParsed, errors))
   {
     errors.push_back(
-        {ErrorCode::STRING_READ, "Unable to SDF string: " + _sdf});
+        {ErrorCode::STRING_READ, "Unable to read SDF string: " + _sdf});
     return errors;
   }
 

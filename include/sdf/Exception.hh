@@ -24,15 +24,9 @@
 #include <sstream>
 #include <string>
 
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
-
-#ifdef _WIN32
-// Disable warning C4251 which is triggered by
-// std::unique_ptr
-#pragma warning(push)
-#pragma warning(disable: 4251)
-#endif
 
 namespace sdf
 {
@@ -48,8 +42,6 @@ namespace sdf
   #define sdfthrow(msg) {std::ostringstream throwStream;\
     throwStream << msg << std::endl << std::flush;\
     throw sdf::Exception(__FILE__, __LINE__, throwStream.str()); }
-
-  class ExceptionPrivate;
 
   /// \class Exception Exception.hh common/common.hh
   /// \brief Class for generating exceptions
@@ -68,24 +60,24 @@ namespace sdf
 
     /// \brief Copy constructor
     /// \param[in] _e Exception to copy.
-    public: Exception(const Exception &_e);
+    public: Exception(const Exception &_e) = default;
 
     /// \brief Move constructor
     /// \param[in] _e Exception to move.
-    public: Exception(Exception &&_e) noexcept;
+    public: Exception(Exception &&_e) noexcept = default;
 
     /// \brief Assignment operator.
     /// \param[in] _exception The exception to set values from.
     /// \return *this
-    public: Exception &operator=(const Exception &_exception);
+    public: Exception &operator=(const Exception &_exception) = default;
 
     /// \brief Move assignment operator.
     /// \param[in] _exception Exception to move.
     /// \return Reference to this.
-    public: Exception &operator=(Exception &&_exception);
+    public: Exception &operator=(Exception &&_exception) noexcept = default;
 
     /// \brief Destructor
-    public: virtual ~Exception();
+    public: virtual ~Exception() = default;
 
     /// \brief Return the error function
     /// \return The error function name
@@ -109,7 +101,7 @@ namespace sdf
     }
 
     /// \brief Private data pointer.
-    private: std::unique_ptr<ExceptionPrivate> dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \class InternalError Exception.hh common/common.hh
@@ -157,9 +149,5 @@ namespace sdf
   /// \}
   }
 }
-
-#ifdef _WIN32
-#pragma warning(pop)
-#endif
 
 #endif

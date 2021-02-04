@@ -122,11 +122,12 @@ endif()
 ########################################
 # Find ignition utils
 # Set a variable for generating ProjectConfig.cmake
-find_package(ignition-utils0 QUIET)
-if (NOT ignition-utils0_FOUND)
-  message(STATUS "Looking for ignition-utils0-config.cmake - not found")
-  BUILD_ERROR ("Missing: Ignition utils(libignition-utils0-dev)")
+find_package(ignition-utils1 QUIET)
+if (NOT ignition-utils1_FOUND)
+  message(STATUS "Looking for ignition-utils1-config.cmake - not found")
+  BUILD_ERROR ("Missing: Ignition utils(libignition-utils1-dev)")
 else()
-  set(IGN_UTILS_VER ${ignition-utils0_VERSION_MAJOR})
+  set(IGN_UTILS_VER ${ignition-utils1_VERSION_MAJOR})
   message(STATUS "Looking for ignition-utils${IGN_UTILS_VER}-config.cmake - found")
 endif()
+

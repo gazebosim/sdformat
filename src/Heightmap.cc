@@ -23,7 +23,7 @@
 using namespace sdf;
 
 // Private data class
-class sdf::HeightmapTexturePrivate
+class sdf::HeightmapTexture::Implementation
 {
   /// \brief URI of the diffuse map.
   public: std::string diffuse{""};
@@ -39,7 +39,7 @@ class sdf::HeightmapTexturePrivate
 };
 
 // Private data class
-class sdf::HeightmapBlendPrivate
+class sdf::HeightmapBlend::Implementation
 {
   /// \brief Minimum height
   public: double minHeight{0.0};
@@ -52,7 +52,7 @@ class sdf::HeightmapBlendPrivate
 };
 
 // Private data class
-class sdf::HeightmapPrivate
+class sdf::Heightmap::Implementation
 {
   /// \brief URI to 2d grayscale map.
   public: std::string uri{""};
@@ -70,7 +70,7 @@ class sdf::HeightmapPrivate
   public: bool useTerrainPaging{false};
 
   /// \brief Sampling per datum.
-  public: unsigned int sampling{2u};
+  public: unsigned int sampling{1u};
 
   /// \brief Textures in order
   public: std::vector<HeightmapTexture> textures;
@@ -84,41 +84,8 @@ class sdf::HeightmapPrivate
 
 /////////////////////////////////////////////////
 HeightmapTexture::HeightmapTexture()
-  : dataPtr(new HeightmapTexturePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-HeightmapTexture::~HeightmapTexture()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-HeightmapTexture::HeightmapTexture(const HeightmapTexture &_heightmap)
-  : dataPtr(new HeightmapTexturePrivate(*_heightmap.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-HeightmapTexture::HeightmapTexture(HeightmapTexture &&_heightmap) noexcept
-  : dataPtr(std::exchange(_heightmap.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-HeightmapTexture &HeightmapTexture::operator=(
-    const HeightmapTexture &_heightmap)
-{
-  return *this = HeightmapTexture(_heightmap);
-}
-
-/////////////////////////////////////////////////
-HeightmapTexture &HeightmapTexture::operator=(HeightmapTexture &&_heightmap)
-{
-  std::swap(this->dataPtr, _heightmap.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -225,41 +192,8 @@ void HeightmapTexture::SetNormal(const std::string &_normal)
 
 /////////////////////////////////////////////////
 HeightmapBlend::HeightmapBlend()
-  : dataPtr(new HeightmapBlendPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-HeightmapBlend::~HeightmapBlend()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-HeightmapBlend::HeightmapBlend(const HeightmapBlend &_heightmap)
-  : dataPtr(new HeightmapBlendPrivate(*_heightmap.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-HeightmapBlend::HeightmapBlend(HeightmapBlend &&_heightmap) noexcept
-  : dataPtr(std::exchange(_heightmap.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-HeightmapBlend &HeightmapBlend::operator=(
-    const HeightmapBlend &_heightmap)
-{
-  return *this = HeightmapBlend(_heightmap);
-}
-
-/////////////////////////////////////////////////
-HeightmapBlend &HeightmapBlend::operator=(HeightmapBlend &&_heightmap)
-{
-  std::swap(this->dataPtr, _heightmap.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -344,40 +278,8 @@ void HeightmapBlend::SetFadeDistance(double _fadeDistance)
 
 /////////////////////////////////////////////////
 Heightmap::Heightmap()
-  : dataPtr(new HeightmapPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Heightmap::~Heightmap()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Heightmap::Heightmap(const Heightmap &_heightmap)
-  : dataPtr(new HeightmapPrivate(*_heightmap.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-Heightmap::Heightmap(Heightmap &&_heightmap) noexcept
-  : dataPtr(std::exchange(_heightmap.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Heightmap &Heightmap::operator=(const Heightmap &_heightmap)
-{
-  return *this = Heightmap(_heightmap);
-}
-
-/////////////////////////////////////////////////
-Heightmap &Heightmap::operator=(Heightmap &&_heightmap)
-{
-  std::swap(this->dataPtr, _heightmap.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////

@@ -23,10 +23,13 @@
 #include <string>
 #include <vector>
 
+#include <ignition/utils/ImplPtr.hh>
+
 #include "sdf/Error.hh"
 #include "sdf/InterfaceElements.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
+
 
 namespace sdf
 {
@@ -74,29 +77,9 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Default constructor
   public: ParserConfig();
 
-  /// \brief Copy constructor
-  /// \param[in] _config ParserConfig to copy.
-  public: ParserConfig(const ParserConfig &_config);
-
-  /// \brief Move constructor
-  /// \param[in] _config ParserConfig to move.
-  public: ParserConfig(ParserConfig &&_config) noexcept;
-
-  /// \brief Move assignment operator.
-  /// \param[in] _config ParserConfig to move.
-  /// \return Reference to this.
-  public: ParserConfig &operator=(ParserConfig &&_config) noexcept;
-
-  /// \brief Copy assignment operator.
-  /// \param[in] _config ParserConfig to copy.
-  /// \return Reference to this.
-  public: ParserConfig &operator=(const ParserConfig &_config);
-
-  /// \brief Destructor
-  public: ~ParserConfig();
-
   /// Mutable access to a singleton ParserConfig that serves as the global
-  /// ParserConfig object for all parsing operations
+  /// ParserConfig object for all parsing operations that do not specify their
+  /// own ParserConfig.
   /// \return A mutable reference to the singleton ParserConfig object
   public: static ParserConfig &GlobalConfig();
 
@@ -107,8 +90,17 @@ class SDFORMAT_VISIBLE ParserConfig
 
   /// \brief Set the callback to use when libsdformat can't find a file.
   /// The callback should return a complete path to the requested file, or
-  /// and empty string if the file was not found in the callback.
+  /// an empty string if the file was not found in the callback. Generally, the
+  /// input argument is a URI or a file path (absolute or relative) obtained
+  /// from a `//include/uri` element. For example, if the value
+  /// `custom://model_name` is given in a `//include/uri`, sdf::findFile() may
+  /// invoke the callback with the argument `custom://model_name` if it is
+  /// unable to find a file using the steps listed in sdf::findfile().
+  ///
+  /// Note, however, the input is not limited to URIs and file paths, and it is
+  /// left up to the callback to interpret the contents of the input string.
   /// \param[in] _cb The callback function.
+  /// \sa sdf::findFile() for the order of search operations
   public: void SetFindCallback(
               std::function<std::string(const std::string &)> _cb);
 
@@ -120,6 +112,7 @@ class SDFORMAT_VISIBLE ParserConfig
   /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
   /// \param[in] _uri URI that will be mapped to _path
   /// \param[in] _path Colon separated set of paths.
+  /// \sa sdf::findFile() for the order of search operations
   public: void AddURIPath(const std::string &_uri, const std::string &_path);
 
   /// \brief Registers a custom model parser.
@@ -130,7 +123,7 @@ class SDFORMAT_VISIBLE ParserConfig
   public: const std::vector<CustomModelParser> &CustomModelParsers() const;
 
   /// \brief Private data pointer.
-  private: ParserConfigPrivate *dataPtr;
+  IGN_UTILS_IMPL_PTR(dataPtr)
 };
 }
 }

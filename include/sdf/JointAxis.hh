@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Vector3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Exception.hh"
 #include "sdf/Types.hh"
@@ -33,7 +34,6 @@ namespace sdf
   //
 
   // Forward declare private data class.
-  class JointAxisPrivate;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
 
@@ -43,27 +43,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: JointAxis();
-
-    /// \brief Copy constructor
-    /// \param[in] _jointAxis Joint axis to copy.
-    public: JointAxis(const JointAxis &_jointAxis);
-
-    /// \brief Move constructor
-    /// \param[in] _jointAxis Joint axis to move.
-    public: JointAxis(JointAxis &&_jointAxis) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _jointAxis JointAxis component to move.
-    /// \return Reference to this.
-    public: JointAxis &operator=(JointAxis &&_jointAxis);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _jointAxis JointAxis component to copy.
-    /// \return Reference to this.
-    public: JointAxis &operator=(const JointAxis &_jointAxis);
-
-    /// \brief Destructor
-    public: ~JointAxis();
 
     /// \brief Load the joint axis based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -174,7 +153,7 @@ namespace sdf
     /// axis is continuous.
     /// \param[in] _upper The upper joint axis limit.
     /// \sa double Upper() const
-    public: void SetUpper(const double _upper) const;
+    public: void SetUpper(const double _upper);
 
     /// \brief Get the value for enforcing the maximum absolute joint effort
     /// that can be applied.
@@ -201,7 +180,7 @@ namespace sdf
     /// \param[in] _velocity The value for enforcing the maximum absolute
     /// joint velocity.
     /// \sa double MaxVelocity() const
-    public: void SetMaxVelocity(const double _velocity) const;
+    public: void SetMaxVelocity(const double _velocity);
 
     /// \brief Get the joint stop stiffness. The default value is 1e8.
     /// \return The joint stop stiffness.
@@ -212,7 +191,7 @@ namespace sdf
     /// \param[in] _stiffness The joint stop stiffness.
     /// \return The joint stop stiffness.
     /// \sa double Stiffness() const
-    public: void SetStiffness(const double _stiffness) const;
+    public: void SetStiffness(const double _stiffness);
 
     /// \brief Get the joint stop dissipation. The default value is 1.0.
     /// \return The joint stop dissipation.
@@ -222,7 +201,7 @@ namespace sdf
     /// \brief Set the joint stop dissipation.
     /// \param[in] _dissipation The joint stop dissipation.
     /// \sa double Dissipation() const
-    public: void SetDissipation(const double _dissipation) const;
+    public: void SetDissipation(const double _dissipation);
 
     /// Get the name of the coordinate frame in which this joint axis's
     /// unit vector is expressed. An empty value implies the parent (joint)
@@ -270,7 +249,7 @@ namespace sdf
     friend class Joint;
 
     /// \brief Private data pointer
-    private: JointAxisPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

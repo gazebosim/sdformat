@@ -19,6 +19,7 @@
 #define SDF_SKY_HH_
 
 #include <ignition/math/Color.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
@@ -29,36 +30,10 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-
-  // Forward declarations.
-  class SkyPrivate;
-
   class SDFORMAT_VISIBLE Sky
   {
     /// \brief Default constructor
     public: Sky();
-
-    /// \brief Copy constructor
-    /// \param[in] _sky Sky element to copy.
-    public: Sky(const Sky &_sky);
-
-    /// \brief Move constructor
-    /// \param[in] _sky Sky to move.
-    public: Sky(Sky &&_sky) noexcept;
-
-    /// \brief Destructor
-    public: ~Sky();
-
-    /// \brief Assignment operator.
-    /// \param[in] _sky The sky to set values from.
-    /// \return *this
-    public: Sky &operator=(const Sky &_sky);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _workflow The sky to move from.
-    /// \return *this
-    public: Sky &operator=(Sky &&_sky);
 
     /// \brief Get time of day [0..24]
     /// \return Time of day
@@ -139,7 +114,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    private: SkyPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }
