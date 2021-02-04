@@ -28,6 +28,8 @@
 #include "sdf/InterfaceFrame.hh"
 #include "sdf/InterfaceJoint.hh"
 #include "sdf/InterfaceLink.hh"
+#include "sdf/InterfaceModelPoseGraph.hh"
+#include "sdf/Types.hh"
 
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -41,28 +43,34 @@ class InterfaceModel;
 using InterfaceModelPtr = std::shared_ptr<InterfaceModel>;
 using InterfaceModelConstPtr = std::shared_ptr<const InterfaceModel>;
 
+
+using RepostureFunction =
+    std::function<void(const sdf::InterfaceModelPoseGraph &)>;
+
 class SDFORMAT_VISIBLE InterfaceModel
 {
   /// \brief Constructor
+  /// // TODO (addisu) update docs
   /// \param[in] name The *local* name (no nesting, e.g. "::").
   ///   If this name contains "::", an error will be raised.
   /// \param[in] _static Whether the model is static
   /// \param[in] _canonicalLinkNameThe canonical link's name. (It must be
   ///   registered).
-  /// \param[in] model_frame_pose_in_canonical_link_frame Model frame pose
-  ///   relative to canonical link's frame. Defaults to identity.
   /// \param[in] model_frame_pose_in_parent_model_frame Model frame pose
   ///   relative to the including model's frame. Defaults to identity.
   ///   \note This will not be used if //include/pose is specified.
   public: InterfaceModel(const std::string &_name,
+              const sdf::RepostureFunction &_repostureFunction,
               bool _static,
               const std::string &_canonicalLinkName,
-              const ignition::math::Pose3d &_poseInCanonicalLinkFrame = {},
-              const ignition::math::Pose3d &_poseInParentFrame = {});
+              const ignition::math::Pose3d &_poseInRelativeToFrame = {},
+              const std::string &_relativeTo = {});
 
   /// \brief Get the name of the model.
   /// \return Local name of the model.
   public: const std::string &Name() const;
+
+  public: const sdf::RepostureFunction& RepostureFunction() const;
 
   /// TODO (addisu) docs
   public: bool Static() const;
@@ -78,10 +86,9 @@ class SDFORMAT_VISIBLE InterfaceModel
   public: const std::string ResolvedCanonicalLinkName() const;
 
   public: const ignition::math::Pose3d &
-          ModelFramePoseInCanonicalLinkFrame() const;
+          ModelFramePoseInRelativeToFrame() const;
 
-  public: const ignition::math::Pose3d &
-          ModelFramePoseInParentFrame() const;
+  public: const std::string &PoseRelativeTo() const;
 
   // TODO: Why is this nested_model a shared_ptr?
   /// Provided so that hierarchy can still be leveraged from SDFormat.

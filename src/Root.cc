@@ -287,7 +287,7 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
 
   // Load all the models.
   Errors modelLoadErrors = loadUniqueRepeated<sdf::Model>(
-      this->dataPtr->sdf, "model", this->dataPtr->models);
+      this->dataPtr->sdf, "model", this->dataPtr->models, _config);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
   if (!this->dataPtr->models.empty())
   {

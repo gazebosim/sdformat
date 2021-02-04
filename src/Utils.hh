@@ -79,9 +79,9 @@ namespace sdf
   /// exists.
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
-  template <typename Class>
+  template <typename Class, typename... Args>
   sdf::Errors loadUniqueRepeated(sdf::ElementPtr _sdf,
-      const std::string &_sdfName, std::vector<Class> &_objs)
+      const std::string &_sdfName, std::vector<Class> &_objs, Args&&... _args)
   {
     Errors errors;
 
@@ -97,7 +97,7 @@ namespace sdf
         Class obj;
 
         // Load the model and capture the errors.
-        Errors loadErrors = obj.Load(elem);
+        Errors loadErrors = obj.Load(elem, std::forward<Args>(_args)...);
 
         // keep processing even if there are loadErrors
         {

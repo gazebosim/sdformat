@@ -24,10 +24,11 @@ inline namespace SDF_VERSION_NAMESPACE
 class InterfaceModel::Implementation
 {
   public: std::string name;
+  public: sdf::RepostureFunction repostureFunction;
   public: bool isStatic;
   public: std::string canonicalLinkName;
-  public: ignition::math::Pose3d poseInCanonicalLinkFrame;
-  public: ignition::math::Pose3d poseInParentFrame;
+  public: ignition::math::Pose3d poseInRelativeToFrame;
+  public: std::string relativeTo;
   public: std::vector<sdf::InterfaceModelConstPtr> nestedModels;
   public: std::vector<sdf::InterfaceFrame> frames;
   public: std::vector<sdf::InterfaceJoint> joints;
@@ -35,17 +36,19 @@ class InterfaceModel::Implementation
 };
 
 InterfaceModel::InterfaceModel(const std::string &_name,
+    const sdf::RepostureFunction &_repostureFunction,
     bool _static,
     const std::string &_canonicalLinkName,
-    const ignition::math::Pose3d &_poseInCanonicalLinkFrame,
-    const ignition::math::Pose3d &_poseInParentFrame)
+    const ignition::math::Pose3d &_poseInRelativeToFrame,
+    const std::string &_relativeTo)
     : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->name = _name;
+  this->dataPtr->repostureFunction = _repostureFunction;
   this->dataPtr->isStatic = _static;
   this->dataPtr->canonicalLinkName = _canonicalLinkName;
-  this->dataPtr->poseInCanonicalLinkFrame = _poseInCanonicalLinkFrame;
-  this->dataPtr->poseInParentFrame = _poseInParentFrame;
+  this->dataPtr->poseInRelativeToFrame = _poseInRelativeToFrame;
+  this->dataPtr->relativeTo = _relativeTo;
 }
 
 /////////////////////////////////////////////////
@@ -61,6 +64,12 @@ bool InterfaceModel::Static() const
 }
 
 /////////////////////////////////////////////////
+const sdf::RepostureFunction& InterfaceModel::RepostureFunction() const
+{
+  return this->dataPtr->repostureFunction;
+}
+
+/////////////////////////////////////////////////
 const std::string &InterfaceModel::CanonicalLinkName() const
 {
   return this->dataPtr->canonicalLinkName;
@@ -72,18 +81,19 @@ const std::string InterfaceModel::ResolvedCanonicalLinkName() const
   // TODO: This is not correct.
   return this->dataPtr->canonicalLinkName;
 }
-/////////////////////////////////////////////////
-const ignition::math::Pose3d &
-InterfaceModel::ModelFramePoseInCanonicalLinkFrame() const
-{
-  return this->dataPtr->poseInCanonicalLinkFrame;
-}
 
 /////////////////////////////////////////////////
 const ignition::math::Pose3d &
-InterfaceModel::ModelFramePoseInParentFrame() const
+InterfaceModel::ModelFramePoseInRelativeToFrame() const
 {
-  return this->dataPtr->poseInParentFrame;
+  return this->dataPtr->poseInRelativeToFrame;
+}
+
+
+/////////////////////////////////////////////////
+const std::string &InterfaceModel::PoseRelativeTo() const
+{
+  return this->dataPtr->relativeTo;
 }
 
 ///////////////////////////////////////////////

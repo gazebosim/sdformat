@@ -58,7 +58,9 @@ struct NestedInclude {
   /// As defined by `//include/static`.
   std::optional<bool> isStatic;
 
-  // TODO(addisu) Don't we need to pass //include/pose?
+  // TODO (addisu) docs
+  std::optional<ignition::math::Pose3d> includeRawPose;
+  std::optional<std::string> includePoseRelativeTo;
 
   /// This is a "virtual" XML element that will contain all custom (*unparsed*)
   /// elements and attributes within `//include`.

@@ -25,6 +25,7 @@
 #include <ignition/math/graph/Graph.hh>
 
 #include "sdf/Error.hh"
+#include "sdf/InterfaceModel.hh"
 #include "sdf/Types.hh"
 
 /// \ingroup sdf_frame_semantics
@@ -116,6 +117,9 @@ namespace sdf
   Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
               const Model *_model, bool _root = true);
 
+  Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
+              InterfaceModelConstPtr _model, bool _root = true);
+
   /// \brief Build a FrameAttachedToGraph for a world.
   /// \param[out] _out Graph object to write.
   /// \param[in] _world World from which to build attached_to graph.
@@ -129,6 +133,9 @@ namespace sdf
   /// \return Errors.
   Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
               const Model *_model, bool _root = true);
+
+  Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
+              InterfaceModelConstPtr _model, bool _root = true);
 
   /// \brief Build a PoseRelativeToGraph for a world.
   /// \param[out] _out Graph object to write.

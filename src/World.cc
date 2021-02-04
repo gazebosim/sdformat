@@ -23,6 +23,7 @@
 #include "sdf/Actor.hh"
 #include "sdf/Frame.hh"
 #include "sdf/InterfaceModel.hh"
+#include "sdf/InterfaceModelPoseGraph.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/ParserConfig.hh"
@@ -70,7 +71,7 @@ class sdf::WorldPrivate
   /// \brief The models specified in this world.
   public: std::vector<Model> models;
 
-  /// \brief The models specified in this world.
+  /// \brief The interface models specified in this world.
   public: std::vector<InterfaceModelPtr> interfaceModels;
 
   /// \brief Name of the world.
@@ -614,6 +615,15 @@ void World::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
   for (auto &model : this->dataPtr->models)
   {
     model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &ifaceModel : this->dataPtr->interfaceModels)
+  {
+    const auto &repostureFunc = ifaceModel->RepostureFunction();
+    if (repostureFunc)
+    {
+      repostureFunc(sdf::InterfaceModelPoseGraph(ifaceModel->Name(),
+          ifaceModel->PoseRelativeTo(), this->dataPtr->poseRelativeToGraph));
+    }
   }
   for (auto &frame : this->dataPtr->frames)
   {

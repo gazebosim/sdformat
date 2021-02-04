@@ -52,6 +52,12 @@ sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
     }
 
     include.virtualCustomElements = virtualCustomElements;
+    if (includeElem->HasElement("pose"))
+    {
+      auto poseElem = includeElem->GetElement("pose");
+      include.includeRawPose = poseElem->Get<ignition::math::Pose3d>();
+      include.includePoseRelativeTo = poseElem->Get<std::string>("relative_to");
+    }
 
     for (const auto &parser : _config.CustomModelParsers())
     {

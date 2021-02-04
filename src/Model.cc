@@ -22,11 +22,15 @@
 #include <ignition/math/SemanticVersion.hh>
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
+#include "sdf/InterfaceModel.hh"
+#include "sdf/InterfaceModelPoseGraph.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
+#include "sdf/ParserConfig.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
+#include "InterfaceElementsImpl.hh"
 #include "ScopedGraph.hh"
 #include "Utils.hh"
 
@@ -73,6 +77,9 @@ class sdf::ModelPrivate
 
   /// \brief The nested models specified in this model.
   public: std::vector<Model> models;
+
+  /// \brief The interface models specified in this model.
+  public: std::vector<InterfaceModelPtr> interfaceModels;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -127,6 +134,12 @@ Model &Model::operator=(Model &&_model)
 
 /////////////////////////////////////////////////
 Errors Model::Load(ElementPtr _sdf)
+{
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
 {
   Errors errors;
 
@@ -195,7 +208,7 @@ Errors Model::Load(ElementPtr _sdf)
 
   // Load nested models.
   Errors nestedModelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
-    this->dataPtr->models);
+    this->dataPtr->models, _config);
   errors.insert(errors.end(),
                 nestedModelLoadErrors.begin(),
                 nestedModelLoadErrors.end());
@@ -206,6 +219,19 @@ Errors Model::Load(ElementPtr _sdf)
   for (const auto &model : this->dataPtr->models)
   {
     frameNames.insert(model.Name());
+  }
+
+  // Load included models via the interface API
+  Errors interfaceModelLoadErrors =
+      loadInterfaceElements(_sdf, _config, this->dataPtr->interfaceModels);
+  errors.insert(errors.end(), interfaceModelLoadErrors.begin(),
+      interfaceModelLoadErrors.end());
+
+  // TODO: Check that the interface model names don't collide with the regular
+  // model names
+  for (const auto &ifaceModel : this->dataPtr->interfaceModels)
+  {
+    frameNames.insert(ifaceModel->Name());
   }
 
   // Load all the links.
@@ -249,10 +275,10 @@ Errors Model::Load(ElementPtr _sdf)
   // Require at least one link so the implicit model frame can be attached to
   // something.
   if (!this->Static() && this->dataPtr->links.empty() &&
-      this->dataPtr->models.empty())
+      this->dataPtr->models.empty() && this->dataPtr->interfaceModels.empty())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
-                     "A model must have at least one link."});
+                     std::string(__func__) + "A model must have at least one link."});
   }
 
   // Load all the joints.
@@ -584,6 +610,20 @@ std::pair<const Link*, std::string> Model::CanonicalLinkAndRelativeName() const
       }
       return canonicalLinkAndName;
     }
+    else if (this->InterfaceModelCount() > 0)
+    {
+      // Recursively choose the canonical link of the first nested model
+      // (depth first search).
+      auto firstModel = this->InterfaceModelByIndex(0);
+      auto canonicalLinkName = firstModel->ResolvedCanonicalLinkName();
+      // Prepend firstModelName if a valid link is found.
+      if (canonicalLinkName != "")
+      {
+        canonicalLinkName =
+            firstModel->Name() + "::" + canonicalLinkName;
+      }
+      return {nullptr, canonicalLinkName};
+    }
     else
     {
       return std::make_pair(nullptr, "");
@@ -656,6 +696,15 @@ void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
   for (auto &model : this->dataPtr->models)
   {
     model.SetPoseRelativeToGraph(childPoseGraph);
+  }
+  for (auto &ifaceModel : this->dataPtr->interfaceModels)
+  {
+    const auto &repostureFunc = ifaceModel->RepostureFunction();
+    if (repostureFunc)
+    {
+      repostureFunc(sdf::InterfaceModelPoseGraph(ifaceModel->Name(),
+          ifaceModel->PoseRelativeTo(), this->dataPtr->poseGraph));
+    }
   }
   for (auto &link : this->dataPtr->links)
   {
@@ -738,3 +787,19 @@ sdf::ElementPtr Model::Element() const
 {
   return this->dataPtr->sdf;
 }
+
+/////////////////////////////////////////////////
+uint64_t Model::InterfaceModelCount() const
+{
+  return this->dataPtr->interfaceModels.size();
+}
+
+/////////////////////////////////////////////////
+InterfaceModelConstPtr Model::InterfaceModelByIndex(
+    const uint64_t _index) const
+{
+  if (_index < this->dataPtr->interfaceModels.size())
+    return this->dataPtr->interfaceModels[_index];
+  return nullptr;
+}
+

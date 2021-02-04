@@ -14,29 +14,33 @@
  * limitations under the License.
  *
  */
-#ifndef SDF_INTERFACE_ELEMENTS_IMPL_HH_
-#define SDF_INTERFACE_ELEMENTS_IMPL_HH_
 
-#include <memory>
-#include <vector>
+#include "sdf/InterfaceModelPoseGraph.hh"
 
-#include "sdf/Element.hh"
-#include "sdf/InterfaceModel.hh"
-#include "sdf/ParserConfig.hh"
-#include "sdf/Types.hh"
-
-#include "sdf/sdf_config.h"
-#include "sdf/system_util.hh"
+#include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
-/// \brief TODO (addisu)
-sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
-    const sdf::ParserConfig &_config,
-    std::vector<InterfaceModelPtr> &_models);
-}
-}
+class InterfaceModelPoseGraph::Implementation
+{
+};
 
-#endif
+InterfaceModelPoseGraph::InterfaceModelPoseGraph(
+    const std::string &_name, const std::string &_relativeTo,
+    const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
+    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+{
+}
+sdf::Errors InterfaceModelPoseGraph::ResolveNestedModelFramePoseInWorldFrame(
+    ignition::math::Pose3d &_pose) const
+{
+  sdf::Errors errors;
+  _pose.SetX(1.0);
+  _pose.SetY(2.0);
+  return errors;
+}
+}
+}

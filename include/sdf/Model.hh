@@ -35,9 +35,11 @@ namespace sdf
 
   // Forward declarations.
   class Frame;
+  class InterfaceModel;
   class Joint;
   class Link;
   class ModelPrivate;
+  class ParserConfig;
   struct PoseRelativeToGraph;
   struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;
@@ -75,6 +77,8 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
+
+    public: Errors Load(sdf::ElementPtr _sdf, const ParserConfig &_config);
 
     /// \brief Get the name of the model.
     /// The name of the model should be unique within the scope of a World.
@@ -320,6 +324,11 @@ namespace sdf
     /// name of the link relative to the current model.
     public: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
         const;
+
+    public: uint64_t InterfaceModelCount() const;
+
+    public: std::shared_ptr<const InterfaceModel> InterfaceModelByIndex(
+                const uint64_t _index) const;
 
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or
