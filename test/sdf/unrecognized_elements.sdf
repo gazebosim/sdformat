@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="joint_incorrect_tags" some_attribute="staheousth">
+    <link name="link">
+      <pose>0 0 1 0 0 0</pose>
+      <not_a_link_element>This should trigger a warning</not_a_link_element>
+    </link>
+    <not_a_model_element>This should also trigger a warning</not_a_model_element>
+  </model>
+  <not_an_sdf_element>Warnings time</not_an_sdf_element>
+</sdf>
