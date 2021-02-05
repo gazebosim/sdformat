@@ -26,7 +26,7 @@
 
 using namespace sdf;
 
-class sdf::MaterialPrivate
+class sdf::Material::Implementation
 {
   /// \brief Script URI
   public: std::string scriptUri = "";
@@ -73,40 +73,8 @@ class sdf::MaterialPrivate
 
 /////////////////////////////////////////////////
 Material::Material()
-  : dataPtr(new MaterialPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Material::~Material()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Material::Material(const Material &_material)
-  : dataPtr(new MaterialPrivate(*_material.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Material::Material(Material &&_material) noexcept
-  : dataPtr(std::exchange(_material.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Material &Material::operator=(const Material &_material)
-{
-  return *this = Material(_material);
-}
-
-/////////////////////////////////////////////////
-Material &Material::operator=(Material &&_material)
-{
-  std::swap(this->dataPtr, _material.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -236,7 +204,7 @@ ignition::math::Color Material::Ambient() const
 }
 
 //////////////////////////////////////////////////
-void Material::SetAmbient(const ignition::math::Color &_color) const
+void Material::SetAmbient(const ignition::math::Color &_color)
 {
   this->dataPtr->ambient = _color;
 }
@@ -248,7 +216,7 @@ ignition::math::Color Material::Diffuse() const
 }
 
 //////////////////////////////////////////////////
-void Material::SetDiffuse(const ignition::math::Color &_color) const
+void Material::SetDiffuse(const ignition::math::Color &_color)
 {
   this->dataPtr->diffuse = _color;
 }
@@ -260,7 +228,7 @@ ignition::math::Color Material::Specular() const
 }
 
 //////////////////////////////////////////////////
-void Material::SetSpecular(const ignition::math::Color &_color) const
+void Material::SetSpecular(const ignition::math::Color &_color)
 {
   this->dataPtr->specular = _color;
 }
@@ -272,7 +240,7 @@ ignition::math::Color Material::Emissive() const
 }
 
 //////////////////////////////////////////////////
-void Material::SetEmissive(const ignition::math::Color &_color) const
+void Material::SetEmissive(const ignition::math::Color &_color)
 {
   this->dataPtr->emissive = _color;
 }
@@ -374,7 +342,7 @@ void Material::SetPbrMaterial(const Pbr &_pbr)
 }
 
 //////////////////////////////////////////////////
-Pbr *Material::PbrMaterial() const
+const Pbr *Material::PbrMaterial() const
 {
   return optionalToPointer(this->dataPtr->pbr);
 }

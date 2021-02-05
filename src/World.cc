@@ -33,10 +33,10 @@
 
 using namespace sdf;
 
-class sdf::WorldPrivate
+class sdf::World::Implementation
 {
   /// \brief Optional atmosphere model.
-  public: std::optional<Atmosphere> atmosphere;
+  public: std::optional<sdf::Atmosphere> atmosphere;
 
   /// \brief Audio device name
   public: std::string audioDevice = "default";
@@ -46,10 +46,10 @@ class sdf::WorldPrivate
            ignition::math::Vector3d(0, 0, -9.80665);
 
   /// \brief Optional Gui parameters.
-  public: std::optional<Gui> gui;
+  public: std::optional<sdf::Gui> gui;
 
   /// \brief Optional Scene parameters.
-  public: std::optional<Scene> scene;
+  public: std::optional<sdf::Scene> scene;
 
   /// \brief The frames specified in this world.
   public: std::vector<Frame> frames;
@@ -92,41 +92,9 @@ class sdf::WorldPrivate
 
 /////////////////////////////////////////////////
 World::World()
-  : dataPtr(new WorldPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->physics.emplace_back(Physics());
-}
-
-/////////////////////////////////////////////////
-World::~World()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-World::World(const World &_world)
-  : dataPtr(new WorldPrivate(*_world.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-World::World(World &&_world) noexcept
-  : dataPtr(std::exchange(_world.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-World &World::operator=(const World &_world)
-{
-  return *this = World(_world);
-}
-
-/////////////////////////////////////////////////
-World &World::operator=(World &&_world)
-{
-  std::swap(this->dataPtr, _world.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -293,7 +261,7 @@ std::string World::Name() const
 }
 
 /////////////////////////////////////////////////
-void World::SetName(const std::string &_name) const
+void World::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
 }
@@ -393,13 +361,13 @@ const sdf::Atmosphere *World::Atmosphere() const
 }
 
 /////////////////////////////////////////////////
-void World::SetAtmosphere(const sdf::Atmosphere &_atmosphere) const
+void World::SetAtmosphere(const sdf::Atmosphere &_atmosphere)
 {
   this->dataPtr->atmosphere = _atmosphere;
 }
 
 /////////////////////////////////////////////////
-sdf::Gui *World::Gui() const
+const sdf::Gui *World::Gui() const
 {
   return optionalToPointer(this->dataPtr->gui);
 }

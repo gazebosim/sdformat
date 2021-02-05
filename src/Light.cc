@@ -25,7 +25,7 @@
 using namespace sdf;
 
 /// \brief Light private data.
-class sdf::LightPrivate
+class sdf::Light::Implementation
 {
   /// \brief Name of the light.
   public: std::string name = "";
@@ -87,63 +87,8 @@ class sdf::LightPrivate
 
 /////////////////////////////////////////////////
 Light::Light()
-  : dataPtr(new LightPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Light::~Light()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Light::Light(const Light &_light)
-  : dataPtr(new LightPrivate)
-{
-  this->CopyFrom(_light);
-}
-
-/////////////////////////////////////////////////
-Light::Light(Light &&_light) noexcept
-  : dataPtr(std::exchange(_light.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-Light &Light::operator=(const Light &_light)
-{
-  return *this = Light(_light);
-}
-
-//////////////////////////////////////////////////
-Light &Light::operator=(Light &&_light)
-{
-  std::swap(this->dataPtr, _light.dataPtr);
-  return *this;
-}
-
-//////////////////////////////////////////////////
-void Light::CopyFrom(const Light &_light)
-{
-  this->dataPtr->name= _light.dataPtr->name;
-  this->dataPtr->pose = _light.dataPtr->pose;
-  this->dataPtr->poseRelativeTo = _light.dataPtr->poseRelativeTo;
-  this->dataPtr->type = _light.dataPtr->type;
-  this->dataPtr->sdf = _light.dataPtr->sdf;
-  this->dataPtr->castShadows = _light.dataPtr->castShadows;
-  this->dataPtr->attenuationRange = _light.dataPtr->attenuationRange;
-  this->dataPtr->linearAttenuation = _light.dataPtr->linearAttenuation;
-  this->dataPtr->constantAttenuation = _light.dataPtr->constantAttenuation;
-  this->dataPtr->quadraticAttenuation = _light.dataPtr->quadraticAttenuation;
-  this->dataPtr->direction = _light.dataPtr->direction;
-  this->dataPtr->diffuse = _light.dataPtr->diffuse;
-  this->dataPtr->specular = _light.dataPtr->specular;
-  this->dataPtr->spotInnerAngle = _light.dataPtr->spotInnerAngle;
-  this->dataPtr->spotOuterAngle = _light.dataPtr->spotOuterAngle;
-  this->dataPtr->spotFalloff = _light.dataPtr->spotFalloff;
-  this->dataPtr->intensity = _light.dataPtr->intensity;
 }
 
 /////////////////////////////////////////////////
@@ -289,7 +234,7 @@ std::string Light::Name() const
 }
 
 /////////////////////////////////////////////////
-void Light::SetName(const std::string &_name) const
+void Light::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
 }
@@ -378,7 +323,7 @@ ignition::math::Color Light::Diffuse() const
 }
 
 /////////////////////////////////////////////////
-void Light::SetDiffuse(const ignition::math::Color &_color) const
+void Light::SetDiffuse(const ignition::math::Color &_color)
 {
   this->dataPtr->diffuse = _color;
 }
@@ -390,7 +335,7 @@ ignition::math::Color Light::Specular() const
 }
 
 /////////////////////////////////////////////////
-void Light::SetSpecular(const ignition::math::Color &_color) const
+void Light::SetSpecular(const ignition::math::Color &_color)
 {
   this->dataPtr->specular = _color;
 }

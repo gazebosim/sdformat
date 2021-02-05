@@ -20,7 +20,7 @@
 using namespace sdf;
 
 /// \brief Sky private data.
-class sdf::SkyPrivate
+class sdf::Sky::Implementation
 {
   /// \brief Time of day
   public: double time = 10.0;
@@ -53,40 +53,8 @@ class sdf::SkyPrivate
 
 /////////////////////////////////////////////////
 Sky::Sky()
-  : dataPtr(new SkyPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Sky::~Sky()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-Sky::Sky(const Sky &_sky)
-  : dataPtr(new SkyPrivate(*_sky.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Sky::Sky(Sky &&_sky) noexcept
-  : dataPtr(std::exchange(_sky.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Sky &Sky::operator=(const Sky &_sky)
-{
-  return *this = Sky(_sky);
-}
-
-/////////////////////////////////////////////////
-Sky &Sky::operator=(Sky &&_sky)
-{
-  std::swap(this->dataPtr, _sky.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////

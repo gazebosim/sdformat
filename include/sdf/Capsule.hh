@@ -18,6 +18,7 @@
 #define SDF_CAPSULE_HH_
 
 #include <ignition/math/Capsule.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -26,38 +27,12 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-
-  // Forward declare private data class.
-  class CapsulePrivate;
-
   /// \brief Capsule represents a capsule shape, and is usually accessed
   /// through a Geometry.
   class SDFORMAT_VISIBLE Capsule
   {
     /// \brief Constructor
     public: Capsule();
-
-    /// \brief Copy constructor
-    /// \param[in] _capsule Capsule to copy.
-    public: Capsule(const Capsule &_capsule);
-
-    /// \brief Move constructor
-    /// \param[in] _capsule Capsule to move.
-    public: Capsule(Capsule &&_capsule) noexcept;
-
-    /// \brief Destructor
-    public: ~Capsule();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _capsule Capsule to move.
-    /// \return Reference to this.
-    public: Capsule &operator=(Capsule &&_capsule);
-
-    /// \brief Assignment operator.
-    /// \param[in] _capsule The capsule to set values from.
-    /// \return *this
-    public: Capsule &operator=(const Capsule &_capsule);
 
     /// \brief Load the capsule geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -98,7 +73,7 @@ namespace sdf
     public: ignition::math::Capsuled &Shape();
 
     /// \brief Private data pointer.
-    private: CapsulePrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

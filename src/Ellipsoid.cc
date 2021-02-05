@@ -20,7 +20,7 @@
 using namespace sdf;
 
 // Private data class
-class sdf::EllipsoidPrivate
+class sdf::Ellipsoid::Implementation
 {
   /// \brief An ellipsoid with all three radii of 1 meter
   public: ignition::math::Ellipsoidd ellipsoid{ignition::math::Vector3d::One};
@@ -31,41 +31,8 @@ class sdf::EllipsoidPrivate
 
 /////////////////////////////////////////////////
 Ellipsoid::Ellipsoid()
-  : dataPtr(new EllipsoidPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Ellipsoid::~Ellipsoid()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Ellipsoid::Ellipsoid(const Ellipsoid &_ellipsoid)
-  : dataPtr(new EllipsoidPrivate)
-{
-  *this->dataPtr = *_ellipsoid.dataPtr;
-}
-
-//////////////////////////////////////////////////
-Ellipsoid::Ellipsoid(Ellipsoid &&_ellipsoid) noexcept
-  : dataPtr(std::exchange(_ellipsoid.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Ellipsoid &Ellipsoid::operator=(const Ellipsoid &_ellipsoid)
-{
-  return *this = Ellipsoid(_ellipsoid);
-}
-
-/////////////////////////////////////////////////
-Ellipsoid &Ellipsoid::operator=(Ellipsoid &&_ellipsoid)
-{
-  std::swap(this->dataPtr, _ellipsoid.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////

@@ -17,6 +17,7 @@
 #ifndef SDF_GUI_HH_
 #define SDF_GUI_HH_
 
+#include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -26,36 +27,10 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-
-  // Forward declarations.
-  class GuiPrivate;
-
   class SDFORMAT_VISIBLE Gui
   {
     /// \brief Default constructor
     public: Gui();
-
-    /// \brief Copy constructor
-    /// \param[in] _gui Gui element to copy.
-    public: Gui(const Gui &_gui);
-
-    /// \brief Move constructor
-    /// \param[in] _gui Gui to move.
-    public: Gui(Gui &&_gui) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _gui Gui to move.
-    /// \return Reference to this.
-    public: Gui &operator=(Gui &&_gui);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _gui Gui to copy.
-    /// \return Reference to this.
-    public: Gui &operator=(const Gui &_gui);
-
-    /// \brief Destructor
-    public: ~Gui();
 
     /// \brief Load the gui based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -72,7 +47,7 @@ namespace sdf
     /// \brief Set whether the Gui should be full screen.
     /// \param[in] _fullscreen True indicates that the Gui should be
     /// fullscreen.
-    public: void SetFullscreen(const bool _fullscreen) const;
+    public: void SetFullscreen(const bool _fullscreen);
 
     /// \brief Equality operator that returns true if this Gui
     /// instance equals the given Gui instance.
@@ -87,7 +62,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    private: GuiPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

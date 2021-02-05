@@ -18,6 +18,7 @@
 #define SDF_ROOT_HH_
 
 #include <string>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
@@ -34,7 +35,6 @@ namespace sdf
   class Actor;
   class Light;
   class Model;
-  class RootPrivate;
   class World;
 
   /// \brief Root class that acts as an entry point to the SDF document
@@ -56,26 +56,6 @@ namespace sdf
     /// \brief Default constructor
     public: Root();
 
-    /// \brief Copy constructor is explicitly deleted to avoid copying the
-    /// FrameAttachedToGraph and PoseRelativeToGraphs contained in Root.
-    public: Root(const Root &_root) = delete;
-
-    /// \brief Move constructor
-    /// \param[in] _root Root to move.
-    public: Root(Root &&_root) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _root Root to move.
-    /// \return Reference to this.
-    public: Root &operator=(Root &&_root) noexcept;
-
-    /// \brief Copy assignment operator is explicitly deleted to avoid copying
-    /// the FrameAttachedToGraph and PoseRelativeToGraphs contained in Root.
-    public: Root &operator=(const Root &_root) = delete;
-
-    /// \brief Destructor
-    public: ~Root();
-
     /// \brief Parse the given SDF file, and generate objects based on types
     /// specified in the SDF file.
     /// \param[in] _filename Name of the SDF file to parse.
@@ -83,12 +63,30 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(const std::string &_filename);
 
+    /// \brief Parse the given SDF file, and generate objects based on types
+    /// specified in the SDF file.
+    /// \param[in] _filename Name of the SDF file to parse.
+    /// \param[in] _config Custom parser configuration
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(
+                const std::string &_filename, const ParserConfig &_config);
+
     /// \brief Parse the given SDF string, and generate objects based on types
     /// specified in the SDF file.
     /// \param[in] _sdf SDF string to parse.
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors LoadSdfString(const std::string &_sdf);
+
+    /// \brief Parse the given SDF string, and generate objects based on types
+    /// specified in the SDF file.
+    /// \param[in] _sdf SDF string to parse.
+    /// \param[in] _config Custom parser configuration
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors LoadSdfString(
+                const std::string &_sdf, const ParserConfig &_config);
 
     /// \brief Parse the given SDF pointer, and generate objects based on types
     /// specified in the SDF file.
@@ -221,7 +219,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer
-    private: RootPrivate *dataPtr = nullptr;
+    IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
   };
   }
 }

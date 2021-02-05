@@ -46,6 +46,7 @@ set (sources
   Noise.cc
   parser.cc
   parser_urdf.cc
+  ParserConfig.cc
   Param.cc
   Pbr.cc
   Physics.cc
@@ -117,6 +118,7 @@ if (BUILD_SDF_TEST)
     Noise_TEST.cc
     Param_TEST.cc
     parser_TEST.cc
+    ParserConfig_TEST.cc
     Pbr_TEST.cc
     Physics_TEST.cc
     Plane_TEST.cc
@@ -194,6 +196,7 @@ target_compile_features(${sdf_target} PUBLIC cxx_std_17)
 target_link_libraries(${sdf_target}
   PUBLIC
     ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
+    ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
   PRIVATE
     ${TinyXML2_LIBRARIES})
 

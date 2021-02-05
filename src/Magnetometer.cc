@@ -21,7 +21,7 @@
 using namespace sdf;
 
 /// \brief Private magnetometer data.
-class sdf::MagnetometerPrivate
+class sdf::Magnetometer::Implementation
 {
   /// \brief The magnetometer noise values.
   public: std::array<Noise, 3> noise;
@@ -32,40 +32,8 @@ class sdf::MagnetometerPrivate
 
 //////////////////////////////////////////////////
 Magnetometer::Magnetometer()
-  : dataPtr(new MagnetometerPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-//////////////////////////////////////////////////
-Magnetometer::~Magnetometer()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Magnetometer::Magnetometer(const Magnetometer &_magnetometer)
-  : dataPtr(new MagnetometerPrivate(*_magnetometer.dataPtr))
-{
-}
-
-//////////////////////////////////////////////////
-Magnetometer::Magnetometer(Magnetometer &&_magnetometer) noexcept
-  : dataPtr(std::exchange(_magnetometer.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-Magnetometer &Magnetometer::operator=(const Magnetometer &_magnetometer)
-{
-  return *this = Magnetometer(_magnetometer);
-}
-
-//////////////////////////////////////////////////
-Magnetometer &Magnetometer::operator=(Magnetometer &&_magnetometer)
-{
-  std::swap(this->dataPtr, _magnetometer.dataPtr);
-  return *this;
 }
 
 //////////////////////////////////////////////////

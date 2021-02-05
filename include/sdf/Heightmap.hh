@@ -19,6 +19,7 @@
 
 #include <string>
 #include <ignition/math/Vector3.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Element.hh>
 #include <sdf/Error.hh>
 #include <sdf/sdf_config.h>
@@ -27,39 +28,11 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
-
-  // Forward declare private data class.
-  class HeightmapPrivate;
-  class HeightmapTexturePrivate;
-  class HeightmapBlendPrivate;
-
   /// \brief Texture to be used on heightmaps.
   class SDFORMAT_VISIBLE HeightmapTexture
   {
     /// \brief Constructor
     public: HeightmapTexture();
-
-    /// \brief Copy constructor
-    /// \param[in] _texture HeightmapTexture to copy.
-    public: HeightmapTexture(const HeightmapTexture &_texture);
-
-    /// \brief Move constructor
-    /// \param[in] _texture HeightmapTexture to move.
-    public: HeightmapTexture(HeightmapTexture &&_texture) noexcept;
-
-    /// \brief Destructor
-    public: virtual ~HeightmapTexture();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _texture Heightmap texture to move.
-    /// \return Reference to this.
-    public: HeightmapTexture &operator=(HeightmapTexture &&_texture);
-
-    /// \brief Copy Assignment operator.
-    /// \param[in] _texture The heightmap texture to set values from.
-    /// \return *this
-    public: HeightmapTexture &operator=(const HeightmapTexture &_texture);
 
     /// \brief Load the heightmap texture geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -99,7 +72,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    private: HeightmapTexturePrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Blend information to be used between textures on heightmaps.
@@ -107,27 +80,6 @@ namespace sdf
   {
     /// \brief Constructor
     public: HeightmapBlend();
-
-    /// \brief Copy constructor
-    /// \param[in] _blend HeightmapBlend to copy.
-    public: HeightmapBlend(const HeightmapBlend &_blend);
-
-    /// \brief Move constructor
-    /// \param[in] _blend HeightmapBlend to move.
-    public: HeightmapBlend(HeightmapBlend &&_blend) noexcept;
-
-    /// \brief Destructor
-    public: virtual ~HeightmapBlend();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _blend Heightmap blend to move.
-    /// \return Reference to this.
-    public: HeightmapBlend &operator=(HeightmapBlend &&_blend);
-
-    /// \brief Copy Assignment operator.
-    /// \param[in] _blend The heightmap blend to set values from.
-    /// \return *this
-    public: HeightmapBlend &operator=(const HeightmapBlend &_blend);
 
     /// \brief Load the heightmap blend geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -159,7 +111,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    private: HeightmapBlendPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Heightmap represents a shape defined by a 2D field, and is usually
@@ -168,27 +120,6 @@ namespace sdf
   {
     /// \brief Constructor
     public: Heightmap();
-
-    /// \brief Copy constructor
-    /// \param[in] _heightmap Heightmap to copy.
-    public: Heightmap(const Heightmap &_heightmap);
-
-    /// \brief Move constructor
-    /// \param[in] _heightmap Heightmap to move.
-    public: Heightmap(Heightmap &&_heightmap) noexcept;
-
-    /// \brief Destructor
-    public: virtual ~Heightmap();
-
-    /// \brief Move assignment operator.
-    /// \param[in] _heightmap Heightmap to move.
-    /// \return Reference to this.
-    public: Heightmap &operator=(Heightmap &&_heightmap);
-
-    /// \brief Copy Assignment operator.
-    /// \param[in] _heightmap The heightmap to set values from.
-    /// \return *this
-    public: Heightmap &operator=(const Heightmap &_heightmap);
 
     /// \brief Load the heightmap geometry based on a element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -284,7 +215,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    private: HeightmapPrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

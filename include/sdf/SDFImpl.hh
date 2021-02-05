@@ -21,11 +21,12 @@
 #include <memory>
 #include <string>
 
-#include "sdf/Param.hh"
 #include "sdf/Element.hh"
+#include "sdf/Param.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
-#include "sdf/Types.hh"
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -53,6 +54,20 @@ namespace sdf
   /// \{
 
   /// \brief Find the absolute path of a file.
+  ///
+  /// The search order in the function is as follows:
+  /// 1. Using the global URI path map, search in paths associated with the URI
+  ///    scheme of the input.
+  /// 2. Seach in the path defined by the macro `SDF_SHARE_PATH`.
+  /// 3. Search in the the libsdformat install path. The path is formed by
+  ///    has the pattern `SDF_SHARE_PATH/sdformat<major version>/<version>/`
+  /// 4. Directly check if the input path exists in the filesystem.
+  /// 5. Seach in the path defined by the environment variable `SDF_PATH`.
+  /// 6. If enabled via _searchLocalPath, prepend the input with the current
+  ///    working directory and check if the result path exists.
+  /// 7. If enabled via _useCallback and the global callback function is set,
+  ///    invoke the function and return its result.
+  ///
   /// \param[in] _filename Name of the file to find.
   /// \param[in] _searchLocalPath True to search for the file in the current
   /// working directory.
@@ -63,6 +78,26 @@ namespace sdf
   std::string findFile(const std::string &_filename,
                        bool _searchLocalPath = true,
                        bool _useCallback = false);
+
+  /// \brief Find the absolute path of a file.
+  ///
+  /// This overload uses the URI path map and and the callback function
+  /// configured in the input ParserConfig object instead of their global
+  /// counterparts.
+  ///
+  /// \param[in] _filename Name of the file to find.
+  /// \param[in] _searchLocalPath True to search for the file in the current
+  /// working directory.
+  /// \param[in] _useCallback True to find a file based on a registered
+  /// callback if the file is not found via the normal mechanism.
+  /// \param[in] _config Custom parser configuration
+  /// \return File's full path.
+  SDFORMAT_VISIBLE
+  std::string findFile(const std::string &_filename,
+                       bool _searchLocalPath,
+                       bool _useCallback,
+                       const ParserConfig &_config);
+
 
   /// \brief Associate paths to a URI.
   /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
@@ -77,7 +112,6 @@ namespace sdf
   /// \param[in] _cb The callback function.
   SDFORMAT_VISIBLE
   void setFindCallback(std::function<std::string (const std::string &)> _cb);
-
 
   /// \brief Base SDF class
   class SDFORMAT_VISIBLE SDF

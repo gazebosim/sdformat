@@ -24,7 +24,7 @@
 using namespace sdf;
 
 /// \brief Animation private data.
-class sdf::AnimationPrivate
+class sdf::Animation::Implementation
 {
   /// \brief Unique name for animation.
   public: std::string name = "__default__";
@@ -43,7 +43,7 @@ class sdf::AnimationPrivate
 };
 
 /// \brief Waypoint private data.
-class sdf::WaypointPrivate
+class sdf::Waypoint::Implementation
 {
   /// \brief Time to indicate when the pose should be reached.
   public: double time = 0.0;
@@ -53,7 +53,7 @@ class sdf::WaypointPrivate
 };
 
 /// \brief Trajectory private data.
-class sdf::TrajectoryPrivate
+class sdf::Trajectory::Implementation
 {
     /// \brief Unique id for a trajectory.
     public: uint64_t id = 0;
@@ -69,7 +69,7 @@ class sdf::TrajectoryPrivate
 };
 
 /// \brief Actor private data.
-class sdf::ActorPrivate
+class sdf::Actor::Implementation
 {
   /// \brief Name of the actor.
   public: std::string name = "__default__";
@@ -116,51 +116,8 @@ class sdf::ActorPrivate
 
 /////////////////////////////////////////////////
 Animation::Animation()
-  : dataPtr(new AnimationPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Animation::~Animation()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Animation::Animation(const Animation &_animation)
-  : dataPtr(new AnimationPrivate(*_animation.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Animation::Animation(Animation &&_animation) noexcept
-  : dataPtr(std::exchange(_animation.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-Animation &Animation::operator=(const Animation &_animation)
-{
-  return *this = Animation(_animation);
-}
-
-//////////////////////////////////////////////////
-Animation &Animation::operator=(Animation &&_animation)
-{
-  std::swap(this->dataPtr, _animation.dataPtr);
-  return *this;
-}
-
-/////////////////////////////////////////////////
-void Animation::CopyFrom(const Animation &_animation)
-{
-  // TODO(anyone) Deprecate function
-  this->dataPtr->name = _animation.dataPtr->name;
-  this->dataPtr->filename = _animation.dataPtr->filename;
-  this->dataPtr->scale = _animation.dataPtr->scale;
-  this->dataPtr->interpolateX = _animation.dataPtr->interpolateX;
-  this->dataPtr->filePath = _animation.dataPtr->filePath;
 }
 
 /////////////////////////////////////////////////
@@ -256,48 +213,8 @@ void Animation::SetFilePath(const std::string &_filePath)
 
 /////////////////////////////////////////////////
 Waypoint::Waypoint()
-  : dataPtr(new WaypointPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Waypoint::~Waypoint()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Waypoint::Waypoint(const Waypoint &_waypoint)
-  : dataPtr(new WaypointPrivate(*_waypoint.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Waypoint::Waypoint(Waypoint &&_waypoint) noexcept
-  : dataPtr(std::exchange(_waypoint.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-Waypoint &Waypoint::operator=(const Waypoint &_waypoint)
-{
-  return *this = Waypoint(_waypoint);
-}
-
-//////////////////////////////////////////////////
-Waypoint &Waypoint::operator=(Waypoint &&_waypoint)
-{
-  std::swap(this->dataPtr, _waypoint.dataPtr);
-  return *this;
-}
-
-/////////////////////////////////////////////////
-void Waypoint::CopyFrom(const Waypoint &_waypoint)
-{
-  // TODO(anyone) deprecate function
-  this->dataPtr->time = _waypoint.dataPtr->time;
-  this->dataPtr->pose = _waypoint.dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
@@ -351,50 +268,8 @@ void Waypoint::SetPose(const ignition::math::Pose3d &_pose)
 
 /////////////////////////////////////////////////
 Trajectory::Trajectory()
-  : dataPtr(new TrajectoryPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Trajectory::~Trajectory()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Trajectory::Trajectory(const Trajectory &_trajectory)
-  : dataPtr(new TrajectoryPrivate(*_trajectory.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Trajectory::Trajectory(Trajectory &&_trajectory) noexcept
-  : dataPtr(std::exchange(_trajectory.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-Trajectory &Trajectory::operator=(const Trajectory &_trajectory)
-{
-  return *this = Trajectory(_trajectory);
-}
-
-//////////////////////////////////////////////////
-Trajectory &Trajectory::operator=(Trajectory &&_trajectory)
-{
-  std::swap(this->dataPtr, _trajectory.dataPtr);
-  return *this;
-}
-
-/////////////////////////////////////////////////
-void Trajectory::CopyFrom(const Trajectory &_trajectory)
-{
-  // TODO(anyone) deprecate function
-  this->dataPtr->id = _trajectory.dataPtr->id;
-  this->dataPtr->type = _trajectory.dataPtr->type;
-  this->dataPtr->tension = _trajectory.dataPtr->tension;
-  this->dataPtr->waypoints = _trajectory.dataPtr->waypoints;
 }
 
 /////////////////////////////////////////////////
@@ -488,57 +363,8 @@ void Trajectory::AddWaypoint(const Waypoint &_waypoint)
 
 /////////////////////////////////////////////////
 Actor::Actor()
-  : dataPtr(new ActorPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Actor::~Actor()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Actor::Actor(const Actor &_actor)
-  : dataPtr(new ActorPrivate(*_actor.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-Actor::Actor(Actor &&_actor) noexcept
-    : dataPtr(std::exchange(_actor.dataPtr, nullptr))
-{
-}
-
-//////////////////////////////////////////////////
-Actor &Actor::operator=(const Actor &_actor)
-{
-  return *this = Actor(_actor);
-}
-
-//////////////////////////////////////////////////
-Actor &Actor::operator=(Actor &&_actor)
-{
-  std::swap(this->dataPtr, _actor.dataPtr);
-  return *this;
-}
-
-//////////////////////////////////////////////////
-void Actor::CopyFrom(const Actor &_actor)
-{
-  // TODO(anyone) deprecate function
-  this->dataPtr->name             = _actor.dataPtr->name;
-  this->dataPtr->pose             = _actor.dataPtr->pose;
-  this->dataPtr->poseRelativeTo   = _actor.dataPtr->poseRelativeTo;
-  this->dataPtr->skinFilename     = _actor.dataPtr->skinFilename;
-  this->dataPtr->skinScale        = _actor.dataPtr->skinScale;
-  this->dataPtr->animations       = _actor.dataPtr->animations;
-  this->dataPtr->scriptLoop       = _actor.dataPtr->scriptLoop;
-  this->dataPtr->scriptDelayStart = _actor.dataPtr->scriptDelayStart;
-  this->dataPtr->scriptAutoStart  = _actor.dataPtr->scriptAutoStart;
-  this->dataPtr->trajectories     = _actor.dataPtr->trajectories;
-  this->dataPtr->filePath         = _actor.dataPtr->filePath;
 }
 
 /////////////////////////////////////////////////
@@ -631,7 +457,7 @@ Errors Actor::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-std::string &Actor::Name() const
+const std::string &Actor::Name() const
 {
   return this->dataPtr->name;
 }

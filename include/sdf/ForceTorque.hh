@@ -18,6 +18,7 @@
 #define SDF_FORCE_TORQUE_HH_
 
 #include <string>
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
@@ -27,9 +28,6 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  // Forward declare private data class.
-  class ForceTorquePrivate;
-
   /// \enum ForceTorqueFrame
   /// \brief The set of supported frames of the wrench values.
   enum class ForceTorqueFrame : uint8_t
@@ -68,27 +66,6 @@ namespace sdf
     /// \brief Default constructor
     public: ForceTorque();
 
-    /// \brief Copy constructor
-    /// \param[in] _ft The force torque sensor to copy.
-    public: ForceTorque(const ForceTorque &_ft);
-
-    /// \brief Move constructor
-    /// \param[in] _ft The force torque sensor to move.
-    public: ForceTorque(ForceTorque &&_ft) noexcept;
-
-    /// \brief Destructor
-    public: ~ForceTorque();
-
-    /// \brief Assignment operator.
-    /// \param[in] _ft The force torque sensor to set values from.
-    /// \return *this
-    public: ForceTorque &operator=(const ForceTorque &_ft);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _ft The force torque sensor to set values from.
-    /// \return *this
-    public: ForceTorque &operator=(ForceTorque &&_ft) noexcept;
-
     /// \brief Load the force torque sensor based on an element pointer. This is
     /// *not* the usual entry point. Typical usage of the SDF DOM is through the
     /// Root object.
@@ -108,7 +85,7 @@ namespace sdf
 
     /// \brief Set the frame in which the wrench values are reported.
     /// \param[in] _frame The frame of the wrench values.
-    public: void SetFrame(ForceTorqueFrame _frame) const;
+    public: void SetFrame(ForceTorqueFrame _frame);
 
     /// \brief Get the measure direction of the wrench values.
     /// \return The measure direction of the wrench values.
@@ -116,8 +93,7 @@ namespace sdf
 
     /// \brief Set the measure direction of the wrench values.
     /// \param[in] _direction The measure direction of the wrench values.
-    public: void SetMeasureDirection(
-        ForceTorqueMeasureDirection _direction) const;
+    public: void SetMeasureDirection(ForceTorqueMeasureDirection _direction);
 
     /// \brief Return true if both force torque objects contain the same values.
     /// \param[_in] _ft Force torque value to compare.
@@ -131,7 +107,7 @@ namespace sdf
     public: bool operator!=(const ForceTorque &_ft) const;
 
     /// \brief Private data pointer.
-    private: ForceTorquePrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }
