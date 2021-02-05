@@ -58,6 +58,7 @@
         <constant>2.0</constant>
         <quadratic>-100.2</quadratic>
       </attenuation>
+      <intensity>1.8</intensity>
     </light>
 
     <frame name="frame1" attached_to="world">
