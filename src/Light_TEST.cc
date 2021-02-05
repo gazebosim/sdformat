@@ -98,6 +98,10 @@ TEST(DOMLight, DefaultConstruction)
   EXPECT_DOUBLE_EQ(0.0, light.SpotFalloff());
   light.SetSpotFalloff(4.3);
   EXPECT_DOUBLE_EQ(4.3, light.SpotFalloff());
+
+  EXPECT_DOUBLE_EQ(1.0, light.Intensity());
+  light.SetIntensity(0.3);
+  EXPECT_DOUBLE_EQ(0.3, light.Intensity());
 }
 
 /////////////////////////////////////////////////
@@ -119,6 +123,7 @@ TEST(DOMLight, CopyConstructor)
   light.SetSpotInnerAngle(1.9);
   light.SetSpotOuterAngle(3.3);
   light.SetSpotFalloff(0.9);
+  light.SetIntensity(1.7);
 
   sdf::Light light2(light);
   EXPECT_EQ("test_copy_light", light2.Name());
@@ -136,6 +141,7 @@ TEST(DOMLight, CopyConstructor)
   EXPECT_EQ(ignition::math::Angle(1.9), light2.SpotInnerAngle());
   EXPECT_EQ(ignition::math::Angle(3.3), light2.SpotOuterAngle());
   EXPECT_DOUBLE_EQ(0.9, light2.SpotFalloff());
+  EXPECT_DOUBLE_EQ(1.7, light2.Intensity());
 }
 
 /////////////////////////////////////////////////
@@ -157,6 +163,7 @@ TEST(DOMLight, CopyAssignmentOperator)
   light.SetSpotInnerAngle(1.9);
   light.SetSpotOuterAngle(3.3);
   light.SetSpotFalloff(0.9);
+  light.SetIntensity(1.7);
 
   sdf::Light light2;
   light2 = light;
@@ -175,6 +182,7 @@ TEST(DOMLight, CopyAssignmentOperator)
   EXPECT_EQ(ignition::math::Angle(1.9), light2.SpotInnerAngle());
   EXPECT_EQ(ignition::math::Angle(3.3), light2.SpotOuterAngle());
   EXPECT_DOUBLE_EQ(0.9, light2.SpotFalloff());
+  EXPECT_DOUBLE_EQ(1.7, light2.Intensity());
 }
 
 /////////////////////////////////////////////////
@@ -196,6 +204,7 @@ TEST(DOMLight, MoveConstructor)
   light.SetSpotInnerAngle(1.9);
   light.SetSpotOuterAngle(3.3);
   light.SetSpotFalloff(0.9);
+  light.SetIntensity(1.7);
 
   sdf::Light light2(std::move(light));
   EXPECT_EQ("test_light_assignment", light2.Name());
@@ -213,6 +222,7 @@ TEST(DOMLight, MoveConstructor)
   EXPECT_EQ(ignition::math::Angle(1.9), light2.SpotInnerAngle());
   EXPECT_EQ(ignition::math::Angle(3.3), light2.SpotOuterAngle());
   EXPECT_DOUBLE_EQ(0.9, light2.SpotFalloff());
+  EXPECT_DOUBLE_EQ(1.7, light2.Intensity());
 }
 
 /////////////////////////////////////////////////
@@ -234,6 +244,7 @@ TEST(DOMLight, MoveAssignment)
   light.SetSpotInnerAngle(1.9);
   light.SetSpotOuterAngle(3.3);
   light.SetSpotFalloff(0.9);
+  light.SetIntensity(1.7);
 
   sdf::Light light2;
   light2 = std::move(light);
@@ -252,6 +263,7 @@ TEST(DOMLight, MoveAssignment)
   EXPECT_EQ(ignition::math::Angle(1.9), light2.SpotInnerAngle());
   EXPECT_EQ(ignition::math::Angle(3.3), light2.SpotOuterAngle());
   EXPECT_DOUBLE_EQ(0.9, light2.SpotFalloff());
+  EXPECT_DOUBLE_EQ(1.7, light2.Intensity());
 }
 
 /////////////////////////////////////////////////
