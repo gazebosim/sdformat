@@ -34,7 +34,6 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
-
 /// \brief Policy to describe how to treat certain conditions when parsing
 enum class EnforcementPolicy
 {
