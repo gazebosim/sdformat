@@ -51,7 +51,7 @@ class sdf::LightPrivate
   /// \brief True if the light should cast shadows.
   public: bool castShadows = false;
 
-  /// \brief Spot light falloff.
+  /// \brief Light intensity
   public: double intensity = 1.0;
 
   /// \brief The attenation range.
