@@ -1,7 +1,7 @@
 <!-- Please remove the appropriate section.
-For example, if this is a new feature, remove the "Bug Report" section -->
+For example, if this is a new feature, remove the "Bug Fix" section -->
 
-# Bug Report
+# Bug Fix
 
 Fixes issue #<NUMBER>
 
@@ -14,12 +14,11 @@ before and after the PR.-->
 - [ ] Added tests
 - [ ] Updated documentation (as needed)
 - [ ] Updated migration guide (as needed)
-- [ ] `codecheck` passed (See
-  [contributing](https://ignitionrobotics.org/docs/all/contributing#contributing-code))
+- [ ] Code check passed (In source directory, run `sh tools/code_check.sh`)
 - [ ] All tests passed (See
   [test coverage](https://ignitionrobotics.org/docs/all/contributing#test-coverage))
 - [ ] While waiting for a review on your PR, please help review
-[another open pull request](https://github.com/pulls?q=is%3Aopen+is%3Apr+user%3Aignitionrobotics+archived%3Afalse+)
+[another open pull request](https://github.com/pulls?q=is%3Aopen+is%3Apr+user%3Aignitionrobotics+repo%3Aosrf%2Fsdformat+archived%3Afalse+)
 to support the maintainers
 
 **Note to maintainers**: Remember to use **Squash-Merge**
@@ -43,10 +42,10 @@ context (e.g., screenshots, gifs) if appropriate.-->
 - [ ] Added example world and/or tutorial
 - [ ] Updated documentation (as needed)
 - [ ] Updated migration guide (as needed)
-- [ ] `codecheck` passed (See [contributing](https://ignitionrobotics.org/docs/all/contributing#contributing-code))
+- [ ] Code check passed (In source directory, run `sh tools/code_check.sh`)
 - [ ] All tests passed (See [test coverage](https://ignitionrobotics.org/docs/all/contributing#test-coverage))
 - [ ] While waiting for a review on your PR, please help review
-[another open pull request](https://github.com/pulls?q=is%3Aopen+is%3Apr+user%3Aignitionrobotics+archived%3Afalse+)
+[another open pull request](https://github.com/pulls?q=is%3Aopen+is%3Apr+user%3Aignitionrobotics+repo%3Aosrf%2Fsdformat+archived%3Afalse+)
 to support the maintainers
 
 **Note to maintainers**: Remember to use **Squash-Merge**
