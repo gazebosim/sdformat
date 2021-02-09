@@ -17,7 +17,7 @@ set (headers
   Filesystem.hh
   Frame.hh
   Geometry.hh
-  Gps.hh
+  SatNav.hh
   Gui.hh
   Heightmap.hh
   Imu.hh
