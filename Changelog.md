@@ -4,14 +4,36 @@
 
 ### libsdformat 11.0.0 (202X-XX-XX)
 
+1. Add ParserConfig class to encapsulate file path settings.
+    * [Pull request 439](https://github.com/osrf/sdformat/pull/439)
+
+1. Add EnforcementPolicy in ParserConfig to configure parsing strictness.
+    * [Pull request 481](https://github.com/osrf/sdformat/pull/481)
+
+1. Use `ImplPtr` / `UniqueImplPtr` from ignition-utils
+    * [Pull request 472](https://github.com/osrf/sdformat/pull/472)
+    * [Pull request 474](https://github.com/osrf/sdformat/pull/474)
+
 1. Allow files paths for include URIs
     * [Pull request 448](https://github.com/osrf/sdformat/pull/448)
+
+1. Add split/join for separating the link name from fully-qualified name.
+    * [Pull request 457](https://github.com/osrf/sdformat/pull/457)
 
 1. SDFormat 1.8: Add ellipsoid geometry type.
     * [Pull request 434](https://github.com/osrf/sdformat/pull/434)
 
 1. SDFormat 1.8: Add capsule geometry type.
     * [Pull request 389](https://github.com/osrf/sdformat/pull/389)
+
+1. SDFormat 1.8: Add light intensity field.
+    * [Pull request 484](https://github.com/osrf/sdformat/pull/484)
+
+1. SDFormat 1.8: reduce default heightmap sampling from 2 to 1.
+    * [Pull request 459](https://github.com/osrf/sdformat/pull/459)
+
+1. SDFormat 1.8: remove `//inertial/pose/@relative_to` from spec.
+    * [Pull request 480](https://github.com/osrf/sdformat/pull/480)
 
 1. Allow only one of actor/light/model for <include> tags.
     * [Pull request 433](https://github.com/osrf/sdformat/pull/433)
@@ -32,6 +54,12 @@
 1. Update documentation for Cylinder length.
     * [Pull request 318](https://github.com/osrf/sdformat/pull/318)
 
+1. Root: fix grammar in error message.
+    * [Pull request 478](https://github.com/osrf/sdformat/pull/478)
+
+1. Ensure relocatable config files.
+    * [Pull request 419](https://github.com/osrf/sdformat/pull/419)
+
 1. Update CI.
     * [Pull request 452](https://github.com/osrf/sdformat/pull/452)
     * [Pull request 255](https://github.com/osrf/sdformat/pull/255)
@@ -48,6 +76,9 @@
     * [Pull request 355](https://github.com/osrf/sdformat/pull/355)
     * [Pull request 324](https://github.com/osrf/sdformat/pull/324)
     * [Pull request 304](https://github.com/osrf/sdformat/pull/304)
+
+1. Fix precision loss when adding nested models.
+    * [Pull request 314](https://github.com/osrf/sdformat/pull/314)
 
 1. Initial version of SDFormat 1.8 specification.
     * [BitBucket pull request 682](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/682)

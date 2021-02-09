@@ -292,6 +292,13 @@ but with improved human-readability..
     * [Pull request 389](https://github.com/osrf/sdformat/pull/389)
     * [Pull request 434](https://github.com/osrf/sdformat/pull/434)
 
+1. **light.sdf** `//light/intensity` element
+    + description: Scale factor to set the relative power of a light.
+    + type: double
+    + default: 1
+    + required: 0
+    + [pull request 484](https://github.com/osrf/sdformat/pull/484)
+
 ### Modifications
 
 1. **joint.sdf** `child` and `parent` elements accept frame names instead of only link names
@@ -301,10 +308,12 @@ but with improved human-readability..
 
 ### Deprecations
 
+1. **joint.sdf** `initial_position` element in `<joint><axis>` and `<joint><axis2>` is deprecated
+
+### Removals
+
 1. **inerial.sdf** `//inertial/pose/@relative_to` attribute is removed
     + [Pull request 480](https://github.com/osrf/sdformat/pull/480)
-
-1. **joint.sdf** `initial_position` element in `<joint><axis>` and `<joint><axis2>` is deprecated
 
 ## SDFormat specification 1.6 to 1.7
 
