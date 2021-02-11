@@ -2,6 +2,17 @@
 
 ### libsdformat 9.X.X (202X-XX-XX)
 
+### libsdformat 9.5.0 (2021-02-11)
+
+1. Add Windows installation
+    * [Pull request 463](https://github.com/osrf/sdformat/pull/463)
+
+1. Add laser_retro in Visual
+    * [Pull request 454](https://github.com/osrf/sdformat/pull/454)
+
+1. Wrap description tags in CDATA
+    * [Pull request 483](https://github.com/osrf/sdformat/pull/483)
+
 ### libsdformat 9.4.0 (2021-01-08)
 
 1. Define `PATH_MAX` for Debian Hurd system
