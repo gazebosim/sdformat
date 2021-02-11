@@ -144,7 +144,8 @@ TEST(UnrecognizedElements, OldElementsInNewSchemas)
 {
   // This should be valid in 1.6, but not in 1.8 (do to usage of
   // `use_parent_model_frame`).
-  auto make_model_xml_string = [](std::string version) {
+  auto make_model_xml_string = [](std::string version)
+  {
     return R"(
 <?xml version="1.0" ?>
 <sdf version=")" + version + R"(">
