@@ -210,7 +210,7 @@ TEST(DOMVisual, LaserRetro)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  const sdf::Model *model = root.ModelByIndex(0);
+  const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
   const sdf::Link *link = model->LinkByIndex(0);
