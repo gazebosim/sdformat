@@ -755,7 +755,8 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF world file with an invalid usage of __root__
   {
     // Set SDF_PATH so that included models can be found
-    setenv("SDF_PATH", PROJECT_SOURCE_PATH "/test/integration/model", 1);
+    sdf::testing::setenv(
+      "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
     std::string path = pathBase + "/world_invalid_root_reference.sdf";
 
     std::string output =
