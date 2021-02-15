@@ -61,6 +61,12 @@ class sdf::Visual::Implementation
 
   /// \brief Visibility flags of a visual. Defaults to 0xFFFFFFFF
   public: uint32_t visibilityFlags = 4294967295u;
+
+  /// \brief True indicates the lidar reflective intensity was set.
+  public: bool hasLaserRetro{false};
+
+  /// \brief Lidar reflective intensity
+  public: double laserRetro = 0;
 };
 
 /////////////////////////////////////////////////
@@ -135,6 +141,12 @@ Errors Visual::Load(ElementPtr _sdf)
   // Load the geometry
   Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
+
+  // Load the lidar reflective intensity if it is given
+  if (_sdf->HasElement("laser_retro"))
+  {
+    this->SetLaserRetro(_sdf->Get<double>("laser_retro"));
+  }
 
   return errors;
 }
@@ -212,19 +224,6 @@ void Visual::SetGeom(const Geometry &_geom)
 }
 
 /////////////////////////////////////////////////
-void Visual::SetXmlParentName(const std::string &_xmlParentName)
-{
-  this->dataPtr->xmlParentName = _xmlParentName;
-}
-
-/////////////////////////////////////////////////
-void Visual::SetPoseRelativeToGraph(
-    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
-{
-  this->dataPtr->poseRelativeToGraph = _graph;
-}
-
-/////////////////////////////////////////////////
 sdf::SemanticPose Visual::SemanticPose() const
 {
   return sdf::SemanticPose(
@@ -262,4 +261,42 @@ uint32_t Visual::VisibilityFlags() const
 void Visual::SetVisibilityFlags(uint32_t _flags)
 {
   this->dataPtr->visibilityFlags = _flags;
+}
+
+//////////////////////////////////////////////////
+void Visual::SetHasLaserRetro(bool _laserRetro)
+{
+  this->dataPtr->hasLaserRetro = _laserRetro;
+}
+
+//////////////////////////////////////////////////
+bool Visual::HasLaserRetro() const
+{
+  return this->dataPtr->hasLaserRetro;
+}
+
+//////////////////////////////////////////////////
+double Visual::LaserRetro() const
+{
+  return this->dataPtr->laserRetro;
+}
+
+//////////////////////////////////////////////////
+void Visual::SetLaserRetro(double _laserRetro)
+{
+  this->dataPtr->hasLaserRetro = true;
+  this->dataPtr->laserRetro = _laserRetro;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetXmlParentName(const std::string &_xmlParentName)
+{
+  this->dataPtr->xmlParentName = _xmlParentName;
+}
+
+/////////////////////////////////////////////////
+void Visual::SetPoseRelativeToGraph(
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
+{
+  this->dataPtr->poseRelativeToGraph = _graph;
 }
