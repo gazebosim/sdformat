@@ -14,6 +14,10 @@
     <description>When true, the light will cast shadows.</description>
   </element>
 
+  <element name="intensity" type="double" default="1" required="0">
+    <description>Scale factor to set the relative power of a light.</description>
+  </element>
+
   <include filename="pose.sdf" required="0"/>
 
   <element name="diffuse" type="color" default="1 1 1 1" required="0">

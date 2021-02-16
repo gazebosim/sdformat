@@ -33,8 +33,7 @@
 TEST(DOMWorld, LoadLights)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "world_complete.sdf");
+    sdf::testing::TestFile("sdf", "world_complete.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -59,6 +58,7 @@ TEST(DOMWorld, LoadLights)
   EXPECT_DOUBLE_EQ(1.0, pointLight->LinearAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.0, pointLight->ConstantAttenuationFactor());
   EXPECT_DOUBLE_EQ(20.2, pointLight->QuadraticAttenuationFactor());
+  EXPECT_DOUBLE_EQ(1.0, pointLight->Intensity());
 
   const sdf::Light *spotLight = world->LightByIndex(1);
   ASSERT_NE(nullptr, spotLight);
@@ -68,6 +68,7 @@ TEST(DOMWorld, LoadLights)
   EXPECT_DOUBLE_EQ(0.1, spotLight->SpotInnerAngle().Radian());
   EXPECT_DOUBLE_EQ(0.5, spotLight->SpotOuterAngle().Radian());
   EXPECT_DOUBLE_EQ(2.2, spotLight->SpotFalloff());
+  EXPECT_DOUBLE_EQ(1.0, spotLight->Intensity());
 
   const sdf::Light *dirLight = world->LightByIndex(2);
   ASSERT_NE(nullptr, dirLight);
@@ -84,6 +85,7 @@ TEST(DOMWorld, LoadLights)
   EXPECT_DOUBLE_EQ(0.0, dirLight->LinearAttenuationFactor());
   EXPECT_DOUBLE_EQ(1.0, dirLight->ConstantAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.0, dirLight->QuadraticAttenuationFactor());
+  EXPECT_DOUBLE_EQ(1.8, dirLight->Intensity());
 
   const sdf::Model *model = world->ModelByIndex(0);
   ASSERT_NE(nullptr, model);

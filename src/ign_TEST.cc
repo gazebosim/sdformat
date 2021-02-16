@@ -755,7 +755,8 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF world file with an invalid usage of __root__
   {
     // Set SDF_PATH so that included models can be found
-    setenv("SDF_PATH", PROJECT_SOURCE_PATH "/test/integration/model", 1);
+    sdf::testing::setenv(
+      "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
     std::string path = pathBase + "/world_invalid_root_reference.sdf";
 
     std::string output =
@@ -1130,7 +1131,7 @@ int main(int argc, char **argv)
 {
   // Set IGN_CONFIG_PATH to the directory where the .yaml configuration file
   // is located.
-  setenv("IGN_CONFIG_PATH", IGN_CONFIG_PATH, 1);
+  sdf::testing::setenv("IGN_CONFIG_PATH", IGN_CONFIG_PATH);
 
   // Make sure that we load the library recently built and not the one installed
   // in your system. This is done by placing the the current build directory
@@ -1141,13 +1142,13 @@ int main(int argc, char **argv)
 #ifndef _WIN32
   std::string testLibraryPath = IGN_TEST_LIBRARY_PATH;
 
-  char *currentLibraryPath = std::getenv("LD_LIBRARY_PATH");
-  if (currentLibraryPath)
+  std::string currentLibraryPath;
+  if (sdf::testing::env("LD_LIBRARY_PATH", currentLibraryPath))
   {
     testLibraryPath = testLibraryPath + ":" + currentLibraryPath;
   }
 
-  setenv("LD_LIBRARY_PATH", testLibraryPath.c_str(), 1);
+  sdf::testing::setenv("LD_LIBRARY_PATH", testLibraryPath);
 #endif
 
   ::testing::InitGoogleTest(&argc, argv);

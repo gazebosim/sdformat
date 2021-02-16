@@ -39,8 +39,7 @@
 TEST(FrameSemantics, buildFrameAttachedToGraph_Model)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "model_frame_attached_to.sdf");
+    sdf::testing::TestFile("sdf", "model_frame_attached_to.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -107,8 +106,7 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_Model)
 TEST(FrameSemantics, buildFrameAttachedToGraph_World)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "world_frame_attached_to.sdf");
+    sdf::testing::TestFile("sdf", "world_frame_attached_to.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -209,8 +207,7 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_World)
 TEST(FrameSemantics, buildPoseRelativeToGraph)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "model_frame_relative_to_joint.sdf");
+    sdf::testing::TestFile("sdf", "model_frame_relative_to_joint.sdf");
 
   // Load the SDF file
   sdf::Root root;

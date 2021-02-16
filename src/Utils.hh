@@ -23,6 +23,7 @@
 #include <vector>
 #include "sdf/Error.hh"
 #include "sdf/Element.hh"
+#include "sdf/ParserConfig.hh"
 #include "sdf/Types.hh"
 
 namespace sdf
@@ -68,6 +69,20 @@ namespace sdf
   /// \return Infinity if the input value is negative, otherwise the original
   /// value.
   double infiniteIfNegative(double _value);
+
+  /// \brief Handle a condition which can be treated as an error, warning or
+  /// ignored entirely.
+  /// Based on the policy, this will either add it to an errors vector, stream
+  /// it to sdfwarn, or sdfdbg.
+  /// \param[in] _policy The enforcement policy to follow
+  /// \param[in] _message The message to add for this warning
+  /// \param[in] _error An error code to use if the policy is ERR
+  /// \param[out] _errors The errors to append to if the policy is ERR
+  void enforceConfigurablePolicyCondition(
+    const sdf::EnforcementPolicy _policy,
+    const std::string &_message,
+    const ErrorCode _error,
+    sdf::Errors &_errors);
 
   /// \brief Load all objects of a specific sdf element type. No error
   /// is returned if an element is not present. This function assumes that
@@ -205,6 +220,6 @@ namespace sdf
       return &_opt.value();
     return nullptr;
   }
-  }
+}
 }
 #endif
