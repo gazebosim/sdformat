@@ -2,6 +2,26 @@
 
 ### libsdformat 10.X.X (202X-XX-XX)
 
+### libsdformat 10.3.0 (2021-02-18)
+
+1. Replace PROJECT_SOURCE_DIR in tests
+    + [Pull request 460](https://github.com/osrf/sdformat/pull/460)
+
+1. Add Windows installation
+    + [Pull request 463](https://github.com/osrf/sdformat/pull/463)
+
+1. Add laser_retro in Visual
+    + [Pull request 454](https://github.com/osrf/sdformat/pull/454)
+
+1. Fix temperature gradient default value in Atmosphere DOM
+    + [Pull request 482](https://github.com/osrf/sdformat/pull/482)
+
+1. Wrap description tags in CDATA
+    + [Pull request 483](https://github.com/osrf/sdformat/pull/483)
+
+1. Add L16 pixel format to Camera pixel format conversion function
+    + [Pull request 487](https://github.com/osrf/sdformat/pull/487)
+
 ### libsdformat 10.2.0 (2021-01-12)
 
 1. Disable ign test on Windows
