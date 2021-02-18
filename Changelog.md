@@ -19,6 +19,9 @@
 1. Wrap description tags in CDATA
     + [Pull request 483](https://github.com/osrf/sdformat/pull/483)
 
+1. Add L16 pixel format to Camera pixel format conversion function
+    + [Pull request 487](https://github.com/osrf/sdformat/pull/487)
+
 ### libsdformat 10.2.0 (2021-01-12)
 
 1. Disable ign test on Windows
