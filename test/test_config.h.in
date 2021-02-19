@@ -27,6 +27,7 @@
 #define SDF_PROTOCOL_VERSION "${SDF_PROTOCOL_VERSION}"
 #define SDF_TMP_DIR "tmp-sdf/"
 
+// cppcheck-suppress missingInclude
 #include "env.hh"
 
 #include <sdf/Filesystem.hh>
@@ -87,10 +88,10 @@ namespace sdf
     /// \return True if directory is set correctly, false otherwise
     bool TestSetHomePath(std::string &_homeDir)
     {
-      if (env("TEST_UNDECLARED_OUTPUTS_DIR", _homeDir)) 
+      if (env("TEST_UNDECLARED_OUTPUTS_DIR", _homeDir))
       {
         return true;
-      } 
+      }
       else
       {
         _homeDir = PROJECT_BINARY_DIR;

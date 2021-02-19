@@ -92,6 +92,8 @@ bool isValidFrameReference(const std::string &_name)
   return "__root__" != _name;
 }
 
+/////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
 void enforceConfigurablePolicyCondition(
   const sdf::EnforcementPolicy _policy,
   const std::string &_message,
