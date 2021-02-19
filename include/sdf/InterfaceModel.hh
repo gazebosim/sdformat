@@ -18,6 +18,7 @@
 #ifndef SDF_INTERFACE_MODEL_HH_
 #define SDF_INTERFACE_MODEL_HH_
 
+#include <functional>
 #include <string>
 #include <memory>
 #include <vector>

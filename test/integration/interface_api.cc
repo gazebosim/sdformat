@@ -19,6 +19,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <variant>
 
 #include "sdf/Filesystem.hh"
