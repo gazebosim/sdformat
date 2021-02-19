@@ -31,7 +31,7 @@ if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
   pkg_check_modules(URDF urdfdom>=1.0)
 
   if (NOT URDF_FOUND)
-    find_package(urdfdom)
+    find_package(urdfdom QUIET)
     if (urdfdom_FOUND)
       set(URDF_INCLUDE_DIRS ${urdfdom_INCLUDE_DIRS})
       # ${urdfdom_LIBRARIES} already contains absolute library filenames

@@ -12,7 +12,7 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
-## SDFormat 10.x to 11.0
+## libsdformat 10.x to 11.0
 
 ### Additions
 
@@ -63,7 +63,14 @@ but with improved human-readability..
     + uint64_t ActorCount();
     + bool ActorNameExists(const std::string &\_name) const;
 
-## SDFormat 9.x to 10.0
+## libsdformat 10.2.0 to 10.x.x
+
+### Modifications
+
+1. Fixed Atmosphere DOM class's temperature default value. Changed from -0.065 to -0.0065.
+    * [Pull request 482](https://github.com/osrf/sdformat/pull/482)
+
+## libsdformat 9.x to 10.0
 
 ### Modifications
 
@@ -106,7 +113,21 @@ but with improved human-readability..
     + std::optional<std::string> GetMaxValueAsString() const;
     + bool ValidateValue() const;
 
-## SDFormat 9.0 to 9.3
+## libsdformat 9.3 to 9.4
+
+### Modifications
+
+1. **camera.sdf**
+    + Reduce minimum value of `//camera/clip/far`
+
+### Deprecations
+
+1. Fix spelling of supported shader types in `//material/shader/@type`
+    + `normal_map_objectspace`  replaced by `normal_map_object_space`
+    + `normal_map_tangentspace` replaced by `normal_map_tangent_space`
+    + [pull request 383](https://github.com/osrf/sdformat/pull/383)
+
+## libsdformat 9.0 to 9.3
 
 ### Additions
 
@@ -292,6 +313,13 @@ but with improved human-readability..
     * [Pull request 389](https://github.com/osrf/sdformat/pull/389)
     * [Pull request 434](https://github.com/osrf/sdformat/pull/434)
 
+1. **light.sdf** `//light/intensity` element
+    + description: Scale factor to set the relative power of a light.
+    + type: double
+    + default: 1
+    + required: 0
+    + [pull request 484](https://github.com/osrf/sdformat/pull/484)
+
 ### Modifications
 
 1. **joint.sdf** `child` and `parent` elements accept frame names instead of only link names
@@ -301,10 +329,12 @@ but with improved human-readability..
 
 ### Deprecations
 
+1. **joint.sdf** `initial_position` element in `<joint><axis>` and `<joint><axis2>` is deprecated
+
+### Removals
+
 1. **inerial.sdf** `//inertial/pose/@relative_to` attribute is removed
     + [Pull request 480](https://github.com/osrf/sdformat/pull/480)
-
-1. **joint.sdf** `initial_position` element in `<joint><axis>` and `<joint><axis2>` is deprecated
 
 ## SDFormat specification 1.6 to 1.7
 

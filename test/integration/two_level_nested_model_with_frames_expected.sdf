@@ -16,7 +16,7 @@
               <pose relative_to='F2'>0 0 0 0 -0 0</pose>
               <geometry>
                 <sphere>
-                  <radius>1</radius>
+                  <radius>1.5707963267948966</radius>
                 </sphere>
               </geometry>
             </visual>
@@ -24,7 +24,7 @@
               <pose relative_to='__model__'>0 0 0 0 -0 0</pose>
               <geometry>
                 <sphere>
-                  <radius>1</radius>
+                  <radius>0.78539816339744828</radius>
                 </sphere>
               </geometry>
             </collision>

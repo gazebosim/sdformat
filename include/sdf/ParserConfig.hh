@@ -35,6 +35,19 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
+/// \brief Policy to describe how to treat certain conditions when parsing
+enum class EnforcementPolicy
+{
+  /// \brief Policy is to treat condition as an error and fail parsing
+  ERR,
+
+  /// \brief Treat condition as a warning and issue to user
+  WARN,
+
+  /// \brief Ignore condition in favor of best effort parsing
+  LOG,
+};
+
 // Forward declare private data class.
 class ParserConfigPrivate;
 
@@ -114,6 +127,22 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \param[in] _path Colon separated set of paths.
   /// \sa sdf::findFile() for the order of search operations
   public: void AddURIPath(const std::string &_uri, const std::string &_path);
+
+  /// \brief Set the warning enforcment policy.
+  /// \param[in] _policy policy enum value to set
+  public: void SetWarningsPolicy(EnforcementPolicy _policy);
+
+  /// \brief Get the current warning enforcement policy
+  /// \return The warning enforcement policy enum value
+  public: EnforcementPolicy WarningsPolicy() const;
+
+  /// \brief Set the policy for unrecogonized elements without an xmlns
+  /// \param[in] _policy The unrecognized elements enforcement policy
+  public: void SetUnrecognizedElementsPolicy(EnforcementPolicy _policy);
+
+  /// \brief Get the current unrecognized elements policy
+  /// \return The unrecognized elements policy enum value
+  public: EnforcementPolicy UnrecognizedElementsPolicy() const;
 
   /// \brief Registers a custom model parser.
   /// \param[in] _modelParser Callback as described above.

@@ -149,6 +149,7 @@ if (BUILD_SDF_TEST)
     )
   endif()
 
+  include_directories(${PROJECT_SOURCE_DIR}/test)
   sdf_build_tests(${gtest_sources})
 
   if (TARGET UNIT_ign_TEST)
