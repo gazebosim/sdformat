@@ -1082,6 +1082,15 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
           }
         }
 
+        // TODO(jenn) prototyping parameter passing
+        // ref: sdformat.org > Documentation > Proposal for parameter passing
+        if (elemXml->FirstChildElement("experimental:params"))
+        {
+          updateParams(elemXml->FirstChildElement("experimental:params"),
+                       includeSDF,
+                       _errors);
+        }
+
         if (_sdf->GetName() == "model")
         {
           addNestedModel(_sdf, includeSDF->Root(), _errors);
@@ -1096,15 +1105,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
           // a core feature of SDF, and not a hack that that parser handles
           // includeSDF->Root()->GetFirstElement()->SetInclude(
           // elemXml->Attribute("filename"));
-        }
-
-        // TODO(jenn) prototyping parameter passing
-        // ref: sdformat.org > Documentation > Proposal for parameter passing
-        if (elemXml->FirstChildElement("experimental:params"))
-        {
-          updateParams(elemXml->FirstChildElement("experimental:params"),
-                       includeSDF,
-                       _errors);
         }
 
         continue;

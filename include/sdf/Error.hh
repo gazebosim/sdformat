@@ -131,6 +131,10 @@ namespace sdf
 
     /// \brief Indicates that reading an SDF string failed.
     STRING_READ,
+
+    /// \brief A duplicate element with specified name already exists
+    /// (used for parameter passing).
+    DUPLICATE_ELEMENT
   };
 
   class SDFORMAT_VISIBLE Error

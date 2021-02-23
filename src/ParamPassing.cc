@@ -24,45 +24,96 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 
 //////////////////////////////////////////////////
-void updateParams(const tinyxml2::XMLElement *_childXmlParams,
+void updateParams(tinyxml2::XMLElement *_childXmlParams,
                   SDFPtr _includeSDF, Errors &_errors)
 {
   // loop through <experimental:params> children
-  const tinyxml2::XMLElement *childElemXml = nullptr;
+  tinyxml2::XMLElement *childElemXml = nullptr;
   for (childElemXml = _childXmlParams->FirstChildElement();
        childElemXml;
        childElemXml = childElemXml->NextSiblingElement())
   {
     // element identifier
-    const char *childElemId = childElemXml->Attribute("name");
+    const char *childElemId = childElemXml->Attribute("element_id");
     if (!childElemId)
     {
       tinyxml2::XMLPrinter printer;
       childElemXml->Accept(&printer);
 
       _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
-        "Element identifier requires a name, but the name is not set. "
+        "Element identifier requires an element_id attribute, but the "
+        "element_id is not set. Skipping element modification:\n"
+        + std::string(printer.CStr())
+      });
+      continue;
+    }
+
+    std::string elemIdAttr(childElemId);
+
+    // checks for name after last set of double colons
+    size_t found = elemIdAttr.rfind("::");
+    if (found != std::string::npos
+        && (elemIdAttr.substr(found+2)).empty())
+    {
+      tinyxml2::XMLPrinter printer;
+      childElemXml->Accept(&printer);
+
+      _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+        "Missing name after double colons in element identifier. "
         "Skipping element modification:\n"
         + std::string(printer.CStr())
       });
       continue;
     }
 
+    // *** Retrieve specified element using element identifier ***
+
     std::string actionStr;
     if (childElemXml->Attribute("action"))
       actionStr = std::string(childElemXml->Attribute("action"));
 
     // get element pointer to specified element using element identifier
-    ElementPtr  elem;
+    ElementPtr elem = getElementById(_includeSDF, childElemXml->Name(),
+                          childElemId);
+
     if (actionStr == "add")
     {
-      // TODO(jenn) implement this, skipping for now
-      continue;
-    }
-    else
-    {
-      elem = getElementById(_includeSDF, childElemXml->Name(),
-                            childElemId, true);
+      if (elem != nullptr)
+      {
+        // TODO(jenn) make test for this
+        tinyxml2::XMLPrinter printer;
+        childElemXml->Accept(&printer);
+
+        _errors.push_back({ErrorCode::DUPLICATE_NAME,
+          "Could not add element <" + std::string(childElemXml->Name())
+          + " element_id='" + childElemXml->Attribute("element_id")
+          + "'> because element already exists in included model. "
+          + "Skipping element addition:\n"
+          + printer.CStr()
+        });
+        continue;
+      }
+
+      if (found != std::string::npos)
+      {
+        // +2 past double colons
+        elemIdAttr = elemIdAttr.substr(found+2);
+      }
+
+      if (!elemIdAttr.compare(childElemId))
+      {
+        // if equal add new element as direct child of included model
+        elem = _includeSDF->Root()->GetFirstElement();  // model element
+      }
+      else
+      {
+        // get parent element of childElemId.substr(found+2)
+        elem = getElementById(_includeSDF, "",
+                              std::string(childElemId).substr(0, found),
+                              true);
+
+        // TODO(jenn) add error case for DUPLICATE_ELEMENT
+      }
     }
 
     if (elem == nullptr)
@@ -72,7 +123,7 @@ void updateParams(const tinyxml2::XMLElement *_childXmlParams,
 
       _errors.push_back({ErrorCode::ELEMENT_MISSING,
         "Could not find element <" + std::string(childElemXml->Name())
-        + " name='" + childElemXml->Attribute("name") + "'>. " +
+        + " element_id='" + childElemXml->Attribute("element_id") + "'>. " +
         "Skipping element modification:\n" + printer.CStr()
       });
       continue;
@@ -86,12 +137,8 @@ void updateParams(const tinyxml2::XMLElement *_childXmlParams,
 ElementPtr getElementById(const SDFPtr _sdf,
                           const std::string &_elemName,
                           const std::string &_elemId,
-                          const bool &_prefixModelName)
+                          const bool _isParentElement)
 {
-  std::string modelName
-    = _sdf->Root()->GetFirstElement()->GetAttribute("name")->GetAsString();
-
-  // TODO(jenn) add requirement model name in element identifier?
   // child element of includeSDF
   ElementPtr childElem = _sdf->Root()->GetFirstElement()->GetFirstElement();
 
@@ -107,32 +154,21 @@ ElementPtr getElementById(const SDFPtr _sdf,
     {
       childName = childElem->GetAttribute("name")->GetAsString();
 
-      if (startIdx == 0 && _prefixModelName)
-      {
-        stopIdx = findPrefixLastIndex(modelName + "::" + _elemId,
-                                      startIdx,
-                                      childName);
-        if (stopIdx != -1)
-        {
-          // removing added model name
-          stopIdx = stopIdx - (modelName.size()-1);
-        }
-      }
-      else
-      {
-        stopIdx = findPrefixLastIndex(_elemId, startIdx, childName);
+      // for add action, found parent element
+      if (_isParentElement && _elemId == childName)
+        return childElem;
 
-        if (!_prefixModelName)
-          stopIdx += 3;  // past "::"
-      }
+      stopIdx = findPrefixLastIndex(_elemId, startIdx, childName);
 
       if (stopIdx > longestIdx)
       {
         matchingChild = childElem;
 
         // found matching element break out of included model iteration
-        if (childElem->GetName() == _elemName
+        if (!_isParentElement && childElem->GetName() == _elemName
               && _elemId.substr(startIdx) == childName)
+          break;
+        else if (_isParentElement && _elemId.substr(startIdx) == childName)
           break;
 
         longestIdx = stopIdx;
@@ -148,6 +184,13 @@ ElementPtr getElementById(const SDFPtr _sdf,
       childElem = matchingChild->GetFirstElement();
       matchingChild = nullptr;
       startIdx = longestIdx;
+
+      size_t found = _elemId.find("::", startIdx);
+      if (found != std::string::npos && (found - startIdx) == 1ul)
+      {
+        // past double colons
+        startIdx += 3;
+      }
     }
   }
 

@@ -7,10 +7,10 @@
         <uri>robot</uri>
 
         <experimental:params>
-          <visual name="chassis::lidar_visual" action="remove"/>
-          <sensor name="chassis::lidar" action="remove"/>
+          <visual element_id="chassis::lidar_visual" action="remove"/>
+          <sensor element_id="chassis::lidar" action="remove"/>
 
-          <visual name="chassis::camera_visual" action="add">
+          <visual element_id="chassis::camera_visual" action="add">
             <pose>-1.06 0 0 0 0 3.14</pose>
             <geometry>
               <box>
@@ -19,12 +19,41 @@
             </geometry>
           </visual>
 
-          <sensor name="top::camera" action="modify">
+          <link element_id="new_link" action="add">
+            <pose>0 0 0 0 0 0</pose>
+            <sensor type="camera" element_id="my_sensor">
+              <camera>
+                <horizontal_fov>1.047</horizontal_fov>
+                <image>
+                  <width>320</width>
+                  <height>240</height>
+                </image>
+                <clip>
+                  <near>0.1</near>
+                  <far>100</far>
+                </clip>
+              </camera>
+              <always_on>1</always_on>
+              <update_rate>30</update_rate>
+              <visualize>true</visualize>
+            </sensor>
+          </link>
+
+          <visual element_id="nested_links::link1::link2::new_visual" action="add">
+            <geometry>
+              <box>
+                <size>0.1 0.1 0.1</size>
+              </box>
+            </geometry>
+          </visual>
+
+          <sensor element_id="top::camera" action="modify">
             <pose>-0.2 0 0.3 0 0.0 3.14</pose>
             <update_rate>60</update_rate>
           </sensor>
 
-          <visual name="top::camera_visual">
+          <visual element_id="top::camera_visual">
+            <transparency action="add">0.5</transparency>
             <geometry action="replace">
               <sphere>
                 <radius>0.05</radius>

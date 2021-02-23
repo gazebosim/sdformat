@@ -6,8 +6,10 @@
       <include>
         <uri>robot</uri>
         <experimental:params>
+          <!-- missing element_id attribute (i.e., element identifier) -->
           <foo/>
-          <visual name="chassis::camera_visual" action="modify">
+          <!-- element does not exist -->
+          <visual element_id="chassis::camera_visual" action="modify">
             <pose>-1.06 0 0 0 0 3.14</pose>
             <geometry>
               <box>
@@ -15,6 +17,24 @@
               </box>
             </geometry>
           </visual>
+          <!-- element already exists -->
+          <visual element_id="chassis::visual" action="add">
+            <geometry>
+              <box>
+                <size>0.1 0.1 0.1</size>
+              </box>
+            </geometry>
+          </visual>
+          <!-- parent of new element does not exist -->
+          <visual element_id="chassis::test::visual" action="add">
+            <geometry>
+              <box>
+                <size>0.1 0.1 0.1</size>
+              </box>
+            </geometry>
+          </visual>
+          <!-- missing name after :: -->
+          <link element_id="chassis::test::" action="add"/>
         </experimental:params>
       </include>
     </model>
