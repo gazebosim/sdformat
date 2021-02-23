@@ -3475,7 +3475,7 @@ void ReduceSDFExtensionPluginFrameReplace(
         }
 
         // pass through the parent transform from fixed joint reduction
-        _reductionTransform = inverseTransformToParentFrame(_reductionTransform,
+        _reductionTransform = TransformToParentFrame(_reductionTransform,
             _link->parent_joint->parent_to_joint_origin_transform);
 
         // create new offset xml blocks
