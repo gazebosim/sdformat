@@ -86,7 +86,7 @@ sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
     include.resolvedFileName = sdf::findFile(include.uri, true, true, _config);
 
     sdf::ElementPtr virtualCustomElements = includeElem->Clone();
-    for (std::size_t i = 0; i < includeElem->GetElementDescriptionCount(); ++i)
+    for (unsigned int i = 0; i < includeElem->GetElementDescriptionCount(); ++i)
     {
       auto elemDescr = includeElem->GetElementDescription(i);
       while (virtualCustomElements->HasElement(elemDescr->GetName()))
