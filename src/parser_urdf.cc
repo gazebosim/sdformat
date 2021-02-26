@@ -219,10 +219,6 @@ std::string Values2str(unsigned int _count, const double *_values);
 
 void CreateGeometry(TiXmlElement* _elem, urdf::GeometrySharedPtr _geometry);
 
-ignition::math::Pose3d inverseTransformToParentFrame(
-    ignition::math::Pose3d _transformInLinkFrame,
-    urdf::Pose _parentToLinkTransform);
-
 /// reduced fixed joints: transform to parent frame
 urdf::Pose TransformToParentFrame(urdf::Pose _transformInLinkFrame,
     urdf::Pose _parentToLinkTransform);
@@ -2416,31 +2412,6 @@ ignition::math::Pose3d TransformToParentFrame(
   // translate link to parentLink frame
   transformInParentLinkFrame.Pos() =
     _parentToLinkTransform.Pos() + transformInParentLinkFrame.Pos();
-
-  return transformInParentLinkFrame;
-}
-
-/////////////////////////////////////////////////
-/// reduced fixed joints: transform to parent frame
-ignition::math::Pose3d inverseTransformToParentFrame(
-    ignition::math::Pose3d _transformInLinkFrame,
-    urdf::Pose _parentToLinkTransform)
-{
-  ignition::math::Pose3d transformInParentLinkFrame;
-  //   rotate link pose to parentLink frame
-  urdf::Rotation ri = _parentToLinkTransform.rotation.GetInverse();
-  ignition::math::Quaterniond q1(ri.w, ri.x, ri.y, ri.z);
-  transformInParentLinkFrame.Pos() = q1 * _transformInLinkFrame.Pos();
-  urdf::Rotation r2 = _parentToLinkTransform.rotation.GetInverse();
-  ignition::math::Quaterniond q3(r2.w, r2.x, r2.y, r2.z);
-  transformInParentLinkFrame.Rot() = q3 * _transformInLinkFrame.Rot();
-  //   translate link to parentLink frame
-  transformInParentLinkFrame.Pos().X() = transformInParentLinkFrame.Pos().X()
-    - _parentToLinkTransform.position.x;
-  transformInParentLinkFrame.Pos().Y() = transformInParentLinkFrame.Pos().Y()
-    - _parentToLinkTransform.position.y;
-  transformInParentLinkFrame.Pos().Z() = transformInParentLinkFrame.Pos().Z()
-    - _parentToLinkTransform.position.z;
 
   return transformInParentLinkFrame;
 }
