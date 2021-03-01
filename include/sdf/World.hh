@@ -43,6 +43,7 @@ namespace sdf
   class Model;
   class ParserConfig;
   class Physics;
+  class NestedInclude;
   struct PoseRelativeToGraph;
   struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;
@@ -261,6 +262,9 @@ namespace sdf
     public: uint64_t InterfaceModelCount() const;
 
     public: std::shared_ptr<const InterfaceModel> InterfaceModelByIndex(
+                const uint64_t _index) const;
+
+    public: const NestedInclude* InterfaceModelNestedIncludeByIndex(
                 const uint64_t _index) const;
 
     /// \brief Give the Scoped PoseRelativeToGraph to be passed on to child

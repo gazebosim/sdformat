@@ -22,6 +22,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
+#include "sdf/InterfaceElements.hh"
 #include "sdf/InterfaceFrame.hh"
 #include "sdf/InterfaceJoint.hh"
 #include "sdf/InterfaceLink.hh"
@@ -244,14 +245,19 @@ std::pair<const Link *, std::string>
 /// i.e, X_RPf cannot be represented in the PoseRelativeTo graph.
 /// Thus, the X_RM has to be calculated such that X_RPf = X_RM * X_MPf.
 //
-/// \param[in] _model Input model whose pose to resolve relative to its parent
+/// \param[in] _rawPose Raw pose of the model whose pose to resolve relative to
+/// its parent
+/// \param[in] _placementFrame Placement frame of the model whose pose to
+/// resolve relative to its parent
 /// \param[in] _graph The PoseRelativeTo graph with the same scope as the
 /// frame referenced by the placement frame attribute of the input model. i.e,
 /// the input model's graph.
 /// \param[out] _resolvedPose The resolved pose (X_RM). If an error was
 /// encountered during `sdf::resolvePoseRelativeToRoot`, _resolvedPose will not
 /// be modified.
-static Errors resolveModelPoseWithPlacementFrame(const sdf::Model &_model,
+static Errors resolveModelPoseWithPlacementFrame(
+    const ignition::math::Pose3d &_rawPose,
+    const std::string _placementFrame,
     const sdf::ScopedGraph<PoseRelativeToGraph> &_graph,
     ignition::math::Pose3d &_resolvedPose)
 {
@@ -259,15 +265,14 @@ static Errors resolveModelPoseWithPlacementFrame(const sdf::Model &_model,
 
   // Alias for better pose notation
   ignition::math::Pose3d &X_RM = _resolvedPose;
-  const ignition::math::Pose3d &X_RPf = _model.RawPose();
+  const ignition::math::Pose3d &X_RPf = _rawPose;
 
   // If the model has a placement frame, calculate the necessary pose to use
-  if (!_model.PlacementFrameName().empty())
+  if (_placementFrame != "")
   {
     ignition::math::Pose3d X_MPf;
 
-    errors = sdf::resolvePoseRelativeToRoot(
-        X_MPf, _graph, _model.PlacementFrameName());
+    errors = sdf::resolvePoseRelativeToRoot(X_MPf, _graph, _placementFrame);
     if (errors.empty())
     {
       X_RM = X_RPf * X_MPf.Inverse();
@@ -1150,7 +1155,8 @@ Errors buildPoseRelativeToGraph(
     }
 
     ignition::math::Pose3d resolvedModelPose = nestedModel->RawPose();
-    sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(*nestedModel,
+    sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
+        nestedModel->RawPose(), nestedModel->PlacementFrameName(),
         outModel.ChildModelScope(nestedModel->Name()), resolvedModelPose);
     errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
@@ -1192,11 +1198,12 @@ Errors buildPoseRelativeToGraph(
 
     ignition::math::Pose3d resolvedModelPose =
         ifaceModel->ModelFramePoseInRelativeToFrame();
-    // TODO (addisu) Handle placement frames for interface models
-    // sdf::Errors resolveErrors =
-    // resolveModelPoseWithPlacementFrame(*ifaceModel,
-    //     _out.ChildModelScope(ifaceModel->Name()), resolvedModelPose);
-    // errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+    const auto *nestedInclude = _model->InterfaceModelNestedIncludeByIndex(m);
+    sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
+        nestedInclude->includeRawPose.value_or(ignition::math::Pose3d()),
+        nestedInclude->placementFrame.value_or(""),
+        outModel.ChildModelScope(ifaceModel->Name()), resolvedModelPose);
+    errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
     outModel.AddEdge({relativeToId, nestedModelId}, resolvedModelPose);
   }
@@ -1209,8 +1216,9 @@ Errors buildPoseRelativeToGraph(
     // pose is calculated.
     auto rootToModel = outModel.AddEdge({rootId, modelId}, {});
     ignition::math::Pose3d resolvedModelPose = _model->RawPose();
-    sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
-        *_model, outModel, resolvedModelPose);
+    sdf::Errors resolveErrors =
+        resolveModelPoseWithPlacementFrame(_model->RawPose(),
+            _model->PlacementFrameName(), outModel, resolvedModelPose);
     errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
     outModel.UpdateEdge(rootToModel, resolvedModelPose);
@@ -1387,21 +1395,23 @@ Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
   }
 
 
-  if (_root)
-  {
+  // if (_root)
+  // {
     // We have to add this edge now with an identity pose to be able to call
     // resolveModelPoseWithPlacementFrame, which in turn calls
     // sdf::resolvePoseRelativeToRoot. We will later update the edge after the
     // pose is calculated.
     // auto rootToModel = outModel.AddEdge({rootId, modelId}, {});
     // ignition::math::Pose3d resolvedModelPose =
-    // _model->ModelFramePoseInParentFrame(); sdf::Errors resolveErrors =
-    // resolveModelPoseWithPlacementFrame(
-    //     *_model, outModel, resolvedModelPose);
+    //     _model->ModelFramePoseInRelativeToFrame();
+    // sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
+    //     _nestedInclude->includeRawPose.value_or(ignition::math::Pose3d()),
+    //     _nestedInclude->placementFrame.value_or(""), outModel,
+    //     resolvedModelPose);
     // errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
     // outModel.UpdateEdge(rootToModel, resolvedModelPose);
-  }
+  // }
   return errors;
 }
 
@@ -1464,7 +1474,8 @@ Errors buildPoseRelativeToGraph(
       continue;
     }
 
-    auto modelErrors = buildPoseRelativeToGraph(_out , ifaceModel , false);
+    auto modelErrors =
+        buildPoseRelativeToGraph(_out, ifaceModel, false);
     errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
   }
 
@@ -1529,7 +1540,8 @@ Errors buildPoseRelativeToGraph(
     }
 
     ignition::math::Pose3d resolvedModelPose = model->RawPose();
-    sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(*model,
+    sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
+        model->RawPose(), model->PlacementFrameName(),
         _out.ChildModelScope(model->Name()), resolvedModelPose);
     errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
@@ -1572,11 +1584,12 @@ Errors buildPoseRelativeToGraph(
 
     ignition::math::Pose3d resolvedModelPose =
         ifaceModel->ModelFramePoseInRelativeToFrame();
-    // TODO (addisu) Handle placement frames for interface models
-    // sdf::Errors resolveErrors =
-    // resolveModelPoseWithPlacementFrame(*ifaceModel,
-    //     _out.ChildModelScope(ifaceModel->Name()), resolvedModelPose);
-    // errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+    const auto *nestedInclude = _world->InterfaceModelNestedIncludeByIndex(m);
+    sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
+        nestedInclude->includeRawPose.value_or(ignition::math::Pose3d()),
+        nestedInclude->placementFrame.value_or(""),
+        _out.ChildModelScope(ifaceModel->Name()), resolvedModelPose);
+    errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
     _out.AddEdge({relativeToId, modelId}, resolvedModelPose);
   }

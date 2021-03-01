@@ -63,7 +63,8 @@ static std::optional<std::string> computeAbsoluteName(
 /////////////////////////////////////////////////
 // cppcheck-suppress unusedFunction
 sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
-    const sdf::ParserConfig &_config, std::vector<InterfaceModelPtr> &_models)
+    const sdf::ParserConfig &_config,
+    std::vector<InterfaceModelWrapper> &_models)
 {
   sdf::Errors allErrors;
   for (auto includeElem = _sdf->GetElementImpl("include"); includeElem;
@@ -105,6 +106,11 @@ sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
       include.includePoseRelativeTo = poseElem->Get<std::string>("relative_to");
     }
 
+    if (includeElem->HasElement("placement_frame"))
+    {
+      include.placementFrame = includeElem->Get<std::string>("placement_frame");
+    }
+
     for (const auto &parser : _config.CustomModelParsers())
     {
       sdf::Errors errors;
@@ -118,8 +124,19 @@ sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
       }
       else if (nullptr != model)
       {
-        // TODO: (addisu) Check for model name uniqueness
-        _models.push_back(std::move(model));
+        if (model->Name() == "")
+        {
+          allErrors.emplace_back(sdf::ErrorCode::ATTRIBUTE_INVALID,
+              "Missing name of custom model with URI [" + include.uri + "]");
+        }
+        else
+        {
+          InterfaceModelWrapper modelWrapper;
+          modelWrapper.nestedInclude = include;
+          modelWrapper.interfaceModel = model;
+          // TODO: (addisu) Check for model name uniqueness
+          _models.push_back(std::move(modelWrapper));
+        }
         break;
       }
       // If there are no errors and model == nullptr, continue iterating through

@@ -79,19 +79,19 @@ class SDFORMAT_VISIBLE InterfaceModel
   /// \brief Get the pose of this model in the parent model frame.
   /// \return Pose of this model in the parent model frame.
   // public: const ignition::math::Pose3d &PoseInModelFrame() const;
-  // TODO: (addisu) The CanonicalLinkName function mirrores
+  // TODO (addisu): The CanonicalLinkName function mirrores
   // Model::CanonicalLinkName, which is only a getter function. If the
   // canonical_link attribute is not set, this will return an empty string. We
   // need another function that resolves the canonical link.
   public: const std::string &CanonicalLinkName() const;
   public: const std::string ResolvedCanonicalLinkName() const;
 
+  // TODO (addisu): May not be needed or can be renamed back to the original
   public: const ignition::math::Pose3d &
           ModelFramePoseInRelativeToFrame() const;
 
   public: const std::string &PoseRelativeTo() const;
 
-  // TODO: Why is this nested_model a shared_ptr?
   /// Provided so that hierarchy can still be leveraged from SDFormat.
   public: void AddNestedModel(sdf::InterfaceModelConstPtr _nestedModel);
 

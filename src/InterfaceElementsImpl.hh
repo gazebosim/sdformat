@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "sdf/Element.hh"
+#include "sdf/InterfaceElements.hh"
 #include "sdf/InterfaceModel.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/Types.hh"
@@ -35,7 +36,7 @@ inline namespace SDF_VERSION_NAMESPACE
 /// \brief TODO (addisu)
 sdf::Errors loadInterfaceElements(sdf::ElementPtr _sdf,
     const sdf::ParserConfig &_config,
-    std::vector<InterfaceModelPtr> &_models);
+    std::vector<InterfaceModelWrapper> &_models);
 }
 }
 

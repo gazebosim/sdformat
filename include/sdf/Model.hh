@@ -40,6 +40,7 @@ namespace sdf
   class Joint;
   class Link;
   class ParserConfig;
+  class NestedInclude;
   struct PoseRelativeToGraph;
   struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;
@@ -308,7 +309,8 @@ namespace sdf
 
     public: std::shared_ptr<const InterfaceModel> InterfaceModelByIndex(
                 const uint64_t _index) const;
-
+    public: const NestedInclude *InterfaceModelNestedIncludeByIndex(
+                const uint64_t _index) const;
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or
     /// World::SetPoseRelativeToGraph if this is a standalone model and

@@ -64,10 +64,17 @@ struct NestedInclude {
   // TODO (addisu) docs
   std::optional<ignition::math::Pose3d> includeRawPose;
   std::optional<std::string> includePoseRelativeTo;
+  std::optional<std::string> placementFrame;
 
   /// This is a "virtual" XML element that will contain all custom (*unparsed*)
   /// elements and attributes within `//include`.
   sdf::ElementPtr virtualCustomElements;
+};
+
+struct InterfaceModelWrapper
+{
+  NestedInclude nestedInclude;
+  InterfaceModelPtr interfaceModel;
 };
 
 /// Defines a custom model parser.

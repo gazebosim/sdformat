@@ -22,6 +22,7 @@
 #include <ignition/math/SemanticVersion.hh>
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
+#include "sdf/InterfaceElements.hh"
 #include "sdf/InterfaceModel.hh"
 #include "sdf/InterfaceModelPoseGraph.hh"
 #include "sdf/Joint.hh"
@@ -79,7 +80,7 @@ class sdf::Model::Implementation
   public: std::vector<Model> models;
 
   /// \brief The interface models specified in this model.
-  public: std::vector<InterfaceModelPtr> interfaceModels;
+  public: std::vector<InterfaceModelWrapper> interfaceModels;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -197,9 +198,9 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
 
   // TODO: Check that the interface model names don't collide with the regular
   // model names
-  for (const auto &ifaceModel : this->dataPtr->interfaceModels)
+  for (const auto &ifaceModelWrapper : this->dataPtr->interfaceModels)
   {
-    frameNames.insert(ifaceModel->Name());
+    frameNames.insert(ifaceModelWrapper.interfaceModel->Name());
   }
 
   // Load all the links.
@@ -665,13 +666,14 @@ void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
   {
     model.SetPoseRelativeToGraph(childPoseGraph);
   }
-  for (auto &ifaceModel : this->dataPtr->interfaceModels)
+  for (auto &ifaceModelWrapper : this->dataPtr->interfaceModels)
   {
-    const auto &repostureFunc = ifaceModel->RepostureFunction();
+    const auto &repostureFunc =
+        ifaceModelWrapper.interfaceModel->RepostureFunction();
     if (repostureFunc)
     {
       repostureFunc(sdf::InterfaceModelPoseGraph(
-          ifaceModel->Name(), childPoseGraph));
+          ifaceModelWrapper.interfaceModel->Name(), childPoseGraph));
     }
   }
   for (auto &link : this->dataPtr->links)
@@ -767,7 +769,15 @@ InterfaceModelConstPtr Model::InterfaceModelByIndex(
     const uint64_t _index) const
 {
   if (_index < this->dataPtr->interfaceModels.size())
-    return this->dataPtr->interfaceModels[_index];
+    return this->dataPtr->interfaceModels[_index].interfaceModel;
   return nullptr;
 }
 
+/////////////////////////////////////////////////
+const NestedInclude *Model::InterfaceModelNestedIncludeByIndex(
+    const uint64_t _index) const
+{
+  if (_index < this->dataPtr->interfaceModels.size())
+    return &this->dataPtr->interfaceModels[_index].nestedInclude;
+  return nullptr;
+}
