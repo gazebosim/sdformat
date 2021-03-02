@@ -223,12 +223,11 @@ sdf::InterfaceModelPtr parseModel(toml::Value &_doc,
 
   // Pose of model (M) in parent (P) frame
   const auto X_PM = _doc["pose"].ParamGet<ignition::math::Pose3d>();
-  const auto relativeTo = _doc["relative_to"].ParamGet<std::string>("");
 
   bool isStatic = _doc["static"].ParamGet<bool>(false);
 
   auto model = std::make_shared<sdf::InterfaceModel>(
-      _modelName, nullptr, isStatic, canonicalLink, X_PM, relativeTo);
+      _modelName, nullptr, isStatic, canonicalLink, X_PM);
 
   for (auto &[name, link] : _doc["links"].Map())
   {
@@ -282,12 +281,6 @@ sdf::InterfaceModelPtr customTomlParser(
       doc["pose"] = {poseParam};
     }
 
-    if (_include.includePoseRelativeTo.has_value())
-    {
-      sdf::Param relativeToParam("relative_to", "string", "", false);
-      relativeToParam.Set(*_include.includePoseRelativeTo);
-      doc["relative_to"] = {relativeToParam};
-    }
     return parseModel(doc, modelName);
   }
   return nullptr;
@@ -411,7 +404,7 @@ void TomlParserTest(const sdf::InterfaceModelConstPtr &_interfaceModel)
   EXPECT_EQ("double_pendulum", _interfaceModel->Name());
   EXPECT_EQ("base", _interfaceModel->CanonicalLinkName());
   EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0),
-      _interfaceModel->ModelFramePoseInRelativeToFrame());
+      _interfaceModel->ModelFramePoseInParentFrame());
 
   EXPECT_EQ(3u, _interfaceModel->Links().size());
   std::map <std::string, Pose3d> expLinks = {
@@ -459,7 +452,7 @@ void TomlParserTest(const sdf::InterfaceModelConstPtr &_interfaceModel)
   {
     ASSERT_EQ(1u, expNestedModels.count(nestedModel->Name()));
     EXPECT_EQ(expNestedModels[nestedModel->Name()],
-        nestedModel->ModelFramePoseInRelativeToFrame());
+        nestedModel->ModelFramePoseInParentFrame());
   }
 }
 
@@ -689,8 +682,7 @@ TEST_F(InterfaceAPI, Reposturing)
 
     auto model = std::make_shared<sdf::InterfaceModel>(_include.localModelName,
         repostureFunc, false, "base_link",
-        _include.includeRawPose.value_or(Pose3d {}),
-        _include.includePoseRelativeTo.value_or(""));
+        _include.includeRawPose.value_or(Pose3d {}));
     model->AddLink({"base_link", {}});
     return model;
   };
@@ -733,8 +725,7 @@ TEST_F(InterfaceAPI, PlacementFrame)
 
     auto model = std::make_shared<sdf::InterfaceModel>(_include.localModelName,
         repostureFunc, false, "base_link",
-        _include.includeRawPose.value_or(Pose3d {}),
-        _include.includePoseRelativeTo.value_or(""));
+        _include.includeRawPose.value_or(Pose3d {}));
     model->AddLink({"base_link", Pose3d(0, 1, 0, 0, 0, 0)});
     model->AddFrame({"frame_1", "__model__", Pose3d(0, 0, 1, 0, 0, 0)});
     return model;

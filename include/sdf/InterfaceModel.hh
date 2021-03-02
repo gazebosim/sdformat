@@ -57,15 +57,14 @@ class SDFORMAT_VISIBLE InterfaceModel
   /// \param[in] _static Whether the model is static
   /// \param[in] _canonicalLinkNameThe canonical link's name. (It must be
   ///   registered).
-  /// \param[in] model_frame_pose_in_parent_model_frame Model frame pose
+  /// \param[in] _poseInParentFrame Model frame pose
   ///   relative to the including model's frame. Defaults to identity.
   ///   \note This will not be used if //include/pose is specified.
   public: InterfaceModel(const std::string &_name,
               const sdf::RepostureFunction &_repostureFunction,
               bool _static,
               const std::string &_canonicalLinkName,
-              const ignition::math::Pose3d &_poseInRelativeToFrame = {},
-              const std::string &_relativeTo = {});
+              const ignition::math::Pose3d &_poseInParentFrame = {});
 
   /// \brief Get the name of the model.
   /// \return Local name of the model.
@@ -88,9 +87,7 @@ class SDFORMAT_VISIBLE InterfaceModel
 
   // TODO (addisu): May not be needed or can be renamed back to the original
   public: const ignition::math::Pose3d &
-          ModelFramePoseInRelativeToFrame() const;
-
-  public: const std::string &PoseRelativeTo() const;
+          ModelFramePoseInParentFrame() const;
 
   /// Provided so that hierarchy can still be leveraged from SDFormat.
   public: void AddNestedModel(sdf::InterfaceModelConstPtr _nestedModel);

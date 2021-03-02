@@ -1165,13 +1165,15 @@ Errors buildPoseRelativeToGraph(
   for (uint64_t m = 0; m < _model->InterfaceModelCount(); ++m)
   {
     auto ifaceModel = _model->InterfaceModelByIndex(m);
+    const auto *nestedInclude = _model->InterfaceModelNestedIncludeByIndex(m);
 
     auto nestedModelId = outModel.VertexIdByName(ifaceModel->Name());
     // if relative_to is empty, add edge from implicit model frame to
     // nestedModel
     auto relativeToId = modelFrameId;
 
-    const std::string &relativeTo = ifaceModel->PoseRelativeTo();
+    const std::string &relativeTo =
+        nestedInclude->includePoseRelativeTo.value_or("");
     if (!relativeTo.empty())
     {
       // look for vertex in graph that matches relative_to value
@@ -1197,8 +1199,8 @@ Errors buildPoseRelativeToGraph(
     }
 
     ignition::math::Pose3d resolvedModelPose =
-        ifaceModel->ModelFramePoseInRelativeToFrame();
-    const auto *nestedInclude = _model->InterfaceModelNestedIncludeByIndex(m);
+        nestedInclude->includeRawPose.value_or(ignition::math::Pose3d());
+
     sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
         nestedInclude->includeRawPose.value_or(ignition::math::Pose3d()),
         nestedInclude->placementFrame.value_or(""),
@@ -1328,7 +1330,7 @@ Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
     errors.insert(errors.end(), nestedErrors.begin(), nestedErrors.end());
     auto nestedModelId = outModel.VertexIdByName(nestedModel->Name());
     outModel.AddEdge({modelFrameId, nestedModelId},
-        nestedModel->ModelFramePoseInRelativeToFrame());
+        nestedModel->ModelFramePoseInParentFrame());
   }
 
   for (const auto &joint : _model->Joints())
@@ -1551,13 +1553,15 @@ Errors buildPoseRelativeToGraph(
   for (uint64_t m = 0; m < _world->InterfaceModelCount(); ++m)
   {
     auto ifaceModel = _world->InterfaceModelByIndex(m);
+    const auto *nestedInclude = _world->InterfaceModelNestedIncludeByIndex(m);
 
     auto modelId = _out.VertexIdByName(ifaceModel->Name());
     // if relative_to is empty, add edge from implicit model frame to
     // world
     auto relativeToId = worldFrameId;
 
-    const std::string &relativeTo = ifaceModel->PoseRelativeTo();
+    const std::string &relativeTo =
+        nestedInclude->includePoseRelativeTo.value_or("");
     if (!relativeTo.empty())
     {
       // look for vertex in graph that matches relative_to value
@@ -1583,8 +1587,8 @@ Errors buildPoseRelativeToGraph(
     }
 
     ignition::math::Pose3d resolvedModelPose =
-        ifaceModel->ModelFramePoseInRelativeToFrame();
-    const auto *nestedInclude = _world->InterfaceModelNestedIncludeByIndex(m);
+        nestedInclude->includeRawPose.value_or(ignition::math::Pose3d());
+
     sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
         nestedInclude->includeRawPose.value_or(ignition::math::Pose3d()),
         nestedInclude->placementFrame.value_or(""),
