@@ -139,7 +139,9 @@ class ScopedGraph
   /// \return A new child scope.
   public: ScopedGraph<T> ChildModelScope(const std::string &_name) const;
 
-  // TODO (addisu): docs
+  // \brief Get the root scope (the scope without any prefix). This is useful
+  // for resolving poses relative to the world.
+  // \return A new scope anchored at the root of the graph
   public: ScopedGraph<T> RootScope() const;
 
   /// \brief Checks if the scope points to a valid graph.

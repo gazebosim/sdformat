@@ -898,3 +898,50 @@ TEST_F(InterfaceAPI, PlacementFrame)
     }
   }
 }
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPI, NameCollision)
+{
+  using ignition::math::Pose3d;
+
+  this->config.RegisterCustomModelParser(customTomlParser);
+
+  // ---------------- Name collision in //world/include ----------------
+  {
+    const std::string testSdf = R"(
+  <sdf version="1.8">
+    <world name="default">
+      <include>
+        <uri>double_pendulum.toml</uri>
+        <name>test_name</name>
+      </include>
+      <model name="test_name">
+        <static>true</static>
+      </model>
+    </world>
+  </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
+  }
+  // ---------------- Name collision in //model/include ----------------
+  {
+    const std::string testSdf = R"(
+  <sdf version="1.8">
+    <model name="parent_model">
+      <include>
+        <uri>double_pendulum.toml</uri>
+        <name>test_name</name>
+      </include>
+      <model name="test_name">
+        <static>true</static>
+      </model>
+    </model>
+  </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
+  }
+}

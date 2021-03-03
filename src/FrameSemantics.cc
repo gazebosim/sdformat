@@ -473,9 +473,6 @@ Errors buildFrameAttachedToGraph(
   }
 
   // identify canonical link, which may be nested
-  // TODO (addisu): If the canonical link is inside an interface model, this
-  // function returns {nullptr, name}. This can be problematic for downstream
-  // applications.
   const auto[canonicalLink, canonicalLinkName] =
       modelCanonicalLinkAndRelativeName(_model);
   if (!_model->Static())
@@ -703,7 +700,6 @@ Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
 
   // identify canonical link, which may be nested
   const std::string canonicalLinkName = _model->CanonicalLinkName();
-  // TODO (addisu) Resolve canonical link
   const auto canonicalLinkId = outModel.VertexIdByName(canonicalLinkName);
   if (!_model->Static())
   {

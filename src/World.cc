@@ -72,7 +72,8 @@ class sdf::World::Implementation
   public: std::vector<Model> models;
 
   /// \brief The interface models specified in this world.
-  public: std::vector<InterfaceModelWrapper> interfaceModels;
+  public: std::vector<std::pair<sdf::NestedInclude, sdf::InterfaceModelPtr>>
+      interfaceModels;
 
   /// \brief Name of the world.
   public: std::string name = "";
@@ -207,11 +208,9 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   errors.insert(errors.end(), interfaceModelLoadErrors.begin(),
       interfaceModelLoadErrors.end());
 
-  // TODO: Check that the interface model names don't collide with the regular
-  // model names
-  for (const auto &ifaceModelWrapper : this->dataPtr->interfaceModels)
+  for (const auto &ifaceModelPair : this->dataPtr->interfaceModels)
   {
-    frameNames.insert(ifaceModelWrapper.interfaceModel->Name());
+    frameNames.insert(ifaceModelPair.second->Name()).second;
   }
 
   // Load all the physics.
@@ -571,7 +570,7 @@ InterfaceModelConstPtr World::InterfaceModelByIndex(
     const uint64_t _index) const
 {
   if (_index < this->dataPtr->interfaceModels.size())
-    return this->dataPtr->interfaceModels[_index].interfaceModel;
+    return this->dataPtr->interfaceModels[_index].second;
   return nullptr;
 }
 
@@ -580,7 +579,7 @@ const NestedInclude *World::InterfaceModelNestedIncludeByIndex(
     const uint64_t _index) const
 {
   if (_index < this->dataPtr->interfaceModels.size())
-    return &this->dataPtr->interfaceModels[_index].nestedInclude;
+    return &this->dataPtr->interfaceModels[_index].first;
   return nullptr;
 }
 
@@ -593,14 +592,14 @@ void World::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
   {
     model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
-  for (auto &ifaceModelWrapper : this->dataPtr->interfaceModels)
+  for (auto &ifaceModelPair : this->dataPtr->interfaceModels)
   {
     const auto &repostureFunc =
-        ifaceModelWrapper.interfaceModel->RepostureFunction();
+        ifaceModelPair.second->RepostureFunction();
     if (repostureFunc)
     {
       repostureFunc(
-          sdf::InterfaceModelPoseGraph(ifaceModelWrapper.interfaceModel->Name(),
+          sdf::InterfaceModelPoseGraph(ifaceModelPair.second->Name(),
               this->dataPtr->poseRelativeToGraph));
     }
   }

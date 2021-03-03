@@ -163,7 +163,7 @@ static std::optional<std::string> computeAbsoluteName(
 // cppcheck-suppress unusedFunction
 sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
     const sdf::ParserConfig &_config,
-    std::vector<InterfaceModelWrapper> &_models)
+    std::vector<std::pair<NestedInclude, InterfaceModelPtr>> &_models)
 {
   sdf::Errors allErrors;
   for (auto includeElem = _sdf->GetElementImpl("include"); includeElem;
@@ -232,11 +232,7 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
         }
         else
         {
-          InterfaceModelWrapper modelWrapper;
-          modelWrapper.nestedInclude = include;
-          modelWrapper.interfaceModel = model;
-          // TODO: (addisu) Check for model name uniqueness
-          _models.push_back(std::move(modelWrapper));
+          _models.emplace_back(include, model);
         }
         break;
       }

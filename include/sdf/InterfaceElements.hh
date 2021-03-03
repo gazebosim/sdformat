@@ -33,10 +33,10 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
-// TODO (addisu) docs
-// This can be used in both //model elements as well as /world.
-struct SDFORMAT_VISIBLE NestedInclude {
-
+/// \brief Contains the necessary information about an included model file
+/// for custom model parsers to be able to find the file and parse it.
+struct SDFORMAT_VISIBLE NestedInclude
+{
   /// \brief Provides the URI as specified in `//include/uri`. This may or may
   /// not end with a file extension (it will not end an extension if it refers
   /// to a model package).
@@ -55,7 +55,8 @@ struct SDFORMAT_VISIBLE NestedInclude {
   /// be an empty string.
   std::string absoluteParentName;
 
-  /// \brief Name relative to immediate parent as specified in `//include/@name`.
+  /// \brief Name relative to immediate parent as specified in
+  /// `//include/@name`.
   /// Example: `my_new_model`
   std::string localModelName;
 
@@ -79,14 +80,6 @@ struct SDFORMAT_VISIBLE NestedInclude {
   /// This is a "virtual" XML element that will contain all custom (*unparsed*)
   /// elements and attributes within `//include`.
   sdf::ElementPtr virtualCustomElements;
-};
-
-
-/// \brief
-struct InterfaceModelWrapper
-{
-  NestedInclude nestedInclude;
-  InterfaceModelPtr interfaceModel;
 };
 
 /// Defines a custom model parser.

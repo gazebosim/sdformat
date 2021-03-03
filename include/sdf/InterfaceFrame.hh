@@ -34,8 +34,10 @@ class SDFORMAT_VISIBLE InterfaceFrame
 {
   /// Constructor
   /// \param[in] _name The *local* name.
-  /// \param[in] _attachedTo Name of the attached-to frame. Must be "__model__"
-  /// if attached to model. TODO (addisu) Can it be ""
+  /// \param[in] _attachedTo Name of the attached-to frame. This cannot be an
+  /// empty string. If the frame is attached to the model frame, this must be
+  /// "__model__" . The (implicit or explicit) frame must exist in the scope of
+  /// this frame.
   /// \param[in] _pose The pose of the frame relative to the attached-to frame.
   public: InterfaceFrame(const std::string &_name,
       const std::string &_attachedTo, const ignition::math::Pose3d &_pose);

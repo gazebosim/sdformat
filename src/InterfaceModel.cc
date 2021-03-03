@@ -73,13 +73,6 @@ const std::string &InterfaceModel::CanonicalLinkName() const
 }
 
 /////////////////////////////////////////////////
-const std::string InterfaceModel::ResolvedCanonicalLinkName() const
-{
-  // TODO: This is not correct.
-  return this->dataPtr->canonicalLinkName;
-}
-
-/////////////////////////////////////////////////
 const ignition::math::Pose3d &
 InterfaceModel::ModelFramePoseInParentFrame() const
 {
