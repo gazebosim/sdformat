@@ -83,3 +83,107 @@ TEST(Unknown, CopyUnknownElement)
   EXPECT_EQ("my nested xml", nestedElem->Get<std::string>("attr"));
   EXPECT_EQ("AString", nestedElem->Get<std::string>("string"));
 }
+
+/////////////////////////////////////////////////
+/// Test that elements that aren't part of the spec are flagged with when
+/// UnrecognizedElementsPolicy is set to err
+TEST(UnrecognizedElements, UnrecognizedElementsWithWarningsPolicies)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "unrecognized_elements.sdf");
+
+  sdf::ParserConfig config;
+
+  {
+    config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::ERR);
+    sdf::Root root;
+    const auto errors = root.Load(testFile, config);
+    ASSERT_FALSE(errors.empty());
+    constexpr char expectedMessage[] =
+      "XML Element[not_a_link_element], child of element[link], not defined in"
+      " SDF. Copying[not_a_link_element] as children of [link].\n";
+    EXPECT_EQ(errors[0].Message(), expectedMessage);
+  }
+  {
+    config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::WARN);
+    sdf::Root root;
+    const auto errors = root.Load(testFile, config);
+    EXPECT_TRUE(errors.empty());
+  }
+  {
+    config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::LOG);
+    sdf::Root root;
+    const auto errors = root.Load(testFile, config);
+    EXPECT_TRUE(errors.empty());
+  }
+}
+
+/////////////////////////////////////////////////
+/// Test that elements that aren't part of the spec but have the namespace
+/// separator ":" don't cause errors even with EnforcementPolicy::ERR
+TEST(UnrecognizedElements, UnrecognizedElementsWithNamespaces)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "unrecognized_elements_with_namespace.sdf");
+
+  sdf::ParserConfig config;
+  config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::ERR);
+
+  sdf::Root root;
+  const auto errors = root.Load(testFile, config);
+  EXPECT_TRUE(errors.empty());
+}
+
+/////////////////////////////////////////////////
+/// Test that elements that aren't part of the version of the spec
+/// cause an error (#327) - e.g. something that was valid in SDFormat 1.6 but
+/// not in SDFormat>=1.7 (https://git.io/JtKKb).
+TEST(UnrecognizedElements, OldElementsInNewSchemas)
+{
+  // This should be valid in 1.6, but not in 1.8 (do to usage of
+  // `use_parent_model_frame`).
+  auto make_model_xml_string = [](std::string version)
+  {
+    return R"(
+<?xml version="1.0" ?>
+<sdf version=")" + version + R"(">
+  <model name="default">
+    <joint name="joint_WA" type="revolute">
+      <parent>world</parent>
+      <child>A</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name="A"/>
+  </model>
+</sdf>)";
+  };
+
+  sdf::ParserConfig config;
+  config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::ERR);
+
+  // Valid in 1.6.
+  {
+    sdf::Root root;
+    const auto errors = root.LoadSdfString(
+        make_model_xml_string("1.6"), config);
+    ASSERT_TRUE(errors.empty());
+  }
+
+  // Invalid in >=1.7.
+  {
+    sdf::Root root;
+    const auto errors = root.LoadSdfString(
+        make_model_xml_string("1.8"), config);
+    ASSERT_EQ(errors.size(), 1u);
+    constexpr char expectedMessage[] =
+        "XML Element[use_parent_model_frame], child of element[axis], not "
+        "defined in SDF. Copying[use_parent_model_frame] as children of "
+        "[axis].\n";
+    EXPECT_EQ(errors[0].Message(), expectedMessage);
+  }
+}

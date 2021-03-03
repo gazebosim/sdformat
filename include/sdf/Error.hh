@@ -65,6 +65,10 @@ namespace sdf
     /// \brief This error indicates that an SDF attribute is deprecated.
     ATTRIBUTE_DEPRECATED,
 
+    /// \brief Indicates an attribute was included that is not part of the sdf
+    /// spec
+    ATTRIBUTE_INCORRECT_TYPE,
+
     /// \brief Indicates that a required SDF element is missing.
     ELEMENT_MISSING,
 
@@ -134,6 +138,9 @@ namespace sdf
 
     /// \brief The specified placement frame is invalid
     MODEL_PLACEMENT_FRAME_INVALID,
+
+    /// \brief The provided version has been deprecated or it is pre-versioning
+    VERSION_DEPRECATED,
   };
 
   class SDFORMAT_VISIBLE Error

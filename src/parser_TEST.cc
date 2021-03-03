@@ -68,9 +68,8 @@ sdf::SDFPtr InitSDF()
 /// Checks emitted warnings for custom/unknown elements in log file
 TEST(Parser, CustomUnknownElements)
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase += "/test/sdf";
-  const std::string path = pathBase +"/custom_and_unknown_elements.sdf";
+  const auto path = sdf::testing::TestFile(
+      "sdf", "custom_and_unknown_elements.sdf");
 
   sdf::SDFPtr sdf = InitSDF();
   EXPECT_TRUE(sdf::readFile(path, sdf));
@@ -100,10 +99,9 @@ TEST(Parser, CustomUnknownElements)
 /////////////////////////////////////////////////
 TEST(Parser, ReusedSDFVersion)
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase += "/test/sdf";
-  const std::string path17 = pathBase +"/model_link_relative_to.sdf";
-  const std::string path16 = pathBase +"/joint_complete.sdf";
+  const auto path17 = sdf::testing::TestFile(
+      "sdf", "model_link_relative_to.sdf");
+  const auto path16 = sdf::testing::TestFile("sdf", "joint_complete.sdf");
 
   // Call readFile API that always converts
   sdf::SDFPtr sdf = InitSDF();
@@ -123,9 +121,7 @@ TEST(Parser, ReusedSDFVersion)
 /////////////////////////////////////////////////
 TEST(Parser, readFileConversions)
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase += "/test/sdf";
-  const std::string path = pathBase +"/joint_complete.sdf";
+  const auto path = sdf::testing::TestFile("sdf", "joint_complete.sdf");
 
   // Call readFile API that always converts
   {
@@ -150,16 +146,13 @@ TEST(Parser, readFileConversions)
 /////////////////////////////////////////////////
 TEST(Parser, NameUniqueness)
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase += "/test/sdf";
-
   // These tests are copies of the ones in ign_TEST.cc but use direct calls to
   // name uniqueness validator functions instead of going through ign.
 
   // Check an SDF file with sibling elements of the same type (world)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/world_duplicate.sdf";
+    const auto path = sdf::testing::TestFile("sdf", "world_duplicate.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
@@ -172,7 +165,8 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of different types (model, light)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/world_sibling_same_names.sdf";
+    const auto path = sdf::testing::TestFile("sdf",
+        "world_sibling_same_names.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
@@ -185,7 +179,8 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of the same type (link)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/model_duplicate_links.sdf";
+    const auto path = sdf::testing::TestFile("sdf",
+        "model_duplicate_links.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
@@ -198,7 +193,8 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of the same type (joint)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/model_duplicate_joints.sdf";
+    const auto path = sdf::testing::TestFile("sdf",
+        "model_duplicate_joints.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
@@ -211,7 +207,8 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of different types (link, joint)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/model_link_joint_same_name.sdf";
+    const auto path = sdf::testing::TestFile("sdf",
+        "model_link_joint_same_name.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
@@ -224,7 +221,8 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of the same type (collision)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/link_duplicate_sibling_collisions.sdf";
+    const auto path = sdf::testing::TestFile("sdf",
+        "link_duplicate_sibling_collisions.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
@@ -237,7 +235,8 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of the same type (visual)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/link_duplicate_sibling_visuals.sdf";
+    const auto path = sdf::testing::TestFile("sdf",
+        "link_duplicate_sibling_visuals.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
@@ -250,7 +249,8 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with cousin elements of the same type (collision)
   // that have duplicate names. This is a valid file.
   {
-    std::string path = pathBase +"/link_duplicate_cousin_collisions.sdf";
+    const auto path = sdf::testing::TestFile("sdf",
+        "link_duplicate_cousin_collisions.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_TRUE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
@@ -264,7 +264,8 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with cousin elements of the same type (visual)
   // that have duplicate names. This is a valid file.
   {
-    std::string path = pathBase +"/link_duplicate_cousin_visuals.sdf";
+    const auto path = sdf::testing::TestFile("sdf",
+        "link_duplicate_cousin_visuals.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_TRUE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
@@ -286,9 +287,6 @@ static bool contains(const std::string &_a, const std::string &_b)
 /////////////////////////////////////////////////
 TEST(Parser, SyntaxErrorInValues)
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase += "/test/sdf";
-
   // Capture sdferr output
   std::stringstream buffer;
   auto old = std::cerr.rdbuf(buffer.rdbuf());
@@ -298,7 +296,7 @@ TEST(Parser, SyntaxErrorInValues)
 #endif
 
   {
-    std::string path = pathBase +"/bad_syntax_pose.sdf";
+    const auto path = sdf::testing::TestFile("sdf", "bad_syntax_pose.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
@@ -309,7 +307,7 @@ TEST(Parser, SyntaxErrorInValues)
   {
     // clear the contents of the buffer
     buffer.str("");
-    std::string path = pathBase +"/bad_syntax_double.sdf";
+    const auto path = sdf::testing::TestFile("sdf", "bad_syntax_double.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
@@ -320,7 +318,7 @@ TEST(Parser, SyntaxErrorInValues)
   {
     // clear the contents of the buffer
     buffer.str("");
-    std::string path = pathBase +"/bad_syntax_vector.sdf";
+    const auto path = sdf::testing::TestFile("sdf", "bad_syntax_vector.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
@@ -390,8 +388,8 @@ class ValueConstraintsFixture : public ::testing::Test
 /// Check if minimum/maximum values are valided
 TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
 {
-  std::string sdfDescPath = std::string(PROJECT_SOURCE_PATH) +
-                            "/test/sdf/stricter_semantics_desc.sdf";
+  const auto sdfDescPath =
+    sdf::testing::TestFile("sdf", "stricter_semantics_desc.sdf");
 
   auto sdfTest = std::make_shared<sdf::SDF>();
   sdf::initFile(sdfDescPath, sdfTest);
@@ -462,19 +460,9 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
 /// Main
 int main(int argc, char **argv)
 {
-  // temporarily set HOME to build directory
-#ifndef _WIN32
-  setenv("HOME", PROJECT_BINARY_DIR, 1);
-#else
-  std::string buildDir = PROJECT_BINARY_DIR;
-  for (int i = 0; i < buildDir.size(); ++i)
-  {
-    if (buildDir[i] == '/')
-      buildDir[i] = '\\';
-  }
-  std::string homePath = "HOMEPATH=" + buildDir;
-  _putenv(homePath.c_str());
-#endif
+  // temporarily set HOME
+  std::string homeDir;
+  sdf::testing::TestSetHomePath(homeDir);
   sdf::Console::Clear();
 
   ::testing::InitGoogleTest(&argc, argv);

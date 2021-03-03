@@ -4,14 +4,36 @@
 
 ### libsdformat 11.0.0 (202X-XX-XX)
 
+1. Add ParserConfig class to encapsulate file path settings.
+    * [Pull request 439](https://github.com/osrf/sdformat/pull/439)
+
+1. Add EnforcementPolicy in ParserConfig to configure parsing strictness.
+    * [Pull request 481](https://github.com/osrf/sdformat/pull/481)
+
+1. Use `ImplPtr` / `UniqueImplPtr` from ignition-utils
+    * [Pull request 472](https://github.com/osrf/sdformat/pull/472)
+    * [Pull request 474](https://github.com/osrf/sdformat/pull/474)
+
 1. Allow files paths for include URIs
     * [Pull request 448](https://github.com/osrf/sdformat/pull/448)
+
+1. Add split/join for separating the link name from fully-qualified name.
+    * [Pull request 457](https://github.com/osrf/sdformat/pull/457)
 
 1. SDFormat 1.8: Add ellipsoid geometry type.
     * [Pull request 434](https://github.com/osrf/sdformat/pull/434)
 
 1. SDFormat 1.8: Add capsule geometry type.
     * [Pull request 389](https://github.com/osrf/sdformat/pull/389)
+
+1. SDFormat 1.8: Add light intensity field.
+    * [Pull request 484](https://github.com/osrf/sdformat/pull/484)
+
+1. SDFormat 1.8: reduce default heightmap sampling from 2 to 1.
+    * [Pull request 459](https://github.com/osrf/sdformat/pull/459)
+
+1. SDFormat 1.8: remove `//inertial/pose/@relative_to` from spec.
+    * [Pull request 480](https://github.com/osrf/sdformat/pull/480)
 
 1. Allow only one of actor/light/model for <include> tags.
     * [Pull request 433](https://github.com/osrf/sdformat/pull/433)
@@ -32,6 +54,12 @@
 1. Update documentation for Cylinder length.
     * [Pull request 318](https://github.com/osrf/sdformat/pull/318)
 
+1. Root: fix grammar in error message.
+    * [Pull request 478](https://github.com/osrf/sdformat/pull/478)
+
+1. Ensure relocatable config files.
+    * [Pull request 419](https://github.com/osrf/sdformat/pull/419)
+
 1. Update CI.
     * [Pull request 452](https://github.com/osrf/sdformat/pull/452)
     * [Pull request 255](https://github.com/osrf/sdformat/pull/255)
@@ -48,6 +76,9 @@
     * [Pull request 355](https://github.com/osrf/sdformat/pull/355)
     * [Pull request 324](https://github.com/osrf/sdformat/pull/324)
     * [Pull request 304](https://github.com/osrf/sdformat/pull/304)
+
+1. Fix precision loss when adding nested models.
+    * [Pull request 314](https://github.com/osrf/sdformat/pull/314)
 
 1. Initial version of SDFormat 1.8 specification.
     * [BitBucket pull request 682](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/682)
@@ -154,7 +185,61 @@
 
 ### libsdformat 9.X.X (202X-XX-XX)
 
-### libsdformat 9.3.0 (2020-09-07)
+### libsdformat 9.5.0 (2021-02-11)
+
+1. Add Windows installation
+    * [Pull request 463](https://github.com/osrf/sdformat/pull/463)
+
+1. Add laser_retro in Visual
+    * [Pull request 454](https://github.com/osrf/sdformat/pull/454)
+
+1. Wrap description tags in CDATA
+    * [Pull request 483](https://github.com/osrf/sdformat/pull/483)
+
+### libsdformat 9.4.0 (2021-01-08)
+
+1. Define `PATH_MAX` for Debian Hurd system
+    * [Pull request 369](https://github.com/osrf/sdformat/pull/369)
+
+1. Fix supported shader types (`normal_map_X_space`)
+    * [Pull request 383](https://github.com/osrf/sdformat/pull/383)
+
+1. Move list of debian dependencies to packages.apt
+    * [Pull request 392](https://github.com/osrf/sdformat/pull/392)
+
+1. Enable/disable tests for issue #202, add macOS workflow
+    * [Pull request 414](https://github.com/osrf/sdformat/pull/414)
+    * [Pull request 438](https://github.com/osrf/sdformat/pull/438)
+    * [Issue 202](https://github.com/osrf/sdformat/issues/202)
+
+1. Test included model folder missing model.config
+    * [Pull request 422](https://github.com/osrf/sdformat/pull/422)
+
+1. Prefix nested model names when flattening
+    * [Pull request 399](https://github.com/osrf/sdformat/pull/399)
+
+1. Add Sky DOM
+    * [Pull request 417](https://github.com/osrf/sdformat/pull/417)
+    * [Pull request 397](https://github.com/osrf/sdformat/pull/397)
+
+1. camera.sdf: decrease far clip lower bound
+    * [Pull request 435](https://github.com/osrf/sdformat/pull/435)
+
+1. material.sdf: add `double_sided` parameter
+    * [Pull request 410](https://github.com/osrf/sdformat/pull/410)
+
+1. Migration to GitHub: CI, links...
+    * [Pull request 239](https://github.com/osrf/sdformat/pull/239)
+    * [Pull request 310](https://github.com/osrf/sdformat/pull/310)
+    * [Pull request 390](https://github.com/osrf/sdformat/pull/390)
+
+1. Fix Actor copy operators and increase test coverage.
+    * [Pull request 301](https://github.com/osrf/sdformat/pull/301)
+
+1. Add Heightmap class
+    * [Pull request 388](https://github.com/osrf/sdformat/pull/388)
+
+### libsdformat 9.3.0 (2020-XX-XX)
 
 1. Store material file path information.
     + [Pull request 349](https://github.com/osrf/sdformat/pull/349)

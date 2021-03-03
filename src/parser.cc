@@ -736,7 +736,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
-      sdfwarn << "Converting a deprecated SDF source[" << _source << "].\n";
+      sdfdbg << "Converting a deprecated SDF source[" << _source << "].\n";
+
       Converter::Convert(_xmlDoc, SDF::Version());
     }
 
@@ -895,7 +896,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
   // Check if the element pointer is deprecated.
   if (_sdf->GetRequired() == "-1")
   {
-    sdfwarn << "SDF Element[" + _sdf->GetName() + "] is deprecated\n";
+    std::stringstream ss;
+    ss << "SDF Element[" + _sdf->GetName() + "] is deprecated\n";
+    enforceConfigurablePolicyCondition(
+      _config.WarningsPolicy(), ss.str(),
+      ErrorCode::ELEMENT_DEPRECATED, _errors);
   }
 
   if (!_xml)
@@ -992,9 +997,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
     if (i == _sdf->GetAttributeCount())
     {
-      sdfwarn << "XML Attribute[" << attribute->Name()
+      std::stringstream ss;
+      ss << "XML Attribute[" << attribute->Name()
               << "] in element[" << _xml->Value()
-              << "] not defined in SDF, ignoring.\n";
+              << "] not defined in SDF.\n";
+      enforceConfigurablePolicyCondition(
+        _config.WarningsPolicy(), ss.str(),
+        ErrorCode::ATTRIBUTE_INCORRECT_TYPE, _errors);
     }
 
     attribute = attribute->Next();
@@ -1110,10 +1119,14 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             }
             else
             {
-              sdfwarn << "Found other top level element <" << elementType
-                      << "> in addition to <" << topLevelElem->GetName()
-                      << "> in include file. This is unsupported and in future "
-                      << "versions of libsdformat will become an error";
+              std::stringstream ss;
+              ss << "Found other top level element <" << elementType
+                 << "> in addition to <" << topLevelElem->GetName()
+                 << "> in include file. This is unsupported and in future "
+                 << "versions of libsdformat will become an error";
+              enforceConfigurablePolicyCondition(
+                _config.WarningsPolicy(), ss.str(),
+                ErrorCode::ELEMENT_INCORRECT_TYPE, _errors);
             }
           }
         }
@@ -1130,9 +1143,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         // Check for more than one of the discovered top-level element type
         if (nullptr != topLevelElem->GetNextElement(topLevelElementType))
         {
-          sdfwarn << "Found more than one of " << topLevelElem->GetName()
-                  << " for <include>. This is unsupported and in future "
-                  << "versions of libsdformat will become an error";
+          std::stringstream ss;
+          ss << "Found more than one of " << topLevelElem->GetName()
+             << " for <include>. This is unsupported and in future "
+             << "versions of libsdformat will become an error";
+          enforceConfigurablePolicyCondition(
+            _config.WarningsPolicy(), ss.str(),
+            ErrorCode::ELEMENT_INCORRECT_TYPE, _errors);
         }
 
         bool isModel = topLevelElementType == "model";
@@ -1259,10 +1276,16 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       if (descCounter == _sdf->GetElementDescriptionCount()
             && std::strchr(elemXml->Value(), ':') == nullptr)
       {
-        sdfdbg << "XML Element[" << elemXml->Value()
-               << "], child of element[" << _xml->Value()
-               << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
-               << "as children of [" << _xml->Value() << "].\n";
+        std::stringstream ss;
+        ss << "XML Element[" << elemXml->Value()
+           << "], child of element[" << _xml->Value()
+           << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
+           << "as children of [" << _xml->Value() << "].\n";
+
+        enforceConfigurablePolicyCondition(
+          _config.UnrecognizedElementsPolicy(), ss.str(),
+          ErrorCode::ELEMENT_INCORRECT_TYPE, _errors);
+
         continue;
       }
     }
