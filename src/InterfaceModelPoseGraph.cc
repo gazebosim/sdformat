@@ -26,9 +26,10 @@ inline namespace SDF_VERSION_NAMESPACE
 {
 class InterfaceModelPoseGraph::Implementation
 {
-  public: std::string name;
-  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseGraph;
+  /// \brief Pose relative-to graph anchored at the root node
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> rootGraph;
+
+  /// \brief Vertex id of the interface model associated with this object.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph>::VertexId modelVertexId;
 };
 
@@ -37,11 +38,8 @@ InterfaceModelPoseGraph::InterfaceModelPoseGraph(
     const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
     : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-  this->dataPtr->name = _name;
-  this->dataPtr->poseGraph = _graph;
   this->dataPtr->rootGraph = _graph.RootScope();
-  this->dataPtr->modelVertexId =
-      this->dataPtr->poseGraph.VertexIdByName(this->dataPtr->name);
+  this->dataPtr->modelVertexId = _graph.VertexIdByName(_name);
 }
 
 sdf::Errors InterfaceModelPoseGraph::ResolveNestedModelFramePoseInWorldFrame(

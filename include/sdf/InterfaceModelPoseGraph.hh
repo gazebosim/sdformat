@@ -39,16 +39,21 @@ struct PoseRelativeToGraph;
 template <typename T>
 class ScopedGraph;
 
+/// \brief Class used in reposture callbacks of custom parsers to resolve poses.
 class SDFORMAT_VISIBLE InterfaceModelPoseGraph
 {
+  /// \brief Resolve pose relative to world
+  /// \param[out] _pose Resolved pose
+  /// \return Errors
   public: sdf::Errors ResolveNestedModelFramePoseInWorldFrame(
               ignition::math::Pose3d &_pose) const;
+
+  /// \brief Private constructor
+  /// \param[in] _name Interface model associated with this object
+  /// \param[in] _graph Pose relative-to graph at the scope of the interface
+  /// model associated with this object.
   private: InterfaceModelPoseGraph(const std::string &_name,
                const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
-  // /// \param[in] relative_to Can be "world", or any frame within the nested
-  // ///   model's frame graph. (It cannot reach outside of this model).
-  // public: ignition::math::Pose3d ResolveNestedFramePose(
-  //             const std::string &_relativeTo = "world") const;
 
   friend class Model;
   friend class World;
