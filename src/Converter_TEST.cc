@@ -2141,6 +2141,177 @@ TEST(Converter, Pose_16_to_17)
   EXPECT_STREQ("parent", jointLinkPoseElem->Attribute("relative_to"));
 }
 
+const std::string CONVERT_DOC_17_18 =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.8", "1_7.convert");
+
+/////////////////////////////////////////////////
+/// Test conversion unflattened world in 1.7 to 1.8
+TEST(Converter, World_17_to_18)
+{
+  // The flattened world in 1.7 format
+  std::string xmlString = R"(
+  <?xml version="1.0" ?>
+  <sdf version='1.7'>
+    <world name="default">
+      <model name='include_links'>
+        <frame name='A::__model__' attached_to='A::B::C'>
+          <pose relative_to='__model__'>1 0 0 0 0 0</pose>
+        </frame>
+        <frame name='A::B::__model__' attached_to='A::B::C'>
+          <pose relative_to='A::__model__'>0 1 0 0 0 0</pose>
+        </frame>
+        <link name='A::B::C'>
+          <pose relative_to='A::B::__model__'>0 0 1 0 0 0</pose>
+        </link>
+      </model>
+    </world>
+  </sdf>)";
+
+
+  tinyxml2::XMLDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+
+  // Convert
+  tinyxml2::XMLDocument convertXmlDoc;
+  convertXmlDoc.LoadFile(CONVERT_DOC_17_18.c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // Check some basic elements
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "sdf");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "world");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "include_links");
+
+  // Check unnested elements
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "A");
+  EXPECT_STREQ(convertedElem->Attribute("canonical_link"), "B::C");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "pose");
+  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
+
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("canonical_link"), "C");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "pose");
+  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "link");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "C");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "pose");
+  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
+
+  // Another flattened world in 1.7 format
+  xmlString = R"(
+  <?xml version="1.0" ?>
+  <sdf version='1.7'>
+    <world name="default">
+      <model name="ParentModel">
+        <frame name="ChildModel::__model__" attached_to="ChildModel::L1">
+          <pose relative_to="__model__">1 0 1 0 0 0</pose>
+        </frame>
+        <frame name="ChildModel::NewFrame" attached_to="ChildModel::L1">
+          <pose relative_to="ChildModel::Something">1 0 1 0 0 0</pose>
+        </frame>
+        <link name="ChildModel::L1">
+          <pose relative_to="ChildModel::__model__">0 1 0 0 0 0</pose>
+          <visual name="v1">
+            <geometry>
+              <sphere>
+                <radius>0.1</radius>
+              </sphere>
+            </geometry>
+          </visual>
+        </link>
+        <link name="ChildModel::L2">
+          <pose relative_to="ChildModel::__model__">0 0 0 0 0 0</pose>
+        </link>
+        <joint name="ChildModel::J1" type="revolute">
+          <parent>ChildModel::L1</parent>
+          <child>ChildModel::L2</child>
+        </joint>
+        <joint name="ChildModel::J2" type="revolute">
+          <pose relative_to="ChildModel::__model__">0 0 0 0 0 0</pose>
+          <parent>ChildModel::L1</parent>
+          <child>ChildModel::L2</child>
+          <axis>
+            <xyz expressed_in="ChildModel::NewFrame">0 0 1</xyz>
+          </axis>
+          <axis2>
+            <xyz expressed_in="ChildModel::NewFrame">0 0 1</xyz>
+          </axis2>
+        </joint>
+      </model>
+    </world>
+  </sdf>)";
+
+  xmlDoc.Clear();
+  xmlDoc.Parse(xmlString.c_str());
+
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  // Check some basic elements
+  convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "sdf");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "world");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "ParentModel");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+
+  // Check unnested elements
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "ChildModel");
+  EXPECT_STREQ(convertedElem->Attribute("canonical_link"), "L1");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "pose");
+  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "frame");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "NewFrame");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("relative_to"),
+              "Something");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "link");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "L1");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("relative_to"),
+              "__model__");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "link");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "L2");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("relative_to"),
+              "__model__");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "joint");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "J1");
+  EXPECT_STREQ(convertedElem->FirstChildElement("parent")->GetText(), "L1");
+  EXPECT_STREQ(convertedElem->FirstChildElement("child")->GetText(), "L2");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "joint");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "J2");
+  EXPECT_STREQ(convertedElem->FirstChildElement("parent")->GetText(), "L1");
+  EXPECT_STREQ(convertedElem->FirstChildElement("child")->GetText(), "L2");
+  convertedElem = convertedElem->FirstChildElement("axis");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("expressed_in"),
+              "NewFrame");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "axis2");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("expressed_in"),
+              "NewFrame");
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)

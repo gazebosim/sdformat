@@ -1,3 +1,9 @@
 <convert name="sdf">
 
+  <convert name="world">
+    <convert name="model">
+      <unnest/>
+    </convert>
+  </convert>
+
 </convert> <!-- End SDF -->

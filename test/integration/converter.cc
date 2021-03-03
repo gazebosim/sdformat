@@ -157,3 +157,20 @@ void ParserStringConverter(const std::string &_version)
   EXPECT_EQ(_version, magElem->OriginalVersion());
 }
 
+/////////////////////////////////////////////////
+/// Test conversion unflattened world in 1.7 to 1.8
+TEST(ConverterIntegration, UnnestConversion)
+{
+  const std::string filename =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+                          "flattened_test_nested_model_with_frames.sdf");
+
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+  sdf::init(sdf);
+
+  EXPECT_TRUE(sdf::convertFile(filename, "1.8", sdf));
+
+  // TODO(jenn) finish
+  std::cout << "Unnested:\n" << sdf->Root()->ToString("") << std::endl;
+}
