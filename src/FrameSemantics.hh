@@ -113,12 +113,18 @@ namespace sdf
   /// \brief Build a FrameAttachedToGraph for a model.
   /// \param[out] _out Graph object to write.
   /// \param[in] _model Model from which to build attached_to graph.
+  /// \param[in] _root True if the model is a standalone model, i.e,
+  /// //sdf/model.
   /// \return Errors.
   Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
               const Model *_model, bool _root = true);
 
+  /// \brief Build a FrameAttachedToGraph for an Interface Model.
+  /// \param[out] _out Graph object to write.
+  /// \param[in] _model Interface model from which to build attached_to graph.
+  /// \return Errors.
   Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
-              InterfaceModelConstPtr _model, bool _root = true);
+              InterfaceModelConstPtr _model);
 
   /// \brief Build a FrameAttachedToGraph for a world.
   /// \param[out] _out Graph object to write.
@@ -129,13 +135,19 @@ namespace sdf
 
   /// \brief Build a PoseRelativeToGraph for a model.
   /// \param[out] _out Graph object to write.
-  /// \param[in] _model Model from which to build attached_to graph.
+  /// \param[in] _model Model from which to build relative_to graph.
+  /// \param[in] _root True if the model is a standalone model, i.e,
+  /// //sdf/model.
   /// \return Errors.
   Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
               const Model *_model, bool _root = true);
 
+  /// \brief Build a PoseRelativeToGraph for an Interface model.
+  /// \param[out] _out Graph object to write.
+  /// \param[in] _model Interface model from which to build relative_to graph.
+  /// \return Errors.
   Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
-              InterfaceModelConstPtr _model, bool _root = true);
+              InterfaceModelConstPtr _model);
 
   /// \brief Build a PoseRelativeToGraph for a world.
   /// \param[out] _out Graph object to write.
@@ -185,6 +197,12 @@ namespace sdf
       const ScopedGraph<PoseRelativeToGraph> &_graph,
       const std::string &_vertexName);
 
+  /// \brief Resolve pose of a vertex relative to its outgoing ancestor
+  /// (analog of the root of a tree). This overload takes a vertex ID.
+  /// \param[out] _pose Pose object to write.
+  /// \param[in] _graph PoseRelativeToGraph to read from.
+  /// \param[in] _vertexId Id of vertex whose pose is to be computed.
+  /// \return Errors.
   Errors resolvePoseRelativeToRoot(
       ignition::math::Pose3d &_pose,
       const ScopedGraph<PoseRelativeToGraph> &_graph,
@@ -203,6 +221,14 @@ namespace sdf
       const std::string &_frameName,
       const std::string &_resolveTo);
 
+  /// \brief Resolve pose of a vertex relative to another vertex in the pose
+  /// graph.
+  /// \param[out] _pose Pose object to write.
+  /// \param[in] _graph PoseRelativeToGraph to read from.
+  /// \param[in] _frameVertedId Verted Id of frame whose pose is to be resolved.
+  /// \param[in] _resolveToVertexId Verted ID of frame relative to which the
+  /// pose is to be resolved.
+  /// \return Errors.
   Errors resolvePose(
       ignition::math::Pose3d &_pose,
       const ScopedGraph<PoseRelativeToGraph> &_graph,

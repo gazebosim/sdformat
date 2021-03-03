@@ -405,16 +405,16 @@ Errors buildFrameAttachedToGraph(
   // add nested interface model vertices
   for (uint64_t m = 0; m < _model->InterfaceModelCount(); ++m)
   {
-    auto nestedModel = _model->InterfaceModelByIndex(m);
-    if (outModel.Count(nestedModel->Name()) > 0)
+    auto nestedIfaceModel = _model->InterfaceModelByIndex(m);
+    if (outModel.Count(nestedIfaceModel->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Nested interface model with non-unique name [" +
-              nestedModel->Name() + "] detected in model with name [" +
+              nestedIfaceModel->Name() + "] detected in model with name [" +
               _model->Name() + "]."});
       continue;
     }
-    auto nestedErrors = buildFrameAttachedToGraph(outModel, nestedModel, false);
+    auto nestedErrors = buildFrameAttachedToGraph(outModel, nestedIfaceModel);
     errors.insert(errors.end(), nestedErrors.begin(), nestedErrors.end());
   }
 
@@ -537,14 +537,14 @@ Errors buildFrameAttachedToGraph(
 
 /////////////////////////////////////////////////
 Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
-    InterfaceModelConstPtr _model, bool _root)
+    InterfaceModelConstPtr _model)
 {
   Errors errors;
 
   if (!_model)
   {
     errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Invalid sdf::Model pointer."});
+        "Invalid sdf::InterfaceModel pointer."});
     return errors;
   }
   else if (_model->Links().size() == 0u && _model->NestedModels().size() == 0 &&
@@ -560,22 +560,6 @@ Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
       _model->Static() ? sdf::FrameType::STATIC_MODEL : sdf::FrameType::MODEL;
 
   const std::string scopeContextName = "__model__";
-
-  auto rootId = ignition::math::graph::kNullId;
-  if (_root)
-  {
-    // The __root__ vertex identifies the scope that contains a root level
-    // model. In the PoseRelativeTo graph, this vertex is connected to the model
-    // with an edge that holds the value of //model/pose. However, in the
-    // FrameAttachedTo graph, the vertex is disconnected because nothing is
-    // attached to it. Since only links and static models are allowed to be
-    // disconnected in this graph, the STATIC_MODEL was chosen as its frame
-    // type. A different frame type could potentially be used, but that adds
-    // more complexity to the validateFrameAttachedToGraph code.
-    _out = _out.AddScopeVertex(
-        "", "__root__", scopeContextName, sdf::FrameType::STATIC_MODEL);
-    rootId = _out.ScopeVertexId();
-  }
 
   const auto modelId = _out.AddVertex(_model->Name(), frameType).Id();
 
@@ -632,17 +616,17 @@ Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
   }
 
   // add nested model vertices
-  for (const auto &nestedModel : _model->NestedModels())
+  for (const auto &nestedIfaceModel : _model->NestedModels())
   {
-    if (outModel.Count(nestedModel->Name()) > 0)
+    if (outModel.Count(nestedIfaceModel->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
-          "Nested model with non-unique name [" + nestedModel->Name() +
+          "Nested model with non-unique name [" + nestedIfaceModel->Name() +
           "] detected in model with name [" + _model->Name() +
           "]."});
       continue;
     }
-    auto nestedErrors = buildFrameAttachedToGraph(outModel, nestedModel, false);
+    auto nestedErrors = buildFrameAttachedToGraph(outModel, nestedIfaceModel);
     errors.insert(errors.end(), nestedErrors.begin(), nestedErrors.end());
   }
 
@@ -795,7 +779,7 @@ Errors buildFrameAttachedToGraph(
           "]."});
       continue;
     }
-    auto modelErrors = buildFrameAttachedToGraph(_out, ifaceModel, false);
+    auto modelErrors = buildFrameAttachedToGraph(_out, ifaceModel);
     errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
   }
 
@@ -990,7 +974,7 @@ Errors buildPoseRelativeToGraph(
       continue;
     }
 
-    auto nestedErrors = buildPoseRelativeToGraph(outModel, ifaceModel, false);
+    auto nestedErrors = buildPoseRelativeToGraph(outModel, ifaceModel);
     errors.insert(errors.end(), nestedErrors.begin(), nestedErrors.end());
   }
 
@@ -1226,7 +1210,7 @@ Errors buildPoseRelativeToGraph(
 
 /////////////////////////////////////////////////
 Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
-    InterfaceModelConstPtr _model, bool _root)
+    InterfaceModelConstPtr _model)
 {
   Errors errors;
 
@@ -1238,14 +1222,7 @@ Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
   }
 
   const std::string scopeContextName = "__model__";
-  auto rootId = ignition::math::graph::kNullId;
   // add the model frame vertex first
-  if (_root)
-  {
-    _out = _out.AddScopeVertex(
-        "", "__root__", scopeContextName, sdf::FrameType::MODEL);
-    rootId = _out.ScopeVertexId();
-  }
   auto modelId = _out.AddVertex(_model->Name(), sdf::FrameType::MODEL).Id();
   auto outModel = _out.AddScopeVertex(_model->Name(), scopeContextName,
       scopeContextName, sdf::FrameType::MODEL);
@@ -1311,22 +1288,22 @@ Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
   }
 
   // add nested model vertices and default edge if relative_to is empty
-  for (const auto &nestedModel : _model->NestedModels())
+  for (const auto &nestedIfaceModel : _model->NestedModels())
   {
-    if (outModel.Count(nestedModel->Name()) > 0)
+    if (outModel.Count(nestedIfaceModel->Name()) > 0)
     {
       errors.push_back({ErrorCode::DUPLICATE_NAME,
-          "Nested model with non-unique name [" + nestedModel->Name() +
+          "Nested model with non-unique name [" + nestedIfaceModel->Name() +
           "] detected in model with name [" + _model->Name() +
           "]."});
       continue;
     }
 
-    auto nestedErrors = buildPoseRelativeToGraph(outModel, nestedModel, false);
+    auto nestedErrors = buildPoseRelativeToGraph(outModel, nestedIfaceModel);
     errors.insert(errors.end(), nestedErrors.begin(), nestedErrors.end());
-    auto nestedModelId = outModel.VertexIdByName(nestedModel->Name());
+    auto nestedModelId = outModel.VertexIdByName(nestedIfaceModel->Name());
     outModel.AddEdge({modelFrameId, nestedModelId},
-        nestedModel->ModelFramePoseInParentFrame());
+        nestedIfaceModel->ModelFramePoseInParentFrame());
   }
 
   for (const auto &joint : _model->Joints())
@@ -1455,7 +1432,7 @@ Errors buildPoseRelativeToGraph(
     }
 
     auto modelErrors =
-        buildPoseRelativeToGraph(_out, ifaceModel, false);
+        buildPoseRelativeToGraph(_out, ifaceModel);
     errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
   }
 
