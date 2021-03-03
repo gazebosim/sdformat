@@ -23,6 +23,7 @@
 #include <vector>
 #include "sdf/Error.hh"
 #include "sdf/Element.hh"
+#include "sdf/InterfaceElements.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/Types.hh"
 
@@ -197,6 +198,15 @@ namespace sdf
 
     return errors;
   }
+
+  /// \brief Load interface models from //include tags.
+  /// \param[in] _sdf sdf::ElementPtr that contains the //include tags.
+  /// \param[in] _config Parser configuration options.
+  /// \param[out] _models Loaded interface models
+  /// \return Errors encountered.
+  sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
+      const sdf::ParserConfig &_config,
+      std::vector<InterfaceModelWrapper> &_models);
 
   /// \brief Convenience function that returns a pointer to the value contained
   /// in a std::optional.

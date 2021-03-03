@@ -702,7 +702,7 @@ Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
   }
 
   // identify canonical link, which may be nested
-  const std::string canonicalLinkName = _model->ResolvedCanonicalLinkName();
+  const std::string canonicalLinkName = _model->CanonicalLinkName();
   // TODO (addisu) Resolve canonical link
   const auto canonicalLinkId = outModel.VertexIdByName(canonicalLinkName);
   if (!_model->Static())
@@ -1396,24 +1396,6 @@ Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
     outModel.AddEdge({relativeToId, frameId}, frame.PoseInAttachedToFrame());
   }
 
-
-  // if (_root)
-  // {
-    // We have to add this edge now with an identity pose to be able to call
-    // resolveModelPoseWithPlacementFrame, which in turn calls
-    // sdf::resolvePoseRelativeToRoot. We will later update the edge after the
-    // pose is calculated.
-    // auto rootToModel = outModel.AddEdge({rootId, modelId}, {});
-    // ignition::math::Pose3d resolvedModelPose =
-    //     _model->ModelFramePoseInRelativeToFrame();
-    // sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
-    //     _nestedInclude->includeRawPose.value_or(ignition::math::Pose3d()),
-    //     _nestedInclude->placementFrame.value_or(""), outModel,
-    //     resolvedModelPose);
-    // errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
-
-    // outModel.UpdateEdge(rootToModel, resolvedModelPose);
-  // }
   return errors;
 }
 

@@ -51,15 +51,17 @@ using RepostureFunction =
 class SDFORMAT_VISIBLE InterfaceModel
 {
   /// \brief Constructor
-  /// // TODO (addisu) update docs
-  /// \param[in] name The *local* name (no nesting, e.g. "::").
-  ///   If this name contains "::", an error will be raised.
+  /// \param[in] name The *local* name (no nesting, e.g. "::").  If this name
+  /// contains "::", an error will be raised.
   /// \param[in] _static Whether the model is static
-  /// \param[in] _canonicalLinkNameThe canonical link's name. (It must be
-  ///   registered).
-  /// \param[in] _poseInParentFrame Model frame pose
-  ///   relative to the including model's frame. Defaults to identity.
-  ///   \note This will not be used if //include/pose is specified.
+  /// \param[in] _canonicalLinkName The canonical link's name. This is the
+  /// resolved name of the canonical link, therefore, it cannot be an empty
+  /// string. The link must be added to the model. If the canonical link is
+  /// nested in a child model, this should be the relative name (using the "::"
+  /// delimiter) of the canonical link in the scope of this model.
+  /// \param[in] _poseInParentFrame Model frame pose relative to the parent
+  /// frame. Defaults to identity.
+  /// \note This will not be used if //include/pose is specified.
   public: InterfaceModel(const std::string &_name,
               const sdf::RepostureFunction &_repostureFunction,
               bool _static,
@@ -70,24 +72,24 @@ class SDFORMAT_VISIBLE InterfaceModel
   /// \return Local name of the model.
   public: const std::string &Name() const;
 
-  public: const sdf::RepostureFunction& RepostureFunction() const;
+  /// \brief Get the reposture callback function.
+  /// \return The reposture callback function.
+  public: const sdf::RepostureFunction &RepostureFunction() const;
 
-  /// TODO (addisu) docs
+  /// \brief Get whether the model is static.
+  /// \return Whether the model is static.
   public: bool Static() const;
 
-  /// \brief Get the pose of this model in the parent model frame.
-  /// \return Pose of this model in the parent model frame.
-  // public: const ignition::math::Pose3d &PoseInModelFrame() const;
-  // TODO (addisu): The CanonicalLinkName function mirrores
-  // Model::CanonicalLinkName, which is only a getter function. If the
-  // canonical_link attribute is not set, this will return an empty string. We
-  // need another function that resolves the canonical link.
+  /// \brief Get the canonical link name.
+  /// \remark Unlike Model::CanonicalLinkName which simply returns
+  /// the value of //model/@canonical_link without resolving to an actual link,
+  /// this function returns the resolved canonical link name.
+  /// \return Canonical link name of the model.
   public: const std::string &CanonicalLinkName() const;
-  public: const std::string ResolvedCanonicalLinkName() const;
 
-  // TODO (addisu): May not be needed or can be renamed back to the original
-  public: const ignition::math::Pose3d &
-          ModelFramePoseInParentFrame() const;
+  /// \brief Get the pose of this model in the parent frame.
+  /// \return Pose of this model in the parent model frame.
+  public: const ignition::math::Pose3d &ModelFramePoseInParentFrame() const;
 
   /// Provided so that hierarchy can still be leveraged from SDFormat.
   public: void AddNestedModel(sdf::InterfaceModelConstPtr _nestedModel);

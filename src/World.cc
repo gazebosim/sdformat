@@ -32,7 +32,6 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "FrameSemantics.hh"
-#include "InterfaceElementsImpl.hh"
 #include "ScopedGraph.hh"
 #include "Utils.hh"
 
@@ -203,8 +202,8 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   }
 
   // Load included models via the interface API
-  Errors interfaceModelLoadErrors =
-      loadInterfaceElements(_sdf, _config, this->dataPtr->interfaceModels);
+  Errors interfaceModelLoadErrors = loadIncludedInterfaceModels(
+      _sdf, _config, this->dataPtr->interfaceModels);
   errors.insert(errors.end(), interfaceModelLoadErrors.begin(),
       interfaceModelLoadErrors.end());
 

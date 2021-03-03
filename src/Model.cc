@@ -31,7 +31,6 @@
 #include "sdf/ParserConfig.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
-#include "InterfaceElementsImpl.hh"
 #include "ScopedGraph.hh"
 #include "Utils.hh"
 
@@ -191,13 +190,13 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   }
 
   // Load included models via the interface API
-  Errors interfaceModelLoadErrors =
-      loadInterfaceElements(_sdf, _config, this->dataPtr->interfaceModels);
+  Errors interfaceModelLoadErrors = loadIncludedInterfaceModels(
+      _sdf, _config, this->dataPtr->interfaceModels);
   errors.insert(errors.end(), interfaceModelLoadErrors.begin(),
       interfaceModelLoadErrors.end());
 
-  // TODO: Check that the interface model names don't collide with the regular
-  // model names
+  // TODO (addisu): Check that the interface model names don't collide with the
+  // regular model names
   for (const auto &ifaceModelWrapper : this->dataPtr->interfaceModels)
   {
     frameNames.insert(ifaceModelWrapper.interfaceModel->Name());
@@ -584,7 +583,7 @@ std::pair<const Link*, std::string> Model::CanonicalLinkAndRelativeName() const
       // Recursively choose the canonical link of the first nested model
       // (depth first search).
       auto firstModel = this->InterfaceModelByIndex(0);
-      auto canonicalLinkName = firstModel->ResolvedCanonicalLinkName();
+      auto canonicalLinkName = firstModel->CanonicalLinkName();
       // Prepend firstModelName if a valid link is found.
       if (canonicalLinkName != "")
       {

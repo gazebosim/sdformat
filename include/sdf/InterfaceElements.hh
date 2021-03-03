@@ -35,35 +35,45 @@ inline namespace SDF_VERSION_NAMESPACE
 {
 // TODO (addisu) docs
 // This can be used in both //model elements as well as /world.
-struct NestedInclude {
-  /// Provides the URI as specified in `//include/uri`. This may or may not end
-  /// with a file extension (it will not end an extension if it refers to a
-  /// model package).
+struct SDFORMAT_VISIBLE NestedInclude {
+
+  /// \brief Provides the URI as specified in `//include/uri`. This may or may
+  /// not end with a file extension (it will not end an extension if it refers
+  /// to a model package).
   std::string uri;
 
-  /// Provides the *resolved* absolute file path from the URI.
+  /// \brief Provides the *resolved* absolute file path from the URI.
   /// It is recommended to use this in `CustomModelParser` when checking
   /// predicates on filenames -- however, the predicates should generally only
   /// check the file extension.
   std::string resolvedFileName;
 
-  /// Name of the parent entity in absolute hierarchy.
+  /// \brief Name of the parent entity in absolute hierarchy.
   /// Example: if the interface model's name is
   /// `top_model::middle_model::my_new_model`, the absoluteParentName would be
   /// `top_model::middle_model`. If the parent entity is the world, this would
   /// be an empty string.
   std::string absoluteParentName;
 
-  /// Name relative to immediate parent as specified in `//include/@name`.
+  /// \brief Name relative to immediate parent as specified in `//include/@name`.
   /// Example: `my_new_model`
   std::string localModelName;
 
-  /// As defined by `//include/static`.
+  /// \brief Whether the model is static as defined by `//include/static`. This
+  /// is nullopt if `//include/static` is not set.
   std::optional<bool> isStatic;
 
-  // TODO (addisu) docs
+  /// \brief The raw pose as specified in //include/pose. This is nullopt if
+  /// `//include/pose` is not set.
   std::optional<ignition::math::Pose3d> includeRawPose;
+
+  /// \brief The relative-to frame of the pose as specified in
+  /// `//include/pose/@relative_to`. This is nullopt if
+  /// `//include/pose/@relative_to` is set.
   std::optional<std::string> includePoseRelativeTo;
+
+  /// \brief The placement frame as specified in `//include/placement_frame`.
+  /// This is nullopt if `//include/placement_frame` is is not set.
   std::optional<std::string> placementFrame;
 
   /// This is a "virtual" XML element that will contain all custom (*unparsed*)
@@ -71,6 +81,8 @@ struct NestedInclude {
   sdf::ElementPtr virtualCustomElements;
 };
 
+
+/// \brief
 struct InterfaceModelWrapper
 {
   NestedInclude nestedInclude;
@@ -81,7 +93,7 @@ struct InterfaceModelWrapper
 ///
 /// Every custom model parser should define it's own way of (quickly)
 /// determining if it should parse a model. This should generally be done by
-/// looking at the file extension of `include.resolved_file_name`, and
+/// looking at the file extension of `include.resolvedFileName`, and
 /// returning nullptr if it doesn't match a given criteria.
 ///
 /// Custom model parsers are visited in the *reverse* of how they are defined.
@@ -97,7 +109,7 @@ struct InterfaceModelWrapper
 ///   should be parsed.
 /// \param[out] errors Errors encountered during custom parsing.
 ///   If any errors are reported, this must return nullptr.
-/// \returns An optional ModelInterface.
+/// \return An optional ModelInterface.
 ///   * If not nullptr, the returned model interface is incorporated into the
 ///     existing model and its frames are exposed through the frame graph.
 ///   * If nullptr and no errors are reported, then libsdformat should
