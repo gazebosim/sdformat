@@ -397,6 +397,43 @@ TEST_F(InterfaceAPI, NestedIncludeData)
 }
 
 /////////////////////////////////////////////////
+TEST_F(InterfaceAPI, CustomParserPrecedence)
+{
+  const std::string testSdf = R"(
+<sdf version="1.8">
+  <world name="default">
+    <include>
+      <uri>test_file.yaml</uri>
+      <name>box</name>
+    </include>
+  </world>
+</sdf>)";
+
+  std::vector<int> calledParsers;
+  auto createCustomParser = [&](int _parserId)
+  {
+    auto testParser = [=, &calledParsers](
+                          const sdf::NestedInclude &, sdf::Errors &)
+    {
+      calledParsers.push_back(_parserId);
+      return nullptr;
+    };
+    return testParser;
+  };
+
+  this->config.RegisterCustomModelParser(createCustomParser(0));
+  this->config.RegisterCustomModelParser(createCustomParser(1));
+  this->config.RegisterCustomModelParser(createCustomParser(2));
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_EQ(3u, calledParsers.size());
+  EXPECT_EQ(2, calledParsers[0]);
+  EXPECT_EQ(1, calledParsers[1]);
+  EXPECT_EQ(0, calledParsers[2]);
+}
+
+/////////////////////////////////////////////////
 void TomlParserTest(const sdf::InterfaceModelConstPtr &_interfaceModel)
 {
   using ignition::math::Pose3d;
@@ -751,8 +788,7 @@ TEST_F(InterfaceAPI, PlacementFrame)
       </include>
       <frame name="test_frame"/>
     </world>
-  </sdf>
-    )";
+  </sdf>)";
     sdf::Root root;
     sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
     EXPECT_TRUE(errors.empty()) << errors;
@@ -791,8 +827,7 @@ TEST_F(InterfaceAPI, PlacementFrame)
       </include>
       <frame name="test_frame"/>
     </model>
-  </sdf>
-    )";
+  </sdf>)";
     sdf::Root root;
     sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
     EXPECT_TRUE(errors.empty()) << errors;
@@ -834,8 +869,7 @@ TEST_F(InterfaceAPI, PlacementFrame)
         <frame name="test_frame"/>
       </model>
     </world>
-  </sdf>
-    )";
+  </sdf>)";
     sdf::Root root;
     sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
     EXPECT_TRUE(errors.empty()) << errors;

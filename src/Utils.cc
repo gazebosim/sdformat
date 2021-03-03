@@ -210,10 +210,12 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
       include.placementFrame = includeElem->Get<std::string>("placement_frame");
     }
 
-    for (const auto &parser : _config.CustomModelParsers())
+    const auto &customParsers =  _config.CustomModelParsers();
+    for (auto parserIt = customParsers.rbegin();
+         parserIt != customParsers.rend(); ++parserIt)
     {
       sdf::Errors errors;
-      auto model = parser(include, errors);
+      auto model = (*parserIt)(include, errors);
       if (!errors.empty())
       {
         // If there are any errors, stop iterating through the custom parsers
