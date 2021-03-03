@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <string>
 #include <optional>
+#include <utility>
 #include <vector>
 #include "sdf/Error.hh"
 #include "sdf/Element.hh"

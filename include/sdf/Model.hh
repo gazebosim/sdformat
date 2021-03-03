@@ -308,12 +308,31 @@ namespace sdf
     public: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
         const;
 
+    /// \brief Get the number of nested interface models that are immediate (not
+    /// recursively nested) children of this Model object.
+    /// \return Number of nested interface models contained in this Model
+    /// object.
     public: uint64_t InterfaceModelCount() const;
 
+    /// \brief Get an immediate (not recursively nested) child interface model
+    /// based on an index.
+    /// \param[in] _index Index of the nested interface model. The index should
+    /// be in the range [0..InterfaceModelCount()).
+    /// \return Pointer to the model. Nullptr if the index does not exist.
+    /// \sa uint64_t InterfaceModelCount() const
     public: std::shared_ptr<const InterfaceModel> InterfaceModelByIndex(
                 const uint64_t _index) const;
+
+    /// \brief Get the nested include information of an immediate (not
+    /// recursively nested) child interface model based on an index.
+    /// \param[in] _index Index of the nested interface model. The index should
+    /// be in the range [0..InterfaceModelCount()).
+    /// \return Pointer to the nested include information. Nullptr if the index
+    /// does not exist.
+    /// \sa uint64_t InterfaceModelCount() const
     public: const NestedInclude *InterfaceModelNestedIncludeByIndex(
                 const uint64_t _index) const;
+
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or
     /// World::SetPoseRelativeToGraph if this is a standalone model and

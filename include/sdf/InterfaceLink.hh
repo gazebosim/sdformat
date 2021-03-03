@@ -30,9 +30,10 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
+/// \brief Interface element representing a Link
 class SDFORMAT_VISIBLE InterfaceLink
 {
-  /// Constructor
+  /// \brief Constructor
   /// \param[in] name The *local* name.
   /// \param[in] _pose The pose of the link relative to model frame.
   public: InterfaceLink(

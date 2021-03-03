@@ -44,10 +44,11 @@ class InterfaceModel;
 using InterfaceModelPtr = std::shared_ptr<InterfaceModel>;
 using InterfaceModelConstPtr = std::shared_ptr<const InterfaceModel>;
 
-
+/// \brief Function signature for the reposture callback function
 using RepostureFunction =
     std::function<void(const sdf::InterfaceModelPoseGraph &)>;
 
+/// \brief Interface element representing a Model
 class SDFORMAT_VISIBLE InterfaceModel
 {
   /// \brief Constructor
@@ -91,31 +92,35 @@ class SDFORMAT_VISIBLE InterfaceModel
   /// \return Pose of this model in the parent model frame.
   public: const ignition::math::Pose3d &ModelFramePoseInParentFrame() const;
 
-  /// Provided so that hierarchy can still be leveraged from SDFormat.
+  /// \brief Provided so that hierarchy can still be leveraged from SDFormat.
+  /// \param[in] _nestedModel A child interface model.
   public: void AddNestedModel(sdf::InterfaceModelConstPtr _nestedModel);
 
-  /// Gets registered nested models.
+  /// \brief Gets registered nested models.
   public: const std::vector<sdf::InterfaceModelConstPtr> &NestedModels() const;
 
-  /// Provided so that the including SDFormat model can still interface with
-  /// the declared frames.
+  /// \brief Add an interface frame. Provided so that the including SDFormat
+  /// model can still interface with the declared frames.
+  /// \param[in] _frame A child interface frame.
   public: void AddFrame(sdf::InterfaceFrame _frame);
 
-  /// Gets registered frames.
+  /// \brief Gets registered frames.
   public: const std::vector<sdf::InterfaceFrame> &Frames() const;
 
-  /// Provided so that the including SDFormat model can still interface with
-  /// the declared joints.
+  /// \brief Add an interface joint. Provided so that the including SDFormat
+  /// model can still interface with the declared joints.
+  /// \param[in] _joint A child interface joint.
   public: void AddJoint(sdf::InterfaceJoint _joint);
 
-  /// Gets registered joints.
+  /// \brief Gets registered joints.
   public: const std::vector<sdf::InterfaceJoint> &Joints() const;
 
-  /// Provided so that the including SDFormat model can still interface with
-  /// the declared links.
+  /// \brief Add an interface link. Provided so that the including SDFormat
+  /// model can still interface with the declared links.
+  /// \param[in] _link A child interface link.
   public: void AddLink(sdf::InterfaceLink _link);
 
-  /// Gets registered links.
+  /// \brief Gets registered links.
   public: const std::vector<sdf::InterfaceLink> &Links() const;
 
   /// \brief Private data pointer.

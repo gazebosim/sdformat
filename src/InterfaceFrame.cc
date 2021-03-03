@@ -23,8 +23,13 @@ inline namespace SDF_VERSION_NAMESPACE
 {
 class InterfaceFrame::Implementation
 {
+  /// \brief Name of this interface frame.
   public: std::string name;
+
+  /// \brief Name of the implicit or explicit frame this frame is attached to.
   public: std::string attachedTo;
+
+  /// \brief Pose of this frame relative to the attachedTo frame.
   public: ignition::math::Pose3d pose;
 };
 
@@ -43,13 +48,11 @@ const std::string &InterfaceFrame::Name() const
   return this->dataPtr->name;
 }
 
-
 /////////////////////////////////////////////////
 const std::string &InterfaceFrame::AttachedTo() const
 {
   return this->dataPtr->attachedTo;
 }
-
 
 /////////////////////////////////////////////////
 const ignition::math::Pose3d &InterfaceFrame::PoseInAttachedToFrame() const

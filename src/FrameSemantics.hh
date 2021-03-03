@@ -156,7 +156,6 @@ namespace sdf
   Errors buildPoseRelativeToGraph(
               ScopedGraph<PoseRelativeToGraph> &_out, const World *_world);
 
-
   /// \brief Confirm that FrameAttachedToGraph is valid by checking the number
   /// of outbound edges for each vertex and checking for graph cycles.
   /// \param[in] _in Graph object to validate.

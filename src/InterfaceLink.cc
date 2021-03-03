@@ -23,7 +23,10 @@ inline namespace SDF_VERSION_NAMESPACE
 {
 class InterfaceLink::Implementation
 {
+  /// \brief Name of this interface link.
   public: std::string name;
+
+  /// \brief Pose of this link relative to the containing model frame.
   public: ignition::math::Pose3d pose;
 };
 

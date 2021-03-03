@@ -23,8 +23,13 @@ inline namespace SDF_VERSION_NAMESPACE
 {
 class InterfaceJoint::Implementation
 {
+  /// \brief Name of this interface joint.
   public: std::string name;
+
+  /// \brief Name of this joint's child frame.
   public: std::string childName;
+
+  /// \brief Pose of this joint relative to the child frame.
   public: ignition::math::Pose3d pose;
 };
 

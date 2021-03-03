@@ -344,6 +344,7 @@ uint64_t World::ModelCount() const
 {
   return this->dataPtr->models.size();
 }
+
 /////////////////////////////////////////////////
 const Model *World::ModelByIndex(const uint64_t _index) const
 {

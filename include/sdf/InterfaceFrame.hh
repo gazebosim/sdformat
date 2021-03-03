@@ -30,9 +30,10 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
+/// \brief Interface element representing an explicit frame
 class SDFORMAT_VISIBLE InterfaceFrame
 {
-  /// Constructor
+  /// \brief Constructor
   /// \param[in] _name The *local* name.
   /// \param[in] _attachedTo Name of the attached-to frame. This cannot be an
   /// empty string. If the frame is attached to the model frame, this must be
@@ -42,7 +43,7 @@ class SDFORMAT_VISIBLE InterfaceFrame
   public: InterfaceFrame(const std::string &_name,
       const std::string &_attachedTo, const ignition::math::Pose3d &_pose);
 
-  /// Get the name of the frame.
+  /// \brief Get the name of the frame.
   /// \return Local name of the frame.
   public: const std::string &Name() const;
 

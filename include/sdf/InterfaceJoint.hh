@@ -30,9 +30,10 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
+/// \brief Interface element representing a Joint
 class SDFORMAT_VISIBLE InterfaceJoint
 {
-  /// Constructor
+  /// \brief Constructor
   /// \param[in] name The *local* name.
   /// \param[in] _childName Name of the child link or frame.
   /// \param[in] _pose The pose of the joint relative to the child frame.

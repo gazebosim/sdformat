@@ -36,6 +36,7 @@ class sdf::ParserConfig::Implementation
   public: EnforcementPolicy unrecognizedElementsPolicy =
     EnforcementPolicy::LOG;
 
+  /// \brief Collection of custom model parsers.
   public: std::vector<CustomModelParser> customParsers;
 };
 

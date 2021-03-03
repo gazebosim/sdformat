@@ -61,6 +61,13 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
 
+    /// \brief Load the world based on a element pointer. This is *not* the
+    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// object.
+    /// \param[in] _sdf The SDF Element pointer
+    /// \param[in] _config Custom parser configuration
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
     public: Errors Load(sdf::ElementPtr _sdf, const ParserConfig &_config);
 
     /// \brief Get the name of the world.
@@ -259,11 +266,28 @@ namespace sdf
     /// \return True if there exists a physics profile with the given name.
     public: bool PhysicsNameExists(const std::string &_name) const;
 
+    /// \brief Get the number of nested interface models that are immediate (not
+    /// recursively nested) children of this World object.
+    /// \return Number of nested interface models contained in this World
+    /// object.
     public: uint64_t InterfaceModelCount() const;
 
+    /// \brief Get an immediate (not recursively nested) child interface model
+    /// based on an index.
+    /// \param[in] _index Index of the nested interface model. The index should
+    /// be in the range [0..InterfaceModelCount()).
+    /// \return Pointer to the model. Nullptr if the index does not exist.
+    /// \sa uint64_t InterfaceModelCount() const
     public: std::shared_ptr<const InterfaceModel> InterfaceModelByIndex(
                 const uint64_t _index) const;
 
+    /// \brief Get the nested include information of an immediate (not
+    /// recursively nested) child interface model based on an index.
+    /// \param[in] _index Index of the nested interface model. The index should
+    /// be in the range [0..InterfaceModelCount()).
+    /// \return Pointer to the nested include information. Nullptr if the index
+    /// does not exist.
+    /// \sa uint64_t InterfaceModelCount() const
     public: const NestedInclude* InterfaceModelNestedIncludeByIndex(
                 const uint64_t _index) const;
 

@@ -23,14 +23,32 @@ inline namespace SDF_VERSION_NAMESPACE
 {
 class InterfaceModel::Implementation
 {
+  /// \brief Name of this interface model.
   public: std::string name;
+
+  /// \brief Reposturing callback function.
   public: sdf::RepostureFunction repostureFunction;
+
+  /// \brief Whether this model is static.
   public: bool isStatic;
+
+  /// \brief Name of Canonical link. This is the resolved name of the canonical
+  /// link, therefore, it cannot be an empty string.
   public: std::string canonicalLinkName;
+
+  /// \brief Model frame pose relative to the parent frame.
   public: ignition::math::Pose3d poseInParentFrame;
+
+  /// \brief Collection of child interface models
   public: std::vector<sdf::InterfaceModelConstPtr> nestedModels;
+
+  /// \brief Collection of child interface frames
   public: std::vector<sdf::InterfaceFrame> frames;
+
+  /// \brief Collection of child interface joints
   public: std::vector<sdf::InterfaceJoint> joints;
+
+  /// \brief Collection of child interface links
   public: std::vector<sdf::InterfaceLink> links;
 };
 

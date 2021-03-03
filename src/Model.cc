@@ -587,7 +587,7 @@ std::pair<const Link*, std::string> Model::CanonicalLinkAndRelativeName() const
       if (canonicalLinkName != "")
       {
         canonicalLinkName =
-            firstModel->Name() + "::" + canonicalLinkName;
+            sdf::JoinName(firstModel->Name(), canonicalLinkName);
       }
       return {nullptr, canonicalLinkName};
     }
