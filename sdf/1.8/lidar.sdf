@@ -11,7 +11,7 @@
       </element>
 
       <element name="resolution" type="double" default="1" required="1">
-        <description>This number is multiplied by samples to determine the number of range data points returned. If resolution is less than one, range data is interpolated. If resolution is greater than one, range data is averaged.</description>
+        <description>This number is multiplied by samples to determine the number of range data points returned. If resolution is not equal to one, range data is interpolated.</description>
       </element>
 
       <element name="min_angle" type="double" default="0" required="1">
@@ -31,7 +31,7 @@
       </element>
 
       <element name="resolution" type="double" default="1" required="0">
-        <description>This number is multiplied by samples to determine the number of range data points returned. If resolution is less than one, range data is interpolated. If resolution is greater than one, range data is averaged.</description>
+        <description>This number is multiplied by samples to determine the number of range data points returned. If resolution is not equal to one, range data is interpolated.</description>
       </element>
 
       <element name="min_angle" type="double" default="0" required="1">
