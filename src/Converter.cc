@@ -325,7 +325,7 @@ void Converter::Unnest(tinyxml2::XMLElement *_elem)
         std::string eName = std::get<1>(deleteElem);
 
         while (eName != std::string(e->Attribute("name")))
-          e = _elem->NextSiblingElement(std::get<0>(deleteElem).c_str());
+            e = e->NextSiblingElement(std::get<0>(deleteElem).c_str());
 
         if (std::string(e->Attribute("name")) == eName)
           _elem->DeleteChild(e);
@@ -416,7 +416,36 @@ Converter::TupleVector Converter::FindNewModelElements(
 
     else if (elemName == "link")
     {
-      // TODO(jenn) //visual/pose/@relative_to & //collision/pose/@relative_to
+      // find & strip new model prefix of all //visual/pose/@relative_to &
+      // //collision/pose/@relative_to
+      tinyxml2::XMLElement *e;
+      std::string eName = "visual";
+      while (true)
+      {
+        e = elem->FirstChildElement(eName.c_str());
+        while (e)
+        {
+          poseElem = e->FirstChildElement("pose");
+          if (poseElem != nullptr)
+          {
+            std::string poseRelTo = poseElem->Attribute("relative_to");
+
+            SDF_ASSERT(poseRelTo.find(newModelName) != std::string::npos,
+              "Error: Pose attribute 'relative_to' does not start with " +
+              newModelName);
+
+            poseRelTo = poseRelTo.substr(_newNameIdx);
+            poseElem->SetAttribute("relative_to", poseRelTo.c_str());
+          }
+
+          e = e->NextSiblingElement(eName.c_str());
+        }
+
+        if (eName == "collision") break;
+
+        eName = "collision";
+      }
+
     }  // link
 
     else if (elemName == "joint")

@@ -165,6 +165,111 @@ TEST(ConverterIntegration, UnnestConversion)
 
   EXPECT_TRUE(sdf::convertFile(filename, "1.8", sdf));
 
-  // TODO(jenn) finish
-  std::cout << "Unnested:\n" << sdf->Root()->ToString("") << std::endl;
+  ASSERT_NE(nullptr, sdf->Root());
+  EXPECT_EQ(sdf->Root()->GetName(), "sdf");
+  EXPECT_EQ("1.8", sdf->Root()->Get<std::string>("version"));
+  EXPECT_EQ("1.7", sdf->OriginalVersion());
+  EXPECT_EQ("1.7", sdf->Root()->OriginalVersion());
+
+  sdf::ElementPtr worldElem = sdf->Root()->GetElement("world");
+  ASSERT_NE(nullptr, worldElem);
+  EXPECT_EQ(worldElem->Get<std::string>("name"), "default");
+
+  sdf::ElementPtr modelElem = worldElem->GetElement("model");
+  ASSERT_NE(nullptr, modelElem);
+  EXPECT_EQ(modelElem->Get<std::string>("name"),
+            "test_nested_model_with_frames");
+
+  sdf::ElementPtr nestModelElem = modelElem->GetElement("model");
+  ASSERT_NE(nullptr, nestModelElem);
+  EXPECT_EQ(nestModelElem->Get<std::string>("name"), "test_model_with_frames");
+  EXPECT_EQ(nestModelElem->Get<std::string>("canonical_link"), "L1");
+
+  sdf::ElementPtr poseElem = nestModelElem->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "__model__");
+
+  sdf::ElementPtr frameElem = nestModelElem->GetElement("frame");
+  ASSERT_NE(nullptr, frameElem);
+  EXPECT_EQ(frameElem->Get<std::string>("name"), "F1");
+  EXPECT_EQ(frameElem->Get<std::string>("attached_to"), "__model__");
+
+  frameElem = frameElem->GetNextElement("frame");
+  ASSERT_NE(nullptr, frameElem);
+  EXPECT_EQ(frameElem->Get<std::string>("name"), "F2");
+  EXPECT_EQ(frameElem->Get<std::string>("attached_to"), "__model__");
+  poseElem = frameElem->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "F1");
+
+  sdf::ElementPtr linkElem = frameElem->GetNextElement("link");
+  ASSERT_NE(nullptr, linkElem);
+  EXPECT_EQ(linkElem->Get<std::string>("name"), "L1");
+  poseElem = linkElem->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "F1");
+  poseElem = linkElem->GetElement("visual")->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "F2");
+  poseElem = linkElem->GetElement("collision")->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "__model__");
+
+  linkElem = linkElem->GetNextElement("link");
+  ASSERT_NE(nullptr, linkElem);
+  EXPECT_EQ(linkElem->Get<std::string>("name"), "L2");
+  poseElem = linkElem->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "F1");
+
+  linkElem = linkElem->GetNextElement("link");
+  ASSERT_NE(nullptr, linkElem);
+  EXPECT_EQ(linkElem->Get<std::string>("name"), "L3");
+  poseElem = linkElem->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "L2");
+
+  linkElem = linkElem->GetNextElement("link");
+  ASSERT_NE(nullptr, linkElem);
+  EXPECT_EQ(linkElem->Get<std::string>("name"), "L4");
+  poseElem = linkElem->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "__model__");
+
+  sdf::ElementPtr jointElem = linkElem->GetNextElement("joint");
+  ASSERT_NE(nullptr, jointElem);
+  EXPECT_EQ(jointElem->Get<std::string>("name"), "J1");
+  poseElem = jointElem->GetElement("pose");
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "L1");
+  EXPECT_EQ(jointElem->Get<std::string>("parent"), "L1");
+  EXPECT_EQ(jointElem->Get<std::string>("child"), "L2");
+  sdf::ElementPtr xyzElem = jointElem->GetElement("axis")->GetElement("xyz");
+  ASSERT_NE(nullptr, xyzElem);
+  EXPECT_EQ(xyzElem->Get<std::string>("expressed_in"), "F2");
+  xyzElem = jointElem->GetElement("axis2")->GetElement("xyz");
+  ASSERT_NE(nullptr, xyzElem);
+  EXPECT_EQ(xyzElem->Get<std::string>("expressed_in"), "F2");
+
+  jointElem = jointElem->GetNextElement("joint");
+  ASSERT_NE(nullptr, jointElem);
+  EXPECT_EQ(jointElem->Get<std::string>("name"), "J2");
+  EXPECT_EQ(jointElem->Get<std::string>("parent"), "L2");
+  EXPECT_EQ(jointElem->Get<std::string>("child"), "L3");
+  xyzElem = jointElem->GetElement("axis")->GetElement("xyz");
+  ASSERT_NE(nullptr, xyzElem);
+  EXPECT_EQ(xyzElem->Get<std::string>("expressed_in"), "__model__");
+
+  jointElem = jointElem->GetNextElement("joint");
+  ASSERT_NE(nullptr, jointElem);
+  EXPECT_EQ(jointElem->Get<std::string>("name"), "J3");
+  poseElem = jointElem->GetElement("pose");
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "__model__");
+  EXPECT_EQ(jointElem->Get<std::string>("parent"), "L3");
+  EXPECT_EQ(jointElem->Get<std::string>("child"), "L4");
+
+  nestModelElem = jointElem->GetNextElement("model");
+  ASSERT_NE(nullptr, nestModelElem);
+  EXPECT_EQ(nestModelElem->Get<std::string>("name"), "M2");
+  poseElem = nestModelElem->GetElement("pose");
+  EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "F1");
 }
