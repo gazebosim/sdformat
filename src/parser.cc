@@ -480,7 +480,8 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
   auto error_code = xmlDoc.LoadFile(filename.c_str());
   if (error_code)
   {
-    sdferr << "Error parsing XML in file [" << filename << "]: "
+    sdferr << "Error parsing XML in file [" << filename << "]:"
+           << xmlDoc.ErrorLineNum() << " : "
            << xmlDoc.ErrorStr() << '\n';
     return false;
   }
@@ -1266,7 +1267,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           {
             _errors.push_back({ErrorCode::ELEMENT_INVALID,
                 std::string("Error reading element <") +
-                elemXml->Value() + ">"});
+                elemXml->Value() + ">: Line " + 
+                std::to_string(elemXml->GetLineNum())});
             return false;
           }
           break;
