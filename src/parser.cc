@@ -1049,8 +1049,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           if (modelPath.empty())
           {
             _errors.push_back({ErrorCode::URI_LOOKUP,
-                "[" + _source + ":L" + std::to_string(uri_element->GetLineNum())
-                + "]: Unable to find uri[" + uri + "]"});
+                getTraceString(_source, uri_element->GetLineNum())
+                + "Unable to find uri[" + uri + "]"});
             continue;
           }
           else
@@ -1063,7 +1063,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
               if (filename.empty())
               {
                 _errors.push_back({ErrorCode::URI_LOOKUP,
-                    "Unable to resolve uri[" + uri + "] to model path [" +
+                    getTraceString(_source, uri_element->GetLineNum())
+                    + "Unable to resolve uri[" + uri + "] to model path [" +
                     modelPath + "] since it does not contain a model.config " +
                     "file."});
                 continue;
@@ -1081,8 +1082,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         else
         {
           _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
-              "[" + _source + ":L" + std::to_string(elemXml->GetLineNum())
-              + "]: <include> element missing 'uri' attribute"});
+              getTraceString(_source, elemXml->GetLineNum()) 
+              + "<include> element missing 'uri' attribute"});
           continue;
         }
 
@@ -1386,6 +1387,19 @@ void copyChildren(ElementPtr _sdf,
       _sdf->InsertElement(element);
     }
   }
+}
+
+/////////////////////////////////////////////////
+std::string getTraceString(
+    const std::string &_source, int _lineNum)
+{
+  std::string trace_string = "";
+  if (!filesystem::exists(_source))
+  {
+    trace_string =
+        "[" + _source + ":L" + std::to_string(elemXml->GetLineNum()) + "]: ";
+  }
+  return trace_string;  
 }
 
 /////////////////////////////////////////////////
