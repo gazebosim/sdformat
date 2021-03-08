@@ -480,8 +480,7 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
   auto error_code = xmlDoc.LoadFile(filename.c_str());
   if (error_code)
   {
-    sdferr << "Error parsing XML in file [" << filename << "]:"
-           << xmlDoc.ErrorLineNum() << " : "
+    sdferr << "Error parsing XML in file [" << filename << "]: "
            << xmlDoc.ErrorStr() << '\n';
     return false;
   }
@@ -680,7 +679,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
 
     // parse new sdf xml
     auto *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
-    if (!readXml(elemXml, _sdf->Root(), _config, _errors))
+    if (!readXml(elemXml, _sdf->Root(), _config, _source, _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Error reading element <" + _sdf->Root()->GetName() + ">"});
@@ -750,7 +749,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     }
 
     // parse new sdf xml
-    if (!readXml(elemXml, _sdf, _config, _errors))
+    if (!readXml(elemXml, _sdf, _config, _source, _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Unable to parse sdf element["+ _sdf->GetName() + "]"});
@@ -892,7 +891,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 
 //////////////////////////////////////////////////
 bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
-    const ParserConfig &_config, Errors &_errors)
+    const ParserConfig &_config, const std::string &_source, Errors &_errors)
 {
   // Check if the element pointer is deprecated.
   if (_sdf->GetRequired() == "-1")
@@ -1042,14 +1041,16 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
         if (elemXml->FirstChildElement("uri"))
         {
-          std::string uri = elemXml->FirstChildElement("uri")->GetText();
+          tinyxml2::XMLElement *uri_element = elemXml->FirstChildElement("uri");
+          std::string uri = uri_element->GetText();
           modelPath = sdf::findFile(uri, true, true, _config);
 
           // Test the model path
           if (modelPath.empty())
           {
             _errors.push_back({ErrorCode::URI_LOOKUP,
-                "Unable to find uri[" + uri + "]"});
+                "[" + _source + ":L" + std::to_string(uri_element->GetLineNum())
+                + "]: Unable to find uri[" + uri + "]"});
             continue;
           }
           else
@@ -1080,7 +1081,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         else
         {
           _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
-              "<include> element missing 'uri' attribute"});
+              "[" + _source + ":L" + std::to_string(elemXml->GetLineNum())
+              + "]: <include> element missing 'uri' attribute"});
           continue;
         }
 
@@ -1227,7 +1229,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
               sdf::ElementPtr pluginElem;
               pluginElem = topLevelElem->AddElement("plugin");
 
-              if (!readXml(childElemXml, pluginElem, _config, _errors))
+              if (!readXml(
+                  childElemXml, pluginElem, _config, filename, _errors))
               {
                 _errors.push_back({ErrorCode::ELEMENT_INVALID,
                                    "Error reading plugin element"});
@@ -1259,7 +1262,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         {
           ElementPtr element = elemDesc->Clone();
           element->SetParent(_sdf);
-          if (readXml(elemXml, element, _config, _errors))
+          if (readXml(elemXml, element, _config, _source, _errors))
           {
             _sdf->InsertElement(element);
           }
