@@ -105,9 +105,15 @@ namespace sdf
   /// \param[in] _lineNum The line number of interest. This parameter is ignored
   /// if the source is not a file path.
   /// \return Trace string that goes before error printouts. Returns an empty
-  /// string if the source is a string.
+  /// string if the source is not a file path.
   static std::string getTraceString(
       const std::string &_source, int _lineNum);
+
+  /// \brief Gets the error trace string formed using the source name.
+  /// \param[in] _source File path or different formats of sources.
+  /// \return Trace string that goes before error printouts. Returns an empty
+  /// string if the source is not a file path.
+  static std::string getTraceString(const std::string &_source);
   }
 }
 #endif
