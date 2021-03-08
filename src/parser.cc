@@ -1154,7 +1154,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         if (nullptr != nextTopLevelElem)
         {
           std::stringstream ss;
-          ss << getTraceString(filename, nextTopLevelElem->GetLineNum())
+          ss << getTraceString(_source, uriElement->GetLineNum())
              << "Found more than one of " << topLevelElem->GetName()
              << " for <include>. This is unsupported and in future "
              << "versions of libsdformat will become an error";
@@ -1326,7 +1326,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
               _sdf->Get<std::string>("type") != "ball")
           {
             _errors.push_back({ErrorCode::ELEMENT_MISSING,
-                getTraceString(_source, elemDesc->GetLineNum()) +
+                getTraceString(_source, elemXml->GetLineNum()) +
                 "XML Missing required element[" + elemDesc->GetName() +
                 "], child of element[" + _sdf->GetName() + "]"});
             return false;
@@ -1408,10 +1408,9 @@ std::string getTraceString(
     const std::string &_source, int _lineNum)
 {
   std::string trace_string = "";
-  if (!filesystem::exists(_source))
+  if (filesystem::exists(_source))
   {
-    trace_string =
-        "[" + _source + ":L" + std::to_string(elemXml->GetLineNum()) + "]: ";
+    trace_string = "[" + _source + ":L" + std::to_string(_lineNum) + "]: ";
   }
   return trace_string;  
 }
@@ -1420,7 +1419,7 @@ std::string getTraceString(
 std::string getTraceString(const std::string &_source)
 {
   std::string trace_string = "";
-  if (!filesystem::exists(_source))
+  if (filesystem::exists(_source))
   {
     trace_string = "[" + _source + "]: ";
   }
