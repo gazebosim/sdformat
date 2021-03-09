@@ -264,18 +264,18 @@ void Converter::Unnest(tinyxml2::XMLElement *_elem)
 
   // std::cout << "copy:\n" << PrintElement(copy->ToElement()) << std::endl;
 
-  tinyxml2::XMLElement *elem = _elem->FirstChildElement(), *nextElem = nullptr;
-  while (elem)
+  tinyxml2::XMLElement *nextElem = nullptr;
+  for(tinyxml2::XMLElement *elem = _elem->FirstChildElement();
+      elem;
+      elem = nextElem)
   {
     nextElem = elem->NextSiblingElement();
-
     std::string elemName = elem->Name();
 
     // skip element if not one of the following
     if (elemName != "frame" && elemName != "joint"
         && elemName != "link" && elemName != "model")
     {
-      elem = nextElem;
       continue;
     }
 
@@ -292,11 +292,9 @@ void Converter::Unnest(tinyxml2::XMLElement *_elem)
         Unnest(elem);
 
         // std::cout << "unnested model:\n" << PrintElement(elem) << std::endl;
-        _elem->InsertEndChild(elem);
         break;
       }
 
-      elem = nextElem;
       continue;
     }
 
@@ -305,8 +303,7 @@ void Converter::Unnest(tinyxml2::XMLElement *_elem)
     newModel->SetAttribute("name", newModelName.c_str());
 
     Converter::TupleVector deleteElems =
-        FindNewModelElements(doc,
-                            copy->ToElement(),
+        FindNewModelElements(copy->ToElement(),
                             newModel,
                             found + 2);
 
@@ -331,16 +328,13 @@ void Converter::Unnest(tinyxml2::XMLElement *_elem)
           _elem->DeleteChild(e);
       }
 
-      nextElem = _elem->FirstChildElement();
+      Unnest(newModel);
     }
-
-    elem = nextElem;
   }
 }
 
 /////////////////////////////////////////////////
 Converter::TupleVector Converter::FindNewModelElements(
-                                                tinyxml2::XMLDocument *_doc,
                                                 tinyxml2::XMLElement *_copy,
                                                 tinyxml2::XMLElement *_newModel,
                                                 const size_t &_newNameIdx)
@@ -470,7 +464,7 @@ Converter::TupleVector Converter::FindNewModelElements(
 
       // strip new model prefix from //xyz/@expressed_in
       std::string axisStr = "axis";
-      for (int i = 0; i < 2; ++i)
+      while (true)
       {
         tinyxml2::XMLElement *axisElem =
             elem->FirstChildElement(axisStr.c_str());
@@ -491,6 +485,9 @@ Converter::TupleVector Converter::FindNewModelElements(
                     ->SetAttribute("expressed_in", expressIn.c_str());
           }
         }
+
+        if (axisStr == "axis2") break;
+
         axisStr += "2";
       }
     }  // joint

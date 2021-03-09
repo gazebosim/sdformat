@@ -115,15 +115,13 @@ namespace sdf
       using TupleVector = std::vector< std::tuple<std::string, std::string> >;
 
     /// \brief Finds all elements related to the unnested model
-    /// \param[in] _doc SDF xml doc
     /// \param[in] _copy Copy of the entire original element that needs unnested
     /// \param[in] _newModel The new unnested model element
     /// \param[in] _newNameIdx The index of the new name for child elements
     /// \return Vector of tuples containing the element name & attribute name
     /// to be deleted from the original element that needs unnested
     private:
-      static TupleVector FindNewModelElements(tinyxml2::XMLDocument *_doc,
-                             tinyxml2::XMLElement *_copy,
+      static TupleVector FindNewModelElements(tinyxml2::XMLElement *_copy,
                              tinyxml2::XMLElement *_newModel,
                              const size_t &_newNameIdx);
 
