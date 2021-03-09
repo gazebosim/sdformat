@@ -163,7 +163,7 @@ TEST(ConverterIntegration, UnnestConversion)
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
 
-  EXPECT_TRUE(sdf::convertFile(filename, "1.8", sdf));
+  ASSERT_TRUE(sdf::convertFile(filename, "1.8", sdf));
 
   ASSERT_NE(nullptr, sdf->Root());
   EXPECT_EQ(sdf->Root()->GetName(), "sdf");

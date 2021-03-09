@@ -265,16 +265,17 @@ void Converter::Unnest(tinyxml2::XMLElement *_elem)
   // std::cout << "copy:\n" << PrintElement(copy->ToElement()) << std::endl;
 
   tinyxml2::XMLElement *nextElem = nullptr;
-  for(tinyxml2::XMLElement *elem = _elem->FirstChildElement();
+  for (tinyxml2::XMLElement *elem = _elem->FirstChildElement();
       elem;
       elem = nextElem)
   {
     nextElem = elem->NextSiblingElement();
     std::string elemName = elem->Name();
 
-    // skip element if not one of the following
-    if (elemName != "frame" && elemName != "joint"
+    // skip element if not one of the following or if missing name attribute
+    if ((elemName != "frame" && elemName != "joint"
         && elemName != "link" && elemName != "model")
+        || !elem->Attribute("name"))
     {
       continue;
     }
@@ -388,7 +389,7 @@ Converter::TupleVector Converter::FindNewModelElements(
       {
         attachedTo = elem->Attribute("attached_to");
 
-        SDF_ASSERT(attachedTo.find(newModelName) != std::string::npos,
+        SDF_ASSERT(attachedTo.compare(0, _newNameIdx - 2, newModelName) == 0,
           "Error: Frame attribute 'attached_to' does not start with " +
           newModelName);
 
@@ -410,36 +411,24 @@ Converter::TupleVector Converter::FindNewModelElements(
 
     else if (elemName == "link")
     {
-      // find & strip new model prefix of all //visual/pose/@relative_to &
-      // //collision/pose/@relative_to
-      tinyxml2::XMLElement *e;
-      std::string eName = "visual";
-      while (true)
+      // find & strip new model prefix of all //link/<element>/pose/@relative_to
+      for (tinyxml2::XMLElement *e = elem->FirstChildElement();
+          e;
+          e = e->NextSiblingElement())
       {
-        e = elem->FirstChildElement(eName.c_str());
-        while (e)
+        poseElem = e->FirstChildElement("pose");
+        if (poseElem != nullptr)
         {
-          poseElem = e->FirstChildElement("pose");
-          if (poseElem != nullptr)
-          {
-            std::string poseRelTo = poseElem->Attribute("relative_to");
+          std::string poseRelTo = poseElem->Attribute("relative_to");
 
-            SDF_ASSERT(poseRelTo.find(newModelName) != std::string::npos,
-              "Error: Pose attribute 'relative_to' does not start with " +
-              newModelName);
+          SDF_ASSERT(poseRelTo.compare(0, _newNameIdx - 2, newModelName) == 0,
+            "Error: Pose attribute 'relative_to' does not start with " +
+            newModelName);
 
-            poseRelTo = poseRelTo.substr(_newNameIdx);
-            poseElem->SetAttribute("relative_to", poseRelTo.c_str());
-          }
-
-          e = e->NextSiblingElement(eName.c_str());
+          poseRelTo = poseRelTo.substr(_newNameIdx);
+          poseElem->SetAttribute("relative_to", poseRelTo.c_str());
         }
-
-        if (eName == "collision") break;
-
-        eName = "collision";
       }
-
     }  // link
 
     else if (elemName == "joint")
@@ -448,7 +437,7 @@ Converter::TupleVector Converter::FindNewModelElements(
       tinyxml2::XMLElement *e = elem->FirstChildElement("parent");
       std::string eText = e->GetText();
 
-      SDF_ASSERT(eText.find(newModelName) != std::string::npos,
+      SDF_ASSERT(eText.compare(0, _newNameIdx - 2, newModelName) == 0,
         "Error: Joint's <parent> value does not start with " + newModelName);
 
       e->SetText(eText.substr(_newNameIdx).c_str());
@@ -457,7 +446,7 @@ Converter::TupleVector Converter::FindNewModelElements(
       e = elem->FirstChildElement("child");
       eText = e->GetText();
 
-      SDF_ASSERT(eText.find(newModelName) != std::string::npos,
+      SDF_ASSERT(eText.compare(0, _newNameIdx - 2, newModelName) == 0,
         "Error: Joint's <child> value does not start with " + newModelName);
 
       e->SetText(std::string(e->GetText()).substr(_newNameIdx).c_str());
@@ -475,7 +464,7 @@ Converter::TupleVector Converter::FindNewModelElements(
             std::string expressIn =
                 axisElem->FirstChildElement("xyz")->Attribute("expressed_in");
 
-            SDF_ASSERT(expressIn.find(newModelName) != std::string::npos,
+            SDF_ASSERT(expressIn.compare(0, _newNameIdx - 2, newModelName) == 0,
               "Error: <xyz>'s attribute 'expressed_in' does not start with " +
               newModelName);
 
@@ -489,6 +478,25 @@ Converter::TupleVector Converter::FindNewModelElements(
         if (axisStr == "axis2") break;
 
         axisStr += "2";
+      }
+
+      // strip new model prefix from all //joint/sensor/pose/@relative_to
+      for (e = elem->FirstChildElement("sensor");
+          e;
+          e = e->NextSiblingElement("sensor"))
+      {
+        poseElem = e->FirstChildElement("pose");
+        if (poseElem != nullptr)
+        {
+          std::string poseRelTo = poseElem->Attribute("relative_to");
+
+          SDF_ASSERT(poseRelTo.compare(0, _newNameIdx - 2, newModelName) == 0,
+            "Error: Pose attribute 'relative_to' does not start with " +
+            newModelName);
+
+          poseRelTo = poseRelTo.substr(_newNameIdx);
+          poseElem->SetAttribute("relative_to", poseRelTo.c_str());
+        }
       }
     }  // joint
 

@@ -2249,6 +2249,9 @@ TEST(Converter, World_17_to_18)
           <axis2>
             <xyz expressed_in="ChildModel::NewFrame">0 0 1</xyz>
           </axis2>
+          <sensor name="camera" type="camera">
+            <pose relative_to="ChildModel::NewFrame">1 0 0 0 0 0</pose>
+          </sensor>
         </joint>
       </model>
     </world>
@@ -2309,6 +2312,11 @@ TEST(Converter, World_17_to_18)
   convertedElem = convertedElem->NextSiblingElement();
   EXPECT_STREQ(convertedElem->Name(), "axis2");
   EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("expressed_in"),
+              "NewFrame");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "sensor");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Name(), "pose");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("relative_to"),
               "NewFrame");
 
   // Another flattened world in 1.7 format
