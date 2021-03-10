@@ -2253,6 +2253,14 @@ TEST(Converter, World_17_to_18)
             <pose relative_to="ChildModel::NewFrame">1 0 0 0 0 0</pose>
           </sensor>
         </joint>
+        <include>
+          <pose relative_to="ChildModel::L1">0 1 0 0 0 0</pose>
+          <uri>test</uri>
+        </include>
+        <gripper name="gripper">
+          <gripper_link>ChildModel::L1</gripper_link>
+          <palm_link>ChildModel::L2</palm_link>
+        </gripper>
       </model>
     </world>
   </sdf>)";
@@ -2318,6 +2326,18 @@ TEST(Converter, World_17_to_18)
   EXPECT_STREQ(convertedElem->FirstChildElement()->Name(), "pose");
   EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("relative_to"),
               "NewFrame");
+  convertedElem = convertedElem->Parent()->NextSiblingElement("include");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Name(), "pose");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("relative_to"),
+              "L1");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "gripper");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "gripper_link");
+  EXPECT_STREQ(convertedElem->GetText(), "L1");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "palm_link");
+  EXPECT_STREQ(convertedElem->GetText(), "L2");
 
   // Another flattened world in 1.7 format
   xmlString = R"(

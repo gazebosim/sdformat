@@ -262,8 +262,6 @@ void Converter::Unnest(tinyxml2::XMLElement *_elem)
   tinyxml2::XMLDocument *doc = _elem->GetDocument();
   tinyxml2::XMLNode *copy = DeepClone(doc, _elem);
 
-  // std::cout << "copy:\n" << PrintElement(copy->ToElement()) << std::endl;
-
   tinyxml2::XMLElement *nextElem = nullptr;
   for (tinyxml2::XMLElement *elem = _elem->FirstChildElement();
       elem;
@@ -320,6 +318,12 @@ void Converter::Unnest(tinyxml2::XMLElement *_elem)
         tinyxml2::XMLElement *e =
           _elem->FirstChildElement(std::get<0>(deleteElem).c_str());
 
+        if (std::get<0>(deleteElem) == "include")
+        {
+          _elem->DeleteChild(e);
+          continue;
+        }
+
         std::string eName = std::get<1>(deleteElem);
 
         while (eName != std::string(e->Attribute("name")))
@@ -355,17 +359,25 @@ Converter::TupleVector Converter::FindNewModelElements(
       elemAttrName = elem->Attribute("name");
 
     if (elemAttrName.empty() ||
-        elemAttrName.find(newModelName) == std::string::npos ||
+        elemAttrName.compare(0, _newNameIdx - 2, newModelName) != 0 ||
         (elemName != "frame" && elemName != "joint" &&
         elemName != "link" && elemName != "model"))
     {
-      elem = nextElem;
-      continue;
+      if (elemName != "include" && elemName != "gripper")
+      {
+        elem = nextElem;
+        continue;
+      }
     }
 
     // Child attribute name w/ newModelName prefix stripped
-    std::string childAttrName = elemAttrName.substr(_newNameIdx);
-    elem->SetAttribute("name", childAttrName.c_str());
+    // except for //include & //gripper
+    std::string childAttrName;
+    if (elemName != "include" && elemName != "gripper")
+    {
+      childAttrName = elemAttrName.substr(_newNameIdx);
+      elem->SetAttribute("name", childAttrName.c_str());
+    }
 
     // strip new model prefix from //pose/@relative_to
     tinyxml2::XMLElement *poseElem = elem->FirstChildElement("pose");
@@ -374,10 +386,17 @@ Converter::TupleVector Converter::FindNewModelElements(
       std::string poseRelTo = poseElem->Attribute("relative_to");
 
       // strip new model prefix from //pose/@relative_to
-      if (poseRelTo.find(newModelName) != std::string::npos)
+      if (poseRelTo.compare(0, _newNameIdx - 2, newModelName) == 0)
       {
         poseRelTo = poseRelTo.substr(_newNameIdx);
         poseElem->SetAttribute("relative_to", poseRelTo.c_str());
+      }
+      else if (elemName == "include")
+      {
+        // if //include/pose/@relative_to does not have new model prefix
+        // don't add to new model
+        elem = nextElem;
+        continue;
       }
     }
 
@@ -499,6 +518,46 @@ Converter::TupleVector Converter::FindNewModelElements(
         }
       }
     }  // joint
+
+    else if (elemName == "gripper")
+    {
+      bool hasPrefix = true;
+
+      // strip prefix from all /model/gripper/gripper_link
+      tinyxml2::XMLElement *e = elem->FirstChildElement("gripper_link");
+      std::string eText;
+      while (e)
+      {
+        eText = e->GetText();
+
+        if (eText.compare(0, _newNameIdx - 2, newModelName) != 0)
+        {
+          hasPrefix = false;
+          break;
+        }
+
+        e->SetText(eText.substr(_newNameIdx).c_str());
+        e = e->NextSiblingElement("gripper_link");
+      }
+
+      // if //model/gripper/gripper_link does not have new model prefix
+      // don't add to new model
+      if (!hasPrefix)
+      {
+        elem = nextElem;
+        continue;
+      }
+
+      // strip prefix from //model/gripper/palm_link
+      e = elem->FirstChildElement("palm_link");
+      eText = e->GetText();
+
+      SDF_ASSERT(eText.compare(0, _newNameIdx - 2, newModelName) == 0,
+        "Error: Gripper's <palm_link> value does not start with "
+        + newModelName);
+
+      e->SetText(eText.substr(_newNameIdx).c_str());
+    }  // gripper
 
     _newModel->InsertEndChild(elem);
     deleteElems.push_back(std::make_tuple(elemName, elemAttrName));
