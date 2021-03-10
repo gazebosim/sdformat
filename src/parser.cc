@@ -47,6 +47,20 @@
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
+
+sdf::ElementPtr getIncludeDescription(sdf::ElementPtr _root)
+{
+  for (uint64_t i = 0; i < _root->GetElementDescriptionCount(); ++i)
+  {
+    auto desc = _root->GetElementDescription(i);
+    if ("include" == desc->GetName())
+    {
+      return desc;
+    }
+  }
+  return nullptr;
+}
+
 //////////////////////////////////////////////////
 /// \brief Internal helper for readFile, which populates the SDF values
 /// from a file
@@ -1038,10 +1052,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       if (std::string("include") == elemXml->Value())
       {
         std::string modelPath;
+        std::string uri;
 
         if (elemXml->FirstChildElement("uri"))
         {
-          std::string uri = elemXml->FirstChildElement("uri")->GetText();
+          uri = elemXml->FirstChildElement("uri")->GetText();
           modelPath = sdf::findFile(uri, true, true, _config);
 
           // Test the model path
@@ -1236,14 +1251,18 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           }
         }
 
-        includeSDF->Root()->GetFirstElement()->SetParent(_sdf);
-        _sdf->InsertElement(includeSDF->Root()->GetFirstElement());
-        // TODO: This was used to store the included filename so that when
-        // a world is saved, the included model's SDF is not stored in the
-        // world file. This highlights the need to make model inclusion
-        // a core feature of SDF, and not a hack that that parser handles
-        // includeSDF->Root()->GetFirstElement()->SetInclude(
-        // elemXml->Attribute("filename"));
+        auto includeSDFFirstElem = includeSDF->Root()->GetFirstElement();
+        includeSDFFirstElem->SetParent(_sdf);
+        auto includeDesc = _sdf->GetElementDescription("include");
+        if (includeDesc)
+        {
+          // Store the contents of the <include> tag as the includeElement of
+          // the entity that was loaded from the included URI.
+          auto includeInfo = includeDesc->Clone();
+          copyChildren(includeInfo, elemXml, false);
+          includeSDFFirstElem->SetIncludeElement(includeInfo);
+        }
+        _sdf->InsertElement(includeSDFFirstElem);
 
         continue;
       }
@@ -1351,8 +1370,8 @@ void copyChildren(ElementPtr _sdf,
         }
 
         // copy value
-        std::string value = elemXml->GetText();
-        if (!value.empty())
+        const char *value = elemXml->GetText();
+        if (value)
         {
           element->GetValue()->SetFromString(value);
         }

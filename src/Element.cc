@@ -195,6 +195,11 @@ ElementPtr Element::Clone() const
     clone->dataPtr->value = this->dataPtr->value->Clone();
   }
 
+  if (this->dataPtr->includeElement)
+  {
+    clone->dataPtr->includeElement = this->dataPtr->includeElement->Clone();
+  }
+
   return clone;
 }
 
@@ -249,6 +254,18 @@ void Element::Copy(const ElementPtr _elem)
     elem->Copy(*iter);
     elem->SetParent(shared_from_this());
     this->dataPtr->elements.push_back(elem);
+  }
+
+  if (_elem->dataPtr->includeElement)
+  {
+    if (!this->dataPtr->includeElement)
+    {
+      this->dataPtr->includeElement = _elem->dataPtr->includeElement->Clone();
+    }
+    else
+    {
+      this->dataPtr->includeElement->Copy(_elem->dataPtr->includeElement);
+    }
   }
 }
 
@@ -910,6 +927,18 @@ void Element::SetInclude(const std::string &_filename)
 std::string Element::GetInclude() const
 {
   return this->dataPtr->includeFilename;
+}
+
+/////////////////////////////////////////////////
+void Element::SetIncludeElement(sdf::ElementPtr _includeElem)
+{
+  this->dataPtr->includeElement = _includeElem;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Element::GetIncludeElement() const
+{
+  return this->dataPtr->includeElement;
 }
 
 /////////////////////////////////////////////////
