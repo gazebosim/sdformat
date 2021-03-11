@@ -47,20 +47,6 @@
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
-
-sdf::ElementPtr getIncludeDescription(sdf::ElementPtr _root)
-{
-  for (uint64_t i = 0; i < _root->GetElementDescriptionCount(); ++i)
-  {
-    auto desc = _root->GetElementDescription(i);
-    if ("include" == desc->GetName())
-    {
-      return desc;
-    }
-  }
-  return nullptr;
-}
-
 //////////////////////////////////////////////////
 /// \brief Internal helper for readFile, which populates the SDF values
 /// from a file
