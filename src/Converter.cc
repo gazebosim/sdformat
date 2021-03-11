@@ -260,15 +260,15 @@ void Converter::Unnest(tinyxml2::XMLElement *_elem)
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
 
   tinyxml2::XMLDocument *doc = _elem->GetDocument();
-  // TODO figure out why if this clone is comment out then
-  // UNIT_Converter_TEST seg faults
-  DeepClone(doc, _elem);
 
-  tinyxml2::XMLElement *nextElem = nullptr;
+  tinyxml2::XMLElement *nextElem = nullptr, *firstUnnestedModel = nullptr;
   for (tinyxml2::XMLElement *elem = _elem->FirstChildElement();
       elem;
       elem = nextElem)
   {
+    // break loop if reached the first unnested model
+    if (firstUnnestedModel == elem) break;
+
     nextElem = elem->NextSiblingElement();
     std::string elemName = elem->Name();
 
@@ -305,9 +305,14 @@ void Converter::Unnest(tinyxml2::XMLElement *_elem)
 
     if (FindNewModelElements(_elem, newModel, found + 2))
     {
+      Unnest(newModel);
       _elem->InsertEndChild(newModel);
 
-      Unnest(newModel);
+      // since newModel is inserted at the end, point back to the top element
+      nextElem = _elem->FirstChildElement();
+
+      if (!firstUnnestedModel)
+        firstUnnestedModel = newModel;
       // std::cout << "newModel:\n" << PrintElement(newModel) << std::endl;
     }
   }
