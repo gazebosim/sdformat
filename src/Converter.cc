@@ -260,7 +260,9 @@ void Converter::Unnest(tinyxml2::XMLElement *_elem)
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
 
   tinyxml2::XMLDocument *doc = _elem->GetDocument();
-  tinyxml2::XMLNode *copy = DeepClone(doc, _elem);
+  // TODO figure out why if this clone is comment out then
+  // UNIT_Converter_TEST seg faults
+  DeepClone(doc, _elem);
 
   tinyxml2::XMLElement *nextElem = nullptr;
   for (tinyxml2::XMLElement *elem = _elem->FirstChildElement();
@@ -301,53 +303,25 @@ void Converter::Unnest(tinyxml2::XMLElement *_elem)
     tinyxml2::XMLElement *newModel = doc->NewElement("model");
     newModel->SetAttribute("name", newModelName.c_str());
 
-    Converter::TupleVector deleteElems =
-        FindNewModelElements(copy->ToElement(),
-                            newModel,
-                            found + 2);
-
-    // std::cout << "newModel:\n" << PrintElement(newModel) << std::endl;
-
-    if (!deleteElems.empty())
+    if (FindNewModelElements(_elem, newModel, found + 2))
     {
       _elem->InsertEndChild(newModel);
 
-      // delete unnested elements
-      for (std::tuple<std::string, std::string> deleteElem : deleteElems)
-      {
-        tinyxml2::XMLElement *e =
-          _elem->FirstChildElement(std::get<0>(deleteElem).c_str());
-
-        if (std::get<0>(deleteElem) == "include")
-        {
-          _elem->DeleteChild(e);
-          continue;
-        }
-
-        std::string eName = std::get<1>(deleteElem);
-
-        while (eName != std::string(e->Attribute("name")))
-            e = e->NextSiblingElement(std::get<0>(deleteElem).c_str());
-
-        if (std::string(e->Attribute("name")) == eName)
-          _elem->DeleteChild(e);
-      }
-
       Unnest(newModel);
+      // std::cout << "newModel:\n" << PrintElement(newModel) << std::endl;
     }
   }
 }
 
 /////////////////////////////////////////////////
-Converter::TupleVector Converter::FindNewModelElements(
-                                                tinyxml2::XMLElement *_copy,
-                                                tinyxml2::XMLElement *_newModel,
-                                                const size_t &_newNameIdx)
+bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
+                                    tinyxml2::XMLElement *_newModel,
+                                    const size_t &_newNameIdx)
 {
-  Converter::TupleVector deleteElems;
+  bool unnestedNewModel = false;
   std::string newModelName = _newModel->Attribute("name");
 
-  tinyxml2::XMLElement *elem = _copy->FirstChildElement(), *nextElem = nullptr;
+  tinyxml2::XMLElement *elem = _elem->FirstChildElement(), *nextElem = nullptr;
   while (elem)
   {
     nextElem = elem->NextSiblingElement();
@@ -363,17 +337,16 @@ Converter::TupleVector Converter::FindNewModelElements(
         (elemName != "frame" && elemName != "joint" &&
         elemName != "link" && elemName != "model"))
     {
-      if (elemName != "include" && elemName != "gripper")
+      if (elemName != "gripper")
       {
         elem = nextElem;
         continue;
       }
     }
 
-    // Child attribute name w/ newModelName prefix stripped
-    // except for //include & //gripper
+    // Child attribute name w/ newModelName prefix stripped except for //gripper
     std::string childAttrName;
-    if (elemName != "include" && elemName != "gripper")
+    if (elemName != "gripper")
     {
       childAttrName = elemAttrName.substr(_newNameIdx);
       elem->SetAttribute("name", childAttrName.c_str());
@@ -385,18 +358,10 @@ Converter::TupleVector Converter::FindNewModelElements(
     {
       std::string poseRelTo = poseElem->Attribute("relative_to");
 
-      // strip new model prefix from //pose/@relative_to
       if (poseRelTo.compare(0, _newNameIdx - 2, newModelName) == 0)
       {
         poseRelTo = poseRelTo.substr(_newNameIdx);
         poseElem->SetAttribute("relative_to", poseRelTo.c_str());
-      }
-      else if (elemName == "include")
-      {
-        // if //include/pose/@relative_to does not have new model prefix
-        // don't add to new model
-        elem = nextElem;
-        continue;
       }
     }
 
@@ -423,7 +388,7 @@ Converter::TupleVector Converter::FindNewModelElements(
         _newModel->SetAttribute("canonical_link", attachedTo.c_str());
         _newModel->InsertFirstChild(poseElem);
 
-        _copy->DeleteChild(elem);
+        _elem->DeleteChild(elem);
         elem = poseElem;
       }
     }  // frame
@@ -559,13 +524,13 @@ Converter::TupleVector Converter::FindNewModelElements(
       e->SetText(eText.substr(_newNameIdx).c_str());
     }  // gripper
 
+    unnestedNewModel = true;
     _newModel->InsertEndChild(elem);
-    deleteElems.push_back(std::make_tuple(elemName, elemAttrName));
 
     elem = nextElem;
   }
 
-  return deleteElems;
+  return unnestedNewModel;
 }
 
 /////////////////////////////////////////////////

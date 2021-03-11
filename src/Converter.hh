@@ -109,21 +109,15 @@ namespace sdf
     /// \param[in] _elem The element to unnest
     private: static void Unnest(tinyxml2::XMLElement *_elem);
 
-    /// \brief Convenience type alias for vector of tuple<string, string>
-    /// where 1st string is the element name & 2nd string is attribute name
-    private:
-      using TupleVector = std::vector< std::tuple<std::string, std::string> >;
-
     /// \brief Finds all elements related to the unnested model
-    /// \param[in] _copy Copy of the entire original element that needs unnested
+    /// \param[in] _elem The element to unnest
     /// \param[in] _newModel The new unnested model element
     /// \param[in] _newNameIdx The index of the new name for child elements
-    /// \return Vector of tuples containing the element name & attribute name
-    /// to be deleted from the original element that needs unnested
+    /// \return True if unnested new model elements
     private:
-      static TupleVector FindNewModelElements(tinyxml2::XMLElement *_copy,
-                             tinyxml2::XMLElement *_newModel,
-                             const size_t &_newNameIdx);
+      static bool FindNewModelElements(tinyxml2::XMLElement *_elem,
+                                      tinyxml2::XMLElement *_newModel,
+                                      const size_t &_newNameIdx);
 
     private: static const char *GetValue(const char *_valueElem,
                                          const char *_valueAttr,
