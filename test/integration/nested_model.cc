@@ -641,6 +641,21 @@ TEST(NestedModel, PartiallyFlattened)
   const sdf::Model *outerModel = world->ModelByIndex(0);
   ASSERT_NE(nullptr, outerModel);
   EXPECT_EQ("ParentModel", outerModel->Name());
+
+  EXPECT_TRUE(outerModel->LinkNameExists("M1::L1"));
+  EXPECT_TRUE(outerModel->LinkNameExists("M1::L2"));
+  EXPECT_TRUE(outerModel->LinkNameExists("M1::L3"));
+  EXPECT_TRUE(outerModel->LinkNameExists("M1::L4"));
+
+  EXPECT_TRUE(outerModel->JointNameExists("M1::J1"));
+  EXPECT_TRUE(outerModel->JointNameExists("M1::J2"));
+  EXPECT_TRUE(outerModel->JointNameExists("M1::J3"));
+
+  EXPECT_TRUE(outerModel->FrameNameExists("M1::F1"));
+  EXPECT_TRUE(outerModel->FrameNameExists("M1::F2"));
+
+  EXPECT_TRUE(outerModel->ModelNameExists("M1::M2"));
+
   EXPECT_EQ(1u, outerModel->ModelCount());
 
   // Get the middle model
@@ -685,6 +700,7 @@ TEST(NestedModel, PartiallyFlattened)
   ASSERT_NE(nullptr, innerModel);
   EXPECT_EQ("M2", innerModel->Name());
   EXPECT_EQ(innerModel, midModel->ModelByName("M2"));
+  EXPECT_EQ(innerModel, outerModel->ModelByName("M1::M2"));
 
   EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, -0, 0),
             innerModel->SemanticPose().RawPose());
@@ -696,6 +712,7 @@ TEST(NestedModel, PartiallyFlattened)
 
   EXPECT_TRUE(innerModel->LinkNameExists("L5"));
   EXPECT_NE(nullptr, innerModel->LinkByName("L5"));
+  EXPECT_TRUE(outerModel->LinkNameExists("M1::M2::L5"));
 
   EXPECT_EQ(0u, innerModel->JointCount());
 

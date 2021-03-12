@@ -2,7 +2,7 @@
 
   <convert name="world">
     <convert name="model">
-      <unnest/>
+      <unflatten/>
     </convert>
   </convert>
 

@@ -105,19 +105,18 @@ namespace sdf
     private: static void Remove(tinyxml2::XMLElement *_elem,
                                 tinyxml2::XMLElement *_removeElem);
 
-    /// \brief Unnest an element (conversion from SDFormat <= 1.7 to 1.8)
-    /// \param[in] _elem The element to unnest
-    private: static void Unnest(tinyxml2::XMLElement *_elem);
+    /// \brief Unflatten an element (conversion from SDFormat <= 1.7 to 1.8)
+    /// \param[in] _elem The element to unflatten
+    private: static void Unflatten(tinyxml2::XMLElement *_elem);
 
-    /// \brief Finds all elements related to the unnested model
-    /// \param[in] _elem The element to unnest
-    /// \param[in] _newModel The new unnested model element
+    /// \brief Finds all elements related to the unflattened model
+    /// \param[in] _elem The element to unflatten
+    /// \param[in] _newModel The new unflattened model element
     /// \param[in] _newNameIdx The index of the new name for child elements
-    /// \return True if unnested new model elements
-    private:
-      static bool FindNewModelElements(tinyxml2::XMLElement *_elem,
-                                      tinyxml2::XMLElement *_newModel,
-                                      const size_t &_newNameIdx);
+    /// \return True if unflattened new model elements
+    private: static bool FindNewModelElements(tinyxml2::XMLElement *_elem,
+                                              tinyxml2::XMLElement *_newModel,
+                                              const size_t &_newNameIdx);
 
     private: static const char *GetValue(const char *_valueElem,
                                          const char *_valueAttr,

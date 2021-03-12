@@ -153,7 +153,7 @@ void ParserStringConverter(const std::string &_version)
 
 /////////////////////////////////////////////////
 /// Test conversion unflattened world in 1.7 to 1.8
-TEST(ConverterIntegration, UnnestConversion)
+TEST(ConverterIntegration, UnflattenConversion)
 {
   const std::string filename =
   sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",

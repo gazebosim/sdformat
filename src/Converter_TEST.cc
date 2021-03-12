@@ -2231,6 +2231,11 @@ TEST(Converter, World_17_to_18)
               </sphere>
             </geometry>
           </visual>
+          <sensor name="s1">
+            <camera name="c1" type="camera">
+              <pose relative_to="ChildModel::__model__">0 0 1 0 0 0</pose>
+            </camera>
+          </sensor>
         </link>
         <link name="ChildModel::L2">
           <pose relative_to="ChildModel::__model__">0 0 0 0 0 0</pose>
@@ -2251,6 +2256,9 @@ TEST(Converter, World_17_to_18)
           </axis2>
           <sensor name="camera" type="camera">
             <pose relative_to="ChildModel::NewFrame">1 0 0 0 0 0</pose>
+            <camera name="c2">
+              <pose relative_to="ChildModel::NewFrame">0 0 1 0 0 0</pose>
+            </camera>
           </sensor>
         </joint>
         <gripper name="gripper">
