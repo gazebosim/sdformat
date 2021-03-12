@@ -1048,9 +1048,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           // Test the model path
           if (modelPath.empty())
           {
-            _errors.push_back({ErrorCode::URI_LOOKUP,
-                getTraceString(_source, uriElement->GetLineNum()) +
-                "Unable to find uri[" + uri + "]"});
+            _errors.push_back({
+                ErrorCode::URI_LOOKUP,
+                "Unable to find uri[" + uri + "]", 
+                _source,
+                uriElement->GetLineNum()});
             continue;
           }
           else
@@ -1062,11 +1064,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
               if (filename.empty())
               {
-                _errors.push_back({ErrorCode::URI_LOOKUP,
-                    getTraceString(_source, uriElement->GetLineNum()) +
+                _errors.push_back({
+                    ErrorCode::URI_LOOKUP,
                     "Unable to resolve uri[" + uri + "] to model path [" +
                     modelPath + "] since it does not contain a model.config " +
-                    "file."});
+                    "file.",
+                    _source,
+                    uriElement->GetLineNum()});
                 continue;
               }
             }
@@ -1081,9 +1085,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         }
         else
         {
-          _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
-              getTraceString(_source, elemXml->GetLineNum()) +
-              "<include> element missing 'uri' attribute"});
+          _errors.push_back({
+              ErrorCode::ATTRIBUTE_MISSING,
+              "<include> element missing 'uri' attribute",
+              _source,
+              elemXml->GetLineNum()});
           continue;
         }
 
@@ -1103,9 +1109,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
         if (!readFile(filename, includeSDF))
         {
-          _errors.push_back({ErrorCode::FILE_READ,
-              getTraceString(_source, uriElement->GetLineNum()) +
-              "Unable to read file[" + filename + "]"});
+          _errors.push_back({
+              ErrorCode::FILE_READ,
+              "Unable to read file[" + filename + "]",
+              _source,
+              uriElement->GetLineNum()});
           return false;
         }
 
@@ -1126,7 +1134,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             else
             {
               std::stringstream ss;
-              ss << getTraceString(_source, uriElement->GetLineNum())
+              ss << "[" << _source << ":L"
+                 << std::to_string(uriElement->GetLineNum()) << "]: "
                  << "Found other top level element <" << elementType
                  << "> in addition to <" << topLevelElem->GetName()
                  << "> in include file. This is unsupported and in future "
@@ -1140,10 +1149,12 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
         if (nullptr == topLevelElem)
         {
-          _errors.push_back({ErrorCode::ELEMENT_MISSING,
-              getTraceString(_source, uriElement->GetLineNum()) +
+          _errors.push_back({
+              ErrorCode::ELEMENT_MISSING,
               "Failed to find top level <model> / <actor> / <light> for "
-              "<include>\n"});
+              "<include>\n",
+              _source,
+              uriElement->GetLineNum()});
           continue;
         }
 
@@ -1154,7 +1165,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         if (nullptr != nextTopLevelElem)
         {
           std::stringstream ss;
-          ss << getTraceString(_source, uriElement->GetLineNum())
+          ss << "[" << _source << ":L"
+             << std::to_string(uriElement->GetLineNum()) << "]: "
              << "Found more than one of " << topLevelElem->GetName()
              << " for <include>. This is unsupported and in future "
              << "versions of libsdformat will become an error";
@@ -1209,10 +1221,12 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         {
           if (nullptr == elemXml->FirstChildElement("pose"))
           {
-            _errors.push_back({ErrorCode::MODEL_PLACEMENT_FRAME_INVALID,
-                getTraceString(_source, elemXml->GetLineNum()) +
+            _errors.push_back({
+                ErrorCode::MODEL_PLACEMENT_FRAME_INVALID,
                 "<pose> is required when specifying the placement_frame "
-                "element"});
+                "element",
+                _source,
+                elemXml->GetLineNum()});
             return false;
           }
 
@@ -1220,11 +1234,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
           if (!isValidFrameReference(placementFrameVal))
           {
-            _errors.push_back({ErrorCode::RESERVED_NAME,
-                getTraceString(_source, placementFrameElem->GetLineNum()) +
+            _errors.push_back({
+                ErrorCode::RESERVED_NAME,
                 "'" + placementFrameVal +
                 "' is reserved; it cannot be used as a value of "
-                "element [placement_frame]"});
+                "element [placement_frame]",
+                _source,
+                placementFrameElem->GetLineNum()});
           }
           topLevelElem->GetAttribute("placement_frame")
               ->SetFromString(placementFrameVal);
@@ -1243,9 +1259,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
               if (!readXml(
                   childElemXml, pluginElem, _config, _source, _errors))
               {
-                _errors.push_back({ErrorCode::ELEMENT_INVALID,
-                    getTraceString(_source, childElemXml->GetLineNum()) +
-                    "Error reading plugin element"});
+                _errors.push_back({
+                    ErrorCode::ELEMENT_INVALID,
+                    "Error reading plugin element",
+                    _source,
+                    childElemXml->GetLineNum()});
                 return false;
               }
             }
@@ -1280,11 +1298,12 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           }
           else
           {
-            _errors.push_back({ErrorCode::ELEMENT_INVALID,
-                getTraceString(_source, elemXml->GetLineNum()) +
+            _errors.push_back({
+                ErrorCode::ELEMENT_INVALID,
                 std::string("Error reading element <") +
-                elemXml->Value() + ">: Line " + 
-                std::to_string(elemXml->GetLineNum())});
+                elemXml->Value() + ">",
+                _source,
+                elemXml->GetLineNum()});
             return false;
           }
           break;
@@ -1295,7 +1314,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             && std::strchr(elemXml->Value(), ':') == nullptr)
       {
         std::stringstream ss;
-        ss << getTraceString(_source, elemXml->GetLineNum())
+        ss << "[" << _source << ":L"
+           << std::to_string(elemXml->GetLineNum()) << "]: "
            << "XML Element[" << elemXml->Value()
            << "], child of element[" << _xml->Value()
            << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
@@ -1325,10 +1345,12 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           if (_sdf->GetName() == "joint" &&
               _sdf->Get<std::string>("type") != "ball")
           {
-            _errors.push_back({ErrorCode::ELEMENT_MISSING,
-                getTraceString(_source, elemXml->GetLineNum()) +
+            _errors.push_back({
+                ErrorCode::ELEMENT_MISSING,
                 "XML Missing required element[" + elemDesc->GetName() +
-                "], child of element[" + _sdf->GetName() + "]"});
+                "], child of element[" + _sdf->GetName() + "]",
+                _source,
+                elemXml->GetLineNum()});
             return false;
           }
           else
@@ -1401,29 +1423,6 @@ void copyChildren(ElementPtr _sdf,
       _sdf->InsertElement(element);
     }
   }
-}
-
-/////////////////////////////////////////////////
-std::string getTraceString(
-    const std::string &_source, int _lineNum)
-{
-  std::string trace_string = "";
-  if (filesystem::exists(_source))
-  {
-    trace_string = "[" + _source + ":L" + std::to_string(_lineNum) + "]: ";
-  }
-  return trace_string;  
-}
-
-/////////////////////////////////////////////////
-std::string getTraceString(const std::string &_source)
-{
-  std::string trace_string = "";
-  if (filesystem::exists(_source))
-  {
-    trace_string = "[" + _source + "]: ";
-  }
-  return trace_string;  
 }
 
 /////////////////////////////////////////////////
