@@ -21,6 +21,7 @@
 #include <string>
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
+#include <ignition/utils/ImplPtr.hh>
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -145,14 +146,24 @@ namespace sdf
 
   class SDFORMAT_VISIBLE Error
   {
-    /// \brief default constructor
-    public: Error() = default;
+    /// \brief Default constructor
+    public: Error();
 
     /// \brief Constructor.
     /// \param[in] _code The error code.
     /// \param[in] _message A description of the error.
     /// \sa ErrorCode.
     public: Error(const ErrorCode _code, const std::string &_message);
+
+    /// \brief Constructor.
+    /// \param[in] _code The error code.
+    /// \param[in] _message A description of the error.
+    /// \param[in] _filePath The file path that is related to this error.
+    /// \param[in] _lineNumber The line number in the provided file path where
+    /// this error was raised.
+    /// \sa ErrorCode.
+    public: Error(const ErrorCode _code, const std::string &_message,
+                  const std::string &_filePath, int _lineNumber);
 
     /// \brief Get the error code.
     /// \return An error code.
@@ -162,6 +173,16 @@ namespace sdf
     /// \brief Get the error message, which is a description of the error.
     /// \return Error message.
     public: std::string Message() const;
+
+    /// \brief Get the file path associated with this error.
+    /// \return Path of the file that this error is related to. Returns an empty
+    /// string if there is no related file.
+    public: std::string FilePath() const;
+
+    /// \brief Get the line number associated with this error.
+    /// \return Line number. Returns -1 if there is no line number associated
+    /// with this error.
+    public: int LineNumber() const;
 
     /// \brief Safe bool conversion.
     /// \return True if this Error's Code() != NONE. In otherwords, this is
@@ -184,26 +205,24 @@ namespace sdf
     public: friend std::ostream &operator<<(std::ostream &_out,
                                             const sdf::Error &_err)
     {
-      _out << "Error Code "
-        << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
-        << " Msg: " << _err.Message();
+      if (_err.FilePath().empty())
+      {
+        _out << "Error Code "
+          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
+          << " Msg: " << _err.Message();
+      }
+      else
+      {
+        _out << "[" << _err.FilePath() << ":L"
+          << std::to_string(_err.LineNumber()) << "]: "
+          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
+          << " Msg: " << _err.Message();
+      }
       return _out;
     }
 
-    /// \brief The error code value.
-    private: ErrorCode code = ErrorCode::NONE;
-
-#ifdef _WIN32
-  // Disable warning C4251 which is triggered by
-  // std::string
-  #pragma warning(push)
-  #pragma warning(disable: 4251)
-#endif
-    /// \brief Description of the error.
-    private: std::string message = "";
-#ifdef _WIN32
-  #pragma warning(pop)
-#endif
+    /// \brief Private data pointer.
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }
