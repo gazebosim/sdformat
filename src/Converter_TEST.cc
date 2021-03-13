@@ -2205,6 +2205,41 @@ TEST(Converter, World_17_to_18)
 
   EXPECT_EQ(ElementToString(expectedXmlDoc.RootElement()), convertedXmlStr);
 
+    // Check some basic elements
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "sdf");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "world");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "include_links");
+
+  // Check unnested elements
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "A");
+  EXPECT_STREQ(convertedElem->Attribute("canonical_link"), "B::C");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "pose");
+  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
+
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("canonical_link"), "C");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "pose");
+  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "link");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "C");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "pose");
+  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
+
+
   // ------- Another flattened world in 1.7 format
   xmlString = R"(
   <?xml version="1.0" ?>
@@ -2336,6 +2371,7 @@ TEST(Converter, World_17_to_18)
 
   EXPECT_EQ(ElementToString(expectedXmlDoc.RootElement()), convertedXmlStr);
 
+
   // ------- Another flattened world in 1.7 format
   xmlString = R"(
 <?xml version="1.0" ?>
@@ -2407,6 +2443,60 @@ TEST(Converter, World_17_to_18)
   expectedXmlDoc.Parse(expectedXmlStr.c_str());
 
   EXPECT_EQ(ElementToString(expectedXmlDoc.RootElement()), convertedXmlStr);
+
+  // Check some basic elements
+  convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "sdf");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "world");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "ParentModel");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+
+  // Check unnested elements
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "C");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "ChildModel");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Name(), "link");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("name"), "L1");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "A");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Name(), "model");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("name"), "B");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  convertedElem = convertedElem->PreviousSiblingElement();
+  convertedElem = convertedElem->PreviousSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "C");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "D");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Name(), "link");
+  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("name"), "E");
+  convertedElem = convertedElem->NextSiblingElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "F");
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "model");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "G");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "link");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "H");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "visual");
+  EXPECT_STREQ(convertedElem->Attribute("name"), "v1");
+  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  convertedElem = convertedElem->FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "pose");
+  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
+  EXPECT_STREQ(convertedElem->NextSiblingElement()->Name(), "geometry");
 }
 
 /////////////////////////////////////////////////

@@ -469,7 +469,8 @@ bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
             std::string expressIn =
                 axisElem->FirstChildElement("xyz")->Attribute("expressed_in");
 
-            SDF_ASSERT(expressIn.compare(0, newModelNameSize, newModelName) == 0,
+            SDF_ASSERT(
+              expressIn.compare(0, newModelNameSize, newModelName) == 0,
               "Error: <xyz>'s attribute 'expressed_in' does not start with " +
               newModelName);
 
