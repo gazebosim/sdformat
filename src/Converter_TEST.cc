@@ -2148,7 +2148,10 @@ const std::string CONVERT_DOC_17_18 =
 /// Test conversion unflattened world in 1.7 to 1.8
 TEST(Converter, World_17_to_18)
 {
-  // The flattened world in 1.7 format
+  // for ElementToString
+  using namespace sdf::SDF_VERSION_NAMESPACE;
+
+  // ------- The flattened world in 1.7 format
   std::string xmlString = R"(
   <?xml version="1.0" ?>
   <sdf version='1.7'>
@@ -2176,41 +2179,33 @@ TEST(Converter, World_17_to_18)
   convertXmlDoc.LoadFile(CONVERT_DOC_17_18.c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  // Check some basic elements
-  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "sdf");
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "world");
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "include_links");
+  // Compare converted xml with expected
+  std::string convertedXmlStr = ElementToString(xmlDoc.RootElement());
+  ASSERT_FALSE(convertedXmlStr.empty());
 
-  // Check unnested elements
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "A");
-  EXPECT_STREQ(convertedElem->Attribute("canonical_link"), "B::C");
-  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "pose");
-  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
+  std::string expectedXmlStr = R"(
+  <sdf version="1.7">
+      <world name="default">
+          <model name="include_links">
+              <model name="A" canonical_link="B::C">
+                  <pose relative_to="__model__">1 0 0 0 0 0</pose>
+                  <model name="B" canonical_link="C">
+                      <pose relative_to="__model__">0 1 0 0 0 0</pose>
+                      <link name="C">
+                          <pose relative_to="__model__">0 0 1 0 0 0</pose>
+                      </link>
+                  </model>
+              </model>
+          </model>
+      </world>
+  </sdf>)";
 
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("canonical_link"), "C");
-  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "pose");
-  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "link");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "C");
-  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "pose");
-  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
+  tinyxml2::XMLDocument expectedXmlDoc;
+  expectedXmlDoc.Parse(expectedXmlStr.c_str());
 
-  // Another flattened world in 1.7 format
+  EXPECT_EQ(ElementToString(expectedXmlDoc.RootElement()), convertedXmlStr);
+
+  // ------- Another flattened world in 1.7 format
   xmlString = R"(
   <?xml version="1.0" ?>
   <sdf version='1.7'>
@@ -2274,72 +2269,74 @@ TEST(Converter, World_17_to_18)
 
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  // Check some basic elements
-  convertedElem =  xmlDoc.FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "sdf");
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "world");
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "ParentModel");
-  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  // Compare converted xml with expected
+  convertedXmlStr = ElementToString(xmlDoc.RootElement());
+  ASSERT_FALSE(convertedXmlStr.empty());
 
-  // Check unnested elements
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "ChildModel");
-  EXPECT_STREQ(convertedElem->Attribute("canonical_link"), "L1");
-  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "pose");
-  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "frame");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "NewFrame");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("relative_to"),
-              "Something");
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "link");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "L1");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("relative_to"),
-              "__model__");
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "link");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "L2");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("relative_to"),
-              "__model__");
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "joint");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "J1");
-  EXPECT_STREQ(convertedElem->FirstChildElement("parent")->GetText(), "L1");
-  EXPECT_STREQ(convertedElem->FirstChildElement("child")->GetText(), "L2");
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "joint");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "J2");
-  EXPECT_STREQ(convertedElem->FirstChildElement("parent")->GetText(), "L1");
-  EXPECT_STREQ(convertedElem->FirstChildElement("child")->GetText(), "L2");
-  convertedElem = convertedElem->FirstChildElement("axis");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("expressed_in"),
-              "NewFrame");
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "axis2");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("expressed_in"),
-              "NewFrame");
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "sensor");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Name(), "pose");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("relative_to"),
-              "NewFrame");
-  convertedElem = convertedElem->Parent()->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "gripper");
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "gripper_link");
-  EXPECT_STREQ(convertedElem->GetText(), "L1");
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "palm_link");
-  EXPECT_STREQ(convertedElem->GetText(), "L2");
+  expectedXmlStr = R"(
+  <?xml version="1.0" ?>
+  <sdf version="1.7">
+      <world name="default">
+          <model name="ParentModel">
+              <model name="ChildModel" canonical_link="L1">
+                  <pose relative_to="__model__">1 0 1 0 0 0</pose>
+                  <frame name="NewFrame" attached_to="L1">
+                      <pose relative_to="Something">1 0 1 0 0 0</pose>
+                  </frame>
+                  <link name="L1">
+                      <pose relative_to="__model__">0 1 0 0 0 0</pose>
+                      <visual name="v1">
+                          <geometry>
+                              <sphere>
+                                  <radius>0.1</radius>
+                              </sphere>
+                          </geometry>
+                      </visual>
+                      <sensor name="s1">
+                          <camera name="c1" type="camera">
+                              <pose relative_to="__model__">0 0 1 0 0 0</pose>
+                          </camera>
+                      </sensor>
+                  </link>
+                  <link name="L2">
+                      <pose relative_to="__model__">0 0 0 0 0 0</pose>
+                  </link>
+                  <joint name="J1" type="revolute">
+                      <parent>L1</parent>
+                      <child>L2</child>
+                  </joint>
+                  <joint name="J2" type="revolute">
+                      <pose relative_to="__model__">0 0 0 0 0 0</pose>
+                      <parent>L1</parent>
+                      <child>L2</child>
+                      <axis>
+                          <xyz expressed_in="NewFrame">0 0 1</xyz>
+                      </axis>
+                      <axis2>
+                          <xyz expressed_in="NewFrame">0 0 1</xyz>
+                      </axis2>
+                      <sensor name="camera" type="camera">
+                          <pose relative_to="NewFrame">1 0 0 0 0 0</pose>
+                          <camera name="c2">
+                              <pose relative_to="NewFrame">0 0 1 0 0 0</pose>
+                          </camera>
+                      </sensor>
+                  </joint>
+                  <gripper name="gripper">
+                      <gripper_link>L1</gripper_link>
+                      <palm_link>L2</palm_link>
+                  </gripper>
+              </model>
+          </model>
+      </world>
+  </sdf>)";
 
-  // Another flattened world in 1.7 format
+  expectedXmlDoc.Clear();
+  expectedXmlDoc.Parse(expectedXmlStr.c_str());
+
+  EXPECT_EQ(ElementToString(expectedXmlDoc.RootElement()), convertedXmlStr);
+
+  // ------- Another flattened world in 1.7 format
   xmlString = R"(
 <?xml version="1.0" ?>
 <sdf version="1.7">
@@ -2369,59 +2366,47 @@ TEST(Converter, World_17_to_18)
 
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
-  // Check some basic elements
-  convertedElem =  xmlDoc.FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "sdf");
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "world");
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "ParentModel");
-  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
+  // Compare converted xml with expected
+  convertedXmlStr = ElementToString(xmlDoc.RootElement());
+  ASSERT_FALSE(convertedXmlStr.empty());
 
-  // Check unnested elements
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "C");
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "ChildModel");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Name(), "link");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("name"), "L1");
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "A");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Name(), "model");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("name"), "B");
-  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
-  convertedElem = convertedElem->PreviousSiblingElement();
-  convertedElem = convertedElem->PreviousSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "C");
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "D");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Name(), "link");
-  EXPECT_STREQ(convertedElem->FirstChildElement()->Attribute("name"), "E");
-  convertedElem = convertedElem->NextSiblingElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "F");
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "model");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "G");
-  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "link");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "H");
-  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "visual");
-  EXPECT_STREQ(convertedElem->Attribute("name"), "v1");
-  EXPECT_EQ(convertedElem->NextSiblingElement(), nullptr);
-  convertedElem = convertedElem->FirstChildElement();
-  EXPECT_STREQ(convertedElem->Name(), "pose");
-  EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
-  EXPECT_STREQ(convertedElem->NextSiblingElement()->Name(), "geometry");
+  expectedXmlStr = R"(
+<sdf version="1.7">
+    <world name="default">
+        <model name="ParentModel">
+            <model name="C">
+                <model name="D">
+                    <link name="E"/>
+                </model>
+                <model name="F">
+                    <model name="G">
+                        <link name="H">
+                            <visual name="v1">
+                                <pose relative_to="__model__">1 0 0 0 0 0</pose>
+                                <geometry>
+                                    <sphere>
+                                        <radius>0.1</radius>
+                                    </sphere>
+                                </geometry>
+                            </visual>
+                        </link>
+                    </model>
+                </model>
+            </model>
+            <model name="ChildModel">
+                <link name="L1"/>
+            </model>
+            <model name="A">
+                <model name="B"/>
+            </model>
+        </model>
+    </world>
+</sdf>)";
+
+  expectedXmlDoc.Clear();
+  expectedXmlDoc.Parse(expectedXmlStr.c_str());
+
+  EXPECT_EQ(ElementToString(expectedXmlDoc.RootElement()), convertedXmlStr);
 }
 
 /////////////////////////////////////////////////
