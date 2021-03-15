@@ -908,9 +908,9 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     if (_sdf->GetRequired() == "1" || _sdf->GetRequired() =="+")
     {
       _errors.push_back({
-        ErrorCode::ELEMENT_MISSING,
-        "SDF Element<" + _sdf->GetName() + "> is missing",
-        _source});
+          ErrorCode::ELEMENT_MISSING,
+          "SDF Element<" + _sdf->GetName() + "> is missing",
+          _source});
       return false;
     }
     else
@@ -1059,7 +1059,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           {
             _errors.push_back({
                 ErrorCode::URI_LOOKUP,
-                "Unable to find uri[" + uri + "]", 
+                "Unable to find uri[" + uri + "]",
                 _source,
                 uriElement->GetLineNum()});
             continue;

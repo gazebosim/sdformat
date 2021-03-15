@@ -357,9 +357,12 @@ TEST(Parser, MissingRequiredAttributesErrors)
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
-                 "Error Code " + std::to_string(static_cast<int>(sdf::ErrorCode::ATTRIBUTE_MISSING)));
+                 "Error Code " +
+                 std::to_string(
+                    static_cast<int>(sdf::ErrorCode::ATTRIBUTE_MISSING)));
     EXPECT_PRED2(contains, buffer.str(),
-                 "Required attribute[name] in element[link] is not specified in SDF.");
+                 "Required attribute[name] in element[link] is not specified "+
+                 "in SDF.");
     EXPECT_PRED2(contains, buffer.str(), "box_bad_test.world:L6");
   }
 
@@ -390,7 +393,9 @@ TEST(Parser, IncludesErrors)
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
-                 "Error Code " + std::to_string(static_cast<int>(sdf::ErrorCode::ATTRIBUTE_MISSING)));
+                 "Error Code " +
+                 std::to_string(
+                    static_cast<int>(sdf::ErrorCode::ATTRIBUTE_MISSING)));
     EXPECT_PRED2(contains, buffer.str(),
                  "<include> element missing 'uri' attribute");
     EXPECT_PRED2(contains, buffer.str(), "includes_missing_uri.sdf:L5");
@@ -399,13 +404,16 @@ TEST(Parser, IncludesErrors)
     // clear the contents of the buffer
     buffer.str("");
 
-    const auto path = sdf::testing::TestFile("sdf", "includes_missing_model.sdf");
+    const auto path =
+        sdf::testing::TestFile("sdf", "includes_missing_model.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
-                 "Error Code " + std::to_string(static_cast<int>(sdf::ErrorCode::URI_LOOKUP)));
+                 "Error Code " +
+                 std::to_string(
+                    static_cast<int>(sdf::ErrorCode::URI_LOOKUP)));
     EXPECT_PRED2(contains, buffer.str(),
                  "Unable to find uri[missing_model]");
     EXPECT_PRED2(contains, buffer.str(), "includes_missing_model.sdf:L6");
@@ -416,7 +424,8 @@ TEST(Parser, IncludesErrors)
 
     const std::string modelRootPath = sdf::filesystem::append(
         PROJECT_SOURCE_PATH, "test", "integration", "model");
-    const auto path = sdf::testing::TestFile("sdf", "includes_model_without_sdf.sdf");
+    const auto path =
+        sdf::testing::TestFile("sdf", "includes_model_without_sdf.sdf");
     sdf::setFindCallback([&](const std::string &_file)
         {
           return sdf::filesystem::append(modelRootPath, _file);
@@ -427,7 +436,8 @@ TEST(Parser, IncludesErrors)
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
-                 "Error Code " + std::to_string(static_cast<int>(sdf::ErrorCode::URI_LOOKUP)));
+                 "Error Code " +
+                 std::to_string(static_cast<int>(sdf::ErrorCode::URI_LOOKUP)));
     EXPECT_PRED2(contains, buffer.str(),
                  "Unable to resolve uri[box_missing_config]");
     EXPECT_PRED2(contains, buffer.str(),
@@ -440,7 +450,8 @@ TEST(Parser, IncludesErrors)
 
     const std::string modelRootPath = sdf::filesystem::append(
         PROJECT_SOURCE_PATH, "test", "integration", "model");
-    const auto path = sdf::testing::TestFile("sdf", "includes_without_top_level.sdf");
+    const auto path =
+        sdf::testing::TestFile("sdf", "includes_without_top_level.sdf");
     sdf::setFindCallback([&](const std::string &_file)
         {
           return sdf::filesystem::append(modelRootPath, _file);
@@ -451,9 +462,12 @@ TEST(Parser, IncludesErrors)
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
-                 "Error Code " + std::to_string(static_cast<int>(sdf::ErrorCode::ELEMENT_MISSING)));
+                 "Error Code " +
+                 std::to_string(
+                    static_cast<int>(sdf::ErrorCode::ELEMENT_MISSING)));
     EXPECT_PRED2(contains, buffer.str(),
-                 "Failed to find top level <model> / <actor> / <light> for <include>\n");
+                 "Failed to find top level <model> / <actor> / <light> for "
+                 "<include>\n");
     EXPECT_PRED2(contains, buffer.str(), "includes_without_top_level.sdf:L6");
   }
 

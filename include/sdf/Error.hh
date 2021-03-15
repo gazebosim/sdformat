@@ -19,9 +19,9 @@
 
 #include <iostream>
 #include <string>
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
-#include <ignition/utils/ImplPtr.hh>
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -216,20 +216,23 @@ namespace sdf
       if (_err.FilePath().empty())
       {
         _out << "Error Code "
-          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
+          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
+              _err.Code())
           << " Msg: " << _err.Message();
       }
       else if (_err.LineNumber() < 1)
       {
         _out << "Error Code "
-          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
+          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
+              _err.Code())
           << ": [" << _err.FilePath() << "]: "
           << " Msg: " << _err.Message();
       }
       else
       {
         _out << "Error Code "
-          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
+          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
+              _err.Code())
           << ": [" << _err.FilePath() << ":L"
           << std::to_string(_err.LineNumber()) << "]: "
           << " Msg: " << _err.Message();
