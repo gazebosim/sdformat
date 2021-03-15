@@ -213,9 +213,10 @@ namespace sdf
       }
       else
       {
-        _out << "[" << _err.FilePath() << ":L"
-          << std::to_string(_err.LineNumber()) << "]: "
+        _out << "Error Code "
           << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
+          << ": [" << _err.FilePath() << ":L"
+          << std::to_string(_err.LineNumber()) << "]: "
           << " Msg: " << _err.Message();
       }
       return _out;
