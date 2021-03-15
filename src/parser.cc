@@ -1143,9 +1143,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             else
             {
               std::stringstream ss;
-              ss << "[" << _source << ":L"
-                 << std::to_string(uriElement->GetLineNum()) << "]: "
-                 << "Found other top level element <" << elementType
+              ss << "Found other top level element <" << elementType
                  << "> in addition to <" << topLevelElem->GetName()
                  << "> in include file. This is unsupported and in future "
                  << "versions of libsdformat will become an error";
@@ -1174,9 +1172,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         if (nullptr != nextTopLevelElem)
         {
           std::stringstream ss;
-          ss << "[" << _source << ":L"
-             << std::to_string(uriElement->GetLineNum()) << "]: "
-             << "Found more than one of " << topLevelElem->GetName()
+          ss << "Found more than one of " << topLevelElem->GetName()
              << " for <include>. This is unsupported and in future "
              << "versions of libsdformat will become an error";
           enforceConfigurablePolicyCondition(
@@ -1323,9 +1319,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             && std::strchr(elemXml->Value(), ':') == nullptr)
       {
         std::stringstream ss;
-        ss << "[" << _source << ":L"
-           << std::to_string(elemXml->GetLineNum()) << "]: "
-           << "XML Element[" << elemXml->Value()
+        ss << "XML Element[" << elemXml->Value()
            << "], child of element[" << _xml->Value()
            << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
            << "as children of [" << _xml->Value() << "].\n";
