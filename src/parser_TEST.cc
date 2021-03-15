@@ -361,7 +361,7 @@ TEST(Parser, MissingRequiredAttributesErrors)
                  std::to_string(
                     static_cast<int>(sdf::ErrorCode::ATTRIBUTE_MISSING)));
     EXPECT_PRED2(contains, buffer.str(),
-                 "Required attribute[name] in element[link] is not specified "+
+                 "Required attribute[name] in element[link] is not specified "
                  "in SDF.");
     EXPECT_PRED2(contains, buffer.str(), "box_bad_test.world:L6");
   }
