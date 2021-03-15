@@ -58,6 +58,16 @@ Error::Error(const ErrorCode _code, const std::string &_message)
 
 /////////////////////////////////////////////////
 Error::Error(const ErrorCode _code, const std::string &_message,
+             const std::string &_filePath)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+{
+  this->dataPtr->code = _code;
+  this->dataPtr->message = _message;
+  this->dataPtr->filePath = _filePath;
+}
+
+/////////////////////////////////////////////////
+Error::Error(const ErrorCode _code, const std::string &_message,
              const std::string &_filePath, int _lineNumber)
   : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {

@@ -159,6 +159,14 @@ namespace sdf
     /// \param[in] _code The error code.
     /// \param[in] _message A description of the error.
     /// \param[in] _filePath The file path that is related to this error.
+    /// \sa ErrorCode.
+    public: Error(const ErrorCode _code, const std::string &_message,
+                  const std::string &_filePath);
+
+    /// \brief Constructor.
+    /// \param[in] _code The error code.
+    /// \param[in] _message A description of the error.
+    /// \param[in] _filePath The file path that is related to this error.
     /// \param[in] _lineNumber The line number in the provided file path where
     /// this error was raised.
     /// \sa ErrorCode.
@@ -209,6 +217,13 @@ namespace sdf
       {
         _out << "Error Code "
           << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
+          << " Msg: " << _err.Message();
+      }
+      else if (_err.LineNumber() < 1)
+      {
+        _out << "Error Code "
+          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
+          << ": [" << _err.FilePath() << "]: "
           << " Msg: " << _err.Message();
       }
       else

@@ -907,8 +907,10 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
   {
     if (_sdf->GetRequired() == "1" || _sdf->GetRequired() =="+")
     {
-      _errors.push_back({ErrorCode::ELEMENT_MISSING,
-          "SDF Element<" + _sdf->GetName() + "> is missing"});
+      _errors.push_back({
+        ErrorCode::ELEMENT_MISSING,
+        "SDF Element<" + _sdf->GetName() + "> is missing",
+        _source});
       return false;
     }
     else
