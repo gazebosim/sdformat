@@ -303,6 +303,7 @@ TEST(Parser, SyntaxErrorInValues)
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
                  "Unable to set value [bad 0 0 0 0 0 ] for key[pose]");
+    EXPECT_PRED2(contains, buffer.str(), "bad_syntax_pose.sdf:L5");
   }
   {
     // clear the contents of the buffer
@@ -314,6 +315,7 @@ TEST(Parser, SyntaxErrorInValues)
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
                  "Unable to set value [bad ] for key[linear]");
+    EXPECT_PRED2(contains, buffer.str(), "bad_syntax_double.sdf:L7");
   }
   {
     // clear the contents of the buffer
@@ -325,6 +327,20 @@ TEST(Parser, SyntaxErrorInValues)
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
                  "Unable to set value [0 1 bad ] for key[gravity]");
+    EXPECT_PRED2(contains, buffer.str(), "bad_syntax_vector.sdf:L4");
+  }
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    const auto path = sdf::testing::TestFile("sdf", "box_bad_test.world");
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+
+    sdf::readFile(path, sdf);
+    EXPECT_PRED2(contains, buffer.str(),
+                 "Required attribute[name] in element[link] is not specified in SDF.");
+    EXPECT_PRED2(contains, buffer.str(), "box_bad_test.world:L6");
   }
 
   // Revert cerr rdbug so as to not interfere with other tests
@@ -336,6 +352,14 @@ TEST(Parser, SyntaxErrorInValues)
 
 TEST(Parser, PlacementFrameMissingPose)
 {
+  // Capture sdferr output
+  std::stringstream buffer;
+  auto old = std::cerr.rdbuf(buffer.rdbuf());
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+#endif
+
   const std::string modelRootPath = sdf::filesystem::append(
       PROJECT_SOURCE_PATH, "test", "integration", "model");
 
@@ -351,6 +375,13 @@ TEST(Parser, PlacementFrameMissingPose)
   EXPECT_FALSE(sdf::readFile(testModelPath, sdf, errors));
   ASSERT_GE(errors.size(), 0u);
   EXPECT_EQ(sdf::ErrorCode::MODEL_PLACEMENT_FRAME_INVALID, errors[0].Code());
+  EXPECT_PRED2(contains, buffer.str(), "placement_frame_missing_pose.sdf:L8");
+
+  // Revert cerr rdbug so as to not interfere with other tests
+  std::cerr.rdbuf(old);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(true);
+#endif
 }
 
 /////////////////////////////////////////////////
