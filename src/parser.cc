@@ -955,7 +955,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
   unsigned int i = 0;
 
-  // Iterate over all the attributes defined in the give XML element
+  // Iterate over all the attributes defined in the given XML element
   while (attribute)
   {
     // Avoid printing a warning message for missing attributes if a namespaced
@@ -979,18 +979,23 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         {
           if (!isValidFrameReference(attribute->Value()))
           {
-            _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+            _errors.push_back({
+                ErrorCode::ATTRIBUTE_INVALID,
                 "'" + std::string(attribute->Value()) +
-                    "' is reserved; it cannot be used as a value of "
-                    "attribute [" +
-                    p->GetKey() + "]"});
+                "' is reserved; it cannot be used as a value of "
+                "attribute [" + p->GetKey() + "]",
+                _source,
+                attribute->GetLineNum()});
             }
         }
         // Set the value of the SDF attribute
         if (!p->SetFromString(attribute->Value()))
         {
-          _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
-              "Unable to read attribute[" + p->GetKey() + "]"});
+          _errors.push_back({
+              ErrorCode::ATTRIBUTE_INVALID,
+              "Unable to read attribute[" + p->GetKey() + "]",
+              _source,
+              attribute->GetLineNum()});
           return false;
         }
         break;
@@ -1017,9 +1022,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     ParamPtr p = _sdf->GetAttribute(i);
     if (p->GetRequired() && !p->GetSet())
     {
-      _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+      _errors.push_back({
+          ErrorCode::ATTRIBUTE_MISSING,
           "Required attribute[" + p->GetKey() + "] in element[" + _xml->Value()
-          + "] is not specified in SDF."});
+          + "] is not specified in SDF.",
+          _source});
       return false;
     }
   }
