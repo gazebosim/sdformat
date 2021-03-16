@@ -3467,7 +3467,7 @@ void ReduceSDFExtensionPluginFrameReplace(
         TiXmlNode* rpyKey = (*_blobIt)->FirstChild("rpyOffset");
         if (rpyKey)
         {
-          urdf::Vector3 rpy = ParseVector3(rpyKey, M_PI/180.0);
+          urdf::Vector3 rpy = ParseVector3(rpyKey);
           _reductionTransform.Rot() =
             ignition::math::Quaterniond::EulerToQuaternion(rpy.x, rpy.y, rpy.z);
           // remove xyzOffset and rpyOffset
