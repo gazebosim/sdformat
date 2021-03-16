@@ -354,6 +354,31 @@ TEST(Parser, PlacementFrameMissingPose)
 }
 
 /////////////////////////////////////////////////
+// Delimiter '::' in name should error in SDFormat 1.8 but not in 1.7
+TEST(Parser, DoubleColonNameAttrError)
+{
+  sdf::SDFPtr sdf = InitSDF();
+  std::ostringstream stream;
+  stream << "<?xml version=\"1.0\"?>"
+         << "<sdf version='1.8'>"
+         << "  <model name='test'>"
+         << "    <link name='A::B'/>"
+         << "  </model>"
+         << "</sdf>";
+
+  EXPECT_FALSE(sdf::readString(stream.str(), sdf));
+
+  sdf = InitSDF();
+  stream.str("");
+  stream << "<?xml version=\"1.0\"?>"
+         << "<sdf version='1.7'>"
+         << "  <model name='test::A'/>"
+         << "</sdf>";
+
+  EXPECT_TRUE(sdf::readString(stream.str(), sdf));
+}
+
+/////////////////////////////////////////////////
 /// Fixture for setting up stream redirection
 class ValueConstraintsFixture : public ::testing::Test
 {
