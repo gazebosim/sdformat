@@ -23,6 +23,7 @@
 #include "sdf/Error.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
+#include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
@@ -65,6 +66,9 @@ class sdf::Joint::Implementation
 
   /// \brief Scoped Pose Relative-To graph at the parent model scope.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
+
+  /// \brief The sensors specified in this joint.
+  public: std::vector<Sensor> sensors;
 };
 
 /////////////////////////////////////////////////
@@ -215,6 +219,10 @@ Errors Joint::Load(ElementPtr _sdf)
         "A joint type is required, but is not set."});
   }
 
+  // Load all the sensors.
+  Errors sensorLoadErrors = loadUniqueRepeated<Sensor>(_sdf, "sensor",
+      this->dataPtr->sensors);
+  errors.insert(errors.end(), sensorLoadErrors.begin(), sensorLoadErrors.end());
   return errors;
 }
 
@@ -404,4 +412,44 @@ void Joint::SetThreadPitch(double _threadPitch)
 sdf::ElementPtr Joint::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+uint64_t Joint::SensorCount() const
+{
+  return this->dataPtr->sensors.size();
+}
+
+/////////////////////////////////////////////////
+const Sensor *Joint::SensorByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->sensors.size())
+    return &this->dataPtr->sensors[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Joint::SensorNameExists(const std::string &_name) const
+{
+  for (auto const &s : this->dataPtr->sensors)
+  {
+    if (s.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Sensor *Joint::SensorByName(const std::string &_name) const
+{
+  for (auto const &s : this->dataPtr->sensors)
+  {
+    if (s.Name() == _name)
+    {
+      return &s;
+    }
+  }
+  return nullptr;
 }
