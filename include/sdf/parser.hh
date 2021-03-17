@@ -417,10 +417,11 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem);
 
-  /// \brief Check that all sibling elements do not the delimiter double colons
-  /// '::' in element names which is reserved for forming scopes in SDFormat 1.8
-  /// This checks recursively and should check the files exhaustively rather
-  /// than terminating early when the first name containing '::' is found.
+  /// \brief Check that all sibling elements do not contain the delimiter
+  /// double colons '::' in element names, which is reserved for forming scopes
+  /// in SDFormat 1.8. This checks recursively and should check the files
+  /// exhaustively rather than terminating early when the first name
+  /// containing '::' is found.
   /// \param[in] _elem SDF Element to check recursively.
   /// \return True if all contained element names do not have the delimiter '::'
   SDFORMAT_VISIBLE

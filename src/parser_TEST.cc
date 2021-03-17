@@ -366,7 +366,10 @@ TEST(Parser, DoubleColonNameAttrError)
          << "  </model>"
          << "</sdf>";
 
-  EXPECT_FALSE(sdf::readString(stream.str(), sdf));
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::readString(stream.str(), sdf, errors));
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::RESERVED_NAME);
 
   sdf = InitSDF();
   stream.str("");
@@ -375,7 +378,9 @@ TEST(Parser, DoubleColonNameAttrError)
          << "  <model name='test::A'/>"
          << "</sdf>";
 
-  EXPECT_TRUE(sdf::readString(stream.str(), sdf));
+  errors.clear();
+  EXPECT_TRUE(sdf::readString(stream.str(), sdf, errors));
+  EXPECT_EQ(errors.size(), 0u);
 }
 
 /////////////////////////////////////////////////
