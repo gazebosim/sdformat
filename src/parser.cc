@@ -687,7 +687,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     }
 
     // delimiter '::' in element names not allowed in SDFormat >= 1.8
-    if (std::stof(_sdf->Root()->OriginalVersion()) >= 1.8f
+    ignition::math::SemanticVersion sdfVersion(_sdf->Root()->OriginalVersion());
+    if (sdfVersion >= ignition::math::SemanticVersion(1, 8)
         && !recursiveSiblingNoDoubleColonInNames(_sdf->Root()))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
@@ -768,7 +769,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     }
 
     // delimiter '::' in element names not allowed in SDFormat >= 1.8
-    if (std::stof(_sdf->OriginalVersion()) >= 1.8f
+    ignition::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
+    if (sdfVersion >= ignition::math::SemanticVersion(1, 8)
         && !recursiveSiblingNoDoubleColonInNames(_sdf))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
