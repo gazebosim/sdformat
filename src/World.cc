@@ -344,14 +344,24 @@ bool World::ModelNameExists(const std::string &_name) const
 /////////////////////////////////////////////////
 const Model *World::ModelByName(const std::string &_name) const
 {
+  auto index = _name.find("::");
+  const std::string nextModelName = _name.substr(0, index);
+  const Model *nextModel = nullptr;
+
   for (auto const &m : this->dataPtr->models)
   {
-    if (m.Name() == _name)
+    if (m.Name() == nextModelName)
     {
-      return &m;
+      nextModel = &m;
+      break;
     }
   }
-  return nullptr;
+
+  if (nullptr != nextModel && index != std::string::npos)
+  {
+    return nextModel->ModelByName(_name.substr(index + 2));
+  }
+  return nextModel;
 }
 
 /////////////////////////////////////////////////
