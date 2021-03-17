@@ -132,11 +132,17 @@ namespace sdf
 
     /// \brief Get a model based on a name.
     /// \param[in] _name Name of the model.
-    /// \return Pointer to the model. Nullptr if the name does not exist.
+    /// To get a model nested in other models, prefix the model name
+    /// with the sequence of nested model names, delimited by "::".
+    /// \return Pointer to the model. Nullptr if a model with the given name
+    /// does not exist.
+    /// \sa bool ModelNameExists(const std::string &_name) const
     public: const Model *ModelByName(const std::string &_name) const;
 
     /// \brief Get whether a model name exists.
     /// \param[in] _name Name of the model to check.
+    /// To check for a model nested in other models, prefix the model name with
+    /// the sequence of nested models containing this frame, delimited by "::".
     /// \return True if there exists a model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
 
