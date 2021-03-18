@@ -2,15 +2,17 @@
 
 set -x
 
+BUILD_DIR=`pwd`
+
 # Install
 make install
 
 # Compile examples
-curdir=$PWD
 cd ../examples
 mkdir build;
 cd build;
 cmake ..;
 make;
 ./simple ../simple.sdf;
-cd $curdir
+
+cd $BUILD_DIR
