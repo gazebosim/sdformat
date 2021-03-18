@@ -20,7 +20,6 @@
 #include <tinyxml2.h>
 
 #include <string>
-#include <vector>
 #include <tuple>
 
 #include <sdf/sdf_config.h>

@@ -156,9 +156,8 @@ void ParserStringConverter(const std::string &_version)
 TEST(ConverterIntegration, UnflattenConversion)
 {
   const std::string filename =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+  sdf::testing::SourceFile("test", "sdf",
                           "flattened_test_nested_model_with_frames.sdf");
-
 
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
@@ -240,6 +239,7 @@ TEST(ConverterIntegration, UnflattenConversion)
   ASSERT_NE(nullptr, jointElem);
   EXPECT_EQ(jointElem->Get<std::string>("name"), "J1");
   poseElem = jointElem->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
   EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "L1");
   EXPECT_EQ(jointElem->Get<std::string>("parent"), "L1");
   EXPECT_EQ(jointElem->Get<std::string>("child"), "L2");
@@ -263,6 +263,7 @@ TEST(ConverterIntegration, UnflattenConversion)
   ASSERT_NE(nullptr, jointElem);
   EXPECT_EQ(jointElem->Get<std::string>("name"), "J3");
   poseElem = jointElem->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
   EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "__model__");
   EXPECT_EQ(jointElem->Get<std::string>("parent"), "L3");
   EXPECT_EQ(jointElem->Get<std::string>("child"), "L4");
@@ -271,5 +272,6 @@ TEST(ConverterIntegration, UnflattenConversion)
   ASSERT_NE(nullptr, nestModelElem);
   EXPECT_EQ(nestModelElem->Get<std::string>("name"), "M2");
   poseElem = nestModelElem->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
   EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "F1");
 }

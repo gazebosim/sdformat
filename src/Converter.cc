@@ -42,11 +42,11 @@ bool EndsWith(const std::string& _a, const std::string& _b)
 }
 
 /////////////////////////////////////////////////
-// returns true if the element is one of the listed for Unflatten conversion
-bool IsInterfaceElement(const std::string &_elemName)
+// returns true if the element is not one of the listed for Unflatten conversion
+bool IsNotFlattenedElement(const std::string &_elemName)
 {
-  return (_elemName != "frame" && _elemName != "joint"
-          && _elemName != "link" && _elemName != "model");
+  return (_elemName != "frame" && _elemName != "joint" && _elemName != "link"
+          && _elemName != "model" && _elemName != "gripper");
 }
 
 /////////////////////////////////////////////////
@@ -262,9 +262,6 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
     else if (name == "unflatten")
     {
       Unflatten(_elem);
-      // TODO(jenn) delete debug statements
-      // std::cout << "\n\n_elem after unflatten:\n"
-      //             << ElementToString(_elem) << std::endl;
     }
     else if (name != "convert")
     {
@@ -292,7 +289,7 @@ void Converter::Unflatten(tinyxml2::XMLElement *_elem)
     std::string elemName = elem->Name();
 
     // skip element if not one of the following or if missing name attribute
-    if (IsInterfaceElement(elemName) || !elem->Attribute("name"))
+    if (IsNotFlattenedElement(elemName) || !elem->Attribute("name"))
       continue;
 
     std::string attrName = elem->Attribute("name");
@@ -303,12 +300,7 @@ void Converter::Unflatten(tinyxml2::XMLElement *_elem)
       // recursive unflatten
       if (elemName == "model")
       {
-        // std::cout << "before recursive:\n"
-        //           << ElementToString(elem) << std::endl;
         Unflatten(elem);
-
-        // std::cout << "unflatteneded model:\n"
-        //           << ElementToString(elem) << std::endl;
         break;
       }
 
@@ -329,7 +321,6 @@ void Converter::Unflatten(tinyxml2::XMLElement *_elem)
 
       if (!firstUnflatModel)
         firstUnflatModel = newModel;
-      // std::cout << "newModel:\n" << ElementToString(newModel) << std::endl;
     }
   }
 }
@@ -357,9 +348,9 @@ bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
 
     if (elemAttrName.empty() ||
         elemAttrName.compare(0, newModelNameSize, newModelName) != 0 ||
-        IsInterfaceElement(elemName))
+        IsNotFlattenedElement(elemName))
     {
-      // since //gripper/@name is not flattened but the children are
+      // since //gripper/@name may not be flattened but the children are
       // & elemAttrName.compare will evaluate to true, don't skip this element
       if (elemName != "gripper")
       {
@@ -368,9 +359,10 @@ bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
       }
     }
 
-    // Child attribute name w/ newModelName prefix stripped except for //gripper
+    // Child attribute name w/ newModelName prefix stripped except for
+    // possibly //gripper, which may or may not have a prefix
     std::string childAttrName;
-    if (elemName != "gripper")
+    if (elemAttrName.compare(0, newModelNameSize, newModelName) == 0)
     {
       childAttrName = elemAttrName.substr(_childNameIdx);
       elem->SetAttribute("name", childAttrName.c_str());
