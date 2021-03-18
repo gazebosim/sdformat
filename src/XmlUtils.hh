@@ -40,6 +40,11 @@ namespace sdf
   ///          nullptr if an error occurs.
   tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
                                const tinyxml2::XMLNode *_src);
+
+  /// \brief Converts the XML Element to a string
+  /// \param[in] _elem Element to be converted
+  /// \return The string representation
+  std::string ElementToString(const tinyxml2::XMLElement *_elem);
   }
 }
 #endif

@@ -40,6 +40,36 @@ bool EndsWith(const std::string& _a, const std::string& _b)
   return (_a.size() >= _b.size()) &&
       (_a.compare(_a.size() - _b.size(), _b.size(), _b) == 0);
 }
+
+/////////////////////////////////////////////////
+// returns true if the element is not one of the listed for Unflatten conversion
+bool IsNotFlattenedElement(const std::string &_elemName)
+{
+  return (_elemName != "frame" && _elemName != "joint" && _elemName != "link"
+          && _elemName != "model" && _elemName != "gripper");
+}
+
+/////////////////////////////////////////////////
+// used to update //pose/@relative_to in FindNewModelElements()
+void UpdatePose(tinyxml2::XMLElement *_elem,
+                const size_t &_childNameIdx,
+                const std::string &_modelName)
+{
+  tinyxml2::XMLElement *pose = _elem->FirstChildElement("pose");
+  if (pose && pose->Attribute("relative_to"))
+  {
+    std::string poseRelTo = pose->Attribute("relative_to");
+
+    SDF_ASSERT(poseRelTo.compare(0, _modelName.size(), _modelName) == 0,
+      "Error: Pose attribute 'relative_to' does not start with " + _modelName);
+
+    poseRelTo = poseRelTo.substr(_childNameIdx);
+    pose->SetAttribute("relative_to", poseRelTo.c_str());
+  }
+
+  if (_elem->FirstChildElement("camera"))
+    UpdatePose(_elem->FirstChildElement("camera"), _childNameIdx, _modelName);
+}
 }
 
 /////////////////////////////////////////////////
@@ -229,11 +259,288 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
     {
       Remove(_elem, childElem);
     }
+    else if (name == "unflatten")
+    {
+      Unflatten(_elem);
+    }
     else if (name != "convert")
     {
       sdferr << "Unknown convert element[" << name << "]\n";
     }
   }
+}
+
+/////////////////////////////////////////////////
+void Converter::Unflatten(tinyxml2::XMLElement *_elem)
+{
+  SDF_ASSERT(_elem != nullptr, "SDF element is nullptr");
+
+  tinyxml2::XMLDocument *doc = _elem->GetDocument();
+
+  tinyxml2::XMLElement *nextElem = nullptr, *firstUnflatModel = nullptr;
+  for (tinyxml2::XMLElement *elem = _elem->FirstChildElement();
+      elem;
+      elem = nextElem)
+  {
+    // break loop if reached the first unflattened model
+    if (firstUnflatModel == elem) break;
+
+    nextElem = elem->NextSiblingElement();
+    std::string elemName = elem->Name();
+
+    // skip element if not one of the following or if missing name attribute
+    if (IsNotFlattenedElement(elemName) || !elem->Attribute("name"))
+      continue;
+
+    std::string attrName = elem->Attribute("name");
+
+    size_t found = attrName.find("::");
+    if (found == std::string::npos)
+    {
+      // recursive unflatten
+      if (elemName == "model")
+      {
+        Unflatten(elem);
+        break;
+      }
+
+      continue;
+    }
+
+    std::string newModelName = attrName.substr(0, found);
+    tinyxml2::XMLElement *newModel = doc->NewElement("model");
+    newModel->SetAttribute("name", newModelName.c_str());
+
+    if (FindNewModelElements(_elem, newModel, found + 2))
+    {
+      Unflatten(newModel);
+      _elem->InsertEndChild(newModel);
+
+      // since newModel is inserted at the end, point back to the top element
+      nextElem = _elem->FirstChildElement();
+
+      if (!firstUnflatModel)
+        firstUnflatModel = newModel;
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
+                                    tinyxml2::XMLElement *_newModel,
+                                    const size_t &_childNameIdx)
+{
+  bool unflattenedNewModel = false;
+  std::string newModelName = _newModel->Attribute("name");
+  size_t newModelNameSize = newModelName.size();
+
+  // loop through looking for new model elements
+  tinyxml2::XMLElement *elem = _elem->FirstChildElement(), *nextElem = nullptr;
+  while (elem)
+  {
+    nextElem = elem->NextSiblingElement();
+
+    std::string elemName = elem->Name();
+    std::string elemAttrName;
+
+    if (elem->Attribute("name"))
+      elemAttrName = elem->Attribute("name");
+
+    if (elemAttrName.empty() ||
+        elemAttrName.compare(0, newModelNameSize, newModelName) != 0 ||
+        IsNotFlattenedElement(elemName))
+    {
+      // since //gripper/@name may not be flattened but the children are
+      // & elemAttrName.compare will evaluate to true, don't skip this element
+      if (elemName != "gripper")
+      {
+        elem = nextElem;
+        continue;
+      }
+    }
+
+    // Child attribute name w/ newModelName prefix stripped except for
+    // possibly //gripper, which may or may not have a prefix
+    std::string childAttrName;
+    if (elemAttrName.compare(0, newModelNameSize, newModelName) == 0)
+    {
+      childAttrName = elemAttrName.substr(_childNameIdx);
+      elem->SetAttribute("name", childAttrName.c_str());
+    }
+
+    // strip new model prefix from //pose/@relative_to
+    tinyxml2::XMLElement *poseElem = elem->FirstChildElement("pose");
+    if (poseElem != nullptr && poseElem->Attribute("relative_to"))
+    {
+      std::string poseRelTo = poseElem->Attribute("relative_to");
+
+      if (poseRelTo.compare(0, newModelNameSize, newModelName) == 0)
+      {
+        poseRelTo = poseRelTo.substr(_childNameIdx);
+        poseElem->SetAttribute("relative_to", poseRelTo.c_str());
+      }
+    }
+
+    if (elemName == "frame")
+    {
+      std::string attachedTo;
+
+      if (elem->Attribute("attached_to"))
+      {
+        attachedTo = elem->Attribute("attached_to");
+
+        SDF_ASSERT(attachedTo.compare(0, newModelNameSize, newModelName) == 0,
+          "Error: Frame attribute 'attached_to' does not start with " +
+          newModelName);
+
+        // strip new model prefix from attached_to
+        attachedTo = attachedTo.substr(_childNameIdx);
+        elem->SetAttribute("attached_to", attachedTo.c_str());
+
+        // remove frame if childAttrName == __model__
+        if (childAttrName == "__model__")
+        {
+          _newModel->SetAttribute("canonical_link", attachedTo.c_str());
+          _newModel->InsertFirstChild(poseElem);
+
+          _elem->DeleteChild(elem);
+          elem = poseElem;
+        }
+      }
+    }  // frame
+
+    else if (elemName == "link")
+    {
+      // find & strip new model prefix of all //link/<element>/pose/@relative_to
+      for (tinyxml2::XMLElement *e = elem->FirstChildElement();
+          e;
+          e = e->NextSiblingElement())
+      {
+        UpdatePose(e, _childNameIdx, newModelName);
+      }
+    }  // link
+
+    else if (elemName == "joint")
+    {
+      std::string eText;
+
+      // strip new model prefix from //joint/parent
+      tinyxml2::XMLElement *e = elem->FirstChildElement("parent");
+      if (e != nullptr && e->GetText() != nullptr)
+      {
+        eText = e->GetText();
+
+        SDF_ASSERT(eText.compare(0, newModelNameSize, newModelName) == 0,
+        "Error: Joint's <parent> value does not start with " + newModelName);
+
+        e->SetText(eText.substr(_childNameIdx).c_str());
+      }
+
+      // strip new model prefix from //joint/child
+      e = elem->FirstChildElement("child");
+      if (e != nullptr && e->GetText() != nullptr)
+      {
+        eText = e->GetText();
+
+        SDF_ASSERT(eText.compare(0, newModelNameSize, newModelName) == 0,
+        "Error: Joint's <child> value does not start with " + newModelName);
+
+        e->SetText(eText.substr(_childNameIdx).c_str());
+      }
+
+      // strip new model prefix from //xyz/@expressed_in
+      std::string axisStr = "axis";
+      while (true)
+      {
+        tinyxml2::XMLElement *axisElem =
+            elem->FirstChildElement(axisStr.c_str());
+        if (axisElem != nullptr)
+        {
+          if (axisElem->FirstChildElement("xyz")->Attribute("expressed_in"))
+          {
+            std::string expressIn =
+                axisElem->FirstChildElement("xyz")->Attribute("expressed_in");
+
+            SDF_ASSERT(
+              expressIn.compare(0, newModelNameSize, newModelName) == 0,
+              "Error: <xyz>'s attribute 'expressed_in' does not start with " +
+              newModelName);
+
+            expressIn = expressIn.substr(_childNameIdx);
+
+            axisElem->FirstChildElement("xyz")
+                    ->SetAttribute("expressed_in", expressIn.c_str());
+          }
+        }
+
+        if (axisStr == "axis2") break;
+
+        axisStr += "2";
+      }
+
+      // strip new model prefix from all //joint/sensor/pose/@relative_to
+      for (e = elem->FirstChildElement("sensor");
+          e;
+          e = e->NextSiblingElement("sensor"))
+      {
+        UpdatePose(e, _childNameIdx, newModelName);
+      }
+    }  // joint
+
+    else if (elemName == "gripper")
+    {
+      bool hasPrefix = true;
+
+      // strip prefix from all /model/gripper/gripper_link
+      tinyxml2::XMLElement *e = elem->FirstChildElement("gripper_link");
+      std::string eText;
+      while (e)
+      {
+        if (e->GetText() != nullptr)
+        {
+          eText = e->GetText();
+
+          if (eText.compare(0, newModelNameSize, newModelName) != 0)
+          {
+            hasPrefix = false;
+            break;
+          }
+
+          e->SetText(eText.substr(_childNameIdx).c_str());
+        }
+
+        e = e->NextSiblingElement("gripper_link");
+      }
+
+      // if //model/gripper/gripper_link does not have new model prefix
+      // don't add to new model
+      if (!hasPrefix)
+      {
+        elem = nextElem;
+        continue;
+      }
+
+      // strip prefix from //model/gripper/palm_link
+      e = elem->FirstChildElement("palm_link");
+      if (e != nullptr && e->GetText() != nullptr)
+      {
+        eText = e->GetText();
+
+        SDF_ASSERT(eText.compare(0, newModelNameSize, newModelName) == 0,
+        "Error: Gripper's <palm_link> value does not start with "
+        + newModelName);
+
+        e->SetText(eText.substr(_childNameIdx).c_str());
+      }
+    }  // gripper
+
+    unflattenedNewModel = true;
+    _newModel->InsertEndChild(elem);
+
+    elem = nextElem;
+  }
+
+  return unflattenedNewModel;
 }
 
 /////////////////////////////////////////////////
