@@ -20,6 +20,7 @@
 #include <tinyxml2.h>
 
 #include <string>
+#include <tuple>
 
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
@@ -102,6 +103,20 @@ namespace sdf
     /// \param[in] _removeElem The element to remove.
     private: static void Remove(tinyxml2::XMLElement *_elem,
                                 tinyxml2::XMLElement *_removeElem);
+
+    /// \brief Unflatten an element (conversion from SDFormat <= 1.7 to 1.8)
+    /// \param[in] _elem The element to unflatten
+    private: static void Unflatten(tinyxml2::XMLElement *_elem);
+
+    /// \brief Finds all elements related to the unflattened model
+    /// \param[in] _elem The element to unflatten
+    /// \param[in] _newModel The new unflattened model element
+    /// \param[in] _childNameIdx The beginning index of child element names
+    /// (e.g., in newModelName::childName then _childNameIdx = 14)
+    /// \return True if unflattened new model elements
+    private: static bool FindNewModelElements(tinyxml2::XMLElement *_elem,
+                                              tinyxml2::XMLElement *_newModel,
+                                              const size_t &_childNameIdx);
 
     private: static const char *GetValue(const char *_valueElem,
                                          const char *_valueAttr,
