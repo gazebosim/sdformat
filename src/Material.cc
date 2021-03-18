@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <sstream>
 #include <string>
 #include <optional>
 #include <vector>
@@ -69,6 +70,17 @@ class sdf::Material::Implementation
 
   /// \brief The path to the file where this material was defined.
   public: std::string filePath = "";
+
+  /// \brief Get a valid color. This checks the color components specified in
+  /// this->sdf are r,g,b or r,g,b,a and each value is between [0,1].
+  /// If the checks do not pass, the default color 0,0,0,1 is returned.
+  /// \param[in] _colorType The color type (i.e., ambient, diffuse, specular,
+  /// or emissive)
+  /// \param[out] _errors Parsing errors will be appended to this variable
+  /// \return A color for _colorType. If no parsing errors occurred then the
+  /// specified color component from this->sdf is returned, otherwise 0,0,0,1
+  public: ignition::math::Color GetColor(const std::string &_colorType,
+                                         Errors &_errors);
 };
 
 /////////////////////////////////////////////////
@@ -168,17 +180,13 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   this->dataPtr->renderOrder = _sdf->Get<float>("render_order",
       this->dataPtr->renderOrder).first;
 
-  this->dataPtr->ambient = _sdf->Get<ignition::math::Color>("ambient",
-      this->dataPtr->ambient).first;
+  this->dataPtr->ambient = this->dataPtr->GetColor("ambient", errors);
 
-  this->dataPtr->diffuse = _sdf->Get<ignition::math::Color>("diffuse",
-      this->dataPtr->diffuse).first;
+  this->dataPtr->diffuse = this->dataPtr->GetColor("diffuse", errors);
 
-  this->dataPtr->specular = _sdf->Get<ignition::math::Color>("specular",
-      this->dataPtr->specular).first;
+  this->dataPtr->specular = this->dataPtr->GetColor("specular", errors);
 
-  this->dataPtr->emissive = _sdf->Get<ignition::math::Color>("emissive",
-      this->dataPtr->emissive).first;
+  this->dataPtr->emissive = this->dataPtr->GetColor("emissive", errors);
 
   this->dataPtr->lighting = _sdf->Get<bool>("lighting",
       this->dataPtr->lighting).first;
@@ -357,4 +365,65 @@ const std::string &Material::FilePath() const
 void Material::SetFilePath(const std::string &_filePath)
 {
   this->dataPtr->filePath = _filePath;
+}
+
+//////////////////////////////////////////////////
+ignition::math::Color Material::Implementation::GetColor(
+    const std::string &_colorType, Errors &_errors)
+{
+  ignition::math::Color color(0, 0, 0, 1);
+
+  if (!this->sdf->HasElement(_colorType))
+    return color;
+
+  std::string colorStr = this->sdf->GetElement(_colorType)
+                                  ->GetValue()
+                                  ->GetAsString();
+  if (colorStr.empty())
+    return color;
+
+  std::stringstream ss(colorStr);
+  std::string token;
+  std::vector<float> colors;
+  float c;  // r,g,b,a values
+  bool isValidColor = true;
+  while (ss >> token)
+  {
+    try
+    {
+      c = std::stof(token);
+      colors.push_back(c);
+    }
+    catch(const std::exception &e)
+    {
+      std::cerr << "Error converting color value: can not convert ["
+                << token << "] to a float" << std::endl;
+      isValidColor = false;
+      break;
+    }
+
+    if (c < 0.0f || c > 1.0f)
+    {
+      isValidColor = false;
+      break;
+    }
+  }
+
+  size_t colorSize = colors.size();
+  if (colorSize == 3)
+    colors.push_back(1.0f);
+  else if (colorSize < 4 || colorSize > 4)
+    isValidColor = false;
+
+  if (!isValidColor)
+  {
+    _errors.push_back({ErrorCode::ELEMENT_INVALID, "The value <" + _colorType +
+        ">" + colorStr + "</" + _colorType + "> is invalid. " +
+        "Using default values 0 0 0 1 for <" + _colorType + "> element."});
+    return color;
+  }
+
+  color.Set(colors[0], colors[1], colors[2], colors[3]);
+
+  return color;
 }
