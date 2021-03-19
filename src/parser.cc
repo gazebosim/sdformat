@@ -1026,7 +1026,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           ErrorCode::ATTRIBUTE_MISSING,
           "Required attribute[" + p->GetKey() + "] in element[" + _xml->Value()
           + "] is not specified in SDF.",
-          _source});
+          _source,
+          _xml->GetLineNum()});
       return false;
     }
   }
