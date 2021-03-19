@@ -292,7 +292,7 @@ TEST(DOMMaterial, InvalidSdf)
 
 void PrintErrors(sdf::Errors &_errors)
 {
-  for (auto e : _errors)
+  for (const auto &e : _errors)
     std::cout << e << std::endl;
 }
 
@@ -302,11 +302,10 @@ TEST(DOMMaterial, Colors)
   sdf::ElementPtr elem(new sdf::Element());
   elem->SetName("material");
 
-  // invalid diffuse
+  // invalid diffuse (empty)
   sdf::ElementPtr elemDiffuse(new sdf::Element());
   elemDiffuse->SetName("diffuse");
-  elemDiffuse->AddValue("string", "0 0 0 1", false, "description");
-  elemDiffuse->Set<std::string>("1.5 0 0 1");
+  elemDiffuse->AddValue("string", "", false, "description");
   elem->InsertElement(elemDiffuse);
 
   sdf::Material material;
@@ -320,7 +319,17 @@ TEST(DOMMaterial, Colors)
   EXPECT_EQ(material.Specular(), ignition::math::Color(0, 0, 0, 1));
   EXPECT_EQ(material.Emissive(), ignition::math::Color(0, 0, 0, 1));
 
-  // another invalid diffuse
+  // another invalid diffuse (value is > 1)
+  elemDiffuse->Set<std::string>("1.5 0 0 1");
+  errors.clear();
+  errors = material.Load(elem);
+  PrintErrors(errors);
+
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  EXPECT_EQ(material.Diffuse(), ignition::math::Color(0, 0, 0, 1));
+
+  // another invalid diffuse (only 2 values)
   elemDiffuse->Set<std::string>("0.1       0.2");
   errors.clear();
   errors = material.Load(elem);
@@ -332,21 +341,21 @@ TEST(DOMMaterial, Colors)
 
   // invalid ambient
   sdf::ElementPtr elemAmbient(new sdf::Element());
-  elemAmbient->AddValue("string", "0 0 0 1", false, "description");
+  elemAmbient->AddValue("string", "", false, "description");
   elemAmbient->SetName("ambient");
   elemAmbient->Set<std::string>("0.1 0.2    test");
   elem->InsertElement(elemAmbient);
 
   // invalid specular
   sdf::ElementPtr elemSpecular(new sdf::Element());
-  elemSpecular->AddValue("string", "0 0 0 1", false, "description");
+  elemSpecular->AddValue("string", "", false, "description");
   elemSpecular->SetName("specular");
   elemSpecular->Set<std::string>("0.1 0.2 0.3 0.4 0.5");
   elem->InsertElement(elemSpecular);
 
   // invalid emissive
   sdf::ElementPtr elemEmissive(new sdf::Element());
-  elemEmissive->AddValue("string", "0 0 0 1", false, "description");
+  elemEmissive->AddValue("string", "", false, "description");
   elemEmissive->SetName("emissive");
   elemEmissive->Set<std::string>("-0.1 0.2 0.3 0.4");
   elem->InsertElement(elemEmissive);
@@ -356,8 +365,13 @@ TEST(DOMMaterial, Colors)
   PrintErrors(errors);
 
   EXPECT_EQ(errors.size(), 4u);
-  for (auto e : errors)
+  for (const auto &e : errors)
     EXPECT_EQ(e.Code(), sdf::ErrorCode::ELEMENT_INVALID);
+
+  EXPECT_EQ(material.Ambient(), ignition::math::Color(0, 0, 0, 1));
+  EXPECT_EQ(material.Diffuse(), ignition::math::Color(0, 0, 0, 1));
+  EXPECT_EQ(material.Specular(), ignition::math::Color(0, 0, 0, 1));
+  EXPECT_EQ(material.Emissive(), ignition::math::Color(0, 0, 0, 1));
 
   // valid diffuse, ambient, specular, emissive
   elemDiffuse->Set<std::string>("0 0.1 0.2");
@@ -370,8 +384,9 @@ TEST(DOMMaterial, Colors)
   PrintErrors(errors);
 
   EXPECT_EQ(errors.size(), 0u);
-  EXPECT_EQ(material.Diffuse(), ignition::math::Color(0, 0.1, 0.2, 1));
-  EXPECT_EQ(material.Ambient(), ignition::math::Color(0.3, 0.4, 0.55, 1));
-  EXPECT_EQ(material.Specular(), ignition::math::Color(0, 0.1, 0.2, 0.3));
-  EXPECT_EQ(material.Emissive(), ignition::math::Color(0.12, 0.23, 0.34, 0.56));
+  EXPECT_EQ(material.Diffuse(), ignition::math::Color(0, 0.1f, 0.2f, 1));
+  EXPECT_EQ(material.Ambient(), ignition::math::Color(0.3f, 0.4f, 0.55f, 1));
+  EXPECT_EQ(material.Specular(), ignition::math::Color(0, 0.1f, 0.2f, 0.3f));
+  EXPECT_EQ(material.Emissive(),
+            ignition::math::Color(0.12f, 0.23f, 0.34f, 0.56f));
 }

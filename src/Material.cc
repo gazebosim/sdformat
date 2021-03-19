@@ -72,10 +72,11 @@ class sdf::Material::Implementation
   public: std::string filePath = "";
 
   /// \brief Get a valid color. This checks the color components specified in
-  /// this->sdf are r,g,b or r,g,b,a and each value is between [0,1].
-  /// If the checks do not pass, the default color 0,0,0,1 is returned.
+  /// this->sdf are r,g,b or r,g,b,a (expects 3 or 4 values) and each value is
+  /// between [0,1]. When only 3 values are present (r,g,b), then alpha is set
+  /// to 1. If the checks do not pass, the default color 0,0,0,1 is returned.
   /// \param[in] _colorType The color type (i.e., ambient, diffuse, specular,
-  /// or emissive)
+  /// or emissive), which is case sensitive and expects a lowercase string
   /// \param[out] _errors Parsing errors will be appended to this variable
   /// \return A color for _colorType. If no parsing errors occurred then the
   /// specified color component from this->sdf is returned, otherwise 0,0,0,1
@@ -380,7 +381,11 @@ ignition::math::Color Material::Implementation::GetColor(
                                   ->GetValue()
                                   ->GetAsString();
   if (colorStr.empty())
+  {
+    _errors.push_back({ErrorCode::ELEMENT_INVALID, "No values found inside <" +
+        _colorType + "> element. Using default values 0 0 0 1."});
     return color;
+  }
 
   std::stringstream ss(colorStr);
   std::string token;
@@ -394,7 +399,7 @@ ignition::math::Color Material::Implementation::GetColor(
       c = std::stof(token);
       colors.push_back(c);
     }
-    catch(const std::exception &e)
+    catch(const std::exception &/*e*/)
     {
       std::cerr << "Error converting color value: can not convert ["
                 << token << "] to a float" << std::endl;
@@ -410,9 +415,9 @@ ignition::math::Color Material::Implementation::GetColor(
   }
 
   size_t colorSize = colors.size();
-  if (colorSize == 3)
+  if (colorSize == 3u)
     colors.push_back(1.0f);
-  else if (colorSize < 4 || colorSize > 4)
+  else if (colorSize != 4u)
     isValidColor = false;
 
   if (!isValidColor)
