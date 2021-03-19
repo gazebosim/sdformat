@@ -685,6 +685,18 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
           "Error reading element <" + _sdf->Root()->GetName() + ">"});
       return false;
     }
+
+    // delimiter '::' in element names not allowed in SDFormat >= 1.8
+    ignition::math::SemanticVersion sdfVersion(_sdf->Root()->OriginalVersion());
+    if (sdfVersion >= ignition::math::SemanticVersion(1, 8)
+        && !recursiveSiblingNoDoubleColonInNames(_sdf->Root()))
+    {
+      _errors.push_back({ErrorCode::RESERVED_NAME,
+          "Delimiter '::' found in attribute names of element <"
+          + _sdf->Root()->GetName() +
+          ">, which is not allowed in SDFormat >= 1.8"});
+      return false;
+    }
   }
   else
   {
@@ -753,6 +765,18 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Unable to parse sdf element["+ _sdf->GetName() + "]"});
+      return false;
+    }
+
+    // delimiter '::' in element names not allowed in SDFormat >= 1.8
+    ignition::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
+    if (sdfVersion >= ignition::math::SemanticVersion(1, 8)
+        && !recursiveSiblingNoDoubleColonInNames(_sdf))
+    {
+      _errors.push_back({ErrorCode::RESERVED_NAME,
+          "Delimiter '::' found in attribute names of element <"
+          + _sdf->GetName() +
+          ">, which is not allowed in SDFormat >= 1.8"});
       return false;
     }
   }
@@ -1797,6 +1821,32 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
   while (child)
   {
     result = recursiveSiblingUniqueNames(child) && result;
+    child = child->GetNextElement();
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem)
+{
+  if (!shouldValidateElement(_elem))
+    return true;
+
+  bool result = true;
+  if (_elem->HasAttribute("name")
+      && _elem->Get<std::string>("name").find("::") != std::string::npos)
+  {
+    std::cerr << "Error: Detected delimiter '::' in element name in\n"
+             << _elem->ToString("")
+             << std::endl;
+    result = false;
+  }
+
+  sdf::ElementPtr child = _elem->GetFirstElement();
+  while (child)
+  {
+    result = recursiveSiblingNoDoubleColonInNames(child) && result;
     child = child->GetNextElement();
   }
 

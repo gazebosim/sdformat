@@ -327,6 +327,9 @@ but with improved human-readability..
 
 1. **heightmap.sdf**: sampling now defaults to 1 instead of 2.
 
+1. Element attribute names containing delimiter "::" no longer accepted
+    * [Issue 420](https://github.com/osrf/sdformat/issues/420)
+
 ### Deprecations
 
 1. **joint.sdf** `initial_position` element in `<joint><axis>` and `<joint><axis2>` is deprecated
