@@ -1136,10 +1136,9 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         {
           if (includeSDF->Root()->HasElement(elementType))
           {
-            auto elemFound = includeSDF->Root()->GetElement(elementType);
             if (nullptr == topLevelElem)
             {
-              topLevelElem = elemFound;
+              topLevelElem = includeSDF->Root()->GetElement(elementType);
             }
             else
             {
