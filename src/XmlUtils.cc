@@ -55,6 +55,20 @@ tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
 
   return copy;
 }
+
+/////////////////////////////////////////////////
+std::string ElementToString(const tinyxml2::XMLElement *_elem)
+{
+  if (_elem == nullptr)
+  {
+    sdferr << "Pointer to XML Element _elem is nullptr\n";
+    return "";
+  }
+
+  tinyxml2::XMLPrinter printer;
+  _elem->Accept(&printer);
+
+  return std::string(printer.CStr());
+}
 }
 }  // namespace sdf
-
