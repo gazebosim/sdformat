@@ -28,10 +28,10 @@ class sdf::Error::Implementation
   public: std::string message = "";
 
   /// \brief File path where the error was raised.
-  public: std::string filePath = "";
+  public: std::optional<std::string> filePath = std::nullopt;
 
   /// \brief Line number in the file path where the error was raised.
-  public: int lineNumber = -1;
+  public: std::optional<int> lineNumber = std::nullopt;
 };
 
 /////////////////////////////////////////////////
@@ -81,13 +81,13 @@ std::string Error::Message() const
 }
 
 /////////////////////////////////////////////////
-std::string Error::FilePath() const
+std::optional<std::string> Error::FilePath() const
 {
   return this->dataPtr->filePath;
 }
 
 /////////////////////////////////////////////////
-int Error::LineNumber() const
+std::optional<int> Error::LineNumber() const
 {
   return this->dataPtr->lineNumber;
 }

@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <string>
+#include <optional>
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
@@ -183,14 +184,13 @@ namespace sdf
     public: std::string Message() const;
 
     /// \brief Get the file path associated with this error.
-    /// \return Path of the file that this error is related to. Returns an empty
-    /// string if there is no related file.
-    public: std::string FilePath() const;
+    /// \return Returns the path of the file that this error is related to.
+    /// nullopt otherwise.
+    public: std::optional<std::string> FilePath() const;
 
     /// \brief Get the line number associated with this error.
-    /// \return Line number. Returns -1 if there is no line number associated
-    /// with this error.
-    public: int LineNumber() const;
+    /// \return Returns the line number. nullopt otherwise.
+    public: std::optional<int> LineNumber() const;
 
     /// \brief Safe bool conversion.
     /// \return True if this Error's Code() != NONE. In otherwords, this is
@@ -213,19 +213,19 @@ namespace sdf
     public: friend std::ostream &operator<<(std::ostream &_out,
                                             const sdf::Error &_err)
     {
-      if (_err.FilePath().empty())
+      if (!_err.FilePath().has_value())
       {
         _out << "Error Code "
           << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
               _err.Code())
           << " Msg: " << _err.Message();
       }
-      else if (_err.LineNumber() < 1)
+      else if (!_err.LineNumber().has_value())
       {
         _out << "Error Code "
           << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
               _err.Code())
-          << ": [" << _err.FilePath() << "]: "
+          << ": [" << _err.FilePath().value() << "]: "
           << " Msg: " << _err.Message();
       }
       else
@@ -233,8 +233,8 @@ namespace sdf
         _out << "Error Code "
           << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
               _err.Code())
-          << ": [" << _err.FilePath() << ":L"
-          << std::to_string(_err.LineNumber()) << "]: "
+          << ": [" << _err.FilePath().value() << ":L"
+          << std::to_string(_err.LineNumber().value()) << "]: "
           << " Msg: " << _err.Message();
       }
       return _out;
