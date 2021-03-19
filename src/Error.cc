@@ -24,20 +24,11 @@ class sdf::Error::Implementation
   /// \brief The error code value.
   public: ErrorCode code = ErrorCode::NONE;
 
-#ifdef _WIN32
-  // Disable warning C4251 which is triggered by
-  // std::string
-  #pragma warning(push)
-  #pragma warning(disable: 4251)
-#endif
   /// \brief Description of the error.
   public: std::string message = "";
 
   /// \brief File path where the error was raised.
   public: std::string filePath = "";
-#ifdef _WIN32
-  #pragma warning(pop)
-#endif
 
   /// \brief Line number in the file path where the error was raised.
   public: int lineNumber = -1;
