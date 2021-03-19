@@ -899,8 +899,9 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     std::stringstream ss;
     ss << "SDF Element[" + _sdf->GetName() + "] is deprecated\n";
     enforceConfigurablePolicyCondition(
-      _config.WarningsPolicy(), ss.str(),
-      ErrorCode::ELEMENT_DEPRECATED, _errors);
+        _config.WarningsPolicy(),
+        Error(ErrorCode::ELEMENT_DEPRECATED, ss.str()),
+        _errors);
   }
 
   if (!_xml)
@@ -1009,8 +1010,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
               << "] in element[" << _xml->Value()
               << "] not defined in SDF.\n";
       enforceConfigurablePolicyCondition(
-        _config.WarningsPolicy(), ss.str(),
-        ErrorCode::ATTRIBUTE_INCORRECT_TYPE, _errors);
+          _config.WarningsPolicy(),
+          Error(
+              ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+              ss.str(),
+              _source,
+              _xml->GetLineNum()),
+          _errors);
     }
 
     attribute = attribute->Next();
@@ -1148,8 +1154,12 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
                  << "> in include file. This is unsupported and in future "
                  << "versions of libsdformat will become an error";
               enforceConfigurablePolicyCondition(
-                _config.WarningsPolicy(), ss.str(),
-                ErrorCode::ELEMENT_INCORRECT_TYPE, _errors);
+                  _config.WarningsPolicy(),
+                  Error(
+                      ErrorCode::ELEMENT_INCORRECT_TYPE,
+                      ss.str(),
+                      filename),
+                  _errors);
             }
           }
         }
@@ -1176,8 +1186,12 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
              << " for <include>. This is unsupported and in future "
              << "versions of libsdformat will become an error";
           enforceConfigurablePolicyCondition(
-            _config.WarningsPolicy(), ss.str(),
-            ErrorCode::ELEMENT_INCORRECT_TYPE, _errors);
+              _config.WarningsPolicy(),
+              Error(
+                  ErrorCode::ELEMENT_INCORRECT_TYPE,
+                  ss.str(),
+                  filename),
+              _errors);
         }
 
         bool isModel = topLevelElementType == "model";
@@ -1325,8 +1339,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
            << "as children of [" << _xml->Value() << "].\n";
 
         enforceConfigurablePolicyCondition(
-          _config.UnrecognizedElementsPolicy(), ss.str(),
-          ErrorCode::ELEMENT_INCORRECT_TYPE, _errors);
+            _config.UnrecognizedElementsPolicy(),
+            Error(
+                ErrorCode::ELEMENT_INCORRECT_TYPE,
+                ss.str(),
+                _source,
+                elemXml->GetLineNum()),
+            _errors);
 
         continue;
       }

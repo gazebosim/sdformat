@@ -122,3 +122,27 @@ TEST(DOMUtils, ReservedNames)
   EXPECT_TRUE(sdf::isReservedName("__world__"));
   EXPECT_TRUE(sdf::isReservedName("__anything__"));
 }
+
+/////////////////////////////////////////////////
+TEST(PolicyUtils, EnforcementPolicyErrors)
+{
+  sdf::Errors errors;
+  const std::string emptyFilePath = "Empty/file/path";
+  sdf::Error error(sdf::ErrorCode::FILE_READ, "Unable to read a file",
+                   emptyFilePath, 10);
+  ASSERT_EQ(error, true);
+  ASSERT_TRUE(errors.empty());
+
+  sdf::enforceConfigurablePolicyCondition(
+      sdf::EnforcementPolicy::ERR,
+      error,
+      errors);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(errors[0], true);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FILE_READ);
+  EXPECT_EQ(errors[0].Message(), "Unable to read a file");
+  EXPECT_TRUE(errors[0].FilePath().has_value());
+  EXPECT_EQ(errors[0].FilePath().value(), emptyFilePath);
+  EXPECT_TRUE(errors[0].LineNumber().has_value());
+  EXPECT_EQ(errors[0].LineNumber().value(), 10);
+}
