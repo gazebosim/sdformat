@@ -93,7 +93,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check world_duplicate.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: World with name[default] already exists."),
+    EXPECT_NE(output.find("World with name[default] already exists."),
               std::string::npos) << output;
   }
 
@@ -105,7 +105,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check world_sibling_same_names.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: Non-unique names"), std::string::npos)
+    EXPECT_NE(output.find("Non-unique names"), std::string::npos)
       << output;
   }
 
@@ -117,7 +117,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check model_duplicate_links.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: link with name[link] already exists."),
+    EXPECT_NE(output.find("link with name[link] already exists."),
               std::string::npos) << output;
   }
 
@@ -129,7 +129,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check model_duplicate_joints.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: joint with name[joint] already exists."),
+    EXPECT_NE(output.find("joint with name[joint] already exists."),
               std::string::npos) << output;
   }
 
@@ -141,7 +141,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check model_link_joint_same_name.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: Non-unique names"), std::string::npos)
+    EXPECT_NE(output.find("Non-unique names"), std::string::npos)
       << output;
   }
 
@@ -153,7 +153,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check link_duplicate_sibling_collisions.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: collision with name[collision] "
+    EXPECT_NE(output.find("collision with name[collision] "
                           "already exists."),
               std::string::npos) << output;
   }
@@ -166,7 +166,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check link_duplicate_sibling_visuals.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: visual with name[visual] already exists."),
+    EXPECT_NE(output.find("visual with name[visual] already exists."),
               std::string::npos) << output;
   }
 
@@ -199,7 +199,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check joint_invalid_child.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: Child frame with name[invalid] specified by "
+    EXPECT_NE(output.find("Child frame with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_child]."),
               std::string::npos) << output;
@@ -212,7 +212,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check joint_invalid_parent.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: parent frame with name[invalid] specified by "
+    EXPECT_NE(output.find("parent frame with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_parent]."),
               std::string::npos) << output;
@@ -225,7 +225,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check joint_invalid_self_child.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: FrameAttachedToGraph cycle detected, already "
+    EXPECT_NE(output.find("FrameAttachedToGraph cycle detected, already "
                           "visited vertex [joint_invalid_self_child::self]."),
               std::string::npos) << output;
   }
@@ -237,7 +237,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check joint_invalid_self_parent.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: joint with name[self] in model with "
+    EXPECT_NE(output.find("joint with name[self] in model with "
                           "name[joint_invalid_self_parent] must not specify "
                           "its own name as the parent frame."),
               std::string::npos) << output;
@@ -250,7 +250,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check joint_invalid_parent_same_as_child.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: Joint with name[joint] must "
+    EXPECT_NE(output.find("Joint with name[joint] must "
                           "specify different link names for parent and child, "
                           "while [link] was specified for both."),
               std::string::npos) << output;
@@ -278,7 +278,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check joint_child_world.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: Joint with name[joint] specified invalid "
+    EXPECT_NE(output.find("Joint with name[joint] specified invalid "
                           "child link [world]."),
               std::string::npos) << output;
   }
@@ -334,7 +334,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check model_invalid_canonical_link.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: canonical_link with name[link3] not found in "
+    EXPECT_NE(output.find("canonical_link with name[link3] not found in "
                           "model with name[model_invalid_canonical_link]."),
               std::string::npos) << output;
   }
@@ -346,7 +346,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check model_without_links.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: A model must have at least one link."),
+    EXPECT_NE(output.find("A model must have at least one link."),
               std::string::npos) << output;
   }
 
@@ -389,7 +389,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check nested_without_links_invalid.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: A model must have at least one link."),
+    EXPECT_NE(output.find("A model must have at least one link."),
               std::string::npos) << output;
   }
 
@@ -400,21 +400,21 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check model_invalid_reserved_names.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: The supplied link name [world] is reserved."),
+    EXPECT_NE(output.find("The supplied link name [world] is reserved."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: The supplied link name [__link__] "
+    EXPECT_NE(output.find("The supplied link name [__link__] "
                           "is reserved."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: The supplied visual name [__visual__] "
+    EXPECT_NE(output.find("The supplied visual name [__visual__] "
                           "is reserved."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: The supplied collision name [__collision__] "
+    EXPECT_NE(output.find("The supplied collision name [__collision__] "
                           "is reserved."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: The supplied joint name [__joint__] "
+    EXPECT_NE(output.find("The supplied joint name [__joint__] "
                           "is reserved."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: The supplied frame name [__frame__] "
+    EXPECT_NE(output.find("The supplied frame name [__frame__] "
                           "is reserved."),
               std::string::npos) << output;
   }
@@ -477,12 +477,12 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check model_frame_invalid_attached_to.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: attached_to name[A] specified by frame with "
+    EXPECT_NE(output.find("attached_to name[A] specified by frame with "
                           "name[F3] does not match a nested model, link, "
                           "joint, or frame name in model with "
                           "name[model_frame_invalid_attached_to]."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: attached_to name[F4] is identical to frame "
+    EXPECT_NE(output.find("attached_to name[F4] is identical to frame "
                           "name[F4], causing a graph cycle in model with "
                           "name[model_frame_invalid_attached_to]."),
               std::string::npos) << output;
@@ -523,12 +523,12 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check world_frame_invalid_attached_to.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: attached_to name[A] specified by frame with "
+    EXPECT_NE(output.find("attached_to name[A] specified by frame with "
                           "name[F] does not match a model or frame "
                           "name in world with "
                           "name[world_frame_invalid_attached_to]."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: attached_to name[self_cycle] is identical "
+    EXPECT_NE(output.find("attached_to name[self_cycle] is identical "
                           "to frame name[self_cycle], causing a graph cycle "
                           "in world with "
                           "name[world_frame_invalid_attached_to]."),
@@ -553,12 +553,12 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check model_invalid_link_relative_to.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: relative_to name[A] specified by link with "
+    EXPECT_NE(output.find("relative_to name[A] specified by link with "
                           "name[L] does not match a nested model, link, "
                           "joint, or frame name in model with "
                           "name[model_invalid_link_relative_to]."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: relative_to name[self_cycle] is identical to "
+    EXPECT_NE(output.find("relative_to name[self_cycle] is identical to "
                           "link name[self_cycle], causing a graph cycle in "
                           "model with name[model_invalid_link_relative_to]."),
               std::string::npos) << output;
@@ -605,12 +605,12 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check model_invalid_joint_relative_to.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: relative_to name[A] specified by joint with "
+    EXPECT_NE(output.find("relative_to name[A] specified by joint with "
                           "name[J] does not match a nested model, link, "
                           "joint, or frame name in model with "
                           "name[model_invalid_joint_relative_to]."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: relative_to name[Jcycle] is identical to "
+    EXPECT_NE(output.find("relative_to name[Jcycle] is identical to "
                           "joint name[Jcycle], causing a graph cycle in "
                           "model with name[model_invalid_joint_relative_to]."),
               std::string::npos) << output;
@@ -645,12 +645,12 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check model_invalid_frame_relative_to.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: relative_to name[A] specified by frame with "
+    EXPECT_NE(output.find("relative_to name[A] specified by frame with "
                           "name[F] does not match a nested model, link, "
                           "joint, or frame name in model with "
                           "name[model_invalid_frame_relative_to]."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: relative_to name[cycle] is identical to "
+    EXPECT_NE(output.find("relative_to name[cycle] is identical to "
                           "frame name[cycle], causing a graph cycle in model "
                           "with name[model_invalid_frame_relative_to]."),
               std::string::npos) << output;
@@ -691,22 +691,22 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check world_frame_invalid_relative_to.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("Error: relative_to name[A] specified by model with "
+    EXPECT_NE(output.find("relative_to name[A] specified by model with "
                           "name[M] does not match a model or frame "
                           "name in world with "
                           "name[world_frame_invalid_relative_to]."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: relative_to name[cycle] is identical "
+    EXPECT_NE(output.find("relative_to name[cycle] is identical "
                           "to model name[cycle], causing a graph cycle "
                           "in world with "
                           "name[world_frame_invalid_relative_to]."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: relative_to name[A] specified by frame with "
+    EXPECT_NE(output.find("relative_to name[A] specified by frame with "
                           "name[F] does not match a model or frame "
                           "name in world with "
                           "name[world_frame_invalid_relative_to]."),
               std::string::npos) << output;
-    EXPECT_NE(output.find("Error: relative_to name[self_cycle] is identical "
+    EXPECT_NE(output.find("relative_to name[self_cycle] is identical "
                           "to frame name[self_cycle], causing a graph cycle "
                           "in world with "
                           "name[world_frame_invalid_relative_to]."),
@@ -742,12 +742,12 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(
-        output.find("Error: '__root__' is reserved; it cannot be used as a "
+        output.find("'__root__' is reserved; it cannot be used as a "
                     "value of attribute [relative_to]"),
         std::string::npos)
         << output;
     EXPECT_NE(
-        output.find("Error: '__root__' is reserved; it cannot be used as a"
+        output.find("'__root__' is reserved; it cannot be used as a"
                     " value of attribute [attached_to]"),
         std::string::npos)
         << output;
@@ -762,43 +762,43 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(
-        output.find("Error: '__root__' is reserved; it cannot be used as a "
+        output.find("'__root__' is reserved; it cannot be used as a "
                     "value of attribute [relative_to]"),
         std::string::npos)
         << output;
     EXPECT_NE(
-        output.find("Error: '__root__' is reserved; it cannot be used as a "
+        output.find("'__root__' is reserved; it cannot be used as a "
                     "value of attribute [attached_to]"),
         std::string::npos)
         << output;
     EXPECT_NE(
-        output.find("Error: '__root__' is reserved; it cannot be used as a "
+        output.find("'__root__' is reserved; it cannot be used as a "
                     "value of attribute [placement_frame]"),
         std::string::npos)
         << output;
     EXPECT_NE(
-        output.find("Error: '__root__' is reserved; it cannot be used as a "
+        output.find("'__root__' is reserved; it cannot be used as a "
                     "value of attribute [canonical_link]"),
         std::string::npos)
         << output;
     EXPECT_NE(
-        output.find("Error: '__root__' is reserved; it cannot be used as a "
+        output.find("'__root__' is reserved; it cannot be used as a "
                     "value of attribute [parent_frame]"),
         std::string::npos)
         << output;
     EXPECT_NE(
-        output.find("Error: '__root__' is reserved; it cannot be used as a "
+        output.find("'__root__' is reserved; it cannot be used as a "
                     "value of element [placement_frame]"),
         std::string::npos)
         << output;
     EXPECT_NE(
         output.find(
-            "Error: The supplied joint child name [__root__] is not valid"),
+            "The supplied joint child name [__root__] is not valid"),
         std::string::npos)
         << output;
     EXPECT_NE(
         output.find(
-            "Error: The supplied joint parent name [__root__] is not valid"),
+            "The supplied joint parent name [__root__] is not valid"),
         std::string::npos)
         << output;
   }
