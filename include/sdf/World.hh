@@ -145,7 +145,7 @@ namespace sdf
     /// \brief Get whether a model name exists.
     /// \param[in] _name Name of the model to check.
     /// To check for a model nested in other models, prefix the model name with
-    /// the sequence of nested models containing this frame, delimited by "::".
+    /// the sequence of nested models containing this model, delimited by "::".
     /// \return True if there exists a model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
 
