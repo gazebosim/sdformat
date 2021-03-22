@@ -641,59 +641,84 @@ TEST(NestedModel, PartiallyFlattened)
   const sdf::Model *outerModel = world->ModelByIndex(0);
   ASSERT_NE(nullptr, outerModel);
   EXPECT_EQ("ParentModel", outerModel->Name());
-  EXPECT_EQ(4u, outerModel->LinkCount());
-  EXPECT_NE(nullptr, outerModel->LinkByIndex(0));
-  EXPECT_NE(nullptr, outerModel->LinkByIndex(1));
-  EXPECT_NE(nullptr, outerModel->LinkByIndex(2));
-  EXPECT_NE(nullptr, outerModel->LinkByIndex(3));
-  EXPECT_EQ(nullptr, outerModel->LinkByIndex(4));
 
   EXPECT_TRUE(outerModel->LinkNameExists("M1::L1"));
   EXPECT_TRUE(outerModel->LinkNameExists("M1::L2"));
   EXPECT_TRUE(outerModel->LinkNameExists("M1::L3"));
   EXPECT_TRUE(outerModel->LinkNameExists("M1::L4"));
 
-  EXPECT_EQ(3u, outerModel->JointCount());
   EXPECT_TRUE(outerModel->JointNameExists("M1::J1"));
   EXPECT_TRUE(outerModel->JointNameExists("M1::J2"));
   EXPECT_TRUE(outerModel->JointNameExists("M1::J3"));
 
-  EXPECT_EQ(3u, outerModel->FrameCount());
-  EXPECT_TRUE(outerModel->FrameNameExists("M1::__model__"));
   EXPECT_TRUE(outerModel->FrameNameExists("M1::F1"));
   EXPECT_TRUE(outerModel->FrameNameExists("M1::F2"));
 
+  EXPECT_TRUE(outerModel->ModelNameExists("M1::M2"));
+
   EXPECT_EQ(1u, outerModel->ModelCount());
-  EXPECT_NE(nullptr, outerModel->ModelByIndex(0));
-  EXPECT_EQ(nullptr, outerModel->ModelByIndex(1));
 
   // Get the middle model
   const sdf::Model *midModel = outerModel->ModelByIndex(0);
   ASSERT_NE(nullptr, midModel);
-  EXPECT_EQ("M1::M2", midModel->Name());
-  // TODO: the following expectations should be true, but ModelNameExists
-  // and ModelByName do not support names containing "::".
-  // EXPECT_TRUE(outerModel->ModelNameExists("M1::M2"));
-  // EXPECT_EQ(midModel, outerModel->ModelByName("M1::M2"));
+  EXPECT_EQ(1u, midModel->ModelCount());
+  EXPECT_EQ("M1", midModel->Name());
+  EXPECT_EQ("L1", midModel->CanonicalLinkName());
+  EXPECT_EQ(ignition::math::Pose3d(10, 0, 0, 0, -0, 1.5708),
+            midModel->SemanticPose().RawPose());
+  EXPECT_EQ("__model__", midModel->SemanticPose().RelativeTo());
 
-  EXPECT_EQ(1u, midModel->LinkCount());
+  EXPECT_EQ(4u, midModel->LinkCount());
   EXPECT_NE(nullptr, midModel->LinkByIndex(0));
-  EXPECT_EQ(nullptr, midModel->LinkByIndex(1));
+  EXPECT_NE(nullptr, midModel->LinkByIndex(1));
+  EXPECT_NE(nullptr, midModel->LinkByIndex(2));
+  EXPECT_NE(nullptr, midModel->LinkByIndex(3));
+  EXPECT_EQ(nullptr, midModel->LinkByIndex(4));
 
-  EXPECT_TRUE(midModel->LinkNameExists("L5"));
+  EXPECT_TRUE(midModel->LinkNameExists("L1"));
+  EXPECT_TRUE(midModel->LinkNameExists("L2"));
+  EXPECT_TRUE(midModel->LinkNameExists("L3"));
+  EXPECT_TRUE(midModel->LinkNameExists("L4"));
 
-  EXPECT_EQ(0u, midModel->JointCount());
+  EXPECT_EQ(3u, midModel->JointCount());
+  EXPECT_TRUE(midModel->JointNameExists("J1"));
+  EXPECT_TRUE(midModel->JointNameExists("J2"));
+  EXPECT_TRUE(midModel->JointNameExists("J3"));
 
-  EXPECT_EQ(0u, midModel->FrameCount());
+  EXPECT_EQ(2u, midModel->FrameCount());
+  EXPECT_TRUE(midModel->FrameNameExists("F1"));
+  EXPECT_TRUE(midModel->FrameNameExists("F2"));
 
-  EXPECT_EQ(0u, midModel->ModelCount());
+  EXPECT_EQ(1u, midModel->ModelCount());
+  EXPECT_NE(nullptr, midModel->ModelByIndex(0));
+  EXPECT_EQ(nullptr, midModel->ModelByIndex(1));
 
-  // test nested names from outer model
-  // TODO: the following expectations also fail due to the limitations of
-  // ModelNameExists and ModelByName not supporting names containing "::".
-  // const std::string midLinkNestedName = "M1::M2::L5";
-  // EXPECT_TRUE(outerModel->LinkNameExists(midLinkNestedName));
-  // EXPECT_NE(nullptr, outerModel->LinkByName(midLinkNestedName));
+  EXPECT_TRUE(midModel->ModelNameExists("M2"));
+
+  // Get the inner model of midModel
+  const sdf::Model *innerModel = midModel->ModelByIndex(0);
+  ASSERT_NE(nullptr, innerModel);
+  EXPECT_EQ("M2", innerModel->Name());
+  EXPECT_EQ(innerModel, midModel->ModelByName("M2"));
+  EXPECT_EQ(innerModel, outerModel->ModelByName("M1::M2"));
+
+  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, -0, 0),
+            innerModel->SemanticPose().RawPose());
+  EXPECT_EQ("F1", innerModel->SemanticPose().RelativeTo());
+
+  EXPECT_EQ(1u, innerModel->LinkCount());
+  EXPECT_NE(nullptr, innerModel->LinkByIndex(0));
+  EXPECT_EQ(nullptr, innerModel->LinkByIndex(1));
+
+  EXPECT_TRUE(innerModel->LinkNameExists("L5"));
+  EXPECT_NE(nullptr, innerModel->LinkByName("L5"));
+  EXPECT_TRUE(outerModel->LinkNameExists("M1::M2::L5"));
+
+  EXPECT_EQ(0u, innerModel->JointCount());
+
+  EXPECT_EQ(0u, innerModel->FrameCount());
+
+  EXPECT_EQ(0u, innerModel->ModelCount());
 }
 
 //////////////////////////////////////////////////

@@ -1,0 +1,5 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <!-- This is an example of an invalid file that has no top level model, actor or light -->
+
+</sdf>

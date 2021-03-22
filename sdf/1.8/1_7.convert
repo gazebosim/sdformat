@@ -1,3 +1,9 @@
 <convert name="sdf">
 
+  <convert name="world">
+    <convert name="model">
+      <unflatten/>
+    </convert>
+  </convert>
+
 </convert> <!-- End SDF -->
