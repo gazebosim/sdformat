@@ -4,6 +4,9 @@
   <link name='child'/>
   <model name='nested_model'>
     <link name='nested_link01'/>
+    <model name='nested_nested_model'>
+      <link name='nested_nested_link01'/>
+    </model>
   </model>
   <joint name='top_level_joint' type='revolute'>
     <parent>parent</parent>

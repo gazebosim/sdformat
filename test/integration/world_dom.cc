@@ -214,3 +214,87 @@ TEST(DOMWorld, LoadModelFrameSameName)
       SemanticPose().Resolve(pose, "ground").empty());
   EXPECT_EQ(Pose(0, -2, 3, 0, 0, 0), pose);
 }
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, NestedModels)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "world_nested_model.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  // Get the first world
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  EXPECT_EQ("world_nested_model", world->Name());
+  EXPECT_EQ(1u, world->ModelCount());
+  EXPECT_NE(nullptr, world->ModelByIndex(0));
+  EXPECT_EQ(nullptr, world->ModelByIndex(1));
+  EXPECT_EQ(nullptr, world->ModelByIndex(2));
+
+  EXPECT_FALSE(world->ModelNameExists("nested_model"));
+  EXPECT_FALSE(world->ModelNameExists("nested_nested_model"));
+  EXPECT_FALSE(world->ModelNameExists("nested_model::nested_nested_model"));
+  EXPECT_FALSE(world->ModelNameExists("top_level_model::nested_nested_model"));
+
+  EXPECT_TRUE(world->ModelNameExists("top_level_model"));
+  EXPECT_TRUE(world->ModelNameExists("top_level_model::nested_model"));
+  EXPECT_TRUE(
+      world->ModelNameExists(
+          "top_level_model::nested_model::nested_nested_model"));
+
+  EXPECT_EQ(nullptr, world->ModelByName("nested_model"));
+  EXPECT_EQ(nullptr, world->ModelByName("nested_nested_model"));
+  EXPECT_EQ(nullptr, world->ModelByName("nested_model::nested_nested_model"));
+
+  EXPECT_NE(nullptr, world->ModelByName("top_level_model"));
+  EXPECT_NE(nullptr, world->ModelByName("top_level_model::nested_model"));
+  EXPECT_NE(
+      nullptr,
+      world->ModelByName("top_level_model::nested_model::nested_nested_model"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, NestedFrames)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "world_nested_frame.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  // Get the first world
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  EXPECT_EQ("world_nested_frame", world->Name());
+  EXPECT_EQ(1u, world->FrameCount());
+  EXPECT_NE(nullptr, world->FrameByIndex(0));
+  EXPECT_EQ(nullptr, world->FrameByIndex(1));
+  EXPECT_EQ(nullptr, world->FrameByIndex(2));
+
+  EXPECT_FALSE(world->FrameNameExists("top_level_model_frame"));
+  EXPECT_FALSE(world->FrameNameExists("nested_model_frame"));
+  EXPECT_FALSE(world->FrameNameExists("nested_model::nested_model_frame"));
+
+  EXPECT_TRUE(world->FrameNameExists("world_frame"));
+  EXPECT_TRUE(world->FrameNameExists("top_level_model::top_level_model_frame"));
+  EXPECT_TRUE(
+      world->FrameNameExists(
+          "top_level_model::nested_model::nested_model_frame"));
+
+  EXPECT_EQ(nullptr, world->FrameByName("top_level_model_frame"));
+  EXPECT_EQ(nullptr, world->FrameByName("nested_model_frame"));
+  EXPECT_EQ(nullptr, world->FrameByName("nested_model::nested_model_frame"));
+
+  EXPECT_NE(nullptr, world->FrameByName("world_frame"));
+  EXPECT_NE(
+      nullptr, world->FrameByName("top_level_model::top_level_model_frame"));
+  EXPECT_NE(
+      nullptr,
+      world->FrameByName("top_level_model::nested_model::nested_model_frame"));
+}

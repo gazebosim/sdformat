@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="world_nested_model">
+    <model name='top_level_model'>
+      <link name='parent'/>
+      <link name='child'/>
+      <model name='nested_model'>
+        <link name='nested_link01'/>
+        <model name='nested_nested_model'>
+          <link name='nested_nested_link01'/>
+        </model>
+      </model>
+      <joint name='top_level_joint' type='revolute'>
+        <parent>parent</parent>
+        <child>child</child>
+        <axis>
+          <xyz>1 0 0</xyz>
+        </axis>
+      </joint>
+    </model>
+  </world>
+</sdf>

@@ -120,23 +120,32 @@ namespace sdf
 
     /// \brief Get the number of models that are immediate (not nested) children
     /// of this World object.
+    /// \remark ModelByName() can find nested models that are not immediate
+    /// children of this World object.
     /// \return Number of models contained in this World object.
     public: uint64_t ModelCount() const;
 
-    /// \brief Get an immediate (not nested) child model based on an index.
-    /// \param[in] _index Index of the model. The index should be in the
-    /// range [0..ModelCount()).
+    /// \brief Get an immediate (not recursively nested) child model based on an
+    /// index.
+    /// \param[in] _index Index of the model. The index should be in the range
+    /// [0..ModelCount()).
     /// \return Pointer to the model. Nullptr if the index does not exist.
     /// \sa uint64_t ModelCount() const
     public: const Model *ModelByIndex(const uint64_t _index) const;
 
     /// \brief Get a model based on a name.
     /// \param[in] _name Name of the model.
-    /// \return Pointer to the model. Nullptr if the name does not exist.
+    /// To get a model nested in other models, prefix the model name
+    /// with the sequence of nested model names, delimited by "::".
+    /// \return Pointer to the model. Nullptr if a model with the given name
+    /// does not exist.
+    /// \sa bool ModelNameExists(const std::string &_name) const
     public: const Model *ModelByName(const std::string &_name) const;
 
     /// \brief Get whether a model name exists.
     /// \param[in] _name Name of the model to check.
+    /// To check for a model nested in other models, prefix the model name with
+    /// the sequence of nested models containing this model, delimited by "::".
     /// \return True if there exists a model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
 
@@ -158,6 +167,8 @@ namespace sdf
 
     /// \brief Get the number of explicit frames that are immediate (not nested)
     /// children of this World object.
+    /// \remark FrameByName() can find explicit frames that are not immediate
+    /// children of this World object.
     /// \return Number of explicit frames contained in this World object.
     public: uint64_t FrameCount() const;
 
@@ -172,12 +183,16 @@ namespace sdf
 
     /// \brief Get an explicit frame based on a name.
     /// \param[in] _name Name of the explicit frame.
+    /// To get a frame in a nested model, prefix the frame name with the
+    /// sequence of nested models containing this frame, delimited by "::".
     /// \return Pointer to the explicit frame. Nullptr if the name does not
     /// exist.
     public: const Frame *FrameByName(const std::string &_name) const;
 
     /// \brief Get whether an explicit frame name exists.
     /// \param[in] _name Name of the explicit frame to check.
+    /// To check for a frame in a nested model, prefix the frame name with
+    /// the sequence of nested models containing this frame, delimited by "::".
     /// \return True if there exists an explicit frame with the given name.
     public: bool FrameNameExists(const std::string &_name) const;
 
