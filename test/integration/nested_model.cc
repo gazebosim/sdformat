@@ -1403,7 +1403,8 @@ TEST(NestedModel, IncludeElements)
   const std::string modelRootPath = sdf::filesystem::append(
       PROJECT_SOURCE_PATH, "test", "integration", "model");
 
-  sdf::setFindCallback(
+  sdf::ParserConfig config;
+  config.SetFindCallback(
       [&](const std::string &_file)
       {
         return sdf::filesystem::append(modelRootPath, _file);
@@ -1445,21 +1446,21 @@ TEST(NestedModel, IncludeElements)
           <name>test_box</name>
           <pose>1 2 3 0 0 0</pose>
           <placement_frame>link</placement_frame>
-          <plugin name="test_plugin" filename="test_plugin_file"/>
+          <plugin name='test_plugin' filename='test_plugin_file'/>
         </include>
-        <model name="test2">
+        <model name='test2'>
           <include>
             <uri>test_model</uri>
             <name>test_model</name>
             <pose>1 2 3 0 0 0</pose>
             <placement_frame>link</placement_frame>
-            <plugin name="test_plugin" filename="test_plugin_file"/>
+            <plugin name='test_plugin' filename='test_plugin_file'/>
           </include>
         </model>
       </world>
     </sdf>)";
     sdf::Root root;
-    sdf::Errors errors = root.LoadSdfString(stream.str());
+    sdf::Errors errors = root.LoadSdfString(stream.str(), config);
     EXPECT_TRUE(errors.empty()) << errors;
 
     auto *world = root.WorldByIndex(0);

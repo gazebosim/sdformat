@@ -493,7 +493,7 @@ namespace sdf
 
     /// \brief The <include> element that was used to load this entity. For
     /// example, given the following SDFormat:
-    /// <sdf version = '1.8'>
+    /// <sdf version='1.8'>
     ///   <world name='default'>
     ///     <include>
     ///       <uri>model_uri</uri>
@@ -501,7 +501,7 @@ namespace sdf
     ///     </include>
     ///   </world>
     /// </sdf>
-    /// The ElementPtr associated with the model loaded from 'model_uri' will
+    /// The ElementPtr associated with the model loaded from `model_uri` will
     /// have the includeElement set to
     ///     <include>
     ///       <uri>model_uri</uri>
