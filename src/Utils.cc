@@ -97,20 +97,35 @@ bool isValidFrameReference(const std::string &_name)
 // cppcheck-suppress unusedFunction
 void enforceConfigurablePolicyCondition(
   const sdf::EnforcementPolicy _policy,
-  const std::string &_message,
-  const ErrorCode _error,
+  const sdf::Error &_error,
   sdf::Errors &_errors)
 {
   switch (_policy)
   {
     case EnforcementPolicy::ERR:
-      _errors.push_back({_error, _message});
+      _errors.push_back(_error);
       break;
     case EnforcementPolicy::WARN:
-      sdfwarn << _message;
+      if (!_error.FilePath().has_value())
+        sdfwarn << _error.Message();
+      else if (!_error.LineNumber().has_value())
+        sdfwarn << "[" << _error.FilePath().value() << "]: "
+            << _error.Message();
+      else
+        sdfwarn << "[" << _error.FilePath().value() << ":L"
+            << _error.LineNumber().value() << "]: "
+            << _error.Message();
       break;
     case EnforcementPolicy::LOG:
-      sdfdbg << _message;
+      if (!_error.FilePath().has_value())
+        sdfdbg << _error.Message();
+      else if (!_error.LineNumber().has_value())
+        sdfdbg << "[" << _error.FilePath().value() << "]: "
+            << _error.Message();
+      else
+        sdfdbg << "[" << _error.FilePath().value() << ":L"
+            << _error.LineNumber().value() << "]: "
+            << _error.Message();
       break;
     default:
       throw std::runtime_error("Unhandled warning policy enum value");

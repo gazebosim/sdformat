@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<sdf version='1.8'>
+  <world name="world_nested_frame">
+
+    <frame name="world_frame"/>          <!-- VALID: Directly attached_to implicit world frame. -->
+
+    <model name="top_level_model">
+      <link name="L"/>
+      <model name="nested_model">
+        <link name="L"/>
+        <frame name="nested_model_frame" attached_to="L"/> <!-- VALID: Directly attached_to link top_level_model::L. -->
+      </model>
+      <frame name="top_level_model_frame" attached_to="nested_model::L"/> <!-- VALID: Directly attached_to link nested_model::L. -->
+      <joint name="J1" type="fixed">
+        <parent>L</parent>
+        <child>top_level_model_frame</child>
+      </joint>
+    </model>
+  </world>
+</sdf>

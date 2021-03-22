@@ -1,0 +1,82 @@
+<sdf version='1.7'>
+  <world name="default">
+    <model name='test_nested_model_with_frames'>
+      <frame name='test_model_with_frames::__model__' attached_to='test_model_with_frames::L1'>
+        <pose relative_to='__model__'>0 10 0 1.5708 -0 0</pose>
+      </frame>
+      <frame name='test_model_with_frames::F1' attached_to='test_model_with_frames::__model__'>
+        <pose>0 0 0 1.5708 -0 0</pose>
+      </frame>
+      <frame name='test_model_with_frames::F2' attached_to='test_model_with_frames::__model__'>
+        <pose relative_to='test_model_with_frames::F1'>0 0 0 0 0.785398 0</pose>
+      </frame>
+      <link name='test_model_with_frames::L1'>
+        <pose relative_to='test_model_with_frames::F1'>0 0 0 0 -0 0</pose>
+        <visual name='V1'>
+          <pose relative_to='test_model_with_frames::F2'>0 0 0 0 -0 0</pose>
+          <geometry>
+            <sphere>
+              <radius>1</radius>
+            </sphere>
+          </geometry>
+        </visual>
+        <collision name='C1'>
+          <pose relative_to='test_model_with_frames::__model__'>0 0 0 0 -0 0</pose>
+          <geometry>
+            <sphere>
+              <radius>1</radius>
+            </sphere>
+          </geometry>
+        </collision>
+      </link>
+      <link name='test_model_with_frames::L2'>
+        <pose relative_to='test_model_with_frames::F1'>1 0 0 0 -0 0</pose>
+      </link>
+      <link name='test_model_with_frames::L3'>
+        <pose relative_to='test_model_with_frames::L2'>0 1 0 0 -0 0</pose>
+      </link>
+      <link name='test_model_with_frames::L4'>
+        <pose relative_to='test_model_with_frames::__model__'>0 0 1 0 -0 0</pose>
+      </link>
+      <joint name='test_model_with_frames::J1' type='universal'>
+        <pose relative_to='test_model_with_frames::L1'>0 0 0 0 -0 0</pose>
+        <parent>test_model_with_frames::L1</parent>
+        <child>test_model_with_frames::L2</child>
+        <axis>
+          <xyz expressed_in='test_model_with_frames::F2'>0 0 1</xyz>
+          <limit>
+            <lower>-1e+16</lower>
+            <upper>1e+16</upper>
+          </limit>
+        </axis>
+        <axis2>
+          <xyz expressed_in='test_model_with_frames::F2'>1 0 0</xyz>
+          <limit/>
+        </axis2>
+      </joint>
+      <joint name='test_model_with_frames::J2' type='revolute'>
+        <pose>0 0 1 0 -0 0</pose>
+        <parent>test_model_with_frames::L2</parent>
+        <child>test_model_with_frames::L3</child>
+        <axis>
+          <xyz expressed_in='test_model_with_frames::__model__'>0 0 1</xyz>
+          <limit>
+            <lower>-1e+16</lower>
+            <upper>1e+16</upper>
+          </limit>
+        </axis>
+      </joint>
+      <joint name='test_model_with_frames::J3' type='fixed'>
+        <pose relative_to='test_model_with_frames::__model__'>1 0 1 0 -0 0</pose>
+        <parent>test_model_with_frames::L3</parent>
+        <child>test_model_with_frames::L4</child>
+      </joint>
+      <model name='test_model_with_frames::M2'>
+        <pose relative_to='test_model_with_frames::F1'>1 0 0 0 -0 0</pose>
+        <link name='L5'>
+          <pose>1 0 0 0 -0 0</pose>
+        </link>
+      </model>
+    </model>
+  </world>
+</sdf>
