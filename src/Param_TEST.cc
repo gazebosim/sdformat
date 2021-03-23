@@ -291,6 +291,13 @@ TEST(Param, InvalidConstructor)
 }
 
 ////////////////////////////////////////////////////
+TEST(Param, InvalidColorConstructor)
+{
+  ASSERT_THROW(sdf::Param("key", "color", "8 20 67 23", false, "description"),
+               sdf::AssertionInternalError);
+}
+
+////////////////////////////////////////////////////
 TEST(Param, SetDescription)
 {
   sdf::Param uint64Param("key", "uint64_t", "1", false, "description");
@@ -392,7 +399,7 @@ TEST(Param, GetAny)
   sdf::Param timeParam("key", "time", "8 20", false, "description");
   EXPECT_TRUE(timeParam.GetAny(anyValue));
 
-  sdf::Param colorParam("key", "color", "8 20 67 23", false, "description");
+  sdf::Param colorParam("key", "color", "0 0.1 0.2 0.3", false, "description");
   EXPECT_TRUE(colorParam.GetAny(anyValue));
 
   sdf::Param vector3Param("key", "vector3", "8.1 20.24 67.7", false,

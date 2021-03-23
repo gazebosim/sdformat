@@ -21,6 +21,7 @@
 #include <locale>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include <locale.h>
 #include <math.h>
@@ -360,6 +361,73 @@ bool ParseUsingStringStream(const std::string &_input, const std::string &_key,
 }
 
 //////////////////////////////////////////////////
+/// \brief Helper function for Param::ValueFromString for parsing colors
+/// This checks the color components specified in _input are rgb or rgba
+/// (expects 3 or 4 values) and each value is between [0,1]. When only 3 values
+/// are present (rgb), then alpha is set to 1.
+/// \param[in] _input Input string.
+/// \param[in] _key Key of the parameter, used for error message.
+/// \param[out] _value This will be set with the parsed value.
+/// \return True if parsing colors succeeded.
+bool ParseColorUsingStringStream(const std::string &_input,
+    const std::string &_key, ParamPrivate::ParamVariant &_value)
+{
+  StringStreamClassicLocale ss(_input);
+  std::string token;
+  std::vector<float> colors;
+  float c;  // r,g,b,a values
+  bool isValidColor = true;
+  while (ss >> token)
+  {
+    try
+    {
+      c = std::stof(token);
+      colors.push_back(c);
+    }
+    // Catch invalid argument exception from std::stof
+    catch(std::invalid_argument &)
+    {
+      sdferr << "Invalid argument. Unable to set value ["<< token
+             << "] for key [" << _key << "].\n";
+      isValidColor = false;
+      break;
+    }
+    // Catch out of range exception from std::stof
+    catch(std::out_of_range &)
+    {
+      sdferr << "Out of range. Unable to set value [" << token
+             << "] for key [" << _key << "].\n";
+      isValidColor = false;
+      break;
+    }
+
+    if (c < 0.0f || c > 1.0f)
+    {
+      isValidColor = false;
+      break;
+    }
+  }
+
+  size_t colorSize = colors.size();
+  if (isValidColor && colorSize == 3u)
+    colors.push_back(1.0f);
+  else if (colorSize != 4u)
+    isValidColor = false;
+
+  if (isValidColor)
+  {
+    _value = ignition::math::Color(colors[0], colors[1], colors[2], colors[3]);
+  }
+  else
+  {
+    sdferr << "The value <" << _key <<
+        ">" << _input << "</" << _key << "> is invalid.\n";
+  }
+
+  return isValidColor;
+}
+
+//////////////////////////////////////////////////
 bool Param::ValueFromString(const std::string &_value)
 {
   // Under some circumstances, latin locales (es_ES or pt_BR) will return a
@@ -448,22 +516,8 @@ bool Param::ValueFromString(const std::string &_value)
     else if (this->dataPtr->typeName == "ignition::math::Color" ||
              this->dataPtr->typeName == "color")
     {
-      // The insertion operator (>>) expects 4 values, but the last value (the
-      // alpha) is optional. We first try to parse assuming the alpha is
-      // specified. If that fails, we append the default value of alpha to the
-      // string and try to parse again.
-      bool result = ParseUsingStringStream<ignition::math::Color>(
-          tmp, this->dataPtr->key, this->dataPtr->value);
-
-      if (!result)
-      {
-        ignition::math::Color colortmp;
-        return ParseUsingStringStream<ignition::math::Color>(
-            tmp + " " + std::to_string(colortmp.A()), this->dataPtr->key,
-            this->dataPtr->value);
-      }
-      else
-        return true;
+      return ParseColorUsingStringStream(
+                tmp, this->dataPtr->key, this->dataPtr->value);
     }
     else if (this->dataPtr->typeName == "ignition::math::Vector2i" ||
              this->dataPtr->typeName == "vector2i")
