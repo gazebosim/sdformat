@@ -384,9 +384,19 @@ bool ParseColorUsingStringStream(const std::string &_input,
       c = std::stof(token);
       colors.push_back(c);
     }
-    catch(const std::exception &/*e*/)
+    // Catch invalid argument exception from std::stof
+    catch(std::invalid_argument &)
     {
-      sdferr << "Error converting color value [" << token << "] to a float\n";
+      sdferr << "Invalid argument. Unable to set value ["<< token
+             << "] for key [" << _key << "].\n";
+      isValidColor = false;
+      break;
+    }
+    // Catch out of range exception from std::stof
+    catch(std::out_of_range &)
+    {
+      sdferr << "Out of range. Unable to set value [" << token
+             << "] for key [" << _key << "].\n";
       isValidColor = false;
       break;
     }
