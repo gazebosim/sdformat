@@ -331,27 +331,30 @@ const Model *World::ModelByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 bool World::ModelNameExists(const std::string &_name) const
 {
-  for (auto const &m : this->dataPtr->models)
-  {
-    if (m.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return nullptr != this->ModelByName(_name);
 }
 
 /////////////////////////////////////////////////
 const Model *World::ModelByName(const std::string &_name) const
 {
+  auto index = _name.find("::");
+  const std::string nextModelName = _name.substr(0, index);
+  const Model *nextModel = nullptr;
+
   for (auto const &m : this->dataPtr->models)
   {
-    if (m.Name() == _name)
+    if (m.Name() == nextModelName)
     {
-      return &m;
+      nextModel = &m;
+      break;
     }
   }
-  return nullptr;
+
+  if (nullptr != nextModel && index != std::string::npos)
+  {
+    return nextModel->ModelByName(_name.substr(index + 2));
+  }
+  return nextModel;
 }
 
 /////////////////////////////////////////////////
@@ -413,19 +416,28 @@ const Frame *World::FrameByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 bool World::FrameNameExists(const std::string &_name) const
 {
-  for (auto const &f : this->dataPtr->frames)
-  {
-    if (f.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return nullptr != this->FrameByName(_name);
 }
 
 /////////////////////////////////////////////////
 const Frame *World::FrameByName(const std::string &_name) const
 {
+  auto index = _name.rfind("::");
+  if (index != std::string::npos)
+  {
+    const Model *model = this->ModelByName(_name.substr(0, index));
+    if (nullptr != model)
+    {
+      return model->FrameByName(_name.substr(index + 2));
+    }
+
+    // The nested model name preceding the last "::" could not be found.
+    // For now, try to find a link that matches _name exactly.
+    // When "::" are reserved and not allowed in names, then uncomment
+    // the following line to return a nullptr.
+    // return nullptr;
+  }
+
   for (auto const &f : this->dataPtr->frames)
   {
     if (f.Name() == _name)

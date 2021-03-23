@@ -196,6 +196,18 @@ TEST(DOMRoot, NestedModel)
   EXPECT_TRUE(model->LinkNameExists(linkNestedName));
   const sdf::Link *nestedLink01 = model->LinkByName(linkNestedName);
   EXPECT_NE(nullptr, nestedLink01);
+
+  // Recursively nested
+  EXPECT_EQ(nullptr, model->ModelByName("nested_nested_model"));
+  EXPECT_FALSE(model->ModelNameExists("nested_nested_model"));
+
+  EXPECT_TRUE(model->ModelNameExists("nested_model::nested_nested_model"));
+  const sdf::Model *nested_nested_model =
+      model->ModelByName("nested_model::nested_nested_model");
+  ASSERT_NE(nullptr, nested_nested_model);
+  const sdf::Link *nested_nested_link =
+      nested_nested_model->LinkByName("nested_nested_link01");
+  EXPECT_NE(nullptr, nested_nested_link);
 }
 
 /////////////////////////////////////////////////
