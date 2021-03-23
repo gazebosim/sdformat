@@ -385,8 +385,9 @@ namespace sdf
     public: std::string GetInclude() const SDF_DEPRECATED(11.0);
 
     /// \brief Set the <include> element that was used to load this element.
-    /// This set by the parser on the first element of the included object (eg.
-    /// Model, Actor, Light, etc). It is not passed down to children elements.
+    /// This is set by the parser on the first element of the included object
+    /// (eg. Model, Actor, Light, etc). It is not passed down to children
+    /// elements.
     /// \param[in] _includeELem The <include> Element
     public: void SetIncludeElement(sdf::ElementPtr _includeElem);
 
