@@ -16,6 +16,8 @@
  */
 
 #include "sdf/InterfaceModel.hh"
+#include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 
 namespace sdf
 {
@@ -79,12 +81,6 @@ bool InterfaceModel::Static() const
 }
 
 /////////////////////////////////////////////////
-const sdf::RepostureFunction& InterfaceModel::RepostureFunction() const
-{
-  return this->dataPtr->repostureFunction;
-}
-
-/////////////////////////////////////////////////
 const std::string &InterfaceModel::CanonicalLinkName() const
 {
   return this->dataPtr->canonicalLinkName;
@@ -144,6 +140,23 @@ void InterfaceModel::AddLink(sdf::InterfaceLink _link)
 const std::vector<sdf::InterfaceLink> &InterfaceModel::Links() const
 {
   return this->dataPtr->links;
+}
+
+/////////////////////////////////////////////////
+void InterfaceModel::InvokeRespostureFunction(
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph) const
+{
+  if (this->dataPtr->repostureFunction)
+  {
+    this->dataPtr->repostureFunction(
+        sdf::InterfaceModelPoseGraph(this->dataPtr->name, _graph));
+  }
+
+  for (const auto &nestedIfaceModel : this->dataPtr->nestedModels)
+  {
+    nestedIfaceModel->InvokeRespostureFunction(
+        _graph.ChildModelScope(this->Name()));
+  }
 }
 }
 }

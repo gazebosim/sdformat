@@ -701,25 +701,62 @@ TEST_F(InterfaceAPI, Reposturing)
   const std::string testFile = sdf::filesystem::append(PROJECT_SOURCE_PATH,
       "test", "sdf", "include_with_interface_api_reposture.sdf");
 
-  std::unordered_map<std::string, Pose3d> modelPosesAfterReposture;
+  std::unordered_map<std::string, sdf::InterfaceModelPtr> models;
+  std::unordered_map<std::string, Pose3d> posesAfterReposture;
+
+  // Create a resposture callback function for a given absolute model name. The
+  // name is used to store poses in `posesAfterReposture` as well as to lookup
+  // interface models in `models`
+  auto makeRepostureFunc = [&](const std::string &_absoluteName)
+  {
+    auto repostureFunc =
+        [modelName = _absoluteName, &models, &posesAfterReposture](
+            const sdf::InterfaceModelPoseGraph &_graph)
+    {
+      {
+        ignition::math::Pose3d pose;
+        sdf::Errors errors =
+            _graph.ResolveNestedModelFramePoseInWorldFrame(pose);
+        EXPECT_TRUE(errors.empty()) << errors;
+        posesAfterReposture[modelName] = pose;
+      }
+
+      auto modelIt = models.find(modelName);
+      if (modelIt != models.end())
+      {
+        for (const auto &link : modelIt->second->Links())
+        {
+          ignition::math::Pose3d pose;
+          sdf::Errors errors = _graph.ResolveNestedFramePose(pose, link.Name());
+          EXPECT_TRUE(errors.empty()) << errors;
+          posesAfterReposture[sdf::JoinName(modelName, link.Name())] = pose;
+        }
+      }
+    };
+    return repostureFunc;
+  };
+
   auto repostureTestParser =
       [&](const sdf::NestedInclude &_include, sdf::Errors &)
   {
-    std::string modelName = sdf::JoinName(_include.absoluteParentName,
-                              *_include.localModelName);
-    auto repostureFunc = [modelName = modelName, &modelPosesAfterReposture](
-                             const sdf::InterfaceModelPoseGraph &_graph)
-    {
-      ignition::math::Pose3d pose;
-      sdf::Errors errors = _graph.ResolveNestedModelFramePoseInWorldFrame(pose);
-      EXPECT_TRUE(errors.empty()) << errors;
-      modelPosesAfterReposture[modelName] = pose;
-    };
+    const std::string absoluteModelName =
+        sdf::JoinName(_include.absoluteParentName, *_include.localModelName);
 
     auto model = std::make_shared<sdf::InterfaceModel>(*_include.localModelName,
-        repostureFunc, false, "base_link",
+        makeRepostureFunc(absoluteModelName), false, "base_link",
         _include.includeRawPose.value_or(Pose3d {}));
     model->AddLink({"base_link", {}});
+    models[absoluteModelName] = model;
+
+    const std::string absoluteNestedModelName =
+        sdf::JoinName(absoluteModelName, "nested_model");
+    auto nestedModel = std::make_shared<sdf::InterfaceModel>("nested_model",
+        makeRepostureFunc(absoluteNestedModelName), false, "nested_link",
+        Pose3d(3, 0, 0, 0, 0, 0));
+    nestedModel->AddLink({"nested_link", Pose3d(0, 0, 0, 0.1, 0, 0)});
+    models[absoluteNestedModelName] = nestedModel;
+
+    model->AddNestedModel(nestedModel);
     return model;
   };
 
@@ -732,12 +769,35 @@ TEST_F(InterfaceAPI, Reposturing)
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile, this->config);
   EXPECT_TRUE(errors.empty()) << errors;
-  EXPECT_EQ(2u, modelPosesAfterReposture.size());
-  ASSERT_EQ(1u, modelPosesAfterReposture.count("M0"));
-  ASSERT_EQ(1u, modelPosesAfterReposture.count("parent_model::M1"));
-  EXPECT_EQ(Pose3d(1, 2, 0, 0, 0, 0), modelPosesAfterReposture["M0"]);
-  EXPECT_EQ(
-      Pose3d(1, 2, 3, 0.1, 0, 0), modelPosesAfterReposture["parent_model::M1"]);
+  auto checkPose =
+      [&posesAfterReposture](
+          const std::string &_name, const Pose3d &_expectedPose)
+  {
+    auto it = posesAfterReposture.find(_name);
+    if (it == posesAfterReposture.end())
+      return testing::AssertionFailure() << _name << " not found in map";
+
+    if (_expectedPose != it->second)
+    {
+      return testing::AssertionFailure()
+          << "Expected pose: " << _expectedPose << " actual: " << it->second;
+    }
+
+    return testing::AssertionSuccess();
+  };
+  // There are two included models using a custom parser.
+  // In each of the included models, there are two models and two links.
+  EXPECT_EQ(8u, posesAfterReposture.size());
+  EXPECT_TRUE(checkPose("M0", {1, 2, 0, 0, 0, 0}));
+  EXPECT_TRUE(checkPose("M0::base_link", {1, 2, 0, 0, 0, 0}));
+  EXPECT_TRUE(checkPose("M0::nested_model", {4, 2, 0, 0, 0, 0}));
+  EXPECT_TRUE(checkPose("M0::nested_model::nested_link", {4, 2, 0, 0.1, 0, 0}));
+  EXPECT_TRUE(checkPose("parent_model::M1", {1, 2, 3, 0.1, 0, 0}));
+  EXPECT_TRUE(checkPose("parent_model::M1::base_link", {1, 2, 3, 0.1, 0, 0}));
+  EXPECT_TRUE(
+      checkPose("parent_model::M1::nested_model", {4, 2, 3, 0.1, 0, 0}));
+  EXPECT_TRUE(checkPose(
+      "parent_model::M1::nested_model::nested_link", {4, 2, 3, 0.2, 0, 0}));
 }
 
 /////////////////////////////////////////////////

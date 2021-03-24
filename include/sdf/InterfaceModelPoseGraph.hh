@@ -35,6 +35,7 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE
 {
 // Forward declarations.
+class InterfaceModel;
 struct PoseRelativeToGraph;
 template <typename T>
 class ScopedGraph;
@@ -62,8 +63,7 @@ class SDFORMAT_VISIBLE InterfaceModelPoseGraph
   private: InterfaceModelPoseGraph(const std::string &_name,
                const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph);
 
-  friend class Model;
-  friend class World;
+  friend class InterfaceModel;
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)
 };

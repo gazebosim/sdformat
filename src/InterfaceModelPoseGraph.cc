@@ -57,21 +57,20 @@ sdf::Errors InterfaceModelPoseGraph::ResolveNestedFramePose(
     ignition::math::Pose3d &_pose, const std::string &_frameName,
     const std::string &_relativeTo) const
 {
-  const auto vertexId = this->dataPtr->modelGraph.VertexIdByName(_frameName);
-  if (ignition::math::graph::kNullId == vertexId)
-  {
-    return {sdf::Error(sdf::ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
-        "Frame name [" + _frameName + "] not found in pose graph.")};
-  }
-
   if (_relativeTo == "world")
   {
+    const auto vertexId = this->dataPtr->modelGraph.VertexIdByName(_frameName);
+    if (ignition::math::graph::kNullId == vertexId)
+    {
+      return {sdf::Error(sdf::ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+          "Frame name [" + _frameName + "] not found in pose graph.")};
+    }
     return sdf::resolvePose(_pose, this->dataPtr->rootGraph, vertexId,
         this->dataPtr->rootGraph.ScopeVertexId());
   }
 
-  return sdf::resolvePose(_pose, this->dataPtr->modelGraph,
-      this->dataPtr->modelVertexId, this->dataPtr->modelGraph.ScopeVertexId());
+  return sdf::resolvePose(
+      _pose, this->dataPtr->modelGraph, _frameName, _relativeTo);
 }
 }
 }

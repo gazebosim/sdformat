@@ -666,13 +666,7 @@ void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
   }
   for (auto &ifaceModelPair : this->dataPtr->interfaceModels)
   {
-    const auto &repostureFunc =
-        ifaceModelPair.second->RepostureFunction();
-    if (repostureFunc)
-    {
-      repostureFunc(sdf::InterfaceModelPoseGraph(
-          ifaceModelPair.second->Name(), childPoseGraph));
-    }
+    ifaceModelPair.second->InvokeRespostureFunction(childPoseGraph);
   }
   for (auto &link : this->dataPtr->links)
   {

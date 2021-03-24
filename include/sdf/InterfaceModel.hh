@@ -40,6 +40,11 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE
 {
 class InterfaceModel;
+class Model;
+struct PoseRelativeToGraph;
+template <typename T>
+class ScopedGraph;
+class World;
 
 using InterfaceModelPtr = std::shared_ptr<InterfaceModel>;
 using InterfaceModelConstPtr = std::shared_ptr<const InterfaceModel>;
@@ -72,10 +77,6 @@ class SDFORMAT_VISIBLE InterfaceModel
   /// \brief Get the name of the model.
   /// \return Local name of the model.
   public: const std::string &Name() const;
-
-  /// \brief Get the reposture callback function.
-  /// \return The reposture callback function.
-  public: const sdf::RepostureFunction &RepostureFunction() const;
 
   /// \brief Get whether the model is static.
   /// \return Whether the model is static.
@@ -123,6 +124,13 @@ class SDFORMAT_VISIBLE InterfaceModel
   /// \brief Gets registered links.
   public: const std::vector<sdf::InterfaceLink> &Links() const;
 
+  /// \brief Recursively invoke the reposture callback if a the callback is set.
+  /// \param[in] _poseGraph Object used for resolving poses.
+  private: void InvokeRespostureFunction(
+      sdf::ScopedGraph<PoseRelativeToGraph> _graph) const;
+
+  friend World;
+  friend Model;
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)
 };
