@@ -27,7 +27,6 @@
 #define SDF_PROTOCOL_VERSION "${SDF_PROTOCOL_VERSION}"
 #define SDF_TMP_DIR "tmp-sdf/"
 
-// cppcheck-suppress missingInclude
 #include "env.hh"
 
 #include <sdf/Filesystem.hh>
