@@ -228,6 +228,8 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
       include.placementFrame = includeElem->Get<std::string>("placement_frame");
     }
 
+    // Iterate through custom model parsers in reverse per the SDFormat proposal
+    // See http://sdformat.org/tutorials?tut=composition_proposal&cat=pose_semantics_docs&#1-5-minimal-libsdformat-interface-types-for-non-sdformat-models
     const auto &customParsers =  _config.CustomModelParsers();
     for (auto parserIt = customParsers.rbegin();
          parserIt != customParsers.rend(); ++parserIt)

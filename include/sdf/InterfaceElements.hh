@@ -112,6 +112,9 @@ struct SDFORMAT_VISIBLE NestedInclude
 ///
 /// If an exception is raised by this callback, libsdformat will *not* try to
 /// intercept the exception.
+///
+/// To see an example implementation, please refer to
+/// test/integration/interface_api.cc
 using CustomModelParser =
     std::function<sdf::InterfaceModelPtr(const sdf::NestedInclude &, Errors &)>;
 }

@@ -284,7 +284,7 @@ static Errors resolveModelPoseWithPlacementFrame(
 
 /////////////////////////////////////////////////
 Errors buildFrameAttachedToGraph(
-    ScopedGraph<FrameAttachedToGraph> &_out, const Model *_model, bool _root)
+    ScopedGraph<FrameAttachedToGraph> &_out, const Model *_model, bool _isRoot)
 {
   Errors errors;
 
@@ -314,7 +314,7 @@ Errors buildFrameAttachedToGraph(
   const std::string scopeContextName = "__model__";
 
   auto rootId = ignition::math::graph::kNullId;
-  if (_root)
+  if (_isRoot)
   {
     // The __root__ vertex identifies the scope that contains a root level
     // model. In the PoseRelativeTo graph, this vertex is connected to the model
@@ -846,7 +846,7 @@ Errors buildFrameAttachedToGraph(
 
 /////////////////////////////////////////////////
 Errors buildPoseRelativeToGraph(
-    ScopedGraph<PoseRelativeToGraph> &_out, const Model *_model, bool _root)
+    ScopedGraph<PoseRelativeToGraph> &_out, const Model *_model, bool _isRoot)
 {
   Errors errors;
 
@@ -866,7 +866,7 @@ Errors buildPoseRelativeToGraph(
   const std::string scopeContextName = "__model__";
   auto rootId = ignition::math::graph::kNullId;
   // add the model frame vertex first
-  if (_root)
+  if (_isRoot)
   {
     _out = _out.AddScopeVertex(
         "", "__root__", scopeContextName, sdf::FrameType::MODEL);
@@ -1190,7 +1190,7 @@ Errors buildPoseRelativeToGraph(
     outModel.AddEdge({relativeToId, nestedModelId}, resolvedModelPose);
   }
 
-  if (_root)
+  if (_isRoot)
   {
     // We have to add this edge now with an identity pose to be able to call
     // resolveModelPoseWithPlacementFrame, which in turn calls
