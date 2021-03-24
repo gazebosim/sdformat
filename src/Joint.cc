@@ -431,14 +431,7 @@ const Sensor *Joint::SensorByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 bool Joint::SensorNameExists(const std::string &_name) const
 {
-  for (auto const &s : this->dataPtr->sensors)
-  {
-    if (s.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return nullptr != this->SensorByName(_name);
 }
 
 /////////////////////////////////////////////////
