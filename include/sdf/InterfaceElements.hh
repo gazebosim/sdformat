@@ -56,9 +56,9 @@ struct SDFORMAT_VISIBLE NestedInclude
   std::string absoluteParentName;
 
   /// \brief Name relative to immediate parent as specified in
-  /// `//include/@name`.
+  /// `//include/@name`. This is nullopt if `//include/name` is not set.
   /// Example: `my_new_model`
-  std::string localModelName;
+  std::optional<std::string> localModelName;
 
   /// \brief Whether the model is static as defined by `//include/static`. This
   /// is nullopt if `//include/static` is not set.

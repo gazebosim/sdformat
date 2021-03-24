@@ -262,9 +262,8 @@ sdf::InterfaceModelPtr customTomlParser(
   toml::Document doc = toml::parseToml(_include.resolvedFileName, _errors);
   if (_errors.empty())
   {
-    const std::string modelName = _include.localModelName.empty()
-        ? doc["name"].ParamGet<std::string>()
-        : _include.localModelName;
+    const std::string modelName =
+        _include.localModelName.value_or(doc["name"].ParamGet<std::string>());
 
     if (_include.isStatic.has_value())
     {
@@ -338,7 +337,7 @@ TEST_F(InterfaceAPI, NestedIncludeData)
     EXPECT_EQ(fileName, _include.uri);
     EXPECT_EQ(sdf::filesystem::append(this->modelDir, fileName),
         _include.resolvedFileName);
-    EXPECT_EQ("box", _include.localModelName);
+    EXPECT_EQ("box", *_include.localModelName);
     EXPECT_TRUE(_include.isStatic.has_value());
     EXPECT_TRUE(_include.isStatic.value());
 
@@ -371,7 +370,7 @@ TEST_F(InterfaceAPI, NestedIncludeData)
     EXPECT_EQ(fileName, _include.uri);
     EXPECT_EQ(
         sdf::filesystem::append(modelDir, fileName), _include.resolvedFileName);
-    EXPECT_EQ("", _include.localModelName);
+    EXPECT_FALSE(_include.localModelName.has_value());
     EXPECT_FALSE(_include.isStatic);
     EXPECT_EQ(nullptr, _include.virtualCustomElements->GetFirstElement());
 
@@ -707,7 +706,7 @@ TEST_F(InterfaceAPI, Reposturing)
       [&](const sdf::NestedInclude &_include, sdf::Errors &)
   {
     std::string modelName = sdf::JoinName(_include.absoluteParentName,
-                              _include.localModelName);
+                              *_include.localModelName);
     auto repostureFunc = [modelName = modelName, &modelPosesAfterReposture](
                              const sdf::InterfaceModelPoseGraph &_graph)
     {
@@ -717,7 +716,7 @@ TEST_F(InterfaceAPI, Reposturing)
       modelPosesAfterReposture[modelName] = pose;
     };
 
-    auto model = std::make_shared<sdf::InterfaceModel>(_include.localModelName,
+    auto model = std::make_shared<sdf::InterfaceModel>(*_include.localModelName,
         repostureFunc, false, "base_link",
         _include.includeRawPose.value_or(Pose3d {}));
     model->AddLink({"base_link", {}});
@@ -750,7 +749,7 @@ TEST_F(InterfaceAPI, PlacementFrame)
       [&](const sdf::NestedInclude &_include, sdf::Errors &)
   {
     std::string modelName =
-        sdf::JoinName(_include.absoluteParentName, _include.localModelName);
+        sdf::JoinName(_include.absoluteParentName, *_include.localModelName);
     auto repostureFunc = [modelName = modelName, &modelPosesAfterReposture](
                              const sdf::InterfaceModelPoseGraph &_graph)
     {
@@ -760,7 +759,7 @@ TEST_F(InterfaceAPI, PlacementFrame)
       modelPosesAfterReposture[modelName] = pose;
     };
 
-    auto model = std::make_shared<sdf::InterfaceModel>(_include.localModelName,
+    auto model = std::make_shared<sdf::InterfaceModel>(*_include.localModelName,
         repostureFunc, false, "base_link",
         _include.includeRawPose.value_or(Pose3d {}));
     model->AddLink({"base_link", Pose3d(0, 1, 0, 0, 0, 0)});

@@ -193,7 +193,10 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
       include.absoluteParentName = *absoluteParentName;
     }
 
-    include.localModelName = includeElem->Get<std::string>("name", "").first;
+    if (includeElem->HasElement("name"))
+    {
+      include.localModelName = includeElem->Get<std::string>("name");
+    }
     if (includeElem->HasElement("static"))
     {
       include.isStatic = includeElem->Get<bool>("static");
