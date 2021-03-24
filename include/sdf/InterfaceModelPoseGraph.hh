@@ -48,6 +48,13 @@ class SDFORMAT_VISIBLE InterfaceModelPoseGraph
   public: sdf::Errors ResolveNestedModelFramePoseInWorldFrame(
               ignition::math::Pose3d &_pose) const;
 
+  /// \brief Resolve the pose a frame within the model's scope.
+  /// \param[in] relative_to Can be "world", or any frame within the nested
+  ///   model's frame graph. (It cannot reach outside of this model).
+  public: sdf::Errors ResolveNestedFramePose(ignition::math::Pose3d &_pose,
+              const std::string &_frameName,
+              const std::string &_relativeTo = "world") const;
+
   /// \brief Private constructor
   /// \param[in] _name Interface model associated with this object
   /// \param[in] _graph Pose relative-to graph at the scope of the interface
