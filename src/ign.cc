@@ -41,7 +41,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
   {
     for (auto &error : errors)
     {
-      std::cerr << "Error: " << error.Message() << std::endl;
+      std::cerr << error << std::endl;
     }
     return -1;
   }

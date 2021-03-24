@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="default">
+
+    <include>
+      <uri>missing_model</uri>
+    </include>
+
+  </world>
+</sdf>
