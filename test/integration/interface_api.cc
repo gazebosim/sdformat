@@ -52,15 +52,11 @@ std::string appendPrefix(
 
 std::string keyType(const std::string &_key)
 {
-  static std::unordered_map<std::string, std::string> keyTypes {
-      {"pose", "pose"},
-      {"static", "bool"},
-  };
+  if (_key == "pose")
+    return "pose";
+  else if (_key == "static")
+    return "bool";
 
-  if (auto it = keyTypes.find(_key); it != keyTypes.end())
-  {
-    return it->second;
-  }
   return "string";
 }
 
@@ -211,10 +207,9 @@ Document parseToml(const std::string &_filePath, sdf::Errors &_errors)
   }
 
   fs.close();
-  // std::cout << "Parsed toml:" << "\n" << doc << std::endl;
   return doc;
 }
-}
+}  // namespace toml
 
 sdf::InterfaceModelPtr parseModel(toml::Value &_doc,
     const std::string &_modelName)
@@ -285,9 +280,19 @@ sdf::InterfaceModelPtr customTomlParser(
   return nullptr;
 }
 
+
+bool endsWith(const std::string &_str, const std::string &_suffix)
+{
+  if (_suffix.size() > _str.size())
+  {
+    return false;
+  }
+  const std::size_t startPos = _str.size() - _suffix.size();
+  return _str.compare(startPos, _suffix.size(), _suffix) == 0;
+}
+
 class InterfaceAPI : public ::testing::Test
 {
-  // cppcheck-suppress unusedFunction
   protected: void SetUp() override
   {
     this->modelDir = sdf::filesystem::append(
@@ -312,7 +317,7 @@ TEST_F(InterfaceAPI, NestedIncludeData)
   <world name="default">
     <frame name="F1"/>
     <include>
-      <uri>test_file.yaml</uri>
+      <uri>file_wont_be_parsed.nonce_1</uri>
       <name>box</name>
       <pose relative_to="F1">1 0 0 0 0 0</pose>
       <extra>
@@ -322,18 +327,18 @@ TEST_F(InterfaceAPI, NestedIncludeData)
       <static>1</static>
     </include>
     <include>
-      <uri>test_file.toml</uri>
+      <uri>file_wont_be_parsed.nonce_2</uri>
     </include>
   </world>
 </sdf>)";
 
-  auto testYamlParser =
+  auto testNonce1Parser =
       [&](const sdf::NestedInclude &_include, sdf::Errors &_errors)
   {
-    if (_include.uri.find(".yaml") == std::string::npos)
+    if (!endsWith(_include.uri, ".nonce_1"))
       return nullptr;
 
-    const std::string fileName = "test_file.yaml";
+    const std::string fileName = "file_wont_be_parsed.nonce_1";
     EXPECT_EQ(fileName, _include.uri);
     EXPECT_EQ(sdf::filesystem::append(this->modelDir, fileName),
         _include.resolvedFileName);
@@ -357,16 +362,16 @@ TEST_F(InterfaceAPI, NestedIncludeData)
 
     // Add error for test expectation later on.
     _errors.emplace_back(
-        sdf::ErrorCode::URI_INVALID, "Test YAML error message");
+        sdf::ErrorCode::URI_INVALID, "Test nonce_1 error message");
     return nullptr;
   };
 
-  auto testTomlParser =
+  auto testNonce2Parser =
       [&](const sdf::NestedInclude &_include, sdf::Errors &_errors)
   {
-    if (_include.uri.find(".toml") == std::string::npos)
+    if (!endsWith(_include.uri, ".nonce_2"))
       return nullptr;
-    const std::string fileName = "test_file.toml";
+    const std::string fileName = "file_wont_be_parsed.nonce_2";
     EXPECT_EQ(fileName, _include.uri);
     EXPECT_EQ(
         sdf::filesystem::append(modelDir, fileName), _include.resolvedFileName);
@@ -376,19 +381,19 @@ TEST_F(InterfaceAPI, NestedIncludeData)
 
     // Add error for test expectation later on.
     _errors.emplace_back(
-        sdf::ErrorCode::URI_INVALID, "Test TOML error message");
+        sdf::ErrorCode::URI_INVALID, "Test nonce_2 error message");
     return nullptr;
   };
 
-  this->config.RegisterCustomModelParser(testYamlParser);
-  this->config.RegisterCustomModelParser(testTomlParser);
+  this->config.RegisterCustomModelParser(testNonce1Parser);
+  this->config.RegisterCustomModelParser(testNonce2Parser);
   sdf::Root root;
   sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
   ASSERT_EQ(3u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::URI_INVALID, errors[0].Code());
-  EXPECT_EQ("Test YAML error message", errors[0].Message());
+  EXPECT_EQ("Test nonce_1 error message", errors[0].Message());
   EXPECT_EQ(sdf::ErrorCode::URI_INVALID, errors[1].Code());
-  EXPECT_EQ("Test TOML error message", errors[1].Message());
+  EXPECT_EQ("Test nonce_2 error message", errors[1].Message());
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
   auto interfaceModel = world->InterfaceModelByIndex(0);
@@ -402,19 +407,19 @@ TEST_F(InterfaceAPI, CustomParserPrecedence)
 <sdf version="1.8">
   <world name="default">
     <include>
-      <uri>test_file.yaml</uri>
+      <uri>file_wont_be_parsed.nonce_1</uri>
       <name>box</name>
     </include>
   </world>
 </sdf>)";
 
-  std::vector<int> calledParsers;
+  std::vector<int> customParserCallOrder;
   auto createCustomParser = [&](int _parserId)
   {
-    auto testParser = [=, &calledParsers](
+    auto testParser = [=, &customParserCallOrder](
                           const sdf::NestedInclude &, sdf::Errors &)
     {
-      calledParsers.push_back(_parserId);
+      customParserCallOrder.push_back(_parserId);
       return nullptr;
     };
     return testParser;
@@ -426,10 +431,10 @@ TEST_F(InterfaceAPI, CustomParserPrecedence)
   sdf::Root root;
   sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
   EXPECT_TRUE(errors.empty());
-  ASSERT_EQ(3u, calledParsers.size());
-  EXPECT_EQ(2, calledParsers[0]);
-  EXPECT_EQ(1, calledParsers[1]);
-  EXPECT_EQ(0, calledParsers[2]);
+  // Check that custom parsers are called in reverse order of registration.
+  ASSERT_EQ(3u, customParserCallOrder.size());
+  const std::vector<int> customParserCallOrderExpected {{2, 1, 0}};
+  EXPECT_EQ(customParserCallOrderExpected, customParserCallOrder);
 }
 
 /////////////////////////////////////////////////
@@ -543,7 +548,6 @@ TEST_F(InterfaceAPI, FrameSemantics)
   sdf::Errors errors = root.Load(testFile, config);
   EXPECT_TRUE(errors.empty()) << errors;
 
-  // std::cout << root.PoseGraph() << std::endl;
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
   EXPECT_EQ(1u, world->InterfaceModelCount());
@@ -569,20 +573,20 @@ TEST_F(InterfaceAPI, FrameSemantics)
     ASSERT_NE(nullptr, frame);
     // The pose of F0 relative to the double_pendulum interface model is the
     // inverse of the raw pose of double_pendulum
-    const Pose3d expPose(-1, 0, 0, 0, 0, 0);
-    EXPECT_EQ(
-        expPose, resolvePoseNoErrors(frame->SemanticPose(), "double_pendulum"));
+    const Pose3d expectedPose(-1, 0, 0, 0, 0, 0);
+    EXPECT_EQ(expectedPose,
+        resolvePoseNoErrors(frame->SemanticPose(), "double_pendulum"));
   }
 
-  const Pose3d dpPose(1, 2, 0, 0, 0, 0);
+  const Pose3d doublePendulumPose(1, 2, 0, 0, 0, 0);
   {
     const sdf::Frame *frame = world->FrameByName("F1");
     const sdf::Frame *frameAttach = world->FrameByName("F1_attach");
     ASSERT_NE(nullptr, frame);
     ASSERT_NE(nullptr, frameAttach);
-    const Pose3d expPose = dpPose;
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    const Pose3d expectedPose = doublePendulumPose;
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
     EXPECT_EQ("double_pendulum::base", resolveAttachedToNoErrors(*frameAttach));
   }
   {
@@ -591,9 +595,9 @@ TEST_F(InterfaceAPI, FrameSemantics)
     ASSERT_NE(nullptr, frame);
     ASSERT_NE(nullptr, frameAttach);
     const Pose3d upperLinkPose = Pose3d(0, 0, 2.1, -1.5708, 0, 0);
-    const Pose3d expPose = dpPose * upperLinkPose;
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    const Pose3d expectedPose = doublePendulumPose * upperLinkPose;
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
     EXPECT_EQ(
         "double_pendulum::upper_link", resolveAttachedToNoErrors(*frameAttach));
   }
@@ -604,9 +608,10 @@ TEST_F(InterfaceAPI, FrameSemantics)
     ASSERT_NE(nullptr, frameAttach);
     const Pose3d upperLinkPose = Pose3d(0, 0, 2.1, -1.5708, 0, 0);
     const Pose3d upperJointPose = Pose3d(0.001, 0, 0, 0, 0, 0);
-    const Pose3d expPose = dpPose * upperLinkPose * upperJointPose;
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    const Pose3d expectedPose =
+        doublePendulumPose * upperLinkPose * upperJointPose;
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
     EXPECT_EQ(
         "double_pendulum::upper_link", resolveAttachedToNoErrors(*frameAttach));
   }
@@ -616,9 +621,9 @@ TEST_F(InterfaceAPI, FrameSemantics)
     ASSERT_NE(nullptr, frame);
     ASSERT_NE(nullptr, frameAttach);
     const Pose3d frame1Pose = Pose3d(0, 1, 0.0, 0, 0, 0);
-    const Pose3d expPose = dpPose * frame1Pose;
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    const Pose3d expectedPose = doublePendulumPose * frame1Pose;
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
     EXPECT_EQ(
         "double_pendulum::base", resolveAttachedToNoErrors(*frameAttach));
   }
@@ -628,9 +633,9 @@ TEST_F(InterfaceAPI, FrameSemantics)
     ASSERT_NE(nullptr, frame);
     ASSERT_NE(nullptr, frameAttach);
     const Pose3d childModel = Pose3d(2, 0, 0, 0, 0, 0);
-    const Pose3d expPose = dpPose * childModel;
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    const Pose3d expectedPose = doublePendulumPose * childModel;
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
     EXPECT_EQ("double_pendulum::child_model::base_link",
         resolveAttachedToNoErrors(*frameAttach));
   }
@@ -641,9 +646,10 @@ TEST_F(InterfaceAPI, FrameSemantics)
     ASSERT_NE(nullptr, frameAttach);
     const Pose3d childModel = Pose3d(2, 0, 0, 0, 0, 0);
     const Pose3d childModelBaseLink = Pose3d(1, 0, 0, 0, 0, 0);
-    const Pose3d expPose = dpPose * childModel * childModelBaseLink;
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    const Pose3d expectedPose =
+        doublePendulumPose * childModel * childModelBaseLink;
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
     EXPECT_EQ("double_pendulum::child_model::base_link",
         resolveAttachedToNoErrors(*frameAttach));
   }
@@ -652,11 +658,12 @@ TEST_F(InterfaceAPI, FrameSemantics)
     const sdf::Frame *frameAttach = world->FrameByName("F7_attach");
     ASSERT_NE(nullptr, frame);
     ASSERT_NE(nullptr, frameAttach);
-    const Pose3d childDp = Pose3d(3, 0, 0, 0, 0, 0);
-    const Pose3d childDpModel1 = Pose3d(0, 0, 0, 0, 0, 0);
-    const Pose3d expPose = dpPose * childDp * childDpModel1;
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    const Pose3d childDoublePendulum = Pose3d(3, 0, 0, 0, 0, 0);
+    const Pose3d childDoublePendulumModel1 = Pose3d(0, 0, 0, 0, 0, 0);
+    const Pose3d expectedPose =
+        doublePendulumPose * childDoublePendulum * childDoublePendulumModel1;
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
     EXPECT_EQ("double_pendulum::child_dp::model_1::lower_link",
         resolveAttachedToNoErrors(*frameAttach));
   }
@@ -665,13 +672,14 @@ TEST_F(InterfaceAPI, FrameSemantics)
     const sdf::Frame *frameAttach = world->FrameByName("F8_attach");
     ASSERT_NE(nullptr, frame);
     ASSERT_NE(nullptr, frameAttach);
-    const Pose3d childDp = Pose3d(3, 0, 0, 0, 0, 0);
-    const Pose3d childDpModel1 = Pose3d(0, 0, 0, 0, 0, 0);
-    const Pose3d childDpModel1LowerLink = Pose3d(0.25, 1.0, 2.1, -2, 0, 0);
-    const Pose3d expPose =
-        dpPose * childDp * childDpModel1 * childDpModel1LowerLink;
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    const Pose3d childDoublePendulum = Pose3d(3, 0, 0, 0, 0, 0);
+    const Pose3d childDoublePendulumModel1 = Pose3d(0, 0, 0, 0, 0, 0);
+    const Pose3d childDoublePendulumModel1LowerLink =
+        Pose3d(0.25, 1.0, 2.1, -2, 0, 0);
+    const Pose3d expectedPose = doublePendulumPose * childDoublePendulum *
+        childDoublePendulumModel1 * childDoublePendulumModel1LowerLink;
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
     EXPECT_EQ("double_pendulum::child_dp::model_1::lower_link",
         resolveAttachedToNoErrors(*frameAttach));
   }
@@ -680,15 +688,17 @@ TEST_F(InterfaceAPI, FrameSemantics)
     const sdf::Frame *frameAttach = world->FrameByName("F9_attach");
     ASSERT_NE(nullptr, frame);
     ASSERT_NE(nullptr, frameAttach);
-    const Pose3d childDp = Pose3d(3, 0, 0, 0, 0, 0);
-    const Pose3d childDpModel1 = Pose3d(0, 0, 0, 0, 0, 0);
-    const Pose3d childDpModel1LowerLink = Pose3d(0.25, 1.0, 2.1, -2, 0, 0);
+    const Pose3d childDoublePendulum = Pose3d(3, 0, 0, 0, 0, 0);
+    const Pose3d childDoublePendulumModel1 = Pose3d(0, 0, 0, 0, 0, 0);
+    const Pose3d childDoublePendulumModel1LowerLink =
+        Pose3d(0.25, 1.0, 2.1, -2, 0, 0);
     // childDpLowerJoint is relative to childDpModel1LowerLink
-    const Pose3d childDpLowerJoint = Pose3d(0, 0.001, 0, 0, 0, 0);
-    const Pose3d expPose = dpPose * childDp * childDpModel1 *
-        childDpModel1LowerLink * childDpLowerJoint;
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frame->SemanticPose()));
-    EXPECT_EQ(expPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
+    const Pose3d childDoublePendulumLowerJoint = Pose3d(0, 0.001, 0, 0, 0, 0);
+    const Pose3d expectedPose = doublePendulumPose * childDoublePendulum *
+        childDoublePendulumModel1 * childDoublePendulumModel1LowerLink *
+        childDoublePendulumLowerJoint;
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frame->SemanticPose()));
+    EXPECT_EQ(expectedPose, resolvePoseNoErrors(frameAttach->SemanticPose()));
     EXPECT_EQ("double_pendulum::child_dp::model_1::lower_link",
         resolveAttachedToNoErrors(*frameAttach));
   }
@@ -736,9 +746,14 @@ TEST_F(InterfaceAPI, Reposturing)
     return repostureFunc;
   };
 
-  auto repostureTestParser =
-      [&](const sdf::NestedInclude &_include, sdf::Errors &)
+  auto repostureTestParser = [&](const sdf::NestedInclude &_include,
+                                 sdf::Errors &) -> sdf::InterfaceModelPtr
   {
+    bool fileHasCorrectSuffix = endsWith(_include.resolvedFileName, ".nonce_1");
+    EXPECT_TRUE(fileHasCorrectSuffix) << "File: " << _include.resolvedFileName;
+    if (!fileHasCorrectSuffix)
+      return nullptr;
+
     const std::string absoluteModelName =
         sdf::JoinName(_include.absoluteParentName, *_include.localModelName);
 
@@ -787,7 +802,7 @@ TEST_F(InterfaceAPI, Reposturing)
   };
   // There are two included models using a custom parser.
   // In each of the included models, there are two models and two links.
-  EXPECT_EQ(8u, posesAfterReposture.size());
+  ASSERT_EQ(8u, posesAfterReposture.size());
   EXPECT_TRUE(checkPose("M0", {1, 2, 0, 0, 0, 0}));
   EXPECT_TRUE(checkPose("M0::base_link", {1, 2, 0, 0, 0, 0}));
   EXPECT_TRUE(checkPose("M0::nested_model", {4, 2, 0, 0, 0, 0}));

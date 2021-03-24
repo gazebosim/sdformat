@@ -5,7 +5,7 @@
       <pose>0 2 0 0 0 0</pose>
     </frame>
     <include>
-      <uri>nonexistent_reposture_test_file.toml</uri>
+      <uri>nonexistent_reposture_test_file.nonce_1</uri>
       <name>M0</name>
       <pose relative_to="F0">1 0 0 0 0 0</pose>
     </include>
@@ -15,7 +15,7 @@
         <pose>0 0 3 0 0 0</pose>
       </frame>
       <include>
-        <uri>nonexistent_reposture_test_file.toml</uri>
+        <uri>nonexistent_reposture_test_file.nonce_1</uri>
         <name>M1</name>
         <pose relative_to="F1">0 0 0 0.1 0 0</pose>
       </include>
