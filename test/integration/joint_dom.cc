@@ -20,12 +20,14 @@
 
 #include "sdf/Element.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/ForceTorque.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/SDFImpl.hh"
+#include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "sdf/parser.hh"
 #include "test_config.h"
@@ -563,4 +565,47 @@ TEST(DOMJoint, LoadURDFJointPoseRelativeTo)
   EXPECT_TRUE(
     model->JointByName("joint12")->Axis()->ResolveXyz(vec3, "joint12").empty());
   EXPECT_EQ(Vector3(0, 1.0, 0), vec3);
+}
+
+//////////////////////////////////////////////////
+TEST(DOMJoint, Sensors)
+{
+  const std::string testFile =
+      sdf::testing::TestFile("sdf", "joint_sensors.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+  for (const auto &err : errors)
+  {
+    std::cout << err << std::endl;
+  }
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model", model->Name());
+
+  // Get the first joint
+  const sdf::Joint *joint = model->JointByIndex(0);
+  ASSERT_NE(nullptr, joint);
+  EXPECT_EQ("joint", joint->Name());
+  EXPECT_EQ(1u, joint->SensorCount());
+
+  ignition::math::Pose3d pose;
+
+  // Get the force_torque sensor
+  const sdf::Sensor *forceTorqueSensor =
+    joint->SensorByName("force_torque_sensor");
+  ASSERT_NE(nullptr, forceTorqueSensor);
+  EXPECT_EQ("force_torque_sensor", forceTorqueSensor->Name());
+  EXPECT_EQ(sdf::SensorType::FORCE_TORQUE, forceTorqueSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
+      forceTorqueSensor->RawPose());
+  auto forceTorqueSensorConfig = forceTorqueSensor->ForceTorqueSensor();
+  ASSERT_NE(nullptr, forceTorqueSensorConfig);
+  EXPECT_EQ(sdf::ForceTorqueFrame::PARENT, forceTorqueSensorConfig->Frame());
+  EXPECT_EQ(sdf::ForceTorqueMeasureDirection::PARENT_TO_CHILD,
+      forceTorqueSensorConfig->MeasureDirection());
 }
