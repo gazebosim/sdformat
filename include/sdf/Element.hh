@@ -378,11 +378,24 @@ namespace sdf
 
     /// \brief Set the include filename to the passed in filename.
     /// \param[in] _filename the filename to set the include filename to.
-    public: void SetInclude(const std::string &_filename);
+    public: void SetInclude(const std::string &_filename) SDF_DEPRECATED(11.0);
 
     /// \brief Get the include filename.
     /// \return The include filename.
-    public: std::string GetInclude() const;
+    public: std::string GetInclude() const SDF_DEPRECATED(11.0);
+
+    /// \brief Set the <include> element that was used to load this element.
+    /// This is set by the parser on the first element of the included object
+    /// (eg. Model, Actor, Light, etc). It is not passed down to children
+    /// elements.
+    /// \param[in] _includeELem The <include> Element
+    public: void SetIncludeElement(sdf::ElementPtr _includeElem);
+
+    /// \brief Get the <include> element that was used to load this element.
+    /// \return The Element pointer to the <include> element, if this element
+    /// was loaded from an included file. Otherwise, nullptr. This is also
+    /// nullptr for Elements that cannot be included.
+    public: sdf::ElementPtr GetIncludeElement() const;
 
     /// \brief Set the path to the SDF document where this element came from.
     /// \param[in] _path Full path to SDF document.
@@ -478,6 +491,28 @@ namespace sdf
 
     // The possible child elements
     public: ElementPtr_V elementDescriptions;
+
+    /// \brief The <include> element that was used to load this entity. For
+    /// example, given the following SDFormat:
+    /// <sdf version='1.8'>
+    ///   <world name='default'>
+    ///     <include>
+    ///       <uri>model_uri</uri>
+    ///       <pose>1 2 3 0 0 0</pose>
+    ///     </include>
+    ///   </world>
+    /// </sdf>
+    /// The ElementPtr associated with the model loaded from `model_uri` will
+    /// have the includeElement set to
+    ///     <include>
+    ///       <uri>model_uri</uri>
+    ///       <pose>1 2 3 0 0 0</pose>
+    ///     </include>
+    ///
+    /// This can be used to retrieve additional information available under the
+    /// <include> tag after the entity has been loaded. An example use case for
+    /// this is when saving a loaded world back to SDFormat.
+    public: ElementPtr includeElement;
 
     /// name of the include file that was used to create this element
     public: std::string includeFilename;

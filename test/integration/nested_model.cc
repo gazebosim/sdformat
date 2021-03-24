@@ -1396,3 +1396,88 @@ TEST(NestedReference, PlacementFrameElement)
     EXPECT_EQ(placementPose, pose.Inverse());
   }
 }
+
+/////////////////////////////////////////////////
+TEST(NestedModel, IncludeElements)
+{
+  const std::string modelRootPath = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "integration", "model");
+
+  sdf::ParserConfig config;
+  config.SetFindCallback(
+      [&](const std::string &_file)
+      {
+        return sdf::filesystem::append(modelRootPath, _file);
+      });
+
+  auto checkIncludeElem = [](sdf::ElementPtr _includeElem,
+                              const std::string &_uri, const std::string &_name)
+  {
+    ASSERT_NE(nullptr, _includeElem);
+    ASSERT_TRUE(_includeElem->HasElement("uri"));
+    EXPECT_EQ(_uri, _includeElem->Get<std::string>("uri"));
+
+    ASSERT_TRUE(_includeElem->HasElement("name"));
+    EXPECT_EQ(_name, _includeElem->Get<std::string>("name"));
+
+    ASSERT_TRUE(_includeElem->HasElement("pose"));
+    EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0),
+        _includeElem->Get<ignition::math::Pose3d>("pose"));
+
+    ASSERT_TRUE(_includeElem->HasElement("placement_frame"));
+    EXPECT_EQ("link", _includeElem->Get<std::string>("placement_frame"));
+
+    ASSERT_TRUE(_includeElem->HasElement("plugin"));
+    auto pluginElem = _includeElem->GetElement("plugin");
+    ASSERT_TRUE(pluginElem->HasAttribute("name"));
+    EXPECT_EQ("test_plugin", pluginElem->Get<std::string>("name"));
+    ASSERT_TRUE(pluginElem->HasAttribute("filename"));
+    EXPECT_EQ("test_plugin_file", pluginElem->Get<std::string>("filename"));
+  };
+
+  // Test with //world/include
+  {
+    std::ostringstream stream;
+    stream << R"(
+    <sdf version='1.8'>
+      <world name='default'>
+        <include>
+          <uri>box</uri>
+          <name>test_box</name>
+          <pose>1 2 3 0 0 0</pose>
+          <placement_frame>link</placement_frame>
+          <plugin name='test_plugin' filename='test_plugin_file'/>
+        </include>
+        <model name='test2'>
+          <include>
+            <uri>test_model</uri>
+            <name>test_model</name>
+            <pose>1 2 3 0 0 0</pose>
+            <placement_frame>link</placement_frame>
+            <plugin name='test_plugin' filename='test_plugin_file'/>
+          </include>
+        </model>
+      </world>
+    </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(stream.str(), config);
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    auto *world = root.WorldByIndex(0);
+    ASSERT_NE(nullptr, world);
+    auto *box = world->ModelByIndex(0);
+    ASSERT_NE(nullptr, box);
+
+    checkIncludeElem(
+        box->Element()->GetIncludeElement(), "box", "test_box");
+
+    auto *test2 = world->ModelByIndex(1);
+    ASSERT_NE(nullptr, test2);
+    EXPECT_EQ(nullptr, test2->Element()->GetIncludeElement());
+
+    auto *testModel2 = test2->ModelByIndex(0);
+    ASSERT_NE(nullptr, testModel2);
+    checkIncludeElem(
+        testModel2->Element()->GetIncludeElement(), "test_model", "test_model");
+  }
+}

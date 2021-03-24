@@ -158,11 +158,28 @@ TEST(Element, Include)
 {
   sdf::Element elem;
 
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   ASSERT_EQ(elem.GetInclude(), "");
 
   elem.SetInclude("foo.txt");
 
   ASSERT_EQ(elem.GetInclude(), "foo.txt");
+  SDF_SUPPRESS_DEPRECATED_END
+
+  auto includeElemToStore = std::make_shared<sdf::Element>();
+  includeElemToStore->SetName("include");
+  auto uriDesc = std::make_shared<sdf::Element>();
+  uriDesc->SetName("uri");
+  uriDesc->AddValue("string", "", true);
+  includeElemToStore->AddElementDescription(uriDesc);
+
+  includeElemToStore->GetElement("uri")->Set("foo.txt");
+  elem.SetIncludeElement(includeElemToStore);
+
+  auto includeElem = elem.GetIncludeElement();
+  ASSERT_NE(nullptr, includeElem);
+  ASSERT_TRUE(includeElem->HasElement("uri"));
+  EXPECT_EQ("foo.txt", includeElem->GetElement("uri")->Get<std::string>());
 }
 
 /////////////////////////////////////////////////
@@ -276,6 +293,10 @@ TEST(Element, Clone)
   parent->SetFilePath("/path/to/file.sdf");
   parent->SetOriginalVersion("1.5");
 
+  auto includeElemToStore = std::make_shared<sdf::Element>();
+  includeElemToStore->SetName("include");
+  parent->SetIncludeElement(includeElemToStore);
+
   sdf::ElementPtr newelem = parent->Clone();
 
   EXPECT_EQ("/path/to/file.sdf", newelem->FilePath());
@@ -283,6 +304,8 @@ TEST(Element, Clone)
   ASSERT_NE(newelem->GetFirstElement(), nullptr);
   ASSERT_EQ(newelem->GetElementDescriptionCount(), 1UL);
   ASSERT_EQ(newelem->GetAttributeCount(), 1UL);
+  ASSERT_NE(newelem->GetIncludeElement(), nullptr);
+  EXPECT_EQ("include", newelem->GetIncludeElement()->GetName());
 }
 
 /////////////////////////////////////////////////
@@ -438,11 +461,13 @@ TEST(Element, ToStringInclude)
 {
   sdf::Element elem;
 
+  SDF_SUPPRESS_DEPRECATED_BEGIN
   ASSERT_EQ(elem.GetInclude(), "");
 
   elem.SetInclude("foo.txt");
 
   ASSERT_EQ(elem.GetInclude(), "foo.txt");
+  SDF_SUPPRESS_DEPRECATED_END
 
   std::string stringval = elem.ToString("myprefix");
   ASSERT_EQ(stringval, "myprefix<include filename='foo.txt'/>\n");
@@ -547,6 +572,10 @@ TEST(Element, Copy)
   src->AddAttribute("test", "string", "foo", false, "foo description");
   src->InsertElement(std::make_shared<sdf::Element>());
 
+  auto includeElemToStore = std::make_shared<sdf::Element>();
+  includeElemToStore->SetName("include");
+  src->SetIncludeElement(includeElemToStore);
+
   dest->Copy(src);
 
   EXPECT_EQ("/path/to/file.sdf", dest->FilePath());
@@ -568,6 +597,8 @@ TEST(Element, Copy)
   ASSERT_EQ(param->GetDescription(), "foo description");
 
   ASSERT_NE(dest->GetFirstElement(), nullptr);
+  ASSERT_NE(dest->GetIncludeElement(), nullptr);
+  EXPECT_EQ("include", dest->GetIncludeElement()->GetName());
 }
 
 /////////////////////////////////////////////////
