@@ -508,7 +508,7 @@ Errors buildFrameAttachedToGraph(
       }
       else
       {
-        // Search for the vertex in case the canoncal link is an InterfaceLink
+        // Search for the vertex in case the canonical link is an InterfaceLink
         auto canonicalLinkId = outModel.VertexIdByName(canonicalLinkName);
         if (ignition::math::graph::kNullId != canonicalLinkId)
         {
