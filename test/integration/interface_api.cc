@@ -180,9 +180,9 @@ TEST_F(InterfaceAPI, NestedIncludeData)
 
     EXPECT_TRUE(_include.includePoseRelativeTo.has_value());
     EXPECT_EQ("F1", _include.includePoseRelativeTo.value());
-    EXPECT_TRUE(_include.virtualCustomElements->HasElement("extra"));
+    EXPECT_TRUE(_include.includeElement->HasElement("extra"));
 
-    auto extra = _include.virtualCustomElements->GetElement("extra");
+    auto extra = _include.includeElement->GetElement("extra");
     EXPECT_TRUE(extra->HasElement("info1"));
     EXPECT_TRUE(extra->HasElement("info2"));
     EXPECT_EQ("value1", extra->Get<std::string>("info1"));
@@ -205,7 +205,6 @@ TEST_F(InterfaceAPI, NestedIncludeData)
         sdf::filesystem::append(modelDir, fileName), _include.resolvedFileName);
     EXPECT_FALSE(_include.localModelName.has_value());
     EXPECT_FALSE(_include.isStatic);
-    EXPECT_EQ(nullptr, _include.virtualCustomElements->GetFirstElement());
 
     // Add error for test expectation later on.
     _errors.emplace_back(

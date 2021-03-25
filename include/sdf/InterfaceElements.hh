@@ -79,9 +79,9 @@ struct SDFORMAT_VISIBLE NestedInclude
   /// This is nullopt if `//include/placement_frame` is is not set.
   std::optional<std::string> placementFrame;
 
-  /// This is a "virtual" XML element that will contain all custom (*unparsed*)
-  /// elements and attributes within `//include`.
-  sdf::ElementPtr virtualCustomElements;
+  /// This is the `//include` element. This can be used to pass custom elements
+  /// and attributes to the custom model parser.
+  sdf::ElementPtr includeElement;
 };
 
 /// Defines a custom model parser.

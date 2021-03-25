@@ -203,19 +203,7 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
     }
     include.resolvedFileName = sdf::findFile(include.uri, true, true, _config);
 
-    sdf::ElementPtr virtualCustomElements = includeElem->Clone();
-    for (unsigned int i = 0; i < includeElem->GetElementDescriptionCount(); ++i)
-    {
-      auto elemDescr = includeElem->GetElementDescription(i);
-      while (virtualCustomElements->HasElement(elemDescr->GetName()))
-      {
-        auto elemToRemove =
-          virtualCustomElements->GetElement(elemDescr->GetName());
-        virtualCustomElements->RemoveChild(elemToRemove);
-      }
-    }
-
-    include.virtualCustomElements = virtualCustomElements;
+    include.includeElement = includeElem;
     if (includeElem->HasElement("pose"))
     {
       auto poseElem = includeElem->GetElement("pose");
