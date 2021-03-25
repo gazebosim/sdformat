@@ -33,6 +33,11 @@ namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
+#ifdef _WIN32
+// Disable warning C4251 which is triggered by std::string
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 /// \brief Contains the necessary information about an included model file
 /// for custom model parsers to be able to find the file and parse it.
 struct SDFORMAT_VISIBLE NestedInclude
@@ -83,6 +88,9 @@ struct SDFORMAT_VISIBLE NestedInclude
   /// and attributes to the custom model parser.
   sdf::ElementPtr includeElement;
 };
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 /// Defines a custom model parser.
 ///
