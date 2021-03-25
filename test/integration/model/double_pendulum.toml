@@ -1,0 +1,70 @@
+# This file is part of the interface_api integration test. The test contains a
+# very limited toml parser that is not capable of parsing the full toml syntax.
+# Specifically, arrays are not supported.
+name = "double_pendulum"
+pose = "1 0 0 0 0 0"
+canonical_link = "base"
+
+[links.base]
+pose = "1 0 0.5 0 0 0"
+
+[links.upper_link]
+pose = "0 0 2.1 -1.5708 0 0"
+
+[links.lower_link]
+pose = "0.25 1.0 2.1 -2 0 0"
+
+[joints.upper_joint]
+parent = "base"
+child = "upper_link"
+type = "revolute"
+pose = "0.001 0.0 0.0 0 0 0"
+
+[joints.lower_joint]
+parent = "upper_link"
+child = "lower_link"
+type = "revolute"
+pose = "0.0 0.001 0.0 0 0 0"
+
+[frames.frame_1]
+pose = "0 1 0 0 0 0"
+
+[frames.frame_2]
+attached_to = "lower_link"
+pose = "0 0 1 0 0 0"
+
+[models.child_model]
+pose = "2 0 0 0 0 0"
+canonical_link = "base_link"
+
+  [models.child_model.links.base_link]
+  pose = "1 0 0 0 0 0"
+
+[models.child_dp]
+pose = "3 0 0 0 0 0"
+canonical_link = "base"
+
+  [models.child_dp.links.base]
+  pose = "1 0 0.5 0 0 0"
+
+    [models.child_dp.models.model_0]
+    canonical_link = "upper_link"
+      [models.child_dp.models.model_0.links.upper_link]
+      pose = "0 0 2.1 -1.5708 0 0"
+
+    [models.child_dp.models.model_1]
+    canonical_link = "lower_link"
+      [models.child_dp.models.model_1.links.lower_link]
+      pose = "0.25 1.0 2.1 -2 0 0"
+
+  [models.child_dp.joints.upper_joint]
+  parent = "base"
+  child = "model_0::upper_link"
+  type = "revolute"
+  pose = "0.001 0.0 0.0 0 0 0"
+
+  [models.child_dp.joints.lower_joint]
+  parent = "model_0::upper_link"
+  child = "model_1::lower_link"
+  type = "revolute"
+  pose = "0.0 0.001 0.0 0 0 0"

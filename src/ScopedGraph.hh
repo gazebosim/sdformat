@@ -82,6 +82,7 @@ template <typename T>
 class ScopedGraph
 {
   static_assert(
+      // cppcheck-suppress syntaxError
       std::is_same_v<T, sdf::PoseRelativeToGraph> ||
       std::is_same_v<T, sdf::FrameAttachedToGraph>,
       "Template parameter has to be either sdf::PoseRelativeToGraph or "
@@ -119,7 +120,7 @@ class ScopedGraph
   /// doesn't point to any graph.
   public: ScopedGraph() = default;
 
-  /// \brief Constructor. The constructed object holds a weak pointer to the
+  /// \brief Constructor. The constructed object holds a pointer to the
   /// passed in graph.
   /// \param[in] _graph A shared pointer to PoseRelativeTo or FrameAttachedTo
   /// graph.
@@ -137,6 +138,11 @@ class ScopedGraph
   /// _name to the existing prefix of the current scope.
   /// \return A new child scope.
   public: ScopedGraph<T> ChildModelScope(const std::string &_name) const;
+
+  // \brief Get the root scope (the scope without any prefix). This is useful
+  // for resolving poses relative to the world.
+  // \return A new scope anchored at the root of the graph
+  public: ScopedGraph<T> RootScope() const;
 
   /// \brief Checks if the scope points to a valid graph.
   /// \return True if the scope points to a valid graph.
@@ -274,6 +280,19 @@ ScopedGraph<T> ScopedGraph<T>::ChildModelScope(const std::string &_name) const
   newScopedGraph.dataPtr->scopeVertexId =
       newScopedGraph.VertexIdByName("__model__");
   newScopedGraph.dataPtr->scopeContextName = "__model__";
+  return newScopedGraph;
+}
+
+/////////////////////////////////////////////////
+template <typename T>
+ScopedGraph<T> ScopedGraph<T>::RootScope() const
+{
+  auto newScopedGraph = *this;
+  newScopedGraph.dataPtr = std::make_shared<ScopedGraphData>();
+  newScopedGraph.dataPtr->prefix = "";
+  newScopedGraph.dataPtr->scopeVertexId =
+      newScopedGraph.VertexIdByName("__root__");
+  newScopedGraph.dataPtr->scopeContextName = "__root__";
   return newScopedGraph;
 }
 

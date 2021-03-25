@@ -149,7 +149,7 @@ Errors Root::Load(const std::string &_filename, const ParserConfig &_config)
     return errors;
   }
 
-  Errors loadErrors = this->Load(sdfParsed);
+  Errors loadErrors = this->Load(sdfParsed, _config);
   errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
 
   return errors;
@@ -176,7 +176,7 @@ Errors Root::LoadSdfString(const std::string &_sdf, const ParserConfig &_config)
     return errors;
   }
 
-  Errors loadErrors = this->Load(sdfParsed);
+  Errors loadErrors = this->Load(sdfParsed, _config);
   errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
 
   return errors;
@@ -184,6 +184,12 @@ Errors Root::LoadSdfString(const std::string &_sdf, const ParserConfig &_config)
 
 /////////////////////////////////////////////////
 Errors Root::Load(SDFPtr _sdf)
+{
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
 {
   Errors errors;
 
@@ -224,7 +230,7 @@ Errors Root::Load(SDFPtr _sdf)
     {
       World world;
 
-      Errors worldErrors = world.Load(elem);
+      Errors worldErrors = world.Load(elem, _config);
 
       // Build the graphs.
       auto frameAttachedToGraph = addFrameAttachedToGraph(
@@ -261,7 +267,7 @@ Errors Root::Load(SDFPtr _sdf)
 
   // Load all the models.
   Errors modelLoadErrors = loadUniqueRepeated<sdf::Model>(
-      this->dataPtr->sdf, "model", this->dataPtr->models);
+      this->dataPtr->sdf, "model", this->dataPtr->models, _config);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
   if (!this->dataPtr->models.empty())
   {

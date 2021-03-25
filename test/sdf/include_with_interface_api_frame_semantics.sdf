@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="default">
+    <frame name="F0">
+      <pose>0 2 0 0 0 0</pose>
+    </frame>
+    <include>
+      <!-- This file is in test/integration/model/. The search directory has to be set by the test -->
+      <uri>double_pendulum.toml</uri>
+      <pose relative_to="F0">1 0 0 0 0 0</pose>
+    </include>
+
+    <frame name="F1">
+      <pose relative_to="double_pendulum"/>
+    </frame>
+    <frame name="F1_attach" attached_to="double_pendulum"/>
+
+    <frame name="F2">
+      <pose relative_to="double_pendulum::upper_link"/>
+    </frame>
+    <frame name="F2_attach" attached_to="double_pendulum::upper_link"/>
+
+    <frame name="F3">
+      <pose relative_to="double_pendulum::upper_joint"/>
+    </frame>
+    <frame name="F3_attach" attached_to="double_pendulum::upper_joint"/>
+
+    <frame name="F4">
+      <pose relative_to="double_pendulum::frame_1"/>
+    </frame>
+    <frame name="F4_attach" attached_to="double_pendulum::frame_1"/>
+
+    <frame name="F5">
+      <pose relative_to="double_pendulum::child_model"/>
+    </frame>
+    <frame name="F5_attach" attached_to="double_pendulum::child_model"/>
+
+    <frame name="F6">
+      <pose relative_to="double_pendulum::child_model::base_link"/>
+    </frame>
+    <frame name="F6_attach" attached_to="double_pendulum::child_model::base_link"/>
+
+    <frame name="F7">
+      <pose relative_to="double_pendulum::child_dp::model_1"/>
+    </frame>
+    <frame name="F7_attach" attached_to="double_pendulum::child_dp::model_1"/>
+
+    <frame name="F8">
+      <pose relative_to="double_pendulum::child_dp::model_1::lower_link"/>
+    </frame>
+    <frame name="F8_attach" attached_to="double_pendulum::child_dp::model_1::lower_link"/>
+
+    <frame name="F9">
+      <pose relative_to="double_pendulum::child_dp::lower_joint"/>
+    </frame>
+    <frame name="F9_attach" attached_to="double_pendulum::child_dp::lower_joint"/>
+  </world>
+</sdf>

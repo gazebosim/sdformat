@@ -36,8 +36,11 @@ namespace sdf
 
   // Forward declarations.
   class Frame;
+  class InterfaceModel;
   class Joint;
   class Link;
+  class ParserConfig;
+  struct NestedInclude;
   struct PoseRelativeToGraph;
   struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;
@@ -54,6 +57,15 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Load the model based on a element pointer. This is *not* the
+    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// object.
+    /// \param[in] _sdf The SDF Element pointer
+    /// \param[in] _config Parser configuration
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(sdf::ElementPtr _sdf, const ParserConfig &_config);
 
     /// \brief Get the name of the model.
     /// The name of the model should be unique within the scope of a World.
@@ -297,8 +309,36 @@ namespace sdf
     /// relative to the current model, delimited by "::".
     /// \return An immutable pointer to the canonical link and the nested
     /// name of the link relative to the current model.
+    // TODO (addisu): If the canonical link is inside an interface model, this
+    // function returns {nullptr, name}. This can be problematic for downstream
+    // applications.
     public: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
         const;
+
+    /// \brief Get the number of nested interface models that are immediate (not
+    /// recursively nested) children of this Model object.
+    /// \return Number of nested interface models contained in this Model
+    /// object.
+    public: uint64_t InterfaceModelCount() const;
+
+    /// \brief Get an immediate (not recursively nested) child interface model
+    /// based on an index.
+    /// \param[in] _index Index of the nested interface model. The index should
+    /// be in the range [0..InterfaceModelCount()).
+    /// \return Pointer to the model. Nullptr if the index does not exist.
+    /// \sa uint64_t InterfaceModelCount() const
+    public: std::shared_ptr<const InterfaceModel> InterfaceModelByIndex(
+                const uint64_t _index) const;
+
+    /// \brief Get the nested include information of an immediate (not
+    /// recursively nested) child interface model based on an index.
+    /// \param[in] _index Index of the nested interface model. The index should
+    /// be in the range [0..InterfaceModelCount()).
+    /// \return Pointer to the nested include information. Nullptr if the index
+    /// does not exist.
+    /// \sa uint64_t InterfaceModelCount() const
+    public: const NestedInclude *InterfaceModelNestedIncludeByIndex(
+                const uint64_t _index) const;
 
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or
