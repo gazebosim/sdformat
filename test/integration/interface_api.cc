@@ -244,10 +244,21 @@ TEST_F(InterfaceAPI, CustomParserPrecedence)
   std::vector<int> customParserCallOrder;
   auto createCustomParser = [&](int _parserId)
   {
-    auto testParser = [=, &customParserCallOrder](
-                          const sdf::NestedInclude &, sdf::Errors &)
+    auto testParser = [=, &customParserCallOrder](const sdf::NestedInclude &,
+                          sdf::Errors &) -> sdf::InterfaceModelPtr
     {
       customParserCallOrder.push_back(_parserId);
+      if (_parserId <= 1)
+      {
+        // Return a model if the parserId is 1 or 0. This would indicate the
+        // custom parser was successful. However, since parser 1 will be visited
+        // first, we do not expect parser 0 to be called.
+        auto model = std::make_shared<sdf::InterfaceModel>(
+            "test_model" + std::to_string(_parserId), nullptr, false,
+            "base_link", ignition::math::Pose3d());
+        model->AddLink({"base_link", {}});
+        return model;
+      }
       return nullptr;
     };
     return testParser;
@@ -256,12 +267,14 @@ TEST_F(InterfaceAPI, CustomParserPrecedence)
   this->config.RegisterCustomModelParser(createCustomParser(0));
   this->config.RegisterCustomModelParser(createCustomParser(1));
   this->config.RegisterCustomModelParser(createCustomParser(2));
+  this->config.RegisterCustomModelParser(createCustomParser(3));
   sdf::Root root;
   sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
   EXPECT_TRUE(errors.empty());
   // Check that custom parsers are called in reverse order of registration.
   ASSERT_EQ(3u, customParserCallOrder.size());
-  const std::vector<int> customParserCallOrderExpected {{2, 1, 0}};
+  // Parser 0 will not be visited because parser 1 will be successful.
+  const std::vector<int> customParserCallOrderExpected {3, 2, 1};
   EXPECT_EQ(customParserCallOrderExpected, customParserCallOrder);
 }
 
