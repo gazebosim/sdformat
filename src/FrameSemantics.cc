@@ -598,7 +598,7 @@ Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
           "]."});
       continue;
     }
-    outModel.AddVertex(joint.Name(), sdf::FrameType::JOINT).Id();
+    outModel.AddVertex(joint.Name(), sdf::FrameType::JOINT);
   }
 
   // add frame vertices
@@ -612,7 +612,7 @@ Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
           "]."});
       continue;
     }
-    outModel.AddVertex(frame.Name(), sdf::FrameType::FRAME).Id();
+    outModel.AddVertex(frame.Name(), sdf::FrameType::FRAME);
   }
 
   // add nested model vertices
@@ -1264,7 +1264,7 @@ Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
           "]."});
       continue;
     }
-    outModel.AddVertex(joint.Name(), sdf::FrameType::JOINT).Id();
+    outModel.AddVertex(joint.Name(), sdf::FrameType::JOINT);
   }
 
   // add frame vertices and default edge if both

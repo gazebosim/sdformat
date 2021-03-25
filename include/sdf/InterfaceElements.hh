@@ -38,8 +38,8 @@ inline namespace SDF_VERSION_NAMESPACE
 struct SDFORMAT_VISIBLE NestedInclude
 {
   /// \brief Provides the URI as specified in `//include/uri`. This may or may
-  /// not end with a file extension (it will not end an extension if it refers
-  /// to a model package).
+  /// not end with a file extension (it will not end with an extension if it
+  /// refers to a model package).
   std::string uri;
 
   /// \brief Provides the *resolved* absolute file path from the URI.
@@ -56,7 +56,9 @@ struct SDFORMAT_VISIBLE NestedInclude
   std::string absoluteParentName;
 
   /// \brief Name relative to immediate parent as specified in
-  /// `//include/@name`. This is nullopt if `//include/name` is not set.
+  /// `//include/name`. This is nullopt if `//include/name` is not set. Then the
+  /// name of the model must be determined by the custom model parser from the
+  /// included model file.
   /// Example: `my_new_model`
   std::optional<std::string> localModelName;
 
@@ -70,7 +72,7 @@ struct SDFORMAT_VISIBLE NestedInclude
 
   /// \brief The relative-to frame of the pose as specified in
   /// `//include/pose/@relative_to`. This is nullopt if
-  /// `//include/pose/@relative_to` is set.
+  /// `//include/pose/@relative_to` is not set.
   std::optional<std::string> includePoseRelativeTo;
 
   /// \brief The placement frame as specified in `//include/placement_frame`.

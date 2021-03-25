@@ -220,7 +220,11 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
     {
       auto poseElem = includeElem->GetElement("pose");
       include.includeRawPose = poseElem->Get<ignition::math::Pose3d>();
-      include.includePoseRelativeTo = poseElem->Get<std::string>("relative_to");
+      if (poseElem->HasAttribute("relative_to"))
+      {
+        include.includePoseRelativeTo =
+            poseElem->Get<std::string>("relative_to");
+      }
     }
 
     if (includeElem->HasElement("placement_frame"))

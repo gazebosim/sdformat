@@ -145,7 +145,8 @@ class SDFORMAT_VISIBLE ParserConfig
   public: EnforcementPolicy UnrecognizedElementsPolicy() const;
 
   /// \brief Registers a custom model parser.
-  /// \param[in] _modelParser Callback as described above.
+  /// \param[in] _modelParser Callback as as described in
+  /// sdf/InterfaceElements.hh.
   public: void RegisterCustomModelParser(CustomModelParser _modelParser);
 
   /// \brief Get the registered custom model parsers
