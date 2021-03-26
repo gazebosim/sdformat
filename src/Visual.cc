@@ -31,7 +31,7 @@ class sdf::VisualPrivate
   public: VisualPrivate() = default;
 
   /// \brief Copy constructor
-  /// \param[in] _visualPrivate Joint axis to move.
+  /// \param[in] _visualPrivate VisualPrivate to move.
   public: explicit VisualPrivate(const VisualPrivate &_visualPrivate);
 
   // Delete copy assignment so it is not accidentally used
