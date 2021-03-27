@@ -50,10 +50,13 @@ namespace sdf
     /// \brief A cylinder emitter.
     CYLINDER = 2,
 
-    /// \brief An ellipsoid.
+    /// \brief An ellipsoid emitter.
     ELLIPSOID = 3,
   };
 
+  /// \brief A description of a particle emitter, which can be attached
+  /// to a link. A particle emitter can be used to describe fog, smoke, and
+  /// dust.
   class SDFORMAT_VISIBLE ParticleEmitter
   {
     /// \brief Default constructor
@@ -64,7 +67,7 @@ namespace sdf
     public: ParticleEmitter(const ParticleEmitter &_emitter);
 
     /// \brief Move constructor
-    /// \param[in] _model Model to move.
+    /// \param[in] _model Emitter to move.
     public: ParticleEmitter(ParticleEmitter &&_emitter) noexcept;
 
     /// \brief Move assignment operator.
@@ -113,7 +116,7 @@ namespace sdf
     /// \brief Set the type of the particle emitter.
     /// The type of the particle emitter should be unique within the scope of
     /// a Link.
-    /// \param[in] _type Type of the particle emitter.
+    /// \param[in] _typeStr Type of the particle emitter.
     /// \return True if the _typeStr parameter matched a known emitter type.
     /// False if the emitter type could not be set.
     public: bool SetType(const std::string &_typeStr);
@@ -122,9 +125,9 @@ namespace sdf
     /// \return The particle emitter type as a string.
     public: std::string TypeStr() const;
 
-    /// \brief Get whether the particle emitter is running, emitting
-    /// particles.
-    /// \return True if emitting particles.
+    /// \brief Get whether the particle emitter should run (emit
+    /// particles).
+    /// \return True if particles should be emitted.
     public: bool Emitting() const;
 
     /// \brief Set whether the particle emitter is running, emitting
@@ -139,7 +142,7 @@ namespace sdf
 
     /// \brief Set the number of seconds the emitter is active.
     /// \param[in] _duration The number of seconds the emitter is active.
-    /// A value of 0 means infinite duration.
+    /// A value less than or equal to zero means infinite duration.
     public: void SetDuration(double _duration);
 
     /// \brief Get the number of seconds each particle will 'live' for
@@ -154,13 +157,12 @@ namespace sdf
 
     /// \brief Get the number of particles per second that should be
     /// emitted.
-    /// \return The number of particles to emitt per second.
+    /// \return The number of particles to emit per second.
     public: double Rate() const;
 
     /// \brief Set the number of particles per second that should be
     /// emitted.
-    /// \param[in] _rate The number of seconds a particle will 'life'
-    /// for.
+    /// \param[in] _rate The number of particle to emit per second.
     public: void SetRate(double _rate);
 
     /// \brief Get the amount by which to scale the particles in both x
@@ -196,36 +198,33 @@ namespace sdf
     //   - point: The area is ignored.
     //   - box: The area is interpreted as width X height X depth.
     //   - cylinder: The area is interpreted as the bounding box of the
-    //               cilinder. The cylinder is oriented along the Z-axis.
+    //               cyilinder. The cylinder is oriented along the Z-axis.
     //   - ellipsoid: The area is interpreted as the bounding box of an
     //                ellipsoid shaped area, i.e. a sphere or
     //                squashed-sphere area. The parameters are again
     //                identical to EM_BOX, except that the dimensions
     //                describe the widest points along each of the axes.
-    /// \return Size of the emitter region in meters..
+    /// \return Size of the emitter region in meters.
     public: ignition::math::Vector3d Size() const;
 
     /// \brief Set the size of the emitter where the particles are sampled.
-    /// \param[in] _size Size of the emitter in meters..
+    /// \param[in] _size Size of the emitter in meters.
     /// \sa ignition::math::Vector3d Size()
     public: void SetSize(const ignition::math::Vector3d _size);
 
-    /// \brief Get the size of a particle.
+    /// \brief Get the size of a particle in meters.
     /// \return Size of a particle in meters.
     public: ignition::math::Vector3d ParticleSize() const;
 
-    /// \brief Set the size of a particle.
+    /// \brief Set the size of a particle in meters.
     /// \param[in] _size Size of a particle in meters.
     public: void SetParticleSize(const ignition::math::Vector3d _size);
 
     /// \brief Gets the starting color for all particles emitted.
     /// The actual color will be interpolated between this color
-    /// and the one set under <color_end>.
+    /// and the one set using ColorEnd().
     /// Color::White is the default color for the particles
     /// unless a specific function is used.
-    /// To specify a color, RGB values should be passed in.
-    /// For example, to specify red, a user should enter:
-    /// <color_start>1 0 0</color_start>
     /// \return The starting color.
     public: ignition::math::Color ColorStart() const;
 
@@ -236,11 +235,9 @@ namespace sdf
 
     /// \brief Get the end color for all particles emitted.
     /// The actual color will be interpolated between this color
-    /// and the one set under <color_start>.
+    /// and the one set under ColorStart().
     /// Color::White is the default color for the particles
-    /// unless a specific function is used (see color_start for
-    /// more information about defining custom colors with RGB
-    /// values).
+    /// unless a specific function is used.
     /// \return The end color.
     public: ignition::math::Color ColorEnd() const;
 
@@ -306,7 +303,7 @@ namespace sdf
 
     /// \brief Get a pointer to the emitter's material properties. This can
     /// be a nullptr if material properties have not been set.
-    /// \return Pointer to the visual's material properties. Nullptr
+    /// \return Pointer to the emitter's material properties. Nullptr
     /// indicates that material properties have not been set.
     public: sdf::Material *Material() const;
 
@@ -322,13 +319,13 @@ namespace sdf
     /// \paramp[in] _filePath Full path to the file on disk.
     public: void SetFilePath(const std::string &_filePath);
 
-    /// \brief Give the name of the xml parent of this object, to be used
+    /// \brief Set the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.
     /// \param[in] _xmlParentName Name of xml parent object.
     private: void SetXmlParentName(const std::string &_xmlParentName);
 
-    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// \brief Set a weak pointer to the PoseRelativeToGraph to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
