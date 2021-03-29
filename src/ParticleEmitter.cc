@@ -360,7 +360,7 @@ double ParticleEmitter::Lifetime() const
 /////////////////////////////////////////////////
 void ParticleEmitter::SetLifetime(double _lifetime)
 {
-  this->dataPtr->lifetime = _lifetime;
+  this->dataPtr->lifetime = std::max(_lifetime, ignition::math::MIN_D);
 }
 
 /////////////////////////////////////////////////
@@ -372,7 +372,7 @@ double ParticleEmitter::Rate() const
 /////////////////////////////////////////////////
 void ParticleEmitter::SetRate(double _rate)
 {
-  this->dataPtr->rate = _rate;
+  this->dataPtr->rate = std::max(_rate, 0.0);
 }
 
 /////////////////////////////////////////////////
@@ -384,7 +384,7 @@ double ParticleEmitter::ScaleRate() const
 /////////////////////////////////////////////////
 void ParticleEmitter::SetScaleRate(double _scaleRate)
 {
-  this->dataPtr->scaleRate = _scaleRate;
+  this->dataPtr->scaleRate = std::max(_scaleRate, 0.0);
 }
 
 /////////////////////////////////////////////////
@@ -396,7 +396,7 @@ double ParticleEmitter::MinVelocity() const
 /////////////////////////////////////////////////
 void ParticleEmitter::SetMinVelocity(double _vel)
 {
-  this->dataPtr->minVelocity = _vel;
+  this->dataPtr->minVelocity = std::max(_vel, 0.0);
 }
 
 /////////////////////////////////////////////////
@@ -408,7 +408,7 @@ double ParticleEmitter::MaxVelocity() const
 /////////////////////////////////////////////////
 void ParticleEmitter::SetMaxVelocity(double _vel)
 {
-  this->dataPtr->maxVelocity = _vel;
+  this->dataPtr->maxVelocity = std::max(_vel, 0.0);
 }
 
 /////////////////////////////////////////////////
@@ -418,9 +418,10 @@ ignition::math::Vector3d ParticleEmitter::Size() const
 }
 
 /////////////////////////////////////////////////
-void ParticleEmitter::SetSize(const ignition::math::Vector3d _size)
+void ParticleEmitter::SetSize(const ignition::math::Vector3d &_size)
 {
   this->dataPtr->size = _size;
+  this->dataPtr->size.Max(ignition::math::Vector3d::Zero);
 }
 
 /////////////////////////////////////////////////
@@ -430,9 +431,10 @@ ignition::math::Vector3d ParticleEmitter::ParticleSize() const
 }
 
 /////////////////////////////////////////////////
-void ParticleEmitter::SetParticleSize(const ignition::math::Vector3d _size)
+void ParticleEmitter::SetParticleSize(const ignition::math::Vector3d &_size)
 {
   this->dataPtr->particleSize = _size;
+  this->dataPtr->particleSize.Max(ignition::math::Vector3d::Zero);
 }
 
 /////////////////////////////////////////////////

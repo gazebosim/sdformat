@@ -63,7 +63,7 @@ namespace sdf
     public: ParticleEmitter();
 
     /// \brief Copy constructor
-    /// \param[in] _emitter Model to copy.
+    /// \param[in] _emitter Particle emitter to copy.
     public: ParticleEmitter(const ParticleEmitter &_emitter);
 
     /// \brief Move constructor
@@ -83,7 +83,7 @@ namespace sdf
     /// \brief Destructor
     public: ~ParticleEmitter();
 
-    /// \brief Load the particle emitter based on a element pointer. This is
+    /// \brief Load the particle emitter based on an element pointer. This is
     /// *not* the usual entry point. Typical usage of the SDF DOM is through
     /// the Root object.
     /// \param[in] _sdf The SDF Element pointer
@@ -136,7 +136,7 @@ namespace sdf
     public: void SetEmitting(bool _emitting);
 
     /// \brief Get the number of seconds the emitter is active.
-    /// A value of 0 means infinite duration.
+    /// A value less than or equal to zero indicates infinite duration.
     /// \return The number of seconds the emitter is active.
     public: double Duration() const;
 
@@ -152,7 +152,8 @@ namespace sdf
 
     /// \brief Set the number of seconds each particle will 'live' for.
     /// \param[in] _duration The number of seconds a particle will 'life'
-    /// for.
+    /// for. If _duration is <= 0, then the
+    /// value std::numeric_limits<double>::min() will be used.
     public: void SetLifetime(double _duration);
 
     /// \brief Get the number of particles per second that should be
@@ -163,6 +164,7 @@ namespace sdf
     /// \brief Set the number of particles per second that should be
     /// emitted.
     /// \param[in] _rate The number of particle to emit per second.
+    /// A value of zero will be used if _rate is negative.
     public: void SetRate(double _rate);
 
     /// \brief Get the amount by which to scale the particles in both x
@@ -173,6 +175,7 @@ namespace sdf
     /// \brief Set the amount by which to scale the particles in both x
     /// and y direction per second.
     /// \param[in] _scaleRate The caling amount in the x and y directions.
+    /// A value of zero will be used if _scaleRate is negative.
     public: void SetScaleRate(double _scaleRate);
 
     /// \brief Get the minimum velocity for each particle.
@@ -181,6 +184,7 @@ namespace sdf
 
     /// \brief Set the minimum velocity for each particle.
     /// \param[in] _vel The minimum velocity for each particle in m/s.
+    /// A value of zero will be used if _vel is negative.
     public: void SetMinVelocity(double _vel);
 
     /// \brief Get the maximum velocity for each particle.
@@ -189,6 +193,7 @@ namespace sdf
 
     /// \brief Set the maximum velocity for each particle.
     /// \param[in] _vel The maximum velocity for each particle in m/s.
+    /// A value of zero will be used if _vel is negative.
     public: void SetMaxVelocity(double _vel);
 
     /// \brief Get the size of the emitter where the particles are sampled.
@@ -209,8 +214,10 @@ namespace sdf
 
     /// \brief Set the size of the emitter where the particles are sampled.
     /// \param[in] _size Size of the emitter in meters.
+    /// Each component of _size must be greater than or equal to zero. Any
+    /// negative value will be replaced with zero.
     /// \sa ignition::math::Vector3d Size()
-    public: void SetSize(const ignition::math::Vector3d _size);
+    public: void SetSize(const ignition::math::Vector3d &_size);
 
     /// \brief Get the size of a particle in meters.
     /// \return Size of a particle in meters.
@@ -218,7 +225,9 @@ namespace sdf
 
     /// \brief Set the size of a particle in meters.
     /// \param[in] _size Size of a particle in meters.
-    public: void SetParticleSize(const ignition::math::Vector3d _size);
+    /// Each component of _size must be greater than or equal to zero. Any
+    /// negative value will be replaced with zero.
+    public: void SetParticleSize(const ignition::math::Vector3d &_size);
 
     /// \brief Gets the starting color for all particles emitted.
     /// The actual color will be interpolated between this color
@@ -252,6 +261,8 @@ namespace sdf
     /// color values begins from the left side of the image and moves to the
     /// right over the lifetime of the particle, therefore only the horizontal
     /// dimension of the image is used.
+    /// The ColorRangeImage has higher priority than ColorEnd and
+    /// ColorStart. If all three are set, ColorRangeImage should be used.
     public: std::string ColorRangeImage() const;
 
     /// \brief Set the path to the color image used as an affector.

@@ -15,7 +15,7 @@
   </element>
 
   <element name="duration" type="double" default="0" required="0">
-    <description>The number of seconds the emitter is active. A value of <=0 means infinite duration.</description>
+    <description>The number of seconds the emitter is active. A value less than or equal to zero means infinite duration.</description>
   </element>
 
   <element name="size" type="vector3" default="1 1 1" required="0">
@@ -41,22 +41,22 @@
   </element>
 
   <element name="lifetime" type="double" default="5" required="0">
-    <description>The number of seconds each particle will ’live’ for before being destroyed. Default value is 5.</description>
+    <description>The number of seconds each particle will ’live’ for before being destroyed. This value must be greater than zero.</description>
   </element>
 
-  <element name="rate" type="double" default="10" required="0">
+  <element name="rate" type="double" default="10" required="0" min="0.0">
     <description>The number of particles per second that should be emitted.</description>
   </element>
 
-  <element name="min_velocity" type="double" default="1" required="0">
+  <element name="min_velocity" type="double" default="1" required="0" min="0.0">
     <description>Sets a minimum velocity for each particle (m/s).</description>
   </element>
 
-  <element name="max_velocity" type="double" default="1" required="0">
+  <element name="max_velocity" type="double" default="1" required="0" min="0.0">
     <description>Sets a maximum velocity for each particle (m/s).</description>
   </element>
 
-  <element name="scale_rate" type="double" default="1" required="0">
+  <element name="scale_rate" type="double" default="1" required="0" min="0.0">
     <description>Sets the amount by which to scale the particles in both x and y direction per second.</description>
   </element>
 

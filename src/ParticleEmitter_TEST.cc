@@ -48,30 +48,44 @@ TEST(DOMParticleEmitter, Construction)
   EXPECT_DOUBLE_EQ(5.0, emitter.Lifetime());
   emitter.SetLifetime(22.0);
   EXPECT_DOUBLE_EQ(22.0, emitter.Lifetime());
+  emitter.SetLifetime(-1.0);
+  EXPECT_DOUBLE_EQ(ignition::math::MIN_D, emitter.Lifetime());
 
   EXPECT_DOUBLE_EQ(10.0, emitter.Rate());
   emitter.SetRate(123.0);
   EXPECT_DOUBLE_EQ(123.0, emitter.Rate());
+  emitter.SetRate(-123.0);
+  EXPECT_DOUBLE_EQ(0.0, emitter.Rate());
 
   EXPECT_DOUBLE_EQ(1.0, emitter.ScaleRate());
   emitter.SetScaleRate(1.2);
   EXPECT_DOUBLE_EQ(1.2, emitter.ScaleRate());
+  emitter.SetScaleRate(-1.2);
+  EXPECT_DOUBLE_EQ(0.0, emitter.ScaleRate());
 
   EXPECT_DOUBLE_EQ(1.0, emitter.MinVelocity());
   emitter.SetMinVelocity(12.4);
   EXPECT_DOUBLE_EQ(12.4, emitter.MinVelocity());
+  emitter.SetMinVelocity(-12.4);
+  EXPECT_DOUBLE_EQ(0.0, emitter.MinVelocity());
 
   EXPECT_DOUBLE_EQ(1.0, emitter.MaxVelocity());
   emitter.SetMaxVelocity(20.6);
   EXPECT_DOUBLE_EQ(20.6, emitter.MaxVelocity());
+  emitter.SetMaxVelocity(-12.4);
+  EXPECT_DOUBLE_EQ(0.0, emitter.MaxVelocity());
 
   EXPECT_EQ(ignition::math::Vector3d::One, emitter.Size());
   emitter.SetSize(ignition::math::Vector3d(3, 2, 1));
   EXPECT_EQ(ignition::math::Vector3d(3, 2, 1), emitter.Size());
+  emitter.SetSize(ignition::math::Vector3d(-3, -2, -1));
+  EXPECT_EQ(ignition::math::Vector3d(0, 0, 0), emitter.Size());
 
   EXPECT_EQ(ignition::math::Vector3d::One, emitter.ParticleSize());
   emitter.SetParticleSize(ignition::math::Vector3d(4, 5, 6));
   EXPECT_EQ(ignition::math::Vector3d(4, 5, 6), emitter.ParticleSize());
+  emitter.SetParticleSize(ignition::math::Vector3d(-4, -5, -6));
+  EXPECT_EQ(ignition::math::Vector3d(0, 0, 0), emitter.ParticleSize());
 
   EXPECT_EQ(ignition::math::Color::White, emitter.ColorStart());
   emitter.SetColorStart(ignition::math::Color(0.1, 0.2, 0.3, 1.0));
