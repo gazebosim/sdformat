@@ -3197,6 +3197,19 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
     CreateGeometry(sdfVisual, _visual->geometry);
   }
 
+  if (_visual->material){
+    double color[4];
+    color[0] = _visual->material->color.r;
+    color[1] = _visual->material->color.g;
+    color[2] = _visual->material->color.b;
+    color[3] = _visual->material->color.a;
+    AddKeyValue(sdfVisual, "material", "");
+    auto materialTag = sdfVisual->FirstChildElement("material");
+    AddKeyValue(materialTag, "ambient", Values2str(4, color));
+    AddKeyValue(materialTag, "diffuse", Values2str(4, color));
+    AddKeyValue(materialTag, "specular", Values2str(4, color));
+  }
+
   // set additional data from extensions
   InsertSDFExtensionVisual(sdfVisual, _link->name);
 
