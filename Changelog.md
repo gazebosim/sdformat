@@ -2,7 +2,7 @@
 
 ### libsdformat 11.X.X (202X-XX-XX)
 
-### libsdformat 11.0.0 (202X-XX-XX)
+### libsdformat 11.0.0 (2021-03-30)
 
 1. Add ParserConfig class to encapsulate file path settings.
     * [Pull request 439](https://github.com/osrf/sdformat/pull/439)
@@ -69,6 +69,7 @@
     * [Pull request 275](https://github.com/osrf/sdformat/pull/275)
     * [Pull request 250](https://github.com/osrf/sdformat/pull/250)
     * [Pull request 243](https://github.com/osrf/sdformat/pull/243)
+    * [Pull request 524](https://github.com/osrf/sdformat/pull/524)
 
 1. Implement SDFormat 1.8 Model Composition.
     * [Pull request 426](https://github.com/osrf/sdformat/pull/426)
