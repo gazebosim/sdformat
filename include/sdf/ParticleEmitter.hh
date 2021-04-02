@@ -156,13 +156,11 @@ namespace sdf
     /// value std::numeric_limits<double>::min() will be used.
     public: void SetLifetime(double _duration);
 
-    /// \brief Get the number of particles per second that should be
-    /// emitted.
+    /// \brief Get the number of particles per second that should be emitted.
     /// \return The number of particles to emit per second.
     public: double Rate() const;
 
-    /// \brief Set the number of particles per second that should be
-    /// emitted.
+    /// \brief Set the number of particles per second that should be emitted.
     /// \param[in] _rate The number of particle to emit per second.
     /// A value of zero will be used if _rate is negative.
     public: void SetRate(double _rate);
@@ -203,7 +201,7 @@ namespace sdf
     //   - point: The area is ignored.
     //   - box: The area is interpreted as width X height X depth.
     //   - cylinder: The area is interpreted as the bounding box of the
-    //               cyilinder. The cylinder is oriented along the Z-axis.
+    //               cylinder. The cylinder is oriented along the Z-axis.
     //   - ellipsoid: The area is interpreted as the bounding box of an
     //                ellipsoid shaped area, i.e. a sphere or
     //                squashed-sphere area. The parameters are again
@@ -301,13 +299,11 @@ namespace sdf
     /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
 
-    /// \brief Get SemanticPose object of this object to aid in resolving
-    /// poses.
+    /// \brief Get SemanticPose object of this object to aid in resolving poses.
     /// \return SemanticPose object for this emitter.
     public: sdf::SemanticPose SemanticPose() const;
 
-    /// \brief Get a pointer to the SDF element that was used during
-    /// load.
+    /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;

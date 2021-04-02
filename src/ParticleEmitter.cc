@@ -25,7 +25,7 @@
 
 using namespace sdf;
 
-/// Particel emitter type strings. These should match the data in
+/// Particle emitter type strings. These should match the data in
 /// `enum class ParticleEmitterType` located in ParticleEmitter.hh.
 const std::vector<std::string> emitterTypeStrs =
 {
@@ -299,6 +299,8 @@ ParticleEmitterType ParticleEmitter::Type() const
 {
   return this->dataPtr->type;
 }
+
+/////////////////////////////////////////////////
 void ParticleEmitter::SetType(const ParticleEmitterType _type)
 {
   this->dataPtr->type = _type;

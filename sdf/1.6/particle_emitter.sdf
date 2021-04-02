@@ -27,7 +27,7 @@
       - point: The area is ignored.
       - box: The area is interpreted as width X height X depth.
       - cylinder: The area is interpreted as the bounding box of the
-                  cyilinder. The cylinder is oriented along the Z-axis.
+                  cylinder. The cylinder is oriented along the Z-axis.
       - ellipsoid: The area is interpreted as the bounding box of an
                    ellipsoid shaped area, i.e. a sphere or
                    squashed-sphere area. The parameters are again
