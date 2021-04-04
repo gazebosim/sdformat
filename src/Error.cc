@@ -28,7 +28,7 @@ class sdf::Error::Implementation
   public: std::string message = "";
 
   /// \brief File path where the error was raised.
-  public: std::optional<std::string> filePath = std::nullopt;
+  public: std::optional<std::string> path = std::nullopt;
 
   /// \brief Line number in the file path where the error was raised.
   public: std::optional<int> lineNumber = std::nullopt;
@@ -49,12 +49,12 @@ Error::Error(const ErrorCode _code, const std::string &_message)
 
 /////////////////////////////////////////////////
 Error::Error(const ErrorCode _code, const std::string &_message,
-             const std::string &_filePath)
+             const std::string &_path)
   : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->code = _code;
   this->dataPtr->message = _message;
-  this->dataPtr->filePath = _filePath;
+  this->dataPtr->path = _path;
 }
 
 /////////////////////////////////////////////////
@@ -64,7 +64,7 @@ Error::Error(const ErrorCode _code, const std::string &_message,
 {
   this->dataPtr->code = _code;
   this->dataPtr->message = _message;
-  this->dataPtr->filePath = _filePath;
+  this->dataPtr->path = _filePath;
   this->dataPtr->lineNumber = _lineNumber;
 }
 
@@ -81,9 +81,9 @@ std::string Error::Message() const
 }
 
 /////////////////////////////////////////////////
-std::optional<std::string> Error::FilePath() const
+std::optional<std::string> Error::Path() const
 {
-  return this->dataPtr->filePath;
+  return this->dataPtr->path;
 }
 
 /////////////////////////////////////////////////

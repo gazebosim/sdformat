@@ -106,24 +106,24 @@ void enforceConfigurablePolicyCondition(
       _errors.push_back(_error);
       break;
     case EnforcementPolicy::WARN:
-      if (!_error.FilePath().has_value())
+      if (!_error.Path().has_value())
         sdfwarn << _error.Message();
       else if (!_error.LineNumber().has_value())
-        sdfwarn << "[" << _error.FilePath().value() << "]: "
+        sdfwarn << "[" << _error.Path().value() << "]: "
             << _error.Message();
       else
-        sdfwarn << "[" << _error.FilePath().value() << ":L"
+        sdfwarn << "[" << _error.Path().value() << ":L"
             << _error.LineNumber().value() << "]: "
             << _error.Message();
       break;
     case EnforcementPolicy::LOG:
-      if (!_error.FilePath().has_value())
+      if (!_error.Path().has_value())
         sdfdbg << _error.Message();
       else if (!_error.LineNumber().has_value())
-        sdfdbg << "[" << _error.FilePath().value() << "]: "
+        sdfdbg << "[" << _error.Path().value() << "]: "
             << _error.Message();
       else
-        sdfdbg << "[" << _error.FilePath().value() << ":L"
+        sdfdbg << "[" << _error.Path().value() << ":L"
             << _error.LineNumber().value() << "]: "
             << _error.Message();
       break;

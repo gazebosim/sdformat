@@ -141,8 +141,8 @@ TEST(PolicyUtils, EnforcementPolicyErrors)
   EXPECT_EQ(errors[0], true);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FILE_READ);
   EXPECT_EQ(errors[0].Message(), "Unable to read a file");
-  EXPECT_TRUE(errors[0].FilePath().has_value());
-  EXPECT_EQ(errors[0].FilePath().value(), emptyFilePath);
+  EXPECT_TRUE(errors[0].Path().has_value());
+  EXPECT_EQ(errors[0].Path().value(), emptyFilePath);
   EXPECT_TRUE(errors[0].LineNumber().has_value());
   EXPECT_EQ(errors[0].LineNumber().value(), 10);
 }
