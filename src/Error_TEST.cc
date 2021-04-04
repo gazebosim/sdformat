@@ -27,7 +27,7 @@ TEST(Error, DefaultConstruction)
   EXPECT_EQ(error, false);
   EXPECT_EQ(error.Code(), sdf::ErrorCode::NONE);
   EXPECT_TRUE(error.Message().empty());
-  EXPECT_FALSE(error.FilePath().has_value());
+  EXPECT_FALSE(error.Path().has_value());
   EXPECT_FALSE(error.LineNumber().has_value());
 
   if (error)
@@ -41,7 +41,7 @@ TEST(Error, ValueConstructionWithoutFile)
   EXPECT_EQ(error, true);
   EXPECT_EQ(error.Code(), sdf::ErrorCode::FILE_READ);
   EXPECT_EQ(error.Message(), "Unable to read a file");
-  EXPECT_FALSE(error.FilePath().has_value());
+  EXPECT_FALSE(error.Path().has_value());
   EXPECT_FALSE(error.LineNumber().has_value());
 
   if (!error)
@@ -57,8 +57,8 @@ TEST(Error, ValueConstructionWithFile)
   EXPECT_EQ(error, true);
   EXPECT_EQ(error.Code(), sdf::ErrorCode::FILE_READ);
   EXPECT_EQ(error.Message(), "Unable to read a file");
-  EXPECT_TRUE(error.FilePath().has_value());
-  EXPECT_EQ(error.FilePath().value(), emptyFilePath);
+  EXPECT_TRUE(error.Path().has_value());
+  EXPECT_EQ(error.Path().value(), emptyFilePath);
   EXPECT_TRUE(error.LineNumber().has_value());
   EXPECT_EQ(error.LineNumber().value(), 10);
 
