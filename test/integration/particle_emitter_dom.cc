@@ -81,8 +81,8 @@ TEST(DOMWorld, LoadParticleEmitter)
 
   sdf::Material *mat = linkEmitter->Material();
   ASSERT_NE(nullptr, mat);
-  EXPECT_EQ(ignition::math::Color(0.7, 0.7, 0.7), mat->Diffuse());
-  EXPECT_EQ(ignition::math::Color(1.0, 1.0, 1.0), mat->Specular());
+  EXPECT_EQ(ignition::math::Color(0.7f, 0.7f, 0.7f), mat->Diffuse());
+  EXPECT_EQ(ignition::math::Color(1.0f, 1.0f, 1.0f), mat->Specular());
 
   sdf::Pbr *pbr = mat->PbrMaterial();
   ASSERT_NE(nullptr, pbr);
