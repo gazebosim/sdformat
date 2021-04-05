@@ -70,7 +70,7 @@ class sdf::ParticleEmitterPrivate
 
   /// \brief The amount by which to scale the particles in both x and y
   /// direction per second.
-  public: double scaleRate = 1;
+  public: double scaleRate = 0;
 
   /// \brief The minimum velocity for each particle (m/s).
   public: double minVelocity = 1;

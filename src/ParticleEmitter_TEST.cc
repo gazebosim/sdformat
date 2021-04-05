@@ -57,7 +57,7 @@ TEST(DOMParticleEmitter, Construction)
   emitter.SetRate(-123.0);
   EXPECT_DOUBLE_EQ(0.0, emitter.Rate());
 
-  EXPECT_DOUBLE_EQ(1.0, emitter.ScaleRate());
+  EXPECT_DOUBLE_EQ(0.0, emitter.ScaleRate());
   emitter.SetScaleRate(1.2);
   EXPECT_DOUBLE_EQ(1.2, emitter.ScaleRate());
   emitter.SetScaleRate(-1.2);
@@ -88,12 +88,13 @@ TEST(DOMParticleEmitter, Construction)
   EXPECT_EQ(ignition::math::Vector3d(0, 0, 0), emitter.ParticleSize());
 
   EXPECT_EQ(ignition::math::Color::White, emitter.ColorStart());
-  emitter.SetColorStart(ignition::math::Color(0.1, 0.2, 0.3, 1.0));
-  EXPECT_EQ(ignition::math::Color(0.1, 0.2, 0.3, 1.0), emitter.ColorStart());
+  emitter.SetColorStart(ignition::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
+  EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 1.0f),
+      emitter.ColorStart());
 
   EXPECT_EQ(ignition::math::Color::White, emitter.ColorEnd());
-  emitter.SetColorEnd(ignition::math::Color(0.4, 0.5, 0.6, 1.0));
-  EXPECT_EQ(ignition::math::Color(0.4, 0.5, 0.6, 1.0), emitter.ColorEnd());
+  emitter.SetColorEnd(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0f));
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0f), emitter.ColorEnd());
 
   EXPECT_TRUE(emitter.ColorRangeImage().empty());
   emitter.SetColorRangeImage("/test/string");

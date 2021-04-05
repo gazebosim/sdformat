@@ -56,7 +56,7 @@
     <description>Sets a maximum velocity for each particle (m/s).</description>
   </element>
 
-  <element name="scale_rate" type="double" default="1" required="0" min="0.0">
+  <element name="scale_rate" type="double" default="0" required="0" min="0.0">
     <description>Sets the amount by which to scale the particles in both x and y direction per second.</description>
   </element>
 
