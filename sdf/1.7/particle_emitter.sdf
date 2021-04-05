@@ -89,13 +89,13 @@
     </description>
   </element>
 
-  <element name="color_range_image" type="string" default="__default__" required="0">
+  <element name="color_range_image" type="string" default="" required="0">
     <description>
     Sets the path to the color image used as an affector. This affector modifies the color of particles in flight. The colors are taken from a specified image file. The range of color values begins from the left side of the image and moves to the right over the lifetime of the particle, therefore only the horizontal dimension of the image is used.  Note that this function overrides the particle colors set with color_start and color_end.
     </description>
   </element>
 
-  <element name="topic" type="string" default="__default__" required="0">
+  <element name="topic" type="string" default="" required="0">
     <description>
      Topic used to update particle emitter properties at runtime.
      The default topic is
