@@ -171,7 +171,7 @@ namespace sdf
     /// \param[in] _filePath The file path that is related to this error.
     /// \sa ErrorCode.
     public: Error(const ErrorCode _code, const std::string &_message,
-                  const std::string &_xmlPath, const std::string &_path);
+                  const std::string &_xmlPath, const std::string &_filePath);
 
     /// \brief Constructor.
     /// \param[in] _code The error code.
@@ -182,7 +182,7 @@ namespace sdf
     /// this error was raised.
     /// \sa ErrorCode.
     public: Error(const ErrorCode _code, const std::string &_message,
-                  const std::string &_xmlPath, const std::string &_path,
+                  const std::string &_xmlPath, const std::string &_filePath,
                   int _lineNumber);
 
     /// \brief Get the error code.
