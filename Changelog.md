@@ -1,6 +1,16 @@
 ## libsdformat 10.X
 
-### libsdformat 10.X.X (202X-XX-XX)
+### libsdformat 10.4.0 (2021-04-06)
+
+1. Added particle emitter.
+    + [Pull request 528](https://github.com/osrf/sdformat/pull/528)
+
+1. Fixed application of <sensor><pose> tags in lumped linkes during URDF
+   conversion.
+    + [Pull request 525](https://github.com/osrf/sdformat/pull/525)
+
+1. Add camera type aliases to docs.
+    + [Pull request 514](https://github.com/osrf/sdformat/pull/514)
 
 ### libsdformat 10.3.0 (2021-02-18)
 
