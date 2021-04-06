@@ -136,11 +136,11 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
 
       const auto& pose = posePair.first;
 
-      EXPECT_FLOAT_EQ(pose.X(), 333.0);
-      EXPECT_FLOAT_EQ(pose.Y(), 0.0);
-      EXPECT_FLOAT_EQ(pose.Z(), 0.0);
-      EXPECT_FLOAT_EQ(pose.Roll(), 0.0);
-      EXPECT_FLOAT_EQ(pose.Pitch(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.X(), 333.0);
+      EXPECT_DOUBLE_EQ(pose.Y(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
       EXPECT_NEAR(pose.Yaw(), IGN_PI_2, 1e-5);
 
       EXPECT_FALSE(poseElem->GetNextElement("pose"));
@@ -157,11 +157,11 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
 
       const auto& pose = posePair.first;
 
-      EXPECT_FLOAT_EQ(pose.X(), 333.0);
-      EXPECT_FLOAT_EQ(pose.Y(), 111.0);
-      EXPECT_FLOAT_EQ(pose.Z(), 0.0);
-      EXPECT_FLOAT_EQ(pose.Roll(), 0.0);
-      EXPECT_FLOAT_EQ(pose.Pitch(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.X(), 333.0);
+      EXPECT_DOUBLE_EQ(pose.Y(), 111.0);
+      EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
       EXPECT_NEAR(pose.Yaw(), IGN_PI_2 - 1, 1e-5);
 
       EXPECT_FALSE(poseElem->GetNextElement("pose"));
@@ -178,11 +178,11 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
 
       const auto& pose = posePair.first;
 
-      EXPECT_FLOAT_EQ(pose.X(), 111.0);
-      EXPECT_FLOAT_EQ(pose.Y(), 0.0);
-      EXPECT_FLOAT_EQ(pose.Z(), 0.0);
-      EXPECT_FLOAT_EQ(pose.Roll(), 0.0);
-      EXPECT_FLOAT_EQ(pose.Pitch(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.X(), 111.0);
+      EXPECT_DOUBLE_EQ(pose.Y(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
       EXPECT_NEAR(pose.Yaw(), -1, 1e-5);
 
       EXPECT_FALSE(poseElem->GetNextElement("pose"));
@@ -199,11 +199,11 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
 
       const auto& pose = posePair.first;
 
-      EXPECT_FLOAT_EQ(pose.X(), 333.0);
-      EXPECT_FLOAT_EQ(pose.Y(), 111.0);
-      EXPECT_FLOAT_EQ(pose.Z(), 222.0);
-      EXPECT_FLOAT_EQ(pose.Roll(), 0.0);
-      EXPECT_FLOAT_EQ(pose.Pitch(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.X(), 333.0);
+      EXPECT_DOUBLE_EQ(pose.Y(), 111.0);
+      EXPECT_DOUBLE_EQ(pose.Z(), 222.0);
+      EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
+      EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
       EXPECT_NEAR(pose.Yaw(), IGN_PI_2 - 1, 1e-5);
 
       EXPECT_FALSE(poseElem->GetNextElement("pose"));
@@ -220,12 +220,12 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
 
       const auto& pose = posePair.first;
 
-      EXPECT_FLOAT_EQ(pose.X(), 1);
-      EXPECT_FLOAT_EQ(pose.Y(), 2);
-      EXPECT_FLOAT_EQ(pose.Z(), 3);
-      EXPECT_FLOAT_EQ(pose.Roll(), 0.1);
-      EXPECT_FLOAT_EQ(pose.Pitch(), 0.2);
-      EXPECT_FLOAT_EQ(pose.Yaw(), 0.3);
+      EXPECT_DOUBLE_EQ(pose.X(), 1);
+      EXPECT_DOUBLE_EQ(pose.Y(), 2);
+      EXPECT_DOUBLE_EQ(pose.Z(), 3);
+      EXPECT_DOUBLE_EQ(pose.Roll(), 0.1);
+      EXPECT_DOUBLE_EQ(pose.Pitch(), 0.2);
+      EXPECT_DOUBLE_EQ(pose.Yaw(), 0.3);
 
       EXPECT_FALSE(poseElem->GetNextElement("pose"));
     }
