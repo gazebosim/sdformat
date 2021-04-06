@@ -1,3 +1,7 @@
+## libsdformat 12.X
+
+### libsdformat 12.0.0 (202X-XX-XX)
+
 ## libsdformat 11.X
 
 ### libsdformat 11.X.X (202X-XX-XX)

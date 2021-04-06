@@ -80,9 +80,9 @@ conda install libsdformat=9.3.0 --channel conda-forge
 ## Source Installation
 
 
-**Note:** the `master` branch is under development for `libsdformat11` and is
-currently unstable. A release branch (`sdf10`, `sdf9`, etc.) is recommended
-for most users.
+**Note:** the `main` branch is under development for `libsdformat12` and is
+currently unstable. A release branch (`sdf11`, `sdf10`, `sdf9`, etc.) is
+recommended for most users.
 
 ## UNIX
 
