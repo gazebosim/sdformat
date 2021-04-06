@@ -27,8 +27,11 @@ class sdf::Error::Implementation
   /// \brief Description of the error.
   public: std::string message = "";
 
+  /// \brief Xml path where the error was raised.
+  public: std::optional<std::string> xmlPath = std::nullopt;
+
   /// \brief File path where the error was raised.
-  public: std::optional<std::string> path = std::nullopt;
+  public: std::optional<std::string> filePath = std::nullopt;
 
   /// \brief Line number in the file path where the error was raised.
   public: std::optional<int> lineNumber = std::nullopt;
@@ -49,22 +52,35 @@ Error::Error(const ErrorCode _code, const std::string &_message)
 
 /////////////////////////////////////////////////
 Error::Error(const ErrorCode _code, const std::string &_message,
-             const std::string &_path)
+             const std::string &_xmlPath)
   : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->code = _code;
   this->dataPtr->message = _message;
-  this->dataPtr->path = _path;
+  this->dataPtr->path = _xmlPath;
 }
 
 /////////////////////////////////////////////////
 Error::Error(const ErrorCode _code, const std::string &_message,
-             const std::string &_filePath, int _lineNumber)
+             const std::string &_xmlPath, const std::string &_filePath)
   : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->code = _code;
   this->dataPtr->message = _message;
-  this->dataPtr->path = _filePath;
+  this->dataPtr->xmlPath = _xmlPath;
+  this->dataPtr->filePath = _filePath;
+}
+
+/////////////////////////////////////////////////
+Error::Error(const ErrorCode _code, const std::string &_message,
+             const std::string &_xmlPath, const std::string &_filePath,
+             int lineNumber)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+{
+  this->dataPtr->code = _code;
+  this->dataPtr->message = _message;
+  this->dataPtr->xmlPath = _xmlPath;
+  this->dataPtr->filePath = _filePath;
   this->dataPtr->lineNumber = _lineNumber;
 }
 
@@ -81,9 +97,15 @@ std::string Error::Message() const
 }
 
 /////////////////////////////////////////////////
-std::optional<std::string> Error::Path() const
+std::optional<std::string> Error::XmlPath() const
 {
-  return this->dataPtr->path;
+  return this->dataPtr->xmlPath;
+}
+
+/////////////////////////////////////////////////
+std::optional<std::string> Error::FilePath() const
+{
+  return this->dataPtr->filePath;
 }
 
 /////////////////////////////////////////////////
