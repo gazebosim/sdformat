@@ -127,9 +127,14 @@ TEST(DOMUtils, ReservedNames)
 TEST(PolicyUtils, EnforcementPolicyErrors)
 {
   sdf::Errors errors;
+  const std::string emptyXmlPath = "/sdf/model";
   const std::string emptyFilePath = "Empty/file/path";
-  sdf::Error error(sdf::ErrorCode::FILE_READ, "Unable to read a file",
-                   emptyFilePath, 10);
+  sdf::Error error(
+      sdf::ErrorCode::FILE_READ,
+      "Unable to read a file",
+      emptyXmlPath,
+      emptyFilePath,
+      10);
   ASSERT_EQ(error, true);
   ASSERT_TRUE(errors.empty());
 
@@ -141,8 +146,10 @@ TEST(PolicyUtils, EnforcementPolicyErrors)
   EXPECT_EQ(errors[0], true);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FILE_READ);
   EXPECT_EQ(errors[0].Message(), "Unable to read a file");
-  EXPECT_TRUE(errors[0].Path().has_value());
-  EXPECT_EQ(errors[0].Path().value(), emptyFilePath);
-  EXPECT_TRUE(errors[0].LineNumber().has_value());
+  ASSERT_TRUE(errors[0].XmlPath().has_value());
+  EXPECT_EQ(errors[0].XmlPath().value(), emptyXmlPath);
+  ASSERT_TRUE(errors[0].FilePath().has_value());
+  EXPECT_EQ(errors[0].FilePath().value(), emptyFilePath);
+  ASSERT_TRUE(errors[0].LineNumber().has_value());
   EXPECT_EQ(errors[0].LineNumber().value(), 10);
 }
