@@ -83,12 +83,14 @@ namespace sdf
   /// \param[in] _xml Pointer to the TinyXML element
   /// \param[in,out] _sdf SDF pointer to parse data into.
   /// \param[in] _config Custom parser configuration
+  /// \param[in] _xmlPath XPath-like trace.
   /// \param[in] _source Source of the XML document, empty if it came from a
   ///            string.
   /// \param[out] _errors Captures errors found during parsing.
   /// \return True on success, false on error.
   static bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
-      const ParserConfig &_config, const std::string &_source, Errors &_errors);
+      const ParserConfig &_config, const std::string &_xmlPath,
+      const std::string &_source, Errors &_errors);
 
   /// \brief Copy child XML elements into the _sdf element.
   /// \param[in] _sdf Parent Element.

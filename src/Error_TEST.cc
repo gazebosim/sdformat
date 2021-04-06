@@ -61,7 +61,7 @@ TEST(Error, ValueConstructionWithXmlPath)
   EXPECT_EQ(error, true);
   EXPECT_EQ(error.Code(), sdf::ErrorCode::FILE_READ);
   EXPECT_EQ(error.Message(), "Unable to read a file");
-  REQUIRE(error.XmlPath().has_value());
+  ASSERT_TRUE(error.XmlPath().has_value());
   EXPECT_EQ(error.XmlPath().value(), emptyXmlPath);
   EXPECT_FALSE(error.FilePath().has_value());
   EXPECT_FALSE(error.LineNumber().has_value());
@@ -80,9 +80,9 @@ TEST(Error, ValueConstructionWithFile)
   EXPECT_EQ(error, true);
   EXPECT_EQ(error.Code(), sdf::ErrorCode::FILE_READ);
   EXPECT_EQ(error.Message(), "Unable to read a file");
-  EXPECT_TRUE(error.XmlPath().has_value());
+  ASSERT_TRUE(error.XmlPath().has_value());
   EXPECT_EQ(error.XmlPath().value(), emptyXmlPath);
-  EXPECT_TRUE(error.FilePath().has_value());
+  ASSERT_TRUE(error.FilePath().has_value());
   EXPECT_EQ(error.FilePath().value(), emptyFilePath);
   EXPECT_FALSE(error.LineNumber().has_value());
 
@@ -105,11 +105,11 @@ TEST(Error, ValueConstructionWithLineNumber)
   EXPECT_EQ(error, true);
   EXPECT_EQ(error.Code(), sdf::ErrorCode::FILE_READ);
   EXPECT_EQ(error.Message(), "Unable to read a file");
-  EXPECT_TRUE(error.XmlPath().has_value());
+  ASSERT_TRUE(error.XmlPath().has_value());
   EXPECT_EQ(error.XmlPath().value(), emptyXmlPath);
-  EXPECT_TRUE(error.FilePath().has_value());
+  ASSERT_TRUE(error.FilePath().has_value());
   EXPECT_EQ(error.FilePath().value(), emptyFilePath);
-  EXPECT_TRUE(error.LineNumber().has_value());
+  ASSERT_TRUE(error.LineNumber().has_value());
   EXPECT_EQ(error.LineNumber().value(), lineNumber);
 
   if (!error)

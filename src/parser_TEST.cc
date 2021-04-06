@@ -304,6 +304,8 @@ TEST(Parser, SyntaxErrorInValues)
     EXPECT_PRED2(contains, buffer.str(),
                  "Unable to set value [bad 0 0 0 0 0 ] for key[pose]");
     EXPECT_PRED2(contains, buffer.str(), "bad_syntax_pose.sdf:L5");
+    EXPECT_PRED2(contains, buffer.str(),
+                 "/sdf/world[@name=\"default\"]/model[@name=\"robot1\"]/pose:");
   }
   {
     // clear the contents of the buffer
@@ -316,6 +318,9 @@ TEST(Parser, SyntaxErrorInValues)
     EXPECT_PRED2(contains, buffer.str(),
                  "Unable to set value [bad ] for key[linear]");
     EXPECT_PRED2(contains, buffer.str(), "bad_syntax_double.sdf:L7");
+    EXPECT_PRED2(contains, buffer.str(),
+                 "/sdf/world[@name=\"default\"]/model[@name=\"robot1\"]/"
+                 "link[@name=\"link\"]/velocity_decay/linear:");
   }
   {
     // clear the contents of the buffer
@@ -328,6 +333,8 @@ TEST(Parser, SyntaxErrorInValues)
     EXPECT_PRED2(contains, buffer.str(),
                  "Unable to set value [0 1 bad ] for key[gravity]");
     EXPECT_PRED2(contains, buffer.str(), "bad_syntax_vector.sdf:L4");
+    EXPECT_PRED2(contains, buffer.str(),
+                 "/sdf/world[@name=\"default\"]/gravity:");
   }
 
   // Revert cerr rdbug so as to not interfere with other tests
@@ -364,6 +371,8 @@ TEST(Parser, MissingRequiredAttributesErrors)
                  "Required attribute[name] in element[link] is not specified "
                  "in SDF.");
     EXPECT_PRED2(contains, buffer.str(), "box_bad_test.world:L6");
+    EXPECT_PRED2(contains, buffer.str(),
+                 "/sdf/world[@name=\"default\"]/model[@name=\"box\"]/link:");
   }
 
   // Revert cerr rdbug so as to not interfere with other tests
@@ -399,6 +408,8 @@ TEST(Parser, IncludesErrors)
     EXPECT_PRED2(contains, buffer.str(),
                  "<include> element missing 'uri' attribute");
     EXPECT_PRED2(contains, buffer.str(), "includes_missing_uri.sdf:L5");
+    EXPECT_PRED2(contains, buffer.str(),
+                 "/sdf/world[@name=\"default\"]/include[0]:");
   }
   {
     // clear the contents of the buffer
@@ -417,6 +428,8 @@ TEST(Parser, IncludesErrors)
     EXPECT_PRED2(contains, buffer.str(),
                  "Unable to find uri[missing_model]");
     EXPECT_PRED2(contains, buffer.str(), "includes_missing_model.sdf:L6");
+    EXPECT_PRED2(contains, buffer.str(),
+                 "/sdf/world[@name=\"default\"]/include[0]/uri:");
   }
   {
     // clear the contents of the buffer
@@ -443,6 +456,8 @@ TEST(Parser, IncludesErrors)
     EXPECT_PRED2(contains, buffer.str(),
                  "since it does not contain a model.config");
     EXPECT_PRED2(contains, buffer.str(), "includes_model_without_sdf.sdf:L6");
+    EXPECT_PRED2(contains, buffer.str(),
+                 "/sdf/world[@name=\"default\"]/include[0]/uri:");
   }
   {
     // clear the contents of the buffer
@@ -469,6 +484,8 @@ TEST(Parser, IncludesErrors)
                  "Failed to find top level <model> / <actor> / <light> for "
                  "<include>\n");
     EXPECT_PRED2(contains, buffer.str(), "includes_without_top_level.sdf:L6");
+    EXPECT_PRED2(contains, buffer.str(),
+                 "/sdf/world[@name=\"default\"]/include[0]/uri:");
   }
 
   // Revert cerr rdbug so as to not interfere with other tests
