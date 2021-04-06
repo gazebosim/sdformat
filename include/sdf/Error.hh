@@ -159,21 +159,31 @@ namespace sdf
     /// \brief Constructor.
     /// \param[in] _code The error code.
     /// \param[in] _message A description of the error.
-    /// \param[in] _path Either the file path or the XPath-like trace that is
-    /// related to this error.
+    /// \param[in] _xmlPath The XPath-like trace that is related to this error.
     /// \sa ErrorCode.
     public: Error(const ErrorCode _code, const std::string &_message,
-                  const std::string &_path);
+                  const std::string &_xmlPath);
 
     /// \brief Constructor.
     /// \param[in] _code The error code.
     /// \param[in] _message A description of the error.
+    /// \param[in] _xmlPath The XPath-like trace that is related to this error.
+    /// \param[in] _filePath The file path that is related to this error.
+    /// \sa ErrorCode.
+    public: Error(const ErrorCode _code, const std::string &_message,
+                  const std::string &_xmlPath, const std::string &_path);
+
+    /// \brief Constructor.
+    /// \param[in] _code The error code.
+    /// \param[in] _message A description of the error.
+    /// \param[in] _xmlPath The XPath-like trace that is related to this error.
     /// \param[in] _filePath The file path that is related to this error.
     /// \param[in] _lineNumber The line number in the provided file path where
     /// this error was raised.
     /// \sa ErrorCode.
     public: Error(const ErrorCode _code, const std::string &_message,
-                  const std::string &_filePath, int _lineNumber);
+                  const std::string &_xmlPath, const std::string &_path,
+                  int _lineNumber);
 
     /// \brief Get the error code.
     /// \return An error code.
@@ -184,12 +194,15 @@ namespace sdf
     /// \return Error message.
     public: std::string Message() const;
 
-    /// \brief Get the file path or the XPath-like trace that is associated with
-    /// this error.
-    /// \return Returns the path of the file or the XPath-like trace that this
-    /// error is related to.
+    /// \brief Get the XPath-like trace that is associated with this error.
+    /// \return Returns the XPath-like trace that this error is related to,
     /// nullopt otherwise.
-    public: std::optional<std::string> Path() const;
+    public: std::optional<std::string> XmlPath() const;
+
+    /// \brief Get the file path that is associated with this error.
+    /// \return Returns the path of the file that this error is related to,
+    /// nullopt otherwise.
+    public: std::optional<std::string> FilePath() const;
 
     /// \brief Get the line number associated with this error.
     /// \return Returns the line number. nullopt otherwise.
@@ -216,29 +229,39 @@ namespace sdf
     public: friend std::ostream &operator<<(std::ostream &_out,
                                             const sdf::Error &_err)
     {
-      if (!_err.Path().has_value())
+      if (!_err.XmlPath().has_value())
       {
         _out << "Error Code "
           << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
               _err.Code())
           << " Msg: " << _err.Message();
+      }
+      else if (!_err.FilePath().has_value())
+      {
+        _out << "Error Code "
+          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
+              _err.Code())
+          << ": [" << _err.XmlPath().value()
+          << "]: Msg: " << _err.Message();
       }
       else if (!_err.LineNumber().has_value())
       {
         _out << "Error Code "
           << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
               _err.Code())
-          << ": [" << _err.Path().value() << "]: "
-          << " Msg: " << _err.Message();
+          << ": [" << _err.XmlPath().value()
+          << ":" << _err.FilePath().value()
+          << "]: Msg: " << _err.Message();
       }
       else
       {
         _out << "Error Code "
           << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
               _err.Code())
-          << ": [" << _err.Path().value() << ":L"
-          << std::to_string(_err.LineNumber().value()) << "]: "
-          << " Msg: " << _err.Message();
+          << ": [" << _err.XmlPath().value()
+          << ":" << _err.FilePath().value()
+          << ":L" << std::to_string(_err.LineNumber().value())
+          << "]: Msg: " << _err.Message();
       }
       return _out;
     }
