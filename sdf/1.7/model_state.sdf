@@ -1,5 +1,5 @@
 <!-- State information for a model -->
-<element name="model" required="*">
+<element name="model_state" required="*">
   <description>Model state</description>
 
   <attribute name="name" type="string" default="__default__" required="1">

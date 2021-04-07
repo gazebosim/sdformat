@@ -1,5 +1,6 @@
 set (sdfs
   actor.sdf
+  air_pressure.sdf
   altimeter.sdf
   atmosphere.sdf
   audio_source.sdf
@@ -7,6 +8,7 @@ set (sdfs
   battery.sdf
   box_shape.sdf
   camera.sdf
+  collision_engine.sdf
   collision.sdf
   contact.sdf
   cylinder_shape.sdf
@@ -21,6 +23,7 @@ set (sdfs
   imu.sdf
   inertial.sdf
   joint.sdf
+  lidar.sdf
   light.sdf
   light_state.sdf
   link.sdf
@@ -52,6 +55,7 @@ set (sdfs
   state.sdf
   surface.sdf
   transceiver.sdf
+  urdf.sdf
   visual.sdf
   world.sdf
 )

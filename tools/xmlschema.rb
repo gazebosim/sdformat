@@ -79,6 +79,11 @@ def printElem(_file, _spaces, _elem)
     _elem.get_elements("element").each do |elem|
       printElem(_file, _spaces+6, elem)
     end
+
+    _elem.get_elements("include").each do |inc|
+      printIncludeRef(_file, _spaces+6, inc);
+    end
+
     _file.printf("%*s</xsd:choice>\n", _spaces+4, "")
 
     # Print the attributes for the complex type
@@ -130,8 +135,7 @@ end
 
 #################################################
 def printInclude(_file, _spaces, _attr)
-  loc = "http://sdformat.org/schemas/"
-  loc += _attr.attributes['filename'].sub("\.sdf","\.xsd")
+  loc = _attr.attributes['filename'].sub("\.sdf","\.xsd")
   _file.printf("%*s<xsd:include schemaLocation='%s'/>\n", _spaces, "", loc)
 end
 
@@ -181,12 +185,29 @@ def printXSD(_file, _spaces, _elem)
     printDocumentation(_file, _spaces, _elem.elements["description"].text)
   end
 
-  _file.printf("%*s<xsd:include schemaLocation='http://sdformat.org/schemas/types.xsd'/>\n", _spaces, "")
+  _file.printf("%*s<xsd:include schemaLocation='#{$path}/schema/types.xsd'/>\n", _spaces, "")
 
-  # Print the inclues for the complex type
+  includedSchemas = []
+
+  # Print the includes for the complex type
   # The includes must appear first
   _elem.get_elements("include").each do |inc|
+    filename = inc.attributes['filename']
+    includedSchemas << filename
+
     printInclude(_file, _spaces, inc);
+  end
+
+  # Print the nested includes for the complex type
+  # that have not already been included
+  _elem.get_elements("element").each do |elem|
+    elem.get_elements("include").each do |inc|
+      filename = inc.attributes['filename']
+
+      if includedSchemas.grep(filename).size == 0
+        printInclude(_file, _spaces, inc)
+      end
+    end
   end
 
   if _elem.get_elements("element").size > 0 ||
@@ -196,7 +217,12 @@ def printXSD(_file, _spaces, _elem)
     # Print the complex type with a name
     _file.printf("%*s<xsd:element name='%s'>\n", _spaces, "",
                  _elem.attributes["name"])
-    _file.printf("%*s<xsd:complexType>\n", _spaces+2, "")
+
+    if _elem.attributes['name'] == "pose"
+      _file.printf("%*s<xsd:complexType mixed='true'>\n", _spaces+2, "")
+    else
+      _file.printf("%*s<xsd:complexType>\n", _spaces+2, "")
+    end
 
     if _elem.attributes['name'] != "plugin" &&
       (_elem.get_elements("element").size > 0 ||
