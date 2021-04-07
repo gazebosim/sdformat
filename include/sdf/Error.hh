@@ -22,6 +22,7 @@
 #include <optional>
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/sdf_config.h>
+#include "sdf/Filesystem.hh"
 #include "sdf/system_util.hh"
 
 #ifdef _WIN32
@@ -159,7 +160,9 @@ namespace sdf
     /// \brief Constructor.
     /// \param[in] _code The error code.
     /// \param[in] _message A description of the error.
-    /// \param[in] _filePath The file path that is related to this error.
+    /// \param[in] _filePath The file path that is related to this error. If the
+    /// file path indicates a string source (i.e. sdfStringSource or
+    /// urdfStringSource), the file path will be ignored.
     /// \sa ErrorCode.
     public: Error(const ErrorCode _code, const std::string &_message,
                   const std::string &_filePath);
@@ -167,9 +170,12 @@ namespace sdf
     /// \brief Constructor.
     /// \param[in] _code The error code.
     /// \param[in] _message A description of the error.
-    /// \param[in] _filePath The file path that is related to this error.
+    /// \param[in] _filePath The file path that is related to this error. If the
+    /// file path indicates a string source (i.e. sdfStringSource or
+    /// urdfStringSource), the file path will be ignored.
     /// \param[in] _lineNumber The line number in the provided file path where
-    /// this error was raised.
+    /// this error was raised. This parameter will be ignored if the file path
+    /// provided is ignored.
     /// \sa ErrorCode.
     public: Error(const ErrorCode _code, const std::string &_message,
                   const std::string &_filePath, int _lineNumber);
@@ -213,7 +219,9 @@ namespace sdf
     public: friend std::ostream &operator<<(std::ostream &_out,
                                             const sdf::Error &_err)
     {
-      if (!_err.FilePath().has_value())
+      if (!_err.FilePath().has_value() ||
+          _err.FilePath().value() == sdfStringSource ||
+          _err.FilePath().value() == urdfStringSource)
       {
         _out << "Error Code "
           << static_cast<std::underlying_type<sdf::ErrorCode>::type>(

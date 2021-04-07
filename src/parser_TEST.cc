@@ -631,6 +631,42 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
 }
 
 /////////////////////////////////////////////////
+/// Check for parsing errors while reading strings
+TEST(Parser, ReadStringError)
+{
+  sdf::SDFPtr sdf = InitSDF();
+  std::ostringstream stream;
+  stream
+    << "<sdf version='1.8'>"
+    << "<model name=\"test\">"
+    << "  <link name=\"test1\">"
+    << "    <visual name=\"good\">"
+    << "      <geometry>"
+    << "        <box><size>1 1 1</size></box>"
+    << "      </geometry>"
+    << "    </visual>"
+    << "  </link>"
+    << "  <link>"
+    << "    <visual name=\"good2\">"
+    << "      <geometry>"
+    << "        <box><size>1 1 1</size></box>"
+    << "      </geometry>"
+    << "    </visual>"
+    << "  </link>"
+    << "</model>"
+    << "</sdf>";
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::readString(stream.str(), sdf, errors));
+  ASSERT_NE(errors.size(), 0u);
+
+  std::cerr << errors[0] << std::endl;
+
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_FALSE(errors[0].FilePath().has_value());
+  EXPECT_FALSE(errors[0].LineNumber().has_value());
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {

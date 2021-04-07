@@ -128,6 +128,15 @@ namespace sdf
       IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
     };
   }
+
+  /// \brief The source path replacement if it was parsed from a string,
+  /// instead of a file.
+  const std::string sdfStringSource = "data-string";
+
+  /// \brief The source path replacement if the urdf was parsed from a string,
+  /// instead of a file.
+  const std::string urdfStringSource = "urdf string";
+
   }
 }
 

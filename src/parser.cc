@@ -23,6 +23,7 @@
 
 #include <ignition/math/SemanticVersion.hh>
 
+#include "sdf/Types.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
@@ -574,7 +575,7 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, "data-string", _convert, _config, _errors))
+  if (readDoc(&xmlDoc, _sdf, sdfStringSource, _convert, _config, _errors))
   {
     return true;
   }
@@ -584,7 +585,7 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
     auto doc = makeSdfDoc();
     u2g.InitModelString(_xmlString, &doc);
 
-    if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _config, _errors))
+    if (sdf::readDoc(&doc, _sdf, urdfStringSource, _convert, _config, _errors))
     {
       sdfdbg << "Parsing from urdf.\n";
       return true;
@@ -629,7 +630,7 @@ bool readString(const std::string &_xmlString, const ParserConfig &_config,
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, "data-string", true, _config, _errors))
+  if (readDoc(&xmlDoc, _sdf, sdfStringSource, true, _config, _errors))
   {
     return true;
   }
@@ -665,7 +666,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     return false;
   }
 
-  if (_source != "data-string")
+  if (_source != sdfStringSource)
   {
     _sdf->SetFilePath(_source);
   }
@@ -745,7 +746,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     return false;
   }
 
-  if (_source != "data-string")
+  if (_source != sdfStringSource)
   {
     _sdf->SetFilePath(_source);
   }
@@ -1596,7 +1597,8 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
     {
       Errors errors;
       bool result =
-          sdf::readDoc(&xmlDoc, _sdf, "data-string", false, _config, errors);
+          sdf::readDoc(&xmlDoc, _sdf, sdfStringSource, false, _config, 
+          errors);
 
       // Output errors
       for (auto const &e : errors)
