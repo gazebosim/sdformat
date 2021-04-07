@@ -1597,8 +1597,7 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
     {
       Errors errors;
       bool result =
-          sdf::readDoc(&xmlDoc, _sdf, sdfStringSource, false, _config, 
-          errors);
+          sdf::readDoc(&xmlDoc, _sdf, sdfStringSource, false, _config, errors);
 
       // Output errors
       for (auto const &e : errors)

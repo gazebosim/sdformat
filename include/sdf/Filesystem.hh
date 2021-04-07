@@ -136,7 +136,6 @@ namespace sdf
   /// \brief The source path replacement if the urdf was parsed from a string,
   /// instead of a file.
   const std::string urdfStringSource = "urdf string";
-
   }
 }
 
