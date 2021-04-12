@@ -23,6 +23,12 @@ set (headers
   Gui.hh
   Heightmap.hh
   Imu.hh
+  InterfaceElements.hh
+  InterfaceFrame.hh
+  InterfaceJoint.hh
+  InterfaceLink.hh
+  InterfaceModel.hh
+  InterfaceModelPoseGraph.hh
   Joint.hh
   JointAxis.hh
   Lidar.hh

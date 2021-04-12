@@ -15,10 +15,9 @@
  *
  */
 
+#include "sdf/ParserConfig.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Types.hh"
-
-#include "sdf/ParserConfig.hh"
 
 using namespace sdf;
 
@@ -36,6 +35,9 @@ class sdf::ParserConfig::Implementation
   /// Default is to ignore them for compatibility with legacy behavior
   public: EnforcementPolicy unrecognizedElementsPolicy =
     EnforcementPolicy::LOG;
+
+  /// \brief Collection of custom model parsers.
+  public: std::vector<CustomModelParser> customParsers;
 };
 
 
@@ -112,4 +114,16 @@ void ParserConfig::SetUnrecognizedElementsPolicy(EnforcementPolicy _policy)
 EnforcementPolicy ParserConfig::UnrecognizedElementsPolicy() const
 {
   return this->dataPtr->unrecognizedElementsPolicy;
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::RegisterCustomModelParser(CustomModelParser _modelParser)
+{
+  this->dataPtr->customParsers.push_back(_modelParser);
+}
+
+/////////////////////////////////////////////////
+const std::vector<CustomModelParser> &ParserConfig::CustomModelParsers() const
+{
+  return this->dataPtr->customParsers;
 }

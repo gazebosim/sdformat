@@ -2,7 +2,7 @@
 
 ### libsdformat 11.X.X (202X-XX-XX)
 
-### libsdformat 11.0.0 (202X-XX-XX)
+### libsdformat 11.0.0 (2021-03-30)
 
 1. Add ParserConfig class to encapsulate file path settings.
     * [Pull request 439](https://github.com/osrf/sdformat/pull/439)
@@ -69,6 +69,7 @@
     * [Pull request 275](https://github.com/osrf/sdformat/pull/275)
     * [Pull request 250](https://github.com/osrf/sdformat/pull/250)
     * [Pull request 243](https://github.com/osrf/sdformat/pull/243)
+    * [Pull request 524](https://github.com/osrf/sdformat/pull/524)
 
 1. Implement SDFormat 1.8 Model Composition.
     * [Pull request 426](https://github.com/osrf/sdformat/pull/426)
@@ -76,6 +77,8 @@
     * [Pull request 355](https://github.com/osrf/sdformat/pull/355)
     * [Pull request 324](https://github.com/osrf/sdformat/pull/324)
     * [Pull request 304](https://github.com/osrf/sdformat/pull/304)
+    * [Pull request #518](https://github.com/osrf/sdformat/pull/518)
+    * [Pull request #504](https://github.com/osrf/sdformat/pull/504)
 
 1. Fix precision loss when adding nested models.
     * [Pull request 314](https://github.com/osrf/sdformat/pull/314)
@@ -85,6 +88,61 @@
 
 1. SDFormat 1.8: Deprecate //joint/axis/initial_position.
     * [BitBucket pull request 683](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/683)
+
+1. Implement SDFormat 1.8 Interface API
+    * [Pull request #475](https://github.com/osrf/sdformat/pull/475)
+
+1. Add Joint DOM API to access joint sensors
+    * [Pull request #517](https://github.com/osrf/sdformat/pull/517)
+
+1. Store include info in Element
+    * [Pull request #509](https://github.com/osrf/sdformat/pull/509)
+
+1. Updated loading //material colors
+    * [Pull request #519](https://github.com/osrf/sdformat/pull/519)
+
+1. Include file path and line number in parsing errors
+    * [Pull request #512](https://github.com/osrf/sdformat/pull/512)
+
+1. Error when delimiter "::" found in element name in SDFormat 1.8
+    * [Pull request #515](https://github.com/osrf/sdformat/pull/515)
+
+1. Add camera type aliases to docs.
+    * [Pull request #514](https://github.com/osrf/sdformat/pull/514)
+
+1. Fix lidar resolution description about interpolation
+    * [Pull request #506](https://github.com/osrf/sdformat/pull/506)
+
+1. Added issue & PR templates
+    * [Pull request #486](https://github.com/osrf/sdformat/pull/486)
+
+1. Add L16 pixel format to Camera pixel format conversion function
+    * [Pull request #487](https://github.com/osrf/sdformat/pull/487)
+
+1. Quietly search for urdfdom
+    * [Pull request #493](https://github.com/osrf/sdformat/pull/493)
+
+1. tests: Ensure removed SDFormat elements raise errors in newer versions
+    * [Pull request #490](https://github.com/osrf/sdformat/pull/490)
+
+1. sdformat.pc.in: requires ignition-utils1
+    * [Pull request #489](https://github.com/osrf/sdformat/pull/489)
+    * [Pull request #503](https://github.com/osrf/sdformat/pull/503)
+
+1. Wrap description tags in CDATA
+    * [Pull request #483](https://github.com/osrf/sdformat/pull/483)
+
+1. Fix temperature gradient default value in Atmosphere DOM
+    * [Pull request #482](https://github.com/osrf/sdformat/pull/482)
+
+1. Add laser_retro in Visual
+    * [Pull request #454](https://github.com/osrf/sdformat/pull/454)
+
+1. Add Windows installation
+    * [Pull request #463](https://github.com/osrf/sdformat/pull/463)
+
+1. Replace PROJECT_SOURCE_DIR in tests
+    * [Pull request #460](https://github.com/osrf/sdformat/pull/460)
 
 ## libsdformat 10.X
 

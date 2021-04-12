@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="default">
+    <include>
+      <!-- This file is in test/integration/model/. The search directory has to be set by the test -->
+      <uri>double_pendulum.toml</uri>
+      <pose>1 0 0 0 0 0</pose>
+      <extra>
+        <info1>value1</info1>
+        <info2>value2</info2>
+      </extra>
+    </include>
+  </world>
+</sdf>

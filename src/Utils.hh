@@ -20,9 +20,11 @@
 #include <algorithm>
 #include <string>
 #include <optional>
+#include <utility>
 #include <vector>
 #include "sdf/Error.hh"
 #include "sdf/Element.hh"
+#include "sdf/InterfaceElements.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/Types.hh"
 
@@ -92,9 +94,9 @@ namespace sdf
   /// exists.
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
-  template <typename Class>
+  template <typename Class, typename... Args>
   sdf::Errors loadUniqueRepeated(sdf::ElementPtr _sdf,
-      const std::string &_sdfName, std::vector<Class> &_objs)
+      const std::string &_sdfName, std::vector<Class> &_objs, Args&&... _args)
   {
     Errors errors;
 
@@ -110,7 +112,7 @@ namespace sdf
         Class obj;
 
         // Load the model and capture the errors.
-        Errors loadErrors = obj.Load(elem);
+        Errors loadErrors = obj.Load(elem, std::forward<Args>(_args)...);
 
         // keep processing even if there are loadErrors
         {
@@ -195,6 +197,15 @@ namespace sdf
 
     return errors;
   }
+
+  /// \brief Load interface models from //include tags.
+  /// \param[in] _sdf sdf::ElementPtr that contains the //include tags.
+  /// \param[in] _config Parser configuration options.
+  /// \param[out] _models Loaded interface models
+  /// \return Errors encountered.
+  sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
+      const sdf::ParserConfig &_config,
+      std::vector<std::pair<NestedInclude, InterfaceModelPtr>> &_models);
 
   /// \brief Convenience function that returns a pointer to the value contained
   /// in a std::optional.

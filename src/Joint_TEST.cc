@@ -104,6 +104,13 @@ TEST(DOMJoint, Construction)
   const double threadPitch = 0.1;
   joint.SetThreadPitch(threadPitch);
   EXPECT_DOUBLE_EQ(threadPitch, joint.ThreadPitch());
+
+  EXPECT_EQ(0u, joint.SensorCount());
+  EXPECT_EQ(nullptr, joint.SensorByIndex(0));
+  EXPECT_EQ(nullptr, joint.SensorByIndex(1));
+  EXPECT_EQ(nullptr, joint.SensorByName("empty"));
+  EXPECT_FALSE(joint.SensorNameExists(""));
+  EXPECT_FALSE(joint.SensorNameExists("default"));
 }
 
 /////////////////////////////////////////////////

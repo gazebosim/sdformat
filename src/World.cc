@@ -22,8 +22,12 @@
 
 #include "sdf/Actor.hh"
 #include "sdf/Frame.hh"
+#include "sdf/InterfaceElements.hh"
+#include "sdf/InterfaceModel.hh"
+#include "sdf/InterfaceModelPoseGraph.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
+#include "sdf/ParserConfig.hh"
 #include "sdf/Physics.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
@@ -67,6 +71,10 @@ class sdf::World::Implementation
   /// \brief The models specified in this world.
   public: std::vector<Model> models;
 
+  /// \brief The interface models specified in this world.
+  public: std::vector<std::pair<sdf::NestedInclude, sdf::InterfaceModelPtr>>
+      interfaceModels;
+
   /// \brief Name of the world.
   public: std::string name = "";
 
@@ -99,6 +107,12 @@ World::World()
 
 /////////////////////////////////////////////////
 Errors World::Load(sdf::ElementPtr _sdf)
+{
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
 {
   Errors errors;
 
@@ -177,7 +191,7 @@ Errors World::Load(sdf::ElementPtr _sdf)
 
   // Load all the models.
   Errors modelLoadErrors =
-      loadUniqueRepeated<Model>(_sdf, "model", this->dataPtr->models);
+      loadUniqueRepeated<Model>(_sdf, "model", this->dataPtr->models, _config);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
 
   // Models are loaded first, and loadUniqueRepeated ensures there are no
@@ -186,6 +200,17 @@ Errors World::Load(sdf::ElementPtr _sdf)
   for (const auto &model : this->dataPtr->models)
   {
     frameNames.insert(model.Name());
+  }
+
+  // Load included models via the interface API
+  Errors interfaceModelLoadErrors = loadIncludedInterfaceModels(
+      _sdf, _config, this->dataPtr->interfaceModels);
+  errors.insert(errors.end(), interfaceModelLoadErrors.begin(),
+      interfaceModelLoadErrors.end());
+
+  for (const auto &ifaceModelPair : this->dataPtr->interfaceModels)
+  {
+    frameNames.insert(ifaceModelPair.second->Name()).second;
   }
 
   // Load all the physics.
@@ -548,6 +573,30 @@ bool World::PhysicsNameExists(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+uint64_t World::InterfaceModelCount() const
+{
+  return this->dataPtr->interfaceModels.size();
+}
+
+/////////////////////////////////////////////////
+InterfaceModelConstPtr World::InterfaceModelByIndex(
+    const uint64_t _index) const
+{
+  if (_index < this->dataPtr->interfaceModels.size())
+    return this->dataPtr->interfaceModels[_index].second;
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+const NestedInclude *World::InterfaceModelNestedIncludeByIndex(
+    const uint64_t _index) const
+{
+  if (_index < this->dataPtr->interfaceModels.size())
+    return &this->dataPtr->interfaceModels[_index].first;
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
 void World::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
@@ -555,6 +604,11 @@ void World::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
   for (auto &model : this->dataPtr->models)
   {
     model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &ifaceModelPair : this->dataPtr->interfaceModels)
+  {
+    ifaceModelPair.second->InvokeRespostureFunction(
+        this->dataPtr->poseRelativeToGraph);
   }
   for (auto &frame : this->dataPtr->frames)
   {

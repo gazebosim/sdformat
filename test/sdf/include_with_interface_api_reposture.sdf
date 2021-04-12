@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="default">
+    <frame name="F0">
+      <pose>0 2 0 0 0 0</pose>
+    </frame>
+    <include>
+      <uri>nonexistent_reposture_test_file.nonce_1</uri>
+      <name>M0</name>
+      <pose relative_to="F0">1 0 0 0 0 0</pose>
+    </include>
+    <model name="parent_model">
+      <pose relative_to="F0">1 0 0 0 0 0</pose>
+      <frame name="F1">
+        <pose>0 0 3 0 0 0</pose>
+      </frame>
+      <include>
+        <uri>nonexistent_reposture_test_file.nonce_1</uri>
+        <name>M1</name>
+        <pose relative_to="F1">0 0 0 0.1 0 0</pose>
+      </include>
+      <link name="L"/>
+    </model>
+  </world>
+</sdf>
