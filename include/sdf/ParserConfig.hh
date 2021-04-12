@@ -26,6 +26,7 @@
 #include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/Error.hh"
+#include "sdf/InterfaceElements.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
@@ -142,6 +143,14 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the current unrecognized elements policy
   /// \return The unrecognized elements policy enum value
   public: EnforcementPolicy UnrecognizedElementsPolicy() const;
+
+  /// \brief Registers a custom model parser.
+  /// \param[in] _modelParser Callback as described in
+  /// sdf/InterfaceElements.hh.
+  public: void RegisterCustomModelParser(CustomModelParser _modelParser);
+
+  /// \brief Get the registered custom model parsers
+  public: const std::vector<CustomModelParser> &CustomModelParsers() const;
 
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)

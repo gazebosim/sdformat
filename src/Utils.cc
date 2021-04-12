@@ -16,6 +16,7 @@
 */
 #include <string>
 #include <utility>
+#include "sdf/SDFImpl.hh"
 #include "Utils.hh"
 
 namespace sdf
@@ -76,6 +77,7 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
 }
 
 /////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
 double infiniteIfNegative(const double _value)
 {
   if (_value < 0.0)
@@ -85,11 +87,14 @@ double infiniteIfNegative(const double _value)
 }
 
 /////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
 bool isValidFrameReference(const std::string &_name)
 {
   return "__root__" != _name;
 }
 
+/////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
 void enforceConfigurablePolicyCondition(
   const sdf::EnforcementPolicy _policy,
   const sdf::Error &_error,
@@ -125,6 +130,130 @@ void enforceConfigurablePolicyCondition(
     default:
       throw std::runtime_error("Unhandled warning policy enum value");
   }
+}
+
+/////////////////////////////////////////////////
+/// \brief Compute the absolute name of an entity by walking up the element
+/// tree.
+/// \param[in] _sdf sdf::ElementPtr of the entity with the name attribute
+/// \param[out] _errors Will contain errors encountered in the function.
+/// \return Absolute name of the entity of no errors occured. nullopt otherwise.
+static std::optional<std::string> computeAbsoluteName(
+    const sdf::ElementPtr &_sdf, sdf::Errors &_errors)
+{
+  std::vector<std::string> names;
+  for (auto parent = _sdf;
+       parent->GetName() != "world" && parent->GetName() != "sdf";
+       parent = parent->GetParent())
+  {
+    if (parent->HasAttribute("name"))
+    {
+      names.push_back(parent->GetAttribute("name")->GetAsString());
+    }
+    else
+    {
+      _errors.emplace_back(sdf::ErrorCode::ATTRIBUTE_MISSING,
+          "Name attribute missing from " + parent->GetName() + ".");
+      return std::nullopt;
+    }
+  }
+  if (names.size() > 0)
+  {
+    std::string absoluteParentName = names.back();
+    auto it = names.rbegin();
+    std::advance(it, 1);
+    for (; it != names.rend(); ++it)
+    {
+      absoluteParentName.append(kSdfScopeDelimiter);
+      absoluteParentName.append(*it);
+    }
+
+    return absoluteParentName;
+  }
+
+  return std::nullopt;
+}
+
+/////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
+sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
+    const sdf::ParserConfig &_config,
+    std::vector<std::pair<NestedInclude, InterfaceModelPtr>> &_models)
+{
+  sdf::Errors allErrors;
+  for (auto includeElem = _sdf->GetElementImpl("include"); includeElem;
+       includeElem = includeElem->GetNextElement("include"))
+  {
+    sdf::NestedInclude include;
+    include.uri = includeElem->Get<std::string>("uri");
+    auto absoluteParentName = computeAbsoluteName(_sdf, allErrors);
+
+    if (absoluteParentName.has_value())
+    {
+      include.absoluteParentName = *absoluteParentName;
+    }
+
+    if (includeElem->HasElement("name"))
+    {
+      include.localModelName = includeElem->Get<std::string>("name");
+    }
+    if (includeElem->HasElement("static"))
+    {
+      include.isStatic = includeElem->Get<bool>("static");
+    }
+    include.resolvedFileName = sdf::findFile(include.uri, true, true, _config);
+
+    include.includeElement = includeElem;
+    if (includeElem->HasElement("pose"))
+    {
+      auto poseElem = includeElem->GetElement("pose");
+      include.includeRawPose = poseElem->Get<ignition::math::Pose3d>();
+      if (poseElem->HasAttribute("relative_to"))
+      {
+        include.includePoseRelativeTo =
+            poseElem->Get<std::string>("relative_to");
+      }
+    }
+
+    if (includeElem->HasElement("placement_frame"))
+    {
+      include.placementFrame = includeElem->Get<std::string>("placement_frame");
+    }
+
+    // Iterate through custom model parsers in reverse per the SDFormat proposal
+    // See http://sdformat.org/tutorials?tut=composition_proposal&cat=pose_semantics_docs&#1-5-minimal-libsdformat-interface-types-for-non-sdformat-models
+    const auto &customParsers =  _config.CustomModelParsers();
+    for (auto parserIt = customParsers.rbegin();
+         parserIt != customParsers.rend(); ++parserIt)
+    {
+      sdf::Errors errors;
+      auto model = (*parserIt)(include, errors);
+      if (!errors.empty())
+      {
+        // If there are any errors, stop iterating through the custom parsers
+        // and report the error
+        allErrors.insert(allErrors.end(), errors.begin(), errors.end());
+        break;
+      }
+      else if (nullptr != model)
+      {
+        if (model->Name() == "")
+        {
+          allErrors.emplace_back(sdf::ErrorCode::ATTRIBUTE_INVALID,
+              "Missing name of custom model with URI [" + include.uri + "]");
+        }
+        else
+        {
+          _models.emplace_back(include, model);
+        }
+        break;
+      }
+      // If there are no errors and model == nullptr, continue iterating through
+      // the custom parsers.
+    }
+  }
+
+  return allErrors;
 }
 }
 }

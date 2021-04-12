@@ -38,6 +38,7 @@ namespace sdf
   struct FrameAttachedToGraph;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
+  class Sensor;
 
   /// \enum JointType
   /// \brief The set of joint types. INVALID indicates that joint type has
@@ -200,6 +201,29 @@ namespace sdf
     /// poses.
     /// \return SemanticPose object for this link.
     public: sdf::SemanticPose SemanticPose() const;
+
+    /// \brief Get the number of sensors.
+    /// \return Number of sensors contained in this Joint object.
+    public: uint64_t SensorCount() const;
+
+    /// \brief Get a sensor based on an index.
+    /// \param[in] _index Index of the sensor. The index should be in the
+    /// range [0..SensorCount()).
+    /// \return Pointer to the sensor. Nullptr if the index does not exist.
+    /// \sa uint64_t SensorCount() const
+    public: const Sensor *SensorByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a sensor name exists.
+    /// \param[in] _name Name of the sensor to check.
+    /// \return True if there exists a sensor with the given name.
+    public: bool SensorNameExists(const std::string &_name) const;
+
+    /// \brief Get a sensor based on a name.
+    /// \param[in] _name Name of the sensor.
+    /// \return Pointer to the sensor. Nullptr if a sensor with the given name
+    ///  does not exist.
+    /// \sa bool SensorNameExists(const std::string &_name) const
+    public: const Sensor *SensorByName(const std::string &_name) const;
 
     /// \brief Give the scoped FrameAttachedToGraph to be used for resolving
     /// parent and child link names. This is private and is intended to be
