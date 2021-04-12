@@ -29,6 +29,7 @@ set(tests
   nested_model.cc
   param_passing.cc
   parser_error_detection.cc
+  particle_emitter_dom.cc
   plugin_attribute.cc
   plugin_bool.cc
   plugin_include.cc
