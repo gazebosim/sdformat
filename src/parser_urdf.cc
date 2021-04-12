@@ -3197,7 +3197,8 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
     CreateGeometry(sdfVisual, _visual->geometry);
   }
 
-  if (_visual->material){
+  if (_visual->material)
+  {
     double color[4];
     color[0] = _visual->material->color.r;
     color[1] = _visual->material->color.g;
