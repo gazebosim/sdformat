@@ -3197,6 +3197,9 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
     CreateGeometry(sdfVisual, _visual->geometry);
   }
 
+  // set additional data from extensions
+  InsertSDFExtensionVisual(sdfVisual, _link->name);
+
   if (_visual->material)
   {
     double color[4];
@@ -3204,16 +3207,28 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
     color[1] = _visual->material->color.g;
     color[2] = _visual->material->color.b;
     color[3] = _visual->material->color.a;
-    AddKeyValue(sdfVisual, "material", "");
     auto materialTag = sdfVisual->FirstChildElement("material");
-    AddKeyValue(materialTag, "ambient", Values2str(4, color));
-    AddKeyValue(materialTag, "diffuse", Values2str(4, color));
-    AddKeyValue(materialTag, "specular", Values2str(4, color));
+    // If the material is not included by an extension then create it
+    if (materialTag == nullptr)
+    {
+      AddKeyValue(sdfVisual, "material", "");
+      materialTag = sdfVisual->FirstChildElement("material");
+    }
+    // If the specular and diffuse are defined by an extension then don't
+    // use the color values
+    if (materialTag->FirstChildElement("diffuse") == nullptr &&
+        materialTag->FirstChildElement("specular") == nullptr)
+    {
+      if (materialTag->FirstChildElement("diffuse") == nullptr)
+      {
+        AddKeyValue(materialTag, "diffuse", Values2str(4, color));
+      }
+      if (materialTag->FirstChildElement("specular") == nullptr)
+      {
+        AddKeyValue(materialTag, "specular", Values2str(4, color));
+      }
+    }
   }
-
-  // set additional data from extensions
-  InsertSDFExtensionVisual(sdfVisual, _link->name);
-
   // end create _visual node
   _elem->LinkEndChild(sdfVisual);
 }
