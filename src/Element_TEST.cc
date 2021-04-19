@@ -73,6 +73,18 @@ TEST(Element, Required)
 }
 
 /////////////////////////////////////////////////
+TEST(Element, SetSet)
+{
+  sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+
+  ASSERT_TRUE(elem->GetSet());
+
+  elem->SetSet(false);
+
+  ASSERT_FALSE(elem->GetSet());
+}
+
+/////////////////////////////////////////////////
 TEST(Element, CopyChildren)
 {
   sdf::Element elem;

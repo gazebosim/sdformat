@@ -31,6 +31,7 @@ Element::Element()
 {
   this->dataPtr->copyChildren = false;
   this->dataPtr->referenceSDF = "";
+  this->dataPtr->set = true;
 }
 
 /////////////////////////////////////////////////
@@ -91,6 +92,18 @@ const std::string &Element::GetRequired() const
 void Element::SetCopyChildren(bool _value)
 {
   this->dataPtr->copyChildren = _value;
+}
+
+/////////////////////////////////////////////////
+void Element::SetSet(const bool _value)
+{
+  this->dataPtr->set = _value;
+}
+
+/////////////////////////////////////////////////
+bool Element::GetSet() const
+{
+  return this->dataPtr->set;
 }
 
 /////////////////////////////////////////////////
@@ -155,6 +168,7 @@ ElementPtr Element::Clone() const
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
   clone->dataPtr->path = this->dataPtr->path;
   clone->dataPtr->originalVersion = this->dataPtr->originalVersion;
+  clone->dataPtr->set - this->dataPtr->set;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
@@ -196,6 +210,7 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->referenceSDF = _elem->ReferenceSDF();
   this->dataPtr->originalVersion = _elem->OriginalVersion();
   this->dataPtr->path = _elem->FilePath();
+  this->dataPtr->set = _elem->GetSet();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
        iter != _elem->dataPtr->attributes.end(); ++iter)
