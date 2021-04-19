@@ -32,7 +32,6 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   // Forward declarations.
-  class ParticleEmitterPrivate;
   struct PoseRelativeToGraph;
 
   /// \enum ParticleEmitterType
@@ -61,27 +60,6 @@ namespace sdf
   {
     /// \brief Default constructor
     public: ParticleEmitter();
-
-    /// \brief Copy constructor
-    /// \param[in] _emitter Particle emitter to copy.
-    public: ParticleEmitter(const ParticleEmitter &_emitter);
-
-    /// \brief Move constructor
-    /// \param[in] _model Emitter to move.
-    public: ParticleEmitter(ParticleEmitter &&_emitter) noexcept;
-
-    /// \brief Move assignment operator.
-    /// \param[in] _emitter Particle emitter to move.
-    /// \return Reference to this.
-    public: ParticleEmitter &operator=(ParticleEmitter &&_emitter);
-
-    /// \brief Copy assignment operator.
-    /// \param[in] _emitter Particle emitter to copy.
-    /// \return Reference to this.
-    public: ParticleEmitter &operator=(const ParticleEmitter &_emitter);
-
-    /// \brief Destructor
-    public: ~ParticleEmitter();
 
     /// \brief Load the particle emitter based on an element pointer. This is
     /// *not* the usual entry point. Typical usage of the SDF DOM is through
@@ -312,7 +290,7 @@ namespace sdf
     /// be a nullptr if material properties have not been set.
     /// \return Pointer to the emitter's material properties. Nullptr
     /// indicates that material properties have not been set.
-    public: sdf::Material *Material() const;
+    public: const sdf::Material *Material() const;
 
     /// \brief Set the emitter's material
     /// \param[in] _material The material of the particle emitter.
@@ -335,9 +313,9 @@ namespace sdf
     /// \brief Set a weak pointer to the PoseRelativeToGraph to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.
-    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \param[in] _graph scoped PoseRelativeToGraph object.
     private: void SetPoseRelativeToGraph(
-        std::weak_ptr<const PoseRelativeToGraph> _graph);
+                 sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
     /// \brief Allow Link::SetPoseRelativeToGraph to call SetXmlParentName
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is
@@ -345,7 +323,7 @@ namespace sdf
     friend class Link;
 
     /// \brief Private data pointer.
-    private: ParticleEmitterPrivate *dataPtr = nullptr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

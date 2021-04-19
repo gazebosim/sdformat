@@ -15,12 +15,16 @@
  *
 */
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "sdf/ParticleEmitter.hh"
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
+
+#include "FrameSemantics.hh"
+#include "ScopedGraph.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -35,20 +39,8 @@ const std::vector<std::string> emitterTypeStrs =
   "ellipsoid",
 };
 
-class sdf::ParticleEmitterPrivate
+class sdf::ParticleEmitter::Implementation
 {
-  /// \brief Default constructor
-  public: ParticleEmitterPrivate() = default;
-
-  /// \brief Copy constructor
-  /// \param[in] _private ParticleEmitterPrivate to move.
-  public: explicit ParticleEmitterPrivate(
-              const ParticleEmitterPrivate &_private);
-
-  // Delete copy assignment so it is not accidentally used
-  public: ParticleEmitterPrivate &operator=(
-              const ParticleEmitterPrivate &) = delete;
-
   /// \brief Name of the particle emitter.
   public: std::string name = "";
 
@@ -103,13 +95,13 @@ class sdf::ParticleEmitterPrivate
   public: std::string poseRelativeTo = "";
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief Name of xml parent object.
   public: std::string xmlParentName = "";
 
   /// \brief Pointer to the emitter's material properties.
-  public: std::unique_ptr<Material> material;
+  public: std::optional<sdf::Material> material;
 
   /// \brief The path to the file where this emitter was defined.
   public: std::string filePath = "";
@@ -119,72 +111,9 @@ class sdf::ParticleEmitterPrivate
 };
 
 /////////////////////////////////////////////////
-ParticleEmitterPrivate::ParticleEmitterPrivate(
-    const ParticleEmitterPrivate &_private)
-    : name(_private.name),
-      type(_private.type),
-      emitting(_private.emitting),
-      duration(_private.duration),
-      lifetime(_private.lifetime),
-      rate(_private.rate),
-      scaleRate(_private.scaleRate),
-      minVelocity(_private.minVelocity),
-      maxVelocity(_private.maxVelocity),
-      size(_private.size),
-      particleSize(_private.particleSize),
-      colorStart(_private.colorStart),
-      colorEnd(_private.colorEnd),
-      colorRangeImage(_private.colorRangeImage),
-      topic(_private.topic),
-      pose(_private.pose),
-      poseRelativeTo(_private.poseRelativeTo),
-      xmlParentName(_private.xmlParentName),
-      filePath(_private.filePath),
-      sdf(_private.sdf)
-{
-  if (_private.material)
-  {
-    this->material = std::make_unique<Material>(*(_private.material));
-  }
-}
-
-/////////////////////////////////////////////////
 ParticleEmitter::ParticleEmitter()
-  : dataPtr(new ParticleEmitterPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-ParticleEmitter::~ParticleEmitter()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-/////////////////////////////////////////////////
-ParticleEmitter::ParticleEmitter(const ParticleEmitter &_particleEmitter)
-  : dataPtr(new ParticleEmitterPrivate(*_particleEmitter.dataPtr))
-{
-}
-
-/////////////////////////////////////////////////
-ParticleEmitter::ParticleEmitter(ParticleEmitter &&_particleEmitter) noexcept
-  : dataPtr(std::exchange(_particleEmitter.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-ParticleEmitter &ParticleEmitter::operator=(
-    const ParticleEmitter &_particleEmitter)
-{
-  return *this = ParticleEmitter(_particleEmitter);
-}
-
-/////////////////////////////////////////////////
-ParticleEmitter &ParticleEmitter::operator=(ParticleEmitter &&_particleEmitter)
-{
-  std::swap(this->dataPtr, _particleEmitter.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -274,7 +203,7 @@ Errors ParticleEmitter::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("material"))
   {
-    this->dataPtr->material.reset(new sdf::Material());
+    this->dataPtr->material.emplace();
     Errors err = this->dataPtr->material->Load(_sdf->GetElement("material"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
@@ -528,15 +457,15 @@ sdf::ElementPtr ParticleEmitter::Element() const
 }
 
 /////////////////////////////////////////////////
-sdf::Material *ParticleEmitter::Material() const
+const sdf::Material *ParticleEmitter::Material() const
 {
-  return this->dataPtr->material.get();
+  return optionalToPointer(this->dataPtr->material);
 }
 
 /////////////////////////////////////////////////
 void ParticleEmitter::SetMaterial(const sdf::Material &_material)
 {
-  this->dataPtr->material.reset(new sdf::Material(_material));
+  this->dataPtr->material = _material;
 }
 
 //////////////////////////////////////////////////
@@ -559,7 +488,7 @@ void ParticleEmitter::SetXmlParentName(const std::string &_xmlParentName)
 
 /////////////////////////////////////////////////
 void ParticleEmitter::SetPoseRelativeToGraph(
-    std::weak_ptr<const PoseRelativeToGraph> _graph)
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 }
