@@ -935,7 +935,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     std::stringstream ss;
     ss << "SDF Element[" + _sdf->GetName() + "] is deprecated\n";
     enforceConfigurablePolicyCondition(
-        _config.WarningsPolicy(),
+        _config.DeprecatedElementsPolicy(),
         Error(ErrorCode::ELEMENT_DEPRECATED, ss.str()),
         _errors);
   }

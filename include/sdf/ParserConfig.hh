@@ -144,6 +144,22 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \return The unrecognized elements policy enum value
   public: EnforcementPolicy UnrecognizedElementsPolicy() const;
 
+  /// \brief Set the policy for deprecated elements.
+  /// \param[in] _policy The deprecated elements enforcement policy
+  public: void SetDeprecatedElementsPolicy(EnforcementPolicy _policy);
+
+  /// \brief Resets the policy for deprecated elements so that it follows
+  /// WarningsPolicy.
+  public: void ResetDeprecatedElementsPolicy();
+
+  /// \brief Get the current deperacted elements policy. By default, the policy
+  /// is the same as the overall WarningsPolicy, but it can be overriden by
+  /// SetDeprecatedElementsPolicy. Once it is overriden, changing
+  /// SetWarningsPolicy will not change the value of DeprecatedElementsPolicy
+  /// unless ResetDeprecatedElementsPolicy is called.
+  /// \return The deperacted elements policy enum value
+  public: EnforcementPolicy DeprecatedElementsPolicy() const;
+
   /// \brief Registers a custom model parser.
   /// \param[in] _modelParser Callback as described in
   /// sdf/InterfaceElements.hh.
