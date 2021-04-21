@@ -32,6 +32,7 @@ set(tests
   nested_multiple_elements_error.cc
   parser_error_detection.cc
   parser_config.cc
+  particle_emitter_dom.cc
   plugin_attribute.cc
   plugin_bool.cc
   plugin_include.cc
