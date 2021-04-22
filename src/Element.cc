@@ -304,7 +304,7 @@ void Element::AddAttribute(const std::string &_key,
                            const std::string &_description)
 {
   this->dataPtr->attributes.push_back(
-      this->dataPtr->CreateParam(_key, _type, _defaultValue, _required, 
+      this->dataPtr->CreateParam(_key, _type, _defaultValue, _required,
                                  _description));
 }
 
