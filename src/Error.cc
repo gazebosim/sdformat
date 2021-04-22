@@ -54,8 +54,7 @@ Error::Error(const ErrorCode _code, const std::string &_message,
 {
   this->dataPtr->code = _code;
   this->dataPtr->message = _message;
-  if (_filePath != sdfStringSource && _filePath != urdfStringSource)
-    this->dataPtr->filePath = _filePath;
+  this->dataPtr->filePath = _filePath;
 }
 
 /////////////////////////////////////////////////
@@ -65,11 +64,8 @@ Error::Error(const ErrorCode _code, const std::string &_message,
 {
   this->dataPtr->code = _code;
   this->dataPtr->message = _message;
-  if (_filePath != sdfStringSource && _filePath != urdfStringSource)
-  {
-    this->dataPtr->filePath = _filePath;
-    this->dataPtr->lineNumber = _lineNumber;
-  }
+  this->dataPtr->filePath = _filePath;
+  this->dataPtr->lineNumber = _lineNumber;
 }
 
 /////////////////////////////////////////////////

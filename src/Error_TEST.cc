@@ -19,6 +19,7 @@
 #include <optional>
 #include "sdf/sdf_config.h"
 #include "sdf/Error.hh"
+#include "sdf/Filesystem.hh"
 
 /////////////////////////////////////////////////
 TEST(Error, DefaultConstruction)
