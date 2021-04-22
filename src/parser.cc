@@ -23,7 +23,6 @@
 
 #include <ignition/math/SemanticVersion.hh>
 
-#include "sdf/Types.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"

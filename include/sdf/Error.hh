@@ -22,7 +22,6 @@
 #include <optional>
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/sdf_config.h>
-#include "sdf/Filesystem.hh"
 #include "sdf/system_util.hh"
 
 #ifdef _WIN32
