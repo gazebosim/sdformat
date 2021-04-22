@@ -682,6 +682,11 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
       _sdf->Root()->SetOriginalVersion(sdfNode->Attribute("version"));
     }
 
+    if (_sdf->Root()->XmlPath().empty())
+    {
+      _sdf->Root()->SetXmlPath("/sdf");
+    }
+
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
@@ -691,7 +696,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
 
     // parse new sdf xml
     auto *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
-    if (!readXml(elemXml, _sdf->Root(), _config, "/sdf", _source, _errors))
+    if (!readXml(elemXml, _sdf->Root(), _config, _source, _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Error reading element <" + _sdf->Root()->GetName() + ">"});
@@ -757,6 +762,11 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
       _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
     }
 
+    if (_sdf->XmlPath().empty())
+    {
+      _sdf->SetXmlPath("/sdf");
+    }
+
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
@@ -773,7 +783,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     }
 
     // parse new sdf xml
-    if (!readXml(elemXml, _sdf, _config, "/sdf", _source, _errors))
+    if (!readXml(elemXml, _sdf, _config, _source, _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Unable to parse sdf element["+ _sdf->GetName() + "]"});
@@ -927,8 +937,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 
 //////////////////////////////////////////////////
 bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
-    const ParserConfig &_config, const std::string &_xmlPath,
-    const std::string &_source, Errors &_errors)
+    const ParserConfig &_config, const std::string &_source, Errors &_errors)
 {
   // Check if the element pointer is deprecated.
   if (_sdf->GetRequired() == "-1")
@@ -937,7 +946,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     ss << "SDF Element[" + _sdf->GetName() + "] is deprecated\n";
     enforceConfigurablePolicyCondition(
         _config.WarningsPolicy(),
-        Error(ErrorCode::ELEMENT_DEPRECATED, ss.str(), _xmlPath),
+        Error(ErrorCode::ELEMENT_DEPRECATED, ss.str(), _sdf->XmlPath()),
         _errors);
   }
 
@@ -948,7 +957,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       _errors.push_back({
           ErrorCode::ELEMENT_MISSING,
           "SDF Element<" + _sdf->GetName() + "> is missing",
-          _xmlPath,
+          _sdf->XmlPath(),
           _source});
       return false;
     }
@@ -1010,8 +1019,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
     // Construct the Xml path of the current attribute
     const std::string attributeXmlPath =
-        _xmlPath + "[@" + attribute->Name() + "=\"" + attribute->Value() +
-        "\"]";
+        _sdf->XmlPath() + "[@" + attribute->Name() + "=\"" +
+        attribute->Value() + "\"]";
 
     // Find the matching attribute in SDF
     for (i = 0; i < _sdf->GetAttributeCount(); ++i)
@@ -1079,7 +1088,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           ErrorCode::ATTRIBUTE_MISSING,
           "Required attribute[" + p->GetKey() + "] in element[" + _xml->Value()
           + "] is not specified in SDF.",
-          _xmlPath,
+          _sdf->XmlPath(),
           _source,
           _xml->GetLineNum()});
       return false;
@@ -1110,7 +1119,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
         includeElemIndex++;
         const std::string includeXmlPath =
-            _xmlPath + "/include[" + std::to_string(includeElemIndex) + "]";
+            _sdf->XmlPath() + "/include[" + std::to_string(includeElemIndex) +
+            "]";
         const std::string uriXmlPath = includeXmlPath + "/uri";
 
         if (uriElement)
@@ -1135,7 +1145,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             {
               // Get the model.config filename
               filename = getModelFilePath(modelPath);
-
               if (filename.empty())
               {
                 _errors.push_back({
@@ -1356,9 +1365,9 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
                 sdf::ElementPtr pluginElem;
                 pluginElem = topLevelElem->AddElement("plugin");
+                pluginElem->SetXmlPath(pluginXmlPath);
 
-                if (!readXml(
-                    childElemXml, pluginElem, _config, pluginXmlPath, _source,
+                if (!readXml(childElemXml, pluginElem, _config, _source,
                     _errors))
                 {
                   _errors.push_back({
@@ -1398,14 +1407,15 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         ElementPtr elemDesc = _sdf->GetElementDescription(descCounter);
         if (elemDesc->GetName() == elemXml->Value())
         {
-          std::string elemXmlPath = _xmlPath + "/" + elemXml->Value();
+          std::string elemXmlPath = _sdf->XmlPath() + "/" + elemXml->Value();
           const char *name = elemXml->Attribute("name");
           if (name)
             elemXmlPath += "[@name=\"" + std::string(name) + "\"]";
 
           ElementPtr element = elemDesc->Clone();
           element->SetParent(_sdf);
-          if (readXml(elemXml, element, _config, elemXmlPath, _source, _errors))
+          element->SetXmlPath(elemXmlPath);
+          if (readXml(elemXml, element, _config, _source, _errors))
           {
             _sdf->InsertElement(element);
           }
@@ -1427,7 +1437,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       if (descCounter == _sdf->GetElementDescriptionCount()
             && std::strchr(elemXml->Value(), ':') == nullptr)
       {
-        std::string elemXmlPath = _xmlPath + "/" + elemXml->Value();
+        std::string elemXmlPath = _sdf->XmlPath() + "/" + elemXml->Value();
         const char *name = elemXml->Attribute("name");
         if (name)
           elemXmlPath += "[@name=\"" + std::string(name) + "\"]";
@@ -1465,7 +1475,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       {
         if (!_sdf->HasElement(elemDesc->GetName()))
         {
-          const std::string elemXmlPath = _xmlPath + "/" +
+          const std::string elemXmlPath = _sdf->XmlPath() + "/" +
               elemDesc->GetName();
           if (_sdf->GetName() == "joint" &&
               _sdf->Get<std::string>("type") != "ball")
