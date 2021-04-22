@@ -25,9 +25,171 @@
 
 using namespace sdf;
 
+class sdf::Element::Implementation
+{
+  /// \brief Element name
+  public: std::string name;
+
+  /// \brief True if element is required
+  public: std::string required;
+
+  /// \brief Element description
+  public: std::string description;
+
+  /// \brief True if element's children should be copied.
+  public: bool copyChildren;
+
+  /// \brief Element's parent
+  public: ElementWeakPtr parent;
+
+  // Attributes of this element
+  public: Param_V attributes;
+
+  // Value of this element
+  public: ParamPtr value;
+
+  // The existing child elements
+  public: ElementPtr_V elements;
+
+  // The possible child elements
+  public: ElementPtr_V elementDescriptions;
+
+  /// \brief The <include> element that was used to load this entity. For
+  /// example, given the following SDFormat:
+  /// <sdf version='1.8'>
+  ///   <world name='default'>
+  ///     <include>
+  ///       <uri>model_uri</uri>
+  ///       <pose>1 2 3 0 0 0</pose>
+  ///     </include>
+  ///   </world>
+  /// </sdf>
+  /// The ElementPtr associated with the model loaded from `model_uri` will
+  /// have the includeElement set to
+  ///     <include>
+  ///       <uri>model_uri</uri>
+  ///       <pose>1 2 3 0 0 0</pose>
+  ///     </include>
+  ///
+  /// This can be used to retrieve additional information available under the
+  /// <include> tag after the entity has been loaded. An example use case for
+  /// this is when saving a loaded world back to SDFormat.
+  public: ElementPtr includeElement;
+
+  /// name of the include file that was used to create this element
+  public: std::string includeFilename;
+
+  /// \brief Name of reference sdf.
+  public: std::string referenceSDF;
+
+  /// \brief Path to file where this element came from
+  public: std::string filePath;
+
+  /// \brief Xml path of this element.
+  public: std::string xmlPath;
+
+  /// \brief Spec version that this was originally parsed from.
+  public: std::string originalVersion;
+
+  /// \brief Generate a string (XML) representation of this object.
+  /// \param[in] _prefix arbitrary prefix to put on the string.
+  /// \param[out] _out the std::ostreamstream to write output to.
+  public: void ToString(const std::string &_prefix,
+                        std::ostringstream &_out) const;
+
+  /// \brief Generate a string (XML) representation of this object.
+  /// \param[in] _prefix arbitrary prefix to put on the string.
+  /// \param[out] _out the std::ostreamstream to write output to.
+  public: void PrintValuesImpl(const std::string &_prefix,
+                               std::ostringstream &_out) const;
+
+  /// \brief Create a new Param object and return it.
+  /// \param[in] _key Key for the parameter.
+  /// \param[in] _type String name for the value type (double,
+  /// int,...).
+  /// \param[in] _defaultValue Default value.
+  /// \param[in] _required True if the parameter is required to be set.
+  /// \param[in] _description Description of the parameter.
+  /// \return A pointer to the new Param object.
+  public: ParamPtr CreateParam(const std::string &_key,
+                               const std::string &_type,
+                               const std::string &_defaultValue,
+                               bool _required,
+                               const std::string &_description="");
+};
+
+/////////////////////////////////////////////////
+void Element::Implementation::ToString(const std::string &_prefix,
+                                       std::ostringstream &_out) const
+{
+  if (this->includeFilename.empty())
+  {
+    PrintValuesImpl(_prefix, _out);
+  }
+  else
+  {
+    _out << _prefix << "<include filename='"
+         << this->includeFilename << "'/>\n";
+  }
+}
+
+/////////////////////////////////////////////////
+void Element::Implementation::PrintValuesImpl(const std::string &_prefix,
+                                              std::ostringstream &_out) const
+{
+  _out << _prefix << "<" << this->name;
+
+  for (ParamPtr attrib : attributes)
+  {
+    // Only print attribute values if they were set
+    // TODO(anyone): GetRequired is added here to support up-conversions where a
+    // new required attribute with a default value is added. We would have
+    // better separation of concerns if the conversion process set the required
+    // attributes with their default values.
+    if (attrib->GetSet() || attrib->GetRequired())
+    {
+      _out << " " << attrib->GetKey() << "='"
+           << attrib->GetAsString() << "'";
+    }
+  }
+
+  if (this->elements.size() > 0)
+  {
+    _out << ">\n";
+    for (ElementPtr elem : elements)
+    {
+      elem->dataPtr->ToString(_prefix + "  ", _out);
+    }
+    _out << _prefix << "</" << this->name << ">\n";
+  }
+  else
+  {
+    if (this->value)
+    {
+      _out << ">" << this->value->GetAsString()
+           << "</" << this->name << ">\n";
+    }
+    else
+    {
+      _out << "/>\n";
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+ParamPtr Element::Implementation::CreateParam(const std::string &_key,
+                                              const std::string &_type,
+                                              const std::string &_defaultValue,
+                                              bool _required,
+                                              const std::string &_description)
+{
+  return ParamPtr(
+      new Param(_key, _type, _defaultValue, _required, _description));
+}
+
 /////////////////////////////////////////////////
 Element::Element()
-  : dataPtr(new ElementPrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->copyChildren = false;
   this->dataPtr->referenceSDF = "";
@@ -49,7 +211,7 @@ void Element::SetParent(const ElementPtr _parent)
 {
   this->dataPtr->parent = _parent;
 
-  // If this element doesn't have a path, get it from the parent
+  // If this element doesn't have a file path, get it from the parent
   if (nullptr != _parent && (this->FilePath().empty() ||
       this->FilePath() == "data-string"))
   {
@@ -117,7 +279,7 @@ void Element::AddValue(const std::string &_type,
                        bool _required,
                        const std::string &_description)
 {
-  this->dataPtr->value = this->CreateParam(this->dataPtr->name,
+  this->dataPtr->value = this->dataPtr->CreateParam(this->dataPtr->name,
       _type, _defaultValue, _required, _description);
 }
 
@@ -135,17 +297,6 @@ void Element::AddValue(const std::string &_type,
 }
 
 /////////////////////////////////////////////////
-ParamPtr Element::CreateParam(const std::string &_key,
-                              const std::string &_type,
-                              const std::string &_defaultValue,
-                              bool _required,
-                              const std::string &_description)
-{
-  return ParamPtr(
-      new Param(_key, _type, _defaultValue, _required, _description));
-}
-
-/////////////////////////////////////////////////
 void Element::AddAttribute(const std::string &_key,
                            const std::string &_type,
                            const std::string &_defaultValue,
@@ -153,7 +304,8 @@ void Element::AddAttribute(const std::string &_key,
                            const std::string &_description)
 {
   this->dataPtr->attributes.push_back(
-      this->CreateParam(_key, _type, _defaultValue, _required, _description));
+      this->dataPtr->CreateParam(_key, _type, _defaultValue, _required, 
+                                 _description));
 }
 
 /////////////////////////////////////////////////
@@ -166,7 +318,8 @@ ElementPtr Element::Clone() const
   clone->dataPtr->copyChildren = this->dataPtr->copyChildren;
   clone->dataPtr->includeFilename = this->dataPtr->includeFilename;
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
-  clone->dataPtr->path = this->dataPtr->path;
+  clone->dataPtr->filePath = this->dataPtr->filePath;
+  clone->dataPtr->xmlPath = this->dataPtr->xmlPath;
   clone->dataPtr->originalVersion = this->dataPtr->originalVersion;
 
   Param_V::const_iterator aiter;
@@ -213,7 +366,8 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->includeFilename = _elem->dataPtr->includeFilename;
   this->dataPtr->referenceSDF = _elem->ReferenceSDF();
   this->dataPtr->originalVersion = _elem->OriginalVersion();
-  this->dataPtr->path = _elem->FilePath();
+  this->dataPtr->filePath = _elem->FilePath();
+  this->dataPtr->xmlPath = _elem->XmlPath();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
        iter != _elem->dataPtr->attributes.end(); ++iter)
@@ -300,7 +454,7 @@ void Element::PrintDescription(const std::string &_prefix) const
             << this->dataPtr->description
             << "]]></description>\n";
 
-  Param_V::iterator aiter;
+  Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
       aiter != this->dataPtr->attributes.end(); ++aiter)
   {
@@ -327,7 +481,7 @@ void Element::PrintDescription(const std::string &_prefix) const
               << "' required ='*'/>\n";
   }
 
-  ElementPtr_V::iterator eiter;
+  ElementPtr_V::const_iterator eiter;
   for (eiter = this->dataPtr->elementDescriptions.begin();
       eiter != this->dataPtr->elementDescriptions.end(); ++eiter)
   {
@@ -342,7 +496,7 @@ void Element::PrintDocRightPane(std::string &_html, int _spacing,
                                 int &_index) const
 {
   std::ostringstream stream;
-  ElementPtr_V::iterator eiter;
+  ElementPtr_V::const_iterator eiter;
 
   int start = _index++;
 
@@ -394,7 +548,7 @@ void Element::PrintDocRightPane(std::string &_html, int _spacing,
            << "display:inline-block;'>\n";
     stream << "<font style='font-weight:bold'>Attributes</font><br>";
 
-    Param_V::iterator aiter;
+    Param_V::const_iterator aiter;
     for (aiter = this->dataPtr->attributes.begin();
         aiter != this->dataPtr->attributes.end(); ++aiter)
     {
@@ -438,7 +592,7 @@ void Element::PrintDocLeftPane(std::string &_html, int _spacing,
                                int &_index) const
 {
   std::ostringstream stream;
-  ElementPtr_V::iterator eiter;
+  ElementPtr_V::const_iterator eiter;
 
   int start = _index++;
 
@@ -460,57 +614,11 @@ void Element::PrintDocLeftPane(std::string &_html, int _spacing,
   _html += "</div>\n";
 }
 
-void Element::PrintValuesImpl(const std::string &_prefix,
-                              std::ostringstream &_out) const
-{
-  _out << _prefix << "<" << this->dataPtr->name;
-
-  Param_V::const_iterator aiter;
-  for (aiter = this->dataPtr->attributes.begin();
-       aiter != this->dataPtr->attributes.end(); ++aiter)
-  {
-    // Only print attribute values if they were set
-    // TODO(anyone): GetRequired is added here to support up-conversions where a
-    // new required attribute with a default value is added. We would have
-    // better separation of concerns if the conversion process set the required
-    // attributes with their default values.
-    if ((*aiter)->GetSet() || (*aiter)->GetRequired())
-    {
-      _out << " " << (*aiter)->GetKey() << "='"
-           << (*aiter)->GetAsString() << "'";
-    }
-  }
-
-  if (this->dataPtr->elements.size() > 0)
-  {
-    _out << ">\n";
-    ElementPtr_V::const_iterator eiter;
-    for (eiter = this->dataPtr->elements.begin();
-         eiter != this->dataPtr->elements.end(); ++eiter)
-    {
-      (*eiter)->ToString(_prefix + "  ", _out);
-    }
-    _out << _prefix << "</" << this->dataPtr->name << ">\n";
-  }
-  else
-  {
-    if (this->dataPtr->value)
-    {
-      _out << ">" << this->dataPtr->value->GetAsString()
-           << "</" << this->dataPtr->name << ">\n";
-    }
-    else
-    {
-      _out << "/>\n";
-    }
-  }
-}
-
 /////////////////////////////////////////////////
 void Element::PrintValues(std::string _prefix) const
 {
   std::ostringstream ss;
-  PrintValuesImpl(_prefix, ss);
+  this->dataPtr->PrintValuesImpl(_prefix, ss);
   std::cout << ss.str();
 }
 
@@ -518,23 +626,8 @@ void Element::PrintValues(std::string _prefix) const
 std::string Element::ToString(const std::string &_prefix) const
 {
   std::ostringstream out;
-  this->ToString(_prefix, out);
+  this->dataPtr->ToString(_prefix, out);
   return out.str();
-}
-
-/////////////////////////////////////////////////
-void Element::ToString(const std::string &_prefix,
-                       std::ostringstream &_out) const
-{
-  if (this->dataPtr->includeFilename.empty())
-  {
-    PrintValuesImpl(_prefix, _out);
-  }
-  else
-  {
-    _out << _prefix << "<include filename='"
-         << this->dataPtr->includeFilename << "'/>\n";
-  }
 }
 
 /////////////////////////////////////////////////
@@ -845,7 +938,8 @@ void Element::Clear()
 {
   this->ClearElements();
   this->dataPtr->originalVersion.clear();
-  this->dataPtr->path.clear();
+  this->dataPtr->filePath.clear();
+  this->dataPtr->xmlPath.clear();
 }
 
 /////////////////////////////////////////////////
@@ -944,13 +1038,25 @@ sdf::ElementPtr Element::GetIncludeElement() const
 /////////////////////////////////////////////////
 void Element::SetFilePath(const std::string &_path)
 {
-  this->dataPtr->path = _path;
+  this->dataPtr->filePath = _path;
 }
 
 /////////////////////////////////////////////////
 const std::string &Element::FilePath() const
 {
-  return this->dataPtr->path;
+  return this->dataPtr->filePath;
+}
+
+/////////////////////////////////////////////////
+void Element::SetXmlPath(const std::string &_path)
+{
+  this->dataPtr->xmlPath = _path;
+}
+
+/////////////////////////////////////////////////
+const std::string &Element::XmlPath() const
+{
+  return this->dataPtr->xmlPath;
 }
 
 /////////////////////////////////////////////////

@@ -37,6 +37,7 @@ TEST(Element, Child)
   sdf::Element child;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   parent->SetFilePath("/parent/path/model.sdf");
+  parent->SetXmlPath("/sdf/world[@name=\"default\"");
   parent->SetOriginalVersion("1.5");
 
   ASSERT_EQ(child.GetParent(), nullptr);
@@ -291,6 +292,7 @@ TEST(Element, Clone)
   parent->AddValue("string", "foo", false, "foo description");
 
   parent->SetFilePath("/path/to/file.sdf");
+  parent->SetXmlPath("/sdf/world[@name=\"default\"");
   parent->SetOriginalVersion("1.5");
 
   auto includeElemToStore = std::make_shared<sdf::Element>();
@@ -300,6 +302,7 @@ TEST(Element, Clone)
   sdf::ElementPtr newelem = parent->Clone();
 
   EXPECT_EQ("/path/to/file.sdf", newelem->FilePath());
+  EXPECT_EQ("/sdf/world[@name=\"default\"", newelem->XmlPath());
   EXPECT_EQ("1.5", newelem->OriginalVersion());
   ASSERT_NE(newelem->GetFirstElement(), nullptr);
   ASSERT_EQ(newelem->GetElementDescriptionCount(), 1UL);
@@ -315,11 +318,13 @@ TEST(Element, ClearElements)
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
 
   parent->SetFilePath("/path/to/file.sdf");
+  parent->SetXmlPath("/sdf/world[@name=\"default\"");
   parent->SetOriginalVersion("1.5");
   child->SetParent(parent);
   parent->InsertElement(child);
 
   EXPECT_EQ("/path/to/file.sdf", parent->FilePath());
+  EXPECT_EQ("/sdf/world[@name=\"default\"", parent->XmlPath());
   EXPECT_EQ("1.5", parent->OriginalVersion());
   ASSERT_NE(parent->GetFirstElement(), nullptr);
   EXPECT_EQ("/path/to/file.sdf", parent->GetFirstElement()->FilePath());
@@ -339,11 +344,13 @@ TEST(Element, Clear)
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
 
   parent->SetFilePath("/path/to/file.sdf");
+  parent->SetXmlPath("/sdf/world[@name=\"default\"");
   parent->SetOriginalVersion("1.5");
   child->SetParent(parent);
   parent->InsertElement(child);
 
   EXPECT_EQ("/path/to/file.sdf", parent->FilePath());
+  EXPECT_EQ("/sdf/world[@name=\"default\"", parent->XmlPath());
   EXPECT_EQ("1.5", parent->OriginalVersion());
   ASSERT_NE(parent->GetFirstElement(), nullptr);
   EXPECT_EQ("/path/to/file.sdf", parent->GetFirstElement()->FilePath());
@@ -353,6 +360,7 @@ TEST(Element, Clear)
 
   ASSERT_EQ(parent->GetFirstElement(), nullptr);
   EXPECT_TRUE(parent->FilePath().empty());
+  EXPECT_TRUE(parent->XmlPath().empty());
   EXPECT_TRUE(parent->OriginalVersion().empty());
 }
 
@@ -567,6 +575,7 @@ TEST(Element, Copy)
 
   src->SetName("test");
   src->SetFilePath("/path/to/file.sdf");
+  src->SetXmlPath("/sdf/world[@name=\"default\"");
   src->SetOriginalVersion("1.5");
   src->AddValue("string", "val", false, "val description");
   src->AddAttribute("test", "string", "foo", false, "foo description");
@@ -579,6 +588,7 @@ TEST(Element, Copy)
   dest->Copy(src);
 
   EXPECT_EQ("/path/to/file.sdf", dest->FilePath());
+  EXPECT_EQ("/sdf/world[@name=\"default\"", dest->XmlPath());
   EXPECT_EQ("1.5", dest->OriginalVersion());
 
   sdf::ParamPtr param = dest->GetValue();
