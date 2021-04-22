@@ -35,6 +35,26 @@
           </visual>
           <!-- missing name after :: -->
           <link element_id="chassis::test::" action="add"/>
+
+          <visual element_id="top::camera_visual">
+            <!-- missing action attribute -->
+            <transparency>0.2</transparency>
+
+            <!-- duplicate element -->
+            <transparency action="add">0.2</transparency>
+            <transparency action="add">0.5</transparency>
+
+            <!-- incorrect schema (missing required attributes) -->
+            <plugin action="add"/>
+
+            <!-- not defined sdf element -->
+            <test action="add"/>
+          </visual>
+
+          <!-- not defined sdf element -->
+          <test element_id="chassis::new_elem" action="add"/>
+
+          <plugin element_id="some_plugin" action="add"/>
         </experimental:params>
       </include>
     </model>

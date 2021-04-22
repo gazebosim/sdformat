@@ -56,6 +56,17 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   PrintErrors(errors);
   EXPECT_TRUE(errors.empty());
 
+  // compare with expected output
+  testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                          "include_custom_model_expected_output.sdf");
+
+  sdf::Root expectedRoot;
+  errors = expectedRoot.Load(testFile);
+  PrintErrors(errors);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_EQ(root.Element()->ToString(""), expectedRoot.Element()->ToString(""));
+
   // Expected errors
   testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
@@ -63,7 +74,7 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   errors = root.Load(testFile);
   PrintErrors(errors);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(errors.size(), 5u);
+  ASSERT_EQ(errors.size(), 13u);
   // missing element_id attribute
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   // element does not exist in included model
@@ -74,6 +85,20 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::ELEMENT_MISSING);
   // missing name after double colons
   EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  // missing action attribute
+  EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  // duplicate element
+  EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::DUPLICATE_ELEMENT);
+  // incorrect schema (missing required attributes; in children of element_id)
+  EXPECT_EQ(errors[7].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[8].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  // not defined sdf element (in children of where element_id is defined)
+  EXPECT_EQ(errors[9].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  // not defined sdf element (where element_id is defined)
+  EXPECT_EQ(errors[10].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  // incorrect schema (missing required attributes; where element_id defined)
+  EXPECT_EQ(errors[11].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[12].Code(), sdf::ErrorCode::ELEMENT_INVALID);
 }
 
 /////////////////////////////////////////////////

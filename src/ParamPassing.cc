@@ -17,7 +17,12 @@
 #include <cstring>
 #include <vector>
 
+#include "sdf/Filesystem.hh"
+#include "sdf/parser.hh"
+#include "sdf/sdf_config.h"
+
 #include "ParamPassing.hh"
+#include "XmlUtils.hh"
 
 namespace sdf
 {
@@ -80,7 +85,6 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     {
       if (elem != nullptr)
       {
-        // TODO(jenn) make test for this
         tinyxml2::XMLPrinter printer;
         childElemXml->Accept(&printer);
 
@@ -103,7 +107,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
       if (!elemIdAttr.compare(childElemId))
       {
         // if equal add new element as direct child of included model
-        elem = _includeSDF->Root()->GetFirstElement();  // model element
+        elem = _includeSDF->Root()->GetFirstElement();
       }
       else
       {
@@ -111,8 +115,6 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
         elem = getElementById(_includeSDF, "",
                               std::string(childElemId).substr(0, found),
                               true);
-
-        // TODO(jenn) add error case for DUPLICATE_ELEMENT
       }
     }
 
@@ -129,7 +131,21 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
       continue;
     }
 
-    // TODO(jenn) element modifications
+    // *** Element modifications ***
+
+    if (actionStr.empty())
+    {
+      // action attribute not in childElemXml so must be in all direct children
+      // of childElemXml
+      handleIndividualChildActions(childElemXml, elem, _errors);
+
+    }
+    else if (actionStr == "add")
+    {
+      add(childElemXml, elem, _errors, elemIdAttr);
+    }
+
+    // TODO(jenn) element modifications: modify, remove, replace
   }
 }
 
@@ -211,5 +227,149 @@ int64_t findPrefixLastIndex(const std::string &_elemId,
 
   return -1;
 }
+
+//////////////////////////////////////////////////
+void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
+                                  ElementPtr _elem, Errors &_errors)
+{
+  // get element description
+  ElementPtr elemDesc = std::make_shared<Element>();
+  std::string filename = std::string(_childrenXml->Name()) + ".sdf";
+
+  if (!initFile(filename, elemDesc))
+  {
+    // TODO(jenn) not sure if we should load the element anyway
+    // (e.g., user created their own element), maybe future implementation
+    _errors.push_back({ErrorCode::ELEMENT_INVALID,
+      "Element [" + std::string(_childrenXml->Name()) + "] is not a defined "
+      "SDF element. Skipping element modification: "
+      + ElementToString(_childrenXml)
+    });
+    return;
+  }
+
+  // loop through children and handle corresponding actions
+  for (tinyxml2::XMLElement *xmlChild = _childrenXml->FirstChildElement();
+       xmlChild;
+       xmlChild = xmlChild->NextSiblingElement())
+  {
+    if (xmlChild->Attribute("action") == nullptr)
+    {
+      _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+        "Missing an action attribute. Skipping child element modification "
+        "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
+        + std::string(_childrenXml->Attribute("element_id")) + "'>: "
+        + ElementToString(xmlChild)
+      });
+      continue;
+    }
+
+
+    bool useParentDesc = false;
+    std::string elemName = xmlChild->Name();
+
+    // the modification will be skipped if not an existing sdf element
+    // TODO(jenn) not sure if we should load element anyway,
+    // might need to be a future implementation
+    if (!elemDesc->HasElementDescription(elemName))
+    {
+      // TODO(anyone) when forward porting to sdf11,
+      // need to add `|| elemName == "model"` since nested models are allowed
+      if (elemName == "link")
+      {
+        useParentDesc = true;
+      }
+      else
+      {
+        _errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Element [" + elemName + "] is not a defined SDF element. Skipping "
+          "child element modification with parent <"
+          + std::string(_childrenXml->Name()) + " element_id='"
+          + std::string(_childrenXml->Attribute("element_id")) + "'>: "
+          + ElementToString(xmlChild)
+        });
+        continue;
+      }
+    }
+
+    std::string actionStr = xmlChild->Attribute("action");
+
+    // get child element description
+    ElementPtr elemChild;
+    if (useParentDesc)
+      elemChild = elemDesc;
+    else
+      elemChild = elemDesc->GetElementDescription(elemName);
+
+    if (!xmlToSdf(xmlChild, elemChild, _errors))
+    {
+      _errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Unable to convert XML to SDF. Skipping child element modification "
+        "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
+        + std::string(_childrenXml->Attribute("element_id")) + "'>: "
+        + ElementToString(xmlChild)
+      });
+      continue;
+    }
+
+    if (actionStr == "add")
+    {
+      // check requirements
+      if ((elemChild->GetRequired() == "0" || elemChild->GetRequired() == "1")
+          && _elem->HasElement(elemName))
+      {
+        _errors.push_back({ErrorCode::DUPLICATE_ELEMENT,
+          "Element already exists in model, skipping child element addition "
+          "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
+          + std::string(_childrenXml->Attribute("element_id")) + "'>: "
+          + ElementToString(xmlChild)
+        });
+      }
+      else
+      {
+        _elem->InsertElement(elemChild);
+      }
+
+    }
+
+    // TODO(jenn) finish (direct children only): modify, remove, replace
+  }
+}
+
+
+//////////////////////////////////////////////////
+void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem,
+         Errors &_errors, const std::string &_elemNameAttr)
+{
+  ElementPtr newElem = std::make_shared<Element>();
+  std::string filename = std::string(_childXml->Name()) + ".sdf";
+
+  if (!initFile(filename, newElem))
+  {
+    // TODO(jenn) not sure if we should load the element anyway
+    // (e.g., user created their own element), maybe future implementation
+    _errors.push_back({ErrorCode::ELEMENT_INVALID,
+      "Element [" + std::string(_childXml->Name()) + "] is not a defined "
+      "SDF element. Skipping element modification: "
+      + ElementToString(_childXml)
+    });
+    return;
+  }
+
+  newElem->GetAttribute("name")->Set(_elemNameAttr);
+
+  if (xmlToSdf(_childXml, newElem, _errors))
+  {
+    _elem->InsertElement(newElem);
+  }
+  else
+  {
+    _errors.push_back({ErrorCode::ELEMENT_INVALID,
+      "Unable to convert XML to SDF. Skipping element modification: "
+      + ElementToString(_childXml)
+    });
+  }
+}
+
 }
 }
