@@ -138,7 +138,6 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
       // action attribute not in childElemXml so must be in all direct children
       // of childElemXml
       handleIndividualChildActions(childElemXml, elem, _errors);
-
     }
     else if (actionStr == "add")
     {
@@ -329,7 +328,6 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
       {
         _elem->InsertElement(elemChild);
       }
-
     }
 
     // TODO(jenn) finish (direct children only): modify, remove, replace
@@ -370,6 +368,5 @@ void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem,
     });
   }
 }
-
 }
 }
