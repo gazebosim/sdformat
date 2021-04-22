@@ -1145,6 +1145,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             {
               // Get the model.config filename
               filename = getModelFilePath(modelPath);
+
               if (filename.empty())
               {
                 _errors.push_back({
@@ -1367,8 +1368,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
                 pluginElem = topLevelElem->AddElement("plugin");
                 pluginElem->SetXmlPath(pluginXmlPath);
 
-                if (!readXml(childElemXml, pluginElem, _config, _source,
-                    _errors))
+                if (!readXml(
+                    childElemXml, pluginElem, _config, _source, _errors))
                 {
                   _errors.push_back({
                       ErrorCode::ELEMENT_INVALID,
