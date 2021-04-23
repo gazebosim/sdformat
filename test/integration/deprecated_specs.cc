@@ -22,6 +22,7 @@
 #include "sdf/ParserConfig.hh"
 #include "sdf/parser.hh"
 #include "test_config.h"
+#include "test_utils.hh"
 
 ////////////////////////////////////////////////////
 TEST(DeprecatedSpecs, Spec1_0)
@@ -65,9 +66,10 @@ TEST(DeprecatedElements, CanEmitErrors)
 ////////////////////////////////////////////////////
 TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
 {
-  // Capture sdfwarn output, which is treamed to std::cerr
+  // Redirect sdfwarn output
   std::stringstream buffer;
-  auto old = std::cerr.rdbuf(buffer.rdbuf());
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
 
 #ifdef _WIN32
   sdf::Console::Instance()->SetQuiet(false);
@@ -121,9 +123,6 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
     ASSERT_FALSE(errors.empty());
     EXPECT_EQ(sdf::ErrorCode::ELEMENT_DEPRECATED, errors[0].Code());
   }
-
-  // Revert cerr rdbug so as to not interfere with other tests
-  std::cerr.rdbuf(old);
 #ifdef _WIN32
   sdf::Console::Instance()->SetQuiet(true);
 #endif
