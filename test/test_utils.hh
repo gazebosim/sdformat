@@ -25,6 +25,27 @@ namespace sdf
 namespace testing
 {
 
+/// \brief Calls a function when going out of scope.
+/// Taken from:
+/// https://github.com/ros2/rclcpp/blob/master/rclcpp/include/rclcpp/scope_exit.hpp
+template <typename Callable>
+struct ScopeExit
+{
+  /// \brief Constructor
+  /// \param[in] _callable Any callable object that does not throw.
+  explicit ScopeExit(Callable _callable)
+      : callable(_callable)
+  {
+  }
+
+  ~ScopeExit()
+  {
+    this->callable();
+  }
+
+  private: Callable callable;
+};
+
 /// \brief A class used for redirecting the output of sdferr, sdfwarn, etc to a
 /// more convenient stream object like a std::stringstream for testing purposes.
 /// The class reverts to the original stream object when it goes out of scope.

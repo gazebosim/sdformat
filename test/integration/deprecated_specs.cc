@@ -78,6 +78,11 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
 
 #ifdef _WIN32
   sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
 #endif
 
   sdf::SDFPtr sdf(new sdf::SDF());
@@ -123,7 +128,4 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
     ASSERT_FALSE(errors.empty());
     EXPECT_EQ(sdf::ErrorCode::ELEMENT_DEPRECATED, errors[0].Code());
   }
-#ifdef _WIN32
-  sdf::Console::Instance()->SetQuiet(true);
-#endif
 }
