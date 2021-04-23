@@ -152,7 +152,7 @@ class SDFORMAT_VISIBLE ParserConfig
   /// WarningsPolicy.
   public: void ResetDeprecatedElementsPolicy();
 
-  /// \brief Get the current deperacted elements policy. By default, the policy
+  /// \brief Get the current deprecated elements policy. By default, the policy
   /// is the same as the overall WarningsPolicy, but it can be overriden by
   /// SetDeprecatedElementsPolicy. Once it is overriden, changing
   /// SetWarningsPolicy will not change the value of DeprecatedElementsPolicy
