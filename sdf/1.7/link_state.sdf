@@ -1,5 +1,5 @@
 <!-- State information for a link -->
-<element name="link_state" required="*">
+<element name="link" required="*">
   <description>Link state</description>
 
   <attribute name="name" type="string" default="__default__" required="1">

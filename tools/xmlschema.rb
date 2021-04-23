@@ -2,8 +2,10 @@
 
 require "rexml/document"
 require "optparse"
+require "set"
 
 $path = nil
+$printedElements = Set.new([])
 
 #################################################
 # \brief A not very elegant way to convert to schema types
@@ -134,9 +136,21 @@ def printIncludeRef(_file, _spaces, _inc)
 end
 
 #################################################
+# Prints contents of <include>
 def printInclude(_file, _spaces, _attr)
-  loc = _attr.attributes['filename'].sub("\.sdf","\.xsd")
-  _file.printf("%*s<xsd:include schemaLocation='%s'/>\n", _spaces, "", loc)
+  loc = $path + "/" + _attr.attributes['filename']
+  doc = REXML::Document.new File.new(loc)
+
+  doc.elements.each_with_index("element") do |elem, i|
+    name = elem.attributes['name']
+
+    # print only new elements
+    if !$printedElements.include? name
+      printXSD(_file, _spaces, elem, false)
+      _file.printf("\n")
+      $printedElements.add(name)
+    end
+  end
 end
 
 #################################################
@@ -178,14 +192,19 @@ end
 # \param[in] _file File pointer in which to print the schema.
 # \param[in] _spaces Number of spaces to prepend to each line.
 # \param[in] _elem The SDF element to convert to an xml schema.
-def printXSD(_file, _spaces, _elem)
+# \param[in] _printTypes True if $path/schema/types.xsd contents should be
+#             printed. False if it's already printed at start of doc.
+def printXSD(_file, _spaces, _elem, _printTypes)
 
-  if !_elem.elements["description"].nil? &&
-     !_elem.elements["description"].text.nil?
-    printDocumentation(_file, _spaces, _elem.elements["description"].text)
+  if _printTypes
+    # drop xml header
+    File.readlines("#{$path}/schema/types.xsd").drop(1).each do |line|
+      # skip root <schema> element
+      if !line.include? "xsd:schema"
+        _file.printf("%*s#{line}", _spaces-2, "")
+      end
+    end
   end
-
-  _file.printf("%*s<xsd:include schemaLocation='#{$path}/schema/types.xsd'/>\n", _spaces, "")
 
   includedSchemas = []
 
@@ -210,6 +229,8 @@ def printXSD(_file, _spaces, _elem)
     end
   end
 
+  printedRootDoc = false
+
   if _elem.get_elements("element").size > 0 ||
      _elem.get_elements("attribute").size > 0 ||
      _elem.get_elements("include").size > 0
@@ -217,6 +238,12 @@ def printXSD(_file, _spaces, _elem)
     # Print the complex type with a name
     _file.printf("%*s<xsd:element name='%s'>\n", _spaces, "",
                  _elem.attributes["name"])
+
+    if !printedRootDoc && !_elem.elements["description"].nil? &&
+      !_elem.elements["description"].text.nil?
+     printDocumentation(_file, _spaces, _elem.elements["description"].text)
+     printedRootDoc = true
+    end
 
     if _elem.attributes['name'] == "pose"
       _file.printf("%*s<xsd:complexType mixed='true'>\n", _spaces+2, "")
@@ -321,7 +348,7 @@ doc.elements.each_with_index("element") do |elem, i|
   file.print("<?xml version='1.0' encoding='UTF-8'?>\n")
   file.print("<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema'>\n")
 
-  printXSD(file, spaces, elem)
+  printXSD(file, spaces, elem, true)
 
   file.print("</xsd:schema>\n")
   file.close()
