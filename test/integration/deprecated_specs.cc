@@ -63,6 +63,11 @@ TEST(DeprecatedElements, CanEmitErrors)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_DEPRECATED, errors[0].Code());
 }
 
+bool contains(const std::string &_a, const std::string &_b)
+{
+  return _a.find(_b) != std::string::npos;
+}
+
 ////////////////////////////////////////////////////
 TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
 {
@@ -74,11 +79,6 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
 #ifdef _WIN32
   sdf::Console::Instance()->SetQuiet(false);
 #endif
-
-  auto contains = [](const std::string &_a, const std::string &_b)
-  {
-    return _a.find(_b) != std::string::npos;
-  };
 
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
