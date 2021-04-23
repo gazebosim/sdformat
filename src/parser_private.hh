@@ -98,6 +98,14 @@ namespace sdf
   /// the SDF spec. Set this to false to copy everything.
   static void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
                     const bool _onlyUnknown);
+
+  /// \brief The source path replacement if it was parsed from a string,
+  /// instead of a file.
+  constexpr char sdfStringSource[] = "<data-string>";
+
+  /// \brief The source path replacement if the urdf was parsed from a string,
+  /// instead of a file.
+  constexpr char urdfStringSource[] = "<urdf-string>";
   }
 }
 #endif

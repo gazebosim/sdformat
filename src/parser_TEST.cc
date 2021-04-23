@@ -23,6 +23,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
+#include "parser_private.hh"
 #include "test_config.h"
 
 /////////////////////////////////////////////////
@@ -663,7 +664,7 @@ TEST(Parser, ReadSingleLineStringError)
 
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   ASSERT_TRUE(errors[0].FilePath().has_value());
-  EXPECT_EQ(errors[0].FilePath().value(), sdf::sdfStringSource);
+  EXPECT_EQ(errors[0].FilePath().value(), std::string(sdf::sdfStringSource));
   ASSERT_TRUE(errors[0].LineNumber().has_value());
   EXPECT_EQ(errors[0].LineNumber().value(), 1);
 }
@@ -701,7 +702,7 @@ TEST(Parser, ReadMultiLineStringError)
 
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   ASSERT_TRUE(errors[0].FilePath().has_value());
-  EXPECT_EQ(errors[0].FilePath().value(), sdf::sdfStringSource);
+  EXPECT_EQ(errors[0].FilePath().value(), std::string(sdf::sdfStringSource));
   ASSERT_TRUE(errors[0].LineNumber().has_value());
   EXPECT_EQ(errors[0].LineNumber().value(), 10);
 }
