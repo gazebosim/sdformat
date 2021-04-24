@@ -63,6 +63,14 @@ namespace sdf
 
   const std::string kSdfScopeDelimiter = "::";
 
+  /// \brief The source path replacement if it was parsed from a string,
+  /// instead of a file.
+  constexpr char kSdfStringSource[] = "<data-string>";
+
+  /// \brief The source path replacement if the urdf was parsed from a string,
+  /// instead of a file.
+  constexpr char kUrdfStringSource[] = "<urdf-string>";
+
   /// \brief Split a string using the delimiter in splitter.
   /// \param[in] str       The string to split.
   /// \param[in] splitter  The delimiter to use.

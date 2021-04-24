@@ -574,7 +574,7 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, std::string(sdfStringSource), _convert, _config,
+  if (readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource), _convert, _config,
               _errors))
   {
     return true;
@@ -585,7 +585,7 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
     auto doc = makeSdfDoc();
     u2g.InitModelString(_xmlString, &doc);
 
-    if (sdf::readDoc(&doc, _sdf, std::string(urdfStringSource), _convert,
+    if (sdf::readDoc(&doc, _sdf, std::string(kUrdfStringSource), _convert,
                     _config, _errors))
     {
       sdfdbg << "Parsing from urdf.\n";
@@ -631,7 +631,7 @@ bool readString(const std::string &_xmlString, const ParserConfig &_config,
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, std::string(sdfStringSource), true, _config,
+  if (readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource), true, _config,
               _errors))
   {
     return true;
@@ -668,7 +668,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     return false;
   }
 
-  if (_source != std::string(sdfStringSource))
+  if (_source != std::string(kSdfStringSource))
   {
     _sdf->SetFilePath(_source);
   }
@@ -748,7 +748,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     return false;
   }
 
-  if (_source != std::string(sdfStringSource))
+  if (_source != std::string(kSdfStringSource))
   {
     _sdf->SetFilePath(_source);
   }
@@ -1598,7 +1598,7 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
     if (sdf::Converter::Convert(&xmlDoc, _version, true))
     {
       Errors errors;
-      bool result = sdf::readDoc(&xmlDoc, _sdf, std::string(sdfStringSource),
+      bool result = sdf::readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource),
                                  false, _config, errors);
 
       // Output errors
