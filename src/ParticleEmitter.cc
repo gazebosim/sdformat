@@ -96,6 +96,13 @@ class sdf::ParticleEmitterPrivate
   /// \brief Topic used to update particle emitter properties at runtime.
   public: std::string topic = "";
 
+  /// \brief Particle scatter ratio. This is used to determine the ratio of
+  /// particles that will be detected by sensors. Increasing the ratio
+  /// means there is a higher chance of particles reflecting and interfering
+  /// with depth sensing, making the emitter appear more dense. Decreasing the
+  /// ratio decreases making it appear less dense. This value should be > 0.
+  public: float scatterRatio = 0.65f;
+
   /// \brief Pose of the emitter
   public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
@@ -136,6 +143,7 @@ ParticleEmitterPrivate::ParticleEmitterPrivate(
       colorEnd(_private.colorEnd),
       colorRangeImage(_private.colorRangeImage),
       topic(_private.topic),
+      scatterRatio(_private.scatterRatio),
       pose(_private.pose),
       poseRelativeTo(_private.poseRelativeTo),
       xmlParentName(_private.xmlParentName),
@@ -271,6 +279,9 @@ Errors ParticleEmitter::Load(ElementPtr _sdf)
 
   this->dataPtr->topic = _sdf->Get<std::string>(
       "topic", this->dataPtr->topic).first;
+
+  this->dataPtr->scatterRatio = _sdf->Get<float>(
+      "scatter_ratio", this->dataPtr->scatterRatio).first;
 
   if (_sdf->HasElement("material"))
   {
@@ -485,6 +496,18 @@ std::string ParticleEmitter::Topic() const
 void ParticleEmitter::SetTopic(const std::string &_topic)
 {
   this->dataPtr->topic = _topic;
+}
+
+/////////////////////////////////////////////////
+void ParticleEmitter::SetScatterRatio(float _ratio)
+{
+  this->dataPtr->scatterRatio = _ratio;
+}
+
+/////////////////////////////////////////////////
+float ParticleEmitter::ScatterRatio() const
+{
+  return this->dataPtr->scatterRatio;
 }
 
 /////////////////////////////////////////////////
