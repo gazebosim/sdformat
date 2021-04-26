@@ -281,7 +281,7 @@ Errors ParticleEmitter::Load(ElementPtr _sdf)
       "topic", this->dataPtr->topic).first;
 
   this->dataPtr->scatterRatio = _sdf->Get<float>(
-      "scatter_ratio", this->dataPtr->scatterRatio).first;
+      "particle_scatter_ratio", this->dataPtr->scatterRatio).first;
 
   if (_sdf->HasElement("material"))
   {
