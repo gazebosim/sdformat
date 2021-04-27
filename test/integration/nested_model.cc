@@ -1184,7 +1184,7 @@ TEST(NestedReference, PoseRelativeTo)
 TEST(NestedReference, PoseRelativeToInWorld)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", 
+    sdf::testing::TestFile("sdf",
         "world_relative_to_nested_reference.sdf");
 
   // Load the SDF file
@@ -1245,7 +1245,7 @@ TEST(NestedReference, PoseRelativeToInWorld)
 TEST(NestedReference, PlacementFrameAttribute)
 {
   const std::string testFile =
-      sdf::testing::TestFile("integration", 
+      sdf::testing::TestFile("integration",
           "model", "model_with_nested_placement_frame_attribute", "model.sdf");
 
   // Load the SDF file
