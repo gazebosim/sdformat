@@ -663,7 +663,8 @@ TEST(Parser, ReadSingleLineStringError)
 
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   ASSERT_TRUE(errors[0].FilePath().has_value());
-  EXPECT_EQ(errors[0].FilePath().value(), std::string(sdf::kSdfStringSource));
+  EXPECT_EQ(errors[0].FilePath().value(),
+      "<" + std::string(sdf::kSdfStringSource) + ">");
   ASSERT_TRUE(errors[0].LineNumber().has_value());
   EXPECT_EQ(errors[0].LineNumber().value(), 1);
 }
@@ -701,7 +702,8 @@ TEST(Parser, ReadMultiLineStringError)
 
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   ASSERT_TRUE(errors[0].FilePath().has_value());
-  EXPECT_EQ(errors[0].FilePath().value(), std::string(sdf::kSdfStringSource));
+  EXPECT_EQ(errors[0].FilePath().value(),
+      "<" + std::string(sdf::kSdfStringSource) + ">");
   ASSERT_TRUE(errors[0].LineNumber().has_value());
   EXPECT_EQ(errors[0].LineNumber().value(), 10);
 }
