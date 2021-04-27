@@ -18,7 +18,6 @@
 #define SDF_PARSER_HH_
 
 #include <string>
-#include <tinyxml2.h>
 
 #include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
@@ -56,14 +55,6 @@ namespace sdf
   /// \brief Initialize the SDF interface using a string
   SDFORMAT_VISIBLE
   bool initString(const std::string &_xmlString, SDFPtr _sdf);
-
-  /// \brief Converts XML Element to SDF Element (calls sdf::readXml function)
-  /// \param[in] _xml Pointer to TinyXML element
-  /// \param[in,out] _sdf SDF pointer to parse data into
-  /// \param[out] _errors Captures errors found during parsing
-  /// \return True on success, false on error
-  SDFORMAT_VISIBLE
-  bool xmlToSdf(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors);
 
   /// \brief Populate the SDF values from a file
   ///

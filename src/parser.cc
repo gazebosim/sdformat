@@ -815,12 +815,6 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 }
 
 //////////////////////////////////////////////////
-bool xmlToSdf(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
-{
-  return readXml(_xml, _sdf, _errors);
-}
-
-//////////////////////////////////////////////////
 bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
 {
   // Check if the element pointer is deprecated.

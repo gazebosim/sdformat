@@ -22,6 +22,7 @@
 #include "sdf/sdf_config.h"
 
 #include "ParamPassing.hh"
+#include "parser_private.hh"
 #include "XmlUtils.hh"
 
 namespace sdf
@@ -300,7 +301,7 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
     else
       elemChild = elemDesc->GetElementDescription(elemName);
 
-    if (!xmlToSdf(xmlChild, elemChild, _errors))
+    if (!readXml(xmlChild, elemChild, _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
         "Unable to convert XML to SDF. Skipping child element modification "
@@ -356,7 +357,7 @@ void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem,
 
   newElem->GetAttribute("name")->Set(_elemNameAttr);
 
-  if (xmlToSdf(_childXml, newElem, _errors))
+  if (readXml(_childXml, newElem, _errors))
   {
     _elem->InsertElement(newElem);
   }
