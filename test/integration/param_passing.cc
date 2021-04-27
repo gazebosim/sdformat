@@ -74,7 +74,7 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   errors = root.Load(testFile);
   PrintErrors(errors);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(errors.size(), 13u);
+  ASSERT_EQ(errors.size(), 12u);
   // missing element_id attribute
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   // element does not exist in included model
@@ -87,18 +87,16 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
   // missing action attribute
   EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
-  // duplicate element
-  EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::DUPLICATE_ELEMENT);
   // incorrect schema (missing required attributes; in children of element_id)
-  EXPECT_EQ(errors[7].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
-  EXPECT_EQ(errors[8].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[7].Code(), sdf::ErrorCode::ELEMENT_INVALID);
   // not defined sdf element (in children of where element_id is defined)
-  EXPECT_EQ(errors[9].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  EXPECT_EQ(errors[8].Code(), sdf::ErrorCode::ELEMENT_INVALID);
   // not defined sdf element (where element_id is defined)
-  EXPECT_EQ(errors[10].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  EXPECT_EQ(errors[9].Code(), sdf::ErrorCode::ELEMENT_INVALID);
   // incorrect schema (missing required attributes; where element_id defined)
-  EXPECT_EQ(errors[11].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
-  EXPECT_EQ(errors[12].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  EXPECT_EQ(errors[10].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[11].Code(), sdf::ErrorCode::ELEMENT_INVALID);
 }
 
 /////////////////////////////////////////////////

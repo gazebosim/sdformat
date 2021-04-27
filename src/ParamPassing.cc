@@ -43,13 +43,10 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     const char *childElemId = childElemXml->Attribute("element_id");
     if (!childElemId)
     {
-      tinyxml2::XMLPrinter printer;
-      childElemXml->Accept(&printer);
-
       _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
         "Element identifier requires an element_id attribute, but the "
         "element_id is not set. Skipping element modification:\n"
-        + std::string(printer.CStr())
+        + ElementToString(childElemXml)
       });
       continue;
     }
@@ -61,13 +58,10 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     if (found != std::string::npos
         && (elemIdAttr.substr(found+2)).empty())
     {
-      tinyxml2::XMLPrinter printer;
-      childElemXml->Accept(&printer);
-
       _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
         "Missing name after double colons in element identifier. "
         "Skipping element modification:\n"
-        + std::string(printer.CStr())
+        + ElementToString(childElemXml)
       });
       continue;
     }
@@ -86,15 +80,12 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     {
       if (elem != nullptr)
       {
-        tinyxml2::XMLPrinter printer;
-        childElemXml->Accept(&printer);
-
         _errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Could not add element <" + std::string(childElemXml->Name())
           + " element_id='" + childElemXml->Attribute("element_id")
           + "'> because element already exists in included model. "
           + "Skipping element addition:\n"
-          + printer.CStr()
+          + ElementToString(childElemXml)
         });
         continue;
       }
@@ -121,13 +112,10 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
 
     if (elem == nullptr)
     {
-      tinyxml2::XMLPrinter printer;
-      childElemXml->Accept(&printer);
-
       _errors.push_back({ErrorCode::ELEMENT_MISSING,
         "Could not find element <" + std::string(childElemXml->Name())
         + " element_id='" + childElemXml->Attribute("element_id") + "'>. " +
-        "Skipping element modification:\n" + printer.CStr()
+        "Skipping element modification:\n" + ElementToString(childElemXml)
       });
       continue;
     }
@@ -314,21 +302,7 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
 
     if (actionStr == "add")
     {
-      // check requirements
-      if ((elemChild->GetRequired() == "0" || elemChild->GetRequired() == "1")
-          && _elem->HasElement(elemName))
-      {
-        _errors.push_back({ErrorCode::DUPLICATE_ELEMENT,
-          "Element already exists in model, skipping child element addition "
-          "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
-          + std::string(_childrenXml->Attribute("element_id")) + "'>: "
-          + ElementToString(xmlChild)
-        });
-      }
-      else
-      {
-        _elem->InsertElement(elemChild);
-      }
+      _elem->InsertElement(elemChild);
     }
 
     // TODO(jenn) finish (direct children only): modify, remove, replace

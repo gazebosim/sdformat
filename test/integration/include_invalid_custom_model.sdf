@@ -40,10 +40,6 @@
             <!-- missing action attribute -->
             <transparency>0.2</transparency>
 
-            <!-- duplicate element -->
-            <transparency action="add">0.2</transparency>
-            <transparency action="add">0.5</transparency>
-
             <!-- incorrect schema (missing required attributes) -->
             <plugin action="add"/>
 

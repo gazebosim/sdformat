@@ -130,11 +130,7 @@ namespace sdf
     POSE_RELATIVE_TO_GRAPH_ERROR,
 
     /// \brief Indicates that reading an SDF string failed.
-    STRING_READ,
-
-    /// \brief A duplicate element with specified name already exists
-    /// (used for parameter passing).
-    DUPLICATE_ELEMENT
+    STRING_READ
   };
 
   class SDFORMAT_VISIBLE Error
