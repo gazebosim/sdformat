@@ -422,13 +422,11 @@ TEST(Parser, IncludesErrors)
     // clear the contents of the buffer
     buffer.str("");
 
-    const std::string modelRootPath = sdf::filesystem::append(
-        PROJECT_SOURCE_PATH, "test", "integration", "model");
     const auto path =
         sdf::testing::TestFile("sdf", "includes_model_without_sdf.sdf");
     sdf::setFindCallback([&](const std::string &_file)
         {
-          return sdf::filesystem::append(modelRootPath, _file);
+          return sdf::testing::TestFile("integration", "model", _file);
         });
 
     sdf::SDFPtr sdf(new sdf::SDF());
@@ -448,13 +446,11 @@ TEST(Parser, IncludesErrors)
     // clear the contents of the buffer
     buffer.str("");
 
-    const std::string modelRootPath = sdf::filesystem::append(
-        PROJECT_SOURCE_PATH, "test", "integration", "model");
     const auto path =
         sdf::testing::TestFile("sdf", "includes_without_top_level.sdf");
     sdf::setFindCallback([&](const std::string &_file)
         {
-          return sdf::filesystem::append(modelRootPath, _file);
+          return sdf::testing::TestFile("integration", "model", _file);
         });
 
     sdf::SDFPtr sdf(new sdf::SDF());
@@ -480,15 +476,12 @@ TEST(Parser, IncludesErrors)
 
 TEST(Parser, PlacementFrameMissingPose)
 {
-  const std::string modelRootPath = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "integration", "model");
-
-  const std::string testModelPath = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "sdf", "placement_frame_missing_pose.sdf");
+  const std::string testModelPath =
+      sdf::testing::TestFile("sdf", "placement_frame_missing_pose.sdf");
 
   sdf::setFindCallback([&](const std::string &_file)
       {
-        return sdf::filesystem::append(modelRootPath, _file);
+        return sdf::testing::TestFile("integration", "model", _file);
       });
   sdf::SDFPtr sdf = InitSDF();
   sdf::Errors errors;

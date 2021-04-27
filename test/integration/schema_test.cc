@@ -30,16 +30,13 @@ const std::string SDF_ROOT_SCHEMA =
                           "root.xsd");
 
 const std::string SDF_TEST_PR2 =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
-                          "pr2.sdf");
+  sdf::testing::TestFile("integration", "model", "pr2.sdf");
 
 const std::string SDF_TEST_TURTLEBOT =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
-                          "turtlebot.sdf");
+  sdf::testing::TestFile("integration", "model", "turtlebot.sdf");
 
 const std::string SDF_TEST_PENDULUM =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
-                          "double_pendulum.sdf");
+  sdf::testing::TestFile("integration", "model", "double_pendulum.sdf");
 
 
 class SDFSchemaGenerator : public testing::Test

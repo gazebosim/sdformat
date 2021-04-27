@@ -23,8 +23,7 @@
 TEST(DeprecatedSpecs, Spec1_0)
 {
   const std::string filename =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "deprecated_sdf_1-0.sdf");
+    sdf::testing::TestFile("integration", "deprecated_sdf_1-0.sdf");
   sdf::SDFPtr sdf(new sdf::SDF());
   EXPECT_FALSE(sdf::initFile(filename, sdf));
 }
@@ -33,8 +32,7 @@ TEST(DeprecatedSpecs, Spec1_0)
 TEST(DeprecatedSpecs, Spec1_2)
 {
   const std::string filename =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "deprecated_sdf_1-2.sdf");
+    sdf::testing::TestFile("integration", "deprecated_sdf_1-2.sdf");
   sdf::SDFPtr sdf(new sdf::SDF());
   EXPECT_FALSE(sdf::initFile(filename, sdf));
 }

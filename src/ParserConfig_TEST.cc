@@ -31,8 +31,8 @@ TEST(ParserConfig, Construction)
   EXPECT_TRUE(config.URIPathMap().empty());
 
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
-  // PROJECT_SOURCE_PATH
-  const std::string testDir = PROJECT_SOURCE_PATH;
+  // the source path 
+  const std::string testDir = sdf::testing::SourceFile();
 
   config.AddURIPath("file://", testDir);
   ASSERT_FALSE(config.URIPathMap().empty());
@@ -57,10 +57,9 @@ TEST(ParserConfig, Construction)
 TEST(ParserConfig, CopyConstructor)
 {
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
-  // PROJECT_SOURCE_PATH
-  const std::string testDir1 = PROJECT_SOURCE_PATH;
-  const std::string testDir2 =
-      sdf::filesystem::append(PROJECT_SOURCE_PATH, "test");
+  // the source path 
+  const std::string testDir1 = sdf::testing::SourceFile();
+  const std::string testDir2 = sdf::testing::TestFile();
 
   sdf::ParserConfig config1;
   config1.AddURIPath("file://", testDir1);
@@ -101,10 +100,9 @@ TEST(ParserConfig, CopyConstructor)
 TEST(ParserConfig, CopyAssignmentOperator)
 {
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
-  // PROJECT_SOURCE_PATH
-  const std::string testDir1 = PROJECT_SOURCE_PATH;
-  const std::string testDir2 =
-      sdf::filesystem::append(PROJECT_SOURCE_PATH, "test");
+  // the source path 
+  const std::string testDir1 = sdf::testing::SourceFile();
+  const std::string testDir2 = sdf::testing::TestFile();
 
   sdf::ParserConfig config1;
   config1.AddURIPath("file://", testDir1);
@@ -145,8 +143,9 @@ TEST(ParserConfig, CopyAssignmentOperator)
 TEST(ParserConfig, MoveConstructor)
 {
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
-  // PROJECT_SOURCE_PATH
-  const std::string testDir1 = PROJECT_SOURCE_PATH;
+  // the source path 
+  const std::string testDir1 = sdf::testing::SourceFile();
+  const std::string testDir2 = sdf::testing::TestFile();
 
   sdf::ParserConfig config1;
   config1.AddURIPath("file://", testDir1);
@@ -171,8 +170,8 @@ TEST(ParserConfig, MoveConstructor)
 TEST(ParserConfig, MoveAssignmentOperator)
 {
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
-  // PROJECT_SOURCE_PATH
-  const std::string testDir1 = PROJECT_SOURCE_PATH;
+  // the source path 
+  const std::string testDir1 = sdf::testing::SourceFile();
 
   sdf::ParserConfig config1;
   config1.AddURIPath("file://", testDir1);
@@ -198,10 +197,9 @@ TEST(ParserConfig, MoveAssignmentOperator)
 TEST(ParserConfig, CopyAssignmentAfterMove)
 {
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
-  // PROJECT_SOURCE_PATH
-  const std::string testDir1 = PROJECT_SOURCE_PATH;
-  const std::string testDir2 =
-      sdf::filesystem::append(PROJECT_SOURCE_PATH, "test");
+  // the source path 
+  const std::string testDir1 = sdf::testing::SourceFile();
+  const std::string testDir2 = sdf::testing::TestFile();
 
   sdf::ParserConfig config1;
   config1.AddURIPath("file://", testDir1);
