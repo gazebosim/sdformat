@@ -11,7 +11,7 @@ if test "$1" = "-xmldir" -a -n "$2"; then
   builddir=../build
 else
   # This is a heuristic guess; not every developer puts the `build` dir in the src dir
-  builddir=/home/mjcarroll/workspaces/ign_edifice/build/sdformat11/
+  builddir=./build
 fi
 
 # Use a suppression file for spurious errors
