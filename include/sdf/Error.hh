@@ -229,40 +229,25 @@ namespace sdf
     public: friend std::ostream &operator<<(std::ostream &_out,
                                             const sdf::Error &_err)
     {
-      if (!_err.XmlPath().has_value())
-      {
-        _out << "Error Code "
+      std::string pathInfo = "";
+
+      if (_err.XmlPath().has_value())
+        pathInfo += _err.XmlPath().value();
+
+      if (_err.FilePath().has_value())
+        pathInfo += ":" + _err.FilePath().value();
+
+      if (_err.LineNumber().has_value())
+        pathInfo += ":L" + std::to_string(_err.LineNumber().value());
+
+      if (!pathInfo.empty())
+        pathInfo = "[" + pathInfo + "]: ";
+
+      _out << "Error Code "
           << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
-              _err.Code())
-          << " Msg: " << _err.Message();
-      }
-      else if (!_err.FilePath().has_value())
-      {
-        _out << "Error Code "
-          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
-              _err.Code())
-          << ": [" << _err.XmlPath().value()
-          << "]: Msg: " << _err.Message();
-      }
-      else if (!_err.LineNumber().has_value())
-      {
-        _out << "Error Code "
-          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
-              _err.Code())
-          << ": [" << _err.XmlPath().value()
-          << ":" << _err.FilePath().value()
-          << "]: Msg: " << _err.Message();
-      }
-      else
-      {
-        _out << "Error Code "
-          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
-              _err.Code())
-          << ": [" << _err.XmlPath().value()
-          << ":" << _err.FilePath().value()
-          << ":L" << std::to_string(_err.LineNumber().value())
-          << "]: Msg: " << _err.Message();
-      }
+              _err.Code()) << ": "
+          << pathInfo
+          << "Msg: " << _err.Message();
       return _out;
     }
 
