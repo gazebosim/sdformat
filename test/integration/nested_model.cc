@@ -249,7 +249,7 @@ TEST(NestedModel, State)
 TEST(NestedModel, NestedInclude)
 {
   const std::string name = "double_pendulum_kinematics";
-  const std::string MODEL_PATH = 
+  const std::string MODEL_PATH =
     sdf::testing::TestFile("integration", "model", name);
 
   // this uses two models from the test/integration/model folder that are
@@ -406,7 +406,7 @@ TEST(NestedModel, NestedInclude)
 TEST(NestedModel, NestedModelWithFrames)
 {
   const std::string name = "test_model_with_frames";
-  const std::string modelPath = 
+  const std::string modelPath =
     sdf::testing::TestFile("integration", "model", name);
 
   const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
@@ -579,7 +579,7 @@ void prepareForDirectComparison(sdf::ElementPtr _worldElem)
 TEST(NestedModel, NestedModelWithFramesDirectComparison)
 {
   const std::string name = "test_model_with_frames";
-  const std::string modelPath = 
+  const std::string modelPath =
     sdf::testing::TestFile("integration", "model", name);
 
   const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
@@ -609,7 +609,7 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
   prepareForDirectComparison(worldElem);
 
   // Compare with expected output
-  const std::string expectedSdfPath = 
+  const std::string expectedSdfPath =
     sdf::testing::TestFile(
         "integration", "nested_model_with_frames_expected.sdf");
   std::fstream fs;
@@ -625,7 +625,7 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
 TEST(NestedModel, PartiallyFlattened)
 {
   const std::string testFile =
-    sdf::testing::TestFile("integration", 
+    sdf::testing::TestFile("integration",
       "partially_flattened.sdf");
 
   // Load the SDF file
@@ -782,7 +782,7 @@ TEST(NestedModel, TwoLevelNestedModelWithFramesDirectComparison)
 TEST(NestedModel, NestedModelWithSiblingFrames)
 {
   const std::string name = "test_model_with_frames";
-  const std::string MODEL_PATH = 
+  const std::string MODEL_PATH =
       sdf::testing::TestFile("integration", "model", name);
 
   const ignition::math::Pose3d testFramePose(0, 5, 0, 0, 0, -IGN_PI/2);
@@ -885,7 +885,7 @@ TEST(NestedModel, NestedModelWithSiblingFrames)
 TEST(NestedModel, NestedFrameOnlyModel)
 {
   const std::string name = "frame_only_model";
-  const std::string MODEL_PATH = 
+  const std::string MODEL_PATH =
       sdf::testing::TestFile("integration", "model", name);
 
   const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
@@ -943,10 +943,10 @@ class PlacementFrame: public ::testing::Test
 
   protected: void SetUp() override
   {
-    const std::string modelRootPath = 
+    const std::string modelRootPath =
         sdf::testing::TestFile("integration", "model");
 
-    const std::string testModelPath = 
+    const std::string testModelPath =
         sdf::testing::TestFile("sdf", "placement_frame.sdf");
 
     sdf::setFindCallback(
@@ -1265,7 +1265,7 @@ TEST(NestedReference, PlacementFrameAttribute)
 /////////////////////////////////////////////////
 TEST(NestedReference, PlacementFrameElement)
 {
-  const std::string modelRootPath = 
+  const std::string modelRootPath =
     sdf::testing::TestFile("integration", "model");
 
   sdf::setFindCallback([&](const std::string &_file)
@@ -1399,7 +1399,7 @@ TEST(NestedReference, PlacementFrameElement)
 /////////////////////////////////////////////////
 TEST(NestedModel, IncludeElements)
 {
-  const std::string modelRootPath = 
+  const std::string modelRootPath =
     sdf::testing::TestFile("integration", "model");
 
   sdf::ParserConfig config;
