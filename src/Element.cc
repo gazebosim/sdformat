@@ -118,7 +118,7 @@ void Element::AddValue(const std::string &_type,
                        const std::string &_description)
 {
   this->dataPtr->value = this->CreateParam(this->dataPtr->name,
-        _type, _defaultValue, _required, _description);
+      _type, _defaultValue, _required, _description);
 }
 
 /////////////////////////////////////////////////
@@ -507,7 +507,6 @@ void Element::PrintValuesImpl(const std::string &_prefix,
     }
   }
 }
-
 
 /////////////////////////////////////////////////
 void Element::PrintValues(std::string _prefix) const

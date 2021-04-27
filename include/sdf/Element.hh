@@ -472,6 +472,7 @@ namespace sdf
                                   bool _required,
                                   const std::string &_description="");
 
+
     /// \brief Private data pointer
     private: std::unique_ptr<ElementPrivate> dataPtr;
   };
