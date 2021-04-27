@@ -1121,7 +1121,7 @@ TEST_F(PlacementFrame, ModelPlacementFrameAttribute)
 TEST(NestedReference, PoseRelativeTo)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", 
+    sdf::testing::TestFile("sdf",
         "model_relative_to_nested_reference.sdf");
 
   // Load the SDF file
