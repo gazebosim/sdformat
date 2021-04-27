@@ -66,7 +66,7 @@ TEST(ParserConfig, NonGlobalConfig)
 
   sdf::ParserConfig config;
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
-  // the source directory 
+  // the source directory
   const std::string testDir = sdf::testing::SourceFile();
   config.AddURIPath("file://", testDir);
   config.SetFindCallback(
