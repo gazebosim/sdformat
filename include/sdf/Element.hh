@@ -25,8 +25,6 @@
 #include <utility>
 #include <vector>
 
-#include <ignition/utils/ImplPtr.hh>
-
 #include "sdf/Param.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -47,6 +45,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
+  class ElementPrivate;
   class SDFORMAT_VISIBLE Element;
 
   /// \def ElementPtr
@@ -447,8 +446,103 @@ namespace sdf
     /// \return A pointer to the named element if found, nullptr otherwise.
     public: ElementPtr GetElementImpl(const std::string &_name) const;
 
+    /// \brief Generate a string (XML) representation of this object.
+    /// \param[in] _prefix arbitrary prefix to put on the string.
+    /// \param[out] _out the std::ostreamstream to write output to.
+    private: void ToString(const std::string &_prefix,
+                           std::ostringstream &_out) const;
+
+    /// \brief Generate a string (XML) representation of this object.
+    /// \param[in] _prefix arbitrary prefix to put on the string.
+    /// \param[out] _out the std::ostreamstream to write output to.
+    private: void PrintValuesImpl(const std::string &_prefix,
+                                  std::ostringstream &_out) const;
+
+    /// \brief Create a new Param object and return it.
+    /// \param[in] _key Key for the parameter.
+    /// \param[in] _type String name for the value type (double,
+    /// int,...).
+    /// \param[in] _defaultValue Default value.
+    /// \param[in] _required True if the parameter is required to be set.
+    /// \param[in] _description Description of the parameter.
+    /// \return A pointer to the new Param object.
+    private: ParamPtr CreateParam(const std::string &_key,
+                                  const std::string &_type,
+                                  const std::string &_defaultValue,
+                                  bool _required,
+                                  const std::string &_description="");
+
     /// \brief Private data pointer
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    private: std::unique_ptr<ElementPrivate> dataPtr;
+  };
+
+  /// \internal
+  /// \brief Private data for Element
+  class ElementPrivate
+  {
+    /// \brief Element name
+    public: std::string name;
+
+    /// \brief True if element is required
+    public: std::string required;
+
+    /// \brief Element description
+    public: std::string description;
+
+    /// \brief True if element's children should be copied.
+    public: bool copyChildren;
+
+    /// \brief Element's parent
+    public: ElementWeakPtr parent;
+
+    // Attributes of this element
+    public: Param_V attributes;
+
+    // Value of this element
+    public: ParamPtr value;
+
+    // The existing child elements
+    public: ElementPtr_V elements;
+
+    // The possible child elements
+    public: ElementPtr_V elementDescriptions;
+
+    /// \brief The <include> element that was used to load this entity. For
+    /// example, given the following SDFormat:
+    /// <sdf version='1.8'>
+    ///   <world name='default'>
+    ///     <include>
+    ///       <uri>model_uri</uri>
+    ///       <pose>1 2 3 0 0 0</pose>
+    ///     </include>
+    ///   </world>
+    /// </sdf>
+    /// The ElementPtr associated with the model loaded from `model_uri` will
+    /// have the includeElement set to
+    ///     <include>
+    ///       <uri>model_uri</uri>
+    ///       <pose>1 2 3 0 0 0</pose>
+    ///     </include>
+    ///
+    /// This can be used to retrieve additional information available under the
+    /// <include> tag after the entity has been loaded. An example use case for
+    /// this is when saving a loaded world back to SDFormat.
+    public: ElementPtr includeElement;
+
+    /// name of the include file that was used to create this element
+    public: std::string includeFilename;
+
+    /// \brief Name of reference sdf.
+    public: std::string referenceSDF;
+
+    /// \brief Path to file where this element came from
+    public: std::string path;
+
+    /// \brief XML path of this element.
+    public: std::string xmlPath;
+
+    /// \brief Spec version that this was originally parsed from.
+    public: std::string originalVersion;
   };
 
   ///////////////////////////////////////////////
@@ -479,11 +573,10 @@ namespace sdf
                                   const T &_defaultValue) const
   {
     std::pair<T, bool> result(_defaultValue, true);
-    ParamPtr value = this->GetValue();
 
-    if (_key.empty() && value)
+    if (_key.empty() && this->dataPtr->value)
     {
-      value->Get<T>(result.first);
+      this->dataPtr->value->Get<T>(result.first);
     }
     else if (!_key.empty())
     {
@@ -517,10 +610,9 @@ namespace sdf
   template<typename T>
   bool Element::Set(const T &_value)
   {
-    ParamPtr value = this->GetValue();
-    if (value)
+    if (this->dataPtr->value)
     {
-      value->Set(_value);
+      this->dataPtr->value->Set(_value);
       return true;
     }
     return false;
