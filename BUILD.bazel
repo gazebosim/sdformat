@@ -1,0 +1,145 @@
+load(
+    "//ign_bazel:build_defs.bzl",
+    "IGNITION_FEATURES",
+    "IGNITION_ROOT",
+    "IGNITION_VISIBILITY",
+    "cmake_configure_file",
+    "generate_include_header",
+    "generate_yaml",
+)
+
+package(
+    default_visibility = IGNITION_VISIBILITY,
+    features = IGNITION_FEATURES,
+)
+
+licenses(["notice"])
+
+exports_files(["LICENSE"])
+
+PROJECT_NAME = "sdformat"
+
+SDF_MAJOR_VERSION = 11
+
+SDF_MINOR_VERSION = 0
+
+SDF_PATCH_VERSION = 0
+
+# Generates config.hh based on the version numbers in CMake code.
+cmake_configure_file(
+    name = "sdf_config",
+    src = "cmake/sdf_config.h.in",
+    out = "include/sdf/sdf_config.h",
+    cmakelists = ["CMakeLists.txt"],
+    defines = [
+        "SDF_MAJOR_VERSION=%d" % SDF_MAJOR_VERSION,
+        "SDF_MINOR_VERSION=%d" % SDF_MINOR_VERSION,
+        "SDF_PATCH_VERSION=%d" % SDF_PATCH_VERSION,
+        "PROJECT_NAME=%s" % PROJECT_NAME,
+        "SDF_VERSION_NAME=sdf%d" % SDF_MAJOR_VERSION,
+        "CMAKE_INSTALL_FULL_DATAROOTDIR=%s" % "/tmp",
+        "SDF_PKG_VERSION=0",
+    ],
+    visibility = ["//visibility:private"],
+)
+
+genrule(
+    name = "embed_sdf_genrule",
+    srcs = glob([
+        "sdf/**/*.sdf",
+        "sdf/**/*.convert",
+    ]),
+    outs = ["EmbeddedSdf.cc"],
+    cmd = "$(execpath //ign_bazel:embed_sdf) $(SRCS) > $@",  # noqa
+    tools = [IGNITION_ROOT + "ign_bazel:embed_sdf"],
+)
+
+public_headers_no_gen = glob(["include/sdf/*.hh"])
+
+private_headers = glob(["src/*.hh"])
+
+sources = glob(["src/*.cc"], exclude=["src/*_TEST.cc"]) + ["EmbeddedSdf.cc"]
+
+test_sources = glob(["src/*_TEST.cc"], exclude=["src/ign_TEST.cc"])
+
+public_headers = private_headers + public_headers_no_gen + [
+    "include/sdf/sdf_config.h",
+    "include/sdf/sdf.hh",
+]
+
+generate_include_header(
+    name = "sdformathh_genrule",
+    out = "include/sdf/sdf.hh",
+    hdrs = public_headers_no_gen + [
+        "include/sdf/sdf_config.h",
+    ],
+)
+
+cc_library(
+    name = "urdf",
+    srcs = [
+        "src/urdf/urdf_parser/joint.cpp",
+        "src/urdf/urdf_parser/link.cpp",
+        "src/urdf/urdf_parser/model.cpp",
+        "src/urdf/urdf_parser/pose.cpp",
+        "src/urdf/urdf_parser/twist.cpp",
+        "src/urdf/urdf_parser/urdf_model_state.cpp",
+        "src/urdf/urdf_parser/urdf_sensor.cpp",
+        "src/urdf/urdf_parser/world.cpp",
+    ],
+    hdrs = glob(
+        ["src/urdf/**/*.h"],
+    ),
+    includes = ["src/urdf"],
+    deps = [
+        "@tinyxml2",
+    ],
+)
+
+cc_library(
+    name = "sdformat",
+    srcs = sources + private_headers,
+    hdrs = public_headers,
+    includes = [
+        ".",
+        "include",
+    ],
+    copts = ["-Wno-unknown-pragmas"],
+    deps = [
+        "@tinyxml2",
+        IGNITION_ROOT + "ign_math",
+        IGNITION_ROOT + "ign_utils",
+        ":urdf",
+    ],
+)
+
+cc_binary(
+    name = "libsdformat10.so",
+    deps = [":sdformat"],
+    linkshared = True,
+)
+
+[cc_test(
+    name = src.replace("/", "_").replace(".cc", "").replace("src_", ""),
+    srcs = [src],
+    data = [
+        IGNITION_ROOT + "sdformat:sdf/1.2/1_0.convert",
+        IGNITION_ROOT + "sdformat:sdf/1.3/1_2.convert",
+        IGNITION_ROOT + "sdformat:sdf/1.4/1_3.convert",
+        IGNITION_ROOT + "sdformat:sdf/1.5/1_4.convert",
+        IGNITION_ROOT + "sdformat:sdf/1.6/1_5.convert",
+        IGNITION_ROOT + "sdformat:sdf/1.7/1_6.convert",
+        IGNITION_ROOT + "sdformat:sdf/1.8/1_7.convert",
+        IGNITION_ROOT + "sdformat/test:sdf",
+    ],
+    deps = [
+        IGNITION_ROOT + "ign_math",
+        ":sdformat",
+        IGNITION_ROOT + "sdformat/test:test_utils",
+        "@gtest",
+        "@gtest//:gtest_main",
+    ],
+) for src in test_sources]
+
+exports_files(["tools"])
+exports_files(["src/cmd/cmdsdformat.rb.in"])
