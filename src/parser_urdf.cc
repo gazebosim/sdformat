@@ -3217,15 +3217,15 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
     // If the specular and diffuse are defined by an extension then don't
     // use the color values
     if (materialTag->FirstChildElement("diffuse") == nullptr &&
-        materialTag->FirstChildElement("specular") == nullptr)
+        materialTag->FirstChildElement("ambient") == nullptr)
     {
       if (materialTag->FirstChildElement("diffuse") == nullptr)
       {
         AddKeyValue(materialTag, "diffuse", Values2str(4, color));
       }
-      if (materialTag->FirstChildElement("specular") == nullptr)
+      if (materialTag->FirstChildElement("ambient") == nullptr)
       {
-        AddKeyValue(materialTag, "specular", Values2str(4, color));
+        AddKeyValue(materialTag, "ambient", Values2str(4, color));
       }
     }
   }
