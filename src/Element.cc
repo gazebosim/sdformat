@@ -51,7 +51,7 @@ void Element::SetParent(const ElementPtr _parent)
 
   // If this element doesn't have a path, get it from the parent
   if (nullptr != _parent && (this->FilePath().empty() ||
-      this->FilePath() == "data-string"))
+      this->FilePath() == std::string(kSdfStringSource)))
   {
     this->SetFilePath(_parent->FilePath());
   }
