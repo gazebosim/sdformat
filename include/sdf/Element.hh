@@ -101,6 +101,7 @@ namespace sdf
 
     /// \brief Set the requirement type.
     /// \param[in] _req Requirement type for this element:
+    /// -1: Deprecated.
     /// 0: Not required.
     /// 1: Exactly one element is required.
     /// +: One or more elements are required.

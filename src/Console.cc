@@ -109,6 +109,18 @@ void Console::SetQuiet(bool _quiet)
 }
 
 //////////////////////////////////////////////////
+sdf::Console::ConsoleStream &Console::GetMsgStream()
+{
+  return this->dataPtr->msgStream;
+}
+
+//////////////////////////////////////////////////
+sdf::Console::ConsoleStream &Console::GetLogStream()
+{
+  return this->dataPtr->logStream;
+}
+
+//////////////////////////////////////////////////
 Console::ConsoleStream &Console::ColorMsg(const std::string &lbl,
                                           const std::string &file,
                                           unsigned int line, int color)
@@ -159,4 +171,16 @@ void Console::ConsoleStream::Prefix(const std::string &_lbl,
     Console::Instance()->dataPtr->logFileStream << _lbl << " [" <<
       _file.substr(index , _file.size() - index)<< ":" << _line << "] ";
   }
+}
+
+//////////////////////////////////////////////////
+void Console::ConsoleStream::SetStream(std::ostream *_stream)
+{
+  this->stream = _stream;
+}
+
+//////////////////////////////////////////////////
+std::ostream *Console::ConsoleStream::GetStream()
+{
+  return this->stream;
 }
