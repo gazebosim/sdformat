@@ -631,6 +631,84 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
 }
 
 /////////////////////////////////////////////////
+/// Check for parsing errors while reading strings
+TEST(Parser, ReadSingleLineStringError)
+{
+  sdf::SDFPtr sdf = InitSDF();
+  std::ostringstream stream;
+  stream
+    << "<sdf version='1.8'>"
+    << "<model name=\"test\">"
+    << "  <link name=\"test1\">"
+    << "    <visual name=\"good\">"
+    << "      <geometry>"
+    << "        <box><size>1 1 1</size></box>"
+    << "      </geometry>"
+    << "    </visual>"
+    << "  </link>"
+    << "  <link>"
+    << "    <visual name=\"good2\">"
+    << "      <geometry>"
+    << "        <box><size>1 1 1</size></box>"
+    << "      </geometry>"
+    << "    </visual>"
+    << "  </link>"
+    << "</model>"
+    << "</sdf>";
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::readString(stream.str(), sdf, errors));
+  ASSERT_NE(errors.size(), 0u);
+
+  std::cerr << errors[0] << std::endl;
+
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  ASSERT_TRUE(errors[0].FilePath().has_value());
+  EXPECT_EQ(errors[0].FilePath().value(),
+      "<" + std::string(sdf::kSdfStringSource) + ">");
+  ASSERT_TRUE(errors[0].LineNumber().has_value());
+  EXPECT_EQ(errors[0].LineNumber().value(), 1);
+}
+
+/////////////////////////////////////////////////
+/// Check for parsing errors while reading strings
+TEST(Parser, ReadMultiLineStringError)
+{
+  sdf::SDFPtr sdf = InitSDF();
+  std::ostringstream stream;
+  stream
+    << "<sdf version='1.8'>\n"
+    << "<model name=\"test\">\n"
+    << "  <link name=\"test1\">\n"
+    << "    <visual name=\"good\">\n"
+    << "      <geometry>\n"
+    << "        <box><size>1 1 1</size></box>\n"
+    << "      </geometry>\n"
+    << "    </visual>\n"
+    << "  </link>\n"
+    << "  <link>\n"
+    << "    <visual name=\"good2\">\n"
+    << "      <geometry>\n"
+    << "        <box><size>1 1 1</size></box>\n"
+    << "      </geometry>\n"
+    << "    </visual>\n"
+    << "  </link>\n"
+    << "</model>\n"
+    << "</sdf>\n";
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::readString(stream.str(), sdf, errors));
+  ASSERT_NE(errors.size(), 0u);
+
+  std::cerr << errors[0] << std::endl;
+
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  ASSERT_TRUE(errors[0].FilePath().has_value());
+  EXPECT_EQ(errors[0].FilePath().value(),
+      "<" + std::string(sdf::kSdfStringSource) + ">");
+  ASSERT_TRUE(errors[0].LineNumber().has_value());
+  EXPECT_EQ(errors[0].LineNumber().value(), 10);
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {
