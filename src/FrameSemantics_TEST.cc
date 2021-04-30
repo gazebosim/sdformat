@@ -301,8 +301,7 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
 TEST(NestedFrameSemantics, buildFrameAttachedToGraph_Model)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "model_nested_frame_attached_to.sdf");
+    sdf::testing::TestFile("sdf", "model_nested_frame_attached_to.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -394,8 +393,7 @@ TEST(NestedFrameSemantics, buildFrameAttachedToGraph_Model)
 TEST(NestedFrameSemantics, buildFrameAttachedToGraph_World)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "world_nested_frame_attached_to.sdf");
+    sdf::testing::TestFile("sdf", "world_nested_frame_attached_to.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -581,8 +579,7 @@ TEST(NestedFrameSemantics, buildFrameAttachedToGraph_World)
 TEST(NestedFrameSemantics, ModelWithoutLinksWithNestedStaticModel)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "model_nested_static_model.sdf");
+    sdf::testing::TestFile("sdf", "model_nested_static_model.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -611,8 +608,7 @@ TEST(NestedFrameSemantics, ModelWithoutLinksWithNestedStaticModel)
 TEST(NestedFrameSemantics, InvalidAttachedToScope)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "world_frame_invalid_attached_to_scope.sdf");
+    sdf::testing::TestFile("sdf", "world_frame_invalid_attached_to_scope.sdf");
 
   // Load the SDF file
   sdf::Root root;
