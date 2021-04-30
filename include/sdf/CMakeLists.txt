@@ -42,6 +42,7 @@ set (headers
   Param.hh
   parser.hh
   ParserConfig.hh
+  ParticleEmitter.hh
   Pbr.hh
   Physics.hh
   Plane.hh

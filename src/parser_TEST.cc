@@ -422,13 +422,11 @@ TEST(Parser, IncludesErrors)
     // clear the contents of the buffer
     buffer.str("");
 
-    const std::string modelRootPath = sdf::filesystem::append(
-        PROJECT_SOURCE_PATH, "test", "integration", "model");
     const auto path =
         sdf::testing::TestFile("sdf", "includes_model_without_sdf.sdf");
     sdf::setFindCallback([&](const std::string &_file)
         {
-          return sdf::filesystem::append(modelRootPath, _file);
+          return sdf::testing::TestFile("integration", "model", _file);
         });
 
     sdf::SDFPtr sdf(new sdf::SDF());
@@ -448,13 +446,11 @@ TEST(Parser, IncludesErrors)
     // clear the contents of the buffer
     buffer.str("");
 
-    const std::string modelRootPath = sdf::filesystem::append(
-        PROJECT_SOURCE_PATH, "test", "integration", "model");
     const auto path =
         sdf::testing::TestFile("sdf", "includes_without_top_level.sdf");
     sdf::setFindCallback([&](const std::string &_file)
         {
-          return sdf::filesystem::append(modelRootPath, _file);
+          return sdf::testing::TestFile("integration", "model", _file);
         });
 
     sdf::SDFPtr sdf(new sdf::SDF());
@@ -480,15 +476,12 @@ TEST(Parser, IncludesErrors)
 
 TEST(Parser, PlacementFrameMissingPose)
 {
-  const std::string modelRootPath = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "integration", "model");
-
-  const std::string testModelPath = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "sdf", "placement_frame_missing_pose.sdf");
+  const std::string testModelPath =
+      sdf::testing::TestFile("sdf", "placement_frame_missing_pose.sdf");
 
   sdf::setFindCallback([&](const std::string &_file)
       {
-        return sdf::filesystem::append(modelRootPath, _file);
+        return sdf::testing::TestFile("integration", "model", _file);
       });
   sdf::SDFPtr sdf = InitSDF();
   sdf::Errors errors;
@@ -628,6 +621,84 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
         "The value [20] is greater than the maximum allowed value of [10]",
         this->errBuffer.str());
   }
+}
+
+/////////////////////////////////////////////////
+/// Check for parsing errors while reading strings
+TEST(Parser, ReadSingleLineStringError)
+{
+  sdf::SDFPtr sdf = InitSDF();
+  std::ostringstream stream;
+  stream
+    << "<sdf version='1.8'>"
+    << "<model name=\"test\">"
+    << "  <link name=\"test1\">"
+    << "    <visual name=\"good\">"
+    << "      <geometry>"
+    << "        <box><size>1 1 1</size></box>"
+    << "      </geometry>"
+    << "    </visual>"
+    << "  </link>"
+    << "  <link>"
+    << "    <visual name=\"good2\">"
+    << "      <geometry>"
+    << "        <box><size>1 1 1</size></box>"
+    << "      </geometry>"
+    << "    </visual>"
+    << "  </link>"
+    << "</model>"
+    << "</sdf>";
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::readString(stream.str(), sdf, errors));
+  ASSERT_NE(errors.size(), 0u);
+
+  std::cerr << errors[0] << std::endl;
+
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  ASSERT_TRUE(errors[0].FilePath().has_value());
+  EXPECT_EQ(errors[0].FilePath().value(),
+      "<" + std::string(sdf::kSdfStringSource) + ">");
+  ASSERT_TRUE(errors[0].LineNumber().has_value());
+  EXPECT_EQ(errors[0].LineNumber().value(), 1);
+}
+
+/////////////////////////////////////////////////
+/// Check for parsing errors while reading strings
+TEST(Parser, ReadMultiLineStringError)
+{
+  sdf::SDFPtr sdf = InitSDF();
+  std::ostringstream stream;
+  stream
+    << "<sdf version='1.8'>\n"
+    << "<model name=\"test\">\n"
+    << "  <link name=\"test1\">\n"
+    << "    <visual name=\"good\">\n"
+    << "      <geometry>\n"
+    << "        <box><size>1 1 1</size></box>\n"
+    << "      </geometry>\n"
+    << "    </visual>\n"
+    << "  </link>\n"
+    << "  <link>\n"
+    << "    <visual name=\"good2\">\n"
+    << "      <geometry>\n"
+    << "        <box><size>1 1 1</size></box>\n"
+    << "      </geometry>\n"
+    << "    </visual>\n"
+    << "  </link>\n"
+    << "</model>\n"
+    << "</sdf>\n";
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::readString(stream.str(), sdf, errors));
+  ASSERT_NE(errors.size(), 0u);
+
+  std::cerr << errors[0] << std::endl;
+
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  ASSERT_TRUE(errors[0].FilePath().has_value());
+  EXPECT_EQ(errors[0].FilePath().value(),
+      "<" + std::string(sdf::kSdfStringSource) + ">");
+  ASSERT_TRUE(errors[0].LineNumber().has_value());
+  EXPECT_EQ(errors[0].LineNumber().value(), 10);
 }
 
 /////////////////////////////////////////////////

@@ -214,8 +214,7 @@ TEST(DOMRoot, NestedModel)
 TEST(DOMRoot, MultiNestedModel)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "model_multi_nested_model.sdf");
+    sdf::testing::TestFile("sdf", "model_multi_nested_model.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -488,8 +487,7 @@ TEST(DOMRoot, LoadNestedCanonicalLink)
 TEST(DOMRoot, LoadNestedExplicitCanonicalLink)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "nested_explicit_canonical_link.sdf");
+    sdf::testing::TestFile("sdf", "nested_explicit_canonical_link.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -536,8 +534,7 @@ TEST(DOMRoot, LoadNestedExplicitCanonicalLink)
 TEST(DOMRoot, ModelPlacementFrameAttribute)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "model_with_placement_frame_attribute.sdf");
+    sdf::testing::TestFile("sdf", "model_with_placement_frame_attribute.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -557,8 +554,7 @@ TEST(DOMRoot, ModelPlacementFrameAttribute)
 TEST(DOMRoot, LoadInvalidNestedModelWithoutLinks)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "nested_without_links_invalid.sdf");
+    sdf::testing::TestFile("sdf", "nested_without_links_invalid.sdf");
 
   // Load the SDF file
   sdf::Root root;

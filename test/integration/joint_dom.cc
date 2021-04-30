@@ -234,8 +234,7 @@ TEST(DOMJoint, LoadInvalidJointChildWorld)
 TEST(DOMJoint, LoadJointParentFrame)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "joint_parent_frame.sdf");
+    sdf::testing::TestFile("sdf", "joint_parent_frame.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -327,8 +326,7 @@ TEST(DOMJoint, LoadJointParentFrame)
 TEST(DOMJoint, LoadJointChildFrame)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "joint_child_frame.sdf");
+    sdf::testing::TestFile("sdf", "joint_child_frame.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -764,8 +762,7 @@ TEST(DOMJoint, LoadURDFJointPoseRelativeTo)
 TEST(DOMJoint, LoadJointNestedParentChild)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "joint_nested_parent_child.sdf");
+    sdf::testing::TestFile("sdf", "joint_nested_parent_child.sdf");
 
   // Load the SDF file
   sdf::Root root;

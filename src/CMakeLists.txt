@@ -53,6 +53,7 @@ set (sources
   parser_urdf.cc
   ParserConfig.cc
   Param.cc
+  ParticleEmitter.cc
   Pbr.cc
   Physics.cc
   Plane.cc
@@ -124,6 +125,7 @@ if (BUILD_SDF_TEST)
     Param_TEST.cc
     parser_TEST.cc
     ParserConfig_TEST.cc
+    ParticleEmitter_TEST.cc
     Pbr_TEST.cc
     Physics_TEST.cc
     Plane_TEST.cc

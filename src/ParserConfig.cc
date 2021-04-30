@@ -15,6 +15,8 @@
  *
  */
 
+#include <optional>
+
 #include "sdf/ParserConfig.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Types.hh"
@@ -35,6 +37,11 @@ class sdf::ParserConfig::Implementation
   /// Default is to ignore them for compatibility with legacy behavior
   public: EnforcementPolicy unrecognizedElementsPolicy =
     EnforcementPolicy::LOG;
+
+  /// \brief Policy indicating how deprecated elements are treated.
+  /// Defaults to the value of `warningsPolicy`. It can be overriden by the user
+  /// to behave behave differently than the `warningsPolicy`.
+  public: std::optional<EnforcementPolicy> deprecatedElementsPolicy;
 
   /// \brief Collection of custom model parsers.
   public: std::vector<CustomModelParser> customParsers;
@@ -114,6 +121,25 @@ void ParserConfig::SetUnrecognizedElementsPolicy(EnforcementPolicy _policy)
 EnforcementPolicy ParserConfig::UnrecognizedElementsPolicy() const
 {
   return this->dataPtr->unrecognizedElementsPolicy;
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::SetDeprecatedElementsPolicy(EnforcementPolicy _policy)
+{
+  this->dataPtr->deprecatedElementsPolicy = _policy;
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::ResetDeprecatedElementsPolicy()
+{
+  this->dataPtr->deprecatedElementsPolicy.reset();
+}
+
+/////////////////////////////////////////////////
+EnforcementPolicy ParserConfig::DeprecatedElementsPolicy() const
+{
+  return this->dataPtr->deprecatedElementsPolicy.value_or(
+      this->dataPtr->warningsPolicy);
 }
 
 /////////////////////////////////////////////////
