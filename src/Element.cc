@@ -51,7 +51,7 @@ void Element::SetParent(const ElementPtr _parent)
 
   // If this element doesn't have a path, get it from the parent
   if (nullptr != _parent && (this->FilePath().empty() ||
-      this->FilePath() == "data-string"))
+      this->FilePath() == std::string(kSdfStringSource)))
   {
     this->SetFilePath(_parent->FilePath());
   }
@@ -554,6 +554,27 @@ bool Element::GetAttributeSet(const std::string &_key) const
   }
 
   return result;
+}
+
+/////////////////////////////////////////////////
+void Element::RemoveAttribute(const std::string &_key)
+{
+  Param_V::const_iterator iter;
+  for (iter = this->dataPtr->attributes.begin();
+      iter != this->dataPtr->attributes.end(); ++iter)
+  {
+    if ((*iter)->GetKey() == _key)
+    {
+      this->dataPtr->attributes.erase(iter);
+      break;
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+void Element::RemoveAllAttributes()
+{
+  this->dataPtr->attributes.clear();
 }
 
 /////////////////////////////////////////////////

@@ -25,8 +25,7 @@
 #include "test_config.h"
 
 const std::string SDF_TEST_FILE =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                          "numeric.sdf");
+  sdf::testing::TestFile("integration", "numeric.sdf");
 
 // Windows supports the setlocale call but we can not extract the
 // available locales using the Linux call
