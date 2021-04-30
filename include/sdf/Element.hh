@@ -414,7 +414,8 @@ namespace sdf
     public: const std::string &FilePath() const;
 
     /// \brief Set the XML path of this element.
-    /// \param[in] _path Full XML path to the SDF element.
+    /// \param[in] _path Full XML path to the SDF element. (e.g.
+    /// /sdf/world[@name="default"]/model[@name="robot1"]/link[@name="link"])
     public: void SetXmlPath(const std::string &_path);
 
     /// \brief Get the XML path of this element.
