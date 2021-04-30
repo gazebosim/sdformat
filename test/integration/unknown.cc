@@ -90,8 +90,7 @@ TEST(Unknown, CopyUnknownElement)
 TEST(UnrecognizedElements, UnrecognizedElementsWithWarningsPolicies)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "unrecognized_elements.sdf");
+    sdf::testing::TestFile("sdf", "unrecognized_elements.sdf");
 
   sdf::ParserConfig config;
 
@@ -125,8 +124,7 @@ TEST(UnrecognizedElements, UnrecognizedElementsWithWarningsPolicies)
 TEST(UnrecognizedElements, UnrecognizedElementsWithNamespaces)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "unrecognized_elements_with_namespace.sdf");
+    sdf::testing::TestFile("sdf", "unrecognized_elements_with_namespace.sdf");
 
   sdf::ParserConfig config;
   config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::ERR);
