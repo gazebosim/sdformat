@@ -159,31 +159,20 @@ namespace sdf
     /// \brief Constructor.
     /// \param[in] _code The error code.
     /// \param[in] _message A description of the error.
-    /// \param[in] _xmlPath The XPath-like trace that is related to this error.
-    /// \sa ErrorCode.
-    public: Error(const ErrorCode _code, const std::string &_message,
-                  const std::string &_xmlPath);
-
-    /// \brief Constructor.
-    /// \param[in] _code The error code.
-    /// \param[in] _message A description of the error.
-    /// \param[in] _xmlPath The XPath-like trace that is related to this error.
     /// \param[in] _filePath The file path that is related to this error.
     /// \sa ErrorCode.
     public: Error(const ErrorCode _code, const std::string &_message,
-                  const std::string &_xmlPath, const std::string &_filePath);
+                  const std::string &_filePath);
 
     /// \brief Constructor.
     /// \param[in] _code The error code.
     /// \param[in] _message A description of the error.
-    /// \param[in] _xmlPath The XPath-like trace that is related to this error.
     /// \param[in] _filePath The file path that is related to this error.
     /// \param[in] _lineNumber The line number in the provided file path where
     /// this error was raised.
     /// \sa ErrorCode.
     public: Error(const ErrorCode _code, const std::string &_message,
-                  const std::string &_xmlPath, const std::string &_filePath,
-                  int _lineNumber);
+                  const std::string &_filePath, int _lineNumber);
 
     /// \brief Get the error code.
     /// \return An error code.
@@ -194,11 +183,6 @@ namespace sdf
     /// \return Error message.
     public: std::string Message() const;
 
-    /// \brief Get the XPath-like trace that is associated with this error.
-    /// \return Returns the XPath-like trace that this error is related to,
-    /// nullopt otherwise.
-    public: std::optional<std::string> XmlPath() const;
-
     /// \brief Get the file path that is associated with this error.
     /// \return Returns the path of the file that this error is related to,
     /// nullopt otherwise.
@@ -207,6 +191,16 @@ namespace sdf
     /// \brief Get the line number associated with this error.
     /// \return Returns the line number. nullopt otherwise.
     public: std::optional<int> LineNumber() const;
+
+    /// \brief Get the XPath-like trace that is associated with this error.
+    /// \return Returns the XPath-like trace that this error is related to,
+    /// nullopt otherwise.
+    public: std::optional<std::string> XmlPath() const;
+
+    /// \brief Sets the XML path that is associated with this error.
+    /// \param[in] _xmlPath The XML path that is related to this error. (e.g.
+    /// /sdf/world[@name="default"]/model[@name="robot1"]/link[@name="link"])
+    public: void SetXmlPath(const std::string &_xmlPath);
 
     /// \brief Safe bool conversion.
     /// \return True if this Error's Code() != NONE. In otherwords, this is

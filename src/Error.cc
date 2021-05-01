@@ -52,34 +52,21 @@ Error::Error(const ErrorCode _code, const std::string &_message)
 
 /////////////////////////////////////////////////
 Error::Error(const ErrorCode _code, const std::string &_message,
-             const std::string &_xmlPath)
+             const std::string &_filePath)
   : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->code = _code;
   this->dataPtr->message = _message;
-  this->dataPtr->xmlPath = _xmlPath;
-}
-
-/////////////////////////////////////////////////
-Error::Error(const ErrorCode _code, const std::string &_message,
-             const std::string &_xmlPath, const std::string &_filePath)
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
-{
-  this->dataPtr->code = _code;
-  this->dataPtr->message = _message;
-  this->dataPtr->xmlPath = _xmlPath;
   this->dataPtr->filePath = _filePath;
 }
 
 /////////////////////////////////////////////////
 Error::Error(const ErrorCode _code, const std::string &_message,
-             const std::string &_xmlPath, const std::string &_filePath,
-             int _lineNumber)
+             const std::string &_filePath, int _lineNumber)
   : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->code = _code;
   this->dataPtr->message = _message;
-  this->dataPtr->xmlPath = _xmlPath;
   this->dataPtr->filePath = _filePath;
   this->dataPtr->lineNumber = _lineNumber;
 }
@@ -97,12 +84,6 @@ std::string Error::Message() const
 }
 
 /////////////////////////////////////////////////
-std::optional<std::string> Error::XmlPath() const
-{
-  return this->dataPtr->xmlPath;
-}
-
-/////////////////////////////////////////////////
 std::optional<std::string> Error::FilePath() const
 {
   return this->dataPtr->filePath;
@@ -112,6 +93,18 @@ std::optional<std::string> Error::FilePath() const
 std::optional<int> Error::LineNumber() const
 {
   return this->dataPtr->lineNumber;
+}
+
+/////////////////////////////////////////////////
+std::optional<std::string> Error::XmlPath() const
+{
+  return this->dataPtr->xmlPath;
+}
+
+/////////////////////////////////////////////////
+void Error::SetXmlPath(const std::string &_xmlPath)
+{
+  this->dataPtr->xmlPath = _xmlPath;
 }
 
 /////////////////////////////////////////////////

@@ -127,14 +127,14 @@ TEST(DOMUtils, ReservedNames)
 TEST(PolicyUtils, EnforcementPolicyErrors)
 {
   sdf::Errors errors;
-  const std::string emptyXmlPath = "/sdf/model";
   const std::string emptyFilePath = "Empty/file/path";
   sdf::Error error(
       sdf::ErrorCode::FILE_READ,
       "Unable to read a file",
-      emptyXmlPath,
       emptyFilePath,
       10);
+  const std::string emptyXmlPath = "/sdf/model";
+  error.SetXmlPath(emptyXmlPath);
   ASSERT_EQ(error, true);
   ASSERT_TRUE(errors.empty());
 
