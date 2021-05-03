@@ -167,6 +167,7 @@ ElementPtr Element::Clone() const
   clone->dataPtr->includeFilename = this->dataPtr->includeFilename;
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
   clone->dataPtr->path = this->dataPtr->path;
+  clone->dataPtr->lineNumber = this->dataPtr->lineNumber;
   clone->dataPtr->xmlPath = this->dataPtr->xmlPath;
   clone->dataPtr->originalVersion = this->dataPtr->originalVersion;
 
@@ -215,6 +216,7 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->referenceSDF = _elem->ReferenceSDF();
   this->dataPtr->originalVersion = _elem->OriginalVersion();
   this->dataPtr->path = _elem->FilePath();
+  this->dataPtr->lineNumber = _elem->LineNumber();
   this->dataPtr->xmlPath = _elem->XmlPath();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
@@ -869,6 +871,7 @@ void Element::Clear()
   this->ClearElements();
   this->dataPtr->originalVersion.clear();
   this->dataPtr->path.clear();
+  this->dataPtr->lineNumber = std::nullopt;
   this->dataPtr->xmlPath.clear();
 }
 
@@ -975,6 +978,18 @@ void Element::SetFilePath(const std::string &_path)
 const std::string &Element::FilePath() const
 {
   return this->dataPtr->path;
+}
+
+/////////////////////////////////////////////////
+void Element::SetLineNumber(int _lineNumber)
+{
+  this->dataPtr->lineNumber = _lineNumber;
+}
+
+/////////////////////////////////////////////////
+std::optional<int> Element::LineNumber() const
+{
+  return this->dataPtr->lineNumber;
 }
 
 /////////////////////////////////////////////////

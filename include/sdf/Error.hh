@@ -183,7 +183,7 @@ namespace sdf
     /// \return Error message.
     public: std::string Message() const;
 
-    /// \brief Get the file path that is associated with this error.
+    /// \brief Get the file path associated with this error.
     /// \return Returns the path of the file that this error is related to,
     /// nullopt otherwise.
     public: std::optional<std::string> FilePath() const;

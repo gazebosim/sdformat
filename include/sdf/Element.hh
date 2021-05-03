@@ -413,6 +413,15 @@ namespace sdf
     /// \return Full path to SDF document.
     public: const std::string &FilePath() const;
 
+    /// \brief Set the line number of this element within the SDF document.
+    /// \param[in] _lineNumber Line number of element.
+    public: void SetLineNumber(int _lineNumber);
+
+    /// \brief Get the line number of this element within the SDF document.
+    /// \return Line number of this element if it has been set, nullopt
+    /// otherwise.
+    public: std::optional<int> LineNumber() const;
+
     /// \brief Set the XML path of this element.
     /// \param[in] _path Full XML path to the SDF element. (e.g.
     /// /sdf/world[@name="default"]/model[@name="robot1"]/link[@name="link"])
@@ -539,6 +548,9 @@ namespace sdf
 
     /// \brief Path to file where this element came from
     public: std::string path;
+
+    /// \brief Line number in file where this element came from
+    public: std::optional<int> lineNumber;
 
     /// \brief XML path of this element.
     public: std::string xmlPath;
