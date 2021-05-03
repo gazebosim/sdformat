@@ -945,7 +945,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
   std::string sourcePath = _source;
   if (_source == kSdfStringSource || _source == kUrdfStringSource)
     sourcePath = "<" + _source + ">";
-  
+
   // Check if the element pointer is deprecated.
   if (_sdf->GetRequired() == "-1")
   {
