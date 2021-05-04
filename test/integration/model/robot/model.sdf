@@ -98,8 +98,8 @@
           </clip>
         </camera>
         <always_on>1</always_on>
-        <update_rate>30</update_rate>
         <visualize>true</visualize>
+        <update_rate>30</update_rate>
         <topic>chassis/camera</topic>
       </sensor>
 
@@ -125,7 +125,21 @@
           <diffuse>1 0 0 1</diffuse>
           <specular>1 0 0 1</specular>
         </material>
+        <transparency>0.5</transparency>
+        <cast_shadows>1</cast_shadows>
+        <plugin name="top_plugin" filename="/path/to/plugin"/>
+        <plugin name="top_plugin2" filename="/path/to/plugin"/>
+        <plugin name="top_plugin3" filename="/path/to/plugin"/>
       </visual>
+
+      <collision name="camera_collision">
+        <pose>-0.2 0 0.3 0 0 3.14</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.1 0.1</size>
+          </box>
+        </geometry>
+      </collision>
 
       <visual name="camera_visual">
         <pose>-0.2 0 0.3 0 0 3.14</pose>
@@ -143,6 +157,7 @@
           <ambient>0 1 0 1</ambient>
           <diffuse>0 1 0 1</diffuse>
           <specular>0.5 0.5 0.5 1</specular>
+          <lighting>1</lighting>
         </material>
       </visual>
 

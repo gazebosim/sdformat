@@ -70,7 +70,18 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
 
     std::string actionStr;
     if (childElemXml->Attribute("action"))
+    {
       actionStr = std::string(childElemXml->Attribute("action"));
+
+      if (!isValidAction(actionStr))
+      {
+        _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+          "Action [" + actionStr + "] is not a valid action. Skipping "
+          "element modification:\n" + ElementToString(childElemXml)
+        });
+        continue;
+      }
+    }
 
     // get element pointer to specified element using element identifier
     ElementPtr elem = getElementById(_includeSDF, childElemXml->Name(),
@@ -132,8 +143,18 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     {
       add(childElemXml, elem, _errors, elemIdAttr);
     }
+    else if (actionStr == "modify")
+    {
+    }
+    else if (actionStr == "remove")
+    {
+      remove(childElemXml, elem, _errors);
+    }
+    else if (actionStr == "replace")
+    {
+    }
 
-    // TODO(jenn) element modifications: modify, remove, replace
+    // TODO(jenn) element modifications: modify, replace
   }
 }
 
@@ -217,6 +238,51 @@ int64_t findPrefixLastIndex(const std::string &_elemId,
 }
 
 //////////////////////////////////////////////////
+bool isValidAction(const std::string &_action)
+{
+  return (_action == "add" || _action == "modify"
+          || _action == "remove" || _action == "replace");
+}
+
+//////////////////////////////////////////////////
+ElementPtr getElementByName(const ElementPtr _elem,
+                            const tinyxml2::XMLElement *_xml)
+{
+  std::string elemName = _xml->Name();
+
+  if (!_elem->HasElement(elemName))
+    return nullptr;
+
+  ElementPtr elem = _elem->GetElement(elemName);
+  if (_xml->Attribute("name"))
+  {
+    while (elem != nullptr)
+    {
+      if (elem->HasAttribute("name") &&
+          elem->Get<std::string>("name")
+            == std::string(_xml->Attribute("name")))
+      {
+        return elem;
+      }
+
+      elem = elem->GetNextElement(elemName);
+    }
+
+    // if reached here then element was not found
+    elem = nullptr;
+  }
+  else if (elem->HasAttribute("name"))
+  {
+    sdfwarn << "The original element [" << elemName << "] contains the "
+            << "attribute 'name' but none was provided in the element modifier."
+            << " The assumed element to be modified is: <" << elemName
+            << " name='" << elem->Get<std::string>("name") << "'>\n";
+  }
+
+  return elem;
+}
+
+//////////////////////////////////////////////////
 void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
                                   ElementPtr _elem, Errors &_errors)
 {
@@ -246,13 +312,47 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
       _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
         "Missing an action attribute. Skipping child element modification "
         "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
-        + std::string(_childrenXml->Attribute("element_id")) + "'>: "
+        + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
         + ElementToString(xmlChild)
       });
       continue;
     }
 
+    std::string actionStr = xmlChild->Attribute("action");
+    if (!isValidAction(actionStr))
+    {
+      _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+        "Action [" + actionStr + "] is not a valid action. Skipping "
+        "child element modification with parent <"
+        + std::string(_childrenXml->Name()) + " element_id='"
+        + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
+        + ElementToString(xmlChild)
+      });
 
+      continue;
+    }
+
+    if (actionStr == "remove")
+    {
+      ElementPtr e = getElementByName(_elem, xmlChild);
+      if (e == nullptr)
+      {
+        _errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "Could not find element. Skipping child element removal "
+          "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
+          + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
+          + ElementToString(xmlChild)
+        });
+      }
+      else
+      {
+        remove(xmlChild, e, _errors);
+      }
+
+      continue;
+    }
+
+    // get child element description (used for actions: add, modify(?), replace)
     bool useParentDesc = false;
     std::string elemName = xmlChild->Name();
 
@@ -270,7 +370,8 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
       else
       {
         _errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Element [" + elemName + "] is not a defined SDF element. Skipping "
+          "Element [" + elemName + "] is not a defined SDF element or is an "
+          "invalid child specification. Skipping "
           "child element modification with parent <"
           + std::string(_childrenXml->Name()) + " element_id='"
           + std::string(_childrenXml->Attribute("element_id")) + "'>: "
@@ -280,9 +381,6 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
       }
     }
 
-    std::string actionStr = xmlChild->Attribute("action");
-
-    // get child element description
     ElementPtr elemChild;
     if (useParentDesc)
       elemChild = elemDesc;
@@ -304,8 +402,14 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
     {
       _elem->InsertElement(elemChild);
     }
+    else if (actionStr == "modify")
+    {
+    }
+    else if (actionStr == "replace")
+    {
+    }
 
-    // TODO(jenn) finish (direct children only): modify, remove, replace
+    // TODO(jenn) finish (direct children only): modify, replace
   }
 }
 
@@ -341,6 +445,43 @@ void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem,
       "Unable to convert XML to SDF. Skipping element modification: "
       + ElementToString(_childXml)
     });
+  }
+}
+
+//////////////////////////////////////////////////
+void remove(const tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors)
+{
+  if (_xml->NoChildren())
+  {
+    _elem->RemoveFromParent();
+  }
+  else
+  {
+    // iterate through children of _xml
+    ElementPtr elemChild = nullptr;
+    const tinyxml2::XMLElement *xmlChild = nullptr;
+    for (xmlChild = _xml->FirstChildElement();
+         xmlChild;
+         xmlChild = xmlChild->NextSiblingElement())
+    {
+      elemChild = getElementByName(_elem, xmlChild);
+      if (elemChild == nullptr)
+      {
+        const tinyxml2::XMLElement *xmlParent = _xml->Parent()->ToElement();
+
+        _errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "Could not find element. Skipping child element removal from <"
+          + std::string(xmlParent->Name()) + " element_id='"
+          + std::string(xmlParent->Attribute("element_id")) + "'> with parent <"
+          + std::string(_xml->Name()) + ">:\n"
+          + ElementToString(xmlChild)
+        });
+
+        continue;
+      }
+
+      elemChild->RemoveFromParent();
+    }
   }
 }
 }

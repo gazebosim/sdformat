@@ -9,6 +9,10 @@
         <experimental:params>
           <visual element_id="chassis::lidar_visual" action="remove"/>
           <sensor element_id="chassis::lidar" action="remove"/>
+          <sensor element_id="chassis::camera" action="remove">
+            <always_on/>
+            <visualize/>
+          </sensor>
 
           <visual element_id="chassis::camera_visual" action="add">
             <pose>-1.06 0 0 0 0 3.14</pose>
@@ -55,11 +59,18 @@
           <visual element_id="top::camera_visual">
             <transparency action="add">0.5</transparency>
             <plugin name="some_visual_plugin" filename="/path/to/plugin" action="add"/>
+
+            <material action="remove">
+              <specular/>
+              <lighting/>
+            </material>
+
             <geometry action="replace">
               <sphere>
                 <radius>0.05</radius>
               </sphere>
             </geometry>
+
             <material action="modify">
               <ambient>0 0 1 1</ambient>
               <diffuse>0 0 1 1</diffuse>
@@ -77,6 +88,16 @@
                 </geometry>
               </visual>
             </link>
+
+            <collision name="camera_collision" action="remove"/>
+
+            <visual name="top_visual" action="remove">
+              <transparency/>
+              <cast_shadows/>
+              <plugin/>
+              <plugin name="top_plugin3"/>
+            </visual>
+
           </link>
 
         </experimental:params>

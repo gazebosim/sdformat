@@ -63,6 +63,24 @@ namespace sdf
                                 const int64_t &_startIdx,
                                 const std::string &_ref);
 
+    /// \brief Checks if the string is a valid action
+    /// \param[in] _action The action
+    /// \return True if the action is one of the following: add, modify, remove,
+    /// or replace
+    bool isValidAction(const std::string &_action);
+
+    /// \brief Retrieves the sdf element that matches the xml element by element
+    /// name and attribute 'name' if it exists (if the attribute 'name' does
+    /// not exist in the xml then the element is retrieved using only the
+    /// element name)
+    /// \param[in] _elem The sdf (parent) element used to find the matching
+    /// child element described in xml
+    /// \param[in] _xml The xml element to find
+    /// \return ElementPtr to the child element matching the xml, nullptr if
+    /// element could not be found
+    ElementPtr getElementByName(const ElementPtr _elem,
+                                const tinyxml2::XMLElement *_xml);
+
     /// \brief Handles individual actions of children in _childrenXml
     /// \param[in] _childrenXml Pointer to xml element
     /// \param[out] _elem The sdf element to apply actions
@@ -80,6 +98,14 @@ namespace sdf
     /// \param[in] _elemNameAttr The name attribute for the new element
     void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem,
              Errors &_errors, const std::string &_elemNameAttr);
+
+    /// \brief Removes an element specified in xml
+    /// \param[in] _xml Pointer to the xml element(s) to be removed from _elem
+    /// \param[out] _elem The element from the included model to remove
+    /// elements from
+    /// \param[out] _errors Captures errors found during parsing
+    void remove(const tinyxml2::XMLElement *_xml, ElementPtr _elem,
+                Errors &_errors);
   }
 }
 #endif
