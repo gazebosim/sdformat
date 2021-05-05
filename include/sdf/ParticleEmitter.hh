@@ -284,7 +284,7 @@ namespace sdf
 
     /// \brief Set the particle scatter ratio. This is used to determine the
     /// ratio of particles that will be detected by sensors.
-    /// \param[in] _ratio Scatter raito. This value should be > 0.
+    /// \param[in] _ratio Scatter ratio.
     public: void SetScatterRatio(float _ratio);
 
     /// \brief Get the pose of the particle emitter. This is the pose of the
