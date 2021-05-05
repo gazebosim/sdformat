@@ -1156,7 +1156,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         // If the file is not an SDFormat file, it is assumed that it will
         // handled by a custom parser, so fall through and add the include
         // element into _sdf.
-        if (sdf::isSdfFile(filename))
+        if (sdf::isSdfFile(filename) || _config.CustomModelParsers().empty())
         {
           // NOTE: sdf::init is an expensive call. For performance reason,
           // a new sdf pointer is created here by cloning a fresh sdf template
