@@ -12,9 +12,32 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## libsdformat 11.0.0 to 11.x.x
+
+### Additions
+
+1. **sdf/Console.hh** Add functions to retrieve message stream objects. These 
+   can be useful for redirecting the console output to other streams.
+    + ConsoleStream &GetMsgStream()
+    + ConsoleStream &GetLogStream()
+
+1. **sdf/ParserConfig.hh**:
+    + void SetDeprecatedElementsPolicy(EnforcementPolicy _policy)
+    + void ResetDeprecatedElementsPolicy()
+    + EnforcementPolicy DeprecatedElementsPolicy() const
+
+1. **test/test_utils.hh**:
+    + ScopeExit: A utility struct that calls a function when going out of scope.
+    + RedirectConsoleStream: A utility class used for redirecting the output of 
+      sdferr, sdfwarn, etc to a more convenient stream object like a 
+      std::stringstream for testing purposes.
+
 ## libsdformat 10.x to 11.0
 
 ### Additions
+
+1. **sdf/ParserConfig.hh** A class that contains configuration options for the 
+   libsdformat parser.
 
 1. + Depend on ignition-utils1 for the ImplPtr and UniqueImplPtr.
    + [Pull request 474](https://github.com/osrf/sdformat/pull/474)
