@@ -73,15 +73,15 @@ TEST(Element, Required)
 }
 
 /////////////////////////////////////////////////
-TEST(Element, SetSet)
+TEST(Element, SetIsExplicitlySet)
 {
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
 
-  ASSERT_TRUE(elem->GetSet());
+  ASSERT_TRUE(elem->GetIsExplicitlySet());
 
-  elem->SetSet(false);
+  elem->SetIsExplicitlySet(false);
 
-  ASSERT_FALSE(elem->GetSet());
+  ASSERT_FALSE(elem->GetIsExplicitlySet());
 }
 
 /////////////////////////////////////////////////

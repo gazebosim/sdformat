@@ -112,13 +112,13 @@ namespace sdf
     /// \sa Element::SetRequired
     public: const std::string &GetRequired() const;
 
-    /// \brief Set if the element was set or default
+    /// \brief Set if the element and it's child Elments are set or default
     /// \param[in] _value True if the element is set
-    public: void SetSet(const bool _value);
+    public: void SetIsExplicitlySet(const bool _value);
 
-    /// \brief Return true if the element has been set
+    /// \brief Return true if the element has been explicitly set
     /// \return True if the element has been set
-    public: bool GetSet() const;
+    public: bool GetIsExplicitlySet() const;
 
     /// \brief Set whether this element should copy its child elements
     /// during parsing.
@@ -452,7 +452,7 @@ namespace sdf
     public: std::string required;
 
     /// \brief True if the element is set.
-    public: bool set;
+    public: bool isExplicitlySet;
 
     /// \brief Element description
     public: std::string description;

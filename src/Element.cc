@@ -31,7 +31,7 @@ Element::Element()
 {
   this->dataPtr->copyChildren = false;
   this->dataPtr->referenceSDF = "";
-  this->dataPtr->set = true;
+  this->dataPtr->isExplicitlySet = true;
 }
 
 /////////////////////////////////////////////////
@@ -95,15 +95,28 @@ void Element::SetCopyChildren(bool _value)
 }
 
 /////////////////////////////////////////////////
-void Element::SetSet(const bool _value)
+void Element::SetIsExplicitlySet(const bool _value)
 {
-  this->dataPtr->set = _value;
+  this->dataPtr->isExplicitlySet = _value;
+
+  ElementPtr element_ptr = this->GetFirstElement();
+  if (element_ptr != nullptr)
+  {
+    element_ptr->SetIsExplicitlySet(_value);
+  }
+
+  element_ptr = this->GetNextElement();
+  if (element_ptr != nullptr)
+  {
+    element_ptr->SetIsExplicitlySet(_value);
+  }
+
 }
 
 /////////////////////////////////////////////////
-bool Element::GetSet() const
+bool Element::GetIsExplicitlySet() const
 {
-  return this->dataPtr->set;
+  return this->dataPtr->isExplicitlySet;
 }
 
 /////////////////////////////////////////////////
@@ -168,7 +181,7 @@ ElementPtr Element::Clone() const
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
   clone->dataPtr->path = this->dataPtr->path;
   clone->dataPtr->originalVersion = this->dataPtr->originalVersion;
-  clone->dataPtr->set - this->dataPtr->set;
+  clone->dataPtr->isExplicitlySet - this->dataPtr->isExplicitlySet;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
@@ -210,7 +223,7 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->referenceSDF = _elem->ReferenceSDF();
   this->dataPtr->originalVersion = _elem->OriginalVersion();
   this->dataPtr->path = _elem->FilePath();
-  this->dataPtr->set = _elem->GetSet();
+  this->dataPtr->isExplicitlySet = _elem->GetIsExplicitlySet();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
        iter != _elem->dataPtr->attributes.end(); ++iter)

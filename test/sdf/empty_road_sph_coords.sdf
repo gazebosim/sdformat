@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <world name="default">
+    <road name="empty_road"/>
+     <spherical_coordinates/>
+  </world>
+</sdf>
