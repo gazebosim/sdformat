@@ -37,6 +37,7 @@ TEST(IsExplicitlySet, EmptyRoadSphCoords)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(test_file);
+  EXPECT_TRUE(errors.empty());
 
   sdf::ElementPtr element_ptr = root.Element();
   EXPECT_TRUE(root.Element()->GetIsExplicitlySet());
@@ -115,6 +116,7 @@ TEST(IsExplicitlySet, EmptyAxis)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(test_file);
+  EXPECT_TRUE(errors.empty());
 
   sdf::ElementPtr element_ptr = root.Element();
   EXPECT_TRUE(element_ptr->GetIsExplicitlySet());
