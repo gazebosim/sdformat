@@ -10,7 +10,7 @@
           <visual element_id="chassis::lidar_visual" action="remove"/>
           <sensor element_id="chassis::lidar" action="remove"/>
 
-          <visual element_id="chassis::camera_visual" action="add">
+          <visual element_id="chassis" name="camera_visual" action="add">
             <pose>-1.06 0 0 0 0 3.14</pose>
             <geometry>
               <box>
@@ -19,7 +19,7 @@
             </geometry>
           </visual>
 
-          <link element_id="new_link" action="add">
+          <link element_id="" name="new_link" action="add">
             <pose>0 0 0 0 0 0</pose>
             <sensor type="camera" name="camera_sensor">
               <camera>
@@ -39,7 +39,7 @@
             </sensor>
           </link>
 
-          <visual element_id="nested_links::link1::link2::new_visual" action="add">
+          <visual element_id="nested_links::link1::link2" name="new_visual" action="add">
             <geometry>
               <box>
                 <size>0.1 0.1 0.1</size>
