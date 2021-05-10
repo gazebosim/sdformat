@@ -576,6 +576,47 @@ TEST(Element, ToStringInclude)
 }
 
 /////////////////////////////////////////////////
+TEST(Element, ToStringDefaultElements)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+  elem->SetParent(parent);
+  parent->InsertElement(elem);
+  sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
+  elem2->SetParent(parent);
+  parent->InsertElement(elem2);
+
+  std::ostringstream stream;
+  stream
+    << "<>\n"
+    << "  </>\n"
+    << "  </>\n"
+    << "</>\n";
+
+  EXPECT_EQ(parent->ToString(""), stream.str());
+  EXPECT_EQ(parent->ToString("", false), stream.str());
+  EXPECT_EQ(parent->ToString("", true), stream.str());
+
+  elem->SetExplicitlySetInFile(false);
+
+  std::ostringstream stream2;
+  stream2
+    << "<>\n"
+    << "  </>\n"
+    << "</>\n";
+
+  EXPECT_EQ(parent->ToString(""), stream2.str());
+  EXPECT_EQ(parent->ToString("", false), stream2.str());
+  EXPECT_EQ(parent->ToString("", true), stream.str());
+
+  parent->SetExplicitlySetInFile(false);
+
+  EXPECT_EQ(parent->ToString(""), "");
+  EXPECT_EQ(parent->ToString("", false), "");
+  EXPECT_EQ(parent->ToString("", true), stream.str());
+}
+
+/////////////////////////////////////////////////
 TEST(Element, DocLeftPane)
 {
   sdf::Element elem;
