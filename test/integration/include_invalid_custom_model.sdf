@@ -53,6 +53,9 @@
           <!-- missing 'name' attribute -->
           <plugin element_id="chassis" action="add"/>
 
+          <!-- 'name' attribute is empty -->
+          <plugin element_id="chassis" name="" action="add"/>
+
           <!-- incorrect schema (missing required 'filename' attribute) -->
           <plugin element_id="chassis" name="some_plugin" action="add"/>
         </experimental:params>

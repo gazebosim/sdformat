@@ -77,11 +77,22 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
 
     if (actionStr == "add")
     {
+      // checks name attribute exists
       if (!childElemXml->Attribute("name"))
       {
         _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
           "Element to be added is missing a 'name' attribute. "
           "Skipping element addition:\n"
+          + ElementToString(childElemXml)
+        });
+        continue;
+      }
+
+      // checks name attribute nonempty
+      if (!strlen(childElemXml->Attribute("name")))
+      {
+        _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+          "The 'name' attribute can not be empty. Skipping element addition:\n"
           + ElementToString(childElemXml)
         });
         continue;
@@ -116,8 +127,6 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
                               elemIdAttr,
                               true);
       }
-
-      elemIdAttr = attrName;
     }
     else
     {
