@@ -77,9 +77,8 @@ namespace sdf
     /// \param[out] _elem The element from the included model to add the new
     /// element to
     /// \param[out] _errors Captures errors found during parsing
-    /// \param[in] _elemNameAttr The name attribute for the new element
     void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem,
-             Errors &_errors, const std::string &_elemNameAttr);
+             Errors &_errors);
   }
 }
 #endif

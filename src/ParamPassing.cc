@@ -144,7 +144,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     }
     else if (actionStr == "add")
     {
-      add(childElemXml, elem, _errors, elemIdAttr);
+      add(childElemXml, elem, _errors);
     }
 
     // TODO(jenn) element modifications: modify, remove, replace
@@ -325,8 +325,7 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
 
 
 //////////////////////////////////////////////////
-void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem,
-         Errors &_errors, const std::string &_elemNameAttr)
+void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem, Errors &_errors)
 {
   ElementPtr newElem = std::make_shared<Element>();
   std::string filename = std::string(_childXml->Name()) + ".sdf";
