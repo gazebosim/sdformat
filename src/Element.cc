@@ -31,7 +31,7 @@ Element::Element()
 {
   this->dataPtr->copyChildren = false;
   this->dataPtr->referenceSDF = "";
-  this->dataPtr->isExplicitlySet = true;
+  this->dataPtr->explicitlySetInFile = true;
 }
 
 /////////////////////////////////////////////////
@@ -95,28 +95,28 @@ void Element::SetCopyChildren(bool _value)
 }
 
 /////////////////////////////////////////////////
-void Element::SetIsExplicitlySet(const bool _value)
+void Element::SetExplicitlySetInFile(const bool _value)
 {
-  this->dataPtr->isExplicitlySet = _value;
+  this->dataPtr->explicitlySetInFile = _value;
 
   ElementPtr element_ptr = this->GetFirstElement();
   if (element_ptr != nullptr)
   {
-    element_ptr->SetIsExplicitlySet(_value);
+    element_ptr->SetExplicitlySetInFile(_value);
   }
 
   element_ptr = this->GetNextElement();
   if (element_ptr != nullptr)
   {
-    element_ptr->SetIsExplicitlySet(_value);
+    element_ptr->SetExplicitlySetInFile(_value);
   }
 
 }
 
 /////////////////////////////////////////////////
-bool Element::GetIsExplicitlySet() const
+bool Element::GetExplicitlySetInFile() const
 {
-  return this->dataPtr->isExplicitlySet;
+  return this->dataPtr->explicitlySetInFile;
 }
 
 /////////////////////////////////////////////////
@@ -181,7 +181,7 @@ ElementPtr Element::Clone() const
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
   clone->dataPtr->path = this->dataPtr->path;
   clone->dataPtr->originalVersion = this->dataPtr->originalVersion;
-  clone->dataPtr->isExplicitlySet = this->dataPtr->isExplicitlySet;
+  clone->dataPtr->explicitlySetInFile = this->dataPtr->explicitlySetInFile;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
@@ -223,7 +223,7 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->referenceSDF = _elem->ReferenceSDF();
   this->dataPtr->originalVersion = _elem->OriginalVersion();
   this->dataPtr->path = _elem->FilePath();
-  this->dataPtr->isExplicitlySet = _elem->GetIsExplicitlySet();
+  this->dataPtr->explicitlySetInFile = _elem->GetExplicitlySetInFile();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
        iter != _elem->dataPtr->attributes.end(); ++iter)

@@ -1132,7 +1132,7 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
           {
             // Add default element
             ElementPtr default_element = _sdf->AddElement(elemDesc->GetName());
-            default_element->SetIsExplicitlySet(false);
+            default_element->SetExplicitlySetInFile(false);
           }
         }
       }

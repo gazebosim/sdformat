@@ -29,7 +29,7 @@
 #include "test_config.h"
 
 //////////////////////////////////////////////////
-TEST(IsExplicitlySet, EmptyRoadSphCoords)
+TEST(ExplicitlySetInFile, EmptyRoadSphCoords)
 {
   const std::string test_file =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -40,75 +40,75 @@ TEST(IsExplicitlySet, EmptyRoadSphCoords)
   EXPECT_TRUE(errors.empty());
 
   sdf::ElementPtr element_ptr = root.Element();
-  EXPECT_TRUE(root.Element()->GetIsExplicitlySet());
+  EXPECT_TRUE(root.Element()->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetFirstElement();
-  EXPECT_TRUE(element_ptr->GetIsExplicitlySet());
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetFirstElement();
-  EXPECT_TRUE(element_ptr->GetIsExplicitlySet());
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
 
   sdf::ElementPtr road_ptr = element_ptr->GetFirstElement();
-  EXPECT_FALSE(road_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(road_ptr->GetExplicitlySetInFile());
 
   road_ptr = road_ptr->GetNextElement();
-  EXPECT_FALSE(road_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(road_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetNextElement();
-  EXPECT_TRUE(element_ptr->GetIsExplicitlySet());
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
 
   sdf::ElementPtr spherical_coords_ptr = element_ptr->GetFirstElement();
-  EXPECT_FALSE(spherical_coords_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
 
   spherical_coords_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(spherical_coords_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
 
   spherical_coords_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(spherical_coords_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
 
   spherical_coords_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(spherical_coords_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
 
   spherical_coords_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(spherical_coords_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
   
   element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
 
   sdf::ElementPtr physics_ptr = element_ptr->GetFirstElement();
-  EXPECT_FALSE(physics_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(physics_ptr->GetExplicitlySetInFile());
 
   physics_ptr = physics_ptr->GetNextElement();
-  EXPECT_FALSE(physics_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(physics_ptr->GetExplicitlySetInFile());
 
   physics_ptr = physics_ptr->GetNextElement();
-  EXPECT_FALSE(physics_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(physics_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
 
   sdf::ElementPtr scene_ptr = element_ptr->GetFirstElement();
-  EXPECT_FALSE(scene_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(scene_ptr->GetExplicitlySetInFile());
 
   scene_ptr = scene_ptr->GetNextElement();
-  EXPECT_FALSE(scene_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(scene_ptr->GetExplicitlySetInFile());
 
   scene_ptr = scene_ptr->GetNextElement();
-  EXPECT_FALSE(scene_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(scene_ptr->GetExplicitlySetInFile());
 
 }
 
 //////////////////////////////////////////////////
-TEST(IsExplicitlySet, EmptyAxis)
+TEST(ExplicitlySetInFile, EmptyAxis)
 {
   const std::string test_file =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
@@ -119,39 +119,39 @@ TEST(IsExplicitlySet, EmptyAxis)
   EXPECT_TRUE(errors.empty());
 
   sdf::ElementPtr element_ptr = root.Element();
-  EXPECT_TRUE(element_ptr->GetIsExplicitlySet());
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetFirstElement();
-  EXPECT_TRUE(element_ptr->GetIsExplicitlySet());
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetFirstElement();
-  EXPECT_TRUE(element_ptr->GetIsExplicitlySet());
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
   
   element_ptr = element_ptr->GetNextElement();
-  EXPECT_TRUE(element_ptr->GetIsExplicitlySet());
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetNextElement();
-  EXPECT_TRUE(element_ptr->GetIsExplicitlySet());
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetFirstElement();
-  EXPECT_TRUE(element_ptr->GetIsExplicitlySet());
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
   
   element_ptr = element_ptr->GetNextElement();
-  EXPECT_TRUE(element_ptr->GetIsExplicitlySet());
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetNextElement();
-  EXPECT_TRUE(element_ptr->GetIsExplicitlySet());
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetFirstElement();
-  EXPECT_FALSE(element_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetFirstElement();
-  EXPECT_FALSE(element_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetIsExplicitlySet());
+  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
 
 }

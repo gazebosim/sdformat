@@ -73,28 +73,28 @@ TEST(Element, Required)
 }
 
 /////////////////////////////////////////////////
-TEST(Element, SetIsExplicitlySet)
+TEST(Element, SetExplicitlySetInFile)
 {
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
 
-  ASSERT_TRUE(elem->GetIsExplicitlySet());
+  ASSERT_TRUE(elem->GetExplicitlySetInFile());
 
-  elem->SetIsExplicitlySet(false);
+  elem->SetExplicitlySetInFile(false);
 
-  ASSERT_FALSE(elem->GetIsExplicitlySet());
+  ASSERT_FALSE(elem->GetExplicitlySetInFile());
 
-  elem->SetIsExplicitlySet(true);
+  elem->SetExplicitlySetInFile(true);
 
-  ASSERT_TRUE(elem->GetIsExplicitlySet());
+  ASSERT_TRUE(elem->GetExplicitlySetInFile());
 
   //the childs of the element should also be set to the same value
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
   child->SetParent(elem);
   elem->InsertElement(child);
-  elem->SetIsExplicitlySet(false);
+  elem->SetExplicitlySetInFile(false);
 
-  ASSERT_FALSE(elem->GetIsExplicitlySet());
-  ASSERT_FALSE(elem->GetFirstElement()->GetIsExplicitlySet());
+  ASSERT_FALSE(elem->GetExplicitlySetInFile());
+  ASSERT_FALSE(elem->GetFirstElement()->GetExplicitlySetInFile());
 }
 
 /////////////////////////////////////////////////
