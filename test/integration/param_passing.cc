@@ -76,7 +76,7 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   errors = root.Load(testFile);
   PrintErrors(errors);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(errors.size(), 17u);
+  ASSERT_EQ(errors.size(), 19u);
   // missing element_id attribute
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   // element does not exist in included model
@@ -96,20 +96,23 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   EXPECT_EQ(errors[8].Code(), sdf::ErrorCode::ELEMENT_INVALID);
   // not defined sdf element (where element_id is defined)
   EXPECT_EQ(errors[9].Code(), sdf::ErrorCode::ELEMENT_INVALID);
-  // incorrect schema (missing required attributes; where element_id defined)
+  // missing 'name' attribute where element_id is with action="add"
   EXPECT_EQ(errors[10].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
-  // missing attribute requirements
-  EXPECT_EQ(errors[11].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  // 'name' attribute is empty (where element_id is with action="add")
+  EXPECT_EQ(errors[11].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  // incorrect schema (missing required attributes; where element_id defined)
+  EXPECT_EQ(errors[12].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[13].Code(), sdf::ErrorCode::ELEMENT_INVALID);
   // invalid action
-  EXPECT_EQ(errors[12].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  EXPECT_EQ(errors[14].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
   // invalid child action
-  EXPECT_EQ(errors[13].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  EXPECT_EQ(errors[15].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
   // child element does not exist
-  EXPECT_EQ(errors[14].Code(), sdf::ErrorCode::ELEMENT_MISSING);
-  // child <box> (child of <geometry>) does not exist
-  EXPECT_EQ(errors[15].Code(), sdf::ErrorCode::ELEMENT_MISSING);
-  // child element (w/ name attribute) does not exist
   EXPECT_EQ(errors[16].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  // child <box> (child of <geometry>) does not exist
+  EXPECT_EQ(errors[17].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  // child element (w/ name attribute) does not exist
+  EXPECT_EQ(errors[18].Code(), sdf::ErrorCode::ELEMENT_MISSING);
 }
 
 /////////////////////////////////////////////////

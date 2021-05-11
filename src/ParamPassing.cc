@@ -84,11 +84,36 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     }
 
     // get element pointer to specified element using element identifier
-    ElementPtr elem = getElementById(_includeSDF, childElemXml->Name(),
-                          childElemId);
+    ElementPtr elem;
 
     if (actionStr == "add")
     {
+      // checks name attribute exists
+      if (!childElemXml->Attribute("name"))
+      {
+        _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+          "Element to be added is missing a 'name' attribute. "
+          "Skipping element addition:\n"
+          + ElementToString(childElemXml)
+        });
+        continue;
+      }
+
+      // checks name attribute nonempty
+      if (!strlen(childElemXml->Attribute("name")))
+      {
+        _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+          "The 'name' attribute can not be empty. Skipping element addition:\n"
+          + ElementToString(childElemXml)
+        });
+        continue;
+      }
+
+      std::string attrName = childElemXml->Attribute("name");
+
+      // check that elem doesn't already exist
+      elem  = getElementById(_includeSDF, childElemXml->Name(),
+                            elemIdAttr + "::" + attrName);
       if (elem != nullptr)
       {
         _errors.push_back({ErrorCode::DUPLICATE_NAME,
@@ -101,24 +126,22 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
         continue;
       }
 
-      if (found != std::string::npos)
+      if (elemIdAttr.empty())
       {
-        // +2 past double colons
-        elemIdAttr = elemIdAttr.substr(found+2);
-      }
-
-      if (!elemIdAttr.compare(childElemId))
-      {
-        // if equal add new element as direct child of included model
+        // add new element as direct child of included model
         elem = _includeSDF->Root()->GetFirstElement();
       }
       else
       {
-        // get parent element of childElemId.substr(found+2)
+        // get parent element of new element
         elem = getElementById(_includeSDF, "",
-                              std::string(childElemId).substr(0, found),
+                              elemIdAttr,
                               true);
       }
+    }
+    else
+    {
+      elem  = getElementById(_includeSDF, childElemXml->Name(), elemIdAttr);
     }
 
     if (elem == nullptr)
@@ -141,7 +164,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     }
     else if (actionStr == "add")
     {
-      add(childElemXml, elem, _errors, elemIdAttr);
+      add(childElemXml, elem, _errors);
     }
     else if (actionStr == "modify")
     {
@@ -415,8 +438,7 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
 
 
 //////////////////////////////////////////////////
-void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem,
-         Errors &_errors, const std::string &_elemNameAttr)
+void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem, Errors &_errors)
 {
   ElementPtr newElem = std::make_shared<Element>();
   std::string filename = std::string(_childXml->Name()) + ".sdf";
@@ -432,8 +454,6 @@ void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem,
     });
     return;
   }
-
-  newElem->GetAttribute("name")->Set(_elemNameAttr);
 
   if (readXml(_childXml, newElem, _errors))
   {

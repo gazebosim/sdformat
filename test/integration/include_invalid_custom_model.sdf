@@ -18,7 +18,7 @@
             </geometry>
           </visual>
           <!-- element already exists -->
-          <visual element_id="chassis::visual" action="add">
+          <visual element_id="chassis" name="visual" action="add">
             <geometry>
               <box>
                 <size>0.1 0.1 0.1</size>
@@ -26,7 +26,7 @@
             </geometry>
           </visual>
           <!-- parent of new element does not exist -->
-          <visual element_id="chassis::test::visual" action="add">
+          <visual element_id="chassis::test" name="visual" action="add">
             <geometry>
               <box>
                 <size>0.1 0.1 0.1</size>
@@ -34,7 +34,7 @@
             </geometry>
           </visual>
           <!-- missing name after :: -->
-          <link element_id="chassis::test::" action="add"/>
+          <link element_id="chassis::test::" name="foo" action="add"/>
 
           <visual element_id="top::camera_visual">
             <!-- missing action attribute -->
@@ -48,10 +48,16 @@
           </visual>
 
           <!-- not defined sdf element -->
-          <test element_id="chassis::new_elem" action="add"/>
+          <test element_id="chassis" name="new_elem" action="add"/>
 
-          <!-- missing attribute requirements -->
-          <plugin element_id="some_plugin" action="add"/>
+          <!-- missing 'name' attribute -->
+          <plugin element_id="chassis" action="add"/>
+
+          <!-- 'name' attribute is empty -->
+          <plugin element_id="chassis" name="" action="add"/>
+
+          <!-- incorrect schema (missing required 'filename' attribute) -->
+          <plugin element_id="chassis" name="some_plugin" action="add"/>
 
           <!-- invalid action -->
           <link element_id="top" action="test"/>
@@ -69,12 +75,10 @@
             </geometry>
           </collision>
 
-
           <link element_id="top">
             <!-- child element (w/ name attribute) does not exist -->
             <collision name="collision" action="remove"/>
           </link>
-
         </experimental:params>
       </include>
     </model>
