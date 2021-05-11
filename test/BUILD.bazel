@@ -34,9 +34,10 @@ cmake_configure_file(
 cc_library(
     name = "test_utils",
     srcs = [
+        "env.hh",
         "integration/toml_parser.hh",
         "test_config.h",
-        "env.hh",
+        "test_utils.hh",
     ],
     includes = [".", "integration"],
     visibility = IGNITION_VISIBILITY,

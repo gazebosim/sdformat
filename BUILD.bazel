@@ -21,7 +21,7 @@ PROJECT_NAME = "sdformat"
 
 SDF_MAJOR_VERSION = 11
 
-SDF_MINOR_VERSION = 0
+SDF_MINOR_VERSION = 1
 
 SDF_PATCH_VERSION = 0
 
@@ -87,6 +87,7 @@ cc_library(
         "src/urdf/urdf_parser/urdf_sensor.cpp",
         "src/urdf/urdf_parser/world.cpp",
     ],
+    copts = ["-Wno-unknown-pragmas"],
     hdrs = glob(
         ["src/urdf/**/*.h"],
     ),
@@ -104,7 +105,6 @@ cc_library(
         ".",
         "include",
     ],
-    copts = ["-Wno-unknown-pragmas"],
     deps = [
         "@tinyxml2",
         IGNITION_ROOT + "ign_math",
@@ -131,6 +131,7 @@ cc_binary(
         IGNITION_ROOT + "sdformat:sdf/1.7/1_6.convert",
         IGNITION_ROOT + "sdformat:sdf/1.8/1_7.convert",
         IGNITION_ROOT + "sdformat/test:sdf",
+        IGNITION_ROOT + "sdformat/test:integration",
     ],
     deps = [
         IGNITION_ROOT + "ign_math",
