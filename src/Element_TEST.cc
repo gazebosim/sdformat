@@ -82,6 +82,19 @@ TEST(Element, SetIsExplicitlySet)
   elem->SetIsExplicitlySet(false);
 
   ASSERT_FALSE(elem->GetIsExplicitlySet());
+
+  elem->SetIsExplicitlySet(true);
+
+  ASSERT_TRUE(elem->GetIsExplicitlySet());
+
+  //the childs of the element should also be set to the same value
+  sdf::ElementPtr child = std::make_shared<sdf::Element>();
+  child->SetParent(elem);
+  elem->InsertElement(child);
+  elem->SetIsExplicitlySet(false);
+
+  ASSERT_FALSE(elem->GetIsExplicitlySet());
+  ASSERT_FALSE(elem->GetFirstElement()->GetIsExplicitlySet());
 }
 
 /////////////////////////////////////////////////

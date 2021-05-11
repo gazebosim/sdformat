@@ -181,7 +181,7 @@ ElementPtr Element::Clone() const
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
   clone->dataPtr->path = this->dataPtr->path;
   clone->dataPtr->originalVersion = this->dataPtr->originalVersion;
-  clone->dataPtr->isExplicitlySet - this->dataPtr->isExplicitlySet;
+  clone->dataPtr->isExplicitlySet = this->dataPtr->isExplicitlySet;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
