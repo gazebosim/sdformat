@@ -342,6 +342,7 @@ TEST(Element, Clone)
   ASSERT_NE(newelem->GetFirstElement(), nullptr);
   ASSERT_EQ(newelem->GetElementDescriptionCount(), 1UL);
   ASSERT_EQ(newelem->GetAttributeCount(), 1UL);
+  ASSERT_TRUE(newelem->GetExplicitlySetInFile());
 }
 
 /////////////////////////////////////////////////
@@ -619,6 +620,7 @@ TEST(Element, Copy)
   ASSERT_EQ(param->GetDescription(), "val description");
 
   ASSERT_EQ(dest->GetAttributeCount(), 1UL);
+  ASSERT_TRUE(dest->GetExplicitlySetInFile());
   param = dest->GetAttribute("test");
   ASSERT_TRUE(param->IsType<std::string>());
   ASSERT_EQ(param->GetKey(), "test");
