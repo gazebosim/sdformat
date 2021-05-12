@@ -76,7 +76,7 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   errors = root.Load(testFile);
   PrintErrors(errors);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(errors.size(), 19u);
+  ASSERT_EQ(errors.size(), 23u);
   // missing element_id attribute
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   // element does not exist in included model
@@ -113,6 +113,13 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   EXPECT_EQ(errors[17].Code(), sdf::ErrorCode::ELEMENT_MISSING);
   // child element (w/ name attribute) does not exist
   EXPECT_EQ(errors[18].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  // child element does not exist (replace action)
+  EXPECT_EQ(errors[19].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  // missing 'name' attribute (replace action)
+  EXPECT_EQ(errors[20].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  // incorrect schema (missing required attributes; where element_id defined)
+  EXPECT_EQ(errors[21].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[22].Code(), sdf::ErrorCode::ELEMENT_INVALID);
 }
 
 /////////////////////////////////////////////////

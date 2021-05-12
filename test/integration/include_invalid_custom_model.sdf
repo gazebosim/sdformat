@@ -78,7 +78,17 @@
           <link element_id="top">
             <!-- child element (w/ name attribute) does not exist -->
             <collision name="collision" action="remove"/>
+
+            <!-- child element does not exist -->
+            <collision name="collision" action="replace"/>
+
+            <!-- missing 'name' attribute -->
+            <collision action="replace"/>
           </link>
+
+          <!-- incorrect schema (missing required 'type' attribute) -->
+          <sensor element_id="chassis::camera" name="camera" action="replace"/>
+
         </experimental:params>
       </include>
     </model>

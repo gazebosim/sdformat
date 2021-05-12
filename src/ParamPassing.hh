@@ -81,6 +81,13 @@ namespace sdf
     ElementPtr getElementByName(const ElementPtr _elem,
                                 const tinyxml2::XMLElement *_xml);
 
+    /// \brief Initialize an sdf element from xml
+    /// \param[in] _xml Pointer to xml element
+    /// \param[out] _errors Captures errors found during parsing
+    /// \return ElementPtr to the initialized element pointer, nullptr if
+    /// undefined/unknown sdf element
+    ElementPtr initElement(const tinyxml2::XMLElement *_xml, Errors &_errors);
+
     /// \brief Handles individual actions of children in _childrenXml
     /// \param[in] _childrenXml Pointer to xml element
     /// \param[out] _elem The sdf element to apply actions
@@ -105,6 +112,11 @@ namespace sdf
     /// \param[out] _errors Captures errors found during parsing
     void remove(const tinyxml2::XMLElement *_xml, ElementPtr _elem,
                 Errors &_errors);
+
+    /// \brief Replace an element with another element
+    /// \param[in] _newElem The replacement element
+    /// \param[out] _origElem The element to be replaced
+    void replace(const ElementPtr _newElem, ElementPtr _origElem);
   }
 }
 #endif
