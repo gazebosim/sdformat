@@ -3221,18 +3221,24 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
       if (materialTag->FirstChildElement("diffuse") == nullptr)
       {
         double color_diffuse[4];
-        color_diffuse[0] = ignition::math::clamp(_visual->material->color.r / 0.8, 0.0, 1.0);
-        color_diffuse[1] = ignition::math::clamp(_visual->material->color.g / 0.8, 0.0, 1.0);
-        color_diffuse[2] = ignition::math::clamp(_visual->material->color.b / 0.8, 0.0, 1.0);
+        color_diffuse[0] =
+          ignition::math::clamp(_visual->material->color.r / 0.8, 0.0, 1.0);
+        color_diffuse[1] =
+          ignition::math::clamp(_visual->material->color.g / 0.8, 0.0, 1.0);
+        color_diffuse[2] =
+          ignition::math::clamp(_visual->material->color.b / 0.8, 0.0, 1.0);
         color_diffuse[3] = _visual->material->color.a;
         AddKeyValue(materialTag, "diffuse", Values2str(4, color_diffuse));
       }
       if (materialTag->FirstChildElement("ambient") == nullptr)
       {
         double color_ambient[4];
-        color_ambient[0] = ignition::math::clamp(0.5 * _visual->material->color.r / 0.4, 0.0, 1.0);
-        color_ambient[1] = ignition::math::clamp(0.5 * _visual->material->color.g / 0.4, 0.0, 1.0);
-        color_ambient[2] = ignition::math::clamp(0.5 * _visual->material->color.b / 0.4, 0.0, 1.0);
+        color_ambient[0] =
+          ignition::math::clamp(0.5 * _visual->material->color.r / 0.4, 0.0, 1.0);
+        color_ambient[1] =
+          ignition::math::clamp(0.5 * _visual->material->color.g / 0.4, 0.0, 1.0);
+        color_ambient[2] =
+          ignition::math::clamp(0.5 * _visual->material->color.b / 0.4, 0.0, 1.0);
         color_ambient[3] = _visual->material->color.a;
         AddKeyValue(materialTag, "ambient", Values2str(4, color_ambient));
       }
