@@ -203,8 +203,7 @@ TEST(DOMVisual, Transparency)
 TEST(DOMVisual, LaserRetro)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "shapes.sdf");
+    sdf::testing::TestFile("sdf", "shapes.sdf");
 
   // Load the SDF file
   sdf::Root root;

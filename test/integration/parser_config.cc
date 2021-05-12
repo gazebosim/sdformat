@@ -32,8 +32,8 @@
 TEST(ParserConfig, GlobalConfig)
 {
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
-  // PROJECT_SOURCE_PATH
-  const std::string testDir = PROJECT_SOURCE_PATH;
+  // the source directory
+  const std::string testDir = sdf::testing::SourceFile();
 
   sdf::addURIPath("file://", testDir);
   sdf::setFindCallback(
@@ -66,8 +66,8 @@ TEST(ParserConfig, NonGlobalConfig)
 
   sdf::ParserConfig config;
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
-  // PROJECT_SOURCE_PATH
-  const std::string testDir = PROJECT_SOURCE_PATH;
+  // the source directory
+  const std::string testDir = sdf::testing::SourceFile();
   config.AddURIPath("file://", testDir);
   config.SetFindCallback(
       [](const std::string &)
@@ -97,14 +97,11 @@ TEST(ParserConfig, ParseWithNonGlobalConfig)
 
   // Case 1: Use of sdf::setFindCallback
   {
-    const std::string testFile =
-      sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-          "includes.sdf");
+    const std::string testFile = sdf::testing::TestFile("sdf", "includes.sdf");
 
     auto findFileCb = [](const std::string &_uri)
     {
-      return sdf::filesystem::append(
-          PROJECT_SOURCE_PATH, "test", "integration", "model", _uri);
+      return sdf::testing::TestFile("integration", "model", _uri);
     };
 
     sdf::ParserConfig config;
@@ -181,8 +178,7 @@ TEST(ParserConfig, ParseWithNonGlobalConfig)
 
     sdf::ParserConfig config;
     config.AddURIPath("testScheme://",
-        sdf::filesystem::append(
-            PROJECT_SOURCE_PATH, "test", "integration", "model"));
+        sdf::testing::TestFile("integration", "model"));
 
     // Parsing testSdfString without setting addURIPath on the global
     // ParserConfig should fail

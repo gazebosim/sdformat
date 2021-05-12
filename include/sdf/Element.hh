@@ -101,6 +101,7 @@ namespace sdf
 
     /// \brief Set the requirement type.
     /// \param[in] _req Requirement type for this element:
+    /// -1: Deprecated.
     /// 0: Not required.
     /// 1: Exactly one element is required.
     /// +: One or more elements are required.
@@ -240,6 +241,13 @@ namespace sdf
     /// \param[in] _key the key to use to find the attribute.
     /// \return True if the attribute is set, false otherwise.
     public: bool GetAttributeSet(const std::string &_key) const;
+
+    /// \brief Remove an attribute.
+    /// \param[in] _key the key of the attribute.
+    public: void RemoveAttribute(const std::string &_key);
+
+    /// \brief Removes all attributes.
+    public: void RemoveAllAttributes();
 
     /// \brief Get the param of the elements value
     /// return A Param pointer to the value of this element.
