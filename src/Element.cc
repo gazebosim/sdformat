@@ -110,7 +110,6 @@ void Element::SetExplicitlySetInFile(const bool _value)
   {
     elementPtr->SetExplicitlySetInFile(_value);
   }
-
 }
 
 /////////////////////////////////////////////////

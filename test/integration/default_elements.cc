@@ -80,7 +80,7 @@ TEST(ExplicitlySetInFile, EmptyRoadSphCoords)
 
   element_ptr = element_ptr->GetNextElement();
   EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
-  
+
   element_ptr = element_ptr->GetNextElement();
   EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
 
@@ -104,7 +104,6 @@ TEST(ExplicitlySetInFile, EmptyRoadSphCoords)
 
   scene_ptr = scene_ptr->GetNextElement();
   EXPECT_FALSE(scene_ptr->GetExplicitlySetInFile());
-
 }
 
 //////////////////////////////////////////////////
@@ -126,16 +125,7 @@ TEST(ExplicitlySetInFile, EmptyAxis)
 
   element_ptr = element_ptr->GetFirstElement();
   EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
-  
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
-
-  element_ptr = element_ptr->GetFirstElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
-  
   element_ptr = element_ptr->GetNextElement();
   EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
 
@@ -143,6 +133,15 @@ TEST(ExplicitlySetInFile, EmptyAxis)
   EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetFirstElement();
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+
+  element_ptr = element_ptr->GetNextElement();
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+
+  element_ptr = element_ptr->GetNextElement();
+  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+
+  element_ptr = element_ptr->GetFirstElement();
   EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
 
   element_ptr = element_ptr->GetNextElement();
@@ -153,5 +152,4 @@ TEST(ExplicitlySetInFile, EmptyAxis)
 
   element_ptr = element_ptr->GetNextElement();
   EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
-
 }
