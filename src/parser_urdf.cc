@@ -3204,11 +3204,8 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
 
   if (_visual->material)
   {
-    double color[4];
-    color[0] = _visual->material->color.r;
-    color[1] = _visual->material->color.g;
-    color[2] = _visual->material->color.b;
-    color[3] = _visual->material->color.a;
+    // Refer to this comment in github to understand the ambient and diffuse
+    // https://github.com/osrf/sdformat/pull/526#discussion_r623937715
     auto materialTag = sdfVisual->FirstChildElement("material");
     // If the material is not included by an extension then create it
     if (materialTag == nullptr)
@@ -3223,11 +3220,21 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
     {
       if (materialTag->FirstChildElement("diffuse") == nullptr)
       {
-        AddKeyValue(materialTag, "diffuse", Values2str(4, color));
+        double color_diffuse[4];
+        color_diffuse[0] = ignition::math::clamp(_visual->material->color.r / 0.8, 0.0, 1.0);
+        color_diffuse[1] = ignition::math::clamp(_visual->material->color.g / 0.8, 0.0, 1.0);
+        color_diffuse[2] = ignition::math::clamp(_visual->material->color.b / 0.8, 0.0, 1.0);
+        color_diffuse[3] = _visual->material->color.a;
+        AddKeyValue(materialTag, "diffuse", Values2str(4, color_diffuse));
       }
       if (materialTag->FirstChildElement("ambient") == nullptr)
       {
-        AddKeyValue(materialTag, "ambient", Values2str(4, color));
+        double color_ambient[4];
+        color_ambient[0] = ignition::math::clamp(0.5 * _visual->material->color.r / 0.4, 0.0, 1.0);
+        color_ambient[1] = ignition::math::clamp(0.5 * _visual->material->color.g / 0.4, 0.0, 1.0);
+        color_ambient[2] = ignition::math::clamp(0.5 * _visual->material->color.b / 0.4, 0.0, 1.0);
+        color_ambient[3] = _visual->material->color.a;
+        AddKeyValue(materialTag, "ambient", Values2str(4, color_ambient));
       }
     }
   }

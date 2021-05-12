@@ -186,11 +186,11 @@ TEST(Material, URDFValidColors)
                                        ->GetElement("material");
   ASSERT_NE(elem, nullptr);
   EXPECT_EQ(elem->Get<ignition::math::Color>("diffuse"),
-            ignition::math::Color(0.0, 0.8f, 0.8f, 1));
+            ignition::math::Color(0.0, 1.0f, 1.0f, 1));
   EXPECT_EQ(elem->Get<ignition::math::Color>("specular"),
             ignition::math::Color(0.0, 0.0f, 0.0f, 1));
   EXPECT_EQ(elem->Get<ignition::math::Color>("emissive"),
             ignition::math::Color(0, 0, 0, 1));
   EXPECT_EQ(elem->Get<ignition::math::Color>("ambient"),
-            ignition::math::Color(0.0, 0.8f, 0.8f, 1));
+            ignition::math::Color(0.0, 1.0f, 1.0f, 1));
 }
