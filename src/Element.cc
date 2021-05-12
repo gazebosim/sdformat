@@ -99,16 +99,16 @@ void Element::SetExplicitlySetInFile(const bool _value)
 {
   this->dataPtr->explicitlySetInFile = _value;
 
-  ElementPtr element_ptr = this->GetFirstElement();
-  if (element_ptr != nullptr)
+  ElementPtr elementPtr = this->GetFirstElement();
+  if (elementPtr != nullptr)
   {
-    element_ptr->SetExplicitlySetInFile(_value);
+    elementPtr->SetExplicitlySetInFile(_value);
   }
 
-  element_ptr = this->GetNextElement();
-  if (element_ptr != nullptr)
+  elementPtr = this->GetNextElement();
+  if (elementPtr != nullptr)
   {
-    element_ptr->SetExplicitlySetInFile(_value);
+    elementPtr->SetExplicitlySetInFile(_value);
   }
 
 }

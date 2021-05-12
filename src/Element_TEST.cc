@@ -87,14 +87,37 @@ TEST(Element, SetExplicitlySetInFile)
 
   ASSERT_TRUE(elem->GetExplicitlySetInFile());
 
-  //the childs of the element should also be set to the same value
+  // the childs and siblings of the element should all be
+  // set to the same value when using this function
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
   child->SetParent(elem);
   elem->InsertElement(child);
+
+  sdf::ElementPtr sibling = std::make_shared<sdf::Element>();
+  sibling->SetParent(elem);
+  elem->InsertElement(sibling);
+
+  sdf::ElementPtr child2 = std::make_shared<sdf::Element>();
+  child2->SetParent(child);
+  child->InsertElement(child2);
+
+  sdf::ElementPtr sibling2 = std::make_shared<sdf::Element>();
+  sibling2->SetParent(child);
+  child->InsertElement(sibling2);
+
+  ASSERT_TRUE(elem->GetExplicitlySetInFile());
+  ASSERT_TRUE(child->GetExplicitlySetInFile());
+  ASSERT_TRUE(sibling->GetExplicitlySetInFile());
+  ASSERT_TRUE(child2->GetExplicitlySetInFile());
+  ASSERT_TRUE(sibling2->GetExplicitlySetInFile());
+
   elem->SetExplicitlySetInFile(false);
 
   ASSERT_FALSE(elem->GetExplicitlySetInFile());
-  ASSERT_FALSE(elem->GetFirstElement()->GetExplicitlySetInFile());
+  ASSERT_FALSE(child->GetExplicitlySetInFile());
+  ASSERT_FALSE(sibling->GetExplicitlySetInFile());
+  ASSERT_FALSE(child2->GetExplicitlySetInFile());
+  ASSERT_FALSE(sibling2->GetExplicitlySetInFile());
 }
 
 /////////////////////////////////////////////////

@@ -112,7 +112,10 @@ namespace sdf
     /// \sa Element::SetRequired
     public: const std::string &GetRequired() const;
 
-    /// \brief Set if the element and children wer set or default in the file
+    /// \brief Set if the element and children where set or default
+    /// in the original file. This is meant to be used by the parser to
+    /// indicate whether the element was set by the user in the original
+    /// file or added by default during parsing.
     /// \param[in] _value True if the element was set
     public: void SetExplicitlySetInFile(const bool _value);
 
