@@ -39,52 +39,52 @@ TEST(ExplicitlySetInFile, EmptyRoadSphCoords)
   sdf::Errors errors = root.Load(test_file);
   EXPECT_TRUE(errors.empty());
 
-  sdf::ElementPtr element_ptr = root.Element();
+  sdf::ElementPtr elementPtr = root.Element();
   EXPECT_TRUE(root.Element()->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetFirstElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetFirstElement();
+  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetFirstElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetFirstElement();
+  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
 
-  sdf::ElementPtr road_ptr = element_ptr->GetFirstElement();
+  sdf::ElementPtr road_ptr = elementPtr->GetFirstElement();
   EXPECT_FALSE(road_ptr->GetExplicitlySetInFile());
 
   road_ptr = road_ptr->GetNextElement();
   EXPECT_FALSE(road_ptr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetNextElement();
+  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
 
-  sdf::ElementPtr spherical_coords_ptr = element_ptr->GetFirstElement();
+  sdf::ElementPtr spherical_coords_ptr = elementPtr->GetFirstElement();
   EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
 
-  spherical_coords_ptr = element_ptr->GetNextElement();
+  spherical_coords_ptr = elementPtr->GetNextElement();
   EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
 
-  spherical_coords_ptr = element_ptr->GetNextElement();
+  spherical_coords_ptr = elementPtr->GetNextElement();
   EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
 
-  spherical_coords_ptr = element_ptr->GetNextElement();
+  spherical_coords_ptr = elementPtr->GetNextElement();
   EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
 
-  spherical_coords_ptr = element_ptr->GetNextElement();
+  spherical_coords_ptr = elementPtr->GetNextElement();
   EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetNextElement();
+  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetNextElement();
+  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetNextElement();
+  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetNextElement();
+  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
 
-  sdf::ElementPtr physics_ptr = element_ptr->GetFirstElement();
+  sdf::ElementPtr physics_ptr = elementPtr->GetFirstElement();
   EXPECT_FALSE(physics_ptr->GetExplicitlySetInFile());
 
   physics_ptr = physics_ptr->GetNextElement();
@@ -93,10 +93,10 @@ TEST(ExplicitlySetInFile, EmptyRoadSphCoords)
   physics_ptr = physics_ptr->GetNextElement();
   EXPECT_FALSE(physics_ptr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetNextElement();
+  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
 
-  sdf::ElementPtr scene_ptr = element_ptr->GetFirstElement();
+  sdf::ElementPtr scene_ptr = elementPtr->GetFirstElement();
   EXPECT_FALSE(scene_ptr->GetExplicitlySetInFile());
 
   scene_ptr = scene_ptr->GetNextElement();
@@ -117,39 +117,39 @@ TEST(ExplicitlySetInFile, EmptyAxis)
   sdf::Errors errors = root.Load(test_file);
   EXPECT_TRUE(errors.empty());
 
-  sdf::ElementPtr element_ptr = root.Element();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr elementPtr = root.Element();
+  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetFirstElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetFirstElement();
+  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetFirstElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetFirstElement();
+  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetNextElement();
+  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetNextElement();
+  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetFirstElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetFirstElement();
+  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetNextElement();
+  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_TRUE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetNextElement();
+  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetFirstElement();
-  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetFirstElement();
+  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetNextElement();
+  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetFirstElement();
-  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetFirstElement();
+  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
 
-  element_ptr = element_ptr->GetNextElement();
-  EXPECT_FALSE(element_ptr->GetExplicitlySetInFile());
+  elementPtr = elementPtr->GetNextElement();
+  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
 }
