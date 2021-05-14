@@ -685,6 +685,16 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
       _sdf->Root()->SetOriginalVersion(sdfNode->Attribute("version"));
     }
 
+    if (_sdf->Root()->FilePath().empty())
+    {
+      _sdf->Root()->SetFilePath(_source);
+    }
+
+    if (!_sdf->Root()->LineNumber().has_value())
+    {
+      _sdf->Root()->SetLineNumber(sdfNode->GetLineNum());
+    }
+
     if (_sdf->Root()->XmlPath().empty())
     {
       _sdf->Root()->SetXmlPath("/sdf");
@@ -763,6 +773,16 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     if (_sdf->OriginalVersion().empty())
     {
       _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
+    }
+
+    if (_sdf->FilePath().empty())
+    {
+      _sdf->SetFilePath(_source);
+    }
+
+    if (!_sdf->LineNumber().has_value())
+    {
+      _sdf->SetLineNumber(sdfNode->GetLineNum());
     }
 
     if (_sdf->XmlPath().empty())
@@ -987,12 +1007,21 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
   std::string refSDFStr = _sdf->ReferenceSDF();
   if (!refSDFStr.empty())
   {
+    const std::string filePath = _sdf->FilePath();
+    const std::string xmlPath = _sdf->XmlPath();
+    auto lineNumber = _sdf->LineNumber();
+
     ElementPtr refSDF;
     refSDF.reset(new Element);
     std::string refFilename = refSDFStr + ".sdf";
     initFile(refFilename, refSDF);
     _sdf->RemoveFromParent();
     _sdf->Copy(refSDF);
+
+    _sdf->SetFilePath(filePath);
+    _sdf->SetXmlPath(xmlPath);
+    if (lineNumber.has_value())
+      _sdf->SetLineNumber(lineNumber.value());
   }
 
   // A list of parent element-attributes pairs where a frame name is referenced
@@ -1299,8 +1328,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
           if (elemXml->FirstChildElement("name"))
           {
-            topLevelElem->GetAttribute("name")->SetFromString(
-                elemXml->FirstChildElement("name")->GetText());
+            const std::string overrideName =
+                elemXml->FirstChildElement("name")->GetText();
+            topLevelElem->GetAttribute("name")->SetFromString(overrideName);
+            topLevelElem->SetXmlPath("/sdf/" + topLevelElementType +
+                "[@name=\"" + overrideName + "\"]");
           }
 
           tinyxml2::XMLElement *poseElemXml =
@@ -1389,6 +1421,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
                 sdf::ElementPtr pluginElem;
                 pluginElem = topLevelElem->AddElement("plugin");
+                pluginElem->SetFilePath(sourcePath);
+                pluginElem->SetLineNumber(childElemXml->GetLineNum());
                 pluginElem->SetXmlPath(pluginXmlPath);
 
                 if (!readXml(
@@ -1439,6 +1473,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
           ElementPtr element = elemDesc->Clone();
           element->SetParent(_sdf);
+          element->SetFilePath(sourcePath);
+          element->SetLineNumber(elemXml->GetLineNum());
           element->SetXmlPath(elemXmlPath);
           if (readXml(elemXml, element, _config, _source, _errors))
           {
