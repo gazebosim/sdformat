@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Open Source Robotics Foundation
+ * Copyright 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +21,13 @@
 
 #include "sdf/SDFImpl.hh"
 #include "sdf/parser.hh"
-#include "sdf/Frame.hh"
 #include "sdf/Model.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "sdf/Actor.hh"
-#include "sdf/Collision.hh"
-#include "sdf/Filesystem.hh"
-#include "sdf/Geometry.hh"
 #include "sdf/Light.hh"
-#include "sdf/Mesh.hh"
-#include "sdf/Visual.hh"
 #include "test_config.h"
 
 //////////////////////////////////////////////////
