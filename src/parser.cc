@@ -1160,7 +1160,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         std::string uri;
         tinyxml2::XMLElement *uriElement = elemXml->FirstChildElement("uri");
 
-        includeElemIndex++;
+        ++includeElemIndex;
         const std::string includeXmlPath =
             _sdf->XmlPath() + "/include[" + std::to_string(includeElemIndex) +
             "]";
@@ -1415,7 +1415,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             {
               if (std::string("plugin") == childElemXml->Value())
               {
-                pluginIndex++;
+                ++pluginIndex;
                 const std::string pluginXmlPath = includeXmlPath + "/plugin[" +
                     std::to_string(pluginIndex) + "]";
 
