@@ -200,6 +200,7 @@ namespace sdf
     /// \brief Sets the XML path that is associated with this error.
     /// \param[in] _xmlPath The XML path that is related to this error. (e.g.
     /// /sdf/world[@name="default"]/model[@name="robot1"]/link[@name="link"])
+    /// \sa Element::SetXmlPath
     public: void SetXmlPath(const std::string &_xmlPath);
 
     /// \brief Safe bool conversion.

@@ -423,7 +423,18 @@ namespace sdf
     public: std::optional<int> LineNumber() const;
 
     /// \brief Set the XML path of this element.
-    /// \param[in] _path Full XML path to the SDF element. (e.g.
+    /// \param[in] _path Full XML path (i.e., XPath) to the SDF element.
+    /// E.g., a SDF document:
+    /// <sdf>
+    ///   <world name="default">
+    ///     <model name="robot1">
+    ///        <link name="link">
+    ///          ...
+    ///        </link>
+    ///     </model>
+    ///   </world>
+    /// </sdf>
+    ///  The full XML path to the SDF link element would be:
     /// /sdf/world[@name="default"]/model[@name="robot1"]/link[@name="link"])
     public: void SetXmlPath(const std::string &_path);
 
