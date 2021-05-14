@@ -68,7 +68,7 @@ TEST(ElementTracing, NestedModels)
   ASSERT_NE(nullptr, model);
 
   const std::string xmlPath = "/sdf/model[@name=\"top_level_model\"]";
-  
+
   sdf::ElementPtr modelElem = model->Element();
   checkElementPtr(modelElem, testFile, 2, xmlPath);
   EXPECT_EQ(2, static_cast<int>(model->LinkCount()));
@@ -91,17 +91,17 @@ TEST(ElementTracing, NestedModels)
 
   const std::string jointXmlPath =
     xmlPath + "/joint[@name=\"top_level_joint\"]";
-  
+
   const sdf::Joint *joint = model->JointByIndex(0);
   ASSERT_NE(nullptr, joint);
   sdf::ElementPtr jointElem = joint->Element();
   checkElementPtr(jointElem, testFile, 11, jointXmlPath);
-  
+
   const std::string nestedModelXmlPath =
     xmlPath + "/model[@name=\"nested_model\"]";
- 
+
   const sdf::Model *nestedModel = model->ModelByName("nested_model");
-  ASSERT_NE(nullptr, nestedModel); 
+  ASSERT_NE(nullptr, nestedModel);
   sdf::ElementPtr nestedModelElem = nestedModel->Element();
   checkElementPtr(nestedModelElem, testFile, 5, nestedModelXmlPath);
 
@@ -115,7 +115,7 @@ TEST(ElementTracing, NestedModels)
 
   const std::string nestedNestedModelXmlPath =
     nestedModelXmlPath + "/model[@name=\"nested_nested_model\"]";
- 
+
   const sdf::Model *nestedNestedModel =
     nestedModel->ModelByName("nested_nested_model");
   ASSERT_NE(nullptr, nestedNestedModel);
@@ -125,7 +125,7 @@ TEST(ElementTracing, NestedModels)
 
   const std::string nestedNestedLinkXmlPath =
     nestedNestedModelXmlPath + "/link[@name=\"nested_nested_link01\"]";
-  
+
   const sdf::Link *nestedNestedLink =
     nestedNestedModel->LinkByName("nested_nested_link01");
   ASSERT_NE(nullptr, nestedNestedLink);
@@ -174,7 +174,7 @@ TEST(ElementTracing, includes)
 
   const std::string overrideActorPluginXmlPath =
       worldXmlPath + "/include[6]/plugin[0]";
-  
+
   sdf::ElementPtr overrideActorPluginElem =
       overrideActorElem->GetElement("plugin");
   checkElementPtr(
@@ -231,7 +231,7 @@ TEST(ElementTracing, includes)
   ASSERT_NE(nullptr, overrideModelWithFile);
   sdf::ElementPtr overrideModelWithFileElem = overrideModelWithFile->Element();
   checkElementPtr(
-      overrideModelWithFileElem, modelFilePath, 4, 
+      overrideModelWithFileElem, modelFilePath, 4,
       overrideModelWithFileXmlPath);
 }
 
