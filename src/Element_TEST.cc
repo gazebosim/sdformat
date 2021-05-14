@@ -75,17 +75,34 @@ TEST(Element, Required)
 /////////////////////////////////////////////////
 TEST(Element, SetExplicitlySetInFile)
 {
+  // The heirarchy in xml:
+  // <parent>
+  //   <elem>
+  //     <child>
+  //       <grandChild/>
+  //     </child>
+  //     <sibling/>
+  //     <sibling2/>
+  //   </elem>
+  //   <elem2/>
+  // </parent>
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+  elem->SetParent(parent);
+  parent->InsertElement(elem);
+  sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
+  elem2->SetParent(parent);
+  parent->InsertElement(elem2);
 
-  ASSERT_TRUE(elem->GetExplicitlySetInFile());
+  EXPECT_TRUE(elem->GetExplicitlySetInFile());
 
   elem->SetExplicitlySetInFile(false);
 
-  ASSERT_FALSE(elem->GetExplicitlySetInFile());
+  EXPECT_FALSE(elem->GetExplicitlySetInFile());
 
   elem->SetExplicitlySetInFile(true);
 
-  ASSERT_TRUE(elem->GetExplicitlySetInFile());
+  EXPECT_TRUE(elem->GetExplicitlySetInFile());
 
   // the childs and siblings of the element should all be
   // set to the same value when using this function
@@ -97,27 +114,38 @@ TEST(Element, SetExplicitlySetInFile)
   sibling->SetParent(elem);
   elem->InsertElement(sibling);
 
+  sdf::ElementPtr sibling2 = std::make_shared<sdf::Element>();
+  sibling2->SetParent(elem);
+  elem->InsertElement(sibling2);
+
   sdf::ElementPtr child2 = std::make_shared<sdf::Element>();
   child2->SetParent(child);
   child->InsertElement(child2);
 
-  sdf::ElementPtr sibling2 = std::make_shared<sdf::Element>();
-  sibling2->SetParent(child);
-  child->InsertElement(sibling2);
+  sdf::ElementPtr grandChild = std::make_shared<sdf::Element>();
+  grandChild->SetParent(child);
+  child->InsertElement(grandChild);
 
-  ASSERT_TRUE(elem->GetExplicitlySetInFile());
-  ASSERT_TRUE(child->GetExplicitlySetInFile());
-  ASSERT_TRUE(sibling->GetExplicitlySetInFile());
-  ASSERT_TRUE(child2->GetExplicitlySetInFile());
-  ASSERT_TRUE(sibling2->GetExplicitlySetInFile());
+  EXPECT_TRUE(elem->GetExplicitlySetInFile());
+  EXPECT_TRUE(child->GetExplicitlySetInFile());
+  EXPECT_TRUE(sibling->GetExplicitlySetInFile());
+  EXPECT_TRUE(sibling2->GetExplicitlySetInFile());
+  EXPECT_TRUE(child2->GetExplicitlySetInFile());
+  EXPECT_TRUE(grandChild->GetExplicitlySetInFile());
+  EXPECT_TRUE(elem2->GetExplicitlySetInFile());
 
   elem->SetExplicitlySetInFile(false);
+  EXPECT_FALSE(elem->GetExplicitlySetInFile());
+  EXPECT_FALSE(child->GetExplicitlySetInFile());
+  EXPECT_FALSE(sibling->GetExplicitlySetInFile());
+  EXPECT_FALSE(sibling2->GetExplicitlySetInFile());
+  EXPECT_FALSE(child2->GetExplicitlySetInFile());
+  EXPECT_FALSE(grandChild->GetExplicitlySetInFile());
 
-  ASSERT_FALSE(elem->GetExplicitlySetInFile());
-  ASSERT_FALSE(child->GetExplicitlySetInFile());
-  ASSERT_FALSE(sibling->GetExplicitlySetInFile());
-  ASSERT_FALSE(child2->GetExplicitlySetInFile());
-  ASSERT_FALSE(sibling2->GetExplicitlySetInFile());
+  // SetExplicitlySetInFile(false) is be called only on `elem`. We expect
+  // GetExplicitlySetInFile() to be false for all children and grandchildren of
+  // `elem`, but true for `elem2`, which is a sibling of `elem`.
+  EXPECT_TRUE(elem2->GetExplicitlySetInFile());
 }
 
 /////////////////////////////////////////////////
