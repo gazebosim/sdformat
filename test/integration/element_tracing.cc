@@ -151,7 +151,7 @@ TEST(ElementTracing, includes)
   // Actors
   const std::string actorFilePath =
       sdf::testing::TestFile("integration", "model", "test_actor") +
-      "/model.sdf";
+      "model.sdf";
   const std::string actorXmlPath = "/sdf/actor[@name=\"actor\"]";
 
   const sdf::Actor *actor = world->ActorByIndex(0);
@@ -177,7 +177,7 @@ TEST(ElementTracing, includes)
   // Lights
   const std::string lightFilePath =
       sdf::testing::TestFile("integration", "model", "test_light") +
-      "/model.sdf";
+      "model.sdf";
   const std::string lightXmlPath = "/sdf/light[@name=\"point_light\"]";
 
   const sdf::Light *light = world->LightByIndex(0);
@@ -195,7 +195,7 @@ TEST(ElementTracing, includes)
   // Models
   const std::string modelFilePath =
       sdf::testing::TestFile("integration", "model", "test_model") +
-      "/model.sdf";
+      "model.sdf";
   const std::string modelXmlPath = "/sdf/model[@name=\"test_model\"]";
 
   const sdf::Model *model = world->ModelByIndex(0);
