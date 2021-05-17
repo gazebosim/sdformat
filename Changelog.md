@@ -2,8 +2,14 @@
 
 ### libsdformat 10.5.0 (2021-05-17)
 
-1. Add scatter ratio parameter to Particle Emitter DOM
+1. Add scatter ratio parameter to Particle Emitter DOM.
     + [Pull request 547](https://github.com/osrf/sdformat/pull/547)
+
+1. Methods for removing attributes from an element.
+    + [Pull request 555](https://github.com/osrf/sdformat/pull/555)
+
+1. Improve docs of collision bitmask.
+    + [Pull request 521](https://github.com/osrf/sdformat/pull/521)
 
 ### libsdformat 10.4.0 (2021-04-06)
 
