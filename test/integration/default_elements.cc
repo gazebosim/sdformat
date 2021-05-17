@@ -39,71 +39,71 @@ TEST(ExplicitlySetInFile, EmptyRoadSphCoords)
   sdf::Errors errors = root.Load(test_file);
   EXPECT_TRUE(errors.empty());
 
-  sdf::ElementPtr elementPtr = root.Element();
-  EXPECT_TRUE(root.Element()->GetExplicitlySetInFile());
+  sdf::ElementPtr rootPtr = root.Element();
+  EXPECT_TRUE(rootPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetFirstElement();
-  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr worldPtr = rootPtr->GetFirstElement();
+  EXPECT_TRUE(worldPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetFirstElement();
-  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr roadPtr = worldPtr->GetFirstElement();
+  EXPECT_TRUE(roadPtr->GetExplicitlySetInFile());
 
-  sdf::ElementPtr road_ptr = elementPtr->GetFirstElement();
-  EXPECT_FALSE(road_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr roadWidthPtr = roadPtr->GetFirstElement();
+  EXPECT_FALSE(roadWidthPtr->GetExplicitlySetInFile());
 
-  road_ptr = road_ptr->GetNextElement();
-  EXPECT_FALSE(road_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr roadPointPtr = roadWidthPtr->GetNextElement();
+  EXPECT_FALSE(roadPointPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetNextElement();
-  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr sphericalCoordsPtr = roadPtr->GetNextElement();
+  EXPECT_TRUE(sphericalCoordsPtr->GetExplicitlySetInFile());
 
-  sdf::ElementPtr spherical_coords_ptr = elementPtr->GetFirstElement();
-  EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr surfaceModel = sphericalCoordsPtr->GetFirstElement();
+  EXPECT_FALSE(surfaceModel->GetExplicitlySetInFile());
 
-  spherical_coords_ptr = elementPtr->GetNextElement();
-  EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr latitudeDegPtr = surfaceModel->GetNextElement();
+  EXPECT_FALSE(latitudeDegPtr->GetExplicitlySetInFile());
 
-  spherical_coords_ptr = elementPtr->GetNextElement();
-  EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr longitudeDegPtr = latitudeDegPtr->GetNextElement();
+  EXPECT_FALSE(longitudeDegPtr->GetExplicitlySetInFile());
 
-  spherical_coords_ptr = elementPtr->GetNextElement();
-  EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr elevationPtr = longitudeDegPtr->GetNextElement();
+  EXPECT_FALSE(elevationPtr->GetExplicitlySetInFile());
 
-  spherical_coords_ptr = elementPtr->GetNextElement();
-  EXPECT_FALSE(spherical_coords_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr headingDegPtr = elevationPtr->GetNextElement();
+  EXPECT_FALSE(headingDegPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetNextElement();
-  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr gravityPtr = sphericalCoordsPtr->GetNextElement();
+  EXPECT_FALSE(gravityPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetNextElement();
-  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr magneticFieldPtr = gravityPtr->GetNextElement();
+  EXPECT_FALSE(magneticFieldPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetNextElement();
-  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr atmosphereTypePtr = magneticFieldPtr->GetNextElement();
+  EXPECT_FALSE(atmosphereTypePtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetNextElement();
-  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr physicsPtr = atmosphereTypePtr->GetNextElement();
+  EXPECT_FALSE(physicsPtr->GetExplicitlySetInFile());
 
-  sdf::ElementPtr physics_ptr = elementPtr->GetFirstElement();
-  EXPECT_FALSE(physics_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr maxStepSizePtr = physicsPtr->GetFirstElement();
+  EXPECT_FALSE(maxStepSizePtr->GetExplicitlySetInFile());
 
-  physics_ptr = physics_ptr->GetNextElement();
-  EXPECT_FALSE(physics_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr realTimeFactorPtr = maxStepSizePtr->GetNextElement();
+  EXPECT_FALSE(realTimeFactorPtr->GetExplicitlySetInFile());
 
-  physics_ptr = physics_ptr->GetNextElement();
-  EXPECT_FALSE(physics_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr realTimeUpdate = realTimeFactorPtr->GetNextElement();
+  EXPECT_FALSE(realTimeUpdate->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetNextElement();
-  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr scenePtr = physicsPtr->GetNextElement();
+  EXPECT_FALSE(scenePtr->GetExplicitlySetInFile());
 
-  sdf::ElementPtr scene_ptr = elementPtr->GetFirstElement();
-  EXPECT_FALSE(scene_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr ambientPtr = scenePtr->GetFirstElement();
+  EXPECT_FALSE(ambientPtr->GetExplicitlySetInFile());
 
-  scene_ptr = scene_ptr->GetNextElement();
-  EXPECT_FALSE(scene_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr backgroundPtr = ambientPtr->GetNextElement();
+  EXPECT_FALSE(backgroundPtr->GetExplicitlySetInFile());
 
-  scene_ptr = scene_ptr->GetNextElement();
-  EXPECT_FALSE(scene_ptr->GetExplicitlySetInFile());
+  sdf::ElementPtr shadowsPtr = backgroundPtr->GetNextElement();
+  EXPECT_FALSE(shadowsPtr->GetExplicitlySetInFile());
 }
 
 //////////////////////////////////////////////////
@@ -117,39 +117,39 @@ TEST(ExplicitlySetInFile, EmptyAxis)
   sdf::Errors errors = root.Load(test_file);
   EXPECT_TRUE(errors.empty());
 
-  sdf::ElementPtr elementPtr = root.Element();
-  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr rootPtr = root.Element();
+  EXPECT_TRUE(rootPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetFirstElement();
-  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr modelPtr = rootPtr->GetFirstElement();
+  EXPECT_TRUE(modelPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetFirstElement();
-  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr link1Ptr = modelPtr->GetFirstElement();
+  EXPECT_TRUE(link1Ptr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetNextElement();
-  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr link2Ptr = link1Ptr->GetNextElement();
+  EXPECT_TRUE(link2Ptr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetNextElement();
-  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr jointPtr = link2Ptr->GetNextElement();
+  EXPECT_TRUE(jointPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetFirstElement();
-  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr parentPtr = jointPtr->GetFirstElement();
+  EXPECT_TRUE(parentPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetNextElement();
-  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr childPtr = parentPtr->GetNextElement();
+  EXPECT_TRUE(childPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetNextElement();
-  EXPECT_TRUE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr axisPtr = childPtr->GetNextElement();
+  EXPECT_TRUE(axisPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetFirstElement();
-  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr xyzPtr = axisPtr->GetFirstElement();
+  EXPECT_FALSE(xyzPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetNextElement();
-  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr limitPtr = xyzPtr->GetNextElement();
+  EXPECT_FALSE(limitPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetFirstElement();
-  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr lowerLimitPtr = limitPtr->GetFirstElement();
+  EXPECT_FALSE(lowerLimitPtr->GetExplicitlySetInFile());
 
-  elementPtr = elementPtr->GetNextElement();
-  EXPECT_FALSE(elementPtr->GetExplicitlySetInFile());
+  sdf::ElementPtr upperLimitPtr = lowerLimitPtr->GetNextElement();
+  EXPECT_FALSE(upperLimitPtr->GetExplicitlySetInFile());
 }
