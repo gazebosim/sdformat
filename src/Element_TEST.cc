@@ -79,13 +79,16 @@ TEST(Element, SetExplicitlySetInFile)
   // <parent>
   //   <elem>
   //     <child>
-  //       <grandChild/>
+  //       <child2>
+  //         <grandChild/>
+  //       <child2>
   //     </child>
   //     <sibling/>
   //     <sibling2/>
   //   </elem>
   //   <elem2/>
   // </parent>
+
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
   elem->SetParent(parent);
@@ -146,6 +149,19 @@ TEST(Element, SetExplicitlySetInFile)
   // GetExplicitlySetInFile() to be false for all children and grandchildren of
   // `elem`, but true for `elem2`, which is a sibling of `elem`.
   EXPECT_TRUE(elem2->GetExplicitlySetInFile());
+}
+
+/////////////////////////////////////////////////
+TEST(Element, SetExplicitlySetInFileWithInsert)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  parent->SetExplicitlySetInFile(false);
+  sdf::ElementPtr child = std::make_shared<sdf::Element>();
+  child->SetParent(parent);
+  parent->InsertElement(child);
+
+  EXPECT_FALSE(parent->GetExplicitlySetInFile());
+  EXPECT_TRUE(child->GetExplicitlySetInFile());
 }
 
 /////////////////////////////////////////////////
