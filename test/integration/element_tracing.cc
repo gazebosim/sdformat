@@ -273,6 +273,8 @@ TEST(ElementTracing, includes)
   EXPECT_EQ(14, overrideModelPluginElem->LineNumber().value());
   EXPECT_EQ(overrideModelPluginXmlPath, overrideModelPluginElem->XmlPath());
 
+  const std::string modelWithFileFilePath = sdf::testing::TestFile(
+      "integration", "model", "test_model/model.sdf");
   const std::string overrideModelWithFileXmlPath =
       "/sdf/model[@name=\"test_model_with_file\"]";
 
@@ -280,7 +282,7 @@ TEST(ElementTracing, includes)
   ASSERT_NE(nullptr, overrideModelWithFile);
   sdf::ElementPtr overrideModelWithFileElem = overrideModelWithFile->Element();
   ASSERT_NE(nullptr, overrideModelWithFileElem);
-  EXPECT_EQ(modelFilePath, overrideModelWithFileElem->FilePath());
+  EXPECT_EQ(modelWithFileFilePath, overrideModelWithFileElem->FilePath());
   ASSERT_TRUE(overrideModelWithFileElem->LineNumber().has_value());
   EXPECT_EQ(4, overrideModelWithFileElem->LineNumber().value());
   EXPECT_EQ(overrideModelWithFileXmlPath,
