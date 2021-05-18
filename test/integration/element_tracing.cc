@@ -17,7 +17,6 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
 #include <gtest/gtest.h>
 
 #include "sdf/SDFImpl.hh"
