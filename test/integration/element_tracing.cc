@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include <gtest/gtest.h>
 
 #include "sdf/SDFImpl.hh"
@@ -31,8 +32,18 @@
 #include "test_config.h"
 
 //////////////////////////////////////////////////
+// This function handles path sanitization only up to a single '/'.
 std::string findFileCb(const std::string &_input)
 {
+  const std::string delimiter = "/";
+  std::size_t delimiter_pos = 0;
+  
+  if ((delimiter_pos = _input.find(delimiter)) != std::string::npos)
+  {
+    return sdf::testing::TestFile("integration", "model",
+        _input.substr(0, delimiter_pos),
+        _input.substr(delimiter_pos + 1, _input.size()));
+  }  
   return sdf::testing::TestFile("integration", "model", _input);
 }
 
@@ -273,8 +284,6 @@ TEST(ElementTracing, includes)
   EXPECT_EQ(14, overrideModelPluginElem->LineNumber().value());
   EXPECT_EQ(overrideModelPluginXmlPath, overrideModelPluginElem->XmlPath());
 
-  const std::string modelWithFileFilePath = sdf::testing::TestFile(
-      "integration", "model", "test_model/model.sdf");
   const std::string overrideModelWithFileXmlPath =
       "/sdf/model[@name=\"test_model_with_file\"]";
 
@@ -282,7 +291,7 @@ TEST(ElementTracing, includes)
   ASSERT_NE(nullptr, overrideModelWithFile);
   sdf::ElementPtr overrideModelWithFileElem = overrideModelWithFile->Element();
   ASSERT_NE(nullptr, overrideModelWithFileElem);
-  EXPECT_EQ(modelWithFileFilePath, overrideModelWithFileElem->FilePath());
+  EXPECT_EQ(modelFilePath, overrideModelWithFileElem->FilePath());
   ASSERT_TRUE(overrideModelWithFileElem->LineNumber().has_value());
   EXPECT_EQ(4, overrideModelWithFileElem->LineNumber().value());
   EXPECT_EQ(overrideModelWithFileXmlPath,
