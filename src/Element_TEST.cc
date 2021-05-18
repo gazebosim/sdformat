@@ -37,8 +37,6 @@ TEST(Element, Child)
   sdf::Element child;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   parent->SetFilePath("/parent/path/model.sdf");
-  parent->SetLineNumber(12);
-  parent->SetXmlPath("/sdf/world[@name=\"default\"]");
   parent->SetOriginalVersion("1.5");
 
   ASSERT_EQ(child.GetParent(), nullptr);
