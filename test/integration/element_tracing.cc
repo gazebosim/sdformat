@@ -37,13 +37,13 @@ std::string findFileCb(const std::string &_input)
 {
   const std::string delimiter = "/";
   std::size_t delimiter_pos = 0;
-  
+
   if ((delimiter_pos = _input.find(delimiter)) != std::string::npos)
   {
     return sdf::testing::TestFile("integration", "model",
         _input.substr(0, delimiter_pos),
         _input.substr(delimiter_pos + 1, _input.size()));
-  }  
+  }
   return sdf::testing::TestFile("integration", "model", _input);
 }
 
