@@ -184,13 +184,24 @@ namespace sdf
     public: std::string Message() const;
 
     /// \brief Get the file path associated with this error.
-    /// \return Returns the path of the file that this error is related to.
+    /// \return Returns the path of the file that this error is related to,
     /// nullopt otherwise.
     public: std::optional<std::string> FilePath() const;
 
     /// \brief Get the line number associated with this error.
     /// \return Returns the line number. nullopt otherwise.
     public: std::optional<int> LineNumber() const;
+
+    /// \brief Get the XPath-like trace that is associated with this error.
+    /// \return Returns the XPath-like trace that this error is related to,
+    /// nullopt otherwise.
+    public: std::optional<std::string> XmlPath() const;
+
+    /// \brief Sets the XML path that is associated with this error.
+    /// \param[in] _xmlPath The XML path that is related to this error. (e.g.
+    /// /sdf/world[@name="default"]/model[@name="robot1"]/link[@name="link"])
+    /// \sa Element::SetXmlPath
+    public: void SetXmlPath(const std::string &_xmlPath);
 
     /// \brief Safe bool conversion.
     /// \return True if this Error's Code() != NONE. In otherwords, this is
@@ -213,30 +224,25 @@ namespace sdf
     public: friend std::ostream &operator<<(std::ostream &_out,
                                             const sdf::Error &_err)
     {
-      if (!_err.FilePath().has_value())
-      {
-        _out << "Error Code "
+      std::string pathInfo = "";
+
+      if (_err.XmlPath().has_value())
+        pathInfo += _err.XmlPath().value();
+
+      if (_err.FilePath().has_value())
+        pathInfo += ":" + _err.FilePath().value();
+
+      if (_err.LineNumber().has_value())
+        pathInfo += ":L" + std::to_string(_err.LineNumber().value());
+
+      if (!pathInfo.empty())
+        pathInfo = "[" + pathInfo + "]: ";
+
+      _out << "Error Code "
           << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
-              _err.Code())
-          << " Msg: " << _err.Message();
-      }
-      else if (!_err.LineNumber().has_value())
-      {
-        _out << "Error Code "
-          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
-              _err.Code())
-          << ": [" << _err.FilePath().value() << "]: "
-          << " Msg: " << _err.Message();
-      }
-      else
-      {
-        _out << "Error Code "
-          << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
-              _err.Code())
-          << ": [" << _err.FilePath().value() << ":L"
-          << std::to_string(_err.LineNumber().value()) << "]: "
-          << " Msg: " << _err.Message();
-      }
+              _err.Code()) << ": "
+          << pathInfo
+          << "Msg: " << _err.Message();
       return _out;
     }
 
