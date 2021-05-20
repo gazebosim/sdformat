@@ -443,7 +443,7 @@ void Element::PrintDocLeftPane(std::string &_html, int _spacing,
 
 void Element::PrintValuesImpl(const std::string &_prefix,
                               std::ostringstream &_out,
-                              const bool _includeDefaults) const
+                              bool _includeDefaults) const
 {
   if (this->GetExplicitlySetInFile() || _includeDefaults)
   {
@@ -503,8 +503,8 @@ void Element::PrintValues(std::string _prefix) const
 }
 
 /////////////////////////////////////////////////
-void Element::PrintValues(std::string _prefix,
-                          const bool _includeDefaults) const
+void Element::PrintValues(const std::string &_prefix,
+                          bool _includeDefaults) const
 {
   std::ostringstream ss;
   PrintValuesImpl(_prefix, ss, _includeDefaults);
@@ -521,7 +521,7 @@ std::string Element::ToString(const std::string &_prefix) const
 
 /////////////////////////////////////////////////
 std::string Element::ToString(const std::string &_prefix,
-                              const bool _includeDefaults) const
+                              bool _includeDefaults) const
 {
   std::ostringstream out;
   this->ToString(_prefix, out, _includeDefaults);
@@ -531,7 +531,7 @@ std::string Element::ToString(const std::string &_prefix,
 /////////////////////////////////////////////////
 void Element::ToString(const std::string &_prefix,
                        std::ostringstream &_out,
-                       const bool _includeDefaults) const
+                       bool _includeDefaults) const
 {
   if (this->dataPtr->includeFilename.empty())
   {
