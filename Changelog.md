@@ -6,6 +6,27 @@
 
 ### libsdformat 11.X.X (202X-XX-XX)
 
+### libsdformat 11.1.0 (2021-04-30)
+
+1. Clean up use of PROJECT_SOURCE_PATH in tests
+    * [Pull request #549](https://github.com/osrf/sdformat/pull/549)
+
+1. Methods for removing attributes from an element
+    * [Pull request #555](https://github.com/osrf/sdformat/pull/555)
+
+1. Add an EnforcementPolicy for deprecated elements
+    * [Pull request #543](https://github.com/osrf/sdformat/pull/543)
+
+1. Fixed application of <sensor><pose> tags in lumped linkes during URDF conversion
+    * [Pull request #525](https://github.com/osrf/sdformat/pull/525)
+
+1. Particle emitter
+    * [Pull request #528](https://github.com/osrf/sdformat/pull/528)
+
+1. Improve docs of collision_bitmask.
+    * [Pull request #521](https://github.com/osrf/sdformat/pull/521)
+
+
 ### libsdformat 11.0.0 (2021-03-30)
 
 1. Add ParserConfig class to encapsulate file path settings.

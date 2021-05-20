@@ -27,6 +27,9 @@ class sdf::Error::Implementation
   /// \brief Description of the error.
   public: std::string message = "";
 
+  /// \brief Xml path where the error was raised.
+  public: std::optional<std::string> xmlPath = std::nullopt;
+
   /// \brief File path where the error was raised.
   public: std::optional<std::string> filePath = std::nullopt;
 
@@ -90,6 +93,18 @@ std::optional<std::string> Error::FilePath() const
 std::optional<int> Error::LineNumber() const
 {
   return this->dataPtr->lineNumber;
+}
+
+/////////////////////////////////////////////////
+std::optional<std::string> Error::XmlPath() const
+{
+  return this->dataPtr->xmlPath;
+}
+
+/////////////////////////////////////////////////
+void Error::SetXmlPath(const std::string &_xmlPath)
+{
+  this->dataPtr->xmlPath = _xmlPath;
 }
 
 /////////////////////////////////////////////////

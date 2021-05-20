@@ -106,26 +106,58 @@ void enforceConfigurablePolicyCondition(
       _errors.push_back(_error);
       break;
     case EnforcementPolicy::WARN:
-      if (!_error.FilePath().has_value())
+      if (!_error.XmlPath().has_value())
+      {
         sdfwarn << _error.Message();
+      }
+      else if (!_error.FilePath().has_value())
+      {
+        sdfwarn
+            << "[" << _error.XmlPath().value()
+            << "]: " << _error.Message();
+      }
       else if (!_error.LineNumber().has_value())
-        sdfwarn << "[" << _error.FilePath().value() << "]: "
-            << _error.Message();
+      {
+        sdfwarn
+            << "[" << _error.XmlPath().value()
+            << ":" << _error.FilePath().value()
+            << "]: " << _error.Message();
+      }
       else
-        sdfwarn << "[" << _error.FilePath().value() << ":L"
-            << _error.LineNumber().value() << "]: "
-            << _error.Message();
+      {
+        sdfwarn
+            << "[" << _error.XmlPath().value()
+            << ":" << _error.FilePath().value()
+            << ":L" << _error.LineNumber().value()
+            << "]: " << _error.Message();
+      }
       break;
     case EnforcementPolicy::LOG:
-      if (!_error.FilePath().has_value())
+      if (!_error.XmlPath().has_value())
+      {
         sdfdbg << _error.Message();
+      }
+      else if (!_error.FilePath().has_value())
+      {
+        sdfdbg
+            << "[" << _error.XmlPath().value()
+            << "]: " << _error.Message();
+      }
       else if (!_error.LineNumber().has_value())
-        sdfdbg << "[" << _error.FilePath().value() << "]: "
-            << _error.Message();
+      {
+        sdfdbg
+            << "[" << _error.XmlPath().value()
+            << ":" << _error.FilePath().value()
+            << "]: " << _error.Message();
+      }
       else
-        sdfdbg << "[" << _error.FilePath().value() << ":L"
-            << _error.LineNumber().value() << "]: "
-            << _error.Message();
+      {
+        sdfdbg
+            << "[" << _error.XmlPath().value()
+            << ":" << _error.FilePath().value()
+            << ":L" << _error.LineNumber().value()
+            << "]: " << _error.Message();
+      }
       break;
     default:
       throw std::runtime_error("Unhandled warning policy enum value");
