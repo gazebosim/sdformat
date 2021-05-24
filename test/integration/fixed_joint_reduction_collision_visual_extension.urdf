@@ -11,7 +11,7 @@
         <sphere radius="0.02" />
       </geometry>
       <material name="">
-        <color rgba="0.1 0.1 0.1 1" />
+        <color rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -33,7 +33,7 @@
         <sphere radius="0.03" />
       </geometry>
       <material name="">
-        <color rgba="0.1 0.1 0.1 1" />
+        <color rgba="0.0 1.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -60,7 +60,7 @@
         <sphere radius="0.03" />
       </geometry>
       <material name="">
-        <color rgba="0.1 0.1 0.1 1" />
+        <color rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -87,7 +87,7 @@
         <sphere radius="0.05" />
       </geometry>
       <material name="">
-        <color rgba="0.1 0.1 0.1 1" />
+        <color rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -167,4 +167,3 @@
     </visual>
   </gazebo>
 </robot>
-
