@@ -361,3 +361,30 @@ TEST(IncludesTest, IncludeModelMissingConfig)
 
   EXPECT_EQ(nullptr, root.Model());
 }
+
+//////////////////////////////////////////////////
+/// Check that sdformat natively parses URDF files when there are no custom
+/// parsers
+TEST(IncludesTest, IncludeUrdf)
+{
+  sdf::setFindCallback(findFileCb);
+
+  std::ostringstream stream;
+  stream
+    << "<sdf version='" << SDF_VERSION << "'>"
+    << "<include>"
+    << "  <uri>test_include_urdf</uri>"
+    << "</include>"
+    << "</sdf>";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(stream.str());
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("test_include_urdf", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_EQ(1u, model->JointCount());
+}
+

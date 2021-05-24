@@ -110,10 +110,10 @@ TEST(Types, ErrorsOutputStream)
   std::string expected = "Error Code ";
   expected +=
       std::to_string(static_cast<std::size_t>(sdf::ErrorCode::FILE_READ));
-  expected += " Msg: Error reading file\nError Code ";
+  expected += ": Msg: Error reading file\nError Code ";
   expected +=
       std::to_string(static_cast<std::size_t>(sdf::ErrorCode::DUPLICATE_NAME));
-  expected += " Msg: Found duplicate name\n";
+  expected += ": Msg: Found duplicate name\n";
 
   std::stringstream output;
   output << errors;
