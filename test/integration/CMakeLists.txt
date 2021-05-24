@@ -9,6 +9,7 @@ set(tests
   converter.cc
   deprecated_specs.cc
   disable_fixed_joint_reduction.cc
+  element_tracing.cc
   fixed_joint_reduction.cc
   force_torque_sensor.cc
   frame.cc

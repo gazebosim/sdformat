@@ -27,6 +27,7 @@ TEST(Error, DefaultConstruction)
   EXPECT_EQ(error, false);
   EXPECT_EQ(error.Code(), sdf::ErrorCode::NONE);
   EXPECT_TRUE(error.Message().empty());
+  EXPECT_FALSE(error.XmlPath().has_value());
   EXPECT_FALSE(error.FilePath().has_value());
   EXPECT_FALSE(error.LineNumber().has_value());
 
@@ -41,6 +42,7 @@ TEST(Error, ValueConstructionWithoutFile)
   EXPECT_EQ(error, true);
   EXPECT_EQ(error.Code(), sdf::ErrorCode::FILE_READ);
   EXPECT_EQ(error.Message(), "Unable to read a file");
+  EXPECT_FALSE(error.XmlPath().has_value());
   EXPECT_FALSE(error.FilePath().has_value());
   EXPECT_FALSE(error.LineNumber().has_value());
 
@@ -52,16 +54,70 @@ TEST(Error, ValueConstructionWithoutFile)
 TEST(Error, ValueConstructionWithFile)
 {
   const std::string emptyFilePath = "Empty/file/path";
-  sdf::Error error(sdf::ErrorCode::FILE_READ, "Unable to read a file",
-                   emptyFilePath, 10);
+  sdf::Error error(
+    sdf::ErrorCode::FILE_READ,
+    "Unable to read a file",
+    emptyFilePath);
   EXPECT_EQ(error, true);
   EXPECT_EQ(error.Code(), sdf::ErrorCode::FILE_READ);
   EXPECT_EQ(error.Message(), "Unable to read a file");
-  EXPECT_TRUE(error.FilePath().has_value());
+  EXPECT_FALSE(error.XmlPath().has_value());
+  ASSERT_TRUE(error.FilePath().has_value());
   EXPECT_EQ(error.FilePath().value(), emptyFilePath);
-  EXPECT_TRUE(error.LineNumber().has_value());
-  EXPECT_EQ(error.LineNumber().value(), 10);
+  EXPECT_FALSE(error.LineNumber().has_value());
 
   if (!error)
     FAIL();
 }
+
+/////////////////////////////////////////////////
+TEST(Error, ValueConstructionWithLineNumber)
+{
+  const std::string emptyFilePath = "Empty/file/path";
+  const int lineNumber = 10;
+  sdf::Error error(
+    sdf::ErrorCode::FILE_READ,
+    "Unable to read a file",
+    emptyFilePath,
+    lineNumber);
+  EXPECT_EQ(error, true);
+  EXPECT_EQ(error.Code(), sdf::ErrorCode::FILE_READ);
+  EXPECT_EQ(error.Message(), "Unable to read a file");
+  EXPECT_FALSE(error.XmlPath().has_value());
+  ASSERT_TRUE(error.FilePath().has_value());
+  EXPECT_EQ(error.FilePath().value(), emptyFilePath);
+  ASSERT_TRUE(error.LineNumber().has_value());
+  EXPECT_EQ(error.LineNumber().value(), lineNumber);
+
+  if (!error)
+    FAIL();
+}
+
+/////////////////////////////////////////////////
+TEST(Error, ValueConstructionWithXmlPath)
+{
+  const std::string emptyFilePath = "Empty/file/path";
+  const int lineNumber = 10;
+  sdf::Error error(
+    sdf::ErrorCode::FILE_READ,
+    "Unable to read a file",
+    emptyFilePath,
+    lineNumber);
+  EXPECT_EQ(error, true);
+  EXPECT_EQ(error.Code(), sdf::ErrorCode::FILE_READ);
+  EXPECT_EQ(error.Message(), "Unable to read a file");
+  ASSERT_TRUE(error.FilePath().has_value());
+  EXPECT_EQ(error.FilePath().value(), emptyFilePath);
+  ASSERT_TRUE(error.LineNumber().has_value());
+  EXPECT_EQ(error.LineNumber().value(), lineNumber);
+
+  const std::string emptyXmlPath = "/sdf/model";
+  ASSERT_FALSE(error.XmlPath().has_value());
+  error.SetXmlPath(emptyXmlPath);
+  ASSERT_TRUE(error.XmlPath().has_value());
+  EXPECT_EQ(error.XmlPath().value(), emptyXmlPath);
+
+  if (!error)
+    FAIL();
+}
+
