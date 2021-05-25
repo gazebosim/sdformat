@@ -32,6 +32,7 @@ set (headers
   Noise.hh
   Param.hh
   parser.hh
+  ParticleEmitter.hh
   Pbr.hh
   Physics.hh
   Plane.hh
