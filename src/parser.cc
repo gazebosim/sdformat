@@ -685,6 +685,21 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
       _sdf->Root()->SetOriginalVersion(sdfNode->Attribute("version"));
     }
 
+    if (_sdf->Root()->FilePath().empty())
+    {
+      _sdf->Root()->SetFilePath(_source);
+    }
+
+    if (!_sdf->Root()->LineNumber().has_value())
+    {
+      _sdf->Root()->SetLineNumber(sdfNode->GetLineNum());
+    }
+
+    if (_sdf->Root()->XmlPath().empty())
+    {
+      _sdf->Root()->SetXmlPath("/sdf");
+    }
+
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
@@ -758,6 +773,21 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     if (_sdf->OriginalVersion().empty())
     {
       _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
+    }
+
+    if (_sdf->FilePath().empty())
+    {
+      _sdf->SetFilePath(_source);
+    }
+
+    if (!_sdf->LineNumber().has_value())
+    {
+      _sdf->SetLineNumber(sdfNode->GetLineNum());
+    }
+
+    if (_sdf->XmlPath().empty())
+    {
+      _sdf->SetXmlPath("/sdf");
     }
 
     if (_convert
@@ -937,20 +967,22 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
   {
     std::stringstream ss;
     ss << "SDF Element[" + _sdf->GetName() + "] is deprecated\n";
+    Error err(ErrorCode::ELEMENT_DEPRECATED, ss.str());
+    err.SetXmlPath(_sdf->XmlPath());
     enforceConfigurablePolicyCondition(
-        _config.DeprecatedElementsPolicy(),
-        Error(ErrorCode::ELEMENT_DEPRECATED, ss.str()),
-        _errors);
+        _config.DeprecatedElementsPolicy(), err, _errors);
   }
 
   if (!_xml)
   {
     if (_sdf->GetRequired() == "1" || _sdf->GetRequired() =="+")
     {
-      _errors.push_back({
+      Error err(
           ErrorCode::ELEMENT_MISSING,
           "SDF Element<" + _sdf->GetName() + "> is missing",
-          _source});
+          _source);
+      err.SetXmlPath(_sdf->XmlPath());
+      _errors.push_back(err);
       return false;
     }
     else
@@ -969,12 +1001,21 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
   std::string refSDFStr = _sdf->ReferenceSDF();
   if (!refSDFStr.empty())
   {
+    const std::string filePath = _sdf->FilePath();
+    const std::string xmlPath = _sdf->XmlPath();
+    auto lineNumber = _sdf->LineNumber();
+
     ElementPtr refSDF;
     refSDF.reset(new Element);
     std::string refFilename = refSDFStr + ".sdf";
     initFile(refFilename, refSDF);
     _sdf->RemoveFromParent();
     _sdf->Copy(refSDF);
+
+    _sdf->SetFilePath(filePath);
+    _sdf->SetXmlPath(xmlPath);
+    if (lineNumber.has_value())
+      _sdf->SetLineNumber(lineNumber.value());
   }
 
   // A list of parent element-attributes pairs where a frame name is referenced
@@ -1003,11 +1044,15 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     if (std::strchr(attribute->Name(), ':') != nullptr)
     {
       _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
-      _sdf->GetAttribute(attribute->Name())->SetFromString(
-          attribute->Value());
+      _sdf->GetAttribute(attribute->Name())->SetFromString(attribute->Value());
       attribute = attribute->Next();
       continue;
     }
+
+    // Construct the Xml path of the current attribute
+    const std::string attributeXmlPath = _sdf->XmlPath() + "[@" +
+        attribute->Name() + "=\"" + attribute->Value() + "\"]";
+
     // Find the matching attribute in SDF
     for (i = 0; i < _sdf->GetAttributeCount(); ++i)
     {
@@ -1019,23 +1064,27 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         {
           if (!isValidFrameReference(attribute->Value()))
           {
-            _errors.push_back({
+            Error err(
                 ErrorCode::ATTRIBUTE_INVALID,
                 "'" + std::string(attribute->Value()) +
                 "' is reserved; it cannot be used as a value of "
                 "attribute [" + p->GetKey() + "]",
                 _source,
-                attribute->GetLineNum()});
-            }
+                attribute->GetLineNum());
+            err.SetXmlPath(attributeXmlPath);
+            _errors.push_back(err);
+          }
         }
         // Set the value of the SDF attribute
         if (!p->SetFromString(attribute->Value()))
         {
-          _errors.push_back({
+          Error err(
               ErrorCode::ATTRIBUTE_INVALID,
               "Unable to read attribute[" + p->GetKey() + "]",
               _source,
-              attribute->GetLineNum()});
+              attribute->GetLineNum());
+          err.SetXmlPath(attributeXmlPath);
+          _errors.push_back(err);
           return false;
         }
         break;
@@ -1048,14 +1097,14 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       ss << "XML Attribute[" << attribute->Name()
               << "] in element[" << _xml->Value()
               << "] not defined in SDF.\n";
+      Error err(
+          ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+          ss.str(),
+          _source,
+          _xml->GetLineNum());
+      err.SetXmlPath(attributeXmlPath);
       enforceConfigurablePolicyCondition(
-          _config.WarningsPolicy(),
-          Error(
-              ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
-              ss.str(),
-              _source,
-              _xml->GetLineNum()),
-          _errors);
+          _config.WarningsPolicy(), err, _errors);
     }
 
     attribute = attribute->Next();
@@ -1067,12 +1116,14 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     ParamPtr p = _sdf->GetAttribute(i);
     if (p->GetRequired() && !p->GetSet())
     {
-      _errors.push_back({
+      Error err(
           ErrorCode::ATTRIBUTE_MISSING,
           "Required attribute[" + p->GetKey() + "] in element[" + _xml->Value()
           + "] is not specified in SDF.",
           _source,
-          _xml->GetLineNum()});
+          _xml->GetLineNum());
+      err.SetXmlPath(_sdf->XmlPath());
+      _errors.push_back(err);
       return false;
     }
   }
@@ -1085,6 +1136,9 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
   {
     std::string filename;
 
+    // Keep count of the include indices
+    int includeElemIndex = -1;
+
     // Iterate over all the child elements
     tinyxml2::XMLElement *elemXml = nullptr;
     for (elemXml = _xml->FirstChildElement(); elemXml;
@@ -1096,6 +1150,10 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         std::string uri;
         tinyxml2::XMLElement *uriElement = elemXml->FirstChildElement("uri");
 
+        const std::string includeXmlPath = _sdf->XmlPath() + "/include[" +
+            std::to_string(++includeElemIndex) + "]";
+        const std::string uriXmlPath = includeXmlPath + "/uri";
+
         if (uriElement)
         {
           uri = uriElement->GetText();
@@ -1104,11 +1162,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           // Test the model path
           if (modelPath.empty())
           {
-            _errors.push_back({
+            Error err(
                 ErrorCode::URI_LOOKUP,
                 "Unable to find uri[" + uri + "]",
                 _source,
-                uriElement->GetLineNum()});
+                uriElement->GetLineNum());
+            err.SetXmlPath(uriXmlPath);
+            _errors.push_back(err);
             continue;
           }
           else
@@ -1120,13 +1180,15 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
               if (filename.empty())
               {
-                _errors.push_back({
+                Error err(
                     ErrorCode::URI_LOOKUP,
                     "Unable to resolve uri[" + uri + "] to model path [" +
                     modelPath + "] since it does not contain a model.config " +
                     "file.",
                     _source,
-                    uriElement->GetLineNum()});
+                    uriElement->GetLineNum());
+                err.SetXmlPath(uriXmlPath);
+                _errors.push_back(err);
                 continue;
               }
             }
@@ -1141,18 +1203,20 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         }
         else
         {
-          _errors.push_back({
+          Error err(
               ErrorCode::ATTRIBUTE_MISSING,
               "<include> element missing 'uri' attribute",
               _source,
-              elemXml->GetLineNum()});
+              elemXml->GetLineNum());
+          err.SetXmlPath(includeXmlPath);
+          _errors.push_back(err);
           continue;
         }
 
         // If the file is not an SDFormat file, it is assumed that it will
         // handled by a custom parser, so fall through and add the include
         // element into _sdf.
-        if (sdf::isSdfFile(filename))
+        if (sdf::isSdfFile(filename) || _config.CustomModelParsers().empty())
         {
           // NOTE: sdf::init is an expensive call. For performance reason,
           // a new sdf pointer is created here by cloning a fresh sdf template
@@ -1170,11 +1234,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
           if (!readFile(filename, includeSDF))
           {
-            _errors.push_back({
+            Error err(
                 ErrorCode::FILE_READ,
                 "Unable to read file[" + filename + "]",
                 _source,
-                uriElement->GetLineNum()});
+                uriElement->GetLineNum());
+            err.SetXmlPath(uriXmlPath);
+            _errors.push_back(err);
             return false;
           }
 
@@ -1198,25 +1264,25 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
                   << "> in addition to <" << topLevelElem->GetName()
                   << "> in include file. This is unsupported and in future "
                   << "versions of libsdformat will become an error";
+                Error err(
+                    ErrorCode::ELEMENT_INCORRECT_TYPE, ss.str(), filename);
+                err.SetXmlPath("/sdf/" + std::string(elementType));
                 enforceConfigurablePolicyCondition(
-                    _config.WarningsPolicy(),
-                    Error(
-                        ErrorCode::ELEMENT_INCORRECT_TYPE,
-                        ss.str(),
-                        filename),
-                    _errors);
+                    _config.WarningsPolicy(), err, _errors);
               }
             }
           }
 
           if (nullptr == topLevelElem)
           {
-            _errors.push_back({
+            Error err(
                 ErrorCode::ELEMENT_MISSING,
                 "Failed to find top level <model> / <actor> / <light> for "
                 "<include>\n",
                 _source,
-                uriElement->GetLineNum()});
+                uriElement->GetLineNum());
+            err.SetXmlPath(uriXmlPath);
+            _errors.push_back(err);
             continue;
           }
 
@@ -1230,13 +1296,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             ss << "Found more than one of " << topLevelElem->GetName()
               << " for <include>. This is unsupported and in future "
               << "versions of libsdformat will become an error";
+            Error err(
+                ErrorCode::ELEMENT_INCORRECT_TYPE, ss.str(), filename);
+            err.SetXmlPath("/sdf/" + topLevelElementType);
             enforceConfigurablePolicyCondition(
-                _config.WarningsPolicy(),
-                Error(
-                    ErrorCode::ELEMENT_INCORRECT_TYPE,
-                    ss.str(),
-                    filename),
-                _errors);
+                _config.WarningsPolicy(), err, _errors);
           }
 
           bool isModel = topLevelElementType == "model";
@@ -1244,8 +1308,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
           if (elemXml->FirstChildElement("name"))
           {
-            topLevelElem->GetAttribute("name")->SetFromString(
-                elemXml->FirstChildElement("name")->GetText());
+            const std::string overrideName =
+                elemXml->FirstChildElement("name")->GetText();
+            topLevelElem->GetAttribute("name")->SetFromString(overrideName);
+            topLevelElem->SetXmlPath("/sdf/" + topLevelElementType +
+                "[@name=\"" + overrideName + "\"]");
           }
 
           tinyxml2::XMLElement *poseElemXml =
@@ -1284,14 +1351,18 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
               elemXml->FirstChildElement("placement_frame");
           if (isModel && placementFrameElem)
           {
+            const std::string placementFrameXmlPath =
+                includeXmlPath + "/placement_frame";
             if (nullptr == elemXml->FirstChildElement("pose"))
             {
-              _errors.push_back({
+              Error err(
                   ErrorCode::MODEL_PLACEMENT_FRAME_INVALID,
                   "<pose> is required when specifying the placement_frame "
                   "element",
                   _source,
-                  elemXml->GetLineNum()});
+                  elemXml->GetLineNum());
+              err.SetXmlPath(placementFrameXmlPath);
+              _errors.push_back(err);
               return false;
             }
 
@@ -1299,13 +1370,15 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
             if (!isValidFrameReference(placementFrameVal))
             {
-              _errors.push_back({
+              Error err(
                   ErrorCode::RESERVED_NAME,
                   "'" + placementFrameVal +
                   "' is reserved; it cannot be used as a value of "
                   "element [placement_frame]",
                   _source,
-                  placementFrameElem->GetLineNum()});
+                  placementFrameElem->GetLineNum());
+              err.SetXmlPath(placementFrameXmlPath);
+              _errors.push_back(err);
             }
             topLevelElem->GetAttribute("placement_frame")
                 ->SetFromString(placementFrameVal);
@@ -1313,23 +1386,34 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
           if (isModel || isActor)
           {
+            // Using indices for plugins as duplicated plugin names are
+            // allowed.
+            int pluginIndex = -1;
             for (auto *childElemXml = elemXml->FirstChildElement();
                  childElemXml;
                  childElemXml = childElemXml->NextSiblingElement())
             {
               if (std::string("plugin") == childElemXml->Value())
               {
+                const std::string pluginXmlPath = includeXmlPath + "/plugin[" +
+                    std::to_string(++pluginIndex) + "]";
+
                 sdf::ElementPtr pluginElem;
                 pluginElem = topLevelElem->AddElement("plugin");
+                pluginElem->SetFilePath(_source);
+                pluginElem->SetLineNumber(childElemXml->GetLineNum());
+                pluginElem->SetXmlPath(pluginXmlPath);
 
                 if (!readXml(
                     childElemXml, pluginElem, _config, _source, _errors))
                 {
-                  _errors.push_back({
+                  Error err(
                       ErrorCode::ELEMENT_INVALID,
                       "Error reading plugin element",
                       _source,
-                      childElemXml->GetLineNum()});
+                      childElemXml->GetLineNum());
+                  err.SetXmlPath(pluginXmlPath);
+                  _errors.push_back(err);
                   return false;
                 }
               }
@@ -1361,20 +1445,30 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         ElementPtr elemDesc = _sdf->GetElementDescription(descCounter);
         if (elemDesc->GetName() == elemXml->Value())
         {
+          std::string elemXmlPath = _sdf->XmlPath() + "/" + elemXml->Value();
+          const char *name = elemXml->Attribute("name");
+          if (name)
+            elemXmlPath += "[@name=\"" + std::string(name) + "\"]";
+
           ElementPtr element = elemDesc->Clone();
           element->SetParent(_sdf);
+          element->SetFilePath(_source);
+          element->SetLineNumber(elemXml->GetLineNum());
+          element->SetXmlPath(elemXmlPath);
           if (readXml(elemXml, element, _config, _source, _errors))
           {
             _sdf->InsertElement(element);
           }
           else
           {
-            _errors.push_back({
+            Error err(
                 ErrorCode::ELEMENT_INVALID,
                 std::string("Error reading element <") +
                 elemXml->Value() + ">",
                 _source,
-                elemXml->GetLineNum()});
+                elemXml->GetLineNum());
+            err.SetXmlPath(elemXmlPath);
+            _errors.push_back(err);
             return false;
           }
           break;
@@ -1384,20 +1478,25 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       if (descCounter == _sdf->GetElementDescriptionCount()
             && std::strchr(elemXml->Value(), ':') == nullptr)
       {
+        std::string elemXmlPath = _sdf->XmlPath() + "/" + elemXml->Value();
+        const char *name = elemXml->Attribute("name");
+        if (name)
+          elemXmlPath += "[@name=\"" + std::string(name) + "\"]";
+
         std::stringstream ss;
         ss << "XML Element[" << elemXml->Value()
            << "], child of element[" << _xml->Value()
            << "], not defined in SDF. Copying[" << elemXml->Value() << "] "
            << "as children of [" << _xml->Value() << "].\n";
 
+        Error err(
+            ErrorCode::ELEMENT_INCORRECT_TYPE,
+            ss.str(),
+            _source,
+            elemXml->GetLineNum());
+        err.SetXmlPath(elemXmlPath);
         enforceConfigurablePolicyCondition(
-            _config.UnrecognizedElementsPolicy(),
-            Error(
-                ErrorCode::ELEMENT_INCORRECT_TYPE,
-                ss.str(),
-                _source,
-                elemXml->GetLineNum()),
-            _errors);
+            _config.UnrecognizedElementsPolicy(), err, _errors);
 
         continue;
       }
@@ -1416,15 +1515,19 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       {
         if (!_sdf->HasElement(elemDesc->GetName()))
         {
+          const std::string elemXmlPath = _sdf->XmlPath() + "/" +
+              elemDesc->GetName();
           if (_sdf->GetName() == "joint" &&
               _sdf->Get<std::string>("type") != "ball")
           {
-            _errors.push_back({
+            Error err(
                 ErrorCode::ELEMENT_MISSING,
                 "XML Missing required element[" + elemDesc->GetName() +
                 "], child of element[" + _sdf->GetName() + "]",
                 _source,
-                elemXml->GetLineNum()});
+                elemXml->GetLineNum());
+            err.SetXmlPath(elemXmlPath);
+            _errors.push_back(err);
             return false;
           }
           else
