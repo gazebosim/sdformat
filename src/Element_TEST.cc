@@ -593,8 +593,8 @@ TEST(Element, ToStringDefaultElements)
     << "  </>\n"
     << "</>\n";
 
-  EXPECT_EQ(parent->ToString(""), stream.str());
   EXPECT_EQ(parent->ToString("", false), stream.str());
+  EXPECT_EQ(parent->ToString(""), stream.str());
   EXPECT_EQ(parent->ToString("", true), stream.str());
 
   elem->SetExplicitlySetInFile(false);
@@ -605,14 +605,14 @@ TEST(Element, ToStringDefaultElements)
     << "  </>\n"
     << "</>\n";
 
-  EXPECT_EQ(parent->ToString(""), stream2.str());
   EXPECT_EQ(parent->ToString("", false), stream2.str());
+  EXPECT_EQ(parent->ToString(""), stream.str());
   EXPECT_EQ(parent->ToString("", true), stream.str());
 
   parent->SetExplicitlySetInFile(false);
 
-  EXPECT_EQ(parent->ToString(""), "");
   EXPECT_EQ(parent->ToString("", false), "");
+  EXPECT_EQ(parent->ToString(""), stream.str());
   EXPECT_EQ(parent->ToString("", true), stream.str());
 }
 

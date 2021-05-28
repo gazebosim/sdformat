@@ -458,7 +458,7 @@ void Element::PrintValuesImpl(const std::string &_prefix,
       // a new required attribute with a default value is added. We would have
       // better separation of concerns if the conversion process set the
       // required attributes with their default values.
-      if ((*aiter)->GetSet() || (*aiter)->GetRequired() || _includeDefaults)
+      if ((*aiter)->GetSet() || (*aiter)->GetRequired())
       {
         _out << " " << (*aiter)->GetKey() << "='"
              << (*aiter)->GetAsString() << "'";
@@ -498,7 +498,7 @@ void Element::PrintValuesImpl(const std::string &_prefix,
 void Element::PrintValues(std::string _prefix) const
 {
   std::ostringstream ss;
-  PrintValuesImpl(_prefix, ss, false);
+  PrintValuesImpl(_prefix, ss, true);
   std::cout << ss.str();
 }
 
@@ -515,7 +515,7 @@ void Element::PrintValues(const std::string &_prefix,
 std::string Element::ToString(const std::string &_prefix) const
 {
   std::ostringstream out;
-  this->ToString(_prefix, out, false);
+  this->ToString(_prefix, out, true);
   return out.str();
 }
 

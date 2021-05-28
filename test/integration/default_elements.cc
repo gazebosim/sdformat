@@ -166,7 +166,7 @@ TEST(ExplicitlySetInFile, ToString)
   EXPECT_TRUE(errors.empty());
 
   EXPECT_EQ(root.Element()->ToString(""),
-            root.Element()->ToString("", false));
+            root.Element()->ToString("", true));
 
   std::ostringstream stream;
   std::string version = "1.7";
@@ -180,7 +180,6 @@ TEST(ExplicitlySetInFile, ToString)
     << "  </world>\n"
     << "</sdf>\n";
 
-  EXPECT_EQ(root.Element()->ToString(""), stream.str());
   EXPECT_EQ(root.Element()->ToString("", false), stream.str());
 
   stream.str(std::string());
@@ -201,7 +200,7 @@ TEST(ExplicitlySetInFile, ToString)
     << "    <gravity>0 0 -9.8</gravity>\n"
     << "    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>\n"
     << "    <atmosphere type='adiabatic'/>\n"
-    << "    <physics name='default_physics' default='0' type='ode'>\n"
+    << "    <physics type='ode'>\n"
     << "      <max_step_size>0.001</max_step_size>\n"
     << "      <real_time_factor>1</real_time_factor>\n"
     << "      <real_time_update_rate>1000</real_time_update_rate>\n"
@@ -214,5 +213,7 @@ TEST(ExplicitlySetInFile, ToString)
     << "  </world>\n"
     << "</sdf>\n";
 
+  EXPECT_EQ(root.Element()->ToString(""), stream.str());
   EXPECT_EQ(root.Element()->ToString("", true), stream.str());
+
 }
