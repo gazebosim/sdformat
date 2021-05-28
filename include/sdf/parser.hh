@@ -141,5 +141,14 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool convertString(const std::string &_sdfString,
                      const std::string &_version, SDFPtr _sdf);
+
+  /// \brief Check that all sibling elements of the same type have unique names.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first duplicate name is found.
+  /// \param[in] _elem sdf Element to check recursively.
+  /// \return True if all contained elements have do not share a name with
+  /// sibling elements of the same type.
+  SDFORMAT_VISIBLE
+  bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem);
 }
 #endif

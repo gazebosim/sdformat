@@ -18,9 +18,10 @@
 #include <gtest/gtest.h>
 #include "sdf/parser.hh"
 #include "sdf/Element.hh"
+#include "test_config.h"
 
 /////////////////////////////////////////////////
-TEST(parser, initStringTrim)
+TEST(Parser, initStringTrim)
 {
   sdf::SDFPtr sdf(new sdf::SDF());
   std::ostringstream stream;
@@ -46,6 +47,32 @@ TEST(parser, initStringTrim)
   sdf::ParamPtr attr = root->GetAttribute("name");
   EXPECT_TRUE(attr != nullptr);
   EXPECT_TRUE(attr->GetRequired());
+}
+
+/////////////////////////////////////////////////
+/// Tests whether the input sdf string satisfies the unique name criteria among
+/// same types
+sdf::SDFPtr InitSDF()
+{
+  sdf::SDFPtr sdf(new sdf::SDF());
+  sdf::init(sdf);
+  return sdf;
+}
+
+/////////////////////////////////////////////////
+TEST(Parser, NameUniqueness)
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+
+  // Check an SDF file with sibling elements of the same type (world)
+  // that have duplicate names.
+  {
+    std::string path = pathBase +"/world_duplicate.sdf";
+    sdf::SDFPtr sdf = InitSDF();
+    EXPECT_TRUE(sdf::readFile(path, sdf));
+    EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
+  }
 }
 
 /////////////////////////////////////////////////
