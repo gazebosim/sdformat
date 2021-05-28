@@ -215,5 +215,4 @@ TEST(ExplicitlySetInFile, ToString)
 
   EXPECT_EQ(root.Element()->ToString(""), stream.str());
   EXPECT_EQ(root.Element()->ToString("", true), stream.str());
-
 }
