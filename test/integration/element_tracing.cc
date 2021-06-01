@@ -279,6 +279,7 @@ TEST(ElementTracing, includes)
   // 'test_model/model.sdf', therefore Windows machines will assign the path
   // '\\path\\to\\integration\\model\\test_model/model.sdf', instead of
   // '\\path\\to\\integration\\model\\test_model\\model.sdf'.
+  // Reference issue #572.
   modelFilePath = sdf::testing::TestFile(
       "integration", "model", "test_model/model.sdf");
 #endif
