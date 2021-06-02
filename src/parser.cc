@@ -1533,7 +1533,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           else
           {
             // Add default element
-            _sdf->AddElement(elemDesc->GetName());
+            ElementPtr defaultElement = _sdf->AddElement(elemDesc->GetName());
+            defaultElement->SetExplicitlySetInFile(false);
           }
         }
       }
