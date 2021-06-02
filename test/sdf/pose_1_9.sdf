@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="default">
+    
+    <model name="model_with_empty_pose">
+      <pose></pose>
+      <link name="link"/>
+    </model>
+    
+    <model name="model_with_pose_value">
+      <pose>1 2 3 1 2 3</pose>
+      <link name="link"/>
+    </model>
+    
+    <model name="model_with_empty_translation">
+      <pose>
+        <translation></translation>
+      </pose>
+      <link name="link"/>
+    </model>
+    
+    <model name="model_with_translation_value">
+      <pose>
+        <translation>2 3 4</translation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_empty_rpy_deg">
+      <pose>
+        <rotation type="rpy_degrees"></rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_rpy_deg_value">
+      <pose>
+        <rotation type="rpy_degrees">0 90 180</rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_empty_rpy_rad">
+      <pose>
+        <rotation type="rpy_radians"></rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_rpy_rad_value">
+      <pose>
+        <rotation type="rpy_radians">1 2 3</rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_empty_quat">
+      <pose>
+        <rotation type="q_wxyz"></rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_quat_value">
+      <pose>
+        <rotation type="q_wxyz">0.7071068 0.7071068 0 0</rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_both_rotations">
+      <pose>
+        <rotation type="rpy_radians"></rotation>
+        <rotation type="q_wxyz"></rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+  </world>
+</sdf>
+

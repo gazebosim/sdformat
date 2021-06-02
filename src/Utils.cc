@@ -56,24 +56,90 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
       return false;
   }
 
-  // Read the frame. An empty frame implies the parent frame.
+  // Default zero pose.
+  ignition::math::Pose3d pose(
+      ignition::math::Vector3d::Zero, ignition::math::Quaterniond::Identity);
+
+  // Read the frame. An empty frame implies the parent frame. This is optional.
   std::pair<std::string, bool> framePair =
       sdf->Get<std::string>("relative_to", "");
 
-  // Read the pose value.
-  std::pair<ignition::math::Pose3d, bool> posePair =
-    sdf->Get<ignition::math::Pose3d>("", ignition::math::Pose3d::Zero);
-
-  // Set output, but only if the return value is true.
-  if (posePair.second)
+  // Start checking for translation and rotation elements.
+  sdf::ElementPtr translationPtr = sdf->GetElement("translation");
+  sdf::ElementPtr rotationPtr = sdf->GetElement("rotation");
+  
+  // If both are not explicitly set, the pose is parsed using the value.
+  if (!translationPtr->GetExplicitlySetInFile() &&
+      !rotationPtr->GetExplicitlySetInFile())
   {
+    std::pair<ignition::math::Pose3d, bool> posePair =
+        sdf->Get<ignition::math::Pose3d>("", ignition::math::Pose3d::Zero);
     _pose = posePair.first;
     _frame = framePair.first;
+
+    // In this scenario, return true or false based on pose element value.
+    return posePair.second;
+  }
+ 
+  // Read the translation values.
+  if (translationPtr->GetExplicitlySetInFile())
+  {
+    std::pair<ignition::math::Vector3d, bool> translationPair =
+        translationPtr->Get<ignition::math::Vector3d>(
+            "", ignition::math::Vector3d::Zero);
+    if (translationPair.second)
+    {
+      std::cout << "found translation" << std::endl;
+      pose.Set(translationPair.first, pose.Rot());
+    }
   }
 
-  // The frame attribute is optional, so only return true or false based
-  // on the pose element value.
-  return posePair.second;
+  // Read the rotation values.
+  if (rotationPtr->GetExplicitlySetInFile())
+  {
+    std::pair<std::string, bool> typePair =
+        rotationPtr->Get<std::string>("type", "");
+    if (!typePair.second)
+      return false;
+
+    if (typePair.first == "rpy_degrees")
+    {
+      std::cout << "found rpy deg" << std::endl;
+      std::pair<ignition::math::Vector3d, bool> rpyDegPair =
+          rotationPtr->Get<ignition::math::Vector3d>(
+              "", ignition::math::Vector3d::Zero);
+      if (rpyDegPair.second)
+        pose.Set(pose.Pos(), IGN_DTOR(rpyDegPair.first));
+    }
+    else if (typePair.first == "rpy_radians")
+    {
+      std::cout << "found rpy rad" << std::endl;
+      std::pair<ignition::math::Vector3d, bool> rpyRadPair =
+          rotationPtr->Get<ignition::math::Vector3d>(
+              "", ignition::math::Vector3d::Zero);
+      if (rpyRadPair.second)
+        pose.Set(pose.Pos(), rpyRadPair.first);
+    }
+    else if (typePair.first == "q_wxyz")
+    {
+      std::cout << "found quat" << std::endl;
+      std::pair<ignition::math::Quaterniond, bool> quatPair =
+          rotationPtr->Get<ignition::math::Quaterniond>(
+              "", ignition::math::Quaterniond::Identity);
+      if (quatPair.second)
+      {
+        pose.Set(pose.Pos(), quatPair.first);
+        std::cout << quatPair.first << std::endl;
+        std::cout << "set quat" << std::endl;
+      }
+    }
+    else
+      return false;
+  }
+
+  _pose = pose;
+  _frame = framePair.first;
+  return true;
 }
 
 /////////////////////////////////////////////////
