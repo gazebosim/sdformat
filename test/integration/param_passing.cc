@@ -77,42 +77,44 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   PrintErrors(errors);
   EXPECT_FALSE(errors.empty());
   ASSERT_EQ(errors.size(), 19u);
+
+  int i = -1;
   // missing element_id attribute
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   // element does not exist in included model
-  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_MISSING);
   // element already exists in included model
-  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   // for add action, parent of specified element does not exist
-  EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_MISSING);
   // missing name after double colons
-  EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
   // missing action attribute
-  EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   // incorrect schema (missing required attributes; in children of element_id)
-  EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
-  EXPECT_EQ(errors[7].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_INVALID);
   // not defined sdf element (in children of where element_id is defined)
-  EXPECT_EQ(errors[8].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_INVALID);
   // not defined sdf element (where element_id is defined)
-  EXPECT_EQ(errors[9].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_INVALID);
   // missing 'name' attribute where element_id is with action="add"
-  EXPECT_EQ(errors[10].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
   // 'name' attribute is empty (where element_id is with action="add")
-  EXPECT_EQ(errors[11].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
   // incorrect schema (missing required attributes; where element_id defined)
-  EXPECT_EQ(errors[12].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
-  EXPECT_EQ(errors[13].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_INVALID);
   // invalid action
-  EXPECT_EQ(errors[14].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
   // invalid child action
-  EXPECT_EQ(errors[15].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
   // child element does not exist
-  EXPECT_EQ(errors[16].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_MISSING);
   // child <box> (child of <geometry>) does not exist
-  EXPECT_EQ(errors[17].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_MISSING);
   // child element (w/ name attribute) does not exist
-  EXPECT_EQ(errors[18].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_MISSING);
 }
 
 /////////////////////////////////////////////////

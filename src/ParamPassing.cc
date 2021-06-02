@@ -88,8 +88,10 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
 
     if (actionStr == "add")
     {
+      const char *attr = childElemXml->Attribute("name");
+
       // checks name attribute exists
-      if (!childElemXml->Attribute("name"))
+      if (!attr)
       {
         _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
           "Element to be added is missing a 'name' attribute. "
@@ -100,7 +102,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
       }
 
       // checks name attribute nonempty
-      if (!strlen(childElemXml->Attribute("name")))
+      if (!strlen(attr))
       {
         _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
           "The 'name' attribute can not be empty. Skipping element addition:\n"
@@ -109,7 +111,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
         continue;
       }
 
-      std::string attrName = childElemXml->Attribute("name");
+      std::string attrName = attr;
 
       // check that elem doesn't already exist
       elem  = getElementById(_includeSDF, childElemXml->Name(),
@@ -404,6 +406,7 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
       }
     }
 
+    // get child element description
     ElementPtr elemChild;
     if (useParentDesc)
       elemChild = elemDesc;
