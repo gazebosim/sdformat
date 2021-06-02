@@ -17,7 +17,13 @@
 #include <cstring>
 #include <vector>
 
+#include "sdf/Filesystem.hh"
+#include "sdf/parser.hh"
+#include "sdf/sdf_config.h"
+
 #include "ParamPassing.hh"
+#include "parser_private.hh"
+#include "XmlUtils.hh"
 
 namespace sdf
 {
@@ -37,13 +43,10 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     const char *childElemId = childElemXml->Attribute("element_id");
     if (!childElemId)
     {
-      tinyxml2::XMLPrinter printer;
-      childElemXml->Accept(&printer);
-
       _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
         "Element identifier requires an element_id attribute, but the "
         "element_id is not set. Skipping element modification:\n"
-        + std::string(printer.CStr())
+        + ElementToString(childElemXml)
       });
       continue;
     }
@@ -55,13 +58,10 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     if (found != std::string::npos
         && (elemIdAttr.substr(found+2)).empty())
     {
-      tinyxml2::XMLPrinter printer;
-      childElemXml->Accept(&printer);
-
       _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
         "Missing name after double colons in element identifier. "
         "Skipping element modification:\n"
-        + std::string(printer.CStr())
+        + ElementToString(childElemXml)
       });
       continue;
     }
@@ -73,63 +73,92 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
       actionStr = std::string(childElemXml->Attribute("action"));
 
     // get element pointer to specified element using element identifier
-    ElementPtr elem = getElementById(_includeSDF, childElemXml->Name(),
-                          childElemId);
+    ElementPtr elem;
 
     if (actionStr == "add")
     {
+      const char *attr = childElemXml->Attribute("name");
+
+      // checks name attribute exists
+      if (!attr)
+      {
+        _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+          "Element to be added is missing a 'name' attribute. "
+          "Skipping element addition:\n"
+          + ElementToString(childElemXml)
+        });
+        continue;
+      }
+
+      // checks name attribute nonempty
+      if (!strlen(attr))
+      {
+        _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+          "The 'name' attribute can not be empty. Skipping element addition:\n"
+          + ElementToString(childElemXml)
+        });
+        continue;
+      }
+
+      std::string attrName = attr;
+
+      // check that elem doesn't already exist
+      elem  = getElementById(_includeSDF, childElemXml->Name(),
+                            elemIdAttr + "::" + attrName);
       if (elem != nullptr)
       {
-        // TODO(jenn) make test for this
-        tinyxml2::XMLPrinter printer;
-        childElemXml->Accept(&printer);
-
         _errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Could not add element <" + std::string(childElemXml->Name())
           + " element_id='" + childElemXml->Attribute("element_id")
           + "'> because element already exists in included model. "
           + "Skipping element addition:\n"
-          + printer.CStr()
+          + ElementToString(childElemXml)
         });
         continue;
       }
 
-      if (found != std::string::npos)
+      if (elemIdAttr.empty())
       {
-        // +2 past double colons
-        elemIdAttr = elemIdAttr.substr(found+2);
-      }
-
-      if (!elemIdAttr.compare(childElemId))
-      {
-        // if equal add new element as direct child of included model
-        elem = _includeSDF->Root()->GetFirstElement();  // model element
+        // add new element as direct child of included model
+        elem = _includeSDF->Root()->GetFirstElement();
       }
       else
       {
-        // get parent element of childElemId.substr(found+2)
+        // get parent element of new element
         elem = getElementById(_includeSDF, "",
-                              std::string(childElemId).substr(0, found),
+                              elemIdAttr,
                               true);
-
-        // TODO(jenn) add error case for DUPLICATE_ELEMENT
       }
+    }
+    else
+    {
+      elem  = getElementById(_includeSDF, childElemXml->Name(), elemIdAttr);
     }
 
     if (elem == nullptr)
     {
-      tinyxml2::XMLPrinter printer;
-      childElemXml->Accept(&printer);
-
       _errors.push_back({ErrorCode::ELEMENT_MISSING,
         "Could not find element <" + std::string(childElemXml->Name())
         + " element_id='" + childElemXml->Attribute("element_id") + "'>. " +
-        "Skipping element modification:\n" + printer.CStr()
+        "Skipping element modification:\n" + ElementToString(childElemXml)
       });
       continue;
     }
 
-    // TODO(jenn) element modifications
+    // *** Element modifications ***
+
+    if (actionStr.empty())
+    {
+      // action attribute not in childElemXml so must be in all direct children
+      // of childElemXml
+      handleIndividualChildActions(childElemXml, elem, _errors);
+    }
+    else if (actionStr == "add")
+    {
+      add(childElemXml, elem, _errors);
+    }
+
+    // TODO(jenn) element modifications: modify, remove, replace
   }
 }
 
@@ -210,6 +239,131 @@ int64_t findPrefixLastIndex(const std::string &_elemId,
     return _startIdx + (_ref.size()-1);
 
   return -1;
+}
+
+//////////////////////////////////////////////////
+void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
+                                  ElementPtr _elem, Errors &_errors)
+{
+  // get element description
+  ElementPtr elemDesc = std::make_shared<Element>();
+  std::string filename = std::string(_childrenXml->Name()) + ".sdf";
+
+  if (!initFile(filename, elemDesc))
+  {
+    // TODO(jenn) not sure if we should load the element anyway
+    // (e.g., user created their own element), maybe future implementation
+    _errors.push_back({ErrorCode::ELEMENT_INVALID,
+      "Element [" + std::string(_childrenXml->Name()) + "] is not a defined "
+      "SDF element. Skipping element modification: "
+      + ElementToString(_childrenXml)
+    });
+    return;
+  }
+
+  // loop through children and handle corresponding actions
+  for (tinyxml2::XMLElement *xmlChild = _childrenXml->FirstChildElement();
+       xmlChild;
+       xmlChild = xmlChild->NextSiblingElement())
+  {
+    if (xmlChild->Attribute("action") == nullptr)
+    {
+      _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+        "Missing an action attribute. Skipping child element modification "
+        "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
+        + std::string(_childrenXml->Attribute("element_id")) + "'>: "
+        + ElementToString(xmlChild)
+      });
+      continue;
+    }
+
+
+    bool useParentDesc = false;
+    std::string elemName = xmlChild->Name();
+
+    // the modification will be skipped if not an existing sdf element
+    // TODO(jenn) not sure if we should load element anyway,
+    // might need to be a future implementation
+    if (!elemDesc->HasElementDescription(elemName))
+    {
+      // TODO(anyone) when forward porting to sdf11,
+      // need to add `|| elemName == "model"` since nested models are allowed
+      if (elemName == "link")
+      {
+        useParentDesc = true;
+      }
+      else
+      {
+        _errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Element [" + elemName + "] is not a defined SDF element. Skipping "
+          "child element modification with parent <"
+          + std::string(_childrenXml->Name()) + " element_id='"
+          + std::string(_childrenXml->Attribute("element_id")) + "'>: "
+          + ElementToString(xmlChild)
+        });
+        continue;
+      }
+    }
+
+    std::string actionStr = xmlChild->Attribute("action");
+
+    // get child element description
+    ElementPtr elemChild;
+    if (useParentDesc)
+      elemChild = elemDesc;
+    else
+      elemChild = elemDesc->GetElementDescription(elemName);
+
+    if (!readXml(xmlChild, elemChild, _errors))
+    {
+      _errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Unable to convert XML to SDF. Skipping child element modification "
+        "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
+        + std::string(_childrenXml->Attribute("element_id")) + "'>: "
+        + ElementToString(xmlChild)
+      });
+      continue;
+    }
+
+    if (actionStr == "add")
+    {
+      _elem->InsertElement(elemChild);
+    }
+
+    // TODO(jenn) finish (direct children only): modify, remove, replace
+  }
+}
+
+
+//////////////////////////////////////////////////
+void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem, Errors &_errors)
+{
+  ElementPtr newElem = std::make_shared<Element>();
+  std::string filename = std::string(_childXml->Name()) + ".sdf";
+
+  if (!initFile(filename, newElem))
+  {
+    // TODO(jenn) not sure if we should load the element anyway
+    // (e.g., user created their own element), maybe future implementation
+    _errors.push_back({ErrorCode::ELEMENT_INVALID,
+      "Element [" + std::string(_childXml->Name()) + "] is not a defined "
+      "SDF element. Skipping element modification: "
+      + ElementToString(_childXml)
+    });
+    return;
+  }
+
+  if (readXml(_childXml, newElem, _errors))
+  {
+    _elem->InsertElement(newElem);
+  }
+  else
+  {
+    _errors.push_back({ErrorCode::ELEMENT_INVALID,
+      "Unable to convert XML to SDF. Skipping element modification: "
+      + ElementToString(_childXml)
+    });
+  }
 }
 }
 }

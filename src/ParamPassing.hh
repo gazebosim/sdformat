@@ -62,6 +62,23 @@ namespace sdf
     int64_t findPrefixLastIndex(const std::string &_elemId,
                                 const int64_t &_startIdx,
                                 const std::string &_ref);
+
+    /// \brief Handles individual actions of children in _childrenXml
+    /// \param[in] _childrenXml Pointer to xml element
+    /// \param[out] _elem The sdf element to apply actions
+    /// (i.e., add, modify, remove, replace)
+    /// \param[out] _errors Captures errors found during parsing
+    void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
+                                      ElementPtr _elem, Errors &_errors);
+
+    /// \brief Adds a new element to an element from the included model
+    /// \param[in] _childXml Pointer to the new element to add, which is a child
+    /// of //include/experimental:params
+    /// \param[out] _elem The element from the included model to add the new
+    /// element to
+    /// \param[out] _errors Captures errors found during parsing
+    void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem,
+             Errors &_errors);
   }
 }
 #endif
