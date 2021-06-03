@@ -1005,6 +1005,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     _sdf->RemoveFromParent();
     _sdf->Copy(refSDF);
 
+    _sdf->SetFilePath(filePath);
     _sdf->SetXmlPath(xmlPath);
     if (lineNumber.has_value())
       _sdf->SetLineNumber(lineNumber.value());

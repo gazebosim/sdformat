@@ -207,7 +207,7 @@ TEST(ElementTracing, includes)
   sdf::ElementPtr overrideActorPluginElem =
       overrideActorElem->GetElement("plugin");
   ASSERT_NE(nullptr, overrideActorPluginElem);
-  EXPECT_EQ(worldFile, overrideActorPluginElem->FilePath());
+  EXPECT_EQ(actorFilePath, overrideActorPluginElem->FilePath());
   ASSERT_TRUE(overrideActorPluginElem->LineNumber().has_value());
   EXPECT_EQ(40, overrideActorPluginElem->LineNumber().value());
   EXPECT_EQ(overrideActorPluginXmlPath, overrideActorPluginElem->XmlPath());
@@ -268,7 +268,7 @@ TEST(ElementTracing, includes)
   sdf::ElementPtr overrideModelPluginElem =
       overrideModelElem->GetElement("plugin");
   ASSERT_NE(nullptr, overrideModelPluginElem);
-  EXPECT_EQ(worldFile, overrideModelPluginElem->FilePath());
+  EXPECT_EQ(modelFilePath, overrideModelPluginElem->FilePath());
   ASSERT_TRUE(overrideModelPluginElem->LineNumber().has_value());
   EXPECT_EQ(14, overrideModelPluginElem->LineNumber().value());
   EXPECT_EQ(overrideModelPluginXmlPath, overrideModelPluginElem->XmlPath());
