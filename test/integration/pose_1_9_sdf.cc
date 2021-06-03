@@ -34,8 +34,8 @@ TEST(Pose1_9, ModelPoses)
 {
   using Pose = ignition::math::Pose3d;
 
-  const std::string testFile =
-      sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf", "pose.sdf");
+  const std::string testFile = sdf::testing::TestFile(
+      "sdf", "pose_1_9.sdf"); 
   
   // Load the SDF file
   sdf::Root root;
