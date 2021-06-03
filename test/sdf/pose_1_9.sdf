@@ -68,10 +68,92 @@
       <link name="link"/>
     </model>
 
-    <model name="model_with_both_rotations">
+    <model name="model_with_both_rotations_no_value">
       <pose>
         <rotation type="rpy_radians"></rotation>
         <rotation type="q_wxyz"></rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_both_rotations_second_value">
+      <pose>
+        <rotation type="rpy_radians"></rotation>
+        <rotation type="q_wxyz">0.7071068 0.7071068 0 0</rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_both_rotations_first_value">
+      <pose>
+        <rotation type="rpy_radians">1 2 3</rotation>
+        <rotation type="q_wxyz"></rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_translation_rotation_no_value">
+      <pose>
+        <translation></translation>
+        <rotation type="rpy_radians"></rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_translation_rotation_value">
+      <pose>
+        <translation>2 3 4</translation>
+        <rotation type="q_wxyz">0.7071068 0.7071068 0 0</rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_value_and_translation_no_value">
+      <pose>
+        1 2 3 1 2 3
+        <translation></translation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_value_and_translation_value">
+      <pose>
+        1 2 3 1 2 3
+        <translation>2 3 4</translation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_value_and_rotation_no_value">
+      <pose>
+        1 2 3 1 2 3
+        <rotation type="rpy_degrees"></rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_value_and_rotation_value">
+      <pose>
+        1 2 3 1 2 3
+        <rotation type="rpy_degrees">1 2 3</rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_value_and_translation_rotation_no_value">
+      <pose>
+        1 2 3 1 2 3
+        <translation></translation>
+        <rotation type="q_wxyz"></rotation>
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_value_and_translation_rotation_value">
+      <pose>
+        1 2 3 1 2 3
+        <translation>2 3 4</translation>
+        <rotation type="q_wxyz">0.7071068 0.7071068 0 0</rotation>
       </pose>
       <link name="link"/>
     </model>

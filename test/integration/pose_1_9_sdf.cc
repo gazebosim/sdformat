@@ -108,5 +108,72 @@ TEST(Pose1_9, ModelPoses)
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_with_quat_value", model->Name());
   EXPECT_EQ(Pose(0, 0, 0, 0.7071068, 0.7071068, 0, 0), model->RawPose());
+
+  std::cout << "modelWithBothRotationsNoValue" << std::endl;
+  model = world->ModelByIndex(10);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_both_rotations_no_value", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  std::cout << "modelWithBothRotationsSecondValue" << std::endl;
+  model = world->ModelByIndex(11);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_both_rotations_second_value", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  std::cout << "modelWithBothRotationsFirstValue" << std::endl;
+  model = world->ModelByIndex(12);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_both_rotations_first_value", model->Name());
+  EXPECT_EQ(Pose(0, 0, 0, 1, 2, 3), model->RawPose());
+
+  std::cout << "modelWithTranslationRotationNoValue" << std::endl;
+  model = world->ModelByIndex(13);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_translation_rotation_no_value", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  std::cout << "modelWithTranslationRotationValue" << std::endl;
+  model = world->ModelByIndex(14);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_translation_rotation_value", model->Name());
+  EXPECT_EQ(Pose(2, 3, 4, 0.7071068, 0.7071068, 0, 0), model->RawPose());
+
+  std::cout << "modelWithValueAndTranslationNoValue" << std::endl;
+  model = world->ModelByIndex(15);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_value_and_translation_no_value", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  std::cout << "modelWithValueAndTranslationValue" << std::endl;
+  model = world->ModelByIndex(16);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_value_and_translation_value", model->Name());
+  EXPECT_EQ(Pose(2, 3, 4, 0, 0, 0), model->RawPose());
+
+  std::cout << "modelWithValueAndRotationNoValue" << std::endl;
+  model = world->ModelByIndex(17);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_value_and_rotation_no_value", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  std::cout << "modelWithValueAndRotationValue" << std::endl;
+  model = world->ModelByIndex(18);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_value_and_rotation_value", model->Name());
+  EXPECT_EQ(Pose(0, 0, 0, IGN_DTOR(1), IGN_DTOR(2), IGN_DTOR(3)),
+      model->RawPose());
+
+  std::cout << "modelWithValueAndTranslationRotationNoValue" << std::endl;
+  model = world->ModelByIndex(19);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_value_and_translation_rotation_no_value", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  std::cout << "modelWithValueAndTranslationRotationValue" << std::endl;
+  model = world->ModelByIndex(20);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_value_and_translation_rotation_value", model->Name());
+  EXPECT_EQ(Pose(2, 3, 4, 0.7071068, 0.7071068, 0, 0), model->RawPose());
 }
 
