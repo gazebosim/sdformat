@@ -35,8 +35,8 @@ TEST(Pose1_9, ModelPoses)
   using Pose = ignition::math::Pose3d;
 
   const std::string testFile = sdf::testing::TestFile(
-      "sdf", "pose_1_9.sdf"); 
-  
+      "sdf", "pose_1_9.sdf");
+
   // Load the SDF file
   sdf::Root root;
   auto errors = root.Load(testFile);
@@ -45,17 +45,17 @@ TEST(Pose1_9, ModelPoses)
   // std::cout << errors << std::endl;
   ASSERT_TRUE(errors.empty());
   EXPECT_EQ(SDF_PROTOCOL_VERSION, root.Version());
-  
+
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
-  
+
   std::cout << "modelWithEmptyPose" << std::endl;
   const sdf::Model *model = world->ModelByIndex(0);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_with_empty_pose", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
- 
-  std::cout << "modelWithPoseValue" << std::endl; 
+
+  std::cout << "modelWithPoseValue" << std::endl;
   model = world->ModelByIndex(1);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_with_pose_value", model->Name());
@@ -77,13 +77,13 @@ TEST(Pose1_9, ModelPoses)
   model = world->ModelByIndex(4);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_with_empty_rpy_deg", model->Name());
-  EXPECT_EQ(Pose::Zero, model->RawPose()); 
+  EXPECT_EQ(Pose::Zero, model->RawPose());
 
   std::cout << "modelWithRPYDegValue" << std::endl;
   model = world->ModelByIndex(5);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_with_rpy_deg_value", model->Name());
-  EXPECT_EQ(Pose(0, 0, 0, 0, IGN_DTOR(90), IGN_DTOR(180)), model->RawPose()); 
+  EXPECT_EQ(Pose(0, 0, 0, 0, IGN_DTOR(90), IGN_DTOR(180)), model->RawPose());
 
   std::cout << "modelWithEmptyRPYRad" << std::endl;
   model = world->ModelByIndex(6);

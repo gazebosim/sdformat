@@ -67,7 +67,7 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
   // Start checking for translation and rotation elements.
   sdf::ElementPtr translationPtr = sdf->GetElement("translation");
   sdf::ElementPtr rotationPtr = sdf->GetElement("rotation");
-  
+
   // If both are not explicitly set, the pose is parsed using the value.
   if (!translationPtr->GetExplicitlySetInFile() &&
       !rotationPtr->GetExplicitlySetInFile())
@@ -80,7 +80,7 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
     // In this scenario, return true or false based on pose element value.
     return posePair.second;
   }
- 
+
   // Read the translation values.
   if (translationPtr->GetExplicitlySetInFile())
   {
@@ -88,10 +88,7 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
         translationPtr->Get<ignition::math::Vector3d>(
             "", ignition::math::Vector3d::Zero);
     if (translationPair.second)
-    {
-      std::cout << "found translation" << std::endl;
       pose.Set(translationPair.first, pose.Rot());
-    }
   }
 
   // Read the rotation values.
@@ -104,7 +101,6 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
 
     if (typePair.first == "rpy_degrees")
     {
-      std::cout << "found rpy deg" << std::endl;
       std::pair<ignition::math::Vector3d, bool> rpyDegPair =
           rotationPtr->Get<ignition::math::Vector3d>(
               "", ignition::math::Vector3d::Zero);
@@ -113,7 +109,6 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
     }
     else if (typePair.first == "rpy_radians")
     {
-      std::cout << "found rpy rad" << std::endl;
       std::pair<ignition::math::Vector3d, bool> rpyRadPair =
           rotationPtr->Get<ignition::math::Vector3d>(
               "", ignition::math::Vector3d::Zero);
@@ -122,15 +117,12 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
     }
     else if (typePair.first == "q_wxyz")
     {
-      std::cout << "found quat" << std::endl;
       std::pair<ignition::math::Quaterniond, bool> quatPair =
           rotationPtr->Get<ignition::math::Quaterniond>(
               "", ignition::math::Quaterniond::Identity);
       if (quatPair.second)
       {
         pose.Set(pose.Pos(), quatPair.first);
-        std::cout << quatPair.first << std::endl;
-        std::cout << "set quat" << std::endl;
       }
     }
     else

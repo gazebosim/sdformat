@@ -428,6 +428,83 @@ bool ParseColorUsingStringStream(const std::string &_input,
 }
 
 //////////////////////////////////////////////////
+/// \brief Helper function for Param::ValueFromString for parsing rotations
+/// This checks the rotation components specified in _input are rpy or wxyz
+/// (expects 3 or 4 values) and the resulting quaternion is valid.
+/// \param[in] _input Input string.
+/// \param[in] _key Key of the parameter, used for error message.
+/// \param[out] _value This will be set with the parsed value.
+/// \return True if parsing colors succeeded.
+bool ParseRotationUsingStringStream(const std::string &_input,
+    const std::string &_key, ParamPrivate::ParamVariant &_value)
+{
+  StringStreamClassicLocale ss(_input);
+  std::string token;
+  std::vector<double> values;
+  double v;
+  bool isValidRotation = true;
+  while (ss >> token)
+  {
+    try
+    {
+      v = std::stod(token);
+    }
+    // Catch invalid argument exception from std::stod
+    catch(std::invalid_argument &)
+    {
+      sdferr << "Invalid argument. Unable to set value ["<< token
+             << "] for key [" << _key << "].\n";
+      isValidRotation = false;
+      break;
+    }
+    // Catch out of range exception from std::stof
+    catch(std::out_of_range &)
+    {
+      sdferr << "Out of range. Unable to set value [" << token
+             << "] for key [" << _key << "].\n";
+      isValidRotation = false;
+      break;
+    }
+
+    if (values.size() > 4)
+    {
+      sdferr << "Rotation values cannot have more than 4 values.\n";
+      isValidRotation = false;
+      break;
+    }
+
+    if (!std::isfinite(v))
+    {
+      sdferr << "Rotation values must be finite.\n";
+      isValidRotation = false;
+      break;
+    }
+
+    values.push_back(v);
+  }
+
+  if (!isValidRotation)
+    return false;
+
+  if (values.size() == 3u)
+  {
+    _value = ignition::math::Vector3d(values[0], values[1], values[2]);
+  }
+  else if (values.size() == 4u)
+  {
+    _value = ignition::math::Quaterniond(
+        values[0], values[1], values[2], values[3]);
+  }
+  else
+  {
+    sdferr << "Rotation values must have either 3 or 4 values.\n";
+    return false;
+  }
+
+  return true;
+}
+
+//////////////////////////////////////////////////
 bool Param::ValueFromString(const std::string &_value)
 {
   // Under some circumstances, latin locales (es_ES or pt_BR) will return a
@@ -551,6 +628,11 @@ bool Param::ValueFromString(const std::string &_value)
              this->dataPtr->typeName == "quaternion")
     {
       return ParseUsingStringStream<ignition::math::Quaterniond>(
+          tmp, this->dataPtr->key, this->dataPtr->value);
+    }
+    else if (this->dataPtr->typeName == "rotation")
+    {
+      return ParseRotationUsingStringStream(
           tmp, this->dataPtr->key, this->dataPtr->value);
     }
     else
@@ -698,3 +780,4 @@ bool Param::ValidateValue() const
         return true;
       }, this->dataPtr->value);
 }
+

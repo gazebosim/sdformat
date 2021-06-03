@@ -12,18 +12,7 @@
     <description>The position(x,y,z) with respect to the frame named in the relative_to attribute.</description>
   </element>
 
-  <element name="rotation" type="vector3" default="0 0 0" required="1">
-    <description>The rotation with respect to the frame named in the relative_to attribute.</description>
-    <attribute name="type" type="string" default="__default__" required="1">
-      <description>The type of rotation convention, which must be one of the following:
-        (rpy_degrees) rotation in the form of (roll, pitch, yaw), in degrees.
-        (rpy_radians) rotation in the form of (roll, pitch, yaw), in radians.
-        (q_wxyz) rotation in the form of a quaternion (w, x, y, z).
-      </description>
-    </attribute>
-  </element>
-
-  <element name="rotation" type="quaternion" default="1 0 0 0" required="1">
+  <element name="rotation" type="rotation" default="1 0 0 0" required="1">
     <description>The rotation with respect to the frame named in the relative_to attribute.</description>
     <attribute name="type" type="string" default="__default__" required="1">
       <description>The type of rotation convention, which must be one of the following:
