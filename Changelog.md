@@ -3,7 +3,7 @@
 ### SDFormat 6.X.X (20XX-XX-XX)
 
 1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
-    * [Pull request ]()
+    * [Pull request 580](https://github.com/osrf/sdformat/pull/580)
 
 1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
     * [BitBucket pull request 575](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/575)
