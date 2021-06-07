@@ -58,6 +58,27 @@
 
           <!-- incorrect schema (missing required 'filename' attribute) -->
           <plugin element_id="chassis" name="some_plugin" action="add"/>
+
+          <!-- invalid action -->
+          <link element_id="top" action="test"/>
+
+          <collision element_id="left_wheel::collision">
+            <!-- invalid child action -->
+            <geometry action="test"/>
+
+            <!-- child element does not exist -->
+            <laser_retro action="remove"/>
+
+            <!-- child <box> (child of <geometry>) does not exist -->
+            <geometry action="remove">
+              <box/>
+            </geometry>
+          </collision>
+
+          <link element_id="top">
+            <!-- child element (w/ name attribute) does not exist -->
+            <collision name="collision" action="remove"/>
+          </link>
         </experimental:params>
       </include>
     </model>
