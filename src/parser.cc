@@ -1208,4 +1208,31 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
 
   return false;
 }
+
+//////////////////////////////////////////////////
+bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
+{
+  bool result = true;
+  auto typeNames = _elem->GetElementTypeNames();
+  for (const std::string &typeName : typeNames)
+  {
+    if (!_elem->HasUniqueChildNames(typeName))
+    {
+      std::cerr << "Non-unique names detected in type "
+                << typeName << " in\n"
+                << _elem->ToString("")
+                << std::endl;
+      result = false;
+    }
+  }
+
+  sdf::ElementPtr child = _elem->GetFirstElement();
+  while (child)
+  {
+    result = recursiveSameTypeUniqueNames(child) && result;
+    child = child->GetNextElement();
+  }
+
+  return result;
+}
 }
