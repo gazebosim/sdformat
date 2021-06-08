@@ -59,6 +59,7 @@
           <visual element_id="top::camera_visual">
             <transparency action="add">0.5</transparency>
             <plugin name="some_visual_plugin" filename="/path/to/plugin" action="add"/>
+            <plugin name="some_visual_plugin" filename="/path/to/plugin" action="add"/>
 
             <material action="remove">
               <specular/>
@@ -76,6 +77,8 @@
               <diffuse>0 0 1 1</diffuse>
             </material>
           </visual>
+
+          <plugin element_id="top::camera_visual" name="some_visual_plugin" filename="/path/to/plugin" action="add"/>
 
           <link element_id="top">
             <link name="nested_link" action="add">

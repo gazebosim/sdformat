@@ -114,10 +114,10 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
 
       std::string attrName = attr;
 
-      // check that elem doesn't already exist
+      // check that elem doesn't already exist (except for //plugin)
       elem  = getElementById(_includeSDF, childElemXml->Name(),
                             elemIdAttr + "::" + attrName);
-      if (elem != nullptr)
+      if (elem != nullptr && elem->GetName() != "plugin")
       {
         _errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Could not add element <" + std::string(childElemXml->Name())
