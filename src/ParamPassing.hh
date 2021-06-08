@@ -28,6 +28,8 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
 
+  namespace ParamPassing {
+
     /// \brief Updates the included model (_includeSDF) with the specified
     /// modifications listed under //include/experimental:params
     /// \param[in] _childXmlParams Pointer to //include/experimental:params
@@ -118,6 +120,7 @@ namespace sdf
     /// \param[in] _newElem The replacement element
     /// \param[out] _origElem The element to be replaced
     void replace(const ElementPtr _newElem, ElementPtr _origElem);
+  }
   }
 }
 #endif

@@ -28,6 +28,7 @@
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
+namespace ParamPassing {
 
 //////////////////////////////////////////////////
 void updateParams(tinyxml2::XMLElement *_childXmlParams,
@@ -550,6 +551,7 @@ void replace(const ElementPtr _newElem, ElementPtr _origElem)
   _origElem->ClearElements();
   _origElem->RemoveAllAttributes();
   _origElem->Copy(_newElem);
+}
 }
 }
 }
