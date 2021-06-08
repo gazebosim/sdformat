@@ -177,8 +177,9 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     }
     else if (actionStr == "replace")
     {
-      ElementPtr newElem = initElement(childElemXml, _errors);
-      if (!newElem) continue;
+      ElementPtr newElem = initElementDescription(childElemXml, _errors);
+      if (!newElem)
+        continue;
 
       if (!readXml(childElemXml, newElem, _errors))
       {
@@ -321,7 +322,8 @@ ElementPtr getElementByName(const ElementPtr _elem,
 }
 
 //////////////////////////////////////////////////
-ElementPtr initElement(const tinyxml2::XMLElement *_xml, Errors &_errors)
+ElementPtr initElementDescription(const tinyxml2::XMLElement *_xml,
+                                  Errors &_errors)
 {
   ElementPtr elemDesc = std::make_shared<Element>();
   std::string filename = std::string(_xml->Name()) + ".sdf";
@@ -344,8 +346,9 @@ ElementPtr initElement(const tinyxml2::XMLElement *_xml, Errors &_errors)
 void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
                                   ElementPtr _elem, Errors &_errors)
 {
-  ElementPtr elemDesc = initElement(_childrenXml, _errors);
-  if (!elemDesc) return;
+  ElementPtr elemDesc = initElementDescription(_childrenXml, _errors);
+  if (!elemDesc)
+    return;
 
   // loop through children and handle corresponding actions
   for (tinyxml2::XMLElement *xmlChild = _childrenXml->FirstChildElement();
@@ -373,7 +376,6 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
         + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
         + ElementToString(xmlChild)
       });
-
       continue;
     }
 
@@ -393,7 +395,6 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
       {
         remove(xmlChild, e, _errors);
       }
-
       continue;
     }
 
@@ -487,8 +488,9 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
 //////////////////////////////////////////////////
 void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem, Errors &_errors)
 {
-  ElementPtr newElem = initElement(_childXml, _errors);
-  if (!newElem) return;
+  ElementPtr newElem = initElementDescription(_childXml, _errors);
+  if (!newElem)
+    return;
 
   if (readXml(_childXml, newElem, _errors))
   {
@@ -531,7 +533,6 @@ void remove(const tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors)
           + std::string(_xml->Name()) + ">:\n"
           + ElementToString(xmlChild)
         });
-
         continue;
       }
 
@@ -543,7 +544,8 @@ void remove(const tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors)
 //////////////////////////////////////////////////
 void replace(const ElementPtr _newElem, ElementPtr _origElem)
 {
-  if (!_newElem || !_origElem) return;
+  if (!_newElem || !_origElem)
+    return;
 
   _origElem->ClearElements();
   _origElem->RemoveAllAttributes();
