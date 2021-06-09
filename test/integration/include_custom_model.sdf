@@ -158,10 +158,6 @@
             </camera>
           </sensor>
 
-          <!-- <sensor element_id="chassis::camera" action="modify">
-            <pose relative_to=""/>
-          </sensor> -->
-
           <link element_id="caster" action="modify">
             <pose relative_to="right_wheel"/>
             <inertial>

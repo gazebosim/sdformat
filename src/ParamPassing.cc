@@ -535,7 +535,8 @@ void modifyAttributes(tinyxml2::XMLElement *_xml,
   {
     std::string attrName = attr->Name();
 
-    if (attrName == "element_id" || attrName == "action") continue;
+    if (attrName == "element_id" || attrName == "action")
+      continue;
 
     if (!_elem->HasAttribute(attrName))
     {
