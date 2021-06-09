@@ -28,6 +28,8 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
 
+  namespace ParamPassing {
+
     /// \brief Updates the included model (_includeSDF) with the specified
     /// modifications listed under //include/experimental:params
     /// \param[in] _childXmlParams Pointer to //include/experimental:params
@@ -78,19 +80,20 @@ namespace sdf
     /// \param[in] _xml The xml element to find
     /// \param[in] _isModifyAction Is true if the action is modify, the
     /// attribute 'name' may not be in the sdf element (i.e., may be a
-    /// modified/added attribute)
+    /// modified/added attribute such as //camera)
     /// \return ElementPtr to the child element matching the xml, nullptr if
     /// element could not be found
     ElementPtr getElementByName(const ElementPtr _elem,
                                 const tinyxml2::XMLElement *_xml,
                                 const bool _isModifyAction = false);
 
-    /// \brief Initialize an sdf element from xml
+    /// \brief Initialize an sdf element description from the xml element
     /// \param[in] _xml Pointer to xml element
     /// \param[out] _errors Captures errors found during parsing
-    /// \return ElementPtr to the initialized element pointer, nullptr if
-    /// undefined/unknown sdf element
-    ElementPtr initElement(const tinyxml2::XMLElement *_xml, Errors &_errors);
+    /// \return ElementPtr to the initialized element description,
+    /// nullptr if undefined/unknown sdf element
+    ElementPtr initElementDescription(const tinyxml2::XMLElement *_xml,
+                                      Errors &_errors);
 
     /// \brief Handles individual actions of children in _childrenXml
     /// \param[in] _childrenXml Pointer to xml element
@@ -138,6 +141,7 @@ namespace sdf
     /// \param[in] _newElem The replacement element
     /// \param[out] _origElem The element to be replaced
     void replace(const ElementPtr _newElem, ElementPtr _origElem);
+  }
   }
 }
 #endif

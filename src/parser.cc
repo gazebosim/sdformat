@@ -1088,9 +1088,10 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
         // ref: sdformat.org > Documentation > Proposal for parameter passing
         if (elemXml->FirstChildElement("experimental:params"))
         {
-          updateParams(elemXml->FirstChildElement("experimental:params"),
-                       includeSDF,
-                       _errors);
+          ParamPassing::updateParams(
+              elemXml->FirstChildElement("experimental:params"),
+              includeSDF,
+              _errors);
         }
 
         if (_sdf->GetName() == "model")

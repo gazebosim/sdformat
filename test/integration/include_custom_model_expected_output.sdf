@@ -197,9 +197,12 @@
             <!-- <specular>0.5 0.5 0.5 1</specular>
             <lighting>1</lighting> -->
           </material>
+          <plugin name='some_visual_plugin' filename='/path/to/plugin'/>
 
           <!-- added -->
           <transparency>0.5</transparency>
+          <plugin name='some_visual_plugin' filename='/path/to/plugin'/>
+          <plugin name='some_visual_plugin' filename='/path/to/plugin'/>
           <plugin name='some_visual_plugin' filename='/path/to/plugin'/>
         </visual>
 
