@@ -78,10 +78,14 @@ namespace sdf
     /// \param[in] _elem The sdf (parent) element used to find the matching
     /// child element described in xml
     /// \param[in] _xml The xml element to find
+    /// \param[in] _isModifyAction Is true if the action is modify, the
+    /// attribute 'name' may not be in the sdf element (i.e., may be a
+    /// modified/added attribute such as //camera)
     /// \return ElementPtr to the child element matching the xml, nullptr if
     /// element could not be found
     ElementPtr getElementByName(const ElementPtr _elem,
-                                const tinyxml2::XMLElement *_xml);
+                                const tinyxml2::XMLElement *_xml,
+                                const bool _isModifyAction = false);
 
     /// \brief Initialize an sdf element description from the xml element
     /// \param[in] _xml Pointer to xml element
@@ -107,6 +111,23 @@ namespace sdf
     /// \param[out] _errors Captures errors found during parsing
     void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem,
              Errors &_errors);
+
+    /// \brief Modifies the attributes of an element from the included model
+    /// \param[in] _xml Pointer to the xml element which contains the attributes
+    /// to be modified
+    /// \param[out] _elem The element from the included model to modify the
+    /// attributes to
+    /// \param[out] _errors Captures errors found during parsing
+    void modifyAttributes(tinyxml2::XMLElement *_xml,
+                         ElementPtr _elem, Errors &_errors);
+
+    /// \brief Modifies element values and/or attributes of an element from the
+    /// included model
+    /// \param[in] _xml Pointer to the xml element which contains the elements
+    /// to be modified
+    /// \param[out] _elem The element from the included model to modify
+    /// \param[out] _errors Captures errors found during parsing
+    void modify(tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors);
 
     /// \brief Removes an element specified in xml
     /// \param[in] _xml Pointer to the xml element(s) to be removed from _elem

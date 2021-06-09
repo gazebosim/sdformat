@@ -130,10 +130,14 @@
           </geometry>
         </collision> -->
 
-        <visual name='top_visual'>
+        <visual name='top_visual' custom:test='foo'>
+        <!-- modified with above -->
+        <!-- <visual name='top_visual'> -->
           <geometry>
             <box>
-              <size>0.5 1 0.5</size>
+              <size custom:test='bar'>1 0.5 0.5</size>
+              <!-- modified with above -->
+              <!-- <size>0.5 1 0.5</size> -->
             </box>
           </geometry>
 
@@ -183,8 +187,11 @@
           </geometry> -->
 
           <material>
-            <ambient>0 1 0 1</ambient>
-            <diffuse>0 1 0 1</diffuse>
+            <ambient>0 0 1 1</ambient>
+            <diffuse>0 0 0 1</diffuse>
+            <!-- modified with above -->
+            <!-- <ambient>0 1 0 1</ambient>
+            <diffuse>0 1 0 1</diffuse> -->
 
             <!-- removed -->
             <!-- <specular>0.5 0.5 0.5 1</specular>
@@ -199,23 +206,38 @@
           <plugin name='some_visual_plugin' filename='/path/to/plugin'/>
         </visual>
 
-        <sensor name='camera' type='camera'>
+        <sensor name='cam' type='camera' custom:test='hello'>
+          <pose relative_to='vehicle::__model__'>0.1 0.2 0.3 0 -0 0</pose>
+          <camera name='top_camera'>
+        <!-- modified with above -->
+        <!-- <sensor name='camera' type='camera'>
           <pose>-0.2 0 0.3 0 -0 0</pose>
-          <camera>
+          <camera> -->
             <horizontal_fov>1.047</horizontal_fov>
             <image>
-              <width>320</width>
+              <width>1280</width>
+              <!-- modified with above -->
+              <!-- <width>320</width> -->
               <height>240</height>
             </image>
-            <clip>
+            <clip custom:test='foo'>
+              <near>0.05</near>
+              <far>50</far>
+            </clip>
+            <!-- modified with above -->
+            <!-- <clip>
               <near>0.1</near>
               <far>100</far>
-            </clip>
+            </clip> -->
           </camera>
           <always_on>1</always_on>
-          <update_rate>30</update_rate>
+          <update_rate>20</update_rate>
+          <!-- modified with above -->
+          <!-- <update_rate>30</update_rate> -->
           <visualize>1</visualize>
-          <topic>top/camera</topic>
+          <topic>top/cam</topic>
+          <!-- modified with above -->
+          <!-- <topic>top/camera</topic> -->
         </sensor>
 
         <!-- added -->
@@ -324,34 +346,50 @@
 
       </link>
       <link name='vehicle::caster'>
-        <pose relative_to='vehicle::__model__'>-0.957138 -0 -0.125 0 -0 0</pose>
+        <pose relative_to='vehicle::right_wheel'>0 0 0 0 0 0</pose>
+        <!-- modified with above -->
+        <!-- <pose relative_to='vehicle::__model__'>-0.957138 -0 -0.125 0 -0 0</pose> -->
         <inertial>
-          <mass>1</mass>
+          <mass>0.5</mass>
+          <!-- modified with above -->
+          <!-- <mass>1</mass> -->
           <inertia>
-            <ixx>0.1</ixx>
+            <ixx>0.05</ixx>
+            <!-- modified with above -->
+            <!-- <ixx>0.1</ixx> -->
             <ixy>0</ixy>
             <ixz>0</ixz>
-            <iyy>0.1</iyy>
+            <iyy>0.05</iyy>
+            <!-- modified with above -->
+            <!-- <iyy>0.1</iyy> -->
             <iyz>0</iyz>
-            <izz>0.1</izz>
+            <izz>0.05</izz>
+            <!-- modified with above -->
+            <!-- <izz>0.1</izz> -->
           </inertia>
         </inertial>
         <visual name='visual'>
           <geometry>
             <sphere>
-              <radius>0.2</radius>
+              <radius>0.8</radius>
+              <!-- modified with above -->
+              <!-- <radius>0.2</radius> -->
             </sphere>
           </geometry>
           <material>
             <ambient>0.2 0.2 0.2 1</ambient>
             <diffuse>0.2 0.2 0.2 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
+            <specular>1 1 1 1</specular>
+            <!-- modified with above -->
+            <!-- <specular>0.2 0.2 0.2 1</specular> -->
           </material>
         </visual>
         <collision name='collision'>
           <geometry>
             <sphere>
-              <radius>0.2</radius>
+              <radius>0.8</radius>
+              <!-- modified with above -->
+              <!-- <radius>0.2</radius> -->
             </sphere>
           </geometry>
         </collision>

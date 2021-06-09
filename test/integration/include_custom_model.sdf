@@ -51,11 +51,6 @@
             </geometry>
           </visual>
 
-          <sensor element_id="top::camera" action="modify">
-            <pose>-0.2 0 0.3 0 0.0 3.14</pose>
-            <update_rate>60</update_rate>
-          </sensor>
-
           <visual element_id="top::camera_visual">
             <transparency action="add">0.5</transparency>
             <plugin name="some_visual_plugin" filename="/path/to/plugin" action="add"/>
@@ -74,7 +69,7 @@
 
             <material action="modify">
               <ambient>0 0 1 1</ambient>
-              <diffuse>0 0 1 1</diffuse>
+              <diffuse/>
             </material>
           </visual>
 
@@ -109,6 +104,14 @@
               </geometry>
             </collision>
 
+            <visual name="top_visual" action="modify" custom:test="foo">
+              <geometry>
+                <box>
+                  <size custom:test="bar">1 0.5 0.5</size>
+                </box>
+              </geometry>
+            </visual>
+
           </link>
 
           <!-- attribute test get's stripped during replace -->
@@ -138,6 +141,51 @@
             </material>
           </visual>
 
+          <sensor element_id="top::camera" name="cam" action="modify" custom:test="hello">
+            <pose relative_to="__model__">0.1 0.2 0.3 0 0 0</pose>
+            <topic>top/cam</topic>
+            <update_rate>20</update_rate>
+
+            <camera name="top_camera">
+              <image>
+                <width>1280</width>
+              </image>
+              <clip custom:test="foo">
+                <far>50</far>
+                <near>0.05</near>
+              </clip>
+              <horizontal_fov/>
+            </camera>
+          </sensor>
+
+          <link element_id="caster" action="modify">
+            <pose relative_to="right_wheel"/>
+            <inertial>
+              <mass>0.5</mass>
+              <inertia>
+                <ixx>0.05</ixx>
+                <iyy>0.05</iyy>
+                <izz>0.05</izz>
+              </inertia>
+            </inertial>
+            <visual name="visual">
+              <geometry>
+                <sphere>
+                  <radius>0.8</radius>
+                </sphere>
+              </geometry>
+              <material>
+                <specular>1 1 1 1</specular>
+              </material>
+            </visual>
+            <collision name="collision">
+              <geometry>
+                <sphere>
+                  <radius>0.8</radius>
+                </sphere>
+              </geometry>
+            </collision>
+          </link>
         </experimental:params>
 
       </include>

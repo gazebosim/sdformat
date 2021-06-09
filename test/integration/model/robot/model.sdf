@@ -165,7 +165,7 @@
       <sensor name="camera" type="camera">
         <pose>-0.2 0 0.3 0 0.0 0</pose>
         <camera>
-          <horizontal_fov>1.047</horizontal_fov>
+          <horizontal_fov>2</horizontal_fov>
           <image>
             <width>320</width>
             <height>240</height>

@@ -76,7 +76,7 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   errors = root.Load(testFile);
   PrintErrors(errors);
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(errors.size(), 23u);
+  ASSERT_EQ(errors.size(), 29u);
 
   int i = -1;
   // missing element_id attribute
@@ -119,8 +119,20 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_MISSING);
   // missing 'name' attribute (replace action)
   EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  // invalid attribute (modify action)
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  // element missing (modify action)
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_MISSING);
   // incorrect schema (missing required attributes; where element_id defined)
   EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_MISSING);
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  // invalid attribute (modify action)
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ATTRIBUTE_INVALID);
+  // element missing (modify action)
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  // element missing (modify action)
+  EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  // element has invalid value (modify action)
   EXPECT_EQ(errors[++i].Code(), sdf::ErrorCode::ELEMENT_INVALID);
 }
 

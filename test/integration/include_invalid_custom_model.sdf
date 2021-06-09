@@ -84,10 +84,47 @@
 
             <!-- missing 'name' attribute -->
             <collision action="replace"/>
+
+            <!-- invalid attribute -->
+            <collision name="top_collision" action="modify" test="foo"/>
+
+            <!-- element missing -->
+            <geometry action="modify">
+              <box>
+                <size>1 1 1</size>
+              </box>
+            </geometry>
+
           </link>
 
           <!-- incorrect schema (missing required 'type' attribute) -->
           <sensor element_id="chassis::camera" name="camera" action="replace"/>
+
+          <!-- invalid attribute -->
+          <link element_id="top" action="modify" test="foo">
+
+            <!-- element missing -->
+            <inertial/>
+
+            <collision name="top_collision">
+              <!-- element missing -->
+              <geometry>
+                <sphere>
+                  <radius>0.5</radius>
+                </sphere>
+              </geometry>
+
+              <!-- element has invalid value -->
+              <geometry>
+                <box>
+                  <size>0.5 0.5</size>
+                </box>
+              </geometry>
+
+              <!-- no modifications listed, warning is printed (not error) -->
+              <geometry/>
+            </collision>
+          </link>
 
         </experimental:params>
       </include>
