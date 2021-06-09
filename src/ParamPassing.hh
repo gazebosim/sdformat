@@ -28,6 +28,8 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
 
+  namespace ParamPassing {
+
     /// \brief Updates the included model (_includeSDF) with the specified
     /// modifications listed under //include/experimental:params
     /// \param[in] _childXmlParams Pointer to //include/experimental:params
@@ -81,6 +83,14 @@ namespace sdf
     ElementPtr getElementByName(const ElementPtr _elem,
                                 const tinyxml2::XMLElement *_xml);
 
+    /// \brief Initialize an sdf element description from the xml element
+    /// \param[in] _xml Pointer to xml element
+    /// \param[out] _errors Captures errors found during parsing
+    /// \return ElementPtr to the initialized element description,
+    /// nullptr if undefined/unknown sdf element
+    ElementPtr initElementDescription(const tinyxml2::XMLElement *_xml,
+                                      Errors &_errors);
+
     /// \brief Handles individual actions of children in _childrenXml
     /// \param[in] _childrenXml Pointer to xml element
     /// \param[out] _elem The sdf element to apply actions
@@ -105,6 +115,12 @@ namespace sdf
     /// \param[out] _errors Captures errors found during parsing
     void remove(const tinyxml2::XMLElement *_xml, ElementPtr _elem,
                 Errors &_errors);
+
+    /// \brief Replace an element with another element
+    /// \param[in] _newElem The replacement element
+    /// \param[out] _origElem The element to be replaced
+    void replace(const ElementPtr _newElem, ElementPtr _origElem);
+  }
   }
 }
 #endif

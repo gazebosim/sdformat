@@ -28,6 +28,7 @@
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
+namespace ParamPassing {
 
 //////////////////////////////////////////////////
 void updateParams(tinyxml2::XMLElement *_childXmlParams,
@@ -45,7 +46,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     {
       _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
         "Element identifier requires an element_id attribute, but the "
-        "element_id is not set. Skipping element modification:\n"
+        "element_id is not set. Skipping element alteration:\n"
         + ElementToString(childElemXml)
       });
       continue;
@@ -60,7 +61,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     {
       _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
         "Missing name after double colons in element identifier. "
-        "Skipping element modification:\n"
+        "Skipping element alteration:\n"
         + ElementToString(childElemXml)
       });
       continue;
@@ -77,7 +78,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
       {
         _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
           "Action [" + actionStr + "] is not a valid action. Skipping "
-          "element modification:\n" + ElementToString(childElemXml)
+          "element alteration:\n" + ElementToString(childElemXml)
         });
         continue;
       }
@@ -113,10 +114,10 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
 
       std::string attrName = attr;
 
-      // check that elem doesn't already exist
+      // check that elem doesn't already exist (except for //plugin)
       elem  = getElementById(_includeSDF, childElemXml->Name(),
                             elemIdAttr + "::" + attrName);
-      if (elem != nullptr)
+      if (elem != nullptr && elem->GetName() != "plugin")
       {
         _errors.push_back({ErrorCode::DUPLICATE_NAME,
           "Could not add element <" + std::string(childElemXml->Name())
@@ -177,9 +178,23 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
     }
     else if (actionStr == "replace")
     {
+      ElementPtr newElem = initElementDescription(childElemXml, _errors);
+      if (!newElem)
+        continue;
+
+      if (!readXml(childElemXml, newElem, _errors))
+      {
+        _errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Unable to convert XML to SDF. Skipping element replacement:\n"
+          + ElementToString(childElemXml)
+        });
+        continue;
+      }
+
+      replace(newElem, elem);
     }
 
-    // TODO(jenn) element modifications: modify, replace
+    // TODO(jenn) element modifications: modify
   }
 }
 
@@ -308,24 +323,33 @@ ElementPtr getElementByName(const ElementPtr _elem,
 }
 
 //////////////////////////////////////////////////
-void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
-                                  ElementPtr _elem, Errors &_errors)
+ElementPtr initElementDescription(const tinyxml2::XMLElement *_xml,
+                                  Errors &_errors)
 {
-  // get element description
   ElementPtr elemDesc = std::make_shared<Element>();
-  std::string filename = std::string(_childrenXml->Name()) + ".sdf";
+  std::string filename = std::string(_xml->Name()) + ".sdf";
 
   if (!initFile(filename, elemDesc))
   {
     // TODO(jenn) not sure if we should load the element anyway
     // (e.g., user created their own element), maybe future implementation
     _errors.push_back({ErrorCode::ELEMENT_INVALID,
-      "Element [" + std::string(_childrenXml->Name()) + "] is not a defined "
-      "SDF element. Skipping element modification: "
-      + ElementToString(_childrenXml)
+      "Element [" + std::string(_xml->Name()) + "] is not a defined "
+      "SDF element. Skipping element alteration\n: "
+      + ElementToString(_xml)
     });
-    return;
+    return nullptr;
   }
+  return elemDesc;
+}
+
+//////////////////////////////////////////////////
+void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
+                                  ElementPtr _elem, Errors &_errors)
+{
+  ElementPtr elemDesc = initElementDescription(_childrenXml, _errors);
+  if (!elemDesc)
+    return;
 
   // loop through children and handle corresponding actions
   for (tinyxml2::XMLElement *xmlChild = _childrenXml->FirstChildElement();
@@ -353,7 +377,6 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
         + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
         + ElementToString(xmlChild)
       });
-
       continue;
     }
 
@@ -373,7 +396,6 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
       {
         remove(xmlChild, e, _errors);
       }
-
       continue;
     }
 
@@ -399,14 +421,13 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
           "invalid child specification. Skipping "
           "child element modification with parent <"
           + std::string(_childrenXml->Name()) + " element_id='"
-          + std::string(_childrenXml->Attribute("element_id")) + "'>: "
+          + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
           + ElementToString(xmlChild)
         });
         continue;
       }
     }
 
-    // get child element description
     ElementPtr elemChild;
     if (useParentDesc)
       elemChild = elemDesc;
@@ -416,9 +437,9 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
     if (!readXml(xmlChild, elemChild, _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
-        "Unable to convert XML to SDF. Skipping child element modification "
+        "Unable to convert XML to SDF. Skipping child element alteration "
         "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
-        + std::string(_childrenXml->Attribute("element_id")) + "'>: "
+        + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
         + ElementToString(xmlChild)
       });
       continue;
@@ -433,9 +454,34 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
     }
     else if (actionStr == "replace")
     {
+      ElementPtr e = getElementByName(_elem, xmlChild);
+      if (e == nullptr)
+      {
+        _errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "Could not find element. Skipping child element replacement "
+          "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
+          + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
+          + ElementToString(xmlChild)
+        });
+        continue;
+      }
+
+      // check name requirement of original and replacement element
+      if (e->HasAttribute("name") && !xmlChild->Attribute("name"))
+      {
+        _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+          "Replacement element is missing a 'name' attribute. "
+          "Skipping element replacement <" + std::string(_childrenXml->Name())
+          + " element_id='" + std::string(_childrenXml->Attribute("element_id"))
+          + "'>:\n" + ElementToString(xmlChild)
+        });
+        continue;
+      }
+
+      replace(elemChild, e);
     }
 
-    // TODO(jenn) finish (direct children only): modify, replace
+    // TODO(jenn) finish (direct children only): modify
   }
 }
 
@@ -443,20 +489,9 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
 //////////////////////////////////////////////////
 void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem, Errors &_errors)
 {
-  ElementPtr newElem = std::make_shared<Element>();
-  std::string filename = std::string(_childXml->Name()) + ".sdf";
-
-  if (!initFile(filename, newElem))
-  {
-    // TODO(jenn) not sure if we should load the element anyway
-    // (e.g., user created their own element), maybe future implementation
-    _errors.push_back({ErrorCode::ELEMENT_INVALID,
-      "Element [" + std::string(_childXml->Name()) + "] is not a defined "
-      "SDF element. Skipping element modification: "
-      + ElementToString(_childXml)
-    });
+  ElementPtr newElem = initElementDescription(_childXml, _errors);
+  if (!newElem)
     return;
-  }
 
   if (readXml(_childXml, newElem, _errors))
   {
@@ -465,7 +500,7 @@ void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem, Errors &_errors)
   else
   {
     _errors.push_back({ErrorCode::ELEMENT_INVALID,
-      "Unable to convert XML to SDF. Skipping element modification: "
+      "Unable to convert XML to SDF. Skipping element addition:\n"
       + ElementToString(_childXml)
     });
   }
@@ -499,13 +534,24 @@ void remove(const tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors)
           + std::string(_xml->Name()) + ">:\n"
           + ElementToString(xmlChild)
         });
-
         continue;
       }
 
       elemChild->RemoveFromParent();
     }
   }
+}
+
+//////////////////////////////////////////////////
+void replace(const ElementPtr _newElem, ElementPtr _origElem)
+{
+  if (!_newElem || !_origElem)
+    return;
+
+  _origElem->ClearElements();
+  _origElem->RemoveAllAttributes();
+  _origElem->Copy(_newElem);
+}
 }
 }
 }

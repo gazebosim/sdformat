@@ -59,6 +59,7 @@
           <visual element_id="top::camera_visual">
             <transparency action="add">0.5</transparency>
             <plugin name="some_visual_plugin" filename="/path/to/plugin" action="add"/>
+            <plugin name="some_visual_plugin" filename="/path/to/plugin" action="add"/>
 
             <material action="remove">
               <specular/>
@@ -76,6 +77,8 @@
               <diffuse>0 0 1 1</diffuse>
             </material>
           </visual>
+
+          <plugin element_id="top::camera_visual" name="some_visual_plugin" filename="/path/to/plugin" action="add"/>
 
           <link element_id="top">
             <link name="nested_link" action="add">
@@ -98,7 +101,42 @@
               <plugin name="top_plugin3"/>
             </visual>
 
+            <collision name="top_collision" action="replace">
+              <geometry>
+                <sphere>
+                  <radius>0.65</radius>
+                </sphere>
+              </geometry>
+            </collision>
+
           </link>
+
+          <!-- attribute test get's stripped during replace -->
+          <collision element_id="right_wheel::collision" test="hello" name="right_wheel_collision" action="replace">
+            <geometry>
+              <cylinder>
+                <radius>0.2</radius>
+                <length>0.3</length>
+              </cylinder>
+            </geometry>
+          </collision>
+
+          <!-- attribute custom:test does not get stripped -->
+          <collision element_id="left_wheel::collision" custom:test="hello" name="left_wheel_collision" action="replace">
+            <geometry>
+              <cylinder>
+                <radius>0.2</radius>
+                <length>0.3</length>
+              </cylinder>
+            </geometry>
+          </collision>
+
+          <visual element_id="top::top_visual">
+            <material action="replace">
+              <ambient>0 0 1 1</ambient>
+              <diffuse>0 0 1 1</diffuse>
+            </material>
+          </visual>
 
         </experimental:params>
 
