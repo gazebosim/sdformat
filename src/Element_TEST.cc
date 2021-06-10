@@ -540,7 +540,6 @@ TEST(Element, ToStringValue)
             "myprefix< test='foo'>val</>\n");
 }
 
-
 /////////////////////////////////////////////////
 TEST(Element, ToStringClonedElement)
 {
@@ -638,7 +637,6 @@ TEST(Element, ToStringDefaultAttributes)
 
   EXPECT_EQ(element->ToString("", true, true), stream2.str());
   EXPECT_EQ(element->ToString("", false, true), stream2.str());
-
 }
 
 /////////////////////////////////////////////////
