@@ -593,9 +593,9 @@ TEST(Element, ToStringDefaultElements)
     << "  </>\n"
     << "</>\n";
 
-  EXPECT_EQ(parent->ToString("", false), stream.str());
+  EXPECT_EQ(parent->ToString("", false, false), stream.str());
   EXPECT_EQ(parent->ToString(""), stream.str());
-  EXPECT_EQ(parent->ToString("", true), stream.str());
+  EXPECT_EQ(parent->ToString("", true, false), stream.str());
 
   elem->SetExplicitlySetInFile(false);
 
@@ -605,15 +605,40 @@ TEST(Element, ToStringDefaultElements)
     << "  </>\n"
     << "</>\n";
 
-  EXPECT_EQ(parent->ToString("", false), stream2.str());
+  EXPECT_EQ(parent->ToString("", false, false), stream2.str());
   EXPECT_EQ(parent->ToString(""), stream.str());
-  EXPECT_EQ(parent->ToString("", true), stream.str());
+  EXPECT_EQ(parent->ToString("", true, false), stream.str());
 
   parent->SetExplicitlySetInFile(false);
 
-  EXPECT_EQ(parent->ToString("", false), "");
+  EXPECT_EQ(parent->ToString("", false, false), "");
   EXPECT_EQ(parent->ToString(""), stream.str());
-  EXPECT_EQ(parent->ToString("", true), stream.str());
+  EXPECT_EQ(parent->ToString("", true, false), stream.str());
+}
+
+/////////////////////////////////////////////////
+TEST(Element, ToStringDefaultAttributes)
+{
+  sdf::ElementPtr element = std::make_shared<sdf::Element>();
+  element->AddAttribute("test", "string", "foo", false, "foo description");
+  element->AddAttribute("test2", "string", "bar", true, "bar description");
+
+  EXPECT_EQ(element->ToString(""), element->ToString("", true, false));
+  EXPECT_EQ(element->ToString(""), element->ToString("", false, false));
+
+  std::ostringstream stream;
+  stream << "< test2='bar'/>\n";
+
+  EXPECT_EQ(element->ToString(""), stream.str());
+  EXPECT_EQ(element->ToString("", true, false), stream.str());
+  EXPECT_EQ(element->ToString("", false, false), stream.str());
+
+  std::ostringstream stream2;
+  stream2 << "< test='foo' test2='bar'/>\n";
+
+  EXPECT_EQ(element->ToString("", true, true), stream2.str());
+  EXPECT_EQ(element->ToString("", false, true), stream2.str());
+
 }
 
 /////////////////////////////////////////////////

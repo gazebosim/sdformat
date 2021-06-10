@@ -442,10 +442,11 @@ void Element::PrintDocLeftPane(std::string &_html, int _spacing,
 }
 
 void Element::PrintValuesImpl(const std::string &_prefix,
-                              std::ostringstream &_out,
-                              bool _includeDefaults) const
+                              bool _includeDefaultElements,
+                              bool _includeDefaultAttributes,
+                              std::ostringstream &_out) const
 {
-  if (this->GetExplicitlySetInFile() || _includeDefaults)
+  if (this->GetExplicitlySetInFile() || _includeDefaultElements)
   {
     _out << _prefix << "<" << this->dataPtr->name;
 
@@ -458,7 +459,8 @@ void Element::PrintValuesImpl(const std::string &_prefix,
       // a new required attribute with a default value is added. We would have
       // better separation of concerns if the conversion process set the
       // required attributes with their default values.
-      if ((*aiter)->GetSet() || (*aiter)->GetRequired())
+      if ((*aiter)->GetSet() || (*aiter)->GetRequired() ||
+          _includeDefaultAttributes)
       {
         _out << " " << (*aiter)->GetKey() << "='"
              << (*aiter)->GetAsString() << "'";
@@ -472,9 +474,12 @@ void Element::PrintValuesImpl(const std::string &_prefix,
       for (eiter = this->dataPtr->elements.begin();
            eiter != this->dataPtr->elements.end(); ++eiter)
       {
-        if ((*eiter)->GetExplicitlySetInFile() || _includeDefaults)
+        if ((*eiter)->GetExplicitlySetInFile() || _includeDefaultElements)
         {
-          (*eiter)->ToString(_prefix + "  ", _out, _includeDefaults);
+          (*eiter)->ToString(_prefix + "  ",
+                             _includeDefaultElements,
+                             _includeDefaultAttributes,
+                             _out);
         }
       }
       _out << _prefix << "</" << this->dataPtr->name << ">\n";
@@ -498,16 +503,20 @@ void Element::PrintValuesImpl(const std::string &_prefix,
 void Element::PrintValues(std::string _prefix) const
 {
   std::ostringstream ss;
-  PrintValuesImpl(_prefix, ss, true);
+  PrintValuesImpl(_prefix, true, false, ss);
   std::cout << ss.str();
 }
 
 /////////////////////////////////////////////////
 void Element::PrintValues(const std::string &_prefix,
-                          bool _includeDefaults) const
+                          bool _includeDefaultElements,
+                          bool _includeDefaultAttributes) const
 {
   std::ostringstream ss;
-  PrintValuesImpl(_prefix, ss, _includeDefaults);
+  PrintValuesImpl(_prefix,
+                  _includeDefaultElements,
+                  _includeDefaultAttributes,
+                  ss);
   std::cout << ss.str();
 }
 
@@ -515,27 +524,35 @@ void Element::PrintValues(const std::string &_prefix,
 std::string Element::ToString(const std::string &_prefix) const
 {
   std::ostringstream out;
-  this->ToString(_prefix, out, true);
+  this->ToString(_prefix, true, false, out);
   return out.str();
 }
 
 /////////////////////////////////////////////////
 std::string Element::ToString(const std::string &_prefix,
-                              bool _includeDefaults) const
+                              bool _includeDefaultElements,
+                              bool _includeDefaultAttributes) const
 {
   std::ostringstream out;
-  this->ToString(_prefix, out, _includeDefaults);
+  this->ToString(_prefix,
+                 _includeDefaultElements,
+                 _includeDefaultAttributes,
+                 out);
   return out.str();
 }
 
 /////////////////////////////////////////////////
 void Element::ToString(const std::string &_prefix,
-                       std::ostringstream &_out,
-                       bool _includeDefaults) const
+                       bool _includeDefaultElements,
+                       bool _includeDefaultAttributes,
+                       std::ostringstream &_out) const
 {
   if (this->dataPtr->includeFilename.empty())
   {
-    PrintValuesImpl(_prefix, _out, _includeDefaults);
+    PrintValuesImpl(_prefix,
+                    _includeDefaultElements,
+                    _includeDefaultAttributes,
+                    _out);
   }
   else
   {
