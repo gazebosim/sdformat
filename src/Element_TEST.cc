@@ -578,19 +578,22 @@ TEST(Element, ToStringInclude)
 TEST(Element, ToStringDefaultElements)
 {
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  parent->SetName("parent");
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+  elem->SetName("elem");
   elem->SetParent(parent);
   parent->InsertElement(elem);
   sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
+  elem2->SetName("elem2");
   elem2->SetParent(parent);
   parent->InsertElement(elem2);
 
   std::ostringstream stream;
   stream
-    << "<>\n"
-    << "  </>\n"
-    << "  </>\n"
-    << "</>\n";
+    << "<parent>\n"
+    << "  <elem/>\n"
+    << "  <elem2/>\n"
+    << "</parent>\n";
 
   EXPECT_EQ(parent->ToString("", false, false), stream.str());
   EXPECT_EQ(parent->ToString(""), stream.str());
@@ -600,9 +603,9 @@ TEST(Element, ToStringDefaultElements)
 
   std::ostringstream stream2;
   stream2
-    << "<>\n"
-    << "  </>\n"
-    << "</>\n";
+    << "<parent>\n"
+    << "  <elem2/>\n"
+    << "</parent>\n";
 
   EXPECT_EQ(parent->ToString("", false, false), stream2.str());
   EXPECT_EQ(parent->ToString(""), stream.str());
@@ -619,6 +622,7 @@ TEST(Element, ToStringDefaultElements)
 TEST(Element, ToStringDefaultAttributes)
 {
   sdf::ElementPtr element = std::make_shared<sdf::Element>();
+  element->SetName("foo");
   element->AddAttribute("test", "string", "foo", false, "foo description");
   element->AddAttribute("test2", "string", "bar", true, "bar description");
 
@@ -626,14 +630,14 @@ TEST(Element, ToStringDefaultAttributes)
   EXPECT_EQ(element->ToString(""), element->ToString("", false, false));
 
   std::ostringstream stream;
-  stream << "< test2='bar'/>\n";
+  stream << "<foo test2='bar'/>\n";
 
   EXPECT_EQ(element->ToString(""), stream.str());
   EXPECT_EQ(element->ToString("", true, false), stream.str());
   EXPECT_EQ(element->ToString("", false, false), stream.str());
 
   std::ostringstream stream2;
-  stream2 << "< test='foo' test2='bar'/>\n";
+  stream2 << "<foo test='foo' test2='bar'/>\n";
 
   EXPECT_EQ(element->ToString("", true, true), stream2.str());
   EXPECT_EQ(element->ToString("", false, true), stream2.str());

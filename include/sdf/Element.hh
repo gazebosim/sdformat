@@ -180,6 +180,9 @@ namespace sdf
     public: std::string ToString(const std::string &_prefix) const;
 
     /// \brief Convert the element values to a string representation.
+    /// Current behavior of ToString(const std::string &_prefix) can be
+    /// achieved by calling this function with _includeDefaultElements=true
+    /// and _includeDefaultAttributes=false
     /// \param[in] _prefix String value to prefix to the output.
     /// \param[in] _includeDefaultElements flag to include default elements.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
