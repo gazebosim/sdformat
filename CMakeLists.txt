@@ -24,7 +24,7 @@ project (sdformat12)
 
 # The protocol version has nothing to do with the package version set below.
 # It represents the current version of sdformat implement by the software
-set (SDF_PROTOCOL_VERSION 1.8)
+set (SDF_PROTOCOL_VERSION 1.9)
 
 set (SDF_MAJOR_VERSION 12)
 set (SDF_MINOR_VERSION 0)
