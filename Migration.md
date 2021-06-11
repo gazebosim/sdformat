@@ -327,6 +327,8 @@ but with improved human-readability..
     + Changed to `_fixed_joint_lump__` to avoid confusion with scoped names
     + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
 
+## SDFormat specification 1.8 to 1.9
+
 ## SDFormat specification 1.7 to 1.8
 
 ### Additions
