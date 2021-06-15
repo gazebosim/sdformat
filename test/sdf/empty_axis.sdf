@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<!--Commented elements are defaults that will be added during parsing-->
+<sdf version="1.6">
+  <model name="empty_axis">
+    <link name="link1" />
+    <link name="link2" />
+    <joint name="joint" type="fixed">
+      <parent>link1</parent>
+      <child>link2</child>
+      <axis>
+<!--    <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit> -->
+      </axis>
+    </joint>
+  </model>
+</sdf>
