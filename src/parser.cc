@@ -685,11 +685,6 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
       _sdf->Root()->SetOriginalVersion(sdfNode->Attribute("version"));
     }
 
-    if (_sdf->Root()->FilePath().empty())
-    {
-      _sdf->Root()->SetFilePath(_source);
-    }
-
     if (!_sdf->Root()->LineNumber().has_value())
     {
       _sdf->Root()->SetLineNumber(sdfNode->GetLineNum());
@@ -773,11 +768,6 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     if (_sdf->OriginalVersion().empty())
     {
       _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
-    }
-
-    if (_sdf->FilePath().empty())
-    {
-      _sdf->SetFilePath(_source);
     }
 
     if (!_sdf->LineNumber().has_value())
@@ -1400,7 +1390,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
                 sdf::ElementPtr pluginElem;
                 pluginElem = topLevelElem->AddElement("plugin");
-                pluginElem->SetFilePath(_source);
                 pluginElem->SetLineNumber(childElemXml->GetLineNum());
                 pluginElem->SetXmlPath(pluginXmlPath);
 
@@ -1452,7 +1441,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
           ElementPtr element = elemDesc->Clone();
           element->SetParent(_sdf);
-          element->SetFilePath(_source);
           element->SetLineNumber(elemXml->GetLineNum());
           element->SetXmlPath(elemXmlPath);
           if (readXml(elemXml, element, _config, _source, _errors))
