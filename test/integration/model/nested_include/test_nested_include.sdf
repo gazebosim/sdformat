@@ -19,7 +19,7 @@
           </visual>
 
           <sensor element_id="top_model::top_camera::top_camera_link::camera" action="modify">
-            <pose>-0.2 0 0.3 0 0.0 3.14</pose>
+            <pose>0 0 0 0 0 3.14</pose>
             <update_rate>60</update_rate>
           </sensor>
 

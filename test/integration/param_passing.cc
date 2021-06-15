@@ -159,4 +159,17 @@ TEST(ParamPassingTest, NestedInclude)
   sdf::Errors errors = root.Load(testFile);
   PrintErrors(errors);
   EXPECT_TRUE(errors.empty());
+
+  // compare with expected output
+  testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                          "include_custom_nested_model_expected_output.sdf");
+
+  sdf::Root expectedRoot;
+  errors = expectedRoot.Load(testFile);
+  PrintErrors(errors);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_EQ(root.Element()->ToString(""), expectedRoot.Element()->ToString(""))
+        << "ACTUAL:\n" << root.Element()->ToString("\t")
+        << "\nEXPECTED:\n" << expectedRoot.Element()->ToString("\t");
 }

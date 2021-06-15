@@ -10,11 +10,6 @@
             <size>0.1 0.1 0.1</size>
           </box>
         </geometry>
-        <!-- <geometry>
-          <sphere>
-            <radius>0.05</radius>
-          </sphere>
-        </geometry> -->
         <material>
           <ambient>0 1 0 1</ambient>
           <diffuse>0 1 0 1</diffuse>
@@ -23,7 +18,6 @@
       </visual>
 
       <sensor name="camera" type="camera">
-        <!-- <pose>-0.2 0 0.3 0 0.0 3.14</pose> -->
         <pose>-0.2 0 0.3 0 0.0 0</pose>
         <camera>
           <horizontal_fov>1.047</horizontal_fov>

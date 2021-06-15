@@ -75,17 +75,7 @@
         <visualize>true</visualize>
       </sensor>
 
-      <!-- <visual name="camera_visual">
-        <pose>-1.06 0 0 0 0 3.14</pose>
-        <geometry>
-          <box>
-            <size>0.1 0.1 0.1</size>
-          </box>
-        </geometry>
-      </visual> -->
-
       <sensor name="camera" type="camera">
-      <!-- <sensor name="camera" type="thermal"> -->
         <pose>-1.06 0 0 0 0 3.14</pose>
         <camera>
           <horizontal_fov>1.047</horizontal_fov>
@@ -163,6 +153,6 @@
       <parent>chassis</parent>
       <child>caster::wheel_link</child>
     </joint>
-    
+
   </model>
 </sdf>
