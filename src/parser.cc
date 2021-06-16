@@ -1074,7 +1074,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
   std::string modelName = modelPtr->Get<std::string>("name");
   while (elem)
   {
-    if (elem->GetName() == "link")
+    if (elem->GetName() == "link" || elem->GetName() == "model")
     {
       std::string elemName = elem->Get<std::string>("name");
       std::string newName =  modelName + "::" + elemName;
