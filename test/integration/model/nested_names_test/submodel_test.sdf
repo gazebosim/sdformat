@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+<model name='main_model_prefix'>
+      <link name='frame'>
+        <pose frame=''>0.06 -0.0005 0 0 -0 0</pose>
+      </link>
+      <model name='subnested_model'>
+	  <link name='link1' />
+      </model>
+
+      <joint name='joint1' type='revolute'>
+        <parent>subnested_model</parent>
+        <child>subnested_model::link1</child>
+      </joint>
+
+      <joint name='joint2' type='revolute'>
+        <parent>main_model_prefix::subnested_model::link1</parent>
+        <child>other_prefix::subnested_model</child>
+      </joint>
+    </model>
+</sdf>

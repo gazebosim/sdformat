@@ -24,6 +24,8 @@
 
 #include "sdf/sdf.hh"
 
+#include "test_config.h"
+
 ////////////////////////////////////////
 // Test parsing nested model with joint
 TEST(NestedModel, NestedModel)
@@ -238,4 +240,53 @@ TEST(NestedModel, State)
   EXPECT_TRUE(nestedLinkStateElem->HasElement("wrench"));
   EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("wrench"),
     ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+}
+
+////////////////////////////////////////
+// Test parsing a include element that has a pose element and includes a
+// submodel
+TEST(NestedModel, IncludeFlatteningNames)
+{
+  const std::string MODEL_PATH =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                            "model", "nested_names_test");
+
+  std::ostringstream stream;
+  std::string version = SDF_VERSION;
+  stream
+    << "<sdf version='" << version << "'>"
+    << "<model name='top_level_model'>"
+    << "  <include>"
+    << "    <uri>" + MODEL_PATH +"</uri>"
+    << "  </include>"
+    << "</model>"
+    << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
+
+  sdf::ElementPtr modelElem = sdfParsed->Root()->GetElement("model");
+  EXPECT_EQ(modelElem->Get<std::string>("name"), "top_level_model");
+
+  sdf::ElementPtr linkElem = modelElem->GetElement("link");
+  EXPECT_EQ(linkElem->Get<std::string>("name"), "main_model_prefix::frame");
+
+  sdf::ElementPtr jointElem = modelElem->GetElement("joint");
+  EXPECT_EQ(jointElem->Get<std::string>("name"), "main_model_prefix::joint1");
+  EXPECT_EQ(jointElem->Get<std::string>("parent"),
+    "main_model_prefix::subnested_model");
+  EXPECT_EQ(jointElem->Get<std::string>("child"),
+    "main_model_prefix::subnested_model::link1") <<
+    "Flattening logic for nested models failed for case B (check parser.cc)";
+
+  sdf::ElementPtr joint2Elem = jointElem->GetNextElement("joint");
+  EXPECT_EQ(joint2Elem->Get<std::string>("name"), "main_model_prefix::joint2");
+  EXPECT_EQ(joint2Elem->Get<std::string>("parent"),
+    "main_model_prefix::subnested_model::link1") <<
+    "Flattening logic for nested models failed for case A (check parser.cc)" +
+    "duplicates";
+  EXPECT_EQ(joint2Elem->Get<std::string>("child"),
+    "other_prefix::main_model_prefix::subnested_model") <<
+    "Flattening logic for nested models failed for case C (check parser.cc)";
 }
