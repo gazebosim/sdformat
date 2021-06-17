@@ -1074,11 +1074,12 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
   std::string modelName = modelPtr->Get<std::string>("name");
   while (elem)
   {
+    std::string elemName = elem->Get<std::string>("name");
+    std::string newName =  modelName + "::" + elemName;
+    replace[elemName] = newName;
+
     if (elem->GetName() == "link")
     {
-      std::string elemName = elem->Get<std::string>("name");
-      std::string newName =  modelName + "::" + elemName;
-      replace[elemName] = newName;
       if (elem->HasElementDescription("pose"))
       {
         ignition::math::Pose3d offsetPose =
@@ -1092,11 +1093,6 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
     }
     else if (elem->GetName() == "joint")
     {
-      // for joints, we need to
-      //   prefix name like we did with links, and
-      std::string elemName = elem->Get<std::string>("name");
-      std::string newName =  modelName + "::" + elemName;
-      replace[elemName] = newName;
       //   rotate the joint axis because they are model-global
       if (elem->HasElement("axis"))
       {
@@ -1113,12 +1109,14 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
   for (std::map<std::string, std::string>::iterator iter = replace.begin();
        iter != replace.end(); ++iter)
   {
-    replace_all(str, std::string("\"") + iter->first + "\"",
-                std::string("\"") + iter->second + "\"");
-    replace_all(str, std::string("'") + iter->first + "'",
-                std::string("'") + iter->second + "'");
-    replace_all(str, std::string(">") + iter->first + "<",
-                std::string(">") + iter->second + "<");
+    std::string old_name(iter->first);
+    std::string name_with_nested_prefix(iter->second);
+    replace_all(str, "\"" + old_name + "\"",
+                     "\"" + name_with_nested_prefix + "\"");
+    replace_all(str, "'" + old_name + "'",
+                     "'" + name_with_nested_prefix + "'");
+    replace_all(str, ">" + old_name + "<",
+                     ">" + name_with_nested_prefix + "<");
   }
 
   _includeSDF->ClearElements();
