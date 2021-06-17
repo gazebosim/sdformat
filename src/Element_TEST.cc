@@ -540,7 +540,6 @@ TEST(Element, ToStringValue)
             "myprefix< test='foo'>val</>\n");
 }
 
-
 /////////////////////////////////////////////////
 TEST(Element, ToStringClonedElement)
 {
@@ -573,6 +572,75 @@ TEST(Element, ToStringInclude)
 
   std::string stringval = elem.ToString("myprefix");
   ASSERT_EQ(stringval, "myprefix<include filename='foo.txt'/>\n");
+}
+
+/////////////////////////////////////////////////
+TEST(Element, ToStringDefaultElements)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  parent->SetName("parent");
+  sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+  elem->SetName("elem");
+  elem->SetParent(parent);
+  parent->InsertElement(elem);
+  sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
+  elem2->SetName("elem2");
+  elem2->SetParent(parent);
+  parent->InsertElement(elem2);
+
+  std::ostringstream stream;
+  stream
+    << "<parent>\n"
+    << "  <elem/>\n"
+    << "  <elem2/>\n"
+    << "</parent>\n";
+
+  EXPECT_EQ(parent->ToString("", false, false), stream.str());
+  EXPECT_EQ(parent->ToString(""), stream.str());
+  EXPECT_EQ(parent->ToString("", true, false), stream.str());
+
+  elem->SetExplicitlySetInFile(false);
+
+  std::ostringstream stream2;
+  stream2
+    << "<parent>\n"
+    << "  <elem2/>\n"
+    << "</parent>\n";
+
+  EXPECT_EQ(parent->ToString("", false, false), stream2.str());
+  EXPECT_EQ(parent->ToString(""), stream.str());
+  EXPECT_EQ(parent->ToString("", true, false), stream.str());
+
+  parent->SetExplicitlySetInFile(false);
+
+  EXPECT_EQ(parent->ToString("", false, false), "");
+  EXPECT_EQ(parent->ToString(""), stream.str());
+  EXPECT_EQ(parent->ToString("", true, false), stream.str());
+}
+
+/////////////////////////////////////////////////
+TEST(Element, ToStringDefaultAttributes)
+{
+  sdf::ElementPtr element = std::make_shared<sdf::Element>();
+  element->SetName("foo");
+  element->AddAttribute("test", "string", "foo", false, "foo description");
+  element->AddAttribute("test2", "string", "bar", true, "bar description");
+
+  EXPECT_EQ(element->ToString(""), element->ToString("", true, false));
+  EXPECT_EQ(element->ToString(""), element->ToString("", false, false));
+
+  std::ostringstream stream;
+  stream << "<foo test2='bar'/>\n";
+
+  EXPECT_EQ(element->ToString(""), stream.str());
+  EXPECT_EQ(element->ToString("", true, false), stream.str());
+  EXPECT_EQ(element->ToString("", false, false), stream.str());
+
+  std::ostringstream stream2;
+  stream2 << "<foo test='foo' test2='bar'/>\n";
+
+  EXPECT_EQ(element->ToString("", true, true), stream2.str());
+  EXPECT_EQ(element->ToString("", false, true), stream2.str());
 }
 
 /////////////////////////////////////////////////
