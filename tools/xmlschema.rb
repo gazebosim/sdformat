@@ -73,11 +73,7 @@ def printElem(_file, _spaces, _elem)
       printDocumentation(_file, _spaces+2, _elem.elements["description"].text)
     end
 
-    if _elem.attributes['name'] == "pose"
-      _file.printf("%*s<xsd:complexType mixed='true'>\n", _spaces+2, "")
-    else
-      _file.printf("%*s<xsd:complexType>\n", _spaces+2, "")
-    end
+    _file.printf("%*s<xsd:complexType>\n", _spaces+2, "")
 
     _file.printf("%*s<xsd:choice maxOccurs='unbounded'>\n", _spaces+4, "")
 
@@ -162,7 +158,7 @@ def printInclude(_file, _spaces, _attr)
   doc = REXML::Document.new File.new(loc)
 
   doc.elements.each_with_index("element") do |elem, i|
-    printXSD(_file, _spaces+2, elem)
+    printElem(_file, _spaces+2, elem)
   end
 end
 
@@ -220,11 +216,7 @@ def printXSD(_file, _spaces, _elem)
      printDocumentation(_file, _spaces+2, _elem.elements["description"].text)
     end
 
-    if _elem.attributes['name'] == "pose"
-      _file.printf("%*s<xsd:complexType mixed='true'>\n", _spaces+2, "")
-    else
-      _file.printf("%*s<xsd:complexType>\n", _spaces+2, "")
-    end
+    _file.printf("%*s<xsd:complexType>\n", _spaces+2, "")
 
     if _elem.attributes['name'] != "plugin" &&
       (_elem.get_elements("element").size > 0 ||

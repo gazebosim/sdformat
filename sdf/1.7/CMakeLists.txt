@@ -3,8 +3,8 @@ set (sdfs
   air_pressure.sdf
   altimeter.sdf
   atmosphere.sdf
-  audio_source.sdf
   audio_sink.sdf
+  audio_source.sdf
   battery.sdf
   box_shape.sdf
   camera.sdf
@@ -12,8 +12,8 @@ set (sdfs
   collision.sdf
   contact.sdf
   cylinder_shape.sdf
-  frame.sdf
   forcetorque.sdf
+  frame.sdf
   geometry.sdf
   gps.sdf
   gripper.sdf
@@ -24,16 +24,16 @@ set (sdfs
   inertial.sdf
   joint.sdf
   lidar.sdf
-  light.sdf
   light_state.sdf
-  link.sdf
+  light.sdf
   link_state.sdf
+  link.sdf
   logical_camera.sdf
   magnetometer.sdf
   material.sdf
   mesh_shape.sdf
-  model.sdf
   model_state.sdf
+  model.sdf
   noise.sdf
   physics.sdf
   plane_shape.sdf
@@ -43,15 +43,15 @@ set (sdfs
   pose.sdf
   projector.sdf
   ray.sdf
-  rfidtag.sdf
   rfid.sdf
+  rfidtag.sdf
   road.sdf
   root.sdf
   scene.sdf
   sensor.sdf
-  spherical_coordinates.sdf
-  sphere_shape.sdf
   sonar.sdf
+  sphere_shape.sdf
+  spherical_coordinates.sdf
   state.sdf
   surface.sdf
   transceiver.sdf
