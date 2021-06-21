@@ -59,7 +59,7 @@ TEST(ParamPassing, GetElement)
   sdf::ElementPtr elem = sdf->Root()->GetFirstElement()
                                         ->GetElement("model")
                                         ->GetElement("link");
-  sdf::ElementPtr paramPassElem = sdf::ParamPassing::getElementById(sdf,
+  sdf::ElementPtr paramPassElem = sdf::ParamPassing::getElementById(sdf->Root(),
                                                  "link",
                                                  "test_model::test_link");
   EXPECT_NE(nullptr, elem);
@@ -72,7 +72,7 @@ TEST(ParamPassing, GetElement)
                         ->GetElement("link")
                         ->GetNextElement()
                         ->GetElement("visual");
-  paramPassElem = sdf::ParamPassing::getElementById(sdf,
+  paramPassElem = sdf::ParamPassing::getElementById(sdf->Root(),
                                  "visual",
                                  "test_model::test_link2::test_visual");
   EXPECT_NE(nullptr, elem);
@@ -80,13 +80,13 @@ TEST(ParamPassing, GetElement)
   EXPECT_EQ(elem, paramPassElem);
 
   // No element <visual name='test_visual'> (element is a collision)
-  paramPassElem = sdf::ParamPassing::getElementById(sdf,
+  paramPassElem = sdf::ParamPassing::getElementById(sdf->Root(),
                                  "visual",
                                  "test_model::test_link::test_visual");
   EXPECT_EQ(nullptr, paramPassElem);
 
   // incorrect element identifier (model::test_link::test_visual)
-  paramPassElem = sdf::ParamPassing::getElementById(sdf,
+  paramPassElem = sdf::ParamPassing::getElementById(sdf->Root(),
                                  "collision",
                                  "model::test_link::test_visual");
   EXPECT_EQ(nullptr, paramPassElem);

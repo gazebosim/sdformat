@@ -38,7 +38,7 @@ namespace sdf
     // parse and update data into
     /// \param[out] _errors Captures errors found during parsing
     void updateParams(tinyxml2::XMLElement *_childXmlParams,
-                      SDFPtr _includeSDF, Errors &_errors);
+                      ElementPtr _includeSDF, Errors &_errors);
 
     /// \brief Retrieves the specified element by the element identifier
     /// and element name
@@ -51,7 +51,7 @@ namespace sdf
     /// the add action
     /// \return ElementPtr to the specified element, nullptr if element could
     /// not found
-    ElementPtr getElementById(const SDFPtr _sdf,
+    ElementPtr getElementById(const ElementPtr _sdf,
                               const std::string &_elemName,
                               const std::string &_elemId,
                               const bool _isParentElement = false);

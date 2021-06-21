@@ -32,7 +32,7 @@ namespace ParamPassing {
 
 //////////////////////////////////////////////////
 void updateParams(tinyxml2::XMLElement *_childXmlParams,
-                  SDFPtr _includeSDF, Errors &_errors)
+                  ElementPtr _includeSDF, Errors &_errors)
 {
   // loop through <experimental:params> children
   tinyxml2::XMLElement *childElemXml = nullptr;
@@ -132,7 +132,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
       if (elemIdAttr.empty())
       {
         // add new element as direct child of included model
-        elem = _includeSDF->Root()->GetFirstElement();
+        elem = _includeSDF->GetFirstElement();
       }
       else
       {
@@ -198,13 +198,13 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
 }
 
 //////////////////////////////////////////////////
-ElementPtr getElementById(const SDFPtr _sdf,
+ElementPtr getElementById(const ElementPtr _sdf,
                           const std::string &_elemName,
                           const std::string &_elemId,
                           const bool _isParentElement)
 {
   // child element of includeSDF
-  ElementPtr childElem = _sdf->Root()->GetFirstElement()->GetFirstElement();
+  ElementPtr childElem = _sdf->GetFirstElement()->GetFirstElement();
 
   // start and stop idx of elemId for finding longest substring
   int64_t startIdx = 0, stopIdx = 0, longestIdx = 0;

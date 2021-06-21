@@ -1088,7 +1088,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
         {
           ParamPassing::updateParams(
               elemXml->FirstChildElement("experimental:params"),
-              includeSDF,
+              includeSDF->Root(),
               _errors);
         }
 
