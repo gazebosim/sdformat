@@ -1111,23 +1111,23 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
   {
     std::string old_name(iter->first);
     std::string name_with_nested_prefix(iter->second);
-    replace_all(str, "\"" + old_name + "\"",
-                     "\"" + name_with_nested_prefix + "\"");
-    replace_all(str, "'" + old_name + "'",
-                     "'" + name_with_nested_prefix + "'");
-    replace_all(str, ">" + old_name + "<",
-                     ">" + name_with_nested_prefix + "<");
+    replace_all(str, std::string("\"") + old_name + "\"",
+                     std::string("\"") + name_with_nested_prefix + "\"");
+    replace_all(str, std::string("'") + old_name + "'",
+                     std::string("'") + name_with_nested_prefix + "'");
+    replace_all(str, std::string(">") + old_name + "<",
+                     std::string(">") + name_with_nested_prefix + "<");
     // Deal with nested model inside other nested model and already with
-    // '::component::' entries in the name
-    // Case A. ::component1::iter.first::component2
-    replace_all(str, "::" + old_name + "::",
-                     "::" + name_with_nested_prefix + "::");
+    // ::namespace:: entries in the name
+    // Case A. ::namespace1::iter.first::namespace2
+    replace_all(str, std::string("::") + old_name + "::",
+                     std::string("::") + name_with_nested_prefix + "::");
     // Case B. >iter.first::component
-    replace_all(str, ">" + old_name + "::",
-                     ">" + name_with_nested_prefix + "::");
+    replace_all(str, std::string(">") + old_name + "::",
+                     std::string(">") + name_with_nested_prefix + "::");
     // Case C.::component::iter.first<
-    replace_all(str, "::" + old_name + "<",
-                     "::" + name_with_nested_prefix + "<");
+    replace_all(str, std::string("::") + old_name + "<",
+                     std::string("::") + name_with_nested_prefix + "<");
     // remove duplicate prefixes introduced by the logic above (cases
     // A,B,C) if the full name (iter.second) was used in the original SDF: (i.e
     // iter.second::component)
