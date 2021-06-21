@@ -891,11 +891,9 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
       }
     }
 
-    std::string attrName = attribute->Name();
-    if (i == _sdf->GetAttributeCount()
-        && attrName != "action" && attrName != "element_id")
+    if (i == _sdf->GetAttributeCount())
     {
-      sdfwarn << "XML Attribute[" << attrName
+      sdfwarn << "XML Attribute[" << attribute->Name()
               << "] in element[" << _xml->Value()
               << "] not defined in SDF, ignoring.\n";
     }

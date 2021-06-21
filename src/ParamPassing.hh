@@ -141,6 +141,15 @@ namespace sdf
     /// \param[in] _newElem The replacement element
     /// \param[out] _origElem The element to be replaced
     void replace(const ElementPtr _newElem, ElementPtr _origElem);
+
+    /// \brief Wrapper for parser.cc's readXml function, which populates
+    /// an SDF Element from the XML input. The function first strips the
+    /// action and element_id attributes before calling readXml
+    /// \param[in] _xml Pointer to the TinyXML element
+    /// \param[in,out] _sdf SDF pointer to parse data into
+    /// \param[out] _errors Captures errors found during parsing
+    /// \return True on success, false on error
+    bool xmlToSdf(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors);
   }
   }
 }

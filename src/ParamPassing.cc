@@ -183,7 +183,7 @@ void updateParams(tinyxml2::XMLElement *_childXmlParams,
       if (!newElem)
         continue;
 
-      if (!readXml(childElemXml, newElem, _errors))
+      if (!xmlToSdf(childElemXml, newElem, _errors))
       {
         _errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Unable to convert XML to SDF. Skipping element replacement:\n"
@@ -459,7 +459,7 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
     else
       elemChild = elemDesc->GetElementDescription(elemName);
 
-    if (!readXml(xmlChild, elemChild, _errors))
+    if (!xmlToSdf(xmlChild, elemChild, _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
         "Unable to convert XML to SDF. Skipping child element alteration "
@@ -513,7 +513,7 @@ void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem, Errors &_errors)
   if (!newElem)
     return;
 
-  if (readXml(_childXml, newElem, _errors))
+  if (xmlToSdf(_childXml, newElem, _errors))
   {
     _elem->InsertElement(newElem);
   }
@@ -669,6 +669,15 @@ void replace(const ElementPtr _newElem, ElementPtr _origElem)
   _origElem->ClearElements();
   _origElem->RemoveAllAttributes();
   _origElem->Copy(_newElem);
+}
+
+//////////////////////////////////////////////////
+bool xmlToSdf(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
+{
+  _xml->DeleteAttribute("element_id");
+  _xml->DeleteAttribute("action");
+
+  return readXml(_xml, _sdf, _errors);
 }
 }
 }
