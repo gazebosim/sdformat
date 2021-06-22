@@ -2,7 +2,6 @@
 <sdf version="1.7">
   <model name='top_model'>
 
-
     <link name="top">
       <pose>0.6 0 0.7 0 0 0</pose>
       <collision name="top_collision">

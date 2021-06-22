@@ -97,7 +97,7 @@
     </link>
 
     <include>
-      <uri>top</uri>
+      <uri>top_model</uri>
     </include>
 
     <joint name="top_to_base" type="fixed">

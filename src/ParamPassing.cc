@@ -616,8 +616,7 @@ void modify(tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors)
                 << ElementToString(_xml) << "\n";
       }
     }
-
-    if (!xmlChild->NoChildren())
+    else
     {
       modify(xmlChild, elemChild, _errors);
     }

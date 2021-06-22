@@ -30,8 +30,7 @@ void PrintErrors(sdf::Errors &_errors)
 TEST(ParamPassingTest, ExperimentalParamsTag)
 {
   const std::string modelRootPath =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "model");
+    sdf::testing::TestFile("integration", "model");
   sdf::setFindCallback(
       [&](const std::string &_file)
       {
@@ -40,8 +39,7 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
 
   // checks normal <include> (w/o <experimental:params>)
   std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "include_model.sdf");
+    sdf::testing::TestFile("integration", "include_model.sdf");
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
   PrintErrors(errors);
@@ -49,18 +47,14 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
 
   // checks <include> containing <experimental:params> w/ correctly specified
   // elements
-  testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "include_custom_model.sdf");
+  testFile = sdf::testing::TestFile("integration", "include_custom_model.sdf");
   errors = root.Load(testFile);
   PrintErrors(errors);
   EXPECT_TRUE(errors.empty());
 
   // compare with expected output
-  testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                          "include_custom_model_expected_output.sdf");
-
+  testFile = sdf::testing::TestFile("integration",
+                                    "include_custom_model_expected_output.sdf");
   sdf::Root expectedRoot;
   errors = expectedRoot.Load(testFile);
   PrintErrors(errors);
@@ -70,9 +64,8 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
         << "\nEXPECTED:\n" << expectedRoot.Element()->ToString("\t");
 
   // Expected errors
-  testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "include_invalid_custom_model.sdf");
+  testFile = sdf::testing::TestFile("integration",
+                                    "include_invalid_custom_model.sdf");
   errors = root.Load(testFile);
   PrintErrors(errors);
   EXPECT_FALSE(errors.empty());
@@ -140,8 +133,7 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
 TEST(ParamPassingTest, NestedInclude)
 {
   const std::string modelRootPath =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "model", "nested_include");
+    sdf::testing::TestFile("integration", "model", "nested_include");
   sdf::setFindCallback(
       [&](const std::string &_file)
       {
@@ -153,18 +145,16 @@ TEST(ParamPassingTest, NestedInclude)
   // e.g., When model A includes B and B includes C. The top-level A
   //       <experimental:params> specifies elements of C
   std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
-                            "nested_include", "test_nested_include.sdf");
+    sdf::testing::TestFile("integration", "model",
+                           "nested_include", "test_nested_include.sdf");
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
   PrintErrors(errors);
   EXPECT_TRUE(errors.empty());
 
   // compare with expected output
-  testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                          "include_custom_nested_model_expected_output.sdf");
-
+  testFile = sdf::testing::TestFile("integration",
+                           "include_custom_nested_model_expected_output.sdf");
   sdf::Root expectedRoot;
   errors = expectedRoot.Load(testFile);
   PrintErrors(errors);
