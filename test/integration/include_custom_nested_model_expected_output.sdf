@@ -183,7 +183,14 @@
         <pose relative_to='base::top_model::top_camera::__model__'>0 0 0 0 -0 0</pose>
 
         <!-- added -->
-        <link name="new_link"/>
+        <collision name="camera_collision">
+          <pose>-0.2 0 0.3 0 0 3.14</pose>
+          <geometry>
+            <sphere>
+              <radius>0.05</radius>
+            </sphere>
+          </geometry>
+        </collision>
       </link>
       <joint name='base::top_model::top_to_camera' type='fixed'>
         <parent>base::top_model::top</parent>

@@ -35,6 +35,5 @@
       <child>top_camera::top_camera_link</child>
     </joint>
 
-
   </model>
 </sdf>

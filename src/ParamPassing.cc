@@ -425,7 +425,6 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
     }
 
     // get child element description (used for actions: add and replace)
-    bool useParentDesc = false;
     std::string elemName = xmlChild->Name();
 
     // the modification will be skipped if not an existing sdf element
@@ -433,31 +432,18 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
     // might need to be a future implementation
     if (!elemDesc->HasElementDescription(elemName))
     {
-      // TODO(anyone) when forward porting to sdf11,
-      // need to add `|| elemName == "model"` since nested models are allowed
-      if (elemName == "link")
-      {
-        useParentDesc = true;
-      }
-      else
-      {
-        _errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Element [" + elemName + "] is not a defined SDF element or is an "
-          "invalid child specification. Skipping "
-          "child element modification with parent <"
-          + std::string(_childrenXml->Name()) + " element_id='"
-          + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
-          + ElementToString(xmlChild)
-        });
-        continue;
-      }
+      _errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Element [" + elemName + "] is not a defined SDF element or is an "
+        "invalid child specification. Skipping "
+        "child element modification with parent <"
+        + std::string(_childrenXml->Name()) + " element_id='"
+        + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
+        + ElementToString(xmlChild)
+      });
+      continue;
     }
 
-    ElementPtr elemChild;
-    if (useParentDesc)
-      elemChild = elemDesc;
-    else
-      elemChild = elemDesc->GetElementDescription(elemName);
+    ElementPtr elemChild = elemDesc->GetElementDescription(elemName);
 
     if (!xmlToSdf(xmlChild, elemChild, _errors))
     {
@@ -540,7 +526,10 @@ void modifyAttributes(tinyxml2::XMLElement *_xml,
 
     if (!_elem->HasAttribute(attrName))
     {
-      // TODO(jenn) add attributes for namespaced elements?
+      // since custom attribute is not in spec, HasAttribute will always fail
+      // so need to add the attribute whereas other attributes that are part of
+      // the spec HasAttribute will pass even if not set.
+      // TODO(jenn) add attributes for namespaced elements
       if (attrName.find(":") != std::string::npos)
       {
         _elem->AddAttribute(attrName, "string", "", 1, "");

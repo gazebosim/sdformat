@@ -239,18 +239,6 @@
           <!-- modified with above -->
           <!-- <topic>top/camera</topic> -->
         </sensor>
-
-        <!-- added -->
-        <link name='nested_link'>
-          <visual name="visual">
-            <geometry>
-              <cylinder>
-                <radius>1</radius>
-                <length>1.2</length>
-              </cylinder>
-            </geometry>
-          </visual>
-        </link>
       </link>
 
       <joint name='vehicle::top_to_base' type='fixed'>
@@ -421,10 +409,10 @@
         <child>vehicle::caster</child>
       </joint>
 
-      <link name='vehicle::nested_links'>
+      <model name='vehicle::nested_models'>
         <pose relative_to='vehicle::__model__'>0 0 0 0 -0 0</pose>
-        <link name='link1'>
-          <link name='link2'>
+        <model name='model1'>
+          <link name='link1'>
 
             <!-- added -->
             <visual name='new_visual'>
@@ -436,8 +424,8 @@
             </visual>
 
           </link>
-        </link>
-      </link>
+        </model>
+      </model>
 
       <!-- added -->
       <link name='vehicle::new_link'>

@@ -36,7 +36,14 @@
             </material>
           </visual>
 
-          <link element_id="top_model::top_camera::top_camera_link" name="new_link" action="add"/>
+          <collision element_id="top_model::top_camera::top_camera_link" name="camera_collision" action="add">
+            <pose>-0.2 0 0.3 0 0 3.14</pose>
+            <geometry>
+              <sphere>
+                <radius>0.05</radius>
+              </sphere>
+            </geometry>
+          </collision>
         </experimental:params>
       </include>
     </model>

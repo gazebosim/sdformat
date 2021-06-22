@@ -75,15 +75,6 @@
         <visualize>true</visualize>
       </sensor>
 
-      <!-- <visual name="camera_visual">
-        <pose>-1.06 0 0 0 0 3.14</pose>
-        <geometry>
-          <box>
-            <size>0.1 0.1 0.1</size>
-          </box>
-        </geometry>
-      </visual> -->
-
       <sensor name="camera" type="camera">
         <pose>-1.06 0 0 0 0 3.14</pose>
         <camera>
@@ -314,11 +305,11 @@
       <child>caster</child>
     </joint>
 
-    <link name="nested_links">
+    <model name="nested_models">
       <pose>0 0 0 0 0 0</pose>
-      <link name="link1">
-        <link name="link2"/>
-      </link>
-    </link>
+      <model name="model1">
+        <link name="link1"/>
+      </model>
+    </model>
   </model>
 </sdf>

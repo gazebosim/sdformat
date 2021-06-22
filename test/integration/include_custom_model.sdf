@@ -43,7 +43,7 @@
             </sensor>
           </link>
 
-          <visual element_id="nested_links::link1::link2" name="new_visual" action="add">
+          <visual element_id="nested_models::model1::link1" name="new_visual" action="add">
             <geometry>
               <box>
                 <size>0.1 0.1 0.1</size>
@@ -76,17 +76,6 @@
           <plugin element_id="top::camera_visual" name="some_visual_plugin" filename="/path/to/plugin" action="add"/>
 
           <link element_id="top">
-            <link name="nested_link" action="add">
-              <visual name="visual">
-                <geometry>
-                  <cylinder>
-                    <radius>1</radius>
-                    <length>1.2</length>
-                  </cylinder>
-                </geometry>
-              </visual>
-            </link>
-
             <collision name="camera_collision" action="remove"/>
 
             <visual name="top_visual" action="remove">
