@@ -121,6 +121,13 @@ namespace sdf
     void modifyAttributes(tinyxml2::XMLElement *_xml,
                          ElementPtr _elem, Errors &_errors);
 
+    /// \brief Modifies the children elements of the included model
+    /// \param[in] _xml Pointer to the xml element which contains the elements
+    /// to be modified
+    /// \param[out] _elem The element from the included model to modify
+    void modifyChildren(tinyxml2::XMLElement *_xml,
+                        ElementPtr _elem, Errors &_errors);
+
     /// \brief Modifies element values and/or attributes of an element from the
     /// included model
     /// \param[in] _xml Pointer to the xml element which contains the elements

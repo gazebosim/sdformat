@@ -175,6 +175,25 @@
               </geometry>
             </collision>
           </link>
+
+          <model element_id="nested_models">
+            <pose action="modify" relative_to="caster">1 1 1 0 0 0</pose>
+          </model>
+
+          <!-- add link with custom element -->
+          <link element_id="" name="link_custom1" action="add">
+            <foo:custom_elem>
+              foo
+            </foo:custom_elem>
+          </link>
+
+          <link element_id="link_custom1">
+            <!-- modify newly added custom element -->
+            <foo:custom_elem custom:attr="test" action="modify">
+              bar
+            </foo:custom_elem>
+          </link>
+
         </experimental:params>
 
       </include>

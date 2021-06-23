@@ -410,7 +410,9 @@
       </joint>
 
       <model name='vehicle::nested_models'>
-        <pose relative_to='vehicle::__model__'>0 0 0 0 -0 0</pose>
+        <pose relative_to='vehicle::caster'>1 1 1 0 -0 0</pose>
+        <!-- modified with above -->
+        <!-- <pose relative_to='vehicle::__model__'>0 0 0 0 -0 0</pose> -->
         <model name='model1'>
           <link name='link1'>
 
@@ -446,6 +448,13 @@
           <update_rate>30</update_rate>
           <visualize>1</visualize>
         </sensor>
+      </link>
+
+      <!-- added -->
+      <link name="vehicle::link_custom1">
+        <pose relative_to='vehicle::__model__'>0 0 0 0 -0 0</pose>
+        <!-- modified value from foo to bar-->
+        <foo:custom_elem custom:attr='test'>bar</foo:custom_elem>
       </link>
 
     </model>

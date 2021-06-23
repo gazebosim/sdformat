@@ -459,6 +459,7 @@ void handleIndividualChildActions(tinyxml2::XMLElement *_childrenXml,
     if (actionStr == "add")
     {
       _elem->InsertElement(elemChild);
+      elemChild->SetParent(_elem);
     }
     else if (actionStr == "replace")
     {
@@ -502,6 +503,7 @@ void add(tinyxml2::XMLElement *_childXml, ElementPtr _elem, Errors &_errors)
   if (xmlToSdf(_childXml, newElem, _errors))
   {
     _elem->InsertElement(newElem);
+    newElem->SetParent(_elem);
   }
   else
   {
@@ -550,10 +552,9 @@ void modifyAttributes(tinyxml2::XMLElement *_xml,
 }
 
 //////////////////////////////////////////////////
-void modify(tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors)
+void modifyChildren(tinyxml2::XMLElement *_xml,
+                    ElementPtr _elem, Errors &_errors)
 {
-  modifyAttributes(_xml, _elem, _errors);
-
   for (tinyxml2::XMLElement *xmlChild = _xml->FirstChildElement();
        xmlChild;
        xmlChild = xmlChild->NextSiblingElement())
@@ -609,6 +610,31 @@ void modify(tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors)
     {
       modify(xmlChild, elemChild, _errors);
     }
+  }
+}
+
+//////////////////////////////////////////////////
+void modify(tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors)
+{
+  modifyAttributes(_xml, _elem, _errors);
+
+  if (_xml->GetText())
+  {
+    // modify value of element
+    ParamPtr param = _elem->GetValue();
+    if (param && !param->SetFromString(_xml->GetText()))
+    {
+      _errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Value [" + std::string(_xml->GetText()) + "] for element [" +
+        std::string(_xml->Name()) + "] is invalid. Skipping modification for:\n"
+        + ElementToString(_xml)
+      });
+    }
+  }
+  else
+  {
+    // modify children elements
+    modifyChildren(_xml, _elem, _errors);
   }
 }
 
