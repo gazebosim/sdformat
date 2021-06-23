@@ -7,6 +7,7 @@ set(tests
   cfm_damping_implicit_spring_damper.cc
   collision_dom.cc
   converter.cc
+  default_elements.cc
   deprecated_specs.cc
   disable_fixed_joint_reduction.cc
   element_tracing.cc
