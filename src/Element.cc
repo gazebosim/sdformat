@@ -31,6 +31,7 @@ Element::Element()
 {
   this->dataPtr->copyChildren = false;
   this->dataPtr->referenceSDF = "";
+  this->dataPtr->explicitlySetInFile = true;
 }
 
 /////////////////////////////////////////////////
@@ -91,6 +92,25 @@ const std::string &Element::GetRequired() const
 void Element::SetCopyChildren(bool _value)
 {
   this->dataPtr->copyChildren = _value;
+}
+
+/////////////////////////////////////////////////
+void Element::SetExplicitlySetInFile(const bool _value)
+{
+  this->dataPtr->explicitlySetInFile = _value;
+
+  ElementPtr_V::const_iterator eiter;
+  for (eiter = this->dataPtr->elements.begin();
+       eiter != this->dataPtr->elements.end(); ++eiter)
+  {
+    (*eiter)->SetExplicitlySetInFile(_value);
+  }
+}
+
+/////////////////////////////////////////////////
+bool Element::GetExplicitlySetInFile() const
+{
+  return this->dataPtr->explicitlySetInFile;
 }
 
 /////////////////////////////////////////////////
@@ -170,6 +190,7 @@ ElementPtr Element::Clone() const
   clone->dataPtr->lineNumber = this->dataPtr->lineNumber;
   clone->dataPtr->xmlPath = this->dataPtr->xmlPath;
   clone->dataPtr->originalVersion = this->dataPtr->originalVersion;
+  clone->dataPtr->explicitlySetInFile = this->dataPtr->explicitlySetInFile;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
@@ -218,6 +239,7 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->path = _elem->FilePath();
   this->dataPtr->lineNumber = _elem->LineNumber();
   this->dataPtr->xmlPath = _elem->XmlPath();
+  this->dataPtr->explicitlySetInFile = _elem->GetExplicitlySetInFile();
 
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
        iter != _elem->dataPtr->attributes.end(); ++iter)
