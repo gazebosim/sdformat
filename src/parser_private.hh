@@ -38,7 +38,7 @@ namespace sdf
   ///            model XML tag
   /// \param[out] _modelFileName file name of the best model file
   /// \return string with the best SDF version supported
-  static std::string getBestSupportedModelVersion(
+  std::string getBestSupportedModelVersion(
       tinyxml2::XMLElement *_modelXML, std::string &_modelFileName);
 
   /// \brief Initialize the SDF interface using a TinyXML2 document.
@@ -47,7 +47,7 @@ namespace sdf
   /// \param[in] _xmlDoc TinyXML2 document containing the SDFormat description
   /// file that corresponds with the input SDFPtr
   /// \param[in] _sdf SDF interface to be initialized
-  static bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf);
+  bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf);
 
   /// \brief Initialize the SDF Element using a TinyXML2 document
   ///
@@ -55,7 +55,7 @@ namespace sdf
   /// \param[in] _xmlDoc TinyXML2 document containing the SDFormat description
   /// file that corresponds with the input ElementPtr
   /// \param[in] _sdf SDF Element to be initialized
-  static bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf);
+  bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf);
 
   /// \brief Initialize the SDF Element by parsing the SDFormat description in
   /// the input TinyXML2 element. This is where SDFormat spec/description files
@@ -64,15 +64,15 @@ namespace sdf
   /// \param[in] _xml TinyXML2 element containing the SDFormat description
   /// file that corresponds with the input ElementPtr
   /// \param[in] _sdf SDF ElementPtr to be initialized
-  static bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf);
+  bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf);
 
   /// \brief Populate the SDF values from a TinyXML document
-  static bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
+  bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
                       const std::string &_source, bool _convert,
                       Errors &_errors);
 
   /// \brief Populate the SDF values from a TinyXML document
-  static bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
+  bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
       const std::string &_source, bool _convert, Errors &_errors);
 
   /// \brief Populate an SDF Element from the XML input. The XML input here is
@@ -83,7 +83,7 @@ namespace sdf
   /// \param[in,out] _sdf SDF pointer to parse data into.
   /// \param[out] _errors Captures errors found during parsing.
   /// \return True on success, false on error.
-  static bool readXml(tinyxml2::XMLElement *_xml,
+  bool readXml(tinyxml2::XMLElement *_xml,
                       ElementPtr _sdf,
                       Errors &_errors);
 
@@ -93,7 +93,7 @@ namespace sdf
   /// copied.
   /// \param[in] _onlyUnknown True to copy only elements that are NOT part of
   /// the SDF spec. Set this to false to copy everything.
-  static void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
+  void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
                     const bool _onlyUnknown);
   }
 }

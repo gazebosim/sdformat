@@ -130,7 +130,7 @@ namespace sdf
     POSE_RELATIVE_TO_GRAPH_ERROR,
 
     /// \brief Indicates that reading an SDF string failed.
-    STRING_READ,
+    STRING_READ
   };
 
   class SDFORMAT_VISIBLE Error

@@ -28,6 +28,7 @@ set(tests
   model_dom.cc
   model_versions.cc
   nested_model.cc
+  param_passing.cc
   parser_error_detection.cc
   particle_emitter_dom.cc
   plugin_attribute.cc
@@ -73,5 +74,3 @@ if (UNIX AND NOT APPLE)
   add_test(NAME INTEGRATION_versioned_symbols
     COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash ${CMAKE_BINARY_DIR}/src/libsdformat${SDF_MAJOR_VERSION}.so)
 endif()
-
-

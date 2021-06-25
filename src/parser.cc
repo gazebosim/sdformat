@@ -37,6 +37,7 @@
 
 #include "Converter.hh"
 #include "FrameSemantics.hh"
+#include "ParamPassing.hh"
 #include "parser_private.hh"
 #include "parser_urdf.hh"
 
@@ -1079,6 +1080,16 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
               }
             }
           }
+        }
+
+        // TODO(jenn) prototyping parameter passing
+        // ref: sdformat.org > Documentation > Proposal for parameter passing
+        if (elemXml->FirstChildElement("experimental:params"))
+        {
+          ParamPassing::updateParams(
+              elemXml->FirstChildElement("experimental:params"),
+              includeSDF->Root(),
+              _errors);
         }
 
         if (_sdf->GetName() == "model")

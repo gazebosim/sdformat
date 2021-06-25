@@ -44,6 +44,7 @@ set (sources
   parser.cc
   parser_urdf.cc
   Param.cc
+  ParamPassing.cc
   ParticleEmitter.cc
   Pbr.cc
   Physics.cc
@@ -182,6 +183,21 @@ if (BUILD_SDF_TEST)
       target_link_libraries(UNIT_parser_urdf_TEST PRIVATE ${URDF_LIBRARIES})
     endif()
     target_link_libraries(UNIT_parser_urdf_TEST PRIVATE
+      ${TinyXML2_LIBRARIES})
+  endif()
+
+  if (NOT WIN32)
+    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS ParamPassing.cc XmlUtils.cc parser.cc
+          parser_urdf.cc FrameSemantics.cc Converter.cc EmbeddedSdf.cc SDFExtension.cc)
+    sdf_build_tests(ParamPassing_TEST.cc)
+    if (NOT USE_INTERNAL_URDF)
+      target_compile_options(UNIT_ParamPassing_TEST PRIVATE ${URDF_CFLAGS})
+      if (${CMAKE_VERSION} VERSION_GREATER 3.13)
+        target_link_options(UNIT_ParamPassing_TEST PRIVATE ${URDF_LDFLAGS})
+      endif()
+      target_link_libraries(UNIT_ParamPassing_TEST PRIVATE ${URDF_LIBRARIES})
+    endif()
+    target_link_libraries(UNIT_ParamPassing_TEST PRIVATE
       ${TinyXML2_LIBRARIES})
   endif()
 endif()
