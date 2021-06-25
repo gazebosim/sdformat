@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <model name='top_model'>
+
+    <link name="top">
+      <pose>0.6 0 0.7 0 0 0</pose>
+      <collision name="top_collision">
+        <geometry>
+          <box>
+            <size>0.5 1 0.5</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="top_visual">
+        <geometry>
+          <box>
+            <size>0.5 1 0.5</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>1 0 0 1</specular>
+        </material>
+      </visual>
+    </link>
+
+    <include>
+      <uri>top_camera</uri>
+      <pose relative_to="top">0 0 0 0 0 0</pose>
+    </include>
+
+    <joint name="top_to_camera" type="fixed">
+      <parent>top</parent>
+      <child>top_camera::top_camera_link</child>
+    </joint>
+
+  </model>
+</sdf>

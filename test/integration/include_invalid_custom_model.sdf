@@ -1,0 +1,133 @@
+<?xml version="1.0" ?>
+<sdf version="1.7"
+     xmlns:experimental="http://sdformat.org/schemas/experimental">
+  <world name="world_invalid_custom_model">
+    <model name="robot">
+      <include>
+        <uri>robot</uri>
+        <experimental:params>
+          <!-- missing element_id attribute (i.e., element identifier) -->
+          <foo/>
+          <!-- element does not exist -->
+          <visual element_id="chassis::camera_visual" action="modify">
+            <pose>-1.06 0 0 0 0 3.14</pose>
+            <geometry>
+              <box>
+                <size>0.1 0.1 0.1</size>
+              </box>
+            </geometry>
+          </visual>
+          <!-- element already exists -->
+          <visual element_id="chassis" name="visual" action="add">
+            <geometry>
+              <box>
+                <size>0.1 0.1 0.1</size>
+              </box>
+            </geometry>
+          </visual>
+          <!-- parent of new element does not exist -->
+          <visual element_id="chassis::test" name="visual" action="add">
+            <geometry>
+              <box>
+                <size>0.1 0.1 0.1</size>
+              </box>
+            </geometry>
+          </visual>
+          <!-- missing name after :: -->
+          <link element_id="chassis::test::" name="foo" action="add"/>
+
+          <visual element_id="top::camera_visual">
+            <!-- missing action attribute -->
+            <transparency>0.2</transparency>
+
+            <!-- incorrect schema (missing required attributes) -->
+            <plugin action="add"/>
+
+            <!-- not defined sdf element -->
+            <test action="add"/>
+          </visual>
+
+          <!-- not defined sdf element -->
+          <test element_id="chassis" name="new_elem" action="add"/>
+
+          <!-- missing 'name' attribute -->
+          <plugin element_id="chassis" action="add"/>
+
+          <!-- 'name' attribute is empty -->
+          <plugin element_id="chassis" name="" action="add"/>
+
+          <!-- incorrect schema (missing required 'filename' attribute) -->
+          <plugin element_id="chassis" name="some_plugin" action="add"/>
+
+          <!-- invalid action -->
+          <link element_id="top" action="test"/>
+
+          <collision element_id="left_wheel::collision">
+            <!-- invalid child action -->
+            <geometry action="test"/>
+
+            <!-- child element does not exist -->
+            <laser_retro action="remove"/>
+
+            <!-- child <box> (child of <geometry>) does not exist -->
+            <geometry action="remove">
+              <box/>
+            </geometry>
+          </collision>
+
+          <link element_id="top">
+            <!-- child element (w/ name attribute) does not exist -->
+            <collision name="collision" action="remove"/>
+
+            <!-- child element does not exist -->
+            <collision name="collision" action="replace"/>
+
+            <!-- missing 'name' attribute -->
+            <collision action="replace"/>
+
+            <!-- invalid attribute -->
+            <collision name="top_collision" action="modify" test="foo"/>
+
+            <!-- element missing -->
+            <geometry action="modify">
+              <box>
+                <size>1 1 1</size>
+              </box>
+            </geometry>
+
+          </link>
+
+          <!-- incorrect schema (missing required 'type' attribute) -->
+          <sensor element_id="chassis::camera" name="camera" action="replace"/>
+
+          <!-- invalid attribute -->
+          <link element_id="top" action="modify" test="foo">
+
+            <!-- element missing -->
+            <inertial/>
+
+            <collision name="top_collision">
+              <!-- element missing -->
+              <geometry>
+                <sphere>
+                  <radius>0.5</radius>
+                </sphere>
+              </geometry>
+
+              <!-- element has invalid value -->
+              <geometry>
+                <box>
+                  <size>0.5 0.5</size>
+                </box>
+              </geometry>
+
+              <!-- no modifications listed, warning is printed (not error) -->
+              <geometry/>
+            </collision>
+          </link>
+
+        </experimental:params>
+      </include>
+    </model>
+  </world>
+</sdf>
