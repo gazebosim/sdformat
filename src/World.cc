@@ -387,6 +387,35 @@ Errors World::Load(sdf::ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
+Errors World::ValidateGraphs() const
+{
+  Errors errors;
+  if (!this->dataPtr->frameAttachedToGraph)
+  {
+    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+        "FrameAttachedToGraph pointer is null."});
+  }
+  else
+  {
+    errors = validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
+  }
+
+  if (!this->dataPtr->poseRelativeToGraph)
+  {
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "PoseRelativeToGraph pointer is null."});
+  }
+  else
+  {
+    Errors poseErrors =
+        validatePoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph);
+    errors.insert(errors.end(), poseErrors.begin(), poseErrors.end());
+  }
+
+  return errors;
+}
+
+/////////////////////////////////////////////////
 std::string World::Name() const
 {
   return this->dataPtr->name;
