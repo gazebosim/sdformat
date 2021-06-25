@@ -61,7 +61,7 @@ TEST(DOMWorld, Construction)
   EXPECT_EQ(1u, world.PhysicsCount());
 
   auto errors = world.ValidateGraphs();
-  EXPECT_EQ(2u, errors.size()) >> errors;
+  EXPECT_EQ(2u, errors.size()) << errors;
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
