@@ -6,6 +6,32 @@
 
 ### libsdformat 11.X.X (202X-XX-XX)
 
+### libsdformat 11.2.0 (2021-06-23)
+
+1. Revert behavior of FilePath() for elements loaded from strings
+    * [Pull request #582](https://github.com/ignitionrobotics/sdformat/pull/582)
+
+1. Adding comment and modifications to element_tracing test regarding path sanitization
+    * [Pull request #578](https://github.com/ignitionrobotics/sdformat/pull/578)
+
+1. Allow to convert URDF color to SDF material tag
+    * [Pull request #526](https://github.com/ignitionrobotics/sdformat/pull/526)
+
+1. Encode XML path and line number in Element and add XML path setter Error.
+    * [Pull request #548](https://github.com/ignitionrobotics/sdformat/pull/548)
+
+1. Merge sdf 1.7 changes forward to 1.8
+    * [Pull request #570](https://github.com/ignitionrobotics/sdformat/pull/570)
+
+1. Add API for determining if an element was set by the user
+    * [Pull request #542](https://github.com/ignitionrobotics/sdformat/pull/542)
+
+1. Add scatter ratio parameter to Particle Emitter DOM
+    * [Pull request #547](https://github.com/ignitionrobotics/sdformat/pull/547)
+
+1. Fix bug where included URDFs are not parsed when there are no custom parsers
+    * [Pull request #562](https://github.com/ignitionrobotics/sdformat/pull/562)
+
 ### libsdformat 11.1.0 (2021-04-30)
 
 1. Clean up use of PROJECT_SOURCE_PATH in tests
@@ -170,6 +196,17 @@
     * [Pull request #460](https://github.com/osrf/sdformat/pull/460)
 
 ## libsdformat 10.X
+
+### libsdformat 10.5.0 (2021-05-17)
+
+1. Add scatter ratio parameter to Particle Emitter DOM.
+    + [Pull request 547](https://github.com/osrf/sdformat/pull/547)
+
+1. Methods for removing attributes from an element.
+    + [Pull request 555](https://github.com/osrf/sdformat/pull/555)
+
+1. Improve docs of collision bitmask.
+    + [Pull request 521](https://github.com/osrf/sdformat/pull/521)
 
 ### libsdformat 10.4.0 (2021-04-06)
 
