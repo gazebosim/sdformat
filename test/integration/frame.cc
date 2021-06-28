@@ -720,6 +720,7 @@ TEST(DOMFrame, LoadWorldFramesInvalidAttachedTo)
       "causing a graph cycle"));
   // errors[2]
   // errors[3]
+  // errors[4]
   EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
   EXPECT_NE(std::string::npos,
     errors[5].Message().find(
@@ -730,9 +731,71 @@ TEST(DOMFrame, LoadWorldFramesInvalidAttachedTo)
     errors[6].Message().find(
       "relative_to name[self_cycle] is identical to frame name[self_cycle], "
       "causing a graph cycle"));
-  // errors[6]
   // errors[7]
   // errors[8]
+  EXPECT_EQ(errors[9].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[9].Message().find(
+      "PoseRelativeToGraph cycle detected, "
+      "already visited vertex [self_cycle]"));
+  EXPECT_EQ(errors[10].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[10].Message().find(
+      "Failed to load a world"));
+
+  // Try loading sdf::World object
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  ASSERT_TRUE(sdf::readFile(testFile, sdfParsed));
+
+  auto rootElem = sdfParsed->Root();
+  ASSERT_NE(nullptr, rootElem);
+  ASSERT_TRUE(rootElem->HasElement("world"));
+  auto worldElem = rootElem->GetElement("world");
+  ASSERT_NE(nullptr, worldElem);
+
+  // the first 10 errors from loading an sdf::World match the first 10 errors
+  // from loading an sdf::Root
+  sdf::World world;
+  auto worldLoadErrors = world.Load(worldElem);
+  ASSERT_EQ(10u, worldLoadErrors.size());
+  for(int i = 0; i < 10; ++i)
+  {
+    EXPECT_EQ(errors[i].Code(), worldLoadErrors[i].Code());
+    EXPECT_EQ(errors[i].Message(), worldLoadErrors[i].Message());
+  }
+
+  errors = world.ValidateGraphs();
+  EXPECT_EQ(6u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "FrameAttachedToGraph error, FRAME vertices in WORLD attached_to graph "
+      "should have 1 outgoing edge"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "Graph has world scope but sink vertex named [F] does not have "
+      "FrameType WORLD or MODEL when starting from vertex with name [F]"));
+  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[2].Message().find(
+      "cycle detected, already visited vertex [self_cycle]"));
+  EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[3].Message().find(
+      "MODEL / FRAME vertex with name [F] is disconnected; it should have "
+      "1 incoming edge in WORLD relative_to graph"));
+  EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[4].Message().find(
+      "frame with name [F] is disconnected; its source vertex has name [F], "
+      "but its source name should be world"));
+  EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[5].Message().find(
+      "PoseRelativeToGraph cycle detected, "
+      "already visited vertex [self_cycle]"));
 }
 
 /////////////////////////////////////////////////
