@@ -519,9 +519,6 @@ namespace sdf
     /// \brief True if element is required
     public: std::string required;
 
-    /// \brief True if the element was set in the SDF file.
-    public: bool explicitlySetInFile;
-
     /// \brief Element description
     public: std::string description;
 
@@ -574,14 +571,18 @@ namespace sdf
     /// \brief Path to file where this element came from
     public: std::string path;
 
+    /// \brief Spec version that this was originally parsed from.
+    public: std::string originalVersion;
+
+    /// \brief True if the element was set in the SDF file.
+    public: bool explicitlySetInFile;
+
     /// \brief Line number in file where this element came from
     public: std::optional<int> lineNumber;
 
     /// \brief XML path of this element.
     public: std::string xmlPath;
 
-    /// \brief Spec version that this was originally parsed from.
-    public: std::string originalVersion;
   };
 
   ///////////////////////////////////////////////
