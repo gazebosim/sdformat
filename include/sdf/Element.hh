@@ -582,7 +582,6 @@ namespace sdf
 
     /// \brief XML path of this element.
     public: std::string xmlPath;
-
   };
 
   ///////////////////////////////////////////////
