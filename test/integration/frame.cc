@@ -718,6 +718,7 @@ TEST(DOMFrame, LoadWorldFramesInvalidAttachedTo)
       "causing a graph cycle"));
   // errors[2]
   // errors[3]
+  // errors[4]
   EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
   EXPECT_NE(std::string::npos,
     errors[5].Message().find(
@@ -728,9 +729,45 @@ TEST(DOMFrame, LoadWorldFramesInvalidAttachedTo)
     errors[6].Message().find(
       "relative_to name[self_cycle] is identical to frame name[self_cycle], "
       "causing a graph cycle"));
-  // errors[6]
   // errors[7]
   // errors[8]
+  EXPECT_EQ(errors[9].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[9].Message().find(
+      "PoseRelativeToGraph cycle detected, "
+      "already visited vertex [self_cycle]"));
+  EXPECT_EQ(errors[10].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+  EXPECT_NE(std::string::npos,
+    errors[10].Message().find(
+      "Failed to load a world"));
+
+  // Try loading sdf::World object
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  ASSERT_TRUE(sdf::readFile(testFile, sdfParsed));
+
+  auto rootElem = sdfParsed->Root();
+  ASSERT_NE(nullptr, rootElem);
+  ASSERT_TRUE(rootElem->HasElement("world"));
+  auto worldElem = rootElem->GetElement("world");
+  ASSERT_NE(nullptr, worldElem);
+
+  // there are no errors when loading an sdf::World directly since it doesn't
+  // build graphs
+  sdf::World world;
+  auto worldLoadErrors = world.Load(worldElem);
+  EXPECT_EQ(0u, worldLoadErrors.size()) << worldLoadErrors;
+
+  errors = world.ValidateGraphs();
+  ASSERT_EQ(2u, errors.size()) << errors;
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "FrameAttachedToGraph error: scope does not point to a valid graph"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "PoseRelativeToGraph error: scope does not point to a valid graph"));
 }
 
 /////////////////////////////////////////////////
