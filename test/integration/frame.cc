@@ -759,7 +759,7 @@ TEST(DOMFrame, LoadWorldFramesInvalidAttachedTo)
   sdf::World world;
   auto worldLoadErrors = world.Load(worldElem);
   ASSERT_EQ(10u, worldLoadErrors.size());
-  for(int i = 0; i < 10; ++i)
+  for (int i = 0; i < 10; ++i)
   {
     EXPECT_EQ(errors[i].Code(), worldLoadErrors[i].Code());
     EXPECT_EQ(errors[i].Message(), worldLoadErrors[i].Message());
