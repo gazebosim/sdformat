@@ -791,16 +791,9 @@ TEST(Parser, MissingRequiredElement)
       </world>
     </sdf>)";
 
-  auto findFileCb = [](const std::string &_uri)
-  {
-    return sdf::testing::TestFile("integration", "model", _uri);
-  };
-
-  sdf::ParserConfig config;
-  config.SetFindCallback(findFileCb);
   sdf::Errors errors;
   sdf::SDFPtr sdf = InitSDF();
-  EXPECT_FALSE(sdf::readString(testString, config, sdf, errors));
+  EXPECT_FALSE(sdf::readString(testString, sdf, errors));
 
   ASSERT_NE(errors.size(), 0u);
   std::cerr << errors[0] << std::endl;
