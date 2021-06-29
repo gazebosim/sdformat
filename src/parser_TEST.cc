@@ -801,7 +801,7 @@ TEST(Parser, MissingRequiredElement)
   sdf::Errors errors;
   sdf::SDFPtr sdf = InitSDF();
   EXPECT_FALSE(sdf::readString(testString, config, sdf, errors));
-  
+
   ASSERT_NE(errors.size(), 0u);
   std::cerr << errors[0] << std::endl;
 
