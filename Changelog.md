@@ -2,6 +2,14 @@
 
 ### libsdformat 11.X.X (202X-XX-XX)
 
+### libsdformat 11.2.0 (2021-06-28)
+
+1. Fix ABI break on sdf11
+    * [Pull request #606](https://github.com/ignitionrobotics/sdformat/pull/606)
+
+1. Add triage, remove ticket templates
+    * [Pull request #608](https://github.com/ignitionrobotics/sdformat/pull/608)
+
 ### libsdformat 11.2.0 (2021-06-23)
 
 1. Revert behavior of FilePath() for elements loaded from strings
