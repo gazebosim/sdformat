@@ -1495,13 +1495,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           if (_sdf->GetName() == "joint" &&
               _sdf->Get<std::string>("type") != "ball")
           {
-            Error err(
+            Error missingElementError(
                 ErrorCode::ELEMENT_MISSING,
                 "XML Missing required element[" + elemDesc->GetName() +
                 "], child of element[" + _sdf->GetName() + "]",
-                errorSourcePath, elemXml->GetLineNum());
-            err.SetXmlPath(elemXmlPath);
-            _errors.push_back(err);
+                errorSourcePath, _xml->GetLineNum());
+            missingElementError.SetXmlPath(elemXmlPath);
+            _errors.push_back(missingElementError);
             return false;
           }
           else

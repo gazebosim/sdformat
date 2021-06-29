@@ -768,6 +768,52 @@ TEST(Parser, ElementFilePath)
 }
 
 /////////////////////////////////////////////////
+/// Check for missing element segfault, #590
+TEST(Parser, MissingRequiredElement)
+{
+  const std::string testString = R"(<?xml version="1.0" ?>
+    <sdf version="1.8">
+      <world name="default">
+        <model name="test_model">
+          <link name="link_0"/>
+          <link name="link_1"/>
+          <joint name="joint" type="revolute">
+            <parent>link_0</parent>
+            <axis>
+              <xyz>1 0 0</xyz>
+              <limit>
+                <lower>-1</lower>
+                <upper>1</upper>
+              </limit>
+            </axis>
+          </joint>
+        </model>
+      </world>
+    </sdf>)";
+
+  auto findFileCb = [](const std::string &_uri)
+  {
+    return sdf::testing::TestFile("integration", "model", _uri);
+  };
+
+  sdf::ParserConfig config;
+  config.SetFindCallback(findFileCb);
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = InitSDF();
+  EXPECT_FALSE(sdf::readString(testString, config, sdf, errors));
+  
+  ASSERT_NE(errors.size(), 0u);
+  std::cerr << errors[0] << std::endl;
+
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  ASSERT_TRUE(errors[0].FilePath().has_value());
+  EXPECT_EQ(errors[0].FilePath().value(),
+      "<" + std::string(sdf::kSdfStringSource) + ">");
+  ASSERT_TRUE(errors[0].LineNumber().has_value());
+  EXPECT_EQ(errors[0].LineNumber().value(), 7);
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {
