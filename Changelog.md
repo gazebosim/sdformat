@@ -2,7 +2,7 @@
 
 ### libsdformat 11.X.X (202X-XX-XX)
 
-### libsdformat 11.2.0 (2021-06-28)
+### libsdformat 11.2.1 (2021-06-28)
 
 1. Fix ABI break on sdf11
     * [Pull request #606](https://github.com/ignitionrobotics/sdformat/pull/606)
