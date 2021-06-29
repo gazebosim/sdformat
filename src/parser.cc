@@ -1119,17 +1119,10 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
                      std::string(">") + name_with_nested_prefix + "<");
     // Deal with nested model inside other nested model and already with
     // ::namespace:: entries in the name
-    // Case A. ::namespace1::iter.first::namespace2
-    replace_all(str, std::string("::") + old_name + "::",
-                     std::string("::") + name_with_nested_prefix + "::");
-    // Case B. >iter.first::component
     replace_all(str, std::string(">") + old_name + "::",
                      std::string(">") + name_with_nested_prefix + "::");
-    // Case C.::component::iter.first<
-    replace_all(str, std::string("::") + old_name + "<",
-                     std::string("::") + name_with_nested_prefix + "<");
-    // remove duplicate prefixes introduced by the logic above (cases
-    // A,B,C) if the full name (iter.second) was used in the original SDF: (i.e
+    // remove duplicate prefixes introduced by the logic above
+    // if the full name (iter.second) was used in the original SDF: (i.e
     // iter.second::component)
     std::string::size_type found = name_with_nested_prefix.find(old_name);
     if (found != std::string::npos)

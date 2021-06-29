@@ -15,7 +15,7 @@
 
       <joint name='joint2' type='revolute'>
         <parent>main_model_prefix::subnested_model::link1</parent>
-        <child>other_prefix::subnested_model</child>
+        <child>joint1</child>
       </joint>
     </model>
 </sdf>
