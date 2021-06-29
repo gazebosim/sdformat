@@ -504,9 +504,6 @@ namespace sdf
     /// \brief True if element is required
     public: std::string required;
 
-    /// \brief True if the element was set in the SDF file.
-    public: bool explicitlySetInFile;
-
     /// \brief Element description
     public: std::string description;
 
@@ -539,6 +536,9 @@ namespace sdf
 
     /// \brief Spec version that this was originally parsed from.
     public: std::string originalVersion;
+
+    /// \brief True if the element was set in the SDF file.
+    public: bool explicitlySetInFile;
   };
 
   ///////////////////////////////////////////////
