@@ -510,7 +510,67 @@ TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
       "causing a graph cycle"));
   // errors[7]
   // errors[8]
-  // errors[9]
+  EXPECT_EQ(errors[9].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[9].Message().find(
+      "PoseRelativeToGraph cycle detected, "
+      "already visited vertex [F4]"));
+
+  // Try loading sdf::Model object
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  ASSERT_TRUE(sdf::readFile(testFile, sdfParsed));
+
+  auto rootElem = sdfParsed->Root();
+  ASSERT_NE(nullptr, rootElem);
+  ASSERT_TRUE(rootElem->HasElement("model"));
+  auto modelElem = rootElem->GetElement("model");
+  ASSERT_NE(nullptr, modelElem);
+
+  // the first 10 errors from loading an sdf::Model match the first 10 errors
+  // from loading an sdf::Root
+  sdf::Model model;
+  auto modelLoadErrors = model.Load(modelElem);
+  ASSERT_EQ(10u, modelLoadErrors.size());
+  for (int i = 0; i < 10; ++i)
+  {
+    EXPECT_EQ(errors[i].Code(), modelLoadErrors[i].Code());
+    EXPECT_EQ(errors[i].Message(), modelLoadErrors[i].Message());
+  }
+
+  errors = model.ValidateGraphs();
+  EXPECT_EQ(6u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "FrameAttachedToGraph error, Non-LINK vertex with name [F3] is "
+      "disconnected; it should have 1 outgoing edge in MODEL attached_to "
+      "graph.")) << errors[0];
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "Graph has __model__ scope but sink vertex named [F3] does not have "
+      "FrameType LINK or MODEL when starting from vertex with name [F3]"))
+      << errors[1];
+  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[2].Message().find(
+      "cycle detected, already visited vertex [F4]")) << errors[2];
+  EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[3].Message().find(
+      "Vertex with name [F3] is disconnected; it should have "
+      "1 incoming edge in MODEL relative_to graph")) << errors[3];
+  EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[4].Message().find(
+      "frame with name [F3] is disconnected; its source vertex has name [F3], "
+      "but its source name should be __model__")) << errors[4];
+  EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[5].Message().find(
+      "PoseRelativeToGraph cycle detected, "
+      "already visited vertex [F4]")) << errors[5];
 }
 
 /////////////////////////////////////////////////
