@@ -1084,7 +1084,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
       replace[elemName] = newName;
     }
 
-    if (elem->GetName() == "link")
+    if ((elem->GetName() == "link") || (elem->GetName() == "model"))
     {
       if (elem->HasElementDescription("pose"))
       {
