@@ -1074,11 +1074,18 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
   std::string modelName = modelPtr->Get<std::string>("name");
   while (elem)
   {
-    if (elem->GetName() == "link")
+    // protect elements that should not change the name attribute
+    // i.e: plugin
+    if ((elem->GetName() == "link") || (elem->GetName() == "joint") ||
+        (elem->GetName() == "model"))
     {
       std::string elemName = elem->Get<std::string>("name");
       std::string newName =  modelName + "::" + elemName;
       replace[elemName] = newName;
+    }
+
+    if (elem->GetName() == "link")
+    {
       if (elem->HasElementDescription("pose"))
       {
         ignition::math::Pose3d offsetPose =
@@ -1092,11 +1099,6 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
     }
     else if (elem->GetName() == "joint")
     {
-      // for joints, we need to
-      //   prefix name like we did with links, and
-      std::string elemName = elem->Get<std::string>("name");
-      std::string newName =  modelName + "::" + elemName;
-      replace[elemName] = newName;
       //   rotate the joint axis because they are model-global
       if (elem->HasElement("axis"))
       {
@@ -1113,12 +1115,18 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
   for (std::map<std::string, std::string>::iterator iter = replace.begin();
        iter != replace.end(); ++iter)
   {
-    replace_all(str, std::string("\"") + iter->first + "\"",
-                std::string("\"") + iter->second + "\"");
-    replace_all(str, std::string("'") + iter->first + "'",
-                std::string("'") + iter->second + "'");
-    replace_all(str, std::string(">") + iter->first + "<",
-                std::string(">") + iter->second + "<");
+    std::string oldName(iter->first);
+    std::string nameWithNestedPrefix(iter->second);
+    replace_all(str, std::string("\"") + oldName + "\"",
+                     std::string("\"") + nameWithNestedPrefix + "\"");
+    replace_all(str, std::string("'") + oldName + "'",
+                     std::string("'") + nameWithNestedPrefix + "'");
+    replace_all(str, std::string(">") + oldName + "<",
+                     std::string(">") + nameWithNestedPrefix + "<");
+    // Deal with nested model inside other nested model and already with
+    // ::namespace:: entries in the name
+    replace_all(str, std::string(">") + oldName + "::",
+                     std::string(">") + nameWithNestedPrefix + "::");
   }
 
   _includeSDF->ClearElements();
