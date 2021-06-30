@@ -285,4 +285,7 @@ TEST(NestedModel, IncludeFlatteningNames)
   EXPECT_EQ(joint2Elem->Get<std::string>("parent"),
     "main_model_prefix::subnested_model::link1") <<
     "Flattening logic for nested models failed (check parser.cc)";
+  EXPECT_EQ(joint2Elem->Get<std::string>("child"),
+    "main_model_prefix::joint1") <<
+    "Flattening logic for nested models failed (check parser.cc)";
 }
