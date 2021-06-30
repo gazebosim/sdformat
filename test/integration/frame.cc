@@ -507,7 +507,39 @@ TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
       "causing a graph cycle"));
   // errors[7]
   // errors[8]
-  // errors[9]
+  EXPECT_EQ(errors[9].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE);
+  EXPECT_NE(std::string::npos,
+    errors[9].Message().find(
+      "PoseRelativeToGraph cycle detected, "
+      "already visited vertex [model_frame_invalid_attached_to::F4]"));
+
+  // Try loading sdf::Model object
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  ASSERT_TRUE(sdf::readFile(testFile, sdfParsed));
+
+  auto rootElem = sdfParsed->Root();
+  ASSERT_NE(nullptr, rootElem);
+  ASSERT_TRUE(rootElem->HasElement("model"));
+  auto modelElem = rootElem->GetElement("model");
+  ASSERT_NE(nullptr, modelElem);
+
+  // there are no errors when loading an sdf::Model directly since it doesn't
+  // build graphs
+  sdf::Model model;
+  auto modelLoadErrors = model.Load(modelElem);
+  EXPECT_EQ(0u, modelLoadErrors.size()) << modelLoadErrors;
+
+  errors = model.ValidateGraphs();
+  ASSERT_EQ(2u, errors.size()) << errors;
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "FrameAttachedToGraph error: scope does not point to a valid graph"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "PoseRelativeToGraph error: scope does not point to a valid graph"));
 }
 
 /////////////////////////////////////////////////

@@ -67,6 +67,12 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(sdf::ElementPtr _sdf, const ParserConfig &_config);
 
+    /// \brief Check that the FrameAttachedToGraph and PoseRelativeToGraph
+    /// are valid.
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors ValidateGraphs() const;
+
     /// \brief Get the name of the model.
     /// The name of the model should be unique within the scope of a World.
     /// \return Name of the model.
