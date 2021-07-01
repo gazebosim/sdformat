@@ -1346,7 +1346,7 @@ Errors resolveFrameAttachedToBody(
     {
       errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
           "Graph has __model__ scope but sink vertex named [" +
-          sinkVertex.Name() + "] does not have FrameType LINK OR MODEL "
+          sinkVertex.Name() + "] does not have FrameType LINK or MODEL "
           "when starting from vertex with name [" + _vertexName + "]."});
       return errors;
     }
