@@ -150,6 +150,14 @@ namespace sdf
     /// \param[in] _prefix String value to prefix to the output.
     public: void PrintValues(std::string _prefix) const;
 
+    /// \brief Output Element's values to stdout.
+    /// \param[in] _prefix String value to prefix to the output.
+    /// \param[in] _includeDefaultElements flag to print default elements.
+    /// \param[in] _includeDefaultAttributes flag to print default attributes.
+    public: void PrintValues(const std::string &_prefix,
+                             bool _includeDefaultElements,
+                             bool _includeDefaultAttributes) const;
+
     /// \brief Helper function for SDF::PrintDoc
     ///
     /// This generates the SDF html documentation.
@@ -171,6 +179,18 @@ namespace sdf
     /// \param[in] _prefix String value to prefix to the output.
     /// \return The string representation.
     public: std::string ToString(const std::string &_prefix) const;
+
+    /// \brief Convert the element values to a string representation.
+    /// Current behavior of ToString(const std::string &_prefix) can be
+    /// achieved by calling this function with _includeDefaultElements=true
+    /// and _includeDefaultAttributes=false
+    /// \param[in] _prefix String value to prefix to the output.
+    /// \param[in] _includeDefaultElements flag to include default elements.
+    /// \param[in] _includeDefaultAttributes flag to include default attributes.
+    /// \return The string representation.
+    public: std::string ToString(const std::string &_prefix,
+                                 bool _includeDefaultElements,
+                                 bool _includeDefaultAttributes) const;
 
     /// \brief Add an attribute value.
     /// \param[in] _key Key value.
@@ -480,14 +500,22 @@ namespace sdf
 
     /// \brief Generate a string (XML) representation of this object.
     /// \param[in] _prefix arbitrary prefix to put on the string.
+    /// \param[in] _includeDefaultElements flag to include default elements.
+    /// \param[in] _includeDefaultAttributes flag to include default attributes.
     /// \param[out] _out the std::ostreamstream to write output to.
     private: void ToString(const std::string &_prefix,
+                           bool _includeDefaultElements,
+                           bool _includeDefaultAttributes,
                            std::ostringstream &_out) const;
 
     /// \brief Generate a string (XML) representation of this object.
     /// \param[in] _prefix arbitrary prefix to put on the string.
+    /// \param[in] _includeDefaultElements flag to include default elements.
+    /// \param[in] _includeDefaultAttributes flag to include default attributes.
     /// \param[out] _out the std::ostreamstream to write output to.
     private: void PrintValuesImpl(const std::string &_prefix,
+                                  bool _includeDefaultElements,
+                                  bool _includeDefaultAttributes,
                                   std::ostringstream &_out) const;
 
     /// \brief Create a new Param object and return it.
