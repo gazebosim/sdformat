@@ -280,6 +280,17 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
 }
 
 /////////////////////////////////////////////////
+Errors World::ValidateGraphs() const
+{
+  Errors errors =
+      validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  Errors poseErrors =
+      validatePoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  errors.insert(errors.end(), poseErrors.begin(), poseErrors.end());
+  return errors;
+}
+
+/////////////////////////////////////////////////
 std::string World::Name() const
 {
   return this->dataPtr->name;
