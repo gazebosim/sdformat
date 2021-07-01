@@ -2,6 +2,14 @@
 
 ### libsdformat 11.X.X (202X-XX-XX)
 
+### libsdformat 11.2.2 (2021-07-01)
+
+1. Fix segfault when checking for required elements in joint
+    * [Pull request #610](https://github.com/ignitionrobotics/sdformat/pull/610)
+
+1. Add ValidateGraphs methods to Model/World
+    * [Pull request #601](https://github.com/ignitionrobotics/sdformat/pull/601)
+
 ### libsdformat 11.2.1 (2021-06-28)
 
 1. Fix ABI break on sdf11
