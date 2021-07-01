@@ -141,6 +141,9 @@ TEST(DOMRoot, LoadDoublePendulum)
 
   EXPECT_TRUE(model->JointNameExists("upper_joint"));
   EXPECT_TRUE(model->JointNameExists("lower_joint"));
+
+  auto graphErrors = model->ValidateGraphs();
+  EXPECT_EQ(0u, graphErrors.size());
 }
 
 /////////////////////////////////////////////////
