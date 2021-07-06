@@ -1,6 +1,14 @@
 ## SDFormat 6.0
 
-### SDFormat 6.X.X (20XX-XX-XX)
+### SDFormat 6.3.1 (2021-07-06)
+
+1. Fix flattening logic for nested model names
+    * [Pull request 597](https://github.com/osrf/sdformat/pull/597)
+
+1. Fix flattening logic for nested model names
+    * [Pull request 596](https://github.com/osrf/sdformat/pull/596)
+
+### SDFormat 6.3.0 (2021-06-21)
 
 1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
     * [Pull request 580](https://github.com/osrf/sdformat/pull/580)
