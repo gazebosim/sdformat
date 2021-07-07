@@ -5,7 +5,7 @@
 1. Fix flattening logic for nested model names
     * [Pull request 597](https://github.com/osrf/sdformat/pull/597)
 
-1. Fix flattening logic for nested model names
+1. Translate poses of nested models inside other nested models
     * [Pull request 596](https://github.com/osrf/sdformat/pull/596)
 
 ### SDFormat 6.3.0 (2021-06-21)
