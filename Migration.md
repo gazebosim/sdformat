@@ -12,6 +12,24 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## libsdformat 11.x to 12.0
+
+An error is now emitted instead of a warning for a file containing more than
+one root level model, actor or light.
+
+### Removals
+
+1. **src/Root.hh**: The following deprecated methods have been removed.
+    + const sdf::Model \*ModelByIndex();
+    + uint64_t ModelCount();
+    + bool ModelNameExists(const std::string &\_name) const;
+    + const sdf::Light \*LightByIndex();
+    + uint64_t LightCount();
+    + bool LightNameExists(const std::string &\_name) const;
+    + const sdf::Actor \*ActorByIndex();
+    + uint64_t ActorCount();
+    + bool ActorNameExists(const std::string &\_name) const;
+
 ## libsdformat 11.1.0 to 11.2.0
 
 ABI was broken for `sdf::Element`, and restored on version 11.2.1.
