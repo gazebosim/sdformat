@@ -52,6 +52,10 @@ namespace sdf
   /// \brief Shared pointer to an SDF Element
   typedef std::shared_ptr<Element> ElementPtr;
 
+  /// \def ElementConstPtr
+  /// \brief Shared pointer to a const SDF Element
+  typedef std::shared_ptr<const Element> ElementConstPtr;
+
   /// \def ElementWeakPtr
   /// \brief Weak pointer to an SDF Element
   typedef std::weak_ptr<Element> ElementWeakPtr;
@@ -377,7 +381,18 @@ namespace sdf
     /// \param[in] _name Name of the child element to retreive.
     /// \return Pointer to the existing child element, or nullptr
     /// if the child element was not found.
-    public: ElementPtr FindElement(const std::string &_name) const;
+    public: ElementPtr FindElement(const std::string &_name);
+
+    /// \brief Return a pointer to the child element with the provided name.
+    ///
+    /// Unlike \ref GetElement, this does not create a new child element if it
+    /// fails to find an existing element.
+    /// \remarks If there are multiple elements with the given tag, it returns
+    ///          the first one.
+    /// \param[in] _name Name of the child element to retreive.
+    /// \return Pointer to the existing child element, or nullptr
+    /// if the child element was not found.
+    public: ElementConstPtr FindElement(const std::string &_name) const;
 
     /// \brief Add a named element.
     /// \param[in] _name the name of the element to add.

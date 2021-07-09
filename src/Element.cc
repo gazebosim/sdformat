@@ -828,7 +828,13 @@ ElementPtr Element::GetElement(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
-ElementPtr Element::FindElement(const std::string &_name) const
+ElementPtr Element::FindElement(const std::string &_name)
+{
+  return this->GetElementImpl(_name);
+}
+
+/////////////////////////////////////////////////
+ElementConstPtr Element::FindElement(const std::string &_name) const
 {
   return this->GetElementImpl(_name);
 }

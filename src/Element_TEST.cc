@@ -842,7 +842,7 @@ sdf::ElementPtr AddChildElement(sdf::ElementPtr _parent,
     child->AddAttribute("name", "string", _childName, false, "description");
   }
   return child;
-};
+}
 
 /////////////////////////////////////////////////
 TEST(Element, CountNamedElements)
@@ -960,6 +960,21 @@ TEST(Element, FindElement)
   }
 
   // Check that it works with const pointers
+  {
+    sdf::ElementConstPtr rootConst = root;
+    sdf::ElementConstPtr elemA = rootConst->FindElement("elem_A");
+    ASSERT_NE(nullptr, elemA);
+    EXPECT_NE(nullptr, elemA->FindElement("child_elem_A"));
+    EXPECT_EQ(nullptr, elemA->FindElement("non_existent_elem"));
+
+    sdf::ElementConstPtr elemB = root->FindElement("elem_B");
+    ASSERT_NE(nullptr, elemB);
+    // This should find the first "child_elem_B" element, which has the name
+    // attribute
+    sdf::ElementConstPtr childElemB = elemB->FindElement("child_elem_B");
+    ASSERT_TRUE(childElemB->HasAttribute("name"));
+    EXPECT_EQ("first_child", childElemB->GetAttribute("name")->GetAsString());
+  }
   {
     sdf::ElementConstPtr rootConst = root;
     sdf::ElementConstPtr elemA = rootConst->FindElement("elem_A");
