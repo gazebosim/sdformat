@@ -827,7 +827,7 @@ TEST(Element, GetNextElementMultiple)
 
 /////////////////////////////////////////////////
 /// Helper function to add child elements without having to create descriptions
-sdf::ElementPtr AddChildElement(sdf::ElementPtr _parent,
+sdf::ElementPtr addChildElement(sdf::ElementPtr _parent,
                                 const std::string &_elementName,
                                 const bool _addNameAttribute,
                                 const std::string &_childName)
@@ -864,11 +864,11 @@ TEST(Element, CountNamedElements)
   // <element name="child2"/>
   // <element name="child3"/>
   // <element />
-  AddChildElement(parent, "child", true, "child1");
-  AddChildElement(parent, "child", true, "child2");
-  AddChildElement(parent, "element", true, "child2");
-  AddChildElement(parent, "element", true, "child3");
-  AddChildElement(parent, "element", false, "unset");
+  addChildElement(parent, "child", true, "child1");
+  addChildElement(parent, "child", true, "child2");
+  addChildElement(parent, "element", true, "child2");
+  addChildElement(parent, "element", true, "child3");
+  addChildElement(parent, "element", false, "unset");
 
   // test GetElementTypeNames
   auto typeNames = parent->GetElementTypeNames();
@@ -934,14 +934,14 @@ TEST(Element, FindElement)
 
   // Create elements
   {
-    auto elemA = AddChildElement(root, "elem_A", false, "");
-    AddChildElement(elemA, "child_elem_A", false, "");
+    auto elemA = addChildElement(root, "elem_A", false, "");
+    addChildElement(elemA, "child_elem_A", false, "");
 
-    auto elemB = AddChildElement(root, "elem_B", false, "");
+    auto elemB = addChildElement(root, "elem_B", false, "");
     auto firstChildElemB =
-        AddChildElement(elemB, "child_elem_B", true, "first_child");
+        addChildElement(elemB, "child_elem_B", true, "first_child");
 
-    AddChildElement(elemB, "child_elem_B", false, "");
+    addChildElement(elemB, "child_elem_B", false, "");
   }
 
   {
