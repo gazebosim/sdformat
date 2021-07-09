@@ -826,6 +826,25 @@ TEST(Element, GetNextElementMultiple)
 }
 
 /////////////////////////////////////////////////
+/// Helper function to add child elements without having to create descriptions
+sdf::ElementPtr AddChildElement(sdf::ElementPtr _parent,
+                                const std::string &_elementName,
+                                const bool _addNameAttribute,
+                                const std::string &_childName)
+{
+  sdf::ElementPtr child = std::make_shared<sdf::Element>();
+  child->SetParent(_parent);
+  child->SetName(_elementName);
+  _parent->InsertElement(child);
+
+  if (_addNameAttribute)
+  {
+    child->AddAttribute("name", "string", _childName, false, "description");
+  }
+  return child;
+};
+
+/////////////////////////////////////////////////
 TEST(Element, CountNamedElements)
 {
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
@@ -838,22 +857,6 @@ TEST(Element, CountNamedElements)
   EXPECT_TRUE(parent->HasUniqueChildNames());
   EXPECT_TRUE(parent->HasUniqueChildNames("child"));
 
-  auto addChildElement = [](
-      sdf::ElementPtr _parent,
-      const std::string &_elementName,
-      const bool _addNameAttribute,
-      const std::string &_childName)
-  {
-    sdf::ElementPtr child = std::make_shared<sdf::Element>();
-    child->SetParent(_parent);
-    child->SetName(_elementName);
-    _parent->InsertElement(child);
-
-    if (_addNameAttribute)
-    {
-      child->AddAttribute("name", "string", _childName, false, "description");
-    }
-  };
 
   // The following calls should make the following child elements:
   // <child name="child1"/>
@@ -861,11 +864,11 @@ TEST(Element, CountNamedElements)
   // <element name="child2"/>
   // <element name="child3"/>
   // <element />
-  addChildElement(parent, "child", true, "child1");
-  addChildElement(parent, "child", true, "child2");
-  addChildElement(parent, "element", true, "child2");
-  addChildElement(parent, "element", true, "child3");
-  addChildElement(parent, "element", false, "unset");
+  AddChildElement(parent, "child", true, "child1");
+  AddChildElement(parent, "child", true, "child2");
+  AddChildElement(parent, "element", true, "child2");
+  AddChildElement(parent, "element", true, "child3");
+  AddChildElement(parent, "element", false, "unset");
 
   // test GetElementTypeNames
   auto typeNames = parent->GetElementTypeNames();
@@ -912,6 +915,66 @@ TEST(Element, CountNamedElements)
   EXPECT_EQ(allMap.at("child1"), 1u);
   EXPECT_EQ(allMap.at("child2"), 2u);
   EXPECT_EQ(allMap.at("child3"), 1u);
+}
+
+TEST(Element, FindElement)
+{
+  // <root>
+  //   <elem_A>
+  //     <child_elem_A />
+  //   </elem_A>
+  //
+  //   <elem_B>
+  //     <child_elem_B name="first_child"/>
+  //     <child_elem_B/>
+  //   </elem_B>
+  // </root>
+  sdf::ElementPtr root = std::make_shared<sdf::Element>();
+  root->SetName("root");
+
+  // Create elements
+  {
+    auto elemA = AddChildElement(root, "elem_A", false, "");
+    AddChildElement(elemA, "child_elem_A", false, "");
+
+    auto elemB = AddChildElement(root, "elem_B", false, "");
+    auto firstChildElemB =
+        AddChildElement(elemB, "child_elem_B", true, "first_child");
+
+    AddChildElement(elemB, "child_elem_B", false, "");
+  }
+
+  {
+    auto elemA = root->FindElement("elem_A");
+    ASSERT_NE(nullptr, elemA);
+    EXPECT_NE(nullptr, elemA->FindElement("child_elem_A"));
+    EXPECT_EQ(nullptr, elemA->FindElement("non_existent_elem"));
+
+    auto elemB = root->FindElement("elem_B");
+    ASSERT_NE(nullptr, elemB);
+    // This should find the first "child_elem_B" element, which has the name
+    // attribute
+    auto childElemB = elemB->FindElement("child_elem_B");
+    ASSERT_TRUE(childElemB->HasAttribute("name"));
+    EXPECT_EQ("first_child", childElemB->GetAttribute("name")->GetAsString());
+  }
+
+  // Check that it works with const pointers
+  {
+    sdf::ElementConstPtr rootConst = root;
+    sdf::ElementConstPtr elemA = rootConst->FindElement("elem_A");
+    ASSERT_NE(nullptr, elemA);
+    EXPECT_NE(nullptr, elemA->FindElement("child_elem_A"));
+    EXPECT_EQ(nullptr, elemA->FindElement("non_existent_elem"));
+
+    sdf::ElementConstPtr elemB = root->FindElement("elem_B");
+    ASSERT_NE(nullptr, elemB);
+    // This should find the first "child_elem_B" element, which has the name
+    // attribute
+    sdf::ElementConstPtr childElemB = elemB->FindElement("child_elem_B");
+    ASSERT_TRUE(childElemB->HasAttribute("name"));
+    EXPECT_EQ("first_child", childElemB->GetAttribute("name")->GetAsString());
+  }
 }
 
 /////////////////////////////////////////////////
