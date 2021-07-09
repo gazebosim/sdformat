@@ -18,7 +18,7 @@ but with improved human-readability..
 
 1. Fixed Atmosphere DOM class's temperature default value. Changed from -0.065 to -0.0065.
     * [Pull request 482](https://github.com/osrf/sdformat/pull/482)
-   
+
 1. Fixed parsing of `<sensor><pose>` tags on lumped links when converting from URDF.
     * [Pull request 525](https://github.com/osrf/sdformat/pull/525)
 
@@ -64,6 +64,13 @@ but with improved human-readability..
     + std::optional<std::string> GetMinValueAsString() const;
     + std::optional<std::string> GetMaxValueAsString() const;
     + bool ValidateValue() const;
+
+## libsdformat 9.4 to 9.5
+
+### Additions
+
+1. **sdf/Element.hh**
+    + sdf::ElementPtr FindElement() const
 
 ## libsdformat 9.3 to 9.4
 
