@@ -395,14 +395,6 @@ namespace sdf
     ///        embedded Param.
     public: void Reset();
 
-    /// \brief Set the include filename to the passed in filename.
-    /// \param[in] _filename the filename to set the include filename to.
-    public: void SetInclude(const std::string &_filename) SDF_DEPRECATED(11.0);
-
-    /// \brief Get the include filename.
-    /// \return The include filename.
-    public: std::string GetInclude() const SDF_DEPRECATED(11.0);
-
     /// \brief Set the <include> element that was used to load this element.
     /// This is set by the parser on the first element of the included object
     /// (eg. Model, Actor, Light, etc). It is not passed down to children
@@ -561,9 +553,6 @@ namespace sdf
     /// <include> tag after the entity has been loaded. An example use case for
     /// this is when saving a loaded world back to SDFormat.
     public: ElementPtr includeElement;
-
-    /// name of the include file that was used to create this element
-    public: std::string includeFilename;
 
     /// \brief Name of reference sdf.
     public: std::string referenceSDF;

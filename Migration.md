@@ -12,6 +12,23 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## libsdformat 11.x to 12.0
+
+### Removals
+
+The following deprecated methods and classes have been removed.
+
+1. **sdf/Element.hh**
+    + void SetInclude(const std::string);
+-   + std::string GetInclude() const;
+
+1. **sdf/Types.hh**
+    + sdf::Color class
+
+1. **sdf/JointAxis.hh**
+    + double InitialPosition() const;
+    + void SetInitialPosition(const double)
+
 ## libsdformat 11.1.0 to 11.2.0
 
 ABI was broken for `sdf::Element`, and restored on version 11.2.1.
@@ -332,6 +349,11 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
 
 ## SDFormat specification 1.8 to 1.9
+
+###Removals
+
+1. **joint.sdf**
+    + Deprecated elements `//joint/axis/initial_position` and `//joint/axis2/initial_position` have been removed
 
 ## SDFormat specification 1.7 to 1.8
 

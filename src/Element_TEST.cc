@@ -284,14 +284,6 @@ TEST(Element, Include)
 {
   sdf::Element elem;
 
-  SDF_SUPPRESS_DEPRECATED_BEGIN
-  ASSERT_EQ(elem.GetInclude(), "");
-
-  elem.SetInclude("foo.txt");
-
-  ASSERT_EQ(elem.GetInclude(), "foo.txt");
-  SDF_SUPPRESS_DEPRECATED_END
-
   auto includeElemToStore = std::make_shared<sdf::Element>();
   includeElemToStore->SetName("include");
   auto uriDesc = std::make_shared<sdf::Element>();
@@ -600,23 +592,6 @@ TEST(Element, ToStringClonedElement)
   sdf::ElementPtr parentClone = parent->Clone();
   EXPECT_TRUE(parentClone->GetAttributeSet("test"));
   EXPECT_EQ(parent->ToString("myprefix"), parentClone->ToString("myprefix"));
-}
-
-/////////////////////////////////////////////////
-TEST(Element, ToStringInclude)
-{
-  sdf::Element elem;
-
-  SDF_SUPPRESS_DEPRECATED_BEGIN
-  ASSERT_EQ(elem.GetInclude(), "");
-
-  elem.SetInclude("foo.txt");
-
-  ASSERT_EQ(elem.GetInclude(), "foo.txt");
-  SDF_SUPPRESS_DEPRECATED_END
-
-  std::string stringval = elem.ToString("myprefix");
-  ASSERT_EQ(stringval, "myprefix<include filename='foo.txt'/>\n");
 }
 
 /////////////////////////////////////////////////
