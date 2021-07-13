@@ -120,3 +120,28 @@ bool Error::operator==(const bool _value) const
   return ((this->dataPtr->code != ErrorCode::NONE) && _value) ||
          ((this->dataPtr->code == ErrorCode::NONE) && !_value);
 }
+
+/////////////////////////////////////////////////
+std::ostream &operator<<(std::ostream &_out, const sdf::Error &_err)
+{
+  std::string pathInfo = "";
+
+  if (_err.XmlPath().has_value())
+    pathInfo += _err.XmlPath().value();
+
+  if (_err.FilePath().has_value())
+    pathInfo += ":" + _err.FilePath().value();
+
+  if (_err.LineNumber().has_value())
+    pathInfo += ":L" + std::to_string(_err.LineNumber().value());
+
+  if (!pathInfo.empty())
+    pathInfo = "[" + pathInfo + "]: ";
+
+  _out << "Error Code "
+      << static_cast<std::underlying_type<sdf::ErrorCode>::type>(
+          _err.Code()) << ": "
+      << pathInfo
+      << "Msg: " << _err.Message();
+  return _out;
+}
