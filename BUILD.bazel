@@ -58,7 +58,7 @@ public_headers_no_gen = glob(["include/sdf/*.hh"])
 
 private_headers = glob(["src/*.hh"])
 
-sources = glob(["src/*.cc"], exclude=["src/*_TEST.cc"]) + ["EmbeddedSdf.cc"]
+sources = glob(["src/*.cc"], exclude=["src/*_TEST.cc", "src/ign.cc"]) + ["EmbeddedSdf.cc"]
 
 test_sources = glob(["src/*_TEST.cc"], exclude=["src/ign_TEST.cc"])
 
@@ -115,8 +115,12 @@ cc_library(
 
 cc_binary(
     name = "sdformat.so",
+    srcs = [
+        "src/ign.cc",
+        "src/ign.hh",
+    ],
+    includes = ["include"],
     deps = [":sdformat"],
-    linkshared = True,
 )
 
 [cc_test(
@@ -142,7 +146,27 @@ cc_binary(
     ],
 ) for src in test_sources]
 
-exports_files(["tools"])
-exports_files(["src/cmd/cmdsdformat.rb.in"])
-exports_files(["sdf"])
+cmake_configure_file(
+    name = "sdformat.rb",
+    src = "src/cmd/cmdsdformat.rb.in",
+    out = "cmdsdformat.rb",
+    cmakelists = ["CMakeLists.txt"],
+    defines = [
+        "library_location=sdformat.so",
+        "PROJECT_VERSION_FULL=%d.%d.%d" % (SDF_MAJOR_VERSION, SDF_MINOR_VERSION, SDF_PATCH_VERSION),  # noqa
+        "IGN_LIBRARY_NAME=%s" % [PROJECT_NAME],
+    ],
+)
 
+CMDS = "    - sdf   : Utilities for SDF files."
+
+generate_yaml(
+    name = "sdf",
+    commands = CMDS,
+    library_name = PROJECT_NAME,
+    library_version = "%d.%d.%d" % (SDF_MAJOR_VERSION, SDF_MINOR_VERSION, SDF_PATCH_VERSION),
+    ruby_target = "sdformat.rb",
+)
+
+exports_files(["tools"])
+exports_files(["sdf"])
