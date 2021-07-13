@@ -120,7 +120,6 @@ cc_binary(
         "src/ign.hh",
     ],
     includes = ["include"],
-    linkshared = True,
     deps = [":sdformat"],
 )
 
@@ -170,3 +169,4 @@ generate_yaml(
 )
 
 exports_files(["tools"])
+exports_files(["sdf"])
