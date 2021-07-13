@@ -221,8 +221,8 @@ namespace sdf
     /// \param[in,out] _out The output stream.
     /// \param[in] _err The error to output.
     /// \return Reference to the given output stream
-    public: friend std::ostream &operator<<(std::ostream &_out,
-                                            const sdf::Error &_err);
+    public: friend SDFORMAT_VISIBLE std::ostream &operator<<(
+        std::ostream &_out, const sdf::Error &_err);
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

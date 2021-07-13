@@ -121,7 +121,13 @@ bool Error::operator==(const bool _value) const
          ((this->dataPtr->code == ErrorCode::NONE) && !_value);
 }
 
+namespace sdf
+{
+// Inline bracket to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+
 /////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
 std::ostream &operator<<(std::ostream &_out, const sdf::Error &_err)
 {
   std::string pathInfo = "";
@@ -144,4 +150,6 @@ std::ostream &operator<<(std::ostream &_out, const sdf::Error &_err)
       << pathInfo
       << "Msg: " << _err.Message();
   return _out;
+}
+}
 }
