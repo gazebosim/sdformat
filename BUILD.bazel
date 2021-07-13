@@ -114,7 +114,7 @@ cc_library(
 )
 
 cc_binary(
-    name = "libsdformat10.so",
+    name = "sdformat.so",
     deps = [":sdformat"],
     linkshared = True,
 )
@@ -144,3 +144,5 @@ cc_binary(
 
 exports_files(["tools"])
 exports_files(["src/cmd/cmdsdformat.rb.in"])
+exports_files(["sdf"])
+
