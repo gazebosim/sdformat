@@ -14,6 +14,11 @@ but with improved human-readability..
 
 ## SDFormat 5.x to 6.x
 
+### Additions
+
+1. **sdf/parser.hh**
+   + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)
+
 ### Deprecations
 
 1. **sdf/Types.hh**

@@ -1255,3 +1255,65 @@ TEST(Frame, IncludeFrame)
   EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
             ignition::math::Pose3d(5, -2, 1, 0, 0, 0));
 }
+
+////////////////////////////////////////
+// Test parsing a include element that has a pose element and includes a
+// submodel
+TEST(Frame, IncludeFrameWithSubmodel)
+{
+  const std::string MODEL_PATH =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                            "model", "box_with_submodel");
+
+  std::ostringstream stream;
+  std::string version = SDF_VERSION;
+  stream
+    << "<sdf version='" << version << "'>"
+    << "<world name='default'>"
+    << "<model name='top_level_model'>"
+    << "  <include>"
+    << "    <static>false</static>"
+    << "    <pose>5 5 0 0 0 0</pose>"
+    << "    <uri>" + MODEL_PATH +"</uri>"
+    << "  </include>"
+    << "</model>"
+    << "</world>"
+    << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
+  sdf::ElementPtr worldElem = sdfParsed->Root()->GetElement("world");
+
+  /* top level model: using include will merge top_level_model and box_with_submodel into:
+   *  <model name='top_level_model'>
+   *   <link name='box_with_submodel::link'>
+   *     <pose frame=''>5 5 0 0 -0 0</pose>  <<-- pose has been translated
+   *   </link>
+   *   <model name='box_with_submodel::submodel_box_with_submodel'>
+   *   ...
+   *   </model>
+   * </model>
+  */
+  sdf::ElementPtr modelElem = worldElem->GetElement("model");
+  EXPECT_EQ(modelElem->Get<std::string>("name"), "top_level_model");
+  sdf::ElementPtr modelPoseElem =
+    modelElem->GetElement("link")->GetElement("pose");
+  EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
+            ignition::math::Pose3d(5, 5, 0, 0, 0, 0));
+  /* submodel: pose from parent is translated to model. links are the same
+   * ...
+   *   <model name='box_with_submodel::submodel_box_with_submodel'>
+   *     <link name='submodel_link'>
+   *       <pose frame=''>0 0 0 0 -0 0</pose>
+   *     </link>
+   *     <pose frame=''>5 5 0 0 -0 0</pose>
+   *   </model>
+   */
+  sdf::ElementPtr subModelElem = modelElem->GetElement("model");
+  EXPECT_EQ(subModelElem->Get<std::string>("name"),
+            "box_with_submodel::submodel_of_box_with_submodel");
+  sdf::ElementPtr subModelPoseElem = subModelElem->GetElement("pose");
+  EXPECT_EQ(subModelPoseElem->Get<ignition::math::Pose3d>(),
+            ignition::math::Pose3d(5, 5, 0, 0, 0, 0));
+}
