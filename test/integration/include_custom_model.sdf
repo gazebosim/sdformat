@@ -1,0 +1,202 @@
+<?xml version="1.0" ?>
+<sdf version="1.7"
+     xmlns:experimental="http://sdformat.org/schemas/experimental">
+  <world name="world_custom_model">
+    <model name="robot">
+      <include>
+        <uri>robot</uri>
+
+        <experimental:params>
+          <visual element_id="chassis::lidar_visual" action="remove"/>
+          <sensor element_id="chassis::lidar" action="remove"/>
+          <sensor element_id="chassis::camera" action="remove">
+            <always_on/>
+            <visualize/>
+          </sensor>
+
+          <visual element_id="chassis" name="camera_visual" action="add">
+            <pose>-1.06 0 0 0 0 3.14</pose>
+            <geometry>
+              <box>
+                <size>0.1 0.1 0.1</size>
+              </box>
+            </geometry>
+          </visual>
+
+          <link element_id="" name="new_link" action="add">
+            <pose>0 0 0 0 0 0</pose>
+            <sensor type="camera" name="camera_sensor">
+              <camera>
+                <horizontal_fov>1.047</horizontal_fov>
+                <image>
+                  <width>320</width>
+                  <height>240</height>
+                </image>
+                <clip>
+                  <near>0.1</near>
+                  <far>100</far>
+                </clip>
+              </camera>
+              <always_on>1</always_on>
+              <update_rate>30</update_rate>
+              <visualize>true</visualize>
+            </sensor>
+          </link>
+
+          <visual element_id="nested_models::model1::link1" name="new_visual" action="add">
+            <geometry>
+              <box>
+                <size>0.1 0.1 0.1</size>
+              </box>
+            </geometry>
+          </visual>
+
+          <visual element_id="top::camera_visual">
+            <transparency action="add">0.5</transparency>
+            <plugin name="some_visual_plugin" filename="/path/to/plugin" action="add"/>
+            <plugin name="some_visual_plugin" filename="/path/to/plugin" action="add"/>
+
+            <material action="remove">
+              <specular/>
+              <lighting/>
+            </material>
+
+            <geometry action="replace">
+              <sphere>
+                <radius>0.05</radius>
+              </sphere>
+            </geometry>
+
+            <material action="modify">
+              <ambient>0 0 1 1</ambient>
+              <diffuse/>
+            </material>
+          </visual>
+
+          <plugin element_id="top::camera_visual" name="some_visual_plugin" filename="/path/to/plugin" action="add"/>
+
+          <link element_id="top">
+            <collision name="camera_collision" action="remove"/>
+
+            <visual name="top_visual" action="remove">
+              <transparency/>
+              <cast_shadows/>
+              <plugin/>
+              <plugin name="top_plugin3"/>
+            </visual>
+
+            <collision name="top_collision" action="replace">
+              <geometry>
+                <sphere>
+                  <radius>0.65</radius>
+                </sphere>
+              </geometry>
+            </collision>
+
+            <visual name="top_visual" action="modify" custom:test="foo">
+              <geometry>
+                <box>
+                  <size custom:test="bar">1 0.5 0.5</size>
+                </box>
+              </geometry>
+            </visual>
+
+          </link>
+
+          <!-- attribute test get's stripped during replace -->
+          <collision element_id="right_wheel::collision" test="hello" name="right_wheel_collision" action="replace">
+            <geometry>
+              <cylinder>
+                <radius>0.2</radius>
+                <length>0.3</length>
+              </cylinder>
+            </geometry>
+          </collision>
+
+          <!-- attribute custom:test does not get stripped -->
+          <collision element_id="left_wheel::collision" custom:test="hello" name="left_wheel_collision" action="replace">
+            <geometry>
+              <cylinder>
+                <radius>0.2</radius>
+                <length>0.3</length>
+              </cylinder>
+            </geometry>
+          </collision>
+
+          <visual element_id="top::top_visual">
+            <material action="replace">
+              <ambient>0 0 1 1</ambient>
+              <diffuse>0 0 1 1</diffuse>
+            </material>
+          </visual>
+
+          <sensor element_id="top::camera" name="cam" action="modify" custom:test="hello">
+            <pose relative_to="__model__">0.1 0.2 0.3 0 0 0</pose>
+            <topic>top/cam</topic>
+            <update_rate>20</update_rate>
+
+            <camera name="top_camera">
+              <image>
+                <width>1280</width>
+              </image>
+              <clip custom:test="foo">
+                <far>50</far>
+                <near>0.05</near>
+              </clip>
+              <horizontal_fov/>
+            </camera>
+          </sensor>
+
+          <link element_id="caster" action="modify">
+            <pose relative_to="right_wheel"/>
+            <inertial>
+              <mass>0.5</mass>
+              <inertia>
+                <ixx>0.05</ixx>
+                <iyy>0.05</iyy>
+                <izz>0.05</izz>
+              </inertia>
+            </inertial>
+            <visual name="visual">
+              <geometry>
+                <sphere>
+                  <radius>0.8</radius>
+                </sphere>
+              </geometry>
+              <material>
+                <specular>1 1 1 1</specular>
+              </material>
+            </visual>
+            <collision name="collision">
+              <geometry>
+                <sphere>
+                  <radius>0.8</radius>
+                </sphere>
+              </geometry>
+            </collision>
+          </link>
+
+          <model element_id="nested_models">
+            <pose action="modify" relative_to="caster">1 1 1 0 0 0</pose>
+          </model>
+
+          <!-- add link with custom element -->
+          <link element_id="" name="link_custom1" action="add">
+            <foo:custom_elem>
+              foo
+            </foo:custom_elem>
+          </link>
+
+          <link element_id="link_custom1">
+            <!-- modify newly added custom element -->
+            <foo:custom_elem custom:attr="test" action="modify">
+              bar
+            </foo:custom_elem>
+          </link>
+
+        </experimental:params>
+
+      </include>
+    </model>
+  </world>
+</sdf>

@@ -39,6 +39,7 @@
 
 #include "Converter.hh"
 #include "FrameSemantics.hh"
+#include "ParamPassing.hh"
 #include "ScopedGraph.hh"
 #include "Utils.hh"
 #include "parser_private.hh"
@@ -1397,6 +1398,18 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
                 }
               }
             }
+          }
+
+          // TODO(jenn) prototyping parameter passing
+          // ref: sdformat.org > Documentation > Proposal for parameter passing
+          if (elemXml->FirstChildElement("experimental:params"))
+          {
+            ParamPassing::updateParams(
+                _config,
+                _source,
+                elemXml->FirstChildElement("experimental:params"),
+                includeSDF->Root(),
+                _errors);
           }
 
           auto includeSDFFirstElem = includeSDF->Root()->GetFirstElement();
