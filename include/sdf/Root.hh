@@ -130,92 +130,17 @@ namespace sdf
     /// \return True if there exists a world with the given name.
     public: bool WorldNameExists(const std::string &_name) const;
 
-    /// \brief Get the number of models that are immediate (not nested) children
-    /// of this Root object.
-    /// \return Number of models contained in this Root object.
-    public: uint64_t ModelCount() const SDF_DEPRECATED(11.0);
-
-    /// \brief Get a model based on an index.
-    /// \param[in] _index Index of the model. The index should be in the
-    /// range [0..ModelCount()).
-    /// \return Pointer to the model. Nullptr if the index does not exist.
-    /// \sa uint64_t ModelCount() const
-    public: const sdf::Model *ModelByIndex(const uint64_t _index) const
-        SDF_DEPRECATED(11.0);
-
-    /// \brief Get whether a model name exists.
-    /// \param[in] _name Name of the model to check.
-    /// \return True if there exists a model with the given name.
-    public: bool ModelNameExists(const std::string &_name) const
-        SDF_DEPRECATED(11.0);
-
     /// \brief Get a pointer to the model object if it exists.
-    ///
-    /// If there is more than one model, this will return the first element.
-    /// This method is preferred to ModelByIndex, as its behavior is
-    /// consistent with the planned future API. Having more than one Model, or
-    /// more than one of Model/Actor/Light is now considered deprecated and
-    /// should not be relied upon going forward.
     ///
     /// \return A pointer to the model, nullptr if it doesn't exist
     public: const sdf::Model *Model() const;
 
-    /// \brief Get the number of lights.
-    /// \return Number of lights contained in this Root object.
-    public: uint64_t LightCount() const SDF_DEPRECATED(11.0);
-
-    /// \brief Get a light based on an index.
-    /// \param[in] _index Index of the light. The index should be in the
-    /// range [0..LightCount()).
-    /// \return Pointer to the light. Nullptr if the index does not exist.
-    /// \sa uint64_t LightCount() const
-    public: const sdf::Light *LightByIndex(const uint64_t _index) const
-        SDF_DEPRECATED(11.0);
-
-    /// \brief Get whether a light name exists.
-    /// \param[in] _name Name of the light to check.
-    /// \return True if there exists a light with the given name.
-    public: bool LightNameExists(const std::string &_name) const
-        SDF_DEPRECATED(11.0);
-
     /// \brief Get a pointer to the light object if it exists.
-    ///
-    /// If there is more than one light, this will return the first element. If
-    /// there is already a model element, this will return null.
-    /// This method is preferred to LightByIndex, as its behavior is
-    /// consistent with the planned future API. Having more than one Light, or
-    /// more than one of Model/Actor/Light is now considered deprecated and
-    /// should not be relied upon going forward.
     ///
     /// \return A pointer to the light, nullptr if it doesn't exist
     public: const sdf::Light *Light() const;
 
-    /// \brief Get the number of actors.
-    /// \return Number of actors contained in this Root object.
-    public: uint64_t ActorCount() const SDF_DEPRECATED(11.0);
-
-    /// \brief Get an actor based on an index.
-    /// \param[in] _index Index of the actor. The actor should be in the
-    /// range [0..ActorCount()).
-    /// \return Pointer to the actor. Nullptr if the index does not exist.
-    /// \sa uint64_t ActorCount() const
-    public: const sdf::Actor *ActorByIndex(const uint64_t _index) const
-        SDF_DEPRECATED(11.0);
-
-    /// \brief Get whether an actor name exists.
-    /// \param[in] _name Name of the actor to check.
-    /// \return True if there exists an actor with the given name.
-    public: bool ActorNameExists(const std::string &_name) const
-        SDF_DEPRECATED(11.0);
-
     /// \brief Get a pointer to the actor object if it exists.
-    ///
-    /// If there is more than one actor, this will return the first element. If
-    /// there is already a model or light element, this will return null.
-    /// This method is preferred to ActorByIndex, as its behavior is
-    /// consistent with the planned future API. Having more than one Actor, or
-    /// more than one of Model/Actor/Light is now considered deprecated and
-    /// should not be relied upon going forward.
     ///
     /// \return A pointer to the actor, nullptr if it doesn't exist
     public: const sdf::Actor *Actor() const;

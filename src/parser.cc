@@ -1234,10 +1234,10 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             return false;
           }
 
-          // For now there is only a warning if there is more than one model,
-          // actor or light element, or two different types of those elements.
-          // For compatibility with old behavior, this chooses the first element
-          // in the preference order: model->actor->light
+          // Emit an error if there is more than one model, actor or light
+          // element, or two different types of those elements. For
+          // compatibility with old behavior, this chooses the first element in
+          // the preference order: model->actor->light
           sdf::ElementPtr topLevelElem;
           for (const auto &elementType : {"model", "actor", "light"})
           {
@@ -1252,13 +1252,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
                 std::stringstream ss;
                 ss << "Found other top level element <" << elementType
                   << "> in addition to <" << topLevelElem->GetName()
-                  << "> in include file. This is unsupported and in future "
-                  << "versions of libsdformat will become an error";
+                  << "> in include file.";
                 Error err(
                     ErrorCode::ELEMENT_INCORRECT_TYPE, ss.str(), filename);
                 err.SetXmlPath("/sdf/" + std::string(elementType));
-                enforceConfigurablePolicyCondition(
-                    _config.WarningsPolicy(), err, _errors);
+                _errors.push_back(err);
               }
             }
           }
@@ -1283,14 +1281,12 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           if (nullptr != nextTopLevelElem)
           {
             std::stringstream ss;
-            ss << "Found more than one of " << topLevelElem->GetName()
-              << " for <include>. This is unsupported and in future "
-              << "versions of libsdformat will become an error";
+            ss << "Found more than one " << topLevelElem->GetName()
+              << " for <include>.";
             Error err(
                 ErrorCode::ELEMENT_INCORRECT_TYPE, ss.str(), filename);
             err.SetXmlPath("/sdf/" + topLevelElementType);
-            enforceConfigurablePolicyCondition(
-                _config.WarningsPolicy(), err, _errors);
+            _errors.push_back(err);
           }
 
           bool isModel = topLevelElementType == "model";

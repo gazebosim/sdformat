@@ -1,8 +1,7 @@
 <?xml version="1.0" ?>
 <sdf version="1.8">
-  <!-- The included sdf model contains multiple model elements, and is an
-  example of poorly formed file. Currently this is unsupported and will
-  eventually become a parsing error -->
+  <!-- The included sdf model contains multiple model elements, and is
+  considered an invalid file.-->
 
   <include>
     <!-- This search path for this model must be added by the test code -->
