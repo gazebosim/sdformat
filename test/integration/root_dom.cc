@@ -82,24 +82,15 @@ TEST(DOMRoot, LoadMultipleModels)
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
 
-  // Currently just warnings are issued in this case, eventually they may become
+  // An error should be emitted since there are multiple root models.
   // errors. For now, only the first model is loaded.
-  EXPECT_TRUE(errors.empty()) << errors;
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+  EXPECT_EQ("Root object can only contain one model. Using the first one found",
+            errors[0].Message());
+
   ASSERT_NE(nullptr, root.Model());
   EXPECT_EQ("robot1", root.Model()->Name());
-
-  SDF_SUPPRESS_DEPRECATED_BEGIN
-  EXPECT_EQ(3u, root.ModelCount());
-
-  EXPECT_EQ("robot1", root.ModelByIndex(0)->Name());
-  EXPECT_EQ("robot2", root.ModelByIndex(1)->Name());
-  EXPECT_EQ("last_robot", root.ModelByIndex(2)->Name());
-
-  EXPECT_FALSE(root.ModelNameExists("robot"));
-  EXPECT_TRUE(root.ModelNameExists("robot1"));
-  EXPECT_TRUE(root.ModelNameExists("robot2"));
-  EXPECT_TRUE(root.ModelNameExists("last_robot"));
-  SDF_SUPPRESS_DEPRECATED_END
 }
 
 /////////////////////////////////////////////////
@@ -110,12 +101,10 @@ TEST(DOMRoot, LoadDuplicateModels)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
-  EXPECT_FALSE(errors.empty());
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
+  EXPECT_EQ("model with name[robot1] already exists.", errors[0].Message());
+
   EXPECT_NE(nullptr, root.Model());
   EXPECT_EQ("robot1", root.Model()->Name());
-
-  SDF_SUPPRESS_DEPRECATED_BEGIN
-  EXPECT_EQ(1u, root.ModelCount());
-  EXPECT_EQ("robot1", root.ModelByIndex(0)->Name());
-  SDF_SUPPRESS_DEPRECATED_END
 }

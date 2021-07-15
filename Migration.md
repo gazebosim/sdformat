@@ -14,13 +14,16 @@ but with improved human-readability..
 
 ## libsdformat 11.x to 12.0
 
+An error is now emitted instead of a warning for a file containing more than
+one root level model, actor or light.
+
 ### Removals
 
 The following deprecated methods and classes have been removed.
 
 1. **sdf/Element.hh**
     + void SetInclude(const std::string);
--   + std::string GetInclude() const;
+    + std::string GetInclude() const;
 
 1. **sdf/Types.hh**
     + sdf::Color class
@@ -28,6 +31,17 @@ The following deprecated methods and classes have been removed.
 1. **sdf/JointAxis.hh**
     + double InitialPosition() const;
     + void SetInitialPosition(const double)
+
+1. **src/Root.hh**:
+    + const sdf::Model \*ModelByIndex();
+    + uint64_t ModelCount();
+    + bool ModelNameExists(const std::string &\_name) const;
+    + const sdf::Light \*LightByIndex();
+    + uint64_t LightCount();
+    + bool LightNameExists(const std::string &\_name) const;
+    + const sdf::Actor \*ActorByIndex();
+    + uint64_t ActorCount();
+    + bool ActorNameExists(const std::string &\_name) const;
 
 ## libsdformat 11.1.0 to 11.2.0
 
