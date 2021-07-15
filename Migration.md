@@ -19,7 +19,20 @@ one root level model, actor or light.
 
 ### Removals
 
-1. **src/Root.hh**: The following deprecated methods have been removed.
+The following deprecated methods and classes have been removed.
+
+1. **sdf/Element.hh**
+    + void SetInclude(const std::string);
+    + std::string GetInclude() const;
+
+1. **sdf/Types.hh**
+    + sdf::Color class
+
+1. **sdf/JointAxis.hh**
+    + double InitialPosition() const;
+    + void SetInitialPosition(const double)
+
+1. **sdf/Root.hh**:
     + const sdf::Model \*ModelByIndex();
     + uint64_t ModelCount();
     + bool ModelNameExists(const std::string &\_name) const;
@@ -350,6 +363,11 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
 
 ## SDFormat specification 1.8 to 1.9
+
+###Removals
+
+1. **joint.sdf**
+    + Deprecated elements `//joint/axis/initial_position` and `//joint/axis2/initial_position` have been removed
 
 ## SDFormat specification 1.7 to 1.8
 

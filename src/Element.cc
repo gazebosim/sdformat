@@ -184,7 +184,6 @@ ElementPtr Element::Clone() const
   clone->dataPtr->name = this->dataPtr->name;
   clone->dataPtr->required = this->dataPtr->required;
   clone->dataPtr->copyChildren = this->dataPtr->copyChildren;
-  clone->dataPtr->includeFilename = this->dataPtr->includeFilename;
   clone->dataPtr->referenceSDF = this->dataPtr->referenceSDF;
   clone->dataPtr->path = this->dataPtr->path;
   clone->dataPtr->lineNumber = this->dataPtr->lineNumber;
@@ -233,7 +232,6 @@ void Element::Copy(const ElementPtr _elem)
   this->dataPtr->description = _elem->GetDescription();
   this->dataPtr->required = _elem->GetRequired();
   this->dataPtr->copyChildren = _elem->GetCopyChildren();
-  this->dataPtr->includeFilename = _elem->dataPtr->includeFilename;
   this->dataPtr->referenceSDF = _elem->ReferenceSDF();
   this->dataPtr->originalVersion = _elem->OriginalVersion();
   this->dataPtr->path = _elem->FilePath();
@@ -552,15 +550,7 @@ std::string Element::ToString(const std::string &_prefix) const
 void Element::ToString(const std::string &_prefix,
                        std::ostringstream &_out) const
 {
-  if (this->dataPtr->includeFilename.empty())
-  {
-    PrintValuesImpl(_prefix, _out);
-  }
-  else
-  {
-    _out << _prefix << "<include filename='"
-         << this->dataPtr->includeFilename << "'/>\n";
-  }
+  PrintValuesImpl(_prefix, _out);
 }
 
 /////////////////////////////////////////////////
@@ -964,18 +954,6 @@ void Element::Reset()
 void Element::AddElementDescription(ElementPtr _elem)
 {
   this->dataPtr->elementDescriptions.push_back(_elem);
-}
-
-/////////////////////////////////////////////////
-void Element::SetInclude(const std::string &_filename)
-{
-  this->dataPtr->includeFilename = _filename;
-}
-
-/////////////////////////////////////////////////
-std::string Element::GetInclude() const
-{
-  return this->dataPtr->includeFilename;
 }
 
 /////////////////////////////////////////////////
