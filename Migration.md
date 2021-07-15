@@ -32,7 +32,7 @@ The following deprecated methods and classes have been removed.
     + double InitialPosition() const;
     + void SetInitialPosition(const double)
 
-1. **src/Root.hh**:
+1. **sdf/Root.hh**:
     + const sdf::Model \*ModelByIndex();
     + uint64_t ModelCount();
     + bool ModelNameExists(const std::string &\_name) const;
