@@ -3444,6 +3444,12 @@ void ReduceSDFExtensionPluginFrameReplace(
           // remove xyzOffset and rpyOffset
           (*_blobIt)->RemoveChild(rpyKey);
         }
+        TiXmlNode* correctedOffsetKey =
+            (*_blobIt)->FirstChild("ignition::corrected_offsets");
+        if (!correctedOffsetKey)
+        {
+          (*_blobIt)->RemoveChild(correctedOffsetKey);
+        }
 
         // pass through the parent transform from fixed joint reduction
         _reductionTransform = TransformToParentFrame(_reductionTransform,
@@ -3452,6 +3458,7 @@ void ReduceSDFExtensionPluginFrameReplace(
         // create new offset xml blocks
         xyzKey = new TiXmlElement("xyzOffset");
         rpyKey = new TiXmlElement("rpyOffset");
+        correctedOffsetKey = new TiXmlElement("ignition::corrected_offsets");
 
         // create new offset xml blocks
         urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
@@ -3472,12 +3479,15 @@ void ReduceSDFExtensionPluginFrameReplace(
 
         TiXmlText* xyzTxt = new TiXmlText(xyzStream.str());
         TiXmlText* rpyTxt = new TiXmlText(rpyStream.str());
+        TiXmlText* correctedOffsetTxt = new TiXmlText("1");
 
         xyzKey->LinkEndChild(xyzTxt);
         rpyKey->LinkEndChild(rpyTxt);
+        correctedOffsetKey->LinkEndChild(correctedOffsetTxt);
 
         (*_blobIt)->LinkEndChild(xyzKey);
         (*_blobIt)->LinkEndChild(rpyKey);
+        (*_blobIt)->LinkEndChild(correctedOffsetKey);
       }
     }
   }
