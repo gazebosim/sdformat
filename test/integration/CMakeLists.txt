@@ -33,6 +33,7 @@ set(tests
   nested_model.cc
   nested_multiple_elements_error.cc
   param_passing.cc
+  param_parent_element.cc
   parser_error_detection.cc
   parser_config.cc
   particle_emitter_dom.cc
