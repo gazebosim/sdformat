@@ -31,12 +31,12 @@
 //////////////////////////////////////////////////
 TEST(ExplicitlySetInFile, EmptyRoadSphCoords)
 {
-  const std::string test_file =
+  const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
         "empty_road_sph_coords.sdf");
 
   sdf::Root root;
-  sdf::Errors errors = root.Load(test_file);
+  sdf::Errors errors = root.Load(testFile);
   EXPECT_TRUE(errors.empty());
 
   sdf::ElementPtr rootPtr = root.Element();
@@ -109,12 +109,12 @@ TEST(ExplicitlySetInFile, EmptyRoadSphCoords)
 //////////////////////////////////////////////////
 TEST(ExplicitlySetInFile, EmptyAxis)
 {
-  const std::string test_file =
+  const std::string testFile =
     sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
         "empty_axis.sdf");
 
   sdf::Root root;
-  sdf::Errors errors = root.Load(test_file);
+  sdf::Errors errors = root.Load(testFile);
   EXPECT_TRUE(errors.empty());
 
   sdf::ElementPtr rootPtr = root.Element();
@@ -152,4 +152,100 @@ TEST(ExplicitlySetInFile, EmptyAxis)
 
   sdf::ElementPtr upperLimitPtr = lowerLimitPtr->GetNextElement();
   EXPECT_FALSE(upperLimitPtr->GetExplicitlySetInFile());
+}
+
+//////////////////////////////////////////////////
+TEST(ExplicitlySetInFile, ToString)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "empty_road_sph_coords.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(root.Element()->ToString(""),
+            root.Element()->ToString("", true, false));
+
+  std::ostringstream stream;
+  std::string version = SDF_VERSION;
+  stream
+    << "<sdf version='" << version << "'>\n"
+    << "  <world name='default'>\n"
+    << "    <road name='empty_road'>\n"
+    << "    </road>\n"
+    << "    <spherical_coordinates>\n"
+    << "    </spherical_coordinates>\n"
+    << "  </world>\n"
+    << "</sdf>\n";
+
+  EXPECT_EQ(root.Element()->ToString("", false, false), stream.str());
+
+  stream.str(std::string());
+  stream
+    << "<sdf version='" << version << "'>\n"
+    << "  <world name='default'>\n"
+    << "    <road name='empty_road'>\n"
+    << "      <width>1</width>\n"
+    << "      <point>0 0 0</point>\n"
+    << "    </road>\n"
+    << "    <spherical_coordinates>\n"
+    << "      <surface_model>EARTH_WGS84</surface_model>\n"
+    << "      <latitude_deg>0</latitude_deg>\n"
+    << "      <longitude_deg>0</longitude_deg>\n"
+    << "      <elevation>0</elevation>\n"
+    << "      <heading_deg>0</heading_deg>\n"
+    << "    </spherical_coordinates>\n"
+    << "    <gravity>0 0 -9.8</gravity>\n"
+    << "    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>\n"
+    << "    <atmosphere type='adiabatic'/>\n"
+    << "    <physics type='ode'>\n"
+    << "      <max_step_size>0.001</max_step_size>\n"
+    << "      <real_time_factor>1</real_time_factor>\n"
+    << "      <real_time_update_rate>1000</real_time_update_rate>\n"
+    << "    </physics>\n"
+    << "    <scene>\n"
+    << "      <ambient>0.4 0.4 0.4 1</ambient>\n"
+    << "      <background>0.7 0.7 0.7 1</background>\n"
+    << "      <shadows>1</shadows>\n"
+    << "    </scene>\n"
+    << "  </world>\n"
+    << "</sdf>\n";
+
+  EXPECT_EQ(root.Element()->ToString(""), stream.str());
+  EXPECT_EQ(root.Element()->ToString("", true, false), stream.str());
+
+  stream.str(std::string());
+  stream
+    << "<sdf version='" << version << "'>\n"
+    << "  <world name='default'>\n"
+    << "    <road name='empty_road'>\n"
+    << "      <width>1</width>\n"
+    << "      <point>0 0 0</point>\n"
+    << "    </road>\n"
+    << "    <spherical_coordinates>\n"
+    << "      <surface_model>EARTH_WGS84</surface_model>\n"
+    << "      <latitude_deg>0</latitude_deg>\n"
+    << "      <longitude_deg>0</longitude_deg>\n"
+    << "      <elevation>0</elevation>\n"
+    << "      <heading_deg>0</heading_deg>\n"
+    << "    </spherical_coordinates>\n"
+    << "    <gravity>0 0 -9.8</gravity>\n"
+    << "    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>\n"
+    << "    <atmosphere type='adiabatic'/>\n"
+    << "    <physics name='default_physics' default='0' type='ode'>\n"
+    << "      <max_step_size>0.001</max_step_size>\n"
+    << "      <real_time_factor>1</real_time_factor>\n"
+    << "      <real_time_update_rate>1000</real_time_update_rate>\n"
+    << "    </physics>\n"
+    << "    <scene>\n"
+    << "      <ambient>0.4 0.4 0.4 1</ambient>\n"
+    << "      <background>0.7 0.7 0.7 1</background>\n"
+    << "      <shadows>1</shadows>\n"
+    << "    </scene>\n"
+    << "  </world>\n"
+    << "</sdf>\n";
+
+  EXPECT_EQ(root.Element()->ToString("", true, true), stream.str());
 }

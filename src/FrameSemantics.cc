@@ -1611,6 +1611,14 @@ Errors validateFrameAttachedToGraph(
 {
   Errors errors;
 
+  // Check if scope points to a valid graph
+  if (!_in)
+  {
+    errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
+        "FrameAttachedToGraph error: scope does not point to a valid graph."});
+    return errors;
+  }
+
   // Expect ScopeContextName to be either "__model__" or "world"
   if (_in.ScopeContextName() != "__model__" &&
       _in.ScopeContextName() != "world")
@@ -1836,6 +1844,14 @@ Errors validatePoseRelativeToGraph(
     const ScopedGraph<PoseRelativeToGraph> &_in)
 {
   Errors errors;
+
+  // Check if scope points to a valid graph
+  if (!_in)
+  {
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "PoseRelativeToGraph error: scope does not point to a valid graph."});
+    return errors;
+  }
 
   // Expect scopeContextName to be either "__model__" or "world"
   if (_in.ScopeContextName() != "__model__" &&
@@ -2089,7 +2105,7 @@ Errors resolveFrameAttachedToBody(
     {
       errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
           "Graph has __model__ scope but sink vertex named [" +
-          sinkVertex.Name() + "] does not have FrameType LINK OR STATIC_MODEL "
+          sinkVertex.Name() + "] does not have FrameType LINK or STATIC_MODEL "
           "when starting from vertex with name [" + _vertexName + "]."});
       return errors;
     }

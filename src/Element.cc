@@ -485,47 +485,59 @@ void Element::PrintDocLeftPane(std::string &_html, int _spacing,
 }
 
 void Element::PrintValuesImpl(const std::string &_prefix,
+                              bool _includeDefaultElements,
+                              bool _includeDefaultAttributes,
                               std::ostringstream &_out) const
 {
-  _out << _prefix << "<" << this->dataPtr->name;
+  if (this->GetExplicitlySetInFile() || _includeDefaultElements)
+  {
+    _out << _prefix << "<" << this->dataPtr->name;
 
-  Param_V::const_iterator aiter;
-  for (aiter = this->dataPtr->attributes.begin();
-       aiter != this->dataPtr->attributes.end(); ++aiter)
-  {
-    // Only print attribute values if they were set
-    // TODO(anyone): GetRequired is added here to support up-conversions where a
-    // new required attribute with a default value is added. We would have
-    // better separation of concerns if the conversion process set the required
-    // attributes with their default values.
-    if ((*aiter)->GetSet() || (*aiter)->GetRequired())
+    Param_V::const_iterator aiter;
+    for (aiter = this->dataPtr->attributes.begin();
+         aiter != this->dataPtr->attributes.end(); ++aiter)
     {
-      _out << " " << (*aiter)->GetKey() << "='"
-           << (*aiter)->GetAsString() << "'";
+      // Only print attribute values if they were set
+      // TODO(anyone): GetRequired is added here to support up-conversions where
+      // a new required attribute with a default value is added. We would have
+      // better separation of concerns if the conversion process set the
+      // required attributes with their default values.
+      if ((*aiter)->GetSet() || (*aiter)->GetRequired() ||
+          _includeDefaultAttributes)
+      {
+        _out << " " << (*aiter)->GetKey() << "='"
+             << (*aiter)->GetAsString() << "'";
+      }
     }
-  }
 
-  if (this->dataPtr->elements.size() > 0)
-  {
-    _out << ">\n";
-    ElementPtr_V::const_iterator eiter;
-    for (eiter = this->dataPtr->elements.begin();
-         eiter != this->dataPtr->elements.end(); ++eiter)
+    if (this->dataPtr->elements.size() > 0)
     {
-      (*eiter)->ToString(_prefix + "  ", _out);
-    }
-    _out << _prefix << "</" << this->dataPtr->name << ">\n";
-  }
-  else
-  {
-    if (this->dataPtr->value)
-    {
-      _out << ">" << this->dataPtr->value->GetAsString()
-           << "</" << this->dataPtr->name << ">\n";
+      _out << ">\n";
+      ElementPtr_V::const_iterator eiter;
+      for (eiter = this->dataPtr->elements.begin();
+           eiter != this->dataPtr->elements.end(); ++eiter)
+      {
+        if ((*eiter)->GetExplicitlySetInFile() || _includeDefaultElements)
+        {
+          (*eiter)->ToString(_prefix + "  ",
+                             _includeDefaultElements,
+                             _includeDefaultAttributes,
+                             _out);
+        }
+      }
+      _out << _prefix << "</" << this->dataPtr->name << ">\n";
     }
     else
     {
-      _out << "/>\n";
+      if (this->dataPtr->value)
+      {
+        _out << ">" << this->dataPtr->value->GetAsString()
+             << "</" << this->dataPtr->name << ">\n";
+      }
+      else
+      {
+        _out << "/>\n";
+      }
     }
   }
 }
@@ -534,7 +546,20 @@ void Element::PrintValuesImpl(const std::string &_prefix,
 void Element::PrintValues(std::string _prefix) const
 {
   std::ostringstream ss;
-  PrintValuesImpl(_prefix, ss);
+  PrintValuesImpl(_prefix, true, false, ss);
+  std::cout << ss.str();
+}
+
+/////////////////////////////////////////////////
+void Element::PrintValues(const std::string &_prefix,
+                          bool _includeDefaultElements,
+                          bool _includeDefaultAttributes) const
+{
+  std::ostringstream ss;
+  PrintValuesImpl(_prefix,
+                  _includeDefaultElements,
+                  _includeDefaultAttributes,
+                  ss);
   std::cout << ss.str();
 }
 
@@ -542,15 +567,33 @@ void Element::PrintValues(std::string _prefix) const
 std::string Element::ToString(const std::string &_prefix) const
 {
   std::ostringstream out;
-  this->ToString(_prefix, out);
+  this->ToString(_prefix, true, false, out);
+  return out.str();
+}
+
+/////////////////////////////////////////////////
+std::string Element::ToString(const std::string &_prefix,
+                              bool _includeDefaultElements,
+                              bool _includeDefaultAttributes) const
+{
+  std::ostringstream out;
+  this->ToString(_prefix,
+                 _includeDefaultElements,
+                 _includeDefaultAttributes,
+                 out);
   return out.str();
 }
 
 /////////////////////////////////////////////////
 void Element::ToString(const std::string &_prefix,
+                       bool _includeDefaultElements,
+                       bool _includeDefaultAttributes,
                        std::ostringstream &_out) const
 {
-  PrintValuesImpl(_prefix, _out);
+  PrintValuesImpl(_prefix,
+                  _includeDefaultElements,
+                  _includeDefaultAttributes,
+                  _out);
 }
 
 /////////////////////////////////////////////////

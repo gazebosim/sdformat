@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <world name="world_model">
+    <model name="robot">
+      <include>
+        <uri>robot</uri>
+      </include>
+    </model>
+  </world>
+</sdf>

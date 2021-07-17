@@ -59,6 +59,17 @@ TEST(DOMWorld, Construction)
   EXPECT_FALSE(world.FrameNameExists("default"));
 
   EXPECT_EQ(1u, world.PhysicsCount());
+
+  auto errors = world.ValidateGraphs();
+  EXPECT_EQ(2u, errors.size()) << errors;
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "FrameAttachedToGraph error: scope does not point to a valid graph"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR);
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find(
+      "PoseRelativeToGraph error: scope does not point to a valid graph"));
 }
 
 /////////////////////////////////////////////////
