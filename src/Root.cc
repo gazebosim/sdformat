@@ -20,6 +20,7 @@
 #include <utility>
 
 #include "sdf/Actor.hh"
+#include "sdf/Error.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
@@ -43,42 +44,22 @@ class sdf::Root::Implementation
   public: std::vector<World> worlds;
 
   /// \brief A model, light or actor under the root SDF element
-  /// This variant does not currently retain ownership, and instead points to
-  /// the first model/light/actor if they exist. When the vectors below are
-  /// removed this should be changed from a variant of pointers to a variant of
-  /// objects
-  public: std::variant<std::monostate, sdf::Model*, sdf::Light*, sdf::Actor*>
+  public: std::variant<std::monostate, sdf::Model, sdf::Light, sdf::Actor>
               modelLightOrActor;
-
-  /// \brief The models specified under the root SDF element
-  /// Deprecated: to be removed in libsdformat12
-  public: std::vector<sdf::Model> models;
-
-  /// \brief The lights specified under the root SDF element
-  /// Deprecated: to be removed in libsdformat12
-  public: std::vector<sdf::Light> lights;
-
-  /// \brief The actors specified under the root SDF element
-  /// Deprecated: to be removed in libsdformat12
-  public: std::vector<sdf::Actor> actors;
 
   /// \brief Frame Attached-To Graphs constructed when loading Worlds.
   public: std::vector<sdf::ScopedGraph<FrameAttachedToGraph>>
               worldFrameAttachedToGraphs;
 
-  /// \brief Frame Attached-To Graphs constructed when loading Models.
-  /// Deprecated: to be removed in libsdformat12 and converted to a single graph
-  public: std::vector<sdf::ScopedGraph<FrameAttachedToGraph>>
-              modelFrameAttachedToGraphs;
+  /// \brief Frame Attached-To Graphs constructed when loading a Model.
+  public: sdf::ScopedGraph<FrameAttachedToGraph> modelFrameAttachedToGraph;
 
   /// \brief Pose Relative-To Graphs constructed when loading Worlds.
   public: std::vector<sdf::ScopedGraph<PoseRelativeToGraph>>
               worldPoseRelativeToGraphs;
 
-  /// \brief Pose Relative-To Graphs constructed when loading Models.
-  /// Deprecated: to be removed in libsdformat12 and converted to a single graph
-  public: std::vector<sdf::ScopedGraph<PoseRelativeToGraph>>
-              modelPoseRelativeToGraphs;
+  /// \brief Pose Relative-To Graph constructed when loading a Model.
+  public: sdf::ScopedGraph<PoseRelativeToGraph> modelPoseRelativeToGraph;
 
   /// \brief The SDF element pointer generated during load.
   public: sdf::ElementPtr sdf;
@@ -86,12 +67,11 @@ class sdf::Root::Implementation
 
 /////////////////////////////////////////////////
 template <typename T>
-sdf::ScopedGraph<FrameAttachedToGraph> addFrameAttachedToGraph(
-    std::vector<sdf::ScopedGraph<sdf::FrameAttachedToGraph>> &_graphList,
+sdf::ScopedGraph<FrameAttachedToGraph> createFrameAttachedToGraph(
     const T &_domObj, sdf::Errors &_errors)
 {
-  auto &frameGraph =
-      _graphList.emplace_back(std::make_shared<FrameAttachedToGraph>());
+  auto frameGraph = sdf::ScopedGraph<FrameAttachedToGraph>(
+      std::make_shared<FrameAttachedToGraph>());
 
   sdf::Errors buildErrors =
       sdf::buildFrameAttachedToGraph(frameGraph, &_domObj);
@@ -105,18 +85,41 @@ sdf::ScopedGraph<FrameAttachedToGraph> addFrameAttachedToGraph(
 
 /////////////////////////////////////////////////
 template <typename T>
-ScopedGraph<PoseRelativeToGraph> addPoseRelativeToGraph(
-    std::vector<sdf::ScopedGraph<sdf::PoseRelativeToGraph>> &_graphList,
+sdf::ScopedGraph<FrameAttachedToGraph> addFrameAttachedToGraph(
+    std::vector<sdf::ScopedGraph<sdf::FrameAttachedToGraph>> &_graphList,
+    const T &_domObj, sdf::Errors &_errors)
+{
+  auto frameGraph = createFrameAttachedToGraph(_domObj, _errors);
+  _graphList.push_back(frameGraph);
+
+  return frameGraph;
+}
+
+/////////////////////////////////////////////////
+template <typename T>
+ScopedGraph<PoseRelativeToGraph> createPoseRelativeToGraph(
     const T &_domObj, Errors &_errors)
 {
-  auto &poseGraph =
-      _graphList.emplace_back(std::make_shared<sdf::PoseRelativeToGraph>());
+  auto poseGraph = ScopedGraph<PoseRelativeToGraph>(
+      std::make_shared<sdf::PoseRelativeToGraph>());
 
   Errors buildErrors = buildPoseRelativeToGraph(poseGraph, &_domObj);
   _errors.insert(_errors.end(), buildErrors.begin(), buildErrors.end());
 
   Errors validateErrors = validatePoseRelativeToGraph(poseGraph);
   _errors.insert(_errors.end(), validateErrors.begin(), validateErrors.end());
+
+  return poseGraph;
+}
+
+/////////////////////////////////////////////////
+template <typename T>
+ScopedGraph<PoseRelativeToGraph> addPoseRelativeToGraph(
+    std::vector<sdf::ScopedGraph<sdf::PoseRelativeToGraph>> &_graphList,
+    const T &_domObj, Errors &_errors)
+{
+  auto poseGraph = createPoseRelativeToGraph(_domObj, _errors);
+  _graphList.push_back(poseGraph);
 
   return poseGraph;
 }
@@ -266,62 +269,82 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
   }
 
   // Load all the models.
+  std::vector<sdf::Model> models;
   Errors modelLoadErrors = loadUniqueRepeated<sdf::Model>(
-      this->dataPtr->sdf, "model", this->dataPtr->models, _config);
+      this->dataPtr->sdf, "model", models, _config);
   errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
-  if (!this->dataPtr->models.empty())
+  if (!models.empty())
   {
-    this->dataPtr->modelLightOrActor = &this->dataPtr->models.front();
-  }
+    if (models.size() > 1)
+    {
+      errors.emplace_back(
+          ErrorCode::ELEMENT_INCORRECT_TYPE,
+          "Root object can only contain one model. Using the first one found");
+    }
+    this->dataPtr->modelLightOrActor = std::move(models.front());
+    sdf::Model &model = std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
+    // Build the graphs.
+    this->dataPtr->modelFrameAttachedToGraph =
+        createFrameAttachedToGraph(model, errors);
 
-  // Build the graphs.
-  for (sdf::Model &model : this->dataPtr->models)
-  {
-    auto frameAttachedToGraph = addFrameAttachedToGraph(
-        this->dataPtr->modelFrameAttachedToGraphs, model, errors);
+    model.SetFrameAttachedToGraph(this->dataPtr->modelFrameAttachedToGraph);
 
-    model.SetFrameAttachedToGraph(frameAttachedToGraph);
-
-    auto poseRelativeToGraph = addPoseRelativeToGraph(
-        this->dataPtr->modelPoseRelativeToGraphs, model, errors);
-    model.SetPoseRelativeToGraph(poseRelativeToGraph);
+    this->dataPtr->modelPoseRelativeToGraph =
+        createPoseRelativeToGraph(model, errors);
+    model.SetPoseRelativeToGraph(this->dataPtr->modelPoseRelativeToGraph);
   }
 
   // Load all the lights.
-  Errors lightLoadErrors = loadUniqueRepeated<sdf::Light>(this->dataPtr->sdf,
-      "light", this->dataPtr->lights);
+  std::vector<sdf::Light> lights;
+  Errors lightLoadErrors =
+      loadUniqueRepeated<sdf::Light>(this->dataPtr->sdf, "light", lights);
   errors.insert(errors.end(), lightLoadErrors.begin(), lightLoadErrors.end());
-  if (!this->dataPtr->lights.empty())
+  if (!lights.empty())
   {
-    if (std::holds_alternative<std::monostate>(
-      this->dataPtr->modelLightOrActor))
+    if (lights.size() > 1)
     {
-      this->dataPtr->modelLightOrActor = &this->dataPtr->lights.front();
+      errors.emplace_back(
+          ErrorCode::ELEMENT_INCORRECT_TYPE,
+          "Root object can only contain one light. Using the first one found.");
+    }
+    if (std::holds_alternative<std::monostate>(
+            this->dataPtr->modelLightOrActor))
+    {
+      this->dataPtr->modelLightOrActor = std::move(lights.front());
     }
     else
     {
-      sdfwarn << "Root object can only contain one of model, light or actor. "
-              << "This behavior was deprecated in libsdformat11 and will soon "
-              << "be removed";
+      errors.emplace_back(
+          ErrorCode::ELEMENT_INCORRECT_TYPE,
+          "Root object can only contain one of model, light or actor, but "
+          "found more than one type of element. Skipping this light.");
     }
   }
 
   // Load all the actors.
-  Errors actorLoadErrors = loadUniqueRepeated<sdf::Actor>(this->dataPtr->sdf,
-      "actor", this->dataPtr->actors);
+  std::vector<sdf::Actor> actors;
+  Errors actorLoadErrors =
+      loadUniqueRepeated<sdf::Actor>(this->dataPtr->sdf, "actor", actors);
   errors.insert(errors.end(), actorLoadErrors.begin(), actorLoadErrors.end());
-  if (!this->dataPtr->actors.empty())
+  if (!actors.empty())
   {
-    if (std::holds_alternative<std::monostate>(
-      this->dataPtr->modelLightOrActor))
+    if (actors.size() > 1)
     {
-      this->dataPtr->modelLightOrActor = &this->dataPtr->actors.front();
+      errors.emplace_back(
+          ErrorCode::ELEMENT_INCORRECT_TYPE,
+          "Root object can only contain one actor. Using the first one found.");
+    }
+    if (std::holds_alternative<std::monostate>(
+            this->dataPtr->modelLightOrActor))
+    {
+      this->dataPtr->modelLightOrActor = std::move(actors.front());
     }
     else
     {
-      sdfwarn << "Root object can only contain one of model, light or actor. "
-              << "This behavior was deprecated in libsdformat11 and will soon "
-              << "be removed";
+      errors.emplace_back(
+          ErrorCode::ELEMENT_INCORRECT_TYPE,
+          "Root object can only contain one of model, light or actor, but "
+          "found more than one type of element. Skipping this actor.");
     }
   }
 
@@ -366,116 +389,23 @@ bool Root::WorldNameExists(const std::string &_name) const
   }
   return false;
 }
-/////////////////////////////////////////////////
-uint64_t Root::ModelCount() const
-{
-  return this->dataPtr->models.size();
-}
-
-/////////////////////////////////////////////////
-const Model *Root::ModelByIndex(const uint64_t _index) const
-{
-  if (_index < this->dataPtr->models.size())
-    return &this->dataPtr->models[_index];
-  return nullptr;
-}
-
-/////////////////////////////////////////////////
-bool Root::ModelNameExists(const std::string &_name) const
-{
-  for (auto const &m : this->dataPtr->models)
-  {
-    if (m.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
-}
 
 /////////////////////////////////////////////////
 const Model *Root::Model() const
 {
-  if (std::holds_alternative<sdf::Model*>(this->dataPtr->modelLightOrActor))
-  {
-    return std::get<sdf::Model*>(this->dataPtr->modelLightOrActor);
-  }
-  return nullptr;
-}
-
-
-/////////////////////////////////////////////////
-uint64_t Root::LightCount() const
-{
-  return this->dataPtr->lights.size();
-}
-
-/////////////////////////////////////////////////
-const Light *Root::LightByIndex(const uint64_t _index) const
-{
-  if (_index < this->dataPtr->lights.size())
-    return &this->dataPtr->lights[_index];
-  return nullptr;
-}
-
-/////////////////////////////////////////////////
-bool Root::LightNameExists(const std::string &_name) const
-{
-  for (auto const &m : this->dataPtr->lights)
-  {
-    if (m.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return std::get_if<sdf::Model>(&this->dataPtr->modelLightOrActor);
 }
 
 /////////////////////////////////////////////////
 const Light *Root::Light() const
 {
-  if (std::holds_alternative<sdf::Light*>(this->dataPtr->modelLightOrActor))
-  {
-    return std::get<sdf::Light*>(this->dataPtr->modelLightOrActor);
-  }
-  return nullptr;
-}
-
-/////////////////////////////////////////////////
-uint64_t Root::ActorCount() const
-{
-  return this->dataPtr->actors.size();
-}
-
-/////////////////////////////////////////////////
-const Actor *Root::ActorByIndex(const uint64_t _index) const
-{
-  if (_index < this->dataPtr->actors.size())
-    return &this->dataPtr->actors[_index];
-  return nullptr;
-}
-
-/////////////////////////////////////////////////
-bool Root::ActorNameExists(const std::string &_name) const
-{
-  for (auto const &m : this->dataPtr->actors)
-  {
-    if (m.Name() == _name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return std::get_if<sdf::Light>(&this->dataPtr->modelLightOrActor);
 }
 
 /////////////////////////////////////////////////
 const Actor *Root::Actor() const
 {
-  if (std::holds_alternative<sdf::Actor*>(this->dataPtr->modelLightOrActor))
-  {
-    return std::get<sdf::Actor*>(this->dataPtr->modelLightOrActor);
-  }
-  return nullptr;
+  return std::get_if<sdf::Actor>(&this->dataPtr->modelLightOrActor);
 }
 
 /////////////////////////////////////////////////

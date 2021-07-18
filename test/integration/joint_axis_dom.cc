@@ -86,11 +86,6 @@ TEST(DOMJointAxis, Complete)
   EXPECT_EQ("__model__", axis->XyzExpressedIn());
   EXPECT_TRUE(axis2->XyzExpressedIn().empty());
 
-  SDF_SUPPRESS_DEPRECATED_BEGIN
-  EXPECT_DOUBLE_EQ(0.5, axis->InitialPosition());
-  EXPECT_DOUBLE_EQ(1.5, axis2->InitialPosition());
-  SDF_SUPPRESS_DEPRECATED_END
-
   EXPECT_DOUBLE_EQ(-0.5, axis->Lower());
   EXPECT_DOUBLE_EQ(0.5, axis->Upper());
   EXPECT_DOUBLE_EQ(-1.0, axis2->Lower());
@@ -113,6 +108,10 @@ TEST(DOMJointAxis, Complete)
 
   EXPECT_DOUBLE_EQ(10.6, axis->SpringStiffness());
   EXPECT_DOUBLE_EQ(0.0, axis2->SpringStiffness());
+
+  // Ensure that //axis/initial_position is removed during conversion
+  EXPECT_FALSE(axis->Element()->HasElement("initial_position"));
+  EXPECT_FALSE(axis2->Element()->HasElement("initial_position"));
 }
 
 //////////////////////////////////////////////////

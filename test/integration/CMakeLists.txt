@@ -7,6 +7,7 @@ set(tests
   cfm_damping_implicit_spring_damper.cc
   collision_dom.cc
   converter.cc
+  default_elements.cc
   deprecated_specs.cc
   disable_fixed_joint_reduction.cc
   element_tracing.cc
@@ -31,6 +32,7 @@ set(tests
   model_versions.cc
   nested_model.cc
   nested_multiple_elements_error.cc
+  param_passing.cc
   parser_error_detection.cc
   parser_config.cc
   particle_emitter_dom.cc

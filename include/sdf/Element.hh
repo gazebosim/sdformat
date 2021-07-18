@@ -113,6 +113,17 @@ namespace sdf
     /// \sa Element::SetRequired
     public: const std::string &GetRequired() const;
 
+    /// \brief Set if the element and children where set or default
+    /// in the original file. This is meant to be used by the parser to
+    /// indicate whether the element was set by the user in the original
+    /// file or added by default during parsing.
+    /// \param[in] _value True if the element was set
+    public: void SetExplicitlySetInFile(const bool _value);
+
+    /// \brief Return if the element was been explicitly set in the file
+    /// \return True if the element was set in the file
+    public: bool GetExplicitlySetInFile() const;
+
     /// \brief Set whether this element should copy its child elements
     /// during parsing.
     /// \param[in] _value True to copy Element's children.
@@ -139,6 +150,14 @@ namespace sdf
     /// \param[in] _prefix String value to prefix to the output.
     public: void PrintValues(std::string _prefix) const;
 
+    /// \brief Output Element's values to stdout.
+    /// \param[in] _prefix String value to prefix to the output.
+    /// \param[in] _includeDefaultElements flag to print default elements.
+    /// \param[in] _includeDefaultAttributes flag to print default attributes.
+    public: void PrintValues(const std::string &_prefix,
+                             bool _includeDefaultElements,
+                             bool _includeDefaultAttributes) const;
+
     /// \brief Helper function for SDF::PrintDoc
     ///
     /// This generates the SDF html documentation.
@@ -160,6 +179,18 @@ namespace sdf
     /// \param[in] _prefix String value to prefix to the output.
     /// \return The string representation.
     public: std::string ToString(const std::string &_prefix) const;
+
+    /// \brief Convert the element values to a string representation.
+    /// Current behavior of ToString(const std::string &_prefix) can be
+    /// achieved by calling this function with _includeDefaultElements=true
+    /// and _includeDefaultAttributes=false
+    /// \param[in] _prefix String value to prefix to the output.
+    /// \param[in] _includeDefaultElements flag to include default elements.
+    /// \param[in] _includeDefaultAttributes flag to include default attributes.
+    /// \return The string representation.
+    public: std::string ToString(const std::string &_prefix,
+                                 bool _includeDefaultElements,
+                                 bool _includeDefaultAttributes) const;
 
     /// \brief Add an attribute value.
     /// \param[in] _key Key value.
@@ -384,14 +415,6 @@ namespace sdf
     ///        embedded Param.
     public: void Reset();
 
-    /// \brief Set the include filename to the passed in filename.
-    /// \param[in] _filename the filename to set the include filename to.
-    public: void SetInclude(const std::string &_filename) SDF_DEPRECATED(11.0);
-
-    /// \brief Get the include filename.
-    /// \return The include filename.
-    public: std::string GetInclude() const SDF_DEPRECATED(11.0);
-
     /// \brief Set the <include> element that was used to load this element.
     /// This is set by the parser on the first element of the included object
     /// (eg. Model, Actor, Light, etc). It is not passed down to children
@@ -469,14 +492,22 @@ namespace sdf
 
     /// \brief Generate a string (XML) representation of this object.
     /// \param[in] _prefix arbitrary prefix to put on the string.
+    /// \param[in] _includeDefaultElements flag to include default elements.
+    /// \param[in] _includeDefaultAttributes flag to include default attributes.
     /// \param[out] _out the std::ostreamstream to write output to.
     private: void ToString(const std::string &_prefix,
+                           bool _includeDefaultElements,
+                           bool _includeDefaultAttributes,
                            std::ostringstream &_out) const;
 
     /// \brief Generate a string (XML) representation of this object.
     /// \param[in] _prefix arbitrary prefix to put on the string.
+    /// \param[in] _includeDefaultElements flag to include default elements.
+    /// \param[in] _includeDefaultAttributes flag to include default attributes.
     /// \param[out] _out the std::ostreamstream to write output to.
     private: void PrintValuesImpl(const std::string &_prefix,
+                                  bool _includeDefaultElements,
+                                  bool _includeDefaultAttributes,
                                   std::ostringstream &_out) const;
 
     /// \brief Create a new Param object and return it.
@@ -551,23 +582,23 @@ namespace sdf
     /// this is when saving a loaded world back to SDFormat.
     public: ElementPtr includeElement;
 
-    /// name of the include file that was used to create this element
-    public: std::string includeFilename;
-
     /// \brief Name of reference sdf.
     public: std::string referenceSDF;
 
     /// \brief Path to file where this element came from
     public: std::string path;
 
+    /// \brief Spec version that this was originally parsed from.
+    public: std::string originalVersion;
+
+    /// \brief True if the element was set in the SDF file.
+    public: bool explicitlySetInFile;
+
     /// \brief Line number in file where this element came from
     public: std::optional<int> lineNumber;
 
     /// \brief XML path of this element.
     public: std::string xmlPath;
-
-    /// \brief Spec version that this was originally parsed from.
-    public: std::string originalVersion;
   };
 
   ///////////////////////////////////////////////

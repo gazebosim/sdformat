@@ -12,11 +12,46 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## libsdformat 11.x to 12.0
+
+An error is now emitted instead of a warning for a file containing more than
+one root level model, actor or light.
+
+### Removals
+
+The following deprecated methods and classes have been removed.
+
+1. **sdf/Element.hh**
+    + void SetInclude(const std::string);
+    + std::string GetInclude() const;
+
+1. **sdf/Types.hh**
+    + sdf::Color class
+
+1. **sdf/JointAxis.hh**
+    + double InitialPosition() const;
+    + void SetInitialPosition(const double)
+
+1. **sdf/Root.hh**:
+    + const sdf::Model \*ModelByIndex();
+    + uint64_t ModelCount();
+    + bool ModelNameExists(const std::string &\_name) const;
+    + const sdf::Light \*LightByIndex();
+    + uint64_t LightCount();
+    + bool LightNameExists(const std::string &\_name) const;
+    + const sdf::Actor \*ActorByIndex();
+    + uint64_t ActorCount();
+    + bool ActorNameExists(const std::string &\_name) const;
+
+## libsdformat 11.1.0 to 11.2.0
+
+ABI was broken for `sdf::Element`, and restored on version 11.2.1.
+
 ## libsdformat 11.0.0 to 11.x.x
 
 ### Additions
 
-1. **sdf/Console.hh** Add functions to retrieve message stream objects. These 
+1. **sdf/Console.hh** Add functions to retrieve message stream objects. These
    can be useful for redirecting the console output to other streams.
     + ConsoleStream &GetMsgStream()
     + ConsoleStream &GetLogStream()
@@ -28,15 +63,15 @@ but with improved human-readability..
 
 1. **test/test_utils.hh**:
     + ScopeExit: A utility struct that calls a function when going out of scope.
-    + RedirectConsoleStream: A utility class used for redirecting the output of 
-      sdferr, sdfwarn, etc to a more convenient stream object like a 
+    + RedirectConsoleStream: A utility class used for redirecting the output of
+      sdferr, sdfwarn, etc to a more convenient stream object like a
       std::stringstream for testing purposes.
 
 ## libsdformat 10.x to 11.0
 
 ### Additions
 
-1. **sdf/ParserConfig.hh** A class that contains configuration options for the 
+1. **sdf/ParserConfig.hh** A class that contains configuration options for the
    libsdformat parser.
 
 1. + Depend on ignition-utils1 for the ImplPtr and UniqueImplPtr.
@@ -92,7 +127,7 @@ but with improved human-readability..
 
 1. Fixed Atmosphere DOM class's temperature default value. Changed from -0.065 to -0.0065.
     * [Pull request 482](https://github.com/osrf/sdformat/pull/482)
-   
+
 1. Fixed parsing of `<sensor><pose>` tags on lumped links when converting from URDF.
     * [Pull request 525](https://github.com/osrf/sdformat/pull/525)
 
@@ -328,6 +363,11 @@ but with improved human-readability..
     + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
 
 ## SDFormat specification 1.8 to 1.9
+
+###Removals
+
+1. **joint.sdf**
+    + Deprecated elements `//joint/axis/initial_position` and `//joint/axis2/initial_position` have been removed
 
 ## SDFormat specification 1.7 to 1.8
 

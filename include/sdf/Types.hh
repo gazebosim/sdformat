@@ -112,66 +112,6 @@ namespace sdf
   SDFORMAT_VISIBLE std::ostream &operator<<(
       std::ostream &_out, const sdf::Errors &_errs);
 
-  /// \brief Defines a color
-  class SDFORMAT_VISIBLE Color
-  {
-    /// \brief Constructor
-    /// \param[in] _r Red value (range 0 to 1)
-    /// \param[in] _g Green value (range 0 to 1
-    /// \param[in] _b Blue value (range 0 to 1
-    /// \param[in] _a Alpha value (0=transparent, 1=opaque)
-    /// \deprecated Use ignition::math::Color
-    public: Color(float _r = 0.0f, float _g = 0.0f,
-                  float _b = 0.0f, float _a = 1.0f) SDF_DEPRECATED(6.0)
-            : r(_r), g(_g), b(_b), a(_a)
-    {}
-
-    /// \brief Stream insertion operator
-    /// \param[in] _out the output stream
-    /// \param[in] _pt the color
-    /// \return the output stream
-    public: friend std::ostream &operator<< (std::ostream &_out,
-                                             const Color &_pt)
-    {
-      _out << _pt.r << " " << _pt.g << " " << _pt.b << " " << _pt.a;
-      return _out;
-    }
-
-    /// \brief Stream insertion operator
-    /// \param[in] _in the input stream
-    /// \param[in] _pt
-    public: friend std::istream &operator>> (std::istream &_in, Color &_pt)
-    {
-      // Skip white spaces
-      _in.setf(std::ios_base::skipws);
-      _in >> _pt.r >> _pt.g >> _pt.b >> _pt.a;
-      return _in;
-    }
-
-    /// \brief Equality operator
-    /// \param[in] _clr The color to check for equality
-    /// \return True if the this color equals _clf
-    public: bool operator ==(const Color &_clr) const
-    {
-      return equal(this->r, _clr.r) &&
-        equal(this->g, _clr.g) &&
-        equal(this->b, _clr.b) &&
-        equal(this->a, _clr.a);
-    }
-
-    /// \brief Red value
-    public: float r;
-
-    /// \brief Green value
-    public: float g;
-
-    /// \brief Blue value
-    public: float b;
-
-    /// \brief Alpha value
-    public: float a;
-  };
-
   /// \brief A Time class, can be used to hold wall- or sim-time.
   /// stored as sec and nano-sec.
   class SDFORMAT_VISIBLE Time

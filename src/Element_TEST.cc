@@ -73,6 +73,98 @@ TEST(Element, Required)
 }
 
 /////////////////////////////////////////////////
+TEST(Element, SetExplicitlySetInFile)
+{
+  // The heirarchy in xml:
+  // <parent>
+  //   <elem>
+  //     <child>
+  //       <child2>
+  //         <grandChild/>
+  //       <child2>
+  //     </child>
+  //     <sibling/>
+  //     <sibling2/>
+  //   </elem>
+  //   <elem2/>
+  // </parent>
+
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+  elem->SetParent(parent);
+  parent->InsertElement(elem);
+  sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
+  elem2->SetParent(parent);
+  parent->InsertElement(elem2);
+
+  EXPECT_TRUE(elem->GetExplicitlySetInFile());
+
+  elem->SetExplicitlySetInFile(false);
+
+  EXPECT_FALSE(elem->GetExplicitlySetInFile());
+
+  elem->SetExplicitlySetInFile(true);
+
+  EXPECT_TRUE(elem->GetExplicitlySetInFile());
+
+  // the childs and siblings of the element should all be
+  // set to the same value when using this function
+  sdf::ElementPtr child = std::make_shared<sdf::Element>();
+  child->SetParent(elem);
+  elem->InsertElement(child);
+
+  sdf::ElementPtr sibling = std::make_shared<sdf::Element>();
+  sibling->SetParent(elem);
+  elem->InsertElement(sibling);
+
+  sdf::ElementPtr sibling2 = std::make_shared<sdf::Element>();
+  sibling2->SetParent(elem);
+  elem->InsertElement(sibling2);
+
+  sdf::ElementPtr child2 = std::make_shared<sdf::Element>();
+  child2->SetParent(child);
+  child->InsertElement(child2);
+
+  sdf::ElementPtr grandChild = std::make_shared<sdf::Element>();
+  grandChild->SetParent(child);
+  child->InsertElement(grandChild);
+
+  EXPECT_TRUE(elem->GetExplicitlySetInFile());
+  EXPECT_TRUE(child->GetExplicitlySetInFile());
+  EXPECT_TRUE(sibling->GetExplicitlySetInFile());
+  EXPECT_TRUE(sibling2->GetExplicitlySetInFile());
+  EXPECT_TRUE(child2->GetExplicitlySetInFile());
+  EXPECT_TRUE(grandChild->GetExplicitlySetInFile());
+  EXPECT_TRUE(elem2->GetExplicitlySetInFile());
+
+  elem->SetExplicitlySetInFile(false);
+  EXPECT_FALSE(elem->GetExplicitlySetInFile());
+  EXPECT_FALSE(child->GetExplicitlySetInFile());
+  EXPECT_FALSE(sibling->GetExplicitlySetInFile());
+  EXPECT_FALSE(sibling2->GetExplicitlySetInFile());
+  EXPECT_FALSE(child2->GetExplicitlySetInFile());
+  EXPECT_FALSE(grandChild->GetExplicitlySetInFile());
+
+  // SetExplicitlySetInFile(false) is be called only on `elem`. We expect
+  // GetExplicitlySetInFile() to be false for all children and grandchildren of
+  // `elem`, but true for `elem2`, which is a sibling of `elem`.
+  EXPECT_TRUE(elem2->GetExplicitlySetInFile());
+}
+
+/////////////////////////////////////////////////
+TEST(Element, SetExplicitlySetInFileWithInsert)
+{
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  parent->SetExplicitlySetInFile(false);
+  sdf::ElementPtr child = std::make_shared<sdf::Element>();
+  child->SetParent(parent);
+  parent->InsertElement(child);
+
+  EXPECT_FALSE(parent->GetExplicitlySetInFile());
+  EXPECT_TRUE(child->GetExplicitlySetInFile());
+}
+
+/////////////////////////////////////////////////
 TEST(Element, CopyChildren)
 {
   sdf::Element elem;
@@ -191,14 +283,6 @@ TEST(Element, RemoveAllAttributes)
 TEST(Element, Include)
 {
   sdf::Element elem;
-
-  SDF_SUPPRESS_DEPRECATED_BEGIN
-  ASSERT_EQ(elem.GetInclude(), "");
-
-  elem.SetInclude("foo.txt");
-
-  ASSERT_EQ(elem.GetInclude(), "foo.txt");
-  SDF_SUPPRESS_DEPRECATED_END
 
   auto includeElemToStore = std::make_shared<sdf::Element>();
   includeElemToStore->SetName("include");
@@ -345,6 +429,7 @@ TEST(Element, Clone)
   ASSERT_EQ(newelem->GetAttributeCount(), 1UL);
   ASSERT_NE(newelem->GetIncludeElement(), nullptr);
   EXPECT_EQ("include", newelem->GetIncludeElement()->GetName());
+  ASSERT_TRUE(newelem->GetExplicitlySetInFile());
 }
 
 /////////////////////////////////////////////////
@@ -489,7 +574,6 @@ TEST(Element, ToStringValue)
             "myprefix< test='foo'>val</>\n");
 }
 
-
 /////////////////////////////////////////////////
 TEST(Element, ToStringClonedElement)
 {
@@ -510,20 +594,72 @@ TEST(Element, ToStringClonedElement)
 }
 
 /////////////////////////////////////////////////
-TEST(Element, ToStringInclude)
+TEST(Element, ToStringDefaultElements)
 {
-  sdf::Element elem;
+  sdf::ElementPtr parent = std::make_shared<sdf::Element>();
+  parent->SetName("parent");
+  sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+  elem->SetName("elem");
+  elem->SetParent(parent);
+  parent->InsertElement(elem);
+  sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
+  elem2->SetName("elem2");
+  elem2->SetParent(parent);
+  parent->InsertElement(elem2);
 
-  SDF_SUPPRESS_DEPRECATED_BEGIN
-  ASSERT_EQ(elem.GetInclude(), "");
+  std::ostringstream stream;
+  stream
+    << "<parent>\n"
+    << "  <elem/>\n"
+    << "  <elem2/>\n"
+    << "</parent>\n";
 
-  elem.SetInclude("foo.txt");
+  EXPECT_EQ(parent->ToString("", false, false), stream.str());
+  EXPECT_EQ(parent->ToString(""), stream.str());
+  EXPECT_EQ(parent->ToString("", true, false), stream.str());
 
-  ASSERT_EQ(elem.GetInclude(), "foo.txt");
-  SDF_SUPPRESS_DEPRECATED_END
+  elem->SetExplicitlySetInFile(false);
 
-  std::string stringval = elem.ToString("myprefix");
-  ASSERT_EQ(stringval, "myprefix<include filename='foo.txt'/>\n");
+  std::ostringstream stream2;
+  stream2
+    << "<parent>\n"
+    << "  <elem2/>\n"
+    << "</parent>\n";
+
+  EXPECT_EQ(parent->ToString("", false, false), stream2.str());
+  EXPECT_EQ(parent->ToString(""), stream.str());
+  EXPECT_EQ(parent->ToString("", true, false), stream.str());
+
+  parent->SetExplicitlySetInFile(false);
+
+  EXPECT_EQ(parent->ToString("", false, false), "");
+  EXPECT_EQ(parent->ToString(""), stream.str());
+  EXPECT_EQ(parent->ToString("", true, false), stream.str());
+}
+
+/////////////////////////////////////////////////
+TEST(Element, ToStringDefaultAttributes)
+{
+  sdf::ElementPtr element = std::make_shared<sdf::Element>();
+  element->SetName("foo");
+  element->AddAttribute("test", "string", "foo", false, "foo description");
+  element->AddAttribute("test2", "string", "bar", true, "bar description");
+
+  EXPECT_EQ(element->ToString(""), element->ToString("", true, false));
+  EXPECT_EQ(element->ToString(""), element->ToString("", false, false));
+
+  std::ostringstream stream;
+  stream << "<foo test2='bar'/>\n";
+
+  EXPECT_EQ(element->ToString(""), stream.str());
+  EXPECT_EQ(element->ToString("", true, false), stream.str());
+  EXPECT_EQ(element->ToString("", false, false), stream.str());
+
+  std::ostringstream stream2;
+  stream2 << "<foo test='foo' test2='bar'/>\n";
+
+  EXPECT_EQ(element->ToString("", true, true), stream2.str());
+  EXPECT_EQ(element->ToString("", false, true), stream2.str());
 }
 
 /////////////////////////////////////////////////
@@ -647,6 +783,7 @@ TEST(Element, Copy)
   ASSERT_EQ(param->GetDescription(), "val description");
 
   ASSERT_EQ(dest->GetAttributeCount(), 1UL);
+  ASSERT_TRUE(dest->GetExplicitlySetInFile());
   param = dest->GetAttribute("test");
   ASSERT_TRUE(param->IsType<std::string>());
   ASSERT_EQ(param->GetKey(), "test");
