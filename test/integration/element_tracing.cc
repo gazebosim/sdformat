@@ -31,18 +31,8 @@
 #include "test_config.h"
 
 //////////////////////////////////////////////////
-// This function handles path sanitization only up to a single '/'.
 std::string findFileCb(const std::string &_input)
 {
-  const std::string delimiter = "/";
-  std::size_t delimiter_pos = 0;
-
-  if ((delimiter_pos = _input.find(delimiter)) != std::string::npos)
-  {
-    return sdf::testing::TestFile("integration", "model",
-        _input.substr(0, delimiter_pos),
-        _input.substr(delimiter_pos + 1, _input.size()));
-  }
   return sdf::testing::TestFile("integration", "model", _input);
 }
 
@@ -217,7 +207,7 @@ TEST(ElementTracing, includes)
   sdf::ElementPtr overrideActorPluginElem =
       overrideActorElem->GetElement("plugin");
   ASSERT_NE(nullptr, overrideActorPluginElem);
-  EXPECT_EQ(worldFile, overrideActorPluginElem->FilePath());
+  EXPECT_EQ(actorFilePath, overrideActorPluginElem->FilePath());
   ASSERT_TRUE(overrideActorPluginElem->LineNumber().has_value());
   EXPECT_EQ(40, overrideActorPluginElem->LineNumber().value());
   EXPECT_EQ(overrideActorPluginXmlPath, overrideActorPluginElem->XmlPath());
@@ -248,7 +238,7 @@ TEST(ElementTracing, includes)
   EXPECT_EQ(overrideLightXmlPath, overrideLightElem->XmlPath());
 
   // Models
-  const std::string modelFilePath = sdf::testing::TestFile(
+  std::string modelFilePath = sdf::testing::TestFile(
       "integration", "model", "test_model", "model.sdf");
   const std::string modelXmlPath = "/sdf/model[@name=\"test_model\"]";
 
@@ -278,11 +268,21 @@ TEST(ElementTracing, includes)
   sdf::ElementPtr overrideModelPluginElem =
       overrideModelElem->GetElement("plugin");
   ASSERT_NE(nullptr, overrideModelPluginElem);
-  EXPECT_EQ(worldFile, overrideModelPluginElem->FilePath());
+  EXPECT_EQ(modelFilePath, overrideModelPluginElem->FilePath());
   ASSERT_TRUE(overrideModelPluginElem->LineNumber().has_value());
   EXPECT_EQ(14, overrideModelPluginElem->LineNumber().value());
   EXPECT_EQ(overrideModelPluginXmlPath, overrideModelPluginElem->XmlPath());
 
+#ifdef _WIN32
+  // There is a / in the last argument of TestFile here, as sdf::findFile does
+  // not sanitize the file paths provided, which in this case is
+  // 'test_model/model.sdf', therefore Windows machines will assign the path
+  // '\\path\\to\\integration\\model\\test_model/model.sdf', instead of
+  // '\\path\\to\\integration\\model\\test_model\\model.sdf'.
+  // Reference issue #572.
+  modelFilePath = sdf::testing::TestFile(
+      "integration", "model", "test_model/model.sdf");
+#endif
   const std::string overrideModelWithFileXmlPath =
       "/sdf/model[@name=\"test_model_with_file\"]";
 

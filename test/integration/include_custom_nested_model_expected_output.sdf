@@ -1,0 +1,350 @@
+<sdf version='1.7'>
+  <world name='world_custom_model'>
+    <model name='robot'>
+      <model name='base'>
+        <pose>0 0 0.325 0 -0 0</pose>
+        <link name='chassis'>
+          <pose>-0.151427 -0 0.175 0 -0 0</pose>
+          <inertial>
+            <mass>1.14395</mass>
+            <inertia>
+              <ixx>0.126164</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>0.41651899999999997</iyy>
+              <iyz>0</iyz>
+              <izz>0.481014</izz>
+            </inertia>
+          </inertial>
+          <visual name='visual'>
+            <geometry>
+              <box>
+                <size>2.01142 1 0.568726</size>
+              </box>
+            </geometry>
+            <material>
+              <ambient>0.5 0.5 1 1</ambient>
+              <diffuse>0.5 0.5 1 1</diffuse>
+              <specular>0 0 1 1</specular>
+            </material>
+          </visual>
+          <collision name='collision'>
+            <geometry>
+              <box>
+                <size>2.01142 1 0.568726</size>
+              </box>
+            </geometry>
+          </collision>
+
+          <!-- removed -->
+          <!-- <visual name='lidar_visual'>
+            <pose>-0.8 0 0.41 0 -0 0</pose>
+            <geometry>
+              <cylinder>
+                <radius>0.10000000000000001</radius>
+                <length>0.25</length>
+              </cylinder>
+            </geometry>
+          </visual> -->
+
+          <!-- removed -->
+          <!-- <sensor name='lidar' type='gpu_lidar'>
+            <pose>-0.8 0 0.41 0 -0 0</pose>
+            <topic>lidar</topic>
+            <update_rate>10</update_rate>
+            <lidar>
+              <scan>
+                <horizontal>
+                  <samples>640</samples>
+                  <resolution>1</resolution>
+                  <min_angle>-1.396263</min_angle>
+                  <max_angle>1.396263</max_angle>
+                </horizontal>
+                <vertical>
+                  <samples>16</samples>
+                  <resolution>1</resolution>
+                  <min_angle>-0.261799</min_angle>
+                  <max_angle>0.261799</max_angle>
+                </vertical>
+              </scan>
+              <range>
+                <min>0.080000000000000002</min>
+                <max>10</max>
+                <resolution>0.01</resolution>
+              </range>
+            </lidar>
+            <visualize>1</visualize>
+            <alwaysOn>1</alwaysOn>
+          </sensor> -->
+
+          <sensor name='camera' type='camera'>
+            <pose>-1.06 0 0 0 -0 3.14</pose>
+            <camera>
+              <horizontal_fov>1.0469999999999999</horizontal_fov>
+              <image>
+                <width>320</width>
+                <height>240</height>
+              </image>
+              <clip>
+                <near>0.10000000000000001</near>
+                <far>100</far>
+              </clip>
+            </camera>
+            <always_on>1</always_on>
+            <update_rate>30</update_rate>
+            <visualize>1</visualize>
+            <topic>chassis/camera</topic>
+          </sensor>
+
+          <!-- added -->
+          <visual name="camera_visual">
+            <pose>-1.06 0 0 0 -0 3.14</pose>
+            <geometry>
+              <box>
+                <size>0.1 0.1 0.1</size>
+              </box>
+            </geometry>
+          </visual>
+        </link>
+        <model name='top_model'>
+          <link name='top'>
+            <pose>0.6 0 0.7 0 -0 0</pose>
+            <collision name='top_collision'>
+              <geometry>
+                <box>
+                  <size>0.5 1 0.5</size>
+                </box>
+              </geometry>
+            </collision>
+            <visual name='top_visual'>
+              <geometry>
+                <box>
+                  <size>0.5 1 0.5</size>
+                </box>
+              </geometry>
+              <material>
+                <ambient>1 0 0 1</ambient>
+                <diffuse>1 0 0 1</diffuse>
+                <specular>1 0 0 1</specular>
+              </material>
+            </visual>
+          </link>
+          <model name='top_camera'>
+            <link name='top_camera_link'>
+              <visual name='camera_visual'>
+                <pose>-0.2 0 0.3 0 -0 3.14</pose>
+                <geometry>
+                  <sphere>
+                    <radius>0.05</radius>
+                  </sphere>
+                </geometry>
+                <!-- replaced with above -->
+                <!-- <geometry>
+                  <box>
+                    <size>0.1 0.1 0.1</size>
+                  </box>
+                </geometry> -->
+                <material>
+                  <ambient>0 0 1 1</ambient>
+                  <diffuse>0 0 1 1</diffuse>
+                  <!-- modified with above -->
+                  <!-- <ambient>0 1 0 1</ambient>
+                  <diffuse>0 1 0 1</diffuse> -->
+                  <specular>0.5 0.5 0.5 1</specular>
+                </material>
+              </visual>
+              <sensor name='camera' type='camera'>
+                <pose>0 0 0 0 -0 3.14</pose>
+                <!-- modified with above -->
+                <!-- <pose>-0.2 0 0.3 0 -0 0</pose> -->
+                <camera>
+                  <horizontal_fov>1.0469999999999999</horizontal_fov>
+                  <image>
+                    <width>320</width>
+                    <height>240</height>
+                  </image>
+                  <clip>
+                    <near>0.10000000000000001</near>
+                    <far>100</far>
+                  </clip>
+                </camera>
+                <always_on>1</always_on>
+                <update_rate>60</update_rate>
+                <!-- modified with above -->
+                <!-- <update_rate>30</update_rate> -->
+                <visualize>1</visualize>
+                <topic>top/camera</topic>
+              </sensor>
+
+              <!-- added -->
+              <collision name='camera_collision'>
+                <pose>-0.2 0 0.3 0 -0 3.14</pose>
+                <geometry>
+                  <sphere>
+                    <radius>0.050000000000000003</radius>
+                  </sphere>
+                </geometry>
+              </collision>
+            </link>
+            <pose relative_to='top'>0 0 0 0 -0 0</pose>
+          </model>
+          <joint name='top_to_camera' type='fixed'>
+            <parent>top</parent>
+            <child>top_camera::top_camera_link</child>
+          </joint>
+        </model>
+        <joint name='top_to_base' type='fixed'>
+          <parent>chassis</parent>
+          <child>top_model::top</child>
+        </joint>
+        <model name='left_wheel'>
+          <link name='wheel_link'>
+            <pose>0 0 0 0 -0 0</pose>
+            <inertial>
+              <mass>2</mass>
+              <inertia>
+                <ixx>0.14583299999999999</ixx>
+                <ixy>0</ixy>
+                <ixz>0</ixz>
+                <iyy>0.14583299999999999</iyy>
+                <iyz>0</iyz>
+                <izz>0.125</izz>
+              </inertia>
+            </inertial>
+            <visual name='visual'>
+              <geometry>
+                <sphere>
+                  <radius>0.29999999999999999</radius>
+                </sphere>
+              </geometry>
+              <material>
+                <ambient>0.2 0.2 0.2 1</ambient>
+                <diffuse>0.2 0.2 0.2 1</diffuse>
+                <specular>0.2 0.2 0.2 1</specular>
+              </material>
+            </visual>
+            <collision name='collision'>
+              <geometry>
+                <sphere>
+                  <radius>0.29999999999999999</radius>
+                </sphere>
+              </geometry>
+            </collision>
+          </link>
+          <pose>0.554283 0.625029 -0.025 -1.5707 0 0</pose>
+        </model>
+        <model name='right_wheel'>
+          <link name='wheel_link'>
+            <pose>0 0 0 0 -0 0</pose>
+            <inertial>
+              <mass>2</mass>
+              <inertia>
+                <ixx>0.14583299999999999</ixx>
+                <ixy>0</ixy>
+                <ixz>0</ixz>
+                <iyy>0.14583299999999999</iyy>
+                <iyz>0</iyz>
+                <izz>0.125</izz>
+              </inertia>
+            </inertial>
+            <visual name='visual'>
+              <geometry>
+                <sphere>
+                  <radius>0.29999999999999999</radius>
+                </sphere>
+              </geometry>
+              <material>
+                <ambient>0.2 0.2 0.2 1</ambient>
+                <diffuse>0.2 0.2 0.2 1</diffuse>
+                <specular>0.2 0.2 0.2 1</specular>
+              </material>
+            </visual>
+            <collision name='collision'>
+              <geometry>
+                <sphere>
+                  <radius>0.29999999999999999</radius>
+                </sphere>
+              </geometry>
+            </collision>
+          </link>
+          <pose>0.554282 -0.625029 -0.025 -1.5707 0 0</pose>
+        </model>
+        <model name='caster'>
+          <link name='wheel_link'>
+            <pose>0 0 0 0 -0 0</pose>
+            <inertial>
+              <mass>2</mass>
+              <inertia>
+                <ixx>0.14583299999999999</ixx>
+                <ixy>0</ixy>
+                <ixz>0</ixz>
+                <iyy>0.14583299999999999</iyy>
+                <iyz>0</iyz>
+                <izz>0.125</izz>
+              </inertia>
+            </inertial>
+            <visual name='visual'>
+              <geometry>
+                <sphere>
+                  <radius>0.29999999999999999</radius>
+                </sphere>
+              </geometry>
+              <material>
+                <ambient>0.2 0.2 0.2 1</ambient>
+                <diffuse>0.2 0.2 0.2 1</diffuse>
+                <specular>0.2 0.2 0.2 1</specular>
+              </material>
+            </visual>
+            <collision name='collision'>
+              <geometry>
+                <sphere>
+                  <radius>0.29999999999999999</radius>
+                </sphere>
+              </geometry>
+            </collision>
+          </link>
+          <pose>-0.957138 -0 -0.025 0 -0 0</pose>
+        </model>
+        <joint name='left_wheel_joint' type='revolute'>
+          <parent>chassis</parent>
+          <child>left_wheel::wheel_link</child>
+          <axis>
+            <xyz>0 0 1</xyz>
+            <limit>
+              <lower>-1.7976900000000001e+308</lower>
+              <upper>1.7976900000000001e+308</upper>
+            </limit>
+          </axis>
+        </joint>
+        <joint name='right_wheel_joint' type='revolute'>
+          <parent>chassis</parent>
+          <child>right_wheel::wheel_link</child>
+          <axis>
+            <xyz>0 0 1</xyz>
+            <limit>
+              <lower>-1.7976900000000001e+308</lower>
+              <upper>1.7976900000000001e+308</upper>
+            </limit>
+          </axis>
+        </joint>
+        <joint name='caster_wheel' type='ball'>
+          <parent>chassis</parent>
+          <child>caster::wheel_link</child>
+        </joint>
+      </model>
+    </model>
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type='adiabatic'/>
+    <physics type='ode'>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>1</shadows>
+    </scene>
+  </world>
+</sdf>

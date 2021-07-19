@@ -40,8 +40,8 @@ std::string findFileCb(const std::string &_input)
 }
 
 //////////////////////////////////////////////////
-// Currently this only issues a parsing warning and should take the first model
-// element
+// Check that an error is emitted if there are multiple models in an included
+// file. Despite the error, the first model should be loaded.
 TEST(IncludesTest, NestedMultipleModelsError)
 {
   sdf::setFindCallback(findFileCb);
@@ -51,14 +51,9 @@ TEST(IncludesTest, NestedMultipleModelsError)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  if (!errors.empty())
-  {
-    for (const auto &error : errors)
-    {
-      std::cout << error << std::endl;
-    }
-    ASSERT_TRUE(errors.empty());
-  }
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+  EXPECT_EQ("Found more than one model for <include>.", errors[0].Message());
 
   const auto * model = root.Model();
   ASSERT_NE(nullptr, model);
@@ -72,8 +67,8 @@ TEST(IncludesTest, NestedMultipleModelsError)
 }
 
 //////////////////////////////////////////////////
-// Currently this only issues a parsing warning and should take the first actor
-// element
+// Check that an error is emitted if there are multiple actors in an included
+// file. Despite the error, the first actor should be loaded.
 TEST(IncludesTest, NestedMultipleActorsError)
 {
   sdf::setFindCallback(findFileCb);
@@ -83,14 +78,9 @@ TEST(IncludesTest, NestedMultipleActorsError)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  if (!errors.empty())
-  {
-    for (const auto &error : errors)
-    {
-      std::cout << error << std::endl;
-    }
-    ASSERT_TRUE(errors.empty());
-  }
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+  EXPECT_EQ("Found more than one actor for <include>.", errors[0].Message());
 
   EXPECT_EQ(nullptr, root.Model());
   EXPECT_EQ(nullptr, root.Light());
@@ -103,8 +93,8 @@ TEST(IncludesTest, NestedMultipleActorsError)
 }
 
 //////////////////////////////////////////////////
-// Currently this only issues a parsing warning and should take the first light
-// element
+// Check that an error is emitted if there are multiple lights in an included
+// file. Despite the error, the first light should be loaded.
 TEST(IncludesTest, NestedMultipleLightsError)
 {
   sdf::setFindCallback(findFileCb);
@@ -114,14 +104,9 @@ TEST(IncludesTest, NestedMultipleLightsError)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  if (!errors.empty())
-  {
-    for (const auto &error : errors)
-    {
-      std::cout << error << std::endl;
-    }
-    ASSERT_TRUE(errors.empty());
-  }
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+  EXPECT_EQ("Found more than one light for <include>.", errors[0].Message());
 
   EXPECT_EQ(nullptr, root.Model());
   EXPECT_EQ(nullptr, root.Actor());
@@ -133,8 +118,9 @@ TEST(IncludesTest, NestedMultipleLightsError)
 }
 
 //////////////////////////////////////////////////
-// Currently this only issues a parsing warning and should take the first
-// model, actor, light in that order
+// Check that an error is emitted if there are more than one of model, actor, or
+// light in an included file. Despite the error, the
+// the first model, actor, light should be loaded in that order of preference.
 TEST(IncludesTest, NestedMultipleElementsError)
 {
   sdf::setFindCallback(findFileCb);
@@ -144,14 +130,12 @@ TEST(IncludesTest, NestedMultipleElementsError)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  if (!errors.empty())
-  {
-    for (const auto &error : errors)
-    {
-      std::cout << error << std::endl;
-    }
-    ASSERT_TRUE(errors.empty());
-  }
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+  EXPECT_EQ(
+      "Found other top level element <actor> in addition to <model> in include "
+      "file.",
+      errors[0].Message());
 
   EXPECT_EQ(nullptr, root.Light());
   EXPECT_EQ(nullptr, root.Actor());
@@ -172,14 +156,8 @@ TEST(IncludesTest, NestedMultipleElementsErrorWorld)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
-  if (!errors.empty())
-  {
-    for (const auto &error : errors)
-    {
-      std::cout << error << std::endl;
-    }
-    ASSERT_TRUE(errors.empty());
-  }
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
 
   EXPECT_EQ(nullptr, root.Light());
   EXPECT_EQ(nullptr, root.Actor());

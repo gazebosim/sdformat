@@ -31,9 +31,6 @@ using namespace sdf;
 
 class sdf::JointAxis::Implementation
 {
-  /// \brief Default joint position for this joint axis.
-  public: double initialPosition = 0.0;
-
   /// \brief Represents the x,y,z components of the axis unit vector.
   /// The axis is expressed in the joint frame unless the
   /// use_parent_model_frame flag is set to true. The vector should be
@@ -104,10 +101,6 @@ Errors JointAxis::Load(ElementPtr _sdf)
 
   this->dataPtr->sdf = _sdf;
 
-  // Read the initial position. This is optional, with a default value of 0.
-  this->dataPtr->initialPosition = _sdf->Get<double>(
-      "initial_position", 0.0).first;
-
   // Read the xyz values.
   if (_sdf->HasElement("xyz"))
   {
@@ -165,17 +158,6 @@ Errors JointAxis::Load(ElementPtr _sdf)
   }
 
   return errors;
-}
-
-/////////////////////////////////////////////////
-double JointAxis::InitialPosition() const
-{
-  return this->dataPtr->initialPosition;
-}
-/////////////////////////////////////////////////
-void JointAxis::SetInitialPosition(const double _pos)
-{
-  this->dataPtr->initialPosition = _pos;
 }
 
 /////////////////////////////////////////////////

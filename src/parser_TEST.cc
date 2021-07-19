@@ -717,6 +717,94 @@ TEST(Parser, ReadMultiLineStringError)
 }
 
 /////////////////////////////////////////////////
+/// Check that FilePath() for elements loaded from a file returns the file path
+/// whereas it returns "" for elements loaded from a string.
+TEST(Parser, ElementFilePath)
+{
+  auto findFileCb = [](const std::string &_uri)
+  {
+    return sdf::testing::TestFile("integration", "model", _uri);
+  };
+
+  const std::string testString = R"(
+    <?xml version="1.0" ?>
+    <sdf version="1.8">
+      <world name="default">
+        <include>
+          <uri>test_model</uri>
+          <name>included_model</name>
+        </include>
+        <model name="direct_model">
+          <link name="link"/>
+        </model>
+      </world>
+    </sdf>)";
+
+  sdf::ParserConfig config;
+  config.SetFindCallback(findFileCb);
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = InitSDF();
+  ASSERT_TRUE(sdf::readString(testString, config, sdf, errors));
+  ASSERT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, sdf);
+  auto root = sdf->Root();
+  ASSERT_NE(nullptr, root);
+  EXPECT_EQ("", root->FilePath());
+
+  // included_model is loaded from a file, so FilePath should return a file
+  // path.
+  auto includedModel = root->GetElement("world")->GetElement("model");
+  EXPECT_EQ("included_model", includedModel->Get<std::string>("name"));
+  EXPECT_EQ(findFileCb(sdf::filesystem::append("test_model", "model.sdf")),
+      includedModel->FilePath());
+
+  // direct_model is loaded from a string along with the containing world, so
+  // FilePath should return "".
+  auto directModel = includedModel->GetNextElement("model");
+  EXPECT_EQ("direct_model", directModel->Get<std::string>("name"));
+  EXPECT_EQ("", directModel->FilePath());
+}
+
+/////////////////////////////////////////////////
+/// Check for missing element segfault, #590
+TEST(Parser, MissingRequiredElement)
+{
+  const std::string testString = R"(<?xml version="1.0" ?>
+    <sdf version="1.8">
+      <world name="default">
+        <model name="test_model">
+          <link name="link_0"/>
+          <link name="link_1"/>
+          <joint name="joint" type="revolute">
+            <parent>link_0</parent>
+            <axis>
+              <xyz>1 0 0</xyz>
+              <limit>
+                <lower>-1</lower>
+                <upper>1</upper>
+              </limit>
+            </axis>
+          </joint>
+        </model>
+      </world>
+    </sdf>)";
+
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = InitSDF();
+  EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+
+  ASSERT_NE(errors.size(), 0u);
+  std::cerr << errors[0] << std::endl;
+
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_MISSING);
+  ASSERT_TRUE(errors[0].FilePath().has_value());
+  EXPECT_EQ(errors[0].FilePath().value(),
+      std::string(sdf::kSdfStringSource));
+  ASSERT_TRUE(errors[0].LineNumber().has_value());
+  EXPECT_EQ(errors[0].LineNumber().value(), 7);
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {

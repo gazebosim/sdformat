@@ -39,6 +39,7 @@
 
 #include "Converter.hh"
 #include "FrameSemantics.hh"
+#include "ParamPassing.hh"
 #include "ScopedGraph.hh"
 #include "Utils.hh"
 #include "parser_private.hh"
@@ -685,11 +686,6 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
       _sdf->Root()->SetOriginalVersion(sdfNode->Attribute("version"));
     }
 
-    if (_sdf->Root()->FilePath().empty())
-    {
-      _sdf->Root()->SetFilePath(_source);
-    }
-
     if (!_sdf->Root()->LineNumber().has_value())
     {
       _sdf->Root()->SetLineNumber(sdfNode->GetLineNum());
@@ -773,11 +769,6 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     if (_sdf->OriginalVersion().empty())
     {
       _sdf->SetOriginalVersion(sdfNode->Attribute("version"));
-    }
-
-    if (_sdf->FilePath().empty())
-    {
-      _sdf->SetFilePath(_source);
     }
 
     if (!_sdf->LineNumber().has_value())
@@ -1244,10 +1235,10 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             return false;
           }
 
-          // For now there is only a warning if there is more than one model,
-          // actor or light element, or two different types of those elements.
-          // For compatibility with old behavior, this chooses the first element
-          // in the preference order: model->actor->light
+          // Emit an error if there is more than one model, actor or light
+          // element, or two different types of those elements. For
+          // compatibility with old behavior, this chooses the first element in
+          // the preference order: model->actor->light
           sdf::ElementPtr topLevelElem;
           for (const auto &elementType : {"model", "actor", "light"})
           {
@@ -1262,13 +1253,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
                 std::stringstream ss;
                 ss << "Found other top level element <" << elementType
                   << "> in addition to <" << topLevelElem->GetName()
-                  << "> in include file. This is unsupported and in future "
-                  << "versions of libsdformat will become an error";
+                  << "> in include file.";
                 Error err(
                     ErrorCode::ELEMENT_INCORRECT_TYPE, ss.str(), filename);
                 err.SetXmlPath("/sdf/" + std::string(elementType));
-                enforceConfigurablePolicyCondition(
-                    _config.WarningsPolicy(), err, _errors);
+                _errors.push_back(err);
               }
             }
           }
@@ -1293,14 +1282,12 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           if (nullptr != nextTopLevelElem)
           {
             std::stringstream ss;
-            ss << "Found more than one of " << topLevelElem->GetName()
-              << " for <include>. This is unsupported and in future "
-              << "versions of libsdformat will become an error";
+            ss << "Found more than one " << topLevelElem->GetName()
+              << " for <include>.";
             Error err(
                 ErrorCode::ELEMENT_INCORRECT_TYPE, ss.str(), filename);
             err.SetXmlPath("/sdf/" + topLevelElementType);
-            enforceConfigurablePolicyCondition(
-                _config.WarningsPolicy(), err, _errors);
+            _errors.push_back(err);
           }
 
           bool isModel = topLevelElementType == "model";
@@ -1400,7 +1387,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
                 sdf::ElementPtr pluginElem;
                 pluginElem = topLevelElem->AddElement("plugin");
-                pluginElem->SetFilePath(_source);
                 pluginElem->SetLineNumber(childElemXml->GetLineNum());
                 pluginElem->SetXmlPath(pluginXmlPath);
 
@@ -1418,6 +1404,18 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
                 }
               }
             }
+          }
+
+          // TODO(jenn) prototyping parameter passing
+          // ref: sdformat.org > Documentation > Proposal for parameter passing
+          if (elemXml->FirstChildElement("experimental:params"))
+          {
+            ParamPassing::updateParams(
+                _config,
+                _source,
+                elemXml->FirstChildElement("experimental:params"),
+                includeSDF->Root(),
+                _errors);
           }
 
           auto includeSDFFirstElem = includeSDF->Root()->GetFirstElement();
@@ -1452,7 +1450,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
           ElementPtr element = elemDesc->Clone();
           element->SetParent(_sdf);
-          element->SetFilePath(_source);
           element->SetLineNumber(elemXml->GetLineNum());
           element->SetXmlPath(elemXmlPath);
           if (readXml(elemXml, element, _config, _source, _errors))
@@ -1520,20 +1517,21 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           if (_sdf->GetName() == "joint" &&
               _sdf->Get<std::string>("type") != "ball")
           {
-            Error err(
+            Error missingElementError(
                 ErrorCode::ELEMENT_MISSING,
                 "XML Missing required element[" + elemDesc->GetName() +
                 "], child of element[" + _sdf->GetName() + "]",
                 _source,
-                elemXml->GetLineNum());
-            err.SetXmlPath(elemXmlPath);
-            _errors.push_back(err);
+                _xml->GetLineNum());
+            missingElementError.SetXmlPath(elemXmlPath);
+            _errors.push_back(missingElementError);
             return false;
           }
           else
           {
             // Add default element
-            _sdf->AddElement(elemDesc->GetName());
+            ElementPtr defaultElement = _sdf->AddElement(elemDesc->GetName());
+            defaultElement->SetExplicitlySetInFile(false);
           }
         }
       }

@@ -327,6 +327,17 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
 }
 
 /////////////////////////////////////////////////
+Errors Model::ValidateGraphs() const
+{
+  Errors errors =
+      validateFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  Errors poseErrors =
+      validatePoseRelativeToGraph(this->dataPtr->poseGraph);
+  errors.insert(errors.end(), poseErrors.begin(), poseErrors.end());
+  return errors;
+}
+
+/////////////////////////////////////////////////
 std::string Model::Name() const
 {
   return this->dataPtr->name;

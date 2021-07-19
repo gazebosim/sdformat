@@ -52,17 +52,6 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
 
-    /// \brief Get the initial joint position for this joint axis. The
-    /// default value is zero (0.0).
-    /// \return The initial joint position.
-    /// \sa void SetInitialPosition(const double _pos)
-    public: double InitialPosition() const SDF_DEPRECATED(10.0);
-
-    /// \brief Set the initial joint position for this joint axis.
-    /// \param[in] _pos The initial joint position.
-    /// \sa double InitialPosition() const
-    public: void SetInitialPosition(const double _pos) SDF_DEPRECATED(10.0);
-
     /// \brief Get the x,y,z components of the axis unit vector.
     /// The axis is expressed in the frame named in XyzExpressedIn() and
     /// defaults to the joint frame if that method returns an empty string.
