@@ -308,7 +308,6 @@
         </lidar>
       </sensor>
 
-
       <sensor name="rfid_sensor" type="rfid">
         <pose>4 5 6 0 0 0</pose>
       </sensor>
@@ -548,7 +547,6 @@
         </camera>
 
       </sensor>
-
 
       <sensor name="wireless_receiver" type="wireless_receiver">
         <pose>13 14 15 0 0 0</pose>

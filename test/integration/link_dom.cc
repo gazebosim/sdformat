@@ -359,7 +359,8 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("my_segmentation_camera", segmentationCameraSensor->Name());
 
   // Get the boundingbox sensor
-  const sdf::Sensor *boundingboxSensor = link->SensorByName("boundingbox_sensor");
+  const sdf::Sensor *boundingboxSensor =
+    link->SensorByName("boundingbox_sensor");
   ASSERT_NE(nullptr, boundingboxSensor);
   EXPECT_EQ("boundingbox_sensor", boundingboxSensor->Name());
   EXPECT_EQ(sdf::SensorType::BOUNDINGBOX_CAMERA, boundingboxSensor->Type());
