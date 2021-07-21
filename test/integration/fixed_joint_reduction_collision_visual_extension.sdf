@@ -134,10 +134,7 @@
           </script>
         </material>
       </visual>
-      <velocity_decay/>
-      <velocity_decay/>
       <gravity>1</gravity>
-      <velocity_decay/>
     </link>
   </model>
 </sdf>
