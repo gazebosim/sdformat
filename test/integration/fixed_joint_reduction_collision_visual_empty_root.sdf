@@ -51,7 +51,6 @@
           </script>
         </material>
       </visual>
-      <gravity>1</gravity>
       <self_collide>0</self_collide>
     </link>
   </model>

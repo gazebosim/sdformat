@@ -1343,6 +1343,7 @@ void URDF2SDF::ParseSDFExtension(TiXmlDocument &_urdfXml)
       else if (childElem->ValueStr() == "turnGravityOff")
       {
         std::string valueStr = GetKeyValueAsString(childElem);
+        sdf->isGravity = true;
 
         // default of gravity is true
         if (lowerStr(valueStr) == "false" || lowerStr(valueStr) == "no" ||
@@ -2069,13 +2070,9 @@ void InsertSDFExtensionLink(TiXmlElement *_elem, const std::string &_linkName)
           sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
       {
         // insert gravity
-        if ((*ge)->gravity)
+        if ((*ge)->isGravity)
         {
-          AddKeyValue(_elem, "gravity", "true");
-        }
-        else
-        {
-          AddKeyValue(_elem, "gravity", "false");
+          AddKeyValue(_elem, "gravity", (*ge)->gravity ? "true" : "false");
         }
 
         // damping factor

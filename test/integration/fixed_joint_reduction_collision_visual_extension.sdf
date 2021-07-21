@@ -134,7 +134,6 @@
           </script>
         </material>
       </visual>
-      <gravity>1</gravity>
     </link>
   </model>
 </sdf>
