@@ -19,7 +19,7 @@ but with improved human-readability..
 1. **sdf/Element.hh**
     + sdf::ElementPtr FindElement() const
 
-## libsdformat 9.3 to 9.4 
+## libsdformat 9.3 to 9.4
 
 ### Modifications
 
