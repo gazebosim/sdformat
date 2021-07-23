@@ -1,5 +1,6 @@
 set (sdfs
   actor.sdf
+  air_pressure.sdf
   altimeter.sdf
   atmosphere.sdf
   audio_source.sdf
@@ -23,6 +24,7 @@ set (sdfs
   imu.sdf
   inertial.sdf
   joint.sdf
+  lidar.sdf
   light.sdf
   light_state.sdf
   link.sdf
@@ -34,6 +36,7 @@ set (sdfs
   model.sdf
   model_state.sdf
   noise.sdf
+  particle_emitter.sdf
   physics.sdf
   plane_shape.sdf
   plugin.sdf
@@ -74,6 +77,8 @@ foreach(FIL ${sdfs})
     COMMENT "Running xml schema compiler on ${FIL}"
     VERBATIM)
 endforeach()
+
+configure_file(schema/types.xsd ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 add_custom_target(schema1_8 ALL DEPENDS ${SDF_SCHEMA})
 
