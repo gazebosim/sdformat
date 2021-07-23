@@ -78,6 +78,8 @@ foreach(FIL ${sdfs})
     VERBATIM)
 endforeach()
 
+configure_file(schema/types.xsd ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+
 add_custom_target(schema1_8 ALL DEPENDS ${SDF_SCHEMA})
 
 set_source_files_properties(${SDF_SCHEMA} PROPERTIES GENERATED TRUE)
