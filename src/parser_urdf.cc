@@ -3446,7 +3446,7 @@ void ReduceSDFExtensionPluginFrameReplace(
         }
         TiXmlNode* correctedOffsetKey =
             (*_blobIt)->FirstChild("ignition::corrected_offsets");
-        if (!correctedOffsetKey)
+        if (correctedOffsetKey)
         {
           (*_blobIt)->RemoveChild(correctedOffsetKey);
         }
