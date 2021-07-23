@@ -1,5 +1,6 @@
 set (sdfs
   actor.sdf
+  air_pressure.sdf
   altimeter.sdf
   atmosphere.sdf
   audio_source.sdf
@@ -21,6 +22,7 @@ set (sdfs
   imu.sdf
   inertial.sdf
   joint.sdf
+  lidar.sdf
   light.sdf
   light_state.sdf
   link.sdf
@@ -32,6 +34,7 @@ set (sdfs
   model.sdf
   model_state.sdf
   noise.sdf
+  particle_emitter.sdf
   physics.sdf
   plane_shape.sdf
   plugin.sdf
