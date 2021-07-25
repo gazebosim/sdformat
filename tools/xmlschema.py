@@ -4,46 +4,17 @@ import argparse
 from dataclasses import dataclass
 from typing import List
 
-def valid_path(arg:str):
-    path = Path(arg)
-    if path.exists():
-        return path
-    else:
-        raise ValueError(f"The path does not exist: {arg}")
-
-
-def existing_dir(arg:str):
-    path = valid_path(arg)
-    if path.is_dir():
-        return path
-    else:
-        raise ValueError(f"Not a directory: {arg}")
-
-def existing_file(arg:str):
-    path = valid_path(arg)
-    if path.is_file():
-        return path
-    else:
-        raise ValueError(f"Not a file: {arg}")
-
-def template_path(template_path:str):
-    if template_path == "":
-        return Path(__file__).parent / "xsd_templates"
-    else:
-        return existing_dir(template_path)
-
 cmd_arg_parser = argparse.ArgumentParser(description="Create an XML schema from a SDFormat file.")
-cmd_arg_parser.add_argument("-i", "--in", dest="source", required=True, type=existing_file, help="SDF file to compile.")
-cmd_arg_parser.add_argument("-s", "--sdf", dest="directory", required=True, type=existing_dir, help="Directory containing all the SDF files.")
+cmd_arg_parser.add_argument("-i", "--in", dest="source", required=True, type=str, help="SDF file inside of directory to compile.")
+cmd_arg_parser.add_argument("-s", "--sdf", dest="directory", required=True, type=str, help="Directory containing all the SDF files.")
 cmd_arg_parser.add_argument("-o", "--out", dest="target", default=".", type=str, help="Output directory for xsd file. Will be created if it doesn't exit.")
-cmd_arg_parser.add_argument("--template-dir", dest="templates", default="", type=template_path, help="Location to search for xsd tempate files. Default: /tools/xsd_templates.")
 cmd_arg_parser.add_argument("--ns-prefix", dest="ns_prefix", default="sdformat", type=str, help="Prefix for generated xsd namespaces.")
 
 args = cmd_arg_parser.parse_args()
-source:Path = args.source
-source_dir:Path = args.directory
-xsd_file_template:str = (args.templates / "file.xsd").read_text()
-
+source_dir = Path(args.directory)
+source:Path = source_dir / args.source
+template_dir = Path(__file__).parent / "xsd_templates"
+xsd_file_template:str = (template_dir / "file.xsd").read_text()
 
 
 def _tabulate(input:str, offset:int=0) -> str:
@@ -87,9 +58,9 @@ class Element:
         min_occurs, max_occurs = required_codes[self.required]
 
         if self.description:
-            template = (args.templates / "element_with_comment.xsd").read_text()
+            template = (template_dir / "element_with_comment.xsd").read_text()
         else:
-            template = (args.templates / "element.xsd").read_text()
+            template = (template_dir / "element.xsd").read_text()
         template = template.format(
             min_occurs=min_occurs,
             max_occurs=max_occurs,
@@ -110,7 +81,7 @@ class Attribute:
     description:str=None
 
     def to_typedef(self):
-        template = (args.templates / "attribute.xsd").read_text()
+        template = (template_dir / "attribute.xsd").read_text()
         template = template.format(
             name = self.name,
             type = self.type,
@@ -162,7 +133,7 @@ class ComplexType:
             if len(elements) > 0:
                 raise RuntimeError("The compiler cant generate this type.")
             
-            template = (args.templates / "expansion_type.xsd").read_text()
+            template = (template_dir / "expansion_type.xsd").read_text()
             template = template.format(
                 name = self.name,
                 type = self.element.attrib["type"],
@@ -173,7 +144,7 @@ class ComplexType:
             elements = "\n".join(elements)
             attributes = "\n".join(attributes)
 
-            template = (args.templates / "type.xsd").read_text()
+            template = (template_dir / "type.xsd").read_text()
             template = template.format(
                 name = self.name,
                 elements = elements,
