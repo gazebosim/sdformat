@@ -1,0 +1,2 @@
+<xs:attribute name='{name}' type='{type}' use='{required}' default='{default}'>
+</xs:attribute>

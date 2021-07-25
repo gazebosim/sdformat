@@ -1,0 +1,7 @@
+<xs:complexType name='{name}'>
+    <xs:simpleContent>
+      <xs:extension base="{type}">
+{attributes}
+      </xs:extension>
+    </xs:simpleContent>
+</xs:complexType>
