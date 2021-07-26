@@ -16,6 +16,8 @@
  */
 
 #include <string>
+#include <sstream>
+#include <fstream>
 #include <gtest/gtest.h>
 
 #include <ignition/math/Angle.hh>
@@ -26,6 +28,7 @@
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
+#include "sdf/parser.hh"
 #include "sdf/Filesystem.hh"
 #include "test_config.h"
 
@@ -417,4 +420,255 @@ TEST(Pose1_9, ChangingParentPoseElementFromQuaternion)
   ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
   EXPECT_NE(Pose(1, 2, 3, 0.7071068, 0.7071068, 0.0), val);
   EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), val);
+}
+
+//////////////////////////////////////////////////
+static bool contains(const std::string &_a, const std::string &_b)
+{
+  return _a.find(_b) != std::string::npos;
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, InvalidRotationType)
+{
+  // Capture sdferr output
+  std::stringstream buffer;
+  auto old = std::cerr.rdbuf(buffer.rdbuf());
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+#endif
+
+  buffer.str("");
+  const std::string testString = R"(<?xml version="1.0" ?>
+    <sdf version="1.9">
+      <world name="default">
+        <model name="test_model">
+          <pose rotation_type="rpy_xyz">
+            1 2 3 0.4 0.5 0.6
+          </pose>
+          <link name="test_link"/>
+        </model>
+      </world>
+    </sdf>)";
+
+  sdf::Errors errors;
+  sdf::SDFPtr sdf(new sdf::SDF());
+  sdf::init(sdf);
+  EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+  EXPECT_PRED2(contains, buffer.str(), "Invalid @rotation_type of [rpy_xyz]");
+
+  // Revert cerr rdbug so as to not interfere with other tests
+  std::cerr.rdbuf(old);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(true);
+#endif
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, InvalidNumberOfPoseValues)
+{
+  // Capture sdferr output
+  std::stringstream buffer;
+  auto old = std::cerr.rdbuf(buffer.rdbuf());
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+#endif
+
+  {
+    buffer.str("");
+    const std::string testString = R"(<?xml version="1.0" ?>
+      <sdf version="1.9">
+        <world name="default">
+          <model name="test_model">
+            <pose>
+              1 2 3 0.4 0.5
+            </pose>
+            <link name="test_link"/>
+          </model>
+        </world>
+      </sdf>)";
+
+    sdf::Errors errors;
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    EXPECT_PRED2(contains, buffer.str(),
+        "must have 6 values, but 5 were found instead.");
+  }
+  {
+    buffer.str("");
+    const std::string testString = R"(<?xml version="1.0" ?>
+      <sdf version="1.9">
+        <world name="default">
+          <model name="test_model">
+            <pose>
+              1 2 3 0.4 0.5 0.6 0.7
+            </pose>
+            <link name="test_link"/>
+          </model>
+        </world>
+      </sdf>)";
+
+    sdf::Errors errors;
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    EXPECT_PRED2(contains, buffer.str(),
+        "must have 6 values, but 7 were found instead.");
+  }
+  {
+    buffer.str("");
+    const std::string testString = R"(<?xml version="1.0" ?>
+      <sdf version="1.9">
+        <world name="default">
+          <model name="test_model">
+            <pose rotation_type="rpy_radians">
+              1 2 3 0.4 0.5
+            </pose>
+            <link name="test_link"/>
+          </model>
+        </world>
+      </sdf>)";
+
+    sdf::Errors errors;
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    EXPECT_PRED2(contains, buffer.str(),
+        "must have 6 values, but 5 were found instead.");
+  }
+  {
+    buffer.str("");
+    const std::string testString = R"(<?xml version="1.0" ?>
+      <sdf version="1.9">
+        <world name="default">
+          <model name="test_model">
+            <pose rotation_type="rpy_radians">
+              1 2 3 0.4 0.5 0.6 0.7
+            </pose>
+            <link name="test_link"/>
+          </model>
+        </world>
+      </sdf>)";
+
+    sdf::Errors errors;
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    EXPECT_PRED2(contains, buffer.str(),
+        "must have 6 values, but 7 were found instead.");
+  }
+  {
+    buffer.str("");
+    const std::string testString = R"(<?xml version="1.0" ?>
+      <sdf version="1.9">
+        <world name="default">
+          <model name="test_model">
+            <pose rotation_type="rpy_degrees">
+              1 2 3 0.4 0.5
+            </pose>
+            <link name="test_link"/>
+          </model>
+        </world>
+      </sdf>)";
+
+    sdf::Errors errors;
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    EXPECT_PRED2(contains, buffer.str(),
+        "must have 6 values, but 5 were found instead.");
+  }
+  {
+    buffer.str("");
+    const std::string testString = R"(<?xml version="1.0" ?>
+      <sdf version="1.9">
+        <world name="default">
+          <model name="test_model">
+            <pose rotation_type="rpy_degrees">
+              1 2 3 0.4 0.5
+            </pose>
+            <link name="test_link"/>
+          </model>
+        </world>
+      </sdf>)";
+
+    sdf::Errors errors;
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    EXPECT_PRED2(contains, buffer.str(),
+        "must have 6 values, but 5 were found instead.");
+  }
+  {
+    buffer.str("");
+    const std::string testString = R"(<?xml version="1.0" ?>
+      <sdf version="1.9">
+        <world name="default">
+          <model name="test_model">
+            <pose rotation_type="rpy_degrees">
+              1 2 3 0.4 0.5 0.6 0.7
+            </pose>
+            <link name="test_link"/>
+          </model>
+        </world>
+      </sdf>)";
+
+    sdf::Errors errors;
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    EXPECT_PRED2(contains, buffer.str(),
+        "must have 6 values, but 7 were found instead.");
+  }
+  {
+    buffer.str("");
+    const std::string testString = R"(<?xml version="1.0" ?>
+      <sdf version="1.9">
+        <world name="default">
+          <model name="test_model">
+            <pose rotation_type="q_wxyz">
+              1 2 3 0.4 0.5 0.6
+            </pose>
+            <link name="test_link"/>
+          </model>
+        </world>
+      </sdf>)";
+
+    sdf::Errors errors;
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    EXPECT_PRED2(contains, buffer.str(),
+        "must have 7 values, but 6 were found instead.");
+  }
+  {
+    buffer.str("");
+    const std::string testString = R"(<?xml version="1.0" ?>
+      <sdf version="1.9">
+        <world name="default">
+          <model name="test_model">
+            <pose rotation_type="q_wxyz">
+              1 2 3 0.4 0.5 0.6 0.7 0.8
+            </pose>
+            <link name="test_link"/>
+          </model>
+        </world>
+      </sdf>)";
+
+    sdf::Errors errors;
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    EXPECT_PRED2(contains, buffer.str(),
+        "must have 7 values, but 8 were found instead.");
+  }
+
+  // Revert cerr rdbug so as to not interfere with other tests
+  std::cerr.rdbuf(old);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(true);
+#endif
 }

@@ -432,7 +432,7 @@ bool ParseColorUsingStringStream(const std::string &_input,
 //////////////////////////////////////////////////
 /// \brief Helper function for Param::ValueFromString for parsing pose
 /// This checks the pose components specified in _input are xyzrpy or xyzwxyz
-/// (expects 6 ir 7 values) and the resulting pose is valid.
+/// (expects 6 or 7 values) and the resulting pose is valid.
 /// \param[in] _input Input string.
 /// \param[in] _key Key of the parameter, used for error message.
 /// \param[in] _attributes Attributes associated to this pose, nullptr if there
@@ -471,13 +471,6 @@ bool ParsePoseUsingStringStream(const std::string &_input,
       break;
     }
 
-    if (values.size() > 7)
-    {
-      sdferr << "Pose values cannot have more than 7 values.\n";
-      isValidPose = false;
-      break;
-    }
-
     if (!std::isfinite(v))
     {
       sdferr << "Pose values must be finite.\n";
@@ -491,33 +484,60 @@ bool ParsePoseUsingStringStream(const std::string &_input,
   if (!isValidPose || !_attributes)
     return ParseUsingStringStream<ignition::math::Pose3d>(_input, _key, _value);
 
-  std::string rotationType = "rpy_radians";
+  const std::string defaultRotationType = "rpy_radians";
+  std::string rotationType = defaultRotationType;
   for (const auto& p : *_attributes)
   {
     if (p->GetKey() == "rotation_type")
       rotationType = p->GetAsString();
   }
 
-  if (values.size() == 6u && rotationType == "rpy_radians")
+  std::string desiredSizeErrorMessage;
+  auto isRotationType =
+      [&](const std::string &_rotationType, std::size_t _desiredSize)
+  {
+    if (rotationType != _rotationType)
+    {
+      return false;
+    }
+    else if (values.size() != _desiredSize)
+    {
+      std::stringstream sstream;
+      sstream << "The value for //pose[@rotation_type='" << _rotationType
+          << "'] must have " << _desiredSize << " values, but " << values.size()
+          << " were found instead.\n";
+      desiredSizeErrorMessage = sstream.str();
+      return false;
+    }
+    return true;
+  };
+
+  if (isRotationType("rpy_radians", 6u))
   {
     _value = ignition::math::Pose3d(values[0], values[1], values[2],
         values[3], values[4], values[5]);
   }
-  else if (values.size() == 6u && rotationType == "rpy_degrees")
+  else if (isRotationType("rpy_degrees", 6u))
   {
     _value = ignition::math::Pose3d(values[0], values[1], values[2],
         IGN_DTOR(values[3]), IGN_DTOR(values[4]), IGN_DTOR(values[5]));
   }
-  else if (values.size() == 7u && rotationType == "q_wxyz")
+  else if (isRotationType("q_wxyz", 7u))
   {
     _value = ignition::math::Pose3d(values[0], values[1], values[2],
         values[3], values[4], values[5], values[6]);
   }
   else
   {
-    sdferr << "Found @rotation_type of [" << rotationType << "] and "
-        << values.size() << " values. Pose values must have either 6 "
-        << "(rpy_radians, rpy_degrees) or 7 values (q_wxyz).\n";
+    if (desiredSizeErrorMessage.empty())
+    {
+      sdferr << "Invalid @rotation_type of [" << rotationType
+          << "], only rpy_radians, rpy_degrees and q_wxyz are supported.\n";
+    }
+    else
+    {
+      sdferr << desiredSizeErrorMessage;
+    }
     return false;
   }
 
