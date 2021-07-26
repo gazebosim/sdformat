@@ -72,7 +72,7 @@
         <element name="time" type="double" default="0.0" required="1">
           <description>The time in seconds, counted from the beginning of the script, when the pose should be reached.</description>
         </element>
-        <include filename="pose.sdf" required="1">
+        <include filename="pose_without_frames.sdf" required="1">
           <description>The pose which should be reached at the given time.</description>
         </include>
       </element> <!-- End Waypoint -->
