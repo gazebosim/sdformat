@@ -39,6 +39,7 @@ TEST(Pose1_9, ModelPose)
 
   const std::string testFile = sdf::testing::TestFile(
       "sdf", "pose_1_9.sdf");
+  const double pi = 3.14159265358979323846;
 
   // Load the SDF file
   sdf::Root root;
@@ -74,8 +75,7 @@ TEST(Pose1_9, ModelPose)
   model = world->ModelByIndex(4);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_with_rpy_pose_with_degrees", model->Name());
-  EXPECT_EQ(Pose(1, 2, 3, IGN_DTOR(0.4), IGN_DTOR(0.5), IGN_DTOR(0.6)),
-      model->RawPose());
+  EXPECT_EQ(Pose(1, 2, 3, pi / 2, pi, pi * 3 / 2), model->RawPose());
 
   model = world->ModelByIndex(5);
   ASSERT_NE(nullptr, model);
@@ -323,6 +323,7 @@ TEST(Pose1_9, PoseParamSetAndParentElemGet)
 //////////////////////////////////////////////////
 TEST(Pose1_9, ChangingParentPoseElement)
 {
+  const double pi = 3.14159265358979323846;
   using Pose = ignition::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
@@ -366,7 +367,8 @@ TEST(Pose1_9, ChangingParentPoseElement)
   // Set parent to Element with rotation_type attribute as rpy_degrees
   valParam->SetParentElement(rpyDegreesPoseElem);
   ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
-  EXPECT_EQ(Pose(1, 2, 3, IGN_DTOR(0.4), IGN_DTOR(0.5), IGN_DTOR(0.6)), val);
+  EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180),
+      val);
 
   // Set parent to Element with rotation_type attribute as rpy_radians
   valParam->SetParentElement(rpyRadiansPoseElem);
