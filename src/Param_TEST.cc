@@ -24,6 +24,7 @@
 #include <ignition/math/Angle.hh>
 
 #include "sdf/Exception.hh"
+#include "sdf/Element.hh"
 #include "sdf/Param.hh"
 
 bool check_double(const std::string &num)
@@ -455,6 +456,78 @@ TEST(Param, MinMaxViolation)
     EXPECT_TRUE(doubleParam.Get<double>(value));
     EXPECT_DOUBLE_EQ(value, 5.0);
   }
+}
+
+//////////////////////////////////////////////////
+TEST(Param, SettingParentElement)
+{
+  sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
+
+  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  doubleParam.SetParentElement(parentElement);
+
+  ASSERT_NE(nullptr, doubleParam.GetParentElement());
+  EXPECT_EQ(parentElement, doubleParam.GetParentElement());
+
+  // Set a new parent Element
+  sdf::ElementPtr newParentElement = std::make_shared<sdf::Element>();
+
+  doubleParam.SetParentElement(newParentElement);
+  ASSERT_NE(nullptr, doubleParam.GetParentElement());
+  EXPECT_EQ(newParentElement, doubleParam.GetParentElement());
+
+  // Remove the parent Element
+  doubleParam.SetParentElement(nullptr);
+  EXPECT_EQ(nullptr, doubleParam.GetParentElement());
+}
+
+//////////////////////////////////////////////////
+TEST(Param, CopyConstructor)
+{
+  sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
+
+  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  doubleParam.SetParentElement(parentElement);
+
+  ASSERT_NE(nullptr, doubleParam.GetParentElement());
+  EXPECT_EQ(parentElement, doubleParam.GetParentElement());
+
+  sdf::Param newParam(doubleParam);
+  ASSERT_NE(nullptr, newParam.GetParentElement());
+  EXPECT_EQ(parentElement, newParam.GetParentElement());
+}
+
+//////////////////////////////////////////////////
+TEST(Param, EqualOperator)
+{
+  sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
+
+  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  doubleParam.SetParentElement(parentElement);
+
+  ASSERT_NE(nullptr, doubleParam.GetParentElement());
+  EXPECT_EQ(parentElement, doubleParam.GetParentElement());
+
+  sdf::Param newParam = doubleParam;
+  ASSERT_NE(nullptr, newParam.GetParentElement());
+  EXPECT_EQ(parentElement, newParam.GetParentElement());
+}
+
+//////////////////////////////////////////////////
+TEST(Param, DestroyParentElementAfterConstruct)
+{
+  sdf::ParamPtr param = nullptr;
+
+  {
+    sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
+
+    param = std::make_shared<sdf::Param>(
+        "key", "double", "1.0", false, "description");
+    param->SetParentElement(parentElement);
+  }
+
+  ASSERT_NE(nullptr, param);
+  EXPECT_EQ(nullptr, param->GetParentElement());
 }
 
 /////////////////////////////////////////////////
