@@ -530,8 +530,9 @@ bool ParsePoseUsingStringStream(const std::string &_input,
   {
     if (desiredSizeErrorMessage.empty())
     {
-      sdferr << "Invalid @rotation_type of [" << rotationType
-          << "], only rpy_radians, rpy_degrees and q_wxyz are supported.\n";
+      sdferr << "Invalid attribute //pose[@rotation_type='" << rotationType
+          << "'], only 'rpy_radians', 'rpy_degrees' and 'q_wxyz'"
+          << " are supported.\n";
     }
     else
     {

@@ -458,7 +458,8 @@ TEST(Pose1_9, InvalidRotationType)
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
   EXPECT_FALSE(sdf::readString(testString, sdf, errors));
-  EXPECT_PRED2(contains, buffer.str(), "Invalid @rotation_type of [rpy_xyz]");
+  EXPECT_PRED2(contains, buffer.str(),
+      "Invalid attribute //pose[@rotation_type='rpy_xyz']");
 
   // Revert cerr rdbug so as to not interfere with other tests
   std::cerr.rdbuf(old);
