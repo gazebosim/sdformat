@@ -734,9 +734,6 @@ ElementPtr Param::GetParentElement() const
 //////////////////////////////////////////////////
 void Param::SetParentElement(const ElementPtr _parentElement)
 {
-  if (!_parentElement)
-    this->dataPtr->parentElement.reset();
-
   this->dataPtr->parentElement = _parentElement;
 
   if (this->dataPtr->strValue.has_value())
@@ -744,9 +741,17 @@ void Param::SetParentElement(const ElementPtr _parentElement)
     const std::string strVal = this->dataPtr->strValue.value();
     if (!this->SetFromString(strVal))
     {
-      sdferr << "Failed to set value [" << strVal
-          << "] for new parent element of " << "name ["
-          << _parentElement->GetName() << "], reverting to previous value.\n";
+      if (_parentElement)
+      {
+        sdferr << "Failed to set value [" << strVal
+            << "] for new parent element of " << "name ["
+            << _parentElement->GetName() << "], reverting to previous value.\n";
+      }
+      else
+      {
+        sdferr << "Failed to set value [" << strVal
+            << "] without a parent element, reverting to previous value.\n";
+      }
     }
   }
 }
