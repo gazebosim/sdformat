@@ -810,6 +810,15 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_EQ("Valid.\n", output) << output;
   }
+  // Check an SDF with an invalid relative frame at the top level model
+  {
+    std::string path = pathBase + "/top_level_frames.sdf";
+
+    std::string output =
+        custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("invalid relative frame"), std::string::npos)
+        << output;
+  }
 }
 
 /////////////////////////////////////////////////
