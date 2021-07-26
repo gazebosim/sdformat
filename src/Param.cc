@@ -644,7 +644,7 @@ bool Param::ValueFromString(const std::string &_value,
         const ElementPtr p = this->dataPtr->parentElement.lock();
         if (!_ignoreAttributes && p)
         {
-          const Param_V attributes = p->GetAttributes();
+          const Param_V &attributes = p->GetAttributes();
           return ParsePoseUsingStringStream(
               tmp, this->dataPtr->key, &attributes, this->dataPtr->value);
         }

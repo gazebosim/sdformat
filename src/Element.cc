@@ -659,7 +659,7 @@ size_t Element::GetAttributeCount() const
 }
 
 /////////////////////////////////////////////////
-Param_V Element::GetAttributes() const
+const Param_V &Element::GetAttributes() const
 {
   return this->dataPtr->attributes;
 }
