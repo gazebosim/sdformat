@@ -2,6 +2,11 @@
 <sdf version="1.9">
   <world name="default">
 
+    <!--
+      All the pose values listed in this testing sdf file are independent and
+      unrelated to each other.
+    -->
+
     <model name="model_with_empty_pose">
       <pose></pose>
       <link name="link"/>
