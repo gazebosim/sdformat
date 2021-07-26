@@ -203,7 +203,7 @@ TEST(Element, AddValue)
   ASSERT_EQ(param->GetDefaultAsString(), "foo");
   ASSERT_EQ(param->GetDescription(), "foo description");
   ASSERT_NE(param->GetParentElement(), nullptr);
-  EXPECT_EQ(param->GetParentElement()->GetName(), "test");
+  EXPECT_EQ(param->GetParentElement(), elem);
 }
 
 /////////////////////////////////////////////////
@@ -437,15 +437,13 @@ TEST(Element, Clone)
   ASSERT_TRUE(newelem->GetExplicitlySetInFile());
 
   ASSERT_NE(nullptr, parent->GetValue()->GetParentElement());
-  EXPECT_EQ("parent", parent->GetValue()->GetParentElement()->GetName());
+  EXPECT_EQ(parent, parent->GetValue()->GetParentElement());
 
   ASSERT_NE(nullptr, newelem->GetValue()->GetParentElement());
-  EXPECT_EQ("parent", newelem->GetValue()->GetParentElement()->GetName());
-  newelem->SetName("ClonedParent");
-  EXPECT_EQ("ClonedParent", newelem->GetValue()->GetParentElement()->GetName());
+  EXPECT_EQ(newelem, newelem->GetValue()->GetParentElement());
 
   auto clonedAttribs = newelem->GetAttributes();
-  EXPECT_EQ("ClonedParent", clonedAttribs[0]->GetParentElement()->GetName());
+  EXPECT_EQ(newelem, clonedAttribs[0]->GetParentElement());
 }
 
 /////////////////////////////////////////////////
@@ -791,8 +789,6 @@ TEST(Element, Copy)
   EXPECT_EQ("/sdf/world[@name=\"default\"]", dest->XmlPath());
   EXPECT_EQ("1.5", dest->OriginalVersion());
 
-  dest->SetName("Copied");
-
   sdf::ParamPtr param = dest->GetValue();
   ASSERT_TRUE(param->IsType<std::string>());
   ASSERT_EQ(param->GetKey(), "test");
@@ -800,7 +796,7 @@ TEST(Element, Copy)
   ASSERT_EQ(param->GetDefaultAsString(), "val");
   ASSERT_EQ(param->GetDescription(), "val description");
   ASSERT_NE(param->GetParentElement(), nullptr);
-  EXPECT_EQ(param->GetParentElement()->GetName(), "Copied");
+  EXPECT_EQ(param->GetParentElement(), dest);
 
   ASSERT_EQ(dest->GetAttributeCount(), 1UL);
   ASSERT_TRUE(dest->GetExplicitlySetInFile());
@@ -811,7 +807,7 @@ TEST(Element, Copy)
   ASSERT_EQ(param->GetDefaultAsString(), "foo");
   ASSERT_EQ(param->GetDescription(), "foo description");
   ASSERT_NE(param->GetParentElement(), nullptr);
-  EXPECT_EQ(param->GetParentElement()->GetName(), "Copied");
+  EXPECT_EQ(param->GetParentElement(), dest);
 
   ASSERT_NE(dest->GetFirstElement(), nullptr);
   ASSERT_NE(dest->GetIncludeElement(), nullptr);
@@ -830,7 +826,6 @@ TEST(Element, CopyDestValue)
 
   dest->AddValue("string", "val", false, "val description");
   dest->Copy(src);
-  dest->SetName("Copied");
 
   sdf::ParamPtr param = dest->GetValue();
   ASSERT_TRUE(param->IsType<std::string>());
@@ -839,7 +834,7 @@ TEST(Element, CopyDestValue)
   ASSERT_EQ(param->GetDefaultAsString(), "val");
   ASSERT_EQ(param->GetDescription(), "val description");
   ASSERT_NE(param->GetParentElement(), nullptr);
-  EXPECT_EQ(param->GetParentElement()->GetName(), "Copied");
+  EXPECT_EQ(param->GetParentElement(), dest);
 
   ASSERT_EQ(dest->GetAttributeCount(), 1UL);
   param = dest->GetAttribute("test");
@@ -849,7 +844,7 @@ TEST(Element, CopyDestValue)
   ASSERT_EQ(param->GetDefaultAsString(), "foo");
   ASSERT_EQ(param->GetDescription(), "foo description");
   ASSERT_NE(param->GetParentElement(), nullptr);
-  EXPECT_EQ(param->GetParentElement()->GetName(), "Copied");
+  EXPECT_EQ(param->GetParentElement(), dest);
 
   ASSERT_NE(dest->GetFirstElement(), nullptr);
 }
