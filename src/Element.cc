@@ -162,8 +162,8 @@ ParamPtr Element::CreateParam(const std::string &_key,
                               bool _required,
                               const std::string &_description)
 {
-  ParamPtr param(new Param(
-      _key, _type, _defaultValue, _required, _description));
+  ParamPtr param = std::make_shared<Param>(
+      _key, _type, _defaultValue, _required, _description);
   param->SetParentElement(shared_from_this());
   return param;
 }
@@ -248,18 +248,25 @@ void Element::Copy(const ElementPtr _elem)
   for (Param_V::iterator iter = _elem->dataPtr->attributes.begin();
        iter != _elem->dataPtr->attributes.end(); ++iter)
   {
-    if (this->HasAttribute((*iter)->GetKey()))
+    if (!this->HasAttribute((*iter)->GetKey()))
     {
-      this->RemoveAttribute((*iter)->GetKey());
+      this->dataPtr->attributes.push_back((*iter)->Clone());
     }
-    auto clonedAttribute = (*iter)->Clone();
-    clonedAttribute->SetParentElement(shared_from_this());
-    this->dataPtr->attributes.push_back(clonedAttribute);
+    ParamPtr param = this->GetAttribute((*iter)->GetKey());
+    (*param) = (**iter);
+    param->SetParentElement(shared_from_this());
   }
 
   if (_elem->GetValue())
   {
-    this->dataPtr->value = _elem->GetValue()->Clone();
+    if (!this->dataPtr->value)
+    {
+      this->dataPtr->value = _elem->GetValue()->Clone();
+    }
+    else
+    {
+      *(this->dataPtr->value) = *(_elem->GetValue());
+    }
     this->dataPtr->value->SetParentElement(shared_from_this());
   }
 
