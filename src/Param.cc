@@ -435,12 +435,11 @@ bool ParseColorUsingStringStream(const std::string &_input,
 /// (expects 6 or 7 values) and the resulting pose is valid.
 /// \param[in] _input Input string.
 /// \param[in] _key Key of the parameter, used for error message.
-/// \param[in] _attributes Attributes associated to this pose, nullptr if there
-/// are none.
+/// \param[in] _attributes Attributes associated to this pose.
 /// \param[out] _value This will be set with the parsed value.
 /// \return True if parsing pose succeeded.
 bool ParsePoseUsingStringStream(const std::string &_input,
-    const std::string &_key, const Param_V *_attributes,
+    const std::string &_key, const Param_V &_attributes,
     ParamPrivate::ParamVariant &_value)
 {
   StringStreamClassicLocale ss(_input);
@@ -481,12 +480,12 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     values.push_back(v);
   }
 
-  if (!isValidPose || !_attributes)
-    return ParseUsingStringStream<ignition::math::Pose3d>(_input, _key, _value);
+  if (!isValidPose)
+    return false;
 
   const std::string defaultRotationType = "rpy_radians";
   std::string rotationType = defaultRotationType;
-  for (const auto& p : *_attributes)
+  for (const auto &p : _attributes)
   {
     if (p->GetKey() == "rotation_type")
       rotationType = p->GetAsString();
@@ -664,12 +663,12 @@ bool Param::ValueFromString(const std::string &_value,
         const ElementPtr p = this->dataPtr->parentElement.lock();
         if (!_ignoreAttributes && p)
         {
-          const Param_V &attributes = p->GetAttributes();
           return ParsePoseUsingStringStream(
-              tmp, this->dataPtr->key, &attributes, this->dataPtr->value);
+              tmp, this->dataPtr->key, p->GetAttributes(),
+              this->dataPtr->value);
         }
         return ParsePoseUsingStringStream(
-            tmp, this->dataPtr->key, nullptr, this->dataPtr->value);
+            tmp, this->dataPtr->key, {}, this->dataPtr->value);
       }
     }
     else if (this->dataPtr->typeName == "ignition::math::Quaterniond" ||
