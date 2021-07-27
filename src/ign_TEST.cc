@@ -812,12 +812,14 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
   // Check an SDF with an invalid relative frame at the top level model
   {
-    std::string path = pathBase + "/top_level_frames.sdf";
+    std::string path = pathBase + "/model_top_level_frame.sdf";
 
     std::string output =
         custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
-    EXPECT_NE(output.find("invalid relative frame"), std::string::npos)
-        << output;
+    EXPECT_NE(
+        output.find("Attribute //pose[@relative_to] of top level model must be "
+            "left empty, found //pose[@relative_to='some_frame']"),
+        std::string::npos) << output;
   }
 }
 

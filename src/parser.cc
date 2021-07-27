@@ -703,8 +703,18 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
       Converter::Convert(_xmlDoc, SDF::Version());
     }
 
-    // parse new sdf xml
     auto *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
+
+    // Perform all the pre-checks necessary for the XML elements before reading
+    if (!checkXml(elemXml, _source, _errors))
+    {
+      _errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Errors were found when checking the XML of element<"
+          + _sdf->Root()->GetName() + ">."});
+      return false;
+    }
+
+    // parse new sdf xml
     if (!readXml(elemXml, _sdf->Root(), _config, _source, _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
@@ -796,6 +806,15 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
       elemXml = sdfNode->FirstChildElement(_sdf->GetName().c_str());
     }
 
+    // Perform all the pre-checks necessary for the XML elements before reading
+    if (!checkXml(elemXml, _source, _errors))
+    {
+      _errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "Errors were found when checking the XML of element["
+          + _sdf->GetName() + "]."});
+      return false;
+    }
+
     // parse new sdf xml
     if (!readXml(elemXml, _sdf, _config, _source, _errors))
     {
@@ -827,6 +846,46 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
       sdfdbg << "<sdf> element has no version\n";
     }
     return false;
+  }
+
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool checkXml(tinyxml2::XMLElement *_xml, const std::string &_source,
+    Errors &_errors)
+{
+  std::string errorSourcePath = _source;
+  if (_source == kSdfStringSource || _source == kUrdfStringSource)
+    errorSourcePath = "<" + _source + ">";
+
+  // Top level models must have an empty relative_to frame on the top level
+  // pose.
+  {
+    if (tinyxml2::XMLElement *topLevelElem = _xml->FirstChildElement("model"))
+    {
+      if (tinyxml2::XMLElement *topLevelPose =
+          topLevelElem->FirstChildElement("pose"))
+      {
+        if (const char *relativeTo = topLevelPose->Attribute("relative_to"))
+        {
+          const std::string relativeToStr(relativeTo);
+          if (!relativeToStr.empty())
+          {
+            std::stringstream sstream;
+            sstream << "Attribute //pose[@relative_to] of top level model "
+                << "must be left empty, found //pose[@relative_to='"
+                << relativeToStr << "'].\n";
+            _errors.push_back({
+                ErrorCode::ATTRIBUTE_INVALID,
+                sstream.str(),
+                errorSourcePath,
+                topLevelPose->GetLineNum()});
+            return false;
+          }
+        }
+      }
+    }
   }
 
   return true;
