@@ -20,6 +20,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <unordered_set>
 
 #include <ignition/math/SemanticVersion.hh>
 
@@ -855,6 +856,11 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
 bool checkXml(tinyxml2::XMLElement *_xml, const std::string &_source,
     Errors &_errors)
 {
+  // A null XML element is still valid as it might not be a mandatory element.
+  // Further errors will be deciphered by calling readXml with its SDF ptr.
+  if (!_xml)
+    return true;
+
   std::string errorSourcePath = _source;
   if (_source == kSdfStringSource || _source == kUrdfStringSource)
     errorSourcePath = "<" + _source + ">";
@@ -864,18 +870,29 @@ bool checkXml(tinyxml2::XMLElement *_xml, const std::string &_source,
   {
     if (tinyxml2::XMLElement *topLevelElem = _xml->FirstChildElement("model"))
     {
+      std::unordered_set<std::string> frames;
+      tinyxml2::XMLElement *frame = topLevelElem->FirstChildElement("frame");
+      while (frame)
+      {
+        if (const char* frameName = frame->Attribute("name"))
+        {
+          frames.insert(std::string(frameName));
+        }
+        frame = frame->NextSiblingElement("frame");
+      }
+
       if (tinyxml2::XMLElement *topLevelPose =
           topLevelElem->FirstChildElement("pose"))
       {
         if (const char *relativeTo = topLevelPose->Attribute("relative_to"))
         {
           const std::string relativeToStr(relativeTo);
-          if (!relativeToStr.empty())
+          if (!relativeToStr.empty() &&
+              frames.find(relativeToStr) == frames.end())
           {
             std::stringstream sstream;
-            sstream << "Attribute //pose[@relative_to] of top level model "
-                << "must be left empty, found //pose[@relative_to='"
-                << relativeToStr << "'].\n";
+            sstream << "Frame defined in //pose[@relative_to='" << relativeToStr
+                << "'] is unavailable in the context of this model.\n";
             _errors.push_back({
                 ErrorCode::ATTRIBUTE_INVALID,
                 sstream.str(),
