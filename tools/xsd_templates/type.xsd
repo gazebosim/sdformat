@@ -1,7 +1,0 @@
-<xs:complexType name='{name}'>
-    <xs:choice maxOccurs='unbounded'>
-{elements}
-    </xs:choice>
-
-{attributes}
-</xs:complexType>

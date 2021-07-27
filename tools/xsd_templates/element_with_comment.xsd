@@ -1,5 +1,0 @@
-<xs:choice  minOccurs='{min_occurs}' maxOccurs='{max_occurs}'>
-    <xs:element name='{name}' type='{type}'>
-      {description}
-    </xs:element>
-</xs:choice>
