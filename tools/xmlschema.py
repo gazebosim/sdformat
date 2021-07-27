@@ -1,8 +1,18 @@
 from xml.etree import ElementTree
+
 from pathlib import Path
 import argparse
 from dataclasses import dataclass
 from typing import List
+
+
+def _tabulate(input:str, offset:int=0, style:str=" "*4) -> str:
+    """Given XML/XSD input, add indentation and return it"""
+    formatted = ""
+    for line in input.split("\n")[:-1]:
+        formatted += style * offset + line + "\n"
+    return formatted
+
 
 cmd_arg_parser = argparse.ArgumentParser(description="Create an XML schema from a SDFormat file.")
 cmd_arg_parser.add_argument("-i", "--in", dest="source", required=True, type=str, help="SDF file inside of directory to compile.")
@@ -16,15 +26,11 @@ source:Path = source_dir / args.source
 template_dir = Path(__file__).parent / "xsd_templates"
 xsd_file_template:str = (template_dir / "file.xsd").read_text()
 
-
-def _tabulate(input:str, offset:int=0) -> str:
-    formatted = ""
-    for line in input.split("\n")[:-1]:
-        formatted += (" " * 4) * offset + line + "\n"
-    return formatted
-
 # collect existing namespaces
-namespaces = {"types": f"{args.ns_prefix}/types"}
+namespaces = {
+    "types": "http://sdformat.org/schemas/types.xsd",
+    "xs": "http://www.w3.org/2001/XMLSchema"
+}
 for path in source_dir.iterdir():
     if not path.is_file():
         continue
@@ -33,6 +39,17 @@ for path in source_dir.iterdir():
         continue
 
     namespaces[path.stem] = f"{args.ns_prefix}/{path.stem}"
+    ElementTree.register_namespace(path.stem, f"{args.ns_prefix}/{path.stem}")
+
+
+def _to_qname(name:str) -> str:
+    try:
+        prefix, name = name.split(":")
+    except ValueError:
+        # no prefix
+        return name
+    else:
+        return f"{{{namespaces[prefix]}}}{name}"
 
 @dataclass
 class Element:
@@ -41,9 +58,6 @@ class Element:
     required:str
     default:str=None
     description:str=None
-
-    def to_xsd(self):
-        return f"<xs:element name='{self.name}' type='{self.type}' />"
 
     def to_typedef(self):
         """The string used inside a ComplexType to refer to this element"""
@@ -70,7 +84,39 @@ class Element:
             description = self.description,
         )
 
-        return _tabulate(template, 2)
+        return template
+
+    def to_basic(self):
+        el = ElementTree.Element(_to_qname("xs:element"))
+        el.set("name", self.name)
+        el.set("type", self.type)
+        if self.default:
+            el.set("default", self.default)
+        return el
+
+    def to_etree_element(self):
+        el = ElementTree.Element(_to_qname("xs:element"))
+        el.set("name", self.name)
+        el.set("type", self.type)
+        if self.default:
+            el.set("default", self.default)
+
+        required_codes = {
+            "0" : ("0", "1"),
+            "1" : ("1", "1"),
+            "+" : ("1", "unbounded"),
+            "*" : ("0", "unbounded"),
+            "-1" : ("0", "0")
+        }
+        min_occurs, max_occurs = required_codes[self.required]
+        choice = ElementTree.Element(_to_qname("xs:choice"))
+        choice.tail = "\n"
+        choice.set("minOccurs", min_occurs)
+        choice.set("maxOccurs", max_occurs)
+        choice.append(el)
+
+        return choice
+
 
 @dataclass
 class Attribute:
@@ -89,7 +135,20 @@ class Attribute:
             default = self.default
         )
 
-        return _tabulate(template, 1)
+        return template
+
+    def to_etree_element(self):
+        el = ElementTree.Element(_to_qname("xs:attribute"))
+        el.tail = "\n"
+
+        el.set("name", self.name)
+        el.set("type", self.type)
+        el.set("use", "required" if self.required == "1" else "optional")
+        
+        if self.default is not None:
+            el.set("default", self.default)
+
+        return el
 
 @dataclass
 class ComplexType:
@@ -104,12 +163,12 @@ class ComplexType:
             if "default" in attribute.attrib.keys():
                     default = attribute.attrib["default"]
 
-            attributes.append(Attribute(
+            attributes.append(_tabulate(Attribute(
                 name = attribute.attrib["name"],
                 type = attribute.attrib["type"],
                 required= attribute.attrib["required"],
                 default=default
-            ).to_typedef())
+            ).to_typedef(), 1))
 
         for child in self.element.findall("element"):
             if "copy_data" in child.attrib:
@@ -120,14 +179,14 @@ class ComplexType:
                 continue
 
             name = child.attrib["name"]
-            elements.append(declared["elements"][name].to_typedef())
+            elements.append(_tabulate(declared["elements"][name].to_typedef(), 2))
 
         for child in self.element.findall("include"):
             child:ElementTree.Element
             other_file = source_dir / child.attrib["filename"]
             other_root = ElementTree.parse(other_file).getroot()
             name = other_root.attrib["name"]
-            elements.append(declared["elements"][name].to_typedef())
+            elements.append(_tabulate(declared["elements"][name].to_typedef(), 2))
 
         if "type" in self.element.attrib:
             if len(elements) > 0:
@@ -152,6 +211,58 @@ class ComplexType:
             )
 
         return template
+
+    def to_etree_element(self, declared):
+        elements = list()
+        attributes = list()
+
+        for attribute in self.element.findall("attribute"):
+            if "default" in attribute.attrib.keys():
+                    default = attribute.attrib["default"]
+
+            attributes.append(Attribute(
+                name = attribute.attrib["name"],
+                type = attribute.attrib["type"],
+                required= attribute.attrib["required"],
+                default=default
+            ).to_etree_element())
+
+        for child in self.element.findall("element"):
+            if "copy_data" in child.attrib:
+                # special element for plugin.sdf to allow
+                # declare that any children are allowed
+                anyEl = ElementTree.Element(_to_qname("xs:any"))
+                anyEl.set("minOccurs", "0")
+                anyEl.set("maxOccurs", "unbounded")
+                anyEl.set("processContents", "skip")
+                elements.append(anyEl)
+                continue
+
+            name = child.attrib["name"]
+            elements.append(declared["elements"][name].to_etree_element())
+
+        for child in self.element.findall("include"):
+            child:ElementTree.Element
+            other_file = source_dir / child.attrib["filename"]
+            other_root = ElementTree.parse(other_file).getroot()
+            name = other_root.attrib["name"]
+            elements.append(declared["elements"][name].to_etree_element())
+
+        el = ElementTree.Element(_to_qname("xs:complexType"))
+        el.set("name", self.name)
+        el.tail = "\n"
+
+        if elements:
+            choice = ElementTree.Element(_to_qname("xs:choice"))
+            choice.set("maxOccurs", "unbounded")
+            choice.tail = "\n"
+            choice.extend(elements)
+            el.append(choice)
+
+        el.extend(attributes)
+
+        return el
+
 
 @dataclass
 class SimpleType:
@@ -190,6 +301,40 @@ class SimpleType:
             raise RuntimeError(f"Unknown primitive type: {name}") from None
 
         return f"<xs:simpleType name='{name}'><xs:restriction base='{referred}' /></xs:simpleType>"
+
+    def to_etree_element(self):
+        name = self.name
+        known_types = {
+            "unsigned int": "xs:unsignedInt",
+            "unsigned long": "xs:unsignedLong",
+            "bool": "xs:boolean",
+            "string":"xs:string",
+            "double":"xs:double",
+            "int":"xs:int",
+            "float":"xs:float",
+            "char":"xs:char",
+            "vector3": "types:vector3",
+            "vector2d": "types:vector2d",
+            "vector2i": "types:vector2i",
+            "pose": "types:pose",
+            "time": "types:time",
+            "color": "types:color",
+        }
+
+        try:
+            referred = known_types[name]
+        except KeyError:
+            raise RuntimeError(f"Unknown primitive type: {name}") from None
+
+        restriction = ElementTree.Element(_to_qname("xs:restriction"))
+        restriction.set("base", referred)
+
+        el = ElementTree.Element(_to_qname("xs:simpleType"))
+        el.set("name", name)
+        el.append(restriction)
+        el.tail = "\n"
+
+        return el
 
 # parse file
 # recurse elements of the file and track which xsd elements need to be generated
@@ -278,43 +423,48 @@ declared.setdefault("imports", set()).add(source.stem)
 expand(root, declared)
 
 
+xsd_root = ElementTree.Element(_to_qname("xs:schema"))
+xsd_root.set("xmlns", namespaces[source.stem])
+xsd_root.set("targetNamespace", namespaces[source.stem])
+xsd_root.append(declared["elements"][root.attrib["name"]].to_basic())
 strings = dict()
 
 for name in declared["imports"]:
-    ns_elements = strings.setdefault("namespaces", [])
-    ns_elements.append(f"    xmlns:{name}='{namespaces[name]}'")
-    imp_elements = strings.setdefault("imports", [])
-    imp_elements.append(f"    <xs:import namespace='{namespaces[name]}' schemaLocation='./{name}.xsd'/>")
+    el = ElementTree.Element(_to_qname("xs:import"))
+    el.set("namespace", namespaces[name])
+    el.set("schemaLocation", f"./{name}.xsd")
+    el.tail = "\n"
+    
+    xsd_root.append(el)
+    xsd_root.set(f"xmlns:{name}", namespaces[name])
 
 if "simple_types" in declared:
+    el = ElementTree.Element(_to_qname("xs:import"))
+    el.set("namespace", namespaces["types"])
+    el.set("schemaLocation", f"./types.xsd")
+    el.tail = "\n"
+    
+    xsd_root.append(el)
+    xsd_root.set(f"xmlns:types", namespaces["types"])
+
     for simple_type in declared["simple_types"]:
-        elements = strings.setdefault("simple_types", [])
-        elements.append(simple_type.to_xsd())
+        xsd_root.append(simple_type.to_etree_element())
 else:
     strings["simple_types"] = list()
 
 if "complex_types" in declared:
     for complex_type in declared["complex_types"].values():
-        elements = strings.setdefault("complex_types", [])
-        elements.append(complex_type.to_xsd(declared))
+        xsd_root.append(complex_type.to_etree_element(declared))
 else:
     strings["complex_types"] = list()
 
 
 
 # write the file to disk
-substitutions = {
-    "file_namespace": namespaces[source.stem],
-    "namespaces": "\n".join(strings["namespaces"]),
-    "imports":"\n".join(strings["imports"]),
-    "element":declared["elements"][root.attrib["name"]].to_xsd(),
-    "simple_types":"\n".join(strings["simple_types"]),
-    "complex_types":"\n".join(strings["complex_types"])
-}
-
 out_dir = Path(args.target)
 if not out_dir.exists():
     out_dir.mkdir(exist_ok=True, parents=True)
 
 with open(out_dir / (source.stem + ".xsd"), "w") as out_file:
-    print(xsd_file_template.format(**substitutions), file=out_file)
+    ElementTree.ElementTree(xsd_root).write(out_file, encoding="unicode")
+    # print(xsd_string, file=out_file)
