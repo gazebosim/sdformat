@@ -41,6 +41,14 @@ const std::string SDF_TEST_PENDULUM =
   sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
                           "double_pendulum.sdf");
 
+const std::string SDF_TEST_NESTED_MODEL =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+                          "nested_canonical_link.sdf");
+
+const std::string SDF_TEST_STATE =
+  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
+                          "world_with_state.sdf");
+
 
 class SDFSchemaGenerator : public testing::Test
 {
@@ -73,9 +81,20 @@ TEST_F(SDFSchemaGenerator, TestPR2Model)
   runXMLlint(SDF_TEST_PR2);
 }
 
-
 /////////////////////////////////////////////////
 TEST_F(SDFSchemaGenerator, TestTurtleBotModel)
 {
   runXMLlint(SDF_TEST_TURTLEBOT);
+}
+
+/////////////////////////////////////////////////
+TEST_F(SDFSchemaGenerator, TestNestedModel)
+{
+  runXMLlint(SDF_TEST_NESTED_MODEL);
+}
+
+/////////////////////////////////////////////////
+TEST_F(SDFSchemaGenerator, TestState)
+{
+  runXMLlint(SDF_TEST_STATE);
 }
