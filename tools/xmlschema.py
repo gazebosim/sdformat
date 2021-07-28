@@ -15,7 +15,6 @@ cmd_arg_parser.add_argument("--ns-prefix", dest="ns_prefix", default="sdformat",
 args = cmd_arg_parser.parse_args()
 source_dir = Path(args.directory)
 source:Path = source_dir / args.source
-template_dir = Path(__file__).parent / "xsd_templates"
 
 root = ElementTree.parse(source).getroot()
 declared = dict()
@@ -79,8 +78,9 @@ class Description:
         desc_text = self.element.text
         if desc_text is None or desc_text == "":
             return list(), None
-        else:
-            desc_text = self.element.text.strip()
+
+        desc_text = self.element.text.strip()
+        desc_text.replace("\n", " ")
 
         documentation = ElementTree.Element(_to_qname("xs:documentation"))
         documentation.text = desc_text
@@ -108,37 +108,6 @@ class Element:
             if doc_el:
                 el.append(doc_el)
         return namespaces, el
-
-    def to_etree_element(self):
-        namespaces = list()
-        el = ElementTree.Element(_to_qname("xs:element"))
-        el.set("name", self.name)
-        el.set("type", self.type)
-        if self.default:
-            el.set("default", self.default)
-
-        docs = self.element.find("description")
-        if docs is not None:
-            doc_namespaces, doc_el = Description(docs).to_subtree()
-            namespaces.append(doc_namespaces)
-            if doc_el:
-                el.append(doc_el)
-    
-
-        required_codes = {
-            "0" : ("0", "1"),
-            "1" : ("1", "1"),
-            "+" : ("1", "unbounded"),
-            "*" : ("0", "unbounded"),
-            "-1" : ("0", "0")
-        }
-        min_occurs, max_occurs = required_codes[self.element.attrib["required"]]
-        choice = ElementTree.Element(_to_qname("xs:choice"))
-        choice.set("minOccurs", min_occurs)
-        choice.set("maxOccurs", max_occurs)
-        choice.append(el)
-
-        return choice
 
     def to_subtree(self):
         namespaces = list()
@@ -173,8 +142,23 @@ class Element:
         num_children = len(self.element) - len(self.element.findall("description"))
         has_children = num_children > 0
         has_type = "type" in self.element.attrib
+        has_ref = "ref" in self.element.attrib
 
-        if has_type and has_children:
+        if has_ref:
+            # I couldn't quite work out how this tag is supposed to work
+            # it appears to refer to the file from which the root element
+            # should be used to define this element. This seems equivalent
+            # to <include> though, so I am at a loss.
+            # This is a best guess implementation.
+
+            other_file = source_dir / (self.element.attrib["ref"]+".sdf")
+            other_root = ElementTree.parse(other_file).getroot()
+            name = other_root.attrib["name"]
+
+            child_ns, child_el = ComplexType(self.element).to_subtree()
+            el.set("type", f"{name}Type")
+
+        elif has_type and has_children:
             child_ns, child_el = ComplexType(self.element).to_subtree()
             namespaces.extend(child_ns)
             el.append(child_el)
@@ -341,50 +325,46 @@ class ComplexType:
 
         return namespaces, el
 
-xsd_schema = ElementTree.Element(_to_qname("xs:schema"))
-xsd_schema.set("xmlns", namespaces[source.stem])
-xsd_schema.set("targetNamespace", namespaces[source.stem])
+def setup_schema(used_ns:list, use_default_ns:bool=True) -> ElementTree.Element:
+    xsd_schema = ElementTree.Element(_to_qname("xs:schema"))
 
-# add types.xsd to every type schema
-# TODO: only add it to those that use a types type
-el = ElementTree.Element(_to_qname("xs:import"))
-el.set("namespace", namespaces["types"])
-el.set("schemaLocation", f"./types.xsd")
-el.tail = "\n"
-xsd_schema.append(el)
-xsd_schema.set(f"xmlns:types", namespaces["types"])
+    if use_default_ns:
+        xsd_schema.set("xmlns", namespaces[source.stem])
+        xsd_schema.set("targetNamespace", namespaces[source.stem])
 
-used_ns, element = ComplexType(root, root.attrib["name"]+"Type").to_subtree()
+    for name in set(used_ns):
+        el = ElementTree.Element(_to_qname("xs:import"))
+        el.set("namespace", namespaces[name])
 
-for name in set(used_ns):
-    el = ElementTree.Element(_to_qname("xs:import"))
-    el.set("namespace", namespaces[name])
-    el.set("schemaLocation", f"./{name}Type.xsd")
-    
-    xsd_schema.append(el)
-    xsd_schema.set(f"xmlns:{name}", namespaces[name])
+        if name == "types":
+            # types is a special class (not generated)
+            el.set("schemaLocation", f"./types.xsd")
+        else:
+            el.set("schemaLocation", f"./{name}Type.xsd")
+        
+        xsd_schema.append(el)
+        xsd_schema.set(f"xmlns:{name}", namespaces[name])
 
-xsd_schema.append(element)
+    return xsd_schema
 
 out_dir = Path(args.target)
-
 if not out_dir.exists():
     out_dir.mkdir(exist_ok=True, parents=True)
+
 # write type file
+used_ns, element = ComplexType(root, root.attrib["name"]+"Type").to_subtree()
+xsd_schema = setup_schema(used_ns)
+xsd_schema.append(element)
 with open(out_dir / (source.stem + "Type.xsd"), "w") as out_file:
     ElementTree.ElementTree(xsd_schema).write(out_file, encoding="unicode")
 
 # write element file
-xsd_schema = ElementTree.Element(_to_qname("xs:schema"))
-name = source.stem
-el = ElementTree.Element(_to_qname("xs:import"))
-el.set("namespace", namespaces[name])
-el.set("schemaLocation", f"./{name}Type.xsd")
-el.tail = "\n"
-xsd_schema.append(el)
-xsd_schema.set(f"xmlns:{name}", namespaces[name])
-root_ns, root_el = Element(root).to_basic()
-root_el.set("type", f"{name}:{root.attrib['name']}Type")
-xsd_schema.append(root_el)
+file_name = source.stem
+tag_name = root.attrib["name"]
+used_ns, element = Element(root).to_basic()
+element.set("type", f"{file_name}:{tag_name}Type")
+used_ns.append(file_name)
+xsd_schema = setup_schema(used_ns, use_default_ns=False)
+xsd_schema.append(element)
 with open(out_dir / (source.stem + ".xsd"), "w") as out_file:
     ElementTree.ElementTree(xsd_schema).write(out_file, encoding="unicode")
