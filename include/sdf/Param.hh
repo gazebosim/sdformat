@@ -213,6 +213,7 @@ namespace sdf
 
     /// \brief Private method to set the Element from a passed-in string.
     /// \param[in] _value Value to set the parameter to.
+    /// \return True if the parameter was successfully set, false otherwise.
     private: bool ValueFromString(const std::string &_value);
 
     /// \brief Private data
@@ -258,6 +259,14 @@ namespace sdf
 
     /// \brief This parameter's default value
     public: ParamVariant defaultValue;
+
+    /// \brief Method used to set the Element from a passed-in string
+    /// \param[in] _typeName The data type of the value to set
+    /// \param[in] _valueStr The value as a string
+    /// \param[out] _valueToSet The value to set
+    public: bool ValueFromStringImpl(const std::string &_typeName,
+                                     const std::string &_valueStr,
+                                     ParamVariant &_valueToSet);
   };
 
   ///////////////////////////////////////////////
@@ -291,50 +300,62 @@ namespace sdf
   template<typename T>
   bool Param::Get(T &_value) const
   {
-    try
+    T *value = std::get_if<T>(&this->dataPtr->value);
+    if (value)
+      _value = *value;
+    else
     {
-      if (typeid(T) == typeid(bool) && this->dataPtr->typeName == "string")
-      {
-        std::string strValue = std::get<std::string>(this->dataPtr->value);
-        std::transform(strValue.begin(), strValue.end(), strValue.begin(),
-            [](unsigned char c)
-            {
-              return static_cast<unsigned char>(std::tolower(c));
-            });
+      std::string valueStr = this->GetAsString();
+      bool success = false;
+      ParamPrivate::ParamVariant pv;
 
-        std::stringstream tmp;
-        if (strValue == "true" || strValue  == "1")
-        {
-          tmp << "1";
-        }
-        else
-        {
-          tmp << "0";
-        }
-        tmp >> _value;
-      }
-      else
+      if constexpr (std::is_same_v<T, bool>)
+        success = this->dataPtr->ValueFromStringImpl("bool", valueStr, pv);
+      else if constexpr (std::is_same_v<T, char>)
+        success = this->dataPtr->ValueFromStringImpl("char", valueStr, pv);
+      else if constexpr (std::is_same_v<T, std::string>)
+        success = this->dataPtr->ValueFromStringImpl("string", valueStr, pv);
+      else if constexpr (std::is_same_v<T, int>)
+        success = this->dataPtr->ValueFromStringImpl("int", valueStr, pv);
+      else if constexpr (std::is_same_v<T, std::uint64_t>)
+        success = this->dataPtr->ValueFromStringImpl("uint64_t", valueStr, pv);
+      else if constexpr (std::is_same_v<T, unsigned int>)
       {
-        T *value = std::get_if<T>(&this->dataPtr->value);
-        if (value)
-          _value = *value;
-        else
-        {
-          std::stringstream ss;
-          ss << ParamStreamer{this->dataPtr->value};
-          ss >> _value;
-        }
+        success
+          = this->dataPtr->ValueFromStringImpl("unsigned int", valueStr, pv);
       }
+      else if constexpr (std::is_same_v<T, double>)
+        success = this->dataPtr->ValueFromStringImpl("double", valueStr, pv);
+      else if constexpr (std::is_same_v<T, float>)
+        success = this->dataPtr->ValueFromStringImpl("float", valueStr, pv);
+      else if constexpr (std::is_same_v<T, sdf::Time>)
+        success = this->dataPtr->ValueFromStringImpl("time", valueStr, pv);
+      else if constexpr (std::is_same_v<T, ignition::math::Angle>)
+        success = this->dataPtr->ValueFromStringImpl("angle", valueStr, pv);
+      else if constexpr (std::is_same_v<T, ignition::math::Color>)
+        success = this->dataPtr->ValueFromStringImpl("color", valueStr, pv);
+      else if constexpr (std::is_same_v<T, ignition::math::Vector2i>)
+        success = this->dataPtr->ValueFromStringImpl("vector2i", valueStr, pv);
+      else if constexpr (std::is_same_v<T, ignition::math::Vector2d>)
+        success = this->dataPtr->ValueFromStringImpl("vector2d", valueStr, pv);
+      else if constexpr (std::is_same_v<T, ignition::math::Vector3d>)
+        success = this->dataPtr->ValueFromStringImpl("vector3", valueStr, pv);
+      else if constexpr (std::is_same_v<T, ignition::math::Quaterniond>)
+      {
+        success
+          = this->dataPtr->ValueFromStringImpl("quaternion", valueStr, pv);
+      }
+      else if constexpr (std::is_same_v<T, ignition::math::Pose3d>)
+        success = this->dataPtr->ValueFromStringImpl("pose", valueStr, pv);
+      else
+        sdferr << "Unknown parameter type[" << typeid(T).name() << "]\n";
+
+      if (success)
+        _value = std::get<T>(pv);
+
+      return success;
     }
-    catch(...)
-    {
-      sdferr << "Unable to convert parameter["
-             << this->dataPtr->key << "] "
-             << "whose type is["
-             << this->dataPtr->typeName << "], to "
-             << "type[" << typeid(T).name() << "]\n";
-      return false;
-    }
+
     return true;
   }
 
