@@ -131,6 +131,134 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 }
 
 //////////////////////////////////////////////////
+/// Helper function to insert included elements into a parent element.
+/// \param[in,out] _parent The parent element that contains the <include> tag
+/// \param[in] _includeSDF The included element (eg. model)
+/// \param[in] _merge Whether the included element should be merged into the 
+/// parent element. If true, children elements of _includeSDF will be copied to 
+/// _parent without introducing a new model scope. N.B, this only works for 
+/// included nested models.
+static void insertIncludedElement(sdf::ElementPtr _parent,
+                                  sdf::ElementPtr _includeSDF,
+                                  bool _merge = false)
+{
+  if (_merge && _includeSDF->GetName() == "model")
+  {
+    std::string modelName = _includeSDF->Get<std::string>("name");
+
+    ElementPtr proxyModelFrame = _parent->AddElement("frame");
+    const std::string proxyModelFrameName = "__" + modelName + "__model__";
+
+    proxyModelFrame->GetAttribute("name")->Set(proxyModelFrameName);
+
+    // Determine the canonical link so the proxy frame can be attached to it
+    std::string canonicalLinkName = "";
+    if (_includeSDF->GetAttribute("canonical_link")->GetSet())
+    {
+      canonicalLinkName =
+        _includeSDF->GetAttribute("canonical_link")->GetAsString();
+    }
+    else if (_includeSDF->HasElement("link"))
+    {
+      canonicalLinkName =
+        _includeSDF->GetElement("link")->GetAttribute("name")->GetAsString();
+    }
+
+    proxyModelFrame->GetAttribute("attached_to")->Set(canonicalLinkName);
+
+    auto modelPose = _includeSDF->Get<ignition::math::Pose3d>("pose");
+
+    ElementPtr proxyModelFramePose = proxyModelFrame->AddElement("pose");
+    proxyModelFramePose->Set(modelPose);
+
+    // Set the proxyModelFrame's //pose/@relative_to to the frame used in
+    // //include/pose/@relative_to.
+    std::string modelPoseRelativeTo = "";
+    if (_includeSDF->HasElement("pose"))
+    {
+      modelPoseRelativeTo =
+        _includeSDF->GetElement("pose")->Get<std::string>("relative_to");
+    }
+
+    // If empty, use "__model__", since leaving it empty would make it
+    // relative_to the canonical link frame specified in //frame/@attached_to.
+    if (modelPoseRelativeTo.empty())
+    {
+      modelPoseRelativeTo = "__model__";
+    }
+
+    proxyModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
+
+    auto setAttributeToProxyFrame =
+      [&proxyModelFrameName](const std::string &_attr, sdf::ElementPtr _elem,
+          bool updateIfEmpty)
+      {
+        if (nullptr == _elem)
+          return;
+
+        auto attribute = _elem->GetAttribute(_attr);
+        if (attribute->GetAsString() == "__model__" ||
+            (updateIfEmpty && attribute->GetAsString().empty()))
+        {
+          attribute->Set(proxyModelFrameName);
+        }
+      };
+
+    for (auto elem = _includeSDF->GetFirstElement(); elem;
+        elem = elem->GetNextElement())
+    {
+      if ((elem->GetName() == "link") || (elem->GetName() == "model"))
+      {
+        // Add a pose element even if the element doesn't originally have one
+        setAttributeToProxyFrame("relative_to", elem->GetElement("pose"), true);
+      }
+      else if (elem->GetName() == "frame")
+      {
+        // If //frame/@attached_to is empty, explicitly set it to the name
+        // of the nested model frame.
+        setAttributeToProxyFrame("attached_to", elem, true);
+        setAttributeToProxyFrame("relative_to", elem->GetElementImpl("pose"),
+            false);
+      }
+      else if (elem->GetName() == "joint")
+      {
+        setAttributeToProxyFrame("relative_to", elem->GetElementImpl("pose"),
+            false);
+        if (auto axis = elem->GetElementImpl("axis"); axis)
+        {
+          setAttributeToProxyFrame("expressed_in", axis->GetElementImpl("xyz"),
+                                   false);
+        }
+
+        if (auto axis2 = elem->GetElementImpl("axis2"); axis2)
+        {
+          setAttributeToProxyFrame("expressed_in", axis2->GetElementImpl("xyz"),
+                                   false);
+        }
+      }
+
+      // Only named and custom elements are copied. Other elements, such as
+      // <static>, <self_collide>, and <enable_wind> are ignored.
+      if ((elem->GetName() == "link") || (elem->GetName() == "model") ||
+          (elem->GetName() == "joint") || (elem->GetName() == "frame") ||
+          (elem->GetName() == "plugin") ||
+          (elem->GetName().find(':') != std::string::npos))
+      {
+        _parent->InsertElement(elem);
+      }
+    }
+  }
+  else if (_merge)
+  {
+    sdferr << "Merge is only supported for included models\n";
+  }
+  else
+  {
+    _parent->InsertElement(_includeSDF);
+  }
+}
+
+//////////////////////////////////////////////////
 bool init(SDFPtr _sdf)
 {
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
@@ -1137,6 +1265,30 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     {
       if (std::string("include") == elemXml->Value())
       {
+        // Validate the //include tag by calling readXml on it. This is only
+        // here for error checking. We won't use the resulting sdf::ElementPtr
+        // because the contents of the //include are accessed directly via
+        // tinyxml in the subsequent code.
+        for (unsigned int descCounter = 0;
+            descCounter != _sdf->GetElementDescriptionCount(); ++descCounter)
+        {
+          ElementPtr elemDesc = _sdf->GetElementDescription(descCounter);
+          if (elemDesc->GetName() == elemXml->Value())
+          {
+            ElementPtr element = elemDesc->Clone();
+            if (!readXml(elemXml, element, _config, _source, _errors))
+            {
+              Error err(
+                  ErrorCode::ELEMENT_INVALID,
+                  std::string("Error reading element <") +
+                  elemXml->Value() + ">",
+                  _source,
+                  elemXml->GetLineNum());
+              _errors.push_back(err);
+            }
+          }
+        }
+
         std::string modelPath;
         std::string uri;
         tinyxml2::XMLElement *uriElement = elemXml->FirstChildElement("uri");
@@ -1429,7 +1581,10 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             copyChildren(includeInfo, elemXml, false);
             includeSDFFirstElem->SetIncludeElement(includeInfo);
           }
-          _sdf->InsertElement(includeSDFFirstElem);
+          bool toMerge = _sdf->GetName() == "model" &&
+                         elemXml->BoolAttribute("merge", false);
+
+          insertIncludedElement(_sdf, includeSDFFirstElem, toMerge);
 
           continue;
         }

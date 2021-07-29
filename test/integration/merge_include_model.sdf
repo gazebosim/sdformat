@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="world_model">
+    <model name="robot">
+      <include merge="true">
+        <uri>merge_robot</uri>
+        <pose>100 0 0 0 0 0</pose>
+      </include>
+    </model>
+  </world>
+</sdf>
