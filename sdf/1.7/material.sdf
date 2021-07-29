@@ -95,6 +95,14 @@
       <element name="emissive_map" type="string" default="" required="0">
         <description>Filename of the emissive map.</description>
       </element>
+
+      <element name="light_map" type="string" default="" required="0">
+        <attribute name="uv_set" type="unsigned int" default="0" required="0">
+          <description>Index of the texture coordinate set to use.</description>
+        </attribute>
+        <description>Filename of the light map. The light map is a prebaked light texture that is applied over the albedo map</description>
+      </element>
+
     </element>
 
     <element name="specular" required="0">
@@ -135,6 +143,13 @@
       <element name="emissive_map" type="string" default="" required="0">
         <description>Filename of the emissive map.</description>
       </element>
+    </element>
+
+    <element name="light_map" type="string" default="" required="0">
+      <attribute name="uv_set" type="unsigned int" default="0" required="0">
+        <description>Index of the texture coordinate set to use.</description>
+      </attribute>
+      <description>Filename of the light map. The light map is a prebaked light texture that is applied over the albedo map</description>
     </element>
 
   </element>
