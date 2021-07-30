@@ -54,8 +54,8 @@ namespace sdf
   //
 
   class SDFORMAT_VISIBLE Element;
-  typedef std::shared_ptr<Element> ElementPtr;
-  typedef std::weak_ptr<Element> ElementWeakPtr;
+  using ElementPtr = std::shared_ptr<Element>;
+  using ElementWeakPtr = std::weak_ptr<Element>;
 
   class SDFORMAT_VISIBLE Param;
 

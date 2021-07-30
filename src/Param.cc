@@ -456,7 +456,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     // Catch invalid argument exception from std::stod
     catch(std::invalid_argument &)
     {
-      sdferr << "Invalid argument. Unable to set value ["<< token
+      sdferr << "Invalid argument. Unable to set value ["<< _input
              << "] for key [" << _key << "].\n";
       isValidPose = false;
       break;
