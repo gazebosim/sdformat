@@ -31,6 +31,7 @@
 #include "sdf/parser.hh"
 #include "sdf/Filesystem.hh"
 #include "test_config.h"
+#include "test_utils.hh"
 
 //////////////////////////////////////////////////
 TEST(Pose1_9, ModelPose)
@@ -44,9 +45,7 @@ TEST(Pose1_9, ModelPose)
   // Load the SDF file
   sdf::Root root;
   auto errors = root.Load(testFile);
-  for (const auto e : errors)
-    std::cout << e << std::endl;
-  ASSERT_TRUE(errors.empty());
+  ASSERT_TRUE(errors.empty()) << errors;
   EXPECT_EQ(SDF_PROTOCOL_VERSION, root.Version());
 
   const sdf::World *world = root.WorldByIndex(0);
@@ -433,12 +432,18 @@ static bool contains(const std::string &_a, const std::string &_b)
 //////////////////////////////////////////////////
 TEST(Pose1_9, InvalidRotationType)
 {
-  // Capture sdferr output
+  // Redirect sdferr output
   std::stringstream buffer;
-  auto old = std::cerr.rdbuf(buffer.rdbuf());
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
 
 #ifdef _WIN32
   sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
 #endif
 
   buffer.str("");
@@ -454,29 +459,30 @@ TEST(Pose1_9, InvalidRotationType)
       </world>
     </sdf>)";
 
-  sdf::Errors errors;
-  sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
-  EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testString);
+  ASSERT_FALSE(errors.empty()) << errors;
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+  EXPECT_EQ(5, errors[0].LineNumber());
   EXPECT_PRED2(contains, buffer.str(),
       "Invalid attribute //pose[@rotation_type='rpy_xyz']");
-
-  // Revert cerr rdbug so as to not interfere with other tests
-  std::cerr.rdbuf(old);
-#ifdef _WIN32
-  sdf::Console::Instance()->SetQuiet(true);
-#endif
 }
 
 //////////////////////////////////////////////////
 TEST(Pose1_9, InvalidNumberOfPoseValues)
 {
-  // Capture sdferr output
+  // Redirect sdferr output
   std::stringstream buffer;
-  auto old = std::cerr.rdbuf(buffer.rdbuf());
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
 
 #ifdef _WIN32
   sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
 #endif
 
   {
@@ -493,10 +499,11 @@ TEST(Pose1_9, InvalidNumberOfPoseValues)
         </world>
       </sdf>)";
 
-    sdf::Errors errors;
-    sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
-    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testString);
+    ASSERT_FALSE(errors.empty()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+    EXPECT_EQ(5, errors[0].LineNumber());
     EXPECT_PRED2(contains, buffer.str(),
         "must have 6 values, but 5 were found instead.");
   }
@@ -514,10 +521,11 @@ TEST(Pose1_9, InvalidNumberOfPoseValues)
         </world>
       </sdf>)";
 
-    sdf::Errors errors;
-    sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
-    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testString);
+    ASSERT_FALSE(errors.empty()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+    EXPECT_EQ(5, errors[0].LineNumber());
     EXPECT_PRED2(contains, buffer.str(),
         "must have 6 values, but 7 were found instead.");
   }
@@ -535,10 +543,11 @@ TEST(Pose1_9, InvalidNumberOfPoseValues)
         </world>
       </sdf>)";
 
-    sdf::Errors errors;
-    sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
-    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testString);
+    ASSERT_FALSE(errors.empty()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+    EXPECT_EQ(5, errors[0].LineNumber());
     EXPECT_PRED2(contains, buffer.str(),
         "must have 6 values, but 5 were found instead.");
   }
@@ -556,10 +565,11 @@ TEST(Pose1_9, InvalidNumberOfPoseValues)
         </world>
       </sdf>)";
 
-    sdf::Errors errors;
-    sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
-    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testString);
+    ASSERT_FALSE(errors.empty()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+    EXPECT_EQ(5, errors[0].LineNumber());
     EXPECT_PRED2(contains, buffer.str(),
         "must have 6 values, but 7 were found instead.");
   }
@@ -577,10 +587,11 @@ TEST(Pose1_9, InvalidNumberOfPoseValues)
         </world>
       </sdf>)";
 
-    sdf::Errors errors;
-    sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
-    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testString);
+    ASSERT_FALSE(errors.empty()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+    EXPECT_EQ(5, errors[0].LineNumber());
     EXPECT_PRED2(contains, buffer.str(),
         "must have 6 values, but 5 were found instead.");
   }
@@ -598,10 +609,11 @@ TEST(Pose1_9, InvalidNumberOfPoseValues)
         </world>
       </sdf>)";
 
-    sdf::Errors errors;
-    sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
-    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testString);
+    ASSERT_FALSE(errors.empty()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+    EXPECT_EQ(5, errors[0].LineNumber());
     EXPECT_PRED2(contains, buffer.str(),
         "must have 6 values, but 5 were found instead.");
   }
@@ -619,10 +631,11 @@ TEST(Pose1_9, InvalidNumberOfPoseValues)
         </world>
       </sdf>)";
 
-    sdf::Errors errors;
-    sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
-    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testString);
+    ASSERT_FALSE(errors.empty()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+    EXPECT_EQ(5, errors[0].LineNumber());
     EXPECT_PRED2(contains, buffer.str(),
         "must have 6 values, but 7 were found instead.");
   }
@@ -640,10 +653,11 @@ TEST(Pose1_9, InvalidNumberOfPoseValues)
         </world>
       </sdf>)";
 
-    sdf::Errors errors;
-    sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
-    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testString);
+    ASSERT_FALSE(errors.empty()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+    EXPECT_EQ(5, errors[0].LineNumber());
     EXPECT_PRED2(contains, buffer.str(),
         "must have 7 values, but 6 were found instead.");
   }
@@ -661,17 +675,12 @@ TEST(Pose1_9, InvalidNumberOfPoseValues)
         </world>
       </sdf>)";
 
-    sdf::Errors errors;
-    sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
-    EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testString);
+    ASSERT_FALSE(errors.empty()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+    EXPECT_EQ(5, errors[0].LineNumber());
     EXPECT_PRED2(contains, buffer.str(),
         "must have 7 values, but 8 were found instead.");
   }
-
-  // Revert cerr rdbug so as to not interfere with other tests
-  std::cerr.rdbuf(old);
-#ifdef _WIN32
-  sdf::Console::Instance()->SetQuiet(true);
-#endif
 }
