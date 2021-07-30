@@ -243,8 +243,8 @@ TEST(DOMSensor, Type)
   std::vector<sdf::SensorType> types = {
     sdf::SensorType::NONE,
     sdf::SensorType::ALTIMETER,
-    sdf::SensorType::CAMERA,
     sdf::SensorType::BOUNDINGBOX_CAMERA,
+    sdf::SensorType::CAMERA,
     sdf::SensorType::CONTACT,
     sdf::SensorType::DEPTH_CAMERA,
     sdf::SensorType::FORCE_TORQUE,
