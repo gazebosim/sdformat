@@ -870,29 +870,18 @@ bool checkXml(tinyxml2::XMLElement *_xml, const std::string &_source,
   {
     if (tinyxml2::XMLElement *topLevelElem = _xml->FirstChildElement("model"))
     {
-      std::unordered_set<std::string> frames;
-      tinyxml2::XMLElement *frame = topLevelElem->FirstChildElement("frame");
-      while (frame)
-      {
-        if (const char* frameName = frame->Attribute("name"))
-        {
-          frames.insert(std::string(frameName));
-        }
-        frame = frame->NextSiblingElement("frame");
-      }
-
       if (tinyxml2::XMLElement *topLevelPose =
           topLevelElem->FirstChildElement("pose"))
       {
         if (const char *relativeTo = topLevelPose->Attribute("relative_to"))
         {
           const std::string relativeToStr(relativeTo);
-          if (!relativeToStr.empty() &&
-              frames.find(relativeToStr) == frames.end())
+          if (!relativeToStr.empty())
           {
             std::stringstream sstream;
-            sstream << "Frame defined in //pose[@relative_to='" << relativeToStr
-                << "'] is unavailable in the context of this model.\n";
+            sstream << "Attribute //pose[@relative_to] of top level model "
+                << "must be left empty, found //pose[@relative_to='"
+                << relativeToStr << "'].\n";
             _errors.push_back({
                 ErrorCode::ATTRIBUTE_INVALID,
                 sstream.str(),

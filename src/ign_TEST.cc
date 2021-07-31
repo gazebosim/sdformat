@@ -817,8 +817,8 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string output =
         custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(
-        output.find("Frame defined in //pose[@relative_to='some_frame'] is "
-            "unavailable in the context of this model"),
+        output.find("Attribute //pose[@relative_to] of top level model must be "
+                    "left empty, found //pose[@relative_to='some_frame']."),
         std::string::npos) << output;
   }
 }
