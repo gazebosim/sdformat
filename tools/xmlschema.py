@@ -180,10 +180,8 @@ class Element:
             "-1" : ("0", "0")
         }
         min_occurs, max_occurs = required_codes[self.element.attrib["required"]]
-        choice = ElementTree.Element(_to_qname("xs:choice"))
-        choice.set("minOccurs", min_occurs)
-        choice.set("maxOccurs", max_occurs)
-        choice.append(el)
+        el.set("minOccurs", min_occurs)
+        el.set("maxOccurs", max_occurs)
 
         return namespaces, el
 
@@ -229,12 +227,10 @@ class Include:
             "-1" : ("0", "0")
         }
         min_occurs, max_occurs = required_codes[self.element.attrib["required"]]
-        choice = ElementTree.Element(_to_qname("xs:choice"))
-        choice.set("minOccurs", min_occurs)
-        choice.set("maxOccurs", max_occurs)
-        choice.append(el)
+        el.set("minOccurs", min_occurs)
+        el.set("maxOccurs", max_occurs)
         
-        return namespaces, choice
+        return namespaces, el
 
 
 @dataclass
