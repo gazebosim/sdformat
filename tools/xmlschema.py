@@ -101,12 +101,7 @@ class Element:
             el.set("type", self.element.attrib["type"])
         if "default" in self.element.attrib:
             el.set("default", self.element.attrib["default"])
-        docs = self.element.find("description")
-        if docs is not None:
-            doc_namespaces, doc_el = Description(docs).to_subtree()
-            namespaces.extend(doc_namespaces)
-            if doc_el:
-                el.append(doc_el)
+
         return namespaces, el
 
     def to_subtree(self):
@@ -301,6 +296,13 @@ class ComplexType:
 
         if self.name:
             el.set("name", self.name)
+
+        docs = self.element.find("description")
+        if docs is not None:
+            doc_namespaces, doc_el = Description(docs).to_subtree()
+            namespaces.extend(doc_namespaces)
+            if doc_el:
+                el.append(doc_el)
 
         if elements and "type" in self.element.attrib:
             raise NotImplementedError("Cant handle sub-elements for an element declaring a type.")
