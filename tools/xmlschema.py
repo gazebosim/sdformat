@@ -6,48 +6,78 @@ from dataclasses import dataclass
 from typing import List
 
 
-cmd_arg_parser = argparse.ArgumentParser(description="Create an XML schema from a SDFormat file.")
-cmd_arg_parser.add_argument("-i", "--in", dest="source", required=True, type=str, help="SDF file inside of directory to compile.")
-cmd_arg_parser.add_argument("-s", "--sdf", dest="directory", required=True, type=str, help="Directory containing all the SDF files.")
-cmd_arg_parser.add_argument("-o", "--out", dest="target", default=".", type=str, help="Output directory for xsd file. Will be created if it doesn't exit.")
-cmd_arg_parser.add_argument("--ns-prefix", dest="ns_prefix", default="sdformat", type=str, help="Prefix for generated xsd namespaces.")
+cmd_arg_parser = argparse.ArgumentParser(
+    description="Create an XML schema from a SDFormat file."
+)
+cmd_arg_parser.add_argument(
+    "-i",
+    "--in",
+    dest="source",
+    required=True,
+    type=str,
+    help="SDF file inside of directory to compile.",
+)
+cmd_arg_parser.add_argument(
+    "-s",
+    "--sdf",
+    dest="directory",
+    required=True,
+    type=str,
+    help="Directory containing all the SDF files.",
+)
+cmd_arg_parser.add_argument(
+    "-o",
+    "--out",
+    dest="target",
+    default=".",
+    type=str,
+    help="Output directory for xsd file. Will be created if it doesn't exit.",
+)
+cmd_arg_parser.add_argument(
+    "--ns-prefix",
+    dest="ns_prefix",
+    default="sdformat",
+    type=str,
+    help="Prefix for generated xsd namespaces.",
+)
 
 args = cmd_arg_parser.parse_args()
 source_dir = Path(args.directory)
-source:Path = source_dir / args.source
+source: Path = source_dir / args.source
 
 root = ElementTree.parse(source).getroot()
 declared = dict()
 declared["imports"] = set()
 
 
-def _to_simple_type(in_type:str) -> str:
+def _to_simple_type(in_type: str) -> str:
     known_types = {
-            "unsigned int": "xs:unsignedInt",
-            "unsigned long": "xs:unsignedLong",
-            "bool": "xs:boolean",
-            "string":"xs:string",
-            "double":"xs:double",
-            "int":"xs:int",
-            "float":"xs:float",
-            "char":"xs:char",
-            "vector3": "types:vector3",
-            "vector2d": "types:vector2d",
-            "vector2i": "types:vector2i",
-            "pose": "types:pose",
-            "time": "types:time",
-            "color": "types:color",
-        }
+        "unsigned int": "xs:unsignedInt",
+        "unsigned long": "xs:unsignedLong",
+        "bool": "xs:boolean",
+        "string": "xs:string",
+        "double": "xs:double",
+        "int": "xs:int",
+        "float": "xs:float",
+        "char": "xs:char",
+        "vector3": "types:vector3",
+        "vector2d": "types:vector2d",
+        "vector2i": "types:vector2i",
+        "pose": "types:pose",
+        "time": "types:time",
+        "color": "types:color",
+    }
 
     try:
         return known_types[in_type]
     except KeyError:
         raise RuntimeError(f"Unknown simple type: {in_type}") from None
 
+
 # collect existing namespaces
 namespaces = {
     "types": "http://sdformat.org/schemas/types.xsd",
-    "xs": "http://www.w3.org/2001/XMLSchema"
+    "xs": "http://www.w3.org/2001/XMLSchema",
 }
 for path in source_dir.iterdir():
     if not path.is_file():
@@ -60,7 +90,7 @@ for path in source_dir.iterdir():
     ElementTree.register_namespace(path.stem, f"{args.ns_prefix}/{path.stem}")
 
 
-def _to_qname(name:str) -> str:
+def _to_qname(name: str) -> str:
     try:
         prefix, name = name.split(":")
     except ValueError:
@@ -89,6 +119,7 @@ class Description:
         annotation.append(documentation)
         return list(), annotation
 
+
 @dataclass
 class Element:
     element: ElementTree.Element
@@ -114,7 +145,7 @@ class Element:
             anyEl.set("minOccurs", "0")
             anyEl.set("maxOccurs", "unbounded")
             anyEl.set("processContents", "skip")
-            
+
             docs = self.element.find("description")
             if docs is not None:
                 doc_namespaces, doc_el = Description(docs).to_subtree()
@@ -146,7 +177,7 @@ class Element:
             # to <include> though, so I am at a loss.
             # This is a best guess implementation.
 
-            other_file = source_dir / (self.element.attrib["ref"]+".sdf")
+            other_file = source_dir / (self.element.attrib["ref"] + ".sdf")
             other_root = ElementTree.parse(other_file).getroot()
             name = other_root.attrib["name"]
 
@@ -168,16 +199,16 @@ class Element:
                 namespaces.append("types")
         else:
             el.set("type", _to_simple_type("string"))
-        
+
         if "default" in self.element.attrib:
             el.set("default", self.element.attrib["default"])
 
         required_codes = {
-            "0" : ("0", "1"),
-            "1" : ("1", "1"),
-            "+" : ("1", "unbounded"),
-            "*" : ("0", "unbounded"),
-            "-1" : ("0", "0")
+            "0": ("0", "1"),
+            "1": ("1", "1"),
+            "+": ("1", "unbounded"),
+            "*": ("0", "unbounded"),
+            "-1": ("0", "0"),
         }
         min_occurs, max_occurs = required_codes[self.element.attrib["required"]]
         el.set("minOccurs", min_occurs)
@@ -198,7 +229,7 @@ class Include:
 
         el = ElementTree.Element(_to_qname("xs:element"))
         el.set("name", other_root.attrib["name"])
-        
+
         el.set("type", f"{other_file.stem}:{name}Type")
         namespaces.append(f"{other_file.stem}")
 
@@ -215,21 +246,20 @@ class Include:
         if self.element.attrib["required"] == "1":
             el.set("type", f"{other_file.stem}:{name}Type")
 
-        #TODO: remove this line
+        # TODO: remove this line
         declared.setdefault("imports", set()).add(other_file.stem)
 
-
         required_codes = {
-            "0" : ("0", "1"),
-            "1" : ("1", "1"),
-            "+" : ("1", "unbounded"),
-            "*" : ("0", "unbounded"),
-            "-1" : ("0", "0")
+            "0": ("0", "1"),
+            "1": ("1", "1"),
+            "+": ("1", "unbounded"),
+            "*": ("0", "unbounded"),
+            "-1": ("0", "0"),
         }
         min_occurs, max_occurs = required_codes[self.element.attrib["required"]]
         el.set("minOccurs", min_occurs)
         el.set("maxOccurs", max_occurs)
-        
+
         return namespaces, el
 
 
@@ -262,6 +292,7 @@ class Attribute:
             el.set("default", self.element.attrib["default"])
 
         return namespaces, el
+
 
 @dataclass
 class ComplexType:
@@ -301,7 +332,9 @@ class ComplexType:
                 el.append(doc_el)
 
         if elements and "type" in self.element.attrib:
-            raise NotImplementedError("Cant handle sub-elements for an element declaring a type.")
+            raise NotImplementedError(
+                "Cant handle sub-elements for an element declaring a type."
+            )
         elif "type" in self.element.attrib:
             el_type = _to_simple_type(self.element.attrib["type"])
             extension = ElementTree.Element(_to_qname("xs:extension"))
@@ -313,17 +346,35 @@ class ComplexType:
             simple_content.append(extension)
             el.append(simple_content)
         elif elements:
-            choice = ElementTree.Element(_to_qname("xs:choice"))
-            choice.set("maxOccurs", "unbounded")
-            choice.extend(elements)
-            el.append(choice)
+            has_unbound = any(
+                [el.attrib["maxOccurs"] in ["0", "unbounded"] for el in elements]
+            )
+            if has_unbound:
+                # IMPORTANT NOTE: Using a choice container with
+                # maxOccurs="unbounded" is a last-resort option. The
+                # resulting XSD will ignore the min/maxOccurs of the contained
+                # elements and count any combination as valid. This means that
+                # the XSD becomes over-inclusive allowing invalid SDF to
+                # validate.
+                #
+                # I'm currently not sure how to avoid this, as it appears
+                # necessary given that some elements can occur an infinite
+                # number of times and they can do so in any order.
+
+                container = ElementTree.Element(_to_qname("xs:choice"))
+                container.set("maxOccurs", "unbounded")
+            else:
+                container = ElementTree.Element(_to_qname("xs:all"))
+            container.extend(elements)
+            el.append(container)
             el.extend(attributes)
         else:
             el.extend(attributes)
 
         return namespaces, el
 
-def setup_schema(used_ns:list, use_default_ns:bool=True) -> ElementTree.Element:
+
+def setup_schema(used_ns: list, use_default_ns: bool = True) -> ElementTree.Element:
     xsd_schema = ElementTree.Element(_to_qname("xs:schema"))
 
     if use_default_ns:
@@ -339,18 +390,19 @@ def setup_schema(used_ns:list, use_default_ns:bool=True) -> ElementTree.Element:
             el.set("schemaLocation", f"./types.xsd")
         else:
             el.set("schemaLocation", f"./{name}Type.xsd")
-        
+
         xsd_schema.append(el)
         xsd_schema.set(f"xmlns:{name}", namespaces[name])
 
     return xsd_schema
+
 
 out_dir = Path(args.target)
 if not out_dir.exists():
     out_dir.mkdir(exist_ok=True, parents=True)
 
 # write type file
-used_ns, element = ComplexType(root, root.attrib["name"]+"Type").to_subtree()
+used_ns, element = ComplexType(root, root.attrib["name"] + "Type").to_subtree()
 xsd_schema = setup_schema(used_ns)
 xsd_schema.append(element)
 with open(out_dir / (source.stem + "Type.xsd"), "w") as out_file:
