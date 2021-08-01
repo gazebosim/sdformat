@@ -102,7 +102,8 @@ def _to_qname(name: str) -> str:
 
 @dataclass
 class Description:
-    element: ElementTree.Element
+    def __init__(self, element: ElementTree.Element):
+        self.element = element
 
     def to_subtree(self):
         desc_text = self.element.text
@@ -122,7 +123,8 @@ class Description:
 
 @dataclass
 class Element:
-    element: ElementTree.Element
+    def __init__(self, element: ElementTree.Element):
+        self.element = element
 
     def to_basic(self):
         namespaces = list()
@@ -219,7 +221,8 @@ class Element:
 
 @dataclass
 class Include:
-    element: ElementTree.Element
+    def __init__(self, element: ElementTree.Element):
+        self.element = element
 
     def to_subtree(self):
         namespaces = list()
@@ -265,7 +268,8 @@ class Include:
 
 @dataclass
 class Attribute:
-    element: ElementTree.Element
+    def __init__(self, element: ElementTree.Element):
+        self.element = element
 
     def to_subtree(self):
         namespaces = list()
@@ -294,10 +298,10 @@ class Attribute:
         return namespaces, el
 
 
-@dataclass
 class ComplexType:
-    element: ElementTree.Element
-    name: str = None
+    def __init__(self, element: ElementTree.Element, name: str = None):
+        self.element = element
+        self.name = name
 
     def to_subtree(self):
         namespaces = list()
