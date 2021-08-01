@@ -2,7 +2,6 @@ from xml.etree import ElementTree
 
 from pathlib import Path
 import argparse
-from dataclasses import dataclass
 from typing import List
 
 
