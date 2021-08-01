@@ -99,7 +99,6 @@ def _to_qname(name: str) -> str:
         return f"{{{namespaces[prefix]}}}{name}"
 
 
-@dataclass
 class Description:
     def __init__(self, element: ElementTree.Element):
         self.element = element
@@ -120,7 +119,6 @@ class Description:
         return list(), annotation
 
 
-@dataclass
 class Element:
     def __init__(self, element: ElementTree.Element):
         self.element = element
@@ -218,7 +216,6 @@ class Element:
         return namespaces, el
 
 
-@dataclass
 class Include:
     def __init__(self, element: ElementTree.Element):
         self.element = element
@@ -265,7 +262,6 @@ class Include:
         return namespaces, el
 
 
-@dataclass
 class Attribute:
     def __init__(self, element: ElementTree.Element):
         self.element = element
