@@ -35,7 +35,7 @@ cmd_arg_parser.add_argument(
 cmd_arg_parser.add_argument(
     "--ns-prefix",
     dest="ns_prefix",
-    default="sdformat",
+    default="http://sdformat.org/schema",
     type=str,
     help="Prefix for generated xsd namespaces.",
 )
