@@ -349,10 +349,18 @@ class ComplexType:
             simple_content.append(extension)
             el.append(simple_content)
         elif elements:
-            has_unbound = any(
-                [el.attrib["maxOccurs"] in ["0", "unbounded"] for el in elements]
-            )
-            if has_unbound:
+            # drop depreciated elements
+            elements = [el for el in elements if not el.attrib["maxOccurs"] == "0"]
+            
+            unbounded_elements = [el for el in elements if el.attrib["maxOccurs"] == "unbounded"]
+            required_elements = [el for el in elements if el.attrib["minOccurs"] == "1"]
+
+            if not unbounded_elements:
+                container = ElementTree.Element(_to_qname("xs:all"))
+                container.extend(elements)
+                el.append(container)
+                el.extend(attributes)
+            else:
                 # IMPORTANT NOTE: Using a choice container with
                 # maxOccurs="unbounded" is a last-resort option. The
                 # resulting XSD will ignore the min/maxOccurs of the contained
@@ -363,14 +371,15 @@ class ComplexType:
                 # I'm currently not sure how to avoid this, as it appears
                 # necessary given that some elements can occur an infinite
                 # number of times and they can do so in any order.
-
                 container = ElementTree.Element(_to_qname("xs:choice"))
                 container.set("maxOccurs", "unbounded")
-            else:
-                container = ElementTree.Element(_to_qname("xs:all"))
-            container.extend(elements)
-            el.append(container)
-            el.extend(attributes)
+                container.extend(elements)
+                el.append(container)
+                el.extend(attributes)
+
+                # XSD 1.1 allows maxOccurs="unbound" within xs:all, so the
+                # code below works ... it won't work on XSD 1.0 though.
+                # container = ElementTree.Element(_to_qname("xs:all"))
         else:
             el.extend(attributes)
 
@@ -379,6 +388,7 @@ class ComplexType:
 
 def setup_schema(used_ns: list, use_default_ns: bool = True) -> ElementTree.Element:
     xsd_schema = ElementTree.Element(_to_qname("xs:schema"))
+    xsd_schema.set("version", "1.1")
 
     if use_default_ns:
         xsd_schema.set("xmlns", namespaces[source.stem])
