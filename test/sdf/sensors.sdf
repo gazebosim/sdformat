@@ -213,6 +213,7 @@
             <custom_rpy parent_frame="linka">0 1 0</custom_rpy>
             <grav_dir_x parent_frame="linkb">0 0 1</grav_dir_x>
           </orientation_reference_frame>
+          <enable_orientation>false</enable_orientation>
         </imu>
       </sensor>
 
