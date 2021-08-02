@@ -1,4 +1,6 @@
 from xml.etree import ElementTree
+from copy import deepcopy
+from itertools import permutations, zip_longest
 
 from pathlib import Path
 import argparse
@@ -347,35 +349,66 @@ class ComplexType:
         elif elements:
             # drop depreciated elements
             elements = [el for el in elements if not el.attrib["maxOccurs"] == "0"]
-            
             unbounded_elements = [el for el in elements if el.attrib["maxOccurs"] == "unbounded"]
-            required_elements = [el for el in elements if el.attrib["minOccurs"] == "1"]
 
             if not unbounded_elements:
-                container = ElementTree.Element(_to_qname("xs:all"))
-                container.extend(elements)
-                el.append(container)
+                seq_container = ElementTree.Element(_to_qname("xs:all"))
+                seq_container.extend(elements)
+                el.append(seq_container)
                 el.extend(attributes)
             else:
-                # IMPORTANT NOTE: Using a choice container with
-                # maxOccurs="unbounded" is a last-resort option. The
-                # resulting XSD will ignore the min/maxOccurs of the contained
-                # elements and count any combination as valid. This means that
-                # the XSD becomes over-inclusive allowing invalid SDF to
-                # validate.
-                #
-                # I'm currently not sure how to avoid this, as it appears
-                # necessary given that some elements can occur an infinite
-                # number of times and they can do so in any order.
-                container = ElementTree.Element(_to_qname("xs:choice"))
-                container.set("maxOccurs", "unbounded")
-                container.extend(elements)
-                el.append(container)
+                # XSD 1.1 allows maxOccurs="unbound" within xs:all, so 
+                # we could drop this entire else block if we could upgrade
+                # to XSD 1.1. (xmllint only supports XSD 1.0)
+                
+                # sort all elements into two categories: 
+                # 1. maxOccurs <= 1 
+                # 2. maxOccurs = unbounded and minOccurs = 0
+                # the case maxOccurs = unbounded and minOccurs = 1 is refactored
+                # into 1 required element in case 1 + 1 optional element in case 2
+                # bounded_elements = [el for el in elements if not el.attrib["maxOccurs"] == "unbounded"]
+                # optional_unbounded = list()
+                # for unbounded_element in [el for el in elements if el.attrib["maxOccurs"] == "unbounded"]:
+                #     unbounded_element:ElementTree.Element
+                #     min_occurs = unbounded_element.attrib["minOccurs"]
+                #     if min_occurs == "1":
+                #         required_item = deepcopy(unbounded_element)
+                #         required_item.set("maxOccurs", "1")
+                #         bounded_elements.append(required_item)
+                    
+                #     # it will be ugly, but we can try to reduce clutter
+                #     unbounded_element.attrib.pop("minOccurs")
+                #     unbounded_element.attrib.pop("maxOccurs")
+                #     optional_unbounded.append(unbounded_element)
+
+                # infinity_choice = ElementTree.Element(_to_qname("xs:choice"))
+                # infinity_choice.set("maxOccurs", "unbounded")
+                # infinity_choice.extend(optional_unbounded)
+
+                # # bounded elements may show up anywhere between unbounded optional elements.
+                # # However we can't use <xs:all> here (XSD 1.0 limitation). Instead use a choice
+                # # over sequences of unbounded choices with a permutation of bounded elements
+                # # inbetween them.
+                # container = ElementTree.Element(_to_qname("xs:choice"))
+                # for sequence in permutations(bounded_elements):
+                #     seq_container = ElementTree.Element(_to_qname("xs:sequence"))
+                #     seq_container.append(infinity_choice)
+                #     for pair in zip_longest(sequence, [], fillvalue=infinity_choice):
+                #         seq_container.extend(pair)
+                
+                #     container.append(seq_container)
+
+                # el.append(container)
+                # el.extend(attributes)
+
+                # above code appears to work, but the generated
+                # XSD is multiple GB in size. Use this for now.
+                seq_container = ElementTree.Element(_to_qname("xs:choice"))
+                seq_container.set("maxOccurs", "unbounded")
+                seq_container.extend(elements)
+                el.append(seq_container)
                 el.extend(attributes)
 
-                # XSD 1.1 allows maxOccurs="unbound" within xs:all, so the
-                # code below works ... it won't work on XSD 1.0 though.
-                # container = ElementTree.Element(_to_qname("xs:all"))
         else:
             el.extend(attributes)
 
@@ -414,8 +447,8 @@ if not out_dir.exists():
 used_ns, element = ComplexType(root, root.attrib["name"] + "Type").to_subtree()
 xsd_schema = setup_schema(used_ns)
 xsd_schema.append(element)
-with open(out_dir / (source.stem + "Type.xsd"), "w") as out_file:
-    ElementTree.ElementTree(xsd_schema).write(out_file, encoding="unicode")
+with open(out_dir / (source.stem + "Type.xsd"), "wb") as out_file:
+    ElementTree.ElementTree(xsd_schema).write(out_file, encoding="UTF-8", xml_declaration=True)
 
 # write element file
 file_name = source.stem
@@ -425,5 +458,5 @@ element.set("type", f"{file_name}:{tag_name}Type")
 used_ns.append(file_name)
 xsd_schema = setup_schema(used_ns, use_default_ns=False)
 xsd_schema.append(element)
-with open(out_dir / (source.stem + ".xsd"), "w") as out_file:
-    ElementTree.ElementTree(xsd_schema).write(out_file, encoding="unicode")
+with open(out_dir / (source.stem + ".xsd"), "wb") as out_file:
+    ElementTree.ElementTree(xsd_schema).write(out_file, encoding="UTF-8", xml_declaration=True)
