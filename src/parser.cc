@@ -707,7 +707,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     auto *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
 
     // Perform all the pre-checks necessary for the XML elements before reading
-    if (!checkXml(elemXml, _source, _errors))
+    if (!checkXmlFromRoot(elemXml, _source, _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Errors were found when checking the XML of element<"
@@ -808,7 +808,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     }
 
     // Perform all the pre-checks necessary for the XML elements before reading
-    if (!checkXml(elemXml, _source, _errors))
+    if (!checkXmlFromRoot(elemXml, _source, _errors))
     {
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Errors were found when checking the XML of element["
@@ -853,12 +853,13 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
 }
 
 //////////////////////////////////////////////////
-bool checkXml(tinyxml2::XMLElement *_xml, const std::string &_source,
-    Errors &_errors)
+bool checkXmlFromRoot(tinyxml2::XMLElement *_xmlRoot,
+    const std::string &_source, Errors &_errors)
 {
-  // A null XML element is still valid as it might not be a mandatory element.
-  // Further errors will be deciphered by calling readXml with its SDF ptr.
-  if (!_xml)
+  // A null XML Root element is still valid as it might not be a mandatory
+  // element. Further errors will be deciphered by calling readXml with its
+  // SDF ptr.
+  if (!_xmlRoot)
     return true;
 
   std::string errorSourcePath = _source;
@@ -868,7 +869,8 @@ bool checkXml(tinyxml2::XMLElement *_xml, const std::string &_source,
   // Top level models must have an empty relative_to frame on the top level
   // pose.
   {
-    if (tinyxml2::XMLElement *topLevelElem = _xml->FirstChildElement("model"))
+    if (tinyxml2::XMLElement *topLevelElem =
+        _xmlRoot->FirstChildElement("model"))
     {
       if (tinyxml2::XMLElement *topLevelPose =
           topLevelElem->FirstChildElement("pose"))
