@@ -260,13 +260,14 @@ namespace sdf
     /// \brief This parameter's default value
     public: ParamVariant defaultValue;
 
-    /// \brief Method used to set the Element from a passed-in string
+    /// \brief Method used to set the Param from a passed-in string
     /// \param[in] _typeName The data type of the value to set
     /// \param[in] _valueStr The value as a string
     /// \param[out] _valueToSet The value to set
-    public: bool ValueFromStringImpl(const std::string &_typeName,
-                                     const std::string &_valueStr,
-                                     ParamVariant &_valueToSet);
+    public: bool SDFORMAT_VISIBLE ValueFromStringImpl(
+                                    const std::string &_typeName,
+                                    const std::string &_valueStr,
+                                    ParamVariant &_valueToSet) const;
   };
 
   ///////////////////////////////////////////////

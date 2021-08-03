@@ -104,6 +104,7 @@ if (BUILD_SDF_TEST)
     Collision_TEST.cc
     Console_TEST.cc
     Cylinder_TEST.cc
+    Element_TEST.cc
     Error_TEST.cc
     Exception_TEST.cc
     Frame_TEST.cc
@@ -122,12 +123,16 @@ if (BUILD_SDF_TEST)
     Mesh_TEST.cc
     Model_TEST.cc
     Noise_TEST.cc
+    parser_urdf_TEST.cc
+    Param_TEST.cc
+    parser_TEST.cc
     Pbr_TEST.cc
     Physics_TEST.cc
     Plane_TEST.cc
     Root_TEST.cc
     Scene_TEST.cc
     SemanticPose_TEST.cc
+    SDF_TEST.cc
     Sensor_TEST.cc
     Sky_TEST.cc
     Sphere_TEST.cc
@@ -135,15 +140,6 @@ if (BUILD_SDF_TEST)
     Types_TEST.cc
     Visual_TEST.cc
     World_TEST.cc
-  )
-
-  # tests which require Param.cc (e.g., uses Param::Get<T>)
-  set(param_required_tests
-    Element_TEST.cc
-    Param_TEST.cc
-    parser_TEST.cc
-    parser_urdf_TEST.cc
-    SDF_TEST.cc
   )
 
   # Build this test file only if Ignition Tools is installed.
@@ -156,7 +152,7 @@ if (BUILD_SDF_TEST)
   sdf_build_tests(${gtest_sources})
 
   if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc Param.cc)
+    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
     sdf_build_tests(Utils_TEST.cc)
   endif()
 
@@ -168,11 +164,6 @@ if (BUILD_SDF_TEST)
   if (NOT WIN32)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc)
     sdf_build_tests(Converter_TEST.cc)
-  endif()
-
-  if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Param.cc)
-    sdf_build_tests(${param_required_tests})
   endif()
 endif()
 

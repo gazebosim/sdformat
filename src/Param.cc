@@ -281,8 +281,8 @@ bool Param::ValueFromString(const std::string &_value)
 
 //////////////////////////////////////////////////
 bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
-                                      const std::string &_valueStr,
-                                      ParamVariant &_valueToSet)
+                                       const std::string &_valueStr,
+                                       ParamVariant &_valueToSet) const
 {
   // Under some circumstances, latin locales (es_ES or pt_BR) will return a
   // comma for decimal position instead of a dot, making the conversion

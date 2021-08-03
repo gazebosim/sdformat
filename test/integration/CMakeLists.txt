@@ -3,50 +3,46 @@ set(TEST_TYPE "INTEGRATION")
 set(tests
   actor_dom.cc
   audio.cc
-  collision_dom.cc
-  default_elements.cc
-  deprecated_specs.cc
-  geometry_dom.cc
-  include.cc
-  joint_axis_dom.cc
-  joint_dom.cc
-  light_dom.cc
-  link_dom.cc
-  model_dom.cc
-  model_versions.cc
-  parser_error_detection.cc
-  root_dom.cc
-  scene_dom.cc
-  sdf_basic.cc
-  surface_dom.cc
-  visual_dom.cc
-  world_dom.cc
-)
-
-# tests which require Param.cc (e.g., uses Param::Get<T>)
-set(param_required_tests
   category_bitmask.cc
   cfm_damping_implicit_spring_damper.cc
+  collision_dom.cc
   converter.cc
+  default_elements.cc
+  deprecated_specs.cc
   disable_fixed_joint_reduction.cc
   fixed_joint_reduction.cc
   force_torque_sensor.cc
   frame.cc
+  geometry_dom.cc
+  include.cc
   includes.cc
   joint_axis_frame.cc
+  joint_axis_dom.cc
+  joint_dom.cc
+  light_dom.cc
+  link_dom.cc
   link_light.cc
   locale_fix.cc
   locale_fix_cxx.cc
   material_pbr.cc
+  model_dom.cc
+  model_versions.cc
   nested_model.cc
+  parser_error_detection.cc
   plugin_attribute.cc
   plugin_bool.cc
   plugin_include.cc
   provide_feedback.cc
+  root_dom.cc
+  scene_dom.cc
+  sdf_basic.cc
   sdf_custom.cc
+  surface_dom.cc
   unknown.cc
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
+  visual_dom.cc
+  world_dom.cc
 )
 
 if (PYTHONINTERP_FOUND AND PY_PSUTIL)
@@ -63,11 +59,6 @@ endif()
 link_directories(${PROJECT_BINARY_DIR}/test)
 
 sdf_build_tests(${tests})
-
-if (NOT WIN32)
-  set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS ${CMAKE_SOURCE_DIR}/src/Param.cc)
-  sdf_build_tests(${param_required_tests})
-endif()
 
 if (EXISTS ${XMLLINT_EXE})
   # Need to run schema target (build .xsd files) before running schema_test
