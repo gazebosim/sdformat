@@ -264,11 +264,57 @@ namespace sdf
     /// \param[in] _typeName The data type of the value to set
     /// \param[in] _valueStr The value as a string
     /// \param[out] _valueToSet The value to set
+    /// \return True if the value was successfully set, false otherwise
     public: bool SDFORMAT_VISIBLE ValueFromStringImpl(
                                     const std::string &_typeName,
                                     const std::string &_valueStr,
                                     ParamVariant &_valueToSet) const;
+
+    /// \brief Data type to string mapping
+    /// \return The type as a string, empty string if unknown type
+    public: template<typename T>
+            std::string TypeToString() const;
   };
+
+  ///////////////////////////////////////////////
+  template<typename T>
+  std::string ParamPrivate::TypeToString() const
+  {
+    if constexpr (std::is_same_v<T, bool>)
+      return "bool";
+    else if constexpr (std::is_same_v<T, char>)
+      return "char";
+    else if constexpr (std::is_same_v<T, std::string>)
+      return "string";
+    else if constexpr (std::is_same_v<T, int>)
+      return "int";
+    else if constexpr (std::is_same_v<T, std::uint64_t>)
+      return "uint64_t";
+    else if constexpr (std::is_same_v<T, unsigned int>)
+      return "unsigned int";
+    else if constexpr (std::is_same_v<T, double>)
+      return "double";
+    else if constexpr (std::is_same_v<T, float>)
+      return "float";
+    else if constexpr (std::is_same_v<T, sdf::Time>)
+      return "time";
+    else if constexpr (std::is_same_v<T, ignition::math::Angle>)
+      return "angle";
+    else if constexpr (std::is_same_v<T, ignition::math::Color>)
+      return "color";
+    else if constexpr (std::is_same_v<T, ignition::math::Vector2i>)
+      return "vector2i";
+    else if constexpr (std::is_same_v<T, ignition::math::Vector2d>)
+      return "vector2d";
+    else if constexpr (std::is_same_v<T, ignition::math::Vector3d>)
+      return "vector3";
+    else if constexpr (std::is_same_v<T, ignition::math::Quaterniond>)
+      return "quaternion";
+    else if constexpr (std::is_same_v<T, ignition::math::Pose3d>)
+      return "pose";
+    else
+      return "";
+  }
 
   ///////////////////////////////////////////////
   template<typename T>
@@ -306,50 +352,16 @@ namespace sdf
       _value = *value;
     else
     {
-      std::string valueStr = this->GetAsString();
-      bool success = false;
-      ParamPrivate::ParamVariant pv;
-
-      if constexpr (std::is_same_v<T, bool>)
-        success = this->dataPtr->ValueFromStringImpl("bool", valueStr, pv);
-      else if constexpr (std::is_same_v<T, char>)
-        success = this->dataPtr->ValueFromStringImpl("char", valueStr, pv);
-      else if constexpr (std::is_same_v<T, std::string>)
-        success = this->dataPtr->ValueFromStringImpl("string", valueStr, pv);
-      else if constexpr (std::is_same_v<T, int>)
-        success = this->dataPtr->ValueFromStringImpl("int", valueStr, pv);
-      else if constexpr (std::is_same_v<T, std::uint64_t>)
-        success = this->dataPtr->ValueFromStringImpl("uint64_t", valueStr, pv);
-      else if constexpr (std::is_same_v<T, unsigned int>)
+      std::string typeStr = this->dataPtr->TypeToString<T>();
+      if (typeStr.empty())
       {
-        success
-          = this->dataPtr->ValueFromStringImpl("unsigned int", valueStr, pv);
-      }
-      else if constexpr (std::is_same_v<T, double>)
-        success = this->dataPtr->ValueFromStringImpl("double", valueStr, pv);
-      else if constexpr (std::is_same_v<T, float>)
-        success = this->dataPtr->ValueFromStringImpl("float", valueStr, pv);
-      else if constexpr (std::is_same_v<T, sdf::Time>)
-        success = this->dataPtr->ValueFromStringImpl("time", valueStr, pv);
-      else if constexpr (std::is_same_v<T, ignition::math::Angle>)
-        success = this->dataPtr->ValueFromStringImpl("angle", valueStr, pv);
-      else if constexpr (std::is_same_v<T, ignition::math::Color>)
-        success = this->dataPtr->ValueFromStringImpl("color", valueStr, pv);
-      else if constexpr (std::is_same_v<T, ignition::math::Vector2i>)
-        success = this->dataPtr->ValueFromStringImpl("vector2i", valueStr, pv);
-      else if constexpr (std::is_same_v<T, ignition::math::Vector2d>)
-        success = this->dataPtr->ValueFromStringImpl("vector2d", valueStr, pv);
-      else if constexpr (std::is_same_v<T, ignition::math::Vector3d>)
-        success = this->dataPtr->ValueFromStringImpl("vector3", valueStr, pv);
-      else if constexpr (std::is_same_v<T, ignition::math::Quaterniond>)
-      {
-        success
-          = this->dataPtr->ValueFromStringImpl("quaternion", valueStr, pv);
-      }
-      else if constexpr (std::is_same_v<T, ignition::math::Pose3d>)
-        success = this->dataPtr->ValueFromStringImpl("pose", valueStr, pv);
-      else
         sdferr << "Unknown parameter type[" << typeid(T).name() << "]\n";
+        return false;
+      }
+
+      std::string valueStr = this->GetAsString();
+      ParamPrivate::ParamVariant pv;
+      bool success = this->dataPtr->ValueFromStringImpl(typeStr, valueStr, pv);
 
       if (success)
         _value = std::get<T>(pv);
