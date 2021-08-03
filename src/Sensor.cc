@@ -59,7 +59,8 @@ const std::vector<std::string> sensorTypeStrs =
   "wireless_transmitter",
   "air_pressure",
   "rgbd_camera",
-  "thermal_camera"
+  "thermal_camera",
+  "custom"
 };
 
 class sdf::Sensor::Implementation
