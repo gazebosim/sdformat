@@ -755,25 +755,7 @@ ElementPtr Param::GetParentElement() const
 void Param::SetParentElement(const ElementPtr _parentElement)
 {
   this->dataPtr->parentElement = _parentElement;
-
-  if (this->dataPtr->strValue.has_value())
-  {
-    const std::string strVal = this->dataPtr->strValue.value();
-    if (!this->SetFromString(strVal))
-    {
-      if (_parentElement)
-      {
-        sdferr << "Failed to set value [" << strVal
-            << "] for new parent element of " << "name ["
-            << _parentElement->GetName() << "], reverting to previous value.\n";
-      }
-      else
-      {
-        sdferr << "Failed to set value [" << strVal
-            << "] without a parent element, reverting to previous value.\n";
-      }
-    }
-  }
+  this->Reparse();
 }
 
 //////////////////////////////////////////////////
@@ -782,6 +764,33 @@ void Param::Reset()
   this->dataPtr->value = this->dataPtr->defaultValue;
   this->dataPtr->strValue = std::nullopt;
   this->dataPtr->set = false;
+}
+
+//////////////////////////////////////////////////
+bool Param::Reparse()
+{
+  if (!this->dataPtr->strValue.has_value())
+    return false;
+
+  const std::string strVal = this->dataPtr->strValue.value();
+  if (!this->SetFromString(strVal))
+  {
+    if (const auto parentElement = this->dataPtr->parentElement.lock())
+    {
+      sdferr << "Failed to set value '" << strVal << "' to key ["
+          << this->GetKey() << "] for new parent element of name '"
+          << parentElement->GetName() << "', reverting to previous value '"
+          << this->GetAsString() << "'.\n";
+    }
+    else
+    {
+      sdferr << "Failed to set value '" << strVal << "' to key ["
+          << this->GetKey() << "] without a parent element, "
+          << "reverting to previous value '" << this->GetAsString() << "'.\n";
+    }
+    return false;
+  }
+  return true;
 }
 
 //////////////////////////////////////////////////

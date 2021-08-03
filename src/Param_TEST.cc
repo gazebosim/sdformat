@@ -530,6 +530,26 @@ TEST(Param, DestroyParentElementAfterConstruct)
   EXPECT_EQ(nullptr, param->GetParentElement());
 }
 
+//////////////////////////////////////////////////
+TEST(Param, Reparsing)
+{
+  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+
+  // Reparsing without setting values will fail
+  EXPECT_FALSE(doubleParam.Reparse());
+  double value;
+  EXPECT_TRUE(doubleParam.Get<double>(value));
+  EXPECT_DOUBLE_EQ(value, 1.0);
+
+  // Setting a value before reparsing, value doesn't get modified.
+  ASSERT_TRUE(doubleParam.Set<double>(5.));
+  EXPECT_TRUE(doubleParam.Get<double>(value));
+  EXPECT_DOUBLE_EQ(value, 5.0);
+  EXPECT_TRUE(doubleParam.Reparse());
+  EXPECT_TRUE(doubleParam.Get<double>(value));
+  EXPECT_DOUBLE_EQ(value, 5.0);
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)

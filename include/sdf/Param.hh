@@ -208,6 +208,11 @@ namespace sdf
     /// \brief Reset the parameter to the default value.
     public: void Reset();
 
+    /// \brief Reparse the parameter value, this is usually called after the
+    /// parent element's attributes have been modified.
+    /// \return True if the parameter value has been reparsed successfully.
+    public: bool Reparse();
+
     /// \brief Get the key value.
     /// \return The key.
     public: const std::string &GetKey() const;

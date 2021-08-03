@@ -340,20 +340,12 @@ TEST(Pose1_9, ChangingParentPoseElement)
   rpyDegreesPoseElem->AddAttribute(
       "rotation_type", "string", "rpy_degrees", false);
 
-  sdf::ParamPtr rpyDegreesAttrib = poseElem->GetAttribute("rotation_type");
-  ASSERT_NE(nullptr, rpyDegreesAttrib);
-  ASSERT_TRUE(rpyDegreesAttrib->Set<std::string>("rpy_degrees"));
-
   sdf::ElementPtr rpyRadiansPoseElem(new sdf::Element);
   rpyRadiansPoseElem->SetName("pose");
   rpyRadiansPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
   rpyRadiansPoseElem->AddAttribute("relative_to", "string", "", false);
   rpyRadiansPoseElem->AddAttribute(
       "rotation_type", "string", "rpy_radians", false);
-
-  sdf::ParamPtr rpyRadiansAttrib = poseElem->GetAttribute("rotation_type");
-  ASSERT_NE(nullptr, rpyRadiansAttrib);
-  ASSERT_TRUE(rpyRadiansAttrib->Set<std::string>("rpy_radians"));
 
   // Param from original default attibute
   sdf::ParamPtr valParam = poseElem->GetValue();
@@ -380,8 +372,79 @@ TEST(Pose1_9, ChangingParentPoseElement)
 }
 
 //////////////////////////////////////////////////
-TEST(Pose1_9, ChangingParentPoseElementFromQuaternion)
+TEST(Pose1_9, ChangingAttributeOfParentElement)
 {
+  const double pi = 3.14159265358979323846;
+  using Pose = ignition::math::Pose3d;
+
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
+  ASSERT_TRUE(poseElem->Set<ignition::math::Pose3d>(
+      Pose(1, 2, 3, 0.4, 0.5, 0.6)));
+
+  sdf::ParamPtr rotationTypeAttrib = poseElem->GetAttribute("rotation_type");
+  ASSERT_NE(nullptr, rotationTypeAttrib);
+  ASSERT_TRUE(rotationTypeAttrib->Set<std::string>("rpy_radians"));
+
+  // Param value in radians
+  sdf::ParamPtr valParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, valParam);
+
+  Pose val;
+  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+
+  // Changing rotation type to degrees without reparsing, value will remain the
+  // same
+  ASSERT_TRUE(rotationTypeAttrib->Set<std::string>("rpy_degrees"));
+  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+
+  // Values will change to be degrees after reparsing
+  ASSERT_TRUE(valParam->Reparse());
+  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180),
+      val);
+
+  // Changing rotation type back to radians
+  ASSERT_TRUE(rotationTypeAttrib->Set<std::string>("rpy_radians"));
+  ASSERT_TRUE(valParam->Reparse());
+  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+
+  // Changing rotation type to quaterion will fail during reparsing as there
+  // are not enough elements
+  ASSERT_TRUE(rotationTypeAttrib->Set<std::string>("q_wxyz"));
+  EXPECT_FALSE(valParam->Reparse());
+}
+
+//////////////////////////////////////////////////
+static bool contains(const std::string &_a, const std::string &_b)
+{
+  return _a.find(_b) != std::string::npos;
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, ErrorChangingParentPoseElementFromQuaternion)
+{
+  // Redirect sdferr output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  buffer.str("");
   using Pose = ignition::math::Pose3d;
 
   sdf::ElementPtr quatPoseElem(new sdf::Element);
@@ -389,11 +452,7 @@ TEST(Pose1_9, ChangingParentPoseElementFromQuaternion)
   quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
   quatPoseElem->AddAttribute("relative_to", "string", "", false);
   quatPoseElem->AddAttribute(
-      "rotation_type", "string", "rpy_degrees", false);
-
-  sdf::ParamPtr quatAttrib = quatPoseElem->GetAttribute("rotation_type");
-  ASSERT_NE(nullptr, quatAttrib);
-  ASSERT_TRUE(quatAttrib->Set<std::string>("q_wxyz"));
+      "rotation_type", "string", "q_wxyz", false);
 
   sdf::ElementPtr rpyRadiansPoseElem(new sdf::Element);
   rpyRadiansPoseElem->SetName("pose");
@@ -402,21 +461,20 @@ TEST(Pose1_9, ChangingParentPoseElementFromQuaternion)
   rpyRadiansPoseElem->AddAttribute(
       "rotation_type", "string", "rpy_radians", false);
 
-  sdf::ParamPtr rpyRadiansAttrib =
-      rpyRadiansPoseElem->GetAttribute("rotation_type");
-  ASSERT_NE(nullptr, rpyRadiansAttrib);
-  ASSERT_TRUE(rpyRadiansAttrib->Set<std::string>("rpy_radians"));
-
-  // Param from original default attibute
+  // Param from quatPoseElem
   sdf::ParamPtr valParam = quatPoseElem->GetValue();
   ASSERT_NE(nullptr, valParam);
   ASSERT_TRUE(valParam->SetFromString("1 2 3   0.7071068 0.7071068 0 0"));
 
   // Changing to parent Element with rotation_type attribute rpy_radians
   // The new value setting will fail since it can't parse 7 values into xyzrpy
-  // TODO(AA): To capture error string.
   valParam->SetParentElement(rpyRadiansPoseElem);
+  EXPECT_PRED2(contains, buffer.str(),
+      "The value for //pose[@rotation_type='rpy_radians'] must have 6 values, "
+      "but 7 were found instead");
 
+  // The value will not change as it failed to reparse with the new parent
+  // element
   Pose val;
   ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
   EXPECT_NE(Pose(1, 2, 3, 0.7071068, 0.7071068, 0.0), val);
@@ -424,9 +482,58 @@ TEST(Pose1_9, ChangingParentPoseElementFromQuaternion)
 }
 
 //////////////////////////////////////////////////
-static bool contains(const std::string &_a, const std::string &_b)
+TEST(Pose1_9, ErrorChangingParentPoseElementToQuaternion)
 {
-  return _a.find(_b) != std::string::npos;
+  // Redirect sdferr output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  buffer.str("");
+  using Pose = ignition::math::Pose3d;
+
+  sdf::ElementPtr quatPoseElem(new sdf::Element);
+  quatPoseElem->SetName("pose");
+  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  quatPoseElem->AddAttribute("relative_to", "string", "", false);
+  quatPoseElem->AddAttribute(
+      "rotation_type", "string", "q_wxyz", false);
+
+  sdf::ElementPtr rpyRadiansPoseElem(new sdf::Element);
+  rpyRadiansPoseElem->SetName("pose");
+  rpyRadiansPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  rpyRadiansPoseElem->AddAttribute("relative_to", "string", "", false);
+  rpyRadiansPoseElem->AddAttribute(
+      "rotation_type", "string", "rpy_radians", false);
+
+  // Param from rpyRadiansPoseElem
+  sdf::ParamPtr valParam = rpyRadiansPoseElem->GetValue();
+  ASSERT_NE(nullptr, valParam);
+  ASSERT_TRUE(valParam->SetFromString("1 2 3   0.4 0.5 0.6"));
+
+  // Changing to parent Element with rotation_type attribute q_wxyz
+  // The new value setting will fail since it can't parse 6 values into
+  // xyzQWXYZ
+  valParam->SetParentElement(quatPoseElem);
+  EXPECT_PRED2(contains, buffer.str(),
+      "The value for //pose[@rotation_type='q_wxyz'] must have 7 values, "
+      "but 6 were found instead");
+
+  // The value will not change as it failed to reparse with the new parent
+  // element
+  Pose val;
+  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  EXPECT_NE(Pose(1, 2, 3, 0.4, 0.5, 0.6, 0.0), val);
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 }
 
 //////////////////////////////////////////////////
