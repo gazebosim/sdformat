@@ -261,7 +261,8 @@ namespace sdf
     public: bool OrientationEnabled() const;
 
     /// \brief Set whether to enable orientation data generation.
-    /// \param[in] _enabled True to enabled orientation data, false to disable it.
+    /// \param[in] _enabled True to enabled orientation data, false to disable
+    /// it.
     public: void SetOrientationEnabled(bool _enabled);
 
     /// \brief Return true if both Imu objects contain the same values.
