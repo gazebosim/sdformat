@@ -56,6 +56,14 @@
       <origin rpy="0 0 0" xyz="0 -1.5 0"/>
     </visual>
   </link>
+  <gazebo reference="link1">
+    <enable_wind>1</enable_wind>
+    <gravity>0</gravity>
+    <velocity_decay>
+      <linear>0.1</linear>
+      <angular>0.2</angular>
+    </velocity_decay>
+  </gazebo>
 
   <joint name="joint12" type="revolute">
     <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 -3.0 0.0"/>
@@ -81,6 +89,11 @@
       <origin rpy="0 0 0" xyz="0 0 1.0"/>
     </visual>
   </link>
+  <gazebo reference="link2">
+    <enable_wind>0</enable_wind>
+    <turnGravityOff>1</turnGravityOff>
+    <dampingFactor>0.1</dampingFactor>
+  </gazebo>
 
   <joint name="joint13" type="revolute">
     <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 -3.0 0.0"/>
