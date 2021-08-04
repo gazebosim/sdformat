@@ -26,6 +26,7 @@ SDFExtension::SDFExtension()
   this->visual_blobs.clear();
   this->collision_blobs.clear();
   this->setStaticFlag = false;
+  this->isGravity = false;
   this->gravity = true;
   this->isDampingFactor = false;
   this->isMaxContacts = false;
@@ -74,6 +75,7 @@ SDFExtension::SDFExtension(const SDFExtension &_ge)
   this->visual_blobs = _ge.visual_blobs;
   this->collision_blobs = _ge.collision_blobs;
   this->setStaticFlag = _ge.setStaticFlag;
+  this->isGravity = _ge.isGravity;
   this->gravity = _ge.gravity;
   this->isDampingFactor = _ge.isDampingFactor;
   this->isMaxContacts = _ge.isMaxContacts;

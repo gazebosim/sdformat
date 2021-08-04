@@ -134,7 +134,9 @@ void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
   for (sdf::ElementPtr link = urdfModel->GetElement("link"); link;
        link = link->GetNextElement("link"))
   {
+    EXPECT_FALSE(link->HasElement("gravity"));
     EXPECT_FALSE(link->HasElement("self_collide"));
+    EXPECT_FALSE(link->HasElement("velocity_decay"));
     for (sdf::ElementPtr col = link->GetElement("collision"); col;
          col = col->GetNextElement("collision"))
     {
@@ -184,7 +186,9 @@ void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
   for (sdf::ElementPtr link = sdfModel->GetElement("link"); link;
        link = link->GetNextElement("link"))
   {
+    EXPECT_FALSE(link->HasElement("gravity"));
     EXPECT_FALSE(link->HasElement("self_collide"));
+    EXPECT_FALSE(link->HasElement("velocity_decay"));
     for (sdf::ElementPtr col = link->GetElement("collision"); col;
          col = col->GetNextElement("collision"))
     {
