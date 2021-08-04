@@ -77,8 +77,10 @@ TEST(Param, Bool)
   strParam.Get<bool>(value);
   EXPECT_TRUE(value);
 
+  // Anything other than 1 or true is treated as a false value
   strParam.Set("%");
-  EXPECT_FALSE(strParam.Get<bool>(value));
+  strParam.Get<bool>(value);
+  EXPECT_FALSE(value);
 
   boolParam.Set(true);
   std::any anyValue;

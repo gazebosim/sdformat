@@ -349,7 +349,9 @@ namespace sdf
   {
     T *value = std::get_if<T>(&this->dataPtr->value);
     if (value)
+    {
       _value = *value;
+    }
     else
     {
       std::string typeStr = this->dataPtr->TypeToString<T>();
@@ -364,7 +366,22 @@ namespace sdf
       bool success = this->dataPtr->ValueFromStringImpl(typeStr, valueStr, pv);
 
       if (success)
+      {
         _value = std::get<T>(pv);
+      }
+      else if (typeStr == "bool" && this->dataPtr->typeName == "string")
+      {
+        valueStr = lowercase(valueStr);
+
+        std::stringstream tmp;
+        if (valueStr == "true" || valueStr == "1")
+          tmp << "1";
+        else
+          tmp << "0";
+
+        tmp >> _value;
+        return true;
+      }
 
       return success;
     }
