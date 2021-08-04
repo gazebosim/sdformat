@@ -1,7 +1,0 @@
-<?xml version="1.0" ?>
-<sdf version="1.8">
-  <model name="M">
-    <pose relative_to="some_frame"/>
-    <link name="L"/>
-   </model>
-</sdf>

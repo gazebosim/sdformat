@@ -812,7 +812,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
   // Check an SDF with an invalid relative frame at the top level model
   {
-    std::string path = pathBase + "/model_top_level_frame.sdf";
+    std::string path = pathBase + "/model_invalid_top_level_frame.sdf";
 
     std::string output =
         custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
