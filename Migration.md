@@ -12,7 +12,7 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
-## libsdformat 9.3 to 9.5
+## libsdformat 9.4 to 9.5
 
 ### Additions
 
