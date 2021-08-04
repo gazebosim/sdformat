@@ -100,4 +100,40 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       EXPECT_TRUE(physics->Get<bool>("implicit_spring_damper"));
     }
   }
+
+  for (sdf::ElementPtr link = model->GetElement("link"); link;
+       link = link->GetNextElement("link"))
+  {
+    std::string linkName = link->Get<std::string>("name");
+    if (linkName == "link1" || linkName == "link2")
+    {
+      EXPECT_TRUE(link->HasElement("enable_wind"));
+
+      EXPECT_TRUE(link->HasElement("gravity"));
+      EXPECT_FALSE(link->Get<bool>("gravity"));
+
+      EXPECT_TRUE(link->HasElement("velocity_decay"));
+      auto velocityDecay = link->GetElement("velocity_decay");
+      EXPECT_DOUBLE_EQ(0.1, velocityDecay->Get<double>("linear"));
+
+      if (linkName == "link1")
+      {
+        EXPECT_TRUE(link->Get<bool>("enable_wind"));
+        EXPECT_DOUBLE_EQ(0.2, velocityDecay->Get<double>("angular"));
+      }
+      else
+      {
+        // linkName == "link2"
+        EXPECT_FALSE(link->Get<bool>("enable_wind"));
+        EXPECT_DOUBLE_EQ(0.1, velocityDecay->Get<double>("angular"));
+      }
+    }
+    else
+    {
+      // No gazebo tags added
+      EXPECT_FALSE(link->HasElement("enable_wind"));
+      EXPECT_FALSE(link->HasElement("gravity"));
+      EXPECT_FALSE(link->HasElement("velocity_decay"));
+    }
+  }
 }
