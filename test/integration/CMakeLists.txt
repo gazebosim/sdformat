@@ -71,5 +71,3 @@ if (UNIX AND NOT APPLE)
   add_test(NAME INTEGRATION_versioned_symbols
     COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash ${CMAKE_BINARY_DIR}/src/libsdformat${SDF_MAJOR_VERSION}.so)
 endif()
-
-

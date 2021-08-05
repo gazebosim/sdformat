@@ -274,13 +274,23 @@ std::string Param::GetDefaultAsString() const
 //////////////////////////////////////////////////
 bool Param::ValueFromString(const std::string &_value)
 {
+  return this->dataPtr->ValueFromStringImpl(this->dataPtr->typeName,
+                                           _value,
+                                           this->dataPtr->value);
+}
+
+//////////////////////////////////////////////////
+bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
+                                       const std::string &_valueStr,
+                                       ParamVariant &_valueToSet) const
+{
   // Under some circumstances, latin locales (es_ES or pt_BR) will return a
   // comma for decimal position instead of a dot, making the conversion
   // to fail. See bug #60 for more information. Force to use always C
   setlocale(LC_NUMERIC, "C");
 
-  std::string tmp(_value);
-  std::string lowerTmp = lowercase(_value);
+  std::string tmp(_valueStr);
+  std::string lowerTmp = lowercase(_valueStr);
 
   // "true" and "false" doesn't work properly
   if (lowerTmp == "true")
@@ -304,15 +314,15 @@ bool Param::ValueFromString(const std::string &_value)
       numericBase = 16;
     }
 
-    if (this->dataPtr->typeName == "bool")
+    if (_typeName == "bool")
     {
       if (lowerTmp == "true" || lowerTmp == "1")
       {
-        this->dataPtr->value = true;
+        _valueToSet = true;
       }
       else if (lowerTmp == "false" || lowerTmp == "0")
       {
-        this->dataPtr->value = false;
+        _valueToSet = false;
       }
       else
       {
@@ -320,107 +330,116 @@ bool Param::ValueFromString(const std::string &_value)
         return false;
       }
     }
-    else if (this->dataPtr->typeName == "char")
+    else if (_typeName == "char")
     {
-      this->dataPtr->value = tmp[0];
+      _valueToSet = tmp[0];
     }
-    else if (this->dataPtr->typeName == "std::string" ||
-             this->dataPtr->typeName == "string")
+    else if (_typeName == "std::string" ||
+             _typeName == "string")
     {
-      this->dataPtr->value = tmp;
+      _valueToSet = tmp;
     }
-    else if (this->dataPtr->typeName == "int")
+    else if (_typeName == "int")
     {
-      this->dataPtr->value = std::stoi(tmp, nullptr, numericBase);
+      _valueToSet = std::stoi(tmp, nullptr, numericBase);
     }
-    else if (this->dataPtr->typeName == "uint64_t")
+    else if (_typeName == "uint64_t")
     {
       StringStreamClassicLocale ss(tmp);
       std::uint64_t u64tmp;
 
       ss >> u64tmp;
-      this->dataPtr->value = u64tmp;
+      _valueToSet = u64tmp;
     }
-    else if (this->dataPtr->typeName == "unsigned int")
+    else if (_typeName == "unsigned int")
     {
-      this->dataPtr->value = static_cast<unsigned int>(
+      _valueToSet = static_cast<unsigned int>(
           std::stoul(tmp, nullptr, numericBase));
     }
-    else if (this->dataPtr->typeName == "double")
+    else if (_typeName == "double")
     {
-      this->dataPtr->value = std::stod(tmp);
+      _valueToSet = std::stod(tmp);
     }
-    else if (this->dataPtr->typeName == "float")
+    else if (_typeName == "float")
     {
-      this->dataPtr->value = std::stof(tmp);
+      _valueToSet = std::stof(tmp);
     }
-    else if (this->dataPtr->typeName == "sdf::Time" ||
-             this->dataPtr->typeName == "time")
+    else if (_typeName == "sdf::Time" ||
+             _typeName == "time")
     {
       StringStreamClassicLocale ss(tmp);
       sdf::Time timetmp;
 
       ss >> timetmp;
-      this->dataPtr->value = timetmp;
+      _valueToSet = timetmp;
     }
-    else if (this->dataPtr->typeName == "ignition::math::Color" ||
-             this->dataPtr->typeName == "color")
+    else if (_typeName == "ignition::math::Angle" ||
+             _typeName == "angle")
+    {
+      StringStreamClassicLocale ss(tmp);
+      ignition::math::Angle angletmp;
+
+      ss >> angletmp;
+      _valueToSet = angletmp;
+    }
+    else if (_typeName == "ignition::math::Color" ||
+             _typeName == "color")
     {
       StringStreamClassicLocale ss(tmp);
       ignition::math::Color colortmp;
 
       ss >> colortmp;
-      this->dataPtr->value = colortmp;
+      _valueToSet = colortmp;
     }
-    else if (this->dataPtr->typeName == "ignition::math::Vector2i" ||
-             this->dataPtr->typeName == "vector2i")
+    else if (_typeName == "ignition::math::Vector2i" ||
+             _typeName == "vector2i")
     {
       StringStreamClassicLocale ss(tmp);
       ignition::math::Vector2i vectmp;
 
       ss >> vectmp;
-      this->dataPtr->value = vectmp;
+      _valueToSet = vectmp;
     }
-    else if (this->dataPtr->typeName == "ignition::math::Vector2d" ||
-             this->dataPtr->typeName == "vector2d")
+    else if (_typeName == "ignition::math::Vector2d" ||
+             _typeName == "vector2d")
     {
       StringStreamClassicLocale ss(tmp);
       ignition::math::Vector2d vectmp;
 
       ss >> vectmp;
-      this->dataPtr->value = vectmp;
+      _valueToSet = vectmp;
     }
-    else if (this->dataPtr->typeName == "ignition::math::Vector3d" ||
-             this->dataPtr->typeName == "vector3")
+    else if (_typeName == "ignition::math::Vector3d" ||
+             _typeName == "vector3")
     {
       StringStreamClassicLocale ss(tmp);
       ignition::math::Vector3d vectmp;
 
       ss >> vectmp;
-      this->dataPtr->value = vectmp;
+      _valueToSet = vectmp;
     }
-    else if (this->dataPtr->typeName == "ignition::math::Pose3d" ||
-             this->dataPtr->typeName == "pose" ||
-             this->dataPtr->typeName == "Pose")
+    else if (_typeName == "ignition::math::Pose3d" ||
+             _typeName == "pose" ||
+             _typeName == "Pose")
     {
       StringStreamClassicLocale ss(tmp);
       ignition::math::Pose3d posetmp;
 
       ss >> posetmp;
-      this->dataPtr->value = posetmp;
+      _valueToSet = posetmp;
     }
-    else if (this->dataPtr->typeName == "ignition::math::Quaterniond" ||
-             this->dataPtr->typeName == "quaternion")
+    else if (_typeName == "ignition::math::Quaterniond" ||
+             _typeName == "quaternion")
     {
       StringStreamClassicLocale ss(tmp);
       ignition::math::Quaterniond quattmp;
 
       ss >> quattmp;
-      this->dataPtr->value = quattmp;
+      _valueToSet = quattmp;
     }
     else
     {
-      sdferr << "Unknown parameter type[" << this->dataPtr->typeName << "]\n";
+      sdferr << "Unknown parameter type[" << _typeName << "]\n";
       return false;
     }
   }
@@ -428,16 +447,16 @@ bool Param::ValueFromString(const std::string &_value)
   catch(std::invalid_argument &)
   {
     sdferr << "Invalid argument. Unable to set value ["
-           << _value << " ] for key["
-           << this->dataPtr->key << "].\n";
+           << _valueStr << " ] for key["
+           << this->key << "].\n";
     return false;
   }
   // Catch out of range exception from std::stoi/stoul/stod/stof
   catch(std::out_of_range &)
   {
     sdferr << "Out of range. Unable to set value ["
-           << _value << " ] for key["
-           << this->dataPtr->key << "].\n";
+           << _valueStr << " ] for key["
+           << this->key << "].\n";
     return false;
   }
 
