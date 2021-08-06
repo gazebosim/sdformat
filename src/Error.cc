@@ -51,3 +51,20 @@ bool Error::operator==(const bool _value) const
   return ((this->code != ErrorCode::NONE) && _value) ||
          ((this->code == ErrorCode::NONE) && !_value);
 }
+
+namespace sdf
+{
+// Inline bracket to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+
+/////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
+std::ostream &operator<<(std::ostream &_out, const sdf::Error &_err)
+{
+  _out << "Error Code "
+    << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
+    << " Msg: " << _err.Message();
+  return _out;
+}
+}
+}
