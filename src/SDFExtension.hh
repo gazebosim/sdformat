@@ -90,6 +90,7 @@ namespace sdf
 
     // body, default off
     public: bool setStaticFlag;
+    public: bool isGravity;
     public: bool gravity;
     public: bool isDampingFactor;
     public: double dampingFactor;
