@@ -143,6 +143,13 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + std::optional<std::string> GetMaxValueAsString() const;
     + bool ValidateValue() const;
 
+## libsdformat 9.4 to 9.5
+
+### Additions
+
+1. **sdf/Element.hh**
+    + sdf::ElementPtr FindElement() const
+
 ## libsdformat 9.3 to 9.4
 
 ### Modifications
