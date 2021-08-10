@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema'>
+<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns="http://sdformat.org/schemas/types.xsd" targetNamespace="http://sdformat.org/schemas/types.xsd">
   <xsd:simpleType name="vector3">
     <xsd:restriction base="xsd:string">
       <xsd:pattern value="(\s*(-|\+)?(\d+(\.\d*)?|\.\d+|\d+\.\d+[eE][-\+]?[0-9]+)\s+){2}((-|\+)?(\d+(\.\d*)?|\.\d+|\d+\.\d+[eE][-\+]?[0-9]+))\s*"/>
@@ -31,7 +31,8 @@
   </xsd:simpleType>
 
   <xsd:simpleType name="time">
-    <xsd:restriction base="xsd:double">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\d+ \d+"/>
     </xsd:restriction>
   </xsd:simpleType>
 
