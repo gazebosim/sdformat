@@ -12,6 +12,7 @@
                   altimeter,
                   camera,
                   contact,
+                  custom,
                   depth_camera, depth,
                   force_torque,
                   gps,

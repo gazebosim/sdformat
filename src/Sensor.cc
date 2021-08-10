@@ -59,7 +59,8 @@ const std::vector<std::string> sensorTypeStrs =
   "wireless_transmitter",
   "air_pressure",
   "rgbd_camera",
-  "thermal_camera"
+  "thermal_camera",
+  "custom"
 };
 
 class sdf::Sensor::Implementation
@@ -244,6 +245,10 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "contact")
   {
     this->dataPtr->type = SensorType::CONTACT;
+  }
+  else if (type == "custom")
+  {
+    this->dataPtr->type = SensorType::CUSTOM;
   }
   else if (type == "depth" || type == "depth_camera")
   {

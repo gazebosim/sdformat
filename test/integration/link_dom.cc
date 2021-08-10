@@ -242,7 +242,7 @@ TEST(DOMLink, Sensors)
   const sdf::Link *link = model->LinkByIndex(0);
   ASSERT_NE(nullptr, link);
   EXPECT_EQ("link", link->Name());
-  EXPECT_EQ(22u, link->SensorCount());
+  EXPECT_EQ(23u, link->SensorCount());
 
   // Get the altimeter sensor
   const sdf::Sensor *altimeterSensor = link->SensorByIndex(0);
@@ -313,6 +313,19 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), pose);
   EXPECT_TRUE(contactSensor->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(ignition::math::Pose3d(4, 5, 3, 0, 0, 0), pose);
+
+  // Get the custom sensor
+  const sdf::Sensor *customSensor = link->SensorByName("custom_sensor");
+  ASSERT_NE(nullptr, customSensor);
+  EXPECT_EQ("custom_sensor", customSensor->Name());
+  EXPECT_EQ(sdf::SensorType::CUSTOM, customSensor->Type());
+  ASSERT_NE(nullptr, customSensor->Element());
+  auto myNamespaceElem = customSensor->Element()->GetElement(
+      "my_namespace:custom_sensor");
+  ASSERT_NE(nullptr, myNamespaceElem);
+  auto someParamElem = myNamespaceElem->GetElement("some_param");
+  ASSERT_NE(nullptr, someParamElem);
+  EXPECT_EQ(123, someParamElem->Get<int>());
 
   // Get the depth sensor
   const sdf::Sensor *depthSensor = link->SensorByName("depth_sensor");
