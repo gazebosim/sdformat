@@ -145,7 +145,7 @@
       <element name="contact_surface_layer" type="double" default="0.001" required="1">
         <description>The depth of the surface layer around all geometry objects. Contacts are allowed to sink into the surface layer up to the given depth before coming to rest. The default value is zero. Increasing this to some small value (e.g. 0.001) can help prevent jittering problems due to contacts being repeatedly made and broken.</description>
       </element>
-      <element name="split_impulse" type="bool" default="1" required="1">
+      <element name="split_impulse" type="bool" default="true" required="1">
         <description>Similar to ODE's max_vel implementation. See http://web.archive.org/web/20120430155635/http://bulletphysics.org/mediawiki-1.5.8/index.php/BtContactSolverInfo#Split_Impulse for more information.</description>
       </element>
       <element name="split_impulse_penetration_threshold" type="double" default="-0.01" required="1">

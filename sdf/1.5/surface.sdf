@@ -18,7 +18,7 @@
       <element name="coefficient" type="double" default="1.0" min="0.0" required="0">
         <description>Torsional friction coefficient in the range of [0..1].</description>
       </element>
-      <element name="use_patch_radius" type="bool" default="1" required="0">
+      <element name="use_patch_radius" type="bool" default="true" required="0">
         <description>
           If this flag is true,
           torsional friction is calculated using the "patch_radius" parameter.
@@ -152,7 +152,7 @@
       <element name="kd" type="double" default="1.0" required="0">
         <description>dynamically "damping"-equivalent coefficient for contact joints</description>
       </element>
-      <element name="split_impulse" type="bool" default="1" required="1">
+      <element name="split_impulse" type="bool" default="true" required="1">
         <description>Similar to ODE's max_vel implementation.  See http://bulletphysics.org/mediawiki-1.5.8/index.php/BtContactSolverInfo#Split_Impulse for more information.</description>
       </element>
       <element name="split_impulse_penetration_threshold" type="double" default="-0.01" required="1">
