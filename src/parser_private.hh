@@ -76,6 +76,16 @@ namespace sdf
       const std::string &_source, bool _convert, const ParserConfig &_config,
       Errors &_errors);
 
+  /// \brief Perform a series of checks to determine the validity of this XML
+  /// document from the root level element in the context of an SDF Element.
+  /// This is called before readXml.
+  /// \remark For internal use only. Do not use this function.
+  /// \param[in] _xmlRoot Pointer to the root level TinyXML element.
+  /// \param[in] _source Source of the XML document.
+  /// \param[in] _errors Captures errors found during the checks.
+  bool checkXmlFromRoot(tinyxml2::XMLElement *_xmlRoot,
+      const std::string &_source, Errors &_errors);
+
   /// \brief Populate an SDF Element from the XML input. The XML input here is
   /// an actual SDFormat file or string, not the description of the SDFormat
   /// spec.

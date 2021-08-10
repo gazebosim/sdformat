@@ -275,6 +275,7 @@ namespace sdf
 
     /// \brief Private method to set the Element from a passed-in string.
     /// \param[in] _value Value to set the parameter to.
+    /// \return True if the parameter was successfully set, false otherwise.
     private: bool ValueFromString(const std::string &_value);
 
     /// \brief Private data
@@ -326,7 +327,62 @@ namespace sdf
 
     /// \brief This parameter's maximum allowed value
     public: std::optional<ParamVariant> maxValue;
+
+    /// \brief Method used to set the Param from a passed-in string
+    /// \param[in] _typeName The data type of the value to set
+    /// \param[in] _valueStr The value as a string
+    /// \param[out] _valueToSet The value to set
+    /// \return True if the value was successfully set, false otherwise
+    public: bool SDFORMAT_VISIBLE ValueFromStringImpl(
+                                    const std::string &_typeName,
+                                    const std::string &_valueStr,
+                                    ParamVariant &_valueToSet) const;
+
+    /// \brief Data type to string mapping
+    /// \return The type as a string, empty string if unknown type
+    public: template<typename T>
+            std::string TypeToString() const;
   };
+
+  ///////////////////////////////////////////////
+  template<typename T>
+  std::string ParamPrivate::TypeToString() const
+  {
+    if constexpr (std::is_same_v<T, bool>)
+      return "bool";
+    else if constexpr (std::is_same_v<T, char>)
+      return "char";
+    else if constexpr (std::is_same_v<T, std::string>)
+      return "string";
+    else if constexpr (std::is_same_v<T, int>)
+      return "int";
+    else if constexpr (std::is_same_v<T, std::uint64_t>)
+      return "uint64_t";
+    else if constexpr (std::is_same_v<T, unsigned int>)
+      return "unsigned int";
+    else if constexpr (std::is_same_v<T, double>)
+      return "double";
+    else if constexpr (std::is_same_v<T, float>)
+      return "float";
+    else if constexpr (std::is_same_v<T, sdf::Time>)
+      return "time";
+    else if constexpr (std::is_same_v<T, ignition::math::Angle>)
+      return "angle";
+    else if constexpr (std::is_same_v<T, ignition::math::Color>)
+      return "color";
+    else if constexpr (std::is_same_v<T, ignition::math::Vector2i>)
+      return "vector2i";
+    else if constexpr (std::is_same_v<T, ignition::math::Vector2d>)
+      return "vector2d";
+    else if constexpr (std::is_same_v<T, ignition::math::Vector3d>)
+      return "vector3";
+    else if constexpr (std::is_same_v<T, ignition::math::Quaterniond>)
+      return "quaternion";
+    else if constexpr (std::is_same_v<T, ignition::math::Pose3d>)
+      return "pose";
+    else
+      return "";
+  }
 
   ///////////////////////////////////////////////
   template<typename T>
@@ -359,50 +415,48 @@ namespace sdf
   template<typename T>
   bool Param::Get(T &_value) const
   {
-    try
+    T *value = std::get_if<T>(&this->dataPtr->value);
+    if (value)
     {
-      if (typeid(T) == typeid(bool) && this->dataPtr->typeName == "string")
+      _value = *value;
+    }
+    else
+    {
+      std::string typeStr = this->dataPtr->TypeToString<T>();
+      if (typeStr.empty())
       {
-        std::string strValue = std::get<std::string>(this->dataPtr->value);
-        std::transform(strValue.begin(), strValue.end(), strValue.begin(),
-            [](unsigned char c)
-            {
-              return static_cast<unsigned char>(std::tolower(c));
-            });
+        sdferr << "Unknown parameter type[" << typeid(T).name() << "]\n";
+        return false;
+      }
+
+      std::string valueStr = this->GetAsString();
+      ParamPrivate::ParamVariant pv;
+      bool success = this->dataPtr->ValueFromStringImpl(typeStr, valueStr, pv);
+
+      if (success)
+      {
+        _value = std::get<T>(pv);
+      }
+      else if (typeStr == "bool" && this->dataPtr->typeName == "string")
+      {
+        // this section for handling bool types is to keep backward behavior
+        // TODO(anyone) remove for Fortress. For more details:
+        // https://github.com/ignitionrobotics/sdformat/pull/638
+        valueStr = lowercase(valueStr);
 
         std::stringstream tmp;
-        if (strValue == "true" || strValue  == "1")
-        {
+        if (valueStr == "true" || valueStr == "1")
           tmp << "1";
-        }
         else
-        {
           tmp << "0";
-        }
+
         tmp >> _value;
+        return true;
       }
-      else
-      {
-        T *value = std::get_if<T>(&this->dataPtr->value);
-        if (value)
-          _value = *value;
-        else
-        {
-          std::stringstream ss;
-          ss << ParamStreamer{this->dataPtr->value};
-          ss >> _value;
-        }
-      }
+
+      return success;
     }
-    catch(...)
-    {
-      sdferr << "Unable to convert parameter["
-             << this->dataPtr->key << "] "
-             << "whose type is["
-             << this->dataPtr->typeName << "], to "
-             << "type[" << typeid(T).name() << "]\n";
-      return false;
-    }
+
     return true;
   }
 
