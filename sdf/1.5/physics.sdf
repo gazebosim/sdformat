@@ -185,7 +185,7 @@
       <element name="sor" type="double" default="1.3" required="1">
         <description>Set the successive over-relaxation parameter.</description>
       </element>
-      <element name="use_dynamic_moi_rescaling" type="bool" default="0" required="1">
+      <element name="use_dynamic_moi_rescaling" type="bool" default="false" required="1">
         <description>
           Flag to enable dynamic rescaling of moment of inertia in constrained directions.
           See gazebo pull request 1114 for the implementation of this feature.
