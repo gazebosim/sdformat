@@ -21,7 +21,7 @@
           tangential stress to normal stress.
         </description>
       </element>
-      <element name="use_patch_radius" type="bool" default="1" required="0">
+      <element name="use_patch_radius" type="bool" default="true" required="0">
         <description>
           If this flag is true,
           torsional friction is calculated using the "patch_radius" parameter.
@@ -133,7 +133,7 @@
 
   <element name="contact" required="0">
     <description></description>
-    <element name="collide_without_contact" type="bool" default="0" required="0">
+    <element name="collide_without_contact" type="bool" default="false" required="0">
       <description>Flag to disable contact force generation, while still allowing collision checks and contact visualization to occur.</description>
     </element>
     <element name="collide_without_contact_bitmask" type="unsigned int" default="1" required="0">
@@ -212,7 +212,7 @@
       <element name="kd" type="double" default="1.0" required="0">
         <description>dynamically "damping"-equivalent coefficient for contact joints</description>
       </element>
-      <element name="split_impulse" type="bool" default="1" required="1">
+      <element name="split_impulse" type="bool" default="true" required="1">
         <description>Similar to ODE's max_vel implementation.  See http://bulletphysics.org/mediawiki-1.5.8/index.php/BtContactSolverInfo#Split_Impulse for more information.</description>
       </element>
       <element name="split_impulse_penetration_threshold" type="double" default="-0.01" required="1">
