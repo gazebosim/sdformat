@@ -73,6 +73,7 @@ class sdf::SensorPrivate
             pose(_sensor.pose),
             poseRelativeTo(_sensor.poseRelativeTo),
             sdf(_sensor.sdf),
+            enableMetrics(_sensor.enableMetrics),
             updateRate(_sensor.updateRate)
 
   {
@@ -130,6 +131,9 @@ class sdf::SensorPrivate
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Performance metrics flag.
+  public: bool enableMetrics{false};
 
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
@@ -214,6 +218,7 @@ bool Sensor::operator==(const Sensor &_sensor) const
       this->Topic() != _sensor.Topic() ||
       this->RawPose() != _sensor.RawPose() ||
       this->PoseRelativeTo() != _sensor.PoseRelativeTo() ||
+      this->EnableMetrics() != _sensor.EnableMetrics() ||
       !ignition::math::equal(this->UpdateRate(), _sensor.UpdateRate()))
   {
     return false;
@@ -299,6 +304,8 @@ Errors Sensor::Load(ElementPtr _sdf)
   if (this->dataPtr->topic == "__default__")
     this->dataPtr->topic = "";
 
+  this->dataPtr->enableMetrics = _sdf->Get<bool>("enable_metrics",
+      this->dataPtr->enableMetrics).first;
   std::string type = _sdf->Get<std::string>("type");
   if (type == "air_pressure")
   {
@@ -516,6 +523,18 @@ void Sensor::SetPoseRelativeToGraph(
     std::weak_ptr<const PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+bool Sensor::EnableMetrics() const
+{
+  return this->dataPtr->enableMetrics;
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetEnableMetrics(bool _enableMetrics)
+{
+  this->dataPtr->enableMetrics = _enableMetrics;
 }
 
 /////////////////////////////////////////////////
