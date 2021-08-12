@@ -4,7 +4,16 @@
 
   <attribute name="relative_to" type="string" default="" required="*">
     <description>
-      Name of frame relative to which the pose is applied.
+      If specified, this pose is expressed in the named frame. The named frame
+      must be declared both within the same file, and within the same scope of
+      the element that has it's pose specified by this tag.
+      
+      If missing, this pose is expressed in its parent's frame. Note that this
+      frame is often implicitly defined (e.g., by world, model, or link).
+      
+      Regardless of the value of @relative_to, the element remains attached to
+      its parent and, if dynamic, moves with it. An exception to this is a
+      //frame specifying @attached_to. See //frame/@attached_to for details.
     </description>
   </attribute>
 
