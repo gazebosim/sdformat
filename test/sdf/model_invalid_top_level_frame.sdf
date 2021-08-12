@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <model name="M">
+    <!--
+      This is an invalid model, as the top level model of a model file does not
+      have sibling frames. Thus, its pose cannot have a non-empty @relative_to
+      attribute.
+    -->
+    <pose relative_to="some_frame"/>
+    <link name="L"/>
+   </model>
+</sdf>

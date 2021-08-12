@@ -13,6 +13,7 @@
                   camera,
                   contact,
                   boundingbox_camera, boundingbox,
+                  custom,
                   depth_camera, depth,
                   force_torque,
                   gps,

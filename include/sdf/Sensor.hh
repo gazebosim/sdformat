@@ -118,7 +118,10 @@ namespace sdf
     SEGMENTATION_CAMERA = 21,
 
     /// \brief A boundingbox camera sensor
-    BOUNDINGBOX_CAMERA = 22
+    BOUNDINGBOX_CAMERA = 22,
+
+    /// \brief A custom sensor
+    CUSTOM = 23
   };
 
   /// \brief Information about an SDF sensor.
