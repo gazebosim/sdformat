@@ -5,19 +5,24 @@
   <attribute name="relative_to" type="string" default="" required="*">
     <description>
       If specified, this pose is expressed in the named frame. The named frame
-      must be declared both within the same file, and under the same root
-      (world/model) as the element that has its pose specified by this tag. 
-        
-      If missing, this pose is expressed in its parent's frame. Note that this
-      frame is often implicitly defined (e.g., by world, model, or link).
-      
-      Regardless of the value of @relative_to, the element remains attached to
-      its parent and, if dynamic, moves with it. An exception to this is a
-      //frame specifying @attached_to. See //frame/@attached_to for details.
+      must be declared both within the same file, and in the same scope
+      (world/model) as the element that has its pose specified by this tag.
 
-      New in v1.8: @relative_to may use frames of nested models. In this case, the
+      If missing, this pose is expressed in the scope's implicit frame. This
+      frame is implicitly defined by the world or model that contains the
+      element that has its pose set by this pose element. More info on scoping
+      can be found here:
+      http://sdformat.org/tutorials?tut=pose_frame_semantics&ver=1.7&cat=specification&#name-conflicts-and-scope
+
+      Regardless of the value of @relative_to, the element that has its pose
+      specified by this tag remains attached to its parent and moves with it.
+      Exceptions to this rule are //frame elements specifying @attached_to (see
+      //frame/@attached_to) and the implicit frames of //model elements setting
+      //model/@canonical_link.
+
+      New in v1.8: @relative_to may use frames of nested scopes. In this case, the
       frame is specified using `::` as delimiter to define the scope of the frame,
-      e.g. `top_model::nested_model::awesome_frame`.
+      e.g. `nested_model_A::nested_model_B::awesome_frame`.
     </description>
   </attribute>
 
