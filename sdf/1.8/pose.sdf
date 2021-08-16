@@ -10,9 +10,7 @@
 
       If missing, this pose is expressed in the scope's implicit frame. This
       frame is implicitly defined by the world or model that contains the
-      element that has its pose set by this pose element. More info on scoping
-      can be found here:
-      http://sdformat.org/tutorials?tut=pose_frame_semantics&ver=1.7&cat=specification&#name-conflicts-and-scope
+      element that has its pose set by this pose element.
 
       Regardless of the value of @relative_to, the element that has its pose
       specified by this tag remains attached to its parent and moves with it.

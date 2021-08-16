@@ -6,8 +6,7 @@
     <description>
       Name of the frame. It must be unique whithin its scope (model/world),
       i.e., it must not match the name of another frame, model, or link within
-      the same scope. More information on scoping can be found here:
-      http://sdformat.org/tutorials?tut=pose_frame_semantics&ver=1.7
+      the same scope.
     </description>
   </attribute>
 
@@ -21,8 +20,6 @@
       If missing, this frame is attached to the containing scope's frame. Within
       a //world scope this is the implicit world frame, and within a //model
       scope this is the implicit frame defined by the model's canonical link.
-      More information on scoping can be found here:
-      http://sdformat.org/tutorials?tut=pose_frame_semantics&ver=1.7
 
       A frame moves jointly with the frame it is @attached_to. This is different
       from //pose/@relative_to. @attached_to defines how the frame is attached
