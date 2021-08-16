@@ -79,6 +79,66 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Get the noise values related to the body-frame force
+    ///  on the X-axis.
+    /// \return Noise values for the X-axis force.
+    public: const Noise &ForceXNoise() const;
+
+    /// \brief Set the noise values related to the body-frame force
+    ///  on the X-axis.
+    /// \param[in] _noise Noise values for the X-axis force.
+    public: void SetForceXNoise(const Noise &_noise);
+
+    /// \brief Get the noise values related to the body-frame force
+    ///  on the Y-axis.
+    /// \return Noise values for the Y-axis force.
+    public: const Noise &ForceYNoise() const;
+
+    /// \brief Set the noise values related to the body-frame force
+    ///  on the Y-axis.
+    /// \param[in] _noise Noise values for the Y-axis force.
+    public: void SetForceYNoise(const Noise &_noise);
+
+    /// \brief Get the noise values related to the body-frame force
+    ///  on the Z-axis.
+    /// \return Noise values for the Z-axis force.
+    public: const Noise &ForceZNoise() const;
+
+    /// \brief Set the noise values related to the body-frame force
+    ///  on the Z-axis.
+    /// \param[in] _noise Noise values for the Z-axis force.
+    public: void SetForceZNoise(const Noise &_noise);
+
+    /// \brief Get the noise values related to the body-frame torque
+    ///  on the X-axis.
+    /// \return Noise values for the X-axis torque.
+    public: const Noise &TorqueXNoise() const;
+
+    /// \brief Set the noise values related to the body-frame torque
+    ///  on the X-axis.
+    /// \param[in] _noise Noise values for the X-axis torque.
+    public: void SetTorqueXNoise(const Noise &_noise);
+
+    /// \brief Get the noise values related to the body-frame torque
+    ///  on the Y-axis.
+    /// \return Noise values for the Y-axis torque.
+    public: const Noise &TorqueYNoise() const;
+
+    /// \brief Set the noise values related to the body-frame torque
+    ///  on the Y-axis.
+    /// \param[in] _noise Noise values for the Y-axis torque.
+    public: void SetTorqueYNoise(const Noise &_noise);
+
+    /// \brief Get the noise values related to the body-frame torque
+    ///  on the Z-axis.
+    /// \return Noise values for the Z-axis torque.
+    public: const Noise &TorqueZNoise() const;
+
+    /// \brief Set the noise values related to the body-frame torque
+    ///  on the Z-axis.
+    /// \param[in] _noise Noise values for the Z-axis torque.
+    public: void SetTorqueZNoise(const Noise &_noise);
+
     /// \brief Get the frame in which the wrench values are reported.
     /// \return The frame of the wrench values.
     public: ForceTorqueFrame Frame() const;
