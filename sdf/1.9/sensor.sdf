@@ -57,7 +57,6 @@
   <include filename="plugin.sdf" required="*"/>
   <include filename="air_pressure.sdf" required="0"/>
   <include filename="altimeter.sdf" required="0"/>
-  <include filename="bounding_box_camera.sdf" required="0"/>
   <include filename="camera.sdf" required="0"/>
   <include filename="contact.sdf" required="0"/>
   <include filename="forcetorque.sdf" required="0"/>
@@ -69,7 +68,6 @@
   <include filename="ray.sdf" required="0"/>
   <include filename="rfid.sdf" required="0"/>
   <include filename="rfidtag.sdf" required="0"/>
-  <include filename="segmentation_camera.sdf" required="0"/>
   <include filename="sonar.sdf" required="0"/>
   <include filename="transceiver.sdf" required="0"/>
 

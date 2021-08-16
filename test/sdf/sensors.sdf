@@ -443,6 +443,7 @@
       <sensor name="segmentation_sensor" type="segmentation">
         <pose>37 38 39 0 0 0</pose>
         <camera name="my_segmentation_camera">
+          <segmentation_type>semantic</segmentation_type>
           <pose>0.1 0.2 0.3 0 0 0</pose>
           <horizontal_fov>.75</horizontal_fov>
           <image>
@@ -500,6 +501,7 @@
       <sensor name="boundingbox_sensor" type="boundingbox">
         <pose>37 38 39 0 0 0</pose>
         <camera name="my_boundingbox_camera">
+          <box_type>2d</box_type>
           <pose>0.1 0.2 0.3 0 0 0</pose>
           <horizontal_fov>.75</horizontal_fov>
           <image>
