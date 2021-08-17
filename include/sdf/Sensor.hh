@@ -159,6 +159,14 @@ namespace sdf
     /// \param[in] _topic Topic for this sensor's data.
     public: void SetTopic(const std::string &_topic);
 
+    /// \brief Get flag state for enabling performance metrics publication.
+    /// \return True if performance metrics are enabled, false otherwise.
+    public: bool EnableMetrics() const;
+
+    /// \brief Set flag to enable publishing performance metrics
+    /// \param[in] _enableMetrics True to enable.
+    public: void SetEnableMetrics(bool _enableMetrics);
+
     /// \brief Get the pose of the sensor. This is the pose of the sensor
     /// as specified in SDF (<sensor> <pose> ... </pose></sensor>), and is
     /// typically used to express the position and rotation of a sensor in a

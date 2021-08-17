@@ -22,6 +22,7 @@
 
       <sensor name="camera_sensor" type="camera">
         <pose>1 2 3 0 0 0</pose>
+        <enable_metrics>false</enable_metrics>
         <camera name="my_camera">
           <pose>0.1 0.2 0.3 0 0 0</pose>
           <horizontal_fov>.75</horizontal_fov>
@@ -78,10 +79,12 @@
 
       <sensor name="contact_sensor" type="contact">
         <pose relative_to="__model__">4 5 6 0 0 0</pose>
+        <enable_metrics>true</enable_metrics>
       </sensor>
 
       <sensor name="depth_sensor" type="depth">
         <pose>7 8 9 0 0 0</pose>
+        <enable_metrics>true</enable_metrics>
         <camera name="my_depth_camera">
           <pose>0.1 0.2 0.3 0 0 0</pose>
           <horizontal_fov>.75</horizontal_fov>
@@ -310,6 +313,7 @@
 
       <sensor name="lidar_sensor" type="lidar">
         <pose>1 2 3 0 0 0</pose>
+        <enable_metrics>true</enable_metrics>
         <lidar>
           <scan>
             <horizontal>
