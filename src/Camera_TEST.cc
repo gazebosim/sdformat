@@ -62,17 +62,20 @@ TEST(DOMCamera, Construction)
   cam.SetFarClip(200.2);
   EXPECT_DOUBLE_EQ(200.2, cam.FarClip());
 
-  cam.SetSegmentationType("semantic");
   EXPECT_EQ("semantic", cam.SegmentationType());
+  EXPECT_EQ("2d", cam.BoundingBoxType());
+
+  cam.SetHasSegmentationType(true);
   EXPECT_TRUE(cam.HasSegmentationType());
 
-  cam.SetBoundingBoxType("3d");
-  EXPECT_EQ("3d", cam.BoundingBoxType());
+  cam.SetHasBoundingBoxType(true);
   EXPECT_TRUE(cam.HasBoundingBoxType());
 
-  cam.SetDepthNearClip(0.2);
-  EXPECT_DOUBLE_EQ(0.2, cam.DepthNearClip());
-  EXPECT_TRUE(cam.HasDepthNearClip());
+  cam.SetHasSegmentationType(true);
+  EXPECT_TRUE(cam.HasSegmentationType());
+
+  cam.SetHasBoundingBoxType(true);
+  EXPECT_TRUE(cam.HasBoundingBoxType());
 
   EXPECT_FALSE(cam.SaveFrames());
   cam.SetSaveFrames(true);

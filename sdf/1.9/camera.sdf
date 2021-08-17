@@ -66,10 +66,10 @@
     <description>
       The segmentation type of the segmentation camera. Valid options are:
         - semantic: Semantic segmentation, which provides 2 images:
-                    1. A gray image, with the pixel values representing the label of an object
+                    1. A grayscale image, with the pixel values representing the label of an object
                     2. A colored image, with the pixel values being a unique color for each label
 
-        - panoptic | instance: Panoptic segmentation which provides an image where each pixel
+        - panoptic | instance: Panoptic segmentation, which provides an image where each pixel
                               has 1 channel for label value of the object and 2 channels for the
                               number of the instances of that label, and a colored image which its
                               pixels have a unique color for each instance.

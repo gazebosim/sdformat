@@ -79,10 +79,10 @@ class sdf::Camera::Implementation
   public: double depthFarClip{10.0};
 
   /// \brief Segmentation type for segmentation camera.
-  public: std::string segmentationType;
+  public: std::string segmentationType{"semantic"};
 
   /// \brief Boundingbox type for boundingbox camera.
-  public: std::string boundingBoxType;
+  public: std::string boundingBoxType{"2d"};
 
   /// \brief True indicates the depth camera was set.
   public: bool hasDepthCamera{false};
@@ -514,7 +514,7 @@ std::string Camera::SegmentationType() const
 }
 
 //////////////////////////////////////////////////
-void Camera::SetSegmentationType(std::string _type)
+void Camera::SetSegmentationType(const std::string &_type)
 {
   this->dataPtr->hasSegmentationType = true;
   this->dataPtr->segmentationType = _type;
@@ -539,7 +539,7 @@ std::string Camera::BoundingBoxType() const
 }
 
 //////////////////////////////////////////////////
-void Camera::SetBoundingBoxType(std::string _type)
+void Camera::SetBoundingBoxType(const std::string &_type)
 {
   this->dataPtr->hasBoundingBoxType = true;
   this->dataPtr->boundingBoxType = _type;

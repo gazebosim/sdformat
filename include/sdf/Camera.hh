@@ -206,12 +206,12 @@ namespace sdf
     public: bool HasSegmentationType() const;
 
     /// \brief Get the segmentation type.
-    /// \return The far segmentation type.
+    /// \return The segmentation type.
     public: std::string SegmentationType() const;
 
     /// \brief Set the segmentation type.
     /// \param[in] _type The segmentation type.
-    public: void SetSegmentationType(std::string _type);
+    public: void SetSegmentationType(const std::string &_type);
 
     /// \brief Set whether the boundingbox type has been specified.
     /// \param[in] _type True if the boundingbox type
@@ -223,12 +223,12 @@ namespace sdf
     public: bool HasBoundingBoxType() const;
 
     /// \brief Get the boundingbox type.
-    /// \return The far boundingbox type.
+    /// \return The boundingbox type.
     public: std::string BoundingBoxType() const;
 
     /// \brief Set the boundingbox type.
     /// \param[in] _type The boundingbox type.
-    public: void SetBoundingBoxType(std::string _type);
+    public: void SetBoundingBoxType(const std::string &_type);
 
     /// \brief Get whether frames should be saved.
     /// \return True if image frames should be saved.

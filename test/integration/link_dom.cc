@@ -370,6 +370,8 @@ TEST(DOMLink, Sensors)
     segmentationSensor->CameraSensor();
   ASSERT_NE(nullptr, segmentationCameraSensor);
   EXPECT_EQ("my_segmentation_camera", segmentationCameraSensor->Name());
+  EXPECT_TRUE(segmentationCameraSensor->HasSegmentationType());
+  EXPECT_EQ("semantic", segmentationCameraSensor->SegmentationType());
 
   // Get the boundingbox sensor
   const sdf::Sensor *boundingboxSensor =
@@ -382,6 +384,8 @@ TEST(DOMLink, Sensors)
   const sdf::Camera *boundingboxCamSensor = boundingboxSensor->CameraSensor();
   ASSERT_NE(nullptr, boundingboxCamSensor);
   EXPECT_EQ("my_boundingbox_camera", boundingboxCamSensor->Name());
+  EXPECT_TRUE(boundingboxCamSensor->HasBoundingBoxType());
+  EXPECT_EQ("2d", boundingboxCamSensor->BoundingBoxType());
 
   // Get the force_torque sensor
   const sdf::Sensor *forceTorqueSensor =
