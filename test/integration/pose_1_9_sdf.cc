@@ -58,138 +58,83 @@ TEST(Pose1_9, ModelPose)
 
   model = world->ModelByIndex(1);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_empty_pose_with_degrees", model->Name());
+  ASSERT_EQ("model_with_empty_pose_with_degrees_false", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
 
   model = world->ModelByIndex(2);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_empty_pose_with_quaternion", model->Name());
+  ASSERT_EQ("model_with_empty_pose_with_degrees_true", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
 
   model = world->ModelByIndex(3);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_rpy_pose_no_attribute", model->Name());
+  ASSERT_EQ("model_with_pose_no_attribute", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
   model = world->ModelByIndex(4);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_rpy_pose_with_degrees", model->Name());
-  EXPECT_EQ(Pose(1, 2, 3, pi / 2, pi, pi * 3 / 2), model->RawPose());
+  ASSERT_EQ("model_with_pose_with_degrees_false", model->Name());
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
   model = world->ModelByIndex(5);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_rpy_pose_with_radians", model->Name());
-  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
+  ASSERT_EQ("model_with_pose_with_degrees_true", model->Name());
+  EXPECT_EQ(Pose(1, 2, 3, pi / 2, pi, pi * 3 / 2), model->RawPose());
 
   model = world->ModelByIndex(6);
-  ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_quaternion", model->Name());
-  EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), model->RawPose());
-
-  model = world->ModelByIndex(7);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_with_single_space_delimiter", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
-  model = world->ModelByIndex(8);
+  model = world->ModelByIndex(7);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_with_newline_delimiter", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
-  model = world->ModelByIndex(9);
-  ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_newline_delimiter_quaternion", model->Name());
-  EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), model->RawPose());
-
-  model = world->ModelByIndex(10);
+  model = world->ModelByIndex(8);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_with_messy_delimiters", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
-
-  model = world->ModelByIndex(11);
-  ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_messy_delimiters_quaternion", model->Name());
-  EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), model->RawPose());
 }
 
 //////////////////////////////////////////////////
-TEST(Pose1_9, SetQuatIntoDefaultFail)
+static bool contains(const std::string &_a, const std::string &_b)
 {
+  return _a.find(_b) != std::string::npos;
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, PoseSet7ValuesFail)
+{
+  // Redirect sdferr output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  buffer.str("");
   using Pose = ignition::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_FALSE(poseValueParam->SetFromString(
       "1 2 3   0.7071068 0.7071068 0 0"));
-}
-
-//////////////////////////////////////////////////
-TEST(Pose1_9, SetIntoRpyRadiansFail)
-{
-  using Pose = ignition::math::Pose3d;
-
-  sdf::ElementPtr poseElem(new sdf::Element);
-  poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
-
-  sdf::ParamPtr rpyRadiansAttrib = poseElem->GetAttribute("rotation_type");
-  ASSERT_NE(nullptr, rpyRadiansAttrib);
-  ASSERT_TRUE(rpyRadiansAttrib->Set<std::string>("rpy_radians"));
-
-  sdf::ParamPtr poseValueParam = poseElem->GetValue();
-  ASSERT_NE(nullptr, poseValueParam);
-  EXPECT_FALSE(poseValueParam->SetFromString(
-      "1 2 3   0.7071068 0.7071068 0 0"));
-}
-
-//////////////////////////////////////////////////
-TEST(Pose1_9, SetIntoRpyDegreesFail)
-{
-  using Pose = ignition::math::Pose3d;
-
-  sdf::ElementPtr poseElem(new sdf::Element);
-  poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
-
-  sdf::ParamPtr rpyDegreesAttrib = poseElem->GetAttribute("rotation_type");
-  ASSERT_NE(nullptr, rpyDegreesAttrib);
-  ASSERT_TRUE(rpyDegreesAttrib->Set<std::string>("rpy_degrees"));
-
-  sdf::ParamPtr poseValueParam = poseElem->GetValue();
-  ASSERT_NE(nullptr, poseValueParam);
-  EXPECT_FALSE(poseValueParam->SetFromString(
-      "1 2 3   0.7071068 0.7071068 0 0"));
-}
-
-//////////////////////////////////////////////////
-TEST(Pose1_9, SetIntoQuatFail)
-{
-  using Pose = ignition::math::Pose3d;
-
-  sdf::ElementPtr poseElem(new sdf::Element);
-  poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
-
-  sdf::ParamPtr quatAttrib = poseElem->GetAttribute("rotation_type");
-  ASSERT_NE(nullptr, quatAttrib);
-  ASSERT_TRUE(quatAttrib->Set<std::string>("q_wxyz"));
-
-  sdf::ParamPtr poseValueParam = poseElem->GetValue();
-  ASSERT_NE(nullptr, poseValueParam);
-  EXPECT_FALSE(poseValueParam->SetFromString(
-      "1 2 3   0.4 0.5 0.6"));
+  EXPECT_PRED2(contains, buffer.str(),
+      "must have 6 values, but 7 were found instead.");
 }
 
 //////////////////////////////////////////////////
@@ -201,7 +146,7 @@ TEST(Pose1_9, PoseElementSetAndGet)
   poseElem->SetName("pose");
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
   poseElem->Set<ignition::math::Pose3d>(Pose(1, 2, 3, 0.4, 0.5, 0.6));
 
   Pose elemVal;
@@ -218,7 +163,7 @@ TEST(Pose1_9, PoseElementSetAndParamGet)
   poseElem->SetName("pose");
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
   poseElem->Set<ignition::math::Pose3d>(Pose(1, 2, 3, 0.4, 0.5, 0.6));
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
@@ -238,7 +183,7 @@ TEST(Pose1_9, PoseParamSetAndGet)
   poseElem->SetName("pose");
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
@@ -260,7 +205,7 @@ TEST(Pose1_9, PoseParamSetFromStringAndGet)
   poseElem->SetName("pose");
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
@@ -281,7 +226,7 @@ TEST(Pose1_9, PoseParamSetAndElemGet)
   poseElem->SetName("pose");
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
@@ -303,7 +248,7 @@ TEST(Pose1_9, PoseParamSetAndParentElemGet)
   poseElem->SetName("pose");
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
@@ -320,32 +265,33 @@ TEST(Pose1_9, PoseParamSetAndParentElemGet)
 }
 
 //////////////////////////////////////////////////
-TEST(Pose1_9, ChangingParentPoseElement)
+TEST(Pose1_9, ChangingParentPoseElementAfterSet)
 {
-  const double pi = 3.14159265358979323846;
+  // Since the values are explicitly set using the Set<T> function,
+  // reparsing should not change their values, even when parent elements have
+  // been changed.
+
   using Pose = ignition::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
   ASSERT_TRUE(poseElem->Set<ignition::math::Pose3d>(
       Pose(1, 2, 3, 0.4, 0.5, 0.6)));
 
-  sdf::ElementPtr rpyDegreesPoseElem(new sdf::Element);
-  rpyDegreesPoseElem->SetName("pose");
-  rpyDegreesPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  rpyDegreesPoseElem->AddAttribute("relative_to", "string", "", false);
-  rpyDegreesPoseElem->AddAttribute(
-      "rotation_type", "string", "rpy_degrees", false);
+  sdf::ElementPtr degreesPoseElem(new sdf::Element);
+  degreesPoseElem->SetName("pose");
+  degreesPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  degreesPoseElem->AddAttribute("relative_to", "string", "", false);
+  degreesPoseElem->AddAttribute("degrees", "bool", "true", false);
 
-  sdf::ElementPtr rpyRadiansPoseElem(new sdf::Element);
-  rpyRadiansPoseElem->SetName("pose");
-  rpyRadiansPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  rpyRadiansPoseElem->AddAttribute("relative_to", "string", "", false);
-  rpyRadiansPoseElem->AddAttribute(
-      "rotation_type", "string", "rpy_radians", false);
+  sdf::ElementPtr radiansPoseElem(new sdf::Element);
+  radiansPoseElem->SetName("pose");
+  radiansPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  radiansPoseElem->AddAttribute("relative_to", "string", "", false);
+  radiansPoseElem->AddAttribute("degrees", "bool", "false", false);
 
   // Param from original default attibute
   sdf::ParamPtr valParam = poseElem->GetValue();
@@ -355,14 +301,64 @@ TEST(Pose1_9, ChangingParentPoseElement)
   ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
-  // Set parent to Element with rotation_type attribute as rpy_degrees
-  valParam->SetParentElement(rpyDegreesPoseElem);
+  // Set parent to Element with degrees attribute true.
+  valParam->SetParentElement(degreesPoseElem);
   ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
-  EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180),
-      val);
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
-  // Set parent to Element with rotation_type attribute as rpy_radians
-  valParam->SetParentElement(rpyRadiansPoseElem);
+  // Set parent to Element with degrees attribute false.
+  valParam->SetParentElement(radiansPoseElem);
+  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+
+  // Remove parent
+  valParam->SetParentElement(nullptr);
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, ChangingParentPoseElementAfteriParamSetFromString)
+{
+  // Since the values are set using the SetFromString function, reparsing
+  // should change their values, when parent elements have been changed.
+
+  const double pi = 3.14159265358979323846;
+  using Pose = ignition::math::Pose3d;
+
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+
+  sdf::ElementPtr degreesPoseElem(new sdf::Element);
+  degreesPoseElem->SetName("pose");
+  degreesPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  degreesPoseElem->AddAttribute("relative_to", "string", "", false);
+  degreesPoseElem->AddAttribute("degrees", "bool", "true", false);
+
+  sdf::ElementPtr radiansPoseElem(new sdf::Element);
+  radiansPoseElem->SetName("pose");
+  radiansPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  radiansPoseElem->AddAttribute("relative_to", "string", "", false);
+  radiansPoseElem->AddAttribute("degrees", "bool", "false", false);
+
+  // Param from original default attibute
+  sdf::ParamPtr valParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, valParam);
+  ASSERT_TRUE(valParam->SetFromString("1, 2, 3, 0.4, 0.5, 0.6"));
+
+  Pose val;
+  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+
+  // Set parent to Element with degrees attribute true.
+  valParam->SetParentElement(degreesPoseElem);
+  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
+
+  // Set parent to Element with degrees attribute false.
+  valParam->SetParentElement(radiansPoseElem);
   ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
@@ -381,413 +377,32 @@ TEST(Pose1_9, ChangingAttributeOfParentElement)
   poseElem->SetName("pose");
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("rotation_type", "string", "rpy_radians", false);
-  ASSERT_TRUE(poseElem->Set<ignition::math::Pose3d>(
-      Pose(1, 2, 3, 0.4, 0.5, 0.6)));
-
-  sdf::ParamPtr rotationTypeAttrib = poseElem->GetAttribute("rotation_type");
-  ASSERT_NE(nullptr, rotationTypeAttrib);
-  ASSERT_TRUE(rotationTypeAttrib->Set<std::string>("rpy_radians"));
+  poseElem->AddAttribute("degrees", "bool", "false", false);
 
   // Param value in radians
   sdf::ParamPtr valParam = poseElem->GetValue();
   ASSERT_NE(nullptr, valParam);
+  ASSERT_TRUE(valParam->SetFromString("1, 2, 3, 0.4, 0.5, 0.6"));
 
   Pose val;
   ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
-  // Changing rotation type to degrees without reparsing, value will remain the
-  // same
-  ASSERT_TRUE(rotationTypeAttrib->Set<std::string>("rpy_degrees"));
+  // Changing to degrees without reparsing, value will remain the same
+  sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
+  ASSERT_NE(nullptr, degreesAttrib);
+  ASSERT_TRUE(degreesAttrib->Set<bool>(true));
   ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
   // Values will change to be degrees after reparsing
   ASSERT_TRUE(valParam->Reparse());
   ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
-  EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180),
-      val);
+  EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
 
-  // Changing rotation type back to radians
-  ASSERT_TRUE(rotationTypeAttrib->Set<std::string>("rpy_radians"));
+  // Changing back to radians
+  ASSERT_TRUE(degreesAttrib->Set<bool>(false));
   ASSERT_TRUE(valParam->Reparse());
   ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
-
-  // Changing rotation type to quaterion will fail during reparsing as there
-  // are not enough elements
-  ASSERT_TRUE(rotationTypeAttrib->Set<std::string>("q_wxyz"));
-  EXPECT_FALSE(valParam->Reparse());
-}
-
-//////////////////////////////////////////////////
-static bool contains(const std::string &_a, const std::string &_b)
-{
-  return _a.find(_b) != std::string::npos;
-}
-
-//////////////////////////////////////////////////
-TEST(Pose1_9, ErrorChangingParentPoseElementFromQuaternion)
-{
-  // Redirect sdferr output
-  std::stringstream buffer;
-  sdf::testing::RedirectConsoleStream redir(
-      sdf::Console::Instance()->GetMsgStream(), &buffer);
-
-#ifdef _WIN32
-  sdf::Console::Instance()->SetQuiet(false);
-  sdf::testing::ScopeExit revertSetQuiet(
-      []
-      {
-        sdf::Console::Instance()->SetQuiet(true);
-      });
-#endif
-
-  buffer.str("");
-  using Pose = ignition::math::Pose3d;
-
-  sdf::ElementPtr quatPoseElem(new sdf::Element);
-  quatPoseElem->SetName("pose");
-  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  quatPoseElem->AddAttribute("relative_to", "string", "", false);
-  quatPoseElem->AddAttribute(
-      "rotation_type", "string", "q_wxyz", false);
-
-  sdf::ElementPtr rpyRadiansPoseElem(new sdf::Element);
-  rpyRadiansPoseElem->SetName("pose");
-  rpyRadiansPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  rpyRadiansPoseElem->AddAttribute("relative_to", "string", "", false);
-  rpyRadiansPoseElem->AddAttribute(
-      "rotation_type", "string", "rpy_radians", false);
-
-  // Param from quatPoseElem
-  sdf::ParamPtr valParam = quatPoseElem->GetValue();
-  ASSERT_NE(nullptr, valParam);
-  ASSERT_TRUE(valParam->SetFromString("1 2 3   0.7071068 0.7071068 0 0"));
-
-  // Changing to parent Element with rotation_type attribute rpy_radians
-  // The new value setting will fail since it can't parse 7 values into xyzrpy
-  valParam->SetParentElement(rpyRadiansPoseElem);
-  EXPECT_PRED2(contains, buffer.str(),
-      "The value for //pose[@rotation_type='rpy_radians'] must have 6 values, "
-      "but 7 were found instead");
-
-  // The value will not change as it failed to reparse with the new parent
-  // element
-  Pose val;
-  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
-  EXPECT_NE(Pose(1, 2, 3, 0.7071068, 0.7071068, 0.0), val);
-  EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), val);
-}
-
-//////////////////////////////////////////////////
-TEST(Pose1_9, ErrorChangingParentPoseElementToQuaternion)
-{
-  // Redirect sdferr output
-  std::stringstream buffer;
-  sdf::testing::RedirectConsoleStream redir(
-      sdf::Console::Instance()->GetMsgStream(), &buffer);
-
-#ifdef _WIN32
-  sdf::Console::Instance()->SetQuiet(false);
-  sdf::testing::ScopeExit revertSetQuiet(
-      []
-      {
-        sdf::Console::Instance()->SetQuiet(true);
-      });
-#endif
-
-  buffer.str("");
-  using Pose = ignition::math::Pose3d;
-
-  sdf::ElementPtr quatPoseElem(new sdf::Element);
-  quatPoseElem->SetName("pose");
-  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  quatPoseElem->AddAttribute("relative_to", "string", "", false);
-  quatPoseElem->AddAttribute(
-      "rotation_type", "string", "q_wxyz", false);
-
-  sdf::ElementPtr rpyRadiansPoseElem(new sdf::Element);
-  rpyRadiansPoseElem->SetName("pose");
-  rpyRadiansPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  rpyRadiansPoseElem->AddAttribute("relative_to", "string", "", false);
-  rpyRadiansPoseElem->AddAttribute(
-      "rotation_type", "string", "rpy_radians", false);
-
-  // Param from rpyRadiansPoseElem
-  sdf::ParamPtr valParam = rpyRadiansPoseElem->GetValue();
-  ASSERT_NE(nullptr, valParam);
-  ASSERT_TRUE(valParam->SetFromString("1 2 3   0.4 0.5 0.6"));
-
-  // Changing to parent Element with rotation_type attribute q_wxyz
-  // The new value setting will fail since it can't parse 6 values into
-  // xyzQWXYZ
-  valParam->SetParentElement(quatPoseElem);
-  EXPECT_PRED2(contains, buffer.str(),
-      "The value for //pose[@rotation_type='q_wxyz'] must have 7 values, "
-      "but 6 were found instead");
-
-  // The value will not change as it failed to reparse with the new parent
-  // element
-  Pose val;
-  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
-  EXPECT_NE(Pose(1, 2, 3, 0.4, 0.5, 0.6, 0.0), val);
-  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
-}
-
-//////////////////////////////////////////////////
-TEST(Pose1_9, InvalidRotationType)
-{
-  // Redirect sdferr output
-  std::stringstream buffer;
-  sdf::testing::RedirectConsoleStream redir(
-      sdf::Console::Instance()->GetMsgStream(), &buffer);
-
-#ifdef _WIN32
-  sdf::Console::Instance()->SetQuiet(false);
-  sdf::testing::ScopeExit revertSetQuiet(
-      []
-      {
-        sdf::Console::Instance()->SetQuiet(true);
-      });
-#endif
-
-  buffer.str("");
-  const std::string testString = R"(<?xml version="1.0" ?>
-    <sdf version="1.9">
-      <world name="default">
-        <model name="test_model">
-          <pose rotation_type="rpy_xyz">
-            1 2 3 0.4 0.5 0.6
-          </pose>
-          <link name="test_link"/>
-        </model>
-      </world>
-    </sdf>)";
-
-  sdf::Root root;
-  sdf::Errors errors = root.LoadSdfString(testString);
-  ASSERT_FALSE(errors.empty()) << errors;
-  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-  EXPECT_EQ(5, errors[0].LineNumber());
-  EXPECT_PRED2(contains, buffer.str(),
-      "Invalid attribute //pose[@rotation_type='rpy_xyz']");
-}
-
-//////////////////////////////////////////////////
-TEST(Pose1_9, InvalidNumberOfPoseValues)
-{
-  // Redirect sdferr output
-  std::stringstream buffer;
-  sdf::testing::RedirectConsoleStream redir(
-      sdf::Console::Instance()->GetMsgStream(), &buffer);
-
-#ifdef _WIN32
-  sdf::Console::Instance()->SetQuiet(false);
-  sdf::testing::ScopeExit revertSetQuiet(
-      []
-      {
-        sdf::Console::Instance()->SetQuiet(true);
-      });
-#endif
-
-  {
-    buffer.str("");
-    const std::string testString = R"(<?xml version="1.0" ?>
-      <sdf version="1.9">
-        <world name="default">
-          <model name="test_model">
-            <pose>
-              1 2 3 0.4 0.5
-            </pose>
-            <link name="test_link"/>
-          </model>
-        </world>
-      </sdf>)";
-
-    sdf::Root root;
-    sdf::Errors errors = root.LoadSdfString(testString);
-    ASSERT_FALSE(errors.empty()) << errors;
-    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-    EXPECT_EQ(5, errors[0].LineNumber());
-    EXPECT_PRED2(contains, buffer.str(),
-        "must have 6 values, but 5 were found instead.");
-  }
-  {
-    buffer.str("");
-    const std::string testString = R"(<?xml version="1.0" ?>
-      <sdf version="1.9">
-        <world name="default">
-          <model name="test_model">
-            <pose>
-              1 2 3 0.4 0.5 0.6 0.7
-            </pose>
-            <link name="test_link"/>
-          </model>
-        </world>
-      </sdf>)";
-
-    sdf::Root root;
-    sdf::Errors errors = root.LoadSdfString(testString);
-    ASSERT_FALSE(errors.empty()) << errors;
-    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-    EXPECT_EQ(5, errors[0].LineNumber());
-    EXPECT_PRED2(contains, buffer.str(),
-        "must have 6 values, but 7 were found instead.");
-  }
-  {
-    buffer.str("");
-    const std::string testString = R"(<?xml version="1.0" ?>
-      <sdf version="1.9">
-        <world name="default">
-          <model name="test_model">
-            <pose rotation_type="rpy_radians">
-              1 2 3 0.4 0.5
-            </pose>
-            <link name="test_link"/>
-          </model>
-        </world>
-      </sdf>)";
-
-    sdf::Root root;
-    sdf::Errors errors = root.LoadSdfString(testString);
-    ASSERT_FALSE(errors.empty()) << errors;
-    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-    EXPECT_EQ(5, errors[0].LineNumber());
-    EXPECT_PRED2(contains, buffer.str(),
-        "must have 6 values, but 5 were found instead.");
-  }
-  {
-    buffer.str("");
-    const std::string testString = R"(<?xml version="1.0" ?>
-      <sdf version="1.9">
-        <world name="default">
-          <model name="test_model">
-            <pose rotation_type="rpy_radians">
-              1 2 3 0.4 0.5 0.6 0.7
-            </pose>
-            <link name="test_link"/>
-          </model>
-        </world>
-      </sdf>)";
-
-    sdf::Root root;
-    sdf::Errors errors = root.LoadSdfString(testString);
-    ASSERT_FALSE(errors.empty()) << errors;
-    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-    EXPECT_EQ(5, errors[0].LineNumber());
-    EXPECT_PRED2(contains, buffer.str(),
-        "must have 6 values, but 7 were found instead.");
-  }
-  {
-    buffer.str("");
-    const std::string testString = R"(<?xml version="1.0" ?>
-      <sdf version="1.9">
-        <world name="default">
-          <model name="test_model">
-            <pose rotation_type="rpy_degrees">
-              1 2 3 0.4 0.5
-            </pose>
-            <link name="test_link"/>
-          </model>
-        </world>
-      </sdf>)";
-
-    sdf::Root root;
-    sdf::Errors errors = root.LoadSdfString(testString);
-    ASSERT_FALSE(errors.empty()) << errors;
-    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-    EXPECT_EQ(5, errors[0].LineNumber());
-    EXPECT_PRED2(contains, buffer.str(),
-        "must have 6 values, but 5 were found instead.");
-  }
-  {
-    buffer.str("");
-    const std::string testString = R"(<?xml version="1.0" ?>
-      <sdf version="1.9">
-        <world name="default">
-          <model name="test_model">
-            <pose rotation_type="rpy_degrees">
-              1 2 3 0.4 0.5
-            </pose>
-            <link name="test_link"/>
-          </model>
-        </world>
-      </sdf>)";
-
-    sdf::Root root;
-    sdf::Errors errors = root.LoadSdfString(testString);
-    ASSERT_FALSE(errors.empty()) << errors;
-    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-    EXPECT_EQ(5, errors[0].LineNumber());
-    EXPECT_PRED2(contains, buffer.str(),
-        "must have 6 values, but 5 were found instead.");
-  }
-  {
-    buffer.str("");
-    const std::string testString = R"(<?xml version="1.0" ?>
-      <sdf version="1.9">
-        <world name="default">
-          <model name="test_model">
-            <pose rotation_type="rpy_degrees">
-              1 2 3 0.4 0.5 0.6 0.7
-            </pose>
-            <link name="test_link"/>
-          </model>
-        </world>
-      </sdf>)";
-
-    sdf::Root root;
-    sdf::Errors errors = root.LoadSdfString(testString);
-    ASSERT_FALSE(errors.empty()) << errors;
-    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-    EXPECT_EQ(5, errors[0].LineNumber());
-    EXPECT_PRED2(contains, buffer.str(),
-        "must have 6 values, but 7 were found instead.");
-  }
-  {
-    buffer.str("");
-    const std::string testString = R"(<?xml version="1.0" ?>
-      <sdf version="1.9">
-        <world name="default">
-          <model name="test_model">
-            <pose rotation_type="q_wxyz">
-              1 2 3 0.4 0.5 0.6
-            </pose>
-            <link name="test_link"/>
-          </model>
-        </world>
-      </sdf>)";
-
-    sdf::Root root;
-    sdf::Errors errors = root.LoadSdfString(testString);
-    ASSERT_FALSE(errors.empty()) << errors;
-    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-    EXPECT_EQ(5, errors[0].LineNumber());
-    EXPECT_PRED2(contains, buffer.str(),
-        "must have 7 values, but 6 were found instead.");
-  }
-  {
-    buffer.str("");
-    const std::string testString = R"(<?xml version="1.0" ?>
-      <sdf version="1.9">
-        <world name="default">
-          <model name="test_model">
-            <pose rotation_type="q_wxyz">
-              1 2 3 0.4 0.5 0.6 0.7 0.8
-            </pose>
-            <link name="test_link"/>
-          </model>
-        </world>
-      </sdf>)";
-
-    sdf::Root root;
-    sdf::Errors errors = root.LoadSdfString(testString);
-    ASSERT_FALSE(errors.empty()) << errors;
-    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-    EXPECT_EQ(5, errors[0].LineNumber());
-    EXPECT_PRED2(contains, buffer.str(),
-        "must have 7 values, but 8 were found instead.");
-  }
 }

@@ -186,10 +186,11 @@ namespace sdf
 
     /// \brief Set the parameter value from a string.
     /// \param[in] _value New value for the parameter in string form.
-    /// \param[in] _ignoreAttributes Whether to ignore parent element attributes
-    /// when parsing value from string.
+    /// \param[in] _ignoreParentAttributes Whether to ignore parent element
+    /// attributes when parsing value from string as well as subsequent
+    /// reparses.
     public: bool SetFromString(const std::string &_value,
-                               bool _ignoreAttributes);
+                               bool _ignoreParentAttributes);
 
     /// \brief Set the parameter value from a string.
     /// \param[in] _value New value for the parameter in string form.
@@ -301,10 +302,7 @@ namespace sdf
 
     /// \brief Private method to set the Element from a passed-in string.
     /// \param[in] _value Value to set the parameter to.
-    /// \param[in] _ignoreAttributes Whether to ignore parent element attributes
-    /// when parsing value from string.
-    private: bool ValueFromString(const std::string &_value,
-                                  bool _ignoreAttributes);
+    private: bool ValueFromString(const std::string &_value);
 
     /// \brief Private data
     private: std::unique_ptr<ParamPrivate> dataPtr;
@@ -349,6 +347,11 @@ namespace sdf
 
     /// \brief This parameter's value
     public: ParamVariant value;
+
+    /// \brief True if the value has been parsed while ignoring its parent
+    /// element's attributes, and will continue to ignore them for subsequent
+    /// reparses.
+    public: bool ignoreParentAttributes;
 
     /// \brief This parameter's value that was provided as a string
     public: std::optional<std::string> strValue;

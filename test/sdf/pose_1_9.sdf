@@ -12,33 +12,28 @@
       <link name="link"/>
     </model>
 
-    <model name="model_with_empty_pose_with_degrees">
-      <pose rotation_type="rpy_degrees"></pose> 
+    <model name="model_with_empty_pose_with_degrees_false">
+      <pose degrees="false"></pose> 
       <link name="link"/>
     </model>
 
-    <model name="model_with_empty_pose_with_quaternion">
-      <pose rotation_type="q_wxyz"></pose> 
+    <model name="model_with_empty_pose_with_degrees_true">
+      <pose degrees="true"></pose> 
       <link name="link"/>
     </model>
 
-    <model name="model_with_rpy_pose_no_attribute">
+    <model name="model_with_pose_no_attribute">
       <pose>1 2 3   0.4 0.5 0.6</pose>
       <link name="link"/>
     </model>
 
-    <model name="model_with_rpy_pose_with_degrees">
-      <pose rotation_type="rpy_degrees">1 2 3   90 180 270</pose>
+    <model name="model_with_pose_with_degrees_false">
+      <pose degrees="false">1 2 3   0.4 0.5 0.6</pose>
       <link name="link"/>
     </model>
 
-    <model name="model_with_rpy_pose_with_radians">
-      <pose rotation_type="rpy_radians">1 2 3   0.4 0.5 0.6</pose>
-      <link name="link"/>
-    </model>
-
-    <model name="model_with_quaternion">
-      <pose rotation_type="q_wxyz">1 2 3   0.7071068 0.7071068 0 0</pose>
+    <model name="model_with_pose_with_degrees_true">
+      <pose degrees="true">1 2 3   90 180 270</pose>
       <link name="link"/>
     </model>
 
@@ -55,29 +50,11 @@
       <link name="link"/>
     </model>
 
-    <model name="model_with_newline_delimiter_quaternion">
-      <pose rotation_type="q_wxyz">
-        1 2 3
-        0.7071068 0.7071068 0 0
-      </pose>
-      <link name="link"/>
-    </model>
-
     <model name="model_with_messy_delimiters">
       <pose>
         1 2 3
         0.4
         0.5 0.6
-      </pose>
-      <link name="link"/>
-    </model>
-
-    <model name="model_with_messy_delimiters_quaternion">
-      <pose rotation_type="q_wxyz">
-        1 2
-        3
-        0.7071068
-        0.7071068 0 0
       </pose>
       <link name="link"/>
     </model>

@@ -531,7 +531,7 @@ TEST(Param, DestroyParentElementAfterConstruct)
 }
 
 //////////////////////////////////////////////////
-TEST(Param, Reparsing)
+TEST(Param, ReparsingAfterSet)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
 
@@ -543,6 +543,26 @@ TEST(Param, Reparsing)
 
   // Setting a value before reparsing, value doesn't get modified.
   ASSERT_TRUE(doubleParam.Set<double>(5.));
+  EXPECT_TRUE(doubleParam.Get<double>(value));
+  EXPECT_DOUBLE_EQ(value, 5.0);
+  EXPECT_TRUE(doubleParam.Reparse());
+  EXPECT_TRUE(doubleParam.Get<double>(value));
+  EXPECT_DOUBLE_EQ(value, 5.0);
+}
+
+//////////////////////////////////////////////////
+TEST(Param, ReparsingAfterSetFromString)
+{
+  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+
+  // Reparsing without setting values will fail
+  EXPECT_FALSE(doubleParam.Reparse());
+  double value;
+  EXPECT_TRUE(doubleParam.Get<double>(value));
+  EXPECT_DOUBLE_EQ(value, 1.0);
+
+  // Setting a value from string before reparsing, value doesn't get modified.
+  ASSERT_TRUE(doubleParam.SetFromString("5.0"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 5.0);
   EXPECT_TRUE(doubleParam.Reparse());

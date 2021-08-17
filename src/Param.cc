@@ -69,8 +69,9 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->dataPtr->typeName = _typeName;
   this->dataPtr->description = _description;
   this->dataPtr->set = false;
+  this->dataPtr->ignoreParentAttributes = false;
 
-  SDF_ASSERT(this->ValueFromString(_default, false), "Invalid parameter");
+  SDF_ASSERT(this->ValueFromString(_default), "Invalid parameter");
   this->dataPtr->defaultValue = this->dataPtr->value;
 }
 
@@ -85,7 +86,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   if (!_minValue.empty())
   {
     SDF_ASSERT(
-        this->ValueFromString(_minValue, false),
+        this->ValueFromString(_minValue),
         std::string("Invalid [min] parameter in SDFormat description of [") +
             _key + "]");
     this->dataPtr->minValue = this->dataPtr->value;
@@ -94,7 +95,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   if (!_maxValue.empty())
   {
     SDF_ASSERT(
-        this->ValueFromString(_maxValue, false),
+        this->ValueFromString(_maxValue),
         std::string("Invalid [max] parameter in SDFormat description of [") +
             _key + "]");
     this->dataPtr->maxValue = this->dataPtr->value;
@@ -483,70 +484,50 @@ bool ParsePoseUsingStringStream(const std::string &_input,
   if (!isValidPose)
     return false;
 
-  const std::string defaultRotationType = "rpy_radians";
-  std::string rotationType = defaultRotationType;
+  if (values.size() != 6u)
+  {
+    sdferr << "The value for //pose must have 6 values, but "
+        << values.size() << " were found instead.\n";
+    return false;
+  }
+
+  const bool defaultParseAsDegrees = false;
+  bool parseAsDegrees = defaultParseAsDegrees;
+
   for (const auto &p : _attributes)
   {
-    if (p->GetKey() == "rotation_type")
-      rotationType = p->GetAsString();
+    if (p->GetKey() == "degrees")
+    {
+      std::string degreesAttribValue = p->GetAsString();
+
+      if (degreesAttribValue == "true" || degreesAttribValue  == "1")
+        parseAsDegrees = true;
+      else if (degreesAttribValue == "false" || degreesAttribValue == "0")
+        parseAsDegrees = false;
+      else
+      {
+        sdferr << "Invalid boolean value found for attribute "
+            "//pose[@degrees].\n";
+        return false;
+      }
+    }
   }
 
-  std::string desiredSizeErrorMessage;
-  auto isRotationType =
-      [&](const std::string &_rotationType, std::size_t _desiredSize)
-  {
-    if (rotationType != _rotationType)
-    {
-      return false;
-    }
-    else if (values.size() != _desiredSize)
-    {
-      std::stringstream sstream;
-      sstream << "The value for //pose[@rotation_type='" << _rotationType
-          << "'] must have " << _desiredSize << " values, but " << values.size()
-          << " were found instead.\n";
-      desiredSizeErrorMessage = sstream.str();
-      return false;
-    }
-    return true;
-  };
-
-  if (isRotationType("rpy_radians", 6u))
-  {
-    _value = ignition::math::Pose3d(values[0], values[1], values[2],
-        values[3], values[4], values[5]);
-  }
-  else if (isRotationType("rpy_degrees", 6u))
+  if (parseAsDegrees)
   {
     _value = ignition::math::Pose3d(values[0], values[1], values[2],
         IGN_DTOR(values[3]), IGN_DTOR(values[4]), IGN_DTOR(values[5]));
   }
-  else if (isRotationType("q_wxyz", 7u))
-  {
-    _value = ignition::math::Pose3d(values[0], values[1], values[2],
-        values[3], values[4], values[5], values[6]);
-  }
   else
   {
-    if (desiredSizeErrorMessage.empty())
-    {
-      sdferr << "Invalid attribute //pose[@rotation_type='" << rotationType
-          << "'], only 'rpy_radians', 'rpy_degrees' and 'q_wxyz'"
-          << " are supported.\n";
-    }
-    else
-    {
-      sdferr << desiredSizeErrorMessage;
-    }
-    return false;
+    _value = ignition::math::Pose3d(values[0], values[1], values[2],
+        values[3], values[4], values[5]);
   }
-
   return true;
 }
 
 //////////////////////////////////////////////////
-bool Param::ValueFromString(const std::string &_value,
-                            bool _ignoreAttributes)
+bool Param::ValueFromString(const std::string &_value)
 {
   // Under some circumstances, latin locales (es_ES or pt_BR) will return a
   // comma for decimal position instead of a dot, making the conversion
@@ -662,7 +643,7 @@ bool Param::ValueFromString(const std::string &_value,
       if (!tmp.empty())
       {
         const ElementPtr p = this->dataPtr->parentElement.lock();
-        if (!_ignoreAttributes && p)
+        if (!this->dataPtr->ignoreParentAttributes && p)
         {
           return ParsePoseUsingStringStream(
               tmp, this->dataPtr->key, p->GetAttributes(),
@@ -705,8 +686,10 @@ bool Param::ValueFromString(const std::string &_value,
 }
 
 //////////////////////////////////////////////////
-bool Param::SetFromString(const std::string &_value, bool _ignoreAttributes)
+bool Param::SetFromString(const std::string &_value,
+                          bool _ignoreParentAttributes)
 {
+  this->dataPtr->ignoreParentAttributes = _ignoreParentAttributes;
   this->dataPtr->strValue = _value;
   std::string str = sdf::trim(_value.c_str());
 
@@ -723,7 +706,7 @@ bool Param::SetFromString(const std::string &_value, bool _ignoreAttributes)
   }
 
   auto oldValue = this->dataPtr->value;
-  if (!this->ValueFromString(str, _ignoreAttributes))
+  if (!this->ValueFromString(str))
   {
     return false;
   }
@@ -773,7 +756,7 @@ bool Param::Reparse()
     return false;
 
   const std::string strVal = this->dataPtr->strValue.value();
-  if (!this->SetFromString(strVal))
+  if (!this->SetFromString(strVal, this->dataPtr->ignoreParentAttributes))
   {
     if (const auto parentElement = this->dataPtr->parentElement.lock())
     {
