@@ -877,6 +877,18 @@ ElementPtr Element::GetElement(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
+ElementPtr Element::FindElement(const std::string &_name)
+{
+  return this->GetElementImpl(_name);
+}
+
+/////////////////////////////////////////////////
+ElementConstPtr Element::FindElement(const std::string &_name) const
+{
+  return this->GetElementImpl(_name);
+}
+
+/////////////////////////////////////////////////
 void Element::InsertElement(ElementPtr _elem)
 {
   this->dataPtr->elements.push_back(_elem);

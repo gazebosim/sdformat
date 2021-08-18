@@ -1357,6 +1357,7 @@ void URDF2SDF::ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml)
       else if (strcmp(childElem->Name(), "turnGravityOff") == 0)
       {
         std::string valueStr = GetKeyValueAsString(childElem);
+        sdf->isGravity = true;
 
         // default of gravity is true
         if (lowerStr(valueStr) == "false" || lowerStr(valueStr) == "no" ||
@@ -2094,28 +2095,23 @@ void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem,
           sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
       {
         // insert gravity
-        if ((*ge)->gravity)
+        if ((*ge)->isGravity)
         {
-          AddKeyValue(_elem, "gravity", "true");
-        }
-        else
-        {
-          AddKeyValue(_elem, "gravity", "false");
+          AddKeyValue(_elem, "gravity", (*ge)->gravity ? "true" : "false");
         }
 
         // damping factor
-
-        tinyxml2::XMLElement *velocityDecay =
-          _elem->GetDocument()->NewElement("velocity_decay");
         if ((*ge)->isDampingFactor)
         {
+          tinyxml2::XMLElement *velocityDecay =
+            _elem->GetDocument()->NewElement("velocity_decay");
           /// @todo separate linear and angular velocity decay
           AddKeyValue(velocityDecay, "linear",
                       Values2str(1, &(*ge)->dampingFactor));
           AddKeyValue(velocityDecay, "angular",
                       Values2str(1, &(*ge)->dampingFactor));
+          _elem->LinkEndChild(velocityDecay);
         }
-        _elem->LinkEndChild(velocityDecay);
         // selfCollide tag
         if ((*ge)->isSelfCollide)
         {

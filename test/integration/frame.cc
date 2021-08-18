@@ -42,13 +42,15 @@ TEST(Frame, ModelFrame)
   std::string version = SDF_VERSION;
   stream
     << "<sdf version='" << version << "'>"
-    << "<model name='my_model'>"
-    << "  <frame name='mframe'>"
-    << "    <pose relative_to='/world'>1 1 0 0 0 0</pose>"
-    << "  </frame>"
-    << "  <pose relative_to='mframe'>1 0 0 0 0 0</pose>"
-    << "  <link name='link'/>"
-    << "</model>"
+    << "<world name='default'>"
+    << "  <model name='my_model'>"
+    << "    <frame name='mframe'>"
+    << "      <pose relative_to='/world'>1 1 0 0 0 0</pose>"
+    << "    </frame>"
+    << "    <pose relative_to='mframe'>1 0 0 0 0 0</pose>"
+    << "    <link name='link'/>"
+    << "  </model>"
+    << "</world>"
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
@@ -57,9 +59,15 @@ TEST(Frame, ModelFrame)
 
   // Verify correct parsing
 
+  // world
+  ASSERT_TRUE(sdfParsed->Root()->HasElement("world"));
+  sdf::ElementPtr worldElem = sdfParsed->Root()->GetElement("world");
+  ASSERT_NE(worldElem, nullptr);
+
   // model
-  EXPECT_TRUE(sdfParsed->Root()->HasElement("model"));
-  sdf::ElementPtr modelElem = sdfParsed->Root()->GetElement("model");
+  ASSERT_TRUE(worldElem->HasElement("model"));
+  sdf::ElementPtr modelElem = worldElem->GetElement("model");
+  ASSERT_TRUE(modelElem);
   EXPECT_TRUE(modelElem->HasAttribute("name"));
   EXPECT_EQ(modelElem->Get<std::string>("name"), "my_model");
 

@@ -22,6 +22,8 @@
 #include <gtest/gtest.h>
 
 #include <ignition/math/Angle.hh>
+#include <ignition/math/Color.hh>
+#include <ignition/math/Pose3.hh>
 
 #include "sdf/Exception.hh"
 #include "sdf/Element.hh"
@@ -103,6 +105,27 @@ TEST(SetFromString, Decimals)
 }
 
 ////////////////////////////////////////////////////
+/// Test setting param as a string but getting it as different type
+TEST(Param, StringTypeGet)
+{
+  sdf::Param stringParam("key", "string", "", false, "description");
+
+  // pose type
+  ignition::math::Pose3d pose;
+  EXPECT_TRUE(stringParam.SetFromString("1 1 1 0 0 0"));
+  EXPECT_TRUE(stringParam.Get<ignition::math::Pose3d>(pose));
+  EXPECT_EQ(ignition::math::Pose3d(1, 1, 1, 0, 0, 0), pose);
+  EXPECT_EQ("string", stringParam.GetTypeName());
+
+  // color type
+  ignition::math::Color color;
+  EXPECT_TRUE(stringParam.SetFromString("0 0 1 1"));
+  EXPECT_TRUE(stringParam.Get<ignition::math::Color>(color));
+  EXPECT_EQ(ignition::math::Color(0, 0, 1, 1), color);
+  EXPECT_EQ("string", stringParam.GetTypeName());
+}
+
+////////////////////////////////////////////////////
 /// Test Inf
 TEST(SetFromString, DoublePositiveInf)
 {
@@ -113,9 +136,14 @@ TEST(SetFromString, DoublePositiveInf)
   {
     sdf::Param doubleParam("key", "double", "0", false, "description");
     double value = 0.;
-
     EXPECT_TRUE(doubleParam.SetFromString(infString));
     doubleParam.Get<double>(value);
+    EXPECT_DOUBLE_EQ(std::numeric_limits<double>::infinity(), value);
+
+    sdf::Param stringParam("key", "string", "0", false, "description");
+    value = 0;
+    EXPECT_TRUE(stringParam.SetFromString(infString));
+    EXPECT_TRUE(stringParam.Get<double>(value));
     EXPECT_DOUBLE_EQ(std::numeric_limits<double>::infinity(), value);
   }
 }
@@ -131,10 +159,15 @@ TEST(SetFromString, DoubleNegativeInf)
   {
     sdf::Param doubleParam("key", "double", "0", false, "description");
     double value = 0.;
-
     EXPECT_TRUE(doubleParam.SetFromString(infString));
     doubleParam.Get<double>(value);
-    EXPECT_DOUBLE_EQ(- std::numeric_limits<double>::infinity(), value);
+    EXPECT_DOUBLE_EQ(-std::numeric_limits<double>::infinity(), value);
+
+    sdf::Param stringParam("key", "string", "0", false, "description");
+    value = 0;
+    EXPECT_TRUE(stringParam.SetFromString(infString));
+    EXPECT_TRUE(stringParam.Get<double>(value));
+    EXPECT_DOUBLE_EQ(-std::numeric_limits<double>::infinity(), value);
   }
 }
 
