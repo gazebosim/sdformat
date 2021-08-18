@@ -508,7 +508,7 @@ void Camera::SetFarClip(double _far)
 }
 
 //////////////////////////////////////////////////
-std::string Camera::SegmentationType() const
+const std::string &Camera::SegmentationType() const
 {
   return this->dataPtr->segmentationType;
 }
@@ -533,7 +533,7 @@ bool Camera::HasSegmentationType() const
 }
 
 //////////////////////////////////////////////////
-std::string Camera::BoundingBoxType() const
+const std::string &Camera::BoundingBoxType() const
 {
   return this->dataPtr->boundingBoxType;
 }

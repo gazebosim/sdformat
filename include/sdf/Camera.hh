@@ -207,7 +207,7 @@ namespace sdf
 
     /// \brief Get the segmentation type.
     /// \return The segmentation type.
-    public: std::string SegmentationType() const;
+    public: const std::string &SegmentationType() const;
 
     /// \brief Set the segmentation type.
     /// \param[in] _type The segmentation type.
@@ -224,7 +224,7 @@ namespace sdf
 
     /// \brief Get the boundingbox type.
     /// \return The boundingbox type.
-    public: std::string BoundingBoxType() const;
+    public: const std::string &BoundingBoxType() const;
 
     /// \brief Set the boundingbox type.
     /// \param[in] _type The boundingbox type.
