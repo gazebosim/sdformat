@@ -23,9 +23,10 @@
 
       A frame moves jointly with the frame it is @attached_to. This is different
       from //pose/@relative_to. @attached_to defines how the frame is attached
-      to the scope's frame, while //pose/@relative_to defines how the frame's
-      pose is represented numerically. As a result, following the chain of
-      @attached_to attributes must always lead to the scope's frame.
+      to a //link, //model, or //world frame, while //pose/@relative_to defines
+      how the frame's pose is represented numerically. As a result, following
+      the chain of @attached_to attributes must always lead to a //link,
+      //model, //world, or //joint (implicitly attached_to its child //link). 
     </description>
   </attribute>
 
