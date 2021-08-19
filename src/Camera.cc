@@ -78,6 +78,12 @@ class sdf::Camera::Implementation
   /// \brief Far clip distance for depth camera.
   public: double depthFarClip{10.0};
 
+  /// \brief Segmentation type for segmentation camera.
+  public: std::string segmentationType{"semantic"};
+
+  /// \brief Boundingbox type for boundingbox camera.
+  public: std::string boundingBoxType{"2d"};
+
   /// \brief True indicates the depth camera was set.
   public: bool hasDepthCamera{false};
 
@@ -86,6 +92,12 @@ class sdf::Camera::Implementation
 
   /// \brief True indicates the depth camera near clip distance was set.
   public: bool hasDepthNearClip{false};
+
+  /// \brief True indicates the segmentation type was set.
+  public: bool hasSegmentationType{false};
+
+  /// \brief True indicates the boundingobx type was set.
+  public: bool hasBoundingBoxType{false};
 
   /// \brief True indicates frames should be saved.
   public: bool save{false};
@@ -275,6 +287,16 @@ Errors Camera::Load(ElementPtr _sdf)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
         "Camera sensor is missing a <clip> element."});
+  }
+
+  if (_sdf->HasElement("segmentation_type"))
+  {
+    this->SetSegmentationType(_sdf->Get<std::string>("segmentation_type"));
+  }
+
+  if (_sdf->HasElement("box_type"))
+  {
+    this->SetBoundingBoxType(_sdf->Get<std::string>("box_type"));
   }
 
   if (_sdf->HasElement("save"))
@@ -483,6 +505,56 @@ double Camera::FarClip() const
 void Camera::SetFarClip(double _far)
 {
   this->dataPtr->farClip = _far;
+}
+
+//////////////////////////////////////////////////
+const std::string &Camera::SegmentationType() const
+{
+  return this->dataPtr->segmentationType;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetSegmentationType(const std::string &_type)
+{
+  this->dataPtr->hasSegmentationType = true;
+  this->dataPtr->segmentationType = _type;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetHasSegmentationType(bool _type)
+{
+  this->dataPtr->hasSegmentationType = _type;
+}
+
+//////////////////////////////////////////////////
+bool Camera::HasSegmentationType() const
+{
+  return this->dataPtr->hasSegmentationType;
+}
+
+//////////////////////////////////////////////////
+const std::string &Camera::BoundingBoxType() const
+{
+  return this->dataPtr->boundingBoxType;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetBoundingBoxType(const std::string &_type)
+{
+  this->dataPtr->hasBoundingBoxType = true;
+  this->dataPtr->boundingBoxType = _type;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetHasBoundingBoxType(bool _type)
+{
+  this->dataPtr->hasBoundingBoxType = _type;
+}
+
+//////////////////////////////////////////////////
+bool Camera::HasBoundingBoxType() const
+{
+  return this->dataPtr->hasBoundingBoxType;
 }
 
 //////////////////////////////////////////////////
