@@ -12,11 +12,8 @@
       frame is implicitly defined by the world or model that contains the
       element that has its pose set by this pose element.
 
-      Regardless of the value of @relative_to, the element that has its pose
-      specified by this tag remains attached to its parent and moves with it.
-      Exceptions to this rule are //frame elements specifying @attached_to (see
-      //frame/@attached_to) and the implicit frames of //model elements setting
-      //model/@canonical_link.
+      Note that @relative_to merely affects an element's initial position and
+      does not affect the element's dynamic movement thereafter.
     </description>
   </attribute>
 
