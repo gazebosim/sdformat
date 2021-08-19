@@ -22,6 +22,7 @@
 #include "sdf/Altimeter.hh"
 #include "sdf/Camera.hh"
 #include "sdf/Error.hh"
+#include "sdf/NavSat.hh"
 #include "sdf/Imu.hh"
 #include "sdf/Magnetometer.hh"
 #include "sdf/Lidar.hh"
@@ -55,7 +56,8 @@ const std::vector<std::string> sensorTypeStrs =
   "wireless_transmitter",
   "air_pressure",
   "rgbd_camera",
-  "thermal_camera"
+  "thermal_camera",
+  "navsat"
 };
 
 class sdf::SensorPrivate
@@ -71,6 +73,7 @@ class sdf::SensorPrivate
             pose(_sensor.pose),
             poseRelativeTo(_sensor.poseRelativeTo),
             sdf(_sensor.sdf),
+            enableMetrics(_sensor.enableMetrics),
             updateRate(_sensor.updateRate)
 
   {
@@ -78,6 +81,10 @@ class sdf::SensorPrivate
     {
       this->magnetometer = std::make_unique<sdf::Magnetometer>(
           *_sensor.magnetometer);
+    }
+    if (_sensor.navSat)
+    {
+      this->navSat = std::make_unique<sdf::NavSat>(*_sensor.navSat);
     }
     if (_sensor.altimeter)
     {
@@ -125,6 +132,9 @@ class sdf::SensorPrivate
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
+  /// \brief Performance metrics flag.
+  public: bool enableMetrics{false};
+
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
 
@@ -136,6 +146,9 @@ class sdf::SensorPrivate
 
   /// \brief Pointer to an altimeter.
   public: std::unique_ptr<Altimeter> altimeter;
+
+  /// \brief Pointer to NAVSAT sensor.
+  public: std::unique_ptr<NavSat> navSat;
 
   /// \brief Pointer to an air pressure sensor.
   public: std::unique_ptr<AirPressure> airPressure;
@@ -205,6 +218,7 @@ bool Sensor::operator==(const Sensor &_sensor) const
       this->Topic() != _sensor.Topic() ||
       this->RawPose() != _sensor.RawPose() ||
       this->PoseRelativeTo() != _sensor.PoseRelativeTo() ||
+      this->EnableMetrics() != _sensor.EnableMetrics() ||
       !ignition::math::equal(this->UpdateRate(), _sensor.UpdateRate()))
   {
     return false;
@@ -221,6 +235,8 @@ bool Sensor::operator==(const Sensor &_sensor) const
       return *(this->dataPtr->airPressure) == *(_sensor.dataPtr->airPressure);
     case SensorType::IMU:
       return *(this->dataPtr->imu) == *(_sensor.dataPtr->imu);
+    case SensorType::NAVSAT:
+      return *(this->dataPtr->navSat) == *(_sensor.dataPtr->navSat);
     case SensorType::CAMERA:
     case SensorType::DEPTH_CAMERA:
     case SensorType::RGBD_CAMERA:
@@ -288,6 +304,8 @@ Errors Sensor::Load(ElementPtr _sdf)
   if (this->dataPtr->topic == "__default__")
     this->dataPtr->topic = "";
 
+  this->dataPtr->enableMetrics = _sdf->Get<bool>("enable_metrics",
+      this->dataPtr->enableMetrics).first;
   std::string type = _sdf->Get<std::string>("type");
   if (type == "air_pressure")
   {
@@ -340,9 +358,13 @@ Errors Sensor::Load(ElementPtr _sdf)
   {
     this->dataPtr->type = SensorType::FORCE_TORQUE;
   }
-  else if (type == "gps")
+  else if (type == "navsat" || type == "gps")
   {
-    this->dataPtr->type = SensorType::GPS;
+    this->dataPtr->type = SensorType::NAVSAT;
+    this->dataPtr->navSat.reset(new NavSat());
+    Errors err = this->dataPtr->navSat->Load(
+      _sdf->GetElement(_sdf->HasElement("navsat") ? "navsat" : "gps"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "gpu_ray" || type == "gpu_lidar")
   {
@@ -480,6 +502,18 @@ void Sensor::SetPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
+bool Sensor::EnableMetrics() const
+{
+  return this->dataPtr->enableMetrics;
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetEnableMetrics(bool _enableMetrics)
+{
+  this->dataPtr->enableMetrics = _enableMetrics;
+}
+
+/////////////////////////////////////////////////
 sdf::SemanticPose Sensor::SemanticPose() const
 {
   return sdf::SemanticPose(
@@ -600,6 +634,18 @@ void Sensor::SetCameraSensor(const Camera &_cam)
 const Camera *Sensor::CameraSensor() const
 {
   return this->dataPtr->camera.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetNavSatSensor(const NavSat &_gps)
+{
+  this->dataPtr->navSat = std::make_unique<NavSat>(_gps);
+}
+
+/////////////////////////////////////////////////
+const NavSat *Sensor::NavSatSensor() const
+{
+  return this->dataPtr->navSat.get();
 }
 
 /////////////////////////////////////////////////
