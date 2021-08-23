@@ -62,6 +62,22 @@ TEST(DOMCamera, Construction)
   cam.SetFarClip(200.2);
   EXPECT_DOUBLE_EQ(200.2, cam.FarClip());
 
+  EXPECT_EQ("semantic", cam.SegmentationType());
+  EXPECT_FALSE(cam.HasSegmentationType());
+  cam.SetSegmentationType("panoptic");
+  EXPECT_TRUE(cam.HasSegmentationType());
+  EXPECT_EQ("panoptic", cam.SegmentationType());
+  cam.SetHasSegmentationType(false);
+  EXPECT_FALSE(cam.HasSegmentationType());
+
+  EXPECT_EQ("2d", cam.BoundingBoxType());
+  EXPECT_FALSE(cam.HasBoundingBoxType());
+  cam.SetBoundingBoxType("3d");
+  EXPECT_TRUE(cam.HasBoundingBoxType());
+  EXPECT_EQ("3d", cam.BoundingBoxType());
+  cam.SetHasBoundingBoxType(false);
+  EXPECT_FALSE(cam.HasBoundingBoxType());
+
   EXPECT_FALSE(cam.SaveFrames());
   cam.SetSaveFrames(true);
   EXPECT_TRUE(cam.SaveFrames());

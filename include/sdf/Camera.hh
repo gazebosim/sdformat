@@ -196,6 +196,40 @@ namespace sdf
     /// \param[in] _far The far clip distance.
     public: void SetFarClip(double _far);
 
+    /// \brief Set whether the segmentation type has been specified.
+    /// \param[in] _type True if the segmentation type
+    /// has been set in the sdf.
+    public: void SetHasSegmentationType(bool _type);
+
+    /// \brief Get whether the segmentation type was set.
+    /// \return True if the segmentation type was set.
+    public: bool HasSegmentationType() const;
+
+    /// \brief Get the segmentation type.
+    /// \return The segmentation type.
+    public: const std::string &SegmentationType() const;
+
+    /// \brief Set the segmentation type.
+    /// \param[in] _type The segmentation type.
+    public: void SetSegmentationType(const std::string &_type);
+
+    /// \brief Set whether the boundingbox type has been specified.
+    /// \param[in] _type True if the boundingbox type
+    /// has been set in the sdf.
+    public: void SetHasBoundingBoxType(bool _type);
+
+    /// \brief Get whether the boundingbox type was set.
+    /// \return True if the boundingbox type was set.
+    public: bool HasBoundingBoxType() const;
+
+    /// \brief Get the boundingbox type.
+    /// \return The boundingbox type.
+    public: const std::string &BoundingBoxType() const;
+
+    /// \brief Set the boundingbox type.
+    /// \param[in] _type The boundingbox type.
+    public: void SetBoundingBoxType(const std::string &_type);
+
     /// \brief Get whether frames should be saved.
     /// \return True if image frames should be saved.
     public: bool SaveFrames() const;
