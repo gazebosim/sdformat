@@ -31,7 +31,9 @@
   </xsd:simpleType>
 
   <xsd:simpleType name="time">
-    <xsd:restriction base="xsd:double">
+    <xsd:restriction base="xsd:string">
+      <xsd:whiteSpace value="collapse"/>
+      <xsd:pattern value="\d+ \d+"/>
     </xsd:restriction>
   </xsd:simpleType>
 
