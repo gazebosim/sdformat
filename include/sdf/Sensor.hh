@@ -35,6 +35,7 @@ namespace sdf
   class AirPressure;
   class Altimeter;
   class Camera;
+  class ForceTorque;
   class Imu;
   class Lidar;
   class Magnetometer;
@@ -341,6 +342,17 @@ namespace sdf
     /// is not an NAVSAT.
     /// \sa SensorType Type() const
     public: const NavSat *NavSatSensor() const;
+
+    /// \brief Get a pointer to a force-torque sensor, or nullptr if the sensor 
+    /// does not contain a force-torque sensor.
+    /// \return Pointer to the sensor's f-t, or nullptr if the sensor is
+    /// not a force-torque
+    /// \sa SensorType Type() const
+    public: const ForceTorque *ForceTorqueSensor() const;
+
+    /// \brief Set the force-torque sensor.
+    /// \param[in] _forceTorque The force-torque sensor.
+    public: void SetForceTorqueSensor(const ForceTorque &_forceTorque);
 
     /// \brief Set the IMU sensor.
     /// \param[in] _imu The IMU sensor.

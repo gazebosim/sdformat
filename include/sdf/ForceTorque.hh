@@ -18,7 +18,6 @@
 #define SDF_FORCE_TORQUE_HH_
 
 #include <string>
-#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
@@ -28,6 +27,9 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
+  //
+  class ForceTorquePrivate;
+
   /// \enum ForceTorqueFrame
   /// \brief The set of supported frames of the wrench values.
   enum class ForceTorqueFrame : uint8_t
@@ -65,6 +67,27 @@ namespace sdf
   {
     /// \brief Default constructor
     public: ForceTorque();
+
+    /// \brief Copy constructor
+    /// \param[in] _forceTorque ForceTorque to copy.
+    public: ForceTorque(const ForceTorque &_forceTorque);
+
+    /// \brief Move constructor
+    /// \param[in] _forceTorque ForceTorque to move.
+    public: ForceTorque(ForceTorque &&_forceTorque) noexcept;
+
+    /// \brief Destructor
+    public: ~ForceTorque();
+
+    /// \brief Assignment operator.
+    /// \param[in] _forceTorque The Force Torque to set values from.
+    /// \return *this
+    public: ForceTorque &operator=(const ForceTorque &_forceTorque);
+
+    /// \brief Move assignment operator.
+    /// \param[in] _forceTorque The Force Torque to set values from.
+    /// \return *this
+    public: ForceTorque &operator=(ForceTorque &&_forceTorque) noexcept;
 
     /// \brief Load the force torque sensor based on an element pointer. This is
     /// *not* the usual entry point. Typical usage of the SDF DOM is through the
@@ -166,8 +189,7 @@ namespace sdf
     /// \returen True if 'this' != _ft.
     public: bool operator!=(const ForceTorque &_ft) const;
 
-    /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    private: ForceTorquePrivate *dataPtr;
   };
   }
 }

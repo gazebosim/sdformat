@@ -20,7 +20,7 @@
 using namespace sdf;
 
 /// \brief Private force torque data.
-class sdf::ForceTorque::Implementation
+class sdf::ForceTorquePrivate
 {
   /// \brief Noise values related to the body-frame force on the
   /// X-axis.
@@ -59,8 +59,40 @@ class sdf::ForceTorque::Implementation
 
 //////////////////////////////////////////////////
 ForceTorque::ForceTorque()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(new ForceTorquePrivate)
 {
+}
+
+//////////////////////////////////////////////////
+ForceTorque::~ForceTorque()
+{
+  delete this->dataPtr;
+  this->dataPtr = nullptr;
+}
+
+//////////////////////////////////////////////////
+ForceTorque::ForceTorque(const ForceTorque &_forceTorque)
+  : dataPtr(new ForceTorquePrivate(*_forceTorque.dataPtr))
+{
+}
+
+//////////////////////////////////////////////////
+ForceTorque::ForceTorque(ForceTorque &&_forceTorque) noexcept
+  : dataPtr(std::exchange(_forceTorque.dataPtr, nullptr))
+{
+}
+
+//////////////////////////////////////////////////
+ForceTorque &ForceTorque::operator=(const ForceTorque &_forceTorque)
+{
+  return *this = ForceTorque(_forceTorque);
+}
+
+//////////////////////////////////////////////////
+ForceTorque &ForceTorque::operator=(ForceTorque &&_forceTorque) noexcept
+{
+  std::swap(this->dataPtr, _forceTorque.dataPtr);
+  return *this;
 }
 
 //////////////////////////////////////////////////

@@ -22,6 +22,7 @@
 #include "sdf/Altimeter.hh"
 #include "sdf/Camera.hh"
 #include "sdf/Error.hh"
+#include "sdf/ForceTorque.hh"
 #include "sdf/NavSat.hh"
 #include "sdf/Imu.hh"
 #include "sdf/Magnetometer.hh"
@@ -99,6 +100,11 @@ class sdf::SensorPrivate
     {
       this->camera = std::make_unique<sdf::Camera>(*_sensor.camera);
     }
+    if (_sensor.forceTorque)
+    {
+      this->forceTorque = 
+        std::make_unique<sdf::ForceTorque>(*_sensor.forceTorque);
+    }
     if (_sensor.imu)
     {
       this->imu = std::make_unique<sdf::Imu>(*_sensor.imu);
@@ -158,6 +164,9 @@ class sdf::SensorPrivate
 
   /// \brief Pointer to an IMU.
   public: std::unique_ptr<Imu> imu;
+
+  /// \brief Pointer to a f-t sensor.
+  public: std::unique_ptr<ForceTorque> forceTorque;
 
   /// \brief Pointer to a lidar.
   public: std::unique_ptr<Lidar> lidar;
@@ -233,6 +242,8 @@ bool Sensor::operator==(const Sensor &_sensor) const
       return *(this->dataPtr->magnetometer) == *(_sensor.dataPtr->magnetometer);
     case SensorType::AIR_PRESSURE:
       return *(this->dataPtr->airPressure) == *(_sensor.dataPtr->airPressure);
+    case SensorType::FORCE_TORQUE:
+      return *(this->dataPtr->forceTorque) == *(_sensor.dataPtr->forceTorque);
     case SensorType::IMU:
       return *(this->dataPtr->imu) == *(_sensor.dataPtr->imu);
     case SensorType::NAVSAT:
@@ -357,6 +368,9 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "force_torque")
   {
     this->dataPtr->type = SensorType::FORCE_TORQUE;
+    this->dataPtr->forceTorque.reset(new ForceTorque());
+    Errors err = this->dataPtr->forceTorque->Load(_sdf->GetElement("force_torque"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "navsat" || type == "gps")
   {
@@ -376,7 +390,6 @@ Errors Sensor::Load(ElementPtr _sdf)
   }
   else if (type == "imu")
   {
-    this->dataPtr->type = SensorType::IMU;
     this->dataPtr->type = SensorType::IMU;
     this->dataPtr->imu.reset(new Imu());
     Errors err = this->dataPtr->imu->Load(_sdf->GetElement("imu"));
@@ -670,6 +683,18 @@ void Sensor::SetNavSatSensor(const NavSat &_gps)
 const NavSat *Sensor::NavSatSensor() const
 {
   return this->dataPtr->navSat.get();
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetForceTorqueSensor(const ForceTorque &_forceTorque)
+{
+  this->dataPtr->forceTorque = std::make_unique<ForceTorque>(_forceTorque);
+}
+
+/////////////////////////////////////////////////
+const ForceTorque *Sensor::ForceTorqueSensor() const
+{
+  return this->dataPtr->forceTorque.get();
 }
 
 /////////////////////////////////////////////////
