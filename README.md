@@ -17,7 +17,7 @@ allows conversion from previous versions.
 
 Test coverage:
 
-[![codecov](https://codecov.io/bb/osrf/sdformat/branch/default/graph/badge.svg)](https://codecov.io/bb/osrf/sdformat)
+[![codecov](https://codecov.io/bb/ignitionrobotics/sdformat/branch/default/graph/badge.svg)](https://codecov.io/bb/ignitionrobotics/sdformat)
 
 # Installation
 
