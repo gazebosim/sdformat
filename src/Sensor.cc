@@ -59,7 +59,10 @@ const std::vector<std::string> sensorTypeStrs =
   "wireless_transmitter",
   "air_pressure",
   "rgbd_camera",
-  "thermal_camera"
+  "thermal_camera",
+  "segmentation_camera",
+  "boundingbox_camera",
+  "custom"
 };
 
 class sdf::Sensor::Implementation
@@ -155,6 +158,8 @@ bool Sensor::operator==(const Sensor &_sensor) const
     case SensorType::DEPTH_CAMERA:
     case SensorType::RGBD_CAMERA:
     case SensorType::THERMAL_CAMERA:
+    case SensorType::SEGMENTATION_CAMERA:
+    case SensorType::BOUNDINGBOX_CAMERA:
       return *(this->dataPtr->camera) == *(_sensor.dataPtr->camera);
     case SensorType::LIDAR:
       return *(this->dataPtr->lidar) == *(_sensor.dataPtr->lidar);
@@ -245,6 +250,10 @@ Errors Sensor::Load(ElementPtr _sdf)
   {
     this->dataPtr->type = SensorType::CONTACT;
   }
+  else if (type == "custom")
+  {
+    this->dataPtr->type = SensorType::CUSTOM;
+  }
   else if (type == "depth" || type == "depth_camera")
   {
     this->dataPtr->type = SensorType::DEPTH_CAMERA;
@@ -262,6 +271,20 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "thermal" || type == "thermal_camera")
   {
     this->dataPtr->type = SensorType::THERMAL_CAMERA;
+    this->dataPtr->camera.emplace();
+    Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
+  else if (type == "segmentation" || type == "segmentation_camera")
+  {
+    this->dataPtr->type = SensorType::SEGMENTATION_CAMERA;
+    this->dataPtr->camera.emplace();
+    Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
+  else if (type == "boundingbox" || type == "boundingbox_camera")
+  {
+    this->dataPtr->type = SensorType::BOUNDINGBOX_CAMERA;
     this->dataPtr->camera.emplace();
     Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
     errors.insert(errors.end(), err.begin(), err.end());

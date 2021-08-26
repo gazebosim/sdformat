@@ -243,6 +243,7 @@ TEST(DOMSensor, Type)
   std::vector<sdf::SensorType> types = {
     sdf::SensorType::NONE,
     sdf::SensorType::ALTIMETER,
+    sdf::SensorType::BOUNDINGBOX_CAMERA,
     sdf::SensorType::CAMERA,
     sdf::SensorType::CONTACT,
     sdf::SensorType::DEPTH_CAMERA,
@@ -256,15 +257,18 @@ TEST(DOMSensor, Type)
     sdf::SensorType::LIDAR,
     sdf::SensorType::RFID,
     sdf::SensorType::RFIDTAG,
+    sdf::SensorType::SEGMENTATION_CAMERA,
     sdf::SensorType::SONAR,
     sdf::SensorType::WIRELESS_RECEIVER,
     sdf::SensorType::WIRELESS_TRANSMITTER,
-    sdf::SensorType::THERMAL_CAMERA
+    sdf::SensorType::THERMAL_CAMERA,
+    sdf::SensorType::CUSTOM
   };
   std::vector<std::string> typeStrs =
   {
     "none",
     "altimeter",
+    "boundingbox_camera",
     "camera",
     "contact",
     "depth_camera",
@@ -278,10 +282,12 @@ TEST(DOMSensor, Type)
     "lidar",
     "rfid",
     "rfidtag",
+    "segmentation_camera",
     "sonar",
     "wireless_receiver",
     "wireless_transmitter",
-    "thermal_camera"
+    "thermal_camera",
+    "custom"
   };
 
   for (size_t i = 0; i < types.size(); ++i)

@@ -112,7 +112,16 @@ namespace sdf
     RGBD_CAMERA = 19,
 
     /// \brief A thermal camera sensor
-    THERMAL_CAMERA = 20
+    THERMAL_CAMERA = 20,
+
+    /// \brief A segmentation camera sensor
+    SEGMENTATION_CAMERA = 21,
+
+    /// \brief A boundingbox camera sensor
+    BOUNDINGBOX_CAMERA = 22,
+
+    /// \brief A custom sensor
+    CUSTOM = 23
   };
 
   /// \brief Information about an SDF sensor.

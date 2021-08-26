@@ -155,7 +155,6 @@ option(BUILD_SHARED_LIBS "Set this to true to generate shared libraries (recomme
 #####################################
 # Handle CFlags
 unset (CMAKE_C_FLAGS_ALL CACHE)
-unset (CMAKE_CXX_FLAGS CACHE)
 
 # USE_HOST_CFLAGS (default TRUE)
 # Will check building host machine for proper cflags

@@ -62,6 +62,33 @@
     </element>
   </element> <!-- End depth_camera -->
 
+  <element name="segmentation_type" type="string" default="semantic" required="0">
+    <description>
+      The segmentation type of the segmentation camera. Valid options are:
+        - semantic: Semantic segmentation, which provides 2 images:
+                    1. A grayscale image, with the pixel values representing the label of an object
+                    2. A colored image, with the pixel values being a unique color for each label
+
+        - panoptic | instance: Panoptic segmentation, which provides an image where each pixel
+                              has 1 channel for label value of the object and 2 channels for the
+                              number of the instances of that label, and a colored image which its
+                              pixels have a unique color for each instance.
+    </description>
+  </element>  <!-- End segmentation_type -->
+
+  <element name="box_type" type="string" default="2d" required="0">
+    <description>
+      The boundingbox type of the boundingbox camera. Valid options are:
+        - 2d | visible_2d | visible_box_2d: a visible 2d box mode which provides axis aligned 2d boxes
+                                            on the visible parts of the objects
+
+        - full_2d | full_box_2d: a full 2d box mode which provides axis aligned 2d boxes that fills the
+                                 object dimentions, even if it has an occluded part
+
+        - 3d: a 3d mode which provides oriented 3d boxes
+    </description>
+  </element> <!-- End box_type -->
+
   <element name="noise" required="0">
     <description>The properties of the noise model that should be applied to generated images</description>
     <element name="type" type="string" default="gaussian" required="1">
