@@ -244,6 +244,8 @@ namespace sdf
 
     /// \def ParamVariant
     /// \brief Variant type def.
+    /// TODO(anyone) When a new variant is added, add variant to functions
+    /// ParamPrivate::TypeToString and Private::ValueFromStringImpl
     public: typedef std::variant<bool, char, std::string, int, std::uint64_t,
                                    unsigned int, double, float, sdf::Time,
                                    ignition::math::Angle,
