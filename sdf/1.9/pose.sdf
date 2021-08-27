@@ -1,16 +1,16 @@
 <!-- Pose -->
 <element name="pose" type="pose" default="0 0 0   0 0 0" required="0">
   <description>
-    A position(x,y,z) and orientation(rpy) with respect to the frame named in the relative_to attribute.
+    A pose (x, y, z, r, p, y) expressed in the frame named by @relative_to. The first three components (x, y, z) represent the position of the element's origin (in the @relative_to frame) and the last three components (roll, pitch, yaw) represent the orientation of the element as a sequence of intrinsic Euler rotations.
   </description>
 
-  <attribute name="relative_to" type="string" default="" required="*">
+  <attribute name="relative_to" type="string" default="" required="0">
     <description>
       Name of frame relative to which the pose is applied.
     </description>
   </attribute>
 
-  <attribute name="degrees" type="bool" default="false" required="*">
+  <attribute name="degrees" type="bool" default="false" required="0">
     <description>
       Whether or not the euler angles are in degrees, otherwise they will be interpreted as radians by default.
     </description>
