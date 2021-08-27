@@ -147,10 +147,10 @@ TEST(Pose1_9, PoseElementSetAndGet)
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
   poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->Set<ignition::math::Pose3d>(Pose(1, 2, 3, 0.4, 0.5, 0.6));
+  poseElem->Set<Pose>(Pose(1, 2, 3, 0.4, 0.5, 0.6));
 
   Pose elemVal;
-  ASSERT_TRUE(poseElem->Get<ignition::math::Pose3d>("", elemVal, Pose()));
+  ASSERT_TRUE(poseElem->Get<Pose>("", elemVal, Pose()));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), elemVal);
 }
 
@@ -164,13 +164,13 @@ TEST(Pose1_9, PoseElementSetAndParamGet)
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
   poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->Set<ignition::math::Pose3d>(Pose(1, 2, 3, 0.4, 0.5, 0.6));
+  poseElem->Set<Pose>(Pose(1, 2, 3, 0.4, 0.5, 0.6));
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
 
   Pose paramVal;
-  ASSERT_TRUE(poseValueParam->Get<ignition::math::Pose3d>(paramVal));
+  ASSERT_TRUE(poseValueParam->Get<Pose>(paramVal));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), paramVal);
 }
 
@@ -188,11 +188,10 @@ TEST(Pose1_9, PoseParamSetAndGet)
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
 
-  ASSERT_TRUE(poseValueParam->Set<ignition::math::Pose3d>(
-        Pose(1, 2, 3, 0.4, 0.5, 0.6)));
+  ASSERT_TRUE(poseValueParam->Set<Pose>(Pose(1, 2, 3, 0.4, 0.5, 0.6)));
 
   Pose paramVal;
-  ASSERT_TRUE(poseValueParam->Get<ignition::math::Pose3d>(paramVal));
+  ASSERT_TRUE(poseValueParam->Get<Pose>(paramVal));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), paramVal);
 }
 
@@ -213,7 +212,7 @@ TEST(Pose1_9, PoseParamSetFromStringAndGet)
   ASSERT_TRUE(poseValueParam->SetFromString("1 2 3   0.4 0.5 0.6"));
 
   Pose paramVal;
-  ASSERT_TRUE(poseValueParam->Get<ignition::math::Pose3d>(paramVal));
+  ASSERT_TRUE(poseValueParam->Get<Pose>(paramVal));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), paramVal);
 }
 
@@ -231,11 +230,10 @@ TEST(Pose1_9, PoseParamSetAndElemGet)
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
 
-  ASSERT_TRUE(poseValueParam->Set<ignition::math::Pose3d>(
-        Pose(1, 2, 3, 0.4, 0.5, 0.6)));
+  ASSERT_TRUE(poseValueParam->Set<Pose>(Pose(1, 2, 3, 0.4, 0.5, 0.6)));
 
   Pose elemVal;
-  ASSERT_TRUE(poseElem->Get<ignition::math::Pose3d>("", elemVal, Pose()));
+  ASSERT_TRUE(poseElem->Get<Pose>("", elemVal, Pose()));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), elemVal);
 }
 
@@ -253,14 +251,13 @@ TEST(Pose1_9, PoseParamSetAndParentElemGet)
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
 
-  ASSERT_TRUE(poseValueParam->Set<ignition::math::Pose3d>(
-        Pose(1, 2, 3, 0.4, 0.5, 0.6)));
+  ASSERT_TRUE(poseValueParam->Set<Pose>(Pose(1, 2, 3, 0.4, 0.5, 0.6)));
 
   sdf::ElementPtr parentElem = poseValueParam->GetParentElement();
   ASSERT_NE(nullptr, parentElem);
+  EXPECT_EQ(poseElem, parentElem);
   Pose parentElemVal;
-  ASSERT_TRUE(parentElem->Get<ignition::math::Pose3d>(
-      "", parentElemVal, Pose()));
+  ASSERT_TRUE(parentElem->Get<Pose>("", parentElemVal, Pose()));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), parentElemVal);
 }
 
@@ -278,8 +275,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterSet)
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
   poseElem->AddAttribute("degrees", "bool", "false", false);
-  ASSERT_TRUE(poseElem->Set<ignition::math::Pose3d>(
-      Pose(1, 2, 3, 0.4, 0.5, 0.6)));
+  ASSERT_TRUE(poseElem->Set<Pose>(Pose(1, 2, 3, 0.4, 0.5, 0.6)));
 
   sdf::ElementPtr degreesPoseElem(new sdf::Element);
   degreesPoseElem->SetName("pose");
@@ -298,17 +294,17 @@ TEST(Pose1_9, ChangingParentPoseElementAfterSet)
   ASSERT_NE(nullptr, valParam);
 
   Pose val;
-  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
   // Set parent to Element with degrees attribute true.
   valParam->SetParentElement(degreesPoseElem);
-  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
   // Set parent to Element with degrees attribute false.
   valParam->SetParentElement(radiansPoseElem);
-  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
   // Remove parent
@@ -317,7 +313,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterSet)
 }
 
 //////////////////////////////////////////////////
-TEST(Pose1_9, ChangingParentPoseElementAfteriParamSetFromString)
+TEST(Pose1_9, ChangingParentPoseElementAfterParamSetFromString)
 {
   // Since the values are set using the SetFromString function, reparsing
   // should change their values, when parent elements have been changed.
@@ -349,17 +345,17 @@ TEST(Pose1_9, ChangingParentPoseElementAfteriParamSetFromString)
   ASSERT_TRUE(valParam->SetFromString("1, 2, 3, 0.4, 0.5, 0.6"));
 
   Pose val;
-  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
   // Set parent to Element with degrees attribute true.
   valParam->SetParentElement(degreesPoseElem);
-  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
 
   // Set parent to Element with degrees attribute false.
   valParam->SetParentElement(radiansPoseElem);
-  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
   // Remove parent
@@ -385,24 +381,24 @@ TEST(Pose1_9, ChangingAttributeOfParentElement)
   ASSERT_TRUE(valParam->SetFromString("1, 2, 3, 0.4, 0.5, 0.6"));
 
   Pose val;
-  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
   // Changing to degrees without reparsing, value will remain the same
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
   ASSERT_TRUE(degreesAttrib->Set<bool>(true));
-  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
   // Values will change to be degrees after reparsing
   ASSERT_TRUE(valParam->Reparse());
-  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
 
   // Changing back to radians
   ASSERT_TRUE(degreesAttrib->Set<bool>(false));
   ASSERT_TRUE(valParam->Reparse());
-  ASSERT_TRUE(valParam->Get<ignition::math::Pose3d>(val));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 }
