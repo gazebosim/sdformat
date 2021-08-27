@@ -44,7 +44,11 @@ The Source Installation instructions should be used if you need the very latest 
 ### Ubuntu
 
 On Ubuntu systems, `apt-get` can be used to install `sdformat`:
-```
+```sh
+sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
+sudo apt-get update
+
 sudo apt install libsdformat<#>-dev libsdformat<#>
 ```
 
