@@ -564,43 +564,144 @@ TEST(Param, DestroyParentElementAfterConstruct)
 }
 
 //////////////////////////////////////////////////
-TEST(Param, ReparsingAfterSet)
+TEST(Param, ReparsingAfterSetDouble)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
 
-  // Reparsing without setting values will fail
+  // Reparsing without setting values will fail. Value will still be the
+  // default.
   EXPECT_FALSE(doubleParam.Reparse());
   double value;
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 1.0);
 
-  // Setting a value before reparsing, value doesn't get modified.
+  // Reparsing after setting a value will pass.
   ASSERT_TRUE(doubleParam.Set<double>(5.));
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 5.0);
   EXPECT_TRUE(doubleParam.Reparse());
+
+  // Value will be as expected, as the value was set using the explcit Set
+  // function, and no parent element attributes are meant to change the value
+  // for type double.
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 5.0);
 }
 
 //////////////////////////////////////////////////
-TEST(Param, ReparsingAfterSetFromString)
+TEST(Param, ReparsingAfterSetFromStringDouble)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
 
-  // Reparsing without setting values will fail
+  // Reparsing without setting values will fail. Value will still be the
+  // default.
   EXPECT_FALSE(doubleParam.Reparse());
   double value;
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 1.0);
 
-  // Setting a value from string before reparsing, value doesn't get modified.
+  // Reparsing after setting a value from string will pass.
   ASSERT_TRUE(doubleParam.SetFromString("5.0"));
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 5.0);
   EXPECT_TRUE(doubleParam.Reparse());
+
+  // Value will be as expected, as no parent element attributes are meant to
+  // change the value for type double.
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 5.0);
+}
+
+/////////////////////////////////////////////////
+TEST(Param, ReparsingAfterSetPose)
+{
+  using Pose = ignition::math::Pose3d;
+
+  sdf::Param poseParam("", "pose", "1 2 3 0.4 0.5 0.6", false, "description");
+  Pose value;
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), value);
+
+  // Reparsing without setting values will fail.
+  EXPECT_FALSE(poseParam.Reparse());
+
+  // Reparsing after setting values will pass. Note that the value was
+  // explicitly set using the Set function, reparsing will always yield the same
+  // value moving forwards.
+  EXPECT_TRUE(poseParam.Set<Pose>(Pose(2, 3, 4, 0.5, 0.6, 0.7)));
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
+
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+
+  sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
+  ASSERT_NE(nullptr, degreesAttrib);
+
+  // Setting parent with @degrees as false, value will remain the same.
+  poseParam.SetParentElement(poseElem);
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
+
+  // Changing attribute @degrees to true, value remains the same as it was
+  // explicitly Set.
+  ASSERT_TRUE(degreesAttrib->Set<bool>(true));
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
+
+  // After reparse, value will still remain the same, as the explicit Set
+  // function was used.
+  EXPECT_TRUE(poseParam.Reparse());
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
+}
+
+/////////////////////////////////////////////////
+TEST(Param, ReparsingAfterSetFromStringPose)
+{
+  using Pose = ignition::math::Pose3d;
+
+  sdf::Param poseParam("", "pose", "1 2 3 0.4 0.5 0.6", false, "description");
+  Pose value;
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), value);
+
+  // Reparsing without setting values will fail.
+  EXPECT_FALSE(poseParam.Reparse());
+
+  // Reparsing after setting values will pass. Note that the value was
+  // set using SetFromString.
+  EXPECT_TRUE(poseParam.SetFromString("2 3 4 0.5 0.6 0.7"));
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
+
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+
+  sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
+  ASSERT_NE(nullptr, degreesAttrib);
+
+  // Setting parent with @degrees as false, value will remain the same.
+  poseParam.SetParentElement(poseElem);
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
+
+  // Changing attribute @degrees to true, value remains the same before
+  // reparsing.
+  ASSERT_TRUE(degreesAttrib->Set<bool>(true));
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
+
+  // After reparse, rotation values will be parsed as degrees.
+  EXPECT_TRUE(poseParam.Reparse());
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
 }
 
 /////////////////////////////////////////////////
