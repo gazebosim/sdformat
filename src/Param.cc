@@ -431,9 +431,10 @@ bool ParseColorUsingStringStream(const std::string &_input,
 }
 
 //////////////////////////////////////////////////
-/// \brief Helper function for Param::ValueFromString for parsing pose
-/// This checks the pose components specified in _input are xyzrpy or xyzwxyz
-/// (expects 6 or 7 values) and the resulting pose is valid.
+/// \brief Helper function for Param::ValueFromString for parsing pose. This
+/// checks the pose components specified in _input are xyzrpy
+/// (expects 6 values) and whether to parse the rotation values as degrees using
+/// the parent element attributes.
 /// \param[in] _input Input string.
 /// \param[in] _key Key of the parameter, used for error message.
 /// \param[in] _attributes Attributes associated to this pose.
@@ -462,7 +463,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
       isValidPose = false;
       break;
     }
-    // Catch out of range exception from std::stof
+    // Catch out of range exception from std::stod
     catch(std::out_of_range &)
     {
       sdferr << "Out of range. Unable to set value [" << token
@@ -510,6 +511,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
             "//pose[@degrees].\n";
         return false;
       }
+      break;
     }
   }
 
