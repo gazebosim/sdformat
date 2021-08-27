@@ -17,7 +17,8 @@ allows conversion from previous versions.
 
 Test coverage:
 
-[![codecov](https://codecov.io/bb/ignitionrobotics/sdformat/branch/default/graph/badge.svg)](https://codecov.io/bb/ignitionrobotics/sdformat)
+<!-- Note: The branch name in the codecov URL should be updated when forward porting -->
+[![codecov](https://codecov.io/gh/ignitionrobotics/sdformat/branch/sdf9/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/sdformat/branch/sdf9)
 
 # Installation
 
