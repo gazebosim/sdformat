@@ -4,7 +4,7 @@
     <model name='ParentModel'>
       <model name='M1'>
         <frame name='F1'>
-          <pose>0 0 0 1.5708 -0 0</pose>
+          <pose>0 0 0 1.570796 0 0</pose>
         </frame>
         <frame name='F2'>
           <pose relative_to='F1'>0 0 0 0 0.785398 0</pose>
@@ -29,13 +29,13 @@
           </collision>
         </link>
         <link name='L2'>
-          <pose relative_to='F1'>1 0 0 0 -0 0</pose>
+          <pose relative_to='F1'>1 0 0 0 0 0</pose>
         </link>
         <link name='L3'>
-          <pose relative_to='L2'>0 1 0 0 -0 0</pose>
+          <pose relative_to='L2'>0 1 0 0 0 0</pose>
         </link>
         <link name='L4'>
-          <pose relative_to='__model__'>0 0 1 0 -0 0</pose>
+          <pose relative_to='__model__'>0 0 1 0 0 0</pose>
         </link>
         <joint name='J1' type='universal'>
           <pose relative_to='L1'>0 0 0 0 -0 0</pose>
@@ -49,7 +49,7 @@
           </axis2>
         </joint>
         <joint name='J2' type='revolute'>
-          <pose>0 0 1 0 -0 0</pose>
+          <pose>0 0 1 0 0 0</pose>
           <parent>L2</parent>
           <child>L3</child>
           <axis>
@@ -57,14 +57,14 @@
           </axis>
         </joint>
         <joint name='J3' type='fixed'>
-          <pose relative_to='__model__'>1 0 1 0 -0 0</pose>
+          <pose relative_to='__model__'>1 0 1 0 0 0</pose>
           <parent>L3</parent>
           <child>L4</child>
         </joint>
         <model name='M2'>
-          <pose relative_to='F1'>1 0 0 0 -0 0</pose>
+          <pose relative_to='F1'>1 0 0 0 0 0</pose>
           <link name='L5'>
-            <pose>1 0 0 0 -0 0</pose>
+            <pose>1 0 0 0 0 0</pose>
           </link>
         </model>
         <pose>10 0 0 0 -0 1.5708</pose>

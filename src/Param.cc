@@ -301,7 +301,11 @@ std::string Param::GetAsString() const
 {
   StringStreamClassicLocale ss;
 
-  ss << ParamStreamer{ this->dataPtr->value };
+  if (this->dataPtr->strValue.has_value())
+    ss << this->dataPtr->strValue.value();
+  else
+    ss << ParamStreamer{ this->dataPtr->value };
+
   return ss.str();
 }
 
@@ -832,6 +836,13 @@ bool Param::GetRequired() const
 bool Param::GetSet() const
 {
   return this->dataPtr->set;
+}
+
+/////////////////////////////////////////////////
+bool Param::IgnoresParentElementAttribute() const
+{
+  const auto parentElement = this->dataPtr->parentElement.lock();
+  return !parentElement || this->dataPtr->ignoreParentAttributes;
 }
 
 /////////////////////////////////////////////////

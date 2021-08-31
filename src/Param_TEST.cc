@@ -705,6 +705,57 @@ TEST(Param, ReparsingAfterSetFromStringPose)
 }
 
 /////////////////////////////////////////////////
+TEST(Param, IgnoresParentElementAttribute)
+{
+  {
+    // Without parent
+    sdf::Param doubleParam("key", "double", "1.0", false, "description");
+    EXPECT_TRUE(doubleParam.IgnoresParentElementAttribute());
+  }
+
+  {
+    // With parent
+    sdf::Param doubleParam("key", "double", "1.0", false, "description");
+    sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
+    doubleParam.SetParentElement(parentElement);
+    EXPECT_FALSE(doubleParam.IgnoresParentElementAttribute());
+  }
+
+  {
+    // Param from parent element
+    sdf::ElementPtr elem(new sdf::Element);
+    elem->SetName("double");
+    elem->AddValue("double", "0", true);
+
+    sdf::ParamPtr valParam = elem->GetValue();
+    ASSERT_NE(nullptr, valParam);
+    EXPECT_FALSE(valParam->IgnoresParentElementAttribute());
+  }
+
+  {
+    // With parent using Set and SetFromString
+    sdf::Param doubleParam("key", "double", "1.0", false, "description");
+    sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
+    doubleParam.SetParentElement(parentElement);
+    ASSERT_TRUE(doubleParam.Set<double>(23.4));
+    EXPECT_TRUE(doubleParam.IgnoresParentElementAttribute());
+
+    ASSERT_TRUE(doubleParam.SetFromString("34.5"));
+    EXPECT_FALSE(doubleParam.IgnoresParentElementAttribute());
+
+    ASSERT_TRUE(doubleParam.SetFromString("45.6", true));
+    EXPECT_TRUE(doubleParam.IgnoresParentElementAttribute());
+
+    ASSERT_TRUE(doubleParam.SetFromString("56.7", false));
+    EXPECT_FALSE(doubleParam.IgnoresParentElementAttribute());
+
+    ASSERT_TRUE(doubleParam.Set<double>(67.8));
+    EXPECT_TRUE(doubleParam.IgnoresParentElementAttribute());
+  }
+}
+
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {

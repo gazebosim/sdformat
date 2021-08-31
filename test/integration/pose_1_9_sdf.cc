@@ -402,3 +402,98 @@ TEST(Pose1_9, ChangingAttributeOfParentElement)
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 }
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, ToStringWithoutAttrib)
+{
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+
+  sdf::ParamPtr poseValueParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, poseValueParam);
+  EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
+
+  std::string elemStr = poseElem->ToString("");
+  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, ToStringWithDegreesFalse)
+{
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+
+  sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
+  ASSERT_NE(nullptr, degreesAttrib);
+  ASSERT_TRUE(degreesAttrib->Set<bool>(false));
+
+  sdf::ParamPtr poseValueParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, poseValueParam);
+  EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
+
+  std::string elemStr = poseElem->ToString("");
+  EXPECT_PRED2(contains, elemStr, "degrees='0'");
+  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, ToStringWithDegreesTrue)
+{
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+
+  sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
+  ASSERT_NE(nullptr, degreesAttrib);
+  ASSERT_TRUE(degreesAttrib->Set<bool>(true));
+
+  sdf::ParamPtr poseValueParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, poseValueParam);
+  EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
+
+  std::string elemStr = poseElem->ToString("");
+  EXPECT_PRED2(contains, elemStr, "degrees='1'");
+  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
+{
+  using Pose = ignition::math::Pose3d;
+
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+
+  // Param value in radians
+  sdf::ParamPtr valParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, valParam);
+  ASSERT_TRUE(valParam->SetFromString("1 2 3 0.4 0.5 0.6"));
+
+  std::string elemStr = poseElem->ToString("");
+  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+
+  // Changing to degrees
+  sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
+  ASSERT_NE(nullptr, degreesAttrib);
+  ASSERT_TRUE(degreesAttrib->Set<bool>(true));
+  elemStr = poseElem->ToString("");
+  EXPECT_PRED2(contains, elemStr, "degrees='1'");
+  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+
+  // Changing back to radians
+  ASSERT_TRUE(degreesAttrib->Set<bool>(false));
+  elemStr = poseElem->ToString("");
+  EXPECT_PRED2(contains, elemStr, "degrees='0'");
+  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+}

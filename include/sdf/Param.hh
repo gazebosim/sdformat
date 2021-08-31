@@ -236,6 +236,12 @@ namespace sdf
     /// \return True if the parameter has been set.
     public: bool GetSet() const;
 
+    /// \brief Return true if the parameter ignores the parent element's
+    /// attributes, or if the parameter has no parent element.
+    /// \return True if the parameter ignores the parent element's attributes,
+    /// or if the parameter has no parent element.
+    public: bool IgnoresParentElementAttribute() const;
+
     /// \brief Clone the parameter.
     /// \return A new parameter that is the clone of this.
     public: ParamPtr Clone() const;
