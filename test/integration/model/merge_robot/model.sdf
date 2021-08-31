@@ -300,7 +300,8 @@
       <config2>val2</config2>
     </plugin>
     <custom:foo name='baz' />
-    <custom name='test' /> <!-- Should be ignored -->
     <enable_wind>true</enable_wind> <!-- Should be ignored -->
+    <static>false</static> <!-- Should be ignored -->
+    <unknown_element name='test_value' /> <!-- Should be ignored -->
   </model>
 </sdf>

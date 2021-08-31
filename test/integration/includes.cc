@@ -15,9 +15,11 @@
  *
  */
 
+#include <gtest/gtest.h>
+
+#include <ignition/math/Pose3.hh>
 #include <iostream>
 #include <string>
-#include <gtest/gtest.h>
 
 #include "sdf/Actor.hh"
 #include "sdf/Collision.hh"
@@ -388,3 +390,196 @@ TEST(IncludesTest, IncludeUrdf)
   EXPECT_EQ(1u, model->JointCount());
 }
 
+//////////////////////////////////////////////////
+TEST(IncludesTest, MergeInclude)
+{
+  using ignition::math::Pose3d;
+  sdf::ParserConfig config;
+  config.SetFindCallback(findFileCb);
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(
+      sdf::testing::TestFile("integration", "merge_include_model.sdf"), config);
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  auto world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  auto model = world->ModelByIndex(0);
+  EXPECT_EQ("robot1", model->Name());
+  EXPECT_EQ(5u, model->LinkCount());
+  EXPECT_EQ(4u, model->JointCount());
+  EXPECT_EQ(1u, model->ModelCount());
+  ASSERT_NE(nullptr, model->CanonicalLink());
+  EXPECT_EQ(model->LinkByIndex(0), model->CanonicalLink());
+
+  auto resolvePose = [](const sdf::SemanticPose &_semPose)
+  {
+    Pose3d result;
+    sdf::Errors poseErrors = _semPose.Resolve(result);
+    EXPECT_TRUE(poseErrors.empty()) << poseErrors;
+    return result;
+  };
+
+  // Check some poses
+  {
+    // Link "chassis"
+    auto testFrame = model->LinkByName("chassis");
+    ASSERT_NE(nullptr, testFrame);
+    Pose3d testPose = resolvePose(testFrame->SemanticPose());
+    // From SDFormat file
+    Pose3d expectedPose =
+      Pose3d(100, 0, 0, 0, 0, 0) * Pose3d(-0.151427, 0, 0.175, 0, 0, 0);
+    EXPECT_EQ(expectedPose, testPose);
+  }
+  {
+    // Link "top"
+    auto testFrame = model->LinkByName("top");
+    ASSERT_NE(nullptr, testFrame);
+    Pose3d testPose = resolvePose(testFrame->SemanticPose());
+    // From SDFormat file
+    Pose3d expectedPose =
+        Pose3d(100, 0, 0, 0, 0, 0) * Pose3d(0.6, 0, 0.7, 0, 0, 0);
+    EXPECT_EQ(expectedPose, testPose);
+  }
+
+  // Verify that plugins get merged
+  auto modelElem = model->Element();
+  ASSERT_NE(nullptr, modelElem);
+  auto pluginElem = modelElem->FindElement("plugin");
+  ASSERT_NE(nullptr, pluginElem);
+  EXPECT_EQ("test", pluginElem->Get<std::string>("name"));
+
+  // Verify that custom elements get merged
+  auto customFoo = modelElem->FindElement("custom:foo");
+  ASSERT_NE(nullptr, customFoo);
+  EXPECT_EQ("baz", customFoo->Get<std::string>("name"));
+
+  // Verify that other non-named elements, such as <static> and <enable_wind> do
+  // *NOT* get merged. This is also true for unknown elements
+  EXPECT_FALSE(modelElem->HasElement("unknown_element"));
+  EXPECT_FALSE(modelElem->HasElement("enable_wind"));
+  EXPECT_FALSE(modelElem->HasElement("static"));
+}
+
+//////////////////////////////////////////////////
+TEST(IncludesTest, MergeIncludePlacementFrame)
+{
+  using ignition::math::Pose3d;
+  sdf::ParserConfig config;
+  config.SetFindCallback(findFileCb);
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(
+      sdf::testing::TestFile("integration", "merge_include_model.sdf"), config);
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  auto world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  auto model = world->ModelByIndex(1);
+  EXPECT_EQ("robot2", model->Name());
+  EXPECT_EQ(5u, model->LinkCount());
+  EXPECT_EQ(4u, model->JointCount());
+  auto topLink = model->LinkByName("top");
+  ASSERT_NE(nullptr, topLink);
+  Pose3d topLinkPose;
+  EXPECT_TRUE(topLink->SemanticPose().Resolve(topLinkPose).empty());
+  // From SDFormat file
+  Pose3d expectedtopLinkPose = Pose3d(0, 0, 2, 0, 0, 0);
+  EXPECT_EQ(expectedtopLinkPose, topLinkPose);
+}
+
+//////////////////////////////////////////////////
+TEST(IncludesTest, InvalidMergeInclude)
+{
+  sdf::ParserConfig config;
+  // Useing the "file://" URI scheme to allow multiple search paths
+  config.AddURIPath("file://", sdf::testing::TestFile("sdf"));
+  config.AddURIPath("file://", sdf::testing::TestFile("integration", "model"));
+
+  // Models that are not valid by themselves
+  {
+    const std::string sdfString = R"(
+      <sdf version="1.9">
+        <model name="M">
+          <link name="L"/>
+          <include merge="true">
+            <uri>file://model_invalid_frame_only.sdf</uri> <!-- NOLINT -->
+          </include>
+        </model>
+      </sdf>)"; // NOLINT
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::MODEL_WITHOUT_LINK, errors[0].Code());
+  }
+  {
+    const std::string sdfString = R"(
+      <sdf version="1.9">
+        <model name="M">
+          <include merge="true">
+            <uri>file://model_invalid_link_relative_to.sdf</uri> <!-- NOLINT -->
+          </include>
+        </model>
+      </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::POSE_RELATIVE_TO_INVALID, errors[0].Code());
+  }
+
+  // Actors are not supported for merging
+  {
+    const std::string sdfString = R"(
+    <sdf version="1.9">
+      <actor name="A">
+        <include merge="true">
+          <uri>file://test_actor</uri> <!-- NOLINT -->
+        </include>
+      </actor>
+    </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
+    EXPECT_EQ(4u, errors[0].LineNumber());
+  }
+
+  // Lights are not supported for merging
+  {
+    const std::string sdfString = R"(
+    <sdf version="1.9">
+      <light name="Lt" type="spot">
+        <include merge="true">
+          <uri>file://test_light</uri> <!-- NOLINT -->
+        </include>
+      </light>
+    </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
+    EXPECT_EQ("Merge-include is only supported for included models",
+              errors[0].Message());
+    EXPECT_EQ(4u, errors[0].LineNumber());
+  }
+
+  // merge-include cannot be used directly under //world
+  // Lights are not supported for merging
+  {
+    const std::string sdfString = R"(
+    <sdf version="1.9">
+      <world name="default">
+        <include merge="true">
+          <uri>file://merge_robot</uri> <!-- NOLINT -->
+        </include>
+      </world>
+    </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
+    EXPECT_EQ("Merge-include can not supported when parent element is world",
+              errors[0].Message());
+    EXPECT_EQ(4u, errors[0].LineNumber());
+  }
+}

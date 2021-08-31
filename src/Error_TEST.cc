@@ -32,7 +32,20 @@ TEST(Error, DefaultConstruction)
   EXPECT_FALSE(error.LineNumber().has_value());
 
   if (error)
+  {
     FAIL();
+  }
+  error.SetXmlPath("/sdf/world");
+  ASSERT_TRUE(error.XmlPath().has_value());
+  EXPECT_EQ("/sdf/world", error.XmlPath());
+
+  error.SetFilePath("/tmp/test_file.sdf");
+  ASSERT_TRUE(error.FilePath().has_value());
+  EXPECT_EQ("/tmp/test_file.sdf", error.FilePath());
+
+  error.SetLineNumber(5);
+  ASSERT_TRUE(error.LineNumber().has_value());
+  EXPECT_EQ(5, error.LineNumber());
 }
 
 /////////////////////////////////////////////////
