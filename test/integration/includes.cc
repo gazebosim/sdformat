@@ -35,6 +35,7 @@
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
 #include "test_config.h"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
@@ -400,7 +401,7 @@ TEST(IncludesTest, MergeInclude)
   sdf::Root root;
   sdf::Errors errors = root.Load(
       sdf::testing::TestFile("integration", "merge_include_model.sdf"), config);
-  ASSERT_TRUE(errors.empty()) << errors;
+  EXPECT_TRUE(errors.empty()) << errors;
 
   auto world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
@@ -541,7 +542,7 @@ TEST(IncludesTest, InvalidMergeInclude)
     sdf::Errors errors = root.LoadSdfString(sdfString, config);
     ASSERT_FALSE(errors.empty());
     EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
-    EXPECT_EQ(4u, errors[0].LineNumber());
+    EXPECT_EQ(4, *errors[0].LineNumber());
   }
 
   // Lights are not supported for merging
@@ -560,11 +561,10 @@ TEST(IncludesTest, InvalidMergeInclude)
     EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
     EXPECT_EQ("Merge-include is only supported for included models",
               errors[0].Message());
-    EXPECT_EQ(4u, errors[0].LineNumber());
+    EXPECT_EQ(4, *errors[0].LineNumber());
   }
 
   // merge-include cannot be used directly under //world
-  // Lights are not supported for merging
   {
     const std::string sdfString = R"(
     <sdf version="1.9">
@@ -580,6 +580,31 @@ TEST(IncludesTest, InvalidMergeInclude)
     EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
     EXPECT_EQ("Merge-include can not supported when parent element is world",
               errors[0].Message());
-    EXPECT_EQ(4u, errors[0].LineNumber());
+    EXPECT_EQ(4, errors[0].LineNumber());
+  }
+
+  // Syntax error in included file
+  {
+    // Redirect sdferr output
+    std::stringstream buffer;
+    sdf::testing::RedirectConsoleStream redir(
+        sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+    const std::string sdfString = R"(
+    <sdf version="1.9">
+      <world name="default">
+        <include merge="true">
+          <uri>file://invalid_xml_syntax.sdf</uri> <!-- NOLINT -->
+        </include>
+      </world>
+    </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::FILE_READ, errors[0].Code());
+    EXPECT_EQ(0u, errors[0].Message().find("Unable to read file"));
+    EXPECT_EQ(5, *errors[0].LineNumber());
+    EXPECT_TRUE(buffer.str().find("Error parsing XML in file") !=
+                std::string::npos);
   }
 }

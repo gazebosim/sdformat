@@ -170,21 +170,38 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 
 //////////////////////////////////////////////////
 /// Helper function to insert included elements into a parent element.
-/// \param[in,out] _parent The parent element that contains the <include> tag
-/// \param[in] _includeRoot The DOM object corresponding to the included element
+/// \param[in] _includeSDF The SDFPtr corresponding to the included element
+/// \param[in] _sourceLoc The location of the include element in the file
 /// \param[in] _merge Whether the included element should be merged into the
 /// parent element. If true, children elements of _includeSDF will be copied to
 /// _parent without introducing a new model scope. N.B, this only works for
 /// included nested models.
-static void insertIncludedElement(const sdf::Root &_includeRoot,
-                                  const SourceLocation &_sourceLoc,
-                                  sdf::ElementPtr _parent,
-                                  sdf::Errors &_errors,
-                                  bool _merge = false)
+/// \param[in,out] _parent The parent element that contains the <include> tag.
+/// The contents of _includeSDF will be added to this.
+/// \param[out] _errors Captures errors encountered during parsing.
+static void insertIncludedElement(sdf::SDFPtr _includeSDF,
+                                  const SourceLocation &_sourceLoc, bool _merge,
+                                  sdf::ElementPtr _parent, sdf::Errors &_errors)
 {
-  auto _includeSDF = _includeRoot.Element()->GetFirstElement();
-  const sdf::Model *model = _includeRoot.Model();
-  if (_merge && model)
+  Error invalidFileError(ErrorCode::FILE_READ,
+                         "Included model is invalid. Skipping model.");
+  _sourceLoc.SetSourceLocationOnError(invalidFileError);
+
+  sdf::ElementPtr rootElem = _includeSDF->Root();
+  if (nullptr == rootElem)
+  {
+    _errors.push_back(invalidFileError);
+    return;
+  }
+
+  sdf::ElementPtr firstElem = rootElem->GetFirstElement();
+  if (nullptr == firstElem)
+  {
+    _errors.push_back(invalidFileError);
+    return;
+  }
+
+  if (_merge && firstElem->GetName() == "model")
   {
     if (_parent->GetName() != "model")
     {
@@ -194,7 +211,28 @@ static void insertIncludedElement(const sdf::Root &_includeRoot,
               _parent->GetName());
       _sourceLoc.SetSourceLocationOnError(unsupportedError);
       _errors.push_back(unsupportedError);
+      return;
     }
+
+    // Validate included model's frame semantics
+    // We create a throwaway sdf::Root object in order to validate the
+    // included entity.
+    sdf::Root includedRoot;
+    sdf::Errors includeDOMerrors = includedRoot.Load(_includeSDF);
+    _errors.insert(_errors.end(), includeDOMerrors.begin(),
+                   includeDOMerrors.end());
+
+    const sdf::Model *model = includedRoot.Model();
+    if (nullptr == model)
+    {
+      Error unsupportedError(
+          ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
+          "Included model is invalid. Skipping model.");
+      _sourceLoc.SetSourceLocationOnError(unsupportedError);
+      _errors.push_back(unsupportedError);
+      return;
+    }
+
     ElementPtr proxyModelFrame = _parent->AddElement("frame");
     const std::string proxyModelFrameName = model->Name() + "__model__";
 
@@ -251,7 +289,7 @@ static void insertIncludedElement(const sdf::Root &_includeRoot,
       };
 
     sdf::ElementPtr nextElem = nullptr;
-    for (auto elem = _includeSDF->GetFirstElement(); elem; elem = nextElem)
+    for (auto elem = firstElem->GetFirstElement(); elem; elem = nextElem)
     {
       // We need to fetch the next element here before we call elem->SetParent
       // later in this block.
@@ -310,8 +348,8 @@ static void insertIncludedElement(const sdf::Root &_includeRoot,
   }
   else
   {
-    _includeSDF->SetParent(_parent);
-    _parent->InsertElement(_includeSDF);
+    firstElem->SetParent(_parent);
+    _parent->InsertElement(firstElem);
   }
 }
 
@@ -1717,20 +1755,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             copyChildren(includeInfo, elemXml, false);
             includeSDFFirstElem->SetIncludeElement(includeInfo);
           }
-          // Validate included model's frame semantics
-          // We create a throwaway sdf::Root object in order to validate the
-          // included entity.
-          sdf::Root includedRoot;
-          sdf::Errors includeDOMerrors = includedRoot.Load(includeSDF);
-          _errors.insert(_errors.end(), includeDOMerrors.begin(),
-                         includeDOMerrors.end());
-
           bool toMerge = elemXml->BoolAttribute("merge", false);
           SourceLocation sourceLoc{includeXmlPath, _source,
                                    elemXml->GetLineNum()};
 
-          insertIncludedElement(includedRoot, sourceLoc, _sdf, _errors,
-                                toMerge);
+          insertIncludedElement(includeSDF, sourceLoc, toMerge, _sdf, _errors);
           continue;
         }
       }
