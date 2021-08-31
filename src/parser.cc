@@ -786,6 +786,135 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 }
 
 //////////////////////////////////////////////////
+/// Helper function read the all the attributes of an element from TinyXML to
+/// sdf::Element.
+/// \param[in] _xml Pointer to element to read the attributes from.
+/// \param[in,out] _sdf sdf::Element pointer to parse the attribute data into.
+/// \param[out] _errors Captures errors found during parsing.
+/// \return True on success, false on error.
+static bool readAttributes(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
+{
+  TiXmlAttribute *attribute = _xml->FirstAttribute();
+
+  unsigned int i = 0;
+
+  // Iterate over all the attributes defined in the give XML element
+  while (attribute)
+  {
+    // Avoid printing a warning message for missing attributes if a namespaced
+    // attribute is found
+    if (std::strchr(attribute->Name(), ':') != NULL)
+    {
+      _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
+      _sdf->GetAttribute(attribute->Name())->SetFromString(
+          attribute->ValueStr());
+      attribute = attribute->Next();
+      continue;
+    }
+    // Find the matching attribute in SDF
+    for (i = 0; i < _sdf->GetAttributeCount(); ++i)
+    {
+      ParamPtr p = _sdf->GetAttribute(i);
+      if (p->GetKey() == attribute->Name())
+      {
+        // Set the value of the SDF attribute
+        if (!p->SetFromString(attribute->ValueStr()))
+        {
+          _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+              "Unable to read attribute[" + p->GetKey() + "]"});
+          return false;
+        }
+        break;
+      }
+    }
+
+    if (i == _sdf->GetAttributeCount())
+    {
+      sdfwarn << "XML Attribute[" << attribute->Name()
+        << "] in element[" << _xml->Value()
+        << "] not defined in SDF, ignoring.\n";
+    }
+
+    attribute = attribute->Next();
+  }
+
+  // Check that all required attributes have been set
+  for (i = 0; i < _sdf->GetAttributeCount(); ++i)
+  {
+    ParamPtr p = _sdf->GetAttribute(i);
+    if (p->GetRequired() && !p->GetSet())
+    {
+      _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+          "Required attribute[" + p->GetKey() + "] in element[" + _xml->Value()
+          + "] is not specified in SDF."});
+      return false;
+    }
+  }
+
+  return true;
+}
+
+//////////////////////////////////////////////////
+/// Helper function to resolve file name from an //include/uri element.
+/// \param[in] _uriElem Pointer to the //include/uri element.
+/// \param[out] _fileName Resolved file name.
+/// \param[out] _errors Captures errors found during parsing.
+/// \return True if the file name is successfully resolved, false on error.
+static bool resolveFileNameFromUri(TiXmlElement *_uriElem,
+                                   std::string &_fileName, Errors &_errors)
+{
+  if (_uriElem)
+  {
+    const std::string uri = _uriElem->GetText();
+    const std::string modelPath = sdf::findFile(uri, true, true);
+
+    // Test the model path
+    if (modelPath.empty())
+    {
+      _errors.push_back(
+          {ErrorCode::URI_LOOKUP, "Unable to find uri[" + uri + "]"});
+
+      size_t modelFound = uri.find("model://");
+      if (modelFound != 0u)
+      {
+        _errors.push_back(
+            {ErrorCode::URI_INVALID,
+             "Invalid uri[" + uri + "]. Should be model://" + uri});
+      }
+      return false;
+    }
+    else
+    {
+      if (!sdf::filesystem::is_directory(modelPath))
+      {
+        _errors.push_back({ErrorCode::DIRECTORY_NONEXISTANT,
+                           "Directory doesn't exist[" + modelPath + "]"});
+        return false;
+      }
+    }
+
+    // Get the config.xml filename
+    _fileName = getModelFilePath(modelPath);
+
+    if (_fileName .empty())
+    {
+      _errors.push_back(
+          {ErrorCode::URI_LOOKUP,
+           "Unable to resolve uri[" + uri + "] to model path [" + modelPath +
+               "] since it does not contain a model.config " + "file."});
+      return false;
+    }
+  }
+  else
+  {
+    _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+                       "<include> element missing 'uri' attribute"});
+    return false;
+  }
+  return true;
+}
+
+//////////////////////////////////////////////////
 bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 {
   // Check if the element pointer is deprecated.
@@ -828,62 +957,8 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
     _sdf->Copy(refSDF);
   }
 
-  TiXmlAttribute *attribute = _xml->FirstAttribute();
-
-  unsigned int i = 0;
-
-  // Iterate over all the attributes defined in the give XML element
-  while (attribute)
-  {
-    // Avoid printing a warning message for missing attributes if a namespaced
-    // attribute is found
-    if (std::strchr(attribute->Name(), ':') != NULL)
-    {
-      _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
-      _sdf->GetAttribute(attribute->Name())->SetFromString(
-          attribute->ValueStr());
-      attribute = attribute->Next();
-      continue;
-    }
-    // Find the matching attribute in SDF
-    for (i = 0; i < _sdf->GetAttributeCount(); ++i)
-    {
-      ParamPtr p = _sdf->GetAttribute(i);
-      if (p->GetKey() == attribute->Name())
-      {
-        // Set the value of the SDF attribute
-        if (!p->SetFromString(attribute->ValueStr()))
-        {
-          _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
-              "Unable to read attribute[" + p->GetKey() + "]"});
-          return false;
-        }
-        break;
-      }
-    }
-
-    if (i == _sdf->GetAttributeCount())
-    {
-      sdfwarn << "XML Attribute[" << attribute->Name()
-              << "] in element[" << _xml->Value()
-              << "] not defined in SDF, ignoring.\n";
-    }
-
-    attribute = attribute->Next();
-  }
-
-  // Check that all required attributes have been set
-  for (i = 0; i < _sdf->GetAttributeCount(); ++i)
-  {
-    ParamPtr p = _sdf->GetAttribute(i);
-    if (p->GetRequired() && !p->GetSet())
-    {
-      _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
-          "Required attribute[" + p->GetKey() + "] in element[" + _xml->Value()
-          + "] is not specified in SDF."});
-      return false;
-    }
-  }
+  if (!readAttributes(_xml, _sdf, _errors))
+    return false;
 
   if (_sdf->GetCopyChildren())
   {
@@ -900,55 +975,9 @@ bool readXml(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
     {
       if (std::string("include") == elemXml->Value())
       {
-        std::string modelPath;
-
-        if (elemXml->FirstChildElement("uri"))
-        {
-          std::string uri = elemXml->FirstChildElement("uri")->GetText();
-          modelPath = sdf::findFile(uri, true, true);
-
-          // Test the model path
-          if (modelPath.empty())
-          {
-            _errors.push_back({ErrorCode::URI_LOOKUP,
-                "Unable to find uri[" + uri + "]"});
-
-            size_t modelFound = uri.find("model://");
-            if (modelFound != 0u)
-            {
-              _errors.push_back({ErrorCode::URI_INVALID,
-                  "Invalid uri[" + uri + "]. Should be model://" + uri});
-            }
-            continue;
-          }
-          else
-          {
-            if (!sdf::filesystem::is_directory(modelPath))
-            {
-              _errors.push_back({ErrorCode::DIRECTORY_NONEXISTANT,
-                  "Directory doesn't exist[" + modelPath + "]"});
-              continue;
-            }
-          }
-
-          // Get the config.xml filename
-          filename = getModelFilePath(modelPath);
-
-          if (filename.empty())
-          {
-            _errors.push_back({ErrorCode::URI_LOOKUP,
-                "Unable to resolve uri[" + uri + "] to model path [" +
-                modelPath + "] since it does not contain a model.config " +
-                "file."});
-            continue;
-          }
-        }
-        else
-        {
-          _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
-              "<include> element missing 'uri' attribute"});
+        if (!resolveFileNameFromUri(elemXml->FirstChildElement("uri"), filename,
+                                    _errors))
           continue;
-        }
 
         // NOTE: sdf::init is an expensive call. For performance reason,
         // a new sdf pointer is created here by cloning a fresh sdf template
