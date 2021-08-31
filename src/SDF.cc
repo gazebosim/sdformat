@@ -46,7 +46,9 @@ static URIPathMap g_uriPathMap;
 
 static std::function<std::string(const std::string &)> g_findFileCB;
 
-std::string SDF::version = SDF_VERSION;
+// TODO(azeey) This violates the Google style guide. Change to a function that
+// returns the version string when possible.
+std::string SDF::version = SDF_VERSION;  // NOLINT(runtime/string)
 
 /////////////////////////////////////////////////
 // cppcheck-suppress passedByValue
@@ -325,9 +327,7 @@ void SDF::PrintDoc()
 
   std::cout << "</div>\n";
 
-  std::cout << "\
-    </body>\
-    </html>\n";
+  std::cout << "    </body>    </html>\n";
 }
 
 /////////////////////////////////////////////////

@@ -122,7 +122,7 @@ Light &Light::operator=(Light &&_light)
 //////////////////////////////////////////////////
 void Light::CopyFrom(const Light &_light)
 {
-  this->dataPtr->name= _light.dataPtr->name;
+  this->dataPtr->name = _light.dataPtr->name;
   this->dataPtr->pose = _light.dataPtr->pose;
   this->dataPtr->poseRelativeTo = _light.dataPtr->poseRelativeTo;
   this->dataPtr->type = _light.dataPtr->type;
@@ -251,7 +251,7 @@ Errors Light::Load(ElementPtr _sdf)
     this->SetSpotInnerAngle(doubleValue.first);
 
     // Check for and set outer_angle
-    doubleValue =spotElem->Get<double>(
+    doubleValue = spotElem->Get<double>(
         "outer_angle", this->dataPtr->spotOuterAngle.Radian());
     if (!doubleValue.second)
     {
@@ -261,7 +261,7 @@ Errors Light::Load(ElementPtr _sdf)
     this->SetSpotOuterAngle(doubleValue.first);
 
     // Check for and set falloff
-    doubleValue =spotElem->Get<double>("falloff", this->dataPtr->spotFalloff);
+    doubleValue = spotElem->Get<double>("falloff", this->dataPtr->spotFalloff);
     if (!doubleValue.second)
     {
       errors.push_back({ErrorCode::ELEMENT_MISSING,

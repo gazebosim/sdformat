@@ -23,14 +23,6 @@
 
 #include "test_config.h"
 
-const std::string SDF_FIXED_JNT =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                          "fixed_joint_reduction.urdf");
-
-const std::string SDF_FIXED_JNT_NO_LUMPING =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                          "fixed_joint_reduction_disabled.urdf");
-
 /////////////////////////////////////////////////
 bool findJointInModel(const std::string &desired_joint_name, sdf::SDFPtr robot)
 {
@@ -53,13 +45,20 @@ bool findJointInModel(const std::string &desired_joint_name, sdf::SDFPtr robot)
 /////////////////////////////////////////////////
 TEST(SDFParser, DisableFixedJointReductionTest)
 {
+  const std::string sdfFixedJntFile = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "integration", "fixed_joint_reduction.urdf");
+
+  const std::string sdfFixedJntNoLumpingFile =
+      sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                              "fixed_joint_reduction_disabled.urdf");
+
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(SDF_FIXED_JNT, robot));
+  ASSERT_TRUE(sdf::readFile(sdfFixedJntFile, robot));
 
   sdf::SDFPtr robot_disable_lumping(new sdf::SDF());
   sdf::init(robot_disable_lumping);
-  ASSERT_TRUE(sdf::readFile(SDF_FIXED_JNT_NO_LUMPING, robot_disable_lumping));
+  ASSERT_TRUE(sdf::readFile(sdfFixedJntNoLumpingFile, robot_disable_lumping));
 
   ASSERT_FALSE(findJointInModel("joint12a", robot));
   ASSERT_FALSE(findJointInModel("joint23a", robot));

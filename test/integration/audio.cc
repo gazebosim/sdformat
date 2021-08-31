@@ -23,13 +23,12 @@
 
 #include "test_config.h"
 
-const std::string SDF_TEST_FILE =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                          "audio.sdf");
 
 TEST(SDFParser, AudioSDF_FullParameters_noThrow)
 {
+  const std::string sdfTestFile = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "integration", "audio.sdf");
   sdf::SDFPtr p(new sdf::SDF());
   sdf::init(p);
-  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, p));
+  ASSERT_TRUE(sdf::readFile(sdfTestFile , p));
 }
