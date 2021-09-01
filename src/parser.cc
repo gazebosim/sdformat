@@ -786,9 +786,9 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 }
 
 //////////////////////////////////////////////////
-/// Helper function read the all the attributes of an element from TinyXML to
+/// Helper function that reads all the attributes of an element from TinyXML to
 /// sdf::Element.
-/// \param[in] _xml Pointer to element to read the attributes from.
+/// \param[in] _xml Pointer to XML element to read the attributes from.
 /// \param[in,out] _sdf sdf::Element pointer to parse the attribute data into.
 /// \param[out] _errors Captures errors found during parsing.
 /// \return True on success, false on error.
@@ -856,7 +856,7 @@ static bool readAttributes(TiXmlElement *_xml, ElementPtr _sdf, Errors &_errors)
 
 //////////////////////////////////////////////////
 /// Helper function to resolve file name from an //include/uri element.
-/// \param[in] _uriElem Pointer to the //include/uri element.
+/// \param[in] _uriElem Pointer to the //include/uri XML element.
 /// \param[out] _fileName Resolved file name.
 /// \param[out] _errors Captures errors found during parsing.
 /// \return True if the file name is successfully resolved, false on error.
