@@ -30,9 +30,15 @@
   #define pclose _pclose
 #endif
 
-static const std::string g_sdfVersion(" --force-version " +
-  std::string(SDF_VERSION_FULL));
-static const std::string g_ignCommand(std::string(IGN_PATH) + "/ign");
+static std::string SdfVersion()
+{
+  return " --force-version " + std::string(SDF_VERSION_FULL);
+}
+
+static std::string IgnCommand()
+{
+  return std::string(IGN_PATH) + "/ign";
+}
 
 /////////////////////////////////////////////////
 std::string custom_exec_str(std::string _cmd)
@@ -68,7 +74,7 @@ TEST(check, SDF)
 
     // Check box_plane_low_friction_test.world
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -78,7 +84,7 @@ TEST(check, SDF)
 
     // Check box_bad_test.world
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Required attribute"), std::string::npos)
       << output;
   }
@@ -90,7 +96,7 @@ TEST(check, SDF)
 
     // Check world_duplicate.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: World with name[default] already exists."),
               std::string::npos) << output;
   }
@@ -102,7 +108,7 @@ TEST(check, SDF)
 
     // Check world_sibling_same_names.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: Non-unique names"), std::string::npos)
       << output;
   }
@@ -114,7 +120,7 @@ TEST(check, SDF)
 
     // Check model_duplicate_links.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: link with name[link] already exists."),
               std::string::npos) << output;
   }
@@ -126,7 +132,7 @@ TEST(check, SDF)
 
     // Check model_duplicate_joints.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: joint with name[joint] already exists."),
               std::string::npos) << output;
   }
@@ -138,7 +144,7 @@ TEST(check, SDF)
 
     // Check model_link_joint_same_name.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: Non-unique names"), std::string::npos)
       << output;
   }
@@ -150,7 +156,7 @@ TEST(check, SDF)
 
     // Check link_duplicate_sibling_collisions.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: collision with name[collision] "
                           "already exists."),
               std::string::npos) << output;
@@ -163,7 +169,7 @@ TEST(check, SDF)
 
     // Check link_duplicate_sibling_visuals.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: visual with name[visual] already exists."),
               std::string::npos) << output;
   }
@@ -175,7 +181,7 @@ TEST(check, SDF)
 
     // Check link_duplicate_cousin_collisions.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -186,7 +192,7 @@ TEST(check, SDF)
 
     // Check link_duplicate_cousin_visuals.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -196,7 +202,7 @@ TEST(check, SDF)
 
     // Check joint_invalid_child.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: Child link with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_child]."),
@@ -209,7 +215,7 @@ TEST(check, SDF)
 
     // Check joint_invalid_parent.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: parent link with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_parent]."),
@@ -222,7 +228,7 @@ TEST(check, SDF)
 
     // Check joint_invalid_parent_same_as_child.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: Joint with name[joint] must "
                           "specify different link names for parent and child, "
                           "while [link] was specified for both."),
@@ -235,7 +241,7 @@ TEST(check, SDF)
 
     // Check joint_child_world.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: Joint with name[joint] specified invalid "
                           "child link [world]."),
               std::string::npos) << output;
@@ -248,7 +254,7 @@ TEST(check, SDF)
 
     // Check joint_parent_world.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -259,7 +265,7 @@ TEST(check, SDF)
 
     // Check model_canonical_link.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -269,7 +275,7 @@ TEST(check, SDF)
 
     // Check model_invalid_canonical_link.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: canonical_link with name[link3] not found in "
                           "model with name[model_invalid_canonical_link]."),
               std::string::npos) << output;
@@ -281,7 +287,7 @@ TEST(check, SDF)
 
     // Check model_without_links.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: A model must have at least one link."),
               std::string::npos) << output;
   }
@@ -292,7 +298,7 @@ TEST(check, SDF)
 
     // Check nested_model.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -302,7 +308,7 @@ TEST(check, SDF)
 
     // Check nested_canonical_link.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -314,7 +320,7 @@ TEST(check, SDF)
 
     // Check nested_invalid_explicit_canonical_link.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: canonical_link with name[nested::link] not "
                           "found in model with name[top]."),
               std::string::npos) << output;
@@ -328,7 +334,7 @@ TEST(check, SDF)
 
     // Check model_invalid_reserved_names.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: The supplied link name [world] is reserved."),
               std::string::npos) << output;
     EXPECT_NE(output.find("Error: The supplied link name [__link__] "
@@ -353,7 +359,7 @@ TEST(check, SDF)
     std::string path = pathBase +"/ignore_sdf_in_plugin.sdf";
 
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -362,7 +368,7 @@ TEST(check, SDF)
     std::string path = pathBase +"/ignore_sdf_in_namespaced_elements.sdf";
 
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -373,7 +379,7 @@ TEST(check, SDF)
 
     // Check model_frame_attached_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -384,7 +390,7 @@ TEST(check, SDF)
 
     // Check model_frame_attached_to_joint.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -395,7 +401,7 @@ TEST(check, SDF)
 
     // Check model_frame_attached_to_nested_model.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -405,7 +411,7 @@ TEST(check, SDF)
 
     // Check model_frame_invalid_attached_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: attached_to name[A] specified by frame with "
                           "name[F3] does not match a nested model, link, "
                           "joint, or frame name in model with "
@@ -423,7 +429,7 @@ TEST(check, SDF)
 
     // Check model_frame_invalid_attached_to_cycle.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(std::string::npos, output.find(
       "FrameAttachedToGraph cycle detected, already visited vertex [F1]."))
         << output;
@@ -439,7 +445,7 @@ TEST(check, SDF)
 
     // Check world_frame_attached_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -449,7 +455,7 @@ TEST(check, SDF)
 
     // Check world_frame_invalid_attached_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: attached_to name[A] specified by frame with "
                           "name[F] does not match a model or frame "
                           "name in world with "
@@ -469,7 +475,7 @@ TEST(check, SDF)
 
     // Check model_link_relative_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -479,7 +485,7 @@ TEST(check, SDF)
 
     // Check model_invalid_link_relative_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: relative_to name[A] specified by link with "
                           "name[L] does not match a nested model, link, "
                           "joint, or frame name in model with "
@@ -498,7 +504,7 @@ TEST(check, SDF)
 
     // Check model_nested_model_relative_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -509,7 +515,7 @@ TEST(check, SDF)
 
     // Check model_invalid_nested_joint_child.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: Child link with name[M::C] specified by "
                           "joint with name[J] not found in model with "
                           "name[model_invalid_nested_joint_child]."),
@@ -523,7 +529,7 @@ TEST(check, SDF)
 
     // Check model_joint_relative_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -533,7 +539,7 @@ TEST(check, SDF)
 
     // Check model_invalid_joint_relative_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: relative_to name[A] specified by joint with "
                           "name[J] does not match a nested model, link, "
                           "joint, or frame name in model with "
@@ -552,7 +558,7 @@ TEST(check, SDF)
 
     // Check model_frame_relative_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -563,7 +569,7 @@ TEST(check, SDF)
 
     // Check model_frame_relative_to_joint.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -573,7 +579,7 @@ TEST(check, SDF)
 
     // Check model_invalid_frame_relative_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: relative_to name[A] specified by frame with "
                           "name[F] does not match a nested model, link, "
                           "joint, or frame name in model with "
@@ -591,7 +597,7 @@ TEST(check, SDF)
 
     // Check model_invalid_frame_relative_to_cycle.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(std::string::npos, output.find(
       "PoseRelativeToGraph cycle detected, already visited vertex [F1]."))
         << output;
@@ -607,7 +613,7 @@ TEST(check, SDF)
 
     // Check world_frame_relative_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -617,7 +623,7 @@ TEST(check, SDF)
 
     // Check world_frame_invalid_relative_to.sdf
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Error: relative_to name[A] specified by model with "
                           "name[M] does not match a model or frame "
                           "name in world with "
@@ -652,7 +658,7 @@ TEST(check_model_sdf, SDF)
     std::string path = pathBase +"/model.sdf";
 
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output);
   }
 
@@ -662,7 +668,7 @@ TEST(check_model_sdf, SDF)
 
     std::string output =
       custom_exec_str("cd " + pathBase + " && " +
-                      g_ignCommand + " sdf -k " + path + g_sdfVersion);
+                      IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output);
   }
 }
@@ -672,7 +678,7 @@ TEST(describe, SDF)
 {
   // Get the description
   std::string output =
-    custom_exec_str(g_ignCommand + " sdf -d " + g_sdfVersion);
+    custom_exec_str(IgnCommand() + " sdf -d " + SdfVersion());
   EXPECT_FALSE(output.empty());
 
   // The first line should start with the following text.
@@ -694,7 +700,7 @@ TEST(print, SDF)
 
     // Check box_plane_low_friction_test.world
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -p " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -p " + path + SdfVersion());
     EXPECT_EQ(sdf->Root()->ToString(""), output);
   }
 
@@ -704,7 +710,7 @@ TEST(print, SDF)
 
     // Check box_bad_test.world
     std::string output =
-      custom_exec_str(g_ignCommand + " sdf -p " + path + g_sdfVersion);
+      custom_exec_str(IgnCommand() + " sdf -p " + path + SdfVersion());
     EXPECT_TRUE(output.find("Required attribute") != std::string::npos);
   }
 }

@@ -23,20 +23,16 @@
 
 #include "test_config.h"
 
-const std::string URDF_TEST_FILE =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                          "cfm_damping_implicit_spring_damper.urdf");
-
-const std::string SDF_TEST_FILE =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                          "cfm_damping_implicit_spring_damper.sdf");
 
 /////////////////////////////////////////////////
 TEST(SDFParser, CFMDampingSDFTest)
 {
+  const std::string sdfTestFile =
+      sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                              "cfm_damping_implicit_spring_damper.sdf");
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
+  ASSERT_TRUE(sdf::readFile(sdfTestFile, robot));
 
   sdf::ElementPtr model = robot->Root()->GetElement("model");
   unsigned int jointBitMask = 0;
@@ -111,9 +107,13 @@ TEST(SDFParser, CFMDampingSDFTest)
 /////////////////////////////////////////////////
 TEST(SDFParser, CFMDampingURDFTest)
 {
+  const std::string urdfTestFile =
+      sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                              "cfm_damping_implicit_spring_damper.urdf");
+
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(URDF_TEST_FILE, robot));
+  ASSERT_TRUE(sdf::readFile(urdfTestFile, robot));
 
   sdf::ElementPtr root = robot->Root();
   ASSERT_TRUE(root != nullptr);

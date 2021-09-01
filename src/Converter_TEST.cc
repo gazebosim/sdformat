@@ -1885,10 +1885,16 @@ TEST(Converter, MuchNewerVersion)
   ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6"));
 }
 
-const std::string CONVERT_DOC_15_16 =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.6", "1_5.convert");
-const std::string CONVERT_DOC_16_17 =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.7", "1_6.convert");
+static std::string ConvertDoc_15_16()
+{
+  return sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.6",
+                                 "1_5.convert");
+}
+static std::string ConvertDoc_16_17()
+{
+  return sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.7",
+                                 "1_6.convert");
+}
 
 /////////////////////////////////////////////////
 /// Test conversion of imu in 1.5 to 1.6
@@ -1930,7 +1936,7 @@ TEST(Converter, IMU_15_to_16)
 
   // Convert
   TiXmlDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(CONVERT_DOC_15_16);
+  convertXmlDoc.LoadFile(ConvertDoc_15_16());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements
@@ -2024,7 +2030,7 @@ TEST(Converter, World_15_to_16)
 
   // Convert
   TiXmlDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(CONVERT_DOC_15_16);
+  convertXmlDoc.LoadFile(ConvertDoc_15_16());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements
@@ -2080,7 +2086,7 @@ TEST(Converter, Pose_16_to_17)
 
   // Convert
   TiXmlDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(CONVERT_DOC_16_17);
+  convertXmlDoc.LoadFile(ConvertDoc_16_17());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements

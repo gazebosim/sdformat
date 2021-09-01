@@ -206,7 +206,7 @@ namespace sdf
                               const std::string &_type,
                               const std::string &_defaultvalue,
                               bool _required,
-                              const std::string &_description="");
+                              const std::string &_description = "");
 
     /// \brief Add a value to this Element.
     /// \param[in] _type Type of data the attribute will hold.
@@ -216,7 +216,7 @@ namespace sdf
     /// \throws sdf::AssertionInternalError if an invalid type is given.
     public: void AddValue(const std::string &_type,
                           const std::string &_defaultValue, bool _required,
-                          const std::string &_description="");
+                          const std::string &_description = "");
 
     /// \brief Get the param of an attribute.
     /// \param[in] _key the name of the attribute.
@@ -499,7 +499,7 @@ namespace sdf
                                   const std::string &_type,
                                   const std::string &_defaultValue,
                                   bool _required,
-                                  const std::string &_description="");
+                                  const std::string &_description = "");
 
 
     /// \brief Private data pointer

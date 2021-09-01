@@ -25,30 +25,17 @@
 
 #include "test_config.h"
 
-const std::string SDF_ROOT_SCHEMA =
-  sdf::filesystem::append(PROJECT_BINARY_DIR, "sdf", SDF_PROTOCOL_VERSION,
-                          "root.xsd");
-
-const std::string SDF_TEST_PR2 =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
-                          "pr2.sdf");
-
-const std::string SDF_TEST_TURTLEBOT =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
-                          "turtlebot.sdf");
-
-const std::string SDF_TEST_PENDULUM =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration", "model",
-                          "double_pendulum.sdf");
-
 
 class SDFSchemaGenerator : public testing::Test
 {
   public:
     void runXMLlint(const std::string & model)
     {
+      const std::string sdfRootSchema = sdf::filesystem::append(
+          PROJECT_BINARY_DIR, "sdf", SDF_PROTOCOL_VERSION, "root.xsd");
+
       std::string xmllintCmd = "xmllint --noout --schema " +
-                                SDF_ROOT_SCHEMA + " " + model;
+                                sdfRootSchema + " " + model;
       std::cout << "CMD[" << xmllintCmd << "]\n";
       if (system(xmllintCmd.c_str()) != 0)
       {
@@ -64,18 +51,28 @@ class SDFSchemaGenerator : public testing::Test
 /////////////////////////////////////////////////
 TEST_F(SDFSchemaGenerator, TestDoublePendulum)
 {
-  runXMLlint(SDF_TEST_PENDULUM);
+  const std::string sdfTestPendulum =
+      sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                              "model", "double_pendulum.sdf");
+
+  runXMLlint(sdfTestPendulum);
 }
 
 /////////////////////////////////////////////////
 TEST_F(SDFSchemaGenerator, TestPR2Model)
 {
-  runXMLlint(SDF_TEST_PR2);
+  const std::string sdfTestPr2 = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "integration", "model", "pr2.sdf");
+
+  runXMLlint(sdfTestPr2);
 }
 
 
 /////////////////////////////////////////////////
 TEST_F(SDFSchemaGenerator, TestTurtleBotModel)
 {
-  runXMLlint(SDF_TEST_TURTLEBOT);
+  const std::string sdfTestTurtlebot = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "integration", "model", "turtlebot.sdf");
+
+  runXMLlint(sdfTestTurtlebot);
 }
