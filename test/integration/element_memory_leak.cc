@@ -69,12 +69,12 @@ const std::string sdfString(
   "    </model>\n"
   "</sdf>");
 
-const std::string getMemInfoPath =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "tools", "get_mem_info.py");
-const std::string pythonMeminfo("python3 " + getMemInfoPath);
-
 int getMemoryUsage()
 {
+  static const std::string getMemInfoPath =
+      sdf::filesystem::append(PROJECT_SOURCE_PATH, "tools", "get_mem_info.py");
+  static const std::string pythonMeminfo("python3 " + getMemInfoPath);
+
   return std::stoi(custom_exec(pythonMeminfo));
 }
 

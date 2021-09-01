@@ -23,15 +23,14 @@
 
 #include "test_config.h"
 
-const std::string SDF_TEST_FILE =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                          "custom_elems_attrs.sdf");
-
 /////////////////////////////////////////////////
 TEST(SDFParser, CustomElements)
 {
+  const std::string sdfTestFile = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "integration", "custom_elems_attrs.sdf");
+
   sdf::Root root;
-  EXPECT_TRUE(root.Load(SDF_TEST_FILE).empty());
+  EXPECT_TRUE(root.Load(sdfTestFile).empty());
 
   const sdf::World *world = root.WorldByIndex(0);
 

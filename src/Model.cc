@@ -495,7 +495,7 @@ bool Model::EnableWind() const
 /////////////////////////////////////////////////
 void Model::SetEnableWind(const bool _enableWind)
 {
-  this->dataPtr->enableWind =_enableWind;
+  this->dataPtr->enableWind = _enableWind;
 }
 
 /////////////////////////////////////////////////

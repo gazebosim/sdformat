@@ -60,7 +60,7 @@ TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
     TiXmlDocument doc = TiXmlDocument();
     sdf::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  );    // NOLINT(whitespace/parens)
+  );
   SDF_SUPPRESS_DEPRECATED_END
 }
 
@@ -74,7 +74,7 @@ TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
     doc.Parse(getMinimalUrdfTxt().c_str());
     sdf::URDF2SDF parser_;
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
-  );    // NOLINT(whitespace/parens)
+  );
   SDF_SUPPRESS_DEPRECATED_END
 }
 

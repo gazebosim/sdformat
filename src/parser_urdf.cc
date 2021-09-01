@@ -49,9 +49,9 @@ typedef std::map<std::string, std::vector<SDFExtensionPtr> >
 StringSDFExtensionPtrMap g_extensions;
 bool g_reduceFixedJoints;
 bool g_enforceLimits;
-std::string g_collisionExt = "_collision";
-std::string g_visualExt = "_visual";
-std::string g_lumpPrefix = "_fixed_joint_lump__";
+const char kCollisionExt[] = "_collision";
+const char kVisualExt[] = "_visual";
+const char kLumpPrefix[] = "_fixed_joint_lump__";
 urdf::Pose g_initialRobotPose;
 bool g_initialRobotPoseValid = false;
 std::set<std::string> g_fixedJointsTransformedInRevoluteJoints;
@@ -916,8 +916,8 @@ void ReduceVisualsToParent(urdf::LinkSharedPtr _link)
   // from another descendant link connected by a fixed joint.
   //
   // Algorithm for generating new name (or group name) is:
-  //   original name + g_lumpPrefix+original link name (urdf 0.3.x)
-  //   original group name + g_lumpPrefix+original link name (urdf 0.2.x)
+  //   original name + kLumpPrefix+original link name (urdf 0.3.x)
+  //   original group name + kLumpPrefix+original link name (urdf 0.2.x)
   // The purpose is to track where this visual came from
   // (original parent link name before lumping/reducing).
   for (std::vector<urdf::VisualSharedPtr>::iterator
@@ -926,7 +926,7 @@ void ReduceVisualsToParent(urdf::LinkSharedPtr _link)
   {
     // 20151116: changelog for pull request #235
     std::string newVisualName;
-    std::size_t lumpIndex = (*visualIt)->name.find(g_lumpPrefix);
+    std::size_t lumpIndex = (*visualIt)->name.find(kLumpPrefix);
     if (lumpIndex != std::string::npos)
     {
       newVisualName = (*visualIt)->name;
@@ -976,8 +976,8 @@ void ReduceCollisionsToParent(urdf::LinkSharedPtr _link)
   // from another descendant link connected by a fixed joint.
   //
   // Algorithm for generating new name (or group name) is:
-  //   original name + g_lumpPrefix+original link name (urdf 0.3.x)
-  //   original group name + g_lumpPrefix+original link name (urdf 0.2.x)
+  //   original name + kLumpPrefix+original link name (urdf 0.3.x)
+  //   original group name + kLumpPrefix+original link name (urdf 0.2.x)
   // The purpose is to track where this collision came from
   // (original parent link name before lumping/reducing).
   for (std::vector<urdf::CollisionSharedPtr>::iterator
@@ -985,7 +985,7 @@ void ReduceCollisionsToParent(urdf::LinkSharedPtr _link)
       collisionIt != _link->collision_array.end(); ++collisionIt)
   {
     std::string newCollisionName;
-    std::size_t lumpIndex = (*collisionIt)->name.find(g_lumpPrefix);
+    std::size_t lumpIndex = (*collisionIt)->name.find(kLumpPrefix);
     if (lumpIndex != std::string::npos)
     {
       newCollisionName = (*collisionIt)->name;
@@ -1075,9 +1075,6 @@ URDF2SDF::URDF2SDF()
   g_enforceLimits = true;
   g_reduceFixedJoints = true;
   g_extensions.clear();
-  g_collisionExt = "_collision";
-  g_visualExt = "_visual";
-  g_lumpPrefix = "_fixed_joint_lump__";
   g_initialRobotPoseValid = false;
   g_fixedJointsTransformedInRevoluteJoints.clear();
   g_fixedJointsTransformedInFixedJoints.clear();
@@ -1592,8 +1589,8 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
         //           << "]\n";
         // std::cerr << "----------------------------\n";
 
-        std::string lumpCollisionName = g_lumpPrefix +
-          (*ge)->oldLinkName + g_collisionExt;
+        std::string lumpCollisionName = kLumpPrefix +
+          (*ge)->oldLinkName + kCollisionExt;
 
         bool wasReduced = (_linkName == (*ge)->oldLinkName);
         bool collisionNameContainsLinkname =
@@ -1601,7 +1598,7 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
         bool collisionNameContainsLumpedLinkname =
           sdfCollisionName.find(lumpCollisionName) != std::string::npos;
         bool collisionNameContainsLumpedRef =
-          sdfCollisionName.find(g_lumpPrefix) != std::string::npos;
+          sdfCollisionName.find(kLumpPrefix) != std::string::npos;
 
         if (!collisionNameContainsLinkname)
         {
@@ -1610,9 +1607,9 @@ void InsertSDFExtensionCollision(TiXmlElement *_elem,
         }
 
         // if the collision _elem was not reduced,
-        // its name should not have g_lumpPrefix in it.
+        // its name should not have kLumpPrefix in it.
         // otherwise, its name should have
-        // "g_lumpPrefix+[original link name before reduction]".
+        // "kLumpPrefix+[original link name before reduction]".
         if ((wasReduced && !collisionNameContainsLumpedRef) ||
             (!wasReduced && collisionNameContainsLumpedLinkname))
         {
@@ -1906,8 +1903,8 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
         //           << "]\n";
         // std::cerr << "----------------------------\n";
 
-        std::string lumpVisualName = g_lumpPrefix +
-          (*ge)->oldLinkName + g_visualExt;
+        std::string lumpVisualName = kLumpPrefix +
+          (*ge)->oldLinkName + kVisualExt;
 
         bool wasReduced = (_linkName == (*ge)->oldLinkName);
         bool visualNameContainsLinkname =
@@ -1915,7 +1912,7 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
         bool visualNameContainsLumpedLinkname =
           sdfVisualName.find(lumpVisualName) != std::string::npos;
         bool visualNameContainsLumpedRef =
-          sdfVisualName.find(g_lumpPrefix) != std::string::npos;
+          sdfVisualName.find(kLumpPrefix) != std::string::npos;
 
         if (!visualNameContainsLinkname)
         {
@@ -1924,9 +1921,9 @@ void InsertSDFExtensionVisual(TiXmlElement *_elem,
         }
 
         // if the visual _elem was not reduced,
-        // its name should not have g_lumpPrefix in it.
+        // its name should not have kLumpPrefix in it.
         // otherwise, its name should have
-        // "g_lumpPrefix+[original link name before reduction]".
+        // "kLumpPrefix+[original link name before reduction]".
         if ((wasReduced && !visualNameContainsLumpedRef) ||
             (!wasReduced && visualNameContainsLumpedLinkname))
         {
@@ -2804,7 +2801,7 @@ void CreateCollisions(TiXmlElement* _elem,
     }
 
     // add _collision extension
-    collisionName = collisionName + g_collisionExt;
+    collisionName = collisionName + kCollisionExt;
 
     if (collisionCount > 0)
     {
@@ -2849,7 +2846,7 @@ void CreateVisuals(TiXmlElement* _elem,
     }
 
     // add _visual extension
-    visualName = visualName + g_visualExt;
+    visualName = visualName + kVisualExt;
 
     if (visualCount > 0)
     {
@@ -3098,7 +3095,7 @@ void CreateCollision(TiXmlElement* _elem, urdf::LinkConstSharedPtr _link,
   else
   {
     sdfCollision->SetAttribute("name", _link->name
-        + g_lumpPrefix + _oldLinkName);
+        + kLumpPrefix + _oldLinkName);
   }
 
   // std::cerr << "collision [" << sdfCollision->Attribute("name") << "]\n";
@@ -3144,7 +3141,7 @@ void CreateVisual(TiXmlElement *_elem, urdf::LinkConstSharedPtr _link,
   }
   else
   {
-    sdfVisual->SetAttribute("name", _link->name + g_lumpPrefix + _oldLinkName);
+    sdfVisual->SetAttribute("name", _link->name + kLumpPrefix + _oldLinkName);
   }
 
   // add the visualisation transfrom
@@ -3446,12 +3443,12 @@ void ReduceSDFExtensionContactSensorFrameReplace(
       if (collision)
       {
         if (GetKeyValueAsString(collision->ToElement()) ==
-            linkName + g_collisionExt)
+            linkName + kCollisionExt)
         {
           contact->RemoveChild(collision);
           TiXmlElement* collisionNameKey = new TiXmlElement("collision");
           std::ostringstream collisionNameStream;
-          collisionNameStream << parentLinkName << g_collisionExt
+          collisionNameStream << parentLinkName << kCollisionExt
                               << "_" << linkName;
           TiXmlText* collisionNameTxt = new TiXmlText(
               collisionNameStream.str());

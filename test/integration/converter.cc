@@ -27,11 +27,6 @@
 /// \brief Use different sdf versions for ParserStringConverter Test.
 void ParserStringConverter(const std::string &_version);
 
-const std::string CONVERT_DOC_15_16 =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.6", "1_5.convert");
-const std::string CONVERT_DOC_16_17 =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.7", "1_6.convert");
-
 /////////////////////////////////////////////////
 /// Test conversion using the parser sdf file converter interface.
 TEST(ConverterIntegration, ParserFileConverter)

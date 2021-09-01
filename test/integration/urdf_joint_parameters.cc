@@ -23,16 +23,15 @@
 
 #include "test_config.h"
 
-const std::string SDF_TEST_FILE =
-  sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                          "urdf_joint_parameters.urdf");
-
 /////////////////////////////////////////////////
 TEST(SDFParser, JointAxisParameters)
 {
+  const std::string sdfTestFile = sdf::filesystem::append(
+      PROJECT_SOURCE_PATH, "test", "integration", "urdf_joint_parameters.urdf");
+
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
+  ASSERT_TRUE(sdf::readFile(sdfTestFile, robot));
 
   sdf::ElementPtr model = robot->Root()->GetElement("model");
 

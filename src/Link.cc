@@ -490,5 +490,5 @@ bool Link::EnableWind() const
 /////////////////////////////////////////////////
 void Link::SetEnableWind(const bool _enableWind)
 {
-  this->dataPtr->enableWind =_enableWind;
+  this->dataPtr->enableWind = _enableWind;
 }
