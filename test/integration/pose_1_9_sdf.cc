@@ -133,8 +133,7 @@ TEST(Pose1_9, PoseSet7ValuesFail)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_FALSE(poseValueParam->SetFromString(
       "1 2 3   0.7071068 0.7071068 0 0"));
-  EXPECT_PRED2(contains, buffer.str(),
-      "must have 6 values, but 7 were found instead.");
+  EXPECT_PRED2(contains, buffer.str(), "can only accept 6 values");
 }
 
 //////////////////////////////////////////////////

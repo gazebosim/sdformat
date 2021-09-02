@@ -450,7 +450,8 @@ bool ParsePoseUsingStringStream(const std::string &_input,
 {
   StringStreamClassicLocale ss(_input);
   std::string token;
-  std::vector<double> values;
+  std::array<double, 6> values;
+  std::size_t valueIndex = 0;
   double v;
   bool isValidPose = true;
   while (ss >> token)
@@ -483,7 +484,14 @@ bool ParsePoseUsingStringStream(const std::string &_input,
       break;
     }
 
-    values.push_back(v);
+    if (valueIndex >= 6u)
+    {
+      sdferr << "Pose values can only accept 6 values.\n";
+      isValidPose = false;
+      break;
+    }
+
+    values[valueIndex++] = v;
   }
 
   if (!isValidPose)
