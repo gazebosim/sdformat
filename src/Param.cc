@@ -511,13 +511,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
   {
     if (p->GetKey() == "degrees")
     {
-      std::string degreesAttribValue = p->GetAsString();
-
-      if (degreesAttribValue == "true" || degreesAttribValue  == "1")
-        parseAsDegrees = true;
-      else if (degreesAttribValue == "false" || degreesAttribValue == "0")
-        parseAsDegrees = false;
-      else
+      if (!p->Get<bool>(parseAsDegrees))
       {
         sdferr << "Invalid boolean value found for attribute "
             "//pose[@degrees].\n";
