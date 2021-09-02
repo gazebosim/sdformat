@@ -3016,10 +3016,6 @@ void CreateJoint(TiXmlElement *_root,
                       Values2str(1, &_link->parent_joint->limits->lower));
           AddKeyValue(jointAxisLimit, "upper",
                       Values2str(1, &_link->parent_joint->limits->upper));
-          AddKeyValue(jointAxisLimit, "effort",
-                      Values2str(1, &_link->parent_joint->limits->effort));
-          AddKeyValue(jointAxisLimit, "velocity",
-                      Values2str(1, &_link->parent_joint->limits->velocity));
         }
         else if (_link->parent_joint->type != urdf::Joint::CONTINUOUS)
         {
@@ -3041,11 +3037,11 @@ void CreateJoint(TiXmlElement *_root,
                       Values2str(1, &_link->parent_joint->limits->lower));
           AddKeyValue(jointAxisLimit, "upper",
                       Values2str(1, &_link->parent_joint->limits->upper));
-          AddKeyValue(jointAxisLimit, "effort",
-                      Values2str(1, &_link->parent_joint->limits->effort));
-          AddKeyValue(jointAxisLimit, "velocity",
-                      Values2str(1, &_link->parent_joint->limits->velocity));
         }
+        AddKeyValue(jointAxisLimit, "effort",
+                    Values2str(1, &_link->parent_joint->limits->effort));
+        AddKeyValue(jointAxisLimit, "velocity",
+                    Values2str(1, &_link->parent_joint->limits->velocity));
       }
     }
 
