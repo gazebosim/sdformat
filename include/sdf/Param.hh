@@ -209,9 +209,17 @@ namespace sdf
     /// \brief Reset the parameter to the default value.
     public: void Reset();
 
-    /// \brief Reparse the parameter value, this is usually called after the
-    /// parent element's attributes have been modified.
+    /// \brief Reparse the parameter value. This should be called after the
+    /// parent element's attributes have been modified, in the event that the
+    /// value was set using SetFromString or posesses a default value, and that
+    /// the final parsed value is dependent on the attributes of the parent
+    /// element. For example, the rotation component of a pose element can
+    /// be parsed as degrees or radians, depending on the attribute @degrees
+    /// of the parent element. If however the value was explicitly set using the
+    /// Set<T> function, reparsing would not change the value.
     /// \return True if the parameter value has been reparsed successfully.
+    /// \sa bool SetFromString(const std::string &_value)
+    /// \sa bool Set(const T &_value)
     public: bool Reparse();
 
     /// \brief Get the key value.
