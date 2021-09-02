@@ -57,7 +57,6 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 
 /////////////////////////////////////////////////
-// cppcheck-suppress unusedFunction
 std::ostream &operator<<(std::ostream &_out, const sdf::Error &_err)
 {
   _out << "Error Code "

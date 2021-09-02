@@ -73,9 +73,13 @@ namespace sdf
     private: void ParseSDFExtension(TiXmlDocument &_urdfXml);
 
     /// list extensions for debugging
+    // cppcheck-suppress unusedPrivateFunction
+    // cppcheck-suppress unmatchedSuppression
     private: void ListSDFExtensions();
 
     /// list extensions for debugging
+    // cppcheck-suppress unusedPrivateFunction
+    // cppcheck-suppress unmatchedSuppression
     private: void ListSDFExtensions(const std::string &_reference);
   };
   }

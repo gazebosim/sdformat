@@ -282,6 +282,7 @@ namespace sdf
   template<typename T>
   std::string ParamPrivate::TypeToString() const
   {
+    // cppcheck-suppress syntaxError
     if constexpr (std::is_same_v<T, bool>)
       return "bool";
     else if constexpr (std::is_same_v<T, char>)

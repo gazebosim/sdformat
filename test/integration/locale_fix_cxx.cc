@@ -25,7 +25,6 @@ TEST(CheckFixForLocal, CheckFixForCxxLocal)
 {
   struct CommaDecimalPointFacet : std::numpunct<char>
   {
-    // cppcheck-suppress unusedFunction
     char do_decimal_point() const
     {
       return ',';
