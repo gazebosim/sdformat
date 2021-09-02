@@ -204,7 +204,7 @@ namespace sdf
     /// \brief Set the parent Element of this Param.
     /// \param[in] _parentElement Pointer to new parent Element. A nullptr can
     /// provided to remove the current parent Element.
-    public: void SetParentElement(const ElementPtr _parentElement);
+    public: void SetParentElement(ElementPtr _parentElement);
 
     /// \brief Reset the parameter to the default value.
     public: void Reset();

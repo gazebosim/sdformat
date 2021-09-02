@@ -755,7 +755,7 @@ ElementPtr Param::GetParentElement() const
 }
 
 //////////////////////////////////////////////////
-void Param::SetParentElement(const ElementPtr _parentElement)
+void Param::SetParentElement(ElementPtr _parentElement)
 {
   this->dataPtr->parentElement = _parentElement;
   this->Reparse();
