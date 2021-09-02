@@ -498,10 +498,10 @@ bool ParsePoseUsingStringStream(const std::string &_input,
   if (!isValidPose)
     return false;
 
-  if (values.size() != 6u)
+  if (valueIndex != 6u)
   {
     sdferr << "The value for //pose must have 6 values, but "
-        << values.size() << " were found instead.\n";
+        << valueIndex << " were found instead.\n";
     return false;
   }
 
