@@ -127,6 +127,13 @@ macro (check_gcc_visibility)
 endmacro()
 
 ########################################
+# Find ignition cmake2
+# Only for using the testing macros and creating the codecheck target, not 
+# really being use to configure the whole project
+find_package(ignition-cmake2 REQUIRED)
+set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
+
+########################################
 # Find ignition math
 # Set a variable for generating ProjectConfig.cmake
 find_package(ignition-math6 QUIET)
