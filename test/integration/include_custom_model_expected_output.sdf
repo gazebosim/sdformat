@@ -24,9 +24,9 @@
               </box>
             </geometry>
             <material>
-              <ambient>0.5 0.5 1 1</ambient>
-              <diffuse>0.5 0.5 1 1</diffuse>
-              <specular>0 0 1 1</specular>
+              <ambient>0.5 0.5 1.0 1</ambient>
+              <diffuse>0.5 0.5 1.0 1</diffuse>
+              <specular>0.0 0.0 1.0 1</specular>
             </material>
           </visual>
           <collision name='collision'>
@@ -72,12 +72,12 @@
                 <resolution>0.01</resolution>
               </range>
             </lidar>
-            <visualize>1</visualize>
+            <visualize>true</visualize>
             <alwaysOn>1</alwaysOn>
           </sensor> -->
 
           <sensor name='camera' type='camera'>
-            <pose>-1.06 0 0 0 -0 3.14</pose>
+            <pose>-1.06 0 0 0 0 3.14</pose>
             <camera>
               <horizontal_fov>1.047</horizontal_fov>
               <image>
@@ -92,7 +92,7 @@
 
             <!-- removed -->
             <!-- <always_on>1</always_on>
-            <visualize>1</visualize> -->
+            <visualize>true</visualize> -->
 
             <update_rate>30</update_rate>
             <topic>chassis/camera</topic>
@@ -100,7 +100,7 @@
 
           <!-- added -->
           <visual name='camera_visual'>
-            <pose>-1.06 0 0 0 -0 3.14</pose>
+            <pose>-1.06 0 0 0 0 3.14</pose>
             <geometry>
               <box>
                 <size>0.1 0.1 0.1</size>
@@ -110,7 +110,7 @@
         </link>
 
         <link name='top'>
-          <pose>0.6 0 0.7 0 -0 0</pose>
+          <pose>0.6 0 0.7 0 0 0</pose>
 
           <collision name='top_collision'>
             <geometry>
@@ -170,7 +170,7 @@
           </collision> -->
 
           <visual name='camera_visual'>
-            <pose>-0.2 0 0.3 0 -0 3.14</pose>
+            <pose>-0.2 0 0.3 0 0 3.14</pose>
 
             <geometry>
               <sphere>
@@ -205,13 +205,13 @@
           </visual>
 
           <sensor name='cam' type='camera' custom:test='hello'>
-            <pose relative_to='__model__'>0.1 0.2 0.3 0 -0 0</pose>
+            <pose relative_to='__model__'>0.1 0.2 0.3 0 0 0</pose>
             <camera name='top_camera'>
           <!-- modified with above -->
           <!-- <sensor name='camera' type='camera'>
             <pose>-0.2 0 0.3 0 -0 0</pose>
             <camera> -->
-              <horizontal_fov>1.047</horizontal_fov>
+              <horizontal_fov>1.0469999999999999</horizontal_fov>
               <image>
                 <width>1280</width>
                 <!-- modified with above -->
@@ -232,7 +232,7 @@
             <update_rate>20</update_rate>
             <!-- modified with above -->
             <!-- <update_rate>30</update_rate> -->
-            <visualize>1</visualize>
+            <visualize>true</visualize>
             <topic>top/cam</topic>
             <!-- modified with above -->
             <!-- <topic>top/camera</topic> -->
@@ -332,7 +332,7 @@
 
         </link>
         <link name='caster'>
-          <pose relative_to='right_wheel'>0 0 0 0 0 0</pose>
+          <pose relative_to='right_wheel'>0 0 0 0 -0 0</pose>
           <!-- modified with above -->
           <!-- <pose relative_to='__model__'>-0.957138 -0 -0.125 0 -0 0</pose> -->
           <inertial>
@@ -408,7 +408,7 @@
         </joint>
 
         <model name='nested_models'>
-          <pose relative_to='caster'>1 1 1 0 -0 0</pose>
+          <pose relative_to='caster'>1 1 1 0 0 0</pose>
           <!-- modified with above -->
           <!-- <pose relative_to='__model__'>0 0 0 0 -0 0</pose> -->
           <model name='model1'>
@@ -429,7 +429,7 @@
 
         <!-- added -->
         <link name='new_link'>
-          <pose>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 0 0</pose>
           <sensor name='camera_sensor' type='camera'>
             <camera>
               <horizontal_fov>1.047</horizontal_fov>
@@ -444,7 +444,7 @@
             </camera>
             <always_on>1</always_on>
             <update_rate>30</update_rate>
-            <visualize>1</visualize>
+            <visualize>true</visualize>
           </sensor>
         </link>
 

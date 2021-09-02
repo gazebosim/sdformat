@@ -53,6 +53,10 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
+  class SDFORMAT_VISIBLE Element;
+  using ElementPtr = std::shared_ptr<Element>;
+  using ElementWeakPtr = std::weak_ptr<Element>;
+
   class SDFORMAT_VISIBLE Param;
 
   /// \def ParamPtr
@@ -182,10 +186,41 @@ namespace sdf
 
     /// \brief Set the parameter value from a string.
     /// \param[in] _value New value for the parameter in string form.
+    /// \param[in] _ignoreParentAttributes Whether to ignore parent element
+    /// attributes when parsing value from string as well as subsequent
+    /// reparses.
+    public: bool SetFromString(const std::string &_value,
+                               bool _ignoreParentAttributes);
+
+    /// \brief Set the parameter value from a string.
+    /// \param[in] _value New value for the parameter in string form.
     public: bool SetFromString(const std::string &_value);
+
+    /// \brief Get the parent Element of this Param.
+    /// \return Pointer to this Param's parent Element, nullptr if there is no
+    /// parent Element.
+    public: ElementPtr GetParentElement() const;
+
+    /// \brief Set the parent Element of this Param.
+    /// \param[in] _parentElement Pointer to new parent Element. A nullptr can
+    /// provided to remove the current parent Element.
+    public: void SetParentElement(ElementPtr _parentElement);
 
     /// \brief Reset the parameter to the default value.
     public: void Reset();
+
+    /// \brief Reparse the parameter value. This should be called after the
+    /// parent element's attributes have been modified, in the event that the
+    /// value was set using SetFromString or posesses a default value, and that
+    /// the final parsed value is dependent on the attributes of the parent
+    /// element. For example, the rotation component of a pose element can
+    /// be parsed as degrees or radians, depending on the attribute @degrees
+    /// of the parent element. If however the value was explicitly set using the
+    /// Set<T> function, reparsing would not change the value.
+    /// \return True if the parameter value has been reparsed successfully.
+    /// \sa bool SetFromString(const std::string &_value)
+    /// \sa bool Set(const T &_value)
+    public: bool Reparse();
 
     /// \brief Get the key value.
     /// \return The key.
@@ -208,6 +243,12 @@ namespace sdf
     /// \brief Return true if the parameter has been set.
     /// \return True if the parameter has been set.
     public: bool GetSet() const;
+
+    /// \brief Return true if the parameter ignores the parent element's
+    /// attributes, or if the parameter has no parent element.
+    /// \return True if the parameter ignores the parent element's attributes,
+    /// or if the parameter has no parent element.
+    public: bool IgnoresParentElementAttribute() const;
 
     /// \brief Clone the parameter.
     /// \return A new parameter that is the clone of this.
@@ -301,6 +342,9 @@ namespace sdf
     /// \brief Description of the parameter.
     public: std::string description;
 
+    /// \brief Parent element.
+    public: ElementWeakPtr parentElement;
+
     /// \brief Update function pointer.
     public: std::function<std::any ()> updateFunc;
 
@@ -318,6 +362,14 @@ namespace sdf
 
     /// \brief This parameter's value
     public: ParamVariant value;
+
+    /// \brief True if the value has been parsed while ignoring its parent
+    /// element's attributes, and will continue to ignore them for subsequent
+    /// reparses.
+    public: bool ignoreParentAttributes;
+
+    /// \brief This parameter's value that was provided as a string
+    public: std::optional<std::string> strValue;
 
     /// \brief This parameter's default value
     public: ParamVariant defaultValue;
@@ -399,7 +451,7 @@ namespace sdf
     {
       std::stringstream ss;
       ss << _value;
-      return this->SetFromString(ss.str());
+      return this->SetFromString(ss.str(), true);
     }
     catch(...)
     {
