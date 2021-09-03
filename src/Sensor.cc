@@ -24,6 +24,7 @@
 #include "sdf/Camera.hh"
 #include "sdf/Error.hh"
 #include "sdf/ForceTorque.hh"
+#include "sdf/NavSat.hh"
 #include "sdf/Imu.hh"
 #include "sdf/Magnetometer.hh"
 #include "sdf/Lidar.hh"
@@ -59,7 +60,8 @@ const std::vector<std::string> sensorTypeStrs =
   "wireless_transmitter",
   "air_pressure",
   "rgbd_camera",
-  "thermal_camera"
+  "thermal_camera",
+  "navsat"
 };
 
 class sdf::Sensor::Implementation
@@ -82,6 +84,9 @@ class sdf::Sensor::Implementation
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
+  /// \brief Performance metrics flag.
+  public: bool enableMetrics{false};
+
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
 
@@ -93,6 +98,9 @@ class sdf::Sensor::Implementation
 
   /// \brief Optional altimeter.
   public: std::optional<Altimeter> altimeter;
+
+  /// \brief Optional NAVSAT sensor.
+  public: std::optional<NavSat> navSat;
 
   /// \brief Optional air pressure sensor.
   public: std::optional<AirPressure> airPressure;
@@ -133,6 +141,7 @@ bool Sensor::operator==(const Sensor &_sensor) const
       this->Topic() != _sensor.Topic() ||
       this->RawPose() != _sensor.RawPose() ||
       this->PoseRelativeTo() != _sensor.PoseRelativeTo() ||
+      this->EnableMetrics() != _sensor.EnableMetrics() ||
       !ignition::math::equal(this->UpdateRate(), _sensor.UpdateRate()))
   {
     return false;
@@ -151,6 +160,8 @@ bool Sensor::operator==(const Sensor &_sensor) const
       return *(this->dataPtr->forceTorque) == *(_sensor.dataPtr->forceTorque);
     case SensorType::IMU:
       return *(this->dataPtr->imu) == *(_sensor.dataPtr->imu);
+    case SensorType::NAVSAT:
+      return *(this->dataPtr->navSat) == *(_sensor.dataPtr->navSat);
     case SensorType::CAMERA:
     case SensorType::DEPTH_CAMERA:
     case SensorType::RGBD_CAMERA:
@@ -218,6 +229,8 @@ Errors Sensor::Load(ElementPtr _sdf)
   if (this->dataPtr->topic == "__default__")
     this->dataPtr->topic = "";
 
+  this->dataPtr->enableMetrics = _sdf->Get<bool>("enable_metrics",
+      this->dataPtr->enableMetrics).first;
   std::string type = _sdf->Get<std::string>("type");
   if (type == "air_pressure")
   {
@@ -274,9 +287,13 @@ Errors Sensor::Load(ElementPtr _sdf)
         _sdf->GetElement("force_torque"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
-  else if (type == "gps")
+  else if (type == "navsat" || type == "gps")
   {
-    this->dataPtr->type = SensorType::GPS;
+    this->dataPtr->type = SensorType::NAVSAT;
+    this->dataPtr->navSat.emplace();
+    Errors err = this->dataPtr->navSat->Load(
+      _sdf->GetElement(_sdf->HasElement("navsat") ? "navsat" : "gps"));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "gpu_ray" || type == "gpu_lidar")
   {
@@ -413,6 +430,18 @@ void Sensor::SetPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
+bool Sensor::EnableMetrics() const
+{
+  return this->dataPtr->enableMetrics;
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetEnableMetrics(bool _enableMetrics)
+{
+  this->dataPtr->enableMetrics = _enableMetrics;
+}
+
+/////////////////////////////////////////////////
 sdf::SemanticPose Sensor::SemanticPose() const
 {
   return sdf::SemanticPose(
@@ -545,6 +574,18 @@ void Sensor::SetForceTorqueSensor(const ForceTorque &_ft)
 const ForceTorque *Sensor::ForceTorqueSensor() const
 {
   return optionalToPointer(this->dataPtr->forceTorque);
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetNavSatSensor(const NavSat &_gps)
+{
+  this->dataPtr->navSat = _gps;
+}
+
+/////////////////////////////////////////////////
+const NavSat *Sensor::NavSatSensor() const
+{
+  return optionalToPointer(this->dataPtr->navSat);
 }
 
 /////////////////////////////////////////////////
