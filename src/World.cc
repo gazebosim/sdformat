@@ -39,6 +39,11 @@ using namespace sdf;
 
 class sdf::World::Implementation
 {
+  /// \brief Populate sphericalCoordinates
+  /// \param[in] _elem `<spherical_coordinates>` element
+  /// \return Errors, if any.
+  public: Errors LoadSphericalCoordinates(sdf::ElementPtr _elem);
+
   /// \brief Optional atmosphere model.
   public: std::optional<sdf::Atmosphere> atmosphere;
 
@@ -67,6 +72,12 @@ class sdf::World::Implementation
   /// \brief Magnetic field.
   public: ignition::math::Vector3d magneticField =
            ignition::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6);
+
+  /// \brief Spherical coordinates
+  public: ignition::math::SphericalCoordinates sphericalCoordinates =
+      ignition::math::SphericalCoordinates(
+      ignition::math::SphericalCoordinates::SurfaceType::EARTH_WGS84,
+      0.0, 0.0, 0.0, 0.0);
 
   /// \brief The models specified in this world.
   public: std::vector<Model> models;
@@ -178,6 +189,15 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   this->dataPtr->magneticField =
     _sdf->Get<ignition::math::Vector3d>("magnetic_field",
         this->dataPtr->magneticField).first;
+
+  // Read the spherical coordinates
+  if (_sdf->HasElement("spherical_coordinates"))
+  {
+    Errors sphericalCoordsErrors = this->dataPtr->LoadSphericalCoordinates(
+        _sdf->GetElement("spherical_coordinates"));
+    errors.insert(errors.end(), sphericalCoordsErrors.begin(),
+        sphericalCoordsErrors.end());
+  }
 
   if (!_sdf->HasUniqueChildNames())
   {
@@ -403,6 +423,19 @@ const sdf::Atmosphere *World::Atmosphere() const
 void World::SetAtmosphere(const sdf::Atmosphere &_atmosphere)
 {
   this->dataPtr->atmosphere = _atmosphere;
+}
+
+/////////////////////////////////////////////////
+const ignition::math::SphericalCoordinates &World::SphericalCoordinates() const
+{
+  return this->dataPtr->sphericalCoordinates;
+}
+
+/////////////////////////////////////////////////
+void World::SetSphericalCoordinates(const ignition::math::SphericalCoordinates
+    &_sphericalCoordinates)
+{
+  this->dataPtr->sphericalCoordinates = _sphericalCoordinates;
 }
 
 /////////////////////////////////////////////////
@@ -646,4 +679,104 @@ void World::SetFrameAttachedToGraph(
   {
     model.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
   }
+}
+
+/////////////////////////////////////////////////
+Errors World::Implementation::LoadSphericalCoordinates(
+    sdf::ElementPtr _elem)
+{
+  Errors errors;
+
+  if (_elem->GetName() != "spherical_coordinates")
+  {
+    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
+        "Attempting to load <spherical_coordinates>, but the provided SDF "
+        "element is a <" + _elem->GetName() + ">."});
+    return errors;
+  }
+
+  // Get elements
+  auto surfaceModel =
+      ignition::math::SphericalCoordinates::SurfaceType::EARTH_WGS84;
+  if (!_elem->HasElement("surface_model"))
+  {
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Missing required element <surface_model>"});
+  }
+  else
+  {
+    auto surfaceModelStr = _elem->Get<std::string>("surface_model");
+    if (surfaceModelStr != "EARTH_WGS84")
+    {
+      errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "The supplied <surface_model> [" + surfaceModelStr +
+          "] is not supported."});
+    }
+    surfaceModel = ignition::math::SphericalCoordinates::Convert(
+        surfaceModelStr);
+  }
+
+  std::string worldFrameOrientation{"ENU"};
+  if (_elem->HasElement("world_frame_orientation"))
+  {
+    worldFrameOrientation = _elem->Get<std::string>(
+        "world_frame_orientation");
+    if (worldFrameOrientation != "ENU")
+    {
+      errors.push_back({ErrorCode::ELEMENT_INVALID,
+          "The supplied <world_frame_orientation> [" + worldFrameOrientation +
+          "] is not supported."});
+    }
+  }
+
+  ignition::math::Angle latitude{0.0};
+  if (!_elem->HasElement("latitude_deg"))
+  {
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Missing required element <latitude_deg>"});
+  }
+  else
+  {
+    latitude.SetDegree(_elem->Get<double>("latitude_deg"));
+  }
+
+  ignition::math::Angle longitude{0.0};
+  if (!_elem->HasElement("longitude_deg"))
+  {
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Missing required element <longitude_deg>"});
+  }
+  else
+  {
+    longitude.SetDegree(_elem->Get<double>("longitude_deg"));
+  }
+
+  double elevation{0.0};
+  if (!_elem->HasElement("elevation"))
+  {
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Missing required element <elevation>"});
+  }
+  else
+  {
+    elevation = _elem->Get<double>("elevation");
+  }
+
+  ignition::math::Angle heading{0.0};
+  if (!_elem->HasElement("heading_deg"))
+  {
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Missing required element <heading_deg>"});
+  }
+  else
+  {
+    heading.SetDegree(_elem->Get<double>("heading_deg"));
+  }
+
+  // Create coordinates
+  this->sphericalCoordinates =
+      ignition::math::SphericalCoordinates(surfaceModel, latitude, longitude,
+      elevation, heading);
+
+  return errors;
 }

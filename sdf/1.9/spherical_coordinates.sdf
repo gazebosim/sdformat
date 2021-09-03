@@ -12,15 +12,9 @@
     <description>
       This field identifies how Gazebo world frame is aligned in Geographical
       sense.  The final Gazebo world frame orientation is obtained by rotating
-      a frame aligned with following notation by the field heading_deg (Note
-      that heading_deg corresponds to positive yaw rotation in the NED frame,
-      so it's inverse specifies positive Z-rotation in ENU or NWU).
+      a frame aligned with following notation by the field heading_deg.
       Options are:
         - ENU (East-North-Up)
-        - NED (North-East-Down)
-        - NWU (North-West-Up)
-      For example, world frame specified by setting world_orientation="ENU"
-      and heading_deg=-90° is effectively equivalent to NWU with heading of 0°.
     </description>
   </element>
   <element name="latitude_deg" type="double" default="0.0" required="1">
@@ -46,12 +40,10 @@
   <element name="heading_deg" type="double" default="0.0" required="1">
     <description>
       Heading offset of gazebo reference frame, measured as angle between
-      Gazebo world frame and the world_frame_orientation type (ENU/NED/NWU).
-      Rotations about the downward-vector (e.g. North to East) are positive.
-      The direction of rotation is chosen to be consistent with compass
-      heading convention (e.g. 0 degrees points North and 90 degrees
-      points East, positive rotation indicates counterclockwise rotation
-      when viewed from top-down direction).
+      Gazebo world frame and the world_frame_orientation type.
+      The direction of rotation follows the right-hand rule, so a positive
+      angle indicates clockwise rotation when viewed from top-down. Note
+      that this is not consistent with compass heading convention.
       The angle is specified in degrees.
     </description>
   </element>

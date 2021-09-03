@@ -107,6 +107,14 @@ TEST(DOMWorld, Load)
   EXPECT_DOUBLE_EQ(4.3, atmosphere->TemperatureGradient());
   EXPECT_DOUBLE_EQ(43.1, atmosphere->Pressure());
 
+  const auto &sphericalCoords = world->SphericalCoordinates();
+  EXPECT_EQ(ignition::math::SphericalCoordinates::EARTH_WGS84,
+      sphericalCoords.Surface());
+  EXPECT_DOUBLE_EQ(-22.9, sphericalCoords.LatitudeReference().Degree());
+  EXPECT_DOUBLE_EQ(-43.2, sphericalCoords.LongitudeReference().Degree());
+  EXPECT_DOUBLE_EQ(100, sphericalCoords.ElevationReference());
+  EXPECT_DOUBLE_EQ(90, sphericalCoords.HeadingOffset().Degree());
+
   const sdf::Gui *gui = world->Gui();
   ASSERT_NE(nullptr, gui);
   ASSERT_NE(nullptr, gui->Element());

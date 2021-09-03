@@ -81,6 +81,7 @@ TEST(DOMWorld, CopyConstructor)
   world.SetAtmosphere(atmosphere);
   world.SetAudioDevice("test_audio_device");
   world.SetGravity({1, 0, 0});
+  world.SetSphericalCoordinates(ignition::math::SphericalCoordinates());
 
   sdf::Gui gui;
   gui.SetFullscreen(true);
@@ -99,6 +100,8 @@ TEST(DOMWorld, CopyConstructor)
 
   ASSERT_TRUE(nullptr != world.Atmosphere());
   EXPECT_DOUBLE_EQ(0.1, world.Atmosphere()->Pressure());
+  EXPECT_EQ(ignition::math::SphericalCoordinates::EARTH_WGS84,
+      world.SphericalCoordinates().Surface());
   EXPECT_EQ("test_audio_device", world.AudioDevice());
   EXPECT_EQ(ignition::math::Vector3d::UnitX, world.Gravity());
 
