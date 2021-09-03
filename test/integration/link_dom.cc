@@ -447,7 +447,6 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(5.0,
       imuSensorObj->AngularVelocityYNoise().DynamicBiasCorrelationTime());
 
-
   EXPECT_DOUBLE_EQ(5.0, imuSensorObj->AngularVelocityZNoise().Mean());
   EXPECT_DOUBLE_EQ(5.1, imuSensorObj->AngularVelocityZNoise().StdDev());
   EXPECT_DOUBLE_EQ(6.2,
@@ -455,12 +454,13 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(6.0,
       imuSensorObj->AngularVelocityZNoise().DynamicBiasCorrelationTime());
 
-
   EXPECT_EQ("ENU", imuSensorObj->Localization());
   EXPECT_EQ("linka", imuSensorObj->CustomRpyParentFrame());
   EXPECT_EQ(ignition::math::Vector3d::UnitY, imuSensorObj->CustomRpy());
   EXPECT_EQ("linkb", imuSensorObj->GravityDirXParentFrame());
   EXPECT_EQ(ignition::math::Vector3d::UnitZ, imuSensorObj->GravityDirX());
+
+  EXPECT_FALSE(imuSensorObj->OrientationEnabled());
 
   // Get the logical camera sensor
   const sdf::Sensor *logicalCameraSensor =
