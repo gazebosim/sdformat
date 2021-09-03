@@ -74,10 +74,8 @@ class sdf::World::Implementation
            ignition::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6);
 
   /// \brief Spherical coordinates
-  public: ignition::math::SphericalCoordinates sphericalCoordinates =
-      ignition::math::SphericalCoordinates(
-      ignition::math::SphericalCoordinates::SurfaceType::EARTH_WGS84,
-      0.0, 0.0, 0.0, 0.0);
+  public: std::optional<ignition::math::SphericalCoordinates>
+      sphericalCoordinates;
 
   /// \brief The models specified in this world.
   public: std::vector<Model> models;
@@ -426,9 +424,10 @@ void World::SetAtmosphere(const sdf::Atmosphere &_atmosphere)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::SphericalCoordinates &World::SphericalCoordinates() const
+const ignition::math::SphericalCoordinates *
+    World::SphericalCoordinates() const
 {
-  return this->dataPtr->sphericalCoordinates;
+  return optionalToPointer(this->dataPtr->sphericalCoordinates);
 }
 
 /////////////////////////////////////////////////
@@ -774,6 +773,7 @@ Errors World::Implementation::LoadSphericalCoordinates(
   }
 
   // Create coordinates
+  this->sphericalCoordinates.emplace();
   this->sphericalCoordinates =
       ignition::math::SphericalCoordinates(surfaceModel, latitude, longitude,
       elevation, heading);

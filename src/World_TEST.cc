@@ -100,8 +100,9 @@ TEST(DOMWorld, CopyConstructor)
 
   ASSERT_TRUE(nullptr != world.Atmosphere());
   EXPECT_DOUBLE_EQ(0.1, world.Atmosphere()->Pressure());
+  ASSERT_TRUE(nullptr != world.SphericalCoordinates());
   EXPECT_EQ(ignition::math::SphericalCoordinates::EARTH_WGS84,
-      world.SphericalCoordinates().Surface());
+      world.SphericalCoordinates()->Surface());
   EXPECT_EQ("test_audio_device", world.AudioDevice());
   EXPECT_EQ(ignition::math::Vector3d::UnitX, world.Gravity());
 

@@ -17,6 +17,7 @@
 #ifndef SDF_WORLD_HH_
 #define SDF_WORLD_HH_
 
+#include <optional>
 #include <string>
 #include <ignition/math/SphericalCoordinates.hh>
 #include <ignition/math/Vector3.hh>
@@ -138,9 +139,9 @@ namespace sdf
     public: void SetMagneticField(const ignition::math::Vector3d &_mag);
 
     /// \brief Get the spherical coordinates for the world origin.
-    /// \return Spherical coordinates.
-    public: const ignition::math::SphericalCoordinates &SphericalCoordinates()
-        const;
+    /// \return Spherical coordinates or null if not defined.
+    public: const ignition::math::SphericalCoordinates *
+        SphericalCoordinates() const;
 
     /// \brief Set the spherical coordinates for the world origin.
     /// \param[in] _coord The new coordinates for the world origin.
