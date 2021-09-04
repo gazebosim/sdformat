@@ -126,6 +126,7 @@ namespace sdf
     /// \param[in] _line Line number where the error occurred
     /// \param[in] _msg Error message
     public: InternalError(const char *_file, std::int64_t _line,
+                          // cppcheck-suppress passedByValue
                           const std::string _msg);
 
     /// \brief Destructor
@@ -148,8 +149,11 @@ namespace sdf
     /// \param[in] _msg Function where assertion failed
     public: AssertionInternalError(const char *_file,
                                    std::int64_t _line,
+                                   // cppcheck-suppress passedByValue
                                    const std::string _expr,
+                                   // cppcheck-suppress passedByValue
                                    const std::string _function,
+                                   // cppcheck-suppress passedByValue
                                    const std::string _msg = "");
     /// \brief Destructor
     public: virtual ~AssertionInternalError();

@@ -815,48 +815,15 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 }
 
 //////////////////////////////////////////////////
-bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
+/// Helper function that reads all the attributes of an element from TinyXML to
+/// sdf::Element.
+/// \param[in] _xml Pointer to XML element to read the attributes from.
+/// \param[in,out] _sdf sdf::Element pointer to parse the attribute data into.
+/// \param[out] _errors Captures errors found during parsing.
+/// \return True on success, false on error.
+static bool readAttributes(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
+                           Errors &_errors)
 {
-  // Check if the element pointer is deprecated.
-  if (_sdf->GetRequired() == "-1")
-  {
-    _errors.push_back({ErrorCode::ELEMENT_DEPRECATED,
-        "SDF Element[" + _sdf->GetName() + "] is deprecated"});
-    return true;
-  }
-
-  if (!_xml)
-  {
-    if (_sdf->GetRequired() == "1" || _sdf->GetRequired() =="+")
-    {
-      _errors.push_back({ErrorCode::ELEMENT_MISSING,
-          "SDF Element<" + _sdf->GetName() + "> is missing"});
-      return false;
-    }
-    else
-    {
-      return true;
-    }
-  }
-
-  if (_xml->GetText() != nullptr && _sdf->GetValue())
-  {
-    if (!_sdf->GetValue()->SetFromString(_xml->GetText()))
-      return false;
-  }
-
-  // check for nested sdf
-  std::string refSDFStr = _sdf->ReferenceSDF();
-  if (!refSDFStr.empty())
-  {
-    ElementPtr refSDF;
-    refSDF.reset(new Element);
-    std::string refFilename = refSDFStr + ".sdf";
-    initFile(refFilename, refSDF);
-    _sdf->RemoveFromParent();
-    _sdf->Copy(refSDF);
-  }
-
   const tinyxml2::XMLAttribute *attribute = _xml->FirstAttribute();
 
   unsigned int i = 0;
@@ -914,6 +881,115 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
     }
   }
 
+  return true;
+}
+
+//////////////////////////////////////////////////
+/// Helper function to resolve file name from an //include/uri element.
+/// \param[in] _uriElem Pointer to the //include/uri XML element.
+/// \param[out] _fileName Resolved file name.
+/// \param[out] _errors Captures errors found during parsing.
+/// \return True if the file name is successfully resolved, false on error.
+static bool resolveFileNameFromUri(tinyxml2::XMLElement *_uriElem,
+                                   std::string &_fileName, Errors &_errors)
+{
+  if (_uriElem)
+  {
+    const std::string uri = _uriElem->GetText();
+    const std::string modelPath = sdf::findFile(uri, true, true);
+
+    // Test the model path
+    if (modelPath.empty())
+    {
+      _errors.push_back(
+          {ErrorCode::URI_LOOKUP, "Unable to find uri[" + uri + "]"});
+
+      size_t modelFound = uri.find("model://");
+      if (modelFound != 0u)
+      {
+        _errors.push_back(
+            {ErrorCode::URI_INVALID,
+             "Invalid uri[" + uri + "]. Should be model://" + uri});
+      }
+      return false;
+    }
+    else
+    {
+      if (!sdf::filesystem::is_directory(modelPath))
+      {
+        _errors.push_back({ErrorCode::DIRECTORY_NONEXISTANT,
+                           "Directory doesn't exist[" + modelPath + "]"});
+        return false;
+      }
+    }
+
+    // Get the config.xml filename
+    _fileName = getModelFilePath(modelPath);
+
+    if (_fileName .empty())
+    {
+      _errors.push_back(
+          {ErrorCode::URI_LOOKUP,
+           "Unable to resolve uri[" + uri + "] to model path [" + modelPath +
+               "] since it does not contain a model.config " + "file."});
+      return false;
+    }
+  }
+  else
+  {
+    _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+                       "<include> element missing 'uri' attribute"});
+    return false;
+  }
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
+{
+  // Check if the element pointer is deprecated.
+  if (_sdf->GetRequired() == "-1")
+  {
+    _errors.push_back({ErrorCode::ELEMENT_DEPRECATED,
+        "SDF Element[" + _sdf->GetName() + "] is deprecated"});
+    return true;
+  }
+
+  if (!_xml)
+  {
+    if (_sdf->GetRequired() == "1" || _sdf->GetRequired() =="+")
+    {
+      _errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "SDF Element<" + _sdf->GetName() + "> is missing"});
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
+
+  if (_xml->GetText() != nullptr && _sdf->GetValue())
+  {
+    if (!_sdf->GetValue()->SetFromString(_xml->GetText()))
+      return false;
+  }
+
+  // check for nested sdf
+  std::string refSDFStr = _sdf->ReferenceSDF();
+  if (!refSDFStr.empty())
+  {
+    ElementPtr refSDF;
+    refSDF.reset(new Element);
+    std::string refFilename = refSDFStr + ".sdf";
+    initFile(refFilename, refSDF);
+    _sdf->RemoveFromParent();
+    _sdf->Copy(refSDF);
+  }
+
+  if (!readAttributes(_xml, _sdf, _errors))
+    return false;
+
   if (_sdf->GetCopyChildren())
   {
     copyChildren(_sdf, _xml, false);
@@ -929,55 +1005,9 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
     {
       if (std::string("include") == elemXml->Value())
       {
-        std::string modelPath;
-
-        if (elemXml->FirstChildElement("uri"))
-        {
-          std::string uri = elemXml->FirstChildElement("uri")->GetText();
-          modelPath = sdf::findFile(uri, true, true);
-
-          // Test the model path
-          if (modelPath.empty())
-          {
-            _errors.push_back({ErrorCode::URI_LOOKUP,
-                "Unable to find uri[" + uri + "]"});
-
-            size_t modelFound = uri.find("model://");
-            if (modelFound != 0u)
-            {
-              _errors.push_back({ErrorCode::URI_INVALID,
-                  "Invalid uri[" + uri + "]. Should be model://" + uri});
-            }
-            continue;
-          }
-          else
-          {
-            if (!sdf::filesystem::is_directory(modelPath))
-            {
-              _errors.push_back({ErrorCode::DIRECTORY_NONEXISTANT,
-                  "Directory doesn't exist[" + modelPath + "]"});
-              continue;
-            }
-          }
-
-          // Get the config.xml filename
-          filename = getModelFilePath(modelPath);
-
-          if (filename.empty())
-          {
-            _errors.push_back({ErrorCode::URI_LOOKUP,
-                "Unable to resolve uri[" + uri + "] to model path [" +
-                modelPath + "] since it does not contain a model.config " +
-                "file."});
-            continue;
-          }
-        }
-        else
-        {
-          _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
-              "<include> element missing 'uri' attribute"});
+        if (!resolveFileNameFromUri(elemXml->FirstChildElement("uri"), filename,
+                                    _errors))
           continue;
-        }
 
         // NOTE: sdf::init is an expensive call. For performance reason,
         // a new sdf pointer is created here by cloning a fresh sdf template
@@ -1100,10 +1130,10 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
         {
           includeSDF->Root()->GetFirstElement()->SetParent(_sdf);
           _sdf->InsertElement(includeSDF->Root()->GetFirstElement());
-          // TODO: This was used to store the included filename so that when
-          // a world is saved, the included model's SDF is not stored in the
-          // world file. This highlights the need to make model inclusion
-          // a core feature of SDF, and not a hack that that parser handles
+          // TODO(anyone): This was used to store the included filename so that
+          // when a world is saved, the included model's SDF is not stored in
+          // the world file. This highlights the need to make model inclusion a
+          // core feature of SDF, and not a hack that that parser handles
           // includeSDF->Root()->GetFirstElement()->SetInclude(
           // elemXml->Attribute("filename"));
         }

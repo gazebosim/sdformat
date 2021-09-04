@@ -15,6 +15,7 @@
  *
 */
 #include <string>
+#include <set>
 #include <utility>
 #include <vector>
 

@@ -271,6 +271,27 @@ else (build_errors)
   endif(BUILD_SDF)
 
   ########################################
+  # Setup Codecheck
+  include (IgnCodeCheck)
+  set(CPPCHECK_DIRS
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/test/integration
+    ${PROJECT_SOURCE_DIR}/test/performance)
+
+  set(CPPCHECK_INCLUDE_DIRS
+    ${PROJECT_BINARY_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/test/integration
+    ${PROJECT_SOURCE_DIR}/test/performance)
+
+  # Ignore vendored directories.
+  file(WRITE ${PROJECT_BINARY_DIR}/cppcheck.suppress
+    "*:${PROJECT_SOURCE_DIR}/src/urdf/*\n"
+    )
+  ign_setup_target_for_codecheck()
+
+  ########################################
   # Make the package config file
   configure_file(${CMAKE_SOURCE_DIR}/cmake/sdformat_pc.in
     ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME_LOWER}.pc @ONLY)

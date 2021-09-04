@@ -128,7 +128,7 @@ Errors Scene::Load(ElementPtr _sdf)
   }
 
   // Get the ambient property
-  this->dataPtr->ambient= _sdf->Get<ignition::math::Color>("ambient",
+  this->dataPtr->ambient = _sdf->Get<ignition::math::Color>("ambient",
       this->dataPtr->ambient).first;
 
   // Get the background color property
