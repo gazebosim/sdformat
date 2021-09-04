@@ -65,6 +65,13 @@ TEST(SDFParser, JointAxisParameters)
     ASSERT_TRUE(dynamics->HasElement("friction"));
     EXPECT_DOUBLE_EQ(value, dynamics->Get<double>("damping"));
     EXPECT_DOUBLE_EQ(value, dynamics->Get<double>("friction"));
+
+    EXPECT_TRUE(axis->HasElement("limit"));
+    sdf::ElementPtr limit = axis->GetElement("limit");
+    EXPECT_TRUE(limit->HasElement("effort"));
+    EXPECT_TRUE(limit->HasElement("velocity"));
+    EXPECT_DOUBLE_EQ(value, limit->Get<double>("effort"));
+    EXPECT_DOUBLE_EQ(value, limit->Get<double>("velocity"));
   }
   EXPECT_EQ(bitmask, 0x3u);
 
