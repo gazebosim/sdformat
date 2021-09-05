@@ -22,6 +22,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <array>
 
 #include <locale.h>
 #include <math.h>
@@ -29,6 +30,7 @@
 #include "sdf/Assert.hh"
 #include "sdf/Param.hh"
 #include "sdf/Types.hh"
+#include "sdf/Element.hh"
 
 using namespace sdf;
 
@@ -68,6 +70,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->dataPtr->typeName = _typeName;
   this->dataPtr->description = _description;
   this->dataPtr->set = false;
+  this->dataPtr->ignoreParentAttributes = false;
 
   SDF_ASSERT(this->ValueFromString(_default), "Invalid parameter");
   this->dataPtr->defaultValue = this->dataPtr->value;
@@ -102,6 +105,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->dataPtr->value = valCopy;
 }
 
+//////////////////////////////////////////////////
 Param::Param(const Param &_param)
     : dataPtr(std::make_unique<ParamPrivate>(*_param.dataPtr))
 {
@@ -298,7 +302,11 @@ std::string Param::GetAsString() const
 {
   StringStreamClassicLocale ss;
 
-  ss << ParamStreamer{ this->dataPtr->value };
+  if (this->dataPtr->strValue.has_value())
+    ss << this->dataPtr->strValue.value();
+  else
+    ss << ParamStreamer{ this->dataPtr->value };
+
   return ss.str();
 }
 
@@ -425,6 +433,106 @@ bool ParseColorUsingStringStream(const std::string &_input,
   }
 
   return isValidColor;
+}
+
+//////////////////////////////////////////////////
+/// \brief Helper function for Param::ValueFromString for parsing pose. This
+/// checks the pose components specified in _input are xyzrpy
+/// (expects 6 values) and whether to parse the rotation values as degrees using
+/// the parent element attributes.
+/// \param[in] _input Input string.
+/// \param[in] _key Key of the parameter, used for error message.
+/// \param[in] _attributes Attributes associated to this pose.
+/// \param[out] _value This will be set with the parsed value.
+/// \return True if parsing pose succeeded.
+bool ParsePoseUsingStringStream(const std::string &_input,
+    const std::string &_key, const Param_V &_attributes,
+    ParamPrivate::ParamVariant &_value)
+{
+  StringStreamClassicLocale ss(_input);
+  std::string token;
+  std::array<double, 6> values;
+  std::size_t valueIndex = 0;
+  double v;
+  bool isValidPose = true;
+  while (ss >> token)
+  {
+    try
+    {
+      v = std::stod(token);
+    }
+    // Catch invalid argument exception from std::stod
+    catch(std::invalid_argument &)
+    {
+      sdferr << "Invalid argument. Unable to set value ["<< _input
+             << "] for key [" << _key << "].\n";
+      isValidPose = false;
+      break;
+    }
+    // Catch out of range exception from std::stod
+    catch(std::out_of_range &)
+    {
+      sdferr << "Out of range. Unable to set value [" << token
+             << "] for key [" << _key << "].\n";
+      isValidPose = false;
+      break;
+    }
+
+    if (!std::isfinite(v))
+    {
+      sdferr << "Pose values must be finite.\n";
+      isValidPose = false;
+      break;
+    }
+
+    if (valueIndex >= 6u)
+    {
+      sdferr << "Pose values can only accept 6 values.\n";
+      isValidPose = false;
+      break;
+    }
+
+    values[valueIndex++] = v;
+  }
+
+  if (!isValidPose)
+    return false;
+
+  if (valueIndex != 6u)
+  {
+    sdferr << "The value for //pose must have 6 values, but "
+        << valueIndex << " were found instead.\n";
+    return false;
+  }
+
+  const bool defaultParseAsDegrees = false;
+  bool parseAsDegrees = defaultParseAsDegrees;
+
+  for (const auto &p : _attributes)
+  {
+    if (p->GetKey() == "degrees")
+    {
+      if (!p->Get<bool>(parseAsDegrees))
+      {
+        sdferr << "Invalid boolean value found for attribute "
+            "//pose[@degrees].\n";
+        return false;
+      }
+      break;
+    }
+  }
+
+  if (parseAsDegrees)
+  {
+    _value = ignition::math::Pose3d(values[0], values[1], values[2],
+        IGN_DTOR(values[3]), IGN_DTOR(values[4]), IGN_DTOR(values[5]));
+  }
+  else
+  {
+    _value = ignition::math::Pose3d(values[0], values[1], values[2],
+        values[3], values[4], values[5]);
+  }
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -558,8 +666,14 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
     {
       if (!tmp.empty())
       {
-        return ParseUsingStringStream<ignition::math::Pose3d>(
-            tmp, this->key, _valueToSet);
+        const ElementPtr p = this->parentElement.lock();
+        if (!this->ignoreParentAttributes && p)
+        {
+          return ParsePoseUsingStringStream(
+              tmp, this->key, p->GetAttributes(), _valueToSet);
+        }
+        return ParsePoseUsingStringStream(
+            tmp, this->key, {}, _valueToSet);
       }
     }
     else if (_typeName == "ignition::math::Quaterniond" ||
@@ -595,8 +709,11 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
 }
 
 //////////////////////////////////////////////////
-bool Param::SetFromString(const std::string &_value)
+bool Param::SetFromString(const std::string &_value,
+                          bool _ignoreParentAttributes)
 {
+  this->dataPtr->ignoreParentAttributes = _ignoreParentAttributes;
+  this->dataPtr->strValue = _value;
   std::string str = sdf::trim(_value.c_str());
 
   if (str.empty() && this->dataPtr->required)
@@ -629,10 +746,57 @@ bool Param::SetFromString(const std::string &_value)
 }
 
 //////////////////////////////////////////////////
+bool Param::SetFromString(const std::string &_value)
+{
+  return this->SetFromString(_value, false);
+}
+
+//////////////////////////////////////////////////
+ElementPtr Param::GetParentElement() const
+{
+  return this->dataPtr->parentElement.lock();
+}
+
+//////////////////////////////////////////////////
+void Param::SetParentElement(ElementPtr _parentElement)
+{
+  this->dataPtr->parentElement = _parentElement;
+  this->Reparse();
+}
+
+//////////////////////////////////////////////////
 void Param::Reset()
 {
   this->dataPtr->value = this->dataPtr->defaultValue;
+  this->dataPtr->strValue = std::nullopt;
   this->dataPtr->set = false;
+}
+
+//////////////////////////////////////////////////
+bool Param::Reparse()
+{
+  if (!this->dataPtr->strValue.has_value())
+    return false;
+
+  const std::string strVal = this->dataPtr->strValue.value();
+  if (!this->SetFromString(strVal, this->dataPtr->ignoreParentAttributes))
+  {
+    if (const auto parentElement = this->dataPtr->parentElement.lock())
+    {
+      sdferr << "Failed to set value '" << strVal << "' to key ["
+          << this->GetKey() << "] for new parent element of name '"
+          << parentElement->GetName() << "', reverting to previous value '"
+          << this->GetAsString() << "'.\n";
+    }
+    else
+    {
+      sdferr << "Failed to set value '" << strVal << "' to key ["
+          << this->GetKey() << "] without a parent element, "
+          << "reverting to previous value '" << this->GetAsString() << "'.\n";
+    }
+    return false;
+  }
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -675,6 +839,13 @@ bool Param::GetRequired() const
 bool Param::GetSet() const
 {
   return this->dataPtr->set;
+}
+
+/////////////////////////////////////////////////
+bool Param::IgnoresParentElementAttribute() const
+{
+  const auto parentElement = this->dataPtr->parentElement.lock();
+  return !parentElement || this->dataPtr->ignoreParentAttributes;
 }
 
 /////////////////////////////////////////////////

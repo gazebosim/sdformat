@@ -1307,12 +1307,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     }
   }
 
-  if (_xml->GetText() != nullptr && _sdf->GetValue())
-  {
-    if (!_sdf->GetValue()->SetFromString(_xml->GetText()))
-      return false;
-  }
-
   // check for nested sdf
   std::string refSDFStr = _sdf->ReferenceSDF();
   if (!refSDFStr.empty())
@@ -1442,6 +1436,12 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       _errors.push_back(err);
       return false;
     }
+  }
+
+  if (_xml->GetText() != nullptr && _sdf->GetValue())
+  {
+    if (!_sdf->GetValue()->SetFromString(_xml->GetText()))
+      return false;
   }
 
   if (_sdf->GetCopyChildren())

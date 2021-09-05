@@ -11,7 +11,7 @@
               <ixx>0.126164</ixx>
               <ixy>0</ixy>
               <ixz>0</ixz>
-              <iyy>0.41651899999999997</iyy>
+              <iyy>0.416519</iyy>
               <iyz>0</iyz>
               <izz>0.481014</izz>
             </inertia>
@@ -23,9 +23,9 @@
               </box>
             </geometry>
             <material>
-              <ambient>0.5 0.5 1 1</ambient>
-              <diffuse>0.5 0.5 1 1</diffuse>
-              <specular>0 0 1 1</specular>
+              <ambient>0.5 0.5 1.0 1</ambient>
+              <diffuse>0.5 0.5 1.0 1</diffuse>
+              <specular>0.0 0.0 1.0 1</specular>
             </material>
           </visual>
           <collision name='collision'>
@@ -73,32 +73,32 @@
                 <resolution>0.01</resolution>
               </range>
             </lidar>
-            <visualize>1</visualize>
+            <visualize>true</visualize>
             <alwaysOn>1</alwaysOn>
           </sensor> -->
 
           <sensor name='camera' type='camera'>
-            <pose>-1.06 0 0 0 -0 3.14</pose>
+            <pose>-1.06 0 0 0 0 3.14</pose>
             <camera>
-              <horizontal_fov>1.0469999999999999</horizontal_fov>
+              <horizontal_fov>1.047</horizontal_fov>
               <image>
                 <width>320</width>
                 <height>240</height>
               </image>
               <clip>
-                <near>0.10000000000000001</near>
+                <near>0.1</near>
                 <far>100</far>
               </clip>
             </camera>
             <always_on>1</always_on>
             <update_rate>30</update_rate>
-            <visualize>1</visualize>
+            <visualize>true</visualize>
             <topic>chassis/camera</topic>
           </sensor>
 
           <!-- added -->
           <visual name="camera_visual">
-            <pose>-1.06 0 0 0 -0 3.14</pose>
+            <pose>-1.06 0 0 0 0 3.14</pose>
             <geometry>
               <box>
                 <size>0.1 0.1 0.1</size>
@@ -108,7 +108,7 @@
         </link>
         <model name='top_model'>
           <link name='top'>
-            <pose>0.6 0 0.7 0 -0 0</pose>
+            <pose>0.6 0 0.7 0 0 0</pose>
             <collision name='top_collision'>
               <geometry>
                 <box>
@@ -132,7 +132,7 @@
           <model name='top_camera'>
             <link name='top_camera_link'>
               <visual name='camera_visual'>
-                <pose>-0.2 0 0.3 0 -0 3.14</pose>
+                <pose>-0.2 0 0.3 0 0 3.14</pose>
                 <geometry>
                   <sphere>
                     <radius>0.05</radius>
@@ -154,17 +154,17 @@
                 </material>
               </visual>
               <sensor name='camera' type='camera'>
-                <pose>0 0 0 0 -0 3.14</pose>
+                <pose>0 0 0 0 0 3.14</pose>
                 <!-- modified with above -->
                 <!-- <pose>-0.2 0 0.3 0 -0 0</pose> -->
                 <camera>
-                  <horizontal_fov>1.0469999999999999</horizontal_fov>
+                  <horizontal_fov>1.047</horizontal_fov>
                   <image>
                     <width>320</width>
                     <height>240</height>
                   </image>
                   <clip>
-                    <near>0.10000000000000001</near>
+                    <near>0.1</near>
                     <far>100</far>
                   </clip>
                 </camera>
@@ -172,21 +172,21 @@
                 <update_rate>60</update_rate>
                 <!-- modified with above -->
                 <!-- <update_rate>30</update_rate> -->
-                <visualize>1</visualize>
+                <visualize>true</visualize>
                 <topic>top/camera</topic>
               </sensor>
 
               <!-- added -->
               <collision name='camera_collision'>
-                <pose>-0.2 0 0.3 0 -0 3.14</pose>
+                <pose>-0.2 0 0.3 0 0 3.14</pose>
                 <geometry>
                   <sphere>
-                    <radius>0.050000000000000003</radius>
+                    <radius>0.05</radius>
                   </sphere>
                 </geometry>
               </collision>
             </link>
-            <pose relative_to='top'>0 0 0 0 -0 0</pose>
+            <pose relative_to='top'>0 0 0 0 0 0</pose>
           </model>
           <joint name='top_to_camera' type='fixed'>
             <parent>top</parent>
@@ -199,14 +199,14 @@
         </joint>
         <model name='left_wheel'>
           <link name='wheel_link'>
-            <pose>0 0 0 0 -0 0</pose>
+            <pose>0 0 0 0 0 0</pose>
             <inertial>
               <mass>2</mass>
               <inertia>
-                <ixx>0.14583299999999999</ixx>
+                <ixx>0.145833</ixx>
                 <ixy>0</ixy>
                 <ixz>0</ixz>
-                <iyy>0.14583299999999999</iyy>
+                <iyy>0.145833</iyy>
                 <iyz>0</iyz>
                 <izz>0.125</izz>
               </inertia>
@@ -214,7 +214,7 @@
             <visual name='visual'>
               <geometry>
                 <sphere>
-                  <radius>0.29999999999999999</radius>
+                  <radius>0.3</radius>
                 </sphere>
               </geometry>
               <material>
@@ -226,7 +226,7 @@
             <collision name='collision'>
               <geometry>
                 <sphere>
-                  <radius>0.29999999999999999</radius>
+                  <radius>0.3</radius>
                 </sphere>
               </geometry>
             </collision>
@@ -235,14 +235,14 @@
         </model>
         <model name='right_wheel'>
           <link name='wheel_link'>
-            <pose>0 0 0 0 -0 0</pose>
+            <pose>0 0 0 0 0 0</pose>
             <inertial>
               <mass>2</mass>
               <inertia>
-                <ixx>0.14583299999999999</ixx>
+                <ixx>0.145833</ixx>
                 <ixy>0</ixy>
                 <ixz>0</ixz>
-                <iyy>0.14583299999999999</iyy>
+                <iyy>0.145833</iyy>
                 <iyz>0</iyz>
                 <izz>0.125</izz>
               </inertia>
@@ -250,7 +250,7 @@
             <visual name='visual'>
               <geometry>
                 <sphere>
-                  <radius>0.29999999999999999</radius>
+                  <radius>0.3</radius>
                 </sphere>
               </geometry>
               <material>
@@ -262,7 +262,7 @@
             <collision name='collision'>
               <geometry>
                 <sphere>
-                  <radius>0.29999999999999999</radius>
+                  <radius>0.3</radius>
                 </sphere>
               </geometry>
             </collision>
@@ -271,14 +271,14 @@
         </model>
         <model name='caster'>
           <link name='wheel_link'>
-            <pose>0 0 0 0 -0 0</pose>
+            <pose>0 0 0 0 0 0</pose>
             <inertial>
               <mass>2</mass>
               <inertia>
-                <ixx>0.14583299999999999</ixx>
+                <ixx>0.145833</ixx>
                 <ixy>0</ixy>
                 <ixz>0</ixz>
-                <iyy>0.14583299999999999</iyy>
+                <iyy>0.145833</iyy>
                 <iyz>0</iyz>
                 <izz>0.125</izz>
               </inertia>
@@ -286,7 +286,7 @@
             <visual name='visual'>
               <geometry>
                 <sphere>
-                  <radius>0.29999999999999999</radius>
+                  <radius>0.3</radius>
                 </sphere>
               </geometry>
               <material>
@@ -298,7 +298,7 @@
             <collision name='collision'>
               <geometry>
                 <sphere>
-                  <radius>0.29999999999999999</radius>
+                  <radius>0.3</radius>
                 </sphere>
               </geometry>
             </collision>
@@ -311,8 +311,8 @@
           <axis>
             <xyz>0 0 1</xyz>
             <limit>
-              <lower>-1.7976900000000001e+308</lower>
-              <upper>1.7976900000000001e+308</upper>
+              <lower>-1.79769e+308</lower>
+              <upper>1.79769e+308</upper>
             </limit>
           </axis>
         </joint>
@@ -322,8 +322,8 @@
           <axis>
             <xyz>0 0 1</xyz>
             <limit>
-              <lower>-1.7976900000000001e+308</lower>
-              <upper>1.7976900000000001e+308</upper>
+              <lower>-1.79769e+308</lower>
+              <upper>1.79769e+308</upper>
             </limit>
           </axis>
         </joint>

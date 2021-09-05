@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="default">
+
+    <!--
+      All the pose values listed in this testing sdf file are independent and
+      unrelated to each other.
+    -->
+
+    <model name="model_with_empty_pose">
+      <pose></pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_empty_pose_with_degrees_false">
+      <pose degrees="false"></pose> 
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_empty_pose_with_degrees_true">
+      <pose degrees="true"></pose> 
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_pose_no_attribute">
+      <pose>1 2 3   0.4 0.5 0.6</pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_pose_with_degrees_false">
+      <pose degrees="false">1 2 3   0.4 0.5 0.6</pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_pose_with_degrees_true">
+      <pose degrees="true">1 2 3   90 180 270</pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_single_space_delimiter">
+      <pose>1 2 3 0.4 0.5 0.6</pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_newline_delimiter">
+      <pose>
+        1 2 3
+        0.4 0.5 0.6
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_messy_delimiters">
+      <pose>
+        1 2 3
+        0.4
+        0.5 0.6
+      </pose>
+      <link name="link"/>
+    </model>
+  
+  </world>
+</sdf>

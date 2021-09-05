@@ -152,6 +152,7 @@ void Element::AddValue(const std::string &_type,
   this->dataPtr->value =
       std::make_shared<Param>(this->dataPtr->name, _type, _defaultValue,
                               _required, _minValue, _maxValue, _description);
+  this->dataPtr->value->SetParentElement(shared_from_this());
 }
 
 /////////////////////////////////////////////////
@@ -161,8 +162,10 @@ ParamPtr Element::CreateParam(const std::string &_key,
                               bool _required,
                               const std::string &_description)
 {
-  return ParamPtr(
-      new Param(_key, _type, _defaultValue, _required, _description));
+  ParamPtr param = std::make_shared<Param>(
+      _key, _type, _defaultValue, _required, _description);
+  param->SetParentElement(shared_from_this());
+  return param;
 }
 
 /////////////////////////////////////////////////
@@ -195,7 +198,9 @@ ElementPtr Element::Clone() const
   for (aiter = this->dataPtr->attributes.begin();
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
-    clone->dataPtr->attributes.push_back((*aiter)->Clone());
+    auto clonedAttribute = (*aiter)->Clone();
+    clonedAttribute->SetParentElement(clone);
+    clone->dataPtr->attributes.push_back(clonedAttribute);
   }
 
   ElementPtr_V::const_iterator eiter;
@@ -215,6 +220,7 @@ ElementPtr Element::Clone() const
   if (this->dataPtr->value)
   {
     clone->dataPtr->value = this->dataPtr->value->Clone();
+    clone->dataPtr->value->SetParentElement(clone);
   }
 
   if (this->dataPtr->includeElement)
@@ -248,6 +254,7 @@ void Element::Copy(const ElementPtr _elem)
     }
     ParamPtr param = this->GetAttribute((*iter)->GetKey());
     (*param) = (**iter);
+    param->SetParentElement(shared_from_this());
   }
 
   if (_elem->GetValue())
@@ -260,6 +267,7 @@ void Element::Copy(const ElementPtr _elem)
     {
       *(this->dataPtr->value) = *(_elem->GetValue());
     }
+    this->dataPtr->value->SetParentElement(shared_from_this());
   }
 
   this->dataPtr->elementDescriptions.clear();
@@ -655,6 +663,12 @@ ParamPtr Element::GetAttribute(const std::string &_key) const
 size_t Element::GetAttributeCount() const
 {
   return this->dataPtr->attributes.size();
+}
+
+/////////////////////////////////////////////////
+const Param_V &Element::GetAttributes() const
+{
+  return this->dataPtr->attributes;
 }
 
 /////////////////////////////////////////////////
