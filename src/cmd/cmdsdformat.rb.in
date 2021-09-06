@@ -38,11 +38,11 @@ COMMANDS = {  'sdf' =>
                        "Utilities for SDF files.\n\n"\
                        "  ign sdf [options]\n\n"\
                        "Options:\n\n"\
-                       "  -k [ --check ] arg                Check if an SDFormat file is valid.\n" +
-                       "  -d [ --describe ] [SPEC VERSION]  Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
-                       "  -g [ --graph ] <pose, frame> arg  Print the PoseRelativeTo or FrameAttachedTo graph. (WARNING: This is for advanced\n" +
-                       "                                    use only and the output may change without any promise of stability)\n" +
-                       "  -p [ --print ] arg                Print converted arg.\n" +
+                       "  -k [ --check ] arg                                 Check if an SDFormat file is valid.\n" +
+                       "  -d [ --describe ] [SPEC VERSION]                   Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
+                       "  -g [ --graph ] <pose, frame> arg                   Print the PoseRelativeTo or FrameAttachedTo graph. (WARNING: This is for advanced\n" +
+                       "                                                     use only and the output may change without any promise of stability)\n" +
+                       "  -p [ --print ] <in_degrees, snap_to_degrees> arg   Print converted arg. Option for rotation angles to be in degrees for readability, or to snap to commonly used angles in degrees.\n" +
                        COMMON_OPTIONS
             }
 
@@ -160,8 +160,15 @@ class Cmd
           Importer.extern 'int cmdDescribe(const char *)'
           exit(Importer.cmdDescribe(options['describe']))
         elsif options.key?('print')
-          Importer.extern 'int cmdPrint(const char *)'
-          exit(Importer.cmdPrint(File.expand_path(options['print'])))
+          if ARGV.length == 1
+            Importer.extern 'int cmdPrint(const char *)'
+            exit(Importer.cmdPrint(File.expand_path(options['print'])))
+          elsif ARGV.length == 2
+            Importer.extern 'int cmdPrintWithOption(const char *, const char *)'
+            exit(Importer.cmdPrintWithOption(options['print'], File.expand_path(ARGV[1])))
+          else
+            puts 'Print error: must have 1 or 2 arguments after -p, --print.'
+          end
         elsif options.key?('graph')
           Importer.extern 'int cmdGraph(const char *, const char *)'
           exit(Importer.cmdGraph(options['graph'][:type], File.expand_path(ARGV[1])))

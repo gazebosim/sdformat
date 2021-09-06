@@ -160,6 +160,37 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path)
 
 //////////////////////////////////////////////////
 // cppcheck-suppress unusedFunction
+extern "C" SDFORMAT_VISIBLE int cmdPrintWithOption(
+    const char *_option, const char *_path)
+{
+  if (!sdf::filesystem::exists(_path))
+  {
+    std::cerr << "Error: File [" << _path << "] does not exist.\n";
+    return -1;
+  }
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+
+  if (!sdf::init(sdf))
+  {
+    std::cerr << "Error: SDF schema initialization failed.\n";
+    return -1;
+  }
+
+  if (!sdf::readFile(_path, sdf))
+  {
+    std::cerr << "Error: SDF parsing the xml failed.\n";
+    return -1;
+  }
+
+  sdf->PrintValues();
+
+  (void)_option;
+  return 0;
+}
+
+//////////////////////////////////////////////////
+// cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdGraph(
     const char *_graphType, const char *_path)
 {
