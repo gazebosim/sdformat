@@ -108,7 +108,6 @@ void Error::SetXmlPath(const std::string &_xmlPath)
 }
 
 /////////////////////////////////////////////////
-// cppcheck-suppress unusedFunction
 Error::operator bool() const
 {
   return this->dataPtr->code != ErrorCode::NONE;
@@ -127,7 +126,6 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 
 /////////////////////////////////////////////////
-// cppcheck-suppress unusedFunction
 std::ostream &operator<<(std::ostream &_out, const sdf::Error &_err)
 {
   std::string pathInfo = "";

@@ -24,14 +24,14 @@
 
 #include "test_config.h"
 
-const std::string SDF_TEST_FILE =
-  sdf::testing::TestFile("integration", "numeric.sdf");
-
 // Windows supports the setlocale call but we can not extract the
 // available locales using the Linux call
 #ifndef _MSC_VER
 TEST(CheckFixForLocal, MakeTestToFail)
 {
+  const std::string sdfTestFile =
+      sdf::testing::TestFile("integration", "numeric.sdf");
+
   // Check if any of the latin locales is avilable
   FILE *fp = popen("locale -a | grep '^es\\|^pt_\\|^it_' | head -n 1", "r");
 
@@ -58,7 +58,7 @@ TEST(CheckFixForLocal, MakeTestToFail)
   // fix to allow make test without make install
   sdf::SDFPtr p(new sdf::SDF());
   sdf::init(p);
-  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, p));
+  ASSERT_TRUE(sdf::readFile(sdfTestFile, p));
 
   sdf::ElementPtr elem = p->Root()->GetElement("world")
     ->GetElement("physics")->GetElement("ode")->GetElement("solver")
@@ -68,8 +68,8 @@ TEST(CheckFixForLocal, MakeTestToFail)
 
   elem->Set<double>(0.423);
 
-  // TODO: automatic checking. Error is thrown to the log file and std::err
-  // We should check for "Error [Param.cc:186] Unable to set value"
+  // TODO(anyone): automatic checking. Error is thrown to the log file and
+  // std::err We should check for "Error [Param.cc:186] Unable to set value"
   // Problem is How to get the log file path without duplicating code
 
   // Verify that the locale is not affecting the Param constructor

@@ -17,6 +17,7 @@
 #ifndef SDF_WORLD_HH_
 #define SDF_WORLD_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Vector3.hh>
 #include <ignition/utils/ImplPtr.hh>
