@@ -19,17 +19,8 @@
 1. BUG: add missing plugin element to include
     * [Pull request #675](https://github.com/ignitionrobotics/sdformat/pull/675)
 
-1. Update codecov badge url
-    * [Pull request #678](https://github.com/ignitionrobotics/sdformat/pull/678)
-
 1. Added comment reminder to update functions
     * [Pull request #677](https://github.com/ignitionrobotics/sdformat/pull/677)
-
-1. Port to new codecov configuration
-    * [Pull request #676](https://github.com/ignitionrobotics/sdformat/pull/676)
-
-1. Add pull request triage to sdf9
-    * [Pull request #673](https://github.com/ignitionrobotics/sdformat/pull/673)
 
 ### libsdformat 9.6.0 (2021-08-18)
 
