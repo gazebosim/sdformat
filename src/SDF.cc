@@ -44,10 +44,11 @@ static URIPathMap g_uriPathMap;
 
 static std::function<std::string(const std::string &)> g_findFileCB;
 
-std::string SDF::version = SDF_VERSION;
+// TODO(azeey) This violates the Google style guide. Change to a function that
+// returns the version string when possible.
+std::string SDF::version = SDF_VERSION;  // NOLINT(runtime/string)
 
 /////////////////////////////////////////////////
-// cppcheck-suppress passedByValue
 void setFindCallback(std::function<std::string(const std::string &)> _cb)
 {
   g_findFileCB = _cb;
@@ -65,7 +66,6 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   {
     // Check to see if the URI in the global map is the first part of the
     // given filename
-    // cppcheck-suppress stlIfStrFind
     if (_filename.find(iter->first) == 0)
     {
       std::string suffix = _filename;
@@ -323,9 +323,7 @@ void SDF::PrintDoc()
 
   std::cout << "</div>\n";
 
-  std::cout << "\
-    </body>\
-    </html>\n";
+  std::cout << "    </body>    </html>\n";
 }
 
 /////////////////////////////////////////////////

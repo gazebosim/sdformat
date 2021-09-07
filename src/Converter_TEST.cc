@@ -1898,10 +1898,14 @@ TEST(Converter, MuchNewerVersion)
   ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6"));
 }
 
-const std::string CONVERT_DOC_15_16 =
-  sdf::testing::SourceFile("sdf", "1.6", "1_5.convert");
-const std::string CONVERT_DOC_16_17 =
-  sdf::testing::SourceFile("sdf", "1.7", "1_6.convert");
+static std::string ConvertDoc_15_16()
+{
+  return sdf::testing::SourceFile("sdf", "1.6", "1_5.convert");
+}
+static std::string ConvertDoc_16_17()
+{
+  return sdf::testing::SourceFile("sdf", "1.7", "1_6.convert");
+}
 
 /////////////////////////////////////////////////
 /// Test conversion of imu in 1.5 to 1.6
@@ -1943,7 +1947,7 @@ TEST(Converter, IMU_15_to_16)
 
   // Convert
   tinyxml2::XMLDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(CONVERT_DOC_15_16.c_str());
+  convertXmlDoc.LoadFile(ConvertDoc_15_16().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements
@@ -2037,7 +2041,7 @@ TEST(Converter, World_15_to_16)
 
   // Convert
   tinyxml2::XMLDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(CONVERT_DOC_15_16.c_str());
+  convertXmlDoc.LoadFile(ConvertDoc_15_16().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements
@@ -2093,7 +2097,7 @@ TEST(Converter, Pose_16_to_17)
 
   // Convert
   tinyxml2::XMLDocument convertXmlDoc;
-  convertXmlDoc.LoadFile(CONVERT_DOC_16_17.c_str());
+  convertXmlDoc.LoadFile(ConvertDoc_16_17().c_str());
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   // Check some basic elements

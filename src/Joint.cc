@@ -67,7 +67,6 @@ class sdf::JointPrivate
   public: double threadPitch = 1.0;
 
   /// \brief Joint axis
-  // cppcheck-suppress
   public: std::array<std::unique_ptr<JointAxis>, 2> axis;
 
   /// \brief The SDF element pointer used during load.

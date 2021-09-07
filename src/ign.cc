@@ -27,7 +27,6 @@
 #include "ign.hh"
 
 //////////////////////////////////////////////////
-// cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 {
   int result = 0;
@@ -96,7 +95,6 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 }
 
 //////////////////////////////////////////////////
-// cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
 {
 #ifdef _MSC_VER
@@ -109,7 +107,6 @@ extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
 //////////////////////////////////////////////////
 /// \brief Print the full description of the SDF spec.
 /// \return 0 on success, -1 if SDF could not be initialized.
-// cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 {
   sdf::SDFPtr sdf(new sdf::SDF());
@@ -130,7 +127,6 @@ extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 }
 
 //////////////////////////////////////////////////
-// cppcheck-suppress unusedFunction
 extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path)
 {
   if (!sdf::filesystem::exists(_path))

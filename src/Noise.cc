@@ -123,7 +123,7 @@ Errors Noise::Load(ElementPtr _sdf)
   else if (typeLower == "gaussian")
     this->dataPtr->type = NoiseType::GAUSSIAN;
   else if (typeLower == "gaussian_quantized")
-    this->dataPtr->type =NoiseType::GAUSSIAN_QUANTIZED;
+    this->dataPtr->type = NoiseType::GAUSSIAN_QUANTIZED;
   else
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
