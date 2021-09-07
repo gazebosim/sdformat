@@ -203,14 +203,13 @@ void SDF::PrintValues(const PrintConfig &_config)
 /////////////////////////////////////////////////
 void SDF::PrintValues(const std::string &_option)
 {
-  PrintConfig config;
+  PrintConfig config = PrintConfig::DEFAULT;
   if (_option == "in_degrees")
-    config.SetRotationInDegrees(true);
+    config = PrintConfig::ROTATION_IN_DEGREES;
   else if (_option == "snap_to_degrees")
-    config.SetRotationSnapToDegrees(true);
-  (void)config;
-  
-  this->Root()->PrintValues("");
+    config = PrintConfig::ROTATION_SNAP_TO_DEGREES;
+
+  this->Root()->PrintValues("", config);
 }
 
 /////////////////////////////////////////////////

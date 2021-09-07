@@ -199,7 +199,7 @@ namespace sdf
     /// \param[in] _prefix String value to prefix to the output.
     /// \param[in] _includeDefaultElements flag to include default elements.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
-    /// \param[in] _config Configuration for printing the values.
+    /// \param[in] _config Configuration for converting to string.
     /// \return The string representation.
     public: std::string ToString(
         const std::string &_prefix,
