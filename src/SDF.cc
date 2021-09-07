@@ -28,6 +28,7 @@
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/PrintConfig.hh"
 #include "sdf/SDFImpl.hh"
 #include "SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
@@ -197,6 +198,19 @@ void SDF::PrintDescription()
 void SDF::PrintValues(const PrintConfig &_config)
 {
   this->Root()->PrintValues("", _config);
+}
+
+/////////////////////////////////////////////////
+void SDF::PrintValues(const std::string &_option)
+{
+  PrintConfig config;
+  if (_option == "in_degrees")
+    config.SetRotationInDegrees(true);
+  else if (_option == "snap_to_degrees")
+    config.SetRotationSnapToDegrees(true);
+  (void)config;
+  
+  this->Root()->PrintValues("");
 }
 
 /////////////////////////////////////////////////

@@ -24,7 +24,9 @@ inline namespace SDF_VERSION_NAMESPACE
 /////////////////////////////////////////////////
 class PrintConfig::Implementation
 {
+  public: bool rotationInDegrees = false;
 
+  public: bool rotationSnapToDegrees = false;
 };
 
 /////////////////////////////////////////////////
@@ -33,5 +35,30 @@ PrintConfig::PrintConfig()
 {
 }
 
+/////////////////////////////////////////////////
+void PrintConfig::SetRotationInDegrees(bool _value)
+{
+  this->dataPtr->rotationInDegrees = _value;
+}
+
+/////////////////////////////////////////////////
+bool PrintConfig::GetRotationInDegrees() const
+{
+  return this->dataPtr->rotationInDegrees;
+}
+
+/////////////////////////////////////////////////
+void PrintConfig::SetRotationSnapToDegrees(bool _value)
+{
+  this->dataPtr->rotationSnapToDegrees = _value;
+}
+
+/////////////////////////////////////////////////
+bool PrintConfig::GetRotationSnapToDegrees() const
+{
+  return this->dataPtr->rotationSnapToDegrees;
+}
+
+/////////////////////////////////////////////////
 }
 }

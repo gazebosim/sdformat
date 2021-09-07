@@ -183,9 +183,7 @@ extern "C" SDFORMAT_VISIBLE int cmdPrintWithOption(
     return -1;
   }
 
-  sdf->PrintValues();
-
-  (void)_option;
+  sdf->PrintValues(std::string(_option));
   return 0;
 }
 

@@ -135,6 +135,7 @@ if (BUILD_SDF_TEST)
     Pbr_TEST.cc
     Physics_TEST.cc
     Plane_TEST.cc
+    PrintConfig_TEST.cc
     Root_TEST.cc
     Scene_TEST.cc
     SemanticPose_TEST.cc
