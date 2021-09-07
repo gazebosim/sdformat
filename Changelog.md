@@ -2,6 +2,26 @@
 
 ### libsdformat 9.X.X (202X-XX-XX)
 
+### libsdformat 9.6.1 (2021-09-07)
+
+1. Parse URDF continuous joint effort/velocity limits
+    * [Pull request #684](https://github.com/ignitionrobotics/sdformat/pull/684)
+
+1. Add a codecheck make target
+    * [Pull request #682](https://github.com/ignitionrobotics/sdformat/pull/682)
+
+1. Refactor sdf::readXml
+    * [Pull request #681](https://github.com/ignitionrobotics/sdformat/pull/681)
+
+1. Upgrade cpplint and fix new errors
+    * [Pull request #680](https://github.com/ignitionrobotics/sdformat/pull/680)
+
+1. BUG: add missing plugin element to include
+    * [Pull request #675](https://github.com/ignitionrobotics/sdformat/pull/675)
+
+1. Added comment reminder to update functions
+    * [Pull request #677](https://github.com/ignitionrobotics/sdformat/pull/677)
+
 ### libsdformat 9.6.0 (2021-08-18)
 
 1. Adds `enable_metrics` flag to Sensor.
