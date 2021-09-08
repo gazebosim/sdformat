@@ -232,6 +232,16 @@ namespace sdf
     /// \param[in] _frame The name of the parent frame.
     public: void SetCustomRpyParentFrame(const std::string &_frame);
 
+    /// \brief Get whether orientation data generation is enabled.
+    /// \return True if orientation data generation is enabled orientation data,
+    /// false otherwise.
+    public: bool OrientationEnabled() const;
+
+    /// \brief Set whether to enable orientation data generation.
+    /// \param[in] _enabled True to enabled orientation data, false to disable
+    /// it.
+    public: void SetOrientationEnabled(bool _enabled);
+
     /// \brief Return true if both Imu objects contain the same values.
     /// \param[_in] _imu Imu value to compare.
     /// \returen True if 'this' == _imu.

@@ -50,6 +50,7 @@
     </element>
 
     <include filename="pose.sdf" required="0"/>
+    <include filename="plugin.sdf" required="*"/>
 
     <element name="name" type="string" default="" required="0">
       <description>Override the name of the included model.</description>

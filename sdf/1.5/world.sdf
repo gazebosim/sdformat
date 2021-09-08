@@ -28,6 +28,7 @@
     </element>
 
     <include filename="pose.sdf" required="0"/>
+    <include filename="plugin.sdf" required="*"/>
   </element>
 
 

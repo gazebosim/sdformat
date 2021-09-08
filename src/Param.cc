@@ -856,6 +856,7 @@ bool Param::ValidateValue() const
       {
         using T = std::decay_t<decltype(_val)>;
         // cppcheck-suppress syntaxError
+        // cppcheck-suppress unmatchedSuppression
         if constexpr (std::is_scalar_v<T>)
         {
           if (this->dataPtr->minValue.has_value())

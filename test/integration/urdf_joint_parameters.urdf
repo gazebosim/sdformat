@@ -9,6 +9,7 @@
     <parent link="world"/>
     <child link="link0"/>
     <dynamics damping="0.0" friction="0.0" />
+    <limit effort="0.0" velocity="0.0" />
   </joint>
 
   <link name="link0">
@@ -31,6 +32,7 @@
     <parent link="link0"/>
     <child link="link1"/>
     <dynamics damping="1.0" friction="1.0" />
+    <limit effort="1.0" velocity="1.0" />
   </joint>
 
   <link name="link1">

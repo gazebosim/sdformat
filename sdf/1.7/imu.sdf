@@ -114,4 +114,7 @@
     </element>
   </element>
 
+  <element name="enable_orientation" type="bool" default="true" required="0">
+    <description>Some IMU sensors rely on external filters to produce orientation estimates. True to generate and output orientation data, false to disable orientation data generation.</description>
+  </element>
 </element>
