@@ -408,7 +408,7 @@ TEST_F(InterfaceAPI, FrameSemantics)
   };
 
   {
-    const sdf::Frame * frame= world->FrameByName("F0");
+    const sdf::Frame *frame = world->FrameByName("F0");
     ASSERT_NE(nullptr, frame);
     // The pose of F0 relative to the double_pendulum interface model is the
     // inverse of the raw pose of double_pendulum

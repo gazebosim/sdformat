@@ -350,6 +350,8 @@ namespace sdf
 
     /// \def ParamVariant
     /// \brief Variant type def.
+    /// Note: When a new variant is added, add variant to functions
+    /// ParamPrivate::TypeToString and ParamPrivate::ValueFromStringImpl
     public: typedef std::variant<bool, char, std::string, int, std::uint64_t,
                                    unsigned int, double, float, sdf::Time,
                                    ignition::math::Angle,
@@ -400,6 +402,7 @@ namespace sdf
   template<typename T>
   std::string ParamPrivate::TypeToString() const
   {
+    // cppcheck-suppress syntaxError
     if constexpr (std::is_same_v<T, bool>)
       return "bool";
     else if constexpr (std::is_same_v<T, char>)

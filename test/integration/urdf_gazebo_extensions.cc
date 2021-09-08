@@ -23,15 +23,15 @@
 
 #include "test_config.h"
 
-const std::string URDF_TEST_FILE =
-  sdf::testing::TestFile("integration", "urdf_gazebo_extensions.urdf");
-
 /////////////////////////////////////////////////
 TEST(SDFParser, UrdfGazeboExtensionURDFTest)
 {
+  const std::string urdfTestFile =
+      sdf::testing::TestFile("integration", "urdf_gazebo_extensions.urdf");
+
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(URDF_TEST_FILE, robot));
+  ASSERT_TRUE(sdf::readFile(urdfTestFile, robot));
 
   sdf::ElementPtr model = robot->Root()->GetElement("model");
   for (sdf::ElementPtr joint = model->GetElement("joint"); joint;

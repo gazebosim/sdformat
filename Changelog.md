@@ -354,6 +354,62 @@
 
 ### libsdformat 9.X.X (202X-XX-XX)
 
+### libsdformat 9.6.0 (2021-08-18)
+
+1. Adds `enable_metrics` flag to Sensor.
+    * [Pull request #665](https://github.com/ignitionrobotics/sdformat/pull/665)
+
+1. Add GPS sensor DOM to sdf9
+    * [Pull request #453](https://github.com/ignitionrobotics/sdformat/pull/453)
+
+1. Support parsing elements that are not part of the schema
+    * [Pull request #638](https://github.com/ignitionrobotics/sdformat/pull/638)
+
+1. Add lightmap to 1.7 spec and PBR material DOM
+    * [Pull request #429](https://github.com/ignitionrobotics/sdformat/pull/429)
+
+1. Fix urdf link extension tags
+    * [Pull request #628](https://github.com/ignitionrobotics/sdformat/pull/628)
+
+1. Updated material spec
+    * [Pull request #644](https://github.com/ignitionrobotics/sdformat/pull/644)
+
+1. Minor fix to Migration guide
+    * [Pull request #630](https://github.com/ignitionrobotics/sdformat/pull/630)
+
+1. Error: move << operator from .hh to .cc file
+    * [Pull request #625](https://github.com/ignitionrobotics/sdformat/pull/625)
+
+1. Update build system to allow overriding CXX flags and using clang on Linux
+    * [Pull request #621](https://github.com/ignitionrobotics/sdformat/pull/621)
+
+1. Add Element::FindElement as an alternative to Element::GetElement
+    * [Pull request #620](https://github.com/ignitionrobotics/sdformat/pull/620)
+
+1. Add ValidateGraphs methods to Model/World (sdf9)
+    * [Pull request #602](https://github.com/ignitionrobotics/sdformat/pull/602)
+
+1. Fix ABI break
+    * [Pull request #605](https://github.com/ignitionrobotics/sdformat/pull/605)
+
+1. Making PrintValues() and ToString() able to not print default elements
+    * [Pull request #575](https://github.com/ignitionrobotics/sdformat/pull/575)
+
+1. Add API for determining if an element was set by the user
+    * [Pull request #542](https://github.com/ignitionrobotics/sdformat/pull/542)
+
+1. Methods for removing attributes from an element
+    * [Pull request #555](https://github.com/ignitionrobotics/sdformat/pull/555)
+
+1. Improve docs of collision_bitmask.
+    * [Pull request #521](https://github.com/ignitionrobotics/sdformat/pull/521)
+
+1. Add camera type aliases to docs.
+    * [Pull request #514](https://github.com/ignitionrobotics/sdformat/pull/514)
+
+1. Add action-ignition-ci
+    * [Pull request #501](https://github.com/ignitionrobotics/sdformat/pull/452)
+
 ### libsdformat 9.5.0 (2021-02-11)
 
 1. Add Windows installation

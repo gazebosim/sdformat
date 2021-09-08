@@ -173,7 +173,7 @@ Errors PbrWorkflow::Load(sdf::ElementPtr _sdf)
   this->dataPtr->albedoMap = _sdf->Get<std::string>("albedo_map",
       this->dataPtr->albedoMap).first;
 
-  this->dataPtr->normalMap= _sdf->Get<std::string>("normal_map",
+  this->dataPtr->normalMap = _sdf->Get<std::string>("normal_map",
     this->dataPtr->normalMap).first;
 
   this->dataPtr->environmentMap = _sdf->Get<std::string>("environment_map",

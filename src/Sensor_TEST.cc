@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include "sdf/Noise.hh"
 #include "sdf/Magnetometer.hh"
+#include "sdf/sdf.hh"
 #include "sdf/Sensor.hh"
 
 /////////////////////////////////////////////////
@@ -248,7 +249,7 @@ TEST(DOMSensor, Type)
     sdf::SensorType::CONTACT,
     sdf::SensorType::DEPTH_CAMERA,
     sdf::SensorType::FORCE_TORQUE,
-    sdf::SensorType::GPS,
+    sdf::SensorType::NAVSAT,
     sdf::SensorType::GPU_LIDAR,
     sdf::SensorType::IMU,
     sdf::SensorType::LOGICAL_CAMERA,
@@ -273,7 +274,7 @@ TEST(DOMSensor, Type)
     "contact",
     "depth_camera",
     "force_torque",
-    "gps",
+    "navsat",
     "gpu_lidar",
     "imu",
     "logical_camera",
@@ -307,4 +308,31 @@ TEST(DOMSensor, Type)
     EXPECT_EQ(types[i], sensor.Type());
     EXPECT_EQ(typeStrs[i], sensor.TypeStr());
   }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSensor, EnableMetrics)
+{
+  sdf::Sensor sensor;
+  // Verify default value.
+  EXPECT_EQ(false, sensor.EnableMetrics());
+
+  // Set up a simple sdf to test enable metrics option
+  std::ostringstream stream;
+  stream << "<sdf version='1.5'>"
+         << "  <model name='test_model'>"
+         << "    <sensor name='test_sensor' type='none'>"
+         << "      <enable_metrics>true</enable_metrics>"
+         << "    </sensor>"
+         << "  </model>"
+         << "</sdf>";
+  sdf::SDF sdfParsed;
+  sdfParsed.SetFromString(stream.str());
+
+  const sdf::ElementPtr sensorElem = sdfParsed.Root()->
+    GetElement("model")->GetElement("sensor");
+  sensor.Load(sensorElem);
+  EXPECT_EQ(true, sensor.EnableMetrics());
+  sensor.SetEnableMetrics(false);
+  EXPECT_EQ(false, sensor.EnableMetrics());
 }

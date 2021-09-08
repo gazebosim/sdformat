@@ -315,7 +315,7 @@ namespace sdf
     /// relative to the current model, delimited by "::".
     /// \return An immutable pointer to the canonical link and the nested
     /// name of the link relative to the current model.
-    // TODO (addisu): If the canonical link is inside an interface model, this
+    // TODO(addisu): If the canonical link is inside an interface model, this
     // function returns {nullptr, name}. This can be problematic for downstream
     // applications.
     public: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()

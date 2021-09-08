@@ -23,15 +23,15 @@
 
 #include "test_config.h"
 
-const std::string SDF_TEST_FILE =
-  sdf::testing::TestFile("integration", "urdf_joint_parameters.urdf");
-
 /////////////////////////////////////////////////
 TEST(SDFParser, JointAxisParameters)
 {
+  const std::string sdfTestFile =
+      sdf::testing::TestFile("integration", "urdf_joint_parameters.urdf");
+
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
+  ASSERT_TRUE(sdf::readFile(sdfTestFile, robot));
 
   sdf::ElementPtr model = robot->Root()->GetElement("model");
 
@@ -65,6 +65,13 @@ TEST(SDFParser, JointAxisParameters)
     ASSERT_TRUE(dynamics->HasElement("friction"));
     EXPECT_DOUBLE_EQ(value, dynamics->Get<double>("damping"));
     EXPECT_DOUBLE_EQ(value, dynamics->Get<double>("friction"));
+
+    EXPECT_TRUE(axis->HasElement("limit"));
+    sdf::ElementPtr limit = axis->GetElement("limit");
+    EXPECT_TRUE(limit->HasElement("effort"));
+    EXPECT_TRUE(limit->HasElement("velocity"));
+    EXPECT_DOUBLE_EQ(value, limit->Get<double>("effort"));
+    EXPECT_DOUBLE_EQ(value, limit->Get<double>("velocity"));
   }
   EXPECT_EQ(bitmask, 0x3u);
 
