@@ -23,15 +23,15 @@
 
 #include "test_config.h"
 
-const std::string SDF_TEST_FILE =
-  sdf::testing::TestFile("integration", "provide_feedback.urdf");
-
 /////////////////////////////////////////////////
 TEST(SDFParser, ProvideFeedbackTest)
 {
+  const std::string sdfTestFile =
+      sdf::testing::TestFile("integration", "provide_feedback.urdf");
+
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE, robot));
+  ASSERT_TRUE(sdf::readFile(sdfTestFile, robot));
 
   sdf::ElementPtr root = robot->Root();
   ASSERT_TRUE(root != nullptr);

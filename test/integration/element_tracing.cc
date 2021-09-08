@@ -155,7 +155,7 @@ TEST(ElementTracing, includes)
   const auto worldFile = sdf::testing::TestFile("sdf", "includes.sdf");
   sdf::Root root;
   sdf::Errors errors = root.Load(worldFile);
-  EXPECT_TRUE(errors.empty());
+  EXPECT_TRUE(errors.empty()) << errors;
 
   const std::string xmlPath = "/sdf";
 

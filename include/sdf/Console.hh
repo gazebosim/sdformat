@@ -73,7 +73,7 @@ namespace sdf
       /// \brief Constructor.
       /// \param[in] _stream Pointer to an output stream operator. Can be
       /// NULL/nullptr.
-      public: ConsoleStream(std::ostream *_stream) :
+      public: explicit ConsoleStream(std::ostream *_stream) :
               stream(_stream) {}
 
       /// \brief Redirect whatever is passed in to both our ostream

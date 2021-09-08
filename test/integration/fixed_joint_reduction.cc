@@ -24,27 +24,23 @@
 
 #include "test_config.h"
 
-const std::string SDF_TEST_FILE =
-  sdf::testing::TestFile("integration", "fixed_joint_reduction.urdf");
-const std::string SDF_TEST_FILE_COLLISION =
-  sdf::testing::TestFile("integration",
-      "fixed_joint_reduction_collision.urdf");
-const std::string SDF_TEST_FILE_SIMPLE =
-  sdf::testing::TestFile("integration", "fixed_joint_reduction_simple.urdf");
-const std::string SDF_TEST_FILE_VISUAL =
-  sdf::testing::TestFile("integration", "fixed_joint_reduction_visual.urdf");
-const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION =
-  sdf::testing::TestFile("integration",
-    "fixed_joint_reduction_collision_visual_extension.urdf");
-const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_SDF =
-  sdf::testing::TestFile("integration",
-    "fixed_joint_reduction_collision_visual_extension.sdf");
-const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT =
-  sdf::testing::TestFile("integration",
-    "fixed_joint_reduction_collision_visual_empty_root.urdf");
-const std::string SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF =
-  sdf::testing::TestFile("integration",
-    "fixed_joint_reduction_collision_visual_empty_root.sdf");
+const char SDF_TEST_FILE[] = "fixed_joint_reduction.urdf";
+const char SDF_TEST_FILE_COLLISION[] = "fixed_joint_reduction_collision.urdf";
+const char SDF_TEST_FILE_SIMPLE[] = "fixed_joint_reduction_simple.urdf";
+const char SDF_TEST_FILE_VISUAL[] = "fixed_joint_reduction_visual.urdf";
+const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION[] =
+    "fixed_joint_reduction_collision_visual_extension.urdf";
+const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_SDF[] =
+    "fixed_joint_reduction_collision_visual_extension.sdf";
+const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT[] =
+    "fixed_joint_reduction_collision_visual_empty_root.urdf";
+const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF[] =
+    "fixed_joint_reduction_collision_visual_empty_root.sdf";
+
+static std::string GetFullTestFilePath(const char *_input)
+{
+  return sdf::testing::TestFile("integration", _input);
+}
 
 const double gc_tolerance = 1e-6;
 
@@ -57,7 +53,7 @@ void FixedJointReductionCollisionVisualExtensionEmptyRoot(
 /////////////////////////////////////////////////
 TEST(SDFParser, FixedJointReductionEquivalenceTest)
 {
-  FixedJointReductionEquivalence(SDF_TEST_FILE);
+  FixedJointReductionEquivalence(GetFullTestFilePath(SDF_TEST_FILE));
 }
 
 /////////////////////////////////////////////////
@@ -66,7 +62,7 @@ TEST(SDFParser, FixedJointReductionEquivalenceTest)
 // version of urdfdom (see #63).
 TEST(SDFParser, FixedJointReductionVisualTest)
 {
-  FixedJointReductionEquivalence(SDF_TEST_FILE_VISUAL);
+  FixedJointReductionEquivalence(GetFullTestFilePath(SDF_TEST_FILE_VISUAL));
 }
 
 /////////////////////////////////////////////////
@@ -75,7 +71,7 @@ TEST(SDFParser, FixedJointReductionVisualTest)
 // FixedJointReductionVisualTest
 TEST(SDFParser, FixedJointReductionCollisionTest)
 {
-  FixedJointReductionEquivalence(SDF_TEST_FILE_COLLISION);
+  FixedJointReductionEquivalence(GetFullTestFilePath(SDF_TEST_FILE_COLLISION));
 }
 
 // this updated test will not work for old parser
@@ -88,8 +84,8 @@ TEST(SDFParser, FixedJointReductionCollisionTest)
 TEST(SDFParser, FixedJointReductionCollisionVisualExtensionTest)
 {
   FixedJointReductionCollisionVisualExtension(
-    SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION,
-    SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_SDF);
+    GetFullTestFilePath(SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION),
+    GetFullTestFilePath(SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_SDF));
 }
 
 /////////////////////////////////////////////////
@@ -100,8 +96,9 @@ TEST(SDFParser, FixedJointReductionCollisionVisualExtensionTest)
 TEST(SDFParser, FixedJointReductionCollisionVisualExtensionEmptyRootTest)
 {
   FixedJointReductionCollisionVisualExtensionEmptyRoot(
-    SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT,
-    SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF);
+      GetFullTestFilePath(SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT),
+      GetFullTestFilePath(
+          SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF));
 }
 
 /////////////////////////////////////////////////
@@ -618,17 +615,17 @@ void FixedJointReductionEquivalence(const std::string &_file)
     }
   }
 
-  if (_file.compare(SDF_TEST_FILE) == 0)
+  if (_file.compare(GetFullTestFilePath(SDF_TEST_FILE)) == 0)
   {
     EXPECT_EQ(countCollisions, 7u);
     EXPECT_EQ(countVisuals, 7u);
   }
-  else if (_file.compare(SDF_TEST_FILE_COLLISION) == 0)
+  else if (_file.compare(GetFullTestFilePath(SDF_TEST_FILE_COLLISION)) == 0)
   {
     EXPECT_EQ(countCollisions, 6u);
     EXPECT_EQ(countVisuals, 0u);
   }
-  else if (_file.compare(SDF_TEST_FILE_VISUAL) == 0)
+  else if (_file.compare(GetFullTestFilePath(SDF_TEST_FILE_VISUAL)) == 0)
   {
     EXPECT_EQ(countCollisions, 0u);
     EXPECT_EQ(countVisuals, 6u);
@@ -640,7 +637,7 @@ TEST(SDFParser, FixedJointReductionSimple)
 {
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE_SIMPLE, robot));
+  ASSERT_TRUE(sdf::readFile(GetFullTestFilePath(SDF_TEST_FILE_SIMPLE), robot));
 
   std::map<std::string, double> linkMasses;
   std::map<std::string, ignition::math::Pose3d> linkPoses;

@@ -31,7 +31,8 @@ TODO(eric.cousineau): Move terminology section to sdf_tutorials?
 
 ## Test coverage
 
-[![codecov](https://codecov.io/gh/osrf/sdformat/branch/master/graph/badge.svg)](https://codecov.io/gh/osrf/sdformat)
+<!-- Note: The branch name in the codecov URL should be updated when forward porting -->
+[![codecov](https://codecov.io/gh/ignitionrobotics/sdformat/branch/sdf11/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/sdformat/branch/sdf11)
 
 # Installation
 
