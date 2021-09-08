@@ -201,155 +201,154 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
     return;
   }
 
-  if (_merge && firstElem->GetName() == "model")
+  if (!_merge)
   {
-    if (_parent->GetName() != "model")
-    {
-      Error unsupportedError(
-          ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
-          "Merge-include can not supported when parent element is " +
-              _parent->GetName());
-      _sourceLoc.SetSourceLocationOnError(unsupportedError);
-      _errors.push_back(unsupportedError);
-      return;
-    }
-
-    // Validate included model's frame semantics
-    // We create a throwaway sdf::Root object in order to validate the
-    // included entity.
-    sdf::Root includedRoot;
-    sdf::Errors includeDOMerrors = includedRoot.Load(_includeSDF);
-    _errors.insert(_errors.end(), includeDOMerrors.begin(),
-                   includeDOMerrors.end());
-
-    const sdf::Model *model = includedRoot.Model();
-    if (nullptr == model)
-    {
-      Error unsupportedError(
-          ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
-          "Included model is invalid. Skipping model.");
-      _sourceLoc.SetSourceLocationOnError(unsupportedError);
-      _errors.push_back(unsupportedError);
-      return;
-    }
-
-    ElementPtr proxyModelFrame = _parent->AddElement("frame");
-    const std::string proxyModelFrameName = model->Name() + "__model__";
-
-    proxyModelFrame->GetAttribute("name")->Set(proxyModelFrameName);
-
-    // Determine the canonical link so the proxy frame can be attached to it
-    const std::string canonicalLinkName =
-        model->CanonicalLinkAndRelativeName().second;
-
-    proxyModelFrame->GetAttribute("attached_to")->Set(canonicalLinkName);
-
-    auto modelPose = model->RawPose();
-    if (!model->PlacementFrameName().empty())
-    {
-      // M - model frame (__model__)
-      // R - The `relative_to` frame of the placement frame's //pose element.
-      // See resolveModelPoseWithPlacementFrame in FrameSemantics.cc for
-      // notation and documentation
-      ignition::math::Pose3d X_RM = model->RawPose();
-      sdf::Errors resolveErrors = model->SemanticPose().Resolve(X_RM);
-      _errors.insert(_errors.end(), resolveErrors.begin(), resolveErrors.end());
-      modelPose = X_RM;
-    }
-
-    ElementPtr proxyModelFramePose = proxyModelFrame->AddElement("pose");
-    proxyModelFramePose->Set(modelPose);
-
-    // Set the proxyModelFrame's //pose/@relative_to to the frame used in
-    // //include/pose/@relative_to.
-    std::string modelPoseRelativeTo = model->PoseRelativeTo();
-
-    // If empty, use "__model__", since leaving it empty would make it
-    // relative_to the canonical link frame specified in //frame/@attached_to.
-    if (modelPoseRelativeTo.empty())
-    {
-      modelPoseRelativeTo = "__model__";
-    }
-
-    proxyModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
-
-    auto setAttributeToProxyFrame =
-      [&proxyModelFrameName](const std::string &_attr, sdf::ElementPtr _elem,
-          bool updateIfEmpty)
-      {
-        if (nullptr == _elem)
-          return;
-
-        auto attribute = _elem->GetAttribute(_attr);
-        if (attribute->GetAsString() == "__model__" ||
-            (updateIfEmpty && attribute->GetAsString().empty()))
-        {
-          attribute->Set(proxyModelFrameName);
-        }
-      };
-
-    sdf::ElementPtr nextElem = nullptr;
-    for (auto elem = firstElem->GetFirstElement(); elem; elem = nextElem)
-    {
-      // We need to fetch the next element here before we call elem->SetParent
-      // later in this block.
-      nextElem = elem->GetNextElement();
-
-      if ((elem->GetName() == "link") || (elem->GetName() == "model"))
-      {
-        // Add a pose element even if the element doesn't originally have one
-        setAttributeToProxyFrame("relative_to", elem->GetElement("pose"), true);
-      }
-      else if (elem->GetName() == "frame")
-      {
-        // If //frame/@attached_to is empty, explicitly set it to the name
-        // of the nested model frame.
-        setAttributeToProxyFrame("attached_to", elem, true);
-        setAttributeToProxyFrame("relative_to", elem->GetElementImpl("pose"),
-            false);
-      }
-      else if (elem->GetName() == "joint")
-      {
-        setAttributeToProxyFrame("relative_to", elem->GetElementImpl("pose"),
-            false);
-        // cppcheck-suppress syntaxError
-        if (auto axis = elem->GetElementImpl("axis"); axis)
-        {
-          setAttributeToProxyFrame("expressed_in", axis->GetElementImpl("xyz"),
-                                   false);
-        }
-
-        if (auto axis2 = elem->GetElementImpl("axis2"); axis2)
-        {
-          setAttributeToProxyFrame("expressed_in", axis2->GetElementImpl("xyz"),
-                                   false);
-        }
-      }
-
-      // Only named and custom elements are copied. Other elements, such as
-      // <static>, <self_collide>, and <enable_wind> are ignored.
-      if ((elem->GetName() == "link") || (elem->GetName() == "model") ||
-          (elem->GetName() == "joint") || (elem->GetName() == "frame") ||
-          (elem->GetName() == "plugin") ||
-          (elem->GetName().find(':') != std::string::npos))
-      {
-        elem->SetParent(_parent);
-        _parent->InsertElement(elem);
-      }
-    }
+    firstElem->SetParent(_parent);
+    _parent->InsertElement(firstElem);
+    return;
   }
-  else if (_merge)
+  else if (firstElem->GetName() != "model")
   {
     Error unsupportedError(
         ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
         "Merge-include is only supported for included models");
     _sourceLoc.SetSourceLocationOnError(unsupportedError);
     _errors.push_back(unsupportedError);
+    return;
   }
-  else
+  else if (_parent->GetName() != "model")
   {
-    firstElem->SetParent(_parent);
-    _parent->InsertElement(firstElem);
+    Error unsupportedError(
+        ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
+        "Merge-include does not support parent element of type " +
+            _parent->GetName());
+    _sourceLoc.SetSourceLocationOnError(unsupportedError);
+    _errors.push_back(unsupportedError);
+    return;
+  }
+
+  // Validate included model's frame semantics
+  // We create a throwaway sdf::Root object in order to validate the
+  // included entity.
+  sdf::Root includedRoot;
+  sdf::Errors includeDOMerrors = includedRoot.Load(_includeSDF);
+  _errors.insert(_errors.end(), includeDOMerrors.begin(),
+                 includeDOMerrors.end());
+
+  const sdf::Model *model = includedRoot.Model();
+  if (nullptr == model)
+  {
+    Error unsupportedError(ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
+                           "Included model is invalid. Skipping model.");
+    _sourceLoc.SetSourceLocationOnError(unsupportedError);
+    _errors.push_back(unsupportedError);
+    return;
+  }
+
+  ElementPtr proxyModelFrame = _parent->AddElement("frame");
+  const std::string proxyModelFrameName = model->Name() + "__model__";
+
+  proxyModelFrame->GetAttribute("name")->Set(proxyModelFrameName);
+
+  // Determine the canonical link so the proxy frame can be attached to it
+  const std::string canonicalLinkName =
+      model->CanonicalLinkAndRelativeName().second;
+
+  proxyModelFrame->GetAttribute("attached_to")->Set(canonicalLinkName);
+
+  auto modelPose = model->RawPose();
+  if (!model->PlacementFrameName().empty())
+  {
+    // M - model frame (__model__)
+    // R - The `relative_to` frame of the placement frame's //pose element.
+    // See resolveModelPoseWithPlacementFrame in FrameSemantics.cc for
+    // notation and documentation
+    ignition::math::Pose3d X_RM = model->RawPose();
+    sdf::Errors resolveErrors = model->SemanticPose().Resolve(X_RM);
+    _errors.insert(_errors.end(), resolveErrors.begin(), resolveErrors.end());
+    modelPose = X_RM;
+  }
+
+  ElementPtr proxyModelFramePose = proxyModelFrame->AddElement("pose");
+  proxyModelFramePose->Set(modelPose);
+
+  // Set the proxyModelFrame's //pose/@relative_to to the frame used in
+  // //include/pose/@relative_to.
+  std::string modelPoseRelativeTo = model->PoseRelativeTo();
+
+  // If empty, use "__model__", since leaving it empty would make it
+  // relative_to the canonical link frame specified in //frame/@attached_to.
+  if (modelPoseRelativeTo.empty())
+  {
+    modelPoseRelativeTo = "__model__";
+  }
+
+  proxyModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
+
+  auto setAttributeToProxyFrame =
+      [&proxyModelFrameName](const std::string &_attr, sdf::ElementPtr _elem,
+                             bool updateIfEmpty)
+  {
+    if (nullptr == _elem)
+      return;
+
+    auto attribute = _elem->GetAttribute(_attr);
+    if (attribute->GetAsString() == "__model__" ||
+        (updateIfEmpty && attribute->GetAsString().empty()))
+    {
+      attribute->Set(proxyModelFrameName);
+    }
+  };
+
+  sdf::ElementPtr nextElem = nullptr;
+  for (auto elem = firstElem->GetFirstElement(); elem; elem = nextElem)
+  {
+    // We need to fetch the next element here before we call elem->SetParent
+    // later in this block.
+    nextElem = elem->GetNextElement();
+
+    if ((elem->GetName() == "link") || (elem->GetName() == "model"))
+    {
+      // Add a pose element even if the element doesn't originally have one
+      setAttributeToProxyFrame("relative_to", elem->GetElement("pose"), true);
+    }
+    else if (elem->GetName() == "frame")
+    {
+      // If //frame/@attached_to is empty, explicitly set it to the name
+      // of the nested model frame.
+      setAttributeToProxyFrame("attached_to", elem, true);
+      setAttributeToProxyFrame("relative_to", elem->GetElementImpl("pose"),
+                               false);
+    }
+    else if (elem->GetName() == "joint")
+    {
+      setAttributeToProxyFrame("relative_to", elem->GetElementImpl("pose"),
+                               false);
+      // cppcheck-suppress syntaxError
+      // cppcheck-suppress unmatchedSuppression
+      if (auto axis = elem->GetElementImpl("axis"); axis)
+      {
+        setAttributeToProxyFrame("expressed_in", axis->GetElementImpl("xyz"),
+                                 false);
+      }
+
+      if (auto axis2 = elem->GetElementImpl("axis2"); axis2)
+      {
+        setAttributeToProxyFrame("expressed_in", axis2->GetElementImpl("xyz"),
+                                 false);
+      }
+    }
+
+    // Only named and custom elements are copied. Other elements, such as
+    // <static>, <self_collide>, and <enable_wind> are ignored.
+    if ((elem->GetName() == "link") || (elem->GetName() == "model") ||
+        (elem->GetName() == "joint") || (elem->GetName() == "frame") ||
+        (elem->GetName() == "gripper") || (elem->GetName() == "plugin") ||
+        (elem->GetName().find(':') != std::string::npos))
+    {
+      elem->SetParent(_parent);
+      _parent->InsertElement(elem);
+    }
   }
 }
 

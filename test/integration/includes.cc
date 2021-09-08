@@ -24,7 +24,10 @@
 #include "sdf/Actor.hh"
 #include "sdf/Collision.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Frame.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/Joint.hh"
+#include "sdf/JointAxis.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
 #include "sdf/Mesh.hh"
@@ -395,6 +398,7 @@ TEST(IncludesTest, IncludeUrdf)
 TEST(IncludesTest, MergeInclude)
 {
   using ignition::math::Pose3d;
+  using ignition::math::Vector3d;
   sdf::ParserConfig config;
   config.SetFindCallback(findFileCb);
 
@@ -421,27 +425,86 @@ TEST(IncludesTest, MergeInclude)
     return result;
   };
 
+  // X_PM - Pose of original model (M) in parent model (P) frame. This is the
+  // pose override in the //include tag.
+  const Pose3d X_PM(100, 0, 0, IGN_PI_4, 0, 0);
+  // X_MRw - Pose of the right wheel in the original model (M) as specified in
+  // the SDFormat file.
+  const Pose3d X_MRw(0.554282, -0.625029, -0.025, -1.5707, 0, 0);
+  // X_MLw - Pose of the left wheel in the original model (M) as specified in
+  // the SDF file.
+  const Pose3d X_MLw(0.554282, 0.625029, -0.025, -1.5707, 0, 0);
   // Check some poses
   {
     // Link "chassis"
     auto testFrame = model->LinkByName("chassis");
     ASSERT_NE(nullptr, testFrame);
-    Pose3d testPose = resolvePose(testFrame->SemanticPose());
-    // From SDFormat file
-    Pose3d expectedPose =
-      Pose3d(100, 0, 0, 0, 0, 0) * Pose3d(-0.151427, 0, 0.175, 0, 0, 0);
+    const Pose3d testPose = resolvePose(testFrame->SemanticPose());
+    // X_MC - Pose of chassis link(C) in the original model (M) as specified in
+    // the SDF file.
+    const Pose3d X_MC(-0.151427, 0, 0.175, 0, 0, 0);
+    const Pose3d expectedPose = X_PM * X_MC;
     EXPECT_EQ(expectedPose, testPose);
   }
   {
     // Link "top"
     auto testFrame = model->LinkByName("top");
     ASSERT_NE(nullptr, testFrame);
-    Pose3d testPose = resolvePose(testFrame->SemanticPose());
+    const Pose3d testPose = resolvePose(testFrame->SemanticPose());
     // From SDFormat file
-    Pose3d expectedPose =
-        Pose3d(100, 0, 0, 0, 0, 0) * Pose3d(0.6, 0, 0.7, 0, 0, 0);
+    // X_MT - Pose of top link(T) in the original model (M) as specified in
+    // the SDF file.
+    const Pose3d X_MT(0.6, 0, 0.7, 0, 0, 0);
+    const Pose3d expectedPose = X_PM * X_MT;
     EXPECT_EQ(expectedPose, testPose);
   }
+  {
+    // The pose of right_wheel_joint is specified relative to __model__.
+    auto testFrame = model->JointByName("right_wheel_joint");
+    ASSERT_NE(nullptr, testFrame);
+    // Resolve the pose relative to it's child frame (right_wheel)
+    const Pose3d testPose = resolvePose(testFrame->SemanticPose());
+    // From SDFormat file
+    // X_MJr - Pose of right_wheel_joint (Jr) in the original model (M) as
+    // specified in the SDF file.
+    const Pose3d X_MJr(1, 0, 0, 0, 0, 0);
+    const Pose3d expectedPose = X_MRw.Inverse() * X_MJr;
+    EXPECT_EQ(expectedPose, testPose);
+  }
+  {
+    // The pose of sensor_frame is specified relative to __model__.
+    auto testFrame = model->FrameByName("sensor_frame");
+    ASSERT_NE(nullptr, testFrame);
+    // Resolve the pose relative to it's child frame (right_wheel)
+    const Pose3d testPose = resolvePose(testFrame->SemanticPose());
+    // From SDFormat file
+    // X_MS - Pose of sensor_frame (S) in the original model (M) as
+    // specified in the SDF file.
+    const Pose3d X_MS(0, 1, 0, 0, IGN_PI_4, 0);
+    const Pose3d expectedPose = X_PM * X_MS;
+    EXPECT_EQ(expectedPose, testPose);
+  }
+
+  // Check joint axes
+  {
+    // left_wheel_joint's axis is expressed in __model__.
+    auto joint = model->JointByName("left_wheel_joint");
+    ASSERT_NE(nullptr, joint);
+    auto axis = joint->Axis(0);
+    ASSERT_NE(nullptr, axis);
+    Vector3d xyz;
+    sdf::Errors resolveErrors = axis->ResolveXyz(xyz);
+    EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
+    // From SDFormat file
+    // R_MJl - Rotation of left_wheel_joint (Jl) in the original model (M) as
+    // specified in the SDF file. This is the same as R_MLw since //joint/pose
+    // is identity.
+    const auto R_MJl = X_MLw.Rot();
+    Vector3d xyzInOrigModel(0, 0, 1);
+    Vector3d expectedXyz = R_MJl.Inverse() * xyzInOrigModel;
+    EXPECT_EQ(expectedXyz, xyz);
+  }
+
 
   // Verify that plugins get merged
   auto modelElem = model->Element();
@@ -493,7 +556,7 @@ TEST(IncludesTest, MergeIncludePlacementFrame)
 TEST(IncludesTest, InvalidMergeInclude)
 {
   sdf::ParserConfig config;
-  // Useing the "file://" URI scheme to allow multiple search paths
+  // Using the "file://" URI scheme to allow multiple search paths
   config.AddURIPath("file://", sdf::testing::TestFile("sdf"));
   config.AddURIPath("file://", sdf::testing::TestFile("integration", "model"));
 
@@ -578,7 +641,7 @@ TEST(IncludesTest, InvalidMergeInclude)
     sdf::Errors errors = root.LoadSdfString(sdfString, config);
     ASSERT_FALSE(errors.empty());
     EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
-    EXPECT_EQ("Merge-include can not supported when parent element is world",
+    EXPECT_EQ("Merge-include does not support parent element of type world",
               errors[0].Message());
     EXPECT_EQ(4, errors[0].LineNumber());
   }

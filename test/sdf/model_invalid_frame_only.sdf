@@ -2,6 +2,6 @@
 <sdf version='1.7'>
   <model name="model_invalid_frame_only">
     <frame name="F1"/>
-    <frame name="F2"/> 
+    <frame name="F2"/>
   </model>
 </sdf>
