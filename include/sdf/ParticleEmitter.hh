@@ -17,6 +17,7 @@
 #ifndef SDF_PARTICLE_EMITTER_HH_
 #define SDF_PARTICLE_EMITTER_HH_
 
+#include <memory>
 #include <string>
 
 #include <ignition/math/Pose3.hh>

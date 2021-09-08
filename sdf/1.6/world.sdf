@@ -36,6 +36,7 @@
     </element>
 
     <include filename="pose.sdf" required="0"/>
+    <include filename="plugin.sdf" required="*"/>
   </element>
 
   <element name="gravity" type="vector3" default="0 0 -9.8" required="1">

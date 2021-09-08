@@ -16,6 +16,7 @@
 */
 #include <algorithm>
 #include <string>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -1269,7 +1270,7 @@ Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
 
   // add frame vertices and default edge if both
   // relative_to and attached_to are empty
-  for (const auto &frame: _model->Frames())
+  for (const auto &frame : _model->Frames())
   {
     if (outModel.Count(frame.Name()) > 0)
     {
@@ -1333,7 +1334,7 @@ Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
     outModel.AddEdge({relativeToId, jointId}, joint.PoseInChildFrame());
   }
 
-  for (const auto &frame: _model->Frames())
+  for (const auto &frame : _model->Frames())
   {
     if (frame.AttachedTo().empty())
     {

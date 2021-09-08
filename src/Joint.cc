@@ -55,7 +55,6 @@ class sdf::Joint::Implementation
   public: double threadPitch = 1.0;
 
   /// \brief Joint axis
-  // cppcheck-suppress
   public: std::array<std::optional<JointAxis>, 2> axis;
 
   /// \brief The SDF element pointer used during load.

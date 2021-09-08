@@ -548,14 +548,12 @@ class ValueConstraintsFixture : public ::testing::Test
     this->errBuffer.str("");
   }
 
-  // cppcheck-suppress unusedFunction
   protected: void SetUp() override
   {
     sdf::Console::Instance()->SetQuiet(false);
     oldRdbuf = std::cerr.rdbuf(errBuffer.rdbuf());
   }
 
-  // cppcheck-suppress unusedFunction
   protected: void TearDown() override
   {
     std::cerr.rdbuf(oldRdbuf);
