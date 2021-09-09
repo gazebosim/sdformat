@@ -207,7 +207,7 @@ namespace sdf
                               const std::string &_type,
                               const std::string &_defaultvalue,
                               bool _required,
-                              const std::string &_description="");
+                              const std::string &_description = "");
 
     /// \brief Add a value to this Element.
     /// \param[in] _type Type of data the parameter will hold.
@@ -217,7 +217,7 @@ namespace sdf
     /// \throws sdf::AssertionInternalError if an invalid type is given.
     public: void AddValue(const std::string &_type,
                           const std::string &_defaultValue, bool _required,
-                          const std::string &_description="");
+                          const std::string &_description = "");
 
     /// \brief Add a value to this Element. This override allows passing min and
     /// max values of the parameter.
@@ -242,6 +242,10 @@ namespace sdf
     /// \brief Get the number of attributes.
     /// \return The number of attributes.
     public: size_t GetAttributeCount() const;
+
+    /// \brief Get all the attribute params.
+    /// \return The vector of parameter attributes.
+    public: const Param_V &GetAttributes() const;
 
     /// \brief Get an attribute using an index.
     /// \param[in] _index the index of the attribute to get.
@@ -549,7 +553,7 @@ namespace sdf
                                   const std::string &_type,
                                   const std::string &_defaultValue,
                                   bool _required,
-                                  const std::string &_description="");
+                                  const std::string &_description = "");
 
 
     /// \brief Private data pointer

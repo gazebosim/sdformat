@@ -15,6 +15,7 @@
  *
  */
 #include <cstring>
+#include <memory>
 #include <vector>
 
 #include "sdf/Filesystem.hh"

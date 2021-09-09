@@ -34,7 +34,7 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
-  using XMLDocumentPtr= std::shared_ptr<tinyxml2::XMLDocument>;
+  using XMLDocumentPtr = std::shared_ptr<tinyxml2::XMLDocument>;
   using XMLElementPtr = std::shared_ptr<tinyxml2::XMLElement>;
 
   /// \internal

@@ -119,7 +119,7 @@
     <description>Parameters that are specific to a certain physics engine.</description>
     <element name="simbody" required="0">
       <description>Simbody specific parameters</description>
-      <element name="must_be_loop_joint" type="bool" default="0" required="0">
+      <element name="must_be_loop_joint" type="bool" default="false" required="0">
         <description>Force cut in the multibody graph at this joint.</description>
       </element>
     </element>

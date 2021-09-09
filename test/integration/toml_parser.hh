@@ -102,6 +102,7 @@ struct Value
         {
           using T = std::decay_t<decltype(arg)>;
           // cppcheck-suppress syntaxError
+          // cppcheck-suppress unmatchedSuppression
           if constexpr (std::is_same_v<T, sdf::Param>)
           {
             os << _key << " = " << arg << std::endl;

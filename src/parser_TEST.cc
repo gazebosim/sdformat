@@ -302,7 +302,7 @@ TEST(Parser, SyntaxErrorInValues)
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
-                 "Unable to set value [bad 0 0 0 0 0 ] for key[pose]");
+                 "Unable to set value [bad 0 0 0 0 0] for key [pose]");
     EXPECT_PRED2(contains, buffer.str(), "bad_syntax_pose.sdf:L5");
     EXPECT_PRED2(contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/model[@name=\"robot1\"]/pose:");
@@ -548,14 +548,12 @@ class ValueConstraintsFixture : public ::testing::Test
     this->errBuffer.str("");
   }
 
-  // cppcheck-suppress unusedFunction
   protected: void SetUp() override
   {
     sdf::Console::Instance()->SetQuiet(false);
     oldRdbuf = std::cerr.rdbuf(errBuffer.rdbuf());
   }
 
-  // cppcheck-suppress unusedFunction
   protected: void TearDown() override
   {
     std::cerr.rdbuf(oldRdbuf);

@@ -64,6 +64,9 @@ class sdf::Imu::Implementation
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief True to enable orientation
+  public: bool orientationEnabled = true;
 };
 
 //////////////////////////////////////////////////
@@ -176,6 +179,12 @@ Errors Imu::Load(ElementPtr _sdf)
         elem->GetElement("custom_rpy")->Get<std::string>("parent_frame",
             this->dataPtr->customRpyParentFrame).first;
     }
+  }
+
+  if (_sdf->HasElement("enable_orientation"))
+  {
+    this->dataPtr->orientationEnabled = _sdf->Get<bool>(
+        "enable_orientation", this->dataPtr->orientationEnabled).first;
   }
 
   return errors;
@@ -343,4 +352,16 @@ const std::string &Imu::CustomRpyParentFrame() const
 void Imu::SetCustomRpyParentFrame(const std::string &_frame)
 {
   this->dataPtr->customRpyParentFrame = _frame;
+}
+
+//////////////////////////////////////////////////
+void Imu::SetOrientationEnabled(bool _enabled)
+{
+  this->dataPtr->orientationEnabled = _enabled;
+}
+
+//////////////////////////////////////////////////
+bool Imu::OrientationEnabled() const
+{
+  return this->dataPtr->orientationEnabled;
 }
