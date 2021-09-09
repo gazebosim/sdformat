@@ -1405,15 +1405,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           {
             sdf::ElementPtr poseElem = topLevelElem->GetElement("pose");
 
-            if (poseElemXml->GetText())
-            {
-              poseElem->GetValue()->SetFromString(poseElemXml->GetText());
-            }
-            else
-            {
-              poseElem->GetValue()->Reset();
-            }
-
             const char *relativeTo = poseElemXml->Attribute("relative_to");
             if (relativeTo)
             {
@@ -1422,6 +1413,27 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             else
             {
               poseElem->GetAttribute("relative_to")->Reset();
+            }
+
+            const char *degrees = poseElemXml->Attribute("degrees");
+            {
+              if (degrees)
+              {
+                poseElem->GetAttribute("degrees")->SetFromString(degrees);
+              }
+              else
+              {
+                poseElem->GetAttribute("degrees")->Reset();
+              }
+            }
+
+            if (poseElemXml->GetText())
+            {
+              poseElem->GetValue()->SetFromString(poseElemXml->GetText());
+            }
+            else
+            {
+              poseElem->GetValue()->Reset();
             }
           }
 

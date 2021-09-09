@@ -496,3 +496,34 @@ TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
   EXPECT_PRED2(contains, elemStr, "degrees='0'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
+
+//////////////////////////////////////////////////
+std::string findFileCb(const std::string &_input)
+{
+  return sdf::testing::TestFile("integration", "model", _input);
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, IncludePose)
+{
+  using Pose = ignition::math::Pose3d;
+  
+  sdf::setFindCallback(findFileCb);
+  const std::string testFile = sdf::testing::TestFile(
+      "sdf", "include_pose_1_9.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  ASSERT_TRUE(errors.empty()) << errors;
+  EXPECT_EQ(SDF_PROTOCOL_VERSION, root.Version());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  const sdf::Model *model = world->ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_name", model->Name());
+  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+            model->RawPose());
+}
