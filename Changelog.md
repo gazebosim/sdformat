@@ -1,5 +1,76 @@
 ## libsdformat 10.X
 
+### libsdformat 10.6.0 (2021-09-08)
+
+1. Parse URDF continuous joint effort/velocity limits
+    * [Pull request #684](https://github.com/ignitionrobotics/sdformat/pull/684)
+
+1. Add enable_orientation SDF element to imu
+    * [Pull request #651](https://github.com/ignitionrobotics/sdformat/pull/651)
+
+1. Add a codecheck make target
+    * [Pull request #682](https://github.com/ignitionrobotics/sdformat/pull/682)
+
+1. Refactor sdf::readXml
+    * [Pull request #681](https://github.com/ignitionrobotics/sdformat/pull/681)
+
+1. Upgrade cpplint and fix new errors
+    * [Pull request #680](https://github.com/ignitionrobotics/sdformat/pull/680)
+
+1. BUG: add missing plugin element to include
+    * [Pull request #675](https://github.com/ignitionrobotics/sdformat/pull/675)
+
+1. Added comment reminder to update functions
+    * [Pull request #677](https://github.com/ignitionrobotics/sdformat/pull/677)
+
+1. Adds enable_metrics flag to Sensor.
+    * [Pull request #665](https://github.com/ignitionrobotics/sdformat/pull/665)
+
+1. Add GPS / NavSat sensor to sdf9
+    * [Pull request #453](https://github.com/ignitionrobotics/sdformat/pull/453)
+
+1. Support parsing elements that are not part of the schema
+    * [Pull request #638](https://github.com/ignitionrobotics/sdformat/pull/638)
+
+1. Add lightmap to 1.7 spec and PBR material DOM
+    * [Pull request #429](https://github.com/ignitionrobotics/sdformat/pull/429)
+
+1. Fix urdf link extension tags
+    * [Pull request #628](https://github.com/ignitionrobotics/sdformat/pull/628)
+
+1. Updated material spec
+    * [Pull request #644](https://github.com/ignitionrobotics/sdformat/pull/644)
+
+1. Minor fix to Migration guide
+    * [Pull request #630](https://github.com/ignitionrobotics/sdformat/pull/630)
+
+1. Error: move << operator from .hh to .cc file
+    * [Pull request #625](https://github.com/ignitionrobotics/sdformat/pull/625)
+
+1. Update build system to allow overriding CXX flags and using clang on Linux
+    * [Pull request #621](https://github.com/ignitionrobotics/sdformat/pull/621)
+
+1. Add Element::FindElement as an alternative to Element::GetElement
+    * [Pull request #620](https://github.com/ignitionrobotics/sdformat/pull/620)
+
+1. Add ValidateGraphs methods to Model/World (sdf9)
+    * [Pull request #602](https://github.com/ignitionrobotics/sdformat/pull/602)
+
+1. Fix ABI break
+    * [Pull request #605](https://github.com/ignitionrobotics/sdformat/pull/605)
+
+1. Parameter passing prototype
+    * [Pull request #413](https://github.com/ignitionrobotics/sdformat/pull/413)
+
+1. Port particle scatter ratio param to sdf 1.6
+    * [Pull request #595](https://github.com/ignitionrobotics/sdformat/pull/595)
+
+1. Making PrintValues() and ToString() able to not print default elements
+    * [Pull request #575](https://github.com/ignitionrobotics/sdformat/pull/575)
+
+1. Add API for determining if an element was set by the user
+    * [Pull request #542](https://github.com/ignitionrobotics/sdformat/pull/542)
+
 ### libsdformat 10.5.0 (2021-05-17)
 
 1. Add scatter ratio parameter to Particle Emitter DOM.
@@ -143,7 +214,7 @@
 1. Adds `enable_metrics` flag to Sensor.
     * [Pull request #665](https://github.com/ignitionrobotics/sdformat/pull/665)
 
-1. Add GPS sensor DOM to sdf9
+1. Add GPS / NavSat sensor DOM to sdf9
     * [Pull request #453](https://github.com/ignitionrobotics/sdformat/pull/453)
 
 1. Support parsing elements that are not part of the schema
