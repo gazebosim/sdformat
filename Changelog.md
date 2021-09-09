@@ -20,22 +20,13 @@
 1. BUG: add missing plugin element to include
     * [Pull request #675](https://github.com/ignitionrobotics/sdformat/pull/675)
 
-1. Update codecov badge url
-    * [Pull request #678](https://github.com/ignitionrobotics/sdformat/pull/678)
-
 1. Added comment reminder to update functions
     * [Pull request #677](https://github.com/ignitionrobotics/sdformat/pull/677)
-
-1. Port to new codecov configuration
-    * [Pull request #676](https://github.com/ignitionrobotics/sdformat/pull/676)
-
-1. Add pull request triage to sdf9
-    * [Pull request #673](https://github.com/ignitionrobotics/sdformat/pull/673)
 
 1. Adds enable_metrics flag to Sensor.
     * [Pull request #665](https://github.com/ignitionrobotics/sdformat/pull/665)
 
-1. Add GPS sensor to sdf9
+1. Add GPS / NavSat sensor to sdf9
     * [Pull request #453](https://github.com/ignitionrobotics/sdformat/pull/453)
 
 1. Support parsing elements that are not part of the schema
@@ -223,7 +214,7 @@
 1. Adds `enable_metrics` flag to Sensor.
     * [Pull request #665](https://github.com/ignitionrobotics/sdformat/pull/665)
 
-1. Add GPS sensor DOM to sdf9
+1. Add GPS / NavSat sensor DOM to sdf9
     * [Pull request #453](https://github.com/ignitionrobotics/sdformat/pull/453)
 
 1. Support parsing elements that are not part of the schema
