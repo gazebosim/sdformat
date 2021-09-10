@@ -27,14 +27,12 @@
     * [Pull request #673](https://github.com/ignitionrobotics/sdformat/pull/673)
     * [Pull request #630](https://github.com/ignitionrobotics/sdformat/pull/630)
 
-1. BUG: add missing plugin element to include
-    * [Pull request #675](https://github.com/ignitionrobotics/sdformat/pull/675)
-
 1. Added comment reminder to update functions
     * [Pull request #677](https://github.com/ignitionrobotics/sdformat/pull/677)
 
 1. BUG: add missing plugin element to include
     * [Pull request #668](https://github.com/ignitionrobotics/sdformat/pull/668)
+    * [Pull request #675](https://github.com/ignitionrobotics/sdformat/pull/675)
 
 1. Adds `enable_metrics` flag to Sensor.
     * [Pull request #665](https://github.com/ignitionrobotics/sdformat/pull/665)
@@ -66,14 +64,12 @@
 1. BUG: add missing sdf files to CMakeLists
     * [Pull request #631](https://github.com/ignitionrobotics/sdformat/pull/631)
 
-1. Error: move << operator from .hh to .cc file
-    * [Pull request #625](https://github.com/ignitionrobotics/sdformat/pull/625)
-
 1. Update build system to allow overriding CXX flags and using clang on Linux
     * [Pull request #621](https://github.com/ignitionrobotics/sdformat/pull/621)
 
 1. Error: move << operator from .hh to .cc file
     * [Pull request #623](https://github.com/ignitionrobotics/sdformat/pull/623)
+    * [Pull request #625](https://github.com/ignitionrobotics/sdformat/pull/625)
 
 1. Add Element::FindElement as an alternative to Element::GetElement
     * [Pull request #620](https://github.com/ignitionrobotics/sdformat/pull/620)
