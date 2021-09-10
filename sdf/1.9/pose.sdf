@@ -1,7 +1,7 @@
 <!-- Pose -->
 <element name="pose" type="pose" default="0 0 0   0 0 0" required="0">
   <description>
-    A pose (x, y, z, r, p, y) expressed in the frame named by @relative_to. The first three components (x, y, z) represent the position of the element's origin (in the @relative_to frame) and the last three components (roll, pitch, yaw) represent the orientation of the element as a sequence of intrinsic Euler rotations.
+    A pose (x, y, z, r, p, y) expressed in the frame named by @relative_to. The first three components (x, y, z) represent the position of the element's origin (in the @relative_to frame) and the last three components (roll, pitch, yaw) represent the orientation of the element as a sequence of extrinsic X-Y-Z Euler rotations. See https://sdformat.org/tutorials?tut=specify_pose.
   </description>
 
   <attribute name="relative_to" type="string" default="" required="0">
