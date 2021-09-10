@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<sdf version='1.9'>
+<world name='test_world'>
+  <include>
+    <uri>box</uri>
+    <name>model_name</name>
+
+    <!--<pose>0 10 0 1.570796326794895 0 0</pose>-->
+    <pose degrees="true">0 10 0 90 0 0</pose>
+
+  </include>
+</world>
+</sdf>
