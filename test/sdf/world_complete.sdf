@@ -18,6 +18,14 @@
       <pressure>43.1</pressure>
       <temperature_gradient>4.3</temperature_gradient>
     </atmosphere>
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <world_frame_orientation>ENU</world_frame_orientation>
+      <latitude_deg>-22.9</latitude_deg>
+      <longitude_deg>-43.2</longitude_deg>
+      <elevation>100</elevation>
+      <heading_deg>90</heading_deg>
+    </spherical_coordinates>
     <gui fullscreen="true">
     </gui>
     <scene>
