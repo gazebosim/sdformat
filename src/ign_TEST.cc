@@ -937,6 +937,39 @@ TEST(print, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
 }
 
+//////////////////////////////////////////////////
+static bool contains(const std::string &_a, const std::string &_b)
+{
+  return _a.find(_b) != std::string::npos;
+}
+
+/////////////////////////////////////////////////
+TEST(print, PoseRotationPrintingOptions)
+{
+  std::string path = PROJECT_SOURCE_PATH;
+  path += "/test/sdf/rotations_in_radians.sdf";
+
+  // Default printing
+  std::string output = custom_exec_str(
+      g_ignCommand + " sdf -p" + path + g_sdfVersion);
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output, "<pose>1 2 3 0.0 3.1415 0.0</pose>");
+
+  // Printing with in_degrees
+  output = custom_exec_str(
+      g_ignCommand + " sdf -p in_degrees" + path + g_sdfVersion);
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='1'>1 2 3 0.0 179.994691 0.0</pose>");
+
+  // Printing with snap_to_degrees
+  output = custom_exec_str(
+      g_ignCommand + " sdf -p snap_to_degrees" + path + g_sdfVersion);
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='1'>1 2 3 0.0 180 0.0</pose>");
+}
+
 /////////////////////////////////////////////////
 TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
 {
