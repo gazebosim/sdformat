@@ -1,16 +1,17 @@
 <!-- Pose -->
 <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
-  <description>A position(x,y,z) and orientation(roll, pitch yaw) with respect to the frame named in the relative_to attribute.</description>
+  <description>A position(x,y,z) and orientation(roll, pitch yaw) with respect
+  to the frame named in the relative_to attribute.</description>
 
   <attribute name="relative_to" type="string" default="" required="*">
     <description>
       If specified, this pose is expressed in the named frame. The named frame
-      must be declared both within the same file, and in the same scope
-      (world/model) as the element that has its pose specified by this tag.
+      must be declared within the same scope (world/model) as the element that
+      has its pose specified by this tag.
 
-      If missing, this pose is expressed in the scope's implicit frame. This
-      frame is implicitly defined by the world or model that contains the
-      element that has its pose set by this pose element.
+      If missing, the pose is expressed in the frame of the parent element. The
+      parent element is the grandparent of this pose element, i.e., the parent of
+      the element that has its pose set by this pose element.
 
       Note that @relative_to merely affects an element's initial pose and
       does not affect the element's dynamic movement thereafter.
