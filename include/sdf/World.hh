@@ -18,7 +18,9 @@
 #define SDF_WORLD_HH_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <ignition/math/SphericalCoordinates.hh>
 #include <ignition/math/Vector3.hh>
 #include <ignition/utils/ImplPtr.hh>
 
@@ -136,6 +138,16 @@ namespace sdf
     /// \param[in] _mag The new magnetic field vector.
     /// \sa SphericalCoordinates
     public: void SetMagneticField(const ignition::math::Vector3d &_mag);
+
+    /// \brief Get the spherical coordinates for the world origin.
+    /// \return Spherical coordinates or null if not defined.
+    public: const ignition::math::SphericalCoordinates *
+        SphericalCoordinates() const;
+
+    /// \brief Set the spherical coordinates for the world origin.
+    /// \param[in] _coord The new coordinates for the world origin.
+    public: void SetSphericalCoordinates(
+        const ignition::math::SphericalCoordinates &_coord);
 
     /// \brief Get the number of models that are immediate (not nested) children
     /// of this World object.
