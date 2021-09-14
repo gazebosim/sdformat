@@ -19,7 +19,7 @@
 
       If missing, this frame is attached to the containing scope's frame. Within
       a //world scope this is the implicit world frame, and within a //model
-      scope this is the implicit frame defined by the model's canonical link.
+      scope this is the implicit model frame.
 
       A frame moves jointly with the frame it is @attached_to. This is different
       from //pose/@relative_to. @attached_to defines how the frame is attached
