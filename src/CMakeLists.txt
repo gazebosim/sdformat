@@ -115,6 +115,7 @@ if (BUILD_SDF_TEST)
     Gui_TEST.cc
     Heightmap_TEST.cc
     Imu_TEST.cc
+    InterfaceElements_TEST.cc
     Joint_TEST.cc
     JointAxis_TEST.cc
     Lidar_TEST.cc
