@@ -350,6 +350,14 @@ TEST(Pose1_9, ChangingParentPoseElementAfterSet)
   radiansPoseElem->AddAttribute(
       "rotation_format", "string", "euler_rpy", false);
 
+  sdf::ElementPtr quatPoseElem(new sdf::Element);
+  quatPoseElem->SetName("pose");
+  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  quatPoseElem->AddAttribute("relative_to", "string", "", false);
+  quatPoseElem->AddAttribute("degrees", "bool", "false", false);
+  quatPoseElem->AddAttribute(
+      "rotation_format", "string", "quat_wxyz", false);
+
   // Param from original default attibute
   sdf::ParamPtr valParam = poseElem->GetValue();
   ASSERT_NE(nullptr, valParam);
@@ -358,18 +366,23 @@ TEST(Pose1_9, ChangingParentPoseElementAfterSet)
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
-  // Set parent to Element with degrees attribute true.
-  valParam->SetParentElement(degreesPoseElem);
+  // Set parent to Element with degrees attribute true, as euler_rpy.
+  ASSERT_TRUE(valParam->SetParentElement(degreesPoseElem));
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
-  // Set parent to Element with degrees attribute false.
-  valParam->SetParentElement(radiansPoseElem);
+  // Set parent to Element with degrees attribute false, as euler_rpy.
+  ASSERT_TRUE(valParam->SetParentElement(radiansPoseElem));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+
+  // Set parent to Element with degrees attribute false, as quat_wxyz.
+  ASSERT_TRUE(valParam->SetParentElement(quatPoseElem));
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
   // Remove parent
-  valParam->SetParentElement(nullptr);
+  ASSERT_TRUE(valParam->SetParentElement(nullptr));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 }
 
@@ -405,6 +418,14 @@ TEST(Pose1_9, ChangingParentPoseElementAfterParamSetFromString)
   radiansPoseElem->AddAttribute(
       "rotation_format", "string", "euler_rpy", false);
 
+  sdf::ElementPtr quatPoseElem(new sdf::Element);
+  quatPoseElem->SetName("pose");
+  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  quatPoseElem->AddAttribute("relative_to", "string", "", false);
+  quatPoseElem->AddAttribute("degrees", "bool", "false", false);
+  quatPoseElem->AddAttribute(
+      "rotation_format", "string", "quat_wxyz", false);
+
   // Param from original default attibute
   sdf::ParamPtr valParam = poseElem->GetValue();
   ASSERT_NE(nullptr, valParam);
@@ -415,17 +436,17 @@ TEST(Pose1_9, ChangingParentPoseElementAfterParamSetFromString)
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
   // Set parent to Element with degrees attribute true.
-  valParam->SetParentElement(degreesPoseElem);
+  ASSERT_TRUE(valParam->SetParentElement(degreesPoseElem));
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
 
   // Set parent to Element with degrees attribute false.
-  valParam->SetParentElement(radiansPoseElem);
+  ASSERT_TRUE(valParam->SetParentElement(radiansPoseElem));
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
   // Remove parent
-  valParam->SetParentElement(nullptr);
+  ASSERT_TRUE(valParam->SetParentElement(nullptr));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 }
 
@@ -451,7 +472,7 @@ TEST(Pose1_9, ChangingAttributeOfParentElement)
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
-  // Changing to degrees without reparsing, value will remain the same
+  // Changing @degrees to true without reparsing, value will remain the same
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
   ASSERT_TRUE(degreesAttrib->Set<bool>(true));
@@ -463,8 +484,45 @@ TEST(Pose1_9, ChangingAttributeOfParentElement)
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
 
-  // Changing back to radians
+  // Changing @rotation_format to euler_rpy without reparsing, value remains the
+  // same
+  sdf::ParamPtr rotationFormatAttrib =
+      poseElem->GetAttribute("rotation_format");
+  ASSERT_NE(nullptr, rotationFormatAttrib);
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("euler_rpy"));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
+
+  // Values will still remain the same after reparsing
+  ASSERT_TRUE(valParam->Reparse());
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
+
+  // Changing @rotation_format to quat_wxyz without reparsing, value remains the
+  // same
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_wxyz"));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
+
+  // Reparsing will fail, value remains the same as before
+  EXPECT_FALSE(valParam->Reparse());
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
+
+  // Changing @rotation_format to something invalid without reparsing, value
+  // remains the same
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("invalid_format"));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
+
+  // Reparsing will fail, value remains the same as before
+  EXPECT_FALSE(valParam->Reparse());
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
+
+  // Changing back to default values
   ASSERT_TRUE(degreesAttrib->Set<bool>(false));
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("euler_rpy"));
   ASSERT_TRUE(valParam->Reparse());
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
@@ -532,6 +590,112 @@ TEST(Pose1_9, ToStringWithDegreesTrue)
   std::string elemStr = poseElem->ToString("");
   EXPECT_PRED2(contains, elemStr, "degrees='1'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, ToStringWithEulerRPY)
+{
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+
+  sdf::ParamPtr rotationFormatAttrib =
+      poseElem->GetAttribute("rotation_format");
+  ASSERT_NE(nullptr, rotationFormatAttrib);
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("euler_rpy"));
+
+  sdf::ParamPtr poseValueParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, poseValueParam);
+  EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
+
+  std::string elemStr = poseElem->ToString("");
+  EXPECT_PRED2(contains, elemStr, "rotation_format='euler_rpy'");
+  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, ToStringWithEulerRPYDegreesTrue)
+{
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+
+  sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
+  ASSERT_NE(nullptr, degreesAttrib);
+  ASSERT_TRUE(degreesAttrib->Set<bool>(true));
+
+  sdf::ParamPtr rotationFormatAttrib =
+      poseElem->GetAttribute("rotation_format");
+  ASSERT_NE(nullptr, rotationFormatAttrib);
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("euler_rpy"));
+
+  sdf::ParamPtr poseValueParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, poseValueParam);
+  EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
+
+  std::string elemStr = poseElem->ToString("");
+  EXPECT_PRED2(contains, elemStr, "degrees='1'");
+  EXPECT_PRED2(contains, elemStr, "rotation_format='euler_rpy'");
+  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, ToStringWithQuatWXYZ)
+{
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+
+  sdf::ParamPtr rotationFormatAttrib =
+      poseElem->GetAttribute("rotation_format");
+  ASSERT_NE(nullptr, rotationFormatAttrib);
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_wxyz"));
+
+  sdf::ParamPtr poseValueParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, poseValueParam);
+  EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0.7071068 0 0"));
+
+  std::string elemStr = poseElem->ToString("");
+  EXPECT_PRED2(contains, elemStr, "rotation_format='quat_wxyz'");
+  EXPECT_PRED2(contains, elemStr, "0.7071068 0.7071068 0 0");
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, ToStringWithQuatWXYZDegreesFalse)
+{
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+
+  sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
+  ASSERT_NE(nullptr, degreesAttrib);
+  ASSERT_TRUE(degreesAttrib->Set<bool>(false));
+
+  sdf::ParamPtr rotationFormatAttrib =
+      poseElem->GetAttribute("rotation_format");
+  ASSERT_NE(nullptr, rotationFormatAttrib);
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_wxyz"));
+
+  sdf::ParamPtr poseValueParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, poseValueParam);
+  EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0.7071068 0 0"));
+
+  std::string elemStr = poseElem->ToString("");
+  EXPECT_PRED2(contains, elemStr, "degrees='0'");
+  EXPECT_PRED2(contains, elemStr, "rotation_format='quat_wxyz'");
+  EXPECT_PRED2(contains, elemStr, "0.7071068 0.7071068 0 0");
 }
 
 //////////////////////////////////////////////////
@@ -613,6 +777,84 @@ TEST(Pose1_9, IncludePoseInModelString)
 }
 
 //////////////////////////////////////////////////
+TEST(Pose1_9, IncludeEulerRPYPoseInModelString)
+{
+  using Pose = ignition::math::Pose3d;
+
+  sdf::setFindCallback(findFileCb);
+
+  std::ostringstream stream;
+  stream
+      << "<sdf version='1.9'>"
+      << "  <model name='parent'>"
+      << "    <include>"
+      << "      <uri>box</uri>"
+      << "      <pose degrees='true' rotation_format='euler_rpy'>"
+      << "        0 10 0 90 0 0"
+      << "      </pose>"
+      << "    </include>"
+      << "  </model>"
+      << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  sdf::Root root;
+  errors = root.Load(sdfParsed);
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+
+  auto boxModel = model->ModelByName("box");
+  ASSERT_NE(nullptr, boxModel);
+  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+      boxModel->RawPose());
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, IncludeQuatWXYZPoseIn)
+{
+  using Pose = ignition::math::Pose3d;
+
+  sdf::setFindCallback(findFileCb);
+
+  std::ostringstream stream;
+  stream
+      << "<sdf version='1.9'>"
+      << "  <model name='parent'>"
+      << "    <include>"
+      << "      <uri>box</uri>"
+      << "      <pose rotation_format='quat_wxyz'>"
+      << "        0 10 0 0.7071068 0.7071068 0 0"
+      << "      </pose>"
+      << "    </include>"
+      << "  </model>"
+      << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  sdf::Root root;
+  errors = root.Load(sdfParsed);
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+
+  auto boxModel = model->ModelByName("box");
+  ASSERT_NE(nullptr, boxModel);
+  EXPECT_EQ(Pose(0, 10, 0, 0.7071068, 0.7071068, 0, 0),
+      boxModel->RawPose());
+}
+
+//////////////////////////////////////////////////
 TEST(Pose1_9, IncludePoseInWorld)
 {
   using Pose = ignition::math::Pose3d;
@@ -632,7 +874,12 @@ TEST(Pose1_9, IncludePoseInWorld)
 
   const sdf::Model *model = world->ModelByIndex(0);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_name", model->Name());
+  ASSERT_EQ("first_box", model->Name());
   EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
             model->RawPose());
+
+  model = world->ModelByIndex(1);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("second_box", model->Name());
+  EXPECT_EQ(Pose(0, 10, 0, 0.7071068, 0.7071068, 0, 0), model->RawPose());
 }

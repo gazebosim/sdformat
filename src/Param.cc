@@ -795,10 +795,18 @@ ElementPtr Param::GetParentElement() const
 }
 
 //////////////////////////////////////////////////
-void Param::SetParentElement(ElementPtr _parentElement)
+bool Param::SetParentElement(ElementPtr _parentElement)
 {
+  auto prevParentElement = this->dataPtr->parentElement;
+
   this->dataPtr->parentElement = _parentElement;
-  this->Reparse();
+  if (!this->Reparse())
+  {
+    this->dataPtr->parentElement = prevParentElement;
+    return false;
+  }
+
+  return true;
 }
 
 //////////////////////////////////////////////////
