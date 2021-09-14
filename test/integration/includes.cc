@@ -668,6 +668,6 @@ TEST(IncludesTest, InvalidMergeInclude)
     EXPECT_EQ(0u, errors[0].Message().find("Unable to read file"));
     EXPECT_EQ(5, *errors[0].LineNumber());
     EXPECT_TRUE(buffer.str().find("Error parsing XML in file") !=
-                std::string::npos);
+                std::string::npos) << buffer.str();
   }
 }

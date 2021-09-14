@@ -1,5 +1,5 @@
 <?xml version='1.0' ?>
-<sdf version='1.7' xmlns:custom="http://example.org/schema">
+<sdf version='1.9' xmlns:custom="http://example.org/schema">
   <model name='vehicle' canonical_link='top'>
     <pose>0 0 0.325 0 -0 0</pose>
 
