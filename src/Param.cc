@@ -451,7 +451,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
 {
   StringStreamClassicLocale ss(_input);
   std::string token;
-  std::array<double, 6> values;
+  std::array<double, 7> values;
   std::size_t valueIndex = 0;
   double v;
   bool isValidPose = true;
@@ -485,9 +485,9 @@ bool ParsePoseUsingStringStream(const std::string &_input,
       break;
     }
 
-    if (valueIndex >= 6u)
+    if (valueIndex >= 7u)
     {
-      sdferr << "Pose values can only accept 6 values.\n";
+      sdferr << "Pose values can not accept more than 7 values.\n";
       isValidPose = false;
       break;
     }
@@ -498,19 +498,17 @@ bool ParsePoseUsingStringStream(const std::string &_input,
   if (!isValidPose)
     return false;
 
-  if (valueIndex != 6u)
-  {
-    sdferr << "The value for //pose must have 6 values, but "
-        << valueIndex << " were found instead.\n";
-    return false;
-  }
-
   const bool defaultParseAsDegrees = false;
   bool parseAsDegrees = defaultParseAsDegrees;
 
+  const std::string defaultRotationFormat = "euler_rpy";
+  std::string rotationFormat = defaultRotationFormat;
+
   for (const auto &p : _attributes)
   {
-    if (p->GetKey() == "degrees")
+    const std::string key = p->GetKey();
+
+    if (key == "degrees")
     {
       if (!p->Get<bool>(parseAsDegrees))
       {
@@ -518,20 +516,59 @@ bool ParsePoseUsingStringStream(const std::string &_input,
             "//pose[@degrees].\n";
         return false;
       }
-      break;
+    }
+    else if (key == "rotation_format")
+    {
+      rotationFormat = p->GetAsString();
     }
   }
 
-  if (parseAsDegrees)
+  auto isDesiredSize =
+      [&valueIndex](const std::string &_format, std::size_t _size)
   {
+    if (valueIndex != _size)
+    {
+      sdferr << "The value for //pose[@rotation_format='" << _format
+          << "'] must have " << _size << " values, but " << valueIndex
+          << " were found instead.\n";
+      return false;
+    }
+    return true;
+  };
+
+  if (rotationFormat == "euler_rpy" && isDesiredSize(rotationFormat, 6u))
+  {
+    if (parseAsDegrees)
+    {
+      _value = ignition::math::Pose3d(values[0], values[1], values[2],
+          IGN_DTOR(values[3]), IGN_DTOR(values[4]), IGN_DTOR(values[5]));
+    }
+    else
+    {
+      _value = ignition::math::Pose3d(values[0], values[1], values[2],
+          values[3], values[4], values[5]);
+    }
+  }
+  else if (rotationFormat == "quat_wxyz" && isDesiredSize(rotationFormat, 7u))
+  {
+    if (parseAsDegrees)
+    {
+      sdferr << "The attribute //pose[@degrees='true'] does not apply when the "
+          << "parsing quaternions, //pose[@rotation_format='quat_wxyz'].\n";
+      return false;
+    }
+
     _value = ignition::math::Pose3d(values[0], values[1], values[2],
-        IGN_DTOR(values[3]), IGN_DTOR(values[4]), IGN_DTOR(values[5]));
+        values[3], values[4], values[5], values[6]);
   }
   else
   {
-    _value = ignition::math::Pose3d(values[0], values[1], values[2],
-        values[3], values[4], values[5]);
+    sdferr << "Undefined attribute //pose[@rotation_format='"
+        << rotationFormat << "'], only 'euler_rpy' and 'quat_wxyz'"
+        << " is supported.\n";
+    return false;
   }
+
   return true;
 }
 
