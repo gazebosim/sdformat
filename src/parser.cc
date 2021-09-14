@@ -1017,6 +1017,200 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 }
 
 //////////////////////////////////////////////////
+/// Helper function that reads all the attributes of an element from TinyXML to
+/// sdf::Element.
+/// \param[in] _xml Pointer to XML element to read the attributes from.
+/// \param[in,out] _sdf sdf::Element pointer to parse the attribute data into.
+/// \param[in] _config Custom parser configuration
+/// \param[in] _errorSourcePath Source of the XML document.
+/// \param[out] _errors Captures errors found during parsing.
+/// \return True on success, false on error.
+static bool readAttributes(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
+    const ParserConfig &_config, const std::string &_errorSourcePath,
+    Errors &_errors)
+{
+  // A list of parent element-attributes pairs where a frame name is referenced
+  // in the attribute. This is used to check if the reference is invalid.
+  std::set<std::pair<std::string, std::string>> frameReferenceAttributes {
+      // //frame/[@attached_to]
+      {"frame", "attached_to"},
+      // //pose/[@relative_to]
+      {"pose", "relative_to"},
+      // //model/[@placement_frame]
+      {"model", "placement_frame"},
+      // //model/[@canonical_link]
+      {"model", "canonical_link"},
+      // //sensor/imu/orientation_reference_frame/custom_rpy/[@parent_frame]
+      {"custom_rpy", "parent_frame"}};
+
+  const tinyxml2::XMLAttribute *attribute = _xml->FirstAttribute();
+
+  unsigned int i = 0;
+
+  // Iterate over all the attributes defined in the give XML element
+  while (attribute)
+  {
+    // Avoid printing a warning message for missing attributes if a namespaced
+    // attribute is found
+    if (std::strchr(attribute->Name(), ':') != nullptr)
+    {
+      _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
+      _sdf->GetAttribute(attribute->Name())->SetFromString(attribute->Value());
+      attribute = attribute->Next();
+      continue;
+    }
+
+    // Construct the Xml path of the current attribute
+    const std::string attributeXmlPath = _sdf->XmlPath() + "[@" +
+        attribute->Name() + "=\"" + attribute->Value() + "\"]";
+
+    // Find the matching attribute in SDF
+    for (i = 0; i < _sdf->GetAttributeCount(); ++i)
+    {
+      ParamPtr p = _sdf->GetAttribute(i);
+      if (p->GetKey() == attribute->Name())
+      {
+        if (frameReferenceAttributes.count(
+                std::make_pair(_sdf->GetName(), attribute->Name())) != 0)
+        {
+          if (!isValidFrameReference(attribute->Value()))
+          {
+            Error err(
+                ErrorCode::ATTRIBUTE_INVALID,
+                "'" + std::string(attribute->Value()) +
+                "' is reserved; it cannot be used as a value of "
+                "attribute [" + p->GetKey() + "]",
+                _errorSourcePath, attribute->GetLineNum());
+            err.SetXmlPath(attributeXmlPath);
+            _errors.push_back(err);
+          }
+        }
+        // Set the value of the SDF attribute
+        if (!p->SetFromString(attribute->Value()))
+        {
+          Error err(
+              ErrorCode::ATTRIBUTE_INVALID,
+              "Unable to read attribute[" + p->GetKey() + "]",
+              _errorSourcePath, attribute->GetLineNum());
+          err.SetXmlPath(attributeXmlPath);
+          _errors.push_back(err);
+          return false;
+        }
+        break;
+      }
+    }
+
+    if (i == _sdf->GetAttributeCount())
+    {
+      std::stringstream ss;
+      ss << "XML Attribute[" << attribute->Name()
+              << "] in element[" << _xml->Value()
+              << "] not defined in SDF.\n";
+      Error err(
+          ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+          ss.str(), _errorSourcePath, _xml->GetLineNum());
+      err.SetXmlPath(attributeXmlPath);
+      enforceConfigurablePolicyCondition(
+          _config.WarningsPolicy(), err, _errors);
+    }
+
+    attribute = attribute->Next();
+  }
+
+  // Check that all required attributes have been set
+  for (i = 0; i < _sdf->GetAttributeCount(); ++i)
+  {
+    ParamPtr p = _sdf->GetAttribute(i);
+    if (p->GetRequired() && !p->GetSet())
+    {
+      Error err(
+          ErrorCode::ATTRIBUTE_MISSING,
+          "Required attribute[" + p->GetKey() + "] in element[" + _xml->Value()
+          + "] is not specified in SDF.",
+          _errorSourcePath, _xml->GetLineNum());
+      err.SetXmlPath(_sdf->XmlPath());
+      _errors.push_back(err);
+      return false;
+    }
+  }
+
+  return true;
+}
+
+//////////////////////////////////////////////////
+/// Helper function to resolve file name from an //include/uri element.
+/// \param[in] _includeXml Pointer to TinyXML object that corresponds to the
+/// //include tag
+/// \param[in] _config Custom parser configuration
+/// \param[in] _includeXmlPath The XML path of the //include element used for
+/// error messages.
+/// \param[in] _errorSourcePath Source of the XML document.
+/// \param[out] _fileName Resolved file name.
+/// \param[out] _errors Captures errors found during parsing.
+/// \return True if the file name is successfully resolved, false on error.
+static bool resolveFileNameFromUri(tinyxml2::XMLElement *_includeXml,
+    const sdf::ParserConfig &_config, const std::string _includeXmlPath,
+    const std::string &_errorSourcePath, std::string &_fileName,
+    Errors &_errors)
+{
+  tinyxml2::XMLElement *uriElement = _includeXml->FirstChildElement("uri");
+  const std::string uriXmlPath = _includeXmlPath + "/uri";
+  if (uriElement)
+  {
+    const std::string uri = uriElement->GetText();
+    const std::string modelPath = sdf::findFile(uri, true, true, _config);
+
+    // Test the model path
+    if (modelPath.empty())
+    {
+      Error err(ErrorCode::URI_LOOKUP, "Unable to find uri[" + uri + "]",
+          _errorSourcePath, uriElement->GetLineNum());
+      err.SetXmlPath(uriXmlPath);
+      _errors.push_back(err);
+      return false;
+    }
+    else
+    {
+      if (sdf::filesystem::is_directory(modelPath))
+      {
+        // Get the model.config filename
+        _fileName = getModelFilePath(modelPath);
+
+        if (_fileName.empty())
+        {
+          Error err(
+              ErrorCode::URI_LOOKUP,
+              "Unable to resolve uri[" + uri + "] to model path [" +
+              modelPath + "] since it does not contain a model.config " +
+              "file.",
+              _errorSourcePath, uriElement->GetLineNum());
+          err.SetXmlPath(uriXmlPath);
+          _errors.push_back(err);
+          return false;
+        }
+      }
+      else
+      {
+        // This is a file path and since sdf::findFile returns an empty
+        // string if the file doesn't exist, we don't have to check for
+        // existence again here.
+        _fileName = modelPath;
+      }
+    }
+  }
+  else
+  {
+    Error err(ErrorCode::ATTRIBUTE_MISSING,
+        "<include> element missing 'uri' attribute", _errorSourcePath,
+        _includeXml->GetLineNum());
+    err.SetXmlPath(_includeXmlPath);
+    _errors.push_back(err);
+    return false;
+  }
+  return true;
+}
+
+//////////////////////////////////////////////////
 bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     const ParserConfig &_config, const std::string &_source, Errors &_errors)
 {
@@ -1079,110 +1273,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       _sdf->SetLineNumber(lineNumber.value());
   }
 
-  // A list of parent element-attributes pairs where a frame name is referenced
-  // in the attribute. This is used to check if the reference is invalid.
-  std::set<std::pair<std::string, std::string>> frameReferenceAttributes {
-      // //frame/[@attached_to]
-      {"frame", "attached_to"},
-      // //pose/[@relative_to]
-      {"pose", "relative_to"},
-      // //model/[@placement_frame]
-      {"model", "placement_frame"},
-      // //model/[@canonical_link]
-      {"model", "canonical_link"},
-      // //sensor/imu/orientation_reference_frame/custom_rpy/[@parent_frame]
-      {"custom_rpy", "parent_frame"}};
-
-  const tinyxml2::XMLAttribute *attribute = _xml->FirstAttribute();
-
-  unsigned int i = 0;
-
-  // Iterate over all the attributes defined in the given XML element
-  while (attribute)
-  {
-    // Avoid printing a warning message for missing attributes if a namespaced
-    // attribute is found
-    if (std::strchr(attribute->Name(), ':') != nullptr)
-    {
-      _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
-      _sdf->GetAttribute(attribute->Name())->SetFromString(attribute->Value());
-      attribute = attribute->Next();
-      continue;
-    }
-
-    // Construct the Xml path of the current attribute
-    const std::string attributeXmlPath = _sdf->XmlPath() + "[@" +
-        attribute->Name() + "=\"" + attribute->Value() + "\"]";
-
-    // Find the matching attribute in SDF
-    for (i = 0; i < _sdf->GetAttributeCount(); ++i)
-    {
-      ParamPtr p = _sdf->GetAttribute(i);
-      if (p->GetKey() == attribute->Name())
-      {
-        if (frameReferenceAttributes.count(
-                std::make_pair(_sdf->GetName(), attribute->Name())) != 0)
-        {
-          if (!isValidFrameReference(attribute->Value()))
-          {
-            Error err(
-                ErrorCode::ATTRIBUTE_INVALID,
-                "'" + std::string(attribute->Value()) +
-                "' is reserved; it cannot be used as a value of "
-                "attribute [" + p->GetKey() + "]",
-                errorSourcePath, attribute->GetLineNum());
-            err.SetXmlPath(attributeXmlPath);
-            _errors.push_back(err);
-          }
-        }
-        // Set the value of the SDF attribute
-        if (!p->SetFromString(attribute->Value()))
-        {
-          Error err(
-              ErrorCode::ATTRIBUTE_INVALID,
-              "Unable to read attribute[" + p->GetKey() + "]",
-              errorSourcePath, attribute->GetLineNum());
-          err.SetXmlPath(attributeXmlPath);
-          _errors.push_back(err);
-          return false;
-        }
-        break;
-      }
-    }
-
-    if (i == _sdf->GetAttributeCount())
-    {
-      std::stringstream ss;
-      ss << "XML Attribute[" << attribute->Name()
-              << "] in element[" << _xml->Value()
-              << "] not defined in SDF.\n";
-      Error err(
-          ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
-          ss.str(), errorSourcePath, _xml->GetLineNum());
-      err.SetXmlPath(attributeXmlPath);
-      enforceConfigurablePolicyCondition(
-          _config.WarningsPolicy(), err, _errors);
-    }
-
-    attribute = attribute->Next();
-  }
-
-  // Check that all required attributes have been set
-  for (i = 0; i < _sdf->GetAttributeCount(); ++i)
-  {
-    ParamPtr p = _sdf->GetAttribute(i);
-    if (p->GetRequired() && !p->GetSet())
-    {
-      Error err(
-          ErrorCode::ATTRIBUTE_MISSING,
-          "Required attribute[" + p->GetKey() + "] in element[" + _xml->Value()
-          + "] is not specified in SDF.",
-          errorSourcePath, _xml->GetLineNum());
-      err.SetXmlPath(_sdf->XmlPath());
-      _errors.push_back(err);
-      return false;
-    }
-  }
+  if (!readAttributes(_xml, _sdf, _config, errorSourcePath, _errors))
+    return false;
 
   if (_sdf->GetCopyChildren())
   {
@@ -1202,69 +1294,15 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     {
       if (std::string("include") == elemXml->Value())
       {
-        std::string modelPath;
-        std::string uri;
         tinyxml2::XMLElement *uriElement = elemXml->FirstChildElement("uri");
 
         const std::string includeXmlPath = _sdf->XmlPath() + "/include[" +
             std::to_string(++includeElemIndex) + "]";
         const std::string uriXmlPath = includeXmlPath + "/uri";
 
-        if (uriElement)
-        {
-          uri = uriElement->GetText();
-          modelPath = sdf::findFile(uri, true, true, _config);
-
-          // Test the model path
-          if (modelPath.empty())
-          {
-            Error err(
-                ErrorCode::URI_LOOKUP,
-                "Unable to find uri[" + uri + "]",
-                errorSourcePath, uriElement->GetLineNum());
-            err.SetXmlPath(uriXmlPath);
-            _errors.push_back(err);
-            continue;
-          }
-          else
-          {
-            if (sdf::filesystem::is_directory(modelPath))
-            {
-              // Get the model.config filename
-              filename = getModelFilePath(modelPath);
-
-              if (filename.empty())
-              {
-                Error err(
-                    ErrorCode::URI_LOOKUP,
-                    "Unable to resolve uri[" + uri + "] to model path [" +
-                    modelPath + "] since it does not contain a model.config " +
-                    "file.",
-                    errorSourcePath, uriElement->GetLineNum());
-                err.SetXmlPath(uriXmlPath);
-                _errors.push_back(err);
-                continue;
-              }
-            }
-            else
-            {
-              // This is a file path and since sdf::findFile returns an empty
-              // string if the file doesn't exist, we don't have to check for
-              // existence again here.
-              filename = modelPath;
-            }
-          }
-        }
-        else
-        {
-          Error err(
-              ErrorCode::ATTRIBUTE_MISSING,
-              "<include> element missing 'uri' attribute",
-              errorSourcePath, elemXml->GetLineNum());
-          err.SetXmlPath(includeXmlPath);
-          _errors.push_back(err);
+        if (!resolveFileNameFromUri(elemXml, _config, includeXmlPath,
+                errorSourcePath, filename, _errors))
           continue;
-        }
 
         // If the file is not an SDFormat file, it is assumed that it will
         // handled by a custom parser, so fall through and add the include

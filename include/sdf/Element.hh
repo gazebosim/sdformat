@@ -207,7 +207,7 @@ namespace sdf
                               const std::string &_type,
                               const std::string &_defaultvalue,
                               bool _required,
-                              const std::string &_description="");
+                              const std::string &_description = "");
 
     /// \brief Add a value to this Element.
     /// \param[in] _type Type of data the parameter will hold.
@@ -217,7 +217,7 @@ namespace sdf
     /// \throws sdf::AssertionInternalError if an invalid type is given.
     public: void AddValue(const std::string &_type,
                           const std::string &_defaultValue, bool _required,
-                          const std::string &_description="");
+                          const std::string &_description = "");
 
     /// \brief Add a value to this Element. This override allows passing min and
     /// max values of the parameter.
@@ -557,7 +557,7 @@ namespace sdf
                                   const std::string &_type,
                                   const std::string &_defaultValue,
                                   bool _required,
-                                  const std::string &_description="");
+                                  const std::string &_description = "");
 
 
     /// \brief Private data pointer
