@@ -33,6 +33,7 @@ set (sources
   Gui.cc
   Heightmap.cc
   ign.cc
+  InterfaceElements.cc
   InterfaceFrame.cc
   InterfaceJoint.cc
   InterfaceLink.cc
