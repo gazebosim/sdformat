@@ -12,7 +12,7 @@
       frame is implicitly defined by the world or model that contains the
       element that has its pose set by this pose element.
 
-      Note that @relative_to merely affects an element's initial position and
+      Note that @relative_to merely affects an element's initial pose and
       does not affect the element's dynamic movement thereafter.
     </description>
   </attribute>
