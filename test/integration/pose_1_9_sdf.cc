@@ -95,6 +95,56 @@ TEST(Pose1_9, ModelPose)
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_with_messy_delimiters", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
+
+  model = world->ModelByIndex(9);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_empty_pose_euler_rpy", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  model = world->ModelByIndex(10);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_empty_pose_euler_rpy_degrees_true", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  model = world->ModelByIndex(11);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_empty_pose_euler_rpy_degrees_false", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  model = world->ModelByIndex(12);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_empty_pose_quat_wxyz", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  model = world->ModelByIndex(13);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_empty_pose_quat_wxyz_degrees_false", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  model = world->ModelByIndex(14);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_euler_rpy", model->Name());
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
+
+  model = world->ModelByIndex(15);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_euler_rpy_degrees_false", model->Name());
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
+
+  model = world->ModelByIndex(16);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_euler_rpy_degrees_true", model->Name());
+  EXPECT_EQ(Pose(1, 2, 3, 90, 180, 270), model->RawPose());
+
+  model = world->ModelByIndex(17);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_quat_wxyz", model->Name());
+  EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), model->RawPose());
+
+  model = world->ModelByIndex(18);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_quat_wxyz_degrees_false", model->Name());
+  EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), model->RawPose());
 }
 
 //////////////////////////////////////////////////
