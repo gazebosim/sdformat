@@ -15,7 +15,7 @@
       http://sdformat.org/tutorials?tut=pose_frame_semantics&ver=1.5 and
       http://sdformat.org/tutorials?tut=pose_frame_semantics&ver=1.7
 
-      Note that @relative_to merely affects an element's initial position and
+      Note that @relative_to merely affects an element's initial pose and
       does not affect the element's dynamic movement thereafter.
 
       New in v1.8: @relative_to may use frames of nested scopes. In this case,
