@@ -652,6 +652,15 @@ TEST(IncludesTest, InvalidMergeInclude)
     std::stringstream buffer;
     sdf::testing::RedirectConsoleStream redir(
         sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+        []
+        {
+        sdf::Console::Instance()->SetQuiet(true);
+        });
+#endif
+
 
     const std::string sdfString = R"(
     <sdf version="1.9">
