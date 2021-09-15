@@ -9,9 +9,11 @@
       must be declared within the same scope (world/model) as the element that
       has its pose specified by this tag.
 
-      If missing, the pose is expressed in the frame of the parent element. The
-      parent element is the grandparent of this pose element, i.e., the parent of
-      the element that has its pose set by this pose element.
+      If missing, the pose is expressed in the frame of the parent XML element
+      of the element that contains the pose. For exceptions to this rule and
+      more details on the default behavior, see
+      http://sdformat.org/tutorials?tut=pose_frame_semantics&ver=1.5 and
+      http://sdformat.org/tutorials?tut=pose_frame_semantics&ver=1.7
 
       Note that @relative_to merely affects an element's initial pose and
       does not affect the element's dynamic movement thereafter.
