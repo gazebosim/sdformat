@@ -575,6 +575,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
 //////////////////////////////////////////////////
 bool Param::ValueFromString(const std::string &_value)
 {
+  this->dataPtr->strValue = _value;
   return this->dataPtr->ValueFromStringImpl(this->dataPtr->typeName,
                                            _value,
                                            this->dataPtr->value);
@@ -712,6 +713,11 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
         return ParsePoseUsingStringStream(
             tmp, this->key, {}, _valueToSet);
       }
+      else
+      {
+        return ParsePoseUsingStringStream(
+            "0 0 0 0 0 0", this->key, {}, _valueToSet);
+      }
     }
     else if (_typeName == "ignition::math::Quaterniond" ||
              _typeName == "quaternion")
@@ -750,7 +756,6 @@ bool Param::SetFromString(const std::string &_value,
                           bool _ignoreParentAttributes)
 {
   this->dataPtr->ignoreParentAttributes = _ignoreParentAttributes;
-  this->dataPtr->strValue = _value;
   std::string str = sdf::trim(_value.c_str());
 
   if (str.empty() && this->dataPtr->required)
@@ -824,7 +829,7 @@ bool Param::Reparse()
     return false;
 
   const std::string strVal = this->dataPtr->strValue.value();
-  if (!this->SetFromString(strVal, this->dataPtr->ignoreParentAttributes))
+  if (!this->ValueFromString(strVal))
   {
     if (const auto parentElement = this->dataPtr->parentElement.lock())
     {

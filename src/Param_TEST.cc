@@ -568,9 +568,6 @@ TEST(Param, ReparsingAfterSetDouble)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
 
-  // Reparsing without setting values will fail. Value will still be the
-  // default.
-  EXPECT_FALSE(doubleParam.Reparse());
   double value;
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 1.0);
@@ -593,9 +590,6 @@ TEST(Param, ReparsingAfterSetFromStringDouble)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
 
-  // Reparsing without setting values will fail. Value will still be the
-  // default.
-  EXPECT_FALSE(doubleParam.Reparse());
   double value;
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 1.0);
@@ -621,9 +615,6 @@ TEST(Param, ReparsingAfterSetPose)
   Pose value;
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), value);
-
-  // Reparsing without setting values will fail.
-  EXPECT_FALSE(poseParam.Reparse());
 
   // Reparsing after setting values will pass. Note that the value was
   // explicitly set using the Set function, reparsing will always yield the same
@@ -692,9 +683,6 @@ TEST(Param, ReparsingAfterSetFromStringPose)
   Pose value;
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), value);
-
-  // Reparsing without setting values will fail.
-  EXPECT_FALSE(poseParam.Reparse());
 
   // Reparsing after setting values will pass. Note that the value was
   // set using SetFromString.
