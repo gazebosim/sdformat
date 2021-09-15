@@ -12,8 +12,8 @@
       If missing, the pose is expressed in the frame of the parent XML element
       of the element that contains the pose. For exceptions to this rule and
       more details on the default behavior, see
-      http://sdformat.org/tutorials?tut=pose_frame_semantics&ver=1.5 and
-      http://sdformat.org/tutorials?tut=pose_frame_semantics&ver=1.7
+      http://sdformat.org/tutorials?tut=pose_frame_semantics and
+      http://sdformat.org/tutorials?tut=pose_frame_semantics
 
       Note that @relative_to merely affects an element's initial pose and
       does not affect the element's dynamic movement thereafter.
