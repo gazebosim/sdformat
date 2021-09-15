@@ -38,6 +38,7 @@
     </element>
 
     <include filename="pose.sdf" required="0"/>
+    <include filename="plugin.sdf" required="*"/>
 
     <element name="placement_frame" type="string" default="" required="0">
       <description>The frame inside the included entity whose pose will be set by the specified pose element. If this element is specified, the pose must be specified.</description>

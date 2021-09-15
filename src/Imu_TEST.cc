@@ -75,6 +75,10 @@ TEST(DOMImu, Construction)
   imu.SetLocalization("NED");
   EXPECT_EQ("NED", imu.Localization());
 
+  EXPECT_TRUE(imu.OrientationEnabled());
+  imu.SetOrientationEnabled(false);
+  EXPECT_FALSE(imu.OrientationEnabled());
+
   // Copy Constructor
   sdf::Imu imu2(imu);
   EXPECT_EQ(imu, imu2);

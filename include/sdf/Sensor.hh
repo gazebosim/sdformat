@@ -41,6 +41,7 @@ namespace sdf
   class Imu;
   class Lidar;
   class Magnetometer;
+  class NavSat;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
 
@@ -112,7 +113,10 @@ namespace sdf
     RGBD_CAMERA = 19,
 
     /// \brief A thermal camera sensor
-    THERMAL_CAMERA = 20
+    THERMAL_CAMERA = 20,
+
+    /// \brief A NavSat sensor, such as GPS.
+    NAVSAT = 21
   };
 
   /// \brief Information about an SDF sensor.
@@ -146,6 +150,14 @@ namespace sdf
     /// \brief Set the topic on which sensor data should be published.
     /// \param[in] _topic Topic for this sensor's data.
     public: void SetTopic(const std::string &_topic);
+
+    /// \brief Get flag state for enabling performance metrics publication.
+    /// \return True if performance metrics are enabled, false otherwise.
+    public: bool EnableMetrics() const;
+
+    /// \brief Set flag to enable publishing performance metrics
+    /// \param[in] _enableMetrics True to enable.
+    public: void SetEnableMetrics(bool _enableMetrics);
 
     /// \brief Get the pose of the sensor. This is the pose of the sensor
     /// as specified in SDF (<sensor> <pose> ... </pose></sensor>), and is
@@ -268,6 +280,17 @@ namespace sdf
     /// is not a camera.
     /// \sa SensorType Type() const
     public: const Camera *CameraSensor() const;
+
+    /// \brief Set the NAVSAT sensor.
+    /// \param[in] _navsat The NAVSAT sensor.
+    public: void SetNavSatSensor(const NavSat &_navsat);
+
+    /// \brief Get a pointer to a NAVSAT sensor, or nullptr if the sensor
+    /// does not contain an NAVSAT sensor.
+    /// \return Pointer to the sensor's NAVSAT, or nullptr if the sensor
+    /// is not an NAVSAT.
+    /// \sa SensorType Type() const
+    public: const NavSat *NavSatSensor() const;
 
     /// \brief Set the force torque sensor.
     /// \param[in] _ft The force torque sensor.

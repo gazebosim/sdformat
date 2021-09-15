@@ -27,8 +27,8 @@ project (sdformat11)
 set (SDF_PROTOCOL_VERSION 1.8)
 
 set (SDF_MAJOR_VERSION 11)
-set (SDF_MINOR_VERSION 2)
-set (SDF_PATCH_VERSION 2)
+set (SDF_MINOR_VERSION 3)
+set (SDF_PATCH_VERSION 0)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
 set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION})
@@ -273,6 +273,27 @@ else (build_errors)
     add_subdirectory(conf)
     add_subdirectory(doc)
   endif(BUILD_SDF)
+
+  ########################################
+  # Setup Codecheck
+  include (IgnCodeCheck)
+  set(CPPCHECK_DIRS
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/test/integration
+    ${PROJECT_SOURCE_DIR}/test/performance)
+
+  set(CPPCHECK_INCLUDE_DIRS
+    ${PROJECT_BINARY_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/test/integration
+    ${PROJECT_SOURCE_DIR}/test/performance)
+
+  # Ignore vendored directories.
+  file(WRITE ${PROJECT_BINARY_DIR}/cppcheck.suppress
+    "*:${PROJECT_SOURCE_DIR}/src/urdf/*\n"
+    )
+  ign_setup_target_for_codecheck()
 
   ########################################
   # Make the package config file

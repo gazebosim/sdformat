@@ -31,7 +31,8 @@ TODO(eric.cousineau): Move terminology section to sdf_tutorials?
 
 ## Test coverage
 
-[![codecov](https://codecov.io/gh/osrf/sdformat/branch/master/graph/badge.svg)](https://codecov.io/gh/osrf/sdformat)
+<!-- Note: The branch name in the codecov URL should be updated when forward porting -->
+[![codecov](https://codecov.io/gh/ignitionrobotics/sdformat/branch/sdf11/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/sdformat/branch/sdf11)
 
 # Installation
 
@@ -44,7 +45,11 @@ The Source Installation instructions should be used if you need the very latest 
 ### Ubuntu
 
 On Ubuntu systems, `apt-get` can be used to install `sdformat`:
-```
+```sh
+sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+sudo apt-get update
+
 sudo apt install libsdformat<#>-dev libsdformat<#>
 ```
 
