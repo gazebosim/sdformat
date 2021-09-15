@@ -3,7 +3,12 @@
   <description>The model element defines a complete robot or any other physical object.</description>
 
   <attribute name="name" type="string" default="__default__" required="1">
-    <description>A unique name for the model. This name must not match another model in the world.</description>
+    <description>
+      The name of the model and its implicit frame. This name must be unique
+      among all elements defining frames within the same scope, i.e., it must
+      not match another //model, //frame, //joint, or //link within the same
+      scope.
+    </description>
   </attribute>
 
   <attribute name="canonical_link" type="string" default="" required="*">
