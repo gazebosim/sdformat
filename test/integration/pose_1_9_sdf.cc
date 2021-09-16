@@ -935,4 +935,22 @@ TEST(Pose1_9, IncludePoseInWorld)
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("second_box", model->Name());
   EXPECT_EQ(Pose(0, 10, 0, 0.7071068, 0.7071068, 0, 0), model->RawPose());
+
+  model = world->ModelByIndex(2);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("third_box", model->Name());
+  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+            model->RawPose());
+
+  model = world->ModelByIndex(3);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("forth_box", model->Name());
+  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+            model->RawPose());
+
+  model = world->ModelByIndex(4);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("fifth_box", model->Name());
+  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+            model->RawPose());
 }
