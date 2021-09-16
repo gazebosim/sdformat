@@ -130,73 +130,27 @@ Errors ForceTorque::Load(ElementPtr _sdf)
     }
   }
 
-  // Load the force noise values.
-  if(_sdf->HasElement("force"))
+  auto loadAxisNoise = [](sdf::ElementPtr _parent,
+                          const std::string _groupLabel,
+                          const std::string _axisLabel,
+                          sdf::Noise& _noise)
   {
-    sdf::ElementPtr force = _sdf->GetElement("force");
+    if (_parent->HasElement(_groupLabel) &&
+        _parent->GetElement(_groupLabel)->HasElement(_axisLabel))
     {
-      if(force->HasElement("x"))
-      {
-        if(force->GetElement("x")->HasElement("noise"))
-        {
-          this->dataPtr->forceXNoise.Load(
-            force->GetElement("x")->GetElement("noise"));
-        }
-      }
-
-      if(force->HasElement("y"))
-      {
-        if(force->GetElement("y")->HasElement("noise"))
-        {
-          this->dataPtr->forceXNoise.Load(
-            force->GetElement("y")->GetElement("noise"));
-        }
-      }
-
-      if(force->HasElement("z"))
-      {
-        if(force->GetElement("z")->HasElement("noise"))
-        {
-          this->dataPtr->forceXNoise.Load(
-            force->GetElement("z")->GetElement("noise"));
-        }
-      }
+        auto axis = _parent->GetElement(_groupLabel)->GetElement(_axisLabel);
+        _noise.Load(axis->GetElement("noise"));
+        return true;
     }
-  }
+    return false;
+  };
 
-  // Load the torque noise values.
-  if(_sdf->HasElement("torque"))
-  {
-    sdf::ElementPtr torque = _sdf->GetElement("torque");
-    {
-      if(torque->HasElement("x"))
-      {
-        if(torque->GetElement("x")->HasElement("noise"))
-        {
-          this->dataPtr->torqueXNoise.Load(
-            torque->GetElement("x")->GetElement("noise"));
-        }
-      }
-
-      if(torque->HasElement("y"))
-      {
-        if(torque->GetElement("y")->HasElement("noise"))
-        {
-          this->dataPtr->torqueYNoise.Load(
-            torque->GetElement("y")->GetElement("noise"));
-        }
-      }
-
-      if(torque->HasElement("z"))
-      {
-        if(torque->GetElement("z")->HasElement("noise"))
-        {
-          this->dataPtr->torqueZNoise.Load(
-            torque->GetElement("z")->GetElement("noise"));
-        }
-      }
-    }
-  }
+  loadAxisNoise(_sdf, "force", "x", this->dataPtr->forceXNoise);
+  loadAxisNoise(_sdf, "force", "y", this->dataPtr->forceYNoise);
+  loadAxisNoise(_sdf, "force", "z", this->dataPtr->forceZNoise);
+  loadAxisNoise(_sdf, "torque", "x", this->dataPtr->torqueXNoise);
+  loadAxisNoise(_sdf, "torque", "y", this->dataPtr->torqueYNoise);
+  loadAxisNoise(_sdf, "torque", "z", this->dataPtr->torqueZNoise);
 
   return errors;
 }
@@ -218,7 +172,6 @@ bool ForceTorque::operator==(const ForceTorque &_ft) const
 {
   return this->dataPtr->frame == _ft.dataPtr->frame &&
          this->dataPtr->measure_direction == _ft.dataPtr->measure_direction &&
-         
          this->dataPtr->forceXNoise == _ft.dataPtr->forceXNoise &&
          this->dataPtr->forceYNoise == _ft.dataPtr->forceYNoise &&
          this->dataPtr->forceZNoise == _ft.dataPtr->forceZNoise &&
