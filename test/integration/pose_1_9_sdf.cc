@@ -435,15 +435,26 @@ TEST(Pose1_9, ChangingParentPoseElementAfterParamSetFromString)
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
-  // Set parent to Element with degrees attribute true.
+  // Set parent to Element with degrees attribute true, in euler_rpy.
   ASSERT_TRUE(valParam->SetParentElement(degreesPoseElem));
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
 
-  // Set parent to Element with degrees attribute false.
+  // Set parent to Element with degrees attribute false, in euler_rpy.
   ASSERT_TRUE(valParam->SetParentElement(radiansPoseElem));
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+
+  // Set parent to Element with degrees attribute false, in quat_wxyz, will
+  // fail, as the string that was previously set was only 6 values. The value
+  // will remain the same as before and the parent Element will still be the
+  // previous one.
+  ASSERT_FALSE(valParam->SetParentElement(quatPoseElem));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+
+  auto parent = valParam->GetParentElement();
+  EXPECT_EQ(parent, radiansPoseElem);
 
   // Remove parent
   ASSERT_TRUE(valParam->SetParentElement(nullptr));
@@ -526,6 +537,47 @@ TEST(Pose1_9, ChangingAttributeOfParentElement)
   ASSERT_TRUE(valParam->Reparse());
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, QuatWXYZSetDegreesTrueFail)
+{
+  using Pose = ignition::math::Pose3d;
+
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0 0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+
+  sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
+  ASSERT_NE(nullptr, degreesAttrib);
+
+  // Set rotation_format to quat_wxyz
+  sdf::ParamPtr rotationFormatAttrib =
+      poseElem->GetAttribute("rotation_format");
+  ASSERT_NE(nullptr, rotationFormatAttrib);
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_wxyz"));
+
+  // Param rotation format in quaternion
+  sdf::ParamPtr valParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, valParam);
+  ASSERT_TRUE(valParam->SetFromString("1 2 3 0.7071068 0.7071068 0 0"));
+
+  Pose val;
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), val);
+
+  // Changing @degrees to true without reparsing, value will remain the same
+  ASSERT_TRUE(degreesAttrib->Set<bool>(true));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), val);
+
+  // Reparsing will fail due to setting degrees as true, values remain the same
+  EXPECT_FALSE(valParam->Reparse());
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), val);
 }
 
 //////////////////////////////////////////////////

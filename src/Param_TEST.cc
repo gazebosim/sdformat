@@ -790,6 +790,78 @@ TEST(Param, IgnoresParentElementAttribute)
   }
 }
 
+/////////////////////////////////////////////////
+TEST(Param, WithoutParentElementSetParentElementFail)
+{
+  using Pose = ignition::math::Pose3d;
+
+  sdf::Param poseParam("", "pose", "0 0 0 0 0 0", false, "description");
+  EXPECT_TRUE(poseParam.SetFromString("2 3 4 0.5 0.6 0.7"));
+
+  Pose val;
+  EXPECT_TRUE(poseParam.Get<Pose>(val));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), val);
+
+  sdf::ElementPtr quatPoseElem(new sdf::Element);
+  quatPoseElem->SetName("pose");
+  quatPoseElem->AddValue("pose", "0 0 0 0 0 0", true);
+  quatPoseElem->AddAttribute("relative_to", "string", "", false);
+  quatPoseElem->AddAttribute("degrees", "bool", "false", false);
+  quatPoseElem->AddAttribute(
+      "rotation_format", "string", "quat_wxyz", false);
+
+  // Set parent to Element with degrees attribute false, in quat_wxyz, will
+  // fail, as the string that was previously set was only 6 values. The value
+  // will remain the same as before and the parent Element will still be the
+  // previous one, in this case a nullptr.
+  ASSERT_FALSE(poseParam.SetParentElement(quatPoseElem));
+  ASSERT_TRUE(poseParam.Get<Pose>(val));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), val);
+
+  auto parent = poseParam.GetParentElement();
+  EXPECT_EQ(nullptr, parent);
+}
+
+/////////////////////////////////////////////////
+TEST(Param, SetParentElementFail)
+{
+  using Pose = ignition::math::Pose3d;
+
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0 0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+
+  // Param from original default attibute
+  sdf::ParamPtr valParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, valParam);
+  ASSERT_TRUE(valParam->SetFromString("1, 2, 3, 0.4, 0.5, 0.6"));
+
+  Pose val;
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+
+  sdf::ElementPtr quatPoseElem(new sdf::Element);
+  quatPoseElem->SetName("pose");
+  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  quatPoseElem->AddAttribute("relative_to", "string", "", false);
+  quatPoseElem->AddAttribute("degrees", "bool", "false", false);
+  quatPoseElem->AddAttribute(
+      "rotation_format", "string", "quat_wxyz", false);
+
+  // Set parent to Element with degrees attribute false, in quat_wxyz, will
+  // fail, as the string that was previously set was only 6 values. The value
+  // will remain the same as before and the parent Element will still be the
+  // previous one.
+  ASSERT_FALSE(valParam->SetParentElement(quatPoseElem));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+
+  auto parent = valParam->GetParentElement();
+  EXPECT_EQ(parent, poseElem);
+}
 
 /////////////////////////////////////////////////
 /// Main
