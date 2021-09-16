@@ -134,7 +134,8 @@ TEST(Pose1_9, ModelPose)
   model = world->ModelByIndex(16);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_euler_rpy_degrees_true", model->Name());
-  EXPECT_EQ(Pose(1, 2, 3, 90, 180, 270), model->RawPose());
+  EXPECT_EQ(Pose(1, 2, 3, IGN_DTOR(90), IGN_DTOR(180), IGN_DTOR(270)),
+      model->RawPose());
 
   model = world->ModelByIndex(17);
   ASSERT_NE(nullptr, model);

@@ -95,7 +95,7 @@
     </model>
 
     <model name="model_euler_rpy_degrees_true">
-      <pose rotation_format="euler_rpy">1 2 3   90 180 270</pose>
+      <pose rotation_format="euler_rpy" degrees="true">1 2 3   90 180 270</pose>
       <link name="link"/>
     </model>
 
