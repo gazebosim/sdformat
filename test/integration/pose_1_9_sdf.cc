@@ -113,12 +113,12 @@ TEST(Pose1_9, ModelPose)
 
   model = world->ModelByIndex(12);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_empty_pose_quat_wxyz", model->Name());
+  ASSERT_EQ("model_with_empty_pose_quat_xyzw", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
 
   model = world->ModelByIndex(13);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_empty_pose_quat_wxyz_degrees_false", model->Name());
+  ASSERT_EQ("model_with_empty_pose_quat_xyzw_degrees_false", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
 
   model = world->ModelByIndex(14);
@@ -138,12 +138,12 @@ TEST(Pose1_9, ModelPose)
 
   model = world->ModelByIndex(17);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_quat_wxyz", model->Name());
+  ASSERT_EQ("model_quat_xyzw", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), model->RawPose());
 
   model = world->ModelByIndex(18);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_quat_wxyz_degrees_false", model->Name());
+  ASSERT_EQ("model_quat_xyzw_degrees_false", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), model->RawPose());
 }
 
@@ -356,7 +356,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterSet)
   quatPoseElem->AddAttribute("relative_to", "string", "", false);
   quatPoseElem->AddAttribute("degrees", "bool", "false", false);
   quatPoseElem->AddAttribute(
-      "rotation_format", "string", "quat_wxyz", false);
+      "rotation_format", "string", "quat_xyzw", false);
 
   // Param from original default attibute
   sdf::ParamPtr valParam = poseElem->GetValue();
@@ -376,7 +376,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterSet)
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
-  // Set parent to Element with degrees attribute false, as quat_wxyz.
+  // Set parent to Element with degrees attribute false, as quat_xyzw.
   ASSERT_TRUE(valParam->SetParentElement(quatPoseElem));
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
@@ -424,7 +424,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterParamSetFromString)
   quatPoseElem->AddAttribute("relative_to", "string", "", false);
   quatPoseElem->AddAttribute("degrees", "bool", "false", false);
   quatPoseElem->AddAttribute(
-      "rotation_format", "string", "quat_wxyz", false);
+      "rotation_format", "string", "quat_xyzw", false);
 
   // Param from original default attibute
   sdf::ParamPtr valParam = poseElem->GetValue();
@@ -445,7 +445,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterParamSetFromString)
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
 
-  // Set parent to Element with degrees attribute false, in quat_wxyz, will
+  // Set parent to Element with degrees attribute false, in quat_xyzw, will
   // fail, as the string that was previously set was only 6 values. The value
   // will remain the same as before and the parent Element will still be the
   // previous one.
@@ -509,9 +509,9 @@ TEST(Pose1_9, ChangingAttributeOfParentElement)
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
 
-  // Changing @rotation_format to quat_wxyz without reparsing, value remains the
+  // Changing @rotation_format to quat_xyzw without reparsing, value remains the
   // same
-  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_wxyz"));
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_xyzw"));
   ASSERT_TRUE(valParam->Get<Pose>(val));
   EXPECT_EQ(Pose(1, 2, 3, 0.4 * pi / 180, 0.5 * pi / 180, 0.6 * pi / 180), val);
 
@@ -540,7 +540,7 @@ TEST(Pose1_9, ChangingAttributeOfParentElement)
 }
 
 //////////////////////////////////////////////////
-TEST(Pose1_9, QuatWXYZSetDegreesTrueFail)
+TEST(Pose1_9, QuatXYZWSetDegreesTrueFail)
 {
   using Pose = ignition::math::Pose3d;
 
@@ -554,16 +554,16 @@ TEST(Pose1_9, QuatWXYZSetDegreesTrueFail)
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
 
-  // Set rotation_format to quat_wxyz
+  // Set rotation_format to quat_xyzw
   sdf::ParamPtr rotationFormatAttrib =
       poseElem->GetAttribute("rotation_format");
   ASSERT_NE(nullptr, rotationFormatAttrib);
-  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_wxyz"));
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_xyzw"));
 
   // Param rotation format in quaternion
   sdf::ParamPtr valParam = poseElem->GetValue();
   ASSERT_NE(nullptr, valParam);
-  ASSERT_TRUE(valParam->SetFromString("1 2 3 0.7071068 0.7071068 0 0"));
+  ASSERT_TRUE(valParam->SetFromString("1 2 3 0.7071068 0 0 0.7071068"));
 
   Pose val;
   ASSERT_TRUE(valParam->Get<Pose>(val));
@@ -698,7 +698,7 @@ TEST(Pose1_9, ToStringWithEulerRPYDegreesTrue)
 }
 
 //////////////////////////////////////////////////
-TEST(Pose1_9, ToStringWithQuatWXYZ)
+TEST(Pose1_9, ToStringWithQuatXYZ)
 {
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -710,19 +710,19 @@ TEST(Pose1_9, ToStringWithQuatWXYZ)
   sdf::ParamPtr rotationFormatAttrib =
       poseElem->GetAttribute("rotation_format");
   ASSERT_NE(nullptr, rotationFormatAttrib);
-  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_wxyz"));
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_xyzw"));
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
-  EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0.7071068 0 0"));
+  EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0 0 0.7071068"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "rotation_format='quat_wxyz'");
-  EXPECT_PRED2(contains, elemStr, "0.7071068 0.7071068 0 0");
+  EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
+  EXPECT_PRED2(contains, elemStr, "0.7071068 0 0 0.7071068");
 }
 
 //////////////////////////////////////////////////
-TEST(Pose1_9, ToStringWithQuatWXYZDegreesFalse)
+TEST(Pose1_9, ToStringWithQuatXYZWDegreesFalse)
 {
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -738,16 +738,16 @@ TEST(Pose1_9, ToStringWithQuatWXYZDegreesFalse)
   sdf::ParamPtr rotationFormatAttrib =
       poseElem->GetAttribute("rotation_format");
   ASSERT_NE(nullptr, rotationFormatAttrib);
-  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_wxyz"));
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_xyzw"));
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
-  EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0.7071068 0 0"));
+  EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0 0 0.7071068"));
 
   std::string elemStr = poseElem->ToString("");
   EXPECT_PRED2(contains, elemStr, "degrees='0'");
-  EXPECT_PRED2(contains, elemStr, "rotation_format='quat_wxyz'");
-  EXPECT_PRED2(contains, elemStr, "0.7071068 0.7071068 0 0");
+  EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
+  EXPECT_PRED2(contains, elemStr, "0.7071068 0 0 0.7071068");
 }
 
 //////////////////////////////////////////////////
@@ -868,7 +868,7 @@ TEST(Pose1_9, IncludeEulerRPYPoseInModelString)
 }
 
 //////////////////////////////////////////////////
-TEST(Pose1_9, IncludeQuatWXYZPoseIn)
+TEST(Pose1_9, IncludeQuatXYZWPoseIn)
 {
   using Pose = ignition::math::Pose3d;
 
@@ -880,8 +880,8 @@ TEST(Pose1_9, IncludeQuatWXYZPoseIn)
       << "  <model name='parent'>"
       << "    <include>"
       << "      <uri>box</uri>"
-      << "      <pose rotation_format='quat_wxyz'>"
-      << "        0 10 0 0.7071068 0.7071068 0 0"
+      << "      <pose rotation_format='quat_xyzw'>"
+      << "        0 10 0 0.7071068 0 0 0.7071068"
       << "      </pose>"
       << "    </include>"
       << "  </model>"

@@ -74,13 +74,13 @@
       <link name="link"/>
     </model>
 
-    <model name="model_with_empty_pose_quat_wxyz">
-      <pose rotation_format="quat_wxyz"></pose>
+    <model name="model_with_empty_pose_quat_xyzw">
+      <pose rotation_format="quat_xyzw"></pose>
       <link name="link"/>
     </model>
 
-    <model name="model_with_empty_pose_quat_wxyz_degrees_false">
-      <pose rotation_format="quat_wxyz" degrees="false"></pose>
+    <model name="model_with_empty_pose_quat_xyzw_degrees_false">
+      <pose rotation_format="quat_xyzw" degrees="false"></pose>
       <link name="link"/>
     </model>
 
@@ -99,14 +99,14 @@
       <link name="link"/>
     </model>
 
-    <model name="model_quat_wxyz">
-      <pose rotation_format="quat_wxyz">1 2 3   0.7071068 0.7071068 0 0</pose>
+    <model name="model_quat_xyzw">
+      <pose rotation_format="quat_xyzw">1 2 3   0.7071068 0 0 0.7071068</pose>
       <link name="link"/>
     </model>
 
-    <model name="model_quat_wxyz_degrees_false">
-      <pose rotation_format="quat_wxyz" degrees="false">
-        1 2 3   0.7071068 0.7071068 0 0
+    <model name="model_quat_xyzw_degrees_false">
+      <pose rotation_format="quat_xyzw" degrees="false">
+        1 2 3   0.7071068 0 0 0.7071068
       </pose>
       <link name="link"/>
     </model>

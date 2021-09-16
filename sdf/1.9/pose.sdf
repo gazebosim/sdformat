@@ -14,7 +14,7 @@
     <description>
       euler_rpy by default. Supported rotation formats are
       euler_rpy, Euler angles representation in roll, pitch, yaw. The pose is expected to have 6 values.
-      quat_wxyz, Quaternion representation in w, x, y, z. The pose is expected to have 7 values.
+      quat_xyzw, Quaternion representation in x, y, z, w. The pose is expected to have 7 values.
     </description>
   </attribute>
 

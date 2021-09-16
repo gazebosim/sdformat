@@ -659,9 +659,9 @@ TEST(Param, ReparsingAfterSetPose)
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
 
-  // Changing parent @rotation_format to quat_wxyz, reparse will pass, but value
+  // Changing parent @rotation_format to quat_xyzw, reparse will pass, but value
   // remains the same as before, as it was explicitly set
-  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_wxyz"));
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_xyzw"));
   EXPECT_TRUE(poseParam.Reparse());
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
@@ -725,9 +725,9 @@ TEST(Param, ReparsingAfterSetFromStringPose)
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
 
-  // Changing parent @rotation_format to quat_wxyz, reparse will fail, value
+  // Changing parent @rotation_format to quat_xyzw, reparse will fail, value
   // remains the same as before
-  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_wxyz"));
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_xyzw"));
   EXPECT_FALSE(poseParam.Reparse());
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
@@ -808,9 +808,9 @@ TEST(Param, WithoutParentElementSetParentElementFail)
   quatPoseElem->AddAttribute("relative_to", "string", "", false);
   quatPoseElem->AddAttribute("degrees", "bool", "false", false);
   quatPoseElem->AddAttribute(
-      "rotation_format", "string", "quat_wxyz", false);
+      "rotation_format", "string", "quat_xyzw", false);
 
-  // Set parent to Element with degrees attribute false, in quat_wxyz, will
+  // Set parent to Element with degrees attribute false, in quat_xyzw, will
   // fail, as the string that was previously set was only 6 values. The value
   // will remain the same as before and the parent Element will still be the
   // previous one, in this case a nullptr.
@@ -849,9 +849,9 @@ TEST(Param, SetParentElementFail)
   quatPoseElem->AddAttribute("relative_to", "string", "", false);
   quatPoseElem->AddAttribute("degrees", "bool", "false", false);
   quatPoseElem->AddAttribute(
-      "rotation_format", "string", "quat_wxyz", false);
+      "rotation_format", "string", "quat_xyzw", false);
 
-  // Set parent to Element with degrees attribute false, in quat_wxyz, will
+  // Set parent to Element with degrees attribute false, in quat_xyzw, will
   // fail, as the string that was previously set was only 6 values. The value
   // will remain the same as before and the parent Element will still be the
   // previous one.

@@ -549,22 +549,22 @@ bool ParsePoseUsingStringStream(const std::string &_input,
           values[3], values[4], values[5]);
     }
   }
-  else if (rotationFormat == "quat_wxyz" && isDesiredSize(rotationFormat, 7u))
+  else if (rotationFormat == "quat_xyzw" && isDesiredSize(rotationFormat, 7u))
   {
     if (parseAsDegrees)
     {
       sdferr << "The attribute //pose[@degrees='true'] does not apply when the "
-          << "parsing quaternions, //pose[@rotation_format='quat_wxyz'].\n";
+          << "parsing quaternions, //pose[@rotation_format='quat_xyzw'].\n";
       return false;
     }
 
     _value = ignition::math::Pose3d(values[0], values[1], values[2],
-        values[3], values[4], values[5], values[6]);
+        values[6], values[3], values[4], values[5]);
   }
   else
   {
     sdferr << "Undefined attribute //pose[@rotation_format='"
-        << rotationFormat << "'], only 'euler_rpy' and 'quat_wxyz'"
+        << rotationFormat << "'], only 'euler_rpy' and 'quat_xyzw'"
         << " is supported.\n";
     return false;
   }
