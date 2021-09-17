@@ -1420,9 +1420,13 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             setAttribute("rotation_format");
 
             if (poseElemXml->GetText())
+            {
               poseElem->GetValue()->SetFromString(poseElemXml->GetText());
+            }
             else
+            {
               poseElem->GetValue()->Reset();
+            }
           }
 
           if (isModel && elemXml->FirstChildElement("static"))
