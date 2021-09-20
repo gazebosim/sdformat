@@ -7,7 +7,23 @@
   </element>
 
   <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
-    <description>This is the pose of the inertial reference frame. The origin of the inertial reference frame needs to be at the center of gravity. The axes of the inertial reference frame do not need to be aligned with the principal axes of the inertia.</description>
+    <description>
+      A pose (translation, rotation) expressed in the frame of the link. The first three components (x, y, z) represent the position of the element's origin (in the @relative_to frame). The rotation component represent the orientation of the element as either a sequence of Euler rotations (r, p, y), see http://sdformat.org/tutorials?tut=specify_pose, or as a quaternion (x, y, z, w), where w is the real component.
+    </description>
+
+    <attribute name="rotation_format" type="string" default="euler_rpy" required="0">
+      <description>'euler_rpy' by default. Supported rotation formats are
+        'euler_rpy', Euler angles representation in roll, pitch, yaw. The pose is expected to have 6 values.
+        'quat_xyzw', Quaternion representation in x, y, z, w. The pose is expected to have 7 values.
+      </description>
+    </attribute>
+
+    <attribute name="degrees" type="bool" default="false" required="0">
+      <description>
+        Whether or not the euler angles are in degrees, otherwise they will be interpreted as radians by default.
+      </description>
+    </attribute>
+
   </element>
 
   <element name="inertia" required="0">

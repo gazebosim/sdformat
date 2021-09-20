@@ -23,8 +23,10 @@
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
+#include "sdf/Actor.hh"
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
+#include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
@@ -34,7 +36,7 @@
 #include "test_utils.hh"
 
 //////////////////////////////////////////////////
-TEST(Pose1_9, ModelPose)
+TEST(Pose1_9, PoseExpressionFormats)
 {
   using Pose = ignition::math::Pose3d;
 
@@ -136,6 +138,25 @@ TEST(Pose1_9, ModelPose)
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_quat_xyzw_degrees_false", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), model->RawPose());
+
+  // //inertial/pose
+  model = world->ModelByIndex(17);
+  ASSERT_NE(nullptr, model);
+  ASSERT_EQ("model_with_inertia_pose", model->Name());
+  {
+    const auto link = model->LinkByIndex(0);
+    ASSERT_NE(nullptr, link);
+    ASSERT_EQ("link_euler_rpy_degrees_true", link->Name());
+    EXPECT_EQ(Pose(1, 2, 3, IGN_DTOR(90), IGN_DTOR(180), IGN_DTOR(270)),
+              link->Inertial().Pose());
+  }
+  {
+    const auto link = model->LinkByIndex(1);
+    ASSERT_NE(nullptr, link);
+    ASSERT_EQ("link_quat_xyzw", link->Name());
+    EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0),
+              link->Inertial().Pose());
+  }
 }
 
 //////////////////////////////////////////////////
