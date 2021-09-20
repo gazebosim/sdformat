@@ -823,7 +823,7 @@ TEST(Param, WithoutParentElementSetParentElementFail)
 }
 
 /////////////////////////////////////////////////
-TEST(Param, SetParentElementFail)
+TEST(Param, ChangeParentElementFail)
 {
   using Pose = ignition::math::Pose3d;
 
