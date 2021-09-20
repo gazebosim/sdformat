@@ -179,13 +179,15 @@ TEST(Pose1_9, PoseSet8ValuesFail)
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
   poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  poseElem->AddAttribute("rotation_format", "string", "quat_xyzw", false);
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_FALSE(poseValueParam->SetFromString(
       "1 2 3   0.7071068 0.7071068 0 0   0"));
-  EXPECT_PRED2(contains, buffer.str(), "can not accept more than 7 values");
+  EXPECT_PRED2(contains, buffer.str(),
+      "The value for //pose[@rotation_format='quat_xyzw'] must have 7 values, "
+      "but more than that were found in '1 2 3   0.7071068 0.7071068 0 0   0'");
 }
 
 //////////////////////////////////////////////////
