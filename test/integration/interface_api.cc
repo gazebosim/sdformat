@@ -82,24 +82,24 @@ sdf::InterfaceModelPtr parseModel(toml::Value &_doc,
 sdf::InterfaceModelPtr customTomlParser(
     const sdf::NestedInclude &_include, sdf::Errors &_errors)
 {
-  toml::Document doc = toml::parseToml(_include.resolvedFileName, _errors);
+  toml::Document doc = toml::parseToml(_include.ResolvedFileName(), _errors);
   if (_errors.empty())
   {
     const std::string modelName =
-        _include.localModelName.value_or(doc["name"].ParamGet<std::string>());
+        _include.LocalModelName().value_or(doc["name"].ParamGet<std::string>());
 
-    if (_include.isStatic.has_value())
+    if (_include.IsStatic().has_value())
     {
       // if //include/static is set, override the value in the inluded model
       sdf::Param param("static", "bool", "false", false);
-      param.Set(*_include.isStatic);
+      param.Set(*_include.IsStatic());
       doc["static"] = {param};
     }
-    if (_include.includeRawPose.has_value())
+    if (_include.IncludeRawPose().has_value())
     {
       // if //include/static is set, override the value in the inluded model
       sdf::Param poseParam("pose", "pose", "", false);
-      poseParam.Set(*_include.includeRawPose);
+      poseParam.Set(*_include.IncludeRawPose());
       doc["pose"] = {poseParam};
     }
 
@@ -162,26 +162,26 @@ TEST_F(InterfaceAPI, NestedIncludeData)
   auto testNonce1Parser =
       [&](const sdf::NestedInclude &_include, sdf::Errors &_errors)
   {
-    if (!endsWith(_include.uri, ".nonce_1"))
+    if (!endsWith(_include.Uri(), ".nonce_1"))
       return nullptr;
 
     const std::string fileName = "file_wont_be_parsed.nonce_1";
-    EXPECT_EQ(fileName, _include.uri);
+    EXPECT_EQ(fileName, _include.Uri());
     EXPECT_EQ(sdf::filesystem::append(this->modelDir, fileName),
-        _include.resolvedFileName);
-    EXPECT_EQ("box", *_include.localModelName);
-    EXPECT_TRUE(_include.isStatic.has_value());
-    EXPECT_TRUE(_include.isStatic.value());
+              _include.ResolvedFileName());
+    EXPECT_EQ("box", *_include.LocalModelName());
+    EXPECT_TRUE(_include.IsStatic().has_value());
+    EXPECT_TRUE(_include.IsStatic().value());
 
-    EXPECT_TRUE(_include.includeRawPose.has_value());
+    EXPECT_TRUE(_include.IncludeRawPose().has_value());
     EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0),
-        _include.includeRawPose.value());
+              _include.IncludeRawPose().value());
 
-    EXPECT_TRUE(_include.includePoseRelativeTo.has_value());
-    EXPECT_EQ("F1", _include.includePoseRelativeTo.value());
-    EXPECT_TRUE(_include.includeElement->HasElement("extra"));
+    EXPECT_TRUE(_include.IncludePoseRelativeTo().has_value());
+    EXPECT_EQ("F1", _include.IncludePoseRelativeTo().value());
+    EXPECT_TRUE(_include.IncludeElement()->HasElement("extra"));
 
-    auto extra = _include.includeElement->GetElement("extra");
+    auto extra = _include.IncludeElement()->GetElement("extra");
     EXPECT_TRUE(extra->HasElement("info1"));
     EXPECT_TRUE(extra->HasElement("info2"));
     EXPECT_EQ("value1", extra->Get<std::string>("info1"));
@@ -196,14 +196,14 @@ TEST_F(InterfaceAPI, NestedIncludeData)
   auto testNonce2Parser =
       [&](const sdf::NestedInclude &_include, sdf::Errors &_errors)
   {
-    if (!endsWith(_include.uri, ".nonce_2"))
+    if (!endsWith(_include.Uri(), ".nonce_2"))
       return nullptr;
     const std::string fileName = "file_wont_be_parsed.nonce_2";
-    EXPECT_EQ(fileName, _include.uri);
-    EXPECT_EQ(
-        sdf::filesystem::append(modelDir, fileName), _include.resolvedFileName);
-    EXPECT_FALSE(_include.localModelName.has_value());
-    EXPECT_FALSE(_include.isStatic);
+    EXPECT_EQ(fileName, _include.Uri());
+    EXPECT_EQ(sdf::filesystem::append(modelDir, fileName),
+              _include.ResolvedFileName());
+    EXPECT_FALSE(_include.LocalModelName().has_value());
+    EXPECT_FALSE(_include.IsStatic());
 
     // Add error for test expectation later on.
     _errors.emplace_back(
@@ -588,17 +588,19 @@ TEST_F(InterfaceAPI, Reposturing)
   auto repostureTestParser = [&](const sdf::NestedInclude &_include,
                                  sdf::Errors &) -> sdf::InterfaceModelPtr
   {
-    bool fileHasCorrectSuffix = endsWith(_include.resolvedFileName, ".nonce_1");
-    EXPECT_TRUE(fileHasCorrectSuffix) << "File: " << _include.resolvedFileName;
+    bool fileHasCorrectSuffix =
+        endsWith(_include.ResolvedFileName(), ".nonce_1");
+    EXPECT_TRUE(fileHasCorrectSuffix)
+        << "File: " << _include.ResolvedFileName();
     if (!fileHasCorrectSuffix)
       return nullptr;
 
-    const std::string absoluteModelName =
-        sdf::JoinName(_include.absoluteParentName, *_include.localModelName);
+    const std::string absoluteModelName = sdf::JoinName(
+        _include.AbsoluteParentName(), *_include.LocalModelName());
 
-    auto model = std::make_shared<sdf::InterfaceModel>(*_include.localModelName,
-        makeRepostureFunc(absoluteModelName), false, "base_link",
-        _include.includeRawPose.value_or(Pose3d {}));
+    auto model = std::make_shared<sdf::InterfaceModel>(
+        *_include.LocalModelName(), makeRepostureFunc(absoluteModelName), false,
+        "base_link", _include.IncludeRawPose().value_or(Pose3d{}));
     model->AddLink({"base_link", {}});
     models[absoluteModelName] = model;
 
@@ -662,8 +664,8 @@ TEST_F(InterfaceAPI, PlacementFrame)
   auto repostureTestParser =
       [&](const sdf::NestedInclude &_include, sdf::Errors &)
   {
-    std::string modelName =
-        sdf::JoinName(_include.absoluteParentName, *_include.localModelName);
+    std::string modelName = sdf::JoinName(_include.AbsoluteParentName(),
+                                          *_include.LocalModelName());
     auto repostureFunc = [modelName = modelName, &modelPosesAfterReposture](
                              const sdf::InterfaceModelPoseGraph &_graph)
     {
@@ -673,9 +675,9 @@ TEST_F(InterfaceAPI, PlacementFrame)
       modelPosesAfterReposture[modelName] = pose;
     };
 
-    auto model = std::make_shared<sdf::InterfaceModel>(*_include.localModelName,
-        repostureFunc, false, "base_link",
-        _include.includeRawPose.value_or(Pose3d {}));
+    auto model = std::make_shared<sdf::InterfaceModel>(
+        *_include.LocalModelName(), repostureFunc, false, "base_link",
+        _include.IncludeRawPose().value_or(Pose3d{}));
     model->AddLink({"base_link", Pose3d(0, 1, 0, 0, 0, 0)});
     model->AddFrame({"frame_1", "__model__", Pose3d(0, 0, 1, 0, 0, 0)});
     return model;

@@ -88,11 +88,22 @@ std::optional<std::string> Error::FilePath() const
 {
   return this->dataPtr->filePath;
 }
+/////////////////////////////////////////////////
+void Error::SetFilePath(const std::string &_filePath)
+{
+  this->dataPtr->filePath = _filePath;
+}
 
 /////////////////////////////////////////////////
 std::optional<int> Error::LineNumber() const
 {
   return this->dataPtr->lineNumber;
+}
+
+/////////////////////////////////////////////////
+void Error::SetLineNumber(int _lineNumber)
+{
+  this->dataPtr->lineNumber = _lineNumber;
 }
 
 /////////////////////////////////////////////////

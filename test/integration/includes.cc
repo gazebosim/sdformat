@@ -15,14 +15,19 @@
  *
  */
 
+#include <gtest/gtest.h>
+
+#include <ignition/math/Pose3.hh>
 #include <iostream>
 #include <string>
-#include <gtest/gtest.h>
 
 #include "sdf/Actor.hh"
 #include "sdf/Collision.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Frame.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/Joint.hh"
+#include "sdf/JointAxis.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
 #include "sdf/Mesh.hh"
@@ -33,6 +38,7 @@
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
 #include "test_config.h"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
@@ -388,3 +394,289 @@ TEST(IncludesTest, IncludeUrdf)
   EXPECT_EQ(1u, model->JointCount());
 }
 
+//////////////////////////////////////////////////
+TEST(IncludesTest, MergeInclude)
+{
+  using ignition::math::Pose3d;
+  using ignition::math::Vector3d;
+  sdf::ParserConfig config;
+  config.SetFindCallback(findFileCb);
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(
+      sdf::testing::TestFile("integration", "merge_include_model.sdf"), config);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  auto world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  auto model = world->ModelByIndex(0);
+  EXPECT_EQ("robot1", model->Name());
+  EXPECT_EQ(5u, model->LinkCount());
+  EXPECT_EQ(4u, model->JointCount());
+  EXPECT_EQ(1u, model->ModelCount());
+  ASSERT_NE(nullptr, model->CanonicalLink());
+  EXPECT_EQ(model->LinkByIndex(0), model->CanonicalLink());
+
+  auto resolvePose = [](const sdf::SemanticPose &_semPose)
+  {
+    Pose3d result;
+    sdf::Errors poseErrors = _semPose.Resolve(result);
+    EXPECT_TRUE(poseErrors.empty()) << poseErrors;
+    return result;
+  };
+
+  // X_PM - Pose of original model (M) in parent model (P) frame. This is the
+  // pose override in the //include tag.
+  const Pose3d X_PM(100, 0, 0, IGN_PI_4, 0, 0);
+  // X_MRw - Pose of the right wheel in the original model (M) as specified in
+  // the SDFormat file.
+  const Pose3d X_MRw(0.554282, -0.625029, -0.025, -1.5707, 0, 0);
+  // X_MLw - Pose of the left wheel in the original model (M) as specified in
+  // the SDF file.
+  const Pose3d X_MLw(0.554282, 0.625029, -0.025, -1.5707, 0, 0);
+  // Check some poses
+  {
+    // Link "chassis"
+    auto testFrame = model->LinkByName("chassis");
+    ASSERT_NE(nullptr, testFrame);
+    const Pose3d testPose = resolvePose(testFrame->SemanticPose());
+    // X_MC - Pose of chassis link(C) in the original model (M) as specified in
+    // the SDF file.
+    const Pose3d X_MC(-0.151427, 0, 0.175, 0, 0, 0);
+    const Pose3d expectedPose = X_PM * X_MC;
+    EXPECT_EQ(expectedPose, testPose);
+  }
+  {
+    // Link "top"
+    auto testFrame = model->LinkByName("top");
+    ASSERT_NE(nullptr, testFrame);
+    const Pose3d testPose = resolvePose(testFrame->SemanticPose());
+    // From SDFormat file
+    // X_MT - Pose of top link(T) in the original model (M) as specified in
+    // the SDF file.
+    const Pose3d X_MT(0.6, 0, 0.7, 0, 0, 0);
+    const Pose3d expectedPose = X_PM * X_MT;
+    EXPECT_EQ(expectedPose, testPose);
+  }
+  {
+    // The pose of right_wheel_joint is specified relative to __model__.
+    auto testFrame = model->JointByName("right_wheel_joint");
+    ASSERT_NE(nullptr, testFrame);
+    // Resolve the pose relative to it's child frame (right_wheel)
+    const Pose3d testPose = resolvePose(testFrame->SemanticPose());
+    // From SDFormat file
+    // X_MJr - Pose of right_wheel_joint (Jr) in the original model (M) as
+    // specified in the SDF file.
+    const Pose3d X_MJr(1, 0, 0, 0, 0, 0);
+    const Pose3d expectedPose = X_MRw.Inverse() * X_MJr;
+    EXPECT_EQ(expectedPose, testPose);
+  }
+  {
+    // The pose of sensor_frame is specified relative to __model__.
+    auto testFrame = model->FrameByName("sensor_frame");
+    ASSERT_NE(nullptr, testFrame);
+    // Resolve the pose relative to it's child frame (right_wheel)
+    const Pose3d testPose = resolvePose(testFrame->SemanticPose());
+    // From SDFormat file
+    // X_MS - Pose of sensor_frame (S) in the original model (M) as
+    // specified in the SDF file.
+    const Pose3d X_MS(0, 1, 0, 0, IGN_PI_4, 0);
+    const Pose3d expectedPose = X_PM * X_MS;
+    EXPECT_EQ(expectedPose, testPose);
+  }
+
+  // Check joint axes
+  {
+    // left_wheel_joint's axis is expressed in __model__.
+    auto joint = model->JointByName("left_wheel_joint");
+    ASSERT_NE(nullptr, joint);
+    auto axis = joint->Axis(0);
+    ASSERT_NE(nullptr, axis);
+    Vector3d xyz;
+    sdf::Errors resolveErrors = axis->ResolveXyz(xyz);
+    EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
+    // From SDFormat file
+    // R_MJl - Rotation of left_wheel_joint (Jl) in the original model (M) as
+    // specified in the SDF file. This is the same as R_MLw since //joint/pose
+    // is identity.
+    const auto R_MJl = X_MLw.Rot();
+    Vector3d xyzInOrigModel(0, 0, 1);
+    Vector3d expectedXyz = R_MJl.Inverse() * xyzInOrigModel;
+    EXPECT_EQ(expectedXyz, xyz);
+  }
+
+
+  // Verify that plugins get merged
+  auto modelElem = model->Element();
+  ASSERT_NE(nullptr, modelElem);
+  auto pluginElem = modelElem->FindElement("plugin");
+  ASSERT_NE(nullptr, pluginElem);
+  EXPECT_EQ("test", pluginElem->Get<std::string>("name"));
+
+  // Verify that custom elements get merged
+  auto customFoo = modelElem->FindElement("custom:foo");
+  ASSERT_NE(nullptr, customFoo);
+  EXPECT_EQ("baz", customFoo->Get<std::string>("name"));
+
+  // Verify that other non-named elements, such as <static> and <enable_wind> do
+  // *NOT* get merged. This is also true for unknown elements
+  EXPECT_FALSE(modelElem->HasElement("unknown_element"));
+  EXPECT_FALSE(modelElem->HasElement("enable_wind"));
+  EXPECT_FALSE(modelElem->HasElement("static"));
+}
+
+//////////////////////////////////////////////////
+TEST(IncludesTest, MergeIncludePlacementFrame)
+{
+  using ignition::math::Pose3d;
+  sdf::ParserConfig config;
+  config.SetFindCallback(findFileCb);
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(
+      sdf::testing::TestFile("integration", "merge_include_model.sdf"), config);
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  auto world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  auto model = world->ModelByIndex(1);
+  EXPECT_EQ("robot2", model->Name());
+  EXPECT_EQ(5u, model->LinkCount());
+  EXPECT_EQ(4u, model->JointCount());
+  auto topLink = model->LinkByName("top");
+  ASSERT_NE(nullptr, topLink);
+  Pose3d topLinkPose;
+  EXPECT_TRUE(topLink->SemanticPose().Resolve(topLinkPose).empty());
+  // From SDFormat file
+  Pose3d expectedtopLinkPose = Pose3d(0, 0, 2, 0, 0, 0);
+  EXPECT_EQ(expectedtopLinkPose, topLinkPose);
+}
+
+//////////////////////////////////////////////////
+TEST(IncludesTest, InvalidMergeInclude)
+{
+  sdf::ParserConfig config;
+  // Using the "file://" URI scheme to allow multiple search paths
+  config.AddURIPath("file://", sdf::testing::TestFile("sdf"));
+  config.AddURIPath("file://", sdf::testing::TestFile("integration", "model"));
+
+  // Models that are not valid by themselves
+  {
+    const std::string sdfString = R"(
+      <sdf version="1.9">
+        <model name="M">
+          <link name="L"/>
+          <include merge="true">
+            <uri>file://model_invalid_frame_only.sdf</uri> <!-- NOLINT -->
+          </include>
+        </model>
+      </sdf>)"; // NOLINT
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::MODEL_WITHOUT_LINK, errors[0].Code());
+  }
+  {
+    const std::string sdfString = R"(
+      <sdf version="1.9">
+        <model name="M">
+          <include merge="true">
+            <uri>file://model_invalid_link_relative_to.sdf</uri> <!-- NOLINT -->
+          </include>
+        </model>
+      </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::POSE_RELATIVE_TO_INVALID, errors[0].Code());
+  }
+
+  // Actors are not supported for merging
+  {
+    const std::string sdfString = R"(
+    <sdf version="1.9">
+      <actor name="A">
+        <include merge="true">
+          <uri>file://test_actor</uri> <!-- NOLINT -->
+        </include>
+      </actor>
+    </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
+    EXPECT_EQ(4, *errors[0].LineNumber());
+  }
+
+  // Lights are not supported for merging
+  {
+    const std::string sdfString = R"(
+    <sdf version="1.9">
+      <light name="Lt" type="spot">
+        <include merge="true">
+          <uri>file://test_light</uri> <!-- NOLINT -->
+        </include>
+      </light>
+    </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
+    EXPECT_EQ("Merge-include is only supported for included models",
+              errors[0].Message());
+    EXPECT_EQ(4, *errors[0].LineNumber());
+  }
+
+  // merge-include cannot be used directly under //world
+  {
+    const std::string sdfString = R"(
+    <sdf version="1.9">
+      <world name="default">
+        <include merge="true">
+          <uri>file://merge_robot</uri> <!-- NOLINT -->
+        </include>
+      </world>
+    </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
+    EXPECT_EQ("Merge-include does not support parent element of type world",
+              errors[0].Message());
+    EXPECT_EQ(4, errors[0].LineNumber());
+  }
+
+  // Syntax error in included file
+  {
+    // Redirect sdferr output
+    std::stringstream buffer;
+    sdf::testing::RedirectConsoleStream redir(
+        sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+        []
+        {
+        sdf::Console::Instance()->SetQuiet(true);
+        });
+#endif
+
+
+    const std::string sdfString = R"(
+    <sdf version="1.9">
+      <world name="default">
+        <include merge="true">
+          <uri>file://invalid_xml_syntax.sdf</uri> <!-- NOLINT -->
+        </include>
+      </world>
+    </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::FILE_READ, errors[0].Code());
+    EXPECT_EQ(0u, errors[0].Message().find("Unable to read file"));
+    EXPECT_EQ(5, *errors[0].LineNumber());
+    EXPECT_TRUE(buffer.str().find("Error parsing XML in file") !=
+                std::string::npos) << buffer.str();
+  }
+}

@@ -1154,7 +1154,7 @@ Errors buildPoseRelativeToGraph(
     auto relativeToId = modelFrameId;
 
     const std::string &relativeTo =
-        nestedInclude->includePoseRelativeTo.value_or("");
+        nestedInclude->IncludePoseRelativeTo().value_or("");
     if (!relativeTo.empty())
     {
       // look for vertex in graph that matches relative_to value
@@ -1180,11 +1180,11 @@ Errors buildPoseRelativeToGraph(
     }
 
     ignition::math::Pose3d resolvedModelPose =
-        nestedInclude->includeRawPose.value_or(ignition::math::Pose3d());
+        nestedInclude->IncludeRawPose().value_or(ignition::math::Pose3d());
 
     sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
-        nestedInclude->includeRawPose.value_or(ignition::math::Pose3d()),
-        nestedInclude->placementFrame.value_or(""),
+        nestedInclude->IncludeRawPose().value_or(ignition::math::Pose3d()),
+        nestedInclude->PlacementFrame().value_or(""),
         outModel.ChildModelScope(ifaceModel->Name()), resolvedModelPose);
     errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
@@ -1517,7 +1517,7 @@ Errors buildPoseRelativeToGraph(
     auto relativeToId = worldFrameId;
 
     const std::string &relativeTo =
-        nestedInclude->includePoseRelativeTo.value_or("");
+        nestedInclude->IncludePoseRelativeTo().value_or("");
     if (!relativeTo.empty())
     {
       // look for vertex in graph that matches relative_to value
@@ -1543,11 +1543,11 @@ Errors buildPoseRelativeToGraph(
     }
 
     ignition::math::Pose3d resolvedModelPose =
-        nestedInclude->includeRawPose.value_or(ignition::math::Pose3d());
+        nestedInclude->IncludeRawPose().value_or(ignition::math::Pose3d());
 
     sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
-        nestedInclude->includeRawPose.value_or(ignition::math::Pose3d()),
-        nestedInclude->placementFrame.value_or(""),
+        nestedInclude->IncludeRawPose().value_or(ignition::math::Pose3d()),
+        nestedInclude->PlacementFrame().value_or(""),
         _out.ChildModelScope(ifaceModel->Name()), resolvedModelPose);
     errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
