@@ -74,16 +74,6 @@
       <link name="link"/>
     </model>
 
-    <model name="model_with_empty_pose_quat_xyzw">
-      <pose rotation_format="quat_xyzw"></pose>
-      <link name="link"/>
-    </model>
-
-    <model name="model_with_empty_pose_quat_xyzw_degrees_false">
-      <pose rotation_format="quat_xyzw" degrees="false"></pose>
-      <link name="link"/>
-    </model>
-
     <model name="model_euler_rpy">
       <pose rotation_format="euler_rpy">1 2 3   0.4 0.5 0.6</pose>
       <link name="link"/>

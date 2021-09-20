@@ -113,36 +113,26 @@ TEST(Pose1_9, ModelPose)
 
   model = world->ModelByIndex(12);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_empty_pose_quat_xyzw", model->Name());
-  EXPECT_EQ(Pose::Zero, model->RawPose());
-
-  model = world->ModelByIndex(13);
-  ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_empty_pose_quat_xyzw_degrees_false", model->Name());
-  EXPECT_EQ(Pose::Zero, model->RawPose());
-
-  model = world->ModelByIndex(14);
-  ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_euler_rpy", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
-  model = world->ModelByIndex(15);
+  model = world->ModelByIndex(13);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_euler_rpy_degrees_false", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
-  model = world->ModelByIndex(16);
+  model = world->ModelByIndex(14);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_euler_rpy_degrees_true", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, IGN_DTOR(90), IGN_DTOR(180), IGN_DTOR(270)),
       model->RawPose());
 
-  model = world->ModelByIndex(17);
+  model = world->ModelByIndex(15);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_quat_xyzw", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), model->RawPose());
 
-  model = world->ModelByIndex(18);
+  model = world->ModelByIndex(16);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("model_quat_xyzw_degrees_false", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), model->RawPose());
@@ -152,6 +142,141 @@ TEST(Pose1_9, ModelPose)
 static bool contains(const std::string &_a, const std::string &_b)
 {
   return _a.find(_b) != std::string::npos;
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, BadModelPoses)
+{
+  // Redirect sdferr output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  {
+    buffer.str("");
+    std::ostringstream stream;
+    stream
+        << "<sdf version='1.9'>"
+        << "  <model name='bad_rotation_format'>"
+        << "    <pose rotation_format='bad_rotation_format'></pose>"
+        << "    <link name='link'/>"
+        << "  </model>"
+        << "</sdf>";
+
+    sdf::SDFPtr sdfParsed(new sdf::SDF());
+    sdf::init(sdfParsed);
+    sdf::Errors errors;
+    EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
+    EXPECT_FALSE(errors.empty());
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "Undefined attribute //pose[@rotation_format='bad_rotation_format']");
+  }
+
+  {
+    buffer.str("");
+    std::ostringstream stream;
+    stream
+        << "<sdf version='1.9'>"
+        << "  <model name='euler_rpy_wrong_number_of_values'>"
+        << "    <pose rotation_format='euler_rpy'>"
+        << "      1 2 3"
+        << "    </pose>"
+        << "    <link name='link'/>"
+        << "  </model>"
+        << "</sdf>";
+
+    sdf::SDFPtr sdfParsed(new sdf::SDF());
+    sdf::init(sdfParsed);
+    sdf::Errors errors;
+    EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
+    EXPECT_FALSE(errors.empty());
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "//pose[@rotation_format='euler_rpy'] must have 6 values, "
+        "but 3 were found");
+  }
+
+  {
+    buffer.str("");
+    std::ostringstream stream;
+    stream
+        << "<sdf version='1.9'>"
+        << "  <model name='quat_xyzw_wrong_number_of_values'>"
+        << "    <pose rotation_format='quat_xyzw'>"
+        << "      1 2 3 4"
+        << "    </pose>"
+        << "    <link name='link'/>"
+        << "  </model>"
+        << "</sdf>";
+
+    sdf::SDFPtr sdfParsed(new sdf::SDF());
+    sdf::init(sdfParsed);
+    sdf::Errors errors;
+    EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
+    EXPECT_FALSE(errors.empty());
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "//pose[@rotation_format='quat_xyzw'] must have 7 values, "
+        "but 4 were found");
+  }
+
+  {
+    buffer.str("");
+    std::ostringstream stream;
+    stream
+        << "<sdf version='1.9'>"
+        << "  <model name='quat_xyzw_with_degrees_true'>"
+        << "    <pose rotation_format='quat_xyzw' degrees='true'>"
+        << "      1 2 3 0 0 0 1"
+        << "    </pose>"
+        << "    <link name='link'/>"
+        << "  </model>"
+        << "</sdf>";
+
+    sdf::SDFPtr sdfParsed(new sdf::SDF());
+    sdf::init(sdfParsed);
+    sdf::Errors errors;
+    EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
+    EXPECT_FALSE(errors.empty());
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "//pose[@degrees='true'] does not apply when parsing quaternions");
+  }
+
+  {
+    buffer.str("");
+    std::ostringstream stream;
+    stream
+        << "<sdf version='1.9'>"
+        << "  <model name='quat_xyzw_with_degrees_true'>"
+        << "    <pose rotation_format='quat_xyzw'></pose>"
+        << "    <link name='link'/>"
+        << "  </model>"
+        << "</sdf>";
+
+    sdf::SDFPtr sdfParsed(new sdf::SDF());
+    sdf::init(sdfParsed);
+    sdf::Errors errors;
+    EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
+    EXPECT_FALSE(errors.empty());
+
+    // Setting //pose[@rotation_format='quat_xyzw'] will should fail here as
+    // the defined default value from sdf/1.9/pose.sdf is '0 0 0 0 0 0'
+    // which is only a 6-tuple.
+    EXPECT_PRED2(contains, buffer.str(),
+        "//pose[@rotation_format='quat_xyzw'] must have 7 values, "
+        "but 6 were found instead in '0 0 0 0 0 0'");
+  }
 }
 
 //////////////////////////////////////////////////
