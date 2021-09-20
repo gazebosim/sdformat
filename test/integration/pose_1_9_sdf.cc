@@ -655,7 +655,7 @@ TEST(Pose1_9, ToStringWithEulerRPY)
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
   poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  poseElem->AddAttribute("rotation_format", "string", "", false);
 
   sdf::ParamPtr rotationFormatAttrib =
       poseElem->GetAttribute("rotation_format");
@@ -679,7 +679,7 @@ TEST(Pose1_9, ToStringWithEulerRPYDegreesTrue)
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
   poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  poseElem->AddAttribute("rotation_format", "string", "", false);
 
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
