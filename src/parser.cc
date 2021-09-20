@@ -49,6 +49,43 @@
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
+
+namespace
+{
+//////////////////////////////////////////////////
+/// Holds information about the location of a particular point in an SDFormat
+/// file
+struct SourceLocation
+{
+  /// \brief Xml path where the error was raised.
+  public: std::optional<std::string> xmlPath = std::nullopt;
+
+  /// \brief File path where the error was raised.
+  public: std::optional<std::string> filePath = std::nullopt;
+
+  /// \brief Line number in the file path where the error was raised.
+  public: std::optional<int> lineNumber = std::nullopt;
+
+  /// \brief Sets the source location on an sdf::Error object
+  /// \param[in,out] _error sdf::Error object on which the source location is to
+  /// be set.
+  public: void SetSourceLocationOnError(sdf::Error &_error) const
+  {
+    if (this->xmlPath.has_value())
+    {
+      _error.SetXmlPath(*this->xmlPath);
+    }
+    if (this->filePath.has_value())
+    {
+      _error.SetFilePath(*this->filePath);
+    }
+    if (this->lineNumber.has_value())
+    {
+      _error.SetLineNumber(*this->lineNumber);
+    }
+  }
+};
+}
 //////////////////////////////////////////////////
 /// \brief Internal helper for readFile, which populates the SDF values
 /// from a file
@@ -129,6 +166,191 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
   }
 
   return initDoc(&xmlDoc, _sdf);
+}
+
+//////////////////////////////////////////////////
+/// Helper function to insert included elements into a parent element.
+/// \param[in] _includeSDF The SDFPtr corresponding to the included element
+/// \param[in] _sourceLoc The location of the include element in the file
+/// \param[in] _merge Whether the included element should be merged into the
+/// parent element. If true, children elements of _includeSDF will be copied to
+/// _parent without introducing a new model scope. N.B, this only works for
+/// included nested models.
+/// \param[in,out] _parent The parent element that contains the <include> tag.
+/// The contents of _includeSDF will be added to this.
+/// \param[out] _errors Captures errors encountered during parsing.
+static void insertIncludedElement(sdf::SDFPtr _includeSDF,
+                                  const SourceLocation &_sourceLoc, bool _merge,
+                                  sdf::ElementPtr _parent, sdf::Errors &_errors)
+{
+  Error invalidFileError(ErrorCode::FILE_READ,
+                         "Included model is invalid. Skipping model.");
+  _sourceLoc.SetSourceLocationOnError(invalidFileError);
+
+  sdf::ElementPtr rootElem = _includeSDF->Root();
+  if (nullptr == rootElem)
+  {
+    _errors.push_back(invalidFileError);
+    return;
+  }
+
+  sdf::ElementPtr firstElem = rootElem->GetFirstElement();
+  if (nullptr == firstElem)
+  {
+    _errors.push_back(invalidFileError);
+    return;
+  }
+
+  if (!_merge)
+  {
+    firstElem->SetParent(_parent);
+    _parent->InsertElement(firstElem);
+    return;
+  }
+  else if (firstElem->GetName() != "model")
+  {
+    Error unsupportedError(
+        ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
+        "Merge-include is only supported for included models");
+    _sourceLoc.SetSourceLocationOnError(unsupportedError);
+    _errors.push_back(unsupportedError);
+    return;
+  }
+  else if (_parent->GetName() != "model")
+  {
+    Error unsupportedError(
+        ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
+        "Merge-include does not support parent element of type " +
+            _parent->GetName());
+    _sourceLoc.SetSourceLocationOnError(unsupportedError);
+    _errors.push_back(unsupportedError);
+    return;
+  }
+
+  // Validate included model's frame semantics
+  // We create a throwaway sdf::Root object in order to validate the
+  // included entity.
+  sdf::Root includedRoot;
+  sdf::Errors includeDOMerrors = includedRoot.Load(_includeSDF);
+  _errors.insert(_errors.end(), includeDOMerrors.begin(),
+                 includeDOMerrors.end());
+
+  const sdf::Model *model = includedRoot.Model();
+  if (nullptr == model)
+  {
+    Error unsupportedError(ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
+                           "Included model is invalid. Skipping model.");
+    _sourceLoc.SetSourceLocationOnError(unsupportedError);
+    _errors.push_back(unsupportedError);
+    return;
+  }
+
+  ElementPtr proxyModelFrame = _parent->AddElement("frame");
+  const std::string proxyModelFrameName =
+      "merged__" + model->Name() + "__model__";
+
+  proxyModelFrame->GetAttribute("name")->Set(proxyModelFrameName);
+
+  // Determine the canonical link so the proxy frame can be attached to it
+  const std::string canonicalLinkName =
+      model->CanonicalLinkAndRelativeName().second;
+
+  proxyModelFrame->GetAttribute("attached_to")->Set(canonicalLinkName);
+
+  auto modelPose = model->RawPose();
+  if (!model->PlacementFrameName().empty())
+  {
+    // M - model frame (__model__)
+    // R - The `relative_to` frame of the placement frame's //pose element.
+    // See resolveModelPoseWithPlacementFrame in FrameSemantics.cc for
+    // notation and documentation
+    ignition::math::Pose3d X_RM = model->RawPose();
+    sdf::Errors resolveErrors = model->SemanticPose().Resolve(X_RM);
+    _errors.insert(_errors.end(), resolveErrors.begin(), resolveErrors.end());
+    modelPose = X_RM;
+  }
+
+  ElementPtr proxyModelFramePose = proxyModelFrame->AddElement("pose");
+  proxyModelFramePose->Set(modelPose);
+
+  // Set the proxyModelFrame's //pose/@relative_to to the frame used in
+  // //include/pose/@relative_to.
+  std::string modelPoseRelativeTo = model->PoseRelativeTo();
+
+  // If empty, use "__model__", since leaving it empty would make it
+  // relative_to the canonical link frame specified in //frame/@attached_to.
+  if (modelPoseRelativeTo.empty())
+  {
+    modelPoseRelativeTo = "__model__";
+  }
+
+  proxyModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
+
+  auto setAttributeToProxyFrame =
+      [&proxyModelFrameName](const std::string &_attr, sdf::ElementPtr _elem,
+                             bool updateIfEmpty)
+  {
+    if (nullptr == _elem)
+      return;
+
+    auto attribute = _elem->GetAttribute(_attr);
+    if (attribute->GetAsString() == "__model__" ||
+        (updateIfEmpty && attribute->GetAsString().empty()))
+    {
+      attribute->Set(proxyModelFrameName);
+    }
+  };
+
+  sdf::ElementPtr nextElem = nullptr;
+  for (auto elem = firstElem->GetFirstElement(); elem; elem = nextElem)
+  {
+    // We need to fetch the next element here before we call elem->SetParent
+    // later in this block.
+    nextElem = elem->GetNextElement();
+
+    if ((elem->GetName() == "link") || (elem->GetName() == "model"))
+    {
+      // Add a pose element even if the element doesn't originally have one
+      setAttributeToProxyFrame("relative_to", elem->GetElement("pose"), true);
+    }
+    else if (elem->GetName() == "frame")
+    {
+      // If //frame/@attached_to is empty, explicitly set it to the name
+      // of the nested model frame.
+      setAttributeToProxyFrame("attached_to", elem, true);
+      setAttributeToProxyFrame("relative_to", elem->GetElementImpl("pose"),
+                               false);
+    }
+    else if (elem->GetName() == "joint")
+    {
+      setAttributeToProxyFrame("relative_to", elem->GetElementImpl("pose"),
+                               false);
+      // cppcheck-suppress syntaxError
+      // cppcheck-suppress unmatchedSuppression
+      if (auto axis = elem->GetElementImpl("axis"); axis)
+      {
+        setAttributeToProxyFrame("expressed_in", axis->GetElementImpl("xyz"),
+                                 false);
+      }
+
+      if (auto axis2 = elem->GetElementImpl("axis2"); axis2)
+      {
+        setAttributeToProxyFrame("expressed_in", axis2->GetElementImpl("xyz"),
+                                 false);
+      }
+    }
+
+    // Only named and custom elements are copied. Other elements, such as
+    // <static>, <self_collide>, and <enable_wind> are ignored.
+    if ((elem->GetName() == "link") || (elem->GetName() == "model") ||
+        (elem->GetName() == "joint") || (elem->GetName() == "frame") ||
+        (elem->GetName() == "gripper") || (elem->GetName() == "plugin") ||
+        (elem->GetName().find(':') != std::string::npos))
+    {
+      elem->SetParent(_parent);
+      _parent->InsertElement(elem);
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -1211,6 +1433,42 @@ static bool resolveFileNameFromUri(tinyxml2::XMLElement *_includeXml,
 }
 
 //////////////////////////////////////////////////
+// Helper function called from readXml to validate the //include tag by calling
+// readXml on it. This is only here for error checking. We won't use the
+// resulting sdf::ElementPtr because the contents of the //include are accessed
+// directly via tinyxml in the subsequent code.
+/// \param[in] _xml Pointer to the TinyXML element that corresponds to the
+/// <include> element
+/// \param[in,out] _sdf SDF pointer to the parent of the <include> element
+/// \param[in] _config Custom parser configuration
+/// \param[in] _source Source of the XML document
+/// \param[out] _errors Captures errors found during parsing.
+static void validateIncludeElement(tinyxml2::XMLElement *_xml,
+                                   ElementPtr _sdf, const ParserConfig &_config,
+                                   const std::string &_source, Errors &_errors)
+{
+  for (unsigned int descCounter = 0;
+      descCounter != _sdf->GetElementDescriptionCount(); ++descCounter)
+  {
+    ElementPtr elemDesc = _sdf->GetElementDescription(descCounter);
+    if (elemDesc->GetName() == _xml->Value())
+    {
+      ElementPtr element = elemDesc->Clone();
+      if (!readXml(_xml, element, _config, _source, _errors))
+      {
+        Error err(
+            ErrorCode::ELEMENT_INVALID,
+            std::string("Error reading element <") +
+            _xml->Value() + ">",
+            _source,
+            _xml->GetLineNum());
+        _errors.push_back(err);
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////
 bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     const ParserConfig &_config, const std::string &_source, Errors &_errors)
 {
@@ -1291,6 +1549,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     {
       if (std::string("include") == elemXml->Value())
       {
+        validateIncludeElement(elemXml, _sdf, _config, _source, _errors);
+
         tinyxml2::XMLElement *uriElement = elemXml->FirstChildElement("uri");
 
         const std::string includeXmlPath = _sdf->XmlPath() + "/include[" +
@@ -1528,7 +1788,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           }
 
           auto includeSDFFirstElem = includeSDF->Root()->GetFirstElement();
-          includeSDFFirstElem->SetParent(_sdf);
           auto includeDesc = _sdf->GetElementDescription("include");
           if (includeDesc)
           {
@@ -1538,8 +1797,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             copyChildren(includeInfo, elemXml, false);
             includeSDFFirstElem->SetIncludeElement(includeInfo);
           }
-          _sdf->InsertElement(includeSDFFirstElem);
+          bool toMerge = elemXml->BoolAttribute("merge", false);
+          SourceLocation sourceLoc{includeXmlPath, _source,
+                                   elemXml->GetLineNum()};
 
+          insertIncludedElement(includeSDF, sourceLoc, toMerge, _sdf, _errors);
           continue;
         }
       }
