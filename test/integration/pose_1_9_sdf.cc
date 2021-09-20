@@ -54,105 +54,105 @@ TEST(Pose1_9, PoseExpressionFormats)
 
   const sdf::Model *model = world->ModelByIndex(0);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_empty_pose", model->Name());
+  EXPECT_EQ("model_with_empty_pose", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
 
   model = world->ModelByIndex(1);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_empty_pose_with_degrees_false", model->Name());
+  EXPECT_EQ("model_with_empty_pose_with_degrees_false", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
 
   model = world->ModelByIndex(2);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_empty_pose_with_degrees_true", model->Name());
+  EXPECT_EQ("model_with_empty_pose_with_degrees_true", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
 
   model = world->ModelByIndex(3);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_pose_no_attribute", model->Name());
+  EXPECT_EQ("model_with_pose_no_attribute", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
   model = world->ModelByIndex(4);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_pose_with_degrees_false", model->Name());
+  EXPECT_EQ("model_with_pose_with_degrees_false", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
   model = world->ModelByIndex(5);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_pose_with_degrees_true", model->Name());
+  EXPECT_EQ("model_with_pose_with_degrees_true", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, pi / 2, pi, pi * 3 / 2), model->RawPose());
 
   model = world->ModelByIndex(6);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_single_space_delimiter", model->Name());
+  EXPECT_EQ("model_with_single_space_delimiter", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
   model = world->ModelByIndex(7);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_newline_delimiter", model->Name());
+  EXPECT_EQ("model_with_newline_delimiter", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
   model = world->ModelByIndex(8);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_messy_delimiters", model->Name());
+  EXPECT_EQ("model_with_messy_delimiters", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
   model = world->ModelByIndex(9);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_empty_pose_euler_rpy", model->Name());
+  EXPECT_EQ("model_with_empty_pose_euler_rpy", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
 
   model = world->ModelByIndex(10);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_empty_pose_euler_rpy_degrees_true", model->Name());
+  EXPECT_EQ("model_with_empty_pose_euler_rpy_degrees_true", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
 
   model = world->ModelByIndex(11);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_empty_pose_euler_rpy_degrees_false", model->Name());
+  EXPECT_EQ("model_with_empty_pose_euler_rpy_degrees_false", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
 
   model = world->ModelByIndex(12);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_euler_rpy", model->Name());
+  EXPECT_EQ("model_euler_rpy", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
   model = world->ModelByIndex(13);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_euler_rpy_degrees_false", model->Name());
+  EXPECT_EQ("model_euler_rpy_degrees_false", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), model->RawPose());
 
   model = world->ModelByIndex(14);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_euler_rpy_degrees_true", model->Name());
+  EXPECT_EQ("model_euler_rpy_degrees_true", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, IGN_DTOR(90), IGN_DTOR(180), IGN_DTOR(270)),
       model->RawPose());
 
   model = world->ModelByIndex(15);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_quat_xyzw", model->Name());
+  EXPECT_EQ("model_quat_xyzw", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), model->RawPose());
 
   model = world->ModelByIndex(16);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_quat_xyzw_degrees_false", model->Name());
+  EXPECT_EQ("model_quat_xyzw_degrees_false", model->Name());
   EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0), model->RawPose());
 
   // //inertial/pose
   model = world->ModelByIndex(17);
   ASSERT_NE(nullptr, model);
-  ASSERT_EQ("model_with_inertia_pose", model->Name());
+  EXPECT_EQ("model_with_inertia_pose", model->Name());
   {
     const auto link = model->LinkByIndex(0);
     ASSERT_NE(nullptr, link);
-    ASSERT_EQ("link_euler_rpy_degrees_true", link->Name());
+    EXPECT_EQ("link_euler_rpy_degrees_true", link->Name());
     EXPECT_EQ(Pose(1, 2, 3, IGN_DTOR(90), IGN_DTOR(180), IGN_DTOR(270)),
               link->Inertial().Pose());
   }
   {
     const auto link = model->LinkByIndex(1);
     ASSERT_NE(nullptr, link);
-    ASSERT_EQ("link_quat_xyzw", link->Name());
+    EXPECT_EQ("link_quat_xyzw", link->Name());
     EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0),
               link->Inertial().Pose());
   }
