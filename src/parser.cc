@@ -1409,10 +1409,15 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
                 [&poseElem, &poseElemXml](const std::string &_attribName)
             {
               const char *attrib = poseElemXml->Attribute(_attribName.c_str());
-              if (attrib)
-                poseElem->GetAttribute(_attribName)->SetFromString(attrib);
-              else
-                poseElem->GetAttribute(_attribName)->Reset();
+              auto attribParam = poseElem->GetAttribute(_attribName);
+              if (attrib && attribParam)
+              {
+                attribParam->SetFromString(attrib);
+              }
+              else if (attribParam)
+              {
+                attribParam->Reset();
+              }
             };
 
             setAttribute("relative_to");
