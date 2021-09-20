@@ -449,7 +449,62 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     const std::string &_key, const Param_V &_attributes,
     ParamPrivate::ParamVariant &_value)
 {
-  StringStreamClassicLocale ss(_input);
+  const bool defaultParseAsDegrees = false;
+  bool parseAsDegrees = defaultParseAsDegrees;
+
+  const std::string defaultRotationFormat = "euler_rpy";
+  std::string rotationFormat = defaultRotationFormat;
+
+  const std::size_t defaultDesiredSize = 6u;
+  std::size_t desiredSize = defaultDesiredSize;
+
+  std::string defaultValueStr = "0 0 0 0 0 0";
+
+  for (const auto &p : _attributes)
+  {
+    const std::string key = p->GetKey();
+
+    if (key == "degrees")
+    {
+      if (!p->Get<bool>(parseAsDegrees))
+      {
+        sdferr << "Invalid boolean value found for attribute "
+            "//pose[@degrees].\n";
+        return false;
+      }
+    }
+    else if (key == "rotation_format")
+    {
+      rotationFormat = p->GetAsString();
+
+      if (rotationFormat == "euler_rpy")
+      {
+        // Already the default, no modifications needed.
+      }
+      else if (rotationFormat == "quat_xyzw")
+      {
+        desiredSize = 7u;
+        defaultValueStr = "0 0 0 0 0 0 1";
+      }
+      else
+      {
+        sdferr << "Undefined attribute //pose[@rotation_format='"
+            << rotationFormat << "'], only 'euler_rpy' and 'quat_xyzw'"
+            << " is supported.\n";
+        return false;
+      }
+    }
+  }
+
+  if (rotationFormat == "quat_xyzw" && parseAsDegrees)
+  {
+    sdferr << "The attribute //pose[@degrees='true'] does not apply when "
+        << "parsing quaternions, //pose[@rotation_format='quat_xyzw'].\n";
+    return false;
+  }
+
+  std::string input = _input.empty() ? defaultValueStr : _input;
+  StringStreamClassicLocale ss(input);
   std::string token;
   std::array<double, 7> values;
   std::size_t valueIndex = 0;
@@ -464,7 +519,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     // Catch invalid argument exception from std::stod
     catch(std::invalid_argument &)
     {
-      sdferr << "Invalid argument. Unable to set value ["<< _input
+      sdferr << "Invalid argument. Unable to set value ["<< input
              << "] for key [" << _key << "].\n";
       isValidPose = false;
       break;
@@ -485,9 +540,11 @@ bool ParsePoseUsingStringStream(const std::string &_input,
       break;
     }
 
-    if (valueIndex >= 7u)
+    if (valueIndex >= desiredSize)
     {
-      sdferr << "Pose values can not accept more than 7 values.\n";
+      sdferr << "The value for //pose[@rotation_format='" << rotationFormat
+          << "'] must have " << desiredSize
+          << " values, but more than that were found in '" << input << "'.\n";
       isValidPose = false;
       break;
     }
@@ -498,45 +555,15 @@ bool ParsePoseUsingStringStream(const std::string &_input,
   if (!isValidPose)
     return false;
 
-  const bool defaultParseAsDegrees = false;
-  bool parseAsDegrees = defaultParseAsDegrees;
-
-  const std::string defaultRotationFormat = "euler_rpy";
-  std::string rotationFormat = defaultRotationFormat;
-
-  for (const auto &p : _attributes)
+  if (valueIndex != desiredSize)
   {
-    const std::string key = p->GetKey();
-
-    if (key == "degrees")
-    {
-      if (!p->Get<bool>(parseAsDegrees))
-      {
-        sdferr << "Invalid boolean value found for attribute "
-            "//pose[@degrees].\n";
-        return false;
-      }
-    }
-    else if (key == "rotation_format")
-    {
-      rotationFormat = p->GetAsString();
-    }
+    sdferr << "The value for //pose[@rotation_format='" << rotationFormat
+        << "'] must have " << desiredSize << " values, but " << valueIndex
+        << " were found instead in '" << input << "'.\n";
+    return false;
   }
 
-  auto isDesiredSize =
-      [&valueIndex](const std::string &_format, std::size_t _size)
-  {
-    if (valueIndex != _size)
-    {
-      sdferr << "The value for //pose[@rotation_format='" << _format
-          << "'] must have " << _size << " values, but " << valueIndex
-          << " were found instead.\n";
-      return false;
-    }
-    return true;
-  };
-
-  if (rotationFormat == "euler_rpy" && isDesiredSize(rotationFormat, 6u))
+  if (rotationFormat == "euler_rpy")
   {
     if (parseAsDegrees)
     {
@@ -549,24 +576,10 @@ bool ParsePoseUsingStringStream(const std::string &_input,
           values[3], values[4], values[5]);
     }
   }
-  else if (rotationFormat == "quat_xyzw" && isDesiredSize(rotationFormat, 7u))
-  {
-    if (parseAsDegrees)
-    {
-      sdferr << "The attribute //pose[@degrees='true'] does not apply when the "
-          << "parsing quaternions, //pose[@rotation_format='quat_xyzw'].\n";
-      return false;
-    }
-
-    _value = ignition::math::Pose3d(values[0], values[1], values[2],
-        values[6], values[3], values[4], values[5]);
-  }
   else
   {
-    sdferr << "Undefined attribute //pose[@rotation_format='"
-        << rotationFormat << "'], only 'euler_rpy' and 'quat_xyzw'"
-        << " is supported.\n";
-    return false;
+    _value = ignition::math::Pose3d(values[0], values[1], values[2],
+        values[6], values[3], values[4], values[5]);
   }
 
   return true;
@@ -702,22 +715,14 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
              _typeName == "pose" ||
              _typeName == "Pose")
     {
-      if (!tmp.empty())
-      {
-        const ElementPtr p = this->parentElement.lock();
-        if (!this->ignoreParentAttributes && p)
-        {
-          return ParsePoseUsingStringStream(
-              tmp, this->key, p->GetAttributes(), _valueToSet);
-        }
-        return ParsePoseUsingStringStream(
-            tmp, this->key, {}, _valueToSet);
-      }
-      else
+      const ElementPtr p = this->parentElement.lock();
+      if (!this->ignoreParentAttributes && p)
       {
         return ParsePoseUsingStringStream(
-            "0 0 0 0 0 0", this->key, {}, _valueToSet);
+            tmp, this->key, p->GetAttributes(), _valueToSet);
       }
+      return ParsePoseUsingStringStream(
+          tmp, this->key, {}, _valueToSet);
     }
     else if (_typeName == "ignition::math::Quaterniond" ||
              _typeName == "quaternion")
