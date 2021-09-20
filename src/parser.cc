@@ -1272,6 +1272,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     if (!_sdf->GetValue()->SetFromString(_xml->GetText()))
       return false;
   }
+  else if (_sdf->GetValue())
+  {
+    if (!_sdf->GetValue()->Reparse())
+      return false;
+  }
 
   if (_sdf->GetCopyChildren())
   {

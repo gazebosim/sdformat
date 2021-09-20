@@ -585,10 +585,12 @@ bool ParsePoseUsingStringStream(const std::string &_input,
 //////////////////////////////////////////////////
 bool Param::ValueFromString(const std::string &_value)
 {
+  if (!this->dataPtr->ValueFromStringImpl(
+      this->dataPtr->typeName, _value, this->dataPtr->value))
+    return false;
+
   this->dataPtr->strValue = _value;
-  return this->dataPtr->ValueFromStringImpl(this->dataPtr->typeName,
-                                           _value,
-                                           this->dataPtr->value);
+  return true;
 }
 
 //////////////////////////////////////////////////
