@@ -71,6 +71,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->dataPtr->description = _description;
   this->dataPtr->set = false;
   this->dataPtr->ignoreParentAttributes = false;
+  this->dataPtr->defaultStrValue = _default;
 
   SDF_ASSERT(this->ValueFromString(_default), "Invalid parameter");
   this->dataPtr->defaultValue = this->dataPtr->value;
@@ -83,26 +84,27 @@ Param::Param(const std::string &_key, const std::string &_typeName,
              const std::string &_description)
     : Param(_key, _typeName, _default, _required, _description)
 {
-  auto valCopy = this->dataPtr->value;
   if (!_minValue.empty())
   {
     SDF_ASSERT(
-        this->ValueFromString(_minValue),
+        this->dataPtr->ValueFromStringImpl(
+            this->dataPtr->typeName,
+            _minValue,
+            this->dataPtr->minValue.emplace()),
         std::string("Invalid [min] parameter in SDFormat description of [") +
             _key + "]");
-    this->dataPtr->minValue = this->dataPtr->value;
   }
 
   if (!_maxValue.empty())
   {
     SDF_ASSERT(
-        this->ValueFromString(_maxValue),
+        this->dataPtr->ValueFromStringImpl(
+            this->dataPtr->typeName,
+            _maxValue,
+            this->dataPtr->maxValue.emplace()),
         std::string("Invalid [max] parameter in SDFormat description of [") +
             _key + "]");
-    this->dataPtr->maxValue = this->dataPtr->value;
   }
-
-  this->dataPtr->value = valCopy;
 }
 
 //////////////////////////////////////////////////
@@ -301,12 +303,7 @@ void Param::Update()
 std::string Param::GetAsString() const
 {
   StringStreamClassicLocale ss;
-
-  if (this->dataPtr->strValue.has_value())
-    ss << this->dataPtr->strValue.value();
-  else
-    ss << ParamStreamer{ this->dataPtr->value };
-
+  ss << this->dataPtr->strValue;
   return ss.str();
 }
 
@@ -823,30 +820,28 @@ bool Param::SetParentElement(ElementPtr _parentElement)
 void Param::Reset()
 {
   this->dataPtr->value = this->dataPtr->defaultValue;
-  this->dataPtr->strValue = std::nullopt;
+  this->dataPtr->strValue = this->dataPtr->defaultStrValue;
   this->dataPtr->set = false;
 }
 
 //////////////////////////////////////////////////
 bool Param::Reparse()
 {
-  if (!this->dataPtr->strValue.has_value())
-    return false;
-
-  const std::string strVal = this->dataPtr->strValue.value();
-  if (!this->ValueFromString(strVal))
+  if (!this->dataPtr->ValueFromStringImpl(
+      this->dataPtr->typeName, this->dataPtr->strValue, this->dataPtr->value))
   {
     if (const auto parentElement = this->dataPtr->parentElement.lock())
     {
-      sdferr << "Failed to set value '" << strVal << "' to key ["
-          << this->GetKey() << "] for new parent element of name '"
-          << parentElement->GetName() << "', reverting to previous value '"
+      sdferr << "Failed to set value '" << this->dataPtr->strValue
+          << "' to key [" << this->GetKey()
+          << "] for new parent element of name '" << parentElement->GetName()
+          << "', reverting to previous value '"
           << this->GetAsString() << "'.\n";
     }
     else
     {
-      sdferr << "Failed to set value '" << strVal << "' to key ["
-          << this->GetKey() << "] without a parent element, "
+      sdferr << "Failed to set value '" << this->dataPtr->strValue
+          << "' to key [" << this->GetKey() << "] without a parent element, "
           << "reverting to previous value '" << this->GetAsString() << "'.\n";
     }
     return false;

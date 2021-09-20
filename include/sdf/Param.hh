@@ -373,7 +373,10 @@ namespace sdf
     public: bool ignoreParentAttributes;
 
     /// \brief This parameter's value that was provided as a string
-    public: std::optional<std::string> strValue;
+    public: std::string strValue;
+
+    /// \brief This parameter's default value that was provided as a string
+    public: std::string defaultStrValue;
 
     /// \brief This parameter's default value
     public: ParamVariant defaultValue;
