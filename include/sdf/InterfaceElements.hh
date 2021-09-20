@@ -48,7 +48,7 @@ class SDFORMAT_VISIBLE NestedInclude
   // Defaulted copy, move constructors and destructors are needed to avoid
   // deprecation warnings on memeber variables when simply instantiating this
   // class.
-  // TODO(anyone) Remove the constructor and destructor once the depreceted
+  // TODO(anyone) Remove the constructor and destructor once the deprecated
   // members are removed.
   SDF_SUPPRESS_DEPRECATED_BEGIN
   public: NestedInclude(const NestedInclude&) = default;
