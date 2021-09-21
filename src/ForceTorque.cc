@@ -22,6 +22,30 @@ using namespace sdf;
 /// \brief Private force torque data.
 class sdf::ForceTorque::Implementation
 {
+  /// \brief Noise values related to the body-frame force on the
+  /// X-axis.
+  public: Noise forceXNoise;
+
+  /// \brief Noise values related to the body-frame force on the
+  /// Y-axis.
+  public: Noise forceYNoise;
+
+  /// \brief Noise values related to the body-frame force on the
+  /// Z-axis.
+  public: Noise forceZNoise;
+
+  /// \brief Noise values related to the body-frame torque on the
+  /// X-axis.
+  public: Noise torqueXNoise;
+
+  /// \brief Noise values related to the body-frame torque on the
+  /// Y-axis.
+  public: Noise torqueYNoise;
+
+  /// \brief Noise values related to the body-frame torque on the
+  /// Z-axis.
+  public: Noise torqueZNoise;
+
   /// \brief Name of the reference frame for the wrench values.
   public: ForceTorqueFrame frame = ForceTorqueFrame::CHILD;
 
@@ -106,6 +130,29 @@ Errors ForceTorque::Load(ElementPtr _sdf)
     }
   }
 
+  auto loadAxisNoise = [&errors](sdf::ElementPtr _parent,
+                          const std::string _groupLabel,
+                          const std::string _axisLabel,
+                          sdf::Noise& _noise)
+  {
+    if (_parent->HasElement(_groupLabel) &&
+        _parent->GetElement(_groupLabel)->HasElement(_axisLabel))
+    {
+        auto axis = _parent->GetElement(_groupLabel)->GetElement(_axisLabel);
+        sdf::Errors noiseErrors = _noise.Load(axis->GetElement("noise"));
+        errors.insert(errors.end(), noiseErrors.begin(), noiseErrors.end());
+        return true;
+    }
+    return false;
+  };
+
+  loadAxisNoise(_sdf, "force", "x", this->dataPtr->forceXNoise);
+  loadAxisNoise(_sdf, "force", "y", this->dataPtr->forceYNoise);
+  loadAxisNoise(_sdf, "force", "z", this->dataPtr->forceZNoise);
+  loadAxisNoise(_sdf, "torque", "x", this->dataPtr->torqueXNoise);
+  loadAxisNoise(_sdf, "torque", "y", this->dataPtr->torqueYNoise);
+  loadAxisNoise(_sdf, "torque", "z", this->dataPtr->torqueZNoise);
+
   return errors;
 }
 
@@ -125,7 +172,85 @@ bool ForceTorque::operator!=(const ForceTorque &_ft) const
 bool ForceTorque::operator==(const ForceTorque &_ft) const
 {
   return this->dataPtr->frame == _ft.dataPtr->frame &&
-         this->dataPtr->measure_direction == _ft.dataPtr->measure_direction;
+         this->dataPtr->measure_direction == _ft.dataPtr->measure_direction &&
+         this->dataPtr->forceXNoise == _ft.dataPtr->forceXNoise &&
+         this->dataPtr->forceYNoise == _ft.dataPtr->forceYNoise &&
+         this->dataPtr->forceZNoise == _ft.dataPtr->forceZNoise &&
+         this->dataPtr->torqueXNoise == _ft.dataPtr->torqueXNoise &&
+         this->dataPtr->torqueYNoise == _ft.dataPtr->torqueYNoise &&
+         this->dataPtr->torqueZNoise == _ft.dataPtr->torqueZNoise;
+}
+
+//////////////////////////////////////////////////
+const Noise &ForceTorque::ForceXNoise() const
+{
+  return this->dataPtr->forceXNoise;
+}
+
+//////////////////////////////////////////////////
+void ForceTorque::SetForceXNoise(const Noise &_noise)
+{
+  this->dataPtr->forceXNoise = _noise;
+}
+
+//////////////////////////////////////////////////
+const Noise &ForceTorque::ForceYNoise() const
+{
+  return this->dataPtr->forceYNoise;
+}
+
+//////////////////////////////////////////////////
+void ForceTorque::SetForceYNoise(const Noise &_noise)
+{
+  this->dataPtr->forceYNoise = _noise;
+}
+
+//////////////////////////////////////////////////
+const Noise &ForceTorque::ForceZNoise() const
+{
+  return this->dataPtr->forceZNoise;
+}
+
+//////////////////////////////////////////////////
+void ForceTorque::SetForceZNoise(const Noise &_noise)
+{
+  this->dataPtr->forceZNoise = _noise;
+}
+
+//////////////////////////////////////////////////
+const Noise &ForceTorque::TorqueXNoise() const
+{
+  return this->dataPtr->torqueXNoise;
+}
+
+//////////////////////////////////////////////////
+void ForceTorque::SetTorqueXNoise(const Noise &_noise)
+{
+  this->dataPtr->torqueXNoise = _noise;
+}
+
+//////////////////////////////////////////////////
+const Noise &ForceTorque::TorqueYNoise() const
+{
+  return this->dataPtr->torqueYNoise;
+}
+
+//////////////////////////////////////////////////
+void ForceTorque::SetTorqueYNoise(const Noise &_noise)
+{
+  this->dataPtr->torqueYNoise = _noise;
+}
+
+//////////////////////////////////////////////////
+const Noise &ForceTorque::TorqueZNoise() const
+{
+  return this->dataPtr->torqueZNoise;
+}
+
+//////////////////////////////////////////////////
+void ForceTorque::SetTorqueZNoise(const Noise &_noise)
+{
+  this->dataPtr->torqueZNoise = _noise;
 }
 
 //////////////////////////////////////////////////
