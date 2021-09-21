@@ -130,7 +130,7 @@ Errors ForceTorque::Load(ElementPtr _sdf)
     }
   }
 
-  auto loadAxisNoise = [](sdf::ElementPtr _parent,
+  auto loadAxisNoise = [&errors](sdf::ElementPtr _parent,
                           const std::string _groupLabel,
                           const std::string _axisLabel,
                           sdf::Noise& _noise)
@@ -139,7 +139,8 @@ Errors ForceTorque::Load(ElementPtr _sdf)
         _parent->GetElement(_groupLabel)->HasElement(_axisLabel))
     {
         auto axis = _parent->GetElement(_groupLabel)->GetElement(_axisLabel);
-        _noise.Load(axis->GetElement("noise"));
+        sdf::Errors noiseErrors = _noise.Load(axis->GetElement("noise"));
+        errors.insert(errors.end(), noiseErrors.begin(), noiseErrors.end());
         return true;
     }
     return false;
