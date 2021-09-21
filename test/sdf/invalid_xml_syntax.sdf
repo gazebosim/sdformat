@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<!-- This is an invalid file used for testing -->
+<sdf version="1.9">
+  <model name="robot1">
+    <link name="link">
+      <pose>1 0 0  0 0 0</pose>
+        <!-- There should be a </link> here -->
+  </model>
+</sdf>
+

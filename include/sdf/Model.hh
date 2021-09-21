@@ -40,7 +40,7 @@ namespace sdf
   class Joint;
   class Link;
   class ParserConfig;
-  struct NestedInclude;
+  class NestedInclude;
   struct PoseRelativeToGraph;
   struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;

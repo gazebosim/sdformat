@@ -497,7 +497,7 @@ TEST(Param, SettingParentElement)
   sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
 
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
-  doubleParam.SetParentElement(parentElement);
+  ASSERT_TRUE(doubleParam.SetParentElement(parentElement));
 
   ASSERT_NE(nullptr, doubleParam.GetParentElement());
   EXPECT_EQ(parentElement, doubleParam.GetParentElement());
@@ -505,12 +505,12 @@ TEST(Param, SettingParentElement)
   // Set a new parent Element
   sdf::ElementPtr newParentElement = std::make_shared<sdf::Element>();
 
-  doubleParam.SetParentElement(newParentElement);
+  ASSERT_TRUE(doubleParam.SetParentElement(newParentElement));
   ASSERT_NE(nullptr, doubleParam.GetParentElement());
   EXPECT_EQ(newParentElement, doubleParam.GetParentElement());
 
   // Remove the parent Element
-  doubleParam.SetParentElement(nullptr);
+  ASSERT_TRUE(doubleParam.SetParentElement(nullptr));
   EXPECT_EQ(nullptr, doubleParam.GetParentElement());
 }
 
@@ -520,7 +520,7 @@ TEST(Param, CopyConstructor)
   sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
 
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
-  doubleParam.SetParentElement(parentElement);
+  ASSERT_TRUE(doubleParam.SetParentElement(parentElement));
 
   ASSERT_NE(nullptr, doubleParam.GetParentElement());
   EXPECT_EQ(parentElement, doubleParam.GetParentElement());
@@ -536,7 +536,7 @@ TEST(Param, EqualOperator)
   sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
 
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
-  doubleParam.SetParentElement(parentElement);
+  ASSERT_TRUE(doubleParam.SetParentElement(parentElement));
 
   ASSERT_NE(nullptr, doubleParam.GetParentElement());
   EXPECT_EQ(parentElement, doubleParam.GetParentElement());
@@ -556,7 +556,7 @@ TEST(Param, DestroyParentElementAfterConstruct)
 
     param = std::make_shared<sdf::Param>(
         "key", "double", "1.0", false, "description");
-    param->SetParentElement(parentElement);
+    ASSERT_TRUE(param->SetParentElement(parentElement));
   }
 
   ASSERT_NE(nullptr, param);
@@ -568,9 +568,6 @@ TEST(Param, ReparsingAfterSetDouble)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
 
-  // Reparsing without setting values will fail. Value will still be the
-  // default.
-  EXPECT_FALSE(doubleParam.Reparse());
   double value;
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 1.0);
@@ -593,9 +590,6 @@ TEST(Param, ReparsingAfterSetFromStringDouble)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
 
-  // Reparsing without setting values will fail. Value will still be the
-  // default.
-  EXPECT_FALSE(doubleParam.Reparse());
   double value;
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 1.0);
@@ -622,9 +616,6 @@ TEST(Param, ReparsingAfterSetPose)
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), value);
 
-  // Reparsing without setting values will fail.
-  EXPECT_FALSE(poseParam.Reparse());
-
   // Reparsing after setting values will pass. Note that the value was
   // explicitly set using the Set function, reparsing will always yield the same
   // value moving forwards.
@@ -637,12 +628,13 @@ TEST(Param, ReparsingAfterSetPose)
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
   poseElem->AddAttribute("degrees", "bool", "false", false);
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
 
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
 
   // Setting parent with @degrees as false, value will remain the same.
-  poseParam.SetParentElement(poseElem);
+  ASSERT_TRUE(poseParam.SetParentElement(poseElem));
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
 
@@ -654,6 +646,29 @@ TEST(Param, ReparsingAfterSetPose)
 
   // After reparse, value will still remain the same, as the explicit Set
   // function was used.
+  EXPECT_TRUE(poseParam.Reparse());
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
+
+  // Changing parent @rotation_format to euler_rpy, value remains the same
+  sdf::ParamPtr rotationFormatAttrib =
+      poseElem->GetAttribute("rotation_format");
+  ASSERT_NE(nullptr, rotationFormatAttrib);
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("euler_rpy"));
+  EXPECT_TRUE(poseParam.Reparse());
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
+
+  // Changing parent @rotation_format to quat_xyzw, reparse will pass, but value
+  // remains the same as before, as it was explicitly set
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_xyzw"));
+  EXPECT_TRUE(poseParam.Reparse());
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
+
+  // Changing parent @rotation_format to something invalid, reparse will pass,
+  // value remains the same as before, as it was explicitly set
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("invalid_format"));
   EXPECT_TRUE(poseParam.Reparse());
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
@@ -669,9 +684,6 @@ TEST(Param, ReparsingAfterSetFromStringPose)
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), value);
 
-  // Reparsing without setting values will fail.
-  EXPECT_FALSE(poseParam.Reparse());
-
   // Reparsing after setting values will pass. Note that the value was
   // set using SetFromString.
   EXPECT_TRUE(poseParam.SetFromString("2 3 4 0.5 0.6 0.7"));
@@ -683,12 +695,13 @@ TEST(Param, ReparsingAfterSetFromStringPose)
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
   poseElem->AddAttribute("relative_to", "string", "", false);
   poseElem->AddAttribute("degrees", "bool", "false", false);
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
 
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
 
   // Setting parent with @degrees as false, value will remain the same.
-  poseParam.SetParentElement(poseElem);
+  ASSERT_TRUE(poseParam.SetParentElement(poseElem));
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), value);
 
@@ -700,6 +713,29 @@ TEST(Param, ReparsingAfterSetFromStringPose)
 
   // After reparse, rotation values will be parsed as degrees.
   EXPECT_TRUE(poseParam.Reparse());
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
+
+  // Changing parent @rotation_format to euler_rpy, value remains the same
+  sdf::ParamPtr rotationFormatAttrib =
+      poseElem->GetAttribute("rotation_format");
+  ASSERT_NE(nullptr, rotationFormatAttrib);
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("euler_rpy"));
+  EXPECT_TRUE(poseParam.Reparse());
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
+
+  // Changing parent @rotation_format to quat_xyzw, reparse will fail, value
+  // remains the same as before
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_xyzw"));
+  EXPECT_FALSE(poseParam.Reparse());
+  EXPECT_TRUE(poseParam.Get<Pose>(value));
+  EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
+
+  // Changing parent @rotation_format to something invalid, reparse will fail,
+  // value remains the same as before
+  ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("invalid_format"));
+  EXPECT_FALSE(poseParam.Reparse());
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
 }
@@ -717,7 +753,7 @@ TEST(Param, IgnoresParentElementAttribute)
     // With parent
     sdf::Param doubleParam("key", "double", "1.0", false, "description");
     sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
-    doubleParam.SetParentElement(parentElement);
+    ASSERT_TRUE(doubleParam.SetParentElement(parentElement));
     EXPECT_FALSE(doubleParam.IgnoresParentElementAttribute());
   }
 
@@ -736,7 +772,7 @@ TEST(Param, IgnoresParentElementAttribute)
     // With parent using Set and SetFromString
     sdf::Param doubleParam("key", "double", "1.0", false, "description");
     sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
-    doubleParam.SetParentElement(parentElement);
+    ASSERT_TRUE(doubleParam.SetParentElement(parentElement));
     ASSERT_TRUE(doubleParam.Set<double>(23.4));
     EXPECT_TRUE(doubleParam.IgnoresParentElementAttribute());
 
@@ -754,6 +790,78 @@ TEST(Param, IgnoresParentElementAttribute)
   }
 }
 
+/////////////////////////////////////////////////
+TEST(Param, WithoutParentElementSetParentElementFail)
+{
+  using Pose = ignition::math::Pose3d;
+
+  sdf::Param poseParam("", "pose", "0 0 0 0 0 0", false, "description");
+  EXPECT_TRUE(poseParam.SetFromString("2 3 4 0.5 0.6 0.7"));
+
+  Pose val;
+  EXPECT_TRUE(poseParam.Get<Pose>(val));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), val);
+
+  sdf::ElementPtr quatPoseElem(new sdf::Element);
+  quatPoseElem->SetName("pose");
+  quatPoseElem->AddValue("pose", "0 0 0 0 0 0", true);
+  quatPoseElem->AddAttribute("relative_to", "string", "", false);
+  quatPoseElem->AddAttribute("degrees", "bool", "false", false);
+  quatPoseElem->AddAttribute(
+      "rotation_format", "string", "quat_xyzw", false);
+
+  // Set parent to Element with degrees attribute false, in quat_xyzw, will
+  // fail, as the string that was previously set was only 6 values. The value
+  // will remain the same as before and the parent Element will still be the
+  // previous one, in this case a nullptr.
+  ASSERT_FALSE(poseParam.SetParentElement(quatPoseElem));
+  ASSERT_TRUE(poseParam.Get<Pose>(val));
+  EXPECT_EQ(Pose(2, 3, 4, 0.5, 0.6, 0.7), val);
+
+  auto parent = poseParam.GetParentElement();
+  EXPECT_EQ(nullptr, parent);
+}
+
+/////////////////////////////////////////////////
+TEST(Param, ChangeParentElementFail)
+{
+  using Pose = ignition::math::Pose3d;
+
+  sdf::ElementPtr poseElem(new sdf::Element);
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "0 0 0 0 0 0", true);
+  poseElem->AddAttribute("relative_to", "string", "", false);
+  poseElem->AddAttribute("degrees", "bool", "false", false);
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+
+  // Param from original default attibute
+  sdf::ParamPtr valParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, valParam);
+  ASSERT_TRUE(valParam->SetFromString("1, 2, 3, 0.4, 0.5, 0.6"));
+
+  Pose val;
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+
+  sdf::ElementPtr quatPoseElem(new sdf::Element);
+  quatPoseElem->SetName("pose");
+  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
+  quatPoseElem->AddAttribute("relative_to", "string", "", false);
+  quatPoseElem->AddAttribute("degrees", "bool", "false", false);
+  quatPoseElem->AddAttribute(
+      "rotation_format", "string", "quat_xyzw", false);
+
+  // Set parent to Element with degrees attribute false, in quat_xyzw, will
+  // fail, as the string that was previously set was only 6 values. The value
+  // will remain the same as before and the parent Element will still be the
+  // previous one.
+  ASSERT_FALSE(valParam->SetParentElement(quatPoseElem));
+  ASSERT_TRUE(valParam->Get<Pose>(val));
+  EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), val);
+
+  auto parent = valParam->GetParentElement();
+  EXPECT_EQ(parent, poseElem);
+}
 
 /////////////////////////////////////////////////
 /// Main

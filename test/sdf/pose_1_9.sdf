@@ -58,6 +58,64 @@
       </pose>
       <link name="link"/>
     </model>
-  
+
+    <model name="model_with_empty_pose_euler_rpy">
+      <pose rotation_format="euler_rpy"></pose> 
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_empty_pose_euler_rpy_degrees_true">
+      <pose rotation_format="euler_rpy" degrees="true"></pose> 
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_empty_pose_euler_rpy_degrees_false">
+      <pose rotation_format="euler_rpy" degrees="false"></pose> 
+      <link name="link"/>
+    </model>
+
+    <model name="model_euler_rpy">
+      <pose rotation_format="euler_rpy">1 2 3   0.4 0.5 0.6</pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_euler_rpy_degrees_false">
+      <pose rotation_format="euler_rpy" degrees="false">1 2 3   0.4 0.5 0.6</pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_euler_rpy_degrees_true">
+      <pose rotation_format="euler_rpy" degrees="true">1 2 3   90 180 270</pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_quat_xyzw">
+      <pose rotation_format="quat_xyzw">1 2 3   0.7071068 0 0 0.7071068</pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_quat_xyzw_degrees_false">
+      <pose rotation_format="quat_xyzw" degrees="false">
+        1 2 3   0.7071068 0 0 0.7071068
+      </pose>
+      <link name="link"/>
+    </model>
+
+    <model name="model_with_inertia_pose">
+      <link name="link_euler_rpy_degrees_true">
+        <inertial>
+          <pose rotation_format="euler_rpy" degrees="true">1 2 3   90 180 270</pose>
+          <mass>10</mass>
+        </inertial>
+      </link>
+      <link name="link_quat_xyzw">
+        <inertial>
+          <pose rotation_format="quat_xyzw" degrees="false">
+            1 2 3   0.7071068 0 0 0.7071068
+          </pose>
+          <mass>10</mass>
+        </inertial>
+      </link>
+    </model>
   </world>
 </sdf>

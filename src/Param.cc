@@ -71,6 +71,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->dataPtr->description = _description;
   this->dataPtr->set = false;
   this->dataPtr->ignoreParentAttributes = false;
+  this->dataPtr->defaultStrValue = _default;
 
   SDF_ASSERT(this->ValueFromString(_default), "Invalid parameter");
   this->dataPtr->defaultValue = this->dataPtr->value;
@@ -83,26 +84,27 @@ Param::Param(const std::string &_key, const std::string &_typeName,
              const std::string &_description)
     : Param(_key, _typeName, _default, _required, _description)
 {
-  auto valCopy = this->dataPtr->value;
   if (!_minValue.empty())
   {
     SDF_ASSERT(
-        this->ValueFromString(_minValue),
+        this->dataPtr->ValueFromStringImpl(
+            this->dataPtr->typeName,
+            _minValue,
+            this->dataPtr->minValue.emplace()),
         std::string("Invalid [min] parameter in SDFormat description of [") +
             _key + "]");
-    this->dataPtr->minValue = this->dataPtr->value;
   }
 
   if (!_maxValue.empty())
   {
     SDF_ASSERT(
-        this->ValueFromString(_maxValue),
+        this->dataPtr->ValueFromStringImpl(
+            this->dataPtr->typeName,
+            _maxValue,
+            this->dataPtr->maxValue.emplace()),
         std::string("Invalid [max] parameter in SDFormat description of [") +
             _key + "]");
-    this->dataPtr->maxValue = this->dataPtr->value;
   }
-
-  this->dataPtr->value = valCopy;
 }
 
 //////////////////////////////////////////////////
@@ -301,12 +303,7 @@ void Param::Update()
 std::string Param::GetAsString() const
 {
   StringStreamClassicLocale ss;
-
-  if (this->dataPtr->strValue.has_value())
-    ss << this->dataPtr->strValue.value();
-  else
-    ss << ParamStreamer{ this->dataPtr->value };
-
+  ss << this->dataPtr->strValue;
   return ss.str();
 }
 
@@ -449,9 +446,64 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     const std::string &_key, const Param_V &_attributes,
     ParamPrivate::ParamVariant &_value)
 {
-  StringStreamClassicLocale ss(_input);
+  const bool defaultParseAsDegrees = false;
+  bool parseAsDegrees = defaultParseAsDegrees;
+
+  const std::string defaultRotationFormat = "euler_rpy";
+  std::string rotationFormat = defaultRotationFormat;
+
+  const std::size_t defaultDesiredSize = 6u;
+  std::size_t desiredSize = defaultDesiredSize;
+
+  std::string defaultValueStr = "0 0 0 0 0 0";
+
+  for (const auto &p : _attributes)
+  {
+    const std::string key = p->GetKey();
+
+    if (key == "degrees")
+    {
+      if (!p->Get<bool>(parseAsDegrees))
+      {
+        sdferr << "Invalid boolean value found for attribute "
+            "//pose[@degrees].\n";
+        return false;
+      }
+    }
+    else if (key == "rotation_format")
+    {
+      rotationFormat = p->GetAsString();
+
+      if (rotationFormat == "euler_rpy")
+      {
+        // Already the default, no modifications needed.
+      }
+      else if (rotationFormat == "quat_xyzw")
+      {
+        desiredSize = 7u;
+        defaultValueStr = "0 0 0 0 0 0 1";
+      }
+      else
+      {
+        sdferr << "Undefined attribute //pose[@rotation_format='"
+            << rotationFormat << "'], only 'euler_rpy' and 'quat_xyzw'"
+            << " is supported.\n";
+        return false;
+      }
+    }
+  }
+
+  if (rotationFormat == "quat_xyzw" && parseAsDegrees)
+  {
+    sdferr << "The attribute //pose[@degrees='true'] does not apply when "
+        << "parsing quaternions, //pose[@rotation_format='quat_xyzw'].\n";
+    return false;
+  }
+
+  std::string input = _input.empty() ? defaultValueStr : _input;
+  StringStreamClassicLocale ss(input);
   std::string token;
-  std::array<double, 6> values;
+  std::array<double, 7> values;
   std::size_t valueIndex = 0;
   double v;
   bool isValidPose = true;
@@ -464,7 +516,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     // Catch invalid argument exception from std::stod
     catch(std::invalid_argument &)
     {
-      sdferr << "Invalid argument. Unable to set value ["<< _input
+      sdferr << "Invalid argument. Unable to set value ["<< input
              << "] for key [" << _key << "].\n";
       isValidPose = false;
       break;
@@ -485,9 +537,11 @@ bool ParsePoseUsingStringStream(const std::string &_input,
       break;
     }
 
-    if (valueIndex >= 6u)
+    if (valueIndex >= desiredSize)
     {
-      sdferr << "Pose values can only accept 6 values.\n";
+      sdferr << "The value for //pose[@rotation_format='" << rotationFormat
+          << "'] must have " << desiredSize
+          << " values, but more than that were found in '" << input << "'.\n";
       isValidPose = false;
       break;
     }
@@ -498,49 +552,45 @@ bool ParsePoseUsingStringStream(const std::string &_input,
   if (!isValidPose)
     return false;
 
-  if (valueIndex != 6u)
+  if (valueIndex != desiredSize)
   {
-    sdferr << "The value for //pose must have 6 values, but "
-        << valueIndex << " were found instead.\n";
+    sdferr << "The value for //pose[@rotation_format='" << rotationFormat
+        << "'] must have " << desiredSize << " values, but " << valueIndex
+        << " were found instead in '" << input << "'.\n";
     return false;
   }
 
-  const bool defaultParseAsDegrees = false;
-  bool parseAsDegrees = defaultParseAsDegrees;
-
-  for (const auto &p : _attributes)
+  if (rotationFormat == "euler_rpy")
   {
-    if (p->GetKey() == "degrees")
+    if (parseAsDegrees)
     {
-      if (!p->Get<bool>(parseAsDegrees))
-      {
-        sdferr << "Invalid boolean value found for attribute "
-            "//pose[@degrees].\n";
-        return false;
-      }
-      break;
+      _value = ignition::math::Pose3d(values[0], values[1], values[2],
+          IGN_DTOR(values[3]), IGN_DTOR(values[4]), IGN_DTOR(values[5]));
     }
-  }
-
-  if (parseAsDegrees)
-  {
-    _value = ignition::math::Pose3d(values[0], values[1], values[2],
-        IGN_DTOR(values[3]), IGN_DTOR(values[4]), IGN_DTOR(values[5]));
+    else
+    {
+      _value = ignition::math::Pose3d(values[0], values[1], values[2],
+          values[3], values[4], values[5]);
+    }
   }
   else
   {
     _value = ignition::math::Pose3d(values[0], values[1], values[2],
-        values[3], values[4], values[5]);
+        values[6], values[3], values[4], values[5]);
   }
+
   return true;
 }
 
 //////////////////////////////////////////////////
 bool Param::ValueFromString(const std::string &_value)
 {
-  return this->dataPtr->ValueFromStringImpl(this->dataPtr->typeName,
-                                           _value,
-                                           this->dataPtr->value);
+  if (!this->dataPtr->ValueFromStringImpl(
+      this->dataPtr->typeName, _value, this->dataPtr->value))
+    return false;
+
+  this->dataPtr->strValue = _value;
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -664,17 +714,14 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
              _typeName == "pose" ||
              _typeName == "Pose")
     {
-      if (!tmp.empty())
+      const ElementPtr p = this->parentElement.lock();
+      if (!this->ignoreParentAttributes && p)
       {
-        const ElementPtr p = this->parentElement.lock();
-        if (!this->ignoreParentAttributes && p)
-        {
-          return ParsePoseUsingStringStream(
-              tmp, this->key, p->GetAttributes(), _valueToSet);
-        }
         return ParsePoseUsingStringStream(
-            tmp, this->key, {}, _valueToSet);
+            tmp, this->key, p->GetAttributes(), _valueToSet);
       }
+      return ParsePoseUsingStringStream(
+          tmp, this->key, {}, _valueToSet);
     }
     else if (_typeName == "ignition::math::Quaterniond" ||
              _typeName == "quaternion")
@@ -713,7 +760,6 @@ bool Param::SetFromString(const std::string &_value,
                           bool _ignoreParentAttributes)
 {
   this->dataPtr->ignoreParentAttributes = _ignoreParentAttributes;
-  this->dataPtr->strValue = _value;
   std::string str = sdf::trim(_value.c_str());
 
   if (str.empty() && this->dataPtr->required)
@@ -758,40 +804,46 @@ ElementPtr Param::GetParentElement() const
 }
 
 //////////////////////////////////////////////////
-void Param::SetParentElement(ElementPtr _parentElement)
+bool Param::SetParentElement(ElementPtr _parentElement)
 {
+  auto prevParentElement = this->dataPtr->parentElement;
+
   this->dataPtr->parentElement = _parentElement;
-  this->Reparse();
+  if (!this->Reparse())
+  {
+    this->dataPtr->parentElement = prevParentElement;
+    return false;
+  }
+
+  return true;
 }
 
 //////////////////////////////////////////////////
 void Param::Reset()
 {
   this->dataPtr->value = this->dataPtr->defaultValue;
-  this->dataPtr->strValue = std::nullopt;
+  this->dataPtr->strValue = this->dataPtr->defaultStrValue;
   this->dataPtr->set = false;
 }
 
 //////////////////////////////////////////////////
 bool Param::Reparse()
 {
-  if (!this->dataPtr->strValue.has_value())
-    return false;
-
-  const std::string strVal = this->dataPtr->strValue.value();
-  if (!this->SetFromString(strVal, this->dataPtr->ignoreParentAttributes))
+  if (!this->dataPtr->ValueFromStringImpl(
+      this->dataPtr->typeName, this->dataPtr->strValue, this->dataPtr->value))
   {
     if (const auto parentElement = this->dataPtr->parentElement.lock())
     {
-      sdferr << "Failed to set value '" << strVal << "' to key ["
-          << this->GetKey() << "] for new parent element of name '"
-          << parentElement->GetName() << "', reverting to previous value '"
+      sdferr << "Failed to set value '" << this->dataPtr->strValue
+          << "' to key [" << this->GetKey()
+          << "] for new parent element of name '" << parentElement->GetName()
+          << "', reverting to previous value '"
           << this->GetAsString() << "'.\n";
     }
     else
     {
-      sdferr << "Failed to set value '" << strVal << "' to key ["
-          << this->GetKey() << "] without a parent element, "
+      sdferr << "Failed to set value '" << this->dataPtr->strValue
+          << "' to key [" << this->GetKey() << "] without a parent element, "
           << "reverting to previous value '" << this->GetAsString() << "'.\n";
     }
     return false;

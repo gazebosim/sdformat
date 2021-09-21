@@ -11,9 +11,9 @@
             <pose relative_to='F1'>0 0 0 0 0.785398 0</pose>
           </frame>
           <link name='L1'>
-            <pose relative_to='F1'>0 0 0 0 -0 0</pose>
+            <pose relative_to='F1'>0 0 0 0 0 0</pose>
             <visual name='V1'>
-              <pose relative_to='F2'>0 0 0 0 -0 0</pose>
+              <pose relative_to='F2'>0 0 0 0 0 0</pose>
               <geometry>
                 <sphere>
                   <radius>1.5707963267948966</radius>
@@ -21,7 +21,7 @@
               </geometry>
             </visual>
             <collision name='C1'>
-              <pose relative_to='__model__'>0 0 0 0 -0 0</pose>
+              <pose relative_to='__model__'>0 0 0 0 0 0</pose>
               <geometry>
                 <sphere>
                   <radius>0.78539816339744828</radius>
@@ -39,7 +39,7 @@
             <pose relative_to='__model__'>0 0 1 0 0 0</pose>
           </link>
           <joint name='J1' type='universal'>
-            <pose relative_to='L1'>0 0 0 0 -0 0</pose>
+            <pose relative_to='L1'>0 0 0 0 0 0</pose>
             <parent>L1</parent>
             <child>L2</child>
             <axis>
