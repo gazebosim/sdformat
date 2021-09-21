@@ -172,20 +172,26 @@ namespace sdf
         const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Get the default value as a string.
+    /// \param[in] _config Configuration for conversion to string.
     /// \return String containing the default value of the parameter.
-    public: std::string GetDefaultAsString() const;
+    public: std::string GetDefaultAsString(
+        const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Get the minimum allowed value as a string
+    /// \param[in] _config Configuration for conversion to string.
     /// \return Returns a string containing the minimum allowed value of the
     /// parameter if the minimum value is specified in the SDFormat description
     /// of the parameter. nullopt otherwise.
-    public: std::optional<std::string> GetMinValueAsString() const;
+    public: std::optional<std::string> GetMinValueAsString(
+        const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Get the maximum allowed value as a string
+    /// \param[in] _config Configuration for conversion to string.
     /// \return Returns a string containing the maximum allowed value of the
     /// parameter if the maximum value is specified in the SDFormat description
     /// of the parameter. nullopt otherwise.
-    public: std::optional<std::string> GetMaxValueAsString() const;
+    public: std::optional<std::string> GetMaxValueAsString(
+        const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Set the parameter value from a string.
     /// \param[in] _value New value for the parameter in string form.

@@ -24,6 +24,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Param.hh"
 #include "sdf/ParserConfig.hh"
+#include "sdf/PrintConfig.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -120,10 +121,18 @@ namespace sdf
     /// \brief Destructor
     public: ~SDF();
     public: void PrintDescription();
-    public: void PrintValues();
     public: void PrintDoc();
     public: void Write(const std::string &_filename);
-    public: std::string ToString() const;
+
+    /// \brief Output SDF's values to stdout.
+    /// \param[in] _config Configuration for printing the values.
+    public: void PrintValues(const PrintConfig &_config = PrintConfig());
+
+    /// \brief Convert the SDF values to a string representation.
+    /// \param[in] _config Configuration for printing the values.
+    /// \return The string representation.
+    public: std::string ToString(
+        const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Set SDF values from a string
     public: void SetFromString(const std::string &_sdfData);

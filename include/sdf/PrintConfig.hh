@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef PRINTCONFIG_HH_
-#define PRINTCONFIG_HH_
+#ifndef SDF_PRINTCONFIG_HH_
+#define SDF_PRINTCONFIG_HH_
 
 #include <ignition/utils/ImplPtr.hh>
 
